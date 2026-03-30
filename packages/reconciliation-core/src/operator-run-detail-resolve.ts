@@ -21,8 +21,15 @@ import {
   type OperatorRunDetail,
   type OperatorRunStageRow,
 } from "./operator-run-detail.js";
-import { resolveReconciliationRunForTenants, type ResolvedReconciliationRunForTenants } from "./run-resolution.js";
-import { buildRunConfigurationSummary, type RunConfigurationSummary } from "./run-configuration-summary.js";
+import { countReconciliationExceptionsForScope } from "./exception-workbench.js";
+import {
+  resolveReconciliationRunForTenants,
+  type ResolvedReconciliationRunForTenants,
+} from "./run-resolution.js";
+import {
+  buildRunConfigurationSummary,
+  type RunConfigurationSummary,
+} from "./run-configuration-summary.js";
 import { toStageRows, type ReconAuditRow } from "./recon-audit-stages.js";
 
 export type OperatorRunDetailResolution =
@@ -136,8 +143,7 @@ function buildIngestionStages(
       id: "ingestion-reconciliation",
       name: "Ingestion reconciliation",
       status: stageStatus,
-      startedAt:
-        resolved.detail.timestamps.startedAt ?? resolved.detail.timestamps.createdAt,
+      startedAt: resolved.detail.timestamps.startedAt ?? resolved.detail.timestamps.createdAt,
       completedAt: resolved.detail.timestamps.completedAt ?? undefined,
       ...(resolved.detail.errorMessage ? { error: resolved.detail.errorMessage } : {}),
     },
@@ -290,42 +296,31 @@ export async function resolveOperatorRunDetailForTenants(
       })
     );
 
-    const exceptionAggregateRows = (await prisma.$queryRaw`
-      SELECT
-        COUNT(*)::int AS total,
-        COUNT(*) FILTER (WHERE acknowledged = false)::int AS pending,
-        COUNT(*) FILTER (
-          WHERE acknowledged = true
-          AND COALESCE(LOWER(metadata -> 'resolution' ->> 'status'), '') NOT IN ('resolved', 'ignored')
-        )::int AS investigating,
-        COUNT(*) FILTER (
-          WHERE LOWER(metadata -> 'resolution' ->> 'status') = 'resolved'
-        )::int AS resolved,
-        COUNT(*) FILTER (
-          WHERE LOWER(metadata -> 'resolution' ->> 'status') = 'ignored'
-        )::int AS ignored
-      FROM drift_events
-      WHERE recon_job_id = ${runId}::uuid
-        AND tenant_id = ${job.tenantId}::uuid
-    `) as Array<{
-      total: number | bigint;
-      pending: number | bigint;
-      investigating: number | bigint;
-      resolved: number | bigint;
-      ignored: number | bigint;
-    }>;
-    const [exceptionAggregateRow] = exceptionAggregateRows;
+    const exceptionCountResult = await countReconciliationExceptionsForScope({
+      prisma,
+      tenantId: job.tenantId,
+      runId,
+      runKind: "recon_job",
+    });
 
-    const exceptionCounts = {
-      total: Number(exceptionAggregateRow?.total || 0),
-      pending: Number(exceptionAggregateRow?.pending || 0),
-      investigating: Number(exceptionAggregateRow?.investigating || 0),
-      resolved: Number(exceptionAggregateRow?.resolved || 0),
-      ignored: Number(exceptionAggregateRow?.ignored || 0),
-      unresolved:
-        Number(exceptionAggregateRow?.pending || 0) +
-        Number(exceptionAggregateRow?.investigating || 0),
-    };
+    const exceptionCounts =
+      exceptionCountResult.kind === "ok"
+        ? {
+            total: exceptionCountResult.counts.total,
+            pending: exceptionCountResult.counts.pending,
+            investigating: exceptionCountResult.counts.investigating,
+            resolved: exceptionCountResult.counts.resolved,
+            ignored: exceptionCountResult.counts.ignored,
+            unresolved: exceptionCountResult.counts.reviewRequired,
+          }
+        : {
+            total: 0,
+            pending: 0,
+            investigating: 0,
+            resolved: 0,
+            ignored: 0,
+            unresolved: 0,
+          };
 
     let deterministicRows: DeterministicMatchRowLike[] = [];
     if (latestResult?.id) {

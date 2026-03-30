@@ -512,7 +512,7 @@ export class AdjudicationMemoryService {
       byArchetype.set(item.archetypeId, existing);
     }
 
-    for (const [_archetypeId, resolutions] of byArchetype) {
+    for (const [, resolutions] of byArchetype) {
       const ignored = resolutions["ignored"] ?? 0;
       const resolved = resolutions["resolved"] ?? 0;
       const total = ignored + resolved;
