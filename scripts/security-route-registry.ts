@@ -158,7 +158,7 @@ function main(): void {
     ...discoverRpcAndInternal(),
   ]);
 
-  const outputPath = path.join(repoRoot, "security", "route-registry.json");
+  const outputPath = path.join(repoRoot, "artifacts", "security", "route-registry.json");
   mkdirSync(path.dirname(outputPath), { recursive: true });
 
   const payload = {
