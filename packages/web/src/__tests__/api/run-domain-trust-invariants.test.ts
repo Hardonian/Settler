@@ -467,7 +467,7 @@ describe("run domain trust invariants", () => {
 
     expect(response.status).toBe(400);
     const payload = await response.json();
-    expect(payload.error).toContain("resolve|ignore|reopen");
+    expect(payload.error).toBe("Invalid action");
   });
 
   test("job progress route returns 500 for server failures (not false-success 200)", async () => {

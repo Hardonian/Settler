@@ -90,6 +90,9 @@ interface AdjudicationMetadataEntry {
   traceId?: string;
   requestId?: string;
   status: ExceptionStatus;
+  memoryId?: string;
+  evidenceIds?: string[];
+  proofPackageId?: string;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
