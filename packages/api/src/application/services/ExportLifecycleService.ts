@@ -304,8 +304,55 @@ export class ExportLifecycleService {
     });
   }
 
-  async cancelQueuedJob(input: CancelExportJobInput): Promise<boolean> {
-    return this.exportQueue.cancelJob(input.jobId, input.tenantId);
+  async cancelExport(input: { tenantId: string; exportId: string; userId: string }): Promise<void> {
+    await this.prisma.$transaction(async (tx) => {
+      const exportRecord = await tx.export.findFirst({
+        where: { id: input.exportId, tenantId: input.tenantId },
+      });
+
+      if (!exportRecord) {
+        throw new NotFoundError("Export not found", "export", input.exportId);
+      }
+
+      if (exportRecord.status === "processing") {
+        throw new ConflictError("Export is already processing and cannot be cancelled", {
+          code: "EXPORT_PROCESSING",
+          exportId: input.exportId,
+        });
+      }
+
+      if (exportRecord.status !== "pending") {
+        throw new ConflictError(`Cannot cancel export in ${exportRecord.status} state`, {
+          code: "EXPORT_NOT_CANCELLABLE",
+          exportId: input.exportId,
+          status: exportRecord.status,
+        });
+      }
+
+      const metadata = asMetadataObject(exportRecord.metadata);
+      if (metadata.jobId) {
+        const canceled = await this.exportQueue.cancelJob(metadata.jobId as string, input.tenantId);
+        if (!canceled) {
+          throw new ConflictError("Export job is already running and can no longer be cancelled", {
+            code: "EXPORT_NOT_CANCELLABLE",
+            currentStatus: exportRecord.status,
+            jobId: metadata.jobId as string,
+          });
+        }
+      }
+
+      await tx.export.update({
+        where: { id: input.exportId },
+        data: {
+          status: "failed",
+          errorMessage: "Cancelled by user",
+          metadata: mergeMetadata(exportRecord.metadata, {
+            cancelledBy: input.userId,
+            cancelledAt: new Date().toISOString(),
+          }),
+        },
+      });
+    });
   }
 
   async recordJobSuccess(input: RecordExportSuccessInput): Promise<void> {

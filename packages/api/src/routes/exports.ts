@@ -340,49 +340,10 @@ router.post(
       const tenantId = req.tenantId!;
       const userId = req.userId!;
 
-      const exportRecord = await prisma.export.findFirst({
-        where: { id, tenantId },
-      });
-
-      if (!exportRecord) {
-        throw new NotFoundError("Export not found", "export", id);
-      }
-
-      if (exportRecord.status !== "pending") {
-        throw new ConflictError("Can only cancel pending exports", {
-          code: "EXPORT_NOT_PENDING",
-          currentStatus: exportRecord.status,
-        });
-      }
-
-      // Cancel via the job queue
-      const metadata = exportRecord.metadata as any;
-      if (metadata?.jobId) {
-        const canceled = await exportLifecycleService.cancelQueuedJob({
-          tenantId,
-          jobId: metadata.jobId,
-        });
-        if (!canceled) {
-          throw new ConflictError("Export job is already running and can no longer be cancelled", {
-            code: "EXPORT_NOT_CANCELLABLE",
-            currentStatus: exportRecord.status,
-            jobId: metadata.jobId,
-          });
-        }
-      }
-
-      // Update export record
-      await prisma.export.update({
-        where: { id },
-        data: {
-          status: "failed",
-          errorMessage: "Cancelled by user",
-          metadata: {
-            ...metadata,
-            cancelledBy: userId,
-            cancelledAt: new Date().toISOString(),
-          } as any,
-        },
+      await exportLifecycleService.cancelExport({
+        tenantId,
+        exportId: id,
+        userId,
       });
 
       await prisma.auditLog.create({

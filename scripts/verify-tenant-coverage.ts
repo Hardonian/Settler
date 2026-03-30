@@ -16,7 +16,7 @@ type ExemptionRule = {
 };
 
 const repoRoot = process.cwd();
-const registryPath = path.join(repoRoot, "security", "route-registry.json");
+const registryPath = path.join(repoRoot, "artifacts", "security", "route-registry.json");
 
 const TENANT_CONTROL_TOKENS = [
   "tenantId",
