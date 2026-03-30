@@ -652,7 +652,7 @@ export class ExportJobWorker extends EventEmitter {
   private async completeJob(
     jobId: string,
     status: "succeeded" | "failed",
-    result?: Record<string, unknown>
+    result?: Record<string, unknown> | ExportJobExecutionResult
   ): Promise<void> {
     const client = await this.pool.connect();
 
@@ -671,7 +671,14 @@ export class ExportJobWorker extends EventEmitter {
         [
           status,
           status === "succeeded" ? uuidv4() : null,
-          status === "failed" ? { message: result?.error || "Unknown error" } : null,
+          status === "failed"
+            ? {
+                message:
+                  result && typeof result === "object" && "error" in result
+                    ? String(result.error ?? "Unknown error")
+                    : "Unknown error",
+              }
+            : null,
           jobId,
           this.workerId,
         ]

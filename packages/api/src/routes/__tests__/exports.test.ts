@@ -5,6 +5,7 @@ import { AuthRequest } from "../../middleware/auth";
 
 jest.mock("../../infrastructure/db/prisma", () => ({
   prisma: {
+    $transaction: jest.fn(),
     export: {
       findFirst: jest.fn(),
       findMany: jest.fn(),
@@ -21,11 +22,20 @@ jest.mock("../../infrastructure/db/prisma", () => ({
 const { prisma: mockedPrisma } = require("../../infrastructure/db/prisma");
 
 jest.mock("../../jobs/queue/ExportJobQueue", () => ({
+  __mockExportQueue: {
+    enqueue: jest.fn(),
+    cancelJob: jest.fn(),
+  },
   ExportJobQueue: jest.fn().mockImplementation(() => ({
     enqueue: jest.fn(),
     cancelJob: jest.fn(),
   })),
 }));
+const {
+  __mockExportQueue: mockExportQueue,
+  ExportJobQueue,
+} = require("../../jobs/queue/ExportJobQueue");
+(ExportJobQueue as jest.Mock).mockImplementation(() => mockExportQueue);
 
 jest.mock("../../middleware/governance", () => ({
   enforceFreezeState: jest.fn(() => jest.fn((_req: any, _res: any, next: any) => next())),
@@ -63,6 +73,9 @@ describe("exports routes", () => {
     app.use("/api", exportsRouter);
 
     jest.clearAllMocks();
+    mockedPrisma.$transaction.mockImplementation(
+      async (callback: (tx: typeof mockedPrisma) => unknown) => callback(mockedPrisma)
+    );
   });
 
   it("returns a truthful 409 when an export is not ready for download", async () => {
@@ -108,5 +121,70 @@ describe("exports routes", () => {
       fileSizeBytes: 2048,
       format: "csv",
     });
+  });
+
+  it("reuses the canonical export record for duplicate idempotent requests", async () => {
+    mockExportQueue.enqueue.mockResolvedValueOnce({
+      id: "job-1",
+      tenantId: "tenant-123",
+      type: "reconciliation-export",
+      status: "queued",
+      createdAt: new Date("2026-03-29T12:00:00Z"),
+    });
+    mockedPrisma.export.findMany
+      .mockResolvedValueOnce([
+        {
+          id: "export-1",
+          tenantId: "tenant-123",
+          userId: "user-456",
+          type: "reconciliation",
+          format: "csv",
+          reconciliationRunId: "run-1",
+          status: "pending",
+          storageLocation: null,
+          signedUrl: null,
+          signedUrlExpiresAt: null,
+          fileSizeBytes: null,
+          rowCount: null,
+          errorMessage: null,
+          metadata: { jobId: "job-1", idempotencyKey: "idem-1" },
+          createdAt: new Date("2026-03-29T12:00:00Z"),
+        },
+      ])
+      .mockResolvedValueOnce([]);
+
+    const res = await request(app).post("/api/exports").send({
+      runId: "00000000-0000-4000-8000-000000000001",
+      format: "csv",
+      type: "reconciliation",
+      idempotencyKey: "idem-1",
+      options: {},
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      data: {
+        exportId: "export-1",
+        jobId: "job-1",
+        status: "pending",
+        idempotent: true,
+      },
+    });
+    expect(mockedPrisma.auditLog.create).not.toHaveBeenCalled();
+  });
+
+  it("does not mark an export failed when cancellation loses the race to a running job", async () => {
+    mockedPrisma.export.findFirst.mockResolvedValueOnce({
+      id: "export-3",
+      tenantId: "tenant-123",
+      status: "pending",
+      metadata: { jobId: "job-3" },
+    });
+    mockExportQueue.cancelJob.mockResolvedValueOnce(false);
+
+    const res = await request(app).post("/api/exports/export-3/cancel");
+
+    expect(res.status).toBe(409);
+    expect(mockedPrisma.export.update).not.toHaveBeenCalled();
   });
 });
