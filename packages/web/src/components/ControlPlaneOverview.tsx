@@ -56,13 +56,13 @@ const ControlPlaneOverview: React.FC<ControlPlaneOverviewProps> = ({ health }) =
   const getStatusColor = (status: string) => {
     switch (status) {
       case "healthy":
-        return "border-green-200 bg-green-50 text-green-700";
+        return "border-green-500/20 bg-green-500/8 text-green-700 dark:text-green-400";
       case "degraded":
-        return "border-yellow-200 bg-yellow-50 text-yellow-700";
+        return "border-yellow-500/20 bg-yellow-500/8 text-yellow-700 dark:text-yellow-400";
       case "unhealthy":
-        return "border-red-200 bg-red-50 text-red-700";
+        return "border-red-500/20 bg-red-500/8 text-red-700 dark:text-red-400";
       default:
-        return "border-gray-200 bg-gray-50 text-gray-700";
+        return "border-border bg-muted/20 text-muted-foreground";
     }
   };
 
@@ -70,28 +70,28 @@ const ControlPlaneOverview: React.FC<ControlPlaneOverviewProps> = ({ health }) =
     switch (status) {
       case "healthy":
         return (
-          <span className="inline-flex items-center gap-1.5 rounded-md border border-green-200 bg-green-50 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-green-700 shadow-sm">
+          <span className="inline-flex items-center gap-1.5 rounded-md border border-green-500/25 bg-green-500/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-green-700 dark:text-green-400">
             <span className="h-2 w-2 rounded-full bg-green-500" aria-hidden="true" />
             Healthy
           </span>
         );
       case "degraded":
         return (
-          <span className="inline-flex items-center gap-1.5 rounded-md border border-yellow-200 bg-yellow-50 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-yellow-700 shadow-sm">
+          <span className="inline-flex items-center gap-1.5 rounded-md border border-yellow-500/25 bg-yellow-500/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-yellow-700 dark:text-yellow-400">
             <span className="h-2 w-2 rounded-full bg-yellow-500" aria-hidden="true" />
             Degraded
           </span>
         );
       case "unhealthy":
         return (
-          <span className="inline-flex items-center gap-1.5 rounded-md border border-red-200 bg-red-50 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-red-700 shadow-sm">
+          <span className="inline-flex items-center gap-1.5 rounded-md border border-red-500/25 bg-red-500/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-red-700 dark:text-red-400">
             <span className="h-2 w-2 rounded-full bg-red-500" aria-hidden="true" />
             Unhealthy
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-gray-50 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-gray-700 shadow-sm">
+          <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-muted/30 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
             Unknown
           </span>
         );
@@ -107,17 +107,17 @@ const ControlPlaneOverview: React.FC<ControlPlaneOverviewProps> = ({ health }) =
       {/* Overall System Status */}
       <div>
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-base font-bold text-slate-900">Overall System Status</h2>
+          <h2 className="text-base font-bold text-foreground">Overall System Status</h2>
           {getStatusBadge(health.status)}
         </div>
 
         {health.status === "unhealthy" && (
-          <div className="rounded-lg border border-red-200 bg-red-50 p-4 mb-4">
+          <div className="error-well mb-4">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" aria-hidden="true" />
+              <AlertTriangle className="h-5 w-5 text-destructive mt-0.5 shrink-0" aria-hidden="true" />
               <div>
-                <h3 className="text-sm font-bold text-red-900">System Degradation Detected</h3>
-                <p className="mt-1 text-xs text-red-700">
+                <h3 className="text-sm font-bold text-foreground">System Degradation Detected</h3>
+                <p className="mt-1 text-xs text-muted-foreground">
                   One or more critical dependencies are unhealthy. Review dependency status below.
                 </p>
               </div>
@@ -128,7 +128,7 @@ const ControlPlaneOverview: React.FC<ControlPlaneOverviewProps> = ({ health }) =
 
       {/* Dependency Health Status */}
       <div>
-        <h2 className="text-base font-bold text-slate-900 mb-3">Service Dependencies</h2>
+        <h2 className="text-base font-bold text-foreground mb-3">Service Dependencies</h2>
         <div className="space-y-3">
           {dependencies.map(([name, check]) => (
             <div key={name} className={`rounded-lg border p-4 ${getStatusColor(check.status)}`}>
