@@ -428,6 +428,14 @@ router.get(
         },
         include: {
           sourceTransaction: true,
+          run: {
+            select: {
+              id: true,
+              status: true,
+              startedAt: true,
+              completedAt: true,
+            },
+          },
         },
       });
 
@@ -485,12 +493,8 @@ router.get(
 
       res.json({
         data: {
-<<<<<<< HEAD
           ...mapExceptionToResponse(exception as any),
-=======
-          ...mapExceptionToResponse(exception),
-          run: exception.run,
->>>>>>> 8ea2d9995 (feat: initialize billing and reconciliation database schema and exception handling utilities)
+          run: (exception as any).run,
           sourceTransaction: exception.sourceTransaction,
           targetTransaction: null,
           institutionalMemory: adjudicationMemories,

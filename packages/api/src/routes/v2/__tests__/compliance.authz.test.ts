@@ -13,12 +13,13 @@ jest.mock("../../../services/authz/openfga-authorization-service", () => ({
 }));
 
 const createExportMock = jest.fn();
+const getExportMock = jest.fn((_id: string) => undefined as any);
 jest.mock("../../../services/compliance/export-system", () => ({
   complianceExportSystem: {
     createExport: (tenantId: string, jurisdiction: unknown, format: unknown) =>
       createExportMock(tenantId, jurisdiction, format),
     listExports: jest.fn(() => []),
-    getExport: jest.fn(() => undefined),
+    getExport: (id: string) => getExportMock(id),
     getTemplates: jest.fn(() => []),
   },
 }));
@@ -72,5 +73,21 @@ describe("compliance route authz", () => {
     expect(response.status).toBe(503);
     expect(response.body.error).toBe("STRATEGIC_SURFACE_UNAVAILABLE");
     expect(response.body.capability.state).toBe("unavailable");
+  });
+
+  it("closes cross-tenant export lookups with a not-found response", async () => {
+    process.env.SETTLER_ENABLE_V2_STRATEGIC_PREVIEW = "true";
+    getExportMock.mockReturnValue({
+      id: "export-1",
+      customerId: "tenant-2",
+      jurisdiction: "GDPR",
+      format: "json",
+      status: "ready",
+    });
+
+    const response = await request(app).get("/api/v2/compliance/exports/export-1");
+
+    expect(response.status).toBe(404);
+    expect(response.body.error).toBe("Export not found");
   });
 });

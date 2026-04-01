@@ -100,15 +100,13 @@ describe("capability route degradation", () => {
       }),
     });
     registry.getUnavailableOperatorIntelligenceProvider.mockReturnValue({
-      getPlatformOverview: jest
-        .fn()
-        .mockResolvedValue({
-          telemetry: {},
-          analytics: {},
-          costs: {},
-          autonomousOperations: {},
-          leaderboard: [],
-        }),
+      getPlatformOverview: jest.fn().mockResolvedValue({
+        telemetry: {},
+        analytics: {},
+        costs: {},
+        autonomousOperations: {},
+        leaderboard: [],
+      }),
       status: () => ({
         key: "operator_intelligence",
         state: "unavailable",
@@ -143,5 +141,56 @@ describe("capability route degradation", () => {
     expect(response.status).toBe(200);
     expect(response.body.data).toHaveLength(1);
     expect(response.body.data[0].key).toBe("support_intake");
+  });
+
+  it("scopes projected capability resolution to the active tenant", async () => {
+    registry.getCapabilityRegistry.mockResolvedValue({
+      list: () => [
+        { key: "operator_intelligence", state: "available", available: true, source: "oss" },
+        { key: "support_intake", state: "available", available: true, source: "oss" },
+      ],
+    });
+    db.query.mockResolvedValueOnce([{ scopes: [] }]).mockResolvedValueOnce([{ role: "viewer" }]);
+
+    const app = express();
+    app.use((req, _res, next) => {
+      (req as any).tenantId = "tenant-7";
+      (req as any).userId = "user-1";
+      (req as any).apiKeyId = "key-1";
+      next();
+    });
+    app.use(capabilitiesRouter);
+
+    const response = await request(app).get("/capabilities/projected");
+
+    expect(response.status).toBe(200);
+    expect(db.query).toHaveBeenNthCalledWith(1, expect.stringContaining("FROM api_keys"), [
+      "key-1",
+      "tenant-7",
+    ]);
+    expect(db.query).toHaveBeenNthCalledWith(2, expect.stringContaining("FROM users"), [
+      "user-1",
+      "tenant-7",
+    ]);
+    expect(response.body.metadata.tenantId).toBe("tenant-7");
+  });
+
+  it("requires tenant context for projected capabilities", async () => {
+    registry.getCapabilityRegistry.mockResolvedValue({
+      list: () => [],
+    });
+
+    const app = express();
+    app.use((req, _res, next) => {
+      (req as any).tenantId = null;
+      (req as any).userId = "user-1";
+      next();
+    });
+    app.use(capabilitiesRouter);
+
+    const response = await request(app).get("/capabilities/projected");
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe("TENANT_CONTEXT_REQUIRED");
   });
 });

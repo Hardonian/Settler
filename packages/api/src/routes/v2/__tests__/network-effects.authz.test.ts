@@ -13,7 +13,8 @@ jest.mock("../../../services/authz/openfga-authorization-service", () => ({
 }));
 
 const submitMetricsMock = jest.fn(
-  (_tenantId: string, _metrics: unknown) => ({ accepted: true })
+  (_tenantId: string, _metrics: unknown) =>
+    ({ accepted: true }) as { accepted: boolean; reason?: string }
 );
 jest.mock("../../../services/network-effects/performance-pools", () => ({
   performanceTuningPools: {
@@ -21,7 +22,12 @@ jest.mock("../../../services/network-effects/performance-pools", () => ({
     submitMetrics: (tenantId: string, metrics: unknown) => submitMetricsMock(tenantId, metrics),
     getInsights: jest.fn(() => []),
     getRecommendedRules: jest.fn(() => []),
-    getStats: jest.fn(() => ({ totalMetrics: 0, optInCustomers: 0, adapters: [], topPerformers: [] })),
+    getStats: jest.fn(() => ({
+      totalMetrics: 0,
+      optInCustomers: 0,
+      adapters: [],
+      topPerformers: [],
+    })),
   },
 }));
 
@@ -30,7 +36,12 @@ jest.mock("../../../services/network-effects/cross-customer-intelligence", () =>
     optIn: jest.fn(),
     optOut: jest.fn(),
     checkPattern: jest.fn(() => null),
-    getNetworkInsights: jest.fn(() => ({ totalPatterns: 0, fraudPatterns: 0, anomalyPatterns: 0, topPatterns: [] })),
+    getNetworkInsights: jest.fn(() => ({
+      totalPatterns: 0,
+      fraudPatterns: 0,
+      anomalyPatterns: 0,
+      topPatterns: [],
+    })),
   },
 }));
 
@@ -84,5 +95,27 @@ describe("network effects route authz", () => {
     expect(response.status).toBe(503);
     expect(response.body.error).toBe("STRATEGIC_SURFACE_UNAVAILABLE");
     expect(response.body.capability.state).toBe("unavailable");
+  });
+
+  it("returns explicit opt-in-required state instead of false success", async () => {
+    process.env.SETTLER_ENABLE_V2_STRATEGIC_PREVIEW = "true";
+    submitMetricsMock.mockReturnValue({
+      accepted: false,
+      reason: "Tenant must opt in to performance tuning pools before submitting metrics.",
+    });
+
+    const response = await request(app).post("/api/v2/network-effects/performance/submit").send({
+      jobId: "job-1",
+      adapter: "csv",
+      ruleType: "exact",
+      accuracy: 0.98,
+      latency: 12,
+      throughput: 200,
+    });
+
+    expect(response.status).toBe(409);
+    expect(response.body.error).toBe("PERFORMANCE_POOL_OPT_IN_REQUIRED");
+    expect(response.body.capability.state).toBe("degraded");
+    expect(response.body.metadata.tenantId).toBe("tenant-1");
   });
 });

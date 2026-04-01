@@ -6,7 +6,12 @@ jest.mock("../../../middleware/authorization", () => ({
 }));
 
 const listAgentsMock = jest.fn(() => []);
-const getStatsMock = jest.fn(() => ({ totalAgents: 0, enabledAgents: 0, queueLength: 0, isProcessing: false }));
+const getStatsMock = jest.fn(() => ({
+  totalAgents: 0,
+  enabledAgents: 0,
+  queueLength: 0,
+  isProcessing: false,
+}));
 jest.mock("../../../services/ai-agents/orchestrator", () => ({
   BaseAgent: class {},
   agentOrchestrator: {
@@ -16,6 +21,34 @@ jest.mock("../../../services/ai-agents/orchestrator", () => ({
     registerAgent: jest.fn(),
     initializeAll: jest.fn(async () => undefined),
     execute: jest.fn(),
+  },
+}));
+
+jest.mock("../../../services/ai-agents/infrastructure-optimizer", () => ({
+  InfrastructureOptimizerAgent: class {
+    id = "infrastructure-optimizer";
+    name = "Infrastructure Optimizer";
+    type = "optimizer";
+
+    constructor(_config: unknown) {}
+
+    async getStatus() {
+      return { state: "idle" };
+    }
+  },
+}));
+
+jest.mock("../../../services/ai-agents/anomaly-detector", () => ({
+  AnomalyDetectorAgent: class {
+    id = "anomaly-detector";
+    name = "Anomaly Detector";
+    type = "detector";
+
+    constructor(_config: unknown) {}
+
+    async getStatus() {
+      return { state: "idle" };
+    }
   },
 }));
 
@@ -73,5 +106,16 @@ describe("ai agents route authz", () => {
     expect(response.body.error).toBe("STRATEGIC_SURFACE_UNAVAILABLE");
     expect(response.body.capability.state).toBe("unavailable");
     expect(getStatsMock).not.toHaveBeenCalled();
+  });
+
+  it("routes /stats to the stats handler when preview is enabled", async () => {
+    process.env.SETTLER_ENABLE_V2_STRATEGIC_PREVIEW = "true";
+
+    const response = await request(app).get("/api/v2/ai-agents/stats");
+
+    expect(response.status).toBe(200);
+    expect(getStatsMock).toHaveBeenCalledTimes(1);
+    expect(response.body.data.totalAgents).toBe(0);
+    expect(response.body.capability.state).toBe("degraded");
   });
 });
