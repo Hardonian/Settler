@@ -18,9 +18,12 @@ const runDeltaService = new RunDeltaService(prisma);
 
 /**
  * Utility to compute payload hash for evidence integrity
+ * Uses sorted keys for deterministic serialization consistent with @settler/proofs
  */
-function computePayloadHash(payload: any): string {
-  const content = JSON.stringify(payload);
+function computePayloadHash(payload: Record<string, unknown>): string {
+  const sortedKeys =
+    typeof payload === "object" && payload !== null ? Object.keys(payload).sort() : undefined;
+  const content = sortedKeys ? JSON.stringify(payload, sortedKeys) : JSON.stringify(payload);
   return crypto.createHash("sha256").update(content).digest("hex");
 }
 

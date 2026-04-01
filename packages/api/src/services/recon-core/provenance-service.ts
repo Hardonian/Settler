@@ -28,11 +28,14 @@ function stableStringify(input: Record<string, unknown>): string {
   return JSON.stringify(sorted);
 }
 
-function buildEntryHash(input: ProvenanceRecordInput & { sequence: number }): string {
+function buildEntryHash(
+  input: ProvenanceRecordInput & { sequence: number; previousEntryHash?: string }
+): string {
   return crypto
     .createHash("sha256")
     .update(
       [
+        input.previousEntryHash ?? "genesis",
         input.tenantId,
         input.runId,
         input.matchId ?? "none",

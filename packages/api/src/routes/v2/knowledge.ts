@@ -20,8 +20,14 @@ import {
   buildStrategicSurfaceMetadata,
   requireStrategicSurfaceAvailability,
 } from "./strategic-preview";
+import { z } from "zod";
 
 const router: Router = Router();
+
+/**
+ * Metadata for the Knowledge Management Strategic Surface.
+ * This surface is currently in preview and requires specific feature flags.
+ */
 const KNOWLEDGE_SURFACE = {
   key: "knowledge_management_v2",
   unavailableReason:
@@ -30,9 +36,69 @@ const KNOWLEDGE_SURFACE = {
     "Knowledge management v2 is running in local-only preview mode without tenant-scoped durable storage.",
 };
 
+// --- Validation Schemas ---
+
+const CreateDecisionSchema = z.object({
+  title: z.string().min(1),
+  decisionMakers: z.array(z.string()),
+  status: z.enum(["proposed", "accepted", "rejected", "superseded"]),
+  context: z.string(),
+  decision: z.string(),
+  rationale: z.string(),
+  alternativesConsidered: z
+    .array(
+      z.object({
+        option: z.string(),
+        whyNot: z.string(),
+      })
+    )
+    .default([]),
+  expectedOutcomes: z.string().default(""),
+  actualOutcomes: z
+    .array(
+      z.object({
+        date: z.coerce.date(),
+        outcome: z.string(),
+      })
+    )
+    .default([]),
+  lessonsLearned: z.string().default(""),
+  relatedDecisions: z.array(z.string()).default([]),
+  tags: z.array(z.string()).default([]),
+});
+
+const UpdateOutcomeSchema = z.object({
+  outcome: z.string().min(1),
+});
+
+const AssistantQuerySchema = z.object({
+  question: z.string().min(1),
+  context: z
+    .object({
+      userId: z.string().optional(),
+      department: z.string().optional(),
+      project: z.string().optional(),
+    })
+    .optional(),
+});
+
+const QueryDecisionsSchema = z.object({
+  status: z.enum(["proposed", "accepted", "rejected", "superseded"]).optional(),
+  decisionMaker: z.string().optional(),
+  tag: z.string().optional(),
+  startDate: z.string().datetime().optional().or(z.string().optional()), // Allow flexible date strings
+  endDate: z.string().datetime().optional().or(z.string().optional()),
+  search: z.string().optional(),
+});
+
 /**
  * POST /api/v2/knowledge/decisions
- * Create a new decision
+ * Creates a new decision in the institutional memory log.
+ *
+ * @param {string} req.body.title - The title of the decision.
+ * @param {string[]} req.body.decisionMakers - List of individuals involved in the decision.
+ * @param {string} req.body.status - Initial status (e.g., 'proposed', 'accepted').
+ * @returns {Promise<void>}
  */
 router.post(
   "/decisions",
@@ -42,6 +108,7 @@ router.post(
       const tenantId = requireTenantContext(req, res);
       const userId = requireUserContext(req, res);
       if (!tenantId || !userId) return;
+
       if (
         !(await authorizeTenantActionOr403(
           req,
@@ -53,6 +120,7 @@ router.post(
       ) {
         return;
       }
+
       const capability = requireStrategicSurfaceAvailability(
         req,
         res,
@@ -60,7 +128,9 @@ router.post(
         KNOWLEDGE_SURFACE
       );
       if (!capability) return;
-      const decision = await decisionLog.createDecision(req.body);
+
+      const validatedBody = CreateDecisionSchema.parse(req.body);
+      const decision = await decisionLog.createDecision(validatedBody);
 
       res.status(201).json({
         data: decision,
@@ -76,7 +146,15 @@ router.post(
 
 /**
  * GET /api/v2/knowledge/decisions
- * Query decisions
+ * Queries the decision log with optional filters.
+ *
+ * @param {string} [req.query.status] - Filter by decision status.
+ * @param {string} [req.query.decisionMaker] - Filter by decision maker.
+ * @param {string} [req.query.tag] - Filter by tag.
+ * @param {string} [req.query.startDate] - ISO date string for range start.
+ * @param {string} [req.query.endDate] - ISO date string for range end.
+ * @param {string} [req.query.search] - Search text in title or content.
+ * @returns {Promise<void>}
  */
 router.get(
   "/decisions",
@@ -85,6 +163,7 @@ router.get(
     try {
       const tenantId = requireTenantContext(req, res);
       if (!tenantId) return;
+
       if (
         !(await authorizeTenantActionOr403(
           req,
@@ -96,6 +175,7 @@ router.get(
       ) {
         return;
       }
+
       const capability = requireStrategicSurfaceAvailability(
         req,
         res,
@@ -103,35 +183,23 @@ router.get(
         KNOWLEDGE_SURFACE
       );
       if (!capability) return;
-      const queryOptions: {
-        status?: "proposed" | "accepted" | "rejected" | "superseded";
-        decisionMaker?: string;
-        tag?: string;
-        dateRange?: { start: Date; end: Date };
-        search?: string;
-      } = {};
-      if (req.query.status) {
-        queryOptions.status = req.query.status as
-          | "proposed"
-          | "accepted"
-          | "rejected"
-          | "superseded";
-      }
-      if (req.query.decisionMaker) {
-        queryOptions.decisionMaker = req.query.decisionMaker as string;
-      }
-      if (req.query.tag) {
-        queryOptions.tag = req.query.tag as string;
-      }
-      if (req.query.startDate && req.query.endDate) {
+
+      const validatedQuery = QueryDecisionsSchema.parse(req.query);
+
+      const queryOptions: Parameters<typeof decisionLog.queryDecisions>[0] = {
+        status: validatedQuery.status,
+        decisionMaker: validatedQuery.decisionMaker,
+        tag: validatedQuery.tag,
+        search: validatedQuery.search,
+      };
+
+      if (validatedQuery.startDate && validatedQuery.endDate) {
         queryOptions.dateRange = {
-          start: new Date(req.query.startDate as string),
-          end: new Date(req.query.endDate as string),
+          start: new Date(validatedQuery.startDate),
+          end: new Date(validatedQuery.endDate),
         };
       }
-      if (req.query.search) {
-        queryOptions.search = req.query.search as string;
-      }
+
       const decisions = decisionLog.queryDecisions(queryOptions);
 
       res.json({
@@ -140,17 +208,18 @@ router.get(
         count: decisions.length,
         metadata: buildStrategicSurfaceMetadata(req, capability),
       });
-      return;
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to query decisions", 400);
-      return;
     }
   }
 );
 
 /**
  * GET /api/v2/knowledge/decisions/:id
- * Get a decision by ID
+ * Retrieves a single decision by its unique identifier, including related decisions.
+ *
+ * @param {string} req.params.id - The unique identifier of the decision.
+ * @returns {Promise<void>}
  */
 router.get(
   "/decisions/:id",
@@ -159,7 +228,9 @@ router.get(
     try {
       const tenantId = requireTenantContext(req, res);
       if (!tenantId) return;
+
       if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.knowledge.read"))) return;
+
       const capability = requireStrategicSurfaceAvailability(
         req,
         res,
@@ -167,12 +238,13 @@ router.get(
         KNOWLEDGE_SURFACE
       );
       if (!capability) return;
+
       const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
       if (!id) {
         return res.status(400).json({ error: "Decision ID is required" });
       }
-      const decision = decisionLog.getDecision(id);
 
+      const decision = decisionLog.getDecision(id);
       if (!decision) {
         return res.status(404).json({
           error: "Decision not found",
@@ -190,17 +262,19 @@ router.get(
         capability,
         metadata: buildStrategicSurfaceMetadata(req, capability),
       });
-      return;
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to get decision", 400);
-      return;
     }
   }
 );
 
 /**
  * PATCH /api/v2/knowledge/decisions/:id/outcomes
- * Update decision outcomes
+ * Updates the actual outcomes of a decision.
+ *
+ * @param {string} req.params.id - The unique identifier of the decision.
+ * @param {string} req.body.outcome - The outcome description to append.
+ * @returns {Promise<void>}
  */
 router.patch(
   "/decisions/:id/outcomes",
@@ -209,8 +283,10 @@ router.patch(
     try {
       const tenantId = requireTenantContext(req, res);
       if (!tenantId) return;
+
       if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.knowledge.manage")))
         return;
+
       const capability = requireStrategicSurfaceAvailability(
         req,
         res,
@@ -218,20 +294,14 @@ router.patch(
         KNOWLEDGE_SURFACE
       );
       if (!capability) return;
-      const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-      const { outcome } = req.body;
 
+      const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
       if (!id) {
         return res.status(400).json({ error: "Decision ID is required" });
       }
 
-      if (!outcome) {
-        return res.status(400).json({
-          error: "Missing outcome",
-        });
-      }
-
-      const decision = await decisionLog.updateOutcomes(id, outcome);
+      const validatedBody = UpdateOutcomeSchema.parse(req.body);
+      const decision = await decisionLog.updateOutcomes(id, validatedBody.outcome);
 
       res.json({
         data: decision,
@@ -239,17 +309,19 @@ router.patch(
         metadata: buildStrategicSurfaceMetadata(req, capability),
         message: "Outcome updated successfully",
       });
-      return;
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to update outcome", 400);
-      return;
     }
   }
 );
 
 /**
  * POST /api/v2/knowledge/assistant/query
- * Query the AI knowledge assistant
+ * Queries the AI knowledge assistant with a natural language question.
+ *
+ * @param {string} req.body.question - The question to ask the assistant.
+ * @param {Object} [req.body.context] - Additional context for the query.
+ * @returns {Promise<void>}
  */
 router.post(
   "/assistant/query",
@@ -258,7 +330,9 @@ router.post(
     try {
       const tenantId = requireTenantContext(req, res);
       if (!tenantId) return;
+
       if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.knowledge.read"))) return;
+
       const capability = requireStrategicSurfaceAvailability(
         req,
         res,
@@ -266,35 +340,26 @@ router.post(
         KNOWLEDGE_SURFACE
       );
       if (!capability) return;
-      const { question, context } = req.body;
 
-      if (!question || typeof question !== "string") {
-        return res.status(400).json({
-          error: "Missing question",
-        });
-      }
-
-      const response = await aiKnowledgeAssistant.query({
-        question,
-        context,
-      });
+      const validatedBody = AssistantQuerySchema.parse(req.body);
+      const response = await aiKnowledgeAssistant.query(validatedBody);
 
       res.json({
         data: response,
         capability,
         metadata: buildStrategicSurfaceMetadata(req, capability),
       });
-      return;
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to query assistant", 400);
-      return;
     }
   }
 );
 
 /**
  * GET /api/v2/knowledge/stats
- * Get knowledge base statistics
+ * Retrieves aggregated statistics for the knowledge base and AI assistant.
+ *
+ * @returns {Promise<void>}
  */
 router.get(
   "/stats",
@@ -303,7 +368,9 @@ router.get(
     try {
       const tenantId = requireTenantContext(req, res);
       if (!tenantId) return;
+
       if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.knowledge.read"))) return;
+
       const capability = requireStrategicSurfaceAvailability(
         req,
         res,
@@ -311,6 +378,7 @@ router.get(
         KNOWLEDGE_SURFACE
       );
       if (!capability) return;
+
       const assistantStats = aiKnowledgeAssistant.getStats();
 
       // Get decision stats
@@ -334,10 +402,8 @@ router.get(
         capability,
         metadata: buildStrategicSurfaceMetadata(req, capability),
       });
-      return;
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to get stats", 500);
-      return;
     }
   }
 );

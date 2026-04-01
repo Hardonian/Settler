@@ -115,7 +115,6 @@ export function computePackageHash(
     evidenceIds: [...evidenceIds].sort(),
     packageType,
     scopeIds: [...scopeIds].sort(),
-    computedAt: new Date().toISOString(),
   };
   return crypto.createHash("sha256").update(JSON.stringify(payload)).digest("hex");
 }
@@ -364,9 +363,12 @@ export function verifyProofIntegrity(exported: ProofPackageExport): ProofIntegri
 
   // Verify evidence hashes
   for (const artifact of exported.evidence) {
+    const payload = artifact.payload as Record<string, unknown> | null;
+    const sortedKeys =
+      payload && typeof payload === "object" ? Object.keys(payload).sort() : undefined;
     const computedArtifactHash = crypto
       .createHash("sha256")
-      .update(JSON.stringify(artifact.payload))
+      .update(sortedKeys ? JSON.stringify(payload, sortedKeys) : JSON.stringify(artifact.payload))
       .digest("hex");
 
     if (computedArtifactHash !== artifact.payloadHash) {
