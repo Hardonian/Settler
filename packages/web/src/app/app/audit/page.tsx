@@ -3,6 +3,7 @@ import SecurityOverview from "@/components/stitch-import/SecurityOverview";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { History, User, Shield, Database, Globe, MoreHorizontal } from "lucide-react";
+import { PageHeader } from "@/components/app/PageHeader";
 
 export const metadata = {
   title: "Audit Surfaces | Settler",
@@ -30,28 +31,26 @@ export default async function AuditPage() {
   const logs = await getAuditLogs();
 
   return (
-    <div className="space-y-12 pb-12">
-      <div>
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary/70 mb-2">
-          Governance & Assurance
-        </p>
-        <h1 className="text-4xl font-bold tracking-tight text-foreground">Audit Surfaces</h1>
-        <p className="mt-4 max-w-2xl text-base text-muted-foreground leading-relaxed">
-          The immutable ledger of all workspace activities. Audit trails track mutations across
-          policies, data connections, and reconciliation runs to maintain a verifiable chain of
-          custody.
-        </p>
-      </div>
-
-      <section className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-            <History className="h-4 w-4" />
-            Immutable Activity Trail
-          </h2>
+    <div className="space-y-10 pb-12">
+      <PageHeader
+        eyebrow="Governance & Assurance"
+        title="Audit Surfaces"
+        description="The immutable ledger of all workspace activities. Audit trails track mutations across policies, data connections, and reconciliation runs to maintain a verifiable chain of custody."
+        icon={Shield}
+        variant="hero"
+        actions={
           <Badge variant="outline" className="font-mono text-[10px]">
             {logs.length} ENTRIES
           </Badge>
+        }
+      />
+
+      <section className="space-y-6">
+        <div className="flex items-center gap-2">
+          <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+            <History className="h-4 w-4" aria-hidden="true" />
+            Immutable Activity Trail
+          </h2>
         </div>
 
         <div className="space-y-3">

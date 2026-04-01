@@ -123,6 +123,91 @@
            focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 focus:ring-offset-background
            transition-colors duration-100;
   }
+
+  /* Page content shell — consistent max-width + scroll area for app pages */
+  .page-content {
+    @apply space-y-8 pb-12;
+  }
+
+  /* Section title — mid-weight section heading in a content block */
+  .section-title {
+    @apply text-base font-semibold text-foreground tracking-tight;
+  }
+
+  /* Tonal well — inset background surface for secondary content */
+  .surface-well {
+    @apply rounded-xl border border-border/60 bg-muted/20 p-4;
+  }
+
+  /* Alert / notice strip — horizontal status message */
+  .notice-strip {
+    @apply flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-3 text-sm;
+  }
+
+  /* Inline code — for API endpoints, hash values, identifiers */
+  .code-inline {
+    @apply font-mono text-xs rounded bg-muted/60 border border-border/60 px-1.5 py-0.5 text-foreground;
+  }
+
+  /* Evidence/proof block — visual container for audit artifact display */
+  .evidence-block {
+    @apply rounded-xl border border-border/60 bg-card p-5;
+  }
+
+  /* Sidebar nav section heading */
+  .nav-section-label {
+    @apply px-3 mb-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60;
+  }
+
+  /* Run status pill — small inline badge for run/job state */
+  .run-status-pill {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide border;
+  }
+
+  /* Action strip — bottom-of-card or below-header CTA row */
+  .action-strip {
+    @apply flex flex-wrap items-center gap-3 pt-2;
+  }
+
+  /* Stat strip — horizontal row of KPI tiles */
+  .stat-strip {
+    @apply grid gap-4 sm:grid-cols-2 lg:grid-cols-4;
+  }
+
+  /* Highlighted metric number */
+  .kpi-value {
+    @apply text-3xl font-bold font-mono tabular-nums tracking-tight;
+  }
+
+  /* Tinted info notice */
+  .info-well {
+    @apply rounded-lg border border-blue-500/20 bg-blue-500/5 p-4;
+  }
+
+  /* Warning notice */
+  .warn-well {
+    @apply rounded-lg border border-amber-500/20 bg-amber-500/5 p-4;
+  }
+
+  /* Error/critical notice */
+  .error-well {
+    @apply rounded-lg border border-destructive/20 bg-destructive/5 p-4;
+  }
+
+  /* Success notice */
+  .success-well {
+    @apply rounded-lg border border-success/20 bg-success/5 p-4;
+  }
+
+  /* Timeline track — left border + spacing for event streams */
+  .timeline-track {
+    @apply relative pl-5 border-l border-border/60 space-y-5;
+  }
+
+  /* Timeline node dot */
+  .timeline-node {
+    @apply absolute -left-[5px] top-1.5 h-2.5 w-2.5 rounded-full border-2 border-background;
+  }
 }
 
 @layer base {

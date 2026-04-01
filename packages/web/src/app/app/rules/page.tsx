@@ -1,41 +1,50 @@
 "use client";
 
-import { ArrowLeft, Clock, Rocket } from "lucide-react";
+import { Rocket, Clock } from "lucide-react";
 import RulesEditor from "@/components/stitch-import/RulesEditor";
+import { PageHeader } from "@/components/app/PageHeader";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { FlaskConical } from "lucide-react";
 
 export default function RulesPage() {
   return (
-    <div className="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen flex flex-col overflow-hidden">
-      <header className="flex-none sticky top-0 z-50 bg-background-dark border-b border-border-dark pt-safe-top">
-        <div className="flex items-center justify-between p-4 pb-3">
-          <button className="text-white flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-surface-dark transition-colors">
-            <ArrowLeft className="h-6 w-6" />
-          </button>
-          <div className="flex flex-col items-center">
-            <h1 className="text-white text-lg font-bold leading-tight tracking-[-0.015em]">
-              Rules &amp; Configuration
-            </h1>
-            <div className="flex items-center gap-1.5">
-              <div className="size-2 rounded-full bg-emerald-500 animate-pulse"></div>
-              <p className="text-text-secondary text-xs font-medium">System Healthy • v2.3.1</p>
+    <div className="space-y-6 pb-8">
+      <PageHeader
+        eyebrow="Execution Infrastructure"
+        title="Rules & Configuration"
+        description="Define and version the tolerance rules that govern reconciliation evaluation. Changes are versioned and hash-locked before deployment."
+        icon={FlaskConical}
+        variant="hero"
+        actions={
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" aria-hidden="true" />
+              <span>System Healthy</span>
             </div>
+            <Badge variant="outline" className="font-mono text-[10px]">v2.3.1</Badge>
           </div>
-          <button className="text-white flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-surface-dark transition-colors">
-            <Clock className="h-6 w-6" />
-          </button>
-        </div>
-      </header>
-      <RulesEditor />
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background-dark via-background-dark to-transparent z-40 pointer-events-none">
-        <div className="pointer-events-auto">
-          <button
-            className="w-full bg-primary hover:bg-blue-600 disabled:bg-slate-700 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2"
-            disabled
-          >
-            <Rocket className="h-6 w-6" />
-            Save &amp; Deploy v2.4
-          </button>
-        </div>
+        }
+      />
+
+      <div className="panel p-0 overflow-hidden">
+        <RulesEditor />
+      </div>
+
+      <div className="flex items-center justify-end gap-3 pt-2">
+        <Button variant="outline" size="sm" className="gap-2">
+          <Clock className="h-3.5 w-3.5" aria-hidden="true" />
+          Version History
+        </Button>
+        <Button
+          size="sm"
+          className="gap-2"
+          disabled
+          title="No pending changes to deploy"
+        >
+          <Rocket className="h-3.5 w-3.5" aria-hidden="true" />
+          Save & Deploy v2.4
+        </Button>
       </div>
     </div>
   );

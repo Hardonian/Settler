@@ -14,8 +14,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Download, Search, FileDown } from "lucide-react";
+import { Download, Search, FileDown, History } from "lucide-react";
 import { NoAuditEmptyState, NoResultsEmptyState } from "@/components/admin/empty-states";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 
 export default function AdminAuditPage() {
   const [ruleIdFilter, setRuleIdFilter] = useState("");
@@ -50,22 +51,19 @@ export default function AdminAuditPage() {
     }) || [];
 
   return (
-    <div className="p-8 space-y-6 bg-muted/10 min-h-screen">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Audit Trail</h1>
-          <p className="text-muted-foreground mt-1">
-            Complete audit log explorer and export
-          </p>
-        </div>
-        <div className="flex items-center gap-4">
+    <div className="space-y-6 pb-8">
+      <AdminPageHeader
+        eyebrow="Compliance & Governance"
+        title="Audit Trail"
+        description="Complete immutable log of all system and user actions. Filter, inspect, and export evidence for compliance review."
+        icon={History}
+        actions={
           <div className="relative group">
-            <Button variant="outline">
+            <Button variant="outline" size="sm">
               <Download className="w-4 h-4 mr-2" />
               Export
             </Button>
-            <div className="absolute right-0 top-full mt-1 bg-white dark:bg-card border border-border/40 dark:border-border rounded-lg shadow-lg p-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+            <div className="absolute right-0 top-full mt-1 bg-card border border-border/60 rounded-lg shadow-lg p-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 min-w-[160px]">
               <button
                 onClick={() => {
                   if (filteredItems.length > 0) {
@@ -73,7 +71,7 @@ export default function AdminAuditPage() {
                     downloadFile(csv, `audit-${new Date().toISOString().split("T")[0]}.csv`);
                   }
                 }}
-                className="w-full text-left px-3 py-2 text-sm hover:bg-muted/30 dark:hover:bg-card/80 rounded flex items-center gap-2"
+                className="w-full text-left px-3 py-2 text-sm hover:bg-muted/30 rounded flex items-center gap-2"
               >
                 <FileDown className="w-4 h-4" />
                 Export as CSV
@@ -84,15 +82,16 @@ export default function AdminAuditPage() {
                     exportAuditToJSON(filteredItems);
                   }
                 }}
-                className="w-full text-left px-3 py-2 text-sm hover:bg-muted/30 dark:hover:bg-card/80 rounded flex items-center gap-2"
+                className="w-full text-left px-3 py-2 text-sm hover:bg-muted/30 rounded flex items-center gap-2"
               >
                 <FileDown className="w-4 h-4" />
                 Export as JSON
               </button>
             </div>
           </div>
-        </div>
-      </div>
+        }
+      />
+      <div className="px-6 sm:px-8 space-y-6">
 
       {/* Filters */}
       <Card>
@@ -151,13 +150,14 @@ export default function AdminAuditPage() {
           )}
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }
 
 function AuditRow({ item }: { item: AuditItem }) {
   return (
-    <div className="p-4 border border-border/40 dark:border-border rounded-lg hover:bg-muted/10 dark:hover:bg-card/80 transition-colors">
+    <div className="p-4 border border-border/40 rounded-lg hover:bg-muted/10 transition-colors">
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">

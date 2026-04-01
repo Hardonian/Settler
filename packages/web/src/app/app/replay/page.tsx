@@ -98,7 +98,7 @@ export default async function ReplayPage() {
                    <ShieldCheck className="h-4 w-4" />
                    Trusted Replay
                 </h3>
-                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-semibold mb-4">
+                <p className="text-xs text-muted-foreground leading-relaxed font-semibold mb-4">
                   Settler guarantees determinism. Replay results are cryptographically checked against 
                   the original execution fingerprint stored in the immutable trust log.
                 </p>
