@@ -537,6 +537,131 @@ function classifyExceptionOntology(match: {
   };
 }
 
+function parseClusterFromProposalAudit(afterState: unknown): {
+  signature: ExceptionSignature;
+  volume: number;
+  openCount: number;
+  resolvedCount: number;
+  lowConfidenceCount: number;
+  adjudicationMix: Record<string, number>;
+  sourceIds: string[];
+  counterpartyKeys: string[];
+} | null {
+  const state = asRecord(afterState);
+  const signatureState = asRecord(state["signature"]);
+  const construction = asRecord(signatureState["construction"]);
+  const matchType = construction["matchType"];
+  const category = construction["category"];
+  const currency = construction["currency"];
+  const reason = construction["reason"];
+  if (
+    typeof signatureState["signature"] !== "string" ||
+    typeof matchType !== "string" ||
+    typeof category !== "string" ||
+    typeof currency !== "string" ||
+    typeof reason !== "string"
+  ) {
+    return null;
+  }
+  const rationaleCodes = Array.isArray(construction["rationaleCodes"])
+    ? (construction["rationaleCodes"] as unknown[]).filter(
+        (value): value is string => typeof value === "string"
+      )
+    : [];
+  const sourceIds = Array.isArray(state["sourceIds"])
+    ? (state["sourceIds"] as unknown[]).filter(
+        (value): value is string => typeof value === "string"
+      )
+    : [];
+  const counterpartyKeys = Array.isArray(state["counterpartyKeys"])
+    ? (state["counterpartyKeys"] as unknown[]).filter(
+        (value): value is string => typeof value === "string"
+      )
+    : [];
+  return {
+    signature: {
+      signature: signatureState["signature"],
+      construction: {
+        matchType,
+        category,
+        currency,
+        reason,
+        rationaleCodes,
+      },
+    },
+    volume: Number(state["volume"] ?? 0),
+    openCount: Number(state["openCount"] ?? 0),
+    resolvedCount: Number(state["resolvedCount"] ?? 0),
+    lowConfidenceCount: Number(state["lowConfidenceCount"] ?? 0),
+    adjudicationMix: asRecord(state["adjudicationMix"]) as Record<string, number>,
+    sourceIds,
+    counterpartyKeys,
+  };
+}
+
+function buildProposal(
+  tenantId: string,
+  generatedAt: Date,
+  lookbackDays: number,
+  cluster: {
+    signature: ExceptionSignature;
+    volume: number;
+    openCount: number;
+    resolvedCount: number;
+    lowConfidenceCount: number;
+    adjudicationMix: Record<string, number>;
+    sourceIds: string[];
+    counterpartyKeys: string[];
+  },
+  latestReview: PolicyEvolutionProposal["latestReview"]
+): PolicyEvolutionProposal {
+  const recommendation = recommendationFor(cluster);
+  const riskFlags: string[] = [];
+  if (cluster.openCount / Math.max(1, cluster.volume) > 0.6)
+    riskFlags.push("high_open_exception_concentration");
+  if (cluster.lowConfidenceCount / Math.max(1, cluster.volume) > 0.4)
+    riskFlags.push("high_low_confidence_concentration");
+  if (cluster.volume < 5) riskFlags.push("small_sample_size");
+
+  const dataSufficiency: PolicyEvolutionProposal["dataSufficiency"] =
+    cluster.volume >= 10 ? "sufficient" : cluster.volume >= 5 ? "limited" : "insufficient";
+
+  return {
+    proposalId: crypto
+      .createHash("sha256")
+      .update(`${tenantId}|${cluster.signature.signature}|${lookbackDays}`)
+      .digest("hex")
+      .slice(0, 24),
+    tenantId,
+    generatedAt: generatedAt.toISOString(),
+    signature: cluster.signature,
+    why: recommendation.confidenceBasis,
+    historicalBasis: {
+      supportCount: cluster.volume,
+      lookbackDays,
+      openCount: cluster.openCount,
+      resolvedCount: cluster.resolvedCount,
+      lowConfidenceCount: cluster.lowConfidenceCount,
+      adjudicationMix: cluster.adjudicationMix,
+    },
+    affectedScope: {
+      sourceIds: cluster.sourceIds,
+      counterpartyKeys: cluster.counterpartyKeys,
+    },
+    estimatedImpact: {
+      expectedManualReviewReduction:
+        cluster.volume > 0 ? Number((cluster.resolvedCount / cluster.volume).toFixed(4)) : null,
+      expectedOpenExceptionChange:
+        cluster.volume > 0 ? Number((-(cluster.openCount / cluster.volume)).toFixed(4)) : null,
+    },
+    unsupportedMetrics: ["false_positive_rate", "false_negative_rate", "causal_effect_size"],
+    riskFlags,
+    dataSufficiency,
+    status: latestReview?.decision ?? "pending_review",
+    latestReview,
+  };
+}
+
 export class ExceptionIntelligenceService {
   private async fetchScopedMatches(tenantId: string, lookbackDays: number) {
     const since = new Date(Date.now() - lookbackDays * 86400000);
