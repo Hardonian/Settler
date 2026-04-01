@@ -63,7 +63,7 @@ export default function TracesPage() {
                     </p>
                   </div>
                 </div>
-                <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
+                <Badge variant="success">
                   COMPLETED
                 </Badge>
               </div>
@@ -179,7 +179,7 @@ export default function TracesPage() {
                 <Terminal className="h-4 w-4" />
                 Lineage Discovery
               </h3>
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+              <p className="text-xs text-muted-foreground leading-relaxed mb-4">
                 Settler uses content-addressable storage for all trace payloads, ensuring zero-drift
                 between the log and the actual data states.
               </p>

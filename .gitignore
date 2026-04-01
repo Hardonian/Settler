@@ -78,8 +78,17 @@ SEED_ROUND_PITCH_DECK_OUTLINE.md
 core
 node-compile-cache/
 nul
+
+# python
+venv/
+.venv/
 __pycache__/
 *.pyc
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
 
 # temporary JobForge integration artifacts
 .tmp/

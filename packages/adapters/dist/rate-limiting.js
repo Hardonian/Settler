@@ -46,9 +46,21 @@ async function checkRateLimit(providerId, tenantId, supabaseUrl, supabaseService
         .eq('tenant_id', tenantId)
         .gte('started_at', oneDayAgo.toISOString());
     const requests = recentRequests || [];
-    const requestsLastMinute = requests.filter((r) => new Date(r.started_at) >= oneMinuteAgo).length;
-    const requestsLastHour = requests.filter((r) => new Date(r.started_at) >= oneHourAgo).length;
-    const requestsLastDay = requests.length;
+    let requestsLastMinute = 0;
+    let requestsLastHour = 0;
+    let requestsLastDay = 0;
+    for (const r of requests) {
+        const t = new Date(r.started_at).getTime();
+        if (t >= oneDayAgo.getTime()) {
+            requestsLastDay += 1;
+        }
+        if (t >= oneHourAgo.getTime()) {
+            requestsLastHour += 1;
+        }
+        if (t >= oneMinuteAgo.getTime()) {
+            requestsLastMinute += 1;
+        }
+    }
     // Check limits
     if (requestsLastMinute >= limits.requestsPerMinute) {
         return {

@@ -2,6 +2,9 @@
  * Runs API Route v1
  * Exposes reconciliation run history and status
  *
+ * Supports both offset-based and cursor-based pagination.
+ * Cursor pagination is recommended for large datasets.
+ *
  * @deprecated This is the v1 API. New code should use /api/runs which uses the
  * canonical response format with { data, pagination } instead of { rows, pagination }.
  */
@@ -15,6 +18,12 @@ import { handleRouteError } from "../../utils/error-handler";
 import { validateRequest } from "../../middleware/validation";
 import { query } from "../../db";
 import { enforceFreezeState } from "../../middleware/governance";
+import {
+  decodeCursor,
+  encodeCursor,
+  DEFAULT_PAGE_LIMIT,
+  MAX_PAGE_LIMIT,
+} from "../../utils/pagination";
 
 const router: Router = Router();
 
@@ -23,9 +32,9 @@ const getRunsSchema = z.object({
     limit: z
       .string()
       .optional()
-      .transform((val) => (val ? parseInt(val, 10) : 20))
-      .refine((val) => val > 0 && val <= 100, {
-        message: "Limit must be between 1 and 100",
+      .transform((val) => (val ? Math.min(parseInt(val, 10), MAX_PAGE_LIMIT) : DEFAULT_PAGE_LIMIT))
+      .refine((val) => val > 0, {
+        message: "Limit must be positive",
       }),
     offset: z
       .string()
@@ -34,6 +43,9 @@ const getRunsSchema = z.object({
       .refine((val) => val >= 0, {
         message: "Offset must be non-negative",
       }),
+    cursor: z.string().optional(), // Base64 cursor for cursor-based pagination
+    direction: z.enum(["next", "prev"]).optional().default("next"),
+    status: z.enum(["pending", "running", "completed", "failed"]).optional(),
   }),
 });
 
@@ -82,8 +94,41 @@ router.get(
         return;
       }
 
-      const limit = (req.query.limit as unknown as number) || 20;
-      const offset = (req.query.offset as unknown as number) || 0;
+      const { limit, cursor, direction, status } = getRunsSchema.parse({ query: req.query }).query;
+
+      // Build WHERE clause
+      let whereClause = "WHERE tenant_id = $1";
+      const params: (string | number)[] = [tenantId];
+      if (status) {
+        whereClause += ` AND status = $${params.length + 1}`;
+        params.push(status);
+      }
+
+      // Cursor-based pagination: add cursor condition
+      let cursorPagination = false;
+      if (cursor) {
+        const decoded = decodeCursor(cursor);
+        if (decoded) {
+          cursorPagination = true;
+          if (direction === "next") {
+            whereClause += ` AND (created_at, id) < ($${params.length + 1}, $${params.length + 2})`;
+            params.push(decoded.created_at, decoded.id);
+          } else {
+            whereClause += ` AND (created_at, id) > ($${params.length + 1}, $${params.length + 2})`;
+            params.push(decoded.created_at, decoded.id);
+          }
+        }
+      }
+
+      // ORDER BY: cursor pagination uses time-desc, offset uses created_at desc
+      const orderByClause = cursorPagination
+        ? direction === "next"
+          ? "ORDER BY created_at DESC, id DESC"
+          : "ORDER BY created_at ASC, id ASC"
+        : "ORDER BY created_at DESC";
+
+      // Fetch one extra row to determine hasMore
+      const fetchLimit = limit + 1;
 
       // Query runs from reconciliation_runs table with tenant scoping
       const runs = await query<{
@@ -110,43 +155,85 @@ router.get(
           unmatched_source_count,
           unmatched_target_count
          FROM reconciliation_runs
-         WHERE tenant_id = $1
-         ORDER BY created_at DESC
-         LIMIT $2 OFFSET $3`,
-        [tenantId, limit, offset]
+         ${whereClause}
+         ${orderByClause}
+         LIMIT $${params.length + 1}`,
+        [...params, fetchLimit]
       );
 
-      // Get total count for pagination
-      const countResult = await query<{ count: string }>(
-        `SELECT COUNT(*)::text as count FROM reconciliation_runs WHERE tenant_id = $1`,
-        [tenantId]
-      );
-      const totalCount = countResult[0] ? parseInt(countResult[0].count, 10) : 0;
+      // Determine hasMore and trim to requested limit
+      const hasMore = runs.length > limit;
+      const paginatedRuns = hasMore ? runs.slice(0, limit) : runs;
+
+      // Build cursor response
+      let nextCursor: string | undefined;
+      let prevCursor: string | undefined;
+
+      if (paginatedRuns.length > 0) {
+        const firstItem = paginatedRuns[0]!;
+        const lastItem = paginatedRuns[paginatedRuns.length - 1]!;
+
+        if (cursorPagination) {
+          if (direction === "next") {
+            if (hasMore) {
+              nextCursor = encodeCursor(lastItem.created_at, lastItem.id);
+            }
+            prevCursor = encodeCursor(firstItem.created_at, firstItem.id);
+          } else {
+            if (hasMore) {
+              prevCursor = encodeCursor(firstItem.created_at, firstItem.id);
+            }
+            nextCursor = encodeCursor(lastItem.created_at, lastItem.id);
+          }
+        } else {
+          // For offset, still provide cursor for clients that want to switch
+          nextCursor = encodeCursor(lastItem.created_at, lastItem.id);
+        }
+      }
 
       // Transform to frontend-expected format using canonical contract terminology
-      const rows = runs.map((run) => ({
+      const rows = paginatedRuns.map((run) => ({
         run_id: run.id,
         created_at: run.created_at,
         status: run.status,
         policy: run.policy_name,
         total_records: run.total_records,
         matched: run.matched_count,
-        // Canonical: unmatched = unmatched_source_count + unmatched_target_count
         unmatched: (run.unmatched_source_count || 0) + (run.unmatched_target_count || 0),
         unmatchedSourceCount: run.unmatched_source_count,
         unmatchedTargetCount: run.unmatched_target_count,
       }));
 
-      res.json({
+      // Get total count only for offset pagination (cursor pagination doesn't need it)
+      let totalCount: number | undefined;
+      if (!cursorPagination) {
+        const countResult = await query<{ count: string }>(
+          `SELECT COUNT(*)::text as count FROM reconciliation_runs WHERE tenant_id = $1`,
+          [tenantId]
+        );
+        totalCount = countResult[0] ? parseInt(countResult[0].count, 10) : 0;
+      }
+
+      const response: any = {
         rows,
-        pagination: {
-          limit,
-          offset,
-          total: totalCount,
-          hasMore: offset + limit < totalCount,
-        },
+        pagination: cursorPagination
+          ? {
+              limit,
+              hasMore,
+              ...(nextCursor && { nextCursor }),
+              ...(prevCursor && { prevCursor }),
+            }
+          : {
+              limit,
+              offset: getRunsSchema.parse({ query: req.query }).query.offset,
+              total: totalCount,
+              hasMore,
+              ...(nextCursor && { nextCursor }),
+            },
         timestamp: new Date().toISOString(),
-      });
+      };
+
+      res.json(response);
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to retrieve runs", 500, {
         userId: req.userId,

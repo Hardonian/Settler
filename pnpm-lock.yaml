@@ -167,6 +167,9 @@ importers:
       '@settler/edge-ai-core':
         specifier: workspace:*
         version: link:../edge-ai-core
+      '@settler/proofs':
+        specifier: workspace:*
+        version: link:../proofs
       '@settler/reconciliation-core':
         specifier: workspace:*
         version: link:../reconciliation-core
@@ -615,7 +618,15 @@ importers:
 
   packages/jobforge-typescript-config: {}
 
-  packages/proofs: {}
+  packages/proofs:
+    dependencies:
+      '@settler/types':
+        specifier: workspace:*
+        version: link:../types
+    devDependencies:
+      typescript:
+        specifier: ^5.4.0
+        version: 5.9.3
 
   packages/protocol:
     dependencies:

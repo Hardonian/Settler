@@ -11,6 +11,7 @@ import { requirePermission } from "../../middleware/authorization";
 import { enforceFreezeState } from "../../middleware/governance";
 import { Permission } from "../../infrastructure/security/Permissions";
 import { handleRouteError } from "../../utils/error-handler";
+import { authorizeTenantActionOr403, requireTenantContext } from "../authz-helpers";
 import {
   generateDailyIntelligence,
   getErrorRateSummary,
@@ -37,21 +38,26 @@ import { getOperatorReplayStatus } from "../../services/operator-mode/replay-sta
 
 const router: Router = Router();
 
-function requireTenantContext(req: AuthRequest, res: Response): string | undefined {
-  if (req.tenantId) {
-    return req.tenantId;
-  }
-
-  res.status(400).json({
-    error: "TENANT_CONTEXT_REQUIRED",
-    message: "Tenant context is required for this operator endpoint",
-  });
-  return undefined;
-}
-
 function shouldUseGlobalScope(req: AuthRequest): boolean {
   return req.query.scope === "global";
 }
+
+router.use("/operator", async (req: AuthRequest, res: Response, next) => {
+  const tenantId = requireTenantContext(req, res);
+  if (!tenantId) return;
+  if (
+    !(await authorizeTenantActionOr403(
+      req,
+      res,
+      tenantId,
+      "tenant.operator.control",
+      "Operator mode control path is not authorized"
+    ))
+  ) {
+    return;
+  }
+  next();
+});
 
 // ============================================================================
 // DAILY INTELLIGENCE
@@ -190,12 +196,12 @@ router.post(
     try {
       const provider = getAlertRoutingProvider();
       const useGlobalScope = shouldUseGlobalScope(req);
-      const tenantId = useGlobalScope ? undefined : requireTenantContext(req, res);
-      if (!useGlobalScope && !tenantId) {
+      const scopedTenantId = useGlobalScope ? undefined : requireTenantContext(req, res);
+      if (!useGlobalScope && !scopedTenantId) {
         return;
       }
 
-      const alerts = await provider.checkThresholds(tenantId);
+      const alerts = await provider.checkThresholds(scopedTenantId ?? undefined);
       const capability = provider.status();
       observeCapabilityStatus(capability, "/api/v1/operator/alerts/check");
 
@@ -203,7 +209,7 @@ router.post(
         data: alerts,
         capability,
         scope: useGlobalScope ? "global" : "tenant",
-        tenantId: tenantId ?? null,
+        tenantId: scopedTenantId ?? null,
         message: `Checked thresholds, triggered ${alerts.length} alerts`,
       });
     } catch (error: unknown) {

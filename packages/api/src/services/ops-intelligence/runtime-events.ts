@@ -233,3 +233,45 @@ export async function getSystemHealthSnapshot(
     errorRate: Number(apiStats?.error_rate ?? 0),
   };
 }
+
+/**
+ * Hook for run delta computation on reconciliation run completion
+ * This should be called after a successful reconciliation run completes
+ */
+export async function onReconciliationRunCompletedHook(
+  tenantId: string,
+  jobId: string,
+  runId: string
+): Promise<void> {
+  try {
+    const { RunDeltaService } = await import("../intelligence/run-delta");
+    const { prisma } = await import("../../infrastructure/db/prisma");
+
+    const runDeltaService = new RunDeltaService(prisma);
+    const delta = await runDeltaService.onRunCompleted(tenantId, jobId, runId);
+
+    if (delta) {
+      await emitRuntimeEvent({
+        eventType: "reconciliation_run_completed",
+        tenantId,
+        runId,
+        metadata: {
+          deltaId: delta.id,
+          totalDelta: delta.totalDelta,
+          exceptionDelta: delta.exceptionDelta,
+          inputChanged: delta.inputChanged,
+          configDriftDetected: delta.configDriftDetected,
+          newPatterns: delta.newExceptionPatterns,
+          resolvedPatterns: delta.resolvedPatterns,
+        },
+      });
+    }
+  } catch (error) {
+    logError("Run delta computation hook failed", {
+      tenantId,
+      jobId,
+      runId,
+      error,
+    });
+  }
+}

@@ -6,6 +6,10 @@ import { Permission } from "../../infrastructure/security/Permissions";
 import { validateRequest } from "../../middleware/validation";
 import { handleRouteError } from "../../utils/error-handler";
 import { ExceptionIntelligenceService } from "../../services/operator-mode/exception-intelligence-service";
+import {
+  getOpenFgaAuthorizationService,
+  TenantAction,
+} from "../../services/authz/openfga-authorization-service";
 
 const router: Router = Router();
 const service = new ExceptionIntelligenceService();
@@ -41,12 +45,17 @@ const policySandboxSchema = z.object({
 });
 
 const policyProposalReviewSchema = z.object({
-  params: z.object({
-    proposalId: z.string().min(8).max(64),
-  }),
+  params: z.object({ proposalId: z.string().min(8).max(64) }),
   body: z.object({
     decision: z.enum(["approved", "rejected", "deferred"]),
     reason: z.string().max(500).nullable().optional(),
+  }),
+});
+
+const signatureLifecycleSchema = z.object({
+  params: z.object({ signature: z.string().length(20) }),
+  query: z.object({
+    lookbackDays: z.coerce.number().int().min(1).max(365).default(30),
   }),
 });
 
@@ -141,8 +150,9 @@ router.get(
       if (!tenantId) return;
       const proposalId = req.params["proposalId"] as string;
       const data = await service.getPolicyEvolutionProposalDetail(tenantId, proposalId);
-      if (!data)
+      if (!data) {
         return res.status(404).json({ error: "PROPOSAL_NOT_FOUND", message: "Proposal not found" });
+      }
       return res.status(200).json({ data });
     } catch (error: unknown) {
       return handleRouteError(res, error, "Failed to load policy proposal detail", 500, {
@@ -188,8 +198,9 @@ router.get(
       if (!tenantId) return;
       const proposalId = req.params["proposalId"] as string;
       const data = await service.getProposalHistory(tenantId, proposalId);
-      if (!data)
+      if (!data) {
         return res.status(404).json({ error: "PROPOSAL_NOT_FOUND", message: "Proposal not found" });
+      }
       return res.status(200).json({ data });
     } catch (error: unknown) {
       return handleRouteError(res, error, "Failed to load policy proposal history", 500, {

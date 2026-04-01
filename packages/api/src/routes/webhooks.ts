@@ -22,6 +22,11 @@ import {
 } from "../services/webhooks/security";
 import { IngestionBoundary } from "../services/ingestion/boundary";
 import { isValidTenantUuid } from "../utils/tenant-id";
+import {
+  authorizeTenantActionOr403,
+  requireTenantContext,
+  requireUserContext,
+} from "./authz-helpers";
 
 // Initialize Boundary
 const ingestionBoundary = new IngestionBoundary({ query } as any);
@@ -93,7 +98,10 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     try {
       const { url, events, secret } = req.body;
-      const userId = req.userId!;
+      const userId = requireUserContext(req, res);
+      const tenantId = requireTenantContext(req, res);
+      if (!userId || !tenantId) return;
+      if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.webhook.manage"))) return;
 
       const isValidUrl = await validateExternalUrl(url);
       if (!isValidUrl) {
@@ -122,10 +130,10 @@ router.post(
       const webhookSecret = secret || `whsec_${randomBytes(32).toString("base64url")}`;
 
       const result = await query<{ id: string }>(
-        `INSERT INTO webhooks (user_id, url, events, secret, status)
-         VALUES ($1, $2, $3, $4, 'active')
+        `INSERT INTO webhooks (user_id, tenant_id, url, events, secret, status)
+         VALUES ($1, $2, $3, $4, $5, 'active')
          RETURNING id`,
-        [userId, url, events, webhookSecret]
+        [userId, tenantId, url, events, webhookSecret]
       );
 
       if (!result[0]) {
@@ -170,7 +178,9 @@ router.get(
       const limit = Math.min(parseInt(req.query.limit as string) || 100, 1000);
       const offset = (page - 1) * limit;
 
-      const tenantId = req.tenantId!;
+      const tenantId = requireTenantContext(req, res);
+      if (!tenantId) return;
+      if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.webhook.read"))) return;
 
       const [webhooks, totalResult] = await Promise.all([
         query<{
@@ -237,8 +247,7 @@ router.post(
       const idempotencyKey = req.headers["x-idempotency-key"] as string | undefined;
 
       const body = req.body as Record<string, unknown> | undefined;
-      const fromBody =
-        typeof body?.tenant_id === "string" ? body.tenant_id.trim() : undefined;
+      const fromBody = typeof body?.tenant_id === "string" ? body.tenant_id.trim() : undefined;
       const rawTenant = (req.headers["x-tenant-id"] as string | undefined)?.trim() || fromBody;
       if (!isValidTenantUuid(rawTenant)) {
         return res.status(400).json({
@@ -401,7 +410,10 @@ router.delete(
     try {
       const idParam = req.params["id"];
       const id = Array.isArray(idParam) ? (idParam[0] ?? "") : (idParam ?? "");
-      const userId = req.userId!;
+      const userId = requireUserContext(req, res);
+      const tenantId = requireTenantContext(req, res);
+      if (!userId || !tenantId) return;
+      if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.webhook.manage"))) return;
 
       await new Promise<void>((resolve, reject) => {
         requireResourceOwnership(
@@ -416,7 +428,6 @@ router.delete(
         );
       });
 
-      const tenantId = req.tenantId!;
       await query(`DELETE FROM webhooks WHERE id = $1 AND user_id = $2 AND tenant_id = $3`, [
         id || "",
         userId,

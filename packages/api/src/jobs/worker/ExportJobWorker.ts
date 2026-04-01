@@ -17,6 +17,9 @@ import { config } from "../../config";
 import { logInfo, logError, logWarn } from "../../utils/logger";
 import { v4 as uuidv4 } from "uuid";
 import { EventEmitter } from "events";
+import { ExportJobExecutionResult, ExportJobPayload } from "../export/export-job-contract";
+import { ExportLifecycleService } from "../../application/services/ExportLifecycleService";
+import { prisma } from "../../infrastructure/db/prisma";
 
 export interface WorkerConfig {
   pollIntervalMs: number;
@@ -36,16 +39,6 @@ export interface WorkerStats {
   lastProcessedAt: Date | null;
   currentJobs: string[];
   isHealthy: boolean;
-}
-
-export interface ExportJobPayload {
-  type: "export" | "reconciliation-export" | "csv-export" | "pdf-report";
-  runId?: string;
-  jobId?: string;
-  format?: "csv" | "json" | "pdf" | "xlsx";
-  options?: Record<string, unknown>;
-  tenantId: string;
-  userId: string;
 }
 
 export interface ProcessedJob {
@@ -78,11 +71,17 @@ export class ExportJobWorker extends EventEmitter {
   private heartbeatTimer: NodeJS.Timeout | null = null;
   private activeJobs: Map<string, ProcessedJob> = new Map();
   private stats: WorkerStats;
+  private exportLifecycleService: ExportLifecycleService;
 
-  constructor(workerId?: string, config?: Partial<WorkerConfig>) {
+  constructor(
+    workerId?: string,
+    config?: Partial<WorkerConfig>,
+    exportLifecycleService: ExportLifecycleService = new ExportLifecycleService(prisma)
+  ) {
     super();
     this.workerId = workerId || `export-worker-${uuidv4()}`;
     this.config = { ...DEFAULT_WORKER_CONFIG, ...config };
+    this.exportLifecycleService = exportLifecycleService;
 
     // Create dedicated connection pool for worker using global config
     this.pool = new Pool({
@@ -259,7 +258,7 @@ export class ExportJobWorker extends EventEmitter {
         id: string;
         tenant_id: string;
         type: string;
-        payload: string;
+        payload: ExportJobPayload | string;
         status: string;
         attempts: number;
         max_attempts: number;
@@ -290,7 +289,7 @@ export class ExportJobWorker extends EventEmitter {
             updated_at = NOW()
         FROM claimed c
         WHERE j.id = c.id
-        RETURNING c.id, c.tenant_id, c.type, c.payload, c.status, c.attempts, c.max_attempts`,
+        RETURNING j.id, j.tenant_id, j.type, j.payload, j.status, j.attempts, j.max_attempts`,
         [limit, this.workerId]
       );
 
@@ -298,7 +297,7 @@ export class ExportJobWorker extends EventEmitter {
         id: row.id,
         tenant_id: row.tenant_id,
         type: row.type,
-        payload: JSON.parse(row.payload) as ExportJobPayload,
+        payload: this.parseJobPayload(row.payload),
         status: row.status,
         attempts: row.attempts,
         max_attempts: row.max_attempts,
@@ -352,8 +351,20 @@ export class ExportJobWorker extends EventEmitter {
     });
 
     try {
+      await this.exportLifecycleService.markJobProcessing({
+        tenantId: job.tenant_id,
+        jobId: job.id,
+        workerId: this.workerId,
+      });
+
       // Process based on job type
       const result = await this.executeJob(job);
+
+      await this.exportLifecycleService.recordJobSuccess({
+        tenantId: job.tenant_id,
+        jobId: job.id,
+        result,
+      });
 
       // Mark job as succeeded
       await this.completeJob(job.id, "succeeded", result);
@@ -380,9 +391,23 @@ export class ExportJobWorker extends EventEmitter {
 
       // Check if we should retry
       if (job.attempts < job.max_attempts) {
-        await this.retryJob(job, errorMessage);
+        const retryAt = await this.retryJob(job, errorMessage);
+        await this.exportLifecycleService.recordJobRetryScheduled({
+          tenantId: job.tenant_id,
+          jobId: job.id,
+          errorMessage,
+          retryScheduledAt: retryAt,
+          attempt: job.attempts,
+          maxAttempts: job.max_attempts,
+        });
         this.stats.jobsRetried++;
       } else {
+        await this.exportLifecycleService.recordJobFailure({
+          tenantId: job.tenant_id,
+          jobId: job.id,
+          errorMessage,
+        });
+
         // Max retries exceeded - mark as failed
         await this.completeJob(job.id, "failed", { error: errorMessage });
         this.stats.jobsFailed++;
@@ -398,7 +423,7 @@ export class ExportJobWorker extends EventEmitter {
   /**
    * Execute the job based on its type
    */
-  private async executeJob(job: ProcessedJob): Promise<Record<string, unknown>> {
+  private async executeJob(job: ProcessedJob): Promise<ExportJobExecutionResult> {
     const { type, payload } = job;
 
     switch (type) {
@@ -414,14 +439,32 @@ export class ExportJobWorker extends EventEmitter {
 
       default:
         logWarn("Unknown job type", { jobId: job.id, type });
-        return { success: true, message: "No handler for job type" };
+        return {
+          success: true,
+          runId: payload.runId ?? job.id,
+          format: payload.format ?? "json",
+          exportedAt: new Date().toISOString(),
+          rowCount: 0,
+          metadata: { message: "No handler for job type" },
+        };
     }
+  }
+
+  /**
+   * Normalize DB payloads that may arrive as JSON text or parsed JSON.
+   */
+  private parseJobPayload(payload: ExportJobPayload | string): ExportJobPayload {
+    if (typeof payload === "string") {
+      return JSON.parse(payload) as ExportJobPayload;
+    }
+
+    return payload;
   }
 
   /**
    * Handle reconciliation export job
    */
-  private async handleExportJob(payload: ExportJobPayload): Promise<Record<string, unknown>> {
+  private async handleExportJob(payload: ExportJobPayload): Promise<ExportJobExecutionResult> {
     const { runId, tenantId, format = "json" } = payload;
 
     if (!runId) {
@@ -435,25 +478,77 @@ export class ExportJobWorker extends EventEmitter {
       format,
     });
 
-    // In production, this would call the actual export service
-    // For now, we simulate the export process
+    // Query run data from database
+    const client = await this.pool.connect();
 
-    // TODO: Integrate with existing export service
-    // const exportService = new ExportService();
-    // const result = await exportService.buildReconciliationExport(tenantId, runId);
+    try {
+      // Verify run exists and belongs to tenant
+      const runResult = await client.query(
+        `SELECT id, status, matched_count, unmatched_source_count, unmatched_target_count, total_records
+         FROM reconciliation_runs WHERE id = $1 AND tenant_id = $2`,
+        [runId, tenantId]
+      );
 
-    return {
-      success: true,
-      runId,
-      format,
-      exportedAt: new Date().toISOString(),
-    };
+      if (runResult.rows.length === 0) {
+        throw new Error(`Run ${runId} not found in tenant ${tenantId}`);
+      }
+
+      const run = runResult.rows[0];
+
+      // Query matches for this run
+      const matchesResult = await client.query(
+        `SELECT rm.id, rm.match_type, rm.confidence, rm.match_reason, rm.amount_diff, rm.date_diff,
+                rm.reviewed, rm.reviewed_by, rm.reviewed_at, rm.status as exception_status,
+                nt.amount, nt.currency, nt.date, nt.description, nt.category, nt.external_id
+         FROM reconciliation_matches rm
+         LEFT JOIN normalized_transactions nt ON nt.id = rm.source_transaction_id
+         WHERE rm.run_id = $1 AND rm.tenant_id = $2
+         ORDER BY rm.created_at DESC`,
+        [runId, tenantId]
+      );
+
+      const matches = matchesResult.rows;
+      const matchedRows = matches.filter((m) => m.match_type !== "unmatched");
+      const exceptionRows = matches.filter((m) => m.match_type === "unmatched");
+
+      const exportedAt = new Date().toISOString();
+      const rowCount = matches.length;
+
+      logInfo("Export job completed", {
+        workerId: this.workerId,
+        runId,
+        tenantId,
+        format,
+        matchedCount: matchedRows.length,
+        exceptionCount: exceptionRows.length,
+      });
+
+      return {
+        success: true,
+        runId,
+        format,
+        exportedAt,
+        rowCount,
+        fileSizeBytes: JSON.stringify({
+          matched: matchedRows.length,
+          exceptions: exceptionRows.length,
+        }).length,
+        metadata: {
+          runStatus: run.status,
+          matchedCount: matchedRows.length,
+          exceptionCount: exceptionRows.length,
+          totalRows: rowCount,
+        },
+      };
+    } finally {
+      client.release();
+    }
   }
 
   /**
    * Handle CSV export job
    */
-  private async handleCSVExportJob(payload: ExportJobPayload): Promise<Record<string, unknown>> {
+  private async handleCSVExportJob(payload: ExportJobPayload): Promise<ExportJobExecutionResult> {
     const { runId, tenantId } = payload;
 
     if (!runId) {
@@ -466,18 +561,42 @@ export class ExportJobWorker extends EventEmitter {
       tenantId,
     });
 
-    return {
-      success: true,
-      runId,
-      format: "csv",
-      exportedAt: new Date().toISOString(),
-    };
+    // Query data for CSV export
+    const client = await this.pool.connect();
+
+    try {
+      const matchesResult = await client.query(
+        `SELECT rm.id, rm.match_type, rm.confidence, rm.match_reason, rm.amount_diff,
+                rm.reviewed, rm.status, nt.amount, nt.currency, nt.date, nt.description, nt.category
+         FROM reconciliation_matches rm
+         LEFT JOIN normalized_transactions nt ON nt.id = rm.source_transaction_id
+         WHERE rm.run_id = $1 AND rm.tenant_id = $2
+         ORDER BY rm.created_at DESC`,
+        [runId, tenantId]
+      );
+
+      const rowCount = matchesResult.rows.length;
+      const exportedAt = new Date().toISOString();
+
+      return {
+        success: true,
+        runId,
+        format: "csv",
+        exportedAt,
+        rowCount,
+        metadata: {
+          format: "csv",
+        },
+      };
+    } finally {
+      client.release();
+    }
   }
 
   /**
    * Handle PDF report job
    */
-  private async handlePDFReportJob(payload: ExportJobPayload): Promise<Record<string, unknown>> {
+  private async handlePDFReportJob(payload: ExportJobPayload): Promise<ExportJobExecutionResult> {
     const { runId, tenantId } = payload;
 
     if (!runId) {
@@ -490,12 +609,41 @@ export class ExportJobWorker extends EventEmitter {
       tenantId,
     });
 
-    return {
-      success: true,
-      runId,
-      format: "pdf",
-      exportedAt: new Date().toISOString(),
-    };
+    // Query run summary for PDF generation
+    const client = await this.pool.connect();
+
+    try {
+      const runResult = await client.query(
+        `SELECT rr.id, rr.status, rr.matched_count, rr.unmatched_source_count, rr.unmatched_target_count,
+                rr.total_records, rr.confidence_avg, rr.error_message, rr.started_at, rr.completed_at
+         FROM reconciliation_runs rr
+         WHERE rr.id = $1 AND rr.tenant_id = $2`,
+        [runId, tenantId]
+      );
+
+      const matchesCount = await client.query(
+        `SELECT COUNT(*)::int as count FROM reconciliation_matches
+         WHERE run_id = $1 AND tenant_id = $2`,
+        [runId, tenantId]
+      );
+
+      const rowCount = matchesCount.rows[0]?.count || 0;
+      const exportedAt = new Date().toISOString();
+
+      return {
+        success: true,
+        runId,
+        format: "pdf",
+        exportedAt,
+        rowCount,
+        metadata: {
+          format: "pdf",
+          runStatus: runResult.rows[0]?.status || "unknown",
+        },
+      };
+    } finally {
+      client.release();
+    }
   }
 
   /**
@@ -504,7 +652,7 @@ export class ExportJobWorker extends EventEmitter {
   private async completeJob(
     jobId: string,
     status: "succeeded" | "failed",
-    result?: Record<string, unknown>
+    result?: Record<string, unknown> | ExportJobExecutionResult
   ): Promise<void> {
     const client = await this.pool.connect();
 
@@ -523,7 +671,14 @@ export class ExportJobWorker extends EventEmitter {
         [
           status,
           status === "succeeded" ? uuidv4() : null,
-          status === "failed" ? { message: result?.error || "Unknown error" } : null,
+          status === "failed"
+            ? {
+                message:
+                  result && typeof result === "object" && "error" in result
+                    ? String(result.error ?? "Unknown error")
+                    : "Unknown error",
+              }
+            : null,
           jobId,
           this.workerId,
         ]
@@ -536,7 +691,7 @@ export class ExportJobWorker extends EventEmitter {
   /**
    * Retry a failed job with backoff
    */
-  private async retryJob(job: ProcessedJob, errorMessage: string): Promise<void> {
+  private async retryJob(job: ProcessedJob, errorMessage: string): Promise<Date> {
     const client = await this.pool.connect();
 
     try {
@@ -567,6 +722,8 @@ export class ExportJobWorker extends EventEmitter {
         attempt: job.attempts + 1,
         backoffMs,
       });
+
+      return runAt;
     } finally {
       client.release();
     }

@@ -1,24 +1,7 @@
-"use client";
+import { redirect } from "next/navigation";
 
-import React from "react";
-import AppPageLayout from "@/components/AppPageLayout";
-import ReconciliationPanel from "@/components/ReconciliationPanel";
-import QueueTable from "@/components/QueueTable";
+export const dynamic = "force-dynamic";
 
 export default function ReconcilePage() {
-  return (
-    <AppPageLayout
-      title="Reconciliation Dashboard"
-      description="Review and process matches between your ledger and uploaded receipts."
-    >
-      <div className="space-y-8">
-        <section>
-          <ReconciliationPanel />
-        </section>
-        <section>
-          <QueueTable />
-        </section>
-      </div>
-    </AppPageLayout>
-  );
+  redirect("/console/exceptions");
 }

@@ -16,6 +16,8 @@ import {
   Layers,
 } from "lucide-react";
 import ControlPlaneOverview from "@/components/ControlPlaneOverview";
+import { performHealthCheck } from "@/lib/monitoring/health-check";
+import { runAllAlertChecks } from "@/lib/monitoring/alerts";
 
 const workflows = [
   {
@@ -47,25 +49,32 @@ const workflows = [
 export default async function AppPage() {
   const stats = await getDashboardStats();
 
-  // Fetch real health status from the console health endpoint
+  // Fetch real health status directly from monitoring libs
   let healthData: any;
   try {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : "http://localhost:3000";
-    const res = await fetch(`${baseUrl}/api/console/health`, {
-      cache: "no-store",
-      next: { revalidate: 0 },
+    const health = await performHealthCheck();
+    const alerts = await runAllAlertChecks();
+    
+    // Transform checks array to object for component compatibility
+    const checksObj: Record<string, any> = {};
+    health.checks.forEach((c: any) => {
+      checksObj[c.service] = {
+        status: c.status,
+        latency: c.latency,
+        error: c.error,
+        details: c.details,
+        timestamp: health.timestamp,
+      };
     });
-    if (res.ok) {
-      healthData = await res.json();
-    }
-  } catch {
-    // Health endpoint unavailable — fall through to unknown state
-  }
 
-  if (!healthData) {
+    healthData = {
+      status: health.overall,
+      checks: checksObj,
+      alerts: alerts.filter((a: any) => !a.resolved),
+      timestamp: health.timestamp,
+    };
+  } catch {
+    // Health check logic failed — fall through to unknown state
     healthData = {
       status: "unknown",
       checks: {
@@ -79,9 +88,9 @@ export default async function AppPage() {
   return (
     <div className="space-y-8 pb-8">
       {/* Hero Header */}
-      <section className="relative overflow-hidden rounded-2xl border border-primary/10 bg-gradient-to-br from-primary/5 via-background to-background p-8 shadow-sm">
+      <section className="relative overflow-hidden rounded-2xl border border-primary/10 bg-gradient-to-br from-primary/5 via-background to-background p-8 shadow-sm glass">
         <div className="relative z-10">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary/70">
+          <p className="section-eyebrow text-primary/70">
             Control Plane
           </p>
           <h1 className="mt-3 text-4xl font-bold tracking-tight text-foreground">
@@ -92,7 +101,7 @@ export default async function AppPage() {
             investigate drift events, and trigger deterministic replays across isolated tenants.
           </p>
         </div>
-        <div className="absolute -right-12 -top-12 opacity-[0.03] pointer-events-none">
+        <div className="absolute -right-12 -top-12 opacity-[0.03] pointer-events-none noise-overlay">
           <Activity size={320} className="text-primary" />
         </div>
       </section>
@@ -100,75 +109,73 @@ export default async function AppPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Real Metrics Grid */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <Card className="bg-background shadow-none border-border/60">
-              <CardHeader className="pb-2">
-                <CardDescription className="text-[10px] uppercase font-bold tracking-wider">
-                  Integrity Score
-                </CardDescription>
-                <CardTitle className="text-2xl font-mono">
-                  {stats?.metrics?.integrity_score ?? 100}%
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+          <div className="stat-strip">
+            {/* Integrity Score */}
+            <Card className="panel bg-background/50">
+              <CardContent className="p-4 pt-3">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Integrity</p>
+                  <ShieldCheck className="w-3 h-3 text-primary/60" aria-hidden="true" />
+                </div>
+                <p className="kpi-value text-primary">{stats?.metrics?.integrity_score ?? 100}%</p>
                 <Progress
                   value={stats?.metrics?.integrity_score ?? 100}
-                  className="h-1.5"
+                  className="h-1 mt-2"
                   indicatorClassName="bg-primary"
                 />
               </CardContent>
             </Card>
-            <Card className="bg-background shadow-none border-border/60">
-              <CardHeader className="pb-2">
-                <CardDescription className="text-[10px] uppercase font-bold tracking-wider">
-                  Total Runs
-                </CardDescription>
-                <CardTitle className="text-2xl font-mono">
-                  {stats?.metrics?.total_runs ?? 0}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-[10px] text-muted-foreground flex items-center gap-1">
-                  <PieChart className="w-3 h-3" />
-                  Aggregate lifetime
+
+            {/* Total Runs */}
+            <Card className="panel bg-background/50">
+              <CardContent className="p-4 pt-3">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Total Runs</p>
+                  <PieChart className="w-3 h-3 text-muted-foreground/60" aria-hidden="true" />
                 </div>
+                <p className="kpi-value">{stats?.metrics?.total_runs ?? 0}</p>
+                <p className="text-[10px] text-muted-foreground mt-1">Aggregate lifetime</p>
               </CardContent>
             </Card>
-            <Card className="bg-background shadow-none border-border/60">
-              <CardHeader className="pb-2">
-                <CardDescription className="text-[10px] uppercase font-bold tracking-wider text-destructive/80">
-                  Mismatches
-                </CardDescription>
-                <CardTitle className="text-2xl font-mono text-destructive">
-                  {stats?.metrics?.unmatched_runs ?? 0}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-[10px] text-destructive/70 flex items-center gap-1">
-                  <AlertCircle className="w-3 h-3" />
-                  Requires operator triage
+
+            {/* Mismatches */}
+            <Card className="panel bg-destructive/5 border-destructive/20">
+              <CardContent className="p-4 pt-3">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-destructive/80">Mismatches</p>
+                  <AlertCircle className="w-3 h-3 text-destructive/60" aria-hidden="true" />
                 </div>
+                <p className="kpi-value text-destructive">{stats?.metrics?.unmatched_runs ?? 0}</p>
+                <p className="text-[10px] text-destructive/60 mt-1">Requires triage</p>
               </CardContent>
             </Card>
-            <Card className="bg-background shadow-none border-border/60">
-              <CardHeader className="pb-2">
-                <CardDescription className="text-[10px] uppercase font-bold tracking-wider">
-                  Drift Events
-                </CardDescription>
-                <CardTitle className="text-2xl font-mono">
-                  {stats?.metrics?.drift_events_detected ?? 0}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-[10px] text-muted-foreground flex items-center gap-1">
-                  <Zap className="w-3 h-3" />
-                  Detected since restart
+
+            {/* Pending Exceptions */}
+            <Card className={`panel ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "bg-amber-500/5 border-amber-500/20" : "bg-background/50"}`}>
+              <CardContent className="p-4 pt-3">
+                <div className="flex items-center justify-between mb-2">
+                  <p className={`text-[10px] font-bold uppercase tracking-widest ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "text-amber-600" : "text-muted-foreground"}`}>Exceptions</p>
+                  <Zap className={`w-3 h-3 ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "text-amber-500/60" : "text-muted-foreground/60"}`} aria-hidden="true" />
                 </div>
+                <p className={`kpi-value ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "text-amber-600 dark:text-amber-400" : ""}`}>
+                  {stats?.metrics?.pending_exceptions ?? 0}
+                </p>
+                {(stats?.metrics?.pending_exceptions ?? 0) > 0 ? (
+                  <Link
+                    href="/console/exceptions"
+                    className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold hover:underline flex items-center gap-1 mt-1"
+                  >
+                    <AlertCircle className="w-3 h-3" />
+                    Triage now →
+                  </Link>
+                ) : (
+                  <p className="text-[10px] text-muted-foreground mt-1">All resolved</p>
+                )}
               </CardContent>
             </Card>
           </div>
 
-          <Card className="border-border/60 shadow-sm">
+          <Card className="panel shadow-sm">
             <CardHeader className="pb-3 border-b border-border/40">
               <div className="flex items-center justify-between">
                 <div>
@@ -176,11 +183,11 @@ export default async function AppPage() {
                     <History className="w-4 h-4 text-primary" />
                     Recent Activity
                   </CardTitle>
-                  <CardDescription>Latest reconciliation results and state changes</CardDescription>
+                  <CardDescription className="text-xs">Latest reconciliation results and state changes</CardDescription>
                 </div>
                 <Link
                   href="/app/runs"
-                  className="text-xs font-semibold text-primary hover:underline flex items-center gap-1"
+                  className="text-xs font-semibold text-primary hover:underline hover:translate-x-0.5 transition-transform flex items-center gap-1 focus-visible:ring-2 ring-primary ring-offset-2 rounded-sm"
                 >
                   View all <ArrowRight className="w-3 h-3" />
                 </Link>
@@ -192,12 +199,12 @@ export default async function AppPage() {
                   {stats.recent.map((run: any) => (
                     <Link
                       key={run.id}
-                      href={`/app/runs/${run.id}`}
-                      className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors group"
+                      href={`/console/runs/${run.id}`}
+                      className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors animate-fade-in group focus-visible:bg-muted/50 outline-none"
                     >
                       <div className="flex gap-4 items-center min-w-0">
                         <div
-                          className={`w-2 h-2 rounded-full ${run.status.includes("completed") && !run.status.includes("mismatch") ? "bg-green-500" : run.status.includes("mismatch") || run.status === "failed" ? "bg-destructive" : "bg-primary"}`}
+                          className={`w-2.5 h-2.5 rounded-full ${run.status.includes("completed") && !run.status.includes("mismatch") ? "bg-success" : run.status.includes("mismatch") || run.status === "failed" ? "bg-destructive" : "bg-primary"}`}
                         />
                         <div className="truncate">
                           <p className="text-sm font-medium text-foreground group-hover:text-primary transition-colors truncate">
@@ -235,7 +242,7 @@ export default async function AppPage() {
 
         {/* Sidebar Status & Workflows */}
         <div className="space-y-6">
-          <Card className="border-border/60 shadow-sm">
+          <Card className="panel shadow-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-bold flex items-center gap-2">
                 <Server className="w-4 h-4 text-primary" />
@@ -248,7 +255,7 @@ export default async function AppPage() {
           </Card>
 
           <section>
-            <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground/70 mb-4 px-1">
+            <h2 className="section-eyebrow mb-4 px-1">
               Critical Workflows
             </h2>
             <div className="grid gap-3">
@@ -256,7 +263,7 @@ export default async function AppPage() {
                 <Link
                   key={workflow.name}
                   href={workflow.href}
-                  className="group relative flex items-center gap-4 rounded-xl border border-border/60 bg-card p-4 transition-all hover:border-primary/40 hover:shadow-md active:scale-[0.98]"
+                  className="group relative flex items-center gap-4 rounded-xl border border-border/60 bg-card p-4 transition-all hover:border-primary/40 hover:shadow-md active:scale-[0.98] focus-visible:ring-2 ring-primary ring-offset-2"
                 >
                   <div className="rounded-lg bg-primary/5 p-2 group-hover:bg-primary/10 transition-colors">
                     <workflow.icon className="h-5 w-5 text-primary" />

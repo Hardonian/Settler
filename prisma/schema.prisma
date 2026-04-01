@@ -1411,6 +1411,12 @@ model ReconciliationMatch {
   reviewed          Boolean   @default(false)
   reviewedBy        String?   @db.Uuid
   reviewedAt        DateTime?
+  // Enterprise exception workflow fields
+  status            String    @default("open") // open, in_progress, resolved, dismissed
+  assignedTo        String?   @db.Uuid // Operator assigned to resolve this exception
+  resolutionReason  String?   @db.VarChar(100) // Structured reason for resolution
+  notes             String?   @db.Text // Operator notes during adjudication
+  severity          String    @default("medium") // low, medium, high, critical
   metadata          Json      @default("{}")
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
@@ -1418,6 +1424,8 @@ model ReconciliationMatch {
   run               ReconciliationRun @relation(fields: [runId], references: [id], onDelete: Cascade)
   sourceTransaction NormalizedTransaction @relation(fields: [sourceTransactionId], references: [id], onDelete: Cascade)
   provenance        ReconciliationProvenance[]
+  adjudicationMemories ExceptionAdjudicationMemory[]
+  archetypeClassifications ExceptionArchetypeClassification[]
 
   @@index([runId])
   @@index([tenantId])
@@ -1426,6 +1434,8 @@ model ReconciliationMatch {
   @@index([matchType])
   @@index([confidence])
   @@index([reviewed])
+  @@index([tenantId, status, assignedTo])
+  @@index([tenantId, status, severity])
   @@map("reconciliation_matches")
 }
 
@@ -1456,6 +1466,530 @@ model ReconciliationProvenance {
   @@map("reconciliation_provenance")
 }
 
+// ============================================================================
+// EXCEPTION ONTOLOGY & ADJUDICATION MEMORY MODELS
+// Phase II: Reconciliation-Intelligence primitives for compounding knowledge
+// ============================================================================
+
+model ExceptionArchetype {
+  id                String    @id @default(uuid())
+  tenantId          String    @db.Uuid
+  code              String    // e.g., "AMOUNT_MISMATCH", "DATE_DRIFT", "MISSING_IN_SOURCE"
+  label             String    // Human-readable label
+  description       String?   @db.Text
+  category          String    // "amount", "timing", "missing", "duplicate", "classification"
+  severityDefault   String    @default("medium") // default severity for this archetype
+  typicalResolution String?   // Common resolution for this archetype type
+  resolutionTaxonomy Json     @default("[]") // Allowed resolutions for this archetype
+  matchPattern      Json?     // JSON pattern for auto-classification hints
+  matchFieldWeights Json?     @default("{}") // Weights for field-based matching
+  isActive          Boolean   @default(true)
+  isSystem          Boolean   @default(false) // System-defined archetypes cannot be deleted
+  occurrenceCount   Int       @default(0) // Running count for prioritization
+  lastOccurrenceAt  DateTime?
+  metadata          Json      @default("{}")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  deletedAt        DateTime?
+
+  // Relations
+  adjudicationMemories ExceptionAdjudicationMemory[]
+  archetypeClassifications ExceptionArchetypeClassification[]
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+  @@index([category])
+  @@index([isActive])
+  @@index([occurrenceCount(sort: Desc)])
+  @@map("exception_archetypes")
+}
+
+model ExceptionArchetypeClassification {
+  id                String    @id @default(uuid())
+  exceptionId       String    @db.Uuid // FK to ReconciliationMatch.id
+  archetypeId       String    @db.Uuid // FK to ExceptionArchetype.id
+  tenantId          String    @db.Uuid
+  confidence        Decimal   @db.Decimal(5, 4) // Classification confidence score
+  matchFeatures     Json      @default("{}") // Which features triggered this classification
+  classifiedAt      DateTime  @default(now())
+  classifiedBy      String    @default("system") // "system", "human", "ml"
+  metadata          Json      @default("{}")
+
+  exception         ReconciliationMatch @relation(fields: [exceptionId], references: [id], onDelete: Cascade)
+  archetype        ExceptionArchetype @relation(fields: [archetypeId], references: [id], onDelete: Cascade)
+
+  @@unique([exceptionId, archetypeId])
+  @@index([exceptionId])
+  @@index([archetypeId])
+  @@index([tenantId])
+  @@index([confidence])
+  @@index([classifiedAt])
+  @@map("exception_archetype_classifications")
+}
+
+model ExceptionAdjudicationMemory {
+  id                String    @id @default(uuid())
+  tenantId          String    @db.Uuid
+  exceptionId       String    @db.Uuid // FK to ReconciliationMatch.id
+  archetypeId       String?   @db.Uuid // FK to ExceptionArchetype.id (optional - can be classified later)
+  
+  // Structured resolution capture
+  resolution        String    // matched, manual, ignored, duplicate, escalated
+  resolutionReason String?   // Specific reason within the resolution category
+  resolutionCode   String?   // Machine-readable resolution code
+  
+  // Actor tracking
+  adjudicatorId     String    @db.Uuid
+  adjudicatorType   String    @default("operator") // operator, supervisor, system, automated_rule
+  adjudicationType   String    @default("initial") // initial, re_adjudication, escalated_review, auto_resolved
+  
+  // Temporal tracking
+  startedAt         DateTime  @default(now())
+  completedAt       DateTime?
+  durationMs       BigInt?   // Time spent on adjudication
+  
+  // Outcome tracking
+  outcome           String?   // resolved, escalated, reopened, confirmed_dismissed
+  confidence        Decimal?  @db.Decimal(5, 4) // Confidence in the resolution
+  reversibility     String?   // reversible, irreversible, pending_reversal
+  
+  // Lineage for reopen/escalation
+  parentMemoryId    String?   @db.Uuid // Previous adjudication if reopened/escalated
+  escalatedTo       String?   // Queue or user escalated to
+  escalationReason  String?   @db.Text
+  
+  // Evidence references
+  evidenceIds       Json      @default("[]") // Array of evidence artifact IDs used
+  sourceTrustScore  Decimal?  @db.Decimal(5, 4) // Trust score for source data
+  
+  // Annotations and context
+  annotations       Json      @default("{}") // Structured key-value annotations
+  operatorNotes     String?   @db.Text // Freeform operator notes
+  systemNotes       String?   @db.Text // System-generated notes (why flagged, suggestions)
+  
+  // Policy tuning signals
+  suggestedPolicyChange Json? // Hint for policy improvement
+  policyChangeAccepted   Boolean? // Whether suggestion was implemented
+  
+  // Provenance chain
+  entryHash         String    // Hash for audit chain integrity
+  metadata          Json      @default("{}")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  exception         ReconciliationMatch @relation(fields: [exceptionId], references: [id], onDelete: Cascade)
+  archetype         ExceptionArchetype? @relation(fields: [archetypeId], references: [id], onDelete: SetNull)
+  parentMemory      ExceptionAdjudicationMemory? @relation("AdjudicationChain", fields: [parentMemoryId], references: [id], onDelete: SetNull)
+  childMemories     ExceptionAdjudicationMemory[] @relation("AdjudicationChain")
+
+  @@index([tenantId])
+  @@index([exceptionId])
+  @@index([archetypeId])
+  @@index([adjudicatorId])
+  @@index([resolution])
+  @@index([outcome])
+  @@index([createdAt(sort: Desc)])
+  @@index([tenantId, resolution, createdAt(sort: Desc)])
+  @@map("exception_adjudication_memory")
+}
+
+// ============================================================================
+// QUEUE WORKBENCH MODELS
+// Saved views, SLA config, and queue intelligence
+// ============================================================================
+
+model QueueWorkbenchView {
+  id                String    @id @default(uuid())
+  tenantId          String    @db.Uuid
+  userId            String?   @db.Uuid // Null for shared tenant views
+  name              String    // e.g., "Critical Exceptions", "My Queue"
+  description       String?   @db.Text
+  viewType          String    @default("personal") // personal, shared, system
+  
+  // Filter configuration (stored as structured JSON for reusability)
+  filters           Json      @default("{}")
+  sortConfig        Json      @default("{}")
+  columnConfig      Json      @default("[]")
+  groupBy           String?   // How to group results
+  
+  // Scope
+  scope             String    @default("all") // all, job, severity, archetype
+  scopeFilters      Json      @default("{}") // Specific scope filters
+  
+  // Display preferences
+  refreshInterval   Int?      // Auto-refresh in seconds
+  highlightRules   Json      @default("[]") // Conditional formatting rules
+  
+  // Usage tracking
+  usageCount        Int       @default(0)
+  lastUsedAt       DateTime?
+  isDefault         Boolean   @default(false)
+  isFavorite        Boolean   @default(false)
+  
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([scope])
+  @@index([isDefault])
+  @@index([isFavorite])
+  @@map("queue_workbench_views")
+}
+
+model QueueSlaConfig {
+  id                String    @id @default(uuid())
+  tenantId          String    @db.Uuid
+  name              String    // e.g., "Standard SLA", "Critical Path SLA"
+  description        String?   @db.Text
+  
+  // SLA definitions by severity/archetype
+  slaConfig         Json      // { "critical": 3600, "high": 14400, "medium": 86400, "low": 259200 }
+  escalationTimers  Json      @default("{}") // When to escalate
+  
+  // Business hours (optional)
+  businessHoursOnly  Boolean   @default(false)
+  businessHours     Json?     // { "start": "09:00", "end": "17:00", "timezone": "America/New_York", "days": [1,2,3,4,5] }
+  
+  // Scope
+  appliesTo         String    @default("all") // all, specific_jobs, specific_archetypes
+  scopeFilter       Json      @default("{}")
+  
+  // Breaches
+  autoEscalateOnBreach Boolean @default(true)
+  escalationTarget    String?  // User ID or role to escalate to
+  breachNotifications  Json    @default("[]")
+  
+  isActive          Boolean   @default(true)
+  isDefault        Boolean   @default(false)
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@index([isActive])
+  @@index([isDefault])
+  @@map("queue_sla_configs")
+}
+
+model QueueSlaBreach {
+  id                String    @id @default(uuid())
+  tenantId          String    @db.Uuid
+  exceptionId       String    @db.Uuid
+  slaConfigId       String    @db.Uuid
+  userId            String?   @db.Uuid // Assigned user at breach time
+  severity          String    // Severity when breach occurred
+  archetypeCode     String?   // Archetype code
+  
+  slaTargetSeconds   Int       // SLA target in seconds
+  elapsedSeconds     Int       // Time elapsed when breach detected
+  breachSeconds      Int       // How much the SLA was exceeded
+  
+  status            String    @default("breached") // breached, escalated, resolved, waived
+  breachedAt        DateTime  @default(now())
+  resolvedAt        DateTime?
+  
+  escalatedTo        String?   // User/role escalated to
+  escalatedAt        DateTime?
+  escalationAcceptedAt DateTime?
+  
+  waiveReason        String?   @db.Text
+  waivedBy          String?   @db.Uuid
+  
+  metadata           Json      @default("{}")
+  createdAt         DateTime  @default(now())
+
+  @@index([tenantId])
+  @@index([exceptionId])
+  @@index([slaConfigId])
+  @@index([status])
+  @@index([breachedAt(sort: Desc)])
+  @@map("queue_sla_breaches")
+}
+
+model QueueMetrics {
+  id                String    @id @default(uuid())
+  tenantId          String    @db.Uuid
+  jobId             String?   @db.Uuid // Optional - null for tenant-wide
+  
+  // Snapshot period
+  periodStart       DateTime  @db.Date
+  periodEnd         DateTime  @db.Date
+  
+  // Queue health metrics
+  totalOpen         Int       @default(0)
+  totalInProgress   Int       @default(0)
+  totalResolved     Int       @default(0)
+  totalDismissed    Int       @default(0)
+  totalBreached     Int       @default(0)
+  
+  // Age metrics
+  avgAgeSeconds     BigInt    @default(0)
+  oldestAgeSeconds  BigInt    @default(0)
+  medianAgeSeconds  BigInt    @default(0)
+  
+  // Throughput metrics
+  resolvedInPeriod  Int       @default(0)
+  dismissedInPeriod Int       @default(0)
+  reopenedInPeriod  Int       @default(0)
+  
+  // Resolution time metrics
+  avgResolutionTimeSeconds BigInt @default(0)
+  p50ResolutionTimeSeconds BigInt @default(0)
+  p95ResolutionTimeSeconds BigInt @default(0)
+  p99ResolutionTimeSeconds BigInt @default(0)
+  
+  // SLA compliance
+  slaComplianceRate Decimal    @db.Decimal(5, 4) @default(0) // 0.0000 to 1.0000
+  onTimeCount       Int        @default(0)
+  breachedCount     Int        @default(0)
+  
+  // Operator workload
+  uniqueOperators   Int        @default(0)
+  workloadStdDev    Decimal?    @db.Decimal(5, 4)
+  
+  // Archetype breakdown
+  archetypeBreakdown Json     @default("{}") // { "AMOUNT_MISMATCH": 15, "DATE_DRIFT": 8 }
+  
+  metadata          Json       @default("{}")
+  createdAt         DateTime   @default(now())
+
+  @@unique([tenantId, jobId, periodStart])
+  @@index([tenantId])
+  @@index([jobId])
+  @@index([periodStart(sort: Desc)])
+  @@map("queue_metrics")
+}
+
+// ============================================================================
+// EVIDENCE & PROOF PACKAGE MODELS
+// Structured evidence capture for audit and compliance
+// ============================================================================
+
+model EvidenceArtifact {
+  id                String    @id @default(uuid())
+  tenantId          String    @db.Uuid
+  artifactType      String    // "source_snapshot", "target_snapshot", "match_comparison", "operator_annotation", "system_analysis"
+  
+  // Core evidence data
+  artifactKey       String    // Unique key within tenant for deduplication
+  payload           Json      // Structured evidence payload
+  payloadHash       String    // SHA-256 hash of payload for integrity
+  payloadSizeBytes  Int?      // Size for storage accounting
+  
+  // Provenance tracking
+  sourceType        String?   // Where this evidence came from
+  sourceId          String?   // External reference ID
+  capturedBy        String    @default("system") // system, operator, automated_rule
+  capturedByUserId   String?   @db.Uuid
+  
+  // Run context
+  runId             String?   @db.Uuid
+  exceptionId       String?   @db.Uuid
+  
+  // Freshness and validity
+  capturedAt        DateTime  @default(now())
+  validFrom        DateTime  @default(now())
+  validUntil       DateTime? // Null = indefinitely valid
+  isExpired         Boolean   @default(false)
+  expiredAt         DateTime?
+  
+  // Reliability scoring
+  reliabilityScore  Decimal?   @db.Decimal(5, 4) // 0-1 confidence in artifact accuracy
+  reliabilityFactors Json      @default("[]") // Factors affecting reliability
+  
+  // Degradation tracking
+  degraded          Boolean   @default(false)
+  degradedReasons   Json     @default("[]") // Why degraded
+  degradedAt         DateTime?
+  
+  // Attestation
+  attested          Boolean   @default(false)
+  attestedBy        String?   @db.Uuid
+  attestedAt        DateTime?
+  attestationMethod String?   // manual, automated, cryptographic
+  
+  // Versioning
+  version           Int       @default(1)
+  supersededBy      String?   @db.Uuid // ID of newer version
+  supersededAt      DateTime?
+  
+  metadata          Json       @default("{}")
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  @@unique([tenantId, artifactKey])
+  @@index([tenantId])
+  @@index([artifactType])
+  @@index([runId])
+  @@index([exceptionId])
+  @@index([capturedAt(sort: Desc)])
+  @@index([isExpired])
+  @@map("evidence_artifacts")
+}
+
+model ProofPackage {
+  id                String    @id @default(uuid())
+  tenantId          String    @db.Uuid
+  
+  // Package identity
+  packageType       String    // "run_summary", "exception_resolution", "audit_export", "compliance_report"
+  packageKey       String    // Unique key for this package
+  
+  // Package contents
+  evidenceIds       Json      @default("[]") // Array of evidence artifact IDs
+  summary           Json      @default("{}") // Structured summary of package contents
+  narrative         String?   @db.Text // Human-readable audit narrative
+  
+  // Completeness tracking
+  completenessScore Decimal   @db.Decimal(5, 4) @default(0) // 0.0000 to 1.0000
+  missingEvidence   Json      @default("[]") // Evidence types that are missing
+  completenessFlags Json      @default("[]") // Specific completeness issues
+  
+  // Integrity
+  packageHash       String    // Hash of entire package contents
+  signature         String?   @db.Text // Cryptographic signature if available
+  
+  // Attestation
+  attested          Boolean   @default(false)
+  attestations     Json      @default("[]") // Array of attestation records
+  
+  // Scope
+  scope             String    @default("run") // run, job, tenant, custom
+  scopeIds          Json      @default("[]") // IDs within the scope
+  
+  // Time range
+  periodStart       DateTime?
+  periodEnd         DateTime?
+  
+  // Export metadata
+  exportFormat      String?   // "json", "pdf", "csv", "xlsx"
+  exportedAt        DateTime?
+  exportedBy        String?   @db.Uuid
+  
+  // Lifecycle
+  status            String    @default("draft") // draft, finalized, archived
+  finalizedAt       DateTime?
+  archivedAt        DateTime?
+  
+  metadata          Json       @default("{}")
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  deletedAt        DateTime?
+
+  @@unique([tenantId, packageKey])
+  @@index([tenantId])
+  @@index([packageType])
+  @@index([status])
+  @@index([createdAt(sort: Desc)])
+  @@map("proof_packages")
+}
+
+// ============================================================================
+// RUN DELTA & CHANGE INTELLIGENCE MODELS
+// Run-to-run comparison and change detection
+// ============================================================================
+
+model RunDelta {
+  id                String    @id @default(uuid())
+  tenantId          String    @db.Uuid
+  currentRunId      String    @db.Uuid
+  previousRunId     String?   @db.Uuid
+  
+  // Run context
+  jobId             String    @db.Uuid
+  deltaGeneratedAt  DateTime  @default(now())
+  
+  // Input changes
+  inputChanged      Boolean   @default(false)
+  inputDelta       Json      @default("{}") // Summary of input changes
+  sourceDataChanged Boolean   @default(false)
+  targetDataChanged Boolean   @default(false)
+  
+  // Count changes
+  totalDelta        Int       @default(0)
+  matchedDelta      Int       @default(0)
+  unmatchedDelta    Int       @default(0)
+  exceptionDelta     Int       @default(0)
+  
+  // Severity changes
+  criticalDelta     Int       @default(0)
+  highDelta         Int       @default(0)
+  mediumDelta       Int       @default(0)
+  lowDelta         Int       @default(0)
+  
+  // New patterns
+  newExceptionPatterns Json   @default("[]") // Exception archetypes that appeared for first time
+  resolvedPatterns    Json    @default("[]") // Patterns that resolved
+  
+  // Drift detection
+  configDriftDetected Boolean @default(false)
+  configDriftSummary  Json    @default("[]")
+  
+  // Quality signals
+  confidenceDelta    Decimal?  @db.Decimal(5, 4)
+  qualityScoreDelta  Decimal?  @db.Decimal(5, 4)
+  
+  // Analysis metadata
+  analysisVersion    Int      @default(1)
+  algorithm          String   @default("v1")
+  processingTimeMs  BigInt?
+  
+  metadata           Json      @default("{}")
+  createdAt         DateTime  @default(now())
+
+  @@unique([currentRunId])
+  @@index([tenantId])
+  @@index([jobId])
+  @@index([previousRunId])
+  @@index([createdAt(sort: Desc)])
+  @@map("run_deltas")
+}
+
+model PolicyOutcomeLedger {
+  id                String    @id @default(uuid())
+  tenantId          String    @db.Uuid
+  
+  // Accumulated policy fingerprints
+  policyFingerprint String
+  
+  // Resolution outcomes tied to this policy
+  totalAdjudications Int      @default(0)
+  resolutionBreakdown Json    @default("{}") // { "matched": 10, "ignored": 5, "manual": 3 }
+  avgConfidenceScore   Decimal  @db.Decimal(5, 4) @default(0)
+  
+  // Pattern analysis
+  exceptionArchetypes Json    @default("[]") // Archetypes seen with this policy
+  commonResolutions   Json    @default("[]") // Most frequent resolutions
+  suggestedTuning    Json?   // Policy tuning hints based on outcomes
+  
+  // Trust signals
+  trustScore         Decimal  @db.Decimal(5, 4) @default(0.5) // 0-1, starts at neutral
+  trustSignals       Json    @default("[]") // Factors affecting trust
+  
+  // Temporal tracking
+  firstSeenAt        DateTime @default(now())
+  lastSeenAt         DateTime @default(now())
+  observationWindow  Int      @default(30) // Days of observations
+  
+  // Accuracy tracking
+  reversalRate       Decimal  @db.Decimal(5, 4) @default(0) // How often resolutions get overturned
+  accuracyScore      Decimal?  @db.Decimal(5, 4)
+  
+  metadata           Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@unique([tenantId, policyFingerprint])
+  @@index([tenantId])
+  @@index([trustScore])
+  @@index([lastSeenAt(sort: Desc)])
+  @@map("policy_outcome_ledger")
+}
 
 model PolicyMemoryArtifact {
   id             String   @id @default(uuid())
@@ -1570,4 +2104,130 @@ model RetentionMetric {
   @@index([tenantId])
   @@index([runDate(sort: Desc)])
   @@map("retention_metrics")
+}
+
+// ============================================================================
+// APPROVAL WORKFLOW MODELS
+// Formal approval chains for policy changes, exports, and critical operations
+// ============================================================================
+
+model ApprovalRequest {
+  id                String    @id @default(uuid())
+  tenantId          String    @db.Uuid
+  requestedBy       String    @db.Uuid
+  approverId        String?   @db.Uuid
+  approverRole      String?   // Role-based approval (e.g., "supervisor", "finance_admin")
+  
+  // Target of approval
+  requestType       String    // "policy_change", "export", "exception_override", "rule_modification"
+  reconciliationRunId String? @db.Uuid
+  reconJobId        String?   @db.Uuid
+  reconResultId     String?   @db.Uuid
+  proposalId        String?   @db.Uuid
+  
+  // Request details
+  requestDetails    Json      @default("{}")
+  comments          String?   @db.Text
+  justification     String?   @db.Text
+  
+  // Status and timing
+  status            String    @default("pending") // pending, approved, rejected, cancelled, expired
+  requestedAt       DateTime  @default(now())
+  approvedAt        DateTime?
+  rejectedAt        DateTime?
+  cancelledAt       DateTime?
+  expiresAt         DateTime?
+  
+  // Outcome
+  outcome          String?   // approved, rejected, superseded, auto_approved, auto_rejected
+  outcomeReason   String?  @db.Text
+  
+  // Multi-step approvals
+  approvalStep     Int      @default(1)
+  requiredSteps    Int      @default(1)
+  approvalChain    Json     @default("[]") // History of approval steps
+  
+  // Separation of duties
+  separationViolation Boolean @default(false) // True if requester tried to self-approve
+  
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([tenantId])
+  @@index([requestedBy])
+  @@index([approverId])
+  @@index([approverRole])
+  @@index([requestType])
+  @@index([status])
+  @@index([requestedAt(sort: Desc)])
+  @@index([expiresAt])
+  @@map("approval_requests")
+}
+
+model Approver {
+  id                  String    @id @default(uuid())
+  tenantId            String    @db.Uuid
+  userId              String    @db.Uuid
+  role                String    // e.g., "supervisor", "finance_admin", "compliance_officer"
+  
+  // Approval scope
+  approvalScope        Json      @default("{}") // { "requestTypes": ["export", "policy_change"], "maxAmount": 10000 }
+  approvalThreshold    Int?      // For multi-step: number of approvers needed
+  
+  // Capabilities
+  canApproveFinal     Boolean   @default(false)
+  canEscalate         Boolean   @default(true)
+  canDelegate         Boolean   @default(false)
+  maxDelegationDepth  Int       @default(0)
+  
+  // Status
+  isActive            Boolean   @default(true)
+  autoApproveEnabled  Boolean   @default(false) // Auto-approve under certain conditions
+  
+  // Notifications
+  notifyOnRequest     Boolean   @default(true)
+  notifyOnExpiration  Boolean   @default(true)
+  
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  deletedAt          DateTime?
+
+  @@unique([tenantId, userId, role])
+  @@index([tenantId])
+  @@index([userId])
+  @@index([role])
+  @@index([isActive])
+  @@map("approvers")
+}
+
+model ApprovalDelegation {
+  id                String    @id @default(uuid())
+  tenantId          String    @db.Uuid
+  delegatorId       String    @db.Uuid // Original approver
+  delegateId        String    @db.Uuid // Person delegated to
+  role              String    // Role being delegated
+  
+  // Delegation scope
+  scope             Json      @default("{}") // Limitations on delegation
+  requestTypes      Json      @default("[]") // Which request types can be delegated
+  
+  // Timing
+  validFrom         DateTime  @default(now())
+  validUntil        DateTime?
+  isActive          Boolean   @default(true)
+  
+  // Constraints
+  maxDelegations    Int       @default(1) // How many times this can be used
+  usedCount         Int       @default(0)
+  
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+
+  @@unique([tenantId, delegatorId, delegateId, role])
+  @@index([tenantId])
+  @@index([delegatorId])
+  @@index([delegateId])
+  @@index([isActive])
+  @@map("approval_delegations")
 }

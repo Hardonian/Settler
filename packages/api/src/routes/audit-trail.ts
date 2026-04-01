@@ -36,15 +36,8 @@ router.get(
     try {
       const tenantId = req.tenantId!;
       const queryParams = getAuditTrailSchema.parse({ query: req.query });
-      const {
-        resourceType,
-        resourceId,
-        startDate,
-        endDate,
-        eventType,
-        limit,
-        offset,
-      } = queryParams.query;
+      const { resourceType, resourceId, startDate, endDate, eventType, limit, offset } =
+        queryParams.query;
 
       const conditions: string[] = [];
       const values: (string | number | boolean | Date | null)[] = [];
@@ -77,7 +70,7 @@ router.get(
         values.push(eventType);
       }
 
-      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
       const auditLogs = await query<{
         id: string;
@@ -87,8 +80,9 @@ router.get(
         timestamp: Date;
         ip: string | null;
         user_agent: string | null;
+        total_count: string;
       }>(
-        `SELECT id, event, user_id, metadata, timestamp, ip, user_agent
+        `SELECT id, event, user_id, metadata, timestamp, ip, user_agent, COUNT(*) OVER() as total_count
          FROM audit_logs
          ${whereClause}
          ORDER BY timestamp DESC
@@ -96,18 +90,10 @@ router.get(
         [...values, limit, offset]
       );
 
-      const countResult = await query<{ count: string }>(
-        `SELECT COUNT(*) as count FROM audit_logs ${whereClause}`,
-        values
-      );
-
-      if (!countResult[0]) {
-        throw new Error('Failed to get audit log count');
-      }
-      const total = parseInt(countResult[0].count);
+      const total = parseInt(auditLogs[0]?.total_count ?? "0");
 
       res.json({
-        data: auditLogs.map(log => ({
+        data: auditLogs.map((log) => ({
           id: log.id,
           event: log.event,
           userId: log.user_id,
@@ -127,7 +113,9 @@ router.get(
         },
       });
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to get audit trail", 500, { userId: req.userId });
+      handleRouteError(res, error, "Failed to get audit trail", 500, {
+        userId: req.userId,
+      });
     }
   }
 );
@@ -142,7 +130,7 @@ router.get(
       const tenantId = req.tenantId!;
 
       if (!resourceType || !resourceId) {
-        res.status(400).json({ error: 'resourceType and resourceId are required' });
+        res.status(400).json({ error: "resourceType and resourceId are required" });
         return;
       }
 
@@ -166,7 +154,7 @@ router.get(
         data: {
           resourceType,
           resourceId,
-          events: auditLogs.map(log => ({
+          events: auditLogs.map((log) => ({
             id: log.id,
             event: log.event,
             userId: log.user_id,
@@ -178,7 +166,9 @@ router.get(
         },
       });
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to get resource audit trail", 500, { userId: req.userId });
+      handleRouteError(res, error, "Failed to get resource audit trail", 500, {
+        userId: req.userId,
+      });
     }
   }
 );
@@ -190,13 +180,19 @@ router.get(
   async (req: TenantRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
-      const { format = "csv", startDate, endDate } = req.query as {
+      const {
+        format = "csv",
+        startDate,
+        endDate,
+      } = req.query as {
         format?: string;
         startDate?: string;
         endDate?: string;
       };
 
-      const start = startDate ? new Date(startDate) : new Date(Date.now() - 365 * 24 * 60 * 60 * 1000);
+      const start = startDate
+        ? new Date(startDate)
+        : new Date(Date.now() - 365 * 24 * 60 * 60 * 1000);
       const end = endDate ? new Date(endDate) : new Date();
 
       const auditLogs = await query<{
@@ -213,13 +209,16 @@ router.get(
 
       if (format === "csv") {
         res.setHeader("Content-Type", "text/csv");
-        res.setHeader("Content-Disposition", `attachment; filename="audit-trail-tenant-${tenantId}.csv"`);
+        res.setHeader(
+          "Content-Disposition",
+          `attachment; filename="audit-trail-tenant-${tenantId}.csv"`
+        );
 
         let csv = "Event,Timestamp,UserId,IPAddress,UserAgent,Metadata\n";
         for (const log of auditLogs) {
-          const ip = (log as any).ip_address || '';
-          const ua = (log as any).user_agent || '';
-          const userId = (log as any).user_id || '';
+          const ip = (log as any).ip_address || "";
+          const ua = (log as any).user_agent || "";
+          const userId = (log as any).user_id || "";
           csv += `${log.event},${log.timestamp.toISOString()},${userId},${ip},${ua},"${JSON.stringify(log.metadata).replace(/"/g, '""')}"\n`;
         }
 
@@ -232,7 +231,9 @@ router.get(
         format: "json",
       });
     } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to export audit trail", 500, { userId: req.userId });
+      handleRouteError(res, error, "Failed to export audit trail", 500, {
+        userId: req.userId,
+      });
     }
   }
 );

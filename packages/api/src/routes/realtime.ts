@@ -190,6 +190,128 @@ router.get("/reconciliations/:jobId", async (req: AuthRequest, res: Response): P
   });
 });
 
+/**
+ * GET /api/realtime/workbench
+ * Global tenant-wide workbench updates
+ */
+router.get("/workbench", async (req: AuthRequest, res: Response): Promise<void> => {
+  const tenantId = req.tenantId;
+  const userId = req.userId;
+
+  if (!userId || !tenantId) {
+    res.status(401).json({ error: "Authentication and tenant context are required" });
+    return;
+  }
+
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.setHeader("X-Accel-Buffering", "no");
+
+  const connectionId = `workbench-${tenantId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+  logInfo("SSE Workbench connection established", { connectionId, tenantId });
+
+  res.write(`data: ${JSON.stringify({ type: "workbench_connected", tenantId })}\n\n`);
+
+  const pollInterval = setInterval(async () => {
+    try {
+      if (res.destroyed || res.closed) {
+        clearInterval(pollInterval);
+        return;
+      }
+
+      // Fetch global stats for the workbench
+      const stats = await query<{
+        open_exceptions: string;
+        high_severity_exceptions: string;
+        active_runs: string;
+        last_run_timestamp: Date | null;
+      }>(
+        `
+          SELECT 
+            (SELECT COUNT(*) FROM reconciliation_matches WHERE tenant_id = $1 AND status = 'open') as open_exceptions,
+            (SELECT COUNT(*) FROM reconciliation_matches WHERE tenant_id = $1 AND status = 'open' AND severity IN ('high', 'critical')) as high_severity_exceptions,
+            (SELECT COUNT(*) FROM recon_results WHERE tenant_id = $1 AND status = 'running') as active_runs,
+            (SELECT MAX(completed_at) FROM recon_results WHERE tenant_id = $1 AND status = 'completed') as last_run_timestamp
+        `,
+        [tenantId]
+      );
+
+      // Fetch most recent active runs
+      const activeRuns = await query<{
+        id: string;
+        recon_job_id: string;
+        status: string;
+        matched_count: number;
+        unmatched_source_count: number;
+        unmatched_target_count: number;
+        source_count: number;
+        target_count: number;
+      }>(
+        `
+          SELECT 
+            id, recon_job_id, status, matched_count, unmatched_source_count, unmatched_target_count,
+            source_count, target_count
+          FROM recon_results
+          WHERE tenant_id = $1 AND status = 'running'
+          ORDER BY started_at DESC
+          LIMIT 5
+        `,
+        [tenantId]
+      );
+
+      // Cast counts to numbers (Postgres COUNT returns bigint as string in many node drivers)
+      const formattedStats = {
+        open_exceptions: parseInt(stats[0]?.open_exceptions || "0"),
+        high_severity_exceptions: parseInt(stats[0]?.high_severity_exceptions || "0"),
+        active_runs: parseInt(stats[0]?.active_runs || "0"),
+        last_run_timestamp: stats[0]?.last_run_timestamp,
+      };
+
+      const formattedRuns = activeRuns.map((run) => ({
+        ...run,
+        progress:
+          run.source_count + run.target_count === 0
+            ? 0
+            : Math.round(
+                ((run.matched_count * 2 + run.unmatched_source_count + run.unmatched_target_count) /
+                  (run.source_count + run.target_count)) *
+                  100
+              ),
+      }));
+
+      res.write(
+        `data: ${JSON.stringify({
+          type: "workbench_update",
+          stats: formattedStats,
+          activeRuns: formattedRuns,
+        })}\n\n`
+      );
+    } catch (error: unknown) {
+      logError("SSE Workbench polling error", error, { connectionId, tenantId });
+      // Don't kill the interval on one error, just log it.
+    }
+  }, 3000);
+
+  req.on("close", () => {
+    clearInterval(pollInterval);
+    logInfo("SSE Workbench connection closed", { connectionId, tenantId });
+  });
+
+  const heartbeatInterval = setInterval(() => {
+    if (!res.destroyed && !res.closed) {
+      res.write(": heartbeat\n\n");
+    } else {
+      clearInterval(heartbeatInterval);
+    }
+  }, 30000);
+
+  req.on("close", () => {
+    clearInterval(heartbeatInterval);
+  });
+});
+
 export function broadcastJobUpdate(
   jobId: string,
   tenantId: string,

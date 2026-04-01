@@ -12,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, CheckCircle2, Clock, Users, DollarSign, Activity, Shield, Database, TrendingUp, AlertTriangle, XCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 
 interface SystemHealth {
   status: string;
@@ -182,32 +183,30 @@ export default function MonitoringDashboard() {
   if (error) {
     return (
       <div className="p-8">
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <AlertCircle className="h-5 w-5 text-red-600" />
-            <h3 className="font-semibold text-red-900 dark:text-red-200">
-              Unable to Load Metrics
-            </h3>
+        <div className="error-well">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" aria-hidden="true" />
+            <div>
+              <h3 className="font-semibold text-foreground">Unable to Load Metrics</h3>
+              <p className="text-sm text-muted-foreground mt-1 mb-4">
+                We encountered an error while loading monitoring metrics. Please try again or contact support if the problem persists.
+              </p>
+              {process.env.NODE_ENV === 'development' && (
+                <p className="code-inline text-xs mb-4 block">{error}</p>
+              )}
+              <Button
+                onClick={() => {
+                  setError(null);
+                  setLoading(true);
+                  window.location.reload();
+                }}
+                variant="outline"
+                size="sm"
+              >
+                Retry
+              </Button>
+            </div>
           </div>
-          <p className="text-sm text-red-800 dark:text-red-300 mb-4">
-            We encountered an error while loading monitoring metrics. Please try again or contact support if the problem persists.
-          </p>
-          {process.env.NODE_ENV === 'development' && (
-            <p className="text-xs font-mono text-red-600 dark:text-red-400 mb-4">
-              {error}
-            </p>
-          )}
-          <Button 
-            onClick={() => {
-              setError(null);
-              setLoading(true);
-              // Trigger re-fetch
-              window.location.reload();
-            }}
-            variant="outline"
-          >
-            Retry
-          </Button>
         </div>
       </div>
     );
@@ -218,15 +217,14 @@ export default function MonitoringDashboard() {
     : 0;
 
   return (
-    <div className="p-8 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-foreground mb-2">
-          Monitoring Dashboard
-        </h1>
-        <p className="text-muted-foreground">
-          Real-time system health and business metrics
-        </p>
-      </div>
+    <div className="space-y-6 pb-8">
+      <AdminPageHeader
+        eyebrow="System Observability"
+        title="Monitoring Dashboard"
+        description="Real-time system health, business metrics, SLA compliance, and reliability signals."
+        icon={Activity}
+      />
+      <div className="px-6 sm:px-8 space-y-6">
 
       {/* System Health */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -608,6 +606,7 @@ export default function MonitoringDashboard() {
         Last updated: {health?.metrics.timestamp ? new Date(health.metrics.timestamp).toLocaleString() : 'Never'}
         {' • '}
         Auto-refresh: 30s
+      </div>
       </div>
     </div>
   );
