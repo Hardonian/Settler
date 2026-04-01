@@ -147,11 +147,11 @@ export default function AdminOpsConsole() {
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'critical':
-        return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
+        return 'bg-destructive/10 text-destructive border-destructive/20';
       case 'warn':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
+        return 'bg-amber-500/10 text-amber-600 border-amber-500/20';
       default:
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
+        return 'bg-primary/10 text-primary border-primary/20';
     }
   };
 
@@ -167,13 +167,13 @@ export default function AdminOpsConsole() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-[calc(100vh-4rem)] bg-muted/20 dark:bg-background" id="main-content">
+    <div className="flex flex-col lg:flex-row h-[calc(100vh-4rem)] bg-muted/20" id="main-content">
       {/* Left Panel: Exception List */}
-      <div className="w-full lg:w-1/2 border-r border-border dark:border-border flex flex-col">
+      <div className="w-full lg:w-1/2 border-r border-border flex flex-col">
         {/* Header */}
-        <div className="p-4 border-b border-border dark:border-border bg-card bg-muted">
+        <div className="p-4 border-b border-border bg-card/80">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-foreground dark:text-white">
+            <h2 className="text-lg font-semibold text-foreground">
               Exception Queue
             </h2>
             <div className="flex items-center gap-2">
@@ -181,7 +181,7 @@ export default function AdminOpsConsole() {
                 connectionState === 'connected' ? 'bg-green-500' :
                 connectionState === 'reconnecting' ? 'bg-yellow-500' : 'bg-red-500'
               }`} />
-              <span className="text-xs text-muted-foreground dark:text-muted-foreground">
+              <span className="text-xs text-muted-foreground">
                 {connectionState}
               </span>
             </div>
@@ -203,7 +203,7 @@ export default function AdminOpsConsole() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="text-sm border border-border dark:border-border rounded px-2 py-1 bg-card dark:bg-background text-foreground dark:text-white"
+              className="text-sm border border-border rounded px-2 py-1 bg-card text-foreground"
             >
               <option value="all">All Status</option>
               <option value="new">New</option>
@@ -213,7 +213,7 @@ export default function AdminOpsConsole() {
             <select
               value={severityFilter}
               onChange={(e) => setSeverityFilter(e.target.value)}
-              className="text-sm border border-border dark:border-border rounded px-2 py-1 bg-card dark:bg-background text-foreground dark:text-white"
+              className="text-sm border border-border rounded px-2 py-1 bg-card text-foreground"
             >
               <option value="all">All Severity</option>
               <option value="critical">Critical</option>
@@ -226,15 +226,15 @@ export default function AdminOpsConsole() {
         {/* List */}
         <div className="flex-1 overflow-y-auto">
           {isLoading ? (
-            <div className="p-4 text-center text-muted-foreground dark:text-muted-foreground">
+            <div className="p-4 text-center text-muted-foreground">
               Loading exceptions...
             </div>
           ) : filteredExceptions.length === 0 ? (
-            <div className="p-4 text-center text-muted-foreground dark:text-muted-foreground">
+            <div className="p-4 text-center text-muted-foreground">
               No exceptions found
             </div>
           ) : (
-            <div className="divide-y divide-slate-200 dark:divide-border">
+            <div className="divide-y divide-border/40">
               {filteredExceptions.map((ex: ExceptionItem, index: number) => (
                 <button
                   key={ex.id}
@@ -242,8 +242,8 @@ export default function AdminOpsConsole() {
                     setSelectedException(ex.id);
                     selectedIndexRef.current = index;
                   }}
-                  className={`w-full p-4 text-left hover:bg-muted/40 dark:hover:bg-card transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                    selectedException === ex.id ? 'bg-muted/40 dark:bg-card ring-2 ring-blue-500' : ''
+                  className={`w-full p-4 text-left hover:bg-muted/30 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                    selectedException === ex.id ? 'bg-muted/30 ring-2 ring-primary' : ''
                   }`}
                   aria-selected={selectedException === ex.id}
                   role="option"
@@ -260,11 +260,11 @@ export default function AdminOpsConsole() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         {getStatusIcon(ex.status)}
-                        <span className="text-sm font-medium text-foreground dark:text-white">
+                        <span className="text-sm font-medium text-foreground">
                           {ex.reason}
                         </span>
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground dark:text-muted-foreground">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         <span>{ex.source}</span>
                         <span>•</span>
                         <span>{new Date(ex.createdAt).toLocaleString()}</span>
@@ -286,7 +286,7 @@ export default function AdminOpsConsole() {
         {selectedExceptionData ? (
           <ExceptionDetail exception={selectedExceptionData} />
         ) : (
-          <div className="flex-1 flex items-center justify-center text-muted-foreground dark:text-muted-foreground">
+          <div className="flex-1 flex items-center justify-center text-muted-foreground">
             Select an exception to view details
           </div>
         )}
@@ -345,9 +345,9 @@ function ExceptionDetail({ exception }: { exception: ExceptionItem }) {
           <div className="flex items-center justify-between">
             <CardTitle>{exception.reason}</CardTitle>
             <Badge className={
-              exception.severity === 'critical' ? 'bg-red-100 text-red-800' :
-              exception.severity === 'warn' ? 'bg-yellow-100 text-yellow-800' :
-              'bg-blue-100 text-blue-800'
+              exception.severity === 'critical' ? 'bg-destructive/10 text-destructive border-destructive/20' :
+              exception.severity === 'warn' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' :
+              'bg-primary/10 text-primary border-primary/20'
             }>
               {exception.severity}
             </Badge>
@@ -355,28 +355,28 @@ function ExceptionDetail({ exception }: { exception: ExceptionItem }) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <h3 className="text-sm font-medium text-foreground dark:text-muted-foreground mb-2">
+            <h3 className="text-sm font-medium text-foreground mb-2">
               Details
             </h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-muted-foreground dark:text-muted-foreground">Source:</span>
-                <span className="text-foreground dark:text-white">{exception.source}</span>
+                <span className="text-muted-foreground">Source:</span>
+                <span className="text-foreground">{exception.source}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground dark:text-muted-foreground">Status:</span>
-                <span className="text-foreground dark:text-white">{exception.status}</span>
+                <span className="text-muted-foreground">Status:</span>
+                <span className="text-foreground">{exception.status}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground dark:text-muted-foreground">Created:</span>
-                <span className="text-foreground dark:text-white">
+                <span className="text-muted-foreground">Created:</span>
+                <span className="text-foreground">
                   {new Date(exception.createdAt).toLocaleString()}
                 </span>
               </div>
               {exception.ruleId && (
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground dark:text-muted-foreground">Rule ID:</span>
-                  <span className="text-foreground dark:text-white font-mono text-xs">
+                  <span className="text-muted-foreground">Rule ID:</span>
+                  <span className="text-foreground font-mono text-xs">
                     {exception.ruleId}
                   </span>
                 </div>
@@ -386,7 +386,7 @@ function ExceptionDetail({ exception }: { exception: ExceptionItem }) {
 
           {exception.evidence && (
             <div>
-              <h3 className="text-sm font-medium text-foreground dark:text-muted-foreground mb-2">
+              <h3 className="text-sm font-medium text-foreground mb-2">
                 Evidence
               </h3>
               <pre className="text-xs bg-muted/40 dark:bg-card p-3 rounded overflow-auto">
@@ -395,7 +395,7 @@ function ExceptionDetail({ exception }: { exception: ExceptionItem }) {
             </div>
           )}
 
-          <div className="flex gap-2 pt-4 border-t border-border dark:border-border">
+          <div className="flex gap-2 pt-4 border-t border-border/40">
             <Button 
               variant="default" 
               size="sm"

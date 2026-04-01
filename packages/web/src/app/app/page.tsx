@@ -109,85 +109,67 @@ export default async function AppPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Real Metrics Grid */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <Card className="panel bg-background/50 backdrop-blur-sm">
-              <CardHeader className="pb-2">
-                <CardDescription className="label-muted">
-                  Integrity Score
-                </CardDescription>
-                <CardTitle className="metric-value font-mono text-2xl">
-                  {stats?.metrics?.integrity_score ?? 100}%
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+          <div className="stat-strip">
+            {/* Integrity Score */}
+            <Card className="panel bg-background/50">
+              <CardContent className="p-4 pt-3">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Integrity</p>
+                  <ShieldCheck className="w-3 h-3 text-primary/60" aria-hidden="true" />
+                </div>
+                <p className="kpi-value text-primary">{stats?.metrics?.integrity_score ?? 100}%</p>
                 <Progress
                   value={stats?.metrics?.integrity_score ?? 100}
-                  className="h-1.5"
+                  className="h-1 mt-2"
                   indicatorClassName="bg-primary"
                 />
               </CardContent>
             </Card>
-            <Card className="panel bg-background/50 backdrop-blur-sm">
-              <CardHeader className="pb-2">
-                <CardDescription className="label-muted">
-                  Total Runs
-                </CardDescription>
-                <CardTitle className="metric-value font-mono text-2xl">
-                  {stats?.metrics?.total_runs ?? 0}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-[10px] text-muted-foreground flex items-center gap-1">
-                  <PieChart className="w-3 h-3" />
-                  Aggregate lifetime
+
+            {/* Total Runs */}
+            <Card className="panel bg-background/50">
+              <CardContent className="p-4 pt-3">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Total Runs</p>
+                  <PieChart className="w-3 h-3 text-muted-foreground/60" aria-hidden="true" />
                 </div>
+                <p className="kpi-value">{stats?.metrics?.total_runs ?? 0}</p>
+                <p className="text-[10px] text-muted-foreground mt-1">Aggregate lifetime</p>
               </CardContent>
             </Card>
-            <Card className="panel bg-background/50 backdrop-blur-sm">
-              <CardHeader className="pb-2">
-                <CardDescription className="label-muted text-destructive/80">
-                  Mismatches
-                </CardDescription>
-                <CardTitle className="metric-value font-mono text-2xl text-destructive">
-                  {stats?.metrics?.unmatched_runs ?? 0}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-[10px] text-destructive/70 flex items-center gap-1">
-                  <AlertCircle className="w-3 h-3" />
-                  Requires operator triage
+
+            {/* Mismatches */}
+            <Card className="panel bg-destructive/5 border-destructive/20">
+              <CardContent className="p-4 pt-3">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-destructive/80">Mismatches</p>
+                  <AlertCircle className="w-3 h-3 text-destructive/60" aria-hidden="true" />
                 </div>
+                <p className="kpi-value text-destructive">{stats?.metrics?.unmatched_runs ?? 0}</p>
+                <p className="text-[10px] text-destructive/60 mt-1">Requires triage</p>
               </CardContent>
             </Card>
-            <Card
-              className={`panel backdrop-blur-sm ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "bg-amber-50/50 dark:bg-amber-950/20 border-amber-200/60 dark:border-amber-800/40" : "bg-background/50"}`}
-            >
-              <CardHeader className="pb-2">
-                <CardDescription
-                  className={`label-muted ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "text-amber-700 dark:text-amber-400" : ""}`}
-                >
-                  Pending Exceptions
-                </CardDescription>
-                <CardTitle
-                  className={`metric-value font-mono text-2xl ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "text-amber-700 dark:text-amber-400" : ""}`}
-                >
+
+            {/* Pending Exceptions */}
+            <Card className={`panel ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "bg-amber-500/5 border-amber-500/20" : "bg-background/50"}`}>
+              <CardContent className="p-4 pt-3">
+                <div className="flex items-center justify-between mb-2">
+                  <p className={`text-[10px] font-bold uppercase tracking-widest ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "text-amber-600" : "text-muted-foreground"}`}>Exceptions</p>
+                  <Zap className={`w-3 h-3 ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "text-amber-500/60" : "text-muted-foreground/60"}`} aria-hidden="true" />
+                </div>
+                <p className={`kpi-value ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "text-amber-600 dark:text-amber-400" : ""}`}>
                   {stats?.metrics?.pending_exceptions ?? 0}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+                </p>
                 {(stats?.metrics?.pending_exceptions ?? 0) > 0 ? (
                   <Link
                     href="/console/exceptions"
-                    className="text-[10px] text-amber-700 dark:text-amber-400 font-semibold hover:underline flex items-center gap-1"
+                    className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold hover:underline flex items-center gap-1 mt-1"
                   >
                     <AlertCircle className="w-3 h-3" />
                     Triage now →
                   </Link>
                 ) : (
-                  <div className="text-[10px] text-muted-foreground flex items-center gap-1">
-                    <Zap className="w-3 h-3" />
-                    All exceptions resolved
-                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-1">All resolved</p>
                 )}
               </CardContent>
             </Card>
