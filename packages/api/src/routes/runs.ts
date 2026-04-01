@@ -13,7 +13,6 @@
  */
 
 import { Router, Response } from "express";
-import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { validateRequest } from "../middleware/validation";
 import { AuthRequest } from "../middleware/auth";
@@ -22,10 +21,14 @@ import { Permission } from "../infrastructure/security/Permissions";
 import { enforceFreezeState } from "../middleware/governance";
 
 import {
+  decodeMergedRunsCursor,
+  encodeMergedRunsCursor,
+  fetchMergedReconciliationRunsPage,
+  mapCanonicalListItemToApiRunsLegacyRow,
+  MergedRunsCursorError,
+  type MergedRunsCursorV1,
   resolveOperatorRunDetailForTenants,
-  normalizeRunStatus,
 } from "@settler/reconciliation-core";
-import { Run, RunSummary } from "@settler/types";
 import { handleRouteError } from "../utils/error-handler";
 import {
   ConflictError,
@@ -38,6 +41,8 @@ import { logInfo } from "../utils/logger";
 
 const router: Router = Router();
 import { prisma } from "../infrastructure/db/prisma";
+
+const MERGED_LIST_BATCH_SIZE = 100;
 
 const getRunSchema = z.object({
   params: z.object({
@@ -54,9 +59,21 @@ const listRunsQuerySchema = z.object({
   }),
 });
 
+function matchesStatusFilter(statusFilter: string | undefined, status: string): boolean {
+  if (!statusFilter) return true;
+  return status.toLowerCase() === statusFilter;
+}
+
+function matchesSearchFilter(searchFilter: string | undefined, id: string, name: string): boolean {
+  if (!searchFilter) return true;
+  const haystack = `${id} ${name}`.toLowerCase();
+  return haystack.includes(searchFilter);
+}
+
 /**
  * GET /api/runs
- * List reconciliation runs (executions) with job context
+ * List reconciliation runs from the canonical merged run-list surface, adapted
+ * into the historical Express envelope with page/limit pagination.
  */
 router.get(
   "/",
@@ -68,56 +85,62 @@ router.get(
 
       const status = req.query.status as string | undefined;
       const search = req.query.search as string | undefined;
+      const normalizedStatus = status?.trim().toLowerCase() || undefined;
+      const normalizedSearch = search?.trim().toLowerCase() || undefined;
       const page = parseInt((req.query.page as string) || "1");
       const limit = Math.min(parseInt((req.query.limit as string) || "50"), 100);
       const offset = (page - 1) * limit;
+      const data: Array<ReturnType<typeof mapCanonicalListItemToApiRunsLegacyRow>> = [];
+      let total = 0;
+      let pagesScanned = 0;
+      let cursorState: MergedRunsCursorV1 | null = null;
 
-      const where: Prisma.ReconResultWhereInput = {
+      while (true) {
+        const mergedPage = await fetchMergedReconciliationRunsPage({
+          prisma,
+          tenantId,
+          limit: MERGED_LIST_BATCH_SIZE,
+          cursorState,
+          runKind: "all",
+          encodeCursor: encodeMergedRunsCursor,
+        });
+        pagesScanned += 1;
+
+        for (const row of mergedPage.runs) {
+          const legacy = mapCanonicalListItemToApiRunsLegacyRow(row);
+          if (!matchesStatusFilter(normalizedStatus, legacy.status)) continue;
+          if (!matchesSearchFilter(normalizedSearch, legacy.id, legacy.name)) continue;
+
+          if (total >= offset && data.length < limit) {
+            data.push(legacy);
+          }
+          total += 1;
+        }
+
+        if (!mergedPage.next_cursor) {
+          break;
+        }
+
+        try {
+          cursorState = decodeMergedRunsCursor(mergedPage.next_cursor);
+        } catch (error) {
+          throw new InternalServerError(
+            error instanceof MergedRunsCursorError
+              ? `Canonical merged run pagination drift: ${error.message}`
+              : "Canonical merged run pagination drift"
+          );
+        }
+      }
+
+      logInfo("Runs listed", {
         tenantId,
-        ...(status && { status }),
-        ...(search && {
-          reconJob: {
-            name: {
-              contains: search,
-              mode: "insensitive",
-            },
-          },
-        }),
-      };
-
-      const [runs, total] = await Promise.all([
-        prisma.reconResult.findMany({
-          where,
-          include: {
-            reconJob: {
-              select: {
-                name: true,
-              },
-            },
-          },
-          orderBy: {
-            startedAt: "desc",
-          },
-          take: limit,
-          skip: offset,
-        }),
-        prisma.reconResult.count({ where }),
-      ]);
-
-      logInfo("Runs listed", { tenantId, status, count: runs.length, total, page, limit });
-
-      // Transform to operator-friendly format using canonical status normalization
-      const data: Run[] = runs.map((run) => {
-        const summary = (run.summary as RunSummary | null) || undefined;
-
-        return {
-          id: run.id,
-          name: run.reconJob.name,
-          status: normalizeRunStatus(run.status),
-          startedAt: run.startedAt.toISOString(),
-          completedAt: run.completedAt?.toISOString() || null,
-          summary,
-        };
+        status: normalizedStatus,
+        search: normalizedSearch,
+        count: data.length,
+        total,
+        page,
+        limit,
+        pagesScanned,
       });
 
       res.json({

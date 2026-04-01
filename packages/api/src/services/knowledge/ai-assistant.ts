@@ -11,6 +11,7 @@ import { logInfo } from "../../utils/logger";
  */
 
 export interface KnowledgeQuery {
+  tenantId: string;
   question: string;
   context?: {
     userId?: string;
@@ -57,6 +58,7 @@ export class AIKnowledgeAssistant extends EventEmitter {
     });
 
     const decisions = decisionLog.queryDecisions({
+      tenantId: query.tenantId,
       search: query.question,
     });
 

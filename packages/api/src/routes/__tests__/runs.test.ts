@@ -33,13 +33,52 @@ jest.mock("../../infrastructure/db/prisma", () => {
 jest.mock(
   "@settler/reconciliation-core",
   () => ({
+    decodeMergedRunsCursor: jest.fn(),
+    encodeMergedRunsCursor: jest.fn((cursor: unknown) => JSON.stringify(cursor)),
+    fetchMergedReconciliationRunsPage: jest.fn(),
+    mapCanonicalListItemToApiRunsLegacyRow: jest.fn((row: any) => ({
+      runKind: row.runKind,
+      sourceModel: row.provenance.sourceModel,
+      id: row.id,
+      detailHref: `/console/runs/${row.id}`,
+      name: row.name,
+      status: row.lifecycle.status,
+      statusLabel: row.lifecycle.statusLabel,
+      startedAt: row.timestamps.startedAt ?? row.timestamps.createdAt,
+      completedAt: row.timestamps.completedAt,
+      summary: {
+        total: row.summary.total,
+        sourceCount: row.summary.sourceCount,
+        targetCount: row.summary.targetCount,
+        matched: row.summary.matched,
+        unmatched: row.summary.unmatched,
+        unmatchedSourceCount: row.summary.unmatchedSourceCount,
+        unmatchedTargetCount: row.summary.unmatchedTargetCount,
+        conflicts: row.summary.conflicts,
+      },
+      summarySemantics: {
+        processed: row.summary.processed,
+        matchedWithTolerance: row.summary.matchedWithTolerance,
+        exceptioned: row.summary.exceptioned,
+        unresolved: row.summary.unresolved,
+        ignored: row.summary.ignored,
+        resolved: row.summary.resolved,
+      },
+      summaryState: row.summaryState,
+      progress: row.lifecycle.progressPercent,
+      progressState: row.lifecycle.progressState,
+      isTerminal: row.lifecycle.isTerminal,
+      provenance: row.provenance,
+      configDrift: {
+        status: row.configDrift.status,
+        adapter: "none",
+      },
+      ingestionId: row.provenance.ingestionId,
+      sourceAdapter: row.adapters.sourceAdapter,
+      targetAdapter: row.adapters.targetAdapter,
+    })),
+    MergedRunsCursorError: class MergedRunsCursorError extends Error {},
     resolveOperatorRunDetailForTenants: jest.fn(),
-    normalizeRunStatus: (raw: string | null | undefined) => {
-      if (!raw) return "unknown";
-      const s = raw.trim().toLowerCase();
-      if (["pending", "running", "completed", "failed"].includes(s)) return s;
-      return "unknown";
-    },
   }),
   { virtual: true }
 );
@@ -48,6 +87,9 @@ jest.mock(
 const { prisma: mockedPrisma } = require("../../infrastructure/db/prisma");
 const mockReconResult = mockedPrisma.reconResult;
 const {
+  decodeMergedRunsCursor: mockDecodeMergedRunsCursor,
+  fetchMergedReconciliationRunsPage: mockFetchMergedReconciliationRunsPage,
+  mapCanonicalListItemToApiRunsLegacyRow: mockMapCanonicalListItemToApiRunsLegacyRow,
   resolveOperatorRunDetailForTenants: mockResolveOperatorRunDetail,
 } = require("@settler/reconciliation-core");
 
@@ -80,6 +122,70 @@ jest.mock("../../utils/logger", () => ({
 describe("Runs Routes", () => {
   let app: express.Express;
 
+  const buildCanonicalListItem = (overrides: Record<string, any> = {}) => ({
+    runKind: "recon_job",
+    id: "run-1",
+    tenantId: "tenant-123",
+    name: "Daily Reconciliation",
+    reconResultId: null,
+    configDrift: {
+      status: "none",
+      strategyChanged: false,
+      templateChanged: false,
+      validationRulesChanged: false,
+      adapter: {
+        status: "none",
+        comparisonMode: "unavailable",
+        sourceChanged: null,
+        targetChanged: null,
+        sourceHashPresent: false,
+        targetHashPresent: false,
+      },
+      notes: [],
+    },
+    lifecycle: {
+      status: "completed",
+      statusLabel: "Completed",
+      isTerminal: true,
+      progressPercent: 100,
+      progressState: "completed",
+    },
+    summaryState: "success",
+    summary: {
+      total: 100,
+      sourceCount: 50,
+      targetCount: 50,
+      processed: 100,
+      matched: 95,
+      matchedWithTolerance: 0,
+      unmatched: 5,
+      unmatchedSourceCount: 2,
+      unmatchedTargetCount: 3,
+      conflicts: 0,
+      exceptioned: 0,
+      unresolved: 0,
+      ignored: 0,
+      resolved: 0,
+    },
+    provenance: {
+      sourceModel: "recon_jobs",
+      runKind: "recon_job",
+      ingestionId: null,
+      reconJobId: "job-1",
+    },
+    adapters: {
+      sourceAdapter: "source-a",
+      targetAdapter: "target-b",
+    },
+    timestamps: {
+      createdAt: "2026-03-17T09:59:00.000Z",
+      startedAt: "2026-03-17T10:00:00.000Z",
+      completedAt: "2026-03-17T10:05:00.000Z",
+      updatedAt: "2026-03-17T10:05:00.000Z",
+    },
+    ...overrides,
+  });
+
   beforeEach(() => {
     app = express();
     app.use(express.json());
@@ -92,24 +198,33 @@ describe("Runs Routes", () => {
 
     app.use("/api/runs", runsRouter);
     jest.clearAllMocks();
+    mockFetchMergedReconciliationRunsPage.mockReset();
+    mockDecodeMergedRunsCursor.mockReset();
+    mockMapCanonicalListItemToApiRunsLegacyRow.mockClear();
     mockResolveOperatorRunDetail.mockReset();
   });
 
   describe("GET /api/runs", () => {
-    it("should return list of runs tenant-scoped", async () => {
-      mockReconResult.findMany.mockResolvedValueOnce([
-        {
-          id: "run-1",
-          reconJobId: "job-1",
-          reconJob: { name: "Daily Reconciliation" },
-          status: "completed",
-          startedAt: new Date("2026-03-17T10:00:00Z"),
-          completedAt: new Date("2026-03-17T10:05:00Z"),
-          summary: { total: 100, matched: 95, unmatched: 5, conflicts: 0 },
-          errorMessage: null,
+    it("should return merged canonical runs adapted into the Express envelope", async () => {
+      mockFetchMergedReconciliationRunsPage.mockResolvedValueOnce({
+        runs: [buildCanonicalListItem()],
+        next_cursor: null,
+        pagination: {
+          limit: 100,
+          returned: 1,
+          has_more: false,
+          job_stream_has_more: false,
+          ingestion_stream_has_more: false,
+          job_stream_exhausted: true,
+          ingestion_stream_exhausted: true,
         },
-      ]);
-      mockReconResult.count.mockResolvedValueOnce(1);
+        response_meta: {
+          contract_version: 1,
+          included_run_kinds: ["recon_job", "ingestion_run"],
+          ordering: "test-ordering",
+          consistency: "read_committed",
+        },
+      });
 
       const res = await request(app).get("/api/runs");
 
@@ -119,52 +234,125 @@ describe("Runs Routes", () => {
         id: "run-1",
         name: "Daily Reconciliation",
         status: "completed",
+        runKind: "recon_job",
+        sourceModel: "recon_jobs",
         summary: { total: 100, matched: 95, unmatched: 5, conflicts: 0 },
       });
 
-      // Verify tenant isolation via Prisma where clause
-      expect(mockReconResult.findMany).toHaveBeenCalledWith(
+      expect(mockFetchMergedReconciliationRunsPage).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: expect.objectContaining({ tenantId: "tenant-123" }),
+          tenantId: "tenant-123",
+          runKind: "all",
+          limit: 100,
+          cursorState: null,
         })
       );
     });
 
-    it("should filter by status", async () => {
-      mockReconResult.findMany.mockResolvedValueOnce([]);
-      mockReconResult.count.mockResolvedValueOnce(0);
+    it("should filter merged rows by status after canonical adaptation", async () => {
+      mockFetchMergedReconciliationRunsPage.mockResolvedValueOnce({
+        runs: [
+          buildCanonicalListItem(),
+          buildCanonicalListItem({
+            id: "run-2",
+            name: "Nightly",
+            lifecycle: {
+              status: "running",
+              statusLabel: "Running",
+              isTerminal: false,
+              progressPercent: 45,
+              progressState: "in_progress",
+            },
+            summaryState: "in_progress",
+            timestamps: {
+              createdAt: "2026-03-18T09:59:00.000Z",
+              startedAt: "2026-03-18T10:00:00.000Z",
+              completedAt: null,
+              updatedAt: "2026-03-18T10:01:00.000Z",
+            },
+          }),
+        ],
+        next_cursor: null,
+        pagination: {
+          limit: 100,
+          returned: 2,
+          has_more: false,
+          job_stream_has_more: false,
+          ingestion_stream_has_more: false,
+          job_stream_exhausted: true,
+          ingestion_stream_exhausted: true,
+        },
+        response_meta: {
+          contract_version: 1,
+          included_run_kinds: ["recon_job", "ingestion_run"],
+          ordering: "test-ordering",
+          consistency: "read_committed",
+        },
+      });
 
       const res = await request(app).get("/api/runs?status=running");
 
       expect(res.status).toBe(200);
-      expect(mockReconResult.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: expect.objectContaining({ status: "running" }),
-        })
-      );
+      expect(res.body.data).toHaveLength(1);
+      expect(res.body.data[0].id).toBe("run-2");
     });
 
-    it("should filter by search term", async () => {
-      mockReconResult.findMany.mockResolvedValueOnce([]);
-      mockReconResult.count.mockResolvedValueOnce(0);
+    it("should filter merged rows by search across canonical id/name fields", async () => {
+      mockFetchMergedReconciliationRunsPage.mockResolvedValueOnce({
+        runs: [
+          buildCanonicalListItem({ id: "run-a", name: "Daily Reconciliation" }),
+          buildCanonicalListItem({ id: "special-run", name: "Monthly Close" }),
+        ],
+        next_cursor: null,
+        pagination: {
+          limit: 100,
+          returned: 2,
+          has_more: false,
+          job_stream_has_more: false,
+          ingestion_stream_has_more: false,
+          job_stream_exhausted: true,
+          ingestion_stream_exhausted: true,
+        },
+        response_meta: {
+          contract_version: 1,
+          included_run_kinds: ["recon_job", "ingestion_run"],
+          ordering: "test-ordering",
+          consistency: "read_committed",
+        },
+      });
 
-      const res = await request(app).get("/api/runs?search=reconciliation");
+      const res = await request(app).get("/api/runs?search=special");
 
       expect(res.status).toBe(200);
-      expect(mockReconResult.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: expect.objectContaining({
-            reconJob: {
-              name: expect.objectContaining({ contains: "reconciliation" }),
-            },
-          }),
-        })
-      );
+      expect(res.body.data).toHaveLength(1);
+      expect(res.body.data[0].id).toBe("special-run");
     });
 
     it("should handle pagination", async () => {
-      mockReconResult.findMany.mockResolvedValueOnce([]);
-      mockReconResult.count.mockResolvedValueOnce(100);
+      mockFetchMergedReconciliationRunsPage.mockResolvedValueOnce({
+        runs: Array.from({ length: 60 }, (_, index) =>
+          buildCanonicalListItem({
+            id: `run-${index + 1}`,
+            name: `Run ${index + 1}`,
+          })
+        ),
+        next_cursor: null,
+        pagination: {
+          limit: 100,
+          returned: 60,
+          has_more: false,
+          job_stream_has_more: false,
+          ingestion_stream_has_more: false,
+          job_stream_exhausted: true,
+          ingestion_stream_exhausted: true,
+        },
+        response_meta: {
+          contract_version: 1,
+          included_run_kinds: ["recon_job", "ingestion_run"],
+          ordering: "test-ordering",
+          consistency: "read_committed",
+        },
+      });
 
       const res = await request(app).get("/api/runs?page=2&limit=25");
 
@@ -172,19 +360,33 @@ describe("Runs Routes", () => {
       expect(res.body.pagination).toMatchObject({
         page: 2,
         limit: 25,
-        total: 100,
-        totalPages: 4,
+        total: 60,
+        totalPages: 3,
       });
-
-      // Verify offset calculation: (page-1)*limit = 25
-      expect(mockReconResult.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({ skip: 25, take: 25 })
-      );
+      expect(res.body.data[0].id).toBe("run-26");
+      expect(res.body.data).toHaveLength(25);
     });
 
     it("should return empty array when no runs exist", async () => {
-      mockReconResult.findMany.mockResolvedValueOnce([]);
-      mockReconResult.count.mockResolvedValueOnce(0);
+      mockFetchMergedReconciliationRunsPage.mockResolvedValueOnce({
+        runs: [],
+        next_cursor: null,
+        pagination: {
+          limit: 100,
+          returned: 0,
+          has_more: false,
+          job_stream_has_more: false,
+          ingestion_stream_has_more: false,
+          job_stream_exhausted: true,
+          ingestion_stream_exhausted: true,
+        },
+        response_meta: {
+          contract_version: 1,
+          included_run_kinds: ["recon_job", "ingestion_run"],
+          ordering: "test-ordering",
+          consistency: "read_committed",
+        },
+      });
 
       const res = await request(app).get("/api/runs");
 
@@ -194,11 +396,79 @@ describe("Runs Routes", () => {
     });
 
     it("should handle database errors gracefully", async () => {
-      mockReconResult.findMany.mockRejectedValueOnce(new Error("Database connection failed"));
+      mockFetchMergedReconciliationRunsPage.mockRejectedValueOnce(
+        new Error("Database connection failed")
+      );
 
       const res = await request(app).get("/api/runs");
 
       expect(res.status).toBe(500);
+    });
+
+    it("should continue scanning merged pages to satisfy legacy page offsets", async () => {
+      mockFetchMergedReconciliationRunsPage
+        .mockResolvedValueOnce({
+          runs: Array.from({ length: 100 }, (_, index) =>
+            buildCanonicalListItem({
+              id: `run-${index + 1}`,
+              name: `Run ${index + 1}`,
+            })
+          ),
+          next_cursor: "cursor-1",
+          pagination: {
+            limit: 100,
+            returned: 100,
+            has_more: true,
+            job_stream_has_more: true,
+            ingestion_stream_has_more: false,
+            job_stream_exhausted: false,
+            ingestion_stream_exhausted: true,
+          },
+          response_meta: {
+            contract_version: 1,
+            included_run_kinds: ["recon_job", "ingestion_run"],
+            ordering: "test-ordering",
+            consistency: "read_committed",
+          },
+        })
+        .mockResolvedValueOnce({
+          runs: Array.from({ length: 40 }, (_, index) =>
+            buildCanonicalListItem({
+              id: `run-${index + 101}`,
+              name: `Run ${index + 101}`,
+            })
+          ),
+          next_cursor: null,
+          pagination: {
+            limit: 100,
+            returned: 40,
+            has_more: false,
+            job_stream_has_more: false,
+            ingestion_stream_has_more: false,
+            job_stream_exhausted: true,
+            ingestion_stream_exhausted: true,
+          },
+          response_meta: {
+            contract_version: 1,
+            included_run_kinds: ["recon_job", "ingestion_run"],
+            ordering: "test-ordering",
+            consistency: "read_committed",
+          },
+        });
+      mockDecodeMergedRunsCursor.mockReturnValueOnce({
+        v: 1,
+        ij: { t: "2026-03-17T10:05:00.000Z", id: "run-100" },
+        ir: null,
+      });
+
+      const res = await request(app).get("/api/runs?page=3&limit=50");
+
+      expect(res.status).toBe(200);
+      expect(mockFetchMergedReconciliationRunsPage).toHaveBeenCalledTimes(2);
+      expect(mockDecodeMergedRunsCursor).toHaveBeenCalledWith("cursor-1");
+      expect(res.body.pagination.total).toBe(140);
+      expect(res.body.data[0].id).toBe("run-101");
+      expect(res.body.data).toHaveLength(40);
     });
   });
 
@@ -283,30 +553,64 @@ describe("Runs Routes", () => {
   });
 
   describe("Tenant Safety Verification", () => {
-    it("should always scope queries to tenantId from auth middleware", async () => {
-      mockReconResult.findMany.mockResolvedValueOnce([]);
-      mockReconResult.count.mockResolvedValueOnce(0);
+    it("should always scope merged queries to tenantId from auth middleware", async () => {
+      mockFetchMergedReconciliationRunsPage.mockResolvedValueOnce({
+        runs: [],
+        next_cursor: null,
+        pagination: {
+          limit: 100,
+          returned: 0,
+          has_more: false,
+          job_stream_has_more: false,
+          ingestion_stream_has_more: false,
+          job_stream_exhausted: true,
+          ingestion_stream_exhausted: true,
+        },
+        response_meta: {
+          contract_version: 1,
+          included_run_kinds: ["recon_job", "ingestion_run"],
+          ordering: "test-ordering",
+          consistency: "read_committed",
+        },
+      });
 
       await request(app).get("/api/runs");
 
-      expect(mockReconResult.findMany).toHaveBeenCalledWith(
+      expect(mockFetchMergedReconciliationRunsPage).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: expect.objectContaining({ tenantId: "tenant-123" }),
+          tenantId: "tenant-123",
         })
       );
     });
 
     it("should use tenantId from auth middleware, not user input", async () => {
-      mockReconResult.findMany.mockResolvedValueOnce([]);
-      mockReconResult.count.mockResolvedValueOnce(0);
+      mockFetchMergedReconciliationRunsPage.mockResolvedValueOnce({
+        runs: [],
+        next_cursor: null,
+        pagination: {
+          limit: 100,
+          returned: 0,
+          has_more: false,
+          job_stream_has_more: false,
+          ingestion_stream_has_more: false,
+          job_stream_exhausted: true,
+          ingestion_stream_exhausted: true,
+        },
+        response_meta: {
+          contract_version: 1,
+          included_run_kinds: ["recon_job", "ingestion_run"],
+          ordering: "test-ordering",
+          consistency: "read_committed",
+        },
+      });
 
       // Attempt to inject different tenant via header
       await request(app).get("/api/runs").set("x-tenant-id", "malicious-tenant");
 
       // Should use tenant-123 from auth middleware, not malicious-tenant
-      expect(mockReconResult.findMany).toHaveBeenCalledWith(
+      expect(mockFetchMergedReconciliationRunsPage).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: expect.objectContaining({ tenantId: "tenant-123" }),
+          tenantId: "tenant-123",
         })
       );
     });
@@ -428,28 +732,46 @@ describe("Runs Routes", () => {
   });
 
   describe("List status normalization", () => {
-    it("should normalize unknown status values to 'unknown' via canonical normalizeRunStatus", async () => {
-      mockReconResult.findMany.mockResolvedValueOnce([
-        {
-          id: "run-1",
-          reconJobId: "job-1",
-          reconJob: { name: "Job A" },
-          status: "completed",
-          startedAt: new Date("2026-03-17T10:00:00Z"),
-          completedAt: new Date("2026-03-17T10:05:00Z"),
-          summary: null,
+    it("should return canonical lifecycle status values from the merged list adapter", async () => {
+      mockFetchMergedReconciliationRunsPage.mockResolvedValueOnce({
+        runs: [
+          buildCanonicalListItem(),
+          buildCanonicalListItem({
+            id: "run-2",
+            name: "Job B",
+            lifecycle: {
+              status: "unknown",
+              statusLabel: "Unknown",
+              isTerminal: false,
+              progressPercent: 0,
+              progressState: "unknown",
+            },
+            summaryState: "unknown",
+            timestamps: {
+              createdAt: "2026-03-17T11:00:00.000Z",
+              startedAt: "2026-03-17T11:00:00.000Z",
+              completedAt: null,
+              updatedAt: "2026-03-17T11:00:00.000Z",
+            },
+          }),
+        ],
+        next_cursor: null,
+        pagination: {
+          limit: 100,
+          returned: 2,
+          has_more: false,
+          job_stream_has_more: false,
+          ingestion_stream_has_more: false,
+          job_stream_exhausted: true,
+          ingestion_stream_exhausted: true,
         },
-        {
-          id: "run-2",
-          reconJobId: "job-2",
-          reconJob: { name: "Job B" },
-          status: "some_unexpected_value",
-          startedAt: new Date("2026-03-17T11:00:00Z"),
-          completedAt: null,
-          summary: null,
+        response_meta: {
+          contract_version: 1,
+          included_run_kinds: ["recon_job", "ingestion_run"],
+          ordering: "test-ordering",
+          consistency: "read_committed",
         },
-      ]);
-      mockReconResult.count.mockResolvedValueOnce(2);
+      });
 
       const res = await request(app).get("/api/runs");
 

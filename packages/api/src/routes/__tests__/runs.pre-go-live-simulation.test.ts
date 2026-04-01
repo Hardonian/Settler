@@ -28,13 +28,52 @@ jest.mock("../../infrastructure/db/prisma", () => {
 jest.mock(
   "@settler/reconciliation-core",
   () => ({
+    decodeMergedRunsCursor: jest.fn(),
+    encodeMergedRunsCursor: jest.fn((cursor: unknown) => JSON.stringify(cursor)),
+    fetchMergedReconciliationRunsPage: jest.fn(),
+    mapCanonicalListItemToApiRunsLegacyRow: jest.fn((row: any) => ({
+      runKind: row.runKind,
+      sourceModel: row.provenance.sourceModel,
+      id: row.id,
+      detailHref: `/console/runs/${row.id}`,
+      name: row.name,
+      status: row.lifecycle.status,
+      statusLabel: row.lifecycle.statusLabel,
+      startedAt: row.timestamps.startedAt ?? row.timestamps.createdAt,
+      completedAt: row.timestamps.completedAt,
+      summary: {
+        total: row.summary.total,
+        sourceCount: row.summary.sourceCount,
+        targetCount: row.summary.targetCount,
+        matched: row.summary.matched,
+        unmatched: row.summary.unmatched,
+        unmatchedSourceCount: row.summary.unmatchedSourceCount,
+        unmatchedTargetCount: row.summary.unmatchedTargetCount,
+        conflicts: row.summary.conflicts,
+      },
+      summarySemantics: {
+        processed: row.summary.processed,
+        matchedWithTolerance: row.summary.matchedWithTolerance,
+        exceptioned: row.summary.exceptioned,
+        unresolved: row.summary.unresolved,
+        ignored: row.summary.ignored,
+        resolved: row.summary.resolved,
+      },
+      summaryState: row.summaryState,
+      progress: row.lifecycle.progressPercent,
+      progressState: row.lifecycle.progressState,
+      isTerminal: row.lifecycle.isTerminal,
+      provenance: row.provenance,
+      configDrift: {
+        status: row.configDrift.status,
+        adapter: "none",
+      },
+      ingestionId: row.provenance.ingestionId,
+      sourceAdapter: row.adapters.sourceAdapter,
+      targetAdapter: row.adapters.targetAdapter,
+    })),
+    MergedRunsCursorError: class MergedRunsCursorError extends Error {},
     resolveOperatorRunDetailForTenants: jest.fn(),
-    normalizeRunStatus: (raw: string | null | undefined) => {
-      if (!raw) return "unknown";
-      const s = raw.trim().toLowerCase();
-      if (["pending", "running", "completed", "failed"].includes(s)) return s;
-      return "unknown";
-    },
   }),
   { virtual: true }
 );
@@ -42,6 +81,8 @@ jest.mock(
 const { prisma: mockedPrisma } = require("../../infrastructure/db/prisma");
 const mockReconResult = mockedPrisma.reconResult;
 const {
+  decodeMergedRunsCursor: mockDecodeMergedRunsCursor,
+  fetchMergedReconciliationRunsPage: mockFetchMergedReconciliationRunsPage,
   resolveOperatorRunDetailForTenants: mockResolveOperatorRunDetail,
 } = require("@settler/reconciliation-core");
 
@@ -81,8 +122,73 @@ function buildApp(tenantId: string, userId = "operator-sim"): express.Express {
 }
 
 describe("Runs pre-go-live simulation", () => {
+  const buildCanonicalListItem = (tenantId: string, id: string, status = "running") => ({
+    runKind: "recon_job",
+    id,
+    tenantId,
+    name: `Run ${id}`,
+    reconResultId: null,
+    configDrift: {
+      status: "none",
+      strategyChanged: false,
+      templateChanged: false,
+      validationRulesChanged: false,
+      adapter: {
+        status: "none",
+        comparisonMode: "unavailable",
+        sourceChanged: null,
+        targetChanged: null,
+        sourceHashPresent: false,
+        targetHashPresent: false,
+      },
+      notes: [],
+    },
+    lifecycle: {
+      status,
+      statusLabel: status.charAt(0).toUpperCase() + status.slice(1),
+      isTerminal: status === "completed" || status === "failed",
+      progressPercent: status === "running" ? 50 : 100,
+      progressState: status === "running" ? "in_progress" : "completed",
+    },
+    summaryState: status === "running" ? "in_progress" : "success",
+    summary: {
+      total: 10,
+      sourceCount: 5,
+      targetCount: 5,
+      processed: 10,
+      matched: 8,
+      matchedWithTolerance: 0,
+      unmatched: 2,
+      unmatchedSourceCount: 1,
+      unmatchedTargetCount: 1,
+      conflicts: 0,
+      exceptioned: 0,
+      unresolved: 0,
+      ignored: 0,
+      resolved: 0,
+    },
+    provenance: {
+      sourceModel: "recon_jobs",
+      runKind: "recon_job",
+      ingestionId: null,
+      reconJobId: `${tenantId}-job-1`,
+    },
+    adapters: {
+      sourceAdapter: "source-a",
+      targetAdapter: "target-b",
+    },
+    timestamps: {
+      createdAt: "2026-03-28T09:59:00.000Z",
+      startedAt: "2026-03-28T10:00:00.000Z",
+      completedAt: status === "running" ? null : "2026-03-28T10:05:00.000Z",
+      updatedAt: "2026-03-28T10:05:00.000Z",
+    },
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
+    mockFetchMergedReconciliationRunsPage.mockReset();
+    mockDecodeMergedRunsCursor.mockReset();
     mockResolveOperatorRunDetail.mockReset();
   });
 
@@ -90,20 +196,27 @@ describe("Runs pre-go-live simulation", () => {
     const appA = buildApp("tenant-A");
     const appB = buildApp("tenant-B");
 
-    mockReconResult.findMany.mockImplementation(({ where }: { where: { tenantId: string } }) =>
-      Promise.resolve([
-        {
-          id: `${where.tenantId}-run-1`,
-          reconJobId: `${where.tenantId}-job-1`,
-          reconJob: { name: `Daily ${where.tenantId}` },
-          status: "running",
-          startedAt: new Date("2026-03-28T10:00:00Z"),
-          completedAt: null,
-          summary: { total: 10, matched: 8, unmatched: 2, conflicts: 0 },
+    mockFetchMergedReconciliationRunsPage.mockImplementation(({ tenantId }: { tenantId: string }) =>
+      Promise.resolve({
+        runs: [buildCanonicalListItem(tenantId, `${tenantId}-run-1`)],
+        next_cursor: null,
+        pagination: {
+          limit: 100,
+          returned: 1,
+          has_more: false,
+          job_stream_has_more: false,
+          ingestion_stream_has_more: false,
+          job_stream_exhausted: true,
+          ingestion_stream_exhausted: true,
         },
-      ])
+        response_meta: {
+          contract_version: 1,
+          included_run_kinds: ["recon_job", "ingestion_run"],
+          ordering: "test-ordering",
+          consistency: "read_committed",
+        },
+      })
     );
-    mockReconResult.count.mockResolvedValue(1);
 
     mockResolveOperatorRunDetail.mockImplementation(
       async (_prisma: unknown, tenantScope: string[], runId: string) => ({
@@ -130,8 +243,8 @@ describe("Runs pre-go-live simulation", () => {
     const responses = await Promise.all(requests);
     expect(responses.every((res) => res.status === 200)).toBe(true);
 
-    const listTenantIds = mockReconResult.findMany.mock.calls.map(
-      (call: [{ where: { tenantId: string } }]) => call[0].where.tenantId
+    const listTenantIds = mockFetchMergedReconciliationRunsPage.mock.calls.map(
+      (call: [{ tenantId: string }]) => call[0].tenantId
     );
     expect(listTenantIds).toContain("tenant-A");
     expect(listTenantIds).toContain("tenant-B");
