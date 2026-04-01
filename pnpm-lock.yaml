@@ -797,8 +797,8 @@ importers:
         specifier: workspace:*
         version: link:../types
       '@stripe/stripe-js':
-        specifier: ^8.5.3
-        version: 8.10.0
+        specifier: ^9.0.1
+        version: 9.0.1
       '@supabase/ssr':
         specifier: ^0.8.0
         version: 0.8.0(@supabase/supabase-js@2.99.2)
@@ -4319,8 +4319,8 @@ packages:
   '@sinclair/typebox@0.27.10':
     resolution: {integrity: sha512-MTBk/3jGLNB2tVxv6uLlFh1iu64iYOQ2PbdOSK3NW8JZsmlaOh2q6sdtKowBhfw8QFLmYNzTW4/oK4uATIi6ZA==}
 
-  '@sinclair/typebox@0.34.48':
-    resolution: {integrity: sha512-kKJTNuK3AQOrgjjotVxMrCn1sUJwM76wMszfq1kdU4uYVJjvEWuFQ6HgvLt4Xz3fSmZlTOxJ/Ie13KnIcWQXFA==}
+  '@sinclair/typebox@0.34.49':
+    resolution: {integrity: sha512-brySQQs7Jtn0joV8Xh9ZV/hZb9Ozb0pmazDIASBkYKCjXrXU3mpcFahmK/z4YDhGkQvP9mWJbVyahdtU5wQA+A==}
 
   '@sindresorhus/is@4.6.0':
     resolution: {integrity: sha512-t09vSN3MdfsyCHoFcTRCH/iUtG7OJ0CsjzB8cjAmKc/va/kIgeDI/TxsigdncE/4be734m0cvIYwNaV4i2XqAw==}
@@ -4561,8 +4561,8 @@ packages:
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
 
-  '@stripe/stripe-js@8.10.0':
-    resolution: {integrity: sha512-E1FtmN4/AMpdV0zDUyEnTVMpQTMDi7iy2njG22DpFcSxeCujK22bQ/hmF3bGtNUclqGJhOZMkf7rjUyOAcj4CQ==}
+  '@stripe/stripe-js@9.0.1':
+    resolution: {integrity: sha512-un0URSosrW7wNr7xZ5iI2mC9mdeXZ3KERoVlA2RdmeLXYxHUPXq0yHzir2n/MtyXXEdSaELtz4WXGS6dzPEeKA==}
     engines: {node: '>=12.16'}
 
   '@supabase/auth-js@2.99.2':
@@ -12903,7 +12903,7 @@ snapshots:
 
   '@jest/schemas@30.0.5':
     dependencies:
-      '@sinclair/typebox': 0.34.48
+      '@sinclair/typebox': 0.34.49
     optional: true
 
   '@jest/source-map@29.6.3':
@@ -15292,7 +15292,7 @@ snapshots:
 
   '@sinclair/typebox@0.27.10': {}
 
-  '@sinclair/typebox@0.34.48':
+  '@sinclair/typebox@0.34.49':
     optional: true
 
   '@sindresorhus/is@4.6.0': {}
@@ -15666,7 +15666,7 @@ snapshots:
 
   '@standard-schema/spec@1.1.0': {}
 
-  '@stripe/stripe-js@8.10.0': {}
+  '@stripe/stripe-js@9.0.1': {}
 
   '@supabase/auth-js@2.99.2':
     dependencies:
