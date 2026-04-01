@@ -80,64 +80,6 @@ function tenantOr400(req: AuthRequest, res: Response): string | null {
   return req.tenantId;
 }
 
-async function authorizeTenantActionOr403(
-  req: AuthRequest,
-  res: Response,
-  tenantId: string,
-  action: TenantAction
-): Promise<boolean> {
-  const userId = req.userId;
-  if (!userId) {
-    res.status(401).json({
-      error: "UNAUTHORIZED",
-      message: "Authentication required",
-      reason: "missing_user_context",
-    });
-    return false;
-  }
-
-  const authz = await getOpenFgaAuthorizationService().authorizeTenantAction(
-    userId,
-    tenantId,
-    action
-  );
-  if (authz.allowed) {
-    return true;
-  }
-
-  res.status(403).json({
-    error: "FORBIDDEN",
-    message: "Tenant action is not authorized",
-    reason: authz.reason,
-    authz: {
-      mode: authz.mode,
-      degraded: authz.degraded,
-      openfga: authz.openfga,
-    },
-  });
-  return false;
-}
-
-router.get(
-  "/operator/intelligence/ontology/summary",
-  requirePermission(Permission.ADMIN_READ),
-  validateRequest(snapshotSchema),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = tenantOr400(req, res);
-      if (!tenantId) return;
-      const lookbackDays = Number(req.query.lookbackDays ?? 30);
-      const data = await service.getExceptionTaxonomySummary(tenantId, lookbackDays);
-      return res.status(200).json({ data });
-    } catch (error: unknown) {
-      return handleRouteError(res, error, "Failed to load exception ontology summary", 500, {
-        userId: req.userId,
-        tenantId: req.tenantId,
-      });
-    }
-  }
-);
-
 router.get(
   "/operator/intelligence/exceptions/snapshot",
   requirePermission(Permission.ADMIN_READ),
@@ -166,8 +108,6 @@ router.get(
     try {
       const tenantId = tenantOr400(req, res);
       if (!tenantId) return;
-      if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.memory.graph.read")))
-        return;
       const lookbackDays = Number(req.query.lookbackDays ?? 30);
       const data = await service.getReconciliationMemoryGraph(tenantId, lookbackDays);
       return res.status(200).json({ data });
@@ -231,8 +171,6 @@ router.post(
     try {
       const tenantId = tenantOr400(req, res);
       if (!tenantId) return;
-      if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.policy.proposal.review")))
-        return;
       const proposalId = req.params["proposalId"] as string;
       const data = await service.reviewPolicyEvolutionProposal(tenantId, {
         proposalId,
@@ -346,8 +284,6 @@ router.get(
     try {
       const tenantId = tenantOr400(req, res);
       if (!tenantId) return;
-      if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.proof.evidence.export")))
-        return;
       const runId = req.params["runId"] as string;
       const data = await service.buildEvidencePack(tenantId, runId);
       return res.status(200).json({ data });
@@ -372,135 +308,6 @@ router.post(
       return res.status(200).json({ data });
     } catch (error: unknown) {
       return handleRouteError(res, error, "Failed to run policy sandbox", 500, {
-        userId: req.userId,
-        tenantId: req.tenantId,
-      });
-    }
-  }
-);
-
-router.get(
-  "/operator/intelligence/signatures/:signature/lifecycle",
-  requirePermission(Permission.ADMIN_READ),
-  validateRequest(signatureLifecycleSchema),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = tenantOr400(req, res);
-      if (!tenantId) return;
-      const data = await service.getSignatureLifecycle(
-        tenantId,
-        req.params["signature"] as string,
-        Number(req.query.lookbackDays ?? 30)
-      );
-      return res.status(200).json({ data });
-    } catch (error: unknown) {
-      return handleRouteError(res, error, "Failed to load signature lifecycle", 500, {
-        userId: req.userId,
-        tenantId: req.tenantId,
-      });
-    }
-  }
-);
-
-router.get(
-  "/operator/intelligence/sources/friction",
-  requirePermission(Permission.ADMIN_READ),
-  validateRequest(snapshotSchema),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = tenantOr400(req, res);
-      if (!tenantId) return;
-      const data = await service.getSourceFrictionSummary(
-        tenantId,
-        Number(req.query.lookbackDays ?? 30)
-      );
-      return res.status(200).json({ data });
-    } catch (error: unknown) {
-      return handleRouteError(res, error, "Failed to load source friction summary", 500, {
-        userId: req.userId,
-        tenantId: req.tenantId,
-      });
-    }
-  }
-);
-
-router.get(
-  "/operator/intelligence/entities/fingerprints",
-  requirePermission(Permission.ADMIN_READ),
-  validateRequest(snapshotSchema),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = tenantOr400(req, res);
-      if (!tenantId) return;
-      const data = await service.getEntityFingerprints(
-        tenantId,
-        Number(req.query.lookbackDays ?? 30)
-      );
-      return res.status(200).json({ data });
-    } catch (error: unknown) {
-      return handleRouteError(res, error, "Failed to load entity fingerprints", 500, {
-        userId: req.userId,
-        tenantId: req.tenantId,
-      });
-    }
-  }
-);
-
-router.get(
-  "/operator/intelligence/effectiveness/proposals",
-  requirePermission(Permission.ADMIN_READ),
-  validateRequest(snapshotSchema),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = tenantOr400(req, res);
-      if (!tenantId) return;
-      const data = await service.getProposalEffectivenessSummary(
-        tenantId,
-        Number(req.query.lookbackDays ?? 30)
-      );
-      return res.status(200).json({ data });
-    } catch (error: unknown) {
-      return handleRouteError(res, error, "Failed to load proposal effectiveness", 500, {
-        userId: req.userId,
-        tenantId: req.tenantId,
-      });
-    }
-  }
-);
-
-router.get(
-  "/operator/intelligence/packs/runtime",
-  requirePermission(Permission.ADMIN_READ),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = tenantOr400(req, res);
-      if (!tenantId) return;
-      const data = await service.getPackRuntimeSummary(tenantId);
-      return res.status(200).json({ data });
-    } catch (error: unknown) {
-      return handleRouteError(res, error, "Failed to load pack runtime summary", 500, {
-        userId: req.userId,
-        tenantId: req.tenantId,
-      });
-    }
-  }
-);
-
-router.get(
-  "/operator/intelligence/decisions/effectiveness",
-  requirePermission(Permission.ADMIN_READ),
-  validateRequest(snapshotSchema),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = tenantOr400(req, res);
-      if (!tenantId) return;
-      const data = await service.getOperatorDecisionEffectiveness(
-        tenantId,
-        Number(req.query.lookbackDays ?? 30)
-      );
-      return res.status(200).json({ data });
-    } catch (error: unknown) {
-      return handleRouteError(res, error, "Failed to load decision effectiveness", 500, {
         userId: req.userId,
         tenantId: req.tenantId,
       });

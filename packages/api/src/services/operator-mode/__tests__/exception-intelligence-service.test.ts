@@ -119,10 +119,31 @@ describe("ExceptionIntelligenceService", () => {
     expect(pack.deterministicDigest).toHaveLength(64);
   });
 
-  it("supports pack runtime degraded truth when no versions exist", async () => {
-    prisma.policyMemoryArtifact.findMany.mockResolvedValue([]);
+  it("stores proposal review transitions", async () => {
+    prisma.reconAudit.findFirst.mockResolvedValue({ entityId: "proposal-1" });
 
-    const runtime = await service.getPackRuntimeSummary("tenant-1");
+    const result = await service.reviewPolicyEvolutionProposal("tenant-1", {
+      proposalId: "proposal-1",
+      decision: "approved",
+      reviewerId: "user-1",
+      reason: "evidence stable",
+    });
+
+    expect(result).toMatchObject({ accepted: true, status: "approved" });
+    expect(prisma.reconAudit.create).toHaveBeenCalled();
+  });
+
+  it("marks unsupported policy metrics explicitly", async () => {
+    prisma.reconciliationRun.findFirst.mockResolvedValue(null);
+    const result = await service.simulatePolicy("tenant-1", {
+      runId: "run-1",
+      candidatePolicy: {
+        amountTolerance: 1,
+        dateWindowDays: 2,
+        fuzzyDescriptionThreshold: 0.8,
+        requireExactAmount: false,
+      },
+    });
 
     expect(runtime.degraded).toBe(true);
     expect(runtime.degradedReasons).toContain("no_pack_runtime_history");
