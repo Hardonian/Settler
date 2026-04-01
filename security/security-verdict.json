@@ -1,0 +1,68 @@
+{
+  "reportVersion": "2026-03-09.1",
+  "generatedAt": "2026-04-01T19:22:09.765Z",
+  "dimensions": {
+    "code_security_status": {
+      "status": "PASS",
+      "evidenceLevel": "runtime-probed",
+      "blocking": false,
+      "reason": "Header contract checks passed without blocking failures.",
+      "nextAction": []
+    },
+    "dependency_evidence_status": {
+      "status": "PASS_WITH_DEGRADED_EVIDENCE",
+      "evidenceLevel": "degraded",
+      "blocking": true,
+      "reason": "Local dependency audit artifact was not available. Local dependency audit was degraded: pnpm-audit-backend-unavailable, osv-scanner-missing. Authenticated advisory completeness is unauthenticated.",
+      "nextAction": [
+        "Run `pnpm run audit:deps` before release verification.",
+        "Restore registry audit connectivity/auth and rerun `pnpm run audit:deps`.",
+        "Provide DEPENDABOT_ALERTS_EXPORT_PATH or set GITHUB_TOKEN/GH_TOKEN with GITHUB_REPOSITORY."
+      ]
+    },
+    "advisory_completeness_status": {
+      "status": "CONDITIONAL",
+      "evidenceLevel": "unauthenticated",
+      "blocking": false,
+      "reason": "No authenticated advisory source configured.",
+      "nextAction": [
+        "Run `pnpm run audit:deps` before release verification.",
+        "Restore registry audit connectivity/auth and rerun `pnpm run audit:deps`.",
+        "Provide DEPENDABOT_ALERTS_EXPORT_PATH or set GITHUB_TOKEN/GH_TOKEN with GITHUB_REPOSITORY."
+      ]
+    },
+    "tenant_isolation_status": {
+      "status": "PASS",
+      "evidenceLevel": "runtime-api",
+      "blocking": false,
+      "reason": "Cross-tenant runtime denial checks passed.",
+      "nextAction": []
+    },
+    "runtime_probe_status": {
+      "status": "CONDITIONAL",
+      "evidenceLevel": "static-only",
+      "blocking": false,
+      "reason": "Runtime RLS verification not executed in this run; only static/policy boundary is available.",
+      "nextAction": [
+        "Set DATABASE_URL (or DIRECT_URL/SUPABASE_DB_URL) and run `pnpm run verify:rls:live`."
+      ]
+    },
+    "tenant_isolation_rls_status": {
+      "status": "PASS_WITH_DEGRADED_EVIDENCE",
+      "evidenceLevel": "static-only",
+      "blocking": false,
+      "reason": "Runtime RLS verification not executed in this run; only static/policy boundary is available.",
+      "nextAction": [
+        "Set DATABASE_URL (or DIRECT_URL/SUPABASE_DB_URL) and run `pnpm run verify:rls:live`."
+      ]
+    }
+  },
+  "overall": {
+    "overall_development_safe": "YES",
+    "overall_launch_safe": "CONDITIONAL",
+    "overall_enterprise_review_safe": "IMPROVED_NOT_COMPLETE",
+    "development_safe": "YES",
+    "launch_safe": "CONDITIONAL",
+    "enterprise_review_safe": "IMPROVED_NOT_COMPLETE"
+  }
+}

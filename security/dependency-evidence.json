@@ -1,0 +1,64 @@
+{
+  "reportVersion": "2026-03-09.1",
+  "generatedAt": "2026-04-01T19:22:09.380Z",
+  "runId": "2026-04-01T19-22-09-371Z",
+  "status": "PASS_WITH_DEGRADED_EVIDENCE",
+  "evidenceState": "DEGRADED",
+  "reason": "Local dependency audit artifact was not available. Local dependency audit was degraded: pnpm-audit-backend-unavailable, osv-scanner-missing. Authenticated advisory completeness is unauthenticated.",
+  "evidenceCompleteness": "degraded",
+  "environmentConstraints": [
+    "Run `pnpm run audit:deps` to capture local audit state.",
+    "Package registry audit backend/tooling degraded.",
+    "No authenticated advisory source configured."
+  ],
+  "nextOperatorAction": [
+    "Run `pnpm run audit:deps` before release verification.",
+    "Restore registry audit connectivity/auth and rerun `pnpm run audit:deps`.",
+    "Provide DEPENDABOT_ALERTS_EXPORT_PATH or set GITHUB_TOKEN/GH_TOKEN with GITHUB_REPOSITORY."
+  ],
+  "policy": {
+    "mode": "standard"
+  },
+  "ecosystems": ["cargo", "npm"],
+  "lockfiles": [
+    {
+      "ecosystem": "npm",
+      "path": "pnpm-lock.yaml",
+      "present": true
+    },
+    {
+      "ecosystem": "npm",
+      "path": "package-lock.json",
+      "present": false
+    },
+    {
+      "ecosystem": "npm",
+      "path": "yarn.lock",
+      "present": false
+    },
+    {
+      "ecosystem": "cargo",
+      "path": "Cargo.lock",
+      "present": true
+    }
+  ],
+  "localAudit": {
+    "available": false,
+    "pass": false,
+    "degraded": true,
+    "summary": null,
+    "outcome": "warn-backend-unavailable"
+  },
+  "advisoryCompleteness": {
+    "status": "unauthenticated",
+    "source": "none",
+    "authenticated": false,
+    "advisoryCount": null,
+    "reason": "No authenticated advisory source configured.",
+    "provenance": {
+      "importPath": "security/dependabot-alerts.json",
+      "repository": null
+    },
+    "nextAction": "Provide DEPENDABOT_ALERTS_EXPORT_PATH or set GITHUB_TOKEN/GH_TOKEN with GITHUB_REPOSITORY."
+  }
+}

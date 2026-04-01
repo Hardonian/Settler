@@ -38,7 +38,8 @@ export type RouteStateVariant =
   | "env-missing"
   | "billing-disabled"
   | "no-data"
-  | "not-found";
+  | "not-found"
+  | "degraded";
 
 const ROUTE_STATE_VARIANTS: Record<
   RouteStateVariant,
@@ -127,6 +128,18 @@ const ROUTE_STATE_VARIANTS: Record<
       { label: "Go Home", href: "/", variant: "outline" },
     ],
   },
+  degraded: {
+    title: "Operating in degraded mode",
+    description:
+      "Some subsystems are unavailable. Core functionality remains operational with reduced capabilities.",
+    detail:
+      "This is an explicit degraded state, not a silent fallback. Verify affected subsystems in Diagnostics before treating results as complete.",
+    icon: ActivityOff,
+    actions: [
+      { label: "Open Diagnostics", href: "/console/diagnostics" },
+      { label: "Retry", href: "", variant: "outline" },
+    ],
+  },
 };
 
 export function routeStateFromVariant(
@@ -156,7 +169,11 @@ export function RouteStateCard({
 }: RouteStateProps) {
   return (
     <div className={className ?? "flex min-h-[60vh] items-center justify-center px-4 py-8"}>
-      <Card className="w-full max-w-xl border-border/80 shadow-sm">
+      <Card
+        className="w-full max-w-xl border-border/80 shadow-sm"
+        role="alert"
+        aria-live="assertive"
+      >
         <CardHeader className="space-y-3">
           <div className="flex items-center gap-2 text-foreground">
             <Icon className="h-5 w-5 text-muted-foreground" aria-hidden="true" />

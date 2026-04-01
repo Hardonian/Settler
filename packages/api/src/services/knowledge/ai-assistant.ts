@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { decisionLog } from "./decision-log";
+import { type Decision, decisionLog } from "./decision-log";
 import { logInfo } from "../../utils/logger";
 
 /**
@@ -21,58 +21,77 @@ export interface KnowledgeQuery {
 
 export interface KnowledgeResponse {
   answer: string;
-  confidence: number; // 0-100
+  confidence: number;
   sources: Array<{
     type: "decision" | "documentation" | "incident" | "pattern";
     id: string;
     relevance: number;
   }>;
   relatedQuestions?: string[];
+  generation: {
+    mode: "mock_template";
+    degraded: true;
+    productionIntegrationPath: string;
+  };
 }
+
+const MOCK_GENERATION_MODE = "mock_template" as const;
+const PRODUCTION_INTEGRATION_PATH =
+  "Replace template generation with a tenant-scoped retrieval and LLM pipeline once durable knowledge storage is available.";
 
 export class AIKnowledgeAssistant extends EventEmitter {
   private knowledgeBase: Map<string, unknown> = new Map();
 
   /**
    * Queries the knowledge base with a natural language question.
-   * Performs retrieval from structured logs and generates an answer (currently mocked).
+   * Performs retrieval from structured logs and returns a degraded mock answer
+   * that keeps preview-mode behavior explicit until a production LLM path is
+   * wired to tenant-scoped knowledge storage.
    *
    * @param {KnowledgeQuery} query - The query data containing the question and context.
    * @returns {Promise<KnowledgeResponse>} The assistant's response.
    */
   async query(query: KnowledgeQuery): Promise<KnowledgeResponse> {
-    logInfo(`AI Assistant query: "${query.question}"`);
-    // Retrieval: Search decisions
+    logInfo(`AI Assistant query: "${query.question}"`, {
+      generation_mode: MOCK_GENERATION_MODE,
+    });
+
     const decisions = decisionLog.queryDecisions({
       search: query.question,
     });
 
-    // Future retrieval paths:
-    // - searchDocumentation(query.question)
-    // - searchIncidents(query.question)
-
-    // Generation: Generate answer using LLM (mock for now)
     const answer = await this.generateAnswer(query, decisions);
 
     return {
       answer,
-      confidence: 85, // Mock confidence
+      confidence: 85,
       sources: decisions.slice(0, 3).map((d) => ({
         type: "decision" as const,
         id: d.id,
         relevance: 0.9,
       })),
       relatedQuestions: this.generateRelatedQuestions(query.question),
+      generation: {
+        mode: MOCK_GENERATION_MODE,
+        degraded: true,
+        productionIntegrationPath: PRODUCTION_INTEGRATION_PATH,
+      },
     };
   }
 
   /**
-   * Generate answer using LLM (mock implementation)
-   * In production, would call OpenAI/Anthropic API
+   * Generates the current mock response body.
+   *
+   * Production integration path:
+   * 1. Keep retrieval tenant scoped and deterministic.
+   * 2. Replace this template generator with a provider-backed LLM call.
+   * 3. Preserve explicit degraded metadata whenever the provider path is bypassed.
+   *
+   * @param {KnowledgeQuery} query - The user question and optional context.
+   * @param {Decision[]} decisions - Retrieved decision matches used for context.
+   * @returns {Promise<string>} A preview-safe answer string.
    */
-  private async generateAnswer(query: KnowledgeQuery, decisions: unknown[]): Promise<string> {
-    // Mock LLM response
-    // In production, would use actual LLM API
+  private async generateAnswer(query: KnowledgeQuery, decisions: Decision[]): Promise<string> {
     return `Based on our decision logs, here's what I found:
 
 ${
@@ -85,11 +104,12 @@ For "${query.question}", I recommend reviewing our decision logs and documentati
   }
 
   /**
-   * Generate related questions
+   * Returns stable related-question suggestions for preview mode.
+   *
+   * @param {string} _question - The original question. Reserved for future model-backed expansion.
+   * @returns {string[]} A list of follow-up questions.
    */
   private generateRelatedQuestions(_question: string): string[] {
-    // Mock related questions
-    // In production, would use LLM to generate related questions
     return [
       "How do we handle similar situations?",
       "What decisions have we made about this topic?",
@@ -103,6 +123,7 @@ For "${query.question}", I recommend reviewing our decision logs and documentati
    * @param {string} type - The item type (e.g., 'documentation').
    * @param {string} id - Unique identifier for the item.
    * @param {unknown} content - The content to index.
+   * @returns {Promise<void>}
    */
   async indexKnowledge(type: string, id: string, content: unknown): Promise<void> {
     this.knowledgeBase.set(`${type}:${id}`, content);
@@ -110,7 +131,9 @@ For "${query.question}", I recommend reviewing our decision logs and documentati
   }
 
   /**
-   * Returns aggregated statistics for the knowledge base.
+   * Returns aggregated statistics for the in-memory knowledge index.
+   *
+   * @returns {{ totalItems: number; byType: Record<string, number> }} Index statistics.
    */
   getStats(): {
     totalItems: number;

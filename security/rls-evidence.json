@@ -1,0 +1,23 @@
+{
+  "reportVersion": "2026-03-09.1",
+  "generatedAt": "2026-04-01T19:22:09.632Z",
+  "runId": "2026-04-01T19-22-09-624Z",
+  "status": "PASS_WITH_DEGRADED_EVIDENCE",
+  "evidenceState": "DEGRADED",
+  "reason": "Runtime RLS verification not executed in this run; only static/policy boundary is available.",
+  "evidenceLevel": "static-only",
+  "environmentConstraints": [
+    "Runtime RLS verification not executed; only static boundary/policy checks were captured."
+  ],
+  "nextOperatorAction": [
+    "Set DATABASE_URL (or DIRECT_URL/SUPABASE_DB_URL) and run `pnpm run verify:rls:live`."
+  ],
+  "runtimeExecuted": false,
+  "policy": {
+    "mode": "static-only"
+  },
+  "testedTables": [],
+  "fixtures": null,
+  "allowDenyMatrix": null,
+  "policyPresence": null
+}

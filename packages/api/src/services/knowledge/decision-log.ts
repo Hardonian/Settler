@@ -11,12 +11,16 @@ import { logError, logInfo } from "../../utils/logger";
  * decisions in a human-readable and machine-processable format.
  */
 
+export const DECISION_STATUSES = ["proposed", "accepted", "rejected", "superseded"] as const;
+
+export type DecisionStatus = (typeof DECISION_STATUSES)[number];
+
 export interface Decision {
   id: string;
   title: string;
   date: Date;
   decisionMakers: string[];
-  status: "proposed" | "accepted" | "rejected" | "superseded";
+  status: DecisionStatus;
   context: string;
   decision: string;
   rationale: string;
@@ -34,9 +38,34 @@ export interface Decision {
   tags: string[];
 }
 
+export interface DecisionQuery {
+  status?: DecisionStatus;
+  decisionMaker?: string;
+  tag?: string;
+  dateRange?: { start: Date; end: Date };
+  search?: string;
+}
+
+export type CreateDecisionInput = Omit<Decision, "id" | "date">;
+
+export interface DecisionLoadSummary {
+  mode: "index_only";
+  discoveredFiles: number;
+  readableFiles: number;
+  unreadableFiles: string[];
+  populatedDecisions: number;
+}
+
 export class DecisionLog extends EventEmitter {
   private decisions: Map<string, Decision> = new Map();
   private logDirectory: string;
+  private lastLoadSummary: DecisionLoadSummary = {
+    mode: "index_only",
+    discoveredFiles: 0,
+    readableFiles: 0,
+    unreadableFiles: [],
+    populatedDecisions: 0,
+  };
 
   /**
    * Initializes the DecisionLog service.
@@ -54,11 +83,11 @@ export class DecisionLog extends EventEmitter {
   /**
    * Creates a new decision and persists it to the filesystem.
    *
-   * @param {Omit<Decision, 'id' | 'date'>} decision - The decision data.
+   * @param {CreateDecisionInput} decision - The decision data to persist.
    * @returns {Promise<Decision>} The newly created decision with ID and date.
    * @throws {Error} If saving the decision fails.
    */
-  async createDecision(decision: Omit<Decision, "id" | "date">): Promise<Decision> {
+  async createDecision(decision: CreateDecisionInput): Promise<Decision> {
     const fullDecision: Decision = {
       ...decision,
       id: `dec_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
@@ -81,7 +110,12 @@ export class DecisionLog extends EventEmitter {
   }
 
   /**
-   * Update decision outcomes
+   * Appends a newly observed outcome to an existing decision.
+   *
+   * @param {string} decisionId - The decision identifier.
+   * @param {string} outcome - The outcome narrative to append.
+   * @returns {Promise<Decision>} The updated decision.
+   * @throws {Error} If the decision is not found or cannot be persisted.
    */
   async updateOutcomes(decisionId: string, outcome: string): Promise<Decision> {
     const decision = this.decisions.get(decisionId);
@@ -103,9 +137,14 @@ export class DecisionLog extends EventEmitter {
   }
 
   /**
-   * Update decision status
+   * Updates the status of an existing decision.
+   *
+   * @param {string} decisionId - The decision identifier.
+   * @param {DecisionStatus} status - The new lifecycle status.
+   * @returns {Promise<Decision>} The updated decision.
+   * @throws {Error} If the decision is not found or cannot be persisted.
    */
-  async updateStatus(decisionId: string, status: Decision["status"]): Promise<Decision> {
+  async updateStatus(decisionId: string, status: DecisionStatus): Promise<Decision> {
     const decision = this.decisions.get(decisionId);
 
     if (!decision) {
@@ -122,7 +161,10 @@ export class DecisionLog extends EventEmitter {
   }
 
   /**
-   * Get a decision by ID
+   * Returns a decision by ID from the in-memory index.
+   *
+   * @param {string} decisionId - The decision identifier.
+   * @returns {Decision | undefined} The matching decision, if present.
    */
   getDecision(decisionId: string): Decision | undefined {
     return this.decisions.get(decisionId);
@@ -131,21 +173,10 @@ export class DecisionLog extends EventEmitter {
   /**
    * Queries the decision log with optional filters.
    *
-   * @param {Object} query - The query filters.
-   * @param {Decision['status']} [query.status] - Filter by status.
-   * @param {string} [query.decisionMaker] - Filter by decision maker.
-   * @param {string} [query.tag] - Filter by tag.
-   * @param {Object} [query.dateRange] - Filter by date range.
-   * @param {string} [query.search] - Search text in title, context, or decision.
+   * @param {DecisionQuery} query - The query filters.
    * @returns {Decision[]} Sorted list of matching decisions (newest first).
    */
-  queryDecisions(query: {
-    status?: Decision["status"];
-    decisionMaker?: string;
-    tag?: string;
-    dateRange?: { start: Date; end: Date };
-    search?: string;
-  }): Decision[] {
+  queryDecisions(query: DecisionQuery): Decision[] {
     let decisions = Array.from(this.decisions.values());
 
     if (query.status) {
@@ -180,7 +211,10 @@ export class DecisionLog extends EventEmitter {
   }
 
   /**
-   * Get related decisions
+   * Returns the decisions linked from a given decision.
+   *
+   * @param {string} decisionId - The source decision identifier.
+   * @returns {Decision[]} The related decisions that are currently indexed.
    */
   getRelatedDecisions(decisionId: string): Decision[] {
     const decision = this.decisions.get(decisionId);
@@ -195,7 +229,26 @@ export class DecisionLog extends EventEmitter {
   }
 
   /**
-   * Save decision to file
+   * Returns the last startup-scan summary for markdown-backed decisions.
+   *
+   * The current implementation intentionally performs an index-only scan.
+   * It verifies file readability and reports degraded loading semantics
+   * until a structured, tenant-scoped persistence layer is introduced.
+   *
+   * @returns {DecisionLoadSummary} The most recent load summary.
+   */
+  getLoadSummary(): DecisionLoadSummary {
+    return {
+      ...this.lastLoadSummary,
+      unreadableFiles: [...this.lastLoadSummary.unreadableFiles],
+    };
+  }
+
+  /**
+   * Persists a decision to its markdown representation on disk.
+   *
+   * @param {Decision} decision - The decision to persist.
+   * @returns {Promise<void>}
    */
   private async saveDecision(decision: Decision): Promise<void> {
     const filename = `${decision.id}.md`;
@@ -206,7 +259,10 @@ export class DecisionLog extends EventEmitter {
   }
 
   /**
-   * Convert decision to markdown
+   * Converts a decision into the markdown format stored on disk.
+   *
+   * @param {Decision} decision - The decision to serialize.
+   * @returns {string} The markdown representation.
    */
   private decisionToMarkdown(decision: Decision): string {
     return `# Decision: ${decision.title}
@@ -245,7 +301,9 @@ ${decision.tags.map((tag) => `\`${tag}\``).join(", ")}
   }
 
   /**
-   * Ensure directory exists
+   * Ensures the backing markdown directory exists.
+   *
+   * @returns {Promise<void>}
    */
   private async ensureDirectoryExists(): Promise<void> {
     try {
@@ -256,24 +314,47 @@ ${decision.tags.map((tag) => `\`${tag}\``).join(", ")}
   }
 
   /**
-   * Loads decisions from the directory on startup.
-   * Note: Markdown parsing into Decision objects is currently a placeholder.
-   * Decisions are expected to be populated via the createDecision path or
-   * a future migration to a structured DB.
+   * Performs an index-only startup scan of markdown decision files.
+   *
+   * This method deliberately does not hydrate {@link Decision} records from
+   * markdown content because the current preview surface lacks a canonical,
+   * tenant-scoped parser and persistence contract. Instead, it verifies file
+   * readability and records machine-visible summary data about the degraded
+   * loading mode.
+   *
+   * @returns {Promise<void>}
    */
   async loadDecisions(): Promise<void> {
     try {
       await this.ensureDirectoryExists();
       const files = await fs.readdir(this.logDirectory);
       const markdownFiles = files.filter((f: string) => f.endsWith(".md"));
+      const unreadableFiles: string[] = [];
+      let readableFiles = 0;
 
       for (const file of markdownFiles) {
         const filepath = path.join(this.logDirectory, file);
-        const _content = await fs.readFile(filepath, "utf-8");
-        void _content;
-        // In-memory population from markdown content would occur here
+
+        try {
+          await fs.readFile(filepath, "utf-8");
+          readableFiles += 1;
+        } catch (error) {
+          unreadableFiles.push(file);
+          logError("Failed to read decision markdown during startup scan", error, {
+            file: filepath,
+          });
+        }
       }
-      logInfo(`Loaded ${markdownFiles.length} decision files (index-only)`);
+
+      this.lastLoadSummary = {
+        mode: "index_only",
+        discoveredFiles: markdownFiles.length,
+        readableFiles,
+        unreadableFiles,
+        populatedDecisions: this.decisions.size,
+      };
+
+      logInfo("Decision log startup scan completed", { ...this.lastLoadSummary });
     } catch (error) {
       logError("Failed to load decisions from filesystem", error);
     }
