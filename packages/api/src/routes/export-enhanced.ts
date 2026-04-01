@@ -64,13 +64,7 @@ router.get(
       const jobIdParam = req.params["jobId"];
       const jobId = Array.isArray(jobIdParam) ? (jobIdParam[0] ?? "") : (jobIdParam ?? "");
       const queryParams = exportReportSchema.parse({ params: req.params, query: req.query });
-      const {
-        format,
-        startDate,
-        endDate,
-        includeMatched,
-        includeExceptions,
-      } = queryParams.query;
+      const { format, startDate, endDate, includeMatched, includeExceptions } = queryParams.query;
       const userId = req.userId!;
 
       if (!jobId || !userId) {
@@ -183,8 +177,8 @@ router.get(
           date: Date;
         }>(
           `SELECT source_id, target_id, amount, currency, matched_at as date
-           FROM matches WHERE execution_id = $1`,
-          [executionId]
+           FROM matches WHERE execution_id = $1 AND tenant_id = $2`,
+          [executionId, tenantId]
         );
 
         // Format for accounting system

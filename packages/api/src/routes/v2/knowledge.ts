@@ -180,21 +180,19 @@ const QueryDecisionsRequestSchema = z
         }
       }),
   })
-  .transform(
-    ({ query }): DecisionQuery => ({
-      status: query.status,
-      decisionMaker: query.decisionMaker,
-      tag: query.tag,
-      search: query.search,
-      dateRange:
-        query.startDate && query.endDate
-          ? {
-              start: query.startDate,
-              end: query.endDate,
-            }
-          : undefined,
-    })
-  );
+  .transform(({ query }) => ({
+    status: query.status,
+    decisionMaker: query.decisionMaker,
+    tag: query.tag,
+    search: query.search,
+    dateRange:
+      query.startDate && query.endDate
+        ? {
+            start: query.startDate,
+            end: query.endDate,
+          }
+        : undefined,
+  }));
 
 type KnowledgeCapability = NonNullable<ReturnType<typeof requireStrategicSurfaceAvailability>>;
 
@@ -300,7 +298,7 @@ function sendKnowledgeResponse<T>(
 }
 
 function buildDecisionStatusSummary(
-  decisions: ReturnType<typeof decisionLog.queryDecisions>
+  decisions: Array<{ status: DecisionStatus }>
 ): Record<DecisionStatus, number> {
   const summary = Object.fromEntries(DECISION_STATUSES.map((status) => [status, 0])) as Record<
     DecisionStatus,
@@ -344,7 +342,10 @@ router.post(
         return;
       }
 
-      const decision = await decisionLog.createDecision(parsed.body);
+      const decision = await decisionLog.createDecision({
+        ...parsed.body,
+        tenantId: req.tenantId!,
+      });
       sendKnowledgeResponse(req, res, access.capability, decision, {
         message: "Decision created successfully",
         statusCode: 201,
@@ -385,7 +386,10 @@ router.get(
         return;
       }
 
-      const decisions = decisionLog.queryDecisions(query);
+      const decisions = decisionLog.queryDecisions({
+        ...query,
+        tenantId: req.tenantId!,
+      });
       sendKnowledgeResponse(req, res, access.capability, decisions, {
         count: decisions.length,
       });
@@ -425,13 +429,13 @@ router.get(
         return;
       }
 
-      const decision = decisionLog.getDecision(parsed.params.id);
+      const decision = decisionLog.getDecision(req.tenantId!, parsed.params.id);
       if (!decision) {
         sendError(res, 404, "NOT_FOUND", `Decision ${parsed.params.id} not found`);
         return;
       }
 
-      const relatedDecisions = decisionLog.getRelatedDecisions(parsed.params.id);
+      const relatedDecisions = decisionLog.getRelatedDecisions(req.tenantId!, parsed.params.id);
       sendKnowledgeResponse(req, res, access.capability, {
         decision,
         relatedDecisions,
@@ -473,7 +477,11 @@ router.patch(
         return;
       }
 
-      const decision = await decisionLog.updateOutcomes(parsed.params.id, parsed.body.outcome);
+      const decision = await decisionLog.updateOutcomes(
+        req.tenantId!,
+        parsed.params.id,
+        parsed.body.outcome
+      );
       sendKnowledgeResponse(req, res, access.capability, decision, {
         message: "Outcome updated successfully",
       });
@@ -513,7 +521,10 @@ router.post(
         return;
       }
 
-      const response = await aiKnowledgeAssistant.query(parsed.body);
+      const response = await aiKnowledgeAssistant.query({
+        ...parsed.body,
+        tenantId: req.tenantId!,
+      });
       sendKnowledgeResponse(req, res, access.capability, response);
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to query assistant", 400);
@@ -545,7 +556,7 @@ router.get(
       }
 
       const assistantStats = aiKnowledgeAssistant.getStats();
-      const allDecisions = decisionLog.queryDecisions({});
+      const allDecisions = decisionLog.queryDecisions({ tenantId: req.tenantId! });
 
       sendKnowledgeResponse(req, res, access.capability, {
         assistant: assistantStats,

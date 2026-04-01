@@ -16,6 +16,7 @@ const reconJobFindFirstMock = jest.fn();
 const reconResultFindFirstMock = jest.fn();
 const reconResultFindManyMock = jest.fn();
 const reconResultCountMock = jest.fn();
+const runDeltaFindFirstMock = jest.fn();
 const runSnapshotFindFirstMock = jest.fn();
 const reconAuditFindManyMock = jest.fn();
 const reconciliationRunFindFirstMock = jest.fn();
@@ -67,6 +68,9 @@ jest.mock("@/shared/db/prismaClient", () => ({
       findFirst: (...args: unknown[]) => reconResultFindFirstMock(...args),
       findMany: (...args: unknown[]) => reconResultFindManyMock(...args),
       count: (...args: unknown[]) => reconResultCountMock(...args),
+    },
+    runDelta: {
+      findFirst: (...args: unknown[]) => runDeltaFindFirstMock(...args),
     },
     runSnapshot: {
       findFirst: (...args: unknown[]) => runSnapshotFindFirstMock(...args),
@@ -141,6 +145,7 @@ describe("run domain trust invariants", () => {
     reconResultFindFirstMock.mockReset();
     reconResultFindManyMock.mockReset();
     reconResultCountMock.mockReset();
+    runDeltaFindFirstMock.mockReset();
     runSnapshotFindFirstMock.mockReset();
     reconAuditFindManyMock.mockReset();
     reconciliationRunFindFirstMock.mockReset();
@@ -247,6 +252,7 @@ describe("run domain trust invariants", () => {
     reconResultFindFirstMock.mockResolvedValue(latestResultPrisma);
     reconResultFindManyMock.mockResolvedValue([latestResultPrisma]);
     reconResultCountMock.mockResolvedValue(1);
+    runDeltaFindFirstMock.mockResolvedValue(null);
     runSnapshotFindFirstMock.mockResolvedValue({
       id: "snapshot-1",
       inputHash: "hash-1",
@@ -283,9 +289,11 @@ describe("run domain trust invariants", () => {
 
     expect(response.status).toBe(200);
     const payload = await response.json();
+    expect(payload.data).toBeUndefined();
     expect(payload.runKind).toBe("recon_job");
     expect(payload.sourceModel).toBe("recon_jobs");
     expect(payload.detailHref).toBe("/console/runs/run-a-1");
+    expect(payload.traceId).toBeNull();
     expect(payload.config).toEqual(
       expect.objectContaining({
         sourceAdapter: "stripe",
@@ -293,10 +301,6 @@ describe("run domain trust invariants", () => {
         reconStrategy: "deterministic",
         templateId: "tpl-1",
         validationRuleCount: 2,
-        ruleVersionCount: 1,
-        snapshotId: "snapshot-1",
-        inputHash: "hash-1",
-        configSource: "snapshot",
       })
     );
     expect(payload.config.validationRuleLabels).toEqual(
@@ -344,6 +348,8 @@ describe("run domain trust invariants", () => {
     expect(payload.runKind).toBe("ingestion_run");
     expect(payload.sourceModel).toBe("reconciliation_runs");
     expect(payload.kindDetail?.kind).toBe("ingestion_run");
+    expect(payload.traceId).toBe("trace-ing-1");
+    expect(payload.config.inputHash).toBeNull();
     expect(payload.summarySemantics).toEqual(
       expect.objectContaining({
         processed: 24,

@@ -29,6 +29,10 @@ import {
 
 import type { OperatorRunDetail } from "@/types/operator-run-detail";
 import { formatDistanceToNow } from "date-fns";
+import {
+  getOperatorRunDetailProvenanceSignals,
+  parseOperatorRunDetailResponse,
+} from "@/lib/runs/operator-run-detail";
 
 // Extracted Components
 import { RunStages } from "./components/RunStages";
@@ -57,8 +61,7 @@ export default function RunPage() {
       if (!response.ok) {
         throw new Error(`Failed to load run detail: ${response.statusText}`);
       }
-      const json = await response.json();
-      return json.data;
+      return parseOperatorRunDetailResponse(await response.json());
     },
     // Only poll every 2 seconds if the job is not in a terminal state
     refetchInterval: (query) =>
@@ -113,6 +116,8 @@ export default function RunPage() {
       </div>
     );
   }
+
+  const provenanceSignals = getOperatorRunDetailProvenanceSignals(run);
 
   return (
     <div className="p-6 lg:p-10 space-y-10 max-w-7xl mx-auto">
@@ -219,7 +224,12 @@ export default function RunPage() {
         </TabsContent>
 
         <TabsContent value="provenance" className="mt-0 focus-visible:outline-none ring-0">
-          <RunProvenance provenance={run.provenance} metadata={run.metadata} />
+          <RunProvenance
+            provenance={run.provenance}
+            metadata={run.metadata}
+            traceId={provenanceSignals.traceId}
+            inputHash={provenanceSignals.inputHash}
+          />
         </TabsContent>
       </Tabs>
     </div>

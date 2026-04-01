@@ -50,8 +50,10 @@ function startWebServer() {
         "127.0.0.1",
       ];
 
-  const pnpmCmd = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
-  const server = spawn(pnpmCmd, args, {
+  const isWindows = process.platform === "win32";
+  const command = isWindows ? "cmd.exe" : "pnpm";
+  const commandArgs = isWindows ? ["/c", "pnpm.cmd", ...args] : args;
+  const server = spawn(command, commandArgs, {
     stdio: "pipe",
     env: { ...process.env, SETTLER_VERIFY_MODE: "1" },
   });

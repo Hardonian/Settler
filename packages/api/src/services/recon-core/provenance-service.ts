@@ -67,21 +67,6 @@ export class ProvenanceService {
     };
   }
 
-  private async nextSequenceAndPreviousHash(
-    client: Prisma.TransactionClient | PrismaClient,
-    runId: string
-  ): Promise<{ sequence: number; previousEntryHash: string | undefined }> {
-    const latest = await client.reconciliationProvenance.findFirst({
-      where: { runId },
-      select: { sequence: true, entryHash: true },
-      orderBy: { sequence: "desc" },
-    });
-    return {
-      sequence: (latest?.sequence ?? 0) + 1,
-      previousEntryHash: latest?.entryHash,
-    };
-  }
-
   private async nextSequence(
     client: Prisma.TransactionClient | PrismaClient,
     runId: string

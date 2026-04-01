@@ -1,15 +1,6 @@
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
-import {
-  AlertTriangle,
-  Database,
-  Lock,
-  SearchX,
-  ShieldX,
-  Users,
-  Wallet,
-  ActivityOff,
-} from "lucide-react";
+import { AlertTriangle, Database, Lock, SearchX, ShieldX, Users, Wallet } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -134,7 +125,7 @@ const ROUTE_STATE_VARIANTS: Record<
       "Some subsystems are unavailable. Core functionality remains operational with reduced capabilities.",
     detail:
       "This is an explicit degraded state, not a silent fallback. Verify affected subsystems in Diagnostics before treating results as complete.",
-    icon: ActivityOff,
+    icon: AlertTriangle,
     actions: [
       { label: "Open Diagnostics", href: "/console/diagnostics" },
       { label: "Retry", href: "", variant: "outline" },

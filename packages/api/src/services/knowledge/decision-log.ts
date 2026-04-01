@@ -17,6 +17,7 @@ export type DecisionStatus = (typeof DECISION_STATUSES)[number];
 
 export interface Decision {
   id: string;
+  tenantId: string;
   title: string;
   date: Date;
   decisionMakers: string[];
@@ -39,6 +40,7 @@ export interface Decision {
 }
 
 export interface DecisionQuery {
+  tenantId: string;
   status?: DecisionStatus;
   decisionMaker?: string;
   tag?: string;
@@ -81,7 +83,7 @@ export class DecisionLog extends EventEmitter {
   }
 
   /**
-   * Creates a new decision and persists it to the filesystem.
+   * Creates a new decision and persists it to the filesystem under a tenant-scoped directory.
    *
    * @param {CreateDecisionInput} decision - The decision data to persist.
    * @returns {Promise<Decision>} The newly created decision with ID and date.
@@ -99,10 +101,15 @@ export class DecisionLog extends EventEmitter {
     try {
       await this.saveDecision(fullDecision);
       this.emit("decision_created", fullDecision);
-      logInfo(`Decision created: ${fullDecision.id} - ${fullDecision.title}`);
+      logInfo(
+        `Decision created: ${fullDecision.id} - ${fullDecision.title} (tenant: ${fullDecision.tenantId})`
+      );
       return fullDecision;
     } catch (error) {
-      logError(`Failed to save decision ${fullDecision.id}`, error);
+      logError(
+        `Failed to save decision ${fullDecision.id} for tenant ${fullDecision.tenantId}`,
+        error
+      );
       throw new Error(
         `Failed to persist decision: ${error instanceof Error ? error.message : "Unknown error"}`
       );
@@ -112,16 +119,17 @@ export class DecisionLog extends EventEmitter {
   /**
    * Appends a newly observed outcome to an existing decision.
    *
+   * @param {string} tenantId - The tenant identifier.
    * @param {string} decisionId - The decision identifier.
    * @param {string} outcome - The outcome narrative to append.
    * @returns {Promise<Decision>} The updated decision.
    * @throws {Error} If the decision is not found or cannot be persisted.
    */
-  async updateOutcomes(decisionId: string, outcome: string): Promise<Decision> {
+  async updateOutcomes(tenantId: string, decisionId: string, outcome: string): Promise<Decision> {
     const decision = this.decisions.get(decisionId);
 
-    if (!decision) {
-      throw new Error(`Decision ${decisionId} not found`);
+    if (!decision || decision.tenantId !== tenantId) {
+      throw new Error(`Decision ${decisionId} not found for tenant ${tenantId}`);
     }
 
     decision.actualOutcomes.push({
@@ -139,16 +147,21 @@ export class DecisionLog extends EventEmitter {
   /**
    * Updates the status of an existing decision.
    *
+   * @param {string} tenantId - The tenant identifier.
    * @param {string} decisionId - The decision identifier.
    * @param {DecisionStatus} status - The new lifecycle status.
    * @returns {Promise<Decision>} The updated decision.
    * @throws {Error} If the decision is not found or cannot be persisted.
    */
-  async updateStatus(decisionId: string, status: DecisionStatus): Promise<Decision> {
+  async updateStatus(
+    tenantId: string,
+    decisionId: string,
+    status: DecisionStatus
+  ): Promise<Decision> {
     const decision = this.decisions.get(decisionId);
 
-    if (!decision) {
-      throw new Error(`Decision ${decisionId} not found`);
+    if (!decision || decision.tenantId !== tenantId) {
+      throw new Error(`Decision ${decisionId} not found for tenant ${tenantId}`);
     }
 
     decision.status = status;
@@ -161,23 +174,30 @@ export class DecisionLog extends EventEmitter {
   }
 
   /**
-   * Returns a decision by ID from the in-memory index.
+   * Returns a decision by ID from the in-memory index, verified against tenant context.
    *
+   * @param {string} tenantId - The tenant identifier.
    * @param {string} decisionId - The decision identifier.
-   * @returns {Decision | undefined} The matching decision, if present.
+   * @returns {Decision | undefined} The matching decision, if present and authorized.
    */
-  getDecision(decisionId: string): Decision | undefined {
-    return this.decisions.get(decisionId);
+  getDecision(tenantId: string, decisionId: string): Decision | undefined {
+    const decision = this.decisions.get(decisionId);
+    if (decision && decision.tenantId === tenantId) {
+      return decision;
+    }
+    return undefined;
   }
 
   /**
-   * Queries the decision log with optional filters.
+   * Queries the decision log with mandatory tenant scoping.
    *
    * @param {DecisionQuery} query - The query filters.
    * @returns {Decision[]} Sorted list of matching decisions (newest first).
    */
   queryDecisions(query: DecisionQuery): Decision[] {
-    let decisions = Array.from(this.decisions.values());
+    let decisions = Array.from(this.decisions.values()).filter(
+      (d) => d.tenantId === query.tenantId
+    );
 
     if (query.status) {
       decisions = decisions.filter((d) => d.status === query.status);
@@ -211,21 +231,22 @@ export class DecisionLog extends EventEmitter {
   }
 
   /**
-   * Returns the decisions linked from a given decision.
+   * Returns the decisions linked from a given decision, verified against tenant context.
    *
+   * @param {string} tenantId - The tenant identifier.
    * @param {string} decisionId - The source decision identifier.
-   * @returns {Decision[]} The related decisions that are currently indexed.
+   * @returns {Decision[]} The related decisions that are currently indexed and authorized.
    */
-  getRelatedDecisions(decisionId: string): Decision[] {
+  getRelatedDecisions(tenantId: string, decisionId: string): Decision[] {
     const decision = this.decisions.get(decisionId);
 
-    if (!decision) {
+    if (!decision || decision.tenantId !== tenantId) {
       return [];
     }
 
     return decision.relatedDecisions
       .map((id) => this.decisions.get(id))
-      .filter((d): d is Decision => d !== undefined);
+      .filter((d): d is Decision => d !== undefined && d.tenantId === tenantId);
   }
 
   /**
@@ -245,14 +266,17 @@ export class DecisionLog extends EventEmitter {
   }
 
   /**
-   * Persists a decision to its markdown representation on disk.
+   * Persists a decision to its markdown representation on disk under a tenant-scoped path.
    *
    * @param {Decision} decision - The decision to persist.
    * @returns {Promise<void>}
    */
   private async saveDecision(decision: Decision): Promise<void> {
+    const tenantDir = path.join(this.logDirectory, decision.tenantId);
+    await fs.mkdir(tenantDir, { recursive: true });
+
     const filename = `${decision.id}.md`;
-    const filepath = path.join(this.logDirectory, filename);
+    const filepath = path.join(tenantDir, filename);
 
     const markdown = this.decisionToMarkdown(decision);
     await fs.writeFile(filepath, markdown, "utf-8");
@@ -314,47 +338,58 @@ ${decision.tags.map((tag) => `\`${tag}\``).join(", ")}
   }
 
   /**
-   * Performs an index-only startup scan of markdown decision files.
+   * Performs an index-only startup scan of tenant-scoped markdown decision files.
    *
-   * This method deliberately does not hydrate {@link Decision} records from
-   * markdown content because the current preview surface lacks a canonical,
-   * tenant-scoped parser and persistence contract. Instead, it verifies file
-   * readability and records machine-visible summary data about the degraded
-   * loading mode.
+   * This method recursively scans the decision log directory for markdown files
+   * across all tenant subdirectories. It verifies file readability and records
+   * machine-visible summary data about the degraded loading mode.
    *
    * @returns {Promise<void>}
    */
   async loadDecisions(): Promise<void> {
     try {
       await this.ensureDirectoryExists();
-      const files = await fs.readdir(this.logDirectory);
-      const markdownFiles = files.filter((f: string) => f.endsWith(".md"));
+      const tenantDirs = await fs.readdir(this.logDirectory, { withFileTypes: true });
       const unreadableFiles: string[] = [];
+      let discoveredFiles = 0;
       let readableFiles = 0;
 
-      for (const file of markdownFiles) {
-        const filepath = path.join(this.logDirectory, file);
+      for (const dir of tenantDirs) {
+        if (!dir.isDirectory()) continue;
 
-        try {
-          await fs.readFile(filepath, "utf-8");
-          readableFiles += 1;
-        } catch (error) {
-          unreadableFiles.push(file);
-          logError("Failed to read decision markdown during startup scan", error, {
-            file: filepath,
-          });
+        const tenantId = dir.name;
+        const tenantPath = path.join(this.logDirectory, tenantId);
+        const files = await fs.readdir(tenantPath);
+        const markdownFiles = files.filter((f: string) => f.endsWith(".md"));
+
+        discoveredFiles += markdownFiles.length;
+
+        for (const file of markdownFiles) {
+          const filepath = path.join(tenantPath, file);
+
+          try {
+            await fs.readFile(filepath, "utf-8");
+            readableFiles += 1;
+          } catch (error) {
+            unreadableFiles.push(`${tenantId}/${file}`);
+            logError("Failed to read decision markdown during startup scan", error, {
+              file: filepath,
+            });
+          }
         }
       }
 
       this.lastLoadSummary = {
         mode: "index_only",
-        discoveredFiles: markdownFiles.length,
+        discoveredFiles,
         readableFiles,
         unreadableFiles,
         populatedDecisions: this.decisions.size,
       };
 
-      logInfo("Decision log startup scan completed", { ...this.lastLoadSummary });
+      logInfo("Decision log startup scan completed across all tenants", {
+        ...this.lastLoadSummary,
+      });
     } catch (error) {
       logError("Failed to load decisions from filesystem", error);
     }

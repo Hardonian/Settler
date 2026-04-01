@@ -124,6 +124,8 @@ describe("operator run detail serializer", () => {
     );
     expect(payload.rowRationale.available).toBe(true);
     expect(payload.resultContext.persistedResultCount).toBe(2);
+    expect(payload.traceId).toBeNull();
+    expect(payload.metadata).toEqual({});
   });
 
   it("serializes ingestion_run detail with compatibility note fenced in ingestion kind", () => {

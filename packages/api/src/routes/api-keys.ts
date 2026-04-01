@@ -188,9 +188,14 @@ router.post(
 
       // Log audit event
       await query(
-        `INSERT INTO audit_logs (event, user_id, metadata)
-         VALUES ($1, $2, $3)`,
-        ["api_key_created", userId, JSON.stringify({ apiKeyId: result[0]?.id || "", name })]
+        `INSERT INTO audit_logs (event, user_id, tenant_id, metadata)
+         VALUES ($1, $2, $3, $4)`,
+        [
+          "api_key_created",
+          userId,
+          tenantId,
+          JSON.stringify({ apiKeyId: result[0]?.id || "", name }),
+        ]
       );
 
       // Log business event
@@ -303,11 +308,12 @@ router.patch(
 
       // Log audit event
       await query(
-        `INSERT INTO audit_logs (event, user_id, metadata)
-         VALUES ($1, $2, $3)`,
+        `INSERT INTO audit_logs (event, user_id, tenant_id, metadata)
+         VALUES ($1, $2, $3, $4)`,
         [
           "api_key_updated",
           userId,
+          tenantId,
           JSON.stringify({ apiKeyId: id, updates: { name, scopes, rateLimit, revoked } }),
         ]
       );
@@ -390,11 +396,12 @@ router.post(
 
         // Log audit event
         await client.query(
-          `INSERT INTO audit_logs (event, user_id, metadata)
-           VALUES ($1, $2, $3)`,
+          `INSERT INTO audit_logs (event, user_id, tenant_id, metadata)
+           VALUES ($1, $2, $3, $4)`,
           [
             "api_key_regenerated",
             userId,
+            tenantId,
             JSON.stringify({ oldApiKeyId: id, newApiKeyId: result.rows[0]?.id || "" }),
           ]
         );
@@ -474,9 +481,9 @@ router.delete(
 
       // Log audit event
       await query(
-        `INSERT INTO audit_logs (event, user_id, metadata)
-         VALUES ($1, $2, $3)`,
-        ["api_key_deleted", userId, JSON.stringify({ apiKeyId: id })]
+        `INSERT INTO audit_logs (event, user_id, tenant_id, metadata)
+         VALUES ($1, $2, $3, $4)`,
+        ["api_key_deleted", userId, tenantId, JSON.stringify({ apiKeyId: id })]
       );
 
       logInfo("API key deleted", { userId, apiKeyId: id });

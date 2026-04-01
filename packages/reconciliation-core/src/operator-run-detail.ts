@@ -346,6 +346,8 @@ export function buildOperatorReconRunDetailJson(input: {
     },
     rowResultsPreview: input.rowResultsPreview,
     stages: input.stages,
+    metadata: input.detail.metadata,
+    traceId: input.detail.traceId,
     runDelta: input.runDelta,
     kindDetail: {
       kind: "recon_job",

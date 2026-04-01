@@ -21,6 +21,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { AlertCircle, CheckCircle2, Info } from "lucide-react";
 import { capabilitiesForRunKind, type ReconciliationRunKind } from "@settler/reconciliation-core";
 import type { OperatorRunDetail } from "@/types/operator-run-detail";
+import { parseOperatorRunDetailResponse } from "@/lib/runs/operator-run-detail";
 
 interface Match {
   id: string;
@@ -116,7 +117,9 @@ export function ReconciliationMatches({ runId, runKind: runKindProp }: Reconcili
           return;
         }
 
-        const detailBody = (await detailRes.json()) as OperatorRunDetail;
+        const detailBody = parseOperatorRunDetailResponse(
+          (await detailRes.json()) as OperatorRunDetail
+        );
         const k = detailBody.runKind;
         if (k !== "recon_job" && k !== "ingestion_run") {
           setBlockReason({ kind: "other", message: "Unexpected runKind in operator run detail." });

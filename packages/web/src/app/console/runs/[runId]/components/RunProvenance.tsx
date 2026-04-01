@@ -7,12 +7,22 @@ import type { OperatorRunDetail } from "@/types/operator-run-detail";
 interface RunProvenanceProps {
   provenance: OperatorRunDetail["provenance"];
   metadata?: Record<string, any>;
+  traceId?: string | null;
+  inputHash?: string | null;
 }
 
 export const RunProvenance = memo(function RunProvenance({
   provenance,
   metadata,
+  traceId,
+  inputHash,
 }: RunProvenanceProps) {
+  const actorId = typeof metadata?.userId === "string" ? metadata.userId : null;
+  const sourceScopeId = provenance.reconJobId ?? provenance.ingestionId ?? "unlinked";
+  const adapterPair = [provenance.sourceAdapter, provenance.targetAdapter]
+    .filter(Boolean)
+    .join(" -> ");
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -23,19 +33,19 @@ export const RunProvenance = memo(function RunProvenance({
               icon={Database}
               label="Source Model"
               value={provenance.sourceModel}
-              id={provenance.reconJobId || "null"}
+              id={sourceScopeId}
             />
             <ProvenanceRow
               icon={User}
               label="Initiated By"
-              value={metadata?.userId || "System Scheduler"}
-              id={metadata?.userId || "auto-executor"}
+              value={actorId ? "Captured in run metadata" : "Unavailable in canonical payload"}
+              id={actorId || "not-captured"}
             />
             <ProvenanceRow
               icon={Shield}
-              label="Compliance Scope"
-              value="Tenant Isolation Active"
-              id="tenant-id-hidden"
+              label="Adapter Pair"
+              value={adapterPair || "Unavailable"}
+              id={provenance.runKind}
             />
           </div>
         </div>
@@ -43,30 +53,30 @@ export const RunProvenance = memo(function RunProvenance({
         <div className="space-y-4 font-mono">
           <SectionHeader icon={Shield} label="Cryptographic Breadcrumbs" />
           <div className="p-4 rounded-xl border bg-black/10 dark:bg-black/40 space-y-3 text-[10px]">
-            {metadata?.traceId && (
-              <div className="flex items-center justify-between">
-                <span className="opacity-50 uppercase">Trace ID</span>
-                <span className="font-bold text-blue-500 truncate max-w-[200px]">
-                  {metadata.traceId}
-                </span>
-              </div>
-            )}
             <div className="flex items-center justify-between">
-              <span className="opacity-50 uppercase">Input Checksum</span>
-              <span className="font-bold text-muted-foreground truncate max-w-[200px]">
-                SHA-256:{metadata?.inputHash?.slice(0, 16) || "none"}
+              <span className="opacity-50 uppercase">Trace ID</span>
+              <span className="font-bold text-blue-500 truncate max-w-[200px]">
+                {traceId || "unavailable"}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="opacity-50 uppercase">Worker Partition</span>
-              <span className="font-bold text-muted-foreground">reconciliation-worker-01</span>
+              <span className="opacity-50 uppercase">Input Checksum</span>
+              <span className="font-bold text-muted-foreground truncate max-w-[200px]">
+                {inputHash ? `SHA-256:${inputHash.slice(0, 16)}` : "unavailable"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="opacity-50 uppercase">Execution Window</span>
+              <span className="font-bold text-muted-foreground truncate max-w-[200px]">
+                {provenance.executedAt || "unavailable"}
+              </span>
             </div>
           </div>
           <div className="p-4 rounded-xl border bg-gradient-to-r from-blue-500/10 to-transparent flex items-center gap-3">
             <Shield className="w-5 h-5 text-blue-500" />
             <p className="text-[11px] leading-relaxed italic opacity-80">
-              This run has been signed and persisted to the immutable audit trail. Any future
-              modifications to this run definition will be flagged in the drift analysis report.
+              Canonical provenance is shown directly from the run-detail payload. Missing trace or
+              hash values are treated as unavailable rather than inferred.
             </p>
           </div>
         </div>
