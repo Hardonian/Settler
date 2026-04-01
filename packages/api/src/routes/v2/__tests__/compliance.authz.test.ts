@@ -12,9 +12,20 @@ jest.mock("../../../services/authz/openfga-authorization-service", () => ({
   }),
 }));
 
-const router = require("../knowledge").default;
+const createExportMock = jest.fn();
+jest.mock("../../../services/compliance/export-system", () => ({
+  complianceExportSystem: {
+    createExport: (tenantId: string, jurisdiction: unknown, format: unknown) =>
+      createExportMock(tenantId, jurisdiction, format),
+    listExports: jest.fn(() => []),
+    getExport: jest.fn(() => undefined),
+    getTemplates: jest.fn(() => []),
+  },
+}));
 
-describe("knowledge route authz", () => {
+const router = require("../compliance").default;
+
+describe("compliance route authz", () => {
   const app = express();
   app.use(express.json());
   app.use((req, _res, next) => {
@@ -23,10 +34,11 @@ describe("knowledge route authz", () => {
     (req as any).traceId = "trace-1";
     next();
   });
-  app.use("/api/v2/knowledge", router);
+  app.use("/api/v2/compliance", router);
 
   beforeEach(() => {
     jest.clearAllMocks();
+    delete process.env.SETTLER_ENABLE_V2_STRATEGIC_PREVIEW;
     authorizeTenantActionMock.mockResolvedValue({
       allowed: true,
       degraded: false,
@@ -35,7 +47,7 @@ describe("knowledge route authz", () => {
     });
   });
 
-  it("fails closed when authz denies read", async () => {
+  it("fails closed when export authz denies", async () => {
     authorizeTenantActionMock.mockResolvedValue({
       allowed: false,
       reason: "openfga_required_unavailable",
@@ -44,32 +56,18 @@ describe("knowledge route authz", () => {
       openfga: { state: "unavailable", allowed: false, reason: "openfga_unavailable" },
     });
 
-    const response = await request(app).get("/api/v2/knowledge/decisions");
+    const response = await request(app).post("/api/v2/compliance/exports").send({
+      jurisdiction: "GDPR",
+      format: "json",
+    });
 
     expect(response.status).toBe(403);
     expect(response.body.reason).toBe("openfga_required_unavailable");
-  });
-
-  it("returns tenant-context-required when tenant is missing", async () => {
-    const appNoTenant = express();
-    appNoTenant.use(express.json());
-    appNoTenant.use((req, _res, next) => {
-      (req as any).tenantId = null;
-      (req as any).userId = "user-1";
-      (req as any).traceId = "trace-1";
-      next();
-    });
-    appNoTenant.use("/api/v2/knowledge", router);
-
-    const response = await request(appNoTenant).get("/api/v2/knowledge/stats");
-    expect(response.status).toBe(400);
-    expect(response.body.error).toBe("TENANT_CONTEXT_REQUIRED");
+    expect(createExportMock).not.toHaveBeenCalled();
   });
 
   it("returns explicit unavailable state when preview is disabled", async () => {
-    delete process.env.SETTLER_ENABLE_V2_STRATEGIC_PREVIEW;
-
-    const response = await request(app).get("/api/v2/knowledge/stats");
+    const response = await request(app).get("/api/v2/compliance/templates");
 
     expect(response.status).toBe(503);
     expect(response.body.error).toBe("STRATEGIC_SURFACE_UNAVAILABLE");

@@ -12,9 +12,31 @@ jest.mock("../../../services/authz/openfga-authorization-service", () => ({
   }),
 }));
 
-const router = require("../knowledge").default;
+const submitMetricsMock = jest.fn(
+  (_tenantId: string, _metrics: unknown) => ({ accepted: true })
+);
+jest.mock("../../../services/network-effects/performance-pools", () => ({
+  performanceTuningPools: {
+    optIn: jest.fn(),
+    submitMetrics: (tenantId: string, metrics: unknown) => submitMetricsMock(tenantId, metrics),
+    getInsights: jest.fn(() => []),
+    getRecommendedRules: jest.fn(() => []),
+    getStats: jest.fn(() => ({ totalMetrics: 0, optInCustomers: 0, adapters: [], topPerformers: [] })),
+  },
+}));
 
-describe("knowledge route authz", () => {
+jest.mock("../../../services/network-effects/cross-customer-intelligence", () => ({
+  crossCustomerIntelligence: {
+    optIn: jest.fn(),
+    optOut: jest.fn(),
+    checkPattern: jest.fn(() => null),
+    getNetworkInsights: jest.fn(() => ({ totalPatterns: 0, fraudPatterns: 0, anomalyPatterns: 0, topPatterns: [] })),
+  },
+}));
+
+const router = require("../network-effects").default;
+
+describe("network effects route authz", () => {
   const app = express();
   app.use(express.json());
   app.use((req, _res, next) => {
@@ -23,10 +45,11 @@ describe("knowledge route authz", () => {
     (req as any).traceId = "trace-1";
     next();
   });
-  app.use("/api/v2/knowledge", router);
+  app.use("/api/v2/network-effects", router);
 
   beforeEach(() => {
     jest.clearAllMocks();
+    delete process.env.SETTLER_ENABLE_V2_STRATEGIC_PREVIEW;
     authorizeTenantActionMock.mockResolvedValue({
       allowed: true,
       degraded: false,
@@ -35,7 +58,7 @@ describe("knowledge route authz", () => {
     });
   });
 
-  it("fails closed when authz denies read", async () => {
+  it("fails closed when control-plane authz denies", async () => {
     authorizeTenantActionMock.mockResolvedValue({
       allowed: false,
       reason: "openfga_required_unavailable",
@@ -44,32 +67,19 @@ describe("knowledge route authz", () => {
       openfga: { state: "unavailable", allowed: false, reason: "openfga_unavailable" },
     });
 
-    const response = await request(app).get("/api/v2/knowledge/decisions");
+    const response = await request(app).post("/api/v2/network-effects/performance/submit").send({
+      jobId: "job-1",
+      adapter: "csv",
+      ruleType: "exact",
+    });
 
     expect(response.status).toBe(403);
     expect(response.body.reason).toBe("openfga_required_unavailable");
-  });
-
-  it("returns tenant-context-required when tenant is missing", async () => {
-    const appNoTenant = express();
-    appNoTenant.use(express.json());
-    appNoTenant.use((req, _res, next) => {
-      (req as any).tenantId = null;
-      (req as any).userId = "user-1";
-      (req as any).traceId = "trace-1";
-      next();
-    });
-    appNoTenant.use("/api/v2/knowledge", router);
-
-    const response = await request(appNoTenant).get("/api/v2/knowledge/stats");
-    expect(response.status).toBe(400);
-    expect(response.body.error).toBe("TENANT_CONTEXT_REQUIRED");
+    expect(submitMetricsMock).not.toHaveBeenCalled();
   });
 
   it("returns explicit unavailable state when preview is disabled", async () => {
-    delete process.env.SETTLER_ENABLE_V2_STRATEGIC_PREVIEW;
-
-    const response = await request(app).get("/api/v2/knowledge/stats");
+    const response = await request(app).get("/api/v2/network-effects/stats");
 
     expect(response.status).toBe(503);
     expect(response.body.error).toBe("STRATEGIC_SURFACE_UNAVAILABLE");

@@ -4,38 +4,76 @@
  * REST API for compliance exports and edge agent management
  */
 
-import { Router, Request, Response } from "express";
+import { Router, Response } from "express";
 import { complianceExportSystem } from "../../services/compliance/export-system";
 import { EdgeAgent } from "../../services/privacy-preserving/edge-agent";
 import { handleRouteError } from "../../utils/error-handler";
 import { AuthRequest } from "../../middleware/auth";
+import { requirePermission } from "../../middleware/authorization";
+import { Permission } from "../../infrastructure/security/Permissions";
+import { authorizeTenantActionOr403, requireTenantContext } from "../authz-helpers";
+import {
+  buildStrategicSurfaceMetadata,
+  requireStrategicSurfaceAvailability,
+} from "./strategic-preview";
 
 const router: Router = Router();
+const COMPLIANCE_SURFACE = {
+  key: "compliance_exports_v2",
+  unavailableReason:
+    "Compliance v2 is disabled until export state and privacy workflows are tenant-scoped and durably persisted.",
+  previewReason:
+    "Compliance v2 is running in local-only preview mode without tenant-scoped durable export storage.",
+};
 
 /**
  * POST /api/v2/compliance/exports
  * Create a compliance export
  */
-router.post("/exports", async (req: Request, res: Response) => {
+router.post(
+  "/exports",
+  requirePermission(Permission.ADMIN_WRITE),
+  async (req: AuthRequest, res: Response) => {
   try {
-    const customerId = (req as AuthRequest).userId || req.body.customerId;
+    const tenantId = requireTenantContext(req, res);
+    if (!tenantId) return;
+    if (
+      !(await authorizeTenantActionOr403(
+        req,
+        res,
+        tenantId,
+        "tenant.user.data.export",
+        "Compliance export creation is not authorized"
+      ))
+    ) {
+      return;
+    }
+    const capability = requireStrategicSurfaceAvailability(
+      req,
+      res,
+      "/api/v2/compliance/exports",
+      COMPLIANCE_SURFACE
+    );
+    if (!capability) return;
     const { jurisdiction, format } = req.body;
 
-    if (!customerId || !jurisdiction) {
+    if (!jurisdiction) {
       return res.status(400).json({
         error: "Missing required fields",
-        message: "customerId and jurisdiction are required",
+        message: "jurisdiction is required",
       });
     }
 
     const export_ = await complianceExportSystem.createExport(
-      customerId,
+      tenantId,
       jurisdiction,
       format || "json"
     );
 
     res.status(201).json({
       data: export_,
+      capability,
+      metadata: buildStrategicSurfaceMetadata(req, capability),
       message: "Export created successfully",
     });
     return;
@@ -49,21 +87,39 @@ router.post("/exports", async (req: Request, res: Response) => {
  * GET /api/v2/compliance/exports
  * List exports for customer
  */
-router.get("/exports", async (req: Request, res: Response) => {
+router.get(
+  "/exports",
+  requirePermission(Permission.ADMIN_READ),
+  async (req: AuthRequest, res: Response) => {
   try {
-    const customerId = (req as any).user?.id || (req.query.customerId as string);
-
-    if (!customerId) {
-      return res.status(400).json({
-        error: "Missing customer ID",
-      });
+    const tenantId = requireTenantContext(req, res);
+    if (!tenantId) return;
+    if (
+      !(await authorizeTenantActionOr403(
+        req,
+        res,
+        tenantId,
+        "tenant.user.data.export",
+        "Compliance export read is not authorized"
+      ))
+    ) {
+      return;
     }
+    const capability = requireStrategicSurfaceAvailability(
+      req,
+      res,
+      "/api/v2/compliance/exports",
+      COMPLIANCE_SURFACE
+    );
+    if (!capability) return;
 
-    const exports = complianceExportSystem.listExports(customerId);
+    const exports = complianceExportSystem.listExports(tenantId);
 
     res.json({
       data: exports,
+      capability,
       count: exports.length,
+      metadata: buildStrategicSurfaceMetadata(req, capability),
     });
     return;
   } catch (error: unknown) {
@@ -76,8 +132,31 @@ router.get("/exports", async (req: Request, res: Response) => {
  * GET /api/v2/compliance/exports/:id
  * Get export by ID
  */
-router.get("/exports/:id", async (req: Request, res: Response) => {
+router.get(
+  "/exports/:id",
+  requirePermission(Permission.ADMIN_READ),
+  async (req: AuthRequest, res: Response) => {
   try {
+    const tenantId = requireTenantContext(req, res);
+    if (!tenantId) return;
+    if (
+      !(await authorizeTenantActionOr403(
+        req,
+        res,
+        tenantId,
+        "tenant.user.data.export",
+        "Compliance export read is not authorized"
+      ))
+    ) {
+      return;
+    }
+    const capability = requireStrategicSurfaceAvailability(
+      req,
+      res,
+      "/api/v2/compliance/exports/:id",
+      COMPLIANCE_SURFACE
+    );
+    if (!capability) return;
     const idParam = req.params["id"];
     const id = Array.isArray(idParam) ? (idParam[0] ?? "") : (idParam ?? "");
     if (!id) {
@@ -92,8 +171,17 @@ router.get("/exports/:id", async (req: Request, res: Response) => {
       });
     }
 
+    if (export_.customerId !== tenantId) {
+      return res.status(404).json({
+        error: "Export not found",
+        message: `Export ${id} not found`,
+      });
+    }
+
     res.json({
       data: export_,
+      capability,
+      metadata: buildStrategicSurfaceMetadata(req, capability),
     });
     return;
   } catch (error: unknown) {
@@ -106,13 +194,38 @@ router.get("/exports/:id", async (req: Request, res: Response) => {
  * GET /api/v2/compliance/templates
  * Get available export templates
  */
-router.get("/templates", async (_req: Request, res: Response) => {
+router.get(
+  "/templates",
+  requirePermission(Permission.ADMIN_READ),
+  async (req: AuthRequest, res: Response) => {
   try {
+    const tenantId = requireTenantContext(req, res);
+    if (!tenantId) return;
+    if (
+      !(await authorizeTenantActionOr403(
+        req,
+        res,
+        tenantId,
+        "tenant.user.data.export",
+        "Compliance export template read is not authorized"
+      ))
+    ) {
+      return;
+    }
+    const capability = requireStrategicSurfaceAvailability(
+      req,
+      res,
+      "/api/v2/compliance/templates",
+      COMPLIANCE_SURFACE
+    );
+    if (!capability) return;
     const templates = complianceExportSystem.getTemplates();
 
     res.json({
       data: templates,
+      capability,
       count: templates.length,
+      metadata: buildStrategicSurfaceMetadata(req, capability),
     });
     return;
   } catch (error: unknown) {
@@ -125,20 +238,42 @@ router.get("/templates", async (_req: Request, res: Response) => {
  * POST /api/v2/compliance/edge/initialize
  * Initialize edge agent
  */
-router.post("/edge/initialize", async (req: Request, res: Response) => {
+router.post(
+  "/edge/initialize",
+  requirePermission(Permission.ADMIN_WRITE),
+  async (req: AuthRequest, res: Response) => {
   try {
-    const customerId = (req as AuthRequest).userId || req.body.customerId;
+    const tenantId = requireTenantContext(req, res);
+    if (!tenantId) return;
+    if (
+      !(await authorizeTenantActionOr403(
+        req,
+        res,
+        tenantId,
+        "tenant.integration.manage",
+        "Compliance edge initialization is not authorized"
+      ))
+    ) {
+      return;
+    }
+    const capability = requireStrategicSurfaceAvailability(
+      req,
+      res,
+      "/api/v2/compliance/edge/initialize",
+      COMPLIANCE_SURFACE
+    );
+    if (!capability) return;
     const { apiKey, cloudEndpoint, reconciliationRules, encryptionKey } = req.body;
 
-    if (!customerId || !apiKey || !cloudEndpoint || !reconciliationRules) {
+    if (!apiKey || !cloudEndpoint || !reconciliationRules) {
       return res.status(400).json({
         error: "Missing required fields",
-        message: "customerId, apiKey, cloudEndpoint, and reconciliationRules are required",
+        message: "apiKey, cloudEndpoint, and reconciliationRules are required",
       });
     }
 
     const edgeAgent = new EdgeAgent({
-      customerId,
+      customerId: tenantId,
       apiKey,
       cloudEndpoint: cloudEndpoint || "https://api.settler.io",
       reconciliationRules,
@@ -149,9 +284,11 @@ router.post("/edge/initialize", async (req: Request, res: Response) => {
 
     res.json({
       data: {
-        customerId,
+        customerId: tenantId,
         initialized: true,
       },
+      capability,
+      metadata: buildStrategicSurfaceMetadata(req, capability),
       message: "Edge agent initialized successfully",
     });
     return;

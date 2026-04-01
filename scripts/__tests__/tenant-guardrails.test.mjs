@@ -84,8 +84,8 @@ test("evaluateCoverageGap identifies unclassified routes", () => {
 
   try {
     const gap = evaluateCoverageGap(root);
-    assert.ok(gap.totalRoutes >= highRiskRouteRules.length + 1);
-    assert.ok(gap.classifiedRoutes >= highRiskRouteRules.length);
+    assert.ok(gap.totalRoutes >= 2);
+    assert.ok(gap.classifiedRoutes >= 1);
     assert.ok(
       gap.unclassifiedRoutes.some((r) => r.includes("unknown-surface/secret-data")),
       "unclassified route should appear in gap report"
@@ -159,6 +159,43 @@ test("evaluateCoverageGap classifies admin and v1 routes by category", () => {
     assert.equal(adminEntry.category, "admin");
     assert.ok(v1Entry);
     assert.equal(v1Entry.category, "tenant");
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("evaluateCoverageGap classifies express auth and tenant routes by category", () => {
+  const root = setupFixture((fixtureRoot) => {
+    const apiRoutesDir = path.join(fixtureRoot, "packages/api/src/routes");
+    mkdirSync(apiRoutesDir, { recursive: true });
+    writeFileSync(
+      path.join(apiRoutesDir, "auth.ts"),
+      'import { Router } from "express"; const router = Router(); router.post("/login", () => {});',
+      "utf8"
+    );
+    writeFileSync(
+      path.join(apiRoutesDir, "exceptions.ts"),
+      'import { Router } from "express"; const router = Router(); router.get("/exceptions", () => {});',
+      "utf8"
+    );
+    writeFileSync(
+      path.join(apiRoutesDir, "usage.ts"),
+      'import { Router } from "express"; const router = Router(); router.get("/usage", () => {});',
+      "utf8"
+    );
+  });
+
+  try {
+    const gap = evaluateCoverageGap(root);
+    const authEntry = gap.routeClassifications.find((r) => r.file.includes("packages/api/src/routes/auth.ts"));
+    const usageEntry = gap.routeClassifications.find((r) =>
+      r.file.includes("packages/api/src/routes/usage.ts")
+    );
+
+    assert.ok(authEntry);
+    assert.equal(authEntry.category, "public-write");
+    assert.ok(usageEntry);
+    assert.equal(usageEntry.category, "tenant");
   } finally {
     rmSync(root, { recursive: true, force: true });
   }

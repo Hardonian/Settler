@@ -1,12 +1,14 @@
 import { Router, Response } from "express";
 import { query } from "../../db";
 import type { AuthRequest } from "../../middleware/auth";
+import { requirePermission } from "../../middleware/authorization";
 import { UserRole } from "../../domain/entities/User";
 import { Permission, PermissionChecker } from "../../infrastructure/security/Permissions";
 import { getCapabilityRegistry } from "../../services/capabilities/registry";
 import { observeCapabilityStatus } from "../../services/capabilities/telemetry";
 import type { CapabilityStatus } from "../../services/capabilities/types";
 import { handleRouteError } from "../../utils/error-handler";
+import { requireTenantContext } from "../authz-helpers";
 
 const router: Router = Router();
 
@@ -25,22 +27,27 @@ async function resolveRequestPermissions(
   req: AuthRequest
 ): Promise<{ role: UserRole; scopes: string[] }> {
   const scopes: string[] = [];
+  const tenantId = req.tenantId;
 
-  if (req.apiKeyId) {
+  if (req.apiKeyId && tenantId) {
     const apiKeyRows = await query<{ scopes: string[] | null }>(
-      `SELECT scopes FROM api_keys WHERE id = $1`,
-      [req.apiKeyId]
+      `SELECT scopes FROM api_keys WHERE id = $1 AND tenant_id = $2`,
+      [req.apiKeyId, tenantId]
     );
     scopes.push(...(apiKeyRows[0]?.scopes ?? []));
   }
 
-  if (!req.userId) {
+  if (!req.userId || !tenantId) {
     return { role: UserRole.VIEWER, scopes };
   }
 
-  const userRows = await query<{ role: string }>(`SELECT role FROM users WHERE id = $1`, [
+  const userRows = await query<{ role: string }>(
+    `SELECT role FROM users WHERE id = $1 AND tenant_id = $2`,
+    [
     req.userId,
-  ]);
+      tenantId,
+    ]
+  );
   const roleValue = userRows[0]?.role;
   const role = Object.values(UserRole).includes(roleValue as UserRole)
     ? (roleValue as UserRole)
@@ -54,18 +61,30 @@ function isCapabilityVisible(status: CapabilityStatus, role: UserRole, scopes: s
   return PermissionChecker.hasAnyPermission(role, scopes, requiredPermissions);
 }
 
-router.get("/capabilities", async (_req, res) => {
+router.get("/capabilities", requirePermission(Permission.ADMIN_READ), async (req: AuthRequest, res) => {
+  const tenantId = requireTenantContext(req, res);
+  if (!tenantId) return;
+
   try {
     const registry = await getCapabilityRegistry();
     const data = registry.list();
     data.forEach((status) => observeCapabilityStatus(status, "/api/v1/capabilities"));
-    res.json({ data });
+    res.json({
+      data,
+      metadata: { tenantId },
+    });
   } catch (error) {
     return handleRouteError(res, error, "Failed to load capability registry", 500);
   }
 });
 
-router.get("/capabilities/projected", async (req: AuthRequest, res: Response) => {
+router.get(
+  "/capabilities/projected",
+  requirePermission(Permission.USERS_READ),
+  async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantContext(req, res);
+    if (!tenantId) return;
+
   try {
     const registry = await getCapabilityRegistry();
     const { role, scopes } = await resolveRequestPermissions(req);
@@ -83,6 +102,7 @@ router.get("/capabilities/projected", async (req: AuthRequest, res: Response) =>
       metadata: {
         role,
         scopeCount: scopes.length,
+        tenantId,
       },
     });
   } catch (error) {

@@ -16,8 +16,19 @@ import {
   requireTenantContext,
   requireUserContext,
 } from "../authz-helpers";
+import {
+  buildStrategicSurfaceMetadata,
+  requireStrategicSurfaceAvailability,
+} from "./strategic-preview";
 
 const router: Router = Router();
+const KNOWLEDGE_SURFACE = {
+  key: "knowledge_management_v2",
+  unavailableReason:
+    "Knowledge management v2 is disabled until decision storage and retrieval are tenant-scoped and durably persisted.",
+  previewReason:
+    "Knowledge management v2 is running in local-only preview mode without tenant-scoped durable storage.",
+};
 
 /**
  * POST /api/v2/knowledge/decisions
@@ -42,10 +53,19 @@ router.post(
       ) {
         return;
       }
+      const capability = requireStrategicSurfaceAvailability(
+        req,
+        res,
+        "/api/v2/knowledge/decisions",
+        KNOWLEDGE_SURFACE
+      );
+      if (!capability) return;
       const decision = await decisionLog.createDecision(req.body);
 
       res.status(201).json({
         data: decision,
+        capability,
+        metadata: buildStrategicSurfaceMetadata(req, capability),
         message: "Decision created successfully",
       });
     } catch (error: unknown) {
@@ -76,6 +96,13 @@ router.get(
       ) {
         return;
       }
+      const capability = requireStrategicSurfaceAvailability(
+        req,
+        res,
+        "/api/v2/knowledge/decisions",
+        KNOWLEDGE_SURFACE
+      );
+      if (!capability) return;
       const queryOptions: {
         status?: "proposed" | "accepted" | "rejected" | "superseded";
         decisionMaker?: string;
@@ -109,7 +136,9 @@ router.get(
 
       res.json({
         data: decisions,
+        capability,
         count: decisions.length,
+        metadata: buildStrategicSurfaceMetadata(req, capability),
       });
       return;
     } catch (error: unknown) {
@@ -131,6 +160,13 @@ router.get(
       const tenantId = requireTenantContext(req, res);
       if (!tenantId) return;
       if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.knowledge.read"))) return;
+      const capability = requireStrategicSurfaceAvailability(
+        req,
+        res,
+        "/api/v2/knowledge/decisions/:id",
+        KNOWLEDGE_SURFACE
+      );
+      if (!capability) return;
       const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
       if (!id) {
         return res.status(400).json({ error: "Decision ID is required" });
@@ -151,6 +187,8 @@ router.get(
           ...decision,
           relatedDecisions: related,
         },
+        capability,
+        metadata: buildStrategicSurfaceMetadata(req, capability),
       });
       return;
     } catch (error: unknown) {
@@ -173,6 +211,13 @@ router.patch(
       if (!tenantId) return;
       if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.knowledge.manage")))
         return;
+      const capability = requireStrategicSurfaceAvailability(
+        req,
+        res,
+        "/api/v2/knowledge/decisions/:id/outcomes",
+        KNOWLEDGE_SURFACE
+      );
+      if (!capability) return;
       const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
       const { outcome } = req.body;
 
@@ -190,6 +235,8 @@ router.patch(
 
       res.json({
         data: decision,
+        capability,
+        metadata: buildStrategicSurfaceMetadata(req, capability),
         message: "Outcome updated successfully",
       });
       return;
@@ -212,6 +259,13 @@ router.post(
       const tenantId = requireTenantContext(req, res);
       if (!tenantId) return;
       if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.knowledge.read"))) return;
+      const capability = requireStrategicSurfaceAvailability(
+        req,
+        res,
+        "/api/v2/knowledge/assistant/query",
+        KNOWLEDGE_SURFACE
+      );
+      if (!capability) return;
       const { question, context } = req.body;
 
       if (!question || typeof question !== "string") {
@@ -227,6 +281,8 @@ router.post(
 
       res.json({
         data: response,
+        capability,
+        metadata: buildStrategicSurfaceMetadata(req, capability),
       });
       return;
     } catch (error: unknown) {
@@ -248,6 +304,13 @@ router.get(
       const tenantId = requireTenantContext(req, res);
       if (!tenantId) return;
       if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.knowledge.read"))) return;
+      const capability = requireStrategicSurfaceAvailability(
+        req,
+        res,
+        "/api/v2/knowledge/stats",
+        KNOWLEDGE_SURFACE
+      );
+      if (!capability) return;
       const assistantStats = aiKnowledgeAssistant.getStats();
 
       // Get decision stats
@@ -268,6 +331,8 @@ router.get(
             byStatus: decisionsByStatus,
           },
         },
+        capability,
+        metadata: buildStrategicSurfaceMetadata(req, capability),
       });
       return;
     } catch (error: unknown) {

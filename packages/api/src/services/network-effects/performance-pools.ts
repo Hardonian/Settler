@@ -50,12 +50,22 @@ export class PerformanceTuningPools extends EventEmitter {
     this.emit('customer_opted_out', customerId);
   }
 
+  isOptedIn(customerId: string): boolean {
+    return this.optInCustomers.has(customerId);
+  }
+
   /**
    * Submit performance metrics
    */
-  submitMetrics(customerId: string, metrics: Omit<PerformanceMetric, 'customerId' | 'timestamp'>): void {
+  submitMetrics(
+    customerId: string,
+    metrics: Omit<PerformanceMetric, 'customerId' | 'timestamp'>
+  ): { accepted: boolean; reason?: string } {
     if (!this.optInCustomers.has(customerId)) {
-      return; // Silently ignore if not opted in
+      return {
+        accepted: false,
+        reason: 'Tenant must opt in to performance tuning pools before submitting metrics.',
+      };
     }
 
     const metric: PerformanceMetric = {
@@ -72,6 +82,7 @@ export class PerformanceTuningPools extends EventEmitter {
     }
 
     this.emit('metrics_submitted', metric);
+    return { accepted: true };
   }
 
   /**

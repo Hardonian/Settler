@@ -17,8 +17,19 @@ import {
 } from "../../services/reconciliation-graph/types";
 import { handleRouteError } from "../../utils/error-handler";
 import { authorizeTenantActionOr403, requireTenantContext } from "../authz-helpers";
+import {
+  buildStrategicSurfaceMetadata,
+  requireStrategicSurfaceAvailability,
+} from "./strategic-preview";
 
 const router: Router = Router();
+const RECONCILIATION_GRAPH_SURFACE = {
+  key: "reconciliation_graph_v2",
+  unavailableReason:
+    "Reconciliation graph v2 is disabled until graph state is tenant-scoped and durably persisted.",
+  previewReason:
+    "Reconciliation graph v2 is running in local-only preview mode without tenant-scoped durable storage.",
+};
 
 /**
  * POST /api/v2/reconciliation-graph/:jobId/nodes
@@ -42,6 +53,13 @@ router.post(
       ) {
         return;
       }
+      const capability = requireStrategicSurfaceAvailability(
+        req,
+        res,
+        "/api/v2/reconciliation-graph/:jobId/nodes",
+        RECONCILIATION_GRAPH_SURFACE
+      );
+      if (!capability) return;
       const jobId = req.params.jobId as string;
       if (!jobId) {
         return res.status(400).json({ error: "Job ID is required" });
@@ -96,6 +114,8 @@ router.post(
 
       res.status(201).json({
         data: node,
+        capability,
+        metadata: buildStrategicSurfaceMetadata(req, capability),
         message: "Node added successfully",
       });
       return;
@@ -119,6 +139,13 @@ router.post(
       if (!tenantId) return;
       if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.knowledge.manage")))
         return;
+      const capability = requireStrategicSurfaceAvailability(
+        req,
+        res,
+        "/api/v2/reconciliation-graph/:jobId/edges",
+        RECONCILIATION_GRAPH_SURFACE
+      );
+      if (!capability) return;
       const jobId = req.params.jobId as string;
       if (!jobId) {
         return res.status(400).json({ error: "Job ID is required" });
@@ -137,6 +164,8 @@ router.post(
 
       res.status(201).json({
         data: edge,
+        capability,
+        metadata: buildStrategicSurfaceMetadata(req, capability),
         message: "Edge added successfully",
       });
       return;
@@ -160,6 +189,13 @@ router.get(
       if (!tenantId) return;
       if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.memory.graph.read")))
         return;
+      const capability = requireStrategicSurfaceAvailability(
+        req,
+        res,
+        "/api/v2/reconciliation-graph/:jobId/query",
+        RECONCILIATION_GRAPH_SURFACE
+      );
+      if (!capability) return;
       const jobId = req.params.jobId as string;
       if (!jobId) {
         return res.status(400).json({ error: "Job ID is required" });
@@ -206,6 +242,8 @@ router.get(
           edges: result.edges,
           count: result.nodes.length,
         },
+        capability,
+        metadata: buildStrategicSurfaceMetadata(req, capability),
       });
       return;
     } catch (error: unknown) {
@@ -228,6 +266,13 @@ router.get(
       if (!tenantId) return;
       if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.memory.graph.read")))
         return;
+      const capability = requireStrategicSurfaceAvailability(
+        req,
+        res,
+        "/api/v2/reconciliation-graph/:jobId/state",
+        RECONCILIATION_GRAPH_SURFACE
+      );
+      if (!capability) return;
       const jobId = req.params.jobId as string;
       if (!jobId) {
         return res.status(400).json({ error: "Job ID is required" });
@@ -248,6 +293,8 @@ router.get(
           edgeCount: graph.edges.size,
           updatedAt: graph.updatedAt,
         },
+        capability,
+        metadata: buildStrategicSurfaceMetadata(req, capability),
       });
       return;
     } catch (error: unknown) {
@@ -268,6 +315,13 @@ router.get(
     const tenantId = requireTenantContext(req, res);
     if (!tenantId) return;
     if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.memory.graph.read"))) return;
+    const capability = requireStrategicSurfaceAvailability(
+      req,
+      res,
+      "/api/v2/reconciliation-graph/:jobId/stream",
+      RECONCILIATION_GRAPH_SURFACE
+    );
+    if (!capability) return;
     const jobIdParam = req.params["jobId"];
     const jobId = Array.isArray(jobIdParam) ? (jobIdParam[0] ?? "") : (jobIdParam ?? "");
     if (!jobId) {
@@ -292,7 +346,14 @@ router.get(
     });
 
     // Send initial connection message
-    res.write(`data: ${JSON.stringify({ type: "connected", jobId })}\n\n`);
+    res.write(
+      `data: ${JSON.stringify({
+        type: "connected",
+        jobId,
+        capability,
+        metadata: buildStrategicSurfaceMetadata(req, capability),
+      })}\n\n`
+    );
   }
 );
 

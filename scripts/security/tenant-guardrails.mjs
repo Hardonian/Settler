@@ -76,6 +76,72 @@ export const highRiskRouteRules = [
     manualValidation:
       "Public/demo path is intentional; runtime checks must verify it does not leak tenant data.",
   },
+  {
+    route: "/api/v1/runs (express)",
+    classification: "tenant-bound",
+    file: "packages/api/src/routes/runs.ts",
+    mustInclude: [
+      { token: "requirePermission(Permission.JOBS_READ)", reason: "read authz required" },
+      { token: "req.tenantId!", reason: "tenant scope must come from authenticated request" },
+      {
+        token: "resolveOperatorRunDetailForTenants(",
+        reason: "detail route must stay on canonical shared resolver",
+      },
+      {
+        token: "where: { id: runId2, tenantId }",
+        reason: "retry mutation must stay tenant-scoped",
+      },
+    ],
+    manualValidation:
+      "Requires authenticated API request with a foreign-tenant run id to prove denial end-to-end.",
+  },
+  {
+    route: "/api/v1/exceptions (express)",
+    classification: "tenant-bound",
+    file: "packages/api/src/routes/exceptions.ts",
+    mustInclude: [
+      { token: "requirePermission(Permission.REPORTS_READ)", reason: "read authz required" },
+      { token: "ExceptionReviewService", reason: "mutations must flow through shared review service" },
+      { token: "tenantId = req.tenantId!", reason: "tenant scope must come from authenticated request" },
+      { token: "validateExceptionAccess(", reason: "object-level access guard required" },
+    ],
+    manualValidation:
+      "Requires runtime checks for cross-tenant exception ids across list, detail, and mutation flows.",
+  },
+  {
+    route: "/api/v1/intelligence/exceptions/:exceptionId/similar (express)",
+    classification: "tenant-bound",
+    file: "packages/api/src/routes/exception-intelligence.ts",
+    mustInclude: [
+      { token: "requirePermission(Permission.OPERATOR_READ)", reason: "read authz required" },
+      { token: "const tenantId = req.tenantId!", reason: "tenant scope must come from authenticated request" },
+      {
+        token: "where: { id: exceptionId, tenantId }",
+        reason: "lookup must stay tenant-scoped before intelligence reads",
+      },
+      { token: "findSimilarCases({", reason: "similarity read must flow through memory service" },
+    ],
+    manualValidation:
+      "Requires runtime probe using a foreign-tenant exception id to prove no similar-case leakage.",
+  },
+  {
+    route: "/api/v1/tenant/* (express mount)",
+    classification: "tenant-bound",
+    file: "packages/api/src/index.ts",
+    mustInclude: [
+      { token: 'router.use(authMiddleware);', reason: "protected router must authenticate before tenant mounts" },
+      {
+        token: 'router.use("/tenant", tenantMiddleware, tenantDataRouter);',
+        reason: "tenant data routes must keep explicit tenant middleware",
+      },
+      {
+        token: 'router.use("/tenant", tenantMiddleware, platformControlPlaneRouter);',
+        reason: "tenant control-plane routes must keep explicit tenant middleware",
+      },
+    ],
+    manualValidation:
+      "Requires runtime verification that missing or mismatched tenant context is rejected before tenant routes execute.",
+  },
 ];
 
 const classificationRules = [
@@ -324,6 +390,36 @@ const classificationRules = [
     class: "authenticated-user",
     reason: "User endpoints operate on the authenticated caller's own data.",
   },
+  {
+    prefix: "packages/api/src/routes/health.ts",
+    class: "public",
+    reason: "Express health endpoint.",
+  },
+  {
+    prefix: "packages/api/src/routes/metrics.ts",
+    class: "internal",
+    reason: "Express metrics endpoint is infra-facing, not tenant scoped.",
+  },
+  {
+    prefix: "packages/api/src/routes/openapi.ts",
+    class: "public",
+    reason: "Express OpenAPI docs are public by design.",
+  },
+  {
+    prefix: "packages/api/src/routes/playground.ts",
+    class: "public",
+    reason: "Express playground is intentionally public/demo scoped.",
+  },
+  {
+    prefix: "packages/api/src/routes/auth.ts",
+    class: "public-write",
+    reason: "Auth routes include public login/refresh and authenticated credential management.",
+  },
+  {
+    prefix: "packages/api/src/routes/",
+    class: "tenant",
+    reason: "Primary Express API routes default to authenticated tenant-scoped data paths.",
+  },
 ];
 
 export const knownExemptPrefixes = [
@@ -332,6 +428,9 @@ export const knownExemptPrefixes = [
   "packages/web/src/app/api/gtm/",
   "packages/web/src/app/api/legal/",
   "packages/web/src/app/api/builder/revalidate/",
+  "packages/api/src/routes/metrics.ts",
+  "packages/api/src/routes/openapi.ts",
+  "packages/api/src/routes/playground.ts",
 ];
 
 const manualReviewHints = [
@@ -342,10 +441,10 @@ const manualReviewHints = [
 ];
 
 function discoverApiRoutes(repoRoot) {
-  const apiDir = path.join(repoRoot, "packages", "web", "src", "app", "api");
   const routes = [];
+  const discovered = new Set();
 
-  function walk(dir) {
+  function walk(dir, includeFile) {
     let entries;
     try {
       entries = readdirSync(dir);
@@ -353,12 +452,18 @@ function discoverApiRoutes(repoRoot) {
       return;
     }
     for (const entry of entries) {
+      if (entry === "__tests__") continue;
       const full = path.join(dir, entry);
       try {
         const stats = statSync(full);
-        if (stats.isDirectory()) walk(full);
-        else if (entry === "route.ts") {
-          routes.push(path.relative(repoRoot, full));
+        if (stats.isDirectory()) {
+          walk(full, includeFile);
+        } else if (includeFile(entry, full)) {
+          const rel = path.relative(repoRoot, full);
+          if (!discovered.has(rel)) {
+            discovered.add(rel);
+            routes.push(rel);
+          }
         }
       } catch {
         // skip unreadable entries
@@ -366,7 +471,14 @@ function discoverApiRoutes(repoRoot) {
     }
   }
 
-  walk(apiDir);
+  walk(path.join(repoRoot, "packages", "web", "src", "app", "api"), (entry) => entry === "route.ts");
+  walk(path.join(repoRoot, "packages", "api", "src", "routes"), (entry, fullPath) => {
+    if (!entry.endsWith(".ts")) return false;
+    if (["authz-helpers.ts", "route-helpers.ts"].includes(entry)) return false;
+    const content = readFileSync(fullPath, "utf8");
+    return content.includes("Router(") || content.includes("router.") || content.includes("v1Router.") || content.includes("v2Router.");
+  });
+
   return routes.sort((a, b) => a.localeCompare(b));
 }
 

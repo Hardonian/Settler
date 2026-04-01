@@ -9,9 +9,9 @@ const addNodeMock = jest.fn();
 const queryMock = jest.fn();
 jest.mock("../../../services/reconciliation-graph/graph-engine", () => ({
   graphEngine: {
-    addNode: (...args: unknown[]) => addNodeMock(...args),
+    addNode: (jobId: string, node: unknown) => addNodeMock(jobId, node),
     addEdge: jest.fn(),
-    query: (...args: unknown[]) => queryMock(...args),
+    query: (query: unknown) => queryMock(query),
     getGraphState: jest.fn(),
     subscribe: jest.fn(() => () => undefined),
   },
@@ -68,5 +68,15 @@ describe("reconciliation graph authz", () => {
     expect(response.status).toBe(403);
     expect(response.body.reason).toBe("openfga_required_unavailable");
     expect(addNodeMock).not.toHaveBeenCalled();
+  });
+
+  it("returns explicit unavailable state when preview is disabled", async () => {
+    delete process.env.SETTLER_ENABLE_V2_STRATEGIC_PREVIEW;
+
+    const response = await request(app).get("/api/v2/reconciliation-graph/job-1/state");
+
+    expect(response.status).toBe(503);
+    expect(response.body.error).toBe("STRATEGIC_SURFACE_UNAVAILABLE");
+    expect(response.body.capability.state).toBe("unavailable");
   });
 });
