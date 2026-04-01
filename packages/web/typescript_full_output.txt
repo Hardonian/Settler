@@ -1,0 +1,10 @@
+src/app/builder/[...page]/page.tsx(99,12): error TS2607: JSX element class does not support attributes because it does not have a 'props' property.
+src/app/builder/[...page]/page.tsx(99,13): error TS2786: 'BuilderComponent' cannot be used as a JSX component.
+  Its type 'typeof BuilderComponent' is not a valid JSX element type.
+    Types of construct signatures are incompatible.
+      Type 'new (props: BuilderComponentProps) => BuilderComponent' is not assignable to type 'new (props: any, deprecatedLegacyContext?: any) => Component<any, any, any>'.
+        Type 'BuilderComponent' is missing the following properties from type 'Component<any, any, any>': context, setState, forceUpdate, props, and 2 more.
+src/app/console/intelligence/page.tsx(61,14): error TS2322: Type '"success" | "error" | "warning"' is not assignable to type '"success" | "default" | "secondary" | "outline" | "info" | "processing" | "warning" | "destructive" | undefined'.
+  Type '"error"' is not assignable to type '"success" | "default" | "secondary" | "outline" | "info" | "processing" | "warning" | "destructive" | undefined'.
+src/app/console/intelligence/page.tsx(308,23): error TS2322: Type '"success" | "outline" | "error" | "info"' is not assignable to type '"success" | "default" | "secondary" | "outline" | "info" | "processing" | "warning" | "destructive" | undefined'.
+  Type '"error"' is not assignable to type '"success" | "default" | "secondary" | "outline" | "info" | "processing" | "warning" | "destructive" | undefined'.

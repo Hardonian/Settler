@@ -1,0 +1,317 @@
+import { query } from "../../db";
+import { UserRole } from "../../domain/entities/User";
+import { logWarn } from "../../utils/logger";
+
+export type OpenFgaAuthzState =
+  | "disabled"
+  | "unconfigured"
+  | "available"
+  | "degraded"
+  | "unavailable";
+
+export interface OpenFgaCheckResult {
+  state: OpenFgaAuthzState;
+  allowed: boolean;
+  reason?: string;
+}
+
+interface OpenFgaConfig {
+  enabled: boolean;
+  required: boolean;
+  apiUrl?: string;
+  storeId?: string;
+  modelId?: string;
+}
+
+export interface TenantActionAuthorization {
+  allowed: boolean;
+  reason?: string;
+  degraded: boolean;
+  mode: "local_rbac" | "openfga" | "fail_closed";
+  openfga: OpenFgaCheckResult;
+}
+
+export type TenantAction =
+  | "tenant.data.export"
+  | "tenant.data.delete"
+  | "tenant.policy.proposal.review"
+  | "tenant.proof.evidence.export"
+  | "tenant.memory.graph.read"
+  | "tenant.integration.read"
+  | "tenant.integration.manage"
+  | "tenant.approval.read"
+  | "tenant.approval.request"
+  | "tenant.approval.decide"
+  | "tenant.approval.manage"
+  | "tenant.api_key.read"
+  | "tenant.api_key.manage"
+  | "tenant.webhook.read"
+  | "tenant.webhook.manage"
+  | "tenant.user.data.export"
+  | "tenant.user.data.delete"
+  | "tenant.operator.control"
+  | "tenant.knowledge.read"
+  | "tenant.knowledge.manage";
+
+function readConfig(): OpenFgaConfig {
+  const enabled = process.env.OPENFGA_ENABLED === "true";
+  const required = process.env.OPENFGA_REQUIRED === "true";
+  return {
+    enabled,
+    required,
+    apiUrl: process.env.OPENFGA_API_URL,
+    storeId: process.env.OPENFGA_STORE_ID,
+    modelId: process.env.OPENFGA_AUTHORIZATION_MODEL_ID,
+  };
+}
+
+function buildTenantObject(tenantId: string): string {
+  return `tenant:${tenantId}`;
+}
+
+async function checkWithOpenFga(
+  userId: string,
+  relation: string,
+  tenantId: string
+): Promise<OpenFgaCheckResult> {
+  const config = readConfig();
+
+  if (!config.enabled) {
+    return {
+      state: "disabled",
+      allowed: false,
+      reason: "openfga_disabled",
+    };
+  }
+
+  if (!config.apiUrl || !config.storeId || !config.modelId) {
+    return {
+      state: "unconfigured",
+      allowed: false,
+      reason: "openfga_unconfigured",
+    };
+  }
+
+  try {
+    const response = await fetch(`${config.apiUrl}/stores/${config.storeId}/check`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        tuple_key: {
+          user: `user:${userId}`,
+          relation,
+          object: buildTenantObject(tenantId),
+        },
+        authorization_model_id: config.modelId,
+      }),
+    });
+
+    if (!response.ok) {
+      return {
+        state: "degraded",
+        allowed: false,
+        reason: `openfga_http_${response.status}`,
+      };
+    }
+
+    const payload = (await response.json()) as { allowed?: boolean };
+    return {
+      state: "available",
+      allowed: payload.allowed === true,
+      reason: payload.allowed === true ? undefined : "openfga_denied",
+    };
+  } catch (error) {
+    return {
+      state: "unavailable",
+      allowed: false,
+      reason: error instanceof Error ? error.message : "openfga_unknown_error",
+    };
+  }
+}
+
+async function getTenantUserRole(userId: string, tenantId: string): Promise<UserRole | null> {
+  const rows = await query<{ role: UserRole }>(
+    `SELECT role FROM users WHERE id = $1 AND tenant_id = $2`,
+    [userId, tenantId]
+  );
+
+  return rows[0]?.role ?? null;
+}
+
+function relationForAction(action: TenantAction): string {
+  switch (action) {
+    case "tenant.data.delete":
+      return "can_delete";
+    case "tenant.data.export":
+    case "tenant.proof.evidence.export":
+      return "can_export";
+    case "tenant.policy.proposal.review":
+    case "tenant.approval.decide":
+    case "tenant.approval.manage":
+      return "can_review_policy";
+    case "tenant.memory.graph.read":
+    case "tenant.knowledge.read":
+    case "tenant.integration.read":
+    case "tenant.user.data.export":
+      return "can_view";
+    case "tenant.integration.manage":
+    case "tenant.api_key.manage":
+    case "tenant.webhook.manage":
+    case "tenant.knowledge.manage":
+    case "tenant.operator.control":
+    case "tenant.user.data.delete":
+      return "can_manage_integrations";
+    case "tenant.approval.read":
+    case "tenant.approval.request":
+    case "tenant.api_key.read":
+    case "tenant.webhook.read":
+      return "can_view";
+  }
+}
+
+function localRoleAllowed(action: TenantAction, role: UserRole | null): boolean {
+  if (!role) {
+    return false;
+  }
+
+  switch (action) {
+    case "tenant.data.delete":
+      return role === UserRole.OWNER;
+    case "tenant.data.export":
+    case "tenant.policy.proposal.review":
+    case "tenant.proof.evidence.export":
+    case "tenant.memory.graph.read":
+    case "tenant.approval.read":
+    case "tenant.approval.request":
+    case "tenant.approval.decide":
+    case "tenant.approval.manage":
+    case "tenant.integration.manage":
+    case "tenant.api_key.read":
+    case "tenant.api_key.manage":
+    case "tenant.webhook.read":
+    case "tenant.webhook.manage":
+    case "tenant.user.data.delete":
+    case "tenant.operator.control":
+    case "tenant.knowledge.manage":
+      return role === UserRole.OWNER || role === UserRole.ADMIN;
+    case "tenant.integration.read":
+    case "tenant.knowledge.read":
+    case "tenant.user.data.export":
+      return role === UserRole.OWNER || role === UserRole.ADMIN || role === UserRole.DEVELOPER;
+  }
+}
+
+export class OpenFgaAuthorizationService {
+  async authorizeTenantAction(
+    userId: string,
+    tenantId: string,
+    action: TenantAction
+  ): Promise<TenantActionAuthorization> {
+    const role = await getTenantUserRole(userId, tenantId);
+    const localAllowed = localRoleAllowed(action, role);
+
+    if (!localAllowed) {
+      return {
+        allowed: false,
+        reason: "insufficient_local_role",
+        degraded: false,
+        mode: "local_rbac",
+        openfga: { state: "disabled", allowed: false, reason: "local_role_denied" },
+      };
+    }
+
+    const config = readConfig();
+    const openfga = await checkWithOpenFga(userId, relationForAction(action), tenantId);
+
+    if (!config.enabled) {
+      return {
+        allowed: true,
+        degraded: false,
+        mode: "local_rbac",
+        openfga,
+      };
+    }
+
+    if (openfga.state === "available") {
+      return {
+        allowed: openfga.allowed,
+        reason: openfga.allowed ? undefined : "openfga_denied",
+        degraded: false,
+        mode: "openfga",
+        openfga,
+      };
+    }
+
+    if (config.required) {
+      logWarn("OpenFGA required but unavailable; failing closed", {
+        tenantId,
+        userId,
+        action,
+        openfgaState: openfga.state,
+        openfgaReason: openfga.reason,
+      });
+      return {
+        allowed: false,
+        reason: "openfga_required_unavailable",
+        degraded: true,
+        mode: "fail_closed",
+        openfga,
+      };
+    }
+
+    return {
+      allowed: true,
+      reason: "openfga_degraded_fallback_local_rbac",
+      degraded: true,
+      mode: "local_rbac",
+      openfga,
+    };
+  }
+
+  async status(): Promise<{
+    key: string;
+    state: OpenFgaAuthzState;
+    available: boolean;
+    reason?: string;
+  }> {
+    const config = readConfig();
+
+    if (!config.enabled) {
+      return {
+        key: "openfga_authorization",
+        state: "disabled",
+        available: false,
+        reason: "openfga_disabled",
+      };
+    }
+
+    if (!config.apiUrl || !config.storeId || !config.modelId) {
+      return {
+        key: "openfga_authorization",
+        state: "unconfigured",
+        available: false,
+        reason: "openfga_unconfigured",
+      };
+    }
+
+    const probe = await checkWithOpenFga("health-probe", "can_view", "health");
+    return {
+      key: "openfga_authorization",
+      state: probe.state,
+      available: probe.state === "available",
+      reason: probe.reason,
+    };
+  }
+}
+
+let service: OpenFgaAuthorizationService | null = null;
+
+export function getOpenFgaAuthorizationService(): OpenFgaAuthorizationService {
+  if (!service) {
+    service = new OpenFgaAuthorizationService();
+  }
+
+  return service;
+}

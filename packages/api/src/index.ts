@@ -12,6 +12,8 @@ import { openApiRouter } from "./routes/openapi";
 import { authRouter } from "./routes/auth";
 import { apiKeysRouter } from "./routes/api-keys";
 import { exceptionsRouter } from "./routes/exceptions";
+import { exceptionDetailsRouter } from "./routes/exception-details";
+import { exceptionIntelligenceRouter } from "./routes/exception-intelligence";
 import { testModeRouter } from "./routes/test-mode";
 import { dashboardsRouter } from "./routes/dashboards";
 import { feedbackRouter } from "./routes/feedback";
@@ -156,11 +158,14 @@ if (config.features.enableRequestTimeout) {
 app.use((req: Request, res: Response, next: NextFunction) => {
   const authReq = req as AuthRequest;
   const traceId = (req.headers["x-trace-id"] as string) || uuidv4();
+  const requestId = (req.headers["x-request-id"] as string) || uuidv4();
   const executionId = (req.headers["x-execution-id"] as string) || uuidv4();
   authReq.traceId = traceId;
+  authReq.requestId = requestId;
   authReq.executionId = executionId;
   authReq.tenantId = authReq.tenantId || (req.headers["x-tenant-id"] as string | undefined);
   res.setHeader("X-Trace-Id", traceId);
+  res.setHeader("X-Request-Id", requestId);
   res.setHeader("X-Execution-Id", executionId);
   if (authReq.tenantId) {
     res.setHeader("X-Tenant-Id", authReq.tenantId);
@@ -286,6 +291,8 @@ function configureProtectedRouter(router: Router, options: ProtectedRouterOption
   // Shared protected routes
   router.use(apiKeysRouter);
   router.use(exceptionsRouter);
+  router.use(exceptionDetailsRouter);
+  router.use(exceptionIntelligenceRouter);
   router.use(testModeRouter);
   router.use(dashboardsRouter);
   router.use(feedbackRouter);

@@ -16,9 +16,9 @@ import { Permission } from "../infrastructure/security/Permissions";
 import { query, transaction } from "../db";
 import { logInfo, logError } from "../utils/logger";
 import { handleRouteError } from "../utils/error-handler";
-import { UserRole } from "../domain/entities/User";
 import { validateTenantId } from "../infrastructure/tenancy/TenantEnforcement";
 import { verifyTenantIntegrityChain } from "../services/reconciliation/integrity";
+import { getOpenFgaAuthorizationService } from "../services/authz/openfga-authorization-service";
 
 const router: Router = Router();
 
@@ -52,21 +52,22 @@ router.get(
       const userId = req.userId!;
       const format = (req.query.format as string) || "json";
 
-      // Verify user has permission to export tenant data
-      const userCheck = await query<{ role: UserRole }>(
-        `SELECT role FROM users WHERE id = $1 AND tenant_id = $2`,
-        [userId, tenantId]
+      const authz = await getOpenFgaAuthorizationService().authorizeTenantAction(
+        userId,
+        tenantId,
+        "tenant.data.export"
       );
 
-      if (userCheck.length === 0 || !userCheck[0]) {
-        return res.status(403).json({ error: "Forbidden", message: "User not found in tenant" });
-      }
-
-      const userRole = userCheck[0].role;
-      if (userRole !== UserRole.OWNER && userRole !== UserRole.ADMIN) {
+      if (!authz.allowed) {
         return res.status(403).json({
           error: "Forbidden",
-          message: "Only tenant owners and admins can export tenant data",
+          message: "Tenant export not authorized",
+          reason: authz.reason,
+          authz: {
+            mode: authz.mode,
+            degraded: authz.degraded,
+            openfga: authz.openfga,
+          },
         });
       }
 
@@ -382,27 +383,38 @@ router.delete(
         });
       }
 
-      // Verify user is tenant owner
-      const userCheck = await query<{ role: UserRole; password_hash: string }>(
-        `SELECT role, password_hash FROM users WHERE id = $1 AND tenant_id = $2`,
+      const authz = await getOpenFgaAuthorizationService().authorizeTenantAction(
+        userId,
+        tenantId,
+        "tenant.data.delete"
+      );
+
+      if (!authz.allowed) {
+        return res.status(403).json({
+          error: "Forbidden",
+          message: "Tenant deletion not authorized",
+          reason: authz.reason,
+          authz: {
+            mode: authz.mode,
+            degraded: authz.degraded,
+            openfga: authz.openfga,
+          },
+        });
+      }
+
+      const userCheck = await query<{ password_hash: string }>(
+        `SELECT password_hash FROM users WHERE id = $1 AND tenant_id = $2`,
         [userId, tenantId]
       );
 
-      if (userCheck.length === 0 || !userCheck[0]) {
+      const passwordHash = userCheck[0]?.password_hash;
+      if (!passwordHash) {
         return res.status(403).json({ error: "Forbidden", message: "User not found in tenant" });
-      }
-
-      const userRecord = userCheck[0];
-      if (userRecord.role !== UserRole.OWNER) {
-        return res.status(403).json({
-          error: "Forbidden",
-          message: "Only tenant owners can delete tenant data",
-        });
       }
 
       // Verify password
       const { verifyPassword } = await import("../utils/hash");
-      const isValid = await verifyPassword(password, userRecord.password_hash);
+      const isValid = await verifyPassword(password, passwordHash);
       if (!isValid) {
         return res.status(401).json({ error: "Invalid password" });
       }

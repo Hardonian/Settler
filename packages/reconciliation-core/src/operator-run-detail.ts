@@ -163,6 +163,16 @@ export interface OperatorRunDetailBase {
   metadata?: Record<string, unknown>;
   traceId?: string | null;
   exceptionWorkflowNote?: string;
+  runDelta?: {
+    inputChanged: boolean;
+    matchedDelta: number;
+    unmatchedDelta: number;
+    exceptionDelta: number;
+    configDriftDetected: boolean;
+    newExceptionPatterns: string[];
+    resolvedPatterns: string[];
+    confidenceDelta: number | null;
+  } | null;
   kindDetail: OperatorKindDetail;
 }
 
@@ -309,6 +319,7 @@ export function buildOperatorReconRunDetailJson(input: {
   rowRationaleCodes: string[];
   rowResultsPreview: unknown[];
   stages: OperatorRunStageRow[];
+  runDelta?: OperatorRunDetail["runDelta"];
 }): OperatorRunDetail {
   const base = baseFromCanonical(input.detail, input.startedAt, input.completedAt);
 
@@ -335,6 +346,7 @@ export function buildOperatorReconRunDetailJson(input: {
     },
     rowResultsPreview: input.rowResultsPreview,
     stages: input.stages,
+    runDelta: input.runDelta,
     kindDetail: {
       kind: "recon_job",
       reconJob: {

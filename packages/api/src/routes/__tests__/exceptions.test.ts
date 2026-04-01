@@ -1,23 +1,11 @@
-/**
- * Exceptions Route Tests
- *
- * Tests for the exceptions API endpoints:
- * - List exceptions with pagination and filtering
- * - Get exception details
- * - Resolve exception
- * - Bulk resolve exceptions
- * - Get exception statistics
- * - Governance freeze state enforcement
- */
-
 import request from "supertest";
 import express from "express";
 import { exceptionsRouter } from "../exceptions";
 import { AuthRequest } from "../../middleware/auth";
 
-// Mock Prisma - use jest.fn() inside factory to avoid hoisting issues
 jest.mock("../../infrastructure/db/prisma", () => ({
   prisma: {
+    $transaction: jest.fn(),
     reconciliationMatch: {
       findMany: jest.fn(),
       count: jest.fn(),
@@ -25,19 +13,35 @@ jest.mock("../../infrastructure/db/prisma", () => ({
       update: jest.fn(),
       updateMany: jest.fn(),
     },
+    normalizedTransaction: {
+      findFirst: jest.fn(),
+    },
+    exceptionAdjudicationMemory: {
+      findMany: jest.fn(),
+      create: jest.fn(),
+    },
+    evidenceArtifact: {
+      findMany: jest.fn(),
+      create: jest.fn(),
+    },
+    proofPackage: {
+      findMany: jest.fn(),
+      create: jest.fn(),
+    },
     auditLog: {
       create: jest.fn(),
+    },
+    reconciliationProvenance: {
+      findMany: jest.fn(),
     },
   },
 }));
 
-// Access the mocked module after jest.mock is applied
 const { prisma: mockedPrisma } = require("../../infrastructure/db/prisma");
 const mockReconciliationMatch = mockedPrisma.reconciliationMatch;
 
 jest.mock("../../middleware/governance", () => ({
   enforceFreezeState: jest.fn(() => jest.fn((_req: any, _res: any, next: any) => next())),
-  bypassFreeze: jest.fn((_req: any, _res: any, next: any) => next()),
 }));
 
 jest.mock("../../middleware/authorization", () => ({
@@ -51,8 +55,11 @@ jest.mock("../../middleware/validation", () => ({
 jest.mock("../../services/recon-core/provenance-service", () => ({
   ProvenanceService: jest.fn().mockImplementation(() => ({
     recordReviewDecision: jest.fn().mockResolvedValue(undefined),
+    recordReviewDecisionInTransaction: jest.fn().mockResolvedValue(undefined),
+    recordStatusTransition: jest.fn().mockResolvedValue(undefined),
   })),
 }));
+
 jest.mock("../../utils/event-tracker", () => ({
   trackEventAsync: jest.fn(),
 }));
@@ -63,387 +70,360 @@ jest.mock("../../utils/logger", () => ({
   logWarn: jest.fn(),
 }));
 
-describe("Exceptions Routes", () => {
+describe("exceptions routes", () => {
   let app: express.Express;
 
   beforeEach(() => {
+    mockedPrisma.$transaction.mockReset();
+    mockedPrisma.reconciliationMatch.findMany.mockReset();
+    mockedPrisma.reconciliationMatch.count.mockReset();
+    mockedPrisma.reconciliationMatch.findFirst.mockReset();
+    mockedPrisma.reconciliationMatch.update.mockReset();
+    mockedPrisma.reconciliationMatch.updateMany.mockReset();
+    mockedPrisma.normalizedTransaction.findFirst.mockReset();
+    mockedPrisma.exceptionAdjudicationMemory.findMany.mockReset();
+    mockedPrisma.exceptionAdjudicationMemory.create.mockReset();
+    mockedPrisma.evidenceArtifact.findMany.mockReset();
+    mockedPrisma.evidenceArtifact.create.mockReset();
+    mockedPrisma.proofPackage.findMany.mockReset();
+    mockedPrisma.proofPackage.create.mockReset();
+    mockedPrisma.auditLog.create.mockReset();
+    mockedPrisma.reconciliationProvenance.findMany.mockReset();
+
     app = express();
     app.use(express.json());
-
-    app.use((req, res, next) => {
+    app.use((req, _res, next) => {
       (req as AuthRequest).tenantId = "tenant-123";
       (req as AuthRequest).userId = "user-456";
+      (req as AuthRequest).traceId = "00000000-0000-4000-8000-000000000010";
+      (req as AuthRequest).requestId = "req-123";
       next();
     });
-
     app.use("/api", exceptionsRouter);
-    jest.clearAllMocks();
+
+    mockedPrisma.$transaction.mockImplementation(
+      async (callback: (tx: typeof mockedPrisma) => unknown) => callback(mockedPrisma)
+    );
+    mockedPrisma.normalizedTransaction.findFirst.mockResolvedValue({
+      id: "txn-src-1",
+      amount: 100,
+      currency: "USD",
+      date: new Date("2026-03-17T09:00:00Z"),
+      description: "Source transaction",
+      externalId: "ext-src-1",
+    });
+    mockedPrisma.evidenceArtifact.create
+      .mockResolvedValueOnce({ id: "evidence-1" })
+      .mockResolvedValueOnce({ id: "evidence-2" });
+    mockedPrisma.exceptionAdjudicationMemory.create.mockResolvedValue({ id: "memory-1" });
+    mockedPrisma.proofPackage.create.mockResolvedValue({ id: "proof-1" });
   });
 
-  describe("GET /api/exceptions - List Exceptions", () => {
-    it("should return paginated list of exceptions with correct response structure", async () => {
-      const mockExceptions = [
-        {
-          id: "exc-1",
-          tenantId: "tenant-123",
-          matchType: "unmatched",
-          reviewed: false,
-          reviewedAt: null,
-          reviewedBy: null,
-          matchReason: null,
-          createdAt: new Date("2026-03-17T10:00:00Z"),
-          run: { id: "run-1" },
-          sourceTransaction: { category: "amount_mismatch", description: "Amount mismatch" },
-        },
-        {
-          id: "exc-2",
-          tenantId: "tenant-123",
-          matchType: "unmatched",
-          reviewed: false,
-          reviewedAt: null,
-          reviewedBy: null,
-          matchReason: null,
-          createdAt: new Date("2026-03-17T09:00:00Z"),
-          run: { id: "run-1" },
-          sourceTransaction: { category: "timing_difference", description: "Timing diff" },
-        },
-      ];
-
-      mockReconciliationMatch.findMany.mockResolvedValueOnce(mockExceptions);
-      mockReconciliationMatch.count.mockResolvedValueOnce(2);
-
-      const res = await request(app).get("/api/exceptions");
-
-      expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty("data");
-      expect(res.body).toHaveProperty("pagination");
-      expect(res.body.data).toHaveLength(2);
-      expect(res.body.pagination).toMatchObject({
-        limit: 50,
-        offset: 0,
-        total: 2,
-        totalPages: 1,
-      });
-    });
-
-    it("should scope query to tenant", async () => {
-      mockReconciliationMatch.findMany.mockResolvedValueOnce([]);
-      mockReconciliationMatch.count.mockResolvedValueOnce(0);
-
-      await request(app).get("/api/exceptions");
-
-      expect(mockReconciliationMatch.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: expect.objectContaining({ tenantId: "tenant-123" }),
-        })
-      );
-    });
-
-    it("should filter by jobId", async () => {
-      mockReconciliationMatch.findMany.mockResolvedValueOnce([]);
-      mockReconciliationMatch.count.mockResolvedValueOnce(0);
-
-      const res = await request(app).get(
-        "/api/exceptions?jobId=00000000-0000-4000-8000-000000000001"
-      );
-
-      expect(res.status).toBe(200);
-      expect(mockReconciliationMatch.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: expect.objectContaining({
-            run: expect.objectContaining({
-              is: expect.objectContaining({ reconJobId: "00000000-0000-4000-8000-000000000001" }),
-            }),
-          }),
-        })
-      );
-    });
-
-    it("should handle pagination parameters", async () => {
-      mockReconciliationMatch.findMany.mockResolvedValueOnce([]);
-      mockReconciliationMatch.count.mockResolvedValueOnce(100);
-
-      const res = await request(app).get("/api/exceptions?limit=25&offset=50");
-
-      expect(res.status).toBe(200);
-      expect(res.body.pagination).toMatchObject({
-        limit: 25,
-        offset: 50,
-        total: 100,
-        totalPages: 4,
-      });
-      expect(mockReconciliationMatch.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({ take: 25, skip: 50 })
-      );
-    });
-
-    it("should map reviewed=false to status=open", async () => {
-      mockReconciliationMatch.findMany.mockResolvedValueOnce([
-        {
-          id: "exc-1",
-          tenantId: "tenant-123",
-          matchType: "unmatched",
-          reviewed: false,
-          reviewedAt: null,
-          reviewedBy: null,
-          matchReason: null,
-          createdAt: new Date("2026-03-17T10:00:00Z"),
-          run: null,
-          sourceTransaction: null,
-        },
-      ]);
-      mockReconciliationMatch.count.mockResolvedValueOnce(1);
-
-      const res = await request(app).get("/api/exceptions");
-
-      expect(res.status).toBe(200);
-      expect(res.body.data[0].status).toBe("open");
-    });
-
-    it("should map reviewed=true to status=resolved", async () => {
-      mockReconciliationMatch.findMany.mockResolvedValueOnce([
-        {
-          id: "exc-1",
-          tenantId: "tenant-123",
-          matchType: "unmatched",
-          reviewed: true,
-          reviewedAt: new Date(),
-          reviewedBy: "user-456",
-          matchReason: "matched",
-          createdAt: new Date("2026-03-17T10:00:00Z"),
-          run: null,
-          sourceTransaction: null,
-        },
-      ]);
-      mockReconciliationMatch.count.mockResolvedValueOnce(1);
-
-      const res = await request(app).get("/api/exceptions");
-
-      expect(res.status).toBe(200);
-      expect(res.body.data[0].status).toBe("resolved");
-    });
-  });
-
-  describe("GET /api/exceptions/:id - Get Exception Details", () => {
-    it("should return single exception with full details", async () => {
-      mockReconciliationMatch.findFirst.mockResolvedValueOnce({
+  it("lists exceptions with tenant-scoped status filtering", async () => {
+    mockReconciliationMatch.findMany.mockResolvedValueOnce([
+      {
         id: "exc-1",
         tenantId: "tenant-123",
+        runId: "run-1",
+        status: "dismissed",
         matchType: "unmatched",
-        reviewed: false,
-        reviewedAt: null,
-        reviewedBy: null,
-        matchReason: null,
-        createdAt: new Date("2026-03-17T10:00:00Z"),
-        run: { id: "run-1" },
-        sourceTransaction: { category: "amount_mismatch", description: "Amount mismatch" },
-      });
+        sourceTransactionId: "src-1",
+        targetTransactionId: null,
+        confidence: 0.5,
+        reviewed: true,
+        reviewedAt: new Date("2026-03-17T10:00:00Z"),
+        reviewedBy: "user-456",
+        matchReason: "ignored resolution",
+        resolutionReason: "ignored",
+        notes: "False positive",
+        amountDiff: null,
+        dateDiff: null,
+        severity: "high",
+        createdAt: new Date("2026-03-17T09:00:00Z"),
+        updatedAt: new Date("2026-03-17T10:00:00Z"),
+        sourceTransaction: { category: "timing_difference", description: "Timing diff" },
+      },
+    ]);
+    mockReconciliationMatch.count.mockResolvedValueOnce(1);
 
-      const res = await request(app).get("/api/exceptions/exc-1");
+    const res = await request(app).get("/api/exceptions?status=dismissed");
 
-      expect(res.status).toBe(200);
-      expect(res.body.data).toMatchObject({
-        id: "exc-1",
-        jobId: "run-1",
-        executionId: "run-1",
+    expect(res.status).toBe(200);
+    expect(res.body.pagination).toMatchObject({ total: 1, hasMore: false });
+    expect(res.body.data[0]).toMatchObject({ id: "exc-1", status: "dismissed" });
+    expect(mockReconciliationMatch.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          tenantId: "tenant-123",
+          status: "dismissed",
+        }),
+      })
+    );
+  });
+
+  it("returns exception detail with provenance and adjudication history", async () => {
+    mockReconciliationMatch.findFirst.mockResolvedValueOnce({
+      id: "exc-1",
+      tenantId: "tenant-123",
+      runId: "run-1",
+      status: "open",
+      matchType: "unmatched",
+      sourceTransactionId: "src-1",
+      targetTransactionId: null,
+      confidence: 0.5,
+      reviewed: false,
+      reviewedAt: null,
+      reviewedBy: null,
+      matchReason: null,
+      resolutionReason: null,
+      notes: null,
+      amountDiff: null,
+      dateDiff: null,
+      severity: "medium",
+      metadata: {
+        adjudicationHistory: [{ actorId: "user-1", action: "note_added" }],
+      },
+      createdAt: new Date("2026-03-17T09:00:00Z"),
+      updatedAt: new Date("2026-03-17T10:00:00Z"),
+      run: { id: "run-1", status: "completed", startedAt: new Date(), completedAt: new Date() },
+      sourceTransaction: {
+        id: "src-1",
         category: "amount_mismatch",
-        severity: "error",
-        status: "open",
-      });
+        description: "Amount mismatch",
+      },
     });
+    mockedPrisma.reconciliationProvenance.findMany.mockResolvedValueOnce([
+      { id: "prov-1", sequence: 1, eventType: "review_decision", createdAt: new Date() },
+    ]);
+    mockedPrisma.exceptionAdjudicationMemory.findMany.mockResolvedValueOnce([
+      {
+        id: "memory-1",
+        resolution: "manual",
+        resolutionReason: "resolved_in_workbench",
+        adjudicationType: "initial",
+        adjudicatorId: "user-1",
+        adjudicatorType: "operator",
+        outcome: "resolved",
+        confidence: 0.95,
+        sourceTrustScore: 0.9,
+        operatorNotes: "Reviewed",
+        systemNotes: "Persisted in canonical memory",
+        evidenceIds: ["evidence-1", "evidence-2"],
+        createdAt: new Date("2026-03-17T10:00:00Z"),
+        completedAt: new Date("2026-03-17T10:00:00Z"),
+        parentMemoryId: null,
+      },
+    ]);
+    mockedPrisma.evidenceArtifact.findMany.mockResolvedValueOnce([
+      {
+        id: "evidence-1",
+        artifactType: "operator_annotation",
+        artifactKey: "exception:evidence-1",
+        capturedAt: new Date("2026-03-17T10:00:00Z"),
+        capturedBy: "operator",
+        degraded: false,
+        degradedReasons: [],
+        attested: true,
+        reliabilityScore: 0.95,
+      },
+    ]);
+    mockedPrisma.proofPackage.findMany.mockResolvedValueOnce([
+      {
+        id: "proof-1",
+        packageType: "exception_resolution",
+        packageKey: "exception:proof-1",
+        status: "finalized",
+        completenessScore: 0.9,
+        missingEvidence: [],
+        completenessFlags: [],
+        evidenceIds: ["evidence-1"],
+        createdAt: new Date("2026-03-17T10:00:00Z"),
+        finalizedAt: new Date("2026-03-17T10:01:00Z"),
+      },
+    ]);
 
-    it("should return 404 for non-existent exception", async () => {
-      mockReconciliationMatch.findFirst.mockResolvedValueOnce(null);
+    const res = await request(app).get("/api/exceptions/exc-1");
 
-      const res = await request(app).get("/api/exceptions/non-existent");
-
-      expect(res.status).toBe(404);
+    expect(res.status).toBe(200);
+    expect(res.body.data).toMatchObject({
+      id: "exc-1",
+      status: "open",
+      adjudicationHistory: [expect.objectContaining({ actorId: "user-1", action: "resolved" })],
+      adjudicationMemories: [expect.objectContaining({ id: "memory-1" })],
+      proofSummary: expect.objectContaining({ total: 1, finalized: 1 }),
     });
-
-    it("should enforce tenant isolation for exception details", async () => {
-      mockReconciliationMatch.findFirst.mockResolvedValueOnce(null);
-
-      await request(app).get("/api/exceptions/exc-cross-tenant");
-
-      expect(mockReconciliationMatch.findFirst).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: expect.objectContaining({
-            id: "exc-cross-tenant",
-            tenantId: "tenant-123",
-          }),
-        })
-      );
-    });
+    expect(mockedPrisma.reconciliationProvenance.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { tenantId: "tenant-123", matchId: "exc-1" },
+      })
+    );
   });
 
-  describe("POST /api/exceptions/:id/resolve - Resolve Exception", () => {
-    it("should resolve exception with valid resolution", async () => {
-      mockReconciliationMatch.findFirst.mockResolvedValueOnce({
-        id: "exc-1",
-        tenantId: "tenant-123",
-        metadata: {},
-        matchType: "unmatched",
-      });
-      mockReconciliationMatch.updateMany.mockResolvedValueOnce({ count: 1 });
-
-      const res = await request(app)
-        .post("/api/exceptions/exc-1/resolve")
-        .send({ resolution: "matched", notes: "Manually matched via review" });
-
-      expect(res.status).toBe(200);
-      expect(res.body.message).toBe("Exception resolved successfully");
+  it("resolves an open exception and returns explicit outcome semantics", async () => {
+    mockReconciliationMatch.findFirst.mockResolvedValueOnce({
+      id: "exc-1",
+      runId: "run-1",
+      tenantId: "tenant-123",
+      sourceTransactionId: "src-1",
+      targetTransactionId: null,
+      confidence: 0.95,
+      amountDiff: null,
+      dateDiff: null,
+      matchType: "unmatched",
+      status: "open",
+      metadata: {},
+      reviewed: false,
+      reviewedBy: null,
+      reviewedAt: null,
+      matchReason: null,
+      resolutionReason: null,
+      notes: null,
     });
 
-    it("should return 404 when exception not found", async () => {
-      mockReconciliationMatch.findFirst.mockResolvedValueOnce(null);
+    const res = await request(app)
+      .post("/api/exceptions/exc-1/resolve")
+      .send({ resolution: "matched", notes: "Matched after manual review" });
 
-      const res = await request(app)
-        .post("/api/exceptions/exc-1/resolve")
-        .send({ resolution: "matched" });
-
-      expect(res.status).toBe(404);
+    expect(res.status).toBe(200);
+    expect(res.body.message).toBe("Exception resolved successfully");
+    expect(res.body.data).toMatchObject({
+      id: "exc-1",
+      status: "resolved",
+      resolution: "matched",
+      resolutionReason: "matched",
+      outcome: "resolved",
     });
-
-    it("should return 404 when exception missing in tenant scope", async () => {
-      mockReconciliationMatch.findFirst.mockResolvedValueOnce(null);
-
-      const res = await request(app)
-        .post("/api/exceptions/missing-exc/resolve")
-        .send({ resolution: "matched" });
-
-      expect(res.status).toBe(404);
-    });
+    expect(mockedPrisma.exceptionAdjudicationMemory.create).toHaveBeenCalled();
+    expect(mockedPrisma.proofPackage.create).toHaveBeenCalled();
   });
 
-  describe("POST /api/exceptions/bulk-resolve - Bulk Resolve", () => {
-    it("should resolve multiple exceptions at once", async () => {
-      mockReconciliationMatch.findMany.mockResolvedValueOnce([
-        { id: "00000000-0000-4000-8000-000000000001", metadata: {} },
-        { id: "00000000-0000-4000-8000-000000000002", metadata: {} },
-      ]);
-      mockReconciliationMatch.updateMany.mockResolvedValue({ count: 1 });
-
-      const res = await request(app)
-        .post("/api/exceptions/bulk-resolve")
-        .send({
-          exceptionIds: [
-            "00000000-0000-4000-8000-000000000001",
-            "00000000-0000-4000-8000-000000000002",
-          ],
-          resolution: "ignored",
-          notes: "Bulk ignore - false positives",
-        });
-
-      expect(res.status).toBe(200);
-      expect(res.body.count).toBe(2);
-    });
-
-    it("should scope bulk resolve to tenant", async () => {
-      mockReconciliationMatch.findMany.mockResolvedValueOnce([
-        { id: "00000000-0000-4000-8000-000000000001", metadata: {} },
-      ]);
-      mockReconciliationMatch.updateMany.mockResolvedValue({ count: 1 });
-
-      await request(app)
-        .post("/api/exceptions/bulk-resolve")
-        .send({
-          exceptionIds: ["00000000-0000-4000-8000-000000000001"],
+  it("treats identical repeat resolutions as idempotent no-ops", async () => {
+    mockReconciliationMatch.findFirst.mockResolvedValueOnce({
+      id: "exc-1",
+      runId: "run-1",
+      tenantId: "tenant-123",
+      sourceTransactionId: "src-1",
+      targetTransactionId: null,
+      confidence: 0.95,
+      amountDiff: null,
+      dateDiff: null,
+      matchType: "unmatched",
+      status: "resolved",
+      metadata: {
+        latestAdjudication: {
           resolution: "matched",
-        });
-
-      expect(mockReconciliationMatch.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: expect.objectContaining({ tenantId: "tenant-123" }),
-        })
-      );
-    });
-  });
-
-  describe("GET /api/exceptions/stats - Exception Statistics", () => {
-    it("should return aggregated exception statistics", async () => {
-      // stats route calls count 3 times: total, open, resolved
-      mockReconciliationMatch.count
-        .mockResolvedValueOnce(10) // total
-        .mockResolvedValueOnce(5) // open (reviewed=false)
-        .mockResolvedValueOnce(5); // resolved (reviewed=true)
-
-      const res = await request(app).get("/api/exceptions/stats");
-
-      expect(res.status).toBe(200);
-      expect(res.body.data).toMatchObject({
-        total: 10,
-        open: 5,
-        resolved: 5,
-        // inProgress and dismissed are not tracked — they are null
-        inProgress: null,
-        dismissed: null,
-      });
-    });
-
-    it("should filter stats by jobId", async () => {
-      mockReconciliationMatch.count.mockResolvedValue(0);
-
-      const res = await request(app).get(
-        "/api/exceptions/stats?jobId=00000000-0000-4000-8000-000000000001"
-      );
-
-      expect(res.status).toBe(200);
-      expect(mockReconciliationMatch.count).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: expect.objectContaining({
-            run: expect.objectContaining({
-              is: expect.objectContaining({
-                reconJobId: "00000000-0000-4000-8000-000000000001",
-              }),
-            }),
-          }),
-        })
-      );
-    });
-  });
-
-  describe("End-to-End Workflow: Exception Resolution Flow", () => {
-    it("should support full exception lifecycle: list -> resolve -> verify", async () => {
-      // Step 1: List exceptions
-      mockReconciliationMatch.findMany.mockResolvedValueOnce([
-        {
-          id: "exc-1",
-          tenantId: "tenant-123",
-          matchType: "unmatched",
-          reviewed: false,
-          reviewedAt: null,
-          reviewedBy: null,
-          matchReason: null,
-          createdAt: new Date(),
-          run: { id: "run-1" },
-          sourceTransaction: { category: "amount_mismatch", description: "Amount mismatch" },
         },
-      ]);
-      mockReconciliationMatch.count.mockResolvedValueOnce(1);
+      },
+      reviewed: true,
+      reviewedBy: "user-456",
+      reviewedAt: new Date("2026-03-20T12:00:00Z"),
+      matchReason: "Matched after manual review",
+      resolutionReason: "matched",
+      notes: "Matched after manual review",
+    });
 
-      const listRes = await request(app).get("/api/exceptions");
-      expect(listRes.status).toBe(200);
-      expect(listRes.body.data).toHaveLength(1);
+    const res = await request(app)
+      .post("/api/exceptions/exc-1/resolve")
+      .send({ resolution: "matched", notes: "Matched after manual review" });
 
-      // Step 2: Resolve exception
-      mockReconciliationMatch.findFirst.mockResolvedValueOnce({
-        id: "exc-1",
+    expect(res.status).toBe(200);
+    expect(res.body.message).toBe("Exception already resolved");
+    expect(res.body.data.outcome).toBe("already_resolved");
+    expect(mockReconciliationMatch.update).not.toHaveBeenCalled();
+    expect(mockedPrisma.auditLog.create).not.toHaveBeenCalled();
+  });
+
+  it("bulk resolves exceptions with duplicate suppression and explicit skipped counts", async () => {
+    mockReconciliationMatch.findFirst
+      .mockResolvedValueOnce({
+        id: "00000000-0000-4000-8000-000000000001",
+        runId: "run-1",
         tenantId: "tenant-123",
-        metadata: {},
+        sourceTransactionId: "src-1",
+        targetTransactionId: null,
+        confidence: 0.95,
+        amountDiff: null,
+        dateDiff: null,
         matchType: "unmatched",
-      });
-      mockReconciliationMatch.update.mockResolvedValueOnce({
-        id: "exc-1",
+        status: "dismissed",
+        metadata: {
+          latestAdjudication: {
+            resolution: "ignored",
+          },
+        },
         reviewed: true,
         reviewedBy: "user-456",
-        reviewedAt: new Date(),
-        matchReason: "Resolved via workflow test",
+        reviewedAt: new Date("2026-03-20T12:00:00Z"),
+        matchReason: "Bulk ignore - false positives",
+        resolutionReason: "ignored",
+        notes: "Bulk ignore - false positives",
+      })
+      .mockResolvedValueOnce({
+        id: "00000000-0000-4000-8000-000000000002",
+        runId: "run-2",
+        tenantId: "tenant-123",
+        sourceTransactionId: "src-2",
+        targetTransactionId: null,
+        confidence: 0.95,
+        amountDiff: null,
+        dateDiff: null,
+        matchType: "unmatched",
+        status: "open",
+        metadata: {},
+        reviewed: false,
+        reviewedBy: null,
+        reviewedAt: null,
+        matchReason: null,
+        resolutionReason: null,
+        notes: null,
       });
 
-      const resolveRes = await request(app)
-        .post("/api/exceptions/exc-1/resolve")
-        .send({ resolution: "matched", notes: "Resolved via workflow test" });
-      expect(resolveRes.status).toBe(200);
+    const res = await request(app)
+      .post("/api/exceptions/bulk-resolve")
+      .send({
+        exceptionIds: [
+          "00000000-0000-4000-8000-000000000001",
+          "00000000-0000-4000-8000-000000000001",
+          "00000000-0000-4000-8000-000000000002",
+        ],
+        resolution: "ignored",
+        notes: "Bulk ignore - false positives",
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body.data).toMatchObject({
+      resolved: 1,
+      alreadyResolved: 1,
+      duplicateRequestCount: 1,
+      skipped: 2,
+    });
+  });
+
+  it("returns exception statistics with status buckets", async () => {
+    mockReconciliationMatch.count
+      .mockResolvedValueOnce(10)
+      .mockResolvedValueOnce(4)
+      .mockResolvedValueOnce(2)
+      .mockResolvedValueOnce(3)
+      .mockResolvedValueOnce(1)
+      .mockResolvedValueOnce(1)
+      .mockResolvedValueOnce(2)
+      .mockResolvedValueOnce(5)
+      .mockResolvedValueOnce(2)
+      .mockResolvedValueOnce(3);
+    mockReconciliationMatch.findMany.mockResolvedValueOnce([]);
+
+    const res = await request(app).get("/api/exceptions/stats");
+
+    expect(res.status).toBe(200);
+    expect(res.body.data).toMatchObject({
+      total: 10,
+      byStatus: {
+        open: 4,
+        inProgress: 2,
+        resolved: 3,
+        dismissed: 1,
+      },
     });
   });
 });

@@ -85,23 +85,24 @@ router.get(
         }),
       };
 
-      const runs = await prisma.reconResult.findMany({
-        where,
-        include: {
-          reconJob: {
-            select: {
-              name: true,
+      const [runs, total] = await Promise.all([
+        prisma.reconResult.findMany({
+          where,
+          include: {
+            reconJob: {
+              select: {
+                name: true,
+              },
             },
           },
-        },
-        orderBy: {
-          startedAt: "desc",
-        },
-        take: limit,
-        skip: offset,
-      });
-
-      const total = await prisma.reconResult.count({ where });
+          orderBy: {
+            startedAt: "desc",
+          },
+          take: limit,
+          skip: offset,
+        }),
+        prisma.reconResult.count({ where }),
+      ]);
 
       logInfo("Runs listed", { tenantId, status, count: runs.length, total, page, limit });
 

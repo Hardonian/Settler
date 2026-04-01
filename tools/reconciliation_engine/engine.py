@@ -553,25 +553,27 @@ class ReconciliationEngine:
                 source_index[key] = []
             source_index[key].append(record)
 
-        target_index: Dict[str, List[Dict]] = {}
+        # PERF: Convert target batches to dictionaries for O(1) lookups/deletes
+        target_index: Dict[str, Dict[str, Dict]] = {}
         for record in self.target_records:
             key = self._build_match_key(record, self.match_keys)
             if key not in target_index:
-                target_index[key] = []
-            target_index[key].append(record)
+                target_index[key] = {}
+            rec_id = record.get("id")
+            if rec_id:
+                target_index[key][rec_id] = record
 
         truth_table: List[TruthTableEntry] = []
         matched_count = 0
         mismatched_count = 0
         source_orphan_count = 0
         target_orphan_count = 0
-        matched_target_ids: set = set()
-
+        
         # Process source records
         for key, source_batch in source_index.items():
-            target_batch = target_index.get(key, [])
+            target_batch_dict = target_index.get(key)
 
-            if not target_batch:
+            if not target_batch_dict:
                 # Source orphans - no matching key in target
                 for src in source_batch:
                     entry = TruthTableEntry(
@@ -591,12 +593,10 @@ class ReconciliationEngine:
                     source_orphan_count += 1
             else:
                 # Attempt matching within batches
-                available_targets = target_batch.copy()
-
                 for src in source_batch:
                     match_found = False
-
-                    for tgt in available_targets:
+                    # Iterate over a copy of values since we might delete from the dict
+                    for tgt_id, tgt in list(target_batch_dict.items()):
                         matched, rule, confidence, differences = self._records_match(
                             src, tgt
                         )
@@ -621,14 +621,14 @@ class ReconciliationEngine:
                             )
                             truth_table.append(entry)
                             matched_count += 1
-                            matched_target_ids.add(tgt.get("id"))
-                            available_targets.remove(tgt)
+                            # Remove the matched target to prevent re-matching
+                            del target_batch_dict[tgt_id]
                             match_found = True
                             break
 
                     if not match_found:
                         # Mismatched - key matched but values differ
-                        best_target = target_batch[0] if target_batch else None
+                        best_target = next(iter(target_batch_dict.values())) if target_batch_dict else None
                         entry = TruthTableEntry(
                             source_record_id=src.get("id"),
                             target_record_id=best_target.get("id") if best_target else None,
@@ -649,25 +649,25 @@ class ReconciliationEngine:
                         truth_table.append(entry)
                         mismatched_count += 1
 
-        # Find target orphans
-        for key, batch in target_index.items():
-            for tgt in batch:
-                if tgt.get("id") not in matched_target_ids:
-                    entry = TruthTableEntry(
-                        source_record_id=None,
-                        target_record_id=tgt.get("id"),
-                        match_status=MatchStatus.TARGET_ORPHAN,
-                        rule_applied="none",
-                        confidence=0.0,
-                        explanation=f"No source records found with key: {key}",
-                        source_values={},
-                        target_values={
-                            k: tgt.get(k) for k in self.match_keys + ["amount", "currency"]
-                        },
-                        differences={},
-                    )
-                    truth_table.append(entry)
-                    target_orphan_count += 1
+        # Find target orphans - any targets remaining in the dicts are orphans
+        for key, batch_dict in target_index.items():
+            for tgt_id, tgt in batch_dict.items():
+                entry = TruthTableEntry(
+                    source_record_id=None,
+                    target_record_id=tgt.get("id"),
+                    match_status=MatchStatus.TARGET_ORPHAN,
+                    rule_applied="none",
+                    confidence=0.0,
+                    explanation=f"No source records could be matched with key: {key}",
+                    source_values={},
+                    target_values={
+                        k: tgt.get(k) for k in self.match_keys + ["amount", "currency"]
+                    },
+                    differences={},
+                )
+                truth_table.append(entry)
+                target_orphan_count += 1
+
 
         completed_at = datetime.utcnow().isoformat()
 

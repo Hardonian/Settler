@@ -9,12 +9,12 @@
 import { query } from "../../db";
 import { v4 as uuidv4 } from "uuid";
 import { logInfo, logError } from "../../utils/logger";
-import { ExportJobPayload } from "../worker/ExportJobWorker";
+import { ExportJobPayload, ExportJobType } from "../export/export-job-contract";
 
 export interface EnqueueExportJobOptions {
   tenantId: string;
   userId: string;
-  type: "export" | "reconciliation-export" | "csv-export" | "pdf-report";
+  type: ExportJobType;
   runId?: string;
   format?: "csv" | "json" | "pdf" | "xlsx";
   options?: Record<string, unknown>;
@@ -199,7 +199,7 @@ export class ExportJobQueue {
       tenant_id: string;
       type: string;
       status: string;
-      payload: string;
+      payload: ExportJobPayload | string;
       attempts: number;
       max_attempts: number;
       error: Record<string, unknown> | null;
@@ -224,7 +224,10 @@ export class ExportJobQueue {
       tenantId: row.tenant_id,
       type: row.type,
       status: row.status,
-      payload: JSON.parse(row.payload) as ExportJobPayload,
+      payload:
+        typeof row.payload === "string"
+          ? (JSON.parse(row.payload) as ExportJobPayload)
+          : row.payload,
       attempts: row.attempts,
       maxAttempts: row.max_attempts,
       error: row.error,

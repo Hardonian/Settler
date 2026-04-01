@@ -9,7 +9,9 @@ export interface AdapterConfig {
     apiKey?: string;
     secret?: string;
     webhookSecret?: string;
-    [key: string]: any;
+    /** Optional tenant context for polling/normalization (must be explicit when required) */
+    tenantId?: string;
+    [key: string]: unknown;
 }
 export interface DateRange {
     start: Date;
@@ -21,7 +23,7 @@ export interface NormalizedEvent {
     settlement?: Settlement;
     refundDispute?: RefundDispute;
     fxConversion?: FXConversion;
-    rawPayload: Record<string, any>;
+    rawPayload: Record<string, unknown>;
     timestamp: Date;
 }
 export interface WebhookVerificationResult {
@@ -42,7 +44,7 @@ export interface EnhancedAdapter {
     /**
      * Normalize webhook payload to canonical format
      */
-    normalizeWebhook(payload: Record<string, any>, tenantId: string): NormalizedEvent[];
+    normalizeWebhook(payload: Record<string, unknown>, tenantId: string): NormalizedEvent[];
     /**
      * Poll transactions from provider API
      */
@@ -58,11 +60,11 @@ export interface EnhancedAdapter {
     /**
      * Normalize transaction to canonical format
      */
-    normalizeTransaction(raw: Record<string, any>, tenantId: string): Transaction;
+    normalizeTransaction(raw: Record<string, unknown>, tenantId: string): Transaction;
     /**
      * Normalize settlement to canonical format
      */
-    normalizeSettlement(raw: Record<string, any>, tenantId: string): Settlement;
+    normalizeSettlement(raw: Record<string, unknown>, tenantId: string): Settlement;
     /**
      * Handle API version differences
      */

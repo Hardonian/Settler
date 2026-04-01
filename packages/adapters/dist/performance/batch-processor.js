@@ -23,6 +23,12 @@ const DEFAULT_BATCH_CONFIG = {
  */
 async function processInBatches(items, processor, config = {}) {
     const finalConfig = { ...DEFAULT_BATCH_CONFIG, ...config };
+    if (!Number.isFinite(finalConfig.batchSize) || finalConfig.batchSize < 1) {
+        throw new Error(`batchSize must be a finite integer >= 1, got ${finalConfig.batchSize}`);
+    }
+    if (!Number.isFinite(finalConfig.maxConcurrency) || finalConfig.maxConcurrency < 1) {
+        throw new Error(`maxConcurrency must be a finite integer >= 1, got ${finalConfig.maxConcurrency}`);
+    }
     const results = [];
     const errors = [];
     // Split into batches
@@ -92,6 +98,9 @@ class Semaphore {
  * Parallel processing with concurrency limit
  */
 async function processParallel(items, processor, maxConcurrency = 5) {
+    if (!Number.isFinite(maxConcurrency) || maxConcurrency < 1) {
+        throw new Error(`maxConcurrency must be a finite integer >= 1, got ${maxConcurrency}`);
+    }
     const results = [];
     const errors = [];
     const semaphore = new Semaphore(maxConcurrency);
@@ -117,6 +126,9 @@ async function processParallel(items, processor, maxConcurrency = 5) {
  * Chunk array into smaller arrays
  */
 function chunk(array, size) {
+    if (!Number.isFinite(size) || size < 1 || !Number.isInteger(size)) {
+        throw new Error(`chunk size must be a finite integer >= 1, got ${size}`);
+    }
     const chunks = [];
     for (let i = 0; i < array.length; i += size) {
         chunks.push(array.slice(i, i + size));
@@ -141,6 +153,9 @@ function deduplicate(array, keyFn) {
  * Optimize database inserts with batching
  */
 async function batchInsert(items, inserter, batchSize = 1000) {
+    if (!Number.isFinite(batchSize) || batchSize < 1 || !Number.isInteger(batchSize)) {
+        throw new Error(`batchSize must be a finite integer >= 1, got ${batchSize}`);
+    }
     const batches = chunk(items, batchSize);
     for (const batch of batches) {
         await inserter(batch);

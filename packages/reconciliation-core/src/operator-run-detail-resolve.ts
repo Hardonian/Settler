@@ -12,7 +12,6 @@ import {
   toLegacyRunTruth,
   type DeterministicMatchRowLike,
   type ReconJobRecordLike,
-  type ReconResultRecordLike,
   type SnapshotRecordLike,
 } from "./canonical-run-result.js";
 import {
@@ -21,8 +20,15 @@ import {
   type OperatorRunDetail,
   type OperatorRunStageRow,
 } from "./operator-run-detail.js";
-import { resolveReconciliationRunForTenants, type ResolvedReconciliationRunForTenants } from "./run-resolution.js";
-import { buildRunConfigurationSummary, type RunConfigurationSummary } from "./run-configuration-summary.js";
+import { countReconciliationExceptionsForScope } from "./exception-workbench.js";
+import {
+  resolveReconciliationRunForTenants,
+  type ResolvedReconciliationRunForTenants,
+} from "./run-resolution.js";
+import {
+  buildRunConfigurationSummary,
+  type RunConfigurationSummary,
+} from "./run-configuration-summary.js";
 import { toStageRows, type ReconAuditRow } from "./recon-audit-stages.js";
 
 export type OperatorRunDetailResolution =
@@ -30,44 +36,6 @@ export type OperatorRunDetailResolution =
   | { kind: "ambiguous_uuid_collision"; jobId: string; ingestionRunId: string }
   | { kind: "not_found" }
   | { kind: "recon_enrichment_failed"; message: string };
-
-function toReconResultRecordLike(row: {
-  id: string;
-  reconJobId: string;
-  status: string;
-  startedAt: Date;
-  completedAt: Date | null;
-  sourceCount: number;
-  targetCount: number;
-  matchedCount: number;
-  unmatchedSourceCount: number;
-  unmatchedTargetCount: number;
-  conflictCount: number;
-  errorMessage: string | null;
-  inputHash: string | null;
-  snapshotId: string | null;
-  summary: unknown;
-  metadata: unknown;
-}): ReconResultRecordLike {
-  return {
-    id: row.id,
-    recon_job_id: row.reconJobId,
-    status: row.status,
-    started_at: row.startedAt.toISOString(),
-    completed_at: row.completedAt?.toISOString() ?? null,
-    source_count: row.sourceCount,
-    target_count: row.targetCount,
-    matched_count: row.matchedCount,
-    unmatched_source_count: row.unmatchedSourceCount,
-    unmatched_target_count: row.unmatchedTargetCount,
-    conflict_count: row.conflictCount,
-    error_message: row.errorMessage,
-    input_hash: row.inputHash,
-    snapshot_id: row.snapshotId,
-    summary: row.summary as Record<string, unknown> | null,
-    metadata: (row.metadata as Record<string, unknown> | null) ?? null,
-  };
-}
 
 function toReconJobRecordLike(job: {
   id: string;
@@ -136,8 +104,7 @@ function buildIngestionStages(
       id: "ingestion-reconciliation",
       name: "Ingestion reconciliation",
       status: stageStatus,
-      startedAt:
-        resolved.detail.timestamps.startedAt ?? resolved.detail.timestamps.createdAt,
+      startedAt: resolved.detail.timestamps.startedAt ?? resolved.detail.timestamps.createdAt,
       completedAt: resolved.detail.timestamps.completedAt ?? undefined,
       ...(resolved.detail.errorMessage ? { error: resolved.detail.errorMessage } : {}),
     },
@@ -177,78 +144,69 @@ export async function resolveOperatorRunDetailForTenants(
   }
 
   try {
-    const job = await prisma.reconJob.findFirst({
-      where: { id: runId, tenantId: resolved.tenantId, deletedAt: null },
-      select: {
-        id: true,
-        tenantId: true,
-        name: true,
-        status: true,
-        createdAt: true,
-        templateId: true,
-        sourceAdapter: true,
-        targetAdapter: true,
-        sourceConfigEncrypted: true,
-        targetConfigEncrypted: true,
-        validationRules: true,
-        reconStrategy: true,
-      },
-    });
+    const job = resolved.jobRecord;
+    const latestResult = resolved.latestResultRecord;
+    const snapshotId = latestResult?.snapshot_id ?? null;
 
-    if (!job) {
-      return { kind: "not_found" };
-    }
-
-    const [recentResults, persistedResultCount] = await Promise.all([
-      prisma.reconResult.findMany({
-        where: { reconJobId: runId, tenantId: job.tenantId },
-        orderBy: { startedAt: "desc" },
-        take: 2,
-        select: {
-          id: true,
-          reconJobId: true,
-          status: true,
-          startedAt: true,
-          completedAt: true,
-          sourceCount: true,
-          targetCount: true,
-          matchedCount: true,
-          unmatchedSourceCount: true,
-          unmatchedTargetCount: true,
-          conflictCount: true,
-          errorMessage: true,
-          inputHash: true,
-          snapshotId: true,
-          summary: true,
-          metadata: true,
-        },
-      }),
-      prisma.reconResult.count({
-        where: { reconJobId: runId, tenantId: job.tenantId },
-      }),
-    ]);
-
-    const latestResult = recentResults[0] ?? null;
-    const previousResult = recentResults[1] ?? null;
-
-    const latestRecord = latestResult ? toReconResultRecordLike(latestResult) : null;
-    const previousRecord = previousResult ? toReconResultRecordLike(previousResult) : null;
-
-    const snapshotId = latestRecord?.snapshot_id ?? null;
-
-    const snapshotRecord = snapshotId
-      ? await prisma.runSnapshot.findFirst({
-          where: { id: snapshotId, tenantId: job.tenantId },
+    const [audits, exceptionCountResult, runDeltaRecord, snapshotRecord, deterministicRows] =
+      await Promise.all([
+        prisma.reconAudit.findMany({
+          where: { reconJobId: runId, tenantId: job.tenantId },
+          orderBy: { createdAt: "desc" },
+          take: 50,
           select: {
             id: true,
-            inputHash: true,
-            adapterConfigHashes: true,
-            jobConfig: true,
-            ruleVersions: true,
+            auditType: true,
+            action: true,
+            metadata: true,
             createdAt: true,
           },
-        })
-      : null;
+        }),
+        countReconciliationExceptionsForScope({
+          prisma,
+          tenantId: job.tenantId,
+          runId,
+          runKind: "recon_job",
+        }),
+        prisma.runDelta.findFirst({
+          where: { currentRunId: runId, tenantId: job.tenantId },
+        }),
+        snapshotId
+          ? prisma.runSnapshot.findFirst({
+              where: { id: snapshotId, tenantId: job.tenantId },
+              select: {
+                id: true,
+                inputHash: true,
+                adapterConfigHashes: true,
+                jobConfig: true,
+                ruleVersions: true,
+                createdAt: true,
+              },
+            })
+          : Promise.resolve(null),
+        latestResult?.id
+          ? (prisma.$queryRaw`
+          SELECT
+            stable_match_id,
+            left_record_id,
+            right_record_id,
+            confidence_score,
+            rule_id,
+            rule_version,
+            match_rationale,
+            matched_at
+          FROM deterministic_match_results
+          WHERE run_result_id = ${latestResult.id}::uuid
+            AND tenant_id = ${job.tenantId}::uuid
+          ORDER BY matched_at DESC
+          LIMIT 250
+        `.catch(() => []) as Promise<DeterministicMatchRowLike[]>)
+          : Promise.resolve([]),
+      ]);
+
+    const persistedResultCount = resolved.persistedResultCount;
+    const previousRecord = resolved.previousResultRecord;
+    const latestRecord = latestResult;
 
     const snapshotLike: SnapshotRecordLike | null = snapshotRecord
       ? {
@@ -261,20 +219,7 @@ export async function resolveOperatorRunDetailForTenants(
         }
       : null;
 
-    const audits = await prisma.reconAudit.findMany({
-      where: { reconJobId: runId, tenantId: job.tenantId },
-      orderBy: { createdAt: "desc" },
-      take: 50,
-      select: {
-        id: true,
-        auditType: true,
-        action: true,
-        metadata: true,
-        createdAt: true,
-      },
-    });
-
-    const auditRows: ReconAuditRow[] = audits.map(
+    const auditRows: ReconAuditRow[] = (audits as any).map(
       (a: {
         id: string;
         auditType: string;
@@ -290,66 +235,24 @@ export async function resolveOperatorRunDetailForTenants(
       })
     );
 
-    const exceptionAggregateRows = (await prisma.$queryRaw`
-      SELECT
-        COUNT(*)::int AS total,
-        COUNT(*) FILTER (WHERE acknowledged = false)::int AS pending,
-        COUNT(*) FILTER (
-          WHERE acknowledged = true
-          AND COALESCE(LOWER(metadata -> 'resolution' ->> 'status'), '') NOT IN ('resolved', 'ignored')
-        )::int AS investigating,
-        COUNT(*) FILTER (
-          WHERE LOWER(metadata -> 'resolution' ->> 'status') = 'resolved'
-        )::int AS resolved,
-        COUNT(*) FILTER (
-          WHERE LOWER(metadata -> 'resolution' ->> 'status') = 'ignored'
-        )::int AS ignored
-      FROM drift_events
-      WHERE recon_job_id = ${runId}::uuid
-        AND tenant_id = ${job.tenantId}::uuid
-    `) as Array<{
-      total: number | bigint;
-      pending: number | bigint;
-      investigating: number | bigint;
-      resolved: number | bigint;
-      ignored: number | bigint;
-    }>;
-    const [exceptionAggregateRow] = exceptionAggregateRows;
-
-    const exceptionCounts = {
-      total: Number(exceptionAggregateRow?.total || 0),
-      pending: Number(exceptionAggregateRow?.pending || 0),
-      investigating: Number(exceptionAggregateRow?.investigating || 0),
-      resolved: Number(exceptionAggregateRow?.resolved || 0),
-      ignored: Number(exceptionAggregateRow?.ignored || 0),
-      unresolved:
-        Number(exceptionAggregateRow?.pending || 0) +
-        Number(exceptionAggregateRow?.investigating || 0),
-    };
-
-    let deterministicRows: DeterministicMatchRowLike[] = [];
-    if (latestResult?.id) {
-      try {
-        deterministicRows = (await prisma.$queryRaw`
-          SELECT
-            stable_match_id,
-            left_record_id,
-            right_record_id,
-            confidence_score,
-            rule_id,
-            rule_version,
-            match_rationale,
-            matched_at
-          FROM deterministic_match_results
-          WHERE run_result_id = ${latestResult.id}::uuid
-            AND tenant_id = ${job.tenantId}::uuid
-          ORDER BY matched_at DESC
-          LIMIT 250
-        `) as DeterministicMatchRowLike[];
-      } catch {
-        deterministicRows = [];
-      }
-    }
+    const exceptionCounts =
+      exceptionCountResult.kind === "ok"
+        ? {
+            total: exceptionCountResult.counts.total,
+            pending: exceptionCountResult.counts.pending,
+            investigating: exceptionCountResult.counts.investigating,
+            resolved: exceptionCountResult.counts.resolved,
+            ignored: exceptionCountResult.counts.ignored,
+            unresolved: exceptionCountResult.counts.reviewRequired,
+          }
+        : {
+            total: 0,
+            pending: 0,
+            investigating: 0,
+            resolved: 0,
+            ignored: 0,
+            unresolved: 0,
+          };
 
     const jobLike = toReconJobRecordLike(job);
 
@@ -434,6 +337,20 @@ export async function resolveOperatorRunDetailForTenants(
       rowRationaleCodes,
       rowResultsPreview: contract.rowResults.slice(0, 100),
       stages: toStageRows(auditRows),
+      runDelta: runDeltaRecord
+        ? {
+            inputChanged: runDeltaRecord.inputChanged,
+            matchedDelta: runDeltaRecord.matchedDelta,
+            unmatchedDelta: runDeltaRecord.unmatchedDelta,
+            exceptionDelta: runDeltaRecord.exceptionDelta,
+            configDriftDetected: runDeltaRecord.configDriftDetected,
+            newExceptionPatterns: (runDeltaRecord.newExceptionPatterns as string[]) || [],
+            resolvedPatterns: (runDeltaRecord.resolvedPatterns as string[]) || [],
+            confidenceDelta: runDeltaRecord.confidenceDelta
+              ? Number(runDeltaRecord.confidenceDelta)
+              : null,
+          }
+        : null,
     });
 
     return { kind: "ok", detail: detailJson };

@@ -32,6 +32,7 @@ export interface CanonicalExceptionCounts {
   resolved: number;
   ignored: number;
   unresolved: number;
+  reviewRequired: number;
 }
 
 export interface CanonicalRunProvenance {
@@ -1036,6 +1037,9 @@ export function buildCanonicalRunResultContract(input: {
     ignored: asNumber(input.exceptionCounts?.ignored),
     unresolved:
       asNumber(input.exceptionCounts?.unresolved) ||
+      asNumber(input.exceptionCounts?.pending) + asNumber(input.exceptionCounts?.investigating),
+    reviewRequired:
+      asNumber(input.exceptionCounts?.reviewRequired) ||
       asNumber(input.exceptionCounts?.pending) + asNumber(input.exceptionCounts?.investigating),
   };
 

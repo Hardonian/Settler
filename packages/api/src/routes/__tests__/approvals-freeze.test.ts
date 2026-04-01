@@ -14,6 +14,9 @@ import { clearGovernanceCache } from "../../utils/governance-cache";
 
 // Mock dependencies
 jest.mock("../../db");
+jest.mock("../../middleware/authorization", () => ({
+  requirePermission: () => (_req: unknown, _res: unknown, next: () => void) => next(),
+}));
 
 const mockQuery = query as jest.MockedFunction<typeof query>;
 

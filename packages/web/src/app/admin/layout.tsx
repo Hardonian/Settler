@@ -7,7 +7,7 @@
  */
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
   FileText,
@@ -21,6 +21,8 @@ import {
   PlayCircle,
   FileSearch,
   Workflow,
+  Webhook,
+  type LucideIcon,
 } from "lucide-react";
 import { isSuperAdmin } from "@/lib/auth/super-admin";
 import { redirect } from "next/navigation";
@@ -32,7 +34,14 @@ import { OperationalRouteNotice } from "@/components/shared/OperationalRouteNoti
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-const adminNavSections = [
+interface NavItem {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  [key: string]: unknown;
+}
+
+const adminNavSections: { label: string; items: NavItem[] }[] = [
   {
     label: "Operations",
     items: [
@@ -52,7 +61,7 @@ const adminNavSections = [
       { href: "/admin/flags", label: "Feature Flags", icon: Flag },
       { href: "/admin/pages", label: "Pages", icon: FileText },
       { href: "/admin/experiments", label: "Experiments", icon: FlaskConical },
-      { href: "/admin/webhooks", label: "Webhooks", icon: FlaskConical },
+      { href: "/admin/webhooks", label: "Webhooks", icon: Webhook },
     ],
   },
   {
@@ -64,25 +73,33 @@ const adminNavSections = [
   },
 ];
 
+function AdminNavItem({ href, label, icon: Icon }: NavItem) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors",
+        "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      )}
+      aria-label={label}
+    >
+      <Icon size={15} className="shrink-0 text-muted-foreground/70" aria-hidden="true" />
+      {label}
+    </Link>
+  );
+}
+
 function AdminNavContent() {
   return (
     <>
       {adminNavSections.map((section, idx) => (
-        <div key={section.label} className={idx > 0 ? "mt-4 pt-4 border-t border-border" : ""}>
-          <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-2">
+        <div key={section.label} className={cn("space-y-0.5", idx > 0 && "mt-5 pt-5 border-t border-border/60")}>
+          <p className="mb-1.5 px-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
             {section.label}
-          </div>
+          </p>
           {section.items.map((item) => (
-            <Link key={item.href} href={item.href}>
-              <Button
-                variant="ghost"
-                className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
-                aria-label={item.label}
-              >
-                <item.icon size={16} aria-hidden="true" />
-                {item.label}
-              </Button>
-            </Link>
+            <AdminNavItem key={item.href} href={item.href} label={item.label} icon={item.icon} />
           ))}
         </div>
       ))}
@@ -100,8 +117,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       redirect("/login?next=" + encodeURIComponent("/admin"));
     }
   } catch {
-    // Log error but don't expose internal details
-    // Error handling is done in isSuperAdmin function
     // Redirect to sign-in on error - fail secure
     redirect("/login?next=" + encodeURIComponent("/admin"));
   }
@@ -109,41 +124,49 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <AdminErrorBoundary>
       <SkipLinks />
-      <div className="flex h-screen bg-background-light dark:bg-background">
+      <div className="flex h-screen bg-background">
         {/* Mobile Menu */}
         <MobileMenu>
           <AdminNavContent />
         </MobileMenu>
 
         {/* Sidebar - Desktop Only */}
-        <aside className="hidden lg:flex w-64 border-r border-border bg-card dark:bg-card flex-col fixed h-full z-10">
-          <div className="p-5 border-b border-border">
-            <Link
-              href="/admin"
-              className="flex items-center gap-2.5 font-bold text-lg text-foreground"
-            >
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-primary-foreground text-sm font-bold">
-                S
-              </div>
-              Settler Admin
-            </Link>
+        <aside className="hidden lg:flex w-60 border-r border-border bg-card/80 backdrop-blur-sm flex-col fixed h-full z-10">
+          {/* Sidebar header */}
+          <div className="flex h-14 items-center gap-2.5 border-b border-border px-4">
+            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-primary-foreground text-xs font-bold shrink-0">
+              S
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-foreground truncate">Settler Admin</p>
+              <p className="text-[10px] text-muted-foreground/60 uppercase tracking-wide">
+                Control Plane
+              </p>
+            </div>
           </div>
 
+          {/* Nav */}
           <nav
             id="admin-navigation"
-            className="flex-1 p-3 space-y-1 overflow-y-auto"
+            className="flex-1 overflow-y-auto p-3"
             aria-label="Admin navigation"
           >
             <AdminNavContent />
           </nav>
 
-          <div className="p-4 border-t border-border">
-            <div className="text-xs text-muted-foreground font-medium">Tenant: default</div>
+          {/* Footer */}
+          <div className="border-t border-border/60 p-3">
+            <div className="flex items-center gap-2 rounded-md px-3 py-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-success flex-shrink-0" aria-hidden="true" />
+              <span className="text-[10px] text-muted-foreground/60 font-medium uppercase tracking-wide">
+                Tenant: default
+              </span>
+            </div>
           </div>
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 lg:ml-64 overflow-auto" role="main" id="main-content">
+        <main className="flex-1 lg:ml-60 overflow-auto" role="main" id="main-content">
           <div className="p-4">
             <OperationalRouteNotice />
           </div>

@@ -56,7 +56,7 @@ export interface ConsoleRouteEntry {
 export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
   {
     href: "/console",
-    label: "Dashboard",
+    label: "Workbench",
     section: "Operations",
     domain: "overview",
     maturity: "runtime-degraded-without-env",

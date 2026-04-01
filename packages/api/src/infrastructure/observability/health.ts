@@ -6,6 +6,7 @@
 import { query } from "../../db";
 import { getRedisClient } from "../../utils/cache";
 import { getLedgerService } from "../../domain/services/LedgerService";
+import { getOpenFgaAuthorizationService } from "../../services/authz/openfga-authorization-service";
 
 export interface HealthCheck {
   status: "healthy" | "unhealthy" | "degraded";
@@ -129,6 +130,38 @@ export class HealthCheckService {
     }
   }
 
+  async checkOpenFga(): Promise<HealthCheck> {
+    try {
+      const status = await getOpenFgaAuthorizationService().status();
+      if (status.state === "available") {
+        return {
+          status: "healthy",
+          timestamp: new Date().toISOString(),
+        };
+      }
+
+      if (status.state === "disabled" || status.state === "unconfigured") {
+        return {
+          status: "degraded",
+          error: status.reason,
+          timestamp: new Date().toISOString(),
+        };
+      }
+
+      return {
+        status: "unhealthy",
+        error: status.reason || "openfga_unavailable",
+        timestamp: new Date().toISOString(),
+      };
+    } catch (error: unknown) {
+      return {
+        status: "unhealthy",
+        error: error instanceof Error ? error.message : "Unknown error",
+        timestamp: new Date().toISOString(),
+      };
+    }
+  }
+
   async checkSentry(): Promise<HealthCheck> {
     try {
       // Check if Sentry is configured
@@ -158,7 +191,7 @@ export class HealthCheckService {
 
   async checkAll(): Promise<HealthStatus> {
     const redisClient = this.getRedisClient();
-    const [database, redis, sentry, supabase, ledger] = await Promise.all([
+    const [database, redis, sentry, supabase, ledger, openfga] = await Promise.all([
       this.checkDatabase(),
       redisClient
         ? this.checkRedis()
@@ -170,6 +203,7 @@ export class HealthCheckService {
       this.checkSentry(),
       this.checkSupabase(),
       this.checkTigerBeetle(),
+      this.checkOpenFga(),
     ]);
 
     const checks = {
@@ -178,6 +212,7 @@ export class HealthCheckService {
       sentry,
       supabase,
       tigerbeetle: ledger,
+      openfga,
     };
 
     const allHealthy = Object.values(checks).every((check) => check.status === "healthy");

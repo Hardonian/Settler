@@ -33,6 +33,7 @@ Settler's architecture is composed of five primary layers, ensuring a separation
 5.  **Enterprise Integration Layer**: Connectors and policies for managed environments.
 
 For persistence, the platform uses a hybrid model:
+
 - **TigerBeetle**: Acts as the immutable, high-performance ledger core for all financial-grade transactions.
 - **PostgreSQL (Supabase)**: Stores projections, operational metadata, audit logs, and tenant configurations.
 
@@ -45,9 +46,9 @@ For persistence, the platform uses a hybrid model:
 - `docs` — Canonical documentation.
 - `scripts` — Verification, repo hygiene, and automation.
 
-## Getting Started
+## Quick Start
 
-For the complete local setup guide, see **[Canonical Local Setup](../SETUP.md)**.
+For the complete local setup guide, see **[Canonical Local Setup](SETUP.md)**.
 
 The canonical verification command to ensure your environment is correctly configured and the codebase is healthy is:
 

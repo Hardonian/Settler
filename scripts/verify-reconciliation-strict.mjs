@@ -12,11 +12,21 @@ const matrix = [
 ];
 
 const results = [];
+
+function parseCommandJson(output) {
+  const trimmed = output.trim();
+  const start = trimmed.lastIndexOf("{");
+  if (start === -1) {
+    throw new Error("Command output did not include JSON payload.");
+  }
+  return JSON.parse(trimmed.slice(start));
+}
+
 for (const [profile, seed] of matrix) {
   const cmd = `pnpm --filter @settler/cli exec tsx src/index.ts foundry reconciliation-verify --profile ${profile} --seed ${seed} --strict`;
   try {
     const output = execSync(cmd, { encoding: "utf8", stdio: "pipe" });
-    results.push({ profile, seed, status: "pass", output: JSON.parse(output) });
+    results.push({ profile, seed, status: "pass", output: parseCommandJson(output) });
   } catch (error) {
     const stderr = error.stderr?.toString?.() ?? "";
     const stdout = error.stdout?.toString?.() ?? "";

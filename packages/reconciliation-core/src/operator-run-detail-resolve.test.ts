@@ -11,7 +11,6 @@ import { resolveOperatorRunDetailForTenants } from "./operator-run-detail-resolv
 function basePrismaMock() {
   return {
     prisma: {
-      $queryRaw: jest.fn(),
       reconJob: { findFirst: jest.fn() },
       reconResult: {
         findFirst: jest.fn(),
@@ -20,7 +19,8 @@ function basePrismaMock() {
       },
       runSnapshot: { findFirst: jest.fn() },
       reconAudit: { findMany: jest.fn() },
-      reconciliationRun: { findFirst: jest.fn() },
+      reconciliationRun: { findFirst: jest.fn(), findMany: jest.fn() },
+      reconciliationMatch: { count: jest.fn() },
     },
   };
 }
@@ -124,10 +124,13 @@ describe("resolveOperatorRunDetailForTenants", () => {
       createdAt: new Date("2026-01-01T00:09:00.000Z"),
     });
     prisma.reconAudit.findMany.mockResolvedValue([]);
-    prisma.$queryRaw.mockResolvedValueOnce([
-      { total: 0, pending: 0, investigating: 0, resolved: 0, ignored: 0 },
-    ]);
-    prisma.$queryRaw.mockResolvedValueOnce([]);
+    prisma.reconciliationRun.findMany.mockResolvedValue([{ id: "ing-1" }, { id: "ing-2" }]);
+    prisma.reconciliationMatch.count
+      .mockResolvedValueOnce(0)
+      .mockResolvedValueOnce(0)
+      .mockResolvedValueOnce(0)
+      .mockResolvedValueOnce(0)
+      .mockResolvedValueOnce(0);
 
     const out = await resolveOperatorRunDetailForTenants(prisma as never, [tenantId], jobId);
     expect(out.kind).toBe("ok");
@@ -182,6 +185,7 @@ describe("resolveOperatorRunDetailForTenants", () => {
       createdAt: new Date(),
       updatedAt: new Date(),
     });
+    prisma.reconciliationRun.findMany.mockResolvedValue([]);
 
     const out = await resolveOperatorRunDetailForTenants(prisma as never, [tenantId], dup);
     expect(out).toEqual({
