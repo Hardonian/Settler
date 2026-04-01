@@ -1,6 +1,15 @@
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
-import { AlertTriangle, Database, Lock, SearchX, ShieldX, Users, Wallet } from "lucide-react";
+import {
+  AlertTriangle,
+  Database,
+  Lock,
+  SearchX,
+  ShieldX,
+  Users,
+  Wallet,
+  ActivityOff,
+} from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 

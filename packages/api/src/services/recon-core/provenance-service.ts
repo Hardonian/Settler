@@ -52,6 +52,36 @@ function buildEntryHash(
 export class ProvenanceService {
   constructor(private readonly prisma: PrismaClient) {}
 
+  private async nextSequenceAndPreviousHash(
+    client: Prisma.TransactionClient | PrismaClient,
+    runId: string
+  ): Promise<{ sequence: number; previousEntryHash: string | undefined }> {
+    const latest = await client.reconciliationProvenance.findFirst({
+      where: { runId },
+      select: { sequence: true, entryHash: true },
+      orderBy: { sequence: "desc" },
+    });
+    return {
+      sequence: (latest?.sequence ?? 0) + 1,
+      previousEntryHash: latest?.entryHash,
+    };
+  }
+
+  private async nextSequenceAndPreviousHash(
+    client: Prisma.TransactionClient | PrismaClient,
+    runId: string
+  ): Promise<{ sequence: number; previousEntryHash: string | undefined }> {
+    const latest = await client.reconciliationProvenance.findFirst({
+      where: { runId },
+      select: { sequence: true, entryHash: true },
+      orderBy: { sequence: "desc" },
+    });
+    return {
+      sequence: (latest?.sequence ?? 0) + 1,
+      previousEntryHash: latest?.entryHash,
+    };
+  }
+
   private async nextSequence(
     client: Prisma.TransactionClient | PrismaClient,
     runId: string
@@ -92,8 +122,11 @@ export class ProvenanceService {
       }
     }
 
-    const sequence = await this.nextSequence(client, input.runId);
-    const entryHash = buildEntryHash({ ...input, sequence });
+    const { sequence, previousEntryHash } = await this.nextSequenceAndPreviousHash(
+      client,
+      input.runId
+    );
+    const entryHash = buildEntryHash({ ...input, sequence, previousEntryHash });
 
     await client.reconciliationProvenance.create({
       data: {

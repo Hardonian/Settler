@@ -1,5 +1,7 @@
 import { Router, Response } from "express";
 import { AuthRequest } from "../middleware/auth";
+import { requirePermission } from "../middleware/authorization";
+import { Permission } from "../infrastructure/security/Permissions";
 import { handleRouteError } from "../utils/error-handler";
 import {
   getEnterpriseAnalyticsProvider,
@@ -72,6 +74,7 @@ async function getRecentImportWorkbenchSummary(tenantId: string): Promise<{
 
 platformControlPlaneRouter.get(
   "/platform-control-plane/overview",
+  requirePermission(Permission.ADMIN_READ),
   async (req: AuthRequest, res: Response) => {
     const tenantId = req.tenantId;
     if (!tenantId) {
@@ -140,6 +143,7 @@ platformControlPlaneRouter.get(
 
 platformControlPlaneRouter.get(
   "/platform-control-plane/analytics/export",
+  requirePermission(Permission.ADMIN_READ),
   async (req: AuthRequest, res: Response) => {
     const tenantId = req.tenantId;
     if (!tenantId) {

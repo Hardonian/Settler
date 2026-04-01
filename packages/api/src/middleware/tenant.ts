@@ -9,7 +9,6 @@ import { ITenantRepository } from "../domain/repositories/ITenantRepository";
 import { Container } from "../infrastructure/di/Container";
 import { query } from "../db";
 import { sendProblemJson } from "../utils/problem-json";
-import { UserRole } from "../domain/entities/User";
 
 export interface TenantRequest extends AuthRequest {
   tenantId?: string;
@@ -20,6 +19,116 @@ export interface TenantRequest extends AuthRequest {
     status: string;
     tier: string;
   };
+}
+
+type TenantAccessSource =
+  | "direct_user_tenant"
+  | "super_admin"
+  | "tenant_users"
+  | "memberships"
+  | "tenant_memberships"
+  | "user_not_found"
+  | "no_membership";
+
+async function listTenantAccessTables(): Promise<Set<string>> {
+  const rows = await query<{ table_name: string }>(
+    `SELECT table_name
+       FROM information_schema.tables
+      WHERE table_schema = 'public'
+        AND table_name = ANY($1::text[])`,
+    [["tenant_users", "memberships", "tenant_memberships"]]
+  );
+
+  return new Set(rows.map((row) => row.table_name));
+}
+
+async function hasSuperAdminAccess(userId: string): Promise<boolean> {
+  const rows = await query<{ allowed: boolean }>(
+    `SELECT EXISTS (
+       SELECT 1
+         FROM auth.users
+        WHERE id = $1
+          AND (
+            COALESCE(is_super_admin, false) = true
+            OR COALESCE(raw_user_meta_data ->> 'role', '') = 'SUPER_ADMIN'
+            OR COALESCE(raw_user_meta_data ->> 'is_super_admin', 'false') = 'true'
+          )
+     ) AS allowed`,
+    [userId]
+  );
+
+  return rows[0]?.allowed === true;
+}
+
+async function resolveTenantAccess(
+  userId: string,
+  tenantId: string
+): Promise<{ allowed: boolean; source: TenantAccessSource }> {
+  const userRows = await query<{ tenant_id: string }>(`SELECT tenant_id FROM users WHERE id = $1`, [
+    userId,
+  ]);
+
+  if (userRows.length === 0 || !userRows[0]) {
+    return { allowed: false, source: "user_not_found" };
+  }
+
+  if (userRows[0].tenant_id === tenantId) {
+    return { allowed: true, source: "direct_user_tenant" };
+  }
+
+  if (await hasSuperAdminAccess(userId)) {
+    return { allowed: true, source: "super_admin" };
+  }
+
+  const availableTables = await listTenantAccessTables();
+
+  if (availableTables.has("tenant_users")) {
+    const rows = await query<{ allowed: boolean }>(
+      `SELECT EXISTS (
+         SELECT 1
+           FROM tenant_users
+          WHERE tenant_id = $1
+            AND user_id = $2
+       ) AS allowed`,
+      [tenantId, userId]
+    );
+    if (rows[0]?.allowed === true) {
+      return { allowed: true, source: "tenant_users" };
+    }
+  }
+
+  if (availableTables.has("memberships")) {
+    const rows = await query<{ allowed: boolean }>(
+      `SELECT EXISTS (
+         SELECT 1
+           FROM memberships
+          WHERE tenant_id = $1
+            AND user_id = $2
+            AND COALESCE(status, 'active') IN ('active', 'accepted')
+       ) AS allowed`,
+      [tenantId, userId]
+    );
+    if (rows[0]?.allowed === true) {
+      return { allowed: true, source: "memberships" };
+    }
+  }
+
+  if (availableTables.has("tenant_memberships")) {
+    const rows = await query<{ allowed: boolean }>(
+      `SELECT EXISTS (
+         SELECT 1
+           FROM tenant_memberships
+          WHERE tenant_id = $1
+            AND user_id = $2
+       ) AS allowed`,
+      [tenantId, userId]
+    );
+    if (rows[0]?.allowed === true) {
+      return { allowed: true, source: "tenant_memberships" };
+    }
+  }
+
+  return { allowed: false, source: "no_membership" };
 }
 
 /**
@@ -64,35 +173,6 @@ export async function tenantMiddleware(
           });
           return;
         }
-
-        const userResult = await query<{ tenant_id: string; role: UserRole }>(
-          `SELECT tenant_id, role FROM users WHERE id = $1`,
-          [req.userId]
-        );
-
-        if (userResult.length === 0 || !userResult[0]) {
-          sendProblemJson(req, res, {
-            status: 403,
-            title: "Forbidden",
-            detail: "User not found",
-            code: "TENANT_CONTEXT_USER_NOT_FOUND",
-          });
-          return;
-        }
-
-        const user = userResult[0];
-        const canImpersonateTenant = user.role === UserRole.OWNER || user.role === UserRole.ADMIN;
-
-        if (tenantId !== user.tenant_id && !canImpersonateTenant) {
-          sendProblemJson(req, res, {
-            status: 403,
-            title: "Forbidden",
-            detail: "Cross-tenant context is not permitted",
-            code: "TENANT_CONTEXT_FORBIDDEN",
-          });
-          return;
-        }
-
         tenant = await tenantRepo.findById(tenantId);
       }
     }
@@ -117,6 +197,29 @@ export async function tenantMiddleware(
         code: "TENANT_NOT_FOUND",
       });
       return;
+    }
+
+    if (req.userId) {
+      const access = await resolveTenantAccess(req.userId, tenant.id);
+      if (!access.allowed) {
+        sendProblemJson(req, res, {
+          status: 403,
+          title: "Forbidden",
+          detail:
+            access.source === "user_not_found"
+              ? "Authenticated user could not be resolved for tenant access"
+              : "Authenticated identity does not have access to the requested tenant context",
+          code:
+            access.source === "user_not_found"
+              ? "TENANT_CONTEXT_USER_NOT_FOUND"
+              : "TENANT_CONTEXT_FORBIDDEN",
+          extra: {
+            requested_tenant_id: tenant.id,
+            access_source: access.source,
+          },
+        });
+        return;
+      }
     }
 
     // Check tenant status

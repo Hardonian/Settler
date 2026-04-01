@@ -14,6 +14,15 @@ type Finding = {
   action?: string;
 };
 
+function readRequiredNodeVersion(): string {
+  const nvmrcPath = path.join(process.cwd(), ".nvmrc");
+  if (!fs.existsSync(nvmrcPath)) {
+    return "24.0.0";
+  }
+
+  return fs.readFileSync(nvmrcPath, "utf8").trim() || "24.0.0";
+}
+
 function loadEnvFiles(): string[] {
   const loaded: string[] = [];
   const candidates = [
@@ -41,6 +50,22 @@ function isEnabled(value: string | undefined): boolean {
 
 function hasValue(name: string): boolean {
   return Boolean(process.env[name] && process.env[name]?.trim());
+}
+
+function validateToolchain(findings: Finding[]): void {
+  const requiredVersion = readRequiredNodeVersion();
+  const requiredMajor = Number.parseInt(requiredVersion.split(".")[0] || "24", 10);
+  const currentVersion = process.version.replace(/^v/, "");
+  const currentMajor = Number.parseInt(currentVersion.split(".")[0] || "0", 10);
+
+  if (!Number.isFinite(currentMajor) || currentMajor < requiredMajor) {
+    findings.push({
+      severity: "error",
+      area: "toolchain",
+      message: `Unsupported Node.js runtime ${process.version}. Settler requires >=${requiredMajor}.x.`,
+      action: `Run nvm install ${requiredVersion} && nvm use ${requiredVersion} before onboarding or verification.`,
+    });
+  }
 }
 
 function addRequired(
@@ -354,6 +379,7 @@ async function main(): Promise<void> {
   const loadedEnvFiles = loadEnvFiles();
 
   const findings: Finding[] = [];
+  validateToolchain(findings);
   validateCore(findings);
   validateBilling(findings);
   validateEnterprise(findings);

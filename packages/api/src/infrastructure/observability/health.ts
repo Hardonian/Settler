@@ -24,6 +24,15 @@ export interface HealthStatus {
     tigerbeetle?: HealthCheck;
     [key: string]: HealthCheck | undefined;
   };
+  blocking: string[];
+  degraded: string[];
+  timestamp: string;
+}
+
+export interface ReadinessStatus {
+  status: "ready" | "not_ready";
+  blocking: string[];
+  degraded: string[];
   timestamp: string;
 }
 
@@ -189,6 +198,42 @@ export class HealthCheckService {
     }
   }
 
+  private getCriticalCheckNames(): Set<string> {
+    const critical = new Set<string>(["database"]);
+    if (process.env.OPENFGA_REQUIRED === "true") {
+      critical.add("openfga");
+    }
+    return critical;
+  }
+
+  private classifyChecks(checks: HealthStatus["checks"]): {
+    blocking: string[];
+    degraded: string[];
+  } {
+    const critical = this.getCriticalCheckNames();
+    const blocking: string[] = [];
+    const degraded: string[] = [];
+
+    for (const [name, check] of Object.entries(checks)) {
+      if (!check) continue;
+
+      if (critical.has(name)) {
+        if (check.status === "unhealthy") {
+          blocking.push(name);
+        } else if (check.status === "degraded") {
+          degraded.push(name);
+        }
+        continue;
+      }
+
+      if (check.status !== "healthy") {
+        degraded.push(name);
+      }
+    }
+
+    return { blocking, degraded };
+  }
+
   async checkAll(): Promise<HealthStatus> {
     const redisClient = this.getRedisClient();
     const [database, redis, sentry, supabase, ledger, openfga] = await Promise.all([
@@ -215,14 +260,19 @@ export class HealthCheckService {
       openfga,
     };
 
-    const allHealthy = Object.values(checks).every((check) => check.status === "healthy");
-    const anyUnhealthy = Object.values(checks).some((check) => check.status === "unhealthy");
-
-    const overallStatus = anyUnhealthy ? "unhealthy" : allHealthy ? "healthy" : "degraded";
+    const classification = this.classifyChecks(checks);
+    const overallStatus =
+      classification.blocking.length > 0
+        ? "unhealthy"
+        : classification.degraded.length > 0
+          ? "degraded"
+          : "healthy";
 
     return {
       status: overallStatus,
       checks,
+      blocking: classification.blocking,
+      degraded: classification.degraded,
       timestamp: new Date().toISOString(),
     };
   }
@@ -232,11 +282,15 @@ export class HealthCheckService {
     return { status: "ok" };
   }
 
-  async checkReady(): Promise<{ status: "ready" | "not_ready" }> {
-    // Readiness check - only returns ready if critical dependencies are healthy
+  async checkReady(): Promise<ReadinessStatus> {
+    // Readiness check - only critical dependencies block traffic.
+    // Optional services remain explicit in `degraded` for operator triage.
     const health = await this.checkAll();
     return {
-      status: health.status === "healthy" ? "ready" : "not_ready",
+      status: health.blocking.length === 0 ? "ready" : "not_ready",
+      blocking: health.blocking,
+      degraded: health.degraded,
+      timestamp: new Date().toISOString(),
     };
   }
 }

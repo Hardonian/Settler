@@ -13,7 +13,7 @@ interface HealthCheck {
 }
 
 // Reserved for future detailed health checks
- 
+
 async function _checkDatabase(): Promise<HealthCheck> {
   const start = Date.now();
   try {
@@ -27,7 +27,7 @@ async function _checkDatabase(): Promise<HealthCheck> {
 }
 
 // Reserved for future detailed health checks
- 
+
 async function _checkConnectionPool(): Promise<HealthCheck> {
   try {
     const totalConnections = pool.totalCount;
@@ -71,9 +71,11 @@ router.get("/", async (_req: Request, res: Response) => {
 // Detailed health check with dependency checks
 router.get("/detailed", async (_req: Request, res: Response) => {
   const health = await healthCheckService.checkAll();
-  res.status(health.status === "healthy" ? 200 : 503).json({
+  res.status(health.status === "unhealthy" ? 503 : 200).json({
     status: health.status,
     checks: health.checks,
+    blocking: health.blocking,
+    degraded: health.degraded,
     timestamp: health.timestamp,
     service: "settler-api",
     version: "1.0.0",
