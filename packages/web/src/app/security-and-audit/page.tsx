@@ -6,8 +6,13 @@ import { FeatureList } from "@/components/marketing/FeatureList";
 import { Button } from "@/components/ui/button";
 import { UiLink } from "@/components/ui/link";
 import { RealityEvidencePanel } from "@/components/RealityEvidencePanel";
-import { EvidenceArtifactPreview, VisualGrid } from "@/components/site/infographics";
+import {
+  EvidenceArtifactPreview,
+  VisualGrid,
+  IsolationVaultVisual,
+} from "@/components/site/infographics";
 import { ShieldCheck, Lock, Eye, FileText, Server, KeyRound, ArrowRight } from "lucide-react";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "Security & Audit - Settler",
@@ -150,6 +155,32 @@ export default function SecurityAndAuditPage() {
               </div>
             );
           })}
+        </div>
+      </Section>
+
+      {/* Isolation Vault Section */}
+      <Section withGrid className="bg-slate-950 border-y border-white/5 py-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="space-y-8">
+            <h2 className="text-3xl font-bold tracking-tight text-white">
+              Hardened Tenant Isolation
+            </h2>
+            <p className="text-lg text-slate-400 leading-relaxed">
+              Every tenant operates within a cryptographically isolated perimeter. Settler enforces
+              row-level security and runtime context partitioning to ensure zero-leakage between
+              institutional workloads.
+            </p>
+            <IsolationVaultVisual />
+          </div>
+          <div className="relative aspect-square w-full overflow-hidden rounded-3xl border border-white/10 shadow-3xl">
+            <Image
+              src="/isolation_vault_3d.png"
+              alt="Security isolation vault visualization"
+              fill
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent" />
+          </div>
         </div>
       </Section>
 

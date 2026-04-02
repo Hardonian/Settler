@@ -3,6 +3,20 @@
  */
 
 /**
+ * Safely cast unknown to object
+ */
+export function toObject(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" ? (value as Record<string, unknown>) : {};
+}
+
+/**
+ * Safely cast unknown to array
+ */
+export function toArray(value: unknown): unknown[] {
+  return Array.isArray(value) ? value : [];
+}
+
+/**
  * Safely asserts that a value is not undefined
  */
 export function assertDefined<T>(value: T | undefined, errorMessage?: string): asserts value is T {
@@ -49,4 +63,18 @@ export function safeErrorHandler(errorHandler: (error: Error) => void): (error: 
       errorHandler(new Error(String(error)));
     }
   };
+}
+
+/**
+ * Type guard to check if object has required string fields
+ */
+export function hasRequiredStringFields(obj: Record<string, unknown>, fields: string[]): boolean {
+  return fields.every((field) => typeof obj[field] === "string");
+}
+
+/**
+ * Type guard to check if object has required number fields
+ */
+export function hasRequiredNumberFields(obj: Record<string, unknown>, fields: string[]): boolean {
+  return fields.every((field) => typeof obj[field] === "number");
 }

@@ -1,5 +1,13 @@
 import type { ReconResult } from "@prisma/client";
 
+function toObject(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" ? (value as Record<string, unknown>) : {};
+}
+
+function toArray(value: unknown): unknown[] {
+  return Array.isArray(value) ? value : [];
+}
+
 export type RuntimeClassification =
   | "EXACT_MATCH"
   | "FUZZY_MATCH"
@@ -48,14 +56,6 @@ export interface RuntimeMatchContract {
   reversal_phase?: string;
   linked_dispute_id?: string;
   linked_refund_id?: string;
-}
-
-function toObject(value: unknown): Record<string, unknown> {
-  return value && typeof value === "object" ? (value as Record<string, unknown>) : {};
-}
-
-function toArray(value: unknown): unknown[] {
-  return Array.isArray(value) ? value : [];
 }
 
 function normalizeRuntimeMatch(raw: unknown): RuntimeMatchContract | null {
