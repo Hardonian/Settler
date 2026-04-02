@@ -52,6 +52,16 @@ interface Webhook {
   failureCount: number;
 }
 
+interface WebhooksCapability {
+  state?: "available" | "degraded" | "unavailable";
+  reason?: string;
+}
+
+interface WebhooksListResponse {
+  webhooks?: Webhook[];
+  error?: string;
+  capability?: WebhooksCapability;
+}
 const availableEvents = [
   "reconciliation.completed",
   "reconciliation.failed",
@@ -70,6 +80,10 @@ export default function WebhooksPage() {
   const [newWebhookEvents, setNewWebhookEvents] = useState<string[]>([]);
   const [formError, setFormError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [capabilityState, setCapabilityState] = useState<"available" | "degraded" | "unavailable">(
+    "available"
+  );
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);
@@ -81,13 +95,23 @@ export default function WebhooksPage() {
   const fetchWebhooks = async () => {
     try {
       setLoading(true);
+      setLoadError(null);
       const res = await fetch("/api/console/webhooks");
-      if (res.ok) {
-        const data = await res.json();
-        setWebhooks(data.webhooks || []);
+      const data = (await res.json().catch(() => ({}))) as WebhooksListResponse;
+
+      if (!res.ok) {
+        setCapabilityState(data.capability?.state === "unavailable" ? "unavailable" : "degraded");
+        setLoadError(data.error || "Webhook endpoints are currently unavailable.");
+        setWebhooks([]);
+        return;
       }
+
+      setWebhooks(Array.isArray(data.webhooks) ? data.webhooks : []);
+      setCapabilityState(data.capability?.state || "available");
     } catch {
-      // Silent — empty list is a safe degraded state
+      setCapabilityState("degraded");
+      setLoadError("Network error while loading webhooks. Check connectivity and try again.");
+      setWebhooks([]);
     } finally {
       setLoading(false);
     }
@@ -198,6 +222,28 @@ export default function WebhooksPage() {
           </div>
         </div>
 
+        {loadError && (
+          <div className="flex items-start gap-3 rounded-lg border border-amber-400/30 bg-amber-50 px-4 py-3 text-amber-900 dark:border-amber-500/40 dark:bg-amber-950/30 dark:text-amber-100">
+            <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
+            <div className="space-y-1">
+              <p className="text-sm font-medium">
+                {capabilityState === "unavailable"
+                  ? "Webhook management is unavailable for this session."
+                  : "Webhook data is currently degraded."}
+              </p>
+              <p className="text-sm">{loadError}</p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-1"
+                onClick={() => void fetchWebhooks()}
+              >
+                Retry
+              </Button>
+            </div>
+          </div>
+        )}
+
         {actionError && (
           <div className="flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3">
             <AlertCircle
@@ -299,8 +345,12 @@ export default function WebhooksPage() {
             <CardContent className="p-0">
               <EmptyState
                 icon={Plus}
-                title="No webhooks configured"
-                description="Create a webhook to receive real-time event notifications."
+                title={loadError ? "Webhook data unavailable" : "No webhooks configured"}
+                description={
+                  loadError
+                    ? "Settler could not load webhook state. Resolve connectivity or auth issues and retry."
+                    : "Create a webhook to receive real-time event notifications."
+                }
                 action={{
                   label: "Create Webhook",
                   onClick: () => {
