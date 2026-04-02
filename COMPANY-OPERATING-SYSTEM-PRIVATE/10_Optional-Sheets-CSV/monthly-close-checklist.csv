@@ -1,0 +1,5 @@
+task,owner,due_day,evidence,source_system,status
+invoice_reconciliation,finance,D+2,invoice_report,billing,open
+cash_application,finance,D+3,bank_tieout,bank_billing,open
+deferred_revenue_rollforward,finance,D+4,rollforward_sheet,accounting,open
+collections_review,revenue_owner,D+4,aged_ar,billing,open

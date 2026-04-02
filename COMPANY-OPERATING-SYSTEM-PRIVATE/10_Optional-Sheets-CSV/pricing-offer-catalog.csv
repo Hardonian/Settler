@@ -1,0 +1,4 @@
+sku,offer_name,plan_family,billing_type,list_price_usd,usage_metric,usage_rate_usd,implementation_required,standard_support_tier,contract_stack
+SETTLER-STARTER-MTH,Starter,starter,monthly,0,reconciliations,0.01,no,starter,standard_terms
+SETTLER-GROWTH-MTH,Growth,growth,monthly,900,reconciliations,0.01,optional,growth,order_form_optional
+SETTLER-ENT-ANN,Enterprise,enterprise,annual,custom,reconciliations,custom,yes,enterprise,msa_orderform_dpa
