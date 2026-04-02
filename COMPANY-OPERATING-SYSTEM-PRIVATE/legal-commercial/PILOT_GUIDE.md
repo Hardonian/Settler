@@ -1,4 +1,4 @@
-# Pilot Guide — Customer Pilot Process
+# Pilot Agreement Process Guide
 
 **Status:** ✅ Active  
 **Last Updated:** 2026-04-02  
@@ -8,209 +8,352 @@
 
 ## When to Use Pilot Agreement
 
-Use pilot agreement for:
+**Use pilot when:**
 
-- Customers evaluating Settler
-- Proof of concept
-- Limited-time access
-- Low-friction trial period
+- Customer wants to test before committing
+- Technical evaluation needed
+- Proof of concept required
+- Deal is complex or high-value
+- Customer decision process requires trial
 
-**For paid Enterprise:** Use `MSA_GUIDE.md`
+**Don't use pilot when:**
 
----
-
-## Pilot Overview
-
-| Parameter  | Value                      |
-| ---------- | -------------------------- |
-| Duration   | 14 days (extendable to 30) |
-| Scope      | Standard integrations      |
-| Support    | Email (24-48 hr response)  |
-| SLA        | None (as-is)               |
-| Commitment | None                       |
-| Conversion | Automatic or manual        |
+- Customer ready to buy immediately (use standard purchase)
+- Customer low-quality prospect (pilot takes time)
+- Technical requirements unclear (discovery first)
 
 ---
 
-## Pilot Process
+## Pilot Types
 
-### Stage 1: Qualification
+| Type                 | Duration   | Commitment         | Conversion Rate Target |
+| -------------------- | ---------- | ------------------ | ---------------------- |
+| **Standard**         | 14 days    | None               | 50%+                   |
+| **Extended**         | 30 days    | Possible           | 40%+                   |
+| **Proof of Concept** | 30-60 days | Milestone payments | 30%+                   |
 
-1. **Assess fit**
-   - Use case matches product
-   - Budget exists
-   - Timeline reasonable
-   - Decision maker involved
+---
 
-2. **Set expectations**
-   - Pilot scope and limitations
-   - No SLA during pilot
-   - Conversion criteria
+## Pilot Process Overview
+
+```
+Inquiry → Qualification → Agreement → Kickoff → Execution → Conversion
+    ↓           ↓              ↓          ↓           ↓           ↓
+  1 day       1-2 days       1-2 days    1 day       7-30 days    1 week
+```
+
+---
+
+## Stage 1: Inquiry
+
+### Initial Response
+
+- Respond within 24 hours
+- Schedule discovery call
+- Send pilot overview
+
+### Pilot Overview Email Template
+
+```markdown
+Subject: Settler Pilot Program Overview
+
+Hi [Name],
+
+Thanks for your interest in Settler! I'm [Founder Name], and I'll be
+your point of contact.
+
+Our pilot program is designed to help you evaluate Settler with minimal
+commitment:
+
+- 14-day access to Settler platform
+- Connect your Stripe, Shopify, or other data sources
+- Run real reconciliation workflows
+- Full support from our team
+
+There are no obligations — if Settler isn't the right fit, no hard
+feelings.
+
+Would you have 30 minutes this week for a quick discovery call?
+
+Best,
+[Founder]
+```
+
+---
+
+## Stage 2: Qualification
+
+### Discovery Call Agenda
+
+1. **Understand their situation** (15 min)
+   - Current reconciliation process
+   - Pain points
+   - Goals for evaluation
+
+2. **Explain Settler** (10 min)
+   - How it works
+   - What we solve
    - Success criteria
 
-### Stage 2: Agreement
+3. **Pilot preview** (5 min)
+   - Timeline
+   - Expectations
+   - Next steps
 
-1. **Send pilot agreement**
-   - Use `/LEGAL/PILOT_AGREEMENT_TEMPLATE.md`
-   - Customize dates
-   - Get signature
+### Qualification Criteria
 
-2. **Set up access**
-   - Create staging environment
-   - Provision API access
-   - Send credentials
+| Criteria             | Required          | Nice-to-Have         |
+| -------------------- | ----------------- | -------------------- |
+| Technical capability | API access        | Developer resource   |
+| Data available       | 1K+ transactions  | Real production data |
+| Decision authority   | Identified        | Direct authority     |
+| Timeline             | Within 60 days    | Immediate            |
+| Volume fit           | Starter or higher | Growth+              |
 
-### Stage 3: Kickoff
+---
 
-1. **Kickoff email**
-   - Welcome
-   - Getting started guide
-   - Success criteria
-   - Support contact
+## Stage 3: Agreement
 
-2. **Schedule check-ins**
-   - Day 3: Quick check
-   - Day 7: Mid-pilot review
-   - Day 14: Conversion discussion
+### Standard Pilot Agreement
 
-### Stage 4: Execution
+Use `/LEGAL/PILOT_AGREEMENT_TEMPLATE.md`
 
-1. **Customer activities**
-   - Complete onboarding (7 days)
+### Pilot Customization Options
+
+| Element          | Standard      | Customizable   |
+| ---------------- | ------------- | -------------- |
+| Duration         | 14 days       | 14-30 days     |
+| Extensions       | By agreement  | Yes            |
+| Integrations     | Standard only | Extra cost     |
+| Support          | Email (24hr)  | 4hr available  |
+| Success criteria | Documented    | Custom metrics |
+
+### Pilot Terms Checklist
+
+- [ ] Scope clearly defined
+- [ ] Timeline agreed
+- [ ] Success criteria documented
+- [ ] Data responsibilities assigned
+- [ ] Support level confirmed
+- [ ] Conversion criteria clear
+- [ ] No binding commitments
+
+---
+
+## Stage 4: Kickoff
+
+### Pilot Kickoff Checklist
+
+- [ ] Signed agreement received
+- [ ] Accounts provisioned
+- [ ] Access credentials sent
+- [ ] Welcome email sent
+- [ ] Kickoff call scheduled
+- [ ] Success criteria confirmed
+- [ ] Check-in schedule set
+
+### Kickoff Call Agenda
+
+1. **Welcome** (5 min)
+   - Confirm agreement signed
+   - Introduce team
+
+2. **Technical setup** (15 min)
+   - Walk through onboarding
+   - Connect data sources
    - Run first reconciliation
-   - Process 1K transactions
-   - Achieve 95%+ match rate
 
-2. **Our activities**
-   - Respond to support
-   - Gather feedback
-   - Track success metrics
-   - Prepare conversion offer
+3. **Success criteria** (10 min)
+   - Confirm what "success" looks like
+   - Define decision timeline
+   - Identify blockers
 
-### Stage 5: Conversion
-
-1. **Conversion criteria**
-   - Completed onboarding
-   - Ran reconciliation
-   - Processed 1K transactions
-   - 95%+ match rate
-   - Logged in 3+ times
-
-2. **Conversion options**
-   - Continue to paid plan
-   - Extend pilot
-   - Decline (no pressure)
-
-3. **Post-conversion**
-   - Send welcome email
-   - Set up billing
-   - Schedule onboarding call
-   - Add to customer tracking
-
-### Stage 6: No Conversion
-
-1. **Grace period**
-   - 7 days after pilot ends
-   - Data available for export
-
-2. **Offboarding**
-   - Export data if requested
-   - Send offboarding email
-   - Add to nurture list
-   - Follow up in 3 months
+4. **Schedule** (5 min)
+   - Check-in calls
+   - Milestone reviews
+   - Decision point
 
 ---
 
-## Pilot Email Templates
+## Stage 5: Execution
 
-### Pilot Kickoff Email
+### Weekly Check-Ins
 
-```
-Subject: Welcome to Your Settler Pilot
+| Day    | Activity                  |
+| ------ | ------------------------- |
+| Day 3  | Check-in: Setup issues?   |
+| Day 7  | Mid-point: First results? |
+| Day 10 | Technical deep-dive       |
+| Day 12 | Address concerns          |
+| Day 14 | Decision discussion       |
 
-Hi [Name],
+### Pilot Tracking
 
-Welcome to your Settler pilot! We're excited to help you explore reconciliation automation.
+| Metric               | Target | Status |
+| -------------------- | ------ | ------ |
+| Onboarding complete  | Day 3  |        |
+| First reconciliation | Day 5  |        |
+| 95%+ match rate      | Day 10 |        |
+| Real workflow tested | Day 12 |        |
+| Decision meeting     | Day 14 |        |
 
-**Your Pilot Details:**
-- Duration: 14 days (ending [DATE])
-- Access: [LINK]
-- Success criteria: 95%+ match rate
+### Success Criteria Definition
 
-**Next Steps:**
-1. Complete onboarding: [LINK]
-2. Connect your first integration
-3. Run your first reconciliation
+```markdown
+# Pilot Success Criteria - [Customer Name]
 
-**Questions?**
-Reply to this email or contact [EMAIL].
+**Date:** [Date]
 
-Best,
-[Settler Team]
-```
+## Primary Success Metrics
 
-### Day 7 Check-In
+1. [ ] Match rate >95%
+2. [ ] Daily reconciliation automated
+3. [ ] Errors identified and resolved
+4. [ ] Team trained (X people)
 
-```
-Subject: Your Settler Pilot - Day 7 Check-in
+## Secondary Success Metrics
 
-Hi [Name],
+1. [ ] Time savings demonstrated
+2. [ ] User satisfaction rating >4/5
+3. [ ] Decision maker approval
 
-How's your pilot going? We're at the halfway point!
+## Decision Timeline
 
-**Quick Stats:**
-- Reconciliations run: [X]
-- Match rate: [X]%
-- Time saved: [X] hours
+- [ ] Pilot results review: [Date]
+- [ ] Decision: [Date]
+- [ ] Contract signature: [Date]
+- [ ] Go-live: [Date]
 
-**Need Help?**
-- Documentation: [LINK]
-- Support: [EMAIL]
+## Blockers
 
-Let's schedule a quick call to discuss your results.
-```
+1. [Blocker 1]
+2. [Blocker 2]
 
-### Conversion Email
+## Next Steps
 
-```
-Subject: Ready to Continue with Settler?
-
-Hi [Name],
-
-Great work completing your pilot! You achieved [X]% match rate.
-
-**Ready to continue?**
-- Starter: $29/month (1,000 jobs)
-- Growth: $99/month (100,000 jobs)
-
-[SELECT PLAN LINK]
-
-Questions? Reply to this email.
-
-Best,
-[Settler Team]
+[Clear action items with owners]
 ```
 
 ---
 
-## Success Metrics
+## Stage 6: Conversion
 
-| Metric                 | Target | Minimum |
-| ---------------------- | ------ | ------- |
-| Reconciliations run    | 10     | 1       |
-| Match rate             | 98%    | 95%     |
-| Logins                 | 5      | 3       |
-| Integrations connected | 3      | 1       |
-| Support tickets        | 0-2    | -       |
+### Conversion Evaluation
+
+| Criteria                | Required | Weight |
+| ----------------------- | -------- | ------ |
+| Technical success       | Yes      | 40%    |
+| Business value achieved | Yes      | 30%    |
+| Team fit                | Yes      | 20%    |
+| Decision authority      | Yes      | 10%    |
+
+### Conversion Communication
+
+```markdown
+Subject: Settler Pilot Complete - Next Steps
+
+Hi [Name],
+
+Congratulations on completing your Settler pilot! Based on our
+discussions, here's what Settler delivered:
+
+[Results summary]
+
+I'd love to continue working with you. Here's what going forward looks like:
+
+**Proposed Plan:** [Tier]
+**Investment:** $[Price]/month (annual)
+**Term:** 1 year
+
+We can have you fully onboarded within [X] days of signing.
+
+Would you like to schedule time to discuss?
+
+Best,
+[Founder]
+```
+
+### Conversion Timeline
+
+- **Day 14-17:** Conversion discussion
+- **Day 17-24:** Pricing negotiation
+- **Day 24-31:** Contract finalization
+- **Day 31-45:** Implementation
+
+---
+
+## Pilot-to-Sale Checklist
+
+### Technical
+
+- [ ] Platform access tested
+- [ ] All integrations connected
+- [ ] Data migrated
+- [ ] Match rate >95%
+- [ ] Workflows automated
+
+### Business
+
+- [ ] ROI quantified
+- [ ] Team trained
+- [ ] Decision maker aligned
+- [ ] Competitor identified (if any)
+- [ ] Timeline agreed
+
+### Commercial
+
+- [ ] Tier selected
+- [ ] Pricing negotiated
+- [ ] Terms agreed
+- [ ] Contract sent
+- [ ] Signature obtained
+
+---
+
+## Pilot Extensions
+
+### When to Offer Extension
+
+- Technical issues during pilot (our fault)
+- Customer needs more time for approval
+- Strong interest but timing issue
+- Custom development in progress
+
+### Extension Process
+
+1. Request received
+2. Assess reason
+3. Decision (founder approval)
+4. Update agreement
+5. Communicate new timeline
+
+### Extension Email Template
+
+```markdown
+Subject: Settler Pilot Extension
+
+Hi [Name],
+
+We've enjoyed working with you during your Settler pilot. Given
+[reason], we'd like to extend your pilot access.
+
+**New pilot end date:** [Date]
+
+This extension comes at no cost. Let's schedule a call to discuss
+next steps.
+
+Best,
+[Founder]
+```
 
 ---
 
 ## Related Documents
 
-| Document                               | Purpose             |
-| -------------------------------------- | ------------------- |
-| `/LEGAL/PILOT_AGREEMENT_TEMPLATE.md`   | Pilot template      |
-| `/LEGAL/TERMS_OF_SERVICE.md`           | ToS reference       |
-| `MSA_GUIDE.md`                         | Enterprise process  |
-| `../runbooks/FIRST_PILOT_RUNBOOK.md`   | First pilot guide   |
-| `../onboarding/CUSTOMER_ONBOARDING.md` | Onboarding playbook |
+| Document                               | Purpose                  |
+| -------------------------------------- | ------------------------ |
+| `/LEGAL/PILOT_AGREEMENT_TEMPLATE.md`   | Agreement template       |
+| `MSA_GUIDE.md`                         | MSA for converted pilots |
+| `TERMS_REFERENCE.md`                   | Terms summary            |
+| `../onboarding/CUSTOMER_ONBOARDING.md` | Onboarding playbooks     |
+| `/emails/lifecycle/`                   | Email templates          |
