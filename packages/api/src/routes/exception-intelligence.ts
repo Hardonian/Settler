@@ -11,6 +11,7 @@ import { STANDARD_EVIDENCE_REQUIREMENTS } from "@settler/proofs";
 import { RunDeltaService } from "../services/intelligence/run-delta";
 import { Prisma } from "@prisma/client";
 import * as crypto from "crypto";
+import { validateEvidenceManifest } from "../infrastructure/validation/evidence-manifest-validator";
 
 const router = Router();
 const adjudicationMemoryService = new AdjudicationMemoryService(prisma);
@@ -298,6 +299,20 @@ router.post(
         throw new BadRequestError("Missing required fields: artifactType, artifactKey, payload");
       }
 
+      const looksLikeManifest =
+        payload !== null &&
+        typeof payload === "object" &&
+        ("input_hashes" in payload || "schema_version" in payload || "kernel_version" in payload);
+
+      if (looksLikeManifest) {
+        const manifestValidation = validateEvidenceManifest(payload);
+        if (!manifestValidation.valid) {
+          throw new BadRequestError(
+            `Evidence manifest validation failed: ${manifestValidation.errors.map((e) => `${e.path} ${e.message}`).join("; ")}`
+          );
+        }
+      }
+
       const payloadHash = computePayloadHash(payload);
       const reliabilityFactors = reliabilityScore
         ? [{ factor: "operator_assigned", weight: 0.5, value: reliabilityScore }]
@@ -505,6 +520,132 @@ router.get(
       });
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to verify proof package", 500, {
+        userId: req.userId,
+        packageId: req.params.packageId,
+      });
+      return;
+    }
+  }
+);
+
+/**
+ * POST /api/proofpackages/:packageId/finalize
+ * Finalize a proof package with attestation requirements.
+ * Transitions status from "draft" -> "finalized" after validating:
+ *  - Package exists and is in "draft" status
+ *  - Package integrity hash is valid
+ *  - Attestation is provided or already recorded
+ *  - Completeness score meets minimum threshold (>= 0.8)
+ */
+router.post(
+  "/proofpackages/:packageId/finalize",
+  requirePermission(Permission.ADMIN_WRITE),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = req.tenantId!;
+      const packageId = req.params.packageId as string;
+      const { attestorRole, attestorName, attestorNotes, attestationStatement } = req.body as {
+        attestorRole?: string;
+        attestorName?: string;
+        attestorNotes?: string;
+        attestationStatement?: string;
+      };
+
+      const proofpack = await prisma.proofPackage.findFirst({
+        where: { id: packageId, tenantId },
+      });
+
+      if (!proofpack) {
+        throw new NotFoundError("Proof package not found", "proof_package", packageId);
+      }
+
+      if (proofpack.status !== "draft") {
+        throw new BadRequestError(
+          `Cannot finalize proof package in "${proofpack.status}" status. Only "draft" packages can be finalized.`
+        );
+      }
+
+      const computedHash = crypto
+        .createHash("sha256")
+        .update(
+          JSON.stringify({
+            summary: proofpack.summary,
+            evidenceIds: proofpack.evidenceIds,
+          })
+        )
+        .digest("hex");
+
+      if (computedHash !== proofpack.packageHash) {
+        throw new BadRequestError(
+          "Proof package integrity check failed: computed hash does not match stored hash. The package may have been tampered with."
+        );
+      }
+
+      const completenessScore = Number(proofpack.completenessScore);
+      if (completenessScore < 0.8) {
+        throw new BadRequestError(
+          `Proof package completeness score (${completenessScore.toFixed(2)}) does not meet minimum threshold (0.80). Missing evidence: ${JSON.stringify(proofpack.missingEvidence)}`
+        );
+      }
+
+      const alreadyAttested = proofpack.attested === true;
+      const hasNewAttestation = !!(attestorRole && attestationStatement);
+
+      if (!alreadyAttested && !hasNewAttestation) {
+        throw new BadRequestError(
+          "Finalization requires attestation. Provide attestorRole and attestationStatement in the request body, or attest the package first."
+        );
+      }
+
+      const existingAttestations = Array.isArray(proofpack.attestations)
+        ? (proofpack.attestations as Array<Record<string, unknown>>)
+        : [];
+
+      const updatedAttestations = hasNewAttestation
+        ? [
+            ...existingAttestations,
+            {
+              attestorRole,
+              attestorName: attestorName || null,
+              attestationStatement,
+              notes: attestorNotes || null,
+              attestedAt: new Date().toISOString(),
+              attestedBy: req.userId || null,
+            },
+          ]
+        : existingAttestations;
+
+      const updated = await prisma.proofPackage.update({
+        where: { id: packageId },
+        data: {
+          status: "finalized",
+          finalizedAt: new Date(),
+          attested: true,
+          attestations: updatedAttestations as unknown as Prisma.InputJsonValue,
+        },
+      });
+
+      logInfo("Proof package finalized", {
+        tenantId,
+        packageId,
+        packageType: updated.packageType,
+        completenessScore,
+        attestationCount: updatedAttestations.length,
+      });
+
+      return res.status(200).json({
+        data: {
+          id: updated.id,
+          status: updated.status,
+          finalizedAt: updated.finalizedAt,
+          attested: updated.attested,
+          attestations: updated.attestations,
+          completenessScore: Number(updated.completenessScore),
+          packageHash: updated.packageHash,
+        },
+      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, "Failed to finalize proof package", 500, {
         userId: req.userId,
         packageId: req.params.packageId,
       });

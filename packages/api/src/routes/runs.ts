@@ -21,12 +21,7 @@ import { Permission } from "../infrastructure/security/Permissions";
 import { enforceFreezeState } from "../middleware/governance";
 
 import {
-  decodeMergedRunsCursor,
-  encodeMergedRunsCursor,
-  fetchMergedReconciliationRunsPage,
-  mapCanonicalListItemToApiRunsLegacyRow,
-  MergedRunsCursorError,
-  type MergedRunsCursorV1,
+  scanMergedRunsForLegacyPage,
   resolveOperatorRunDetailForTenants,
 } from "@settler/reconciliation-core";
 import { handleRouteError } from "../utils/error-handler";
@@ -59,17 +54,6 @@ const listRunsQuerySchema = z.object({
   }),
 });
 
-function matchesStatusFilter(statusFilter: string | undefined, status: string): boolean {
-  if (!statusFilter) return true;
-  return status.toLowerCase() === statusFilter;
-}
-
-function matchesSearchFilter(searchFilter: string | undefined, id: string, name: string): boolean {
-  if (!searchFilter) return true;
-  const haystack = `${id} ${name}`.toLowerCase();
-  return haystack.includes(searchFilter);
-}
-
 /**
  * GET /api/runs
  * List reconciliation runs from the canonical merged run-list surface, adapted
@@ -85,72 +69,31 @@ router.get(
 
       const status = req.query.status as string | undefined;
       const search = req.query.search as string | undefined;
-      const normalizedStatus = status?.trim().toLowerCase() || undefined;
-      const normalizedSearch = search?.trim().toLowerCase() || undefined;
       const page = parseInt((req.query.page as string) || "1");
       const limit = Math.min(parseInt((req.query.limit as string) || "50"), 100);
-      const offset = (page - 1) * limit;
-      const data: Array<ReturnType<typeof mapCanonicalListItemToApiRunsLegacyRow>> = [];
-      let total = 0;
-      let pagesScanned = 0;
-      let cursorState: MergedRunsCursorV1 | null = null;
-
-      while (true) {
-        const mergedPage = await fetchMergedReconciliationRunsPage({
-          prisma,
-          tenantId,
-          limit: MERGED_LIST_BATCH_SIZE,
-          cursorState,
-          runKind: "all",
-          encodeCursor: encodeMergedRunsCursor,
-        });
-        pagesScanned += 1;
-
-        for (const row of mergedPage.runs) {
-          const legacy = mapCanonicalListItemToApiRunsLegacyRow(row);
-          if (!matchesStatusFilter(normalizedStatus, legacy.status)) continue;
-          if (!matchesSearchFilter(normalizedSearch, legacy.id, legacy.name)) continue;
-
-          if (total >= offset && data.length < limit) {
-            data.push(legacy);
-          }
-          total += 1;
-        }
-
-        if (!mergedPage.next_cursor) {
-          break;
-        }
-
-        try {
-          cursorState = decodeMergedRunsCursor(mergedPage.next_cursor);
-        } catch (error) {
-          throw new InternalServerError(
-            error instanceof MergedRunsCursorError
-              ? `Canonical merged run pagination drift: ${error.message}`
-              : "Canonical merged run pagination drift"
-          );
-        }
-      }
+      const result = await scanMergedRunsForLegacyPage({
+        prisma,
+        tenantId,
+        page,
+        limit,
+        filters: { status, search },
+        batchSize: MERGED_LIST_BATCH_SIZE,
+      });
 
       logInfo("Runs listed", {
         tenantId,
-        status: normalizedStatus,
-        search: normalizedSearch,
-        count: data.length,
-        total,
+        status: result.filters.status,
+        search: result.filters.search,
+        count: result.data.length,
+        total: result.pagination.total,
         page,
         limit,
-        pagesScanned,
+        pagesScanned: result.pagesScanned,
       });
 
       res.json({
-        data,
-        pagination: {
-          page,
-          limit,
-          total,
-          totalPages: Math.ceil(total / limit),
-        },
+        data: result.data,
+        pagination: result.pagination,
       });
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to fetch runs", 500, { userId: req.userId });

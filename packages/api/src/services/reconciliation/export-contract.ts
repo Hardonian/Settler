@@ -1,5 +1,8 @@
 import { query } from "../../db";
-import { assertTenantOwnership, validateTenantId } from "../../infrastructure/tenancy/TenantEnforcement";
+import {
+  assertTenantOwnership,
+  validateTenantId,
+} from "../../infrastructure/tenancy/TenantEnforcement";
 import {
   computeReconciliationHash,
   verifyIntegrityChain,
@@ -31,10 +34,25 @@ export interface ReconciliationExportDocument {
   };
 }
 
+export interface ExportPaginationOptions {
+  limit?: number;
+  offset?: number;
+}
+
+export interface PaginatedExportDocument extends ReconciliationExportDocument {
+  pagination: {
+    limit: number;
+    offset: number;
+    totalMatches: number;
+    hasMore: boolean;
+  };
+}
+
 export async function buildReconciliationExport(
   tenantId: string,
-  runId: string
-): Promise<ReconciliationExportDocument | null> {
+  runId: string,
+  pagination?: ExportPaginationOptions
+): Promise<PaginatedExportDocument | null> {
   validateTenantId(tenantId, "buildReconciliationExport");
   const runRows = await query<Record<string, unknown>>(
     `SELECT id, tenant_id, ingestion_id, status, source_count, target_count,
@@ -71,15 +89,29 @@ export async function buildReconciliationExport(
     completedAt: runRow.completed_at ? new Date(String(runRow.completed_at)).toISOString() : null,
   };
 
+  const matchLimit = pagination?.limit ?? 1000;
+  const matchOffset = pagination?.offset ?? 0;
+
+  const countRows = await query<Record<string, unknown>>(
+    `SELECT COUNT(*)::int AS total FROM reconciliation_matches WHERE run_id = $1 AND tenant_id = $2`,
+    [runId, tenantId]
+  );
+  const totalMatches = Number(countRows[0]?.total ?? 0);
+
   const matchRows = await query<Record<string, unknown>>(
     `SELECT id, tenant_id, source_transaction_id, target_transaction_id, match_type, confidence, amount_diff, date_diff
      FROM reconciliation_matches
      WHERE run_id = $1 AND tenant_id = $2
-     ORDER BY id ASC`,
-    [runId, tenantId]
+     ORDER BY id ASC
+     LIMIT $3 OFFSET $4`,
+    [runId, tenantId, matchLimit, matchOffset]
   );
 
-  assertTenantOwnership(matchRows as Array<{ tenant_id?: string | null }>, tenantId, "reconciliation_matches");
+  assertTenantOwnership(
+    matchRows as Array<{ tenant_id?: string | null }>,
+    tenantId,
+    "reconciliation_matches"
+  );
 
   const matches: ReconciliationMatchForIntegrity[] = matchRows.map((row) => ({
     id: String(row.id),
@@ -105,7 +137,9 @@ export async function buildReconciliationExport(
   const chain: IntegrityChainEntry[] = chainRows
     .map((row) => {
       const metadata = typeof row.metadata === "string" ? JSON.parse(row.metadata) : row.metadata;
-      const integrity = (metadata as Record<string, unknown>)?.integrity as Record<string, unknown> | undefined;
+      const integrity = (metadata as Record<string, unknown>)?.integrity as
+        | Record<string, unknown>
+        | undefined;
       if (!integrity) {
         return null;
       }
@@ -113,8 +147,7 @@ export async function buildReconciliationExport(
       return {
         runId: String(row.id),
         sequence: Number(integrity.sequence),
-        previousHash:
-          typeof integrity.previousHash === "string" ? integrity.previousHash : null,
+        previousHash: typeof integrity.previousHash === "string" ? integrity.previousHash : null,
         reconciliationHash: String(integrity.reconciliationHash),
         chainHash: String(integrity.chainHash),
       };
@@ -134,6 +167,12 @@ export async function buildReconciliationExport(
       reconciliationHash,
       chain,
       chainValid: chainVerification.valid,
+    },
+    pagination: {
+      limit: matchLimit,
+      offset: matchOffset,
+      totalMatches,
+      hasMore: matchOffset + matches.length < totalMatches,
     },
   };
 }

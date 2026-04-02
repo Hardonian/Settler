@@ -8,6 +8,20 @@ const router: Router = Router();
 
 const querySchema = z.object({
   runId: z.string().uuid(),
+  limit: z
+    .string()
+    .regex(/^\d+$/)
+    .transform(Number)
+    .refine((n) => n > 0 && n <= 10000, "limit must be between 1 and 10000")
+    .optional()
+    .default("1000"),
+  offset: z
+    .string()
+    .regex(/^\d+$/)
+    .transform(Number)
+    .refine((n) => n >= 0, "offset must be >= 0")
+    .optional()
+    .default("0"),
 });
 
 router.get("/", async (req: AuthRequest, res: Response) => {
@@ -32,7 +46,10 @@ router.get("/", async (req: AuthRequest, res: Response) => {
       });
     }
 
-    const exportDocument = await buildReconciliationExport(tenantId, parsed.data.runId);
+    const exportDocument = await buildReconciliationExport(tenantId, parsed.data.runId, {
+      limit: parsed.data.limit,
+      offset: parsed.data.offset,
+    });
     if (!exportDocument) {
       return res.status(404).json({
         code: "NOT_FOUND",

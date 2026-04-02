@@ -3,8 +3,19 @@
  * projection (same shape historically returned by GET /api/runs for recon_jobs).
  */
 
+import type { PrismaClient } from "@prisma/client";
 import type { CanonicalReconciliationListItem } from "./canonical-reconciliation.js";
 import type { AdapterDriftSignal } from "./canonical-run-result.js";
+import {
+  decodeMergedRunsCursor,
+  encodeMergedRunsCursor,
+  MergedRunsCursorError,
+  type MergedRunsCursorV1,
+} from "./merged-list-pagination.js";
+import {
+  fetchMergedReconciliationRunsPage,
+  type ReconciliationRunKindFilter,
+} from "./merged-runs-query.js";
 
 function legacyAdapterDriftLabel(
   signal: AdapterDriftSignal
@@ -57,6 +68,50 @@ export type ApiRunsListLegacyItem = {
   sourceAdapter: string | null;
   targetAdapter: string | null;
 };
+
+export type ApiRunsLegacyListFilters = {
+  status?: string;
+  search?: string;
+};
+
+export type ApiRunsLegacyPageScanInput = {
+  prisma: PrismaClient;
+  tenantId: string;
+  page: number;
+  limit: number;
+  filters?: ApiRunsLegacyListFilters;
+  batchSize?: number;
+  runKind?: ReconciliationRunKindFilter;
+  fetchPage?: typeof fetchMergedReconciliationRunsPage;
+  decodeCursor?: typeof decodeMergedRunsCursor;
+  mapRow?: typeof mapCanonicalListItemToApiRunsLegacyRow;
+};
+
+export type ApiRunsLegacyPageScanResult = {
+  data: ApiRunsListLegacyItem[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  filters: {
+    status?: string;
+    search?: string;
+  };
+  pagesScanned: number;
+};
+
+function matchesStatusFilter(statusFilter: string | undefined, status: string): boolean {
+  if (!statusFilter) return true;
+  return status.toLowerCase() === statusFilter;
+}
+
+function matchesSearchFilter(searchFilter: string | undefined, id: string, name: string): boolean {
+  if (!searchFilter) return true;
+  const haystack = `${id} ${name}`.toLowerCase();
+  return haystack.includes(searchFilter);
+}
 
 export function mapCanonicalListItemToApiRunsLegacyRow(
   r: CanonicalReconciliationListItem
@@ -111,5 +166,84 @@ export function mapCanonicalListItemToApiRunsLegacyRow(
     ingestionId: r.provenance.ingestionId,
     sourceAdapter: r.adapters.sourceAdapter,
     targetAdapter: r.adapters.targetAdapter,
+  };
+}
+
+/**
+ * Scans the canonical merged run list into the historical `/api/runs` page/limit envelope.
+ * This keeps legacy filtering, counting, and page-offset behavior aligned across callers.
+ */
+export async function scanMergedRunsForLegacyPage(
+  input: ApiRunsLegacyPageScanInput
+): Promise<ApiRunsLegacyPageScanResult> {
+  const {
+    prisma,
+    tenantId,
+    page,
+    limit,
+    filters,
+    batchSize = 100,
+    runKind = "all",
+    fetchPage = fetchMergedReconciliationRunsPage,
+    decodeCursor = decodeMergedRunsCursor,
+    mapRow = mapCanonicalListItemToApiRunsLegacyRow,
+  } = input;
+
+  const normalizedStatus = filters?.status?.trim().toLowerCase() || undefined;
+  const normalizedSearch = filters?.search?.trim().toLowerCase() || undefined;
+  const offset = (page - 1) * limit;
+  const data: ApiRunsListLegacyItem[] = [];
+  let total = 0;
+  let pagesScanned = 0;
+  let cursorState: MergedRunsCursorV1 | null = null;
+
+  while (true) {
+    const mergedPage = await fetchPage({
+      prisma,
+      tenantId,
+      limit: batchSize,
+      cursorState,
+      runKind,
+      encodeCursor: encodeMergedRunsCursor,
+    });
+    pagesScanned += 1;
+
+    for (const row of mergedPage.runs) {
+      const legacy = mapRow(row);
+      if (!matchesStatusFilter(normalizedStatus, legacy.status)) continue;
+      if (!matchesSearchFilter(normalizedSearch, legacy.id, legacy.name)) continue;
+
+      if (total >= offset && data.length < limit) {
+        data.push(legacy);
+      }
+      total += 1;
+    }
+
+    if (!mergedPage.next_cursor) {
+      break;
+    }
+
+    try {
+      cursorState = decodeCursor(mergedPage.next_cursor);
+    } catch (error) {
+      throw new MergedRunsCursorError(
+        error instanceof Error ? error.message : "cursor decode failed"
+      );
+    }
+  }
+
+  return {
+    data,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+    filters: {
+      status: normalizedStatus,
+      search: normalizedSearch,
+    },
+    pagesScanned,
   };
 }
