@@ -16,10 +16,10 @@
 
 ## 3) Canonical docs by category
 
-- Monetization: `01_Monetization/PRICING_GOVERNANCE.md`, `01_Monetization/COMMERCIAL_SKU_MAP.md`
-- Finance/accounting: `02_Finance-Accounting/REVENUE_RECOGNITION_POLICY_MEMO.md`, `02_Finance-Accounting/FINANCE_SYSTEM_OF_RECORD_AND_EXPORT_MAP.md`
+- Monetization: `01_Monetization/PRICING_GOVERNANCE.md`, `01_Monetization/COMMERCIAL_SKU_MAP.md`, `01_Monetization/LIST_PRICES_AND_PLAN_LIMITS.md`, `01_Monetization/REVENUE_TARGETS_AND_UNIT_ECONOMICS.md`
+- Finance/accounting: `02_Finance-Accounting/REVENUE_RECOGNITION_POLICY_MEMO.md`, `02_Finance-Accounting/FINANCE_SYSTEM_OF_RECORD_AND_EXPORT_MAP.md`, `02_Finance-Accounting/COST_BASELINES_AND_MARGIN_TARGETS.md`
 - Contracting: `03_Legal-Commercial/REDLINES_AND_NEGOTIATION_PLAYBOOK.md`, `03_Legal-Commercial/ORDER_FORM_TEMPLATE.md`
-- Implementation: `04_Sales-Implementation-Handoff/SALES_TO_IMPLEMENTATION_HANDOFF.md`, `04_Sales-Implementation-Handoff/GO_LIVE_ACCEPTANCE_CRITERIA.md`
+- Implementation: `04_Sales-Implementation-Handoff/SALES_TO_IMPLEMENTATION_HANDOFF.md`, `04_Sales-Implementation-Handoff/GO_LIVE_ACCEPTANCE_CRITERIA.md`, `04_Sales-Implementation-Handoff/FIRST_SALE_RUNBOOK.md`, `04_Sales-Implementation-Handoff/FIRST_PILOT_RUNBOOK.md`, `04_Sales-Implementation-Handoff/FIRST_ENTERPRISE_RUNBOOK.md`
 - Customer success/support: `05_Onboarding-GoLive-CS/CUSTOMER_HEALTH_AND_RENEWAL_MODEL.md`, `05_Onboarding-GoLive-CS/SUPPORT_TIERS_AND_BOUNDARIES.md`
 - Procurement/security: `06_Procurement-Security-Pack/CUSTOMER_DILIGENCE_DATA_ROOM_INDEX.md`
 - Rhythm/governance: `07_Operating-Rhythm-KPIs/RACI_AND_OWNERSHIP_MATRIX.md`, `07_Operating-Rhythm-KPIs/DECISION_LOG_TEMPLATE_AND_GOVERNANCE.md`
@@ -28,13 +28,14 @@
 
 ### Before first sale
 
-- Finalize list prices and approve discount limits (`01_Monetization/PRICING_GOVERNANCE.md`).
+- Finalize list prices and approve discount limits (`01_Monetization/PRICING_GOVERNANCE.md`, `01_Monetization/LIST_PRICES_AND_PLAN_LIMITS.md`).
 - Freeze contract stack (`03_Legal-Commercial/COMMERCIAL_CONTRACTING_STACK.md`).
 - Configure SKU/billing mappings (`01_Monetization/COMMERCIAL_SKU_MAP.md`).
+- Run first sale process (`04_Sales-Implementation-Handoff/FIRST_SALE_RUNBOOK.md`).
 
 ### Before first pilot
 
-- Enforce pilot entry/success criteria (`01_Monetization/PILOT_TO_PAID_CONVERSION_PLAYBOOK.md`).
+- Enforce pilot entry/success criteria (`01_Monetization/PILOT_TO_PAID_CONVERSION_PLAYBOOK.md`, `04_Sales-Implementation-Handoff/FIRST_PILOT_RUNBOOK.md`).
 - Use pilot scorecard template (`08_Templates/PILOT_SCORECARD_TEMPLATE.md`).
 
 ### Before first enterprise onboarding
