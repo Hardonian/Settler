@@ -383,7 +383,6 @@ export async function getReceiptDetail(
 
     if (!receipt) {
       // Receipt not found or doesn't belong to this billing account
-      // eslint-disable-next-line no-console
       console.info("[getReceiptDetail] Receipt not found", {
         receiptId,
         billingAccountId,

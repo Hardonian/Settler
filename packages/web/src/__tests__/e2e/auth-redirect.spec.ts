@@ -47,7 +47,7 @@ test.describe("Auth Redirect Behavior", () => {
       const status = response?.status() || 0;
       const isRedirectStatus = [301, 302, 307, 308].includes(status);
 
-      console.log(`[Auth] ${route.path} -> ${currentUrl} (status: ${status})`);
+      console.info(`[Auth] ${route.path} -> ${currentUrl} (status: ${status})`);
 
       // Either redirected or showing auth content on the same page
       const hasAuthContent =
@@ -80,7 +80,7 @@ test.describe("Auth Redirect Behavior", () => {
 
       const status = response?.status() || 0;
 
-      console.log(`[HTTP] ${route.path}: ${status}`);
+      console.info(`[HTTP] ${route.path}: ${status}`);
 
       // CRITICAL: Never return 5xx
       expect(status, `Protected route ${route.path} should not return 5xx`).toBeLessThan(500);
@@ -98,7 +98,7 @@ test.describe("Auth Routes Accessibility", () => {
 
       const status = response?.status() || 0;
 
-      console.log(`[HTTP] ${route.path}: ${status}`);
+      console.info(`[HTTP] ${route.path}: ${status}`);
 
       // Should not return 5xx
       expect(status, `Auth route ${route.path} should not return 5xx`).toBeLessThan(500);
@@ -144,7 +144,7 @@ test.describe("Login Page Functionality", () => {
     const bodyText = await page.textContent("body");
     expect(bodyText, "Login page should have content").toBeTruthy();
 
-    console.log(
+    console.info(
       `[Login] Form elements: form=${hasLoginForm}, email=${hasEmailInput}, password=${hasPasswordInput}`
     );
   });
@@ -163,7 +163,9 @@ test.describe("Login Page Functionality", () => {
     const forgotPasswordLink = page.locator('a[href="/forgot-password"]');
     const hasForgotPasswordLink = await forgotPasswordLink.isVisible().catch(() => false);
 
-    console.log(`[Login] Links: signup=${hasSignupLink}, forgot-password=${hasForgotPasswordLink}`);
+    console.info(
+      `[Login] Links: signup=${hasSignupLink}, forgot-password=${hasForgotPasswordLink}`
+    );
   });
 });
 
@@ -193,7 +195,7 @@ test.describe("Signup Page Functionality", () => {
     const bodyText = await page.textContent("body");
     expect(bodyText, "Signup page should have content").toBeTruthy();
 
-    console.log(`[Signup] Form elements: form=${hasForm}, email=${hasEmailInput}`);
+    console.info(`[Signup] Form elements: form=${hasForm}, email=${hasEmailInput}`);
   });
 
   test("signup page should have login link", async ({ page }) => {
@@ -206,7 +208,7 @@ test.describe("Signup Page Functionality", () => {
     const loginLink = page.locator('a[href="/login"]');
     const hasLoginLink = await loginLink.isVisible().catch(() => false);
 
-    console.log(`[Signup] Has login link: ${hasLoginLink}`);
+    console.info(`[Signup] Has login link: ${hasLoginLink}`);
   });
 });
 

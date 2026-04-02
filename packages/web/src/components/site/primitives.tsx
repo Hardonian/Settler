@@ -15,10 +15,27 @@ export function PublicPageShell({ children }: { children: ReactNode }) {
   return <div className="min-h-screen bg-background">{children}</div>;
 }
 
-export function Section({ children, className }: { children: ReactNode; className?: string }) {
+export function Section({
+  children,
+  className,
+  withGrid,
+}: {
+  children: ReactNode;
+  className?: string;
+  withGrid?: boolean;
+}) {
   return (
-    <section className={cn("px-4 py-20 sm:py-24 sm:px-6 lg:px-8", className)}>
-      <div className="mx-auto max-w-6xl">{children}</div>
+    <section
+      className={cn(
+        "relative px-4 py-20 sm:py-24 sm:px-6 lg:px-8",
+        withGrid && "overflow-hidden bg-grid-quiet bg-grid",
+        className
+      )}
+    >
+      {withGrid && (
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background" />
+      )}
+      <div className="relative mx-auto max-w-6xl">{children}</div>
     </section>
   );
 }
@@ -28,30 +45,40 @@ export function PageHero({
   title,
   description,
   actions,
+  visual,
 }: {
   eyebrow?: string;
   title: string;
   description: string;
   actions?: ReactNode;
+  visual?: ReactNode;
 }) {
   return (
     <Section className="border-b border-border/50 bg-muted/10 pt-24 pb-16 sm:pt-28 sm:pb-20">
-      <MarketingHeroReveal>
-        {eyebrow ? (
-          <Badge variant="outline" className="mb-5 text-xs tracking-widest uppercase font-semibold">
-            {eyebrow}
-          </Badge>
+      <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+        <MarketingHeroReveal>
+          {eyebrow ? (
+            <Badge
+              variant="outline"
+              className="mb-5 text-xs tracking-widest uppercase font-semibold"
+            >
+              {eyebrow}
+            </Badge>
+          ) : null}
+          <h1 className="max-w-4xl text-fluid-3xl font-bold tracking-tight text-foreground sm:text-fluid-4xl md:text-fluid-5xl leading-[1.12]">
+            {title}
+          </h1>
+          <p className="mt-6 max-w-3xl text-fluid-base sm:text-fluid-lg leading-relaxed text-muted-foreground">
+            {description}
+          </p>
+          {actions ? <div className="mt-9 flex flex-wrap gap-3 sm:gap-4">{actions}</div> : null}
+        </MarketingHeroReveal>
+        {visual ? (
+          <div className="relative mt-12 lg:mt-0 lg:ml-12">
+            <MarketingSlideUp>{visual}</MarketingSlideUp>
+          </div>
         ) : null}
-        <h1 className="max-w-4xl text-fluid-3xl font-bold tracking-tight text-foreground sm:text-fluid-4xl md:text-fluid-5xl leading-[1.12]">
-          {title}
-        </h1>
-        <p className="mt-6 max-w-3xl text-fluid-base sm:text-fluid-lg leading-relaxed text-muted-foreground">
-          {description}
-        </p>
-        {actions ? (
-          <div className="mt-9 flex flex-wrap gap-3 sm:gap-4">{actions}</div>
-        ) : null}
-      </MarketingHeroReveal>
+      </div>
     </Section>
   );
 }
@@ -97,7 +124,10 @@ export function FeatureCard({
           <ul className="space-y-2.5 text-sm text-muted-foreground">
             {bullets.map((item) => (
               <li key={item} className="flex items-start gap-2">
-                <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" aria-hidden="true" />
+                <span
+                  className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0"
+                  aria-hidden="true"
+                />
                 <span>{item}</span>
               </li>
             ))}

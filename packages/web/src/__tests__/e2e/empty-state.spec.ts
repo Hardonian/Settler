@@ -52,7 +52,7 @@ test.describe("Empty State Rendering", () => {
       const bodyText = await page.textContent("body");
       expect(bodyText, `${route.name} should have content`).toBeTruthy();
 
-      console.log(`[EmptyState] ${route.name}: ${status}`);
+      console.info(`[EmptyState] ${route.name}: ${status}`);
     }
   });
 });
@@ -75,7 +75,7 @@ test.describe("CTA Element Detection", () => {
           .catch(() => false)
       ) {
         hasCTA = true;
-        console.log(`[CTA] Found: ${selector}`);
+        console.info(`[CTA] Found: ${selector}`);
         break;
       }
     }
@@ -108,7 +108,7 @@ test.describe("CTA Element Detection", () => {
           .catch(() => false)
       ) {
         hasCTA = true;
-        console.log(`[CTA] Pricing page found: ${selector}`);
+        console.info(`[CTA] Pricing page found: ${selector}`);
         break;
       }
     }
@@ -141,7 +141,7 @@ test.describe("CTA Element Detection", () => {
           .catch(() => false)
       ) {
         hasContent = true;
-        console.log(`[Docs] Found: ${selector}`);
+        console.info(`[Docs] Found: ${selector}`);
         break;
       }
     }
@@ -223,7 +223,7 @@ test.describe("Console Empty States", () => {
     const bodyText = await page.textContent("body");
     expect(bodyText).toBeTruthy();
 
-    console.log(`[Console] Runs page resources: ${status}`);
+    console.info(`[Console] Runs page resources: ${status}`);
   });
 });
 
@@ -287,6 +287,6 @@ test.describe("Error Page Testing", () => {
     const bodyText = await page.textContent("body");
     expect(bodyText).toBeTruthy();
 
-    console.log(`[404] Has home link: ${hasHomeLink}`);
+    console.info(`[404] Has home link: ${hasHomeLink}`);
   });
 });

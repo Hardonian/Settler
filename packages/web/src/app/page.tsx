@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
@@ -13,6 +14,7 @@ import {
 import { MarketingIntentCard } from "@/components/site/marketing-motion-wrappers";
 import { Button } from "@/components/ui/button";
 import { UiLink } from "@/components/ui/link";
+import { ReconciliationFlow, VisualGrid } from "@/components/site/infographics";
 
 export const metadata: Metadata = {
   title: "Settler - Deterministic Reconciliation Platform",
@@ -74,7 +76,27 @@ export default function HomePage() {
               </Button>
             </>
           }
+          visual={
+            <div className="relative aspect-square w-full max-w-[500px] overflow-hidden rounded-3xl border border-primary/20 shadow-2xl">
+              <Image
+                src="/hero_abstract_reconciliation.png"
+                alt="Abstract reconciliation visualization"
+                fill
+                className="object-cover"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent" />
+            </div>
+          }
         />
+
+        <Section withGrid>
+          <SectionHeader
+            title="How it works"
+            description="From raw data ingestion to verifiable evidence, Settler ensures every step is reproducible."
+          />
+          <ReconciliationFlow />
+        </Section>
 
         <Section>
           <SectionHeader
@@ -90,40 +112,45 @@ export default function HomePage() {
 
         <Section className="bg-muted/20">
           <SectionHeader title="Navigate by intent" />
-          <div className="grid gap-4 md:grid-cols-2">
-            {[
-              {
-                role: "Developer",
-                href: "/docs/api",
-                desc: "SDK, CLI, and deterministic run model.",
-              },
-              {
-                role: "Operator",
-                href: "/app/runs",
-                desc: "Exception handling, controls, and run operations.",
-              },
-              {
-                role: "Architecture reviewer",
-                href: "/docs/architecture/platform-architecture",
-                desc: "System boundaries, data flow, and execution model.",
-              },
-              {
-                role: "Buyer / evaluator",
-                href: "/demo/console",
-                desc: "Interactive showcase console with realistic reconciliation scenarios.",
-              },
-            ].map((item) => (
-              <MarketingIntentCard key={item.role}>
-                <UiLink
-                  href={item.href}
-                  className="block rounded-xl border border-border bg-card p-6 transition-colors hover:border-primary/45"
-                >
-                  <h3 className="text-lg font-semibold text-foreground">{item.role}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.desc}</p>
-                </UiLink>
-              </MarketingIntentCard>
-            ))}
+          <div className="mb-12">
+            <div className="grid gap-6 md:grid-cols-2">
+              {[
+                {
+                  role: "Developer",
+                  href: "/docs/api",
+                  desc: "SDK, CLI, and deterministic run model.",
+                },
+                {
+                  role: "Operator",
+                  href: "/app/runs",
+                  desc: "Exception handling, controls, and run operations.",
+                },
+                {
+                  role: "Architecture reviewer",
+                  href: "/docs/architecture/platform-architecture",
+                  desc: "System boundaries, data flow, and execution model.",
+                },
+                {
+                  role: "Buyer / evaluator",
+                  href: "/demo/console",
+                  desc: "Interactive showcase console with realistic reconciliation scenarios.",
+                },
+              ].map((item) => (
+                <MarketingIntentCard key={item.role}>
+                  <UiLink
+                    href={item.href}
+                    className="block rounded-xl border border-border bg-card p-6 transition-colors hover:border-primary/45"
+                  >
+                    <h3 className="text-lg font-semibold text-foreground">{item.role}</h3>
+                    <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                      {item.desc}
+                    </p>
+                  </UiLink>
+                </MarketingIntentCard>
+              ))}
+            </div>
           </div>
+          <VisualGrid className="mt-12" />
         </Section>
 
         <CTASection

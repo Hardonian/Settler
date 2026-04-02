@@ -13,19 +13,26 @@ let initializationPromise: Promise<RedisClient | null> | null = null;
 async function initRedis(): Promise<RedisClient | null> {
   const restUrl = process.env.UPSTASH_REDIS_REST_URL;
   const restToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+  const shouldLog = process.env.NODE_ENV !== "test" && process.env.SETTLER_REDIS_SILENCE !== "1";
 
   if (!restUrl || !restToken) {
-    console.warn("[Redis] Upstash Redis not configured — using in-memory fallback");
+    if (shouldLog) {
+      console.warn("[Redis] Upstash Redis not configured — using in-memory fallback");
+    }
     return null;
   }
 
   try {
     const { Redis } = await import("@upstash/redis");
     const client = new Redis({ url: restUrl, token: restToken });
-    console.warn("[Redis] Connected to Upstash Redis");
+    if (shouldLog) {
+      console.warn("[Redis] Connected to Upstash Redis");
+    }
     return client;
   } catch (error) {
-    console.warn("[Redis] Failed to initialise Redis client — using in-memory fallback:", error);
+    if (shouldLog) {
+      console.warn("[Redis] Failed to initialise Redis client — using in-memory fallback:", error);
+    }
     return null;
   }
 }
@@ -60,7 +67,9 @@ export async function safeRedisOperation<T>(
   try {
     return await operation(client);
   } catch (error) {
-    console.warn("[Redis] Operation failed — using fallback:", error);
+    if (process.env.NODE_ENV !== "test" && process.env.SETTLER_REDIS_SILENCE !== "1") {
+      console.warn("[Redis] Operation failed — using fallback:", error);
+    }
     return fallback();
   }
 }

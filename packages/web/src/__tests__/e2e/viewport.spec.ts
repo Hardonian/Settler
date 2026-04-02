@@ -73,7 +73,7 @@ test.describe("Desktop Viewport Sanity", () => {
         const bodyText = await page.textContent("body");
         expect(bodyText, `${viewport.name}: ${route.path} should have content`).toBeTruthy();
 
-        console.log(`[Desktop ${viewport.name}] ${route.path}: ${status}`);
+        console.info(`[Desktop ${viewport.name}] ${route.path}: ${status}`);
       }
     });
   }
@@ -120,7 +120,7 @@ test.describe("Mobile Viewport Sanity", () => {
         const bodyText = await page.textContent("body");
         expect(bodyText, `${viewport.name}: ${route.path} should have content`).toBeTruthy();
 
-        console.log(`[Mobile ${viewport.name}] ${route.path}: ${status}`);
+        console.info(`[Mobile ${viewport.name}] ${route.path}: ${status}`);
       }
     });
   }
@@ -168,7 +168,7 @@ test.describe("Mobile Viewport Sanity", () => {
     const nav = page.locator("nav");
     const hasNav = await nav.isVisible().catch(() => false);
 
-    console.log(`[Mobile] Menu button: ${hasMenuButton}, Nav: ${hasNav}`);
+    console.info(`[Mobile] Menu button: ${hasMenuButton}, Nav: ${hasNav}`);
   });
 });
 
@@ -194,7 +194,7 @@ test.describe("Tablet Viewport Sanity", () => {
         const bodyText = await page.textContent("body");
         expect(bodyText, `${viewport.name}: ${route.path} should have content`).toBeTruthy();
 
-        console.log(`[Tablet ${viewport.name}] ${route.path}: ${status}`);
+        console.info(`[Tablet ${viewport.name}] ${route.path}: ${status}`);
       }
     });
   }
@@ -215,7 +215,7 @@ test.describe("Tablet Viewport Sanity", () => {
     const bodyText = await page.textContent("body");
     expect(bodyText).toBeTruthy();
 
-    console.log(`[Tablet] Has nav: ${hasNav}`);
+    console.info(`[Tablet] Has nav: ${hasNav}`);
   });
 });
 
@@ -285,7 +285,7 @@ test.describe("Responsive Behavior", () => {
     // Should still render
     expect(newMetrics.height, "Should render on mobile").toBeGreaterThan(0);
 
-    console.log(
+    console.info(
       `[Responsive] Desktop: ${JSON.stringify(initialMetrics)}, Mobile: ${JSON.stringify(newMetrics)}`
     );
   });

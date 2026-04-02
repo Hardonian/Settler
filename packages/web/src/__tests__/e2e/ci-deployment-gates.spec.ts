@@ -99,7 +99,7 @@ test.describe("CI Deployment Gates - HTTP Status", () => {
       const status = response?.status() || 0;
 
       // Log for debugging
-      console.log(`[HTTP] ${route.path}: ${status}`);
+      console.info(`[HTTP] ${route.path}: ${status}`);
 
       // CRITICAL: Never return 5xx
       expect(status, `Route ${route.path} should not return 5xx`).toBeLessThan(500);
@@ -124,7 +124,7 @@ test.describe("CI Deployment Gates - Marketing Routes", () => {
 
       const status = response?.status() || 0;
 
-      console.log(`[HTTP] ${route.path}: ${status}`);
+      console.info(`[HTTP] ${route.path}: ${status}`);
 
       // Marketing routes should not return 5xx
       expect(status, `Marketing route ${route.path} should not return 5xx`).toBeLessThan(500);

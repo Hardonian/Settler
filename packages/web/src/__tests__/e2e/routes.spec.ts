@@ -88,7 +88,7 @@ test.describe("Route Reality Harness", () => {
       const status = response?.status() || 0;
 
       // Log the result
-      console.log(`Route ${route.path}: Status ${status}`);
+      console.info(`Route ${route.path}: Status ${status}`);
 
       // For auth-protected routes, 302/301 redirects are acceptable
       // as they indicate the route exists but requires auth
@@ -141,7 +141,7 @@ test.describe("Route Reality Harness", () => {
         !err.includes("Failed to load resource") && !err.includes("favicon") && !err.includes("404")
     );
 
-    console.log("Console errors found:", criticalErrors);
+    console.info("Console errors found:", criticalErrors);
 
     // Allow up to 3 critical errors
     expect(criticalErrors.length).toBeLessThanOrEqual(3);

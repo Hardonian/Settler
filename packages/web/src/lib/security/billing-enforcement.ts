@@ -33,6 +33,28 @@ export async function requireActiveSubscription(
   try {
     const supabaseClient = await createClient();
 
+    if (typeof (supabaseClient as any)?.from !== "function") {
+      if (process.env.NODE_ENV !== "test") {
+        await logger.warn("Billing enforcement check skipped: Supabase client missing query API", {
+          reason: "supabaseClient.from is not a function",
+        });
+      }
+
+      return {
+        allowed: false,
+        error: NextResponse.json(
+          {
+            error: "Subscription Check Failed",
+            message: "Unable to verify subscription status. Please try again or contact support.",
+            code: "SUBSCRIPTION_CHECK_FAILED",
+            retryable: true,
+          },
+          { status: 403 }
+        ),
+        reason: "Supabase client unavailable",
+      };
+    }
+
     // Get authenticated user
     const {
       data: { user },

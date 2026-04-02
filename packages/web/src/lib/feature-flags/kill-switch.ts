@@ -61,7 +61,6 @@ class FeatureFlagManager {
       }
 
       this.initialized = true;
-      // eslint-disable-next-line no-console
       console.info("[FeatureFlags] Initialized with", this.flags.size, "flags");
     } catch (error) {
       console.error("[FeatureFlags] Failed to initialize:", error);
@@ -138,7 +137,6 @@ class FeatureFlagManager {
    */
   setFlag(flag: FeatureFlag): void {
     this.flags.set(flag.key, flag);
-    // eslint-disable-next-line no-console
     console.info(`[FeatureFlags] Flag "${flag.key}" set to ${flag.enabled}`);
   }
 
@@ -162,7 +160,6 @@ class FeatureFlagManager {
     if (flag) {
       flag.enabled = true;
       this.flags.set(key, flag);
-      // eslint-disable-next-line no-console
       console.info(`[FeatureFlags] Feature "${key}" enabled`);
     }
   }

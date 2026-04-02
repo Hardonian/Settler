@@ -31,6 +31,8 @@ const nextConfig = {
   // Note: On Windows, standalone mode is disabled to avoid symlink permission issues
   // The standalone output is used in CI/production (Linux) for optimized Docker deployments
   output: shouldUseStandalone ? "standalone" : undefined,
+  // Ensure Next.js uses the repo root for output tracing when multiple lockfiles exist.
+  outputFileTracingRoot: path.resolve(__dirname, "..", ".."),
   // Reduce memory footprint during build
   compress: true,
   experimental: {
@@ -460,7 +462,11 @@ const nextConfig = {
       },
       // Legacy marketing/docs slugs → existing App Router pages (internal link integrity)
       { source: "/docs/intro", destination: "/docs/quickstart", permanent: true },
-      { source: "/docs/architecture", destination: "/docs/architecture/platform-architecture", permanent: true },
+      {
+        source: "/docs/architecture",
+        destination: "/docs/architecture/platform-architecture",
+        permanent: true,
+      },
       { source: "/docs/installation", destination: "/docs/getting-started", permanent: true },
       { source: "/docs/policies", destination: "/docs/cli", permanent: true },
       { source: "/docs/assertions", destination: "/docs/errors", permanent: true },
@@ -497,11 +503,26 @@ let finalConfig = withBundleAnalyzer(withMDX(nextConfig));
 try {
   const { withSentryConfig } = require("@sentry/nextjs");
 
+  const sentryEnabled = process.env.NEXT_PUBLIC_ENABLE_SENTRY === "true";
+  const sentryConfigured = Boolean(
+    process.env.SENTRY_DSN &&
+    process.env.SENTRY_AUTH_TOKEN &&
+    process.env.SENTRY_ORG &&
+    process.env.SENTRY_PROJECT
+  );
+
+  if (sentryEnabled && !sentryConfigured) {
+    console.warn(
+      "[Sentry] Enabled but missing SENTRY_AUTH_TOKEN/SENTRY_ORG/SENTRY_PROJECT. Skipping source map upload."
+    );
+  }
+
   const sentryWebpackPluginOptions = {
     // Disable by default unless explicitly enabled via env vars
-    disable: !(process.env.NEXT_PUBLIC_ENABLE_SENTRY === "true" && process.env.SENTRY_DSN),
-    org: process.env.SENTRY_ORG || "settler-dev",
-    project: process.env.SENTRY_PROJECT || "web",
+    disable: !(sentryEnabled && sentryConfigured),
+    authToken: process.env.SENTRY_AUTH_TOKEN,
+    org: process.env.SENTRY_ORG,
+    project: process.env.SENTRY_PROJECT,
     silent: true,
     widenClientFileUpload: true,
     hideSourceMaps: true,

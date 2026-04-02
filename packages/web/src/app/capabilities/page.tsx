@@ -9,6 +9,7 @@ import {
   Section,
   SectionHeader,
 } from "@/components/site/primitives";
+import { EvidenceArtifactPreview, VisualGrid } from "@/components/site/infographics";
 
 export const metadata: Metadata = {
   title: "Capabilities - Settler",
@@ -58,6 +59,7 @@ export default function CapabilitiesPage() {
           eyebrow="Capabilities"
           title="A capability model grounded in real workflows"
           description="Settler combines deterministic execution, operator workflows, and evidence-first outputs so engineering, finance, and security teams can reason about reconciliation outcomes."
+          visual={<EvidenceArtifactPreview />}
         />
         <Section>
           <SectionHeader
@@ -70,6 +72,11 @@ export default function CapabilitiesPage() {
             ))}
           </FeatureGrid>
         </Section>
+
+        <Section className="bg-muted/20">
+          <VisualGrid />
+        </Section>
+
         <CTASection
           title="See how these capabilities combine"
           description="Use the architecture and use-case pages to understand execution flow and persona-specific outcomes."

@@ -92,7 +92,7 @@ test.describe("Console Routes - HTTP Status", () => {
 
       const status = response?.status() || 0;
 
-      console.log(`[Console] ${route.path}: ${status}`);
+      console.info(`[Console] ${route.path}: ${status}`);
 
       // CRITICAL: Never return 5xx
       expect(status, `Console route ${route.path} should not return 5xx`).toBeLessThan(500);
@@ -125,7 +125,7 @@ test.describe("Console Routes - Auth Behavior", () => {
 
     const hasAuthContent = await showsAuthContent(page);
 
-    console.log(
+    console.info(
       `[Console Auth] /console/runs -> ${currentUrl} (status: ${status}), auth: ${hasAuthContent}`
     );
 
@@ -195,7 +195,7 @@ test.describe("Console API Routes", () => {
 
       const status = response.status();
 
-      console.log(`[Console API] ${apiRoute}: ${status}`);
+      console.info(`[Console API] ${apiRoute}: ${status}`);
 
       // Should not return 5xx
       expect(status, `API ${apiRoute} should not return 5xx`).toBeLessThan(500);
@@ -211,7 +211,7 @@ test.describe("Console API Routes", () => {
     expect(data).toHaveProperty("tier");
     expect(data).toHaveProperty("hasSubscription");
 
-    console.log(`[Console API] subscription-status: ${JSON.stringify(data)}`);
+    console.info(`[Console API] subscription-status: ${JSON.stringify(data)}`);
   });
 });
 
@@ -229,7 +229,7 @@ test.describe("Console Navigation", () => {
     // Look for navigation links
     const navLinks = await page.$$("nav a, header a, [class*='nav'] a, [class*='menu'] a");
 
-    console.log(`[Console Nav] Found ${navLinks.length} navigation links`);
+    console.info(`[Console Nav] Found ${navLinks.length} navigation links`);
 
     // Page should have loaded
     const bodyText = await page.textContent("body");
