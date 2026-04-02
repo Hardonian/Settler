@@ -1,4 +1,5 @@
 import { SUPABASE_ANON_KEY_KEYS, SUPABASE_URL_KEYS } from "./keys";
+import { formatGroupKeys, resolveEnvGroup } from "./contract";
 
 export const MARKETING_OPTIONAL_ENV_KEYS = [
   SUPABASE_URL_KEYS,
@@ -8,17 +9,10 @@ export const MARKETING_OPTIONAL_ENV_KEYS = [
 
 export const APP_REQUIRED_ENV_KEYS = [SUPABASE_URL_KEYS, SUPABASE_ANON_KEY_KEYS] as const;
 
-type EnvKeyGroup = readonly string[];
-
-function isConfigured(keys: EnvKeyGroup): boolean {
-  return keys.some((key) => {
-    const value = process.env[key];
-    return Boolean(value && value.trim().length > 0);
-  });
-}
-
-function findMissing(keyGroups: readonly EnvKeyGroup[]): string[] {
-  return keyGroups.filter((keys) => !isConfigured(keys)).map((keys) => keys.join(" or "));
+function findMissing(keyGroups: readonly (readonly string[])[]): string[] {
+  return keyGroups
+    .filter((keys) => !resolveEnvGroup(keys).satisfied)
+    .map((keys) => formatGroupKeys(keys));
 }
 
 export function getMarketingEnvStatus(): { ok: boolean; missing: string[] } {

@@ -8,7 +8,8 @@
  * and makes configuration auditing trivial.
  */
 
-import { SUPABASE_ANON_KEY_KEYS, SUPABASE_URL_KEYS, hasConfiguredValue } from "./keys";
+import { SUPABASE_ANON_KEY_KEYS, SUPABASE_URL_KEYS } from "./keys";
+import { formatGroupKeys, resolveEnvGroup } from "./contract";
 
 export interface EnvValidationResult {
   isValid: boolean;
@@ -84,10 +85,10 @@ export function validateEnv(requiredVars: string[]): EnvValidationResult {
  * Validate Supabase environment variables
  */
 export function validateSupabaseEnv(): EnvValidationResult {
-  const requiredGroups = [SUPABASE_URL_KEYS, SUPABASE_ANON_KEY_KEYS];
+  const requiredGroups = [SUPABASE_URL_KEYS, SUPABASE_ANON_KEY_KEYS] as const;
   const missing = requiredGroups
-    .filter((group) => !group.some((key) => hasConfiguredValue(key)))
-    .map((group) => group.join(" or "));
+    .filter((group) => !resolveEnvGroup(group).satisfied)
+    .map((group) => formatGroupKeys(group));
 
   return {
     isValid: missing.length === 0,

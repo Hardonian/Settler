@@ -6,8 +6,10 @@ This matrix is the single source of truth for runtime environment variables and 
 
 ## Operator note (env truth + build gate)
 
-- **Canonical env truth** lives in this file (`docs/setup/env-matrix.md`) and is enforced in code via `packages/web/scripts/assert-build-env.mjs` (build-time gate) and `packages/web/src/lib/env/keys.ts` (shared env key groups).
+- **Canonical env truth** lives in this file (`docs/setup/env-matrix.md`) and is enforced in code via `config/env.required.json` (contract manifest), `packages/web/scripts/assert-build-env.mjs` (build-time gate), and `packages/web/src/lib/env/keys.ts` (shared env key groups).
 - **Canonical production build path** is `pnpm --filter @settler/web run build` (invokes `assert-build-env.mjs` before `next build`).
+- **Ownership model:** Vercel is the deployment/build/runtime injection point for app env; Doppler is optional operator vault/input source; Supabase stores only Supabase-side secrets; GitHub secrets are CI/workflow-only unless explicitly synced into Vercel.
+- **Drift check command:** `pnpm run verify:env:contract` enforces public/server prefix ownership and detects secret leakage into `NEXT_PUBLIC_*`.
 
 ## Security level legend
 

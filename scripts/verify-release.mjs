@@ -13,6 +13,11 @@ const stageCatalog = {
     command: ["pnpm", ["run", "verify:reconciliation-core-dist"]],
     timeoutMs: 60_000,
   },
+  envContract: {
+    label: "Environment contract",
+    command: ["pnpm", ["run", "verify:env:contract"]],
+    timeoutMs: 2 * 60_000,
+  },
   lint: { label: "Lint", command: ["pnpm", ["run", "lint"]], timeoutMs: 12 * 60_000 },
   typecheck: {
     label: "Typecheck",
@@ -81,6 +86,7 @@ const profiles = {
   /** Release-critical code health; excludes internal marketing/docs link crawl (see `fast-with-links`). */
   fast: [
     "root",
+    "envContract",
     "reconciliationCoreDist",
     "lint",
     "typecheck",
@@ -92,6 +98,7 @@ const profiles = {
   /** Same as `fast` plus static internal link integrity (requires fresh `qa/route-registry.json` from `qa:routes`). */
   "fast-with-links": [
     "root",
+    "envContract",
     "reconciliationCoreDist",
     "lint",
     "typecheck",
@@ -106,6 +113,7 @@ const profiles = {
   artifacts: ["launchManifest", "capture", "artifacts"],
   full: [
     "root",
+    "envContract",
     "reconciliationCoreDist",
     "lint",
     "typecheck",

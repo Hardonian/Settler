@@ -4,9 +4,11 @@ This guide helps you sync environment variables from GitHub secrets to Vercel.
 
 ## Overview
 
-- **GitHub Secrets**: Used for CI/CD workflows and server-side operations
-- **Vercel Environment Variables**: Used for runtime application configuration
-- **NEXT_PUBLIC_ Variables**: Must be set in Vercel (exposed to client-side)
+- **Vercel Environment Variables**: canonical app deployment source for build/runtime values.
+- **Doppler (optional)**: upstream secret vault; values must still be synced into Vercel for hosted app behavior.
+- **Supabase**: owns Supabase-side secrets only (database platform concerns).
+- **GitHub Secrets**: CI/workflow-only unless intentionally mirrored into Vercel.
+- **`NEXT_PUBLIC_` Variables**: explicitly public and browser-exposed; server-only secrets must never be duplicated with `NEXT_PUBLIC_` prefix.
 
 ## Quick Sync Methods
 
@@ -41,6 +43,7 @@ vercel env add VARIABLE_NAME production
 ### Method 3: GitHub Integration (Auto-sync)
 
 If GitHub integration is enabled in Vercel:
+
 - Some variables may auto-sync from GitHub secrets
 - However, `NEXT_PUBLIC_` variables typically need manual setup
 - Review this guide to ensure all variables are properly configured
@@ -163,9 +166,10 @@ If GitHub integration is enabled in Vercel:
 
 ## Special Notes
 
-### NEXT_PUBLIC_ Variables
+### `NEXT_PUBLIC_` Variables
 
 Variables prefixed with `NEXT_PUBLIC_` are exposed to the browser. These should:
+
 1. Use the same values as their server-side counterparts (e.g., `NEXT_PUBLIC_SUPABASE_URL` = `SUPABASE_URL`)
 2. Be set in Vercel dashboard (not GitHub secrets)
 3. Only contain non-sensitive configuration (never secrets!)
@@ -179,30 +183,30 @@ Variables prefixed with `NEXT_PUBLIC_` are exposed to the browser. These should:
 
 ### Variable Mapping
 
-| GitHub Secret | Vercel Key | Public? | Required |
-|--------------|------------|---------|----------|
-| `SUPABASE_URL` | `SUPABASE_URL` | No | Yes |
-| `SUPABASE_ANON_KEY` | `SUPABASE_ANON_KEY` | No | Yes |
-| `SUPABASE_SERVICE_ROLE_KEY` | `SUPABASE_SERVICE_ROLE_KEY` | No | Yes |
-| `SUPABASE_URL` | `NEXT_PUBLIC_SUPABASE_URL` | Yes | Yes |
-| `SUPABASE_ANON_KEY` | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Yes |
-| `DATABASE_URL` | `DATABASE_URL` | No | Yes |
-| `DIRECT_URL` | `DIRECT_URL` | No | No |
-| `JWT_SECRET` | `JWT_SECRET` | No | Yes |
-| `ENCRYPTION_KEY` | `ENCRYPTION_KEY` | No | Yes |
-| `UPSTASH_REDIS_REST_URL` | `UPSTASH_REDIS_REST_URL` | No | No |
-| `UPSTASH_REDIS_REST_TOKEN` | `UPSTASH_REDIS_REST_TOKEN` | No | No |
-| `REDIS_URL` | `REDIS_URL` | No | No |
-| `RESEND_API_KEY` | `RESEND_API_KEY` | No | Yes |
-| `RESEND_FROM_EMAIL` | `RESEND_FROM_EMAIL` | No | No |
-| `STRIPE_SECRET_KEY` | `STRIPE_SECRET_KEY` | No | Yes |
-| `STRIPE_WEBHOOK_SECRET` | `STRIPE_WEBHOOK_SECRET` | No | No |
-| `SENTRY_DSN` | `SENTRY_DSN` | No | No |
-| `SENTRY_DSN` | `NEXT_PUBLIC_SENTRY_DSN` | Yes | No |
-| `NEXT_PUBLIC_SITE_URL` | `NEXT_PUBLIC_SITE_URL` | Yes | No |
-| `NEXT_PUBLIC_APP_URL` | `NEXT_PUBLIC_APP_URL` | Yes | No |
-| `NEXT_PUBLIC_GA4_MEASUREMENT_ID` | `NEXT_PUBLIC_GA4_MEASUREMENT_ID` | Yes | No |
-| `NEXT_PUBLIC_POSTHOG_KEY` | `NEXT_PUBLIC_POSTHOG_KEY` | Yes | No |
+| GitHub Secret                    | Vercel Key                       | Public? | Required |
+| -------------------------------- | -------------------------------- | ------- | -------- |
+| `SUPABASE_URL`                   | `SUPABASE_URL`                   | No      | Yes      |
+| `SUPABASE_ANON_KEY`              | `SUPABASE_ANON_KEY`              | No      | Yes      |
+| `SUPABASE_SERVICE_ROLE_KEY`      | `SUPABASE_SERVICE_ROLE_KEY`      | No      | Yes      |
+| `SUPABASE_URL`                   | `NEXT_PUBLIC_SUPABASE_URL`       | Yes     | Yes      |
+| `SUPABASE_ANON_KEY`              | `NEXT_PUBLIC_SUPABASE_ANON_KEY`  | Yes     | Yes      |
+| `DATABASE_URL`                   | `DATABASE_URL`                   | No      | Yes      |
+| `DIRECT_URL`                     | `DIRECT_URL`                     | No      | No       |
+| `JWT_SECRET`                     | `JWT_SECRET`                     | No      | Yes      |
+| `ENCRYPTION_KEY`                 | `ENCRYPTION_KEY`                 | No      | Yes      |
+| `UPSTASH_REDIS_REST_URL`         | `UPSTASH_REDIS_REST_URL`         | No      | No       |
+| `UPSTASH_REDIS_REST_TOKEN`       | `UPSTASH_REDIS_REST_TOKEN`       | No      | No       |
+| `REDIS_URL`                      | `REDIS_URL`                      | No      | No       |
+| `RESEND_API_KEY`                 | `RESEND_API_KEY`                 | No      | Yes      |
+| `RESEND_FROM_EMAIL`              | `RESEND_FROM_EMAIL`              | No      | No       |
+| `STRIPE_SECRET_KEY`              | `STRIPE_SECRET_KEY`              | No      | Yes      |
+| `STRIPE_WEBHOOK_SECRET`          | `STRIPE_WEBHOOK_SECRET`          | No      | No       |
+| `SENTRY_DSN`                     | `SENTRY_DSN`                     | No      | No       |
+| `SENTRY_DSN`                     | `NEXT_PUBLIC_SENTRY_DSN`         | Yes     | No       |
+| `NEXT_PUBLIC_SITE_URL`           | `NEXT_PUBLIC_SITE_URL`           | Yes     | No       |
+| `NEXT_PUBLIC_APP_URL`            | `NEXT_PUBLIC_APP_URL`            | Yes     | No       |
+| `NEXT_PUBLIC_GA4_MEASUREMENT_ID` | `NEXT_PUBLIC_GA4_MEASUREMENT_ID` | Yes     | No       |
+| `NEXT_PUBLIC_POSTHOG_KEY`        | `NEXT_PUBLIC_POSTHOG_KEY`        | Yes     | No       |
 
 ## Verification
 
@@ -212,6 +216,14 @@ After syncing variables:
 2. **Test Deployment**: Trigger a new deployment and check build logs
 3. **Runtime Check**: Use `/api/health` endpoint to verify environment configuration
 4. **Client Check**: Verify `NEXT_PUBLIC_` variables are accessible in browser console
+
+## Contract Verification
+
+Run these after sync to catch drift before deploy:
+
+```bash
+pnpm run verify:env:contract
+```
 
 ## Troubleshooting
 

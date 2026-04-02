@@ -292,21 +292,34 @@ export interface PolicyEvolutionProposal {
 export interface ProposalHistoryResponse {
   proposalId: string;
   tenantId: string;
+  generatedAt: string | null;
+  latestStatus: "pending_review" | "approved" | "rejected" | "deferred";
+  events: Array<{
+    action: string;
+    actorUserId: string | null;
+    occurredAt: string;
+    changes: Record<string, unknown>;
+    metadata: Record<string, unknown>;
+  }>;
   degraded: boolean;
   degradedReasons: string[];
-  reviews: Array<{
-    reviewId: string;
-    decision: "approved" | "rejected" | "deferred";
-    actorUserId: string | null;
-    reason: string | null;
-    reasonCodes: string[];
-    createdAt: string;
-  }>;
-  linkedArtifacts: Array<{
-    artifactKey: string;
-    artifactType: string;
-    createdAt: string;
-  }>;
+}
+
+interface ExceptionPlaybookSummary {
+  signature: string;
+  clusterIdentity: ExceptionSignature["construction"];
+  commonResolutionPaths: Record<string, number>;
+  handlingTimeMinutes: {
+    average: number | null;
+    median: number | null;
+  };
+  sourceSystems: Array<string | null>;
+  commonOperatorActions: string[];
+  escalationIndicators: string[];
+  ambiguityMarkers: string[];
+  evidenceCoverage: "strong" | "partial" | "insufficient";
+  basisType: "mixed" | "automatic_only";
+  degradedReasons: string[];
 }
 
 export interface ProofGraphResponse {
@@ -615,7 +628,7 @@ function buildProposal(
   },
   latestReview: PolicyEvolutionProposal["latestReview"]
 ): PolicyEvolutionProposal {
-  const recommendation = recommendationFor(cluster);
+  const recommendation = buildRecommendation(cluster);
   const riskFlags: string[] = [];
   if (cluster.openCount / Math.max(1, cluster.volume) > 0.6)
     riskFlags.push("high_open_exception_concentration");
@@ -656,9 +669,67 @@ function buildProposal(
     },
     unsupportedMetrics: ["false_positive_rate", "false_negative_rate", "causal_effect_size"],
     riskFlags,
+    learnedEffectiveness: {
+      score: Number(
+        Math.max(0.1, Math.min(0.95, cluster.resolvedCount / Math.max(1, cluster.volume))).toFixed(
+          2
+        )
+      ),
+      confidence: cluster.volume >= 20 ? "high" : cluster.volume >= 8 ? "medium" : "low",
+      evidenceCount: cluster.volume,
+      basis: recommendation.reasons,
+    },
     dataSufficiency,
     status: latestReview?.decision ?? "pending_review",
     latestReview,
+  };
+}
+
+function buildRecommendation(cluster: {
+  volume: number;
+  openCount: number;
+  lowConfidenceCount: number;
+  resolvedCount: number;
+}): ExplainableRecommendation {
+  const openRatio = cluster.openCount / Math.max(1, cluster.volume);
+  const lowConfRatio = cluster.lowConfidenceCount / Math.max(1, cluster.volume);
+
+  if (cluster.volume < 3) {
+    return {
+      action: "insufficient_data",
+      confidence: null,
+      confidenceBasis: "Fewer than 3 observations in lookback window",
+      reasons: ["insufficient_cluster_volume"],
+      degraded: true,
+    };
+  }
+  if (openRatio > 0.6) {
+    return {
+      action: "manual_review",
+      confidence: Number(Math.min(0.95, 0.6 + openRatio / 3).toFixed(2)),
+      confidenceBasis: "High unresolved concentration in recurring signature",
+      reasons: [`open_ratio=${openRatio.toFixed(2)}`],
+      degraded: false,
+    };
+  }
+  if (lowConfRatio > 0.4) {
+    return {
+      action: "policy_adjustment",
+      confidence: Number(Math.min(0.9, 0.5 + lowConfRatio / 2).toFixed(2)),
+      confidenceBasis: "High low-confidence recurrence indicates policy sensitivity",
+      reasons: [`low_confidence_ratio=${lowConfRatio.toFixed(2)}`],
+      degraded: false,
+    };
+  }
+
+  return {
+    action: "auto_match_candidate",
+    confidence: Number(
+      Math.max(0.55, cluster.resolvedCount / Math.max(1, cluster.volume)).toFixed(2)
+    ),
+    confidenceBasis: "Historically resolved signature with low open burden",
+    reasons: [`resolved_ratio=${(cluster.resolvedCount / Math.max(1, cluster.volume)).toFixed(2)}`],
+    degraded: false,
   };
 }
 
@@ -1157,63 +1228,6 @@ export class ExceptionIntelligenceService {
     });
 
     return { accepted: true, status: input.decision, degraded: false, degradedReasons: [] };
-  }
-
-  async getPolicyEvolutionProposalDetail(
-    tenantId: string,
-    proposalId: string
-  ): Promise<PolicyEvolutionProposal | null> {
-    const proposals = await this.listPolicyEvolutionProposals(tenantId, 30);
-    return proposals.find((proposal) => proposal.proposalId === proposalId) ?? null;
-  }
-
-  async getProposalHistory(
-    tenantId: string,
-    proposalId: string
-  ): Promise<ProposalHistoryResponse | null> {
-    const proposal = await prisma.policyEvolutionProposal.findFirst({
-      where: { tenantId, proposalKey: proposalId },
-      select: { id: true },
-    });
-    if (!proposal) return null;
-
-    const [reviews, artifacts] = await Promise.all([
-      prisma.policyEvolutionProposalReview.findMany({
-        where: { tenantId, proposalId: proposal.id },
-        orderBy: { createdAt: "desc" },
-        take: 100,
-      }),
-      prisma.policyMemoryArtifact.findMany({
-        where: {
-          tenantId,
-          OR: [
-            { artifactKey: `proposal:${proposalId}` },
-            { artifactKey: `proposal-review:${proposalId}` },
-          ],
-        },
-        orderBy: { createdAt: "desc" },
-      }),
-    ]);
-
-    return {
-      proposalId,
-      tenantId,
-      degraded: reviews.length === 0,
-      degradedReasons: reviews.length === 0 ? ["proposal_has_no_review_history"] : [],
-      reviews: reviews.map((review) => ({
-        reviewId: review.id,
-        decision: review.resultingStatus as "approved" | "rejected" | "deferred",
-        actorUserId: review.actorUserId,
-        reason: review.reason,
-        reasonCodes: normalizeReasonCodes(review.reason),
-        createdAt: review.createdAt.toISOString(),
-      })),
-      linkedArtifacts: artifacts.map((artifact) => ({
-        artifactKey: artifact.artifactKey,
-        artifactType: artifact.artifactType,
-        createdAt: artifact.createdAt.toISOString(),
-      })),
-    };
   }
 
   async getSignatureLifecycle(
@@ -1806,322 +1820,6 @@ export class ExceptionIntelligenceService {
     };
   }
 
-  async getExceptionPlaybooks(tenantId: string, lookbackDays: number) {
-    const snapshot = await this.getSnapshot(tenantId, lookbackDays);
-    return {
-      tenantId,
-      generatedAt: new Date().toISOString(),
-      degraded: snapshot.degraded,
-      degradedReasons: snapshot.degradedReasons,
-      playbooks: snapshot.clusters.map((cluster) => ({
-        signature: cluster.signature.signature,
-        clusterIdentity: cluster.signature.construction,
-        commonResolutionPaths: cluster.resolutionPath.adjudicationMix,
-        handlingTimeMinutes: {
-          average: cluster.resolutionPath.avgResolutionMinutes,
-          median: cluster.resolutionPath.medianResolutionMinutes,
-        },
-        sourceSystems: snapshot.sourceTrustSignals.map((source) => source.sourceId),
-        commonOperatorActions: [cluster.recommendation.action],
-        escalationIndicators: cluster.openCount > 0 ? ["has_open_exceptions"] : [],
-        ambiguityMarkers: cluster.recommendation.degraded ? cluster.recommendation.reasons : [],
-        evidenceCoverage:
-          cluster.volume >= 8 ? "strong" : cluster.volume >= 3 ? "partial" : "insufficient",
-        basisType: cluster.resolvedCount > 0 && cluster.openCount > 0 ? "mixed" : "automatic_only",
-        degradedReasons: cluster.recommendation.degraded ? cluster.recommendation.reasons : [],
-      })),
-    };
-  }
-
-  async getReconciliationMemoryGraph(tenantId: string, lookbackDays: number) {
-    const [snapshot, decisions, proposals, sourceFriction, fingerprints] = await Promise.all([
-      this.getSnapshot(tenantId, lookbackDays),
-      this.getDecisionHistory(tenantId, { limit: 300 }),
-      this.listPolicyEvolutionProposals(tenantId, lookbackDays),
-      this.getSourceFrictionSummary(tenantId, lookbackDays),
-      this.getEntityFingerprints(tenantId, lookbackDays),
-    ]);
-
-    const nodes: Array<{
-      id: string;
-      type: string;
-      label: string;
-      metadata: Record<string, unknown>;
-    }> = [];
-    const edges: Array<{ from: string; to: string; relation: string }> = [];
-
-    for (const cluster of snapshot.clusters) {
-      nodes.push({
-        id: `signature:${cluster.signature.signature}`,
-        type: "exception_signature",
-        label: cluster.signature.signature,
-        metadata: {
-          volume: cluster.volume,
-          unresolved: cluster.openCount,
-          recommendation: cluster.recommendation.action,
-          mismatchType: cluster.ontology.mismatchType,
-          unresolvedBecause: cluster.ontology.unresolvedBecause,
-          ontologySupport: cluster.ontology.support,
-        },
-      });
-    }
-
-    for (const source of sourceFriction.sources) {
-      nodes.push({
-        id: `source:${source.sourceId}`,
-        type: "source",
-        label: source.sourceName ?? source.sourceId,
-        metadata: {
-          unresolvedRate: source.rates.unresolvedRate,
-          manualReviewRate: source.rates.manualReviewRate,
-          support: source.support,
-        },
-      });
-      for (const sig of source.policyFrictionSignatures) {
-        edges.push({
-          from: `source:${source.sourceId}`,
-          to: `signature:${sig.signature}`,
-          relation: "friction_concentrated_in",
-        });
-      }
-    }
-
-    for (const entity of fingerprints.entities) {
-      nodes.push({
-        id: `entity:${entity.counterpartyKey}`,
-        type: "entity",
-        label: entity.displayName ?? entity.counterpartyKey,
-        metadata: {
-          ambiguityRate: entity.ambiguityRate,
-          support: entity.support,
-        },
-      });
-    }
-
-    for (const decision of decisions.decisions) {
-      const id = `decision:${decision.matchId}`;
-      nodes.push({
-        id,
-        type: "decision",
-        label: decision.decision,
-        metadata: {
-          runId: decision.runId,
-          decidedAt: decision.decidedAt,
-          actorId: decision.actorId,
-        },
-      });
-      edges.push({ from: id, to: `signature:${decision.signature}`, relation: "resolves" });
-      edges.push({ from: id, to: `entity:${decision.counterpartyKey}`, relation: "targets" });
-      edges.push({ from: `run:${decision.runId}`, to: id, relation: "contains" });
-    }
-
-    for (const proposal of proposals) {
-      nodes.push({
-        id: `proposal:${proposal.proposalId}`,
-        type: "proposal",
-        label: proposal.proposalId,
-        metadata: {
-          status: proposal.status,
-          sufficiency: proposal.dataSufficiency,
-        },
-      });
-      edges.push({
-        from: `proposal:${proposal.proposalId}`,
-        to: `signature:${proposal.signature.signature}`,
-        relation: "targets",
-      });
-    }
-
-    const dedupNodes = Array.from(new Map(nodes.map((node) => [node.id, node])).values());
-    const dedupEdges = Array.from(
-      new Map(edges.map((edge) => [`${edge.from}|${edge.relation}|${edge.to}`, edge])).values()
-    );
-
-    const degradedReasons = [
-      ...(snapshot.degraded ? snapshot.degradedReasons : []),
-      ...(proposals.length === 0 ? ["no_policy_proposals_in_scope"] : []),
-    ];
-
-    return {
-      tenantId,
-      generatedAt: new Date().toISOString(),
-      lookbackDays,
-      degraded: degradedReasons.length > 0,
-      degradedReasons,
-      nodes: dedupNodes,
-      edges: dedupEdges,
-    };
-  }
-
-  async getProofGraph(tenantId: string, runId: string): Promise<ProofGraphResponse> {
-    const run = await prisma.reconciliationRun.findFirst({
-      where: { id: runId, tenantId },
-      include: { matches: true, provenance: true },
-    });
-    if (!run) {
-      return {
-        runId,
-        tenantId,
-        degraded: true,
-        degradedReasons: ["run_not_found_or_not_scoped"],
-        nodes: [],
-        edges: [],
-      };
-    }
-
-    const nodes: ProofGraphResponse["nodes"] = [
-      {
-        id: `run:${run.id}`,
-        type: "run",
-        label: `Run ${run.id}`,
-        metadata: {
-          status: run.status,
-          startedAt: run.startedAt.toISOString(),
-          completedAt: run.completedAt?.toISOString() ?? null,
-        },
-      },
-    ];
-
-    const edges: ProofGraphResponse["edges"] = [];
-
-    for (const match of run.matches) {
-      nodes.push({
-        id: `match:${match.id}`,
-        type: "match",
-        label: `Match ${match.id}`,
-        metadata: {
-          matchType: match.matchType,
-          reviewed: match.reviewed,
-          confidence: Number(match.confidence),
-        },
-      });
-      edges.push({ from: `run:${run.id}`, to: `match:${match.id}`, relation: "produced" });
-    }
-
-    for (const provenance of run.provenance) {
-      nodes.push({
-        id: `provenance:${provenance.id}`,
-        type: "provenance",
-        label: provenance.eventType,
-        metadata: {
-          sequence: provenance.sequence,
-          actorType: provenance.actorType,
-          actorUserId: provenance.actorUserId,
-          entryHash: provenance.entryHash,
-          createdAt: provenance.createdAt.toISOString(),
-        },
-      });
-      edges.push({
-        from: `run:${run.id}`,
-        to: `provenance:${provenance.id}`,
-        relation: "recorded",
-      });
-      if (provenance.matchId)
-        edges.push({
-          from: `match:${provenance.matchId}`,
-          to: `provenance:${provenance.id}`,
-          relation: "evidenced_by",
-        });
-    }
-
-    const degradedReasons = run.provenance.length === 0 ? ["missing_run_provenance"] : [];
-    return { runId, tenantId, degraded: degradedReasons.length > 0, degradedReasons, nodes, edges };
-  }
-
-  async buildEvidencePack(tenantId: string, runId: string): Promise<EvidencePack> {
-    const [graph, run] = await Promise.all([
-      this.getProofGraph(tenantId, runId),
-      prisma.reconciliationRun.findFirst({
-        where: { id: runId, tenantId },
-        include: { matches: true, provenance: { orderBy: { sequence: "asc" } } },
-      }),
-    ]);
-
-    const decisions: AdjudicationEvent[] = (run?.matches ?? [])
-      .filter((m) => m.reviewed)
-      .map((m) => ({
-        matchId: m.id,
-        runId,
-        resolution: decisionForMatch(m.matchReason),
-        actorId: m.reviewedBy,
-        occurredAt: m.reviewedAt?.toISOString() ?? m.updatedAt.toISOString(),
-        notes: m.matchReason,
-      }));
-
-    const completenessByCategory = {
-      runLineage: {
-        complete: graph.nodes.some((node) => node.type === "run"),
-        degraded: !graph.nodes.some((node) => node.type === "run"),
-        reasons: graph.nodes.some((node) => node.type === "run") ? [] : ["missing_run_node"],
-      },
-      matchLineage: {
-        complete: graph.nodes.some((node) => node.type === "match"),
-        degraded: !graph.nodes.some((node) => node.type === "match"),
-        reasons: graph.nodes.some((node) => node.type === "match") ? [] : ["missing_match_nodes"],
-      },
-      operatorDecisionLineage: {
-        complete: decisions.length > 0,
-        degraded: decisions.length === 0,
-        reasons: decisions.length > 0 ? [] : ["no_operator_decisions"],
-      },
-      proposalPackLineage: {
-        complete: false,
-        degraded: true,
-        reasons: ["proposal_pack_linkage_not_available_for_run"],
-      },
-      provenanceRecords: {
-        complete: (run?.provenance.length ?? 0) > 0,
-        degraded: (run?.provenance.length ?? 0) === 0,
-        reasons: (run?.provenance.length ?? 0) > 0 ? [] : ["no_provenance_entries_for_run"],
-      },
-    };
-
-    const deterministicInput = {
-      tenantId,
-      runId,
-      nodes: graph.nodes.map((node) => node.id).sort(),
-      edges: graph.edges.map((edge) => `${edge.from}|${edge.relation}|${edge.to}`).sort(),
-      decisions: decisions.map((d) => `${d.matchId}|${d.resolution}|${d.occurredAt}`).sort(),
-      completenessByCategory,
-    };
-
-    const deterministicDigest = crypto
-      .createHash("sha256")
-      .update(JSON.stringify(deterministicInput))
-      .digest("hex");
-
-    return {
-      runId,
-      tenantId,
-      generatedAt: new Date().toISOString(),
-      summary: {
-        runStatus: run?.status ?? null,
-        matchCount: run?.matches.length ?? 0,
-        decisionCount: decisions.length,
-      },
-      lineage: graph,
-      decisions,
-      provenance: {
-        count: run?.provenance.length ?? 0,
-        complete: (run?.provenance.length ?? 0) > 0,
-        missingReasons: (run?.provenance.length ?? 0) > 0 ? [] : ["no_provenance_entries_for_run"],
-      },
-      completenessByCategory,
-      deterministicDigest,
-      exportMetadata: {
-        format: "json",
-        version: "v3",
-        missingBecause: Object.fromEntries(
-          Object.entries(completenessByCategory).map(([category, value]) => [
-            category,
-            value.reasons,
-          ])
-        ),
-        deterministicInputReferences: Object.keys(deterministicInput),
-      },
-    };
-  }
-
   async getPolicyEvolutionProposalDetail(
     tenantId: string,
     proposalId: string
@@ -2133,21 +1831,7 @@ export class ExceptionIntelligenceService {
   async getProposalHistory(
     tenantId: string,
     proposalId: string
-  ): Promise<{
-    proposalId: string;
-    tenantId: string;
-    generatedAt: string | null;
-    latestStatus: "pending_review" | "approved" | "rejected" | "deferred";
-    events: Array<{
-      action: string;
-      actorUserId: string | null;
-      occurredAt: string;
-      changes: Record<string, unknown>;
-      metadata: Record<string, unknown>;
-    }>;
-    degraded: boolean;
-    degradedReasons: string[];
-  } | null> {
+  ): Promise<ProposalHistoryResponse | null> {
     const events = await prisma.reconAudit.findMany({
       where: {
         tenantId,
@@ -2433,6 +2117,177 @@ export class ExceptionIntelligenceService {
       edges: dedupedEdges,
     };
   }
+
+  async getProofGraph(tenantId: string, runId: string): Promise<ProofGraphResponse> {
+    const run = await prisma.reconciliationRun.findFirst({
+      where: { id: runId, tenantId },
+      include: { matches: true, provenance: true },
+    });
+    if (!run) {
+      return {
+        runId,
+        tenantId,
+        degraded: true,
+        degradedReasons: ["run_not_found_or_not_scoped"],
+        nodes: [],
+        edges: [],
+      };
+    }
+
+    const nodes: ProofGraphResponse["nodes"] = [
+      {
+        id: `run:${run.id}`,
+        type: "run",
+        label: `Run ${run.id}`,
+        metadata: {
+          status: run.status,
+          startedAt: run.startedAt.toISOString(),
+          completedAt: run.completedAt?.toISOString() ?? null,
+        },
+      },
+    ];
+
+    const edges: ProofGraphResponse["edges"] = [];
+
+    for (const match of run.matches) {
+      nodes.push({
+        id: `match:${match.id}`,
+        type: "match",
+        label: `Match ${match.id}`,
+        metadata: {
+          matchType: match.matchType,
+          reviewed: match.reviewed,
+          confidence: Number(match.confidence),
+        },
+      });
+      edges.push({ from: `run:${run.id}`, to: `match:${match.id}`, relation: "produced" });
+    }
+
+    for (const provenance of run.provenance) {
+      nodes.push({
+        id: `provenance:${provenance.id}`,
+        type: "provenance",
+        label: provenance.eventType,
+        metadata: {
+          sequence: provenance.sequence,
+          actorType: provenance.actorType,
+          actorUserId: provenance.actorUserId,
+          entryHash: provenance.entryHash,
+          createdAt: provenance.createdAt.toISOString(),
+        },
+      });
+      edges.push({
+        from: `run:${run.id}`,
+        to: `provenance:${provenance.id}`,
+        relation: "recorded",
+      });
+      if (provenance.matchId) {
+        edges.push({
+          from: `match:${provenance.matchId}`,
+          to: `provenance:${provenance.id}`,
+          relation: "evidenced_by",
+        });
+      }
+    }
+
+    const degradedReasons = run.provenance.length === 0 ? ["missing_run_provenance"] : [];
+    return { runId, tenantId, degraded: degradedReasons.length > 0, degradedReasons, nodes, edges };
+  }
+
+  async buildEvidencePack(tenantId: string, runId: string): Promise<EvidencePack> {
+    const [graph, run] = await Promise.all([
+      this.getProofGraph(tenantId, runId),
+      prisma.reconciliationRun.findFirst({
+        where: { id: runId, tenantId },
+        include: { matches: true, provenance: { orderBy: { sequence: "asc" } } },
+      }),
+    ]);
+
+    const decisions: AdjudicationEvent[] = (run?.matches ?? [])
+      .filter((m) => m.reviewed)
+      .map((m) => ({
+        matchId: m.id,
+        runId,
+        resolution: decisionForMatch(m.matchReason),
+        actorId: m.reviewedBy,
+        occurredAt: m.reviewedAt?.toISOString() ?? m.updatedAt.toISOString(),
+        notes: m.matchReason,
+      }));
+
+    const completenessByCategory = {
+      runLineage: {
+        complete: graph.nodes.some((node) => node.type === "run"),
+        degraded: !graph.nodes.some((node) => node.type === "run"),
+        reasons: graph.nodes.some((node) => node.type === "run") ? [] : ["missing_run_node"],
+      },
+      matchLineage: {
+        complete: graph.nodes.some((node) => node.type === "match"),
+        degraded: !graph.nodes.some((node) => node.type === "match"),
+        reasons: graph.nodes.some((node) => node.type === "match") ? [] : ["missing_match_nodes"],
+      },
+      operatorDecisionLineage: {
+        complete: decisions.length > 0,
+        degraded: decisions.length === 0,
+        reasons: decisions.length > 0 ? [] : ["no_operator_decisions"],
+      },
+      proposalPackLineage: {
+        complete: false,
+        degraded: true,
+        reasons: ["proposal_pack_linkage_not_available_for_run"],
+      },
+      provenanceRecords: {
+        complete: (run?.provenance.length ?? 0) > 0,
+        degraded: (run?.provenance.length ?? 0) === 0,
+        reasons: (run?.provenance.length ?? 0) > 0 ? [] : ["no_provenance_entries_for_run"],
+      },
+    };
+
+    const deterministicInput = {
+      tenantId,
+      runId,
+      nodes: graph.nodes.map((node) => node.id).sort(),
+      edges: graph.edges.map((edge) => `${edge.from}|${edge.relation}|${edge.to}`).sort(),
+      decisions: decisions.map((d) => `${d.matchId}|${d.resolution}|${d.occurredAt}`).sort(),
+      completenessByCategory,
+    };
+
+    const deterministicDigest = crypto
+      .createHash("sha256")
+      .update(JSON.stringify(deterministicInput))
+      .digest("hex");
+
+    return {
+      runId,
+      tenantId,
+      generatedAt: new Date().toISOString(),
+      summary: {
+        runStatus: run?.status ?? null,
+        matchCount: run?.matches.length ?? 0,
+        decisionCount: decisions.length,
+      },
+      lineage: graph,
+      decisions,
+      provenance: {
+        count: run?.provenance.length ?? 0,
+        complete: (run?.provenance.length ?? 0) > 0,
+        missingReasons: (run?.provenance.length ?? 0) > 0 ? [] : ["no_provenance_entries_for_run"],
+      },
+      completenessByCategory,
+      deterministicDigest,
+      exportMetadata: {
+        format: "json",
+        version: "v3",
+        missingBecause: Object.fromEntries(
+          Object.entries(completenessByCategory).map(([category, value]) => [
+            category,
+            value.reasons,
+          ])
+        ),
+        deterministicInputReferences: Object.keys(deterministicInput),
+      },
+    };
+  }
+
   async simulatePolicy(
     tenantId: string,
     input: PolicySandboxRequest

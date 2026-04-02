@@ -299,6 +299,8 @@
     "db:reconcile:preview": "bash scripts/run-preview-reconciliation.sh dry-run",
     "verify:env:required": "node scripts/verify-env-contract.mjs required",
     "verify:env:parity": "node scripts/verify-env-contract.mjs parity",
+    "verify:env:ownership": "node scripts/verify-env-contract.mjs ownership",
+    "verify:env:contract": "pnpm run verify:env:required && pnpm run verify:env:parity && pnpm run verify:env:ownership",
     "verify:env:trace": "node scripts/verify-env-contract.mjs trace",
     "audit:env:resolution": "node scripts/generate-env-resolution-audit.mjs",
     "audit:migrations": "node scripts/generate-migration-audit.mjs",

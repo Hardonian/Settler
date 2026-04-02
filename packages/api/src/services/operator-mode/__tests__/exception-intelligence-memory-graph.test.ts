@@ -5,6 +5,12 @@ jest.mock("../../../infrastructure/db/prisma", () => ({
     reconciliationMatch: { findMany: jest.fn() },
     reconciliationRun: { findFirst: jest.fn() },
     reconAudit: { findFirst: jest.fn(), findMany: jest.fn(), create: jest.fn() },
+    policyEvolutionProposal: {
+      findMany: jest.fn(),
+      upsert: jest.fn(),
+    },
+    policyEvolutionProposalReview: { findMany: jest.fn() },
+    policyMemoryArtifact: { upsert: jest.fn(), findMany: jest.fn() },
   },
 }));
 
@@ -13,7 +19,20 @@ const { prisma } = require("../../../infrastructure/db/prisma");
 describe("ExceptionIntelligenceService memory graph", () => {
   const service = new ExceptionIntelligenceService();
 
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => {
+    jest.resetAllMocks();
+    prisma.policyEvolutionProposal.upsert.mockResolvedValue({
+      id: "proposal-row-1",
+      proposalKey: "proposal-1",
+      signatureKey: "aaaaaaaaaaaaaaaaaaaa",
+      status: "pending_review",
+      createdAt: new Date("2026-03-29T00:00:00Z"),
+    });
+    prisma.policyEvolutionProposal.findMany.mockResolvedValue([]);
+    prisma.policyEvolutionProposalReview.findMany.mockResolvedValue([]);
+    prisma.policyMemoryArtifact.upsert.mockResolvedValue({});
+    prisma.policyMemoryArtifact.findMany.mockResolvedValue([]);
+  });
 
   it("builds a tenant-scoped memory graph with proposal review lineage", async () => {
     prisma.reconciliationMatch.findMany.mockResolvedValue([
@@ -86,65 +105,64 @@ describe("ExceptionIntelligenceService memory graph", () => {
     ]);
 
     prisma.reconAudit.findFirst.mockResolvedValue(null);
-    prisma.reconAudit.findMany
-      .mockResolvedValueOnce([
-        {
-          tenantId: "tenant-1",
-          entityId: "proposal-1",
-          action: "proposal_generated",
-          createdAt: new Date("2026-03-29T00:00:00Z"),
-          afterState: {
-            signature: {
-              signature: "09f0ef31ce6d2dc6b38d",
-              construction: {
-                matchType: "unmatched",
-                category: "payments",
-                currency: "USD",
-                reason: "amount variance",
-                rationaleCodes: ["LOW_CONFIDENCE"],
-              },
-            },
-            volume: 3,
-            openCount: 2,
-            resolvedCount: 1,
-            lowConfidenceCount: 3,
-            adjudicationMix: { open: 2, manual: 1 },
-            sourceIds: ["src-1"],
-            counterpartyKeys: ["cp-1"],
-          },
+    prisma.policyEvolutionProposal.upsert.mockResolvedValue({
+      id: "proposal-row-1",
+      proposalKey: "proposal-1",
+      signatureKey: "aaaaaaaaaaaaaaaaaaaa",
+      status: "pending_review",
+      createdAt: new Date("2026-03-29T00:00:00Z"),
+    });
+    prisma.policyEvolutionProposal.findMany.mockResolvedValue([
+      {
+        id: "proposal-row-1",
+        proposalKey: "proposal-1",
+        signatureKey: "aaaaaaaaaaaaaaaaaaaa",
+        status: "pending_review",
+        generatedAt: new Date("2026-03-29T00:00:00Z"),
+        why: "test",
+        historicalBasis: {
+          supportCount: 3,
+          lookbackDays: 30,
+          openCount: 2,
+          resolvedCount: 1,
+          lowConfidenceCount: 2,
+          adjudicationMix: {},
         },
-      ])
-      .mockResolvedValueOnce([
-        {
-          tenantId: "tenant-1",
-          entityId: "proposal-1",
-          action: "proposal_reviewed",
-          userId: "reviewer-1",
-          changes: { decision: "approved", reason: "strong repeated support" },
-          metadata: {},
-          createdAt: new Date("2026-03-29T01:00:00Z"),
+        affectedScope: { sourceIds: ["src-1"], counterpartyKeys: ["cp-1"] },
+        estimatedImpact: {
+          expectedManualReviewReduction: null,
+          expectedOpenExceptionChange: null,
         },
-      ])
-      .mockResolvedValueOnce([
-        {
-          tenantId: "tenant-1",
-          entityId: "proposal-1",
-          action: "proposal_generated",
-          userId: null,
-          changes: {},
-          metadata: {},
-          createdAt: new Date("2026-03-29T00:00:00Z"),
-        },
-        {
-          tenantId: "tenant-1",
-          entityId: "proposal-1",
-          action: "proposal_reviewed",
-          userId: "reviewer-1",
-          changes: { decision: "approved", reason: "strong repeated support" },
-          metadata: {},
-          createdAt: new Date("2026-03-29T01:00:00Z"),
-        },
-      ]);
+        unsupportedMetrics: ["false_positive_rate"],
+        riskFlags: [],
+        dataSufficiency: "limited",
+        createdAt: new Date("2026-03-29T00:00:00Z"),
+        reviews: [],
+      },
+    ]);
+    prisma.policyEvolutionProposalReview.findMany.mockResolvedValue([]);
+    prisma.policyMemoryArtifact.upsert.mockResolvedValue({});
+    prisma.policyMemoryArtifact.findMany.mockResolvedValue([]);
+    prisma.reconAudit.findMany.mockResolvedValue([
+      {
+        tenantId: "tenant-1",
+        entityId: "proposal-1",
+        action: "proposal_generated",
+        userId: null,
+        changes: {},
+        metadata: {},
+        createdAt: new Date("2026-03-29T00:00:00Z"),
+      },
+      {
+        tenantId: "tenant-1",
+        entityId: "proposal-1",
+        action: "proposal_reviewed",
+        userId: "reviewer-1",
+        changes: { decision: "approved", reason: "strong repeated support" },
+        metadata: {},
+        createdAt: new Date("2026-03-29T01:00:00Z"),
+      },
+    ]);
 
     const graph = await service.getReconciliationMemoryGraph("tenant-1", 30);
 

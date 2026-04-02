@@ -101,6 +101,54 @@ function runParityCheck() {
   if (failed) process.exit(1);
 }
 
+function runOwnershipCheck() {
+  let failed = false;
+  for (const variable of manifest.variables) {
+    const hasPublicPrefix = variable.name.startsWith("NEXT_PUBLIC_");
+    if (variable.surface === "public" && !hasPublicPrefix) {
+      console.log(
+        `❌ ownership drift: ${variable.name} marked public but missing NEXT_PUBLIC_ prefix`
+      );
+      failed = true;
+    }
+    if (variable.surface === "server" && hasPublicPrefix) {
+      console.log(
+        `❌ ownership drift: ${variable.name} marked server but uses NEXT_PUBLIC_ prefix`
+      );
+      failed = true;
+    }
+  }
+
+  const secretLeakDenylist = [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "DATABASE_URL",
+    "SUPABASE_DATABASE_URL",
+    "SUPABASE_DB_URL",
+    "DIRECT_URL",
+    "JWT_SECRET",
+    "JWT_REFRESH_SECRET",
+    "ENCRYPTION_KEY",
+    "STRIPE_SECRET_KEY",
+    "STRIPE_WEBHOOK_SECRET",
+    "RESEND_API_KEY",
+    "OPENAI_API_KEY",
+  ];
+
+  const leakedSecrets = secretLeakDenylist.filter((name) => hasValue(`NEXT_PUBLIC_${name}`));
+
+  if (leakedSecrets.length > 0) {
+    failed = true;
+    for (const leaked of leakedSecrets) {
+      console.log(`❌ secret leak: NEXT_PUBLIC_${leaked} should not be set`);
+    }
+  }
+
+  if (!failed) {
+    console.log("✅ ownership model check passed");
+  }
+  if (failed) process.exit(1);
+}
+
 function runTrace() {
   console.log("## env trace: root process");
   for (const name of tracked) printStatus(name);
@@ -141,7 +189,8 @@ const mode = process.argv[2] || "required";
 if (mode === "required") runRequiredCheck();
 else if (mode === "parity") runParityCheck();
 else if (mode === "trace") runTrace();
+else if (mode === "ownership") runOwnershipCheck();
 else {
-  console.error("Usage: node scripts/verify-env-contract.mjs [required|parity|trace]");
+  console.error("Usage: node scripts/verify-env-contract.mjs [required|parity|trace|ownership]");
   process.exit(1);
 }
