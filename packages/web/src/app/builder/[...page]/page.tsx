@@ -96,7 +96,8 @@ export default async function BuilderCatchAllPage({ params }: PageProps) {
 
     // Render the Builder.io content
     const { BuilderComponent } = await import("@builder.io/react");
-    return <BuilderComponent content={content} model={builderModels.page} apiKey={apiKey} />;
+    const Builder = BuilderComponent as unknown as React.ElementType;
+    return <Builder content={content} model={builderModels.page} apiKey={apiKey} />;
   } catch {
     notFound();
   }

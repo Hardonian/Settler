@@ -28,6 +28,7 @@
     "Merkle",
     "mjmk",
     "modelcontextprotocol",
+    "msgpackr",
     "mypy",
     "networkidle",
     "nums",

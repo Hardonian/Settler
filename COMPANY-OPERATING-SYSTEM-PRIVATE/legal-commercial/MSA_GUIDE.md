@@ -1,4 +1,4 @@
-# MSA Guide — Enterprise Contract Process
+# MSA Process Guide
 
 **Status:** ✅ Active  
 **Last Updated:** 2026-04-02  
@@ -8,141 +8,264 @@
 
 ## When to Use MSA
 
-Use MSA for Enterprise customers requiring:
+**Use MSA when:**
 
-- Custom contract terms
-- Negotiated SLAs
-- Volume discounts
-- Custom integrations
-- Extended payment terms
-- Legal review
+- Enterprise customer requests custom contract
+- Multi-year commitment required
+- Custom SLA terms needed
+- Custom pricing negotiated
+- Security review required
+- Custom integrations planned
 
-**For pilots:** Use `PILOT_GUIDE.md`
+**Don't use MSA for:**
 
----
-
-## MSA Process
-
-### Stage 1: Discovery
-
-1. **Understand requirements**
-   - What do they need?
-   - What's their timeline?
-   - Who has signing authority?
-   - Legal review required?
-
-2. **Gather information**
-   - Company name
-   - Entity type
-   - Billing address
-   - Technical contacts
-   - Legal contacts
-
-### Stage 2: Proposal
-
-1. **Draft Order Form**
-   - Services included
-   - Pricing
-   - Term (typically 1-2 years)
-   - SLA commitments
-   - Support level
-
-2. **Send MSA + Order Form**
-   - Use `/LEGAL/MSA_TEMPLATE.md` as base
-   - Customize for deal specifics
-   - Track redlines
-
-### Stage 3: Negotiation
-
-1. **Common negotiation points**
-   - Payment terms (net-30 vs net-60)
-   - Liability caps
-   - Indemnification scope
-   - Termination rights
-   - SLA credits
-
-2. **Decision matrix**
-   | Item | Walk-away | Target | Ideal |
-   |------|----------|--------|-------|
-   | Payment | Net-30 | Net-30 | Net-30 + prepay discount |
-   | Liability | 12 months fees | 12 months fees | 12 months fees |
-   | IP | Standard | Standard | Standard |
-   | Term | 1 year | 1 year | 2 year |
-   | Discount | 0% | 15% | 25% |
-
-3. **Approval workflow**
-   - <$3K/month: Founder approval
-   - $3K-10K/month: Founder + Legal
-   - > $10K/month: Full review
-
-### Stage 4: Signature
-
-1. **Final documents**
-   - MSA with redlines resolved
-   - Order Form
-   - DPA (if EU customer)
-
-2. **Signature process**
-   - Digital signature (DocuSign or similar)
-   - Both parties signed
-   - Executed copy to both parties
-
-3. **Post-signature**
-   - Provision account
-   - Set up billing
-   - Schedule kickoff
-   - Add to enterprise tracking
+- Standard self-service sales (ToS only)
+- Pilot agreements (use pilot template)
 
 ---
 
-## Key MSA Terms
+## MSA Process Overview
 
-### Standard Terms (Non-Negotiable)
+```
+Discovery → Proposal → Negotiation → Legal Review → Signature → Onboarding
+    ↓           ↓            ↓             ↓            ↓          ↓
+  1 week     1 week       1-2 weeks     1-2 weeks   1 week    1 week
+```
 
-- IP ownership (our IP)
-- Data ownership (customer data)
-- Confidentiality
-- Indemnification mutual
-- Governing law (Delaware)
-
-### Negotiable Terms
-
-- Payment terms
-- Liability caps
-- SLA credits
-- Support level
-- Training included
-
-### Anti-Negotiables (Don't Give)
-
-- Data ownership
-- IP ownership
-- Governing law
-- Basic SLA commitment
+**Typical Timeline:** 4-8 weeks from first contact to signed MSA
 
 ---
 
-## Common Redlines
+## Stage 1: Discovery
 
-### Customer asks for X
+### Objectives
 
-| Redline                   | Our Response                           |
-| ------------------------- | -------------------------------------- |
-| Net-60 payment            | Net-30 standard, net-60 for >$5K/month |
-| Unlimited liability       | Cap at 12 months fees                  |
-| Source code escrow        | Not available now                      |
-| Most favored nation       | Not available                          |
-| Auto-renewal cancellation | 30-day notice standard                 |
-| Unlimited SLA credits     | 10% credit cap per month               |
+1. Understand customer needs
+2. Assess fit for MSA track
+3. Identify custom requirements
+4. Qualify budget authority
+
+### Discovery Questions
+
+- What volume of transactions?
+- How many entities?
+- What integrations needed?
+- What SLAs are required?
+- What compliance requirements?
+- Decision timeline?
+- Budget authority?
+
+### Output
+
+- Customer qualification score
+- Initial pricing estimate
+- Custom requirements list
+- Decision timeline
+
+---
+
+## Stage 2: Proposal
+
+### Components
+
+1. **Solution overview** — How Settler addresses their needs
+2. **Pricing** — Based on requirements
+3. **Timeline** — Implementation and commitment
+4. **Terms summary** — Key commercial terms
+5. **Next steps** — Process explanation
+
+### Pricing Guidelines
+
+See `../pricing/00_PRICING_CANONICAL.md` for baseline.
+
+**Enterprise Pricing Formula:**
+
+```
+Base: $1,000-10,000/month (based on volume)
++ Custom integrations: $500-5,000 (one-time)
++ Dedicated support: $500-2,000/month
++ Custom SLAs: Included
+= Total Enterprise ACV
+```
+
+### Proposal Template
+
+```markdown
+# Enterprise Proposal
+
+**Customer:** [Name]
+**Date:** [Date]
+**Validity:** 30 days
+
+## Proposed Solution
+
+[Customized description]
+
+## Pricing
+
+| Component           | Price   |
+| ------------------- | ------- |
+| Base platform       | $X/mo   |
+| Custom integrations | $X      |
+| Dedicated support   | $X/mo   |
+| Training            | $X      |
+| **Annual Total**    | **$XX** |
+
+## Term
+
+- 1 year with automatic renewal
+- Net-30 payment terms
+
+## Next Steps
+
+1. Legal review (2 weeks)
+2. Contract negotiation (1-2 weeks)
+3. Signature
+4. Onboarding begins
+```
+
+---
+
+## Stage 3: Negotiation
+
+### Common Negotiation Points
+
+| Customer Request    | Standard Response  | Acceptable Range      |
+| ------------------- | ------------------ | --------------------- |
+| Multi-year discount | 10% for 2 years    | 10-15%                |
+| Net-60 terms        | Net-30 standard    | Net-45 max            |
+| Lower liability cap | 12 months standard | 6-24 months           |
+| Custom SLA          | 99.99% standard    | 99.9-99.999%          |
+| Training included   | Available extra    | Up to 3 days included |
+
+### Negotiation Principles
+
+1. **Trade, don't give** — Every concession has a cost
+2. **Know your limits** — Non-negotiables defined below
+3. **Document everything** — Verbal agreements must be written
+
+### Non-Negotiables
+
+- Liability cap cannot be removed
+- Governing law is Delaware
+- SOC 2 compliance requirements
+- Data privacy protections
+
+---
+
+## Stage 4: Legal Review
+
+### Review Requirements
+
+1. **Founder review** — All custom terms
+2. **Legal counsel** — Liability changes, IP terms, unusual requests
+3. **Customer legal** — Their redlines
+
+### Common Redlines
+
+| Customer Redline     | Settler Position | Resolution                  |
+| -------------------- | ---------------- | --------------------------- |
+| Remove liability cap | Reject           | Cap at 12 months            |
+| Add audit rights     | Negotiate        | Annual audit, 30-day notice |
+| Change governing law | Reject           | Delaware or mutual          |
+| Remove IP carveout   | Reject           | Maintain IP protections     |
+| Unlimited support    | Reject           | Tiered support              |
+
+### Review Timeline
+
+- Initial review: 3-5 business days
+- Counter-review: 2-3 business days
+- Final approval: 1-2 business days
+
+---
+
+## Stage 5: Signature
+
+### Pre-Signature Checklist
+
+- [ ] All terms agreed
+- [ ] Pricing confirmed
+- [ ] Legal counsel approved
+- [ ] Insurance in place
+- [ ] Order form complete
+- [ ] Signatures arranged
+
+### Signature Process
+
+1. Clean version to both parties
+2. CEO/Founder signature
+3. Customer signature
+4. Exchange fully executed copies
+5. Archive in `/contracts/enterprise/`
+
+---
+
+## Stage 6: Onboarding
+
+### Post-Signature Steps
+
+1. **Notify team** — Sales, engineering, support
+2. **Create account** — Enterprise tier provisioning
+3. **Set up billing** — Custom invoice schedule
+4. **Kickoff meeting** — Timeline and contacts
+5. **Implementation plan** — Technical onboarding
+
+### Handoff to Customer Success
+
+- Contract summary
+- Customer contacts
+- Special terms
+- SLA start date
+- Support tier
+
+---
+
+## Enterprise Deal Checklist
+
+### Qualification
+
+- [ ] Decision maker identified
+- [ ] Budget confirmed
+- [ ] Timeline understood
+- [ ] Compliance requirements known
+- [ ] Technical fit confirmed
+
+### Proposal
+
+- [ ] Custom proposal created
+- [ ] Pricing approved by founder
+- [ ] Proposal sent
+- [ ] Follow-up scheduled
+
+### Negotiation
+
+- [ ] Redlines received
+- [ ] Counter-proposal sent
+- [ ] Terms agreed
+- [ ] Legal involved
+
+### Legal
+
+- [ ] MSA drafted
+- [ ] Legal review complete
+- [ ] Final terms locked
+- [ ] Signatures arranged
+
+### Close
+
+- [ ] Contracts signed
+- [ ] Deposit received (if required)
+- [ ] Team notified
+- [ ] Onboarding started
 
 ---
 
 ## Related Documents
 
-| Document                                  | Purpose                |
-| ----------------------------------------- | ---------------------- |
-| `/LEGAL/MSA_TEMPLATE.md`                  | MSA template           |
-| `/LEGAL/DPA_TEMPLATE.md`                  | DPA template           |
-| `/LEGAL/PILOT_AGREEMENT_TEMPLATE.md`      | Pilot template         |
-| `PILOT_GUIDE.md`                          | Pilot process          |
-| `../runbooks/FIRST_ENTERPRISE_RUNBOOK.md` | First enterprise guide |
+| Document                               | Purpose            |
+| -------------------------------------- | ------------------ |
+| `/LEGAL/MSA_TEMPLATE.md`               | MSA template       |
+| `TERMS_REFERENCE.md`                   | Terms summary      |
+| `PILOT_GUIDE.md`                       | Pilot process      |
+| `../pricing/00_PRICING_CANONICAL.md`   | Enterprise pricing |
+| `../onboarding/CUSTOMER_ONBOARDING.md` | Onboarding guide   |

