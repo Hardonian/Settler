@@ -50,6 +50,7 @@
     "proofpacks",
     "psql",
     "pytest",
+    "RACI",
     "rediss",
     "regclass",
     "replayable",

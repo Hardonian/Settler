@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -20,11 +20,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version-file: ".nvmrc"
+          cache: "pnpm"
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Initialize Billing System
         run: npx tsx scripts/init-billing-system.ts

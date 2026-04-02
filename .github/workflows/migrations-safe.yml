@@ -4,24 +4,24 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Environment to apply migrations'
+        description: "Environment to apply migrations"
         required: true
-        default: 'staging'
+        default: "staging"
         type: choice
         options:
           - staging
           - production
       dry_run:
-        description: 'Dry run (validate only, do not apply)'
+        description: "Dry run (validate only, do not apply)"
         required: false
-        default: 'false'
+        default: "false"
         type: boolean
 
 jobs:
   validate-migrations:
     name: Validate Migrations
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -29,7 +29,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version-file: ".nvmrc"
 
       - name: Install PostgreSQL client
         run: |
@@ -43,7 +43,7 @@ jobs:
         run: |
           echo "Validating migration syntax..."
           export PGPASSWORD="$SUPABASE_DB_PASSWORD"
-          
+
           # Validate each migration file
           for migration in supabase/migrations/*.sql; do
             echo "Validating: $(basename $migration)"
@@ -56,7 +56,7 @@ jobs:
             }
             echo "✓ $(basename $migration) syntax is valid"
           done
-          
+
           echo "✅ All migrations validated successfully"
 
   apply-migrations:
@@ -65,7 +65,7 @@ jobs:
     needs: validate-migrations
     environment: ${{ github.event.inputs.environment }}
     if: github.event.inputs.dry_run != 'true'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -73,7 +73,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version-file: ".nvmrc"
 
       - name: Install PostgreSQL client
         run: |
@@ -87,10 +87,10 @@ jobs:
         run: |
           echo "Applying migrations to ${{ github.event.inputs.environment }}..."
           export PGPASSWORD="$SUPABASE_DB_PASSWORD"
-          
+
           # Get list of migration files sorted by name
           MIGRATIONS=$(ls -1 supabase/migrations/*.sql | sort)
-          
+
           for migration in $MIGRATIONS; do
             migration_name=$(basename $migration)
             echo "📦 Applying: $migration_name"
@@ -104,7 +104,7 @@ jobs:
             
             echo "✅ Applied: $migration_name"
           done
-          
+
           echo "🎉 All migrations applied successfully!"
 
       - name: Verify migrations
@@ -114,7 +114,7 @@ jobs:
         run: |
           echo "Verifying migrations..."
           export PGPASSWORD="$SUPABASE_DB_PASSWORD"
-          
+
           psql "$SUPABASE_DB_URL" -c "
             SELECT 
               'receipts' as table_name,

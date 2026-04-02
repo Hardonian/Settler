@@ -70,6 +70,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
+    "pretest": "cd ../.. && node scripts/assert-node-version.mjs",
     "prebuild": "cd ../.. && node scripts/assert-node-version.mjs && pnpm run prisma:generate && pnpm --filter @settler/reconciliation-core run build",
     "pretypecheck": "cd ../.. && node scripts/assert-node-version.mjs && pnpm run prisma:generate && pnpm --filter @settler/reconciliation-core run build",
     "build": "tsc --skipLibCheck --noEmit false",

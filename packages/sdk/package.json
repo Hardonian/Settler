@@ -42,6 +42,9 @@
     "MIGRATION.md"
   ],
   "scripts": {
+    "prebuild": "cd ../.. && node scripts/assert-node-version.mjs",
+    "pretest": "cd ../.. && node scripts/assert-node-version.mjs",
+    "pretypecheck": "cd ../.. && node scripts/assert-node-version.mjs",
     "build": "tsc",
     "dev": "tsc --watch",
     "test": "jest",

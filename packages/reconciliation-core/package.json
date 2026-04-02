@@ -13,6 +13,9 @@
     "./package.json": "./package.json"
   },
   "scripts": {
+    "prebuild": "cd ../.. && node scripts/assert-node-version.mjs",
+    "pretest": "cd ../.. && node scripts/assert-node-version.mjs",
+    "pretypecheck": "cd ../.. && node scripts/assert-node-version.mjs",
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
