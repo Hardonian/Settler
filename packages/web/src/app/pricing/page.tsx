@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, ArrowRight, Zap, Shield, Globe } from "lucide-react";
 import Link from "next/link";
+import { VisualGrid } from "@/components/site/infographics";
 
 export const metadata = {
   title: "Pricing | Settler",
@@ -84,60 +85,60 @@ export default function PricingPage() {
         <div className="mx-auto max-w-7xl">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
             {plans.map((plan) => (
-            <Card
-              key={plan.name}
-              className={`relative flex h-full flex-col border-border/40 transition-all duration-300 hover:shadow-xl motion-reduce:transition-none motion-reduce:hover:translate-y-0 hover:-translate-y-1 ${plan.popular ? "border-primary shadow-lg ring-1 ring-primary/20" : ""}`}
-            >
-              {plan.popular && (
-                <div className="absolute top-0 right-1/2 translate-x-1/2 -translate-y-1/2 px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-xs font-bold uppercase tracking-widest shadow-lg">
-                  Most Popular
-                </div>
-              )}
-
-              <CardHeader className="p-8">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="p-2 rounded-lg bg-primary/10 text-primary">
-                    <plan.icon className="h-5 w-5" />
+              <Card
+                key={plan.name}
+                className={`relative flex h-full flex-col border-border/40 transition-all duration-300 hover:shadow-xl motion-reduce:transition-none motion-reduce:hover:translate-y-0 hover:-translate-y-1 ${plan.popular ? "border-primary shadow-lg ring-1 ring-primary/20" : ""}`}
+              >
+                {plan.popular && (
+                  <div className="absolute top-0 right-1/2 translate-x-1/2 -translate-y-1/2 px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-xs font-bold uppercase tracking-widest shadow-lg">
+                    Most Popular
                   </div>
-                  <CardTitle className="text-xl font-bold">{plan.name}</CardTitle>
-                </div>
-                <div className="flex items-baseline gap-1 mt-2">
-                  <span className="text-4xl font-bold tracking-tight">{plan.price}</span>
-                  {plan.period && (
-                    <span className="text-sm font-medium text-muted-foreground">{plan.period}</span>
-                  )}
-                </div>
-                <CardDescription className="mt-4 leading-relaxed font-medium min-h-[3rem]">
-                  {plan.description}
-                </CardDescription>
-              </CardHeader>
+                )}
 
-              <CardContent className="flex-1 flex flex-col p-8 pt-0">
-                <div className="space-y-4 mb-8 flex-1">
-                  {plan.features.map((feature) => (
-                    <div key={feature} className="flex items-start gap-3">
-                      <div className="mt-1 rounded-full bg-primary/10 p-1">
-                        <Check className="h-3 w-3 text-primary" />
-                      </div>
-                      <span className="text-sm font-medium text-foreground">
-                        {feature}
-                      </span>
+                <CardHeader className="p-8">
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                      <plan.icon className="h-5 w-5" />
                     </div>
-                  ))}
-                </div>
+                    <CardTitle className="text-xl font-bold">{plan.name}</CardTitle>
+                  </div>
+                  <div className="flex items-baseline gap-1 mt-2">
+                    <span className="text-4xl font-bold tracking-tight">{plan.price}</span>
+                    {plan.period && (
+                      <span className="text-sm font-medium text-muted-foreground">
+                        {plan.period}
+                      </span>
+                    )}
+                  </div>
+                  <CardDescription className="mt-4 leading-relaxed font-medium min-h-[3rem]">
+                    {plan.description}
+                  </CardDescription>
+                </CardHeader>
 
-                <Button
-                  asChild
-                  variant={plan.popular ? "default" : "outline"}
-                  className={`w-full h-12 font-bold group ${plan.popular ? "text-lg" : ""}`}
-                >
-                  <Link href={plan.href} className="flex items-center justify-center gap-2">
-                    {plan.cta}
-                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
+                <CardContent className="flex-1 flex flex-col p-8 pt-0">
+                  <div className="space-y-4 mb-8 flex-1">
+                    {plan.features.map((feature) => (
+                      <div key={feature} className="flex items-start gap-3">
+                        <div className="mt-1 rounded-full bg-primary/10 p-1">
+                          <Check className="h-3 w-3 text-primary" />
+                        </div>
+                        <span className="text-sm font-medium text-foreground">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <Button
+                    asChild
+                    variant={plan.popular ? "default" : "outline"}
+                    className={`w-full h-12 font-bold group ${plan.popular ? "text-lg" : ""}`}
+                  >
+                    <Link href={plan.href} className="flex items-center justify-center gap-2">
+                      {plan.cta}
+                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
@@ -181,6 +182,10 @@ export default function PricingPage() {
             </div>
           </div>
         </div>
+      </Section>
+
+      <Section className="bg-muted/10">
+        <VisualGrid />
       </Section>
 
       <CTASection

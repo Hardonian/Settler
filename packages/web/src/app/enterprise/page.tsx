@@ -61,7 +61,7 @@ const narrativeSections = [
     description:
       "Manual reconciliation does not scale. As transaction volume grows, the failure surface expands. Deterministic automation reduces that surface by replacing probabilistic matching with inspectable, rules-based logic. Every variance is traceable. Every rule path is auditable.",
     icon: Target,
-    visual: "https://images.pexels.com/photos/17483870/pexels-photo-17483870.png",
+    visual: "/hero_abstract_reconciliation.png",
     visualAlt: "Abstract data flow representing deterministic reconciliation pipeline architecture",
   },
   {
@@ -70,7 +70,7 @@ const narrativeSections = [
     description:
       "Settler uses AI-assisted review to surface patterns and compress exception triage time. It does not replace human judgment. Every flagged variance includes evidence and confidence context. Final decisions remain with operators who understand the business context.",
     icon: Eye,
-    visual: "https://images.pexels.com/photos/17485657/pexels-photo-17485657.png",
+    visual: "/ai_review_nodes_3d.png",
     visualAlt:
       "Abstract visualization representing AI-assisted review layer with human oversight nodes",
   },
@@ -141,9 +141,9 @@ export default function EnterprisePage() {
                 className="absolute inset-0 bg-blue-500/10 blur-3xl rounded-full"
                 aria-hidden="true"
               />
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-border border-border">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-border">
                 <Image
-                  src="https://images.pexels.com/photos/25626439/pexels-photo-25626439.jpeg"
+                  src="/enterprise_arch_3d.png"
                   alt="Enterprise architecture visualization representing institutional-grade reconciliation infrastructure"
                   width={600}
                   height={400}
@@ -173,10 +173,7 @@ export default function EnterprisePage() {
             {enterpriseCapabilities.map((feature, index) => {
               const Icon = feature.icon;
               return (
-                <SpotlightCard
-                  key={index}
-                  className="p-6 md:p-8 border-border border-border"
-                >
+                <SpotlightCard key={index} className="p-6 md:p-8 border border-border">
                   <div className="w-12 h-12 bg-muted/40 dark:bg-card rounded-xl flex items-center justify-center mb-6">
                     <Icon
                       className="w-6 h-6 text-foreground dark:text-muted-foreground"
@@ -284,7 +281,7 @@ export default function EnterprisePage() {
               return (
                 <div
                   key={idx}
-                  className="p-6 md:p-8 bg-card dark:bg-background rounded-2xl border border-border border-border"
+                  className="p-6 md:p-8 bg-card dark:bg-background rounded-2xl border border-border"
                 >
                   <Icon
                     className="w-8 h-8 text-foreground dark:text-muted-foreground mx-auto mb-4"
@@ -328,13 +325,15 @@ export default function EnterprisePage() {
             ].map((item, idx) => (
               <div
                 key={idx}
-                className="p-6 bg-muted/20 dark:bg-card/50 rounded-xl border border-border border-border"
+                className="p-6 bg-muted/20 dark:bg-card/50 rounded-xl border border-border"
               >
                 <CheckCircle
                   className="w-8 h-8 text-foreground dark:text-muted-foreground mx-auto mb-4"
                   aria-hidden="true"
                 />
-                <p className="text-sm text-muted-foreground dark:text-muted-foreground leading-relaxed">{item}</p>
+                <p className="text-sm text-muted-foreground dark:text-muted-foreground leading-relaxed">
+                  {item}
+                </p>
               </div>
             ))}
           </div>
@@ -354,12 +353,15 @@ export default function EnterprisePage() {
                 <span className="text-xs font-semibold text-foreground dark:text-muted-foreground">
                   {badge.label}
                 </span>
-                <span className="text-xs text-muted-foreground dark:text-muted-foreground">{badge.sublabel}</span>
+                <span className="text-xs text-muted-foreground dark:text-muted-foreground">
+                  {badge.sublabel}
+                </span>
               </div>
             ))}
           </div>
           <p className="text-xs text-muted-foreground dark:text-muted-foreground mt-6 max-w-lg mx-auto">
-            Architecture alignment does not constitute certification. Review your deployment configuration and consult your compliance team for your audit requirements.
+            Architecture alignment does not constitute certification. Review your deployment
+            configuration and consult your compliance team for your audit requirements.
           </p>
         </div>
       </section>

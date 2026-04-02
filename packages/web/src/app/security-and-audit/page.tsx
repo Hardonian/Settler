@@ -1,21 +1,13 @@
 import { Metadata } from "next";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { Section } from "@/components/marketing/Section";
+import { Section, PageHero } from "@/components/site/primitives";
 import { FeatureList } from "@/components/marketing/FeatureList";
 import { Button } from "@/components/ui/button";
 import { UiLink } from "@/components/ui/link";
 import { RealityEvidencePanel } from "@/components/RealityEvidencePanel";
-import {
-  ShieldCheck,
-  Lock,
-  Eye,
-  FileText,
-  Server,
-  KeyRound,
-  BadgeCheck,
-  ArrowRight,
-} from "lucide-react";
+import { EvidenceArtifactPreview, VisualGrid } from "@/components/site/infographics";
+import { ShieldCheck, Lock, Eye, FileText, Server, KeyRound, ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Security & Audit - Settler",
@@ -103,43 +95,27 @@ const complianceItems = [
 
 export default function SecurityAndAuditPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground">
       <Navigation />
 
-      {/* Hero */}
-      <Section
-        className="pt-20 pb-12"
-        containerClassName="max-w-4xl text-center"
-        aria-labelledby="security-heading"
-      >
-        <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1.5 text-xs font-semibold text-muted-foreground mb-6">
-          <BadgeCheck className="h-3.5 w-3.5" aria-hidden="true" />
-          Security Architecture
-        </div>
-        <h1
-          id="security-heading"
-          className="text-fluid-4xl font-bold text-foreground tracking-tight mb-4"
-        >
-          Security, Isolation, and Verifiable Evidence
-        </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          Settler is designed so that every reconciliation run produces evidence you can verify,
-          every action leaves a traceable record, and your data stays in your infrastructure.
-        </p>
-        <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-          <Button asChild size="lg">
-            <UiLink href="/docs/quickstart" className="flex items-center gap-2">
-              Read the Quickstart
-              <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </UiLink>
-          </Button>
-          <Button asChild variant="outline" size="lg">
-            <UiLink href="/docs" className="flex items-center gap-2">
-              Browse Docs
-            </UiLink>
-          </Button>
-        </div>
-      </Section>
+      <PageHero
+        eyebrow="Security Architecture"
+        title="Security, Isolation, and Verifiable Evidence"
+        description="Settler is designed so that every reconciliation run produces evidence you can verify, every action leaves a traceable record, and your data stays in your infrastructure."
+        visual={<EvidenceArtifactPreview />}
+        actions={
+          <>
+            <Button asChild size="lg">
+              <UiLink href="/docs/quickstart">
+                Read Quickstart <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
+              </UiLink>
+            </Button>
+            <Button asChild variant="outline" size="lg">
+              <UiLink href="/docs">Browse Docs</UiLink>
+            </Button>
+          </>
+        }
+      />
 
       {/* Security Pillars */}
       <Section
@@ -159,7 +135,7 @@ export default function SecurityAndAuditPage() {
             return (
               <div
                 key={pillar.title}
-                className="rounded-xl border border-border bg-card p-6 flex flex-col gap-4"
+                className="rounded-xl border border-border bg-card p-6 flex flex-col gap-4 shadow-sm hover:shadow-md transition-shadow"
               >
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                   <Icon className="h-5 w-5 text-primary" aria-hidden="true" />
@@ -175,6 +151,10 @@ export default function SecurityAndAuditPage() {
             );
           })}
         </div>
+      </Section>
+
+      <Section className="bg-muted/10">
+        <VisualGrid />
       </Section>
 
       {/* Compliance Readiness */}
@@ -193,7 +173,7 @@ export default function SecurityAndAuditPage() {
           Settler is not a compliance certification. It is infrastructure that makes compliance
           evidence collection tractable. The following properties are structural — not add-ons.
         </p>
-        <div className="rounded-xl border border-border bg-card p-6 sm:p-8">
+        <div className="rounded-xl border border-border bg-card p-6 sm:p-8 shadow-inner">
           <FeatureList items={complianceItems} />
         </div>
       </Section>

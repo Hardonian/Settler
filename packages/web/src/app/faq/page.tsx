@@ -1,7 +1,9 @@
 import { Metadata } from "next";
+import Image from "next/image";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { CTASection, PageHero, Section } from "@/components/site/primitives";
+import { VisualGrid } from "@/components/site/infographics";
 
 export const metadata: Metadata = {
   title: "FAQ - Settler",
@@ -40,17 +42,37 @@ export default function FaqPage() {
           eyebrow="FAQ"
           title="Common product and architecture questions"
           description="Answers are constrained to documented product behavior and packaging boundaries."
+          visual={
+            <div className="relative aspect-square w-full max-w-[400px] overflow-hidden rounded-3xl border border-primary/20 shadow-xl lg:ml-auto">
+              <Image
+                src="/evidence_artifact_3d.png"
+                alt="Evidence artifact visualization"
+                fill
+                className="object-cover"
+              />
+            </div>
+          }
         />
-        <Section>
+        <Section withGrid>
           <div className="space-y-4">
             {faqItems.map(([question, answer]) => (
-              <div key={question} className="rounded-xl border border-border bg-card p-5">
+              <div
+                key={question}
+                className="rounded-xl border border-border bg-card p-6 shadow-sm transition-shadow hover:shadow-md"
+              >
                 <h2 className="text-lg font-semibold text-foreground">{question}</h2>
-                <p className="mt-2 text-muted-foreground">{answer}</p>
+                <p className="mt-2 text-muted-foreground leading-relaxed italic border-l-2 border-primary/30 pl-4">
+                  {answer}
+                </p>
               </div>
             ))}
           </div>
         </Section>
+
+        <Section className="bg-muted/10">
+          <VisualGrid />
+        </Section>
+
         <CTASection
           title="Still evaluating fit?"
           description="Use platform, capabilities, architecture, and contact pages for a complete review path."

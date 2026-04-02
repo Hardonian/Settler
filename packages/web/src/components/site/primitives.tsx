@@ -19,10 +19,12 @@ export function Section({
   children,
   className,
   withGrid,
+  containerClassName,
 }: {
   children: ReactNode;
   className?: string;
   withGrid?: boolean;
+  containerClassName?: string;
 }) {
   return (
     <section
@@ -35,7 +37,7 @@ export function Section({
       {withGrid && (
         <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background" />
       )}
-      <div className="relative mx-auto max-w-6xl">{children}</div>
+      <div className={cn("relative mx-auto max-w-6xl", containerClassName)}>{children}</div>
     </section>
   );
 }

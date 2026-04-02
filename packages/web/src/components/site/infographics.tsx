@@ -1,14 +1,4 @@
-import { ReactNode } from "react";
-import {
-  Check,
-  ArrowRight,
-  Shield,
-  Database,
-  Activity,
-  FileText,
-  Lock,
-  RefreshCw,
-} from "lucide-react";
+import { Check, Shield, Database, Activity, FileText, Lock, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
