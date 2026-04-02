@@ -26,6 +26,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as net from "net";
 import { parseArgs } from "util";
+import nodeContract from "./node-version-contract.cjs";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -189,22 +190,22 @@ function execCommand(
 // ---------------------------------------------------------------------------
 
 function checkNodeVersion() {
-  const currentVersion = process.version;
-  const majorVersion = parseInt(currentVersion.slice(1).split(".")[0]);
-
-  // Read required version from .nvmrc
-  const requiredVersion = readFile(".nvmrc") || "24.0.0";
-  const requiredMajor = parseInt(requiredVersion.split(".")[0]);
-
-  if (majorVersion >= requiredMajor) {
-    addCheck("toolchain", "Node.js", "pass", `${currentVersion} (required: >=${requiredMajor}.x)`);
-  } else {
+  try {
+    nodeContract.assertSupportedNodeVersion("doctor");
+    const { requiredVersion, requiredRange } = nodeContract.formatNodeRequirement();
+    addCheck(
+      "toolchain",
+      "Node.js",
+      "pass",
+      `${process.version} (required: ${requiredVersion}, ${requiredRange})`
+    );
+  } catch (error: any) {
     addCheck(
       "toolchain",
       "Node.js",
       "fail",
-      `${currentVersion} (required: >=${requiredMajor}.x)`,
-      `Run 'nvm install ${requiredVersion}' or 'nvm use' to switch Node versions`
+      `${process.version} (required: Node 24.x)`,
+      error?.message || "Switch to the repo Node 24 toolchain before running doctor."
     );
   }
 }

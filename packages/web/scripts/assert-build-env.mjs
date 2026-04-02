@@ -4,6 +4,9 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { existsSync, readFileSync } from "node:fs";
 import { config } from "dotenv";
+import nodeContract from "../../../scripts/node-version-contract.cjs";
+
+nodeContract.assertSupportedNodeVersion("@settler/web build");
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "..", "..", "..");

@@ -4,6 +4,7 @@ import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import dotenv from "dotenv";
+import nodeContract from "./node-version-contract.cjs";
 
 const rootDir = process.cwd();
 const args = new Set(process.argv.slice(2));
@@ -62,13 +63,23 @@ function run(command, commandArgs, options = {}) {
 }
 
 function checkToolchain() {
-  const nodeMajor = Number(process.versions.node.split(".")[0] ?? 0);
-  addCheck(
-    "toolchain.node",
-    nodeMajor >= 24 ? "PASS" : "FAIL",
-    `Node ${process.version} detected`,
-    "Use Node 24.x (see .nvmrc/.node-version and package.json engines)."
-  );
+  try {
+    nodeContract.assertSupportedNodeVersion("doctor");
+    const { requiredVersion, requiredRange } = nodeContract.formatNodeRequirement();
+    addCheck(
+      "toolchain.node",
+      "PASS",
+      `Node ${process.version} detected (required: ${requiredVersion}, ${requiredRange})`,
+      "Use the repo Node 24 toolchain (see .nvmrc/.node-version and package.json engines)."
+    );
+  } catch (error) {
+    addCheck(
+      "toolchain.node",
+      "FAIL",
+      `Node ${process.version} detected`,
+      error instanceof Error ? error.message : "Use the repo Node 24 toolchain."
+    );
+  }
 
   const pnpm = run("pnpm", ["--version"]);
   addCheck(

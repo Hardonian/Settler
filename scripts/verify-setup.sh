@@ -23,12 +23,13 @@ fi
 
 # Check 2: Node version
 echo -n "Checking Node.js version... "
+REQUIRED_NODE_VERSION=$(cat .nvmrc 2>/dev/null || echo "24.12.0")
 NODE_VERSION=$(node -v | cut -d'v' -f2 | cut -d'.' -f1)
-if [ "$NODE_VERSION" -ge 24 ]; then
-    echo -e "${GREEN}✅${NC} ($(node -v))"
+if [ "$NODE_VERSION" -eq 24 ]; then
+    echo -e "${GREEN}✅${NC} ($(node -v), required: ${REQUIRED_NODE_VERSION}, engines: >=24.0.0 <25.0.0)"
 else
     echo -e "${RED}❌${NC} ($(node -v))"
-    echo "  Required: Node.js >= 24.0.0"
+    echo "  Required: Node.js ${REQUIRED_NODE_VERSION} (engines: >=24.0.0 <25.0.0)"
 fi
 
 # Check 3: npm version

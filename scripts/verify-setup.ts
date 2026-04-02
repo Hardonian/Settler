@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import * as dotenv from "dotenv";
+import nodeContract from "./node-version-contract.cjs";
 
 type Severity = "error" | "warning";
 
@@ -13,15 +14,6 @@ type Finding = {
   message: string;
   action?: string;
 };
-
-function readRequiredNodeVersion(): string {
-  const nvmrcPath = path.join(process.cwd(), ".nvmrc");
-  if (!fs.existsSync(nvmrcPath)) {
-    return "24.0.0";
-  }
-
-  return fs.readFileSync(nvmrcPath, "utf8").trim() || "24.0.0";
-}
 
 function loadEnvFiles(): string[] {
   const loaded: string[] = [];
@@ -53,17 +45,14 @@ function hasValue(name: string): boolean {
 }
 
 function validateToolchain(findings: Finding[]): void {
-  const requiredVersion = readRequiredNodeVersion();
-  const requiredMajor = Number.parseInt(requiredVersion.split(".")[0] || "24", 10);
-  const currentVersion = process.version.replace(/^v/, "");
-  const currentMajor = Number.parseInt(currentVersion.split(".")[0] || "0", 10);
-
-  if (!Number.isFinite(currentMajor) || currentMajor < requiredMajor) {
+  try {
+    nodeContract.assertSupportedNodeVersion("verify:setup");
+  } catch (error) {
     findings.push({
       severity: "error",
       area: "toolchain",
-      message: `Unsupported Node.js runtime ${process.version}. Settler requires >=${requiredMajor}.x.`,
-      action: `Run nvm install ${requiredVersion} && nvm use ${requiredVersion} before onboarding or verification.`,
+      message: error instanceof Error ? error.message : String(error),
+      action: "Switch to the repo Node 24 toolchain before onboarding or verification.",
     });
   }
 }
