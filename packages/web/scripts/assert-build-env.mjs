@@ -2,34 +2,26 @@
 
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { config } from "dotenv";
 
-// Load .env.local from repo root (same source Next.js uses during build)
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "..", "..", "..");
-const envLocal = resolve(repoRoot, ".env.local");
-if (existsSync(envLocal)) {
-  config({ path: envLocal });
+
+const shouldLoadLocalEnv = process.env.VERCEL !== "1" && process.env.CI !== "true";
+if (shouldLoadLocalEnv) {
+  const envLocal = resolve(repoRoot, ".env.local");
+  if (existsSync(envLocal)) {
+    config({ path: envLocal });
+  }
 }
 
-const REQUIRED_GROUPS = [
-  {
-    label: "Supabase URL (public)",
-    keys: ["NEXT_PUBLIC_SUPABASE_URL"],
-    visibility: "public",
-  },
-  {
-    label: "Supabase anon key (public)",
-    keys: ["NEXT_PUBLIC_SUPABASE_ANON_KEY"],
-    visibility: "public",
-  },
-  {
-    label: "Database connection (server-only)",
-    keys: ["DATABASE_URL", "SUPABASE_DATABASE_URL", "DIRECT_URL"],
-    visibility: "server",
-  },
-];
+const manifest = JSON.parse(readFileSync(resolve(repoRoot, "config", "env.required.json"), "utf8"));
+
+const BUILD_REQUIRED_GROUP_LABELS = new Set(["supabase-url", "supabase-anon", "database-url"]);
+const REQUIRED_GROUPS = manifest.requirements.groups.filter((group) =>
+  BUILD_REQUIRED_GROUP_LABELS.has(group.label)
+);
 
 const SECRET_PUBLIC_COLLISION_KEYS = [
   "SUPABASE_SERVICE_ROLE_KEY",
@@ -58,7 +50,7 @@ if (missing.length > 0 || leakedToClient.length > 0) {
   if (missing.length > 0) {
     console.error("Missing required environment key groups:");
     for (const group of missing) {
-      console.error(`  - ${group.label} [${group.visibility}]: ${group.keys.join(" or ")}`);
+      console.error(`  - ${group.label}: ${group.keys.join(" or ")}`);
     }
   }
 
@@ -69,7 +61,7 @@ if (missing.length > 0 || leakedToClient.length > 0) {
     }
   }
 
-  console.error("Set these keys in build env and keep secret keys server-only.");
+  console.error("Set required keys in Vercel environment settings for hosted builds/runs.");
   process.exit(1);
 }
 

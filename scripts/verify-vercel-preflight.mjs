@@ -40,6 +40,7 @@ console.log("\n[1] Required build-time files");
 
 const requiredFiles = [
   "packages/web/scripts/assert-build-env.mjs",
+  "config/env.required.json",
   "packages/web/next.config.js",
   "prisma/schema.prisma",
   "pnpm-workspace.yaml",

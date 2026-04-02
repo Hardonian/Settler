@@ -22,9 +22,16 @@ describe("ExceptionIntelligenceService", () => {
   const service = new ExceptionIntelligenceService();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
     prisma.policyEvolutionProposal.findMany.mockResolvedValue([]);
     prisma.policyMemoryArtifact.findMany.mockResolvedValue([]);
+    prisma.policyEvolutionProposal.upsert.mockResolvedValue({
+      id: "proposal-row-1",
+      proposalKey: "proposal-1",
+      signatureKey: "aaaaaaaaaaaaaaaaaaaa",
+      status: "pending_review",
+      createdAt: new Date("2026-03-29T00:00:00Z"),
+    });
   });
 
   it("enforces tenant-scoped retrieval when loading decision history", async () => {
@@ -120,7 +127,10 @@ describe("ExceptionIntelligenceService", () => {
   });
 
   it("stores proposal review transitions", async () => {
-    prisma.reconAudit.findFirst.mockResolvedValue({ entityId: "proposal-1" });
+    prisma.policyEvolutionProposal.findFirst.mockResolvedValue({
+      id: "proposal-1",
+      status: "pending_review",
+    });
 
     const result = await service.reviewPolicyEvolutionProposal("tenant-1", {
       proposalId: "proposal-1",
@@ -135,7 +145,7 @@ describe("ExceptionIntelligenceService", () => {
 
   it("marks unsupported policy metrics explicitly", async () => {
     prisma.reconciliationRun.findFirst.mockResolvedValue(null);
-    const result = await service.simulatePolicy("tenant-1", {
+    const runtime = await service.simulatePolicy("tenant-1", {
       runId: "run-1",
       candidatePolicy: {
         amountTolerance: 1,
@@ -146,7 +156,7 @@ describe("ExceptionIntelligenceService", () => {
     });
 
     expect(runtime.degraded).toBe(true);
-    expect(runtime.degradedReasons).toContain("no_pack_runtime_history");
+    expect(runtime.degradedReasons).toContain("run_not_found_or_not_scoped");
   });
 
   it("builds ontology taxonomy summary with explicit degraded semantics for unknowns", async () => {
@@ -257,22 +267,18 @@ describe("ExceptionIntelligenceService", () => {
         },
       },
     ]);
-    prisma.reconAudit.findFirst.mockResolvedValueOnce(null).mockResolvedValueOnce({
-      entityId: "existing",
-    });
-
     const first = await service.generatePolicyEvolutionProposals("tenant-1", 30);
     const second = await service.generatePolicyEvolutionProposals("tenant-1", 30);
 
     expect(first[0]?.proposalId).toBe(second[0]?.proposalId);
-    expect(prisma.reconAudit.create).toHaveBeenCalledTimes(1);
+    expect(prisma.policyEvolutionProposal.upsert).toHaveBeenCalled();
     expect(first[0]?.unsupportedMetrics).toContain("false_positive_rate");
   });
 
   it("persists proposal review history and blocks missing proposal review", async () => {
-    prisma.reconAudit.findFirst.mockResolvedValueOnce(null).mockResolvedValueOnce({
-      entityId: "proposal-1",
-    });
+    prisma.policyEvolutionProposal.findFirst
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ id: "proposal-1", status: "pending_review" });
 
     const missing = await service.reviewPolicyEvolutionProposal("tenant-1", {
       proposalId: "missing",

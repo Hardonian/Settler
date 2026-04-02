@@ -1,5 +1,5 @@
 /**
- * Contract: `verify:fast` must not include internal link crawl (see `scripts/assert-verify-fast-profile.mjs`).
+ * Contract: `verify:fast` must exclude internal link crawl but include env contract + reconciliation dist checks.
  */
 import { test } from "node:test";
 import assert from "node:assert";
@@ -19,6 +19,7 @@ test("fast profile excludes linkIntegrity; fast-with-links includes it", () => {
     fastMatch[1].includes("reconciliationCoreDist"),
     "fast must include reconciliationCoreDist"
   );
+  assert.ok(fastMatch[1].includes("envContract"), "fast must include envContract checks");
 
   const withLinks = src.match(/"fast-with-links":\s*\[([\s\S]*?)\],/);
   assert.ok(withLinks, "expected fast-with-links profile block");
@@ -26,5 +27,9 @@ test("fast profile excludes linkIntegrity; fast-with-links includes it", () => {
   assert.ok(
     withLinks[1].includes("reconciliationCoreDist"),
     "fast-with-links must include reconciliationCoreDist"
+  );
+  assert.ok(
+    withLinks[1].includes("envContract"),
+    "fast-with-links must include envContract checks"
   );
 });
