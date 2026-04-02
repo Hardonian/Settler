@@ -75,7 +75,7 @@ This runbook guides the process for conducting the first customer pilot.
 
 ### Kickoff Email
 
-```
+```markdown
 Subject: Welcome to Your Settler Pilot!
 Hi [Name],
 Welcome! Duration: 14 days. Success criteria: 95%+ match.
