@@ -513,23 +513,23 @@ try {
 
   if (sentryEnabled && !sentryConfigured) {
     console.warn(
-      "[Sentry] Enabled but missing SENTRY_AUTH_TOKEN/SENTRY_ORG/SENTRY_PROJECT. Skipping source map upload."
+      "[Sentry] Enabled but missing SENTRY_AUTH_TOKEN/SENTRY_ORG/SENTRY_PROJECT. Skipping Sentry webpack plugin."
     );
   }
 
-  const sentryWebpackPluginOptions = {
-    // Disable by default unless explicitly enabled via env vars
-    disable: !(sentryEnabled && sentryConfigured),
-    authToken: process.env.SENTRY_AUTH_TOKEN,
-    org: process.env.SENTRY_ORG,
-    project: process.env.SENTRY_PROJECT,
-    silent: true,
-    widenClientFileUpload: true,
-    hideSourceMaps: true,
-    disableLogger: true,
-  };
+  if (sentryEnabled && sentryConfigured) {
+    const sentryWebpackPluginOptions = {
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+      org: process.env.SENTRY_ORG,
+      project: process.env.SENTRY_PROJECT,
+      silent: true,
+      widenClientFileUpload: true,
+      hideSourceMaps: true,
+      disableLogger: true,
+    };
 
-  finalConfig = withSentryConfig(finalConfig, sentryWebpackPluginOptions);
+    finalConfig = withSentryConfig(finalConfig, sentryWebpackPluginOptions);
+  }
 } catch (e) {
   // Sentry webpack plugin not available - continue without it
   console.warn("[Sentry] Webpack plugin not available, skipping source map upload");

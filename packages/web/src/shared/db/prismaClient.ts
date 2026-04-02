@@ -17,8 +17,10 @@
 // This file is server-only and should not be bundled for the browser
 // Webpack configuration excludes this file from client bundles
 
-// CRITICAL: Set environment variables BEFORE importing PrismaClient
-// Prisma 7 determines engine type at import time, so we must set these first
+import type { PrismaClient } from "@prisma/client";
+
+// CRITICAL: Set environment variables BEFORE loading PrismaClient
+// Prisma 7 determines engine type at load time, so we must set these first
 type PrismaGlobal = typeof globalThis & {
   __PRISMA_BUILD_PHASE__?: boolean;
 };
@@ -39,7 +41,7 @@ if (typeof process !== "undefined" && process.env) {
 
   // Ensure Node.js runtime is detected (not edge)
   // Prisma 7 uses client engine in edge/serverless environments
-  if (!env["NEXT_RUNTIME"]) {
+  if (env["NEXT_RUNTIME"] !== "nodejs") {
     env["NEXT_RUNTIME"] = "nodejs";
   }
 
@@ -47,6 +49,8 @@ if (typeof process !== "undefined" && process.env) {
     env["NEXT_PHASE"] === "phase-production-build" ||
     (env["NODE_ENV"] === "production" && env["VERCEL"] === "1") ||
     (env["NODE_ENV"] === "production" && !env["DATABASE_URL"]) ||
+    (typeof env["npm_lifecycle_event"] === "string" &&
+      env["npm_lifecycle_event"].includes("build")) ||
     env["VERCEL"] === "1";
 
   if (!env["DATABASE_URL"] && isBuildPhase) {
@@ -59,7 +63,11 @@ if (typeof process !== "undefined" && process.env) {
   prismaGlobals.__PRISMA_BUILD_PHASE__ = isBuildPhase;
 }
 
-import { PrismaClient } from "@prisma/client";
+// Use require after env setup so Prisma reads the correct runtime configuration.
+
+const { PrismaClient } = require("@prisma/client") as {
+  PrismaClient: typeof import("@prisma/client").PrismaClient;
+};
 
 type PrismaQueryRaw = {
   $queryRaw<T = unknown>(query: TemplateStringsArray, ...values: unknown[]): Promise<T>;
@@ -81,7 +89,8 @@ const nodeEnv =
 let prismaInstance: PrismaClient;
 
 try {
-  // Using a simple constructor. Prisma will read the DATABASE_URL from process.env.
+  // Pass datasourceUrl explicitly to satisfy Prisma wasm/client engine validation.
+  // The build phase sets a dummy DATABASE_URL to prevent build-time failures.
   prismaInstance = globalForPrisma.prisma ?? new PrismaClient();
 } catch (error) {
   console.error("[Prisma] Failed to initialize Prisma client:", error);

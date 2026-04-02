@@ -144,7 +144,7 @@
     "deploy:vercel": "bash scripts/vercel-deploy.sh",
     "db:check": "tsx scripts/check-connection.ts",
     "db:sanity-check": "tsx scripts/db-sanity-check.ts",
-    "prisma:generate": "cross-env PRISMA_CLIENT_ENGINE_TYPE=wasm PRISMA_ENGINES_MIRROR= prisma generate",
+    "prisma:generate": "cross-env PRISMA_CLIENT_ENGINE_TYPE=binary PRISMA_ENGINES_MIRROR= prisma generate",
     "prisma:migrate": "prisma migrate deploy",
     "prisma:push": "prisma db push",
     "prisma:status": "prisma migrate status",
