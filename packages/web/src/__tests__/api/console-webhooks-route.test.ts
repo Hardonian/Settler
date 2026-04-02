@@ -11,11 +11,21 @@ jest.mock("@/lib/middleware/api-security", () => ({
   withSecurity: (handler: unknown) => handler,
 }));
 
-const requireAuth = jest.fn();
+const requireTenantRequestContext = jest.fn();
 const listWebhooks = jest.fn();
 
-jest.mock("@/lib/api/unified-auth", () => ({
-  requireAuth: (...args: unknown[]) => requireAuth(...args),
+jest.mock("@/lib/api/tenant-context", () => ({
+  requireTenantRequestContext: (...args: unknown[]) => requireTenantRequestContext(...args),
+  buildTenantContextErrorResponse: (error: {
+    status: number;
+    code: string;
+    message: string;
+    capability: unknown;
+  }) =>
+    Response.json(
+      { error: error.message, code: error.code, capability: error.capability },
+      { status: error.status }
+    ),
 }));
 
 jest.mock("@/lib/webhooks/manager", () => ({
@@ -41,7 +51,7 @@ describe("/api/console/webhooks GET truth semantics", () => {
   });
 
   it("returns explicit available capability on success", async () => {
-    requireAuth.mockResolvedValue({ userId: "user-1", tenantId: "tenant-1" });
+    requireTenantRequestContext.mockResolvedValue({ userId: "user-1", tenantId: "tenant-1" });
     listWebhooks.mockResolvedValue([
       {
         id: "wh_1",
@@ -61,7 +71,7 @@ describe("/api/console/webhooks GET truth semantics", () => {
   });
 
   it("returns explicit degraded capability and 503 when list lookup fails", async () => {
-    requireAuth.mockResolvedValue({ userId: "user-1", tenantId: "tenant-1" });
+    requireTenantRequestContext.mockResolvedValue({ userId: "user-1", tenantId: "tenant-1" });
     listWebhooks.mockRejectedValue(new Error("database timeout"));
 
     const res = await GET(makeRequest());
@@ -73,14 +83,25 @@ describe("/api/console/webhooks GET truth semantics", () => {
     expect(appLoggerError).toHaveBeenCalled();
   });
 
-  it("returns explicit unavailable capability when auth context is missing", async () => {
-    requireAuth.mockResolvedValue({ userId: "" });
+  it("returns explicit setup_required capability when tenant context is missing", async () => {
+    requireTenantRequestContext.mockRejectedValue({
+      status: 409,
+      code: "TENANT_CONTEXT_REQUIRED",
+      message: "Select or finish setting up a workspace before using this feature.",
+      capability: {
+        state: "setup_required",
+        reason: "tenant_context_required",
+      },
+    });
 
     const res = await GET(makeRequest());
     const body = await res.json();
 
-    expect(res.status).toBe(401);
-    expect(body.capability).toEqual({ state: "unavailable", reason: "auth_required" });
-    expect(body.error).toBe("Unauthorized");
+    expect(res.status).toBe(409);
+    expect(body.capability).toEqual({
+      state: "setup_required",
+      reason: "tenant_context_required",
+    });
+    expect(listWebhooks).not.toHaveBeenCalled();
   });
 });

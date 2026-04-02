@@ -16,10 +16,7 @@ import {
   Plug,
   FileSearch,
   Settings,
-  ScrollText,
-  BookOpen,
   Database,
-  GitBranch,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";

@@ -26,6 +26,14 @@ export interface CreateWebhookInput {
   secret?: string;
 }
 
+function requireTenantScope(tenantId: string): string {
+  if (typeof tenantId !== "string" || tenantId.trim() === "") {
+    throw new Error("Tenant context is required for webhook operations");
+  }
+
+  return tenantId;
+}
+
 /**
  * Generate webhook secret
  */
@@ -41,6 +49,8 @@ export async function createWebhook(
   tenantId: string,
   input: CreateWebhookInput
 ): Promise<Webhook> {
+  const scopedTenantId = requireTenantScope(tenantId);
+
   // Validate URL format
   try {
     const url = new URL(input.url);
@@ -101,7 +111,7 @@ export async function createWebhook(
   const webhook = await prisma.webhook.create({
     data: {
       userId,
-      tenantId: tenantId || userId, // Fallback to userId if tenantId is null
+      tenantId: scopedTenantId,
       url: input.url,
       events: input.events,
       secret,
@@ -127,10 +137,11 @@ export async function createWebhook(
  * List webhooks for a user/tenant
  */
 export async function listWebhooks(userId: string, tenantId: string): Promise<Webhook[]> {
+  const scopedTenantId = requireTenantScope(tenantId);
   const webhooks = await prisma.webhook.findMany({
     where: {
       userId,
-      tenantId: tenantId || userId, // Fallback to userId if tenantId is null
+      tenantId: scopedTenantId,
       deletedAt: null,
     },
     orderBy: { createdAt: "desc" },
@@ -159,11 +170,12 @@ export async function updateWebhook(
   tenantId: string,
   updates: Partial<Pick<Webhook, "url" | "events" | "status">>
 ): Promise<Webhook> {
+  const scopedTenantId = requireTenantScope(tenantId);
   const existing = await prisma.webhook.findFirst({
     where: {
       id: webhookId,
       userId,
-      tenantId: tenantId || userId, // Fallback to userId if tenantId is null
+      tenantId: scopedTenantId,
       deletedAt: null,
     },
   });
@@ -212,11 +224,12 @@ export async function deleteWebhook(
   userId: string,
   tenantId: string
 ): Promise<void> {
+  const scopedTenantId = requireTenantScope(tenantId);
   const existing = await prisma.webhook.findFirst({
     where: {
       id: webhookId,
       userId,
-      tenantId: tenantId || userId, // Fallback to userId if tenantId is null
+      tenantId: scopedTenantId,
       deletedAt: null,
     },
   });
@@ -242,11 +255,12 @@ export async function rotateWebhookSecret(
   userId: string,
   tenantId: string
 ): Promise<{ secret: string }> {
+  const scopedTenantId = requireTenantScope(tenantId);
   const existing = await prisma.webhook.findFirst({
     where: {
       id: webhookId,
       userId,
-      tenantId: tenantId || userId, // Fallback to userId if tenantId is null
+      tenantId: scopedTenantId,
       deletedAt: null,
     },
   });
@@ -283,11 +297,12 @@ export async function getWebhookDeliveries(
     attemptedAt: Date;
   }>
 > {
+  const scopedTenantId = requireTenantScope(tenantId);
   const existing = await prisma.webhook.findFirst({
     where: {
       id: webhookId,
       userId,
-      tenantId: tenantId || userId, // Fallback to userId if tenantId is null
+      tenantId: scopedTenantId,
       deletedAt: null,
     },
   });

@@ -48,13 +48,6 @@ const policyProposalReviewSchema = z.object({
   }),
 });
 
-const signatureLifecycleSchema = z.object({
-  params: z.object({ signature: z.string().length(20) }),
-  query: z.object({
-    lookbackDays: z.coerce.number().int().min(1).max(365).default(30),
-  }),
-});
-
 const decisionHistorySchema = z.object({
   query: z.object({
     runId: z.string().uuid().optional(),

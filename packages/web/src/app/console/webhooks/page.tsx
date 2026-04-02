@@ -53,7 +53,7 @@ interface Webhook {
 }
 
 interface WebhooksCapability {
-  state?: "available" | "degraded" | "unavailable";
+  state?: "available" | "degraded" | "unavailable" | "unauthorized" | "setup_required";
   reason?: string;
 }
 
@@ -81,9 +81,9 @@ export default function WebhooksPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [capabilityState, setCapabilityState] = useState<"available" | "degraded" | "unavailable">(
-    "available"
-  );
+  const [capabilityState, setCapabilityState] = useState<
+    "available" | "degraded" | "unavailable" | "unauthorized" | "setup_required"
+  >("available");
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);
@@ -100,7 +100,7 @@ export default function WebhooksPage() {
       const data = (await res.json().catch(() => ({}))) as WebhooksListResponse;
 
       if (!res.ok) {
-        setCapabilityState(data.capability?.state === "unavailable" ? "unavailable" : "degraded");
+        setCapabilityState(data.capability?.state || "degraded");
         setLoadError(data.error || "Webhook endpoints are currently unavailable.");
         setWebhooks([]);
         return;
@@ -116,6 +116,8 @@ export default function WebhooksPage() {
       setLoading(false);
     }
   };
+
+  const managementBlocked = capabilityState !== "available";
 
   const createWebhook = async () => {
     setFormError(null);
@@ -211,6 +213,7 @@ export default function WebhooksPage() {
           />
           <div className="flex-shrink-0 pt-1">
             <Button
+              disabled={managementBlocked}
               onClick={() => {
                 setFormError(null);
                 setDialogOpen(true);
@@ -227,9 +230,13 @@ export default function WebhooksPage() {
             <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
             <div className="space-y-1">
               <p className="text-sm font-medium">
-                {capabilityState === "unavailable"
-                  ? "Webhook management is unavailable for this session."
-                  : "Webhook data is currently degraded."}
+                {capabilityState === "setup_required"
+                  ? "Webhook management requires an active workspace."
+                  : capabilityState === "unauthorized"
+                    ? "Webhook management requires authentication."
+                    : capabilityState === "unavailable"
+                      ? "Webhook management is unavailable for this session."
+                      : "Webhook data is currently degraded."}
               </p>
               <p className="text-sm">{loadError}</p>
               <Button

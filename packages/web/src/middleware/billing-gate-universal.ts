@@ -9,6 +9,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { authenticateRequest } from "@/lib/api/unified-auth";
 import { requireActiveSubscription } from "@/lib/security/billing-enforcement";
 
 export interface UniversalBillingGateOptions {
@@ -26,10 +27,8 @@ export interface UniversalBillingGateOptions {
  * This is the DEFAULT behavior. Routes must opt-out if they're free.
  */
 export function withUniversalBillingGate<
-   
   T extends (request: NextRequest, ...args: any[]) => Promise<NextResponse>,
 >(handler: T, options: UniversalBillingGateOptions = {}): T {
-   
   return (async (request: NextRequest, ...args: any[]) => {
     const { allowPublic = false, allowFree = false, feature = "This feature" } = options;
 
@@ -38,8 +37,9 @@ export function withUniversalBillingGate<
       return handler(request, ...args);
     }
 
-    // Check for active subscription
-    const subscriptionCheck = await requireActiveSubscription(request);
+    // Resolve auth first so API-key callers are checked against the correct billing account.
+    const authContext = await authenticateRequest(request).catch(() => null);
+    const subscriptionCheck = await requireActiveSubscription(request, authContext?.userId);
 
     if (!subscriptionCheck.allowed) {
       // If free tier is allowed, check if user is authenticated
@@ -86,7 +86,6 @@ export function withUniversalBillingGate<
  * Helper to mark routes as public (no billing required)
  */
 export function publicRoute<
-   
   T extends (request: NextRequest, ...args: any[]) => Promise<NextResponse>,
 >(handler: T): T {
   return withUniversalBillingGate(handler, { allowPublic: true });
@@ -96,7 +95,6 @@ export function publicRoute<
  * Helper to mark routes as free tier (no subscription, but usage limits apply)
  */
 export function freeRoute<
-   
   T extends (request: NextRequest, ...args: any[]) => Promise<NextResponse>,
 >(handler: T): T {
   return withUniversalBillingGate(handler, { allowFree: true });

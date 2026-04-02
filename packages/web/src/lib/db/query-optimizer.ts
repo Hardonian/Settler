@@ -1,6 +1,6 @@
 /**
  * Query Optimizer
- * 
+ *
  * Optimizes database queries with:
  * - Field selection (only fetch needed fields)
  * - Query batching
@@ -9,7 +9,7 @@
  * - Index hints
  */
 
-import { prisma } from '@/shared/db/prismaClient';
+import { prisma } from "@/shared/db/prismaClient";
 
 // Request deduplication cache (in-memory, short TTL)
 const requestCache = new Map<string, { data: any; timestamp: number }>();
@@ -18,10 +18,7 @@ const CACHE_TTL = 5000; // 5 seconds
 /**
  * Deduplicate concurrent requests for the same query
  */
-async function deduplicateRequest<T>(
-  key: string,
-  queryFn: () => Promise<T>
-): Promise<T> {
+async function deduplicateRequest<T>(key: string, queryFn: () => Promise<T>): Promise<T> {
   // Check if there's a pending request
   const cached = requestCache.get(key);
   if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
@@ -56,15 +53,17 @@ export async function getBillingAccountOptimized(
 
   if (!useCache) {
     return prisma.billingAccount.findFirst({
-      where: { userId },
+      where: { userId, status: "active", deletedAt: null },
       select: { id: true, tenantId: true },
+      orderBy: { createdAt: "desc" },
     });
   }
 
   return deduplicateRequest(cacheKey, async () => {
     return prisma.billingAccount.findFirst({
-      where: { userId },
+      where: { userId, status: "active", deletedAt: null },
       select: { id: true, tenantId: true }, // Only select needed fields
+      orderBy: { createdAt: "desc" },
     });
   });
 }
@@ -72,20 +71,14 @@ export async function getBillingAccountOptimized(
 /**
  * Batch multiple queries together
  */
-export async function batchQueries<T>(
-  queries: Array<() => Promise<T>>
-): Promise<T[]> {
+export async function batchQueries<T>(queries: Array<() => Promise<T>>): Promise<T[]> {
   return Promise.all(queries.map((q) => q()));
 }
 
 /**
  * Optimized receipt listing with proper field selection
  */
-export async function listReceiptsOptimized(
-  billingAccountId: string,
-  limit = 50,
-  offset = 0
-) {
+export async function listReceiptsOptimized(billingAccountId: string, limit = 50, offset = 0) {
   // Use select instead of include to reduce data transfer
   return prisma.receipt.findMany({
     where: {
@@ -108,7 +101,7 @@ export async function listReceiptsOptimized(
         },
       },
     },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: "desc" },
     take: Math.min(limit, 100), // Cap at 100
     skip: offset,
   });

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { memo } from "react";
-import { Database, Filter, Hash, ShieldCheck, FileText, AlertTriangle } from "lucide-react";
+import { Database, Filter, ShieldCheck, FileText, AlertTriangle } from "lucide-react";
 import type { OperatorRunDetail } from "@/types/operator-run-detail";
 
 interface RunConfigurationProps {

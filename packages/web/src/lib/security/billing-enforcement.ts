@@ -1,21 +1,22 @@
 /**
  * Billing Enforcement Runtime Guards
- * 
+ *
  * CRITICAL: These guards enforce billing and subscription requirements
  * at the runtime level, complementing database-level RLS policies.
- * 
+ *
  * These guards MUST be used in all API routes that access paid features.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { logger } from '@/lib/observability/logger';
-import { checkUserEntitlements } from './entitlement-checks';
+import { NextRequest, NextResponse } from "next/server";
+import { authenticateRequest } from "@/lib/api/unified-auth";
+import { createClient } from "@/lib/supabase/server";
+import { logger } from "@/lib/observability/logger";
+import { checkUserEntitlements } from "./entitlement-checks";
 
 export interface BillingEnforcementResult {
   allowed: boolean;
   billingAccountId?: string;
-  subscriptionStatus?: 'active' | 'trialing' | 'none' | 'expired';
+  subscriptionStatus?: "active" | "trialing" | "none" | "expired";
   planId?: string;
   error?: NextResponse;
   reason?: string;
@@ -31,9 +32,12 @@ export async function requireActiveSubscription(
 ): Promise<BillingEnforcementResult> {
   try {
     const supabaseClient = await createClient();
-    
+
     // Get authenticated user
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabaseClient.auth.getUser();
 
     // Support API key authenticated requests: when userId is explicitly provided
     // (e.g. from validateApiKey), allow billing check without a session cookie.
@@ -42,13 +46,13 @@ export async function requireActiveSubscription(
         allowed: false,
         error: NextResponse.json(
           {
-            error: 'Unauthorized',
-            message: 'Authentication required',
-            code: 'AUTH_REQUIRED',
+            error: "Unauthorized",
+            message: "Authentication required",
+            code: "AUTH_REQUIRED",
           },
           { status: 401 }
         ),
-        reason: 'No authenticated user',
+        reason: "No authenticated user",
       };
     }
 
@@ -56,28 +60,28 @@ export async function requireActiveSubscription(
 
     // Get billing account
     const billingAccountResult = await supabaseClient
-      .from('billing_accounts')
-      .select('id, status, tenant_id')
-      .eq('user_id', targetUserId)
-      .eq('status', 'active')
-      .is('deleted_at', null)
+      .from("billing_accounts")
+      .select("id, status, tenant_id")
+      .eq("user_id", targetUserId)
+      .eq("status", "active")
+      .is("deleted_at", null)
       .single();
-    
+
     const { data: billingAccount, error: billingError } = billingAccountResult;
 
-    if (billingError || !billingAccount || typeof billingAccount !== 'object') {
+    if (billingError || !billingAccount || typeof billingAccount !== "object") {
       return {
         allowed: false,
         error: NextResponse.json(
           {
-            error: 'Billing Account Required',
-            message: 'Please set up billing to access this feature',
-            code: 'BILLING_ACCOUNT_REQUIRED',
+            error: "Billing Account Required",
+            message: "Please set up billing to access this feature",
+            code: "BILLING_ACCOUNT_REQUIRED",
             upgrade_required: true,
           },
           { status: 403 }
         ),
-        reason: 'No active billing account',
+        reason: "No active billing account",
       };
     }
 
@@ -89,50 +93,50 @@ export async function requireActiveSubscription(
 
     // Check for active subscription
     const subscriptionResult = await supabaseClient
-      .from('subscriptions')
-      .select('id, status, plan_id, trial_end, cancel_at_period_end, cancelled_at')
-      .eq('billing_account_id', billingAccountTyped.id)
-      .in('status', ['active', 'trialing'])
-      .order('created_at', { ascending: false })
+      .from("subscriptions")
+      .select("id, status, plan_id, trial_end, cancel_at_period_end, cancelled_at")
+      .eq("billing_account_id", billingAccountTyped.id)
+      .in("status", ["active", "trialing"])
+      .order("created_at", { ascending: false })
       .limit(1)
       .single();
-    
+
     const { data: subscription, error: subError } = subscriptionResult;
 
     if (subError || !subscription) {
       return {
         allowed: false,
-        subscriptionStatus: 'none',
+        subscriptionStatus: "none",
         billingAccountId: billingAccountTyped.id,
         error: NextResponse.json(
           {
-            error: 'Active Subscription Required',
-            message: 'Please subscribe to a plan to access this feature',
-            code: 'SUBSCRIPTION_REQUIRED',
+            error: "Active Subscription Required",
+            message: "Please subscribe to a plan to access this feature",
+            code: "SUBSCRIPTION_REQUIRED",
             upgrade_required: true,
           },
           { status: 403 }
         ),
-        reason: 'No active subscription',
+        reason: "No active subscription",
       };
     }
 
     // Type guard for subscription
-    if (!subscription || typeof subscription !== 'object') {
+    if (!subscription || typeof subscription !== "object") {
       return {
         allowed: false,
-        subscriptionStatus: 'none',
+        subscriptionStatus: "none",
         billingAccountId: billingAccountTyped.id,
         error: NextResponse.json(
           {
-            error: 'Active Subscription Required',
-            message: 'Please subscribe to a plan to access this feature',
-            code: 'SUBSCRIPTION_REQUIRED',
+            error: "Active Subscription Required",
+            message: "Please subscribe to a plan to access this feature",
+            code: "SUBSCRIPTION_REQUIRED",
             upgrade_required: true,
           },
           { status: 403 }
         ),
-        reason: 'No active subscription',
+        reason: "No active subscription",
       };
     }
 
@@ -155,20 +159,20 @@ export async function requireActiveSubscription(
       if (now > gracePeriodEnd) {
         return {
           allowed: false,
-          subscriptionStatus: 'expired',
+          subscriptionStatus: "expired",
           billingAccountId: billingAccountTyped.id,
           planId: sub.plan_id || undefined,
           error: NextResponse.json(
             {
-              error: 'Pilot Expired',
-              message: 'Your pilot has expired. Please upgrade to a paid plan.',
-              code: 'PILOT_EXPIRED',
+              error: "Pilot Expired",
+              message: "Your pilot has expired. Please upgrade to a paid plan.",
+              code: "PILOT_EXPIRED",
               upgrade_required: true,
               pilot_expired: true,
             },
             { status: 403 }
           ),
-          reason: 'Trial/pilot expired',
+          reason: "Trial/pilot expired",
         };
       }
     }
@@ -178,7 +182,7 @@ export async function requireActiveSubscription(
       // Still allow access until period ends
       return {
         allowed: true,
-        subscriptionStatus: sub.status === 'trialing' ? 'trialing' : 'active',
+        subscriptionStatus: sub.status === "trialing" ? "trialing" : "active",
         billingAccountId: billingAccountTyped.id,
         planId: sub.plan_id || undefined,
       };
@@ -190,22 +194,22 @@ export async function requireActiveSubscription(
       // If billing status is past_due or unpaid, return entitlement error
       return {
         allowed: false,
-        subscriptionStatus: sub.status === 'trialing' ? 'trialing' : 'active',
+        subscriptionStatus: sub.status === "trialing" ? "trialing" : "active",
         billingAccountId: billingAccountTyped.id,
         planId: sub.plan_id || undefined,
         error: entitlementCheck.error,
-        reason: entitlementCheck.entitlements.message || 'Entitlement check failed',
+        reason: entitlementCheck.entitlements.message || "Entitlement check failed",
       };
     }
 
     return {
       allowed: true,
-      subscriptionStatus: sub.status === 'trialing' ? 'trialing' : 'active',
+      subscriptionStatus: sub.status === "trialing" ? "trialing" : "active",
       billingAccountId: billingAccountTyped.id,
       planId: sub.plan_id || undefined,
     };
   } catch (error) {
-    await logger.error('Billing enforcement check failed', {
+    await logger.error("Billing enforcement check failed", {
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
     });
@@ -215,14 +219,14 @@ export async function requireActiveSubscription(
       allowed: false,
       error: NextResponse.json(
         {
-          error: 'Subscription Check Failed',
-          message: 'Unable to verify subscription status. Please try again or contact support.',
-          code: 'SUBSCRIPTION_CHECK_FAILED',
+          error: "Subscription Check Failed",
+          message: "Unable to verify subscription status. Please try again or contact support.",
+          code: "SUBSCRIPTION_CHECK_FAILED",
           retryable: true,
         },
         { status: 403 }
       ),
-      reason: 'Error checking subscription',
+      reason: "Error checking subscription",
     };
   }
 }
@@ -232,11 +236,11 @@ export async function requireActiveSubscription(
  */
 export async function requirePlan(
   request: NextRequest,
-  minimumPlan: 'free' | 'starter' | 'growth' | 'scale' | 'enterprise',
+  minimumPlan: "free" | "starter" | "growth" | "scale" | "enterprise",
   userId?: string
 ): Promise<BillingEnforcementResult> {
   const subscriptionCheck = await requireActiveSubscription(request, userId);
-  
+
   if (!subscriptionCheck.allowed) {
     return subscriptionCheck;
   }
@@ -252,7 +256,7 @@ export async function requirePlan(
     pro: 2,
   };
 
-  const userPlan = subscriptionCheck.planId || 'free';
+  const userPlan = subscriptionCheck.planId || "free";
   const userPlanLevel = planHierarchy[userPlan] ?? 0;
   const requiredPlanLevel = planHierarchy[minimumPlan] ?? 0;
 
@@ -264,9 +268,9 @@ export async function requirePlan(
       subscriptionStatus: subscriptionCheck.subscriptionStatus,
       error: NextResponse.json(
         {
-          error: 'Plan Upgrade Required',
+          error: "Plan Upgrade Required",
           message: `This feature requires ${minimumPlan} plan or higher`,
-          code: 'PLAN_UPGRADE_REQUIRED',
+          code: "PLAN_UPGRADE_REQUIRED",
           current_plan: userPlan,
           required_plan: minimumPlan,
           upgrade_required: true,
@@ -292,37 +296,37 @@ export async function requireAddOn(
   userId?: string
 ): Promise<BillingEnforcementResult> {
   const subscriptionCheck = await requireActiveSubscription(request, userId);
-  
+
   if (!subscriptionCheck.allowed || !subscriptionCheck.billingAccountId) {
     return subscriptionCheck;
   }
 
   try {
     const supabaseClient = await createClient();
-    
+
     // Check if add-on is standard (included in base plan)
     const addOnResult = await supabaseClient
-      .from('add_ons')
-      .select('id, integration_id, is_standard')
-      .eq('integration_id', addOnIntegrationId)
-      .eq('is_active', true)
+      .from("add_ons")
+      .select("id, integration_id, is_standard")
+      .eq("integration_id", addOnIntegrationId)
+      .eq("is_active", true)
       .single();
-    
+
     const { data: addOn, error: addOnError } = addOnResult;
 
-    if (addOnError || !addOn || typeof addOn !== 'object') {
+    if (addOnError || !addOn || typeof addOn !== "object") {
       return {
         allowed: false,
         billingAccountId: subscriptionCheck.billingAccountId,
         error: NextResponse.json(
           {
-            error: 'Integration Not Found',
+            error: "Integration Not Found",
             message: `Integration ${addOnIntegrationId} not found`,
-            code: 'INTEGRATION_NOT_FOUND',
+            code: "INTEGRATION_NOT_FOUND",
           },
           { status: 404 }
         ),
-        reason: 'Add-on not found',
+        reason: "Add-on not found",
       };
     }
 
@@ -342,13 +346,13 @@ export async function requireAddOn(
 
     // Check if add-on is purchased
     const purchaseResult = await supabaseClient
-      .from('add_on_purchases')
-      .select('id, status')
-      .eq('billing_account_id', subscriptionCheck.billingAccountId)
-      .eq('add_on_id', addOnTyped.id)
-      .eq('status', 'active')
+      .from("add_on_purchases")
+      .select("id, status")
+      .eq("billing_account_id", subscriptionCheck.billingAccountId)
+      .eq("add_on_id", addOnTyped.id)
+      .eq("status", "active")
       .single();
-    
+
     const { data: purchase, error: purchaseError } = purchaseResult;
 
     if (purchaseError || !purchase) {
@@ -357,15 +361,15 @@ export async function requireAddOn(
         billingAccountId: subscriptionCheck.billingAccountId,
         error: NextResponse.json(
           {
-            error: 'Add-On Required',
+            error: "Add-On Required",
             message: `This feature requires the ${addOnIntegrationId} add-on`,
-            code: 'ADD_ON_REQUIRED',
+            code: "ADD_ON_REQUIRED",
             add_on_required: addOnIntegrationId,
             upgrade_required: true,
           },
           { status: 403 }
         ),
-        reason: 'Add-on not purchased',
+        reason: "Add-on not purchased",
       };
     }
 
@@ -374,7 +378,7 @@ export async function requireAddOn(
       allowed: true,
     };
   } catch (error) {
-    await logger.error('Add-on check failed', {
+    await logger.error("Add-on check failed", {
       error: error instanceof Error ? error.message : String(error),
       add_on: addOnIntegrationId,
     });
@@ -384,14 +388,14 @@ export async function requireAddOn(
       billingAccountId: subscriptionCheck.billingAccountId,
       error: NextResponse.json(
         {
-          error: 'Add-On Check Failed',
-          message: 'Unable to verify add-on purchase. Please try again or contact support.',
-          code: 'ADD_ON_CHECK_FAILED',
+          error: "Add-On Check Failed",
+          message: "Unable to verify add-on purchase. Please try again or contact support.",
+          code: "ADD_ON_CHECK_FAILED",
           retryable: true,
         },
         { status: 403 }
       ),
-      reason: 'Error checking add-on',
+      reason: "Error checking add-on",
     };
   }
 }
@@ -404,7 +408,7 @@ export function withBillingEnforcement<T extends (...args: any[]) => Promise<Nex
   handler: T,
   options: {
     requireSubscription?: boolean;
-    requirePlan?: 'free' | 'starter' | 'growth' | 'scale' | 'enterprise';
+    requirePlan?: "free" | "starter" | "growth" | "scale" | "enterprise";
     requireAddOn?: string;
   } = {}
 ): T {
@@ -413,8 +417,10 @@ export function withBillingEnforcement<T extends (...args: any[]) => Promise<Nex
 
     // Check subscription requirement
     if (options.requireSubscription || options.requirePlan || options.requireAddOn) {
-      const subscriptionCheck = await requireActiveSubscription(request);
-      
+      // Resolve auth first so non-cookie auth paths are billed against the correct actor.
+      const authContext = await authenticateRequest(request).catch(() => null);
+      const subscriptionCheck = await requireActiveSubscription(request, authContext?.userId);
+
       if (!subscriptionCheck.allowed) {
         return subscriptionCheck.error!;
       }

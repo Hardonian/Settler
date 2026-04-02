@@ -48,7 +48,7 @@ module.exports = [
       "@typescript-eslint/require-await": "off",
       "@typescript-eslint/await-thenable": "off",
       "@typescript-eslint/ban-ts-comment": "off",
-      "no-console": ["warn", { allow: ["warn", "error"] }],
+      "no-console": ["warn", { allow: ["info", "warn", "error"] }],
 
       // MONOREPO BOUNDARY ENFORCEMENT
       "no-restricted-imports": [

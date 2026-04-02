@@ -54,8 +54,8 @@ function writeEdgeLog(
       console.warn(payload);
       break;
     default:
-      // console.log is available on all runtimes including Edge
-      console.log(payload);
+      // console.info is allowed on all runtimes including Edge
+      console.info(payload);
       break;
   }
 }

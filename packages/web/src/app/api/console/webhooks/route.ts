@@ -6,8 +6,11 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { requireAuth } from "@/lib/api/unified-auth";
 import { createWebhook, listWebhooks, CreateWebhookInput } from "@/lib/webhooks/manager";
+import {
+  buildTenantContextErrorResponse,
+  requireTenantRequestContext,
+} from "@/lib/api/tenant-context";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { appLogger } from "@/lib/utils/logger";
 import { withSecurity } from "@/lib/middleware/api-security";
@@ -19,25 +22,8 @@ export const GET = withSecurity(
   withUniversalBillingGate(
     async function GET(request: NextRequest) {
       try {
-        const authContext = await requireAuth(request);
-
-        if (!authContext.userId) {
-          return NextResponse.json(
-            {
-              error: "Unauthorized",
-              capability: {
-                state: "unavailable",
-                reason: "auth_required",
-              },
-            },
-            { status: 401 }
-          );
-        }
-
-        const webhooks = await listWebhooks(
-          authContext.userId,
-          authContext.tenantId || authContext.userId
-        );
+        const tenantContext = await requireTenantRequestContext(request);
+        const webhooks = await listWebhooks(tenantContext.userId, tenantContext.tenantId);
 
         // Don't expose secrets in list
         const safeWebhooks = webhooks.map((w) => ({
@@ -52,17 +38,13 @@ export const GET = withSecurity(
           },
         });
       } catch (error) {
-        if (error instanceof Error && error.message.includes("Unauthorized")) {
-          return NextResponse.json(
-            {
-              error: "Unauthorized",
-              capability: {
-                state: "unavailable",
-                reason: "auth_required",
-              },
-            },
-            { status: 401 }
-          );
+        if (
+          typeof error === "object" &&
+          error !== null &&
+          "status" in error &&
+          "capability" in error
+        ) {
+          return buildTenantContextErrorResponse(error);
         }
         appLogger.error("[Webhooks API] Error", error);
         return NextResponse.json(
@@ -87,11 +69,7 @@ export const POST = withSecurity(
   withUniversalBillingGate(
     async function POST(request: NextRequest) {
       try {
-        const authContext = await requireAuth(request);
-
-        if (!authContext.userId) {
-          return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const tenantContext = await requireTenantRequestContext(request);
 
         const body = await request.json().catch(() => ({}));
 
@@ -113,20 +91,31 @@ export const POST = withSecurity(
           secret: body.secret,
         };
 
-        const webhook = await createWebhook(
-          authContext.userId,
-          authContext.tenantId || authContext.userId,
-          input
-        );
+        const webhook = await createWebhook(tenantContext.userId, tenantContext.tenantId, input);
 
         // Return full secret only on creation
-        return NextResponse.json({ webhook }, { status: 201 });
+        return NextResponse.json({ webhook, capability: { state: "available" } }, { status: 201 });
       } catch (error) {
-        if (error instanceof Error && error.message.includes("Unauthorized")) {
-          return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        if (
+          typeof error === "object" &&
+          error !== null &&
+          "status" in error &&
+          "capability" in error
+        ) {
+          return buildTenantContextErrorResponse(error);
         }
         const errorMessage = error instanceof Error ? error.message : "Failed to create webhook";
-        return NextResponse.json({ error: errorMessage }, { status: 400 });
+        const status = error instanceof Error && errorMessage.startsWith("Invalid") ? 400 : 503;
+        return NextResponse.json(
+          {
+            error: errorMessage,
+            capability: {
+              state: status === 400 ? "unavailable" : "degraded",
+              reason: status === 400 ? "validation_failed" : "webhook_create_unavailable",
+            },
+          },
+          { status }
+        );
       }
     },
     { feature: "POST API" }

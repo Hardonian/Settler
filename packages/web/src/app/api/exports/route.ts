@@ -12,13 +12,15 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/shared/db/prismaClient";
-import { authenticateApiKey } from "@/shared/auth/apiKey";
-import { createClient } from "@/lib/supabase/server";
 import { z } from "zod";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { appLogger } from "@/lib/utils/logger";
 import { withSecurity } from "@/lib/middleware/api-security";
-import { isValidAuth } from "@/lib/type-safety/route-helpers";
+import {
+  buildTenantContextErrorResponse,
+  requireTenantRequestContext,
+} from "@/lib/api/tenant-context";
+import { getTraceId } from "@/lib/observability/trace";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -32,6 +34,92 @@ const ExportRequestSchema = z.object({
   ingestionId: z.string().uuid().optional(),
 });
 
+function unsupportedExportResponse(error: string, code: string, reason: string): NextResponse {
+  return NextResponse.json(
+    {
+      error,
+      code,
+      capability: {
+        state: "unavailable",
+        reason,
+      },
+    },
+    { status: 409 }
+  );
+}
+
+async function assertExportTargetsAccessible(args: {
+  tenantId: string;
+  reconciliationRunId?: string;
+  jobId?: string;
+  ingestionId?: string;
+}): Promise<NextResponse | null> {
+  const { tenantId, reconciliationRunId, jobId, ingestionId } = args;
+
+  if (reconciliationRunId) {
+    const run = await prisma.reconciliationRun.findFirst({
+      where: {
+        id: reconciliationRunId,
+        tenantId,
+      },
+      select: { id: true },
+    });
+
+    if (!run) {
+      return NextResponse.json(
+        {
+          error: "Reconciliation run not found",
+          code: "EXPORT_RUN_NOT_FOUND",
+        },
+        { status: 404 }
+      );
+    }
+  }
+
+  if (jobId) {
+    const job = await prisma.reconJob.findFirst({
+      where: {
+        id: jobId,
+        tenantId,
+        deletedAt: null,
+      },
+      select: { id: true },
+    });
+
+    if (!job) {
+      return NextResponse.json(
+        {
+          error: "Job not found",
+          code: "EXPORT_JOB_NOT_FOUND",
+        },
+        { status: 404 }
+      );
+    }
+  }
+
+  if (ingestionId) {
+    const ingestion = await prisma.ingestion.findFirst({
+      where: {
+        id: ingestionId,
+        tenantId,
+      },
+      select: { id: true },
+    });
+
+    if (!ingestion) {
+      return NextResponse.json(
+        {
+          error: "Ingestion not found",
+          code: "EXPORT_INGESTION_NOT_FOUND",
+        },
+        { status: 404 }
+      );
+    }
+  }
+
+  return null;
+}
+
 /**
  * POST /api/exports
  * Create an export
@@ -40,63 +128,10 @@ export const POST = withSecurity(
   withUniversalBillingGate(
     async function POST(request: NextRequest) {
       const startTime = Date.now();
+      const traceId = await getTraceId(request);
 
       try {
-        // Authenticate request
-        let tenantId: string | null = null;
-        let userId: string | null = null;
-
-        try {
-          const auth = await authenticateApiKey(request);
-          if (isValidAuth(auth)) {
-            tenantId = auth.tenantId || null;
-            userId = auth.userId || null;
-          } else {
-            // Try Supabase auth as fallback (graceful degradation)
-            try {
-              const supabase = await createClient();
-              const {
-                data: { user },
-              } = await supabase.auth.getUser();
-              if (user) {
-                userId = user.id;
-                const billingAccount = await prisma.billingAccount.findFirst({
-                  where: { userId: user.id },
-                  select: { tenantId: true },
-                });
-                tenantId = billingAccount?.tenantId || null;
-              }
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            } catch (error) {
-              return NextResponse.json(
-                {
-                  error: "Unauthorized",
-                  message: "Authentication required",
-                },
-                { status: 401 }
-              );
-            }
-          }
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (error) {
-          return NextResponse.json(
-            {
-              error: "Unauthorized",
-              message: "Authentication required",
-            },
-            { status: 401 }
-          );
-        }
-
-        if (!tenantId || !userId) {
-          return NextResponse.json(
-            {
-              error: "Unauthorized",
-              message: "Tenant ID and User ID required",
-            },
-            { status: 401 }
-          );
-        }
+        const tenantContext = await requireTenantRequestContext(request);
 
         // Parse and validate request body
         const body = await request.json();
@@ -115,6 +150,22 @@ export const POST = withSecurity(
 
         const { type, format, reconciliationRunId, jobId, ingestionId } = validationResult.data;
 
+        if (type === "excel") {
+          return unsupportedExportResponse(
+            "Excel exports are not available in this release.",
+            "EXPORT_TYPE_UNAVAILABLE",
+            "excel_export_unavailable"
+          );
+        }
+
+        if (format === "reconciliation_report") {
+          return unsupportedExportResponse(
+            "Reconciliation report exports are not available in this release.",
+            "EXPORT_FORMAT_UNAVAILABLE",
+            "reconciliation_report_unavailable"
+          );
+        }
+
         // Verify at least one ID is provided
         if (!reconciliationRunId && !jobId && !ingestionId) {
           return NextResponse.json(
@@ -127,18 +178,47 @@ export const POST = withSecurity(
           );
         }
 
+        if (ingestionId && !reconciliationRunId && !jobId) {
+          return unsupportedExportResponse(
+            "Ingestion-only exports are not available in this release.",
+            "EXPORT_TARGET_UNAVAILABLE",
+            "ingestion_export_unavailable"
+          );
+        }
+
+        const targetCheck = await assertExportTargetsAccessible({
+          tenantId: tenantContext.tenantId,
+          reconciliationRunId,
+          jobId,
+          ingestionId,
+        });
+
+        if (targetCheck) {
+          return targetCheck;
+        }
+
         // Create export record
         const exportRecord = await prisma.export.create({
           data: {
-            tenantId: tenantId,
-            userId: userId,
+            tenantId: tenantContext.tenantId,
+            userId: tenantContext.userId,
             type: type,
             format: format,
             reconciliationRunId: reconciliationRunId || null,
             ingestionId: ingestionId || null,
             status: "pending",
+            traceId,
             metadata: {
               jobId: jobId || null,
+              actor: {
+                userId: tenantContext.userId,
+                authType: tenantContext.auth.type,
+              },
+              requestedScope: {
+                tenantId: tenantContext.tenantId,
+                reconciliationRunId: reconciliationRunId || null,
+                ingestionId: ingestionId || null,
+              },
             },
           },
         });
@@ -147,7 +227,7 @@ export const POST = withSecurity(
         // For now, process immediately
         processExport(
           exportRecord.id,
-          tenantId,
+          tenantContext.tenantId,
           type,
           format,
           reconciliationRunId,
@@ -176,12 +256,28 @@ export const POST = withSecurity(
             status: exportRecord.status,
             type: exportRecord.type,
             format: exportRecord.format,
+            traceId: exportRecord.traceId,
+            reconciliationRunId: exportRecord.reconciliationRunId,
+            ingestionId: exportRecord.ingestionId,
+            jobId,
             createdAt: exportRecord.createdAt,
             message: "Export created successfully. Processing will begin shortly.",
+            capability: {
+              state: "available",
+            },
           },
           { status: 201 }
         );
       } catch (error) {
+        if (
+          typeof error === "object" &&
+          error !== null &&
+          "status" in error &&
+          "capability" in error
+        ) {
+          return buildTenantContextErrorResponse(error);
+        }
+
         const duration = Date.now() - startTime;
         const errorMessage = error instanceof Error ? error.message : "Unknown error";
         const errorStack = error instanceof Error ? error.stack : undefined;
@@ -192,15 +288,18 @@ export const POST = withSecurity(
           duration,
         });
 
-        // Never return 500 - return graceful error response
         return NextResponse.json(
           {
-            success: false,
             error: "Failed to create export",
             message: "Please try again later or contact support if the issue persists",
             details: process.env.NODE_ENV === "development" ? errorMessage : undefined,
+            traceId,
+            capability: {
+              state: "degraded",
+              reason: "export_create_unavailable",
+            },
           },
-          { status: 200 }
+          { status: 500 }
         );
       }
     },
@@ -217,43 +316,13 @@ export const GET = withSecurity(
   withUniversalBillingGate(
     async function GET(request: NextRequest) {
       try {
-        // Authenticate
-        let tenantId: string | null = null;
-        let userId: string | null = null;
-
-        const auth = await authenticateApiKey(request);
-        if (isValidAuth(auth)) {
-          tenantId = auth.tenantId || null;
-          userId = auth.userId || null;
-        } else {
-          // Try Supabase auth as fallback (graceful degradation)
-          try {
-            const supabase = await createClient();
-            const {
-              data: { user },
-            } = await supabase.auth.getUser();
-            if (user) {
-              userId = user.id;
-              const billingAccount = await prisma.billingAccount.findFirst({
-                where: { userId: user.id },
-                select: { tenantId: true },
-              });
-              tenantId = billingAccount?.tenantId || null;
-            }
-          } catch {
-            // Supabase auth failed - will return 401 below
-          }
-        }
-
-        if (!tenantId || !userId) {
-          return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const tenantContext = await requireTenantRequestContext(request);
 
         // Fetch exports
         const exports = await prisma.export.findMany({
           where: {
-            tenantId: tenantId,
-            userId: userId,
+            tenantId: tenantContext.tenantId,
+            userId: tenantContext.userId,
           },
           orderBy: {
             createdAt: "desc",
@@ -262,28 +331,50 @@ export const GET = withSecurity(
         });
 
         return NextResponse.json({
-          data: exports.map((exp: any) => ({
-            id: exp.id,
-            type: exp.type,
-            format: exp.format,
-            status: exp.status,
-            createdAt: exp.createdAt,
-            signedUrl: exp.signedUrl,
-            signedUrlExpiresAt: exp.signedUrlExpiresAt,
-            fileSizeBytes: exp.fileSizeBytes,
-            rowCount: exp.rowCount,
-          })),
+          data: exports.map((exp: any) => {
+            const metadata = (exp.metadata as { jobId?: string | null } | null) || null;
+
+            return {
+              id: exp.id,
+              type: exp.type,
+              format: exp.format,
+              status: exp.status,
+              reconciliationRunId: exp.reconciliationRunId,
+              ingestionId: exp.ingestionId,
+              jobId: metadata?.jobId || null,
+              traceId: exp.traceId,
+              createdAt: exp.createdAt,
+              signedUrl: exp.signedUrl,
+              signedUrlExpiresAt: exp.signedUrlExpiresAt,
+              fileSizeBytes: exp.fileSizeBytes,
+              rowCount: exp.rowCount,
+            };
+          }),
+          capability: {
+            state: "available",
+          },
         });
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        // Never return 500 - return empty exports array with graceful error message
+        if (
+          typeof error === "object" &&
+          error !== null &&
+          "status" in error &&
+          "capability" in error
+        ) {
+          return buildTenantContextErrorResponse(error);
+        }
+
         return NextResponse.json(
           {
             data: [],
             error: "Failed to list exports",
             message: "Please try again later or contact support if the issue persists",
+            capability: {
+              state: "degraded",
+              reason: "export_list_unavailable",
+            },
           },
-          { status: 200 }
+          { status: 503 }
         );
       }
     },
@@ -393,9 +484,7 @@ async function processExport(
       fileContent = JSON.stringify(data, null, 2);
       filename = `export-${exportId}.json`;
     } else {
-      // Excel - for now, return JSON (requires exceljs library)
-      fileContent = JSON.stringify(data, null, 2);
-      filename = `export-${exportId}.json`;
+      throw new Error(`Unsupported export type: ${type}`);
     }
 
     // In production, upload to S3 or similar storage

@@ -6,7 +6,7 @@
  */
 
 import { Suspense } from "react";
-import { Activity, Terminal, LayoutDashboard, Key, Database, ShieldCheck, Bot } from "lucide-react";
+import { Terminal, Key, Database, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { validateSupabaseEnv } from "@/lib/env/validator";
 import { EnvErrorPanel } from "@/components/env/EnvErrorPanel";

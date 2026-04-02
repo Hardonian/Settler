@@ -13,7 +13,6 @@ import type { TenantAction } from "../../services/authz/openfga-authorization-se
 import { aiKnowledgeAssistant } from "../../services/knowledge/ai-assistant";
 import {
   DECISION_STATUSES,
-  type DecisionQuery,
   type DecisionStatus,
   decisionLog,
 } from "../../services/knowledge/decision-log";

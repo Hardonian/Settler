@@ -8,8 +8,6 @@
 import { Router, Request, Response } from "express";
 import { z } from "zod";
 import { authMiddleware } from "../middleware/auth";
-import { requirePermission } from "../middleware/authorization";
-import { Permission } from "../infrastructure/security/Permissions";
 import {
   retentionPolicyService,
   retentionPeriodToDays,
@@ -19,9 +17,6 @@ import { getTTLWorker } from "../services/retention/ttl-worker";
 import { logInfo, logError } from "../utils/logger";
 
 const router: Router = Router();
-
-// All retention routes require authentication
-router.use(authMiddleware);
 
 // All retention routes require authentication
 router.use(authMiddleware);
