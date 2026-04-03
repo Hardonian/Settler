@@ -8,6 +8,7 @@ import {
 import { prisma } from "@/shared/db/prismaClient";
 import {
   resolveOperatorRunDetailForTenants,
+  toRunCompactProofSummary,
   unavailableRunProofpackIndex,
 } from "@settler/reconciliation-core";
 
@@ -39,7 +40,8 @@ export const GET = withSecurity(
       }
 
       const detail = outcome.detail;
-      const proofpackIndex = detail.proofpackIndex;
+      const proofpackIndex = detail.proofpackIndex ?? unavailableRunProofpackIndex();
+      const compactProofSummary = toRunCompactProofSummary(proofpackIndex);
       const artifact = {
         schemaVersion: "proofpack.run.v1",
         generatedAt: new Date().toISOString(),
@@ -51,17 +53,14 @@ export const GET = withSecurity(
           completedAt: detail.completedAt,
           detailHref: detail.detailHref,
         },
-        proofpackIndex: proofpackIndex ?? unavailableRunProofpackIndex(),
+        proofpackIndex,
+        compactProofSummary,
         supportability: {
           shareable: Boolean(
-            proofpackIndex &&
             proofpackIndex.proofPackages.state === "ready" &&
             proofpackIndex.comparison.state === "available"
           ),
-          notes:
-            proofpackIndex?.comparison.state === "available"
-              ? []
-              : ["Prior comparable baseline is unavailable or not comparable."],
+          notes: compactProofSummary.operatorSummary.primaryReasonCodes,
         },
       };
 

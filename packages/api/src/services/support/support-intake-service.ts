@@ -115,7 +115,7 @@ async function buildSupportRunContext(
 ): Promise<Record<string, unknown>> {
   try {
     const outcome = await resolveOperatorRunDetailForTenants(prisma, [tenantId], runId);
-    if (outcome.kind !== "resolved") {
+    if (outcome.kind !== "ok") {
       return {
         state: "unavailable",
         reason: outcome.kind,

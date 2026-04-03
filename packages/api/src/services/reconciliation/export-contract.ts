@@ -4,10 +4,12 @@ import {
   validateTenantId,
 } from "../../infrastructure/tenancy/TenantEnforcement";
 import {
+  resolveOperatorRunDetailForTenants,
   toRunCompactProofSummary,
   unavailableRunProofpackIndex,
   type RunCompactProofSummary,
 } from "@settler/reconciliation-core";
+import { prisma } from "../../infrastructure/db/prisma";
 import {
   computeReconciliationHash,
   verifyIntegrityChain,
@@ -38,6 +40,12 @@ export interface ReconciliationExportDocument {
     chainValid: boolean;
   };
   historicalIntelligence: RunCompactProofSummary;
+  historicalIntelligenceContext: {
+    runId: string;
+    runKind: "recon_job" | "ingestion_run" | "unknown";
+    source: "operator_run_detail" | "fallback";
+    reason: string | null;
+  };
 }
 
 export interface ExportPaginationOptions {
@@ -162,6 +170,8 @@ export async function buildReconciliationExport(
 
   const chainVerification = verifyIntegrityChain(chain);
 
+  const historicalIntelligence = await buildHistoricalIntelligence(tenantId, runId);
+
   return {
     schemaVersion: EXPORT_SCHEMA_VERSION,
     exportedAt: new Date().toISOString(),
@@ -174,9 +184,8 @@ export async function buildReconciliationExport(
       chain,
       chainValid: chainVerification.valid,
     },
-    historicalIntelligence: toRunCompactProofSummary(
-      unavailableRunProofpackIndex("ingestion_run_history_not_comparable")
-    ),
+    historicalIntelligence: historicalIntelligence.summary,
+    historicalIntelligenceContext: historicalIntelligence.context,
     pagination: {
       limit: matchLimit,
       offset: matchOffset,
@@ -184,4 +193,52 @@ export async function buildReconciliationExport(
       hasMore: matchOffset + matches.length < totalMatches,
     },
   };
+}
+
+async function buildHistoricalIntelligence(tenantId: string, runId: string): Promise<{
+  summary: RunCompactProofSummary;
+  context: ReconciliationExportDocument["historicalIntelligenceContext"];
+}> {
+  try {
+    const resolved = await resolveOperatorRunDetailForTenants(prisma, [tenantId], runId);
+    if (resolved.kind !== "ok") {
+      return {
+        summary: toRunCompactProofSummary(
+          unavailableRunProofpackIndex(`export_run_detail_${resolved.kind}`)
+        ),
+        context: {
+          runId,
+          runKind: "unknown",
+          source: "fallback",
+          reason: resolved.kind,
+        },
+      };
+    }
+
+    const fallbackReason =
+      resolved.detail.runKind === "ingestion_run"
+        ? "ingestion_run_history_not_comparable"
+        : "export_run_proofpack_missing";
+    return {
+      summary: toRunCompactProofSummary(
+        resolved.detail.proofpackIndex ?? unavailableRunProofpackIndex(fallbackReason)
+      ),
+      context: {
+        runId: resolved.detail.id,
+        runKind: resolved.detail.runKind,
+        source: "operator_run_detail",
+        reason: resolved.detail.proofpackIndex ? null : fallbackReason,
+      },
+    };
+  } catch {
+    return {
+      summary: toRunCompactProofSummary(unavailableRunProofpackIndex("export_run_detail_error")),
+      context: {
+        runId,
+        runKind: "unknown",
+        source: "fallback",
+        reason: "export_run_detail_error",
+      },
+    };
+  }
 }
