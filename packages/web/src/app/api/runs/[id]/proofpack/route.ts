@@ -7,8 +7,9 @@ import {
 } from "@/lib/supabase/tenant-membership";
 import { prisma } from "@/shared/db/prismaClient";
 import {
+  canonicalMissingProofpackReasonForRunKind,
+  resolveRunCompactProofSummary,
   resolveOperatorRunDetailForTenants,
-  toRunCompactProofSummary,
   unavailableRunProofpackIndex,
 } from "@settler/reconciliation-core";
 
@@ -40,8 +41,14 @@ export const GET = withSecurity(
       }
 
       const detail = outcome.detail;
-      const proofpackIndex = detail.proofpackIndex ?? unavailableRunProofpackIndex();
-      const compactProofSummary = detail.compactProofSummary ?? toRunCompactProofSummary(proofpackIndex);
+      const proofpackIndex =
+        detail.proofpackIndex ??
+        unavailableRunProofpackIndex(canonicalMissingProofpackReasonForRunKind(detail.runKind));
+      const compactProofSummary = resolveRunCompactProofSummary({
+        runKind: detail.runKind,
+        compactProofSummary: detail.compactProofSummary,
+        proofpackIndex,
+      }).compactProofSummary;
       const artifact = {
         schemaVersion: "proofpack.run.v1",
         generatedAt: new Date().toISOString(),

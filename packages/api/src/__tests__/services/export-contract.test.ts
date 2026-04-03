@@ -37,6 +37,55 @@ jest.mock("@settler/reconciliation-core", () => ({
   unavailableRunProofpackIndex: (reasonCode: string) => ({
     comparison: { state: "unavailable", reasonCodes: [reasonCode] },
   }),
+  resolveRunCompactProofSummary: (input: any) => {
+    const reasonCode = input.fallbackReasonCode ?? "run_proofpack_missing";
+    if (input.compactProofSummary) {
+      return {
+        compactProofSummary: input.compactProofSummary,
+        source: "compact_summary",
+        fallbackReasonCode: null,
+      };
+    }
+    if (input.proofpackIndex) {
+      return {
+        compactProofSummary: {
+          delta: {
+            state: input.proofpackIndex.comparison.state,
+            reasonCodes: input.proofpackIndex.comparison.reasonCodes,
+          },
+          operatorSummary: {
+            signal: "strong",
+            pattern: "stable_pattern",
+            changedSincePreviousRun: "unchanged",
+            proofPosture: "unchanged",
+            primaryReasonCodes: input.proofpackIndex.comparison.reasonCodes,
+            recurringFamilies: [],
+            summary: "stable",
+            explainerCodes: ["signal_strong", "pattern_stable"],
+          },
+        },
+        source: "proofpack_index",
+        fallbackReasonCode: null,
+      };
+    }
+    return {
+      compactProofSummary: {
+        delta: { state: "unavailable", reasonCodes: [reasonCode] },
+        operatorSummary: {
+          signal: "unavailable",
+          pattern: "unavailable",
+          changedSincePreviousRun: "unavailable",
+          proofPosture: "unavailable",
+          primaryReasonCodes: [reasonCode],
+          recurringFamilies: [],
+          summary: "unavailable",
+          explainerCodes: ["signal_unavailable", "pattern_unavailable"],
+        },
+      },
+      source: "fallback_unavailable",
+      fallbackReasonCode: reasonCode,
+    };
+  },
 }));
 
 const queryMock = query as jest.MockedFunction<typeof query>;

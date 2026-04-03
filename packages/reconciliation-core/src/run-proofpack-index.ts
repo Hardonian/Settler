@@ -157,6 +157,14 @@ export type RunCompactProofSummary = {
   };
 };
 
+type RunKindForSummary = "recon_job" | "ingestion_run";
+
+export type RunCompactProofSummaryResolution = {
+  compactProofSummary: RunCompactProofSummary;
+  source: "compact_summary" | "proofpack_index" | "fallback_unavailable";
+  fallbackReasonCode: RunOperatorReasonCode | null;
+};
+
 type LatestPriorResultRow = {
   recon_job_id: string;
   rn: number;
@@ -415,6 +423,44 @@ export function toRunCompactProofSummary(index: RunProofpackIndex): RunCompactPr
       summary,
       explainerCodes,
     },
+  };
+}
+
+export function canonicalMissingProofpackReasonForRunKind(
+  runKind: RunKindForSummary
+): RunOperatorReasonCode {
+  return runKind === "ingestion_run" ? "ingestion_run_history_not_comparable" : "run_proofpack_missing";
+}
+
+export function resolveRunCompactProofSummary(input: {
+  runKind: RunKindForSummary;
+  compactProofSummary?: RunCompactProofSummary;
+  proofpackIndex?: RunProofpackIndex;
+  fallbackReasonCode?: RunOperatorReasonCode;
+}): RunCompactProofSummaryResolution {
+  if (input.compactProofSummary) {
+    return {
+      compactProofSummary: input.compactProofSummary,
+      source: "compact_summary",
+      fallbackReasonCode: null,
+    };
+  }
+
+  if (input.proofpackIndex) {
+    return {
+      compactProofSummary: toRunCompactProofSummary(input.proofpackIndex),
+      source: "proofpack_index",
+      fallbackReasonCode: null,
+    };
+  }
+
+  const fallbackReasonCode =
+    input.fallbackReasonCode ?? canonicalMissingProofpackReasonForRunKind(input.runKind);
+
+  return {
+    compactProofSummary: toRunCompactProofSummary(unavailableRunProofpackIndex(fallbackReasonCode)),
+    source: "fallback_unavailable",
+    fallbackReasonCode,
   };
 }
 

@@ -4,9 +4,8 @@ import {
   validateTenantId,
 } from "../../infrastructure/tenancy/TenantEnforcement";
 import {
+  resolveRunCompactProofSummary,
   resolveOperatorRunDetailForTenants,
-  toRunCompactProofSummary,
-  unavailableRunProofpackIndex,
   type RunCompactProofSummary,
 } from "@settler/reconciliation-core";
 import { prisma } from "../../infrastructure/db/prisma";
@@ -203,9 +202,10 @@ async function buildHistoricalIntelligence(tenantId: string, runId: string): Pro
     const resolved = await resolveOperatorRunDetailForTenants(prisma, [tenantId], runId);
     if (resolved.kind !== "ok") {
       return {
-        summary: toRunCompactProofSummary(
-          unavailableRunProofpackIndex(`export_run_detail_${resolved.kind}`)
-        ),
+        summary: resolveRunCompactProofSummary({
+          runKind: "recon_job",
+          fallbackReasonCode: `export_run_detail_${resolved.kind}`,
+        }).compactProofSummary,
         context: {
           runId,
           runKind: "unknown",
@@ -215,28 +215,28 @@ async function buildHistoricalIntelligence(tenantId: string, runId: string): Pro
       };
     }
 
-    const fallbackReason =
-      resolved.detail.runKind === "ingestion_run"
-        ? "ingestion_run_history_not_comparable"
-        : "export_run_proofpack_missing";
-    const fallbackSummary = toRunCompactProofSummary(
-      resolved.detail.proofpackIndex ?? unavailableRunProofpackIndex(fallbackReason)
-    );
+    const summaryResolution = resolveRunCompactProofSummary({
+      runKind: resolved.detail.runKind,
+      compactProofSummary: resolved.detail.compactProofSummary,
+      proofpackIndex: resolved.detail.proofpackIndex,
+      fallbackReasonCode:
+        resolved.detail.runKind === "ingestion_run" ? "ingestion_run_history_not_comparable" : "run_proofpack_missing",
+    });
     return {
-      summary: resolved.detail.compactProofSummary ?? fallbackSummary,
+      summary: summaryResolution.compactProofSummary,
       context: {
         runId: resolved.detail.id,
         runKind: resolved.detail.runKind,
         source: "operator_run_detail",
-        reason:
-          resolved.detail.compactProofSummary || resolved.detail.proofpackIndex
-            ? null
-            : fallbackReason,
+        reason: summaryResolution.fallbackReasonCode,
       },
     };
   } catch {
     return {
-      summary: toRunCompactProofSummary(unavailableRunProofpackIndex("export_run_detail_error")),
+      summary: resolveRunCompactProofSummary({
+        runKind: "recon_job",
+        fallbackReasonCode: "export_run_detail_error",
+      }).compactProofSummary,
       context: {
         runId,
         runKind: "unknown",
