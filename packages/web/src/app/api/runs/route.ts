@@ -26,6 +26,7 @@ import {
   mapCanonicalListItemToApiRunsLegacyRow,
   MergedRunsCursorError,
   buildRunProofpackIndexByRunId,
+  toRunCompactProofSummary,
   type MergedRunsCursorV1,
 } from "@settler/reconciliation-core";
 import {
@@ -37,25 +38,8 @@ import {
 export const runtime = "nodejs";
 
 type RunListItemWithSignals = ReturnType<typeof mapCanonicalListItemToApiRunsLegacyRow> & {
-  compactProofSummary?: ReturnType<typeof toCompactProofSummary>;
+  compactProofSummary?: ReturnType<typeof toRunCompactProofSummary>;
 };
-
-function toCompactProofSummary(index: import("@settler/reconciliation-core").RunProofpackIndex) {
-  return {
-    proofPackages: index.proofPackages,
-    recurrence: index.recurrence,
-    delta: {
-      changedSincePreviousRun: index.comparison.changedSincePriorRun,
-      summary: index.comparison.summary,
-      state: index.comparison.state,
-      certainty: index.comparison.certainty,
-      reasonCodes: index.comparison.reasonCodes,
-      baseline: index.comparison.baseline,
-      history: index.comparison.history,
-      deltas: index.comparison.deltas,
-    },
-  };
-}
 
 function resolveTenantIdForRuns(
   authContext: UnifiedAuthContext,
@@ -96,7 +80,7 @@ async function withRunCompactProofSignals(
     const index = indexByRun.get(row.id);
     return {
       ...legacy,
-      compactProofSummary: index ? toCompactProofSummary(index) : undefined,
+      compactProofSummary: index ? toRunCompactProofSummary(index) : undefined,
     };
   });
 }
@@ -202,7 +186,8 @@ export const GET = withSecurity(
         }
 
         let walkCursor: MergedRunsCursorV1 | null = null;
-        const collected: import("@settler/reconciliation-core").CanonicalReconciliationListItem[] = [];
+        const collected: import("@settler/reconciliation-core").CanonicalReconciliationListItem[] =
+          [];
         let pagesScanned = 0;
         let lastPagePagination = null as
           | Awaited<ReturnType<typeof fetchMergedReconciliationRunsPage>>["pagination"]

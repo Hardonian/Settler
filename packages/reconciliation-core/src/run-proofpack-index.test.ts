@@ -1,4 +1,8 @@
-import { buildRunProofpackIndexByRunId } from "./run-proofpack-index.js";
+import {
+  buildRunProofpackIndexByRunId,
+  toRunCompactProofSummary,
+  unavailableRunProofpackIndex,
+} from "./run-proofpack-index.js";
 import type { CanonicalReconciliationListItem } from "./canonical-reconciliation.js";
 
 const baseRun: CanonicalReconciliationListItem = {
@@ -31,7 +35,12 @@ const baseRun: CanonicalReconciliationListItem = {
     ignored: 0,
     resolved: 0,
   },
-  provenance: { sourceModel: "recon_jobs", runKind: "recon_job", ingestionId: null, reconJobId: "job-1" },
+  provenance: {
+    sourceModel: "recon_jobs",
+    runKind: "recon_job",
+    ingestionId: null,
+    reconJobId: "job-1",
+  },
   adapters: { sourceAdapter: "a", targetAdapter: "b" },
   timestamps: {
     createdAt: "2026-01-01T00:00:00.000Z",
@@ -111,7 +120,11 @@ describe("run proofpack index", () => {
       ]),
     };
 
-    const byRun = await buildRunProofpackIndexByRunId({ prisma, tenantId: "tenant-1", runs: [baseRun] });
+    const byRun = await buildRunProofpackIndexByRunId({
+      prisma,
+      tenantId: "tenant-1",
+      runs: [baseRun],
+    });
     const index = byRun.get("job-1");
     expect(index?.comparison.state).toBe("available");
     expect(index?.comparison.changedSincePriorRun).toBe("changed");
@@ -141,9 +154,40 @@ describe("run proofpack index", () => {
       ]),
     };
 
-    const byRun = await buildRunProofpackIndexByRunId({ prisma, tenantId: "tenant-1", runs: [baseRun] });
+    const byRun = await buildRunProofpackIndexByRunId({
+      prisma,
+      tenantId: "tenant-1",
+      runs: [baseRun],
+    });
     expect(byRun.get("job-1")?.comparison.state).toBe("unavailable");
     expect(byRun.get("job-1")?.comparison.reasonCodes).toContain("baseline_missing");
     expect(byRun.get("job-1")?.comparison.history.trend).toBe("unavailable");
+  });
+
+  it("builds canonical compact proof summary from full index", async () => {
+    const prisma: any = {
+      reconciliationMatch: { findMany: jest.fn().mockResolvedValue([]) },
+      exceptionAdjudicationMemory: { findMany: jest.fn().mockResolvedValue([]) },
+      proofPackage: { findMany: jest.fn().mockResolvedValue([]) },
+      $queryRaw: jest.fn().mockResolvedValue([]),
+    };
+
+    const byRun = await buildRunProofpackIndexByRunId({
+      prisma,
+      tenantId: "tenant-1",
+      runs: [baseRun],
+    });
+    const index = byRun.get("job-1");
+    expect(index).toBeDefined();
+    const compact = toRunCompactProofSummary(index!);
+    expect(compact.delta.changedSincePreviousRun).toBe("unavailable");
+    expect(compact.recurrence.state).toBe("setup_required");
+  });
+
+  it("returns explicit unavailable index contract for unsupported run types", () => {
+    const unavailable = unavailableRunProofpackIndex();
+    expect(unavailable.proofPackages.state).toBe("unavailable");
+    expect(unavailable.comparison.reasonCodes).toEqual(["proofpack_index_unavailable"]);
+    expect(unavailable.comparison.history.reasonCodes).toEqual(["proofpack_index_unavailable"]);
   });
 });

@@ -23,6 +23,8 @@ import { enforceFreezeState } from "../middleware/governance";
 import {
   scanMergedRunsForLegacyPage,
   resolveOperatorRunDetailForTenants,
+  buildRunProofpackIndexByRunId,
+  toRunCompactProofSummary,
 } from "@settler/reconciliation-core";
 import { handleRouteError } from "../utils/error-handler";
 import {
@@ -80,11 +82,25 @@ router.get(
         batchSize: MERGED_LIST_BATCH_SIZE,
       });
 
+      const indexByRun = await buildRunProofpackIndexByRunId({
+        prisma,
+        tenantId,
+        runs: result.data.map((row) => ({ id: row.id, runKind: row.runKind })),
+      });
+
+      const rowsWithSignals = result.data.map((row) => {
+        const index = indexByRun.get(row.id);
+        return {
+          ...row,
+          compactProofSummary: index ? toRunCompactProofSummary(index) : undefined,
+        };
+      });
+
       logInfo("Runs listed", {
         tenantId,
         status: result.filters.status,
         search: result.filters.search,
-        count: result.data.length,
+        count: rowsWithSignals.length,
         total: result.pagination.total,
         page,
         limit,
@@ -92,7 +108,7 @@ router.get(
       });
 
       res.json({
-        data: result.data,
+        data: rowsWithSignals,
         pagination: result.pagination,
       });
     } catch (error: unknown) {
