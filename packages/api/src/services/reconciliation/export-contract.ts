@@ -219,15 +219,19 @@ async function buildHistoricalIntelligence(tenantId: string, runId: string): Pro
       resolved.detail.runKind === "ingestion_run"
         ? "ingestion_run_history_not_comparable"
         : "export_run_proofpack_missing";
+    const fallbackSummary = toRunCompactProofSummary(
+      resolved.detail.proofpackIndex ?? unavailableRunProofpackIndex(fallbackReason)
+    );
     return {
-      summary: toRunCompactProofSummary(
-        resolved.detail.proofpackIndex ?? unavailableRunProofpackIndex(fallbackReason)
-      ),
+      summary: resolved.detail.compactProofSummary ?? fallbackSummary,
       context: {
         runId: resolved.detail.id,
         runKind: resolved.detail.runKind,
         source: "operator_run_detail",
-        reason: resolved.detail.proofpackIndex ? null : fallbackReason,
+        reason:
+          resolved.detail.compactProofSummary || resolved.detail.proofpackIndex
+            ? null
+            : fallbackReason,
       },
     };
   } catch {

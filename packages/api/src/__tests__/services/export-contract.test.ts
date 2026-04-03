@@ -11,6 +11,10 @@ jest.mock("../../db", () => {
   };
 });
 
+jest.mock("../../infrastructure/db/prisma", () => ({
+  prisma: {},
+}));
+
 jest.mock("@settler/reconciliation-core", () => ({
   resolveOperatorRunDetailForTenants: (...args: unknown[]) =>
     resolveOperatorRunDetailForTenantsMock(...args),
@@ -69,6 +73,18 @@ describe("buildReconciliationExport historical intelligence", () => {
       detail: {
         id: "run-1",
         runKind: "recon_job",
+        compactProofSummary: {
+          delta: { state: "available", reasonCodes: ["history_window_evaluated"] },
+          operatorSummary: {
+            signal: "strong",
+            pattern: "recovering_pattern",
+            changedSincePreviousRun: "changed",
+            proofPosture: "stronger",
+            primaryReasonCodes: ["history_window_evaluated"],
+            recurringFamilies: [],
+            summary: "recovering",
+          },
+        },
         proofpackIndex: { comparison: { state: "available", reasonCodes: [] } },
       },
     });
@@ -85,7 +101,7 @@ describe("buildReconciliationExport historical intelligence", () => {
       source: "operator_run_detail",
       reason: null,
     });
-    expect(document?.historicalIntelligence.delta.state).toBe("available");
+    expect(document?.historicalIntelligence.operatorSummary.pattern).toBe("recovering_pattern");
   });
 
   it("preserves explicit fallback reason when canonical detail lookup is unavailable", async () => {

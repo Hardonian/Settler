@@ -11,7 +11,12 @@
 import type { RunStatus } from "@settler/types";
 import type { CanonicalReconciliationRunDetail } from "./canonical-reconciliation.js";
 import type { AdapterDriftSignal } from "./canonical-run-result.js";
-import type { RunProofpackIndex } from "./run-proofpack-index.js";
+import {
+  toRunCompactProofSummary,
+  unavailableRunProofpackIndex,
+  type RunCompactProofSummary,
+  type RunProofpackIndex,
+} from "./run-proofpack-index.js";
 
 function legacyAdapterDriftLabel(
   signal: AdapterDriftSignal
@@ -175,10 +180,26 @@ export interface OperatorRunDetailBase {
     confidenceDelta: number | null;
   } | null;
   proofpackIndex?: RunProofpackIndex;
+  compactProofSummary: RunCompactProofSummary;
   kindDetail: OperatorKindDetail;
 }
 
 export type OperatorRunDetail = OperatorRunDetailBase;
+
+function buildCompactProofSummaryForRunDetail(
+  runKind: OperatorRunDetail["runKind"],
+  proofpackIndex?: RunProofpackIndex
+): RunCompactProofSummary {
+  if (proofpackIndex) {
+    return toRunCompactProofSummary(proofpackIndex);
+  }
+
+  return toRunCompactProofSummary(
+    unavailableRunProofpackIndex(
+      runKind === "ingestion_run" ? "ingestion_run_history_not_comparable" : "run_proofpack_missing"
+    )
+  );
+}
 
 function baseFromCanonical(
   detail: CanonicalReconciliationRunDetail,
@@ -298,6 +319,10 @@ export function buildOperatorIngestionRunDetailJson(input: {
     metadata: input.detail.metadata,
     traceId: input.detail.traceId,
     proofpackIndex: input.proofpackIndex,
+    compactProofSummary: buildCompactProofSummaryForRunDetail(
+      input.detail.runKind,
+      input.proofpackIndex
+    ),
     kindDetail: {
       kind: "ingestion_run",
       ingestionRun: {
@@ -354,6 +379,10 @@ export function buildOperatorReconRunDetailJson(input: {
     metadata: input.detail.metadata,
     traceId: input.detail.traceId,
     proofpackIndex: input.proofpackIndex,
+    compactProofSummary: buildCompactProofSummaryForRunDetail(
+      input.detail.runKind,
+      input.proofpackIndex
+    ),
     runDelta: input.runDelta,
     kindDetail: {
       kind: "recon_job",

@@ -38,6 +38,7 @@ describe("support-intake-service run intelligence context", () => {
         id: "run-1",
         runKind: "recon_job",
         status: "completed",
+        compactProofSummary: { operatorSummary: { signal: "strong" } },
         proofpackIndex: {
           comparison: { reasonCodes: ["history_window_evaluated"] },
         },
@@ -58,10 +59,11 @@ describe("support-intake-service run intelligence context", () => {
     expect(query).toHaveBeenCalledTimes(1);
     const metadata = JSON.parse(query.mock.calls[0][1][4]);
     expect(metadata.run_context).toMatchObject({
-      state: "resolved",
+      state: "ok",
       runId: "run-1",
       runKind: "recon_job",
       status: "completed",
+      compactProofSummary: { operatorSummary: { signal: "strong" } },
     });
 
     expect(eventBus.emitEvent).toHaveBeenCalledWith(
@@ -69,7 +71,7 @@ describe("support-intake-service run intelligence context", () => {
       "tenant-1",
       expect.objectContaining({
         runId: "run-1",
-        runIntelligence: expect.objectContaining({ state: "resolved", runId: "run-1" }),
+        runIntelligence: expect.objectContaining({ state: "ok", runId: "run-1" }),
       }),
       expect.any(Object)
     );
