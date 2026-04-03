@@ -30,6 +30,7 @@ import {
   type RunConfigurationSummary,
 } from "./run-configuration-summary.js";
 import { toStageRows, type ReconAuditRow } from "./recon-audit-stages.js";
+import { buildRunProofpackIndexByRunId } from "./run-proofpack-index.js";
 
 export type OperatorRunDetailResolution =
   | { kind: "ok"; detail: OperatorRunDetail }
@@ -139,6 +140,7 @@ export async function resolveOperatorRunDetailForTenants(
       detail: buildOperatorIngestionRunDetailJson({
         detail: resolved.detail,
         stages: buildIngestionStages(resolved),
+        proofpackIndex: undefined,
       }),
     };
   }
@@ -309,6 +311,12 @@ export async function resolveOperatorRunDetailForTenants(
       new Set(contract.rowResults.map((row) => row.rationale.code))
     );
 
+    const proofpackIndexByRun = await buildRunProofpackIndexByRunId({
+      prisma,
+      tenantId: job.tenantId,
+      runs: [resolved.detail],
+    });
+
     const detailJson = buildOperatorReconRunDetailJson({
       detail: resolved.detail,
       status: truth.status,
@@ -337,6 +345,7 @@ export async function resolveOperatorRunDetailForTenants(
       rowRationaleCodes,
       rowResultsPreview: contract.rowResults.slice(0, 100),
       stages: toStageRows(auditRows),
+      proofpackIndex: proofpackIndexByRun.get(resolved.detail.id),
       runDelta: runDeltaRecord
         ? {
             inputChanged: runDeltaRecord.inputChanged,

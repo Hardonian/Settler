@@ -11,6 +11,7 @@
 import type { RunStatus } from "@settler/types";
 import type { CanonicalReconciliationRunDetail } from "./canonical-reconciliation.js";
 import type { AdapterDriftSignal } from "./canonical-run-result.js";
+import type { RunProofpackIndex } from "./run-proofpack-index.js";
 
 function legacyAdapterDriftLabel(
   signal: AdapterDriftSignal
@@ -173,6 +174,7 @@ export interface OperatorRunDetailBase {
     resolvedPatterns: string[];
     confidenceDelta: number | null;
   } | null;
+  proofpackIndex?: RunProofpackIndex;
   kindDetail: OperatorKindDetail;
 }
 
@@ -236,6 +238,7 @@ function baseFromCanonical(
 export function buildOperatorIngestionRunDetailJson(input: {
   detail: CanonicalReconciliationRunDetail;
   stages: OperatorRunStageRow[];
+  proofpackIndex?: RunProofpackIndex;
 }): OperatorRunDetail {
   const startedAt = input.detail.timestamps.startedAt ?? input.detail.timestamps.createdAt;
   const completedAt = input.detail.timestamps.completedAt;
@@ -294,6 +297,7 @@ export function buildOperatorIngestionRunDetailJson(input: {
     stages: input.stages,
     metadata: input.detail.metadata,
     traceId: input.detail.traceId,
+    proofpackIndex: input.proofpackIndex,
     kindDetail: {
       kind: "ingestion_run",
       ingestionRun: {
@@ -319,6 +323,7 @@ export function buildOperatorReconRunDetailJson(input: {
   rowRationaleCodes: string[];
   rowResultsPreview: unknown[];
   stages: OperatorRunStageRow[];
+  proofpackIndex?: RunProofpackIndex;
   runDelta?: OperatorRunDetail["runDelta"];
 }): OperatorRunDetail {
   const base = baseFromCanonical(input.detail, input.startedAt, input.completedAt);
@@ -348,6 +353,7 @@ export function buildOperatorReconRunDetailJson(input: {
     stages: input.stages,
     metadata: input.detail.metadata,
     traceId: input.detail.traceId,
+    proofpackIndex: input.proofpackIndex,
     runDelta: input.runDelta,
     kindDetail: {
       kind: "recon_job",
