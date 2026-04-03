@@ -126,6 +126,10 @@ describe("operator run detail serializer", () => {
     expect(payload.resultContext.persistedResultCount).toBe(2);
     expect(payload.traceId).toBeNull();
     expect(payload.metadata).toEqual({});
+    expect(payload.compactProofSummary.operatorSummary.signal).toBe("unavailable");
+    expect(payload.compactProofSummary.operatorSummary.primaryReasonCodes).toContain(
+      "run_proofpack_missing"
+    );
   });
 
   it("serializes ingestion_run detail with compatibility note fenced in ingestion kind", () => {
@@ -165,5 +169,9 @@ describe("operator run detail serializer", () => {
     );
     expect(payload.resultContext.latestResultId).toBeNull();
     expect(payload.exceptionWorkflowNote).toContain("recon_job_id");
+    expect(payload.compactProofSummary.operatorSummary.signal).toBe("unavailable");
+    expect(payload.compactProofSummary.operatorSummary.primaryReasonCodes).toContain(
+      "ingestion_run_history_not_comparable"
+    );
   });
 });

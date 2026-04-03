@@ -127,13 +127,16 @@ async function buildSupportRunContext(
     }
 
     return {
-      state: "resolved",
+      state: "ok",
       runId: outcome.detail.id,
       runKind: outcome.detail.runKind,
       status: outcome.detail.status,
-      compactProofSummary: toRunCompactProofSummary(
-        outcome.detail.proofpackIndex ?? unavailableRunProofpackIndex("support_run_proofpack_missing")
-      ),
+      compactProofSummary:
+        outcome.detail.compactProofSummary ??
+        toRunCompactProofSummary(
+          outcome.detail.proofpackIndex ??
+            unavailableRunProofpackIndex("support_run_proofpack_missing")
+        ),
     };
   } catch (error) {
     logError("Failed to derive run intelligence for support intake", error, { tenantId, runId });

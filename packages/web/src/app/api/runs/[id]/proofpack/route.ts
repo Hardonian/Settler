@@ -41,7 +41,7 @@ export const GET = withSecurity(
 
       const detail = outcome.detail;
       const proofpackIndex = detail.proofpackIndex ?? unavailableRunProofpackIndex();
-      const compactProofSummary = toRunCompactProofSummary(proofpackIndex);
+      const compactProofSummary = detail.compactProofSummary ?? toRunCompactProofSummary(proofpackIndex);
       const artifact = {
         schemaVersion: "proofpack.run.v1",
         generatedAt: new Date().toISOString(),
