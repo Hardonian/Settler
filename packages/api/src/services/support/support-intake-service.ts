@@ -3,6 +3,12 @@ import { query } from "../../db";
 import { logError } from "../../utils/logger";
 import { supportIntakeSubmissionSchema, SupportIntakeSubmission } from "./support-intake-contract";
 import { eventBus } from "../events/event-bus";
+import { prisma } from "../../infrastructure/db/prisma";
+import {
+  resolveOperatorRunDetailForTenants,
+  toRunCompactProofSummary,
+  unavailableRunProofpackIndex,
+} from "@settler/reconciliation-core";
 
 export interface StoredSupportIntake {
   submissionId: string;
@@ -22,6 +28,10 @@ export async function submitSupportIntake(params: {
   });
 
   const submissionId = crypto.randomUUID();
+  const runContext =
+    parsed.run_id && parsed.run_id.trim().length > 0
+      ? await buildSupportRunContext(params.tenantId, parsed.run_id)
+      : null;
 
   try {
     await persistSupportIntakeToAuditLog({
@@ -30,6 +40,7 @@ export async function submitSupportIntake(params: {
       path: params.path,
       submissionId,
       payload: parsed,
+      runContext,
     });
 
     await eventBus.emitEvent(
@@ -39,6 +50,7 @@ export async function submitSupportIntake(params: {
         submissionId,
         category: parsed.category,
         runId: parsed.run_id ?? null,
+        runIntelligence: runContext,
         route: parsed.route ?? null,
         module: parsed.module ?? null,
       },
@@ -73,6 +85,7 @@ async function persistSupportIntakeToAuditLog(params: {
   tenantId: string;
   path: string;
   payload: SupportIntakeSubmission;
+  runContext: Record<string, unknown> | null;
 }): Promise<void> {
   await query(
     `INSERT INTO audit_logs (event, user_id, tenant_id, path, metadata)
@@ -90,7 +103,47 @@ async function persistSupportIntakeToAuditLog(params: {
         module: params.payload.module ?? null,
         description: params.payload.description,
         contact: params.payload.contact ?? {},
+        run_context: params.runContext,
       }),
     ]
   );
+}
+
+async function buildSupportRunContext(
+  tenantId: string,
+  runId: string
+): Promise<Record<string, unknown>> {
+  try {
+    const outcome = await resolveOperatorRunDetailForTenants(prisma, [tenantId], runId);
+    if (outcome.kind !== "resolved") {
+      return {
+        state: "unavailable",
+        reason: outcome.kind,
+        runId,
+        compactProofSummary: toRunCompactProofSummary(
+          unavailableRunProofpackIndex("support_run_detail_unavailable")
+        ),
+      };
+    }
+
+    return {
+      state: "resolved",
+      runId: outcome.detail.id,
+      runKind: outcome.detail.runKind,
+      status: outcome.detail.status,
+      compactProofSummary: toRunCompactProofSummary(
+        outcome.detail.proofpackIndex ?? unavailableRunProofpackIndex("support_run_proofpack_missing")
+      ),
+    };
+  } catch (error) {
+    logError("Failed to derive run intelligence for support intake", error, { tenantId, runId });
+    return {
+      state: "degraded",
+      reason: "support_run_context_error",
+      runId,
+      compactProofSummary: toRunCompactProofSummary(
+        unavailableRunProofpackIndex("support_run_context_error")
+      ),
+    };
+  }
 }

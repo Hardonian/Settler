@@ -131,6 +131,7 @@ describe("run proofpack index", () => {
     expect(index?.comparison.deltas.matched).toBe(2);
     expect(index?.comparison.baseline.priorResultId).toBe("result-1");
     expect(index?.comparison.history.trend).toBe("improving");
+    expect(index?.comparison.history.pattern).toBe("recovering_pattern");
     expect(index?.recurrence.topRecurringFamilies[0]?.family).toBe("bank_window");
   });
 
@@ -162,6 +163,7 @@ describe("run proofpack index", () => {
     expect(byRun.get("job-1")?.comparison.state).toBe("unavailable");
     expect(byRun.get("job-1")?.comparison.reasonCodes).toContain("baseline_missing");
     expect(byRun.get("job-1")?.comparison.history.trend).toBe("unavailable");
+    expect(byRun.get("job-1")?.comparison.history.pattern).toBe("thin_history");
   });
 
   it("builds canonical compact proof summary from full index", async () => {
@@ -189,5 +191,24 @@ describe("run proofpack index", () => {
     expect(unavailable.proofPackages.state).toBe("unavailable");
     expect(unavailable.comparison.reasonCodes).toEqual(["proofpack_index_unavailable"]);
     expect(unavailable.comparison.history.reasonCodes).toEqual(["proofpack_index_unavailable"]);
+    expect(unavailable.comparison.history.pattern).toBe("unavailable");
+  });
+
+  it("returns explicit degraded comparison semantics when prior history query fails", async () => {
+    const prisma: any = {
+      reconciliationMatch: { findMany: jest.fn().mockResolvedValue([]) },
+      exceptionAdjudicationMemory: { findMany: jest.fn().mockResolvedValue([]) },
+      proofPackage: { findMany: jest.fn().mockResolvedValue([]) },
+      $queryRaw: jest.fn().mockRejectedValue(new Error("db unavailable")),
+    };
+
+    const byRun = await buildRunProofpackIndexByRunId({
+      prisma,
+      tenantId: "tenant-1",
+      runs: [baseRun],
+    });
+
+    expect(byRun.get("job-1")?.comparison.state).toBe("degraded");
+    expect(byRun.get("job-1")?.comparison.reasonCodes).toContain("history_query_failed");
   });
 });

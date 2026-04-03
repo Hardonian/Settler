@@ -6,6 +6,12 @@ export type RunDeltaChangeState = "changed" | "unchanged" | "unavailable";
 
 type RunCertainty = "high" | "medium" | "low";
 type RunTrend = "improving" | "regressing" | "stable" | "volatile" | "unavailable";
+type RunPattern =
+  | "worsening_pattern"
+  | "recovering_pattern"
+  | "stable_pattern"
+  | "thin_history"
+  | "unavailable";
 
 export interface RunProofpackIndex {
   proofPackages: {
@@ -50,6 +56,7 @@ export interface RunProofpackIndex {
       comparableWindowCount: number;
       certainty: RunCertainty;
       trend: RunTrend;
+      pattern: RunPattern;
       reasonCodes: string[];
       summary: string;
     };
@@ -130,6 +137,7 @@ function defaultIndex(): RunProofpackIndex {
         comparableWindowCount: 0,
         certainty: "low",
         trend: "unavailable",
+        pattern: "unavailable",
         reasonCodes: ["history_missing"],
         summary: "History window is unavailable.",
       },
@@ -182,6 +190,7 @@ export function unavailableRunProofpackIndex(
       summary: "Run-level proofpack index is unavailable for this run type.",
       history: {
         ...base.comparison.history,
+        pattern: "unavailable",
         reasonCodes: [reasonCode],
         summary: "Run history intelligence is unavailable for this run type.",
       },
@@ -231,6 +240,7 @@ function buildHistorySummary(
       comparableWindowCount: comparableRows.length,
       certainty: "low",
       trend: "unavailable",
+      pattern: "thin_history",
       reasonCodes: ["history_too_thin"],
       summary: "Fewer than two comparable completed results are available in the history window.",
     };
@@ -240,8 +250,8 @@ function buildHistorySummary(
   let regressingSignals = 0;
   let volatileSignals = 0;
   for (let i = 0; i < comparableRows.length - 1; i += 1) {
-    const current = comparableRows[i];
-    const prior = comparableRows[i + 1];
+    const current = comparableRows[i]!;
+    const prior = comparableRows[i + 1]!;
     const matchedDelta = current.matched_count - prior.matched_count;
     const unmatchedDelta = totalUnmatched(current) - totalUnmatched(prior);
     const conflictsDelta = current.conflict_count - prior.conflict_count;
@@ -272,11 +282,19 @@ function buildHistorySummary(
             ? "stable"
             : "stable";
 
+  const pattern: RunPattern =
+    trend === "improving"
+      ? "recovering_pattern"
+      : trend === "regressing"
+        ? "worsening_pattern"
+        : "stable_pattern";
+
   return {
     lookbackWindow: Math.min(rows.length, HISTORY_WINDOW),
     comparableWindowCount: comparableRows.length,
     certainty,
     trend,
+    pattern,
     reasonCodes: [trend === "volatile" ? "mixed_direction_signals" : "history_window_evaluated"],
     summary:
       trend === "improving"
@@ -336,7 +354,7 @@ export async function buildRunProofpackIndexByRunId(input: {
     >
   >();
 
-  const exceptionIds = matches.map((match) => match.id);
+  const exceptionIds = matches.map((match: MatchRow) => match.id);
   if (exceptionIds.length > 0) {
     const memories = await prisma.exceptionAdjudicationMemory.findMany({
       where: {
@@ -387,7 +405,7 @@ export async function buildRunProofpackIndexByRunId(input: {
       ? await prisma.proofPackage.findMany({
           where: {
             tenantId,
-            OR: exceptionIds.map((exceptionId) => ({
+            OR: exceptionIds.map((exceptionId: string) => ({
               packageKey: { startsWith: `exception:${exceptionId}:` },
             })),
           },
@@ -402,24 +420,30 @@ export async function buildRunProofpackIndexByRunId(input: {
         })
       : [];
 
-  const results = (await prisma.$queryRaw`
-    SELECT
-      recon_job_id,
-      id,
-      started_at,
-      status,
-      matched_count,
-      unmatched_source_count,
-      unmatched_target_count,
-      conflict_count,
-      ROW_NUMBER() OVER (
-        PARTITION BY recon_job_id
-        ORDER BY started_at DESC NULLS LAST, id::text DESC
-      ) as rn
-    FROM recon_results
-    WHERE tenant_id = ${tenantId}::uuid
-      AND recon_job_id = ANY(${runIds}::uuid[])
-  `.catch(() => [])) as LatestPriorResultRow[];
+  let results: LatestPriorResultRow[] = [];
+  let historyQueryFailed = false;
+  try {
+    results = (await prisma.$queryRaw`
+      SELECT
+        recon_job_id,
+        id,
+        started_at,
+        status,
+        matched_count,
+        unmatched_source_count,
+        unmatched_target_count,
+        conflict_count,
+        ROW_NUMBER() OVER (
+          PARTITION BY recon_job_id
+          ORDER BY started_at DESC NULLS LAST, id::text DESC
+        ) as rn
+      FROM recon_results
+      WHERE tenant_id = ${tenantId}::uuid
+        AND recon_job_id = ANY(${runIds}::uuid[])
+    `) as LatestPriorResultRow[];
+  } catch {
+    historyQueryFailed = true;
+  }
 
   const resultsByRun = new Map<string, LatestPriorResultRow[]>();
   for (const row of results) {
@@ -547,7 +571,13 @@ export async function buildRunProofpackIndexByRunId(input: {
     let unmatchedDelta: number | null = null;
     let conflictsDelta: number | null = null;
 
-    if (!latest) {
+    if (historyQueryFailed) {
+      comparisonState = "degraded";
+      reasonCodes.push("history_query_failed");
+      summary =
+        "Prior-run comparison is degraded because run history could not be loaded from persistence.";
+      certainty = "low";
+    } else if (!latest) {
       reasonCodes.push("latest_result_missing");
       summary = "Run has no persisted result, so prior-run comparison is unavailable.";
     } else if (!prior) {
