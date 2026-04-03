@@ -15,3 +15,4 @@ export * from "./operator-run-detail-resolve.js";
 export * from "./exception-workbench.js";
 export * from "./run-proofpack-index.js";
 export * from "./prisma-client-like.js";
+export * from "./cross-run-intelligence.js";

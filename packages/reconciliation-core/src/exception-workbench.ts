@@ -227,7 +227,17 @@ export async function countReconciliationExceptionsForScope({
     return scope;
   }
 
-  const where: Record<string, unknown> = {
+  // Typed where-clause builder — avoids 'as any' casts against Prisma delegate boundaries.
+  // ReconciliationCorePrismaClient allows dynamic delegates, so we use a typed intermediate
+  // to communicate intent while satisfying the delegate's count() call.
+  type MatchWhereClause = {
+    tenantId: string;
+    matchType: { in: string[] };
+    runId?: { in: string[] };
+    status?: string;
+  };
+
+  const baseWhere: MatchWhereClause = {
     tenantId,
     matchType: { in: [...EXCEPTION_MATCH_TYPES] },
   };
@@ -248,23 +258,15 @@ export async function countReconciliationExceptionsForScope({
         },
       };
     }
-    where["runId"] = { in: scope.runIds };
+    baseWhere.runId = { in: scope.runIds };
   }
 
   const [total, pending, investigating, resolved, ignored] = await Promise.all([
-    prisma.reconciliationMatch.count({ where: where as any }),
-    prisma.reconciliationMatch.count({
-      where: { ...(where as any), status: "open" },
-    }),
-    prisma.reconciliationMatch.count({
-      where: { ...(where as any), status: "in_progress" },
-    }),
-    prisma.reconciliationMatch.count({
-      where: { ...(where as any), status: "resolved" },
-    }),
-    prisma.reconciliationMatch.count({
-      where: { ...(where as any), status: "dismissed" },
-    }),
+    prisma.reconciliationMatch.count({ where: baseWhere }),
+    prisma.reconciliationMatch.count({ where: { ...baseWhere, status: "open" } }),
+    prisma.reconciliationMatch.count({ where: { ...baseWhere, status: "in_progress" } }),
+    prisma.reconciliationMatch.count({ where: { ...baseWhere, status: "resolved" } }),
+    prisma.reconciliationMatch.count({ where: { ...baseWhere, status: "dismissed" } }),
   ]);
 
   return {
