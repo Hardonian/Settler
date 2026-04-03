@@ -4,6 +4,11 @@ import {
   validateTenantId,
 } from "../../infrastructure/tenancy/TenantEnforcement";
 import {
+  toRunCompactProofSummary,
+  unavailableRunProofpackIndex,
+  type RunCompactProofSummary,
+} from "@settler/reconciliation-core";
+import {
   computeReconciliationHash,
   verifyIntegrityChain,
   ReconciliationMatchForIntegrity,
@@ -32,6 +37,7 @@ export interface ReconciliationExportDocument {
     chain: IntegrityChainEntry[];
     chainValid: boolean;
   };
+  historicalIntelligence: RunCompactProofSummary;
 }
 
 export interface ExportPaginationOptions {
@@ -168,6 +174,9 @@ export async function buildReconciliationExport(
       chain,
       chainValid: chainVerification.valid,
     },
+    historicalIntelligence: toRunCompactProofSummary(
+      unavailableRunProofpackIndex("ingestion_run_history_not_comparable")
+    ),
     pagination: {
       limit: matchLimit,
       offset: matchOffset,
