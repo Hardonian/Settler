@@ -1,0 +1,22 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "words": [
+    "infographics",
+    "inspectable",
+    "fintech",
+    "reconciliation",
+    "determinism",
+    "untraced",
+    "approver",
+    "adjudication",
+    "hardonian",
+    "prisma",
+    "tailwindcss",
+    "lucide",
+    "nextjs",
+    "pnpm",
+    "Vercel"
+  ],
+  "ignorePaths": ["node_modules", ".next", "dist"]
+}
