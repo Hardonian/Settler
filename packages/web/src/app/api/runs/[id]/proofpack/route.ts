@@ -6,24 +6,36 @@ import {
   TenantMembershipError,
 } from "@/lib/supabase/tenant-membership";
 import { prisma } from "@/shared/db/prismaClient";
-import { resolveOperatorRunDetailForTenants } from "@settler/reconciliation-core";
+import {
+  resolveOperatorRunDetailForTenants,
+  unavailableRunProofpackIndex,
+} from "@settler/reconciliation-core";
 
 export const runtime = "nodejs";
 
 export const GET = withSecurity(
-  withUniversalBillingGate(async function GET(_request: NextRequest, { params }: { params: { id: string } }) {
+  withUniversalBillingGate(async function GET(
+    _request: NextRequest,
+    { params }: { params: { id: string } }
+  ) {
     try {
       const { tenantIds } = await resolveTenantMembershipScope();
       const outcome = await resolveOperatorRunDetailForTenants(prisma, tenantIds, params.id);
 
       if (outcome.kind === "ambiguous_uuid_collision") {
-        return NextResponse.json({ error: "Ambiguous run identifier", code: "RUN_ID_COLLISION" }, { status: 409 });
+        return NextResponse.json(
+          { error: "Ambiguous run identifier", code: "RUN_ID_COLLISION" },
+          { status: 409 }
+        );
       }
       if (outcome.kind === "not_found") {
         return NextResponse.json({ error: "Run not found" }, { status: 404 });
       }
       if (outcome.kind === "recon_enrichment_failed") {
-        return NextResponse.json({ error: "Failed to build run proofpack artifact" }, { status: 500 });
+        return NextResponse.json(
+          { error: "Failed to build run proofpack artifact" },
+          { status: 500 }
+        );
       }
 
       const detail = outcome.detail;
@@ -39,54 +51,12 @@ export const GET = withSecurity(
           completedAt: detail.completedAt,
           detailHref: detail.detailHref,
         },
-        proofpackIndex: proofpackIndex ?? {
-          proofPackages: {
-            total: 0,
-            finalized: 0,
-            bestCompletenessScore: null,
-            missingEvidenceCount: 0,
-            latestCreatedAt: null,
-            state: "unavailable",
-            degradedEvidenceReasons: ["proofpack_index_unavailable"],
-          },
-          recurrence: {
-            exceptionsWithMemories: 0,
-            repeatedResolutionReasons: [],
-            state: "unavailable",
-            topRecurringFamilies: [],
-          },
-          comparison: {
-            state: "unavailable",
-            changedSincePriorRun: "unavailable",
-            certainty: "low",
-            reasonCodes: ["proofpack_index_unavailable"],
-            summary: "Run-level proofpack index is unavailable for this run type.",
-            baseline: {
-              priorResultId: null,
-              priorResultStartedAt: null,
-            },
-            history: {
-              lookbackWindow: 0,
-              comparableWindowCount: 0,
-              certainty: "low",
-              trend: "unavailable",
-              reasonCodes: ["proofpack_index_unavailable"],
-              summary: "Run history intelligence is unavailable for this run type.",
-            },
-            deltas: {
-              matched: null,
-              unmatched: null,
-              conflicts: null,
-              proofCompleteness: "unavailable",
-              recurringFamilyConcentration: "unavailable",
-            },
-          },
-        },
+        proofpackIndex: proofpackIndex ?? unavailableRunProofpackIndex(),
         supportability: {
           shareable: Boolean(
             proofpackIndex &&
-              proofpackIndex.proofPackages.state === "ready" &&
-              proofpackIndex.comparison.state === "available"
+            proofpackIndex.proofPackages.state === "ready" &&
+            proofpackIndex.comparison.state === "available"
           ),
           notes:
             proofpackIndex?.comparison.state === "available"
@@ -98,7 +68,10 @@ export const GET = withSecurity(
       return NextResponse.json({ artifact });
     } catch (error) {
       if (error instanceof TenantMembershipError) {
-        return NextResponse.json({ error: error.message, code: error.code }, { status: error.status });
+        return NextResponse.json(
+          { error: error.message, code: error.code },
+          { status: error.status }
+        );
       }
       return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }

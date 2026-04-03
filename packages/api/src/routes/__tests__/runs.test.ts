@@ -35,6 +35,8 @@ jest.mock(
   () => ({
     scanMergedRunsForLegacyPage: jest.fn(),
     resolveOperatorRunDetailForTenants: jest.fn(),
+    buildRunProofpackIndexByRunId: jest.fn(),
+    toRunCompactProofSummary: jest.fn((value: unknown) => value),
   }),
   { virtual: true }
 );
@@ -45,6 +47,8 @@ const mockReconResult = mockedPrisma.reconResult;
 const {
   scanMergedRunsForLegacyPage: mockScanMergedRunsForLegacyPage,
   resolveOperatorRunDetailForTenants: mockResolveOperatorRunDetail,
+  buildRunProofpackIndexByRunId: mockBuildRunProofpackIndexByRunId,
+  toRunCompactProofSummary: mockToRunCompactProofSummary,
 } = require("@settler/reconciliation-core");
 
 // Mock governance middleware
@@ -154,10 +158,64 @@ describe("Runs Routes", () => {
     jest.clearAllMocks();
     mockScanMergedRunsForLegacyPage.mockReset();
     mockResolveOperatorRunDetail.mockReset();
+    mockBuildRunProofpackIndexByRunId.mockReset();
+    mockBuildRunProofpackIndexByRunId.mockResolvedValue(new Map());
+    mockToRunCompactProofSummary.mockClear();
   });
 
   describe("GET /api/runs", () => {
     it("should return merged canonical runs adapted into the Express envelope", async () => {
+      mockBuildRunProofpackIndexByRunId.mockResolvedValueOnce(
+        new Map([
+          [
+            "run-1",
+            {
+              proofPackages: {
+                total: 1,
+                finalized: 1,
+                bestCompletenessScore: 1,
+                missingEvidenceCount: 0,
+                latestCreatedAt: "2026-03-17T10:10:00.000Z",
+                state: "ready",
+                degradedEvidenceReasons: [],
+              },
+              recurrence: {
+                exceptionsWithMemories: 1,
+                repeatedResolutionReasons: ["bank_window"],
+                state: "ready",
+                topRecurringFamilies: [],
+              },
+              comparison: {
+                state: "available",
+                changedSincePriorRun: "changed",
+                certainty: "high",
+                reasonCodes: ["history_window_evaluated"],
+                summary:
+                  "Deterministic run-over-run differences detected versus the most recent comparable baseline.",
+                baseline: {
+                  priorResultId: "prior-1",
+                  priorResultStartedAt: "2026-03-16T10:00:00.000Z",
+                },
+                history: {
+                  lookbackWindow: 2,
+                  comparableWindowCount: 2,
+                  certainty: "high",
+                  trend: "improving",
+                  reasonCodes: ["history_window_evaluated"],
+                  summary: "Recent comparable history shows improving reconciliation posture.",
+                },
+                deltas: {
+                  matched: 2,
+                  unmatched: -2,
+                  conflicts: -1,
+                  proofCompleteness: "improved",
+                  recurringFamilyConcentration: "stronger",
+                },
+              },
+            },
+          ],
+        ])
+      );
       mockScanMergedRunsForLegacyPage.mockResolvedValueOnce({
         data: [
           {
@@ -221,6 +279,7 @@ describe("Runs Routes", () => {
         sourceModel: "recon_jobs",
         summary: { total: 100, matched: 95, unmatched: 5, conflicts: 0 },
       });
+      expect(res.body.data[0].compactProofSummary).toBeDefined();
 
       expect(mockScanMergedRunsForLegacyPage).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -230,6 +289,12 @@ describe("Runs Routes", () => {
           limit: 50,
           batchSize: 100,
           filters: { status: undefined, search: undefined },
+        })
+      );
+      expect(mockBuildRunProofpackIndexByRunId).toHaveBeenCalledWith(
+        expect.objectContaining({
+          tenantId: "tenant-123",
+          runs: [{ id: "run-1", runKind: "recon_job" }],
         })
       );
     });

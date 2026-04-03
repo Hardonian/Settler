@@ -63,6 +63,21 @@ export interface RunProofpackIndex {
   };
 }
 
+export type RunCompactProofSummary = {
+  proofPackages: RunProofpackIndex["proofPackages"];
+  recurrence: RunProofpackIndex["recurrence"];
+  delta: {
+    changedSincePreviousRun: RunProofpackIndex["comparison"]["changedSincePriorRun"];
+    summary: RunProofpackIndex["comparison"]["summary"];
+    state: RunProofpackIndex["comparison"]["state"];
+    certainty: RunProofpackIndex["comparison"]["certainty"];
+    reasonCodes: RunProofpackIndex["comparison"]["reasonCodes"];
+    baseline: RunProofpackIndex["comparison"]["baseline"];
+    history: RunProofpackIndex["comparison"]["history"];
+    deltas: RunProofpackIndex["comparison"]["deltas"];
+  };
+};
+
 type LatestPriorResultRow = {
   recon_job_id: string;
   rn: number;
@@ -129,10 +144,57 @@ function defaultIndex(): RunProofpackIndex {
   };
 }
 
+export function toRunCompactProofSummary(index: RunProofpackIndex): RunCompactProofSummary {
+  return {
+    proofPackages: index.proofPackages,
+    recurrence: index.recurrence,
+    delta: {
+      changedSincePreviousRun: index.comparison.changedSincePriorRun,
+      summary: index.comparison.summary,
+      state: index.comparison.state,
+      certainty: index.comparison.certainty,
+      reasonCodes: index.comparison.reasonCodes,
+      baseline: index.comparison.baseline,
+      history: index.comparison.history,
+      deltas: index.comparison.deltas,
+    },
+  };
+}
+
+export function unavailableRunProofpackIndex(
+  reasonCode = "proofpack_index_unavailable"
+): RunProofpackIndex {
+  const base = defaultIndex();
+  return {
+    ...base,
+    proofPackages: {
+      ...base.proofPackages,
+      state: "unavailable",
+      degradedEvidenceReasons: [reasonCode],
+    },
+    recurrence: {
+      ...base.recurrence,
+      state: "unavailable",
+    },
+    comparison: {
+      ...base.comparison,
+      reasonCodes: [reasonCode],
+      summary: "Run-level proofpack index is unavailable for this run type.",
+      history: {
+        ...base.comparison.history,
+        reasonCodes: [reasonCode],
+        summary: "Run history intelligence is unavailable for this run type.",
+      },
+    },
+  };
+}
+
 type RunProofpackPrisma = {
   reconciliationMatch: { findMany: (args: unknown) => Promise<MatchRow[]> };
   exceptionAdjudicationMemory: {
-    findMany: (args: unknown) => Promise<Array<{ exceptionId: string; resolutionReason: string | null }>>;
+    findMany: (
+      args: unknown
+    ) => Promise<Array<{ exceptionId: string; resolutionReason: string | null }>>;
   };
   proofPackage: {
     findMany: (args: unknown) => Promise<
@@ -159,7 +221,9 @@ function toComparableHistory(rows: LatestPriorResultRow[]) {
   return ordered.filter((row) => row.status === "completed").slice(0, HISTORY_WINDOW);
 }
 
-function buildHistorySummary(rows: LatestPriorResultRow[]): RunProofpackIndex["comparison"]["history"] {
+function buildHistorySummary(
+  rows: LatestPriorResultRow[]
+): RunProofpackIndex["comparison"]["history"] {
   const comparableRows = toComparableHistory(rows);
   if (comparableRows.length < 2) {
     return {
@@ -194,7 +258,8 @@ function buildHistorySummary(rows: LatestPriorResultRow[]): RunProofpackIndex["c
   const transitions = comparableRows.length - 1;
   const dominant = Math.max(improvingSignals, regressingSignals, volatileSignals);
   const dominanceRatio = dominant / transitions;
-  const certainty: RunCertainty = transitions >= 4 && dominanceRatio >= 0.75 ? "high" : dominanceRatio >= 0.5 ? "medium" : "low";
+  const certainty: RunCertainty =
+    transitions >= 4 && dominanceRatio >= 0.75 ? "high" : dominanceRatio >= 0.5 ? "medium" : "low";
 
   const trend: RunTrend =
     improvingSignals === regressingSignals && improvingSignals > 0
@@ -227,7 +292,7 @@ function buildHistorySummary(rows: LatestPriorResultRow[]): RunProofpackIndex["c
 export async function buildRunProofpackIndexByRunId(input: {
   prisma: ReconciliationCorePrismaClient;
   tenantId: string;
-  runs: CanonicalReconciliationListItem[];
+  runs: Array<Pick<CanonicalReconciliationListItem, "id" | "runKind">>;
 }): Promise<Map<string, RunProofpackIndex>> {
   const { prisma, tenantId, runs } = input;
   const byRun = new Map<string, RunProofpackIndex>();
@@ -285,13 +350,29 @@ export async function buildRunProofpackIndexByRunId(input: {
       const runId = runByExceptionId.get(memory.exceptionId);
       const match = matchByExceptionId.get(memory.exceptionId);
       if (!runId || !match) continue;
-      const reason = memory.resolutionReason?.trim() || match.resolutionReason?.trim() || "unclassified";
+      const reason =
+        memory.resolutionReason?.trim() || match.resolutionReason?.trim() || "unclassified";
       const runReasons = reasonCountsByRun.get(runId) ?? new Map<string, number>();
       runReasons.set(reason, (runReasons.get(reason) ?? 0) + 1);
       reasonCountsByRun.set(runId, runReasons);
 
-      const runFamilyStats = familyStatsByRun.get(runId) ?? new Map<string, { occurrences: number; unresolvedCount: number; adjudicationTouches: number; highSeverityCount: number; }>();
-      const family = runFamilyStats.get(reason) ?? { occurrences: 0, unresolvedCount: 0, adjudicationTouches: 0, highSeverityCount: 0 };
+      const runFamilyStats =
+        familyStatsByRun.get(runId) ??
+        new Map<
+          string,
+          {
+            occurrences: number;
+            unresolvedCount: number;
+            adjudicationTouches: number;
+            highSeverityCount: number;
+          }
+        >();
+      const family = runFamilyStats.get(reason) ?? {
+        occurrences: 0,
+        unresolvedCount: 0,
+        adjudicationTouches: 0,
+        highSeverityCount: 0,
+      };
       family.occurrences += 1;
       family.adjudicationTouches += 1;
       if (match.status !== "resolved") family.unresolvedCount += 1;
@@ -374,7 +455,9 @@ export async function buildRunProofpackIndexByRunId(input: {
 
     state.total += 1;
     if (proof.status === "finalized") state.finalized += 1;
-    state.missingEvidenceCount += Array.isArray(proof.missingEvidence) ? proof.missingEvidence.length : 0;
+    state.missingEvidenceCount += Array.isArray(proof.missingEvidence)
+      ? proof.missingEvidence.length
+      : 0;
     const completenessScore = Number(proof.completenessScore);
     state.bestCompletenessScore =
       state.bestCompletenessScore == null
@@ -421,7 +504,8 @@ export async function buildRunProofpackIndexByRunId(input: {
             : stats.unresolvedCount === 0 && stats.adjudicationTouches > 0
               ? "weakening"
               : "stable";
-        const certainty: RunCertainty = stats.occurrences >= 3 ? "high" : stats.occurrences >= 2 ? "medium" : "low";
+        const certainty: RunCertainty =
+          stats.occurrences >= 3 ? "high" : stats.occurrences >= 2 ? "medium" : "low";
         return {
           family,
           trend,
@@ -473,7 +557,8 @@ export async function buildRunProofpackIndexByRunId(input: {
       if (!statusesComparable) {
         comparisonState = "not_comparable";
         reasonCodes.push("non_terminal_baseline");
-        summary = "Baseline exists but one or both run results are not completed, so deterministic deltas are not comparable.";
+        summary =
+          "Baseline exists but one or both run results are not completed, so deterministic deltas are not comparable.";
         certainty = "medium";
       } else {
         comparisonState = "available";
@@ -482,7 +567,9 @@ export async function buildRunProofpackIndexByRunId(input: {
         unmatchedDelta = totalUnmatched(latest) - totalUnmatched(prior);
         conflictsDelta = latest.conflict_count - prior.conflict_count;
         changedSincePriorRun =
-          matchedDelta !== 0 || unmatchedDelta !== 0 || conflictsDelta !== 0 ? "changed" : "unchanged";
+          matchedDelta !== 0 || unmatchedDelta !== 0 || conflictsDelta !== 0
+            ? "changed"
+            : "unchanged";
         summary =
           changedSincePriorRun === "changed"
             ? "Deterministic run-over-run differences detected versus the most recent comparable baseline."
