@@ -2,12 +2,16 @@ import { Metadata } from "next";
 import Image from "next/image";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { Section } from "@/components/marketing/Section";
-import { MarketingSectionHeader } from "@/components/marketing/MarketingSectionHeader";
+import { Section, PageHero } from "@/components/site/primitives";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { UiLink } from "@/components/ui/link";
-import { Badge } from "@/components/ui/badge";
 import { RealityEvidencePanel } from "@/components/RealityEvidencePanel";
+import {
+  ExceptionTriageVisual,
+  ReconciliationFlow,
+  VisualGrid,
+} from "@/components/site/infographics";
 import {
   ArrowRight,
   Code2,
@@ -16,7 +20,6 @@ import {
   Eye,
   Database,
   GitBranch,
-  Cpu,
   CheckCircle2,
 } from "lucide-react";
 
@@ -92,75 +95,78 @@ const integrationAdapters = [
 
 export default function PlatformPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground">
       <Navigation />
 
-      {/* Hero */}
-      <Section
-        className="pt-24 pb-16"
-        containerClassName="max-w-6xl"
-        aria-labelledby="platform-heading"
-      >
-        <div className="flex items-center gap-3 mb-5">
-          <Badge variant="outline">
-            <Cpu className="w-3 h-3 mr-1.5" />
-            Platform
-          </Badge>
-        </div>
-        <h1
-          id="platform-heading"
-          className="text-fluid-4xl font-bold text-foreground max-w-4xl mb-6"
-        >
-          Deterministic Reconciliation. AI-Assisted Review.
-        </h1>
-        <p className="mt-4 max-w-3xl text-xl text-muted-foreground leading-relaxed">
-          Settler is API-first infrastructure for finance and fintech teams: a deterministic
-          matching core, AI-assisted exception triage, tenant-safe isolation, and audit-grade
-          evidence trails built into every run.
-        </p>
-
-        <div className="mt-10 flex flex-wrap gap-4">
-          <Button asChild>
-            <UiLink href="/docs/quickstart">
-              Start Quickstart <ArrowRight className="h-4 w-4 ml-1" aria-hidden="true" />
-            </UiLink>
-          </Button>
-          <Button variant="outline" asChild>
-            <UiLink href="/contact">Talk to our team</UiLink>
-          </Button>
-        </div>
-      </Section>
+      <PageHero
+        eyebrow="Platform Core"
+        title="Deterministic Reconciliation. AI-Assisted Review."
+        description="Settler is API-first infrastructure for finance and fintech teams: a deterministic matching core, AI-assisted exception triage, tenant-safe isolation, and audit-grade evidence trails built into every run."
+        visual={
+          <div className="relative aspect-square w-full max-w-[500px] overflow-hidden rounded-3xl border border-primary/20 shadow-2xl">
+            <Image
+              src="/platform_core_3d.png"
+              alt="Platform core visualization"
+              fill
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent" />
+          </div>
+        }
+        actions={
+          <>
+            <Button asChild size="lg">
+              <UiLink href="/docs/quickstart">
+                Start Quickstart <ArrowRight className="h-4 w-4 ml-1" />
+              </UiLink>
+            </Button>
+            <Button variant="outline" asChild size="lg">
+              <UiLink href="/contact">Talk to our team</UiLink>
+            </Button>
+          </>
+        }
+      />
 
       {/* Data flow diagram */}
-      <Section className="py-10 border-t border-b border-border" containerClassName="max-w-6xl">
-        <div className="rounded-xl border border-border bg-card p-6 overflow-hidden">
-          <Image
-            src="/assets/diagrams/data-flow.svg"
-            alt="Data flows from source systems through the deterministic Settler engine, into AI-assisted review, and out as a verifiable audit trail"
-            width={960}
-            height={360}
-            className="h-auto w-full"
-            priority
-          />
+      <Section withGrid className="py-20 border-y border-border/40 bg-muted/10">
+        <div className="text-center space-y-4 max-w-3xl mx-auto mb-16">
+          <h2 className="text-3xl font-bold tracking-tight">The Settlement Pipeline</h2>
+          <p className="text-muted-foreground font-medium">
+            From raw data ingestion to verifiable evidence, every stage is deterministic.
+          </p>
         </div>
-        <p className="text-center text-sm text-muted-foreground mt-4">
-          Data In → Deterministic Engine → AI-Assisted Review → Verifiable Audit Trail
-        </p>
+        <ReconciliationFlow />
+      </Section>
+
+      {/* Triage Section */}
+      <Section className="py-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="space-y-8">
+            <h2 className="text-3xl font-bold tracking-tight">AI-Assisted Exception Review</h2>
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              Don&apos;t waste time on trivial variances. Our AI layer surfaces the context you need
+              to resolve exceptions with institutional confidence.
+            </p>
+            <ExceptionTriageVisual />
+          </div>
+          <div className="rounded-2xl border border-border bg-card p-4 shadow-xl">
+            <RealityEvidencePanel scope="architecture" title="Review Governance" />
+          </div>
+        </div>
       </Section>
 
       {/* Platform layers */}
-      <Section className="py-16" containerClassName="max-w-6xl">
-        <MarketingSectionHeader
-          title="Platform Architecture"
-          description="Layers you operate: deterministic matching, review, governance, and replayable evidence—each inspectable end to end."
-        />
-        <div className="grid gap-6 sm:grid-cols-2">
+      <Section className="py-16 bg-muted/5 border-t border-border/40">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {platformLayers.map((layer) => {
             const Icon = layer.icon;
             return (
-              <div key={layer.title} className="rounded-2xl border border-border bg-card p-6">
-                <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-4">
-                  <Icon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <div
+                key={layer.title}
+                className="rounded-2xl border border-border bg-card p-6 shadow-sm hover:shadow-md transition-shadow"
+              >
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                  <Icon className="w-5 h-5 text-primary" />
                 </div>
                 <h3 className="text-lg font-bold text-foreground mb-2">{layer.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-4">
@@ -168,8 +174,8 @@ export default function PlatformPage() {
                 </p>
                 <ul className="space-y-2">
                   {layer.features.map((feature) => (
-                    <li key={feature} className="flex items-center gap-2 text-sm text-foreground">
-                      <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
+                    <li key={feature} className="flex items-center gap-2 text-xs text-foreground">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-success flex-shrink-0" />
                       {feature}
                     </li>
                   ))}
@@ -178,6 +184,10 @@ export default function PlatformPage() {
             );
           })}
         </div>
+      </Section>
+
+      <Section className="bg-muted/10">
+        <VisualGrid />
       </Section>
 
       <Section className="py-12" containerClassName="max-w-6xl">

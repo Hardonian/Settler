@@ -17,7 +17,7 @@
 // This file is server-only and should not be bundled for the browser
 // Webpack configuration excludes this file from client bundles
 
-import type { PrismaClient } from "@prisma/client";
+import type { PrismaClient as PrismaClientType } from "@prisma/client";
 
 // CRITICAL: Set environment variables BEFORE loading PrismaClient
 // Prisma 7 determines engine type at load time, so we must set these first
@@ -25,7 +25,7 @@ type PrismaGlobal = typeof globalThis & {
   __PRISMA_BUILD_PHASE__?: boolean;
 };
 
-type PrismaClientWithError = PrismaClient & {
+type PrismaClientWithError = PrismaClientType & {
   __prismaInitError?: unknown;
 };
 
@@ -76,7 +76,7 @@ type PrismaQueryRaw = {
 
 // Prevent multiple instances in development
 const globalForPrisma = globalThis as typeof globalThis & {
-  prisma?: PrismaClient;
+  prisma?: PrismaClientType;
 };
 
 const isBuildPhase = prismaGlobals.__PRISMA_BUILD_PHASE__ ?? false;
@@ -86,7 +86,7 @@ const nodeEnv =
 
 // Let Prisma handle reading the DATABASE_URL from the environment automatically.
 // This avoids complex and brittle configuration logic that was causing failures.
-let prismaInstance: PrismaClient;
+let prismaInstance: PrismaClientType;
 
 try {
   // Pass datasourceUrl explicitly to satisfy Prisma wasm/client engine validation.
@@ -95,7 +95,7 @@ try {
 } catch (error) {
   console.error("[Prisma] Failed to initialize Prisma client:", error);
   // Create a stub client for graceful failure during builds or when DB is unavailable.
-  prismaInstance = new Proxy({} as PrismaClient, {
+  prismaInstance = new Proxy({} as PrismaClientType, {
     get(_target, prop) {
       const propName = String(prop);
       if (propName.startsWith("$")) {
@@ -113,7 +113,7 @@ try {
         return null;
       };
     },
-  }) as PrismaClient;
+  }) as PrismaClientType;
   (prismaInstance as PrismaClientWithError).__prismaInitError = error;
 }
 
@@ -150,7 +150,7 @@ if (typeof setInterval !== "undefined" && nodeEnv === "production" && !isBuildPh
   healthCheckTimer.unref?.();
 }
 
-export const prisma = prismaInstance as PrismaClient & PrismaQueryRaw;
+export const prisma = prismaInstance as PrismaClientType & PrismaQueryRaw;
 
 if (nodeEnv !== "production") {
   globalForPrisma.prisma = prisma;

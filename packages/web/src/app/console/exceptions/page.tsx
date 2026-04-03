@@ -278,11 +278,20 @@ export default function ExceptionsPage() {
               ? "No exceptions were recorded for this run under the current filters."
               : "There are no exceptions matching your current filters."
           }
-          hint="Exceptions are created when reconciliation runs detect mismatches, timing differences, or missing transactions."
+          hint={
+            runId
+              ? "If this is your first run, that can mean the workflow completed cleanly. Open run detail or proof surfaces next to confirm what was reconciled and why."
+              : "Exceptions appear when reconciliation runs detect mismatches, timing differences, or missing transactions. If you have not completed a first run yet, use onboarding to connect data or open the run workspace."
+          }
           action={
             filters.status || filters.severity || filters.type || filters.search
               ? { label: "Clear Filters", onClick: () => setFilters({}) }
               : { label: "View Runs", href: "/console/runs" }
+          }
+          secondaryAction={
+            filters.status || filters.severity || filters.type || filters.search
+              ? undefined
+              : { label: "Open Onboarding", href: "/console/onboarding" }
           }
         />
       </div>

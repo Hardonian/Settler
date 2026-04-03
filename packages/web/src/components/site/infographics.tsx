@@ -193,7 +193,6 @@ export function AdapterConnectionMap() {
           <div
             key={i}
             className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 shadow-sm animate-fade-in"
-            style={{ animationDelay: `${i * 150}ms` }}
           >
             <Network className="h-4 w-4 text-primary" />
             <span className="text-xs font-semibold">{source}</span>

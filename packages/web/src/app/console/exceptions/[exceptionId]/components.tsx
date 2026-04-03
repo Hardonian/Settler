@@ -1,37 +1,100 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { safeFetch } from "@/lib/safe-fetch";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { ErrorState } from "@/components/ui/error-state";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge, type StatusType } from "@/components/ui/status-badge";
-import { ChevronDown, ChevronRight, History, Info, ShieldCheck, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AlertTriangle, History, Info, Loader2, ShieldCheck, Workflow } from "lucide-react";
 
-// --- Types ---
+type ExceptionStatus = "pending" | "investigating" | "resolved" | "ignored";
 
-interface ExceptionDetail {
+export type ExceptionMemory = {
   id: string;
-  type: string;
-  status: string;
-  severity: string;
-  detectedAt: string;
-  description: string;
-  amount?: number;
-  currency?: string;
-  sourceTransactionId?: string;
-}
+  resolution: string;
+  resolutionReason: string | null;
+  adjudicationType: string;
+  adjudicatorId: string;
+  adjudicatorType: string;
+  outcome: string | null;
+  confidence: number | null;
+  sourceTrustScore: number | null;
+  operatorNotes: string | null;
+  systemNotes: string | null;
+  evidenceIds: string[];
+  createdAt: string;
+  completedAt: string | null;
+  parentMemoryId: string | null;
+};
 
-export type { ExceptionDetail };
+export type EvidenceSummary = {
+  total: number;
+  degraded: number;
+  attested: number;
+  latestCapturedAt: string | null;
+  items: Array<{
+    id: string;
+    artifactType: string;
+    artifactKey: string;
+    capturedAt: string;
+    capturedBy: string;
+    degraded: boolean;
+    degradedReasons: string[];
+    attested: boolean;
+    reliabilityScore: number | null;
+  }>;
+};
 
-// --- Components ---
+export type ProofSummary = {
+  total: number;
+  finalized: number;
+  latestCreatedAt: string | null;
+  items: Array<{
+    id: string;
+    packageType: string;
+    packageKey: string;
+    status: string;
+    completenessScore: number;
+    missingEvidence: string[];
+    completenessFlags: string[];
+    evidenceIds: string[];
+    createdAt: string;
+    finalizedAt: string | null;
+  }>;
+};
 
-/**
- * SeverityBadge - Status-aware badge for exception priority
- */
+export type AuditTrailEntry = {
+  timestamp: string;
+  action: string;
+  user: string;
+  details?: string;
+};
+
+export type OperatorSummary = {
+  whatHappened: string;
+  whyItMatters: string;
+  nextStep: string;
+  evidenceState: "ready" | "degraded" | "setup_required" | "unavailable";
+  proofState: "ready" | "degraded" | "setup_required" | "unavailable";
+  memoryState: "ready" | "degraded" | "setup_required" | "unavailable";
+  evidenceCount: number;
+  attestedEvidenceCount: number;
+  degradedEvidenceCount: number;
+  proofPackageCount: number;
+  finalizedProofPackageCount: number;
+  bestCompletenessScore: number | null;
+  missingEvidenceCount: number;
+  memoryCount: number;
+  recurringResolutionReason: string | null;
+  latestResolution: {
+    outcome: string | null;
+    reason: string | null;
+    completedAt: string | null;
+  } | null;
+};
+
 export function SeverityBadge({ severity, className }: { severity: string; className?: string }) {
   const variantMap: Record<string, "destructive" | "warning" | "outline" | "secondary"> = {
     critical: "destructive",
@@ -49,20 +112,14 @@ export function SeverityBadge({ severity, className }: { severity: string; class
   );
 }
 
-/**
- * Base status to StatusType mapping
- */
 function mapStatusToType(status: string): StatusType {
-  const s = status.toLowerCase();
-  if (s === "resolved" || s === "matched") return "completed";
-  if (s === "ignored" || s === "dismissed") return "disabled";
-  if (s === "investigating" || s === "in_progress") return "in_progress";
+  const normalized = status.toLowerCase();
+  if (normalized === "resolved" || normalized === "matched") return "completed";
+  if (normalized === "ignored" || normalized === "dismissed") return "disabled";
+  if (normalized === "investigating" || normalized === "in_progress") return "in_progress";
   return "pending";
 }
 
-/**
- * StatusBadge (Exported Wrapper)
- */
 export function GenericStatusBadge({ status, className }: { status: string; className?: string }) {
   return (
     <StatusBadge
@@ -75,106 +132,124 @@ export function GenericStatusBadge({ status, className }: { status: string; clas
 
 export { GenericStatusBadge as StatusBadge };
 
-/**
- * CollapsibleJson - For inspecting raw record and metadata
- */
-export function CollapsibleJson({
-  title,
-  data,
-  expandedDefault = false,
-}: {
-  title: string;
-  data: any;
-  expandedDefault?: boolean;
-}) {
-  const [isExpanded, setIsExpanded] = useState(expandedDefault);
-
-  if (!data) return null;
-
-  return (
-    <div className="rounded-lg border border-border overflow-hidden">
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="flex w-full items-center justify-between bg-muted/30 px-4 py-2 hover:bg-muted/50 transition-colors"
-      >
-        <span className="text-sm font-medium">{title}</span>
-        {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-      </button>
-      {isExpanded && (
-        <div className="bg-background p-4 overflow-auto max-h-[400px]">
-          <pre className="text-xs font-mono text-muted-foreground whitespace-pre-wrap">
-            {JSON.stringify(data, null, 2)}
-          </pre>
-        </div>
-      )}
-    </div>
-  );
+function readinessBadgeStatus(state: OperatorSummary["evidenceState"]): StatusType {
+  switch (state) {
+    case "ready":
+      return "completed";
+    case "degraded":
+      return "degraded";
+    case "setup_required":
+      return "warning";
+    default:
+      return "error";
+  }
 }
 
-/**
- * ProvenanceRow - Individual record in the activity trail
- */
-export function ProvenanceRow({ entry }: { entry: any }) {
+export function OperatorSummaryCard({ summary }: { summary: OperatorSummary }) {
   return (
-    <div className="relative pl-6 pb-6 last:pb-0">
-      <div className="absolute left-0 top-1 bottom-0 w-px bg-border group-last:bg-transparent" />
-      <div className="absolute left-[-4px] top-1.5 h-2 w-2 rounded-full border border-background bg-primary" />
-      <div className="space-y-1">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold">{entry.eventType.replace(/_/g, " ")}</span>
-          <span className="text-xs text-muted-foreground">
-            {new Date(entry.createdAt).toLocaleString()}
-          </span>
+    <Card className="border-primary/20">
+      <CardHeader>
+        <CardTitle className="text-lg flex items-center gap-2">
+          <Workflow className="h-5 w-5 text-primary" />
+          Operator Summary
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        <div className="grid gap-4 md:grid-cols-3">
+          <SummaryBlock label="What happened" value={summary.whatHappened} />
+          <SummaryBlock label="Why it matters" value={summary.whyItMatters} />
+          <SummaryBlock label="What to do next" value={summary.nextStep} />
         </div>
-        <div className="text-xs text-muted-foreground">
-          by <span className="text-foreground/80">{entry.actorType}</span>
-          {entry.actorUserId ? ` (${entry.actorUserId.slice(0, 8)})` : ""}
+
+        <div className="grid gap-3 md:grid-cols-3">
+          <StateMetric
+            label="Evidence"
+            state={summary.evidenceState}
+            value={`${summary.evidenceCount} artifact${summary.evidenceCount === 1 ? "" : "s"}`}
+            detail={`${summary.attestedEvidenceCount} attested · ${summary.degradedEvidenceCount} degraded`}
+          />
+          <StateMetric
+            label="Proof"
+            state={summary.proofState}
+            value={`${summary.finalizedProofPackageCount}/${summary.proofPackageCount} finalized`}
+            detail={
+              summary.bestCompletenessScore != null
+                ? `Best completeness ${Math.round(summary.bestCompletenessScore)}% · ${summary.missingEvidenceCount} missing evidence references`
+                : "No proof package created yet"
+            }
+          />
+          <StateMetric
+            label="Memory"
+            state={summary.memoryState}
+            value={`${summary.memoryCount} adjudication record${summary.memoryCount === 1 ? "" : "s"}`}
+            detail={
+              summary.recurringResolutionReason
+                ? `Recurring reason: ${summary.recurringResolutionReason}`
+                : "No recurring operator pattern recorded yet"
+            }
+          />
         </div>
-        {entry.details && (
-          <div className="mt-2 rounded bg-muted/40 p-2 text-xs font-mono">
-            {typeof entry.details === "string" ? entry.details : JSON.stringify(entry.details)}
+
+        {summary.latestResolution ? (
+          <div className="rounded-lg border border-border/60 bg-muted/20 p-4 text-sm">
+            <p className="font-medium">Latest recorded decision</p>
+            <p className="mt-1 text-muted-foreground">
+              {summary.latestResolution.reason || "Operator resolution recorded without a reason."}
+            </p>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Outcome: {summary.latestResolution.outcome || "not specified"} · Completed:{" "}
+              {summary.latestResolution.completedAt
+                ? new Date(summary.latestResolution.completedAt).toLocaleString()
+                : "not recorded"}
+            </p>
           </div>
-        )}
-      </div>
-    </div>
+        ) : null}
+      </CardContent>
+    </Card>
   );
 }
 
-/**
- * ExceptionDetailClient - Hub for interactive adjudication
- */
-export function ExceptionDetailClient({ exceptionId }: { exceptionId: string }) {
+function SummaryBlock({ label, value }: { label: string; value: string }) {
   return (
-    <div className="grid gap-6 lg:grid-cols-3">
-      {/* Primary Context Column */}
-      <div className="lg:col-span-2 space-y-6">
-        <Memories exceptionId={exceptionId} />
-        <Provenance exceptionId={exceptionId} />
-      </div>
-
-      {/* Side Intelligence Column */}
-      <div className="space-y-6">
-        <Evidence exceptionId={exceptionId} />
-        <Proofs exceptionId={exceptionId} />
-      </div>
+    <div className="rounded-lg border border-border/60 p-4">
+      <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+        {label}
+      </p>
+      <p className="mt-2 text-sm leading-relaxed text-foreground">{value}</p>
     </div>
   );
 }
 
-// Memories
-export function Memories({ exceptionId }: { exceptionId: string }) {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["exception-memories", exceptionId],
-    queryFn: async () => {
-      const result = await safeFetch<{ data: any[] }>(`/api/exceptions/${exceptionId}/memories`);
-      if (!result.success || !result.data) throw new Error(result.error?.message || "Data missing");
-      return result.data.data;
-    },
-  });
+function StateMetric({
+  label,
+  state,
+  value,
+  detail,
+}: {
+  label: string;
+  state: OperatorSummary["evidenceState"];
+  value: string;
+  detail: string;
+}) {
+  return (
+    <div className="rounded-lg border border-border/60 p-4 space-y-2">
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+          {label}
+        </p>
+        <StatusBadge
+          status={readinessBadgeStatus(state)}
+          label={state.replace(/_/g, " ")}
+          size="sm"
+        />
+      </div>
+      <p className="text-lg font-semibold">{value}</p>
+      <p className="text-xs leading-relaxed text-muted-foreground">{detail}</p>
+    </div>
+  );
+}
 
-  if (isLoading) return <Skeleton className="h-48" />;
-  if (error) return <ErrorState title="Failed to load memories" message={error.message} />;
-
+export function MemoriesCard({ memories }: { memories: ExceptionMemory[] }) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -184,42 +259,40 @@ export function Memories({ exceptionId }: { exceptionId: string }) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {!data || data.length === 0 ? (
+        {memories.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground italic text-sm border-2 border-dashed rounded-lg">
-            No durable records for this exception yet. Actions will be logged here.
+            No durable records for this exception yet. The first explicit operator decision will
+            appear here.
           </div>
         ) : (
           <div className="space-y-4">
-            {data.map((memory) => (
-              <div
-                key={memory.id}
-                className="rounded-lg border border-border bg-muted/10 p-4 transition-all hover:bg-muted/20"
-              >
+            {memories.map((memory) => (
+              <div key={memory.id} className="rounded-lg border border-border bg-muted/10 p-4">
                 <div className="flex flex-wrap items-center gap-2 mb-3">
                   <Badge variant="outline" className="font-mono text-xs bg-background">
                     {memory.resolution.toUpperCase()}
                   </Badge>
-                  {memory.outcome && (
+                  {memory.outcome ? (
                     <Badge className="bg-primary/10 text-primary border-primary/20">
                       {memory.outcome}
                     </Badge>
-                  )}
+                  ) : null}
                   <SeverityBadge severity={memory.adjudicationType} className="text-xs" />
-                  {memory.sourceTrustScore != null && (
+                  {memory.sourceTrustScore != null ? (
                     <Badge variant="outline" className="text-xs">
                       <ShieldCheck className="mr-1 h-3 w-3 inline" />
                       {(memory.sourceTrustScore * 100).toFixed(0)}% Trust
                     </Badge>
-                  )}
+                  ) : null}
                 </div>
                 <p className="text-sm font-medium">
                   {memory.resolutionReason ?? "General adjudication outcome."}
                 </p>
-                {memory.operatorNotes && (
+                {memory.operatorNotes ? (
                   <div className="mt-2 text-sm text-muted-foreground border-l-2 border-primary/30 pl-3 italic">
                     {memory.operatorNotes}
                   </div>
-                )}
+                ) : null}
                 <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <Info className="h-3 w-3" />
@@ -238,23 +311,7 @@ export function Memories({ exceptionId }: { exceptionId: string }) {
   );
 }
 
-// Evidence
-export function Evidence({ exceptionId }: { exceptionId: string }) {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["exception-evidence", exceptionId],
-    queryFn: async () => {
-      const result = await safeFetch<{ data: any[] }>(`/api/exceptions/${exceptionId}/evidence`);
-      if (!result.success || !result.data) throw new Error(result.error?.message || "Data missing");
-      return result.data.data;
-    },
-  });
-
-  if (isLoading) return <Skeleton className="h-32" />;
-  if (error) return <ErrorState title="Failed to load evidence" message={error.message} />;
-
-  const count = data?.length || 0;
-  const attested = data?.filter((e) => e.attested).length || 0;
-
+export function EvidenceCard({ evidenceSummary }: { evidenceSummary: EvidenceSummary }) {
   return (
     <Card className="overflow-hidden">
       <CardHeader className="bg-muted/30 border-b">
@@ -263,100 +320,116 @@ export function Evidence({ exceptionId }: { exceptionId: string }) {
           Evidence Status
         </CardTitle>
       </CardHeader>
-      <CardContent className="pt-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="text-3xl font-bold">{count}</div>
+      <CardContent className="pt-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="text-3xl font-bold">{evidenceSummary.total}</div>
           <div className="text-right">
             <div className="text-xs text-muted-foreground font-medium uppercase tracking-tight">
               Artifacts
             </div>
-            <div className="text-[10px] text-green-600 font-semibold">{attested} attested</div>
+            <div className="text-[10px] text-green-600 font-semibold">
+              {evidenceSummary.attested} attested
+            </div>
           </div>
         </div>
-        <div className="space-y-2">
-          {data?.slice(0, 3).map((item) => (
-            <div
-              key={item.id}
-              className="flex items-center justify-between text-xs py-1 border-b border-border/50 last:border-0"
-            >
-              <span className="truncate max-w-[120px] font-mono opacity-80">
-                {item.artifactType}
-              </span>
-              <Badge
-                variant={item.degraded ? "destructive" : "outline"}
-                className="scale-75 origin-right"
+        {evidenceSummary.items.length > 0 ? (
+          <div className="space-y-2">
+            {evidenceSummary.items.slice(0, 4).map((item) => (
+              <div
+                key={item.id}
+                className="rounded-lg border border-border/50 px-3 py-2 text-xs space-y-1"
               >
-                {item.degraded ? "degraded" : "ready"}
-              </Badge>
-            </div>
-          ))}
-          {count > 3 && (
-            <div className="text-[10px] text-center text-muted-foreground pt-1">
-              +{count - 3} more available
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-// Proofs
-export function Proofs({ exceptionId }: { exceptionId: string }) {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["exception-proofs", exceptionId],
-    queryFn: async () => {
-      const result = await safeFetch<{ data: any[] }>(`/api/exceptions/${exceptionId}/proofs`);
-      if (!result.success || !result.data) throw new Error(result.error?.message || "Data missing");
-      return result.data.data;
-    },
-  });
-
-  if (isLoading) return <Skeleton className="h-32" />;
-  if (error) return <ErrorState title="Failed to load proofs" message={error.message} />;
-
-  const ready = data?.some((p) => p.status === "finalized");
-
-  return (
-    <Card className="border-primary/20 bg-primary/5">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-base flex items-center gap-2">
-          <Zap className="h-4 w-4 text-primary" />
-          Proof Readiness
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {ready ? (
-          <div className="flex flex-col items-center py-2">
-            <div className="text-sm font-semibold text-primary mb-1">Finalized & Exportable</div>
-            <p className="text-[10px] text-muted-foreground text-center">
-              Consolidated evidence pack matches ledger truth.
-            </p>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="font-mono text-foreground/80 truncate">{item.artifactType}</span>
+                  <Badge variant={item.degraded ? "destructive" : "outline"}>
+                    {item.degraded ? "degraded" : item.attested ? "attested" : "captured"}
+                  </Badge>
+                </div>
+                <div className="text-muted-foreground">
+                  {item.reliabilityScore != null
+                    ? `${Math.round(item.reliabilityScore * 100)}% reliability`
+                    : "Reliability not recorded"}
+                </div>
+                {item.degradedReasons.length > 0 ? (
+                  <div className="text-amber-600">
+                    {item.degradedReasons.slice(0, 2).join(" · ")}
+                  </div>
+                ) : null}
+              </div>
+            ))}
           </div>
         ) : (
-          <div className="text-center py-4 text-xs text-muted-foreground italic">
-            Gathering requisite artifacts...
-          </div>
+          <p className="text-sm text-muted-foreground">
+            No evidence is attached yet. Capture supporting artifacts before closing the loop on
+            this exception.
+          </p>
         )}
       </CardContent>
     </Card>
   );
 }
 
-// Provenance
-export function Provenance({ exceptionId }: { exceptionId: string }) {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["exception-provenance", exceptionId],
-    queryFn: async () => {
-      const result = await safeFetch<{ data: any[] }>(`/api/exceptions/${exceptionId}/provenance`);
-      if (!result.success || !result.data) throw new Error(result.error?.message || "Data missing");
-      return result.data.data;
-    },
-  });
+export function ProofsCard({ proofSummary }: { proofSummary: ProofSummary }) {
+  return (
+    <Card className="border-primary/20 bg-primary/5">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base flex items-center gap-2">
+          <Workflow className="h-4 w-4 text-primary" />
+          Proof Readiness
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-2xl font-bold">{proofSummary.finalized}</p>
+            <p className="text-xs text-muted-foreground">Finalized packages</p>
+          </div>
+          <div className="text-right">
+            <p className="text-sm font-semibold">{proofSummary.total} total</p>
+            <p className="text-xs text-muted-foreground">
+              {proofSummary.latestCreatedAt
+                ? `Latest ${new Date(proofSummary.latestCreatedAt).toLocaleDateString()}`
+                : "No proof package yet"}
+            </p>
+          </div>
+        </div>
+        {proofSummary.items.length > 0 ? (
+          <div className="space-y-2">
+            {proofSummary.items.slice(0, 3).map((item) => (
+              <div
+                key={item.id}
+                className="rounded-lg border border-border/60 bg-background/70 p-3"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-medium">{item.packageType}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {Math.round(item.completenessScore)}% complete
+                    </p>
+                  </div>
+                  <Badge variant={item.status === "finalized" ? "default" : "outline"}>
+                    {item.status}
+                  </Badge>
+                </div>
+                {item.missingEvidence.length > 0 ? (
+                  <p className="mt-2 text-xs text-amber-700">
+                    Missing: {item.missingEvidence.slice(0, 2).join(", ")}
+                  </p>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            No proof package has been generated for this exception yet.
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
 
-  if (isLoading) return <Skeleton className="h-64" />;
-  if (error) return <ErrorState title="Failed to load provenance" message={error.message} />;
-
+export function ProvenanceCard({ auditTrail }: { auditTrail: AuditTrailEntry[] }) {
   return (
     <Card>
       <CardHeader>
@@ -366,18 +439,148 @@ export function Provenance({ exceptionId }: { exceptionId: string }) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="mt-4">
-          {!data || data.length === 0 ? (
-            <div className="text-center py-6 text-muted-foreground text-sm opacity-60 italic">
-              Tracing system origins...
-            </div>
-          ) : (
-            <div className="group">
-              {data.map((entry) => (
-                <ProvenanceRow key={entry.id} entry={entry} />
-              ))}
-            </div>
-          )}
+        {auditTrail.length === 0 ? (
+          <div className="text-center py-6 text-muted-foreground text-sm opacity-60 italic">
+            No provenance events recorded yet.
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {auditTrail.map((entry, index) => (
+              <div
+                key={`${entry.timestamp}-${entry.action}-${index}`}
+                className="relative pl-6 pb-6 last:pb-0"
+              >
+                <div className="absolute left-0 top-1 bottom-0 w-px bg-border" />
+                <div className="absolute left-[-4px] top-1.5 h-2 w-2 rounded-full border border-background bg-primary" />
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold">{entry.action}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(entry.timestamp).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    by <span className="text-foreground/80">{entry.user}</span>
+                  </div>
+                  {entry.details ? (
+                    <div className="mt-2 rounded bg-muted/40 p-2 text-xs font-mono">
+                      {entry.details}
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+export function ExceptionActionPanel({
+  exceptionId,
+  status,
+}: {
+  exceptionId: string;
+  status: ExceptionStatus;
+}) {
+  const router = useRouter();
+  const [notes, setNotes] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [pendingAction, setPendingAction] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+
+  const availableActions =
+    status === "resolved" || status === "ignored" ? ["reopen"] : ["resolve", "ignore"];
+
+  const handleAction = (action: string) => {
+    setError(null);
+    setSuccess(null);
+    setPendingAction(action);
+
+    startTransition(async () => {
+      try {
+        const response = await fetch(`/api/exceptions/${exceptionId}?action=${action}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ notes: notes.trim() || undefined }),
+        });
+        const payload = (await response.json().catch(() => ({}))) as {
+          message?: string;
+          error?: string;
+        };
+
+        if (!response.ok) {
+          throw new Error(payload.error || payload.message || "Failed to update exception");
+        }
+
+        setSuccess(payload.message || "Exception updated successfully.");
+        setNotes("");
+        router.refresh();
+      } catch (requestError) {
+        setError(
+          requestError instanceof Error ? requestError.message : "Failed to update exception"
+        );
+      } finally {
+        setPendingAction(null);
+      }
+    });
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg flex items-center gap-2">
+          <AlertTriangle className="h-5 w-5 text-primary" />
+          Record Operator Decision
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <p className="text-sm text-muted-foreground">
+          Record the decision here so the exception queue, adjudication memory, and proof surface
+          stay aligned. Notes are stored as part of the operator trail.
+        </p>
+
+        <textarea
+          value={notes}
+          onChange={(event) => setNotes(event.target.value)}
+          rows={4}
+          placeholder="Why was this resolved, ignored, or reopened?"
+          className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/20"
+        />
+
+        {error ? (
+          <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            {error}
+          </div>
+        ) : null}
+        {success ? (
+          <div className="rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">
+            {success}
+          </div>
+        ) : null}
+
+        <div className="flex flex-wrap gap-3">
+          {availableActions.map((action) => (
+            <Button
+              key={action}
+              variant={action === "ignore" ? "outline" : "default"}
+              onClick={() => handleAction(action)}
+              disabled={isPending}
+            >
+              {isPending && pendingAction === action ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : null}
+              {action === "resolve"
+                ? "Resolve exception"
+                : action === "ignore"
+                  ? "Ignore exception"
+                  : "Reopen exception"}
+            </Button>
+          ))}
         </div>
       </CardContent>
     </Card>

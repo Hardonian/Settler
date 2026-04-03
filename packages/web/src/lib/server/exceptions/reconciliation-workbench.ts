@@ -1,4 +1,5 @@
 import type { PrismaClient } from "@prisma/client";
+import type { ReadinessState } from "@/lib/activation/readiness";
 import {
   EXCEPTION_MATCH_TYPES,
   operatorStatusToCanonical,
@@ -120,6 +121,30 @@ export type ReconciliationWorkbenchDetail = ReconciliationWorkbenchListItem & {
     user: string;
     details?: string;
   }>;
+  operatorSummary: ExceptionOperatorSummary;
+};
+
+export type ExceptionOperatorSummary = {
+  whatHappened: string;
+  whyItMatters: string;
+  nextStep: string;
+  evidenceState: ReadinessState;
+  proofState: ReadinessState;
+  memoryState: ReadinessState;
+  evidenceCount: number;
+  attestedEvidenceCount: number;
+  degradedEvidenceCount: number;
+  proofPackageCount: number;
+  finalizedProofPackageCount: number;
+  bestCompletenessScore: number | null;
+  missingEvidenceCount: number;
+  memoryCount: number;
+  recurringResolutionReason: string | null;
+  latestResolution: {
+    outcome: string | null;
+    reason: string | null;
+    completedAt: string | null;
+  } | null;
 };
 
 export type ReconciliationWorkbenchOutcome<T> =
@@ -254,6 +279,180 @@ function buildSuggestedActions(status: CanonicalExceptionStatus, hasEvidence: bo
     "Review the source and target records side by side.",
     "Record operator evidence before resolving or ignoring the exception.",
   ];
+}
+
+function resolveEvidenceState(
+  summary: ReconciliationWorkbenchDetail["evidenceSummary"]
+): ReadinessState {
+  if (summary.total === 0) {
+    return "setup_required";
+  }
+  if (summary.degraded > 0 || summary.attested < summary.total) {
+    return "degraded";
+  }
+  return "ready";
+}
+
+function resolveProofState(args: {
+  evidenceState: ReadinessState;
+  proofSummary: ReconciliationWorkbenchDetail["proofSummary"];
+}): ReadinessState {
+  const missingEvidenceCount = args.proofSummary.items.reduce(
+    (count, item) => count + item.missingEvidence.length,
+    0
+  );
+
+  if (args.proofSummary.total === 0) {
+    return args.evidenceState === "setup_required" ? "setup_required" : "degraded";
+  }
+
+  if (args.proofSummary.finalized > 0 && missingEvidenceCount === 0) {
+    return "ready";
+  }
+
+  return "degraded";
+}
+
+function resolveMemoryState(memoryCount: number): ReadinessState {
+  return memoryCount > 0 ? "ready" : "setup_required";
+}
+
+function summarizeRecurringResolutionReason(
+  memories: ReconciliationWorkbenchDetail["adjudicationMemories"]
+): string | null {
+  const counts = new Map<string, number>();
+  for (const memory of memories) {
+    const reason = memory.resolutionReason?.trim();
+    if (!reason) {
+      continue;
+    }
+    counts.set(reason, (counts.get(reason) ?? 0) + 1);
+  }
+
+  let topReason: string | null = null;
+  let topCount = 0;
+  for (const [reason, count] of counts.entries()) {
+    if (count > topCount) {
+      topReason = reason;
+      topCount = count;
+    }
+  }
+
+  return topReason;
+}
+
+function buildWhatHappened(args: {
+  status: CanonicalExceptionStatus;
+  severity: ReconciliationWorkbenchDetail["severity"];
+  description: string;
+}): string {
+  const severity = args.severity.toUpperCase();
+
+  if (args.status === "resolved") {
+    return `${severity} exception resolved: ${args.description}`;
+  }
+
+  if (args.status === "dismissed") {
+    return `${severity} exception ignored with an explicit operator decision.`;
+  }
+
+  if (args.status === "in_progress") {
+    return `${severity} exception is under investigation: ${args.description}`;
+  }
+
+  return `${severity} exception is awaiting operator review: ${args.description}`;
+}
+
+function buildWhyItMatters(args: {
+  status: CanonicalExceptionStatus;
+  evidenceState: ReadinessState;
+  proofState: ReadinessState;
+  memoryCount: number;
+  recurringResolutionReason: string | null;
+}): string {
+  if (args.status === "resolved" && args.proofState === "ready") {
+    return args.memoryCount > 0
+      ? "The operator decision, supporting evidence, and reusable adjudication memory are aligned for export or reuse."
+      : "The decision is recorded and exportable, but this case has not yet built reusable adjudication depth.";
+  }
+
+  if (args.status === "resolved") {
+    return "The decision is recorded, but the proof or evidence set is not yet fully export-ready.";
+  }
+
+  if (args.evidenceState === "setup_required") {
+    return "No supporting evidence is attached yet, so this exception still depends on operator judgment rather than reusable proof.";
+  }
+
+  if (args.recurringResolutionReason) {
+    return `This exception already shows a recurring resolution pattern: ${args.recurringResolutionReason}.`;
+  }
+
+  return "This exception still affects operator trust until the outcome, evidence, and proof state are recorded explicitly.";
+}
+
+export function buildExceptionOperatorSummary(args: {
+  status: CanonicalExceptionStatus;
+  severity: ReconciliationWorkbenchDetail["severity"];
+  description: string;
+  suggestedActions: string[];
+  adjudicationMemories: ReconciliationWorkbenchDetail["adjudicationMemories"];
+  evidenceSummary: ReconciliationWorkbenchDetail["evidenceSummary"];
+  proofSummary: ReconciliationWorkbenchDetail["proofSummary"];
+}): ExceptionOperatorSummary {
+  const evidenceState = resolveEvidenceState(args.evidenceSummary);
+  const proofState = resolveProofState({
+    evidenceState,
+    proofSummary: args.proofSummary,
+  });
+  const memoryState = resolveMemoryState(args.adjudicationMemories.length);
+  const recurringResolutionReason = summarizeRecurringResolutionReason(args.adjudicationMemories);
+  const latestResolution = args.adjudicationMemories[0]
+    ? {
+        outcome: args.adjudicationMemories[0].outcome,
+        reason: args.adjudicationMemories[0].resolutionReason,
+        completedAt: args.adjudicationMemories[0].completedAt,
+      }
+    : null;
+  const bestCompletenessScore =
+    args.proofSummary.items.length > 0
+      ? Math.max(...args.proofSummary.items.map((item) => item.completenessScore))
+      : null;
+  const missingEvidenceCount = args.proofSummary.items.reduce(
+    (count, item) => count + item.missingEvidence.length,
+    0
+  );
+
+  return {
+    whatHappened: buildWhatHappened({
+      status: args.status,
+      severity: args.severity,
+      description: args.description,
+    }),
+    whyItMatters: buildWhyItMatters({
+      status: args.status,
+      evidenceState,
+      proofState,
+      memoryCount: args.adjudicationMemories.length,
+      recurringResolutionReason,
+    }),
+    nextStep:
+      args.suggestedActions[0] ||
+      "Review the records, record an operator decision, and attach evidence before exporting proof.",
+    evidenceState,
+    proofState,
+    memoryState,
+    evidenceCount: args.evidenceSummary.total,
+    attestedEvidenceCount: args.evidenceSummary.attested,
+    degradedEvidenceCount: args.evidenceSummary.degraded,
+    proofPackageCount: args.proofSummary.total,
+    finalizedProofPackageCount: args.proofSummary.finalized,
+    bestCompletenessScore,
+    missingEvidenceCount,
+    memoryCount: args.adjudicationMemories.length,
+    recurringResolutionReason,
+    latestResolution,
+  };
 }
 
 async function loadTopArchetypes(
@@ -811,6 +1010,81 @@ export async function getReconciliationWorkbenchExceptionDetail(
       })),
   ];
 
+  const evidenceSummary = {
+    total: evidenceArtifacts.length,
+    degraded: evidenceArtifacts.filter((item: (typeof evidenceArtifacts)[number]) => item.degraded)
+      .length,
+    attested: evidenceArtifacts.filter((item: (typeof evidenceArtifacts)[number]) => item.attested)
+      .length,
+    latestCapturedAt: evidenceArtifacts[0]?.capturedAt.toISOString() ?? null,
+    items: evidenceArtifacts.map((item: (typeof evidenceArtifacts)[number]) => ({
+      id: item.id,
+      artifactType: item.artifactType,
+      artifactKey: item.artifactKey,
+      capturedAt: item.capturedAt.toISOString(),
+      capturedBy: item.capturedBy,
+      degraded: item.degraded,
+      degradedReasons: Array.isArray(item.degradedReasons)
+        ? item.degradedReasons.filter(isString)
+        : [],
+      attested: item.attested,
+      reliabilityScore: item.reliabilityScore != null ? Number(item.reliabilityScore) : null,
+    })),
+  };
+  const proofSummary = {
+    total: proofPackages.length,
+    finalized: proofPackages.filter(
+      (item: (typeof proofPackages)[number]) => item.status === "finalized"
+    ).length,
+    latestCreatedAt: proofPackages[0]?.createdAt.toISOString() ?? null,
+    items: proofPackages.map((item: (typeof proofPackages)[number]) => ({
+      id: item.id,
+      packageType: item.packageType,
+      packageKey: item.packageKey,
+      status: item.status,
+      completenessScore: Number(item.completenessScore),
+      missingEvidence: Array.isArray(item.missingEvidence)
+        ? item.missingEvidence.filter(isString)
+        : [],
+      completenessFlags: Array.isArray(item.completenessFlags)
+        ? item.completenessFlags.filter(isString)
+        : [],
+      evidenceIds: Array.isArray(item.evidenceIds) ? item.evidenceIds.filter(isString) : [],
+      createdAt: item.createdAt.toISOString(),
+      finalizedAt: item.finalizedAt?.toISOString() ?? null,
+    })),
+  };
+  const adjudicationMemories = memories.map((memory: (typeof memories)[number]) => ({
+    id: memory.id,
+    resolution: memory.resolution,
+    resolutionReason: memory.resolutionReason,
+    adjudicationType: memory.adjudicationType,
+    adjudicatorId: memory.adjudicatorId,
+    adjudicatorType: memory.adjudicatorType,
+    outcome: memory.outcome,
+    confidence: memory.confidence != null ? Number(memory.confidence) : null,
+    sourceTrustScore: memory.sourceTrustScore != null ? Number(memory.sourceTrustScore) : null,
+    operatorNotes: memory.operatorNotes,
+    systemNotes: memory.systemNotes,
+    evidenceIds: Array.isArray(memory.evidenceIds) ? memory.evidenceIds.filter(isString) : [],
+    createdAt: memory.createdAt.toISOString(),
+    completedAt: memory.completedAt?.toISOString() ?? null,
+    parentMemoryId: memory.parentMemoryId,
+  }));
+  const suggestedActions = buildSuggestedActions(
+    listItem.canonicalStatus,
+    evidenceArtifacts.length > 0
+  );
+  const operatorSummary = buildExceptionOperatorSummary({
+    status: listItem.canonicalStatus,
+    severity: listItem.severity,
+    description: listItem.description,
+    suggestedActions,
+    adjudicationMemories,
+    evidenceSummary,
+    proofSummary,
+  });
+
   return {
     ...listItem,
     notes: row.notes,
@@ -866,74 +1140,15 @@ export async function getReconciliationWorkbenchExceptionDetail(
       listItem.canonicalStatus === "dismissed"
         ? (latestMemory?.adjudicatorId ?? row.reviewedBy ?? null)
         : null,
-    suggestedActions: buildSuggestedActions(listItem.canonicalStatus, evidenceArtifacts.length > 0),
+    suggestedActions,
     playbookApplied: topArchetype?.label ?? null,
     operatorNotes: latestMemory?.operatorNotes ?? row.notes ?? null,
     sourceTrustScore: latestMemory?.sourceTrustScore ? Number(latestMemory.sourceTrustScore) : null,
     topArchetype,
-    adjudicationMemories: memories.map((memory: (typeof memories)[number]) => ({
-      id: memory.id,
-      resolution: memory.resolution,
-      resolutionReason: memory.resolutionReason,
-      adjudicationType: memory.adjudicationType,
-      adjudicatorId: memory.adjudicatorId,
-      adjudicatorType: memory.adjudicatorType,
-      outcome: memory.outcome,
-      confidence: memory.confidence != null ? Number(memory.confidence) : null,
-      sourceTrustScore: memory.sourceTrustScore != null ? Number(memory.sourceTrustScore) : null,
-      operatorNotes: memory.operatorNotes,
-      systemNotes: memory.systemNotes,
-      evidenceIds: Array.isArray(memory.evidenceIds) ? memory.evidenceIds.filter(isString) : [],
-      createdAt: memory.createdAt.toISOString(),
-      completedAt: memory.completedAt?.toISOString() ?? null,
-      parentMemoryId: memory.parentMemoryId,
-    })),
-    evidenceSummary: {
-      total: evidenceArtifacts.length,
-      degraded: evidenceArtifacts.filter(
-        (item: (typeof evidenceArtifacts)[number]) => item.degraded
-      ).length,
-      attested: evidenceArtifacts.filter(
-        (item: (typeof evidenceArtifacts)[number]) => item.attested
-      ).length,
-      latestCapturedAt: evidenceArtifacts[0]?.capturedAt.toISOString() ?? null,
-      items: evidenceArtifacts.map((item: (typeof evidenceArtifacts)[number]) => ({
-        id: item.id,
-        artifactType: item.artifactType,
-        artifactKey: item.artifactKey,
-        capturedAt: item.capturedAt.toISOString(),
-        capturedBy: item.capturedBy,
-        degraded: item.degraded,
-        degradedReasons: Array.isArray(item.degradedReasons)
-          ? item.degradedReasons.filter(isString)
-          : [],
-        attested: item.attested,
-        reliabilityScore: item.reliabilityScore != null ? Number(item.reliabilityScore) : null,
-      })),
-    },
-    proofSummary: {
-      total: proofPackages.length,
-      finalized: proofPackages.filter(
-        (item: (typeof proofPackages)[number]) => item.status === "finalized"
-      ).length,
-      latestCreatedAt: proofPackages[0]?.createdAt.toISOString() ?? null,
-      items: proofPackages.map((item: (typeof proofPackages)[number]) => ({
-        id: item.id,
-        packageType: item.packageType,
-        packageKey: item.packageKey,
-        status: item.status,
-        completenessScore: Number(item.completenessScore),
-        missingEvidence: Array.isArray(item.missingEvidence)
-          ? item.missingEvidence.filter(isString)
-          : [],
-        completenessFlags: Array.isArray(item.completenessFlags)
-          ? item.completenessFlags.filter(isString)
-          : [],
-        evidenceIds: Array.isArray(item.evidenceIds) ? item.evidenceIds.filter(isString) : [],
-        createdAt: item.createdAt.toISOString(),
-        finalizedAt: item.finalizedAt?.toISOString() ?? null,
-      })),
-    },
+    adjudicationMemories,
+    evidenceSummary,
+    proofSummary,
     auditTrail,
+    operatorSummary,
   };
 }

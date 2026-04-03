@@ -18,16 +18,29 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { AnimatedButton } from "@/components/motion/AnimatedButton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { StatusBadge } from "@/components/ui/status-badge";
 import {
   ProgressIndicator,
   SuccessToast,
   ErrorFeedback,
   AchievementBadge,
 } from "@/components/feedback";
-import { CheckCircle2, Circle, Loader2, ArrowRight, Database, Play, Eye } from "lucide-react";
+import {
+  CheckCircle2,
+  Circle,
+  Loader2,
+  ArrowRight,
+  Database,
+  Play,
+  Eye,
+  ListChecks,
+} from "lucide-react";
 import { useMachineState } from "@/lib/xstate/hooks";
 import { onboardingMachine } from "@/lib/xstate/onboarding-machine";
 import { stepTransition } from "@/lib/motion/variants";
+import { useConsoleActivationOverview } from "@/hooks/use-console-activation-overview";
+import { getActivationHeadline, getActivationSummary } from "@/lib/activation/overview";
+import { readinessStateToBadgeStatus } from "@/lib/activation/readiness";
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -36,6 +49,7 @@ export default function OnboardingPage() {
   const context = state.context;
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [showAchievement, setShowAchievement] = useState(false);
+  const activation = useConsoleActivationOverview();
 
   // Initialize: Load progress if workspace ID exists
   useEffect(() => {
@@ -108,8 +122,106 @@ export default function OnboardingPage() {
         >
           <h1 className="text-3xl font-bold text-foreground mb-2">Welcome to Settler</h1>
           <p className="text-muted-foreground">
-            Reconciliation starts automatically - no setup needed
+            Use this activation flow to create a workspace, connect a real data path, reach your
+            first run, and produce proof you can stand behind.
           </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.05 }}
+        >
+          <Card className="mb-8 border-border/70">
+            <CardHeader className="pb-3">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="space-y-1">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <ListChecks className="h-5 w-5 text-primary" />
+                    Activation Truth
+                  </CardTitle>
+                  <CardDescription>
+                    {activation.data
+                      ? getActivationSummary(activation.data)
+                      : "Loading setup and first-value readiness checks."}
+                  </CardDescription>
+                </div>
+                {activation.data ? (
+                  <StatusBadge
+                    status={readinessStateToBadgeStatus(activation.data.overallState)}
+                    label={getActivationHeadline(activation.data)}
+                  />
+                ) : (
+                  <StatusBadge status="pending" label="Loading checks" />
+                )}
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {activation.error ? (
+                <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                  {activation.error}
+                </div>
+              ) : null}
+              {activation.data ? (
+                <>
+                  <div className="grid gap-3 md:grid-cols-2">
+                    {activation.data.journeyChecks.map((check) => (
+                      <div
+                        key={check.id}
+                        className="rounded-lg border border-border/60 p-4 space-y-2"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <p className="font-medium text-sm">{check.label}</p>
+                            <p className="text-xs text-muted-foreground">{check.summary}</p>
+                          </div>
+                          <StatusBadge
+                            status={readinessStateToBadgeStatus(check.state)}
+                            label={check.state.replace(/_/g, " ")}
+                            size="sm"
+                          />
+                        </div>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          {check.detail}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="grid gap-3 md:grid-cols-3">
+                    <div className="rounded-lg border border-border/60 p-4">
+                      <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold">
+                        Workspaces
+                      </p>
+                      <p className="mt-2 text-2xl font-bold">
+                        {activation.data.counts.workspaces.toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="rounded-lg border border-border/60 p-4">
+                      <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold">
+                        Integrations
+                      </p>
+                      <p className="mt-2 text-2xl font-bold">
+                        {activation.data.counts.connectedIntegrations.toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="rounded-lg border border-border/60 p-4">
+                      <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold">
+                        Proof Packs
+                      </p>
+                      <p className="mt-2 text-2xl font-bold">
+                        {activation.data.counts.finalizedProofPackages.toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Loading activation status...
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </motion.div>
 
         {/* Progress Bar */}
@@ -378,7 +490,8 @@ export default function OnboardingPage() {
                   className="space-y-4"
                 >
                   <p className="text-sm text-muted-foreground">
-                    Great! You're all set. View your results in the dashboard.
+                    Return to the console to review activation status, exception flow readiness, and
+                    proof availability for this workspace.
                   </p>
                   <AnimatedButton
                     onClick={() => {
@@ -444,8 +557,8 @@ export default function OnboardingPage() {
           title={context.progress >= 100 ? "Onboarding Complete!" : "Halfway There!"}
           description={
             context.progress >= 100
-              ? "You're all set to start using Settler."
-              : "Great progress! Keep going."
+              ? "Core onboarding steps are recorded. Use the activation truth panel to verify what is still degraded or export-ready."
+              : "Great progress. Keep working through the blocked checks until the first-customer path is fully ready."
           }
           onDismiss={() => setShowAchievement(false)}
         />

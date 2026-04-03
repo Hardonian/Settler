@@ -133,6 +133,7 @@ export const GET = withSecurity(
         };
 
         return NextResponse.json({
+          data: response,
           ...response,
           exception: response,
         });

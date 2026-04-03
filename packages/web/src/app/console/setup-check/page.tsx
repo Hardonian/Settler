@@ -1,275 +1,205 @@
-/**
- * Console Setup Check Page
- *
- * Diagnostic page to check what's missing for the console to work.
- */
-
-import { Suspense } from "react";
+import Link from "next/link";
+import { AlertTriangle, CheckCircle2, Database, Wrench } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { CheckCircle2, XCircle, AlertCircle } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
-import { prisma } from "@/shared/db/prismaClient";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { getConsoleActivationOverview } from "@/lib/server/console/activation-overview";
+import { getActivationHeadline, getActivationSummary } from "@/lib/activation/overview";
+import { readinessStateToBadgeStatus, summarizeReadinessCounts } from "@/lib/activation/readiness";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-interface CheckResult {
-  name: string;
-  status: "pass" | "fail" | "warning";
-  message: string;
-}
-
-async function SetupChecks() {
-  const checks: CheckResult[] = [];
-
-  // Check 1: Environment Variables
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-  const supabaseAnonKey =
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
-  const supabaseServiceKey = process.env["SUPABASE_" + "SERVICE_ROLE_KEY"];
-  const databaseUrl = process.env.DATABASE_URL;
-
-  checks.push({
-    name: "Supabase URL",
-    status: supabaseUrl ? "pass" : "fail",
-    message: supabaseUrl ? "Configured" : "Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL",
-  });
-
-  checks.push({
-    name: "Supabase Anon Key",
-    status: supabaseAnonKey ? "pass" : "fail",
-    message: supabaseAnonKey
-      ? "Configured"
-      : "Missing NEXT_PUBLIC_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY",
-  });
-
-  checks.push({
-    name: "Supabase Service Role Key",
-    status: supabaseServiceKey ? "pass" : "warning",
-    message: supabaseServiceKey
-      ? "Configured"
-      : "Missing service role key (needed for admin operations)",
-  });
-
-  checks.push({
-    name: "Database URL",
-    status: databaseUrl ? "pass" : "fail",
-    message: databaseUrl ? "Configured" : "Missing DATABASE_URL",
-  });
-
-  // Check 2: Supabase Connection
-  try {
-    if (supabaseUrl && supabaseAnonKey) {
-      const supabase = await createClient();
-      const { error } = await supabase.auth.getUser();
-      checks.push({
-        name: "Supabase Connection",
-        status: error ? "warning" : "pass",
-        message: error
-          ? `Connection works but auth error: ${error.message}`
-          : "Connected successfully",
-      });
-    } else {
-      checks.push({
-        name: "Supabase Connection",
-        status: "fail",
-        message: "Cannot test - missing environment variables",
-      });
-    }
-  } catch (err) {
-    checks.push({
-      name: "Supabase Connection",
-      status: "fail",
-      message: `Connection failed: ${err instanceof Error ? err.message : "Unknown error"}`,
-    });
-  }
-
-  // Check 3: Prisma Client
-  try {
-    if (prisma && typeof prisma.billingAccount !== "undefined") {
-      checks.push({
-        name: "Prisma Client",
-        status: "pass",
-        message: "Prisma client initialized",
-      });
-    } else {
-      checks.push({
-        name: "Prisma Client",
-        status: "fail",
-        message: "Prisma client not properly initialized",
-      });
-    }
-  } catch (err) {
-    checks.push({
-      name: "Prisma Client",
-      status: "fail",
-      message: `Prisma error: ${err instanceof Error ? err.message : "Unknown error"}`,
-    });
-  }
-
-  // Check 4: Database Tables (if Prisma is available)
-  if (prisma && typeof prisma.billingAccount !== "undefined") {
-    try {
-      await prisma.billingAccount.findFirst({ take: 1 });
-      checks.push({
-        name: "billingAccount Table",
-        status: "pass",
-        message: "Table exists and accessible",
-      });
-    } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : "Unknown error";
-      if (
-        errorMsg.includes("does not exist") ||
-        errorMsg.includes("relation") ||
-        errorMsg.includes("table")
-      ) {
-        checks.push({
-          name: "billingAccount Table",
-          status: "fail",
-          message: "Table does not exist - run migrations",
-        });
-      } else {
-        checks.push({
-          name: "billingAccount Table",
-          status: "warning",
-          message: `Access issue: ${errorMsg}`,
-        });
-      }
-    }
-  }
-
-  // Check 5: Supabase Tables
-  try {
-    if (supabaseUrl && supabaseServiceKey) {
-      const { createClient: createSupabaseClient } = await import("@supabase/supabase-js");
-      const adminClient = createSupabaseClient(supabaseUrl, supabaseServiceKey);
-
-      const { error } = await adminClient.from("api_keys").select("id").limit(1);
-      if (error) {
-        if (error.code === "42P01" || error.message.includes("does not exist")) {
-          checks.push({
-            name: "api_keys Table (Supabase)",
-            status: "fail",
-            message: "Table does not exist - create migration",
-          });
-        } else {
-          checks.push({
-            name: "api_keys Table (Supabase)",
-            status: "warning",
-            message: `Access issue: ${error.message}`,
-          });
-        }
-      } else {
-        checks.push({
-          name: "api_keys Table (Supabase)",
-          status: "pass",
-          message: "Table exists and accessible",
-        });
-      }
-    } else {
-      checks.push({
-        name: "api_keys Table (Supabase)",
-        status: "warning",
-        message: "Cannot test - missing Supabase credentials",
-      });
-    }
-  } catch (err) {
-    checks.push({
-      name: "api_keys Table (Supabase)",
-      status: "fail",
-      message: `Error: ${err instanceof Error ? err.message : "Unknown error"}`,
-    });
-  }
-
-  const passCount = checks.filter((c: any) => c.status === "pass").length;
-  const failCount = checks.filter((c: any) => c.status === "fail").length;
-  const warnCount = checks.filter((c: any) => c.status === "warning").length;
+export default async function SetupCheckPage() {
+  const overview = await getConsoleActivationOverview();
+  const allChecks = [...overview.systemChecks, ...overview.journeyChecks];
+  const counts = summarizeReadinessCounts(allChecks);
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-          Console Setup Diagnostics
-        </h1>
-        <p className="text-slate-600 dark:text-slate-400">
-          Check what's configured and what needs to be set up for the Developer Console.
-        </p>
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Wrench className="h-4 w-4" />
+            <span className="text-xs font-semibold uppercase tracking-[0.24em]">
+              Console Diagnostics
+            </span>
+          </div>
+          <h1 className="text-3xl font-bold text-foreground">{getActivationHeadline(overview)}</h1>
+          <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
+            {getActivationSummary(overview)}
+          </p>
+        </div>
+        <StatusBadge
+          status={readinessStateToBadgeStatus(overview.overallState)}
+          label={overview.overallState.replace(/_/g, " ")}
+        />
       </div>
 
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardDescription>Passed</CardDescription>
-            <CardTitle className="text-3xl text-green-600">{passCount}</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-3">
-            <CardDescription>Warnings</CardDescription>
-            <CardTitle className="text-3xl text-amber-600">{warnCount}</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-3">
-            <CardDescription>Failed</CardDescription>
-            <CardTitle className="text-3xl text-red-600">{failCount}</CardTitle>
-          </CardHeader>
-        </Card>
+      <Card className="border-amber-200 bg-amber-50/60 dark:border-amber-900 dark:bg-amber-950/20">
+        <CardContent className="flex gap-3 pt-6">
+          <AlertTriangle className="mt-0.5 h-5 w-5 text-amber-700 dark:text-amber-400" />
+          <div className="space-y-1 text-sm">
+            <p className="font-semibold text-amber-900 dark:text-amber-200">
+              Settler reports degraded and blocked states explicitly
+            </p>
+            <p className="text-amber-800/90 dark:text-amber-300/90">
+              Treat every `setup required`, `degraded`, or `unavailable` result below as real
+              operator truth. These are recovery paths, not empty-state success.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <DiagnosticCountCard label="Ready" count={counts.ready} tone="ready" />
+        <DiagnosticCountCard label="Degraded" count={counts.degraded} tone="degraded" />
+        <DiagnosticCountCard
+          label="Setup Required"
+          count={counts.setup_required}
+          tone="setup_required"
+        />
+        <DiagnosticCountCard label="Unavailable" count={counts.unavailable} tone="unavailable" />
       </div>
 
-      <div className="space-y-4">
-        {checks.map((check, index) => (
-          <Card key={index}>
-            <CardContent className="pt-6">
-              <div className="flex items-start gap-4">
-                {check.status === "pass" && (
-                  <CheckCircle2 className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" />
-                )}
-                {check.status === "fail" && (
-                  <XCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
-                )}
-                {check.status === "warning" && (
-                  <AlertCircle className="w-6 h-6 text-amber-600 flex-shrink-0 mt-0.5" />
-                )}
-                <div className="flex-1">
-                  <h3 className="font-semibold text-slate-900 dark:text-white mb-1">
-                    {check.name}
-                  </h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">{check.message}</p>
+      <div className="grid gap-6 xl:grid-cols-2">
+        <DiagnosticSection
+          title="Runtime and System Checks"
+          description="Foundational configuration required before tenant-scoped console truth can be trusted."
+          icon={Database}
+          checks={overview.systemChecks}
+        />
+        <DiagnosticSection
+          title="Operator Journey Checks"
+          description="First-customer readiness from workspace setup through proof export."
+          icon={CheckCircle2}
+          checks={overview.journeyChecks}
+        />
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Next Highest-Leverage Actions</CardTitle>
+          <CardDescription>
+            Work these in order to reduce founder dependency and reach first-customer proof faster.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {overview.tasks.map((task) => (
+            <div key={task.id} className="rounded-lg border border-border/60 p-4">
+              <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium">{task.label}</p>
+                    <StatusBadge
+                      status={
+                        task.state === "completed"
+                          ? "completed"
+                          : task.state === "current"
+                            ? "warning"
+                            : "error"
+                      }
+                      label={task.state.replace(/_/g, " ")}
+                      size="sm"
+                    />
+                  </div>
+                  <p className="text-sm text-muted-foreground">{task.description}</p>
                 </div>
+                <Button asChild variant={task.state === "completed" ? "outline" : "default"}>
+                  <Link href={task.href}>{task.actionLabel}</Link>
+                </Button>
               </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
 
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-3">
         <Button asChild>
-          <Link href="/console">Try Console Again</Link>
+          <Link href="/console">Back to Console</Link>
         </Button>
         <Button asChild variant="outline">
-          <Link href="/">Go Home</Link>
+          <Link href="/console/onboarding">Open Onboarding</Link>
+        </Button>
+        <Button asChild variant="outline">
+          <Link href="/console/proof-explorer">Open Proof Explorer</Link>
         </Button>
       </div>
     </div>
   );
 }
 
-export default function SetupCheckPage() {
+function DiagnosticSection({
+  title,
+  description,
+  icon: Icon,
+  checks,
+}: {
+  title: string;
+  description: string;
+  icon: typeof Database;
+  checks: Awaited<ReturnType<typeof getConsoleActivationOverview>>["systemChecks"];
+}) {
   return (
-    <Suspense
-      fallback={
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-slate-600 dark:text-slate-400">Running diagnostics...</p>
-          </div>
+    <Card>
+      <CardHeader>
+        <div className="flex items-center gap-2">
+          <Icon className="h-4 w-4 text-primary" />
+          <CardTitle>{title}</CardTitle>
         </div>
-      }
-    >
-      <SetupChecks />
-    </Suspense>
+        <CardDescription>{description}</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {checks.map((check) => (
+          <div key={check.id} className="rounded-lg border border-border/60 p-4 space-y-3">
+            <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+              <div className="space-y-1">
+                <p className="font-medium">{check.label}</p>
+                <p className="text-sm text-muted-foreground">{check.summary}</p>
+              </div>
+              <StatusBadge
+                status={readinessStateToBadgeStatus(check.state)}
+                label={check.state.replace(/_/g, " ")}
+                size="sm"
+              />
+            </div>
+            <p className="text-sm text-muted-foreground">{check.detail}</p>
+            {check.href && check.actionLabel ? (
+              <Button asChild size="sm" variant="outline">
+                <Link href={check.href}>{check.actionLabel}</Link>
+              </Button>
+            ) : null}
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
+function DiagnosticCountCard({
+  label,
+  count,
+  tone,
+}: {
+  label: string;
+  count: number;
+  tone: "ready" | "degraded" | "setup_required" | "unavailable";
+}) {
+  const accentClass =
+    tone === "ready"
+      ? "text-green-600"
+      : tone === "degraded"
+        ? "text-amber-600"
+        : tone === "setup_required"
+          ? "text-orange-600"
+          : "text-red-600";
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardDescription>{label}</CardDescription>
+        <CardTitle className={`text-3xl ${accentClass}`}>{count}</CardTitle>
+      </CardHeader>
+    </Card>
   );
 }

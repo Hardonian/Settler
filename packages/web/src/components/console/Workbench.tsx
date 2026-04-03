@@ -4,31 +4,77 @@ import React from "react";
 import {
   Activity,
   AlertTriangle,
+  ArrowRight,
   CheckCircle2,
   Clock,
+  Database,
+  FileCheck2,
   Layers,
+  ListChecks,
+  PlugZap,
+  ShieldCheck,
   Zap,
-  ArrowRight,
-  Shield,
-  Search,
-  Terminal,
-  Cpu,
 } from "lucide-react";
 import Link from "next/link";
 import { useWorkbenchRealtime } from "@/hooks/use-workbench-realtime";
+import { useConsoleActivationOverview } from "@/hooks/use-console-activation-overview";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { StatCard } from "@/components/ui/stat-card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AnimatedGradient } from "@/components/ui/AnimatedGradient";
-import { SpotlightCard } from "@/components/ui/SpotlightCard";
+import { StatusBadge } from "@/components/ui/status-badge";
+import {
+  formatActivationTimestamp,
+  getActivationHeadline,
+  getActivationSummary,
+} from "@/lib/activation/overview";
+import { readinessStateToBadgeStatus } from "@/lib/activation/readiness";
+
+function ArrowRightIcon({ className, ...props }: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      {...props}
+    >
+      <path d="M5 12h14" />
+      <path d="m12 5 7 7-7 7" />
+    </svg>
+  );
+}
+
+function WorkbenchSkeleton() {
+  return (
+    <div className="space-y-6">
+      <Skeleton className="h-24 w-full" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <Skeleton key={index} className="h-28 w-full" />
+        ))}
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Skeleton className="h-[360px] lg:col-span-2" />
+        <Skeleton className="h-[360px]" />
+      </div>
+    </div>
+  );
+}
 
 export function Workbench() {
   const { data, isConnected, error } = useWorkbenchRealtime();
+  const activation = useConsoleActivationOverview({ refreshIntervalMs: 30000 });
 
-  if (!data && !error) {
+  if (!data && !error && activation.loading) {
     return <WorkbenchSkeleton />;
   }
 
@@ -42,22 +88,39 @@ export function Workbench() {
     activeRuns: [],
   };
 
+  const overview = activation.data;
+  const headline = overview ? getActivationHeadline(overview) : "Loading activation truth";
+  const summary = overview ? getActivationSummary(overview) : "Loading readiness checks.";
+
   return (
     <div className="space-y-8 pb-12">
-      {/* Header Overlay with Real-time Status */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div className="max-w-4xl">
-          <div className="flex items-center gap-3 mb-2">
+        <div className="max-w-4xl space-y-4">
+          <div className="flex flex-wrap items-center gap-3">
             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/80">
               Settler Command Center
             </p>
+            {overview ? (
+              <StatusBadge
+                status={readinessStateToBadgeStatus(overview.overallState)}
+                label={headline}
+              />
+            ) : (
+              <Badge
+                variant="outline"
+                className="h-5 text-[9px] bg-muted/20 text-muted-foreground gap-1"
+              >
+                <div className="h-1 w-1 rounded-full bg-muted-foreground" />
+                Loading activation
+              </Badge>
+            )}
             {isConnected ? (
               <Badge
                 variant="outline"
-                className="h-5 text-[9px] bg-success/5 border-success/20 text-success gap-1 animate-in fade-in zoom-in"
+                className="h-5 text-[9px] bg-success/5 border-success/20 text-success gap-1"
               >
                 <div className="h-1 w-1 rounded-full bg-success animate-pulse" />
-                LIVE OPS
+                Live runs
               </Badge>
             ) : (
               <Badge
@@ -65,29 +128,28 @@ export function Workbench() {
                 className="h-5 text-[9px] bg-muted/20 text-muted-foreground gap-1"
               >
                 <div className="h-1 w-1 rounded-full bg-muted-foreground" />
-                DISCONNECTED
+                Live updates disconnected
               </Badge>
             )}
           </div>
-          <h1 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl italic drop-shadow-sm">
-            Operator{" "}
-            <span className="text-primary not-italic font-bold tracking-tighter">Workbench</span>
-          </h1>
-          <p className="mt-4 text-base text-muted-foreground font-medium leading-relaxed max-w-2xl">
-            Real-time reconciliation intelligence. Grounded in backend truth, activated for
-            high-integrity fleet adjudication.
-          </p>
+          <div>
+            <h1 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl">
+              Operator Workbench
+            </h1>
+            <p className="mt-4 text-base text-muted-foreground font-medium leading-relaxed max-w-3xl">
+              {summary}
+            </p>
+          </div>
         </div>
 
-        {error && (
-          <div className="flex items-center gap-2 px-4 py-2 bg-warning/5 border border-warning/20 rounded-xl text-warning text-xs font-bold animate-pulse">
+        {(error || activation.error) && (
+          <div className="flex items-center gap-2 px-4 py-2 bg-warning/5 border border-warning/20 rounded-xl text-warning text-xs font-bold">
             <AlertTriangle size={14} />
-            {error}
+            {activation.error || error}
           </div>
         )}
       </div>
 
-      {/* Primary Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           label="Open Exceptions"
@@ -132,15 +194,14 @@ export function Workbench() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Active Runs Panel */}
         <div className="lg:col-span-2 space-y-6">
-          <Card className="border-border/40 shadow-2xl glass overflow-hidden border-l-4 border-l-primary/60">
+          <Card className="border-border/40 shadow-sm overflow-hidden border-l-4 border-l-primary/60">
             <CardHeader className="bg-primary/5 pb-4 border-b border-border/20">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Activity className="h-4 w-4 text-primary" />
                   <CardTitle className="text-sm font-bold uppercase tracking-widest">
-                    Live Engine Orchestration
+                    Live Reconciliation Runs
                   </CardTitle>
                 </div>
                 <Link href="/console/runs">
@@ -149,7 +210,7 @@ export function Workbench() {
                     size="sm"
                     className="text-[10px] uppercase font-bold tracking-widest h-8"
                   >
-                    View Run History <ArrowRight className="ml-2 h-3 w-3" />
+                    View Run History <ArrowRightIcon className="ml-2 h-3 w-3" />
                   </Button>
                 </Link>
               </div>
@@ -167,7 +228,7 @@ export function Workbench() {
                             </span>
                             <Badge
                               variant="outline"
-                              className="text-[9px] uppercase font-black bg-primary/5 text-primary border-primary/20 animate-pulse"
+                              className="text-[9px] uppercase font-black bg-primary/5 text-primary border-primary/20"
                             >
                               {run.status}
                             </Badge>
@@ -225,7 +286,7 @@ export function Workbench() {
                       No active reconciliation runs
                     </p>
                     <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">
-                      Idle state . System nominal
+                      The engine is idle. Use the activation steps at right to reach first value.
                     </p>
                   </div>
                 </div>
@@ -233,154 +294,262 @@ export function Workbench() {
             </CardContent>
           </Card>
 
-          {/* Infrastructure Health Block */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <SpotlightCard className="border-border/40 bg-card/60">
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <Shield className="h-4 w-4 text-primary" />
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-                    Adjudication Memory
-                  </p>
-                </div>
-                <div className="flex items-end justify-between">
-                  <div className="space-y-1">
-                    <p className="text-2xl font-black italic tracking-tighter">Verified</p>
-                    <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest">
-                      Audit Chain Intact
-                    </p>
-                  </div>
-                  <Badge className="bg-success/5 text-success border-success/20 text-[9px] font-bold uppercase tracking-widest">
-                    PREMIUM
-                  </Badge>
-                </div>
-              </div>
-            </SpotlightCard>
-            <SpotlightCard className="border-border/40 bg-card/60">
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <Cpu className="h-4 w-4 text-primary" />
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-                    Compute Health
-                  </p>
-                </div>
-                <div className="flex items-end justify-between">
-                  <div className="space-y-1">
-                    <p className="text-2xl font-black italic tracking-tighter">Optimal</p>
-                    <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest">
-                      4.2ms avg Latency
-                    </p>
-                  </div>
-                  <Badge className="bg-success/5 text-success border-success/20 text-[9px] font-bold uppercase tracking-widest">
-                    STABLE
-                  </Badge>
-                </div>
-              </div>
-            </SpotlightCard>
+            <Card className="border-border/40">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <ListChecks className="h-4 w-4 text-primary" />
+                  Activation Checks
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {overview ? (
+                  overview.journeyChecks.map((check) => (
+                    <div
+                      key={check.id}
+                      className="rounded-lg border border-border/60 p-3 space-y-2"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-sm font-semibold">{check.label}</p>
+                          <p className="text-xs text-muted-foreground">{check.summary}</p>
+                        </div>
+                        <StatusBadge
+                          status={readinessStateToBadgeStatus(check.state)}
+                          label={check.state.replace(/_/g, " ")}
+                          size="sm"
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        {check.detail}
+                      </p>
+                      {check.href && check.actionLabel ? (
+                        <Link
+                          href={check.href}
+                          className="inline-flex items-center text-xs font-medium text-primary hover:underline"
+                        >
+                          {check.actionLabel} <ArrowRightIcon className="ml-1 h-3 w-3" />
+                        </Link>
+                      ) : null}
+                    </div>
+                  ))
+                ) : (
+                  <Skeleton className="h-40 w-full" />
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/40">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-primary" />
+                  Proof and Memory
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {overview ? (
+                  <>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="rounded-lg border border-border/60 p-3">
+                        <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold">
+                          Evidence artifacts
+                        </p>
+                        <p className="mt-2 text-2xl font-black">
+                          {overview.counts.evidenceArtifacts.toLocaleString()}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {overview.counts.degradedEvidenceArtifacts} degraded
+                        </p>
+                      </div>
+                      <div className="rounded-lg border border-border/60 p-3">
+                        <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold">
+                          Finalized proof
+                        </p>
+                        <p className="mt-2 text-2xl font-black">
+                          {overview.counts.finalizedProofPackages.toLocaleString()}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">Export-grade packages</p>
+                      </div>
+                    </div>
+                    <div className="rounded-lg border border-border/60 p-3">
+                      <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold">
+                        Adjudication memory
+                      </p>
+                      <p className="mt-2 text-2xl font-black">
+                        {overview.counts.adjudicationMemories.toLocaleString()}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Durable operator decisions recorded for reuse
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-1 gap-3 text-xs text-muted-foreground">
+                      <div className="flex items-center justify-between">
+                        <span>Latest run</span>
+                        <span className="font-medium text-foreground">
+                          {formatActivationTimestamp(overview.lastRunAt)}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span>Latest operator decision</span>
+                        <span className="font-medium text-foreground">
+                          {formatActivationTimestamp(overview.lastDecisionAt)}
+                        </span>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <Skeleton className="h-40 w-full" />
+                )}
+              </CardContent>
+            </Card>
           </div>
         </div>
 
-        {/* Intelligence / Sidebar */}
-        <div className="space-y-8">
-          <Card className="border-border/40 bg-card/40 shadow-none border-dashed overflow-hidden flex flex-col min-h-[400px]">
-            <CardHeader className="bg-muted/10 border-b border-border/20 relative">
-              <div className="absolute top-0 right-0 p-4 opacity-5">
-                <Terminal size={80} />
-              </div>
-              <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-primary relative z-10">
-                Active Intelligence
+        <div className="space-y-6">
+          <Card className="border-border/40">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Database className="h-4 w-4 text-primary" />
+                First-Customer Activation
               </CardTitle>
             </CardHeader>
-            <CardContent className="flex-1 p-6 space-y-8 relative z-10">
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 group cursor-pointer">
-                  <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-                    <Search className="h-4 w-4 text-primary" />
+            <CardContent className="space-y-4">
+              {overview ? (
+                <>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="rounded-lg border border-border/60 p-3">
+                      <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold">
+                        Workspaces
+                      </p>
+                      <p className="mt-2 text-2xl font-black">
+                        {overview.counts.workspaces.toLocaleString()}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {overview.counts.activeWorkspaces} active
+                      </p>
+                    </div>
+                    <div className="rounded-lg border border-border/60 p-3">
+                      <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold">
+                        Integrations
+                      </p>
+                      <p className="mt-2 text-2xl font-black">
+                        {overview.counts.connectedIntegrations.toLocaleString()}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">Connected today</p>
+                    </div>
+                    <div className="rounded-lg border border-border/60 p-3">
+                      <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold">
+                        Runs
+                      </p>
+                      <p className="mt-2 text-2xl font-black">
+                        {overview.counts.reconciliationRuns.toLocaleString()}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">Tenant-scoped history</p>
+                    </div>
+                    <div className="rounded-lg border border-border/60 p-3">
+                      <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold">
+                        Unresolved queue
+                      </p>
+                      <p className="mt-2 text-2xl font-black">
+                        {overview.counts.unresolvedExceptions.toLocaleString()}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">Needs operator review</p>
+                    </div>
                   </div>
-                  <div className="space-y-0.5">
-                    <p className="text-xs font-bold">Archetype Detection</p>
-                    <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest">
-                      Automatic classification
-                    </p>
+                  <div className="rounded-lg border border-border/60 p-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <PlugZap className="h-4 w-4 text-primary" />
+                      <p className="text-sm font-semibold">Workspace preview</p>
+                    </div>
+                    {overview.workspaces.length > 0 ? (
+                      <div className="space-y-2">
+                        {overview.workspaces.slice(0, 3).map((workspace) => (
+                          <div
+                            key={workspace.id}
+                            className="flex items-center justify-between text-sm"
+                          >
+                            <div>
+                              <p className="font-medium">{workspace.name}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {workspace.slug} · {workspace.role}
+                              </p>
+                            </div>
+                            <StatusBadge
+                              status={workspace.isActive ? "completed" : "warning"}
+                              label={workspace.isActive ? "active" : "inactive"}
+                              size="sm"
+                            />
+                          </div>
+                        ))}
+                        {overview.workspaces.length > 3 ? (
+                          <Link
+                            href="/console/organizations"
+                            className="inline-flex items-center text-xs font-medium text-primary hover:underline"
+                          >
+                            View all workspaces <ArrowRightIcon className="ml-1 h-3 w-3" />
+                          </Link>
+                        ) : null}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">
+                        No workspace is attached to this operator yet.
+                      </p>
+                    )}
                   </div>
-                </div>
-                <div className="flex items-center gap-2 group cursor-pointer">
-                  <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-                    <Layers className="h-4 w-4 text-primary" />
-                  </div>
-                  <div className="space-y-0.5">
-                    <p className="text-xs font-bold">Proof Package Explorer</p>
-                    <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest">
-                      Evidence provenance
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-6 border-t border-border/40 space-y-4">
-                <div className="p-4 rounded-xl bg-slate-950 border border-white/5 font-mono text-[10px] leading-relaxed text-muted-foreground/80 lowercase italic">
-                  <p className="text-primary uppercase not-italic font-bold mb-1 tracking-widest">
-                    System Boot Trace
-                  </p>
-                  <p>
-                    <span className="text-primary/60">[01:42:01]</span> initializing
-                    matching-engine-v4
-                  </p>
-                  <p>
-                    <span className="text-primary/60">[01:42:05]</span> sse connect
-                    (tenant_drift_active)
-                  </p>
-                  <p>
-                    <span className="text-success/60">[01:42:08]</span> ready . awaiting recon cycle
-                  </p>
-                </div>
-              </div>
+                </>
+              ) : (
+                <Skeleton className="h-60 w-full" />
+              )}
             </CardContent>
           </Card>
 
-          <section className="relative overflow-hidden p-8 rounded-3xl bg-primary/5 border border-primary/10 transition-all hover:border-primary/30 flex flex-col items-center text-center space-y-6">
-            <AnimatedGradient />
-            <div className="relative z-10 space-y-4 flex flex-col items-center">
-              <div className="h-16 w-16 rounded-2xl bg-primary/20 flex items-center justify-center border border-primary/30 shadow-xl">
-                <Shield className="h-8 w-8 text-primary shrink-0" />
-              </div>
-              <div className="space-y-2">
-                <h4 className="text-lg font-black italic tracking-tighter">
-                  Enterprise Mode Active
-                </h4>
-                <p className="text-xs text-muted-foreground font-medium max-w-[220px] leading-relaxed lowercase italic">
-                  All adjudications are cryptographically linked to the proof-ledger.
-                  <span className="block mt-2 font-bold uppercase not-italic tracking-[0.2em] text-[10px] text-primary/80 underline decoration-primary/30 underline-offset-4 cursor-pointer">
-                    Verify Proof-Pack
-                  </span>
-                </p>
-              </div>
-            </div>
-          </section>
+          <Card className="border-border/40">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <FileCheck2 className="h-4 w-4 text-primary" />
+                Next Operator Steps
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {overview ? (
+                overview.tasks.map((task) => (
+                  <div key={task.id} className="rounded-lg border border-border/60 p-3 space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold">{task.label}</p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          {task.description}
+                        </p>
+                      </div>
+                      <StatusBadge
+                        status={
+                          task.state === "completed"
+                            ? "completed"
+                            : task.state === "current"
+                              ? "warning"
+                              : "error"
+                        }
+                        label={task.state.replace(/_/g, " ")}
+                        size="sm"
+                      />
+                    </div>
+                    <Link href={task.href}>
+                      <Button
+                        variant={task.state === "completed" ? "outline" : "default"}
+                        size="sm"
+                      >
+                        {task.actionLabel}
+                        <ArrowRight className="ml-2 h-3.5 w-3.5" />
+                      </Button>
+                    </Link>
+                  </div>
+                ))
+              ) : (
+                <Skeleton className="h-72 w-full" />
+              )}
+            </CardContent>
+          </Card>
         </div>
-      </div>
-    </div>
-  );
-}
-
-function WorkbenchSkeleton() {
-  return (
-    <div className="p-6 space-y-12">
-      <div className="flex justify-between items-end">
-        <div className="space-y-4">
-          <Skeleton className="h-4 w-32" />
-          <Skeleton className="h-12 w-64" />
-          <Skeleton className="h-4 w-96" />
-        </div>
-      </div>
-      <div className="grid grid-cols-4 gap-6">
-        {[1, 2, 3, 4].map((i) => (
-          <Skeleton key={i} className="h-32 rounded-2xl" />
-        ))}
-      </div>
-      <div className="grid grid-cols-3 gap-8">
-        <Skeleton className="col-span-2 h-[500px] rounded-3xl" />
-        <Skeleton className="h-[500px] rounded-3xl" />
       </div>
     </div>
   );
