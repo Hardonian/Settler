@@ -43,6 +43,7 @@ jest.mock("@settler/reconciliation-core", () => ({
       primaryReasonCodes: [],
       recurringFamilies: [],
       summary: "deterministic",
+      explainerCodes: ["signal_strong", "pattern_recovering"],
     },
   }),
   unavailableRunProofpackIndex: () => ({

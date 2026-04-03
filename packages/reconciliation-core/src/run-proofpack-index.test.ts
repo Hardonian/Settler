@@ -186,6 +186,14 @@ describe("run proofpack index", () => {
     expect(compact.recurrence.state).toBe("setup_required");
     expect(compact.operatorSummary.signal).toBe("weak");
     expect(compact.operatorSummary.pattern).toBe("thin_history");
+    expect(compact.operatorSummary.explainerCodes).toEqual(
+      expect.arrayContaining([
+        "signal_weak",
+        "comparison_state_unavailable",
+        "history_too_thin",
+        "comparison_change_unavailable",
+      ])
+    );
   });
 
   it("returns explicit unavailable index contract for unsupported run types", () => {
@@ -214,5 +222,10 @@ describe("run proofpack index", () => {
     expect(byRun.get("job-1")?.comparison.reasonCodes).toContain("history_query_failed");
     expect(byRun.get("job-1")?.comparison.history.pattern).toBe("unavailable");
     expect(byRun.get("job-1")?.comparison.history.reasonCodes).toEqual(["history_query_failed"]);
+
+    const compact = toRunCompactProofSummary(byRun.get("job-1")!);
+    expect(compact.operatorSummary.explainerCodes).toEqual(
+      expect.arrayContaining(["signal_degraded", "history_lookup_failed", "history_unavailable"])
+    );
   });
 });

@@ -13,6 +13,63 @@ type RunPattern =
   | "thin_history"
   | "unavailable";
 
+export type RunOperatorReasonCode =
+  | "baseline_missing"
+  | "history_missing"
+  | "history_query_failed"
+  | "latest_result_missing"
+  | "non_terminal_baseline"
+  | "history_too_thin"
+  | "history_window_evaluated"
+  | "mixed_direction_signals"
+  | "carryforward_concentration_increased"
+  | "proof_completeness_weakened"
+  | "proofpack_index_unavailable"
+  | "run_proofpack_missing"
+  | "ingestion_run_history_not_comparable"
+  | "export_run_detail_not_found"
+  | "export_run_detail_error"
+  | `export_run_detail_${string}`
+  | `support_${string}`
+  | string;
+
+export type RunOperatorExplainerCode =
+  | "signal_strong"
+  | "signal_weak"
+  | "signal_degraded"
+  | "signal_unavailable"
+  | "signal_not_comparable"
+  | "pattern_worsening"
+  | "pattern_recovering"
+  | "pattern_stable"
+  | "pattern_thin_history"
+  | "pattern_unavailable"
+  | "comparison_state_available"
+  | "comparison_state_unavailable"
+  | "comparison_state_degraded"
+  | "comparison_state_not_comparable"
+  | "comparison_trust_high"
+  | "comparison_trust_medium"
+  | "comparison_trust_low"
+  | "proof_posture_stronger"
+  | "proof_posture_weaker"
+  | "proof_posture_unchanged"
+  | "proof_posture_unavailable"
+  | "proof_posture_change_present"
+  | "proof_posture_change_absent"
+  | "history_lookup_failed"
+  | "history_too_thin"
+  | "history_not_comparable"
+  | "history_unavailable"
+  | "history_missing"
+  | "proofpack_missing"
+  | "ingestion_run_not_comparable"
+  | "recurring_family_signal_present"
+  | "recurring_family_signal_absent"
+  | "comparison_change_detected"
+  | "comparison_change_absent"
+  | "comparison_change_unavailable";
+
 export interface RunProofpackIndex {
   proofPackages: {
     total: number;
@@ -38,14 +95,14 @@ export interface RunProofpackIndex {
         adjudicationTouches: number;
         highSeverityCount: number;
       };
-      reasonCodes: string[];
+      reasonCodes: RunOperatorReasonCode[];
     }>;
   };
   comparison: {
     state: RunComparisonState;
     changedSincePriorRun: RunDeltaChangeState;
     certainty: RunCertainty;
-    reasonCodes: string[];
+    reasonCodes: RunOperatorReasonCode[];
     summary: string;
     baseline: {
       priorResultId: string | null;
@@ -57,7 +114,7 @@ export interface RunProofpackIndex {
       certainty: RunCertainty;
       trend: RunTrend;
       pattern: RunPattern;
-      reasonCodes: string[];
+      reasonCodes: RunOperatorReasonCode[];
       summary: string;
     };
     deltas: {
@@ -88,7 +145,7 @@ export type RunCompactProofSummary = {
     pattern: RunProofpackIndex["comparison"]["history"]["pattern"];
     changedSincePreviousRun: RunProofpackIndex["comparison"]["changedSincePriorRun"];
     proofPosture: "stronger" | "weaker" | "unchanged" | "unavailable";
-    primaryReasonCodes: string[];
+    primaryReasonCodes: RunOperatorReasonCode[];
     recurringFamilies: Array<{
       family: string;
       trend: RunProofpackIndex["recurrence"]["topRecurringFamilies"][number]["trend"];
@@ -96,6 +153,7 @@ export type RunCompactProofSummary = {
       reasonCodes: string[];
     }>;
     summary: string;
+    explainerCodes: RunOperatorExplainerCode[];
   };
 };
 
@@ -166,6 +224,110 @@ function defaultIndex(): RunProofpackIndex {
   };
 }
 
+function dedupeReasonCodes(codes: RunOperatorReasonCode[]): RunOperatorReasonCode[] {
+  return Array.from(new Set(codes));
+}
+
+function buildOperatorExplainerCodes(input: {
+  index: RunProofpackIndex;
+  signal: RunCompactProofSummary["operatorSummary"]["signal"];
+  proofPosture: RunCompactProofSummary["operatorSummary"]["proofPosture"];
+  hasRecurringFamilyHighlights: boolean;
+}): RunOperatorExplainerCode[] {
+  const { index, signal, proofPosture, hasRecurringFamilyHighlights } = input;
+  const codes: RunOperatorExplainerCode[] = [];
+
+  codes.push(
+    signal === "strong"
+      ? "signal_strong"
+      : signal === "weak"
+        ? "signal_weak"
+        : signal === "degraded"
+          ? "signal_degraded"
+          : signal === "not_comparable"
+            ? "signal_not_comparable"
+            : "signal_unavailable"
+  );
+
+  codes.push(
+    index.comparison.state === "available"
+      ? "comparison_state_available"
+      : index.comparison.state === "degraded"
+        ? "comparison_state_degraded"
+        : index.comparison.state === "not_comparable"
+          ? "comparison_state_not_comparable"
+          : "comparison_state_unavailable"
+  );
+
+  codes.push(
+    index.comparison.certainty === "high"
+      ? "comparison_trust_high"
+      : index.comparison.certainty === "medium"
+        ? "comparison_trust_medium"
+        : "comparison_trust_low"
+  );
+
+  codes.push(
+    index.comparison.history.pattern === "worsening_pattern"
+      ? "pattern_worsening"
+      : index.comparison.history.pattern === "recovering_pattern"
+        ? "pattern_recovering"
+        : index.comparison.history.pattern === "stable_pattern"
+          ? "pattern_stable"
+          : index.comparison.history.pattern === "thin_history"
+            ? "pattern_thin_history"
+            : "pattern_unavailable"
+  );
+
+  codes.push(
+    proofPosture === "stronger"
+      ? "proof_posture_stronger"
+      : proofPosture === "weaker"
+        ? "proof_posture_weaker"
+        : proofPosture === "unchanged"
+          ? "proof_posture_unchanged"
+          : "proof_posture_unavailable"
+  );
+  codes.push(
+    proofPosture === "stronger" || proofPosture === "weaker"
+      ? "proof_posture_change_present"
+      : "proof_posture_change_absent"
+  );
+
+  codes.push(
+    index.comparison.changedSincePriorRun === "changed"
+      ? "comparison_change_detected"
+      : index.comparison.changedSincePriorRun === "unchanged"
+        ? "comparison_change_absent"
+        : "comparison_change_unavailable"
+  );
+
+  if (index.comparison.reasonCodes.includes("history_query_failed")) {
+    codes.push("history_lookup_failed");
+  }
+  if (index.comparison.reasonCodes.includes("non_terminal_baseline")) {
+    codes.push("history_not_comparable");
+  }
+  if (index.comparison.reasonCodes.includes("baseline_missing")) {
+    codes.push("history_missing");
+  }
+  if (index.comparison.history.pattern === "thin_history") {
+    codes.push("history_too_thin");
+  }
+  if (index.comparison.history.pattern === "unavailable") {
+    codes.push("history_unavailable");
+  }
+  if (index.comparison.reasonCodes.includes("run_proofpack_missing")) {
+    codes.push("proofpack_missing");
+  }
+  if (index.comparison.reasonCodes.includes("ingestion_run_history_not_comparable")) {
+    codes.push("ingestion_run_not_comparable");
+  }
+
+  codes.push(hasRecurringFamilyHighlights ? "recurring_family_signal_present" : "recurring_family_signal_absent");
+  return Array.from(new Set(codes));
+}
+
 export function toRunCompactProofSummary(index: RunProofpackIndex): RunCompactProofSummary {
   const signal: RunCompactProofSummary["operatorSummary"]["signal"] =
     index.comparison.state === "degraded"
@@ -191,7 +353,7 @@ export function toRunCompactProofSummary(index: RunProofpackIndex): RunCompactPr
             ? "weaker"
             : "unavailable";
 
-  const primaryReasonCodes = [
+  const primaryReasonCodes = dedupeReasonCodes([
     ...index.comparison.reasonCodes,
     ...index.comparison.history.reasonCodes,
     ...(index.comparison.history.pattern === "thin_history" ? (["history_too_thin"] as const) : []),
@@ -199,7 +361,7 @@ export function toRunCompactProofSummary(index: RunProofpackIndex): RunCompactPr
       ? (["carryforward_concentration_increased"] as const)
       : []),
     ...(proofPosture === "weaker" ? (["proof_completeness_weakened"] as const) : []),
-  ].filter((code, idx, all) => all.indexOf(code) === idx);
+  ]);
 
   const recurringFamilies = index.recurrence.topRecurringFamilies.slice(0, 3).map((family) => ({
     family: family.family,
@@ -207,6 +369,13 @@ export function toRunCompactProofSummary(index: RunProofpackIndex): RunCompactPr
     certainty: family.certainty,
     reasonCodes: family.reasonCodes,
   }));
+
+  const explainerCodes = buildOperatorExplainerCodes({
+    index,
+    signal,
+    proofPosture,
+    hasRecurringFamilyHighlights: recurringFamilies.length > 0,
+  });
 
   const summary =
     signal === "degraded"
@@ -244,6 +413,7 @@ export function toRunCompactProofSummary(index: RunProofpackIndex): RunCompactPr
       primaryReasonCodes,
       recurringFamilies,
       summary,
+      explainerCodes,
     },
   };
 }
@@ -640,7 +810,7 @@ export async function buildRunProofpackIndexByRunId(input: {
 
     const latest = latestByRun.get(run.id);
     const prior = priorByRun.get(run.id);
-    const reasonCodes: string[] = [];
+    const reasonCodes: RunOperatorReasonCode[] = [];
 
     let comparisonState: RunComparisonState = "unavailable";
     let changedSincePriorRun: RunDeltaChangeState = "unavailable";

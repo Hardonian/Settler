@@ -82,12 +82,37 @@ interface RunListItem {
       }>;
     };
     delta: {
+      state: "available" | "unavailable" | "not_comparable" | "degraded";
       changedSincePreviousRun: "changed" | "unchanged" | "unavailable";
       summary: string;
+      reasonCodes: string[];
       history: {
+        pattern:
+          | "worsening_pattern"
+          | "recovering_pattern"
+          | "stable_pattern"
+          | "thin_history"
+          | "unavailable";
         trend: "improving" | "regressing" | "stable" | "volatile" | "unavailable";
         certainty: "high" | "medium" | "low";
       };
+    };
+    operatorSummary: {
+      signal: "strong" | "weak" | "degraded" | "unavailable" | "not_comparable";
+      pattern:
+        | "worsening_pattern"
+        | "recovering_pattern"
+        | "stable_pattern"
+        | "thin_history"
+        | "unavailable";
+      proofPosture: "stronger" | "weaker" | "unchanged" | "unavailable";
+      explainerCodes: string[];
+      recurringFamilies: Array<{
+        family: string;
+        trend: "strengthening" | "weakening" | "stable" | "unavailable";
+        certainty: "high" | "medium" | "low";
+        reasonCodes: string[];
+      }>;
     };
   };
 }
@@ -717,33 +742,59 @@ export default function RunsPage() {
                               ? "Changed since prior run"
                               : run.compactProofSummary.delta.changedSincePreviousRun ===
                                   "unchanged"
-                                ? "No run config drift"
+                                ? "No prior-run change"
                                 : "Delta unavailable"}
                           </Badge>
-                          {run.compactProofSummary.delta.history.trend !== "unavailable" ? (
+                          <Badge
+                            variant={
+                              run.compactProofSummary.operatorSummary.signal === "degraded"
+                                ? "destructive"
+                                : run.compactProofSummary.operatorSummary.signal === "strong"
+                                  ? "success"
+                                  : "outline"
+                            }
+                            size="sm"
+                          >
+                            Signal {run.compactProofSummary.operatorSummary.signal}
+                          </Badge>
+                          {run.compactProofSummary.operatorSummary.pattern !== "unavailable" ? (
                             <Badge
                               variant={
-                                run.compactProofSummary.delta.history.trend === "regressing"
+                                run.compactProofSummary.operatorSummary.pattern ===
+                                "worsening_pattern"
                                   ? "destructive"
-                                  : run.compactProofSummary.delta.history.trend === "improving"
+                                  : run.compactProofSummary.operatorSummary.pattern ===
+                                      "recovering_pattern"
                                     ? "success"
                                     : "outline"
                               }
                               size="sm"
                             >
-                              History {run.compactProofSummary.delta.history.trend}
+                              Pattern {run.compactProofSummary.operatorSummary.pattern}
                             </Badge>
                           ) : null}
+                          <Badge
+                            variant={
+                              run.compactProofSummary.operatorSummary.proofPosture === "weaker"
+                                ? "destructive"
+                                : run.compactProofSummary.operatorSummary.proofPosture === "stronger"
+                                  ? "success"
+                                  : "outline"
+                            }
+                            size="sm"
+                          >
+                            Proof posture {run.compactProofSummary.operatorSummary.proofPosture}
+                          </Badge>
                           {run.compactProofSummary.recurrence.exceptionsWithMemories > 0 ? (
                             <Badge variant="info" size="sm">
                               {run.compactProofSummary.recurrence.exceptionsWithMemories} recurring
                               families
                             </Badge>
                           ) : null}
-                          {run.compactProofSummary.recurrence.topRecurringFamilies[0] ? (
+                          {run.compactProofSummary.operatorSummary.recurringFamilies[0] ? (
                             <Badge variant="outline" size="sm">
                               Priority family{" "}
-                              {run.compactProofSummary.recurrence.topRecurringFamilies[0].family}
+                              {run.compactProofSummary.operatorSummary.recurringFamilies[0].family}
                             </Badge>
                           ) : null}
                         </>

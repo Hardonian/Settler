@@ -152,6 +152,7 @@ const detail: OperatorRunDetail = {
       primaryReasonCodes: ["proofpack_index_unavailable"],
       recurringFamilies: [],
       summary: "Historical signal is unavailable for this run.",
+      explainerCodes: ["signal_unavailable", "pattern_unavailable"],
     },
   },
   kindDetail: {

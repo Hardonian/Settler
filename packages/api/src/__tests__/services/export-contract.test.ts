@@ -31,6 +31,7 @@ jest.mock("@settler/reconciliation-core", () => ({
       primaryReasonCodes: index.comparison.reasonCodes,
       recurringFamilies: [],
       summary: "stable",
+      explainerCodes: ["signal_strong", "pattern_stable"],
     },
   }),
   unavailableRunProofpackIndex: (reasonCode: string) => ({
@@ -83,6 +84,7 @@ describe("buildReconciliationExport historical intelligence", () => {
             primaryReasonCodes: ["history_window_evaluated"],
             recurringFamilies: [],
             summary: "recovering",
+            explainerCodes: ["signal_strong", "pattern_recovering"],
           },
         },
         proofpackIndex: { comparison: { state: "available", reasonCodes: [] } },
@@ -102,6 +104,10 @@ describe("buildReconciliationExport historical intelligence", () => {
       reason: null,
     });
     expect(document?.historicalIntelligence.operatorSummary.pattern).toBe("recovering_pattern");
+    expect(document?.historicalIntelligence.operatorSummary.explainerCodes).toEqual([
+      "signal_strong",
+      "pattern_recovering",
+    ]);
   });
 
   it("preserves explicit fallback reason when canonical detail lookup is unavailable", async () => {
