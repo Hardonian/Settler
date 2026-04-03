@@ -1,4 +1,5 @@
 import type { CanonicalReconciliationListItem } from "./canonical-reconciliation.js";
+import type { ReconciliationCorePrismaClient } from "./prisma-client-like.js";
 
 export type RunComparisonState = "available" | "unavailable" | "not_comparable" | "degraded";
 export type RunDeltaChangeState = "changed" | "unchanged" | "unavailable";
@@ -224,7 +225,7 @@ function buildHistorySummary(rows: LatestPriorResultRow[]): RunProofpackIndex["c
 }
 
 export async function buildRunProofpackIndexByRunId(input: {
-  prisma: RunProofpackPrisma;
+  prisma: ReconciliationCorePrismaClient;
   tenantId: string;
   runs: CanonicalReconciliationListItem[];
 }): Promise<Map<string, RunProofpackIndex>> {

@@ -1,6 +1,6 @@
-import type { PrismaClient } from "@prisma/client";
 import { resolveReconciliationRunForTenant } from "./run-resolution.js";
 import type { CanonicalExceptionCounts } from "./canonical-run-result.js";
+import type { ReconciliationCorePrismaClient } from "./prisma-client-like.js";
 
 export const EXCEPTION_MATCH_TYPES = ["unmatched", "conflict"] as const;
 
@@ -24,7 +24,7 @@ export type ExceptionScopeResolution =
     };
 
 type ExceptionScopeOptions = {
-  prisma: PrismaClient;
+  prisma: ReconciliationCorePrismaClient;
   tenantId: string;
   runId?: string | null;
   runKind?: "recon_job" | "ingestion_run" | null;
@@ -109,7 +109,7 @@ export function operatorStatusToCanonical(
 }
 
 async function resolveRunIdsForJob(
-  prisma: PrismaClient,
+  prisma: ReconciliationCorePrismaClient,
   tenantId: string,
   jobId: string
 ): Promise<string[]> {
@@ -207,7 +207,7 @@ export async function resolveReconciliationExceptionScope({
 }
 
 type CountOptions = {
-  prisma: PrismaClient;
+  prisma: ReconciliationCorePrismaClient;
   tenantId: string;
   runId?: string | null;
   runKind?: "recon_job" | "ingestion_run" | null;

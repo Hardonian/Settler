@@ -2,7 +2,6 @@
  * Prisma fetch helpers for merged reconciliation list pagination.
  */
 
-import type { PrismaClient } from "@prisma/client";
 import {
   mapIngestionReconciliationRunToCanonicalListItem,
   mapReconJobRowToCanonicalListItem,
@@ -11,6 +10,7 @@ import {
 import type { MergedRunsCursorV1 } from "./merged-list-pagination.js";
 import type { ReconResultRecordLike } from "./canonical-run-result.js";
 import { mergeDualStreamPage, type MergeCandidate } from "./merged-list-pagination.js";
+import type { ReconciliationCorePrismaClient } from "./prisma-client-like.js";
 
 export type ReconciliationRunKindFilter = "all" | "recon_job" | "ingestion_run";
 
@@ -61,7 +61,7 @@ type IngestionRunRow = {
 };
 
 async function fetchIngestionRunsPage(
-  prisma: PrismaClient,
+  prisma: ReconciliationCorePrismaClient,
   tenantId: string,
   cursor: { t: string; id: string } | null | undefined,
   take: number
@@ -165,7 +165,7 @@ type ReconJobSqlRow = {
 };
 
 async function fetchReconJobsPage(
-  prisma: PrismaClient,
+  prisma: ReconciliationCorePrismaClient,
   tenantId: string,
   cursor: { t: string; id: string } | null | undefined,
   take: number
@@ -383,7 +383,7 @@ function mapIngestionRow(row: IngestionRunRow) {
 }
 
 export async function fetchMergedReconciliationRunsPage(input: {
-  prisma: PrismaClient;
+  prisma: ReconciliationCorePrismaClient;
   tenantId: string;
   limit: number;
   cursorState: MergedRunsCursorV1 | null;
