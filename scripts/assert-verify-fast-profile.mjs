@@ -27,6 +27,12 @@ if (!fastBody.includes("reconciliationCoreDist")) {
   );
   process.exit(1);
 }
+if (!fastBody.includes("reconciliationTopology")) {
+  console.error(
+    "`fast` profile must include `reconciliationTopology` so canonical run ownership drift is caught before merge."
+  );
+  process.exit(1);
+}
 
 const fastWithLinksMatch = src.match(/"fast-with-links":\s*\[([\s\S]*?)\],/);
 if (!fastWithLinksMatch) {
