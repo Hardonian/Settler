@@ -48,8 +48,13 @@ jest.mock("@/lib/logger", () => ({
 }));
 
 jest.mock("@/shared/db/prismaClient", () => ({
-  prisma: {},
+  prisma: {
+    reconciliationMatch: { findMany: jest.fn() },
+    exceptionAdjudicationMemory: { findMany: jest.fn() },
+    proofPackage: { findMany: jest.fn() },
+  },
 }));
+import { prisma } from "@/shared/db/prismaClient";
 
 function req(url: string) {
   return {
@@ -127,6 +132,9 @@ describe("GET /api/runs", () => {
     fetchMergedReconciliationRunsPageMock.mockReset();
     decodeMergedRunsCursorMock.mockReset();
     mapCanonicalListItemToApiRunsLegacyRowMock.mockReset();
+    (prisma as any).reconciliationMatch.findMany.mockReset();
+    (prisma as any).exceptionAdjudicationMemory.findMany.mockReset();
+    (prisma as any).proofPackage.findMany.mockReset();
 
     requireAuthMock.mockResolvedValue({ tenantId: "tenant-1", userId: "u1", type: "session" });
     resolveTenantMembershipScopeMock.mockResolvedValue({
@@ -194,6 +202,9 @@ describe("GET /api/runs", () => {
         targetAdapter: row.adapters.targetAdapter,
       })
     );
+    (prisma as any).reconciliationMatch.findMany.mockResolvedValue([]);
+    (prisma as any).exceptionAdjudicationMemory.findMany.mockResolvedValue([]);
+    (prisma as any).proofPackage.findMany.mockResolvedValue([]);
   });
 
   it("returns 400 for invalid run_kind", async () => {
@@ -225,6 +236,7 @@ describe("GET /api/runs", () => {
     expect(body.items[0].id).toBe("job-1");
     expect(body.items[0].runKind).toBe("recon_job");
     expect(body.items[0].sourceModel).toBe("recon_jobs");
+    expect(body.items[0].compactProofSummary.proofPackages.state).toBe("setup_required");
     expect(body.items[0].detailHref).toBe("/console/runs/job-1");
     expect(body.next_cursor).toBe("next");
     expect(body.response_meta.pagination_mode).toBe("merged_cursor");

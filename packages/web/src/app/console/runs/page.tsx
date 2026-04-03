@@ -61,6 +61,25 @@ interface RunListItem {
   configDrift?: {
     status?: "none" | "detected" | "indeterminate";
   };
+  compactProofSummary?: {
+    proofPackages: {
+      total: number;
+      finalized: number;
+      bestCompletenessScore: number | null;
+      missingEvidenceCount: number;
+      latestCreatedAt: string | null;
+      state: "ready" | "degraded" | "setup_required" | "unavailable";
+    };
+    recurrence: {
+      exceptionsWithMemories: number;
+      repeatedResolutionReasons: string[];
+      state: "ready" | "degraded" | "setup_required" | "unavailable";
+    };
+    delta: {
+      changedSincePreviousRun: "changed" | "unchanged" | "unavailable";
+      summary: string;
+    };
+  };
 }
 
 interface RunsListApiResponse {
@@ -317,10 +336,7 @@ export default function RunsPage() {
       <ConsolePageHeader
         title="Runs"
         description="Merged reconciliation activity: scheduled recon jobs and ingestion-triggered reconciliation runs share one list. Use the run kind filter to narrow the stream."
-        breadcrumbs={[
-          { label: "Console", href: "/console" },
-          { label: "Runs" },
-        ]}
+        breadcrumbs={[{ label: "Console", href: "/console" }, { label: "Runs" }]}
         actions={
           <div className="flex flex-wrap items-center gap-3">
             <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
@@ -528,160 +544,209 @@ export default function RunsPage() {
               </p>
             ) : null}
             {runs.map((run) => (
-                <div
-                  key={run.id}
-                  className="rounded-xl border border-border/80 bg-card/50 p-5 shadow-sm transition-colors hover:border-primary/30 hover:bg-card/80 hover:shadow-md"
-                >
-                  <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-                    <div className="min-w-0 flex-1 space-y-4">
-                      {/* Row 1: Name + status badges */}
-                      <div className="flex flex-wrap items-center gap-2">
-                        <h2 className="truncate text-base font-semibold text-foreground" title={run.name}>
-                          {run.name}
-                        </h2>
-                        <Badge variant="outline" className="text-xs font-normal">
-                          {run.runKind === "ingestion_run" ? "Ingestion run" : "Recon job"}
-                        </Badge>
-                        <StatusBadge
-                          status={toStatusType(run.status)}
-                          label={run.statusLabel || undefined}
-                        />
-                        {run.configDrift?.status === "detected" && (
-                          <StatusBadge status="warning" label="Config drift" size="sm" />
-                        )}
-                      </div>
-
-                      {/* Row 2: Metadata grid */}
-                      <div className="grid gap-x-6 gap-y-1 text-sm md:grid-cols-4">
-                        <div>
-                          <span className="text-xs text-muted-foreground">Run ID</span>
-                          <div
-                            className="truncate font-mono text-xs text-foreground"
-                            title={run.id}
-                          >
-                            {run.id}
-                          </div>
-                        </div>
-                        {run.ingestionId ? (
-                          <div>
-                            <span className="text-xs text-muted-foreground">Ingestion</span>
-                            <div
-                              className="truncate font-mono text-xs text-foreground"
-                              title={run.ingestionId}
-                            >
-                              {run.ingestionId}
-                            </div>
-                          </div>
-                        ) : null}
-                        {(run.sourceAdapter || run.targetAdapter) && (
-                          <div className="md:col-span-2">
-                            <span className="text-xs text-muted-foreground">Adapters</span>
-                            <div className="text-sm text-foreground">
-                              {[run.sourceAdapter, run.targetAdapter].filter(Boolean).join(" → ") ||
-                                "—"}
-                            </div>
-                          </div>
-                        )}
-                        <div>
-                          <span className="text-xs text-muted-foreground">Started</span>
-                          <div className="text-foreground">{new Date(run.startedAt).toLocaleString()}</div>
-                        </div>
-                        <div>
-                          <span className="text-xs text-muted-foreground">Completed</span>
-                          <div className="text-foreground">
-                            {run.completedAt
-                              ? new Date(run.completedAt).toLocaleString()
-                              : "Still running"}
-                          </div>
-                        </div>
-                        <div>
-                          <span className="text-xs text-muted-foreground">Duration</span>
-                          <div className="font-mono text-foreground">{formatDuration(run.startedAt, run.completedAt)}</div>
-                        </div>
-                      </div>
-
-                      {/* Row 3: Metric chips */}
-                      <div className="grid gap-2 sm:grid-cols-3 xl:grid-cols-6">
-                        <div className="metric-chip">
-                          <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Matched</div>
-                          <div className="mt-0.5 text-lg font-semibold text-success tabular-nums">
-                            {formatCount(run.summary.matched)}
-                          </div>
-                        </div>
-                        <div className="metric-chip">
-                          <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Unmatched</div>
-                          <div className="mt-0.5 text-lg font-semibold text-warning tabular-nums">
-                            {formatCount(run.summary.unmatched)}
-                          </div>
-                        </div>
-                        <div className="metric-chip">
-                          <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Conflicts</div>
-                          <div className="mt-0.5 text-lg font-semibold text-error tabular-nums">
-                            {formatCount(run.summary.conflicts)}
-                          </div>
-                        </div>
-                        <div className="metric-chip">
-                          <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Exceptions</div>
-                          <div className="mt-0.5 text-lg font-semibold tabular-nums">
-                            {formatCount(run.summarySemantics.exceptioned)}
-                          </div>
-                        </div>
-                        <div className="metric-chip">
-                          <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Review</div>
-                          <div className="mt-0.5 text-lg font-semibold tabular-nums">
-                            {formatCount(run.summarySemantics.unresolved)}
-                          </div>
-                        </div>
-                        <div className="metric-chip">
-                          <div className="text-[11px] uppercase tracking-wide text-muted-foreground">In-tolerance</div>
-                          <div className="mt-0.5 text-lg font-semibold tabular-nums">
-                            {formatCount(run.summarySemantics.matchedWithTolerance)}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Row 4: Summary state + record counts */}
-                      <div className="flex flex-wrap items-center gap-3 text-sm">
-                        <StatusBadge
-                          status={summaryToStatusType(run.summaryState)}
-                          label={run.summaryState.replaceAll("_", " ").replace(/\b\w/g, (c) => c.toUpperCase())}
-                          size="sm"
-                        />
-                        <span className="text-muted-foreground">
-                          {formatCount(run.summarySemantics.processed)} / {formatCount(run.summary.total)} records
-                        </span>
-                        <span className="text-muted-foreground text-xs">
-                          Source {formatCount(run.summary.sourceCount)} &middot; Target {formatCount(run.summary.targetCount)}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex flex-wrap gap-2 xl:w-48 xl:flex-col xl:gap-2">
-                      <Button asChild size="sm">
-                        <Link href={`/console/runs/${run.id}`}>Open detail</Link>
-                      </Button>
-                      {run.runKind === "recon_job" ? (
-                        <>
-                          <Button asChild variant="outline" size="sm">
-                            <Link href={`/console/reconciliations?runId=${run.id}`}>
-                              Reconciliation
-                            </Link>
-                          </Button>
-                          <Button asChild variant="ghost" size="sm">
-                            <Link href={`/console/exceptions?runId=${run.id}`}>Exceptions</Link>
-                          </Button>
-                        </>
-                      ) : (
-                        <p className="text-xs text-muted-foreground xl:px-1">
-                          Results and exceptions UIs are recon-job keyed today; open detail for
-                          ingestion run truth.
-                        </p>
+              <div
+                key={run.id}
+                className="rounded-xl border border-border/80 bg-card/50 p-5 shadow-sm transition-colors hover:border-primary/30 hover:bg-card/80 hover:shadow-md"
+              >
+                <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+                  <div className="min-w-0 flex-1 space-y-4">
+                    {/* Row 1: Name + status badges */}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h2
+                        className="truncate text-base font-semibold text-foreground"
+                        title={run.name}
+                      >
+                        {run.name}
+                      </h2>
+                      <Badge variant="outline" className="text-xs font-normal">
+                        {run.runKind === "ingestion_run" ? "Ingestion run" : "Recon job"}
+                      </Badge>
+                      <StatusBadge
+                        status={toStatusType(run.status)}
+                        label={run.statusLabel || undefined}
+                      />
+                      {run.configDrift?.status === "detected" && (
+                        <StatusBadge status="warning" label="Config drift" size="sm" />
                       )}
                     </div>
+
+                    {/* Row 2: Metadata grid */}
+                    <div className="grid gap-x-6 gap-y-1 text-sm md:grid-cols-4">
+                      <div>
+                        <span className="text-xs text-muted-foreground">Run ID</span>
+                        <div className="truncate font-mono text-xs text-foreground" title={run.id}>
+                          {run.id}
+                        </div>
+                      </div>
+                      {run.ingestionId ? (
+                        <div>
+                          <span className="text-xs text-muted-foreground">Ingestion</span>
+                          <div
+                            className="truncate font-mono text-xs text-foreground"
+                            title={run.ingestionId}
+                          >
+                            {run.ingestionId}
+                          </div>
+                        </div>
+                      ) : null}
+                      {(run.sourceAdapter || run.targetAdapter) && (
+                        <div className="md:col-span-2">
+                          <span className="text-xs text-muted-foreground">Adapters</span>
+                          <div className="text-sm text-foreground">
+                            {[run.sourceAdapter, run.targetAdapter].filter(Boolean).join(" → ") ||
+                              "—"}
+                          </div>
+                        </div>
+                      )}
+                      <div>
+                        <span className="text-xs text-muted-foreground">Started</span>
+                        <div className="text-foreground">
+                          {new Date(run.startedAt).toLocaleString()}
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-xs text-muted-foreground">Completed</span>
+                        <div className="text-foreground">
+                          {run.completedAt
+                            ? new Date(run.completedAt).toLocaleString()
+                            : "Still running"}
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-xs text-muted-foreground">Duration</span>
+                        <div className="font-mono text-foreground">
+                          {formatDuration(run.startedAt, run.completedAt)}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Row 3: Metric chips */}
+                    <div className="grid gap-2 sm:grid-cols-3 xl:grid-cols-6">
+                      <div className="metric-chip">
+                        <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                          Matched
+                        </div>
+                        <div className="mt-0.5 text-lg font-semibold text-success tabular-nums">
+                          {formatCount(run.summary.matched)}
+                        </div>
+                      </div>
+                      <div className="metric-chip">
+                        <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                          Unmatched
+                        </div>
+                        <div className="mt-0.5 text-lg font-semibold text-warning tabular-nums">
+                          {formatCount(run.summary.unmatched)}
+                        </div>
+                      </div>
+                      <div className="metric-chip">
+                        <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                          Conflicts
+                        </div>
+                        <div className="mt-0.5 text-lg font-semibold text-error tabular-nums">
+                          {formatCount(run.summary.conflicts)}
+                        </div>
+                      </div>
+                      <div className="metric-chip">
+                        <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                          Exceptions
+                        </div>
+                        <div className="mt-0.5 text-lg font-semibold tabular-nums">
+                          {formatCount(run.summarySemantics.exceptioned)}
+                        </div>
+                      </div>
+                      <div className="metric-chip">
+                        <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                          Review
+                        </div>
+                        <div className="mt-0.5 text-lg font-semibold tabular-nums">
+                          {formatCount(run.summarySemantics.unresolved)}
+                        </div>
+                      </div>
+                      <div className="metric-chip">
+                        <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                          In-tolerance
+                        </div>
+                        <div className="mt-0.5 text-lg font-semibold tabular-nums">
+                          {formatCount(run.summarySemantics.matchedWithTolerance)}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Row 4: Summary state + record counts */}
+                    <div className="flex flex-wrap items-center gap-3 text-sm">
+                      <StatusBadge
+                        status={summaryToStatusType(run.summaryState)}
+                        label={run.summaryState
+                          .replaceAll("_", " ")
+                          .replace(/\b\w/g, (c) => c.toUpperCase())}
+                        size="sm"
+                      />
+                      <span className="text-muted-foreground">
+                        {formatCount(run.summarySemantics.processed)} /{" "}
+                        {formatCount(run.summary.total)} records
+                      </span>
+                      <span className="text-muted-foreground text-xs">
+                        Source {formatCount(run.summary.sourceCount)} &middot; Target{" "}
+                        {formatCount(run.summary.targetCount)}
+                      </span>
+                      {run.compactProofSummary ? (
+                        <>
+                          <Badge variant="outline" size="sm">
+                            Proof {run.compactProofSummary.proofPackages.finalized}/
+                            {run.compactProofSummary.proofPackages.total}
+                          </Badge>
+                          <Badge
+                            variant={
+                              run.compactProofSummary.delta.changedSincePreviousRun === "changed"
+                                ? "warning"
+                                : "outline"
+                            }
+                            size="sm"
+                          >
+                            {run.compactProofSummary.delta.changedSincePreviousRun === "changed"
+                              ? "Changed since prior run"
+                              : run.compactProofSummary.delta.changedSincePreviousRun ===
+                                  "unchanged"
+                                ? "No run config drift"
+                                : "Delta unavailable"}
+                          </Badge>
+                          {run.compactProofSummary.recurrence.exceptionsWithMemories > 0 ? (
+                            <Badge variant="info" size="sm">
+                              {run.compactProofSummary.recurrence.exceptionsWithMemories} recurring
+                              families
+                            </Badge>
+                          ) : null}
+                        </>
+                      ) : null}
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex flex-wrap gap-2 xl:w-48 xl:flex-col xl:gap-2">
+                    <Button asChild size="sm">
+                      <Link href={`/console/runs/${run.id}`}>Open detail</Link>
+                    </Button>
+                    {run.runKind === "recon_job" ? (
+                      <>
+                        <Button asChild variant="outline" size="sm">
+                          <Link href={`/console/reconciliations?runId=${run.id}`}>
+                            Reconciliation
+                          </Link>
+                        </Button>
+                        <Button asChild variant="ghost" size="sm">
+                          <Link href={`/console/exceptions?runId=${run.id}`}>Exceptions</Link>
+                        </Button>
+                      </>
+                    ) : (
+                      <p className="text-xs text-muted-foreground xl:px-1">
+                        Results and exceptions UIs are recon-job keyed today; open detail for
+                        ingestion run truth.
+                      </p>
+                    )}
                   </div>
                 </div>
-              ))}
+              </div>
+            ))}
             {!filters.status && !filters.search && nextCursor ? (
               <div className="flex justify-center pt-2">
                 <Button

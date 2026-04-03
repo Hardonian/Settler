@@ -40,6 +40,32 @@ export type ReconciliationWorkbenchListItem = {
   runId: string;
   assignedTo?: string | null;
   resolutionReason?: string | null;
+  compactSummary?: {
+    recurrence: {
+      memoryCount: number;
+      recurringResolutionReason: string | null;
+      state: ReadinessState;
+    };
+    evidence: {
+      total: number;
+      degraded: number;
+      attested: number;
+      state: ReadinessState;
+    };
+    proof: {
+      total: number;
+      finalized: number;
+      bestCompletenessScore: number | null;
+      missingEvidenceCount: number;
+      state: ReadinessState;
+      changedSincePreviousRun: "changed" | "unchanged" | "unavailable";
+      changeSummary: string;
+    };
+    supportability: {
+      degradedReasons: string[];
+      nextStep: string;
+    };
+  };
 };
 
 export type ReconciliationWorkbenchDetail = ReconciliationWorkbenchListItem & {
@@ -714,25 +740,99 @@ export async function listReconciliationWorkbenchExceptions(
   ]);
 
   const exceptionIds = rows.map((row: { id: string }) => row.id);
-  const [topArchetypes, latestMemories] = await Promise.all([
-    loadTopArchetypes(prisma, filters.tenantId, exceptionIds),
-    prisma.exceptionAdjudicationMemory.findMany({
-      where: {
-        tenantId: filters.tenantId,
-        exceptionId: { in: exceptionIds },
-      },
-      select: {
-        exceptionId: true,
-        resolutionReason: true,
-        operatorNotes: true,
-        completedAt: true,
-        createdAt: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    }),
-  ]);
+  const [topArchetypes, latestMemories, allMemories, evidenceArtifacts, proofPackages] =
+    await Promise.all([
+      loadTopArchetypes(prisma, filters.tenantId, exceptionIds),
+      prisma.exceptionAdjudicationMemory.findMany({
+        where: {
+          tenantId: filters.tenantId,
+          exceptionId: { in: exceptionIds },
+        },
+        select: {
+          exceptionId: true,
+          resolutionReason: true,
+          operatorNotes: true,
+          completedAt: true,
+          createdAt: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      }),
+      prisma.exceptionAdjudicationMemory.findMany({
+        where: {
+          tenantId: filters.tenantId,
+          exceptionId: { in: exceptionIds },
+        },
+        select: {
+          id: true,
+          exceptionId: true,
+          resolution: true,
+          resolutionReason: true,
+          adjudicationType: true,
+          adjudicatorId: true,
+          adjudicatorType: true,
+          outcome: true,
+          confidence: true,
+          sourceTrustScore: true,
+          operatorNotes: true,
+          systemNotes: true,
+          evidenceIds: true,
+          createdAt: true,
+          completedAt: true,
+          parentMemoryId: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      }),
+      prisma.evidenceArtifact.findMany({
+        where: {
+          tenantId: filters.tenantId,
+          exceptionId: { in: exceptionIds },
+        },
+        select: {
+          id: true,
+          exceptionId: true,
+          artifactType: true,
+          artifactKey: true,
+          capturedAt: true,
+          capturedBy: true,
+          degraded: true,
+          degradedReasons: true,
+          attested: true,
+          reliabilityScore: true,
+        },
+        orderBy: {
+          capturedAt: "desc",
+        },
+      }),
+      exceptionIds.length > 0
+        ? prisma.proofPackage.findMany({
+            where: {
+              tenantId: filters.tenantId,
+              OR: exceptionIds.map((exceptionId: string) => ({
+                packageKey: { startsWith: `exception:${exceptionId}:` },
+              })),
+            },
+            select: {
+              id: true,
+              packageType: true,
+              packageKey: true,
+              status: true,
+              completenessScore: true,
+              missingEvidence: true,
+              completenessFlags: true,
+              evidenceIds: true,
+              createdAt: true,
+              finalizedAt: true,
+            },
+            orderBy: {
+              createdAt: "desc",
+            },
+          })
+        : Promise.resolve([]),
+    ]);
 
   const latestMemoryByException = new Map<
     string,
@@ -748,8 +848,8 @@ export async function listReconciliationWorkbenchExceptions(
     }
   }
 
-  const items = rows.map((row: (typeof rows)[number]) =>
-    mapListItem({
+  const items = rows.map((row: (typeof rows)[number]) => {
+    const mapped = mapListItem({
       id: row.id,
       runId: row.runId,
       matchType: row.matchType,
@@ -773,8 +873,144 @@ export async function listReconciliationWorkbenchExceptions(
         : null,
       latestMemory: latestMemoryByException.get(row.id) ?? null,
       topArchetype: topArchetypes.get(row.id) ?? null,
-    })
-  );
+    });
+
+    const memories = allMemories
+      .filter((memory: (typeof allMemories)[number]) => memory.exceptionId === row.id)
+      .map((memory: (typeof allMemories)[number]) => ({
+        ...memory,
+        resolutionReason: memory.resolutionReason ?? null,
+        outcome: memory.outcome ?? null,
+        confidence: memory.confidence != null ? Number(memory.confidence) : null,
+        sourceTrustScore: memory.sourceTrustScore != null ? Number(memory.sourceTrustScore) : null,
+        operatorNotes: memory.operatorNotes ?? null,
+        systemNotes: memory.systemNotes ?? null,
+        evidenceIds: Array.isArray(memory.evidenceIds) ? memory.evidenceIds.filter(isString) : [],
+        createdAt: memory.createdAt.toISOString(),
+        completedAt: memory.completedAt?.toISOString() ?? null,
+        parentMemoryId: memory.parentMemoryId ?? null,
+      }));
+
+    const evidenceSummary = {
+      total: 0,
+      degraded: 0,
+      attested: 0,
+      latestCapturedAt: null as string | null,
+      items: [] as ReconciliationWorkbenchDetail["evidenceSummary"]["items"],
+    };
+
+    for (const evidence of evidenceArtifacts.filter(
+      (artifact: (typeof evidenceArtifacts)[number]) => artifact.exceptionId === row.id
+    )) {
+      evidenceSummary.total += 1;
+      if (evidence.degraded) evidenceSummary.degraded += 1;
+      if (evidence.attested) evidenceSummary.attested += 1;
+      if (!evidenceSummary.latestCapturedAt) {
+        evidenceSummary.latestCapturedAt = evidence.capturedAt.toISOString();
+      }
+      evidenceSummary.items.push({
+        id: evidence.id,
+        artifactType: evidence.artifactType,
+        artifactKey: evidence.artifactKey,
+        capturedAt: evidence.capturedAt.toISOString(),
+        capturedBy: evidence.capturedBy,
+        degraded: evidence.degraded,
+        degradedReasons: Array.isArray(evidence.degradedReasons)
+          ? evidence.degradedReasons.filter(isString)
+          : [],
+        attested: evidence.attested,
+        reliabilityScore:
+          evidence.reliabilityScore != null ? Number(evidence.reliabilityScore) : null,
+      });
+    }
+
+    const proofSummary = {
+      total: 0,
+      finalized: 0,
+      latestCreatedAt: null as string | null,
+      items: [] as ReconciliationWorkbenchDetail["proofSummary"]["items"],
+    };
+
+    for (const proof of proofPackages.filter((item: (typeof proofPackages)[number]) =>
+      item.packageKey.startsWith(`exception:${row.id}:`)
+    )) {
+      proofSummary.total += 1;
+      if (proof.status === "finalized") {
+        proofSummary.finalized += 1;
+      }
+      if (!proofSummary.latestCreatedAt) {
+        proofSummary.latestCreatedAt = proof.createdAt.toISOString();
+      }
+      proofSummary.items.push({
+        id: proof.id,
+        packageType: proof.packageType,
+        packageKey: proof.packageKey,
+        status: proof.status,
+        completenessScore: Number(proof.completenessScore),
+        missingEvidence: Array.isArray(proof.missingEvidence)
+          ? proof.missingEvidence.filter(isString)
+          : [],
+        completenessFlags: Array.isArray(proof.completenessFlags)
+          ? proof.completenessFlags.filter(isString)
+          : [],
+        evidenceIds: Array.isArray(proof.evidenceIds) ? proof.evidenceIds.filter(isString) : [],
+        createdAt: proof.createdAt.toISOString(),
+        finalizedAt: proof.finalizedAt?.toISOString() ?? null,
+      });
+    }
+
+    const operatorSummary = buildExceptionOperatorSummary({
+      status: mapped.canonicalStatus,
+      severity: mapped.severity,
+      description: mapped.description,
+      suggestedActions: buildSuggestedActions(mapped.canonicalStatus, evidenceSummary.total > 0),
+      adjudicationMemories: memories,
+      evidenceSummary,
+      proofSummary,
+    });
+
+    const supportDegradedReasons: string[] = [];
+    if (operatorSummary.evidenceState !== "ready") {
+      supportDegradedReasons.push("Evidence is incomplete or degraded.");
+    }
+    if (operatorSummary.proofState !== "ready") {
+      supportDegradedReasons.push("Proof package is not finalized and complete.");
+    }
+    if (operatorSummary.memoryState === "setup_required") {
+      supportDegradedReasons.push("Recurring adjudication memory has not been established.");
+    }
+
+    return {
+      ...mapped,
+      compactSummary: {
+        recurrence: {
+          memoryCount: operatorSummary.memoryCount,
+          recurringResolutionReason: operatorSummary.recurringResolutionReason,
+          state: operatorSummary.memoryState,
+        },
+        evidence: {
+          total: operatorSummary.evidenceCount,
+          degraded: operatorSummary.degradedEvidenceCount,
+          attested: operatorSummary.attestedEvidenceCount,
+          state: operatorSummary.evidenceState,
+        },
+        proof: {
+          total: operatorSummary.proofPackageCount,
+          finalized: operatorSummary.finalizedProofPackageCount,
+          bestCompletenessScore: operatorSummary.bestCompletenessScore,
+          missingEvidenceCount: operatorSummary.missingEvidenceCount,
+          state: operatorSummary.proofState,
+          changedSincePreviousRun: "unavailable",
+          changeSummary:
+            "Run-over-run proof delta is unavailable in list context; open detail for canonical lineage.",
+        },
+        supportability: {
+          degradedReasons: supportDegradedReasons,
+          nextStep: operatorSummary.nextStep,
+        },
+      },
+    };
+  });
 
   return {
     kind: "ok",

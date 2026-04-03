@@ -65,6 +65,7 @@ jest.mock("@/lib/utils/logger", () => ({
 
 import { GET as getExceptions } from "@/app/api/exceptions/route";
 import { GET as getExceptionDetail } from "@/app/api/exceptions/[exceptionId]/route";
+import { GET as getExceptionProofpack } from "@/app/api/exceptions/[exceptionId]/proofpack/route";
 
 function req(url: string) {
   return {
@@ -136,6 +137,32 @@ describe("exceptions runtime integrity", () => {
             runId: RUN_ID,
             assignedTo: "user-a",
             resolutionReason: "ignored_in_workbench",
+            compactSummary: {
+              recurrence: {
+                memoryCount: 1,
+                recurringResolutionReason: "ignored_in_workbench",
+                state: "ready",
+              },
+              evidence: {
+                total: 1,
+                degraded: 0,
+                attested: 1,
+                state: "ready",
+              },
+              proof: {
+                total: 1,
+                finalized: 1,
+                bestCompletenessScore: 1,
+                missingEvidenceCount: 0,
+                state: "ready",
+                changedSincePreviousRun: "unavailable",
+                changeSummary: "Delta unavailable",
+              },
+              supportability: {
+                degradedReasons: [],
+                nextStep: "Proceed with export.",
+              },
+            },
           },
         ],
         total: 1,
@@ -158,6 +185,11 @@ describe("exceptions runtime integrity", () => {
       id: EXCEPTION_ID,
       status: "ignored",
       runId: RUN_ID,
+      compactSummary: expect.objectContaining({
+        recurrence: expect.objectContaining({ memoryCount: expect.any(Number) }),
+        evidence: expect.objectContaining({ total: expect.any(Number) }),
+        proof: expect.objectContaining({ state: expect.any(String) }),
+      }),
     });
     expect(listReconciliationWorkbenchExceptionsMock).toHaveBeenCalledWith(
       expect.anything(),
@@ -168,6 +200,95 @@ describe("exceptions runtime integrity", () => {
         status: "ignored",
       })
     );
+  });
+
+  test("returns productized proofpack artifact with explicit completeness and unavailable delta semantics", async () => {
+    getReconciliationWorkbenchExceptionDetailMock.mockResolvedValue({
+      id: EXCEPTION_ID,
+      type: "amount_mismatch",
+      matchType: "unmatched",
+      status: "resolved",
+      canonicalStatus: "resolved",
+      severity: "high",
+      detectedAt: "2026-01-01T00:00:00.000Z",
+      description: "Settlement amount mismatch",
+      runId: RUN_ID,
+      statusDetail: "Resolved",
+      reasonTags: [],
+      confidenceScore: 0.92,
+      sourceTransactionId: "src-1",
+      targetTransactionId: "tgt-1",
+      suggestedActions: ["Export proof package."],
+      adjudicationMemories: [],
+      evidenceSummary: {
+        total: 1,
+        degraded: 1,
+        attested: 0,
+        latestCapturedAt: "2026-01-01T00:05:00.000Z",
+        items: [
+          {
+            id: "ev-1",
+            artifactType: "operator_annotation",
+            artifactKey: "k",
+            capturedAt: "2026-01-01T00:05:00.000Z",
+            capturedBy: "operator",
+            degraded: true,
+            degradedReasons: ["source_unavailable"],
+            attested: false,
+            reliabilityScore: 0.6,
+          },
+        ],
+      },
+      proofSummary: {
+        total: 1,
+        finalized: 0,
+        latestCreatedAt: "2026-01-01T00:06:00.000Z",
+        items: [
+          {
+            id: "proof-1",
+            packageType: "exception_resolution",
+            packageKey: "exception:proof",
+            status: "draft",
+            completenessScore: 0.5,
+            missingEvidence: ["bank_statement"],
+            completenessFlags: [],
+            evidenceIds: ["ev-1"],
+            createdAt: "2026-01-01T00:06:00.000Z",
+            finalizedAt: null,
+          },
+        ],
+      },
+      operatorSummary: {
+        whatHappened: "Resolved with degraded evidence.",
+        whyItMatters: "Evidence is not complete.",
+        nextStep: "Attach evidence.",
+        evidenceState: "degraded",
+        proofState: "degraded",
+        memoryState: "setup_required",
+        evidenceCount: 1,
+        attestedEvidenceCount: 0,
+        degradedEvidenceCount: 1,
+        proofPackageCount: 1,
+        finalizedProofPackageCount: 0,
+        bestCompletenessScore: 0.5,
+        missingEvidenceCount: 1,
+        memoryCount: 0,
+        recurringResolutionReason: null,
+        latestResolution: null,
+      },
+    });
+
+    const response = await getExceptionProofpack(
+      req(`http://localhost/api/exceptions/${EXCEPTION_ID}/proofpack`),
+      { params: Promise.resolve({ exceptionId: EXCEPTION_ID }) } as any
+    );
+
+    expect(response.status).toBe(200);
+    const payload = await response.json();
+    expect(payload.artifact.completeness.isExportReady).toBe(false);
+    expect(payload.artifact.changeSincePreviousRun.available).toBe(false);
+    expect(payload.artifact.changeSincePreviousRun.state).toBe("unavailable");
+    expect(payload.artifact.completeness.degradedEvidenceReasons).toContain("source_unavailable");
   });
 
   test("returns 404 when a requested run scope does not exist", async () => {

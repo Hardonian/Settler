@@ -44,6 +44,20 @@ export interface ConsoleActivationOverview {
   systemChecks: ReadinessCheck[];
   journeyChecks: ReadinessCheck[];
   tasks: ConsoleActivationTask[];
+  supportBundle: {
+    generatedAt: string;
+    summary: string;
+    blockers: Array<{
+      id: string;
+      label: string;
+      state: ReadinessState;
+      summary: string;
+      detail: string;
+      actionLabel: string;
+      href: string;
+    }>;
+    recommendedNextActions: string[];
+  };
   lastRunAt: string | null;
   lastDecisionAt: string | null;
 }
