@@ -31,6 +31,32 @@ interface Exception {
   targetTransactionId?: string;
   runId?: string;
   fieldPath?: string;
+  compactSummary?: {
+    recurrence: {
+      memoryCount: number;
+      recurringResolutionReason: string | null;
+      state: "ready" | "degraded" | "setup_required" | "unavailable";
+    };
+    evidence: {
+      total: number;
+      degraded: number;
+      attested: number;
+      state: "ready" | "degraded" | "setup_required" | "unavailable";
+    };
+    proof: {
+      total: number;
+      finalized: number;
+      bestCompletenessScore: number | null;
+      missingEvidenceCount: number;
+      state: "ready" | "degraded" | "setup_required" | "unavailable";
+      changedSincePreviousRun: "changed" | "unchanged" | "unavailable";
+      changeSummary: string;
+    };
+    supportability: {
+      degradedReasons: string[];
+      nextStep: string;
+    };
+  };
 }
 
 interface ExceptionFilters {
@@ -99,6 +125,21 @@ function buildColumns(_runId: string | null): DataTableColumn<Exception>[] {
               ))}
             </div>
           )}
+          {row.compactSummary ? (
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              <Badge variant="outline" size="sm">
+                Memory {row.compactSummary.recurrence.memoryCount}
+              </Badge>
+              <Badge variant="outline" size="sm">
+                Proof {row.compactSummary.proof.finalized}/{row.compactSummary.proof.total}
+              </Badge>
+              {row.compactSummary.evidence.degraded > 0 ? (
+                <Badge variant="warning" size="sm">
+                  Evidence degraded
+                </Badge>
+              ) : null}
+            </div>
+          ) : null}
         </div>
       ),
     },
@@ -110,6 +151,16 @@ function buildColumns(_runId: string | null): DataTableColumn<Exception>[] {
         <div>
           <p className="line-clamp-2">{row.description}</p>
           {row.statusDetail && <p className="mt-1 text-[11px] opacity-70">{row.statusDetail}</p>}
+          {row.compactSummary?.recurrence.recurringResolutionReason ? (
+            <p className="mt-1 text-[11px] text-muted-foreground">
+              Recurring pattern: {row.compactSummary.recurrence.recurringResolutionReason}
+            </p>
+          ) : null}
+          {row.compactSummary?.supportability.degradedReasons?.length ? (
+            <p className="mt-1 text-[11px] text-warning">
+              {row.compactSummary.supportability.degradedReasons[0]}
+            </p>
+          ) : null}
         </div>
       ),
     },

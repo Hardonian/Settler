@@ -51,6 +51,34 @@ function buildTask(args: {
   };
 }
 
+function buildSupportBundle(args: {
+  generatedAt: string;
+  checks: ReadinessCheck[];
+}): ConsoleActivationOverview["supportBundle"] {
+  const blockers = args.checks.filter((check) => check.state !== "ready");
+  const recommendedNextActions = blockers.slice(0, 5).map((check) => {
+    const action = check.actionLabel?.trim() || "Review";
+    return `${action}: ${check.label}`;
+  });
+  return {
+    generatedAt: args.generatedAt,
+    summary:
+      blockers.length === 0
+        ? "No activation blockers are currently reported."
+        : `${blockers.length} activation blocker${blockers.length === 1 ? "" : "s"} require operator or support follow-up.`,
+    blockers: blockers.map((check) => ({
+      id: check.id,
+      label: check.label,
+      state: check.state,
+      summary: check.summary,
+      detail: check.detail,
+      actionLabel: check.actionLabel || "Open diagnostics",
+      href: check.href || "/console/setup-check",
+    })),
+    recommendedNextActions,
+  };
+}
+
 export async function getConsoleActivationOverview(): Promise<ConsoleActivationOverview> {
   const generatedAt = new Date().toISOString();
   const envValidation = validateSupabaseEnv();
@@ -128,6 +156,10 @@ export async function getConsoleActivationOverview(): Promise<ConsoleActivationO
           actionLabel: "Open diagnostics",
         }),
       ],
+      supportBundle: buildSupportBundle({
+        generatedAt,
+        checks: [...systemChecks, ...journeyChecks],
+      }),
       lastRunAt: null,
       lastDecisionAt: null,
     };
@@ -170,6 +202,10 @@ export async function getConsoleActivationOverview(): Promise<ConsoleActivationO
           actionLabel: "Inspect diagnostics",
         }),
       ],
+      supportBundle: buildSupportBundle({
+        generatedAt,
+        checks: [...systemChecks, ...journeyChecks],
+      }),
       lastRunAt: null,
       lastDecisionAt: null,
     };
@@ -210,6 +246,10 @@ export async function getConsoleActivationOverview(): Promise<ConsoleActivationO
           actionLabel: "Sign in",
         }),
       ],
+      supportBundle: buildSupportBundle({
+        generatedAt,
+        checks: [...systemChecks],
+      }),
       lastRunAt: null,
       lastDecisionAt: null,
     };
@@ -564,6 +604,10 @@ export async function getConsoleActivationOverview(): Promise<ConsoleActivationO
     systemChecks,
     journeyChecks,
     tasks,
+    supportBundle: buildSupportBundle({
+      generatedAt,
+      checks: allChecks,
+    }),
     lastRunAt,
     lastDecisionAt,
   };

@@ -35,6 +35,28 @@ import {
 
 export const runtime = "nodejs";
 
+type RunListItemWithSignals = ReturnType<typeof mapCanonicalListItemToApiRunsLegacyRow> & {
+  compactProofSummary?: {
+    proofPackages: {
+      total: number;
+      finalized: number;
+      bestCompletenessScore: number | null;
+      missingEvidenceCount: number;
+      latestCreatedAt: string | null;
+      state: "ready" | "degraded" | "setup_required" | "unavailable";
+    };
+    recurrence: {
+      exceptionsWithMemories: number;
+      repeatedResolutionReasons: string[];
+      state: "ready" | "degraded" | "setup_required" | "unavailable";
+    };
+    delta: {
+      changedSincePreviousRun: "changed" | "unchanged" | "unavailable";
+      summary: string;
+    };
+  };
+};
+
 function resolveTenantIdForRuns(
   authContext: UnifiedAuthContext,
   tenantIds: string[],
@@ -63,6 +85,172 @@ function matchesSearchFilter(searchFilter: string | undefined, id: string, name:
 }
 
 const MAX_FILTER_SCAN_PAGES = 30;
+
+async function withRunCompactProofSignals(
+  tenantId: string,
+  items: ReturnType<typeof mapCanonicalListItemToApiRunsLegacyRow>[]
+): Promise<RunListItemWithSignals[]> {
+  const reconRunIds = items.filter((item) => item.runKind === "recon_job").map((item) => item.id);
+  if (reconRunIds.length === 0) {
+    return items;
+  }
+
+  const matches = await prisma.reconciliationMatch.findMany({
+    where: {
+      tenantId,
+      runId: { in: reconRunIds },
+      matchType: { in: ["unmatched", "conflict"] },
+    },
+    select: { id: true, runId: true },
+  });
+
+  const runByExceptionId = new Map<string, string>();
+  for (const match of matches) {
+    runByExceptionId.set(match.id, match.runId);
+  }
+
+  const reasonCountsByRun = new Map<string, Map<string, number>>();
+  const exceptionIds = matches.map((match: { id: string }) => match.id);
+  if (exceptionIds.length > 0) {
+    const memories = await prisma.exceptionAdjudicationMemory.findMany({
+      where: {
+        tenantId,
+        exceptionId: { in: exceptionIds },
+      },
+      select: { exceptionId: true, resolutionReason: true },
+    });
+    for (const memory of memories) {
+      const runId = runByExceptionId.get(memory.exceptionId);
+      if (!runId) continue;
+      const reason = memory.resolutionReason?.trim();
+      if (!reason) continue;
+      const runReasons = reasonCountsByRun.get(runId) ?? new Map<string, number>();
+      runReasons.set(reason, (runReasons.get(reason) ?? 0) + 1);
+      reasonCountsByRun.set(runId, runReasons);
+    }
+  }
+
+  const proofPackages =
+    exceptionIds.length > 0
+      ? await prisma.proofPackage.findMany({
+          where: {
+            tenantId,
+            OR: exceptionIds.map((exceptionId: string) => ({
+              packageKey: { startsWith: `exception:${exceptionId}:` },
+            })),
+          },
+          select: {
+            packageKey: true,
+            status: true,
+            completenessScore: true,
+            missingEvidence: true,
+            createdAt: true,
+          },
+          orderBy: { createdAt: "desc" },
+        })
+      : [];
+
+  const proofByRun = new Map<
+    string,
+    {
+      total: number;
+      finalized: number;
+      missingEvidenceCount: number;
+      bestCompletenessScore: number | null;
+      latestCreatedAt: string | null;
+    }
+  >();
+  const runExceptionCounts = new Map<string, number>();
+  for (const match of matches) {
+    runExceptionCounts.set(match.runId, (runExceptionCounts.get(match.runId) ?? 0) + 1);
+  }
+  for (const proof of proofPackages) {
+    const packageKeyParts = proof.packageKey.split(":");
+    const exceptionId = packageKeyParts.length >= 2 ? packageKeyParts[1] : null;
+    if (!exceptionId) continue;
+    const runId = runByExceptionId.get(exceptionId);
+    if (!runId) continue;
+    const state = proofByRun.get(runId) ?? {
+      total: 0,
+      finalized: 0,
+      missingEvidenceCount: 0,
+      bestCompletenessScore: null,
+      latestCreatedAt: null,
+    };
+    state.total += 1;
+    if (proof.status === "finalized") state.finalized += 1;
+    state.missingEvidenceCount += Array.isArray(proof.missingEvidence)
+      ? proof.missingEvidence.length
+      : 0;
+    const completenessScore = Number(proof.completenessScore);
+    state.bestCompletenessScore =
+      state.bestCompletenessScore == null
+        ? completenessScore
+        : Math.max(state.bestCompletenessScore, completenessScore);
+    if (!state.latestCreatedAt) {
+      state.latestCreatedAt = proof.createdAt.toISOString();
+    }
+    proofByRun.set(runId, state);
+  }
+
+  return items.map((item) => {
+    const proof = proofByRun.get(item.id) ?? {
+      total: 0,
+      finalized: 0,
+      missingEvidenceCount: 0,
+      bestCompletenessScore: null,
+      latestCreatedAt: null,
+    };
+    const repeatedReasons = Array.from(reasonCountsByRun.get(item.id)?.entries() ?? [])
+      .filter(([, count]) => count > 1)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 2)
+      .map(([reason]) => reason);
+    const exceptionsWithMemories = Array.from(
+      reasonCountsByRun.get(item.id)?.values() ?? []
+    ).reduce((total, count) => total + (count > 0 ? 1 : 0), 0);
+    const proofState =
+      proof.total === 0
+        ? "setup_required"
+        : proof.finalized > 0 && proof.missingEvidenceCount === 0
+          ? "ready"
+          : "degraded";
+
+    return {
+      ...item,
+      compactProofSummary: {
+        proofPackages: {
+          ...proof,
+          state: proofState,
+        },
+        recurrence: {
+          exceptionsWithMemories,
+          repeatedResolutionReasons: repeatedReasons,
+          state:
+            exceptionsWithMemories > 0
+              ? "ready"
+              : runExceptionCounts.get(item.id)
+                ? "degraded"
+                : "setup_required",
+        },
+        delta: {
+          changedSincePreviousRun:
+            item.configDrift?.status === "detected"
+              ? "changed"
+              : item.configDrift?.status === "none"
+                ? "unchanged"
+                : "unavailable",
+          summary:
+            item.configDrift?.status === "detected"
+              ? "Configuration drift detected since prior run."
+              : item.configDrift?.status === "none"
+                ? "No configuration drift detected in canonical run metadata."
+                : "Prior-run delta unavailable in this list view.",
+        },
+      },
+    };
+  });
+}
 
 export const GET = withSecurity(
   withUniversalBillingGate(
@@ -130,7 +318,8 @@ export const GET = withSecurity(
             encodeCursor: encodeMergedRunsCursor,
           });
 
-          const items = page.runs.map(mapCanonicalListItemToApiRunsLegacyRow);
+          const baseItems = page.runs.map(mapCanonicalListItemToApiRunsLegacyRow);
+          const items = await withRunCompactProofSignals(tenantId, baseItems);
 
           return NextResponse.json({
             items,
@@ -211,7 +400,7 @@ export const GET = withSecurity(
           truncated = true;
         }
 
-        const items = collected.slice(0, limit);
+        const items = await withRunCompactProofSignals(tenantId, collected.slice(0, limit));
 
         return NextResponse.json({
           items,
