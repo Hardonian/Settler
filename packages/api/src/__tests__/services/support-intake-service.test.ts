@@ -63,7 +63,9 @@ describe("support-intake-service run intelligence context", () => {
       runId: "run-1",
       runKind: "recon_job",
       status: "completed",
-      compactProofSummary: { operatorSummary: { signal: "strong" } },
+      compactProofSummary: {
+        operatorSummary: { signal: "strong" },
+      },
     });
 
     expect(eventBus.emitEvent).toHaveBeenCalledWith(
