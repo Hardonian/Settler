@@ -5,7 +5,6 @@
  * tenant-scoped enrichment needed for that response (recon_job and ingestion_run).
  */
 
-import type { PrismaClient } from "@prisma/client";
 import {
   buildCanonicalRunResultContract,
   buildLegacyRunSummary,
@@ -31,6 +30,7 @@ import {
 } from "./run-configuration-summary.js";
 import { toStageRows, type ReconAuditRow } from "./recon-audit-stages.js";
 import { buildRunProofpackIndexByRunId } from "./run-proofpack-index.js";
+import type { ReconciliationCorePrismaClient } from "./prisma-client-like.js";
 
 export type OperatorRunDetailResolution =
   | { kind: "ok"; detail: OperatorRunDetail }
@@ -116,7 +116,7 @@ function buildIngestionStages(
  * Resolve tenant-scoped run id to full {@link OperatorRunDetail} (canonical operator read model).
  */
 export async function resolveOperatorRunDetailForTenants(
-  prisma: PrismaClient,
+  prisma: ReconciliationCorePrismaClient,
   tenantIds: string[],
   runId: string
 ): Promise<OperatorRunDetailResolution> {

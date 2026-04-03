@@ -18,9 +18,13 @@ function basePrismaMock() {
         count: jest.fn(),
       },
       runSnapshot: { findFirst: jest.fn() },
+      runDelta: { findFirst: jest.fn() },
       reconAudit: { findMany: jest.fn() },
       reconciliationRun: { findFirst: jest.fn(), findMany: jest.fn() },
-      reconciliationMatch: { count: jest.fn() },
+      reconciliationMatch: { count: jest.fn(), findMany: jest.fn() },
+      exceptionAdjudicationMemory: { findMany: jest.fn() },
+      proofPackage: { findMany: jest.fn() },
+      $queryRaw: jest.fn(),
     },
   };
 }
@@ -111,6 +115,12 @@ describe("resolveOperatorRunDetailForTenants", () => {
       validationRules: [],
       reconStrategy: "deterministic",
       metadata: {},
+      results: [
+        {
+          ...res,
+        },
+      ],
+      _count: { results: 3 },
     });
 
     prisma.reconResult.findMany.mockResolvedValue([res]);
@@ -124,6 +134,11 @@ describe("resolveOperatorRunDetailForTenants", () => {
       createdAt: new Date("2026-01-01T00:09:00.000Z"),
     });
     prisma.reconAudit.findMany.mockResolvedValue([]);
+    prisma.runDelta.findFirst.mockResolvedValue(null);
+    prisma.reconciliationMatch.findMany.mockResolvedValue([]);
+    prisma.exceptionAdjudicationMemory.findMany.mockResolvedValue([]);
+    prisma.proofPackage.findMany.mockResolvedValue([]);
+    prisma.$queryRaw.mockResolvedValue([]);
     prisma.reconciliationRun.findMany.mockResolvedValue([{ id: "ing-1" }, { id: "ing-2" }]);
     prisma.reconciliationMatch.count
       .mockResolvedValueOnce(0)
@@ -163,6 +178,8 @@ describe("resolveOperatorRunDetailForTenants", () => {
       sourceConfigEncrypted: "a",
       targetConfigEncrypted: "b",
       metadata: {},
+      results: [],
+      _count: { results: 0 },
     });
     prisma.reconciliationRun.findFirst.mockResolvedValue({
       id: dup,
