@@ -1,5 +1,7 @@
 import {
   buildRunProofpackIndexByRunId,
+  canonicalMissingProofpackReasonForRunKind,
+  resolveRunCompactProofSummary,
   toRunCompactProofSummary,
   unavailableRunProofpackIndex,
 } from "./run-proofpack-index.js";
@@ -226,6 +228,29 @@ describe("run proofpack index", () => {
     const compact = toRunCompactProofSummary(byRun.get("job-1")!);
     expect(compact.operatorSummary.explainerCodes).toEqual(
       expect.arrayContaining(["signal_degraded", "history_lookup_failed", "history_unavailable"])
+    );
+  });
+
+  it("uses canonical fallback reason codes by run kind when no summary/index exists", () => {
+    const reconSummary = resolveRunCompactProofSummary({ runKind: "recon_job" });
+    expect(reconSummary.source).toBe("fallback_unavailable");
+    expect(reconSummary.fallbackReasonCode).toBe("run_proofpack_missing");
+    expect(reconSummary.compactProofSummary.operatorSummary.primaryReasonCodes).toContain(
+      "run_proofpack_missing"
+    );
+
+    const ingestionSummary = resolveRunCompactProofSummary({ runKind: "ingestion_run" });
+    expect(ingestionSummary.source).toBe("fallback_unavailable");
+    expect(ingestionSummary.fallbackReasonCode).toBe("ingestion_run_history_not_comparable");
+    expect(ingestionSummary.compactProofSummary.operatorSummary.primaryReasonCodes).toContain(
+      "ingestion_run_history_not_comparable"
+    );
+  });
+
+  it("exposes deterministic run-kind-to-fallback-reason mapping", () => {
+    expect(canonicalMissingProofpackReasonForRunKind("recon_job")).toBe("run_proofpack_missing");
+    expect(canonicalMissingProofpackReasonForRunKind("ingestion_run")).toBe(
+      "ingestion_run_history_not_comparable"
     );
   });
 });

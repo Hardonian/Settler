@@ -5,9 +5,8 @@ import { supportIntakeSubmissionSchema, SupportIntakeSubmission } from "./suppor
 import { eventBus } from "../events/event-bus";
 import { prisma } from "../../infrastructure/db/prisma";
 import {
+  resolveRunCompactProofSummary,
   resolveOperatorRunDetailForTenants,
-  toRunCompactProofSummary,
-  unavailableRunProofpackIndex,
 } from "@settler/reconciliation-core";
 
 export interface StoredSupportIntake {
@@ -120,23 +119,26 @@ async function buildSupportRunContext(
         state: "unavailable",
         reason: outcome.kind,
         runId,
-        compactProofSummary: toRunCompactProofSummary(
-          unavailableRunProofpackIndex("support_run_detail_unavailable")
-        ),
+        compactProofSummary: resolveRunCompactProofSummary({
+          runKind: "recon_job",
+          fallbackReasonCode: "support_run_detail_unavailable",
+        }).compactProofSummary,
       };
     }
+
+    const summaryResolution = resolveRunCompactProofSummary({
+      runKind: outcome.detail.runKind,
+      compactProofSummary: outcome.detail.compactProofSummary,
+      proofpackIndex: outcome.detail.proofpackIndex,
+    });
 
     return {
       state: "ok",
       runId: outcome.detail.id,
       runKind: outcome.detail.runKind,
       status: outcome.detail.status,
-      compactProofSummary:
-        outcome.detail.compactProofSummary ??
-        toRunCompactProofSummary(
-          outcome.detail.proofpackIndex ??
-            unavailableRunProofpackIndex("support_run_proofpack_missing")
-        ),
+      compactProofSummary: summaryResolution.compactProofSummary,
+      fallbackReason: summaryResolution.fallbackReasonCode,
     };
   } catch (error) {
     logError("Failed to derive run intelligence for support intake", error, { tenantId, runId });
@@ -144,9 +146,10 @@ async function buildSupportRunContext(
       state: "degraded",
       reason: "support_run_context_error",
       runId,
-      compactProofSummary: toRunCompactProofSummary(
-        unavailableRunProofpackIndex("support_run_context_error")
-      ),
+      compactProofSummary: resolveRunCompactProofSummary({
+        runKind: "recon_job",
+        fallbackReasonCode: "support_run_context_error",
+      }).compactProofSummary,
     };
   }
 }
