@@ -1,4 +1,5 @@
 import type { CanonicalReconciliationListItem } from "./canonical-reconciliation.js";
+import type { ReconciliationCorePrismaClient } from "./prisma-client-like.js";
 
 export type RunComparisonState = "available" | "unavailable" | "not_comparable" | "degraded";
 export type RunDeltaChangeState = "changed" | "unchanged" | "unavailable";
@@ -87,27 +88,8 @@ function defaultIndex(): RunProofpackIndex {
   };
 }
 
-type RunProofpackPrisma = {
-  reconciliationMatch: { findMany: (args: unknown) => Promise<Array<{ id: string; runId: string }>> };
-  exceptionAdjudicationMemory: {
-    findMany: (args: unknown) => Promise<Array<{ exceptionId: string; resolutionReason: string | null }>>;
-  };
-  proofPackage: {
-    findMany: (args: unknown) => Promise<
-      Array<{
-        packageKey: string;
-        status: string;
-        completenessScore: unknown;
-        missingEvidence: unknown;
-        createdAt: Date;
-      }>
-    >;
-  };
-  $queryRaw: (query: TemplateStringsArray, ...values: unknown[]) => Promise<unknown>;
-};
-
 export async function buildRunProofpackIndexByRunId(input: {
-  prisma: RunProofpackPrisma;
+  prisma: ReconciliationCorePrismaClient;
   tenantId: string;
   runs: CanonicalReconciliationListItem[];
 }): Promise<Map<string, RunProofpackIndex>> {

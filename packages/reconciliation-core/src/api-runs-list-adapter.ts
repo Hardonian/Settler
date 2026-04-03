@@ -3,9 +3,9 @@
  * projection (same shape historically returned by GET /api/runs for recon_jobs).
  */
 
-import type { PrismaClient } from "@prisma/client";
 import type { CanonicalReconciliationListItem } from "./canonical-reconciliation.js";
 import type { AdapterDriftSignal } from "./canonical-run-result.js";
+import type { ReconciliationCorePrismaClient } from "./prisma-client-like.js";
 import {
   decodeMergedRunsCursor,
   encodeMergedRunsCursor,
@@ -75,7 +75,7 @@ export type ApiRunsLegacyListFilters = {
 };
 
 export type ApiRunsLegacyPageScanInput = {
-  prisma: PrismaClient;
+  prisma: ReconciliationCorePrismaClient;
   tenantId: string;
   page: number;
   limit: number;

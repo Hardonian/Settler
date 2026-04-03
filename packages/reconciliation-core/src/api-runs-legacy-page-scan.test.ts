@@ -1,7 +1,7 @@
-import type { PrismaClient } from "@prisma/client";
 import type { CanonicalReconciliationListItem } from "./canonical-reconciliation.js";
 import { MergedRunsCursorError } from "./merged-list-pagination";
 import { scanMergedRunsForLegacyPage } from "./api-runs-list-adapter";
+import type { ReconciliationCorePrismaClient } from "./prisma-client-like.js";
 
 function buildCanonicalListItem(overrides: Partial<CanonicalReconciliationListItem> = {}) {
   return {
@@ -70,7 +70,7 @@ function buildCanonicalListItem(overrides: Partial<CanonicalReconciliationListIt
 }
 
 describe("scanMergedRunsForLegacyPage", () => {
-  const prisma = {} as PrismaClient;
+  const prisma = {} as ReconciliationCorePrismaClient;
 
   it("applies legacy status and search filtering before counting and paging", async () => {
     const fetchPage = jest.fn().mockResolvedValue({

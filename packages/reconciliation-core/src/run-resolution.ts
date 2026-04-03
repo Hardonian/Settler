@@ -2,7 +2,6 @@
  * Explicit resolution of a reconciliation run id across recon_jobs and reconciliation_runs.
  */
 
-import type { PrismaClient } from "@prisma/client";
 import { logConflict } from "./uuid-collision-log.js";
 import {
   mapIngestionReconciliationRunToCanonicalDetail,
@@ -10,6 +9,7 @@ import {
   type CanonicalReconciliationRunDetail,
 } from "./canonical-reconciliation.js";
 import type { ReconResultRecordLike } from "./canonical-run-result.js";
+import type { ReconciliationCorePrismaClient } from "./prisma-client-like.js";
 
 export type ReconciliationRunResolution =
   | { kind: "recon_job"; detail: CanonicalReconciliationRunDetail }
@@ -18,7 +18,7 @@ export type ReconciliationRunResolution =
   | { kind: "not_found" };
 
 export async function resolveReconciliationRunForTenant(
-  prisma: PrismaClient,
+  prisma: ReconciliationCorePrismaClient,
   tenantId: string,
   runId: string
 ): Promise<ReconciliationRunResolution> {
@@ -53,7 +53,7 @@ export type ResolvedReconciliationRunForTenants =
  * Uses at most one row per table across the allowed tenant set.
  */
 export async function resolveReconciliationRunForTenants(
-  prisma: PrismaClient,
+  prisma: ReconciliationCorePrismaClient,
   tenantIds: string[],
   runId: string
 ): Promise<ResolvedReconciliationRunForTenants> {
