@@ -165,7 +165,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body>
+      <body className="relative">
+        <div
+          className="fixed inset-0 pointer-events-none noise-overlay opacity-[0.03] dark:opacity-[0.05] z-[9999]"
+          aria-hidden="true"
+        />
         <ErrorBoundary componentName="RootLayout">
           <TenantThemeProvider theme={null} tenantId={null} tenantSlug={null}>
             <RuntimeUiConfigProvider>

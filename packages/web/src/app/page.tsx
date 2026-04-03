@@ -123,9 +123,9 @@ export default function HomePage() {
             <div className="space-y-8">
               <h2 className="text-3xl font-bold tracking-tight">Operator-Grade Triage</h2>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Settler doesn&apos;t just find mismatches; it empowers operators to resolve them
-                with institutional-grade confidence. AI-assisted review compresses resolution time
-                by surfacing the exact context needed for every decision.
+                Settler doesn't just find mismatches; it empowers operators to resolve them with
+                institutional-grade confidence. AI-assisted review compresses resolution time by
+                surfacing the exact context needed for every decision.
               </p>
               <Button asChild variant="outline">
                 <UiLink href="/platform">
