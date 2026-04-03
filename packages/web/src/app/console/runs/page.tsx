@@ -74,10 +74,20 @@ interface RunListItem {
       exceptionsWithMemories: number;
       repeatedResolutionReasons: string[];
       state: "ready" | "degraded" | "setup_required" | "unavailable";
+      topRecurringFamilies: Array<{
+        family: string;
+        trend: "strengthening" | "weakening" | "stable" | "unavailable";
+        certainty: "high" | "medium" | "low";
+        score: number;
+      }>;
     };
     delta: {
       changedSincePreviousRun: "changed" | "unchanged" | "unavailable";
       summary: string;
+      history: {
+        trend: "improving" | "regressing" | "stable" | "volatile" | "unavailable";
+        certainty: "high" | "medium" | "low";
+      };
     };
   };
 }
@@ -710,10 +720,30 @@ export default function RunsPage() {
                                 ? "No run config drift"
                                 : "Delta unavailable"}
                           </Badge>
+                          {run.compactProofSummary.delta.history.trend !== "unavailable" ? (
+                            <Badge
+                              variant={
+                                run.compactProofSummary.delta.history.trend === "regressing"
+                                  ? "destructive"
+                                  : run.compactProofSummary.delta.history.trend === "improving"
+                                    ? "success"
+                                    : "outline"
+                              }
+                              size="sm"
+                            >
+                              History {run.compactProofSummary.delta.history.trend}
+                            </Badge>
+                          ) : null}
                           {run.compactProofSummary.recurrence.exceptionsWithMemories > 0 ? (
                             <Badge variant="info" size="sm">
                               {run.compactProofSummary.recurrence.exceptionsWithMemories} recurring
                               families
+                            </Badge>
+                          ) : null}
+                          {run.compactProofSummary.recurrence.topRecurringFamilies[0] ? (
+                            <Badge variant="outline" size="sm">
+                              Priority family{" "}
+                              {run.compactProofSummary.recurrence.topRecurringFamilies[0].family}
                             </Badge>
                           ) : null}
                         </>

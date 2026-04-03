@@ -195,6 +195,30 @@ export default function RunPage() {
         />
       </div>
 
+      {run.proofpackIndex ? (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <DetailCard
+            label="History Trend"
+            value={run.proofpackIndex.comparison.history.trend.toUpperCase()}
+            subtext={`certainty ${run.proofpackIndex.comparison.history.certainty}`}
+          />
+          <DetailCard
+            label="Recurring Families"
+            value={run.proofpackIndex.recurrence.topRecurringFamilies.length.toString()}
+            subtext={
+              run.proofpackIndex.recurrence.topRecurringFamilies[0]
+                ? `top ${run.proofpackIndex.recurrence.topRecurringFamilies[0].family}`
+                : "No ranked families yet"
+            }
+          />
+          <DetailCard
+            label="Proof Coverage"
+            value={`${run.proofpackIndex.proofPackages.finalized}/${run.proofpackIndex.proofPackages.total}`}
+            subtext={run.proofpackIndex.proofPackages.state}
+          />
+        </div>
+      ) : null}
+
       <Tabs defaultValue="statistics" className="w-full">
         <div className="flex items-center justify-between border-b border-border/40 pb-px mb-8 sticky top-0 bg-background/80 backdrop-blur-xl z-20">
           <TabsList className="bg-transparent h-12 p-0 gap-8">

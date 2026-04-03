@@ -51,6 +51,7 @@ function toCompactProofSummary(index: import("@settler/reconciliation-core").Run
       certainty: index.comparison.certainty,
       reasonCodes: index.comparison.reasonCodes,
       baseline: index.comparison.baseline,
+      history: index.comparison.history,
       deltas: index.comparison.deltas,
     },
   };
