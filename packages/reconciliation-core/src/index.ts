@@ -13,3 +13,4 @@ export * from "./run-configuration-summary.js";
 export * from "./recon-audit-stages.js";
 export * from "./operator-run-detail-resolve.js";
 export * from "./exception-workbench.js";
+export * from "./run-proofpack-index.js";

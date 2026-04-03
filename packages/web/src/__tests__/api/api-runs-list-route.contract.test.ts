@@ -8,6 +8,7 @@ const resolveTenantMembershipScopeMock = jest.fn();
 const fetchMergedReconciliationRunsPageMock = jest.fn();
 const decodeMergedRunsCursorMock = jest.fn();
 const mapCanonicalListItemToApiRunsLegacyRowMock = jest.fn();
+const buildRunProofpackIndexByRunIdMock = jest.fn();
 
 jest.mock("@/lib/middleware/api-security", () => ({
   withSecurity: (handler: unknown) => handler,
@@ -36,6 +37,7 @@ jest.mock("@settler/reconciliation-core", () => {
     decodeMergedRunsCursor: (...args: unknown[]) => decodeMergedRunsCursorMock(...args),
     mapCanonicalListItemToApiRunsLegacyRow: (...args: unknown[]) =>
       mapCanonicalListItemToApiRunsLegacyRowMock(...args),
+    buildRunProofpackIndexByRunId: (...args: unknown[]) => buildRunProofpackIndexByRunIdMock(...args),
   };
 });
 
@@ -132,6 +134,7 @@ describe("GET /api/runs", () => {
     fetchMergedReconciliationRunsPageMock.mockReset();
     decodeMergedRunsCursorMock.mockReset();
     mapCanonicalListItemToApiRunsLegacyRowMock.mockReset();
+    buildRunProofpackIndexByRunIdMock.mockReset();
     (prisma as any).reconciliationMatch.findMany.mockReset();
     (prisma as any).exceptionAdjudicationMemory.findMany.mockReset();
     (prisma as any).proofPackage.findMany.mockReset();
@@ -205,6 +208,47 @@ describe("GET /api/runs", () => {
     (prisma as any).reconciliationMatch.findMany.mockResolvedValue([]);
     (prisma as any).exceptionAdjudicationMemory.findMany.mockResolvedValue([]);
     (prisma as any).proofPackage.findMany.mockResolvedValue([]);
+    buildRunProofpackIndexByRunIdMock.mockResolvedValue(
+      new Map([
+        [
+          "job-1",
+          {
+            proofPackages: {
+              total: 0,
+              finalized: 0,
+              bestCompletenessScore: null,
+              missingEvidenceCount: 0,
+              latestCreatedAt: null,
+              state: "setup_required",
+              degradedEvidenceReasons: [],
+            },
+            recurrence: {
+              exceptionsWithMemories: 0,
+              repeatedResolutionReasons: [],
+              state: "setup_required",
+            },
+            comparison: {
+              state: "unavailable",
+              changedSincePriorRun: "unavailable",
+              certainty: "low",
+              reasonCodes: ["baseline_missing"],
+              summary: "No prior comparable run result is available yet.",
+              baseline: {
+                priorResultId: null,
+                priorResultStartedAt: null,
+              },
+              deltas: {
+                matched: null,
+                unmatched: null,
+                conflicts: null,
+                proofCompleteness: "unavailable",
+                recurringFamilyConcentration: "unavailable",
+              },
+            },
+          },
+        ],
+      ])
+    );
   });
 
   it("returns 400 for invalid run_kind", async () => {
@@ -237,6 +281,7 @@ describe("GET /api/runs", () => {
     expect(body.items[0].runKind).toBe("recon_job");
     expect(body.items[0].sourceModel).toBe("recon_jobs");
     expect(body.items[0].compactProofSummary.proofPackages.state).toBe("setup_required");
+    expect(body.items[0].compactProofSummary.delta.state).toBe("unavailable");
     expect(body.items[0].detailHref).toBe("/console/runs/job-1");
     expect(body.next_cursor).toBe("next");
     expect(body.response_meta.pagination_mode).toBe("merged_cursor");
