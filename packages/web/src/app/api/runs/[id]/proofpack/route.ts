@@ -40,12 +40,46 @@ export const GET = withSecurity(
           detailHref: detail.detailHref,
         },
         proofpackIndex: proofpackIndex ?? {
+          proofPackages: {
+            total: 0,
+            finalized: 0,
+            bestCompletenessScore: null,
+            missingEvidenceCount: 0,
+            latestCreatedAt: null,
+            state: "unavailable",
+            degradedEvidenceReasons: ["proofpack_index_unavailable"],
+          },
+          recurrence: {
+            exceptionsWithMemories: 0,
+            repeatedResolutionReasons: [],
+            state: "unavailable",
+            topRecurringFamilies: [],
+          },
           comparison: {
             state: "unavailable",
             changedSincePriorRun: "unavailable",
             certainty: "low",
             reasonCodes: ["proofpack_index_unavailable"],
             summary: "Run-level proofpack index is unavailable for this run type.",
+            baseline: {
+              priorResultId: null,
+              priorResultStartedAt: null,
+            },
+            history: {
+              lookbackWindow: 0,
+              comparableWindowCount: 0,
+              certainty: "low",
+              trend: "unavailable",
+              reasonCodes: ["proofpack_index_unavailable"],
+              summary: "Run history intelligence is unavailable for this run type.",
+            },
+            deltas: {
+              matched: null,
+              unmatched: null,
+              conflicts: null,
+              proofCompleteness: "unavailable",
+              recurringFamilyConcentration: "unavailable",
+            },
           },
         },
         supportability: {

@@ -77,6 +77,7 @@ describe("GET /api/runs/[id]/proofpack", () => {
             exceptionsWithMemories: 1,
             repeatedResolutionReasons: ["known_bank_window"],
             state: "ready",
+            topRecurringFamilies: [],
           },
           comparison: {
             state: "available",
@@ -87,6 +88,14 @@ describe("GET /api/runs/[id]/proofpack", () => {
             baseline: {
               priorResultId: "result-1",
               priorResultStartedAt: "2025-12-31T00:00:00.000Z",
+            },
+            history: {
+              lookbackWindow: 2,
+              comparableWindowCount: 2,
+              certainty: "high",
+              trend: "improving",
+              reasonCodes: ["history_window_evaluated"],
+              summary: "Recent comparable history shows improving reconciliation posture.",
             },
             deltas: {
               matched: 2,

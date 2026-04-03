@@ -226,6 +226,7 @@ describe("GET /api/runs", () => {
               exceptionsWithMemories: 0,
               repeatedResolutionReasons: [],
               state: "setup_required",
+              topRecurringFamilies: [],
             },
             comparison: {
               state: "unavailable",
@@ -236,6 +237,14 @@ describe("GET /api/runs", () => {
               baseline: {
                 priorResultId: null,
                 priorResultStartedAt: null,
+              },
+              history: {
+                lookbackWindow: 0,
+                comparableWindowCount: 0,
+                certainty: "low",
+                trend: "unavailable",
+                reasonCodes: ["history_missing"],
+                summary: "History window is unavailable.",
               },
               deltas: {
                 matched: null,

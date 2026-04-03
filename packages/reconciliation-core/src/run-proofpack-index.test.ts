@@ -59,8 +59,31 @@ const baseRun: CanonicalReconciliationListItem = {
 describe("run proofpack index", () => {
   it("returns deterministic available comparison when latest+prior completed results exist", async () => {
     const prisma: any = {
-      reconciliationMatch: { findMany: jest.fn().mockResolvedValue([]) },
-      exceptionAdjudicationMemory: { findMany: jest.fn().mockResolvedValue([]) },
+      reconciliationMatch: {
+        findMany: jest.fn().mockResolvedValue([
+          {
+            id: "exception-1",
+            runId: "job-1",
+            severity: "high",
+            status: "open",
+            resolutionReason: "bank_window",
+          },
+          {
+            id: "exception-2",
+            runId: "job-1",
+            severity: "medium",
+            status: "resolved",
+            resolutionReason: "bank_window",
+          },
+        ]),
+      },
+      exceptionAdjudicationMemory: {
+        findMany: jest.fn().mockResolvedValue([
+          { exceptionId: "exception-1", resolutionReason: "bank_window" },
+          { exceptionId: "exception-2", resolutionReason: "bank_window" },
+          { exceptionId: "exception-1", resolutionReason: "bank_window" },
+        ]),
+      },
       proofPackage: { findMany: jest.fn().mockResolvedValue([]) },
       $queryRaw: jest.fn().mockResolvedValue([
         {
@@ -94,6 +117,8 @@ describe("run proofpack index", () => {
     expect(index?.comparison.changedSincePriorRun).toBe("changed");
     expect(index?.comparison.deltas.matched).toBe(2);
     expect(index?.comparison.baseline.priorResultId).toBe("result-1");
+    expect(index?.comparison.history.trend).toBe("improving");
+    expect(index?.recurrence.topRecurringFamilies[0]?.family).toBe("bank_window");
   });
 
   it("returns unavailable comparison when baseline is missing", async () => {
@@ -119,5 +144,6 @@ describe("run proofpack index", () => {
     const byRun = await buildRunProofpackIndexByRunId({ prisma, tenantId: "tenant-1", runs: [baseRun] });
     expect(byRun.get("job-1")?.comparison.state).toBe("unavailable");
     expect(byRun.get("job-1")?.comparison.reasonCodes).toContain("baseline_missing");
+    expect(byRun.get("job-1")?.comparison.history.trend).toBe("unavailable");
   });
 });
