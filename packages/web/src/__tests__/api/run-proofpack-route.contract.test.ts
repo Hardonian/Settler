@@ -33,6 +33,22 @@ jest.mock("@/lib/supabase/tenant-membership", () => {
 jest.mock("@settler/reconciliation-core", () => ({
   resolveOperatorRunDetailForTenants: (...args: unknown[]) =>
     resolveOperatorRunDetailForTenantsMock(...args),
+  toRunCompactProofSummary: (index: any) => ({
+    delta: index.comparison,
+    operatorSummary: {
+      signal: "strong",
+      pattern: "recovering_pattern",
+      changedSincePreviousRun: index.comparison.changedSincePriorRun,
+      proofPosture: "unchanged",
+      primaryReasonCodes: [],
+      recurringFamilies: [],
+      summary: "deterministic",
+    },
+  }),
+  unavailableRunProofpackIndex: () => ({
+    proofPackages: { state: "unavailable" },
+    comparison: { state: "unavailable", changedSincePriorRun: "unavailable" },
+  }),
 }));
 
 jest.mock("@/shared/db/prismaClient", () => ({ prisma: {} }));
@@ -94,6 +110,7 @@ describe("GET /api/runs/[id]/proofpack", () => {
               comparableWindowCount: 2,
               certainty: "high",
               trend: "improving",
+              pattern: "recovering_pattern",
               reasonCodes: ["history_window_evaluated"],
               summary: "Recent comparable history shows improving reconciliation posture.",
             },
@@ -117,6 +134,7 @@ describe("GET /api/runs/[id]/proofpack", () => {
     const payload = await response.json();
     expect(payload.artifact.schemaVersion).toBe("proofpack.run.v1");
     expect(payload.artifact.proofpackIndex.comparison.state).toBe("available");
+    expect(payload.artifact.compactProofSummary.operatorSummary.pattern).toBe("recovering_pattern");
     expect(payload.artifact.supportability.shareable).toBe(true);
   });
 

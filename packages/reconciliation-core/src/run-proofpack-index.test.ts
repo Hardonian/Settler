@@ -130,8 +130,8 @@ describe("run proofpack index", () => {
     expect(index?.comparison.changedSincePriorRun).toBe("changed");
     expect(index?.comparison.deltas.matched).toBe(2);
     expect(index?.comparison.baseline.priorResultId).toBe("result-1");
-    expect(index?.comparison.history.trend).toBe("improving");
-    expect(index?.comparison.history.pattern).toBe("recovering_pattern");
+    expect(index?.comparison.history.trend).toBe("regressing");
+    expect(index?.comparison.history.pattern).toBe("worsening_pattern");
     expect(index?.recurrence.topRecurringFamilies[0]?.family).toBe("bank_window");
   });
 
@@ -184,6 +184,8 @@ describe("run proofpack index", () => {
     const compact = toRunCompactProofSummary(index!);
     expect(compact.delta.changedSincePreviousRun).toBe("unavailable");
     expect(compact.recurrence.state).toBe("setup_required");
+    expect(compact.operatorSummary.signal).toBe("weak");
+    expect(compact.operatorSummary.pattern).toBe("thin_history");
   });
 
   it("returns explicit unavailable index contract for unsupported run types", () => {
@@ -210,5 +212,7 @@ describe("run proofpack index", () => {
 
     expect(byRun.get("job-1")?.comparison.state).toBe("degraded");
     expect(byRun.get("job-1")?.comparison.reasonCodes).toContain("history_query_failed");
+    expect(byRun.get("job-1")?.comparison.history.pattern).toBe("unavailable");
+    expect(byRun.get("job-1")?.comparison.history.reasonCodes).toEqual(["history_query_failed"]);
   });
 });

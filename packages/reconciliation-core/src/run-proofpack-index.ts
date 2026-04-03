@@ -83,6 +83,20 @@ export type RunCompactProofSummary = {
     history: RunProofpackIndex["comparison"]["history"];
     deltas: RunProofpackIndex["comparison"]["deltas"];
   };
+  operatorSummary: {
+    signal: "strong" | "weak" | "degraded" | "unavailable" | "not_comparable";
+    pattern: RunProofpackIndex["comparison"]["history"]["pattern"];
+    changedSincePreviousRun: RunProofpackIndex["comparison"]["changedSincePriorRun"];
+    proofPosture: "stronger" | "weaker" | "unchanged" | "unavailable";
+    primaryReasonCodes: string[];
+    recurringFamilies: Array<{
+      family: string;
+      trend: RunProofpackIndex["recurrence"]["topRecurringFamilies"][number]["trend"];
+      certainty: RunProofpackIndex["recurrence"]["topRecurringFamilies"][number]["certainty"];
+      reasonCodes: string[];
+    }>;
+    summary: string;
+  };
 };
 
 type LatestPriorResultRow = {
@@ -153,6 +167,62 @@ function defaultIndex(): RunProofpackIndex {
 }
 
 export function toRunCompactProofSummary(index: RunProofpackIndex): RunCompactProofSummary {
+  const signal: RunCompactProofSummary["operatorSummary"]["signal"] =
+    index.comparison.state === "degraded"
+      ? "degraded"
+      : index.comparison.state === "not_comparable"
+        ? "not_comparable"
+        : index.comparison.state === "unavailable"
+          ? index.comparison.history.pattern === "thin_history"
+            ? "weak"
+            : "unavailable"
+          : index.comparison.history.pattern === "thin_history" || index.comparison.certainty === "low"
+            ? "weak"
+            : "strong";
+
+  const proofPosture: RunCompactProofSummary["operatorSummary"]["proofPosture"] =
+    index.comparison.deltas.proofCompleteness === "improved"
+      ? "stronger"
+      : index.comparison.deltas.proofCompleteness === "regressed"
+        ? "weaker"
+        : index.comparison.deltas.proofCompleteness === "unchanged"
+          ? "unchanged"
+          : index.proofPackages.state === "degraded"
+            ? "weaker"
+            : "unavailable";
+
+  const primaryReasonCodes = [
+    ...index.comparison.reasonCodes,
+    ...index.comparison.history.reasonCodes,
+    ...(index.comparison.history.pattern === "thin_history" ? (["history_too_thin"] as const) : []),
+    ...(index.comparison.deltas.recurringFamilyConcentration === "stronger"
+      ? (["carryforward_concentration_increased"] as const)
+      : []),
+    ...(proofPosture === "weaker" ? (["proof_completeness_weakened"] as const) : []),
+  ].filter((code, idx, all) => all.indexOf(code) === idx);
+
+  const recurringFamilies = index.recurrence.topRecurringFamilies.slice(0, 3).map((family) => ({
+    family: family.family,
+    trend: family.trend,
+    certainty: family.certainty,
+    reasonCodes: family.reasonCodes,
+  }));
+
+  const summary =
+    signal === "degraded"
+      ? "Historical signal is degraded because comparison history could not be loaded deterministically."
+      : signal === "not_comparable"
+        ? "Historical signal is not comparable because baseline results are not in a completed terminal state."
+        : signal === "unavailable"
+          ? "Historical signal is unavailable for this run."
+          : signal === "weak"
+            ? "Historical signal is weak due to thin or low-certainty comparable history."
+            : index.comparison.history.pattern === "worsening_pattern"
+              ? "Historical signal is strong and worsening versus recent comparable runs."
+              : index.comparison.history.pattern === "recovering_pattern"
+                ? "Historical signal is strong and recovering versus recent comparable runs."
+                : "Historical signal is strong and stable versus recent comparable runs.";
+
   return {
     proofPackages: index.proofPackages,
     recurrence: index.recurrence,
@@ -165,6 +235,15 @@ export function toRunCompactProofSummary(index: RunProofpackIndex): RunCompactPr
       baseline: index.comparison.baseline,
       history: index.comparison.history,
       deltas: index.comparison.deltas,
+    },
+    operatorSummary: {
+      signal,
+      pattern: index.comparison.history.pattern,
+      changedSincePreviousRun: index.comparison.changedSincePriorRun,
+      proofPosture,
+      primaryReasonCodes,
+      recurringFamilies,
+      summary,
     },
   };
 }
@@ -637,7 +716,22 @@ export async function buildRunProofpackIndexByRunId(input: {
           priorResultId: prior?.id ?? null,
           priorResultStartedAt: prior?.started_at?.toISOString() ?? null,
         },
-        history: buildHistorySummary(resultsByRun.get(run.id) ?? []),
+        ...(historyQueryFailed
+          ? {
+              history: {
+                lookbackWindow: 0,
+                comparableWindowCount: 0,
+                certainty: "low" as const,
+                trend: "unavailable" as const,
+                pattern: "unavailable" as const,
+                reasonCodes: ["history_query_failed"],
+                summary:
+                  "Run history intelligence is degraded because comparable history could not be loaded.",
+              },
+            }
+          : {
+              history: buildHistorySummary(resultsByRun.get(run.id) ?? []),
+            }),
         deltas: {
           matched: matchedDelta,
           unmatched: unmatchedDelta,

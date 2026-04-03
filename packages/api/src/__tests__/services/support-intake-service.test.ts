@@ -33,7 +33,7 @@ describe("support-intake-service run intelligence context", () => {
 
   it("embeds canonical run intelligence in audit/event payload when run_id is provided", async () => {
     resolveOperatorRunDetailForTenants.mockResolvedValue({
-      kind: "resolved",
+      kind: "ok",
       detail: {
         id: "run-1",
         runKind: "recon_job",
