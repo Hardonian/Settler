@@ -17,6 +17,7 @@ import {
   FileSearch,
   Settings,
   Database,
+  Brain,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -37,6 +38,7 @@ const navSections = [
   {
     label: "Operator Intelligence",
     items: [
+      { name: "Intelligence Timeline", href: "/app/console/intelligence", icon: Brain },
       { name: "Live Alerts", href: "/app/alerts", icon: Bell },
       { name: "Runtime Event Signals", href: "/app/metrics", icon: BarChart2 },
       { name: "System Telemetry", href: "/app/system-health", icon: Activity },

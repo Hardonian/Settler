@@ -202,7 +202,14 @@ export async function resolveOperatorRunDetailForTenants(
             AND tenant_id = ${job.tenantId}::uuid
           ORDER BY matched_at DESC
           LIMIT 250
-        `.catch(() => []) as Promise<DeterministicMatchRowLike[]>)
+        `.catch((err: unknown) => {
+            console.warn(
+              "[settler] deterministic_match_results query failed for run",
+              latestResult?.id,
+              err instanceof Error ? err.message : String(err)
+            );
+            return [] as DeterministicMatchRowLike[];
+          }))
           : Promise.resolve([]),
       ]);
 
@@ -221,21 +228,22 @@ export async function resolveOperatorRunDetailForTenants(
         }
       : null;
 
-    const auditRows: ReconAuditRow[] = (audits as any).map(
-      (a: {
-        id: string;
-        auditType: string;
-        action: string;
-        metadata: unknown;
-        createdAt: Date;
-      }) => ({
-        id: a.id,
-        audit_type: a.auditType,
-        action: a.action,
-        metadata: (a.metadata as Record<string, unknown> | null) ?? null,
-        created_at: a.createdAt.toISOString(),
-      })
-    );
+    // Typed audit record to avoid 'as any' at Prisma delegate boundary.
+    type ReconAuditRecord = {
+      id: string;
+      auditType: string;
+      action: string;
+      metadata: unknown;
+      createdAt: Date;
+    };
+
+    const auditRows: ReconAuditRow[] = (audits as ReconAuditRecord[]).map((a) => ({
+      id: a.id,
+      audit_type: a.auditType,
+      action: a.action,
+      metadata: (a.metadata as Record<string, unknown> | null) ?? null,
+      created_at: a.createdAt.toISOString(),
+    }));
 
     const exceptionCounts =
       exceptionCountResult.kind === "ok"
