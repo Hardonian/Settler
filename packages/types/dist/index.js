@@ -6,7 +6,7 @@
  * abstracting provider differences as specified in the Product & Technical Specification.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.safeAsync = exports.AppError = exports.RequestCorrelation = exports.logger = exports.validateEnvScopes = exports.validateTypedServerEnv = exports.validateTypedClientEnv = exports.RUNTIME_REQUIRED_SERVER_KEYS = exports.BUILD_REQUIRED_SERVER_KEYS = exports.SERVER_ENV_KEYS = exports.CLIENT_ENV_KEYS = exports.safeEnv = exports.validateEnv = exports.validateClientEnv = exports.validateServerEnv = exports.fullEnvSchema = exports.clientEnvSchema = exports.serverEnvSchema = void 0;
+exports.supportIntakeSubmissionSchema = exports.SUPPORT_SEVERITY_LABELS = exports.SUPPORT_SEVERITY = exports.SUPPORT_STATUS_LABELS = exports.SUPPORT_STATUS = exports.SUPPORT_ISSUE_CATEGORY_LABELS = exports.SUPPORT_ISSUE_CATEGORY = exports.safeAsync = exports.AppError = exports.RequestCorrelation = exports.logger = exports.validateEnvScopes = exports.validateTypedServerEnv = exports.validateTypedClientEnv = exports.RUNTIME_REQUIRED_SERVER_KEYS = exports.BUILD_REQUIRED_SERVER_KEYS = exports.SERVER_ENV_KEYS = exports.CLIENT_ENV_KEYS = exports.safeEnv = exports.validateEnv = exports.validateClientEnv = exports.validateServerEnv = exports.fullEnvSchema = exports.clientEnvSchema = exports.serverEnvSchema = void 0;
 // Environment validation utilities (Phase 3: Environment Safety)
 var env_validation_1 = require("./env-validation");
 Object.defineProperty(exports, "serverEnvSchema", { enumerable: true, get: function () { return env_validation_1.serverEnvSchema; } });
@@ -30,4 +30,13 @@ Object.defineProperty(exports, "logger", { enumerable: true, get: function () { 
 Object.defineProperty(exports, "RequestCorrelation", { enumerable: true, get: function () { return logging_1.RequestCorrelation; } });
 Object.defineProperty(exports, "AppError", { enumerable: true, get: function () { return logging_1.AppError; } });
 Object.defineProperty(exports, "safeAsync", { enumerable: true, get: function () { return logging_1.safeAsync; } });
+// Support intake (canonical operator/evidence-aligned categories)
+var support_intake_contract_1 = require("./support-intake-contract");
+Object.defineProperty(exports, "SUPPORT_ISSUE_CATEGORY", { enumerable: true, get: function () { return support_intake_contract_1.SUPPORT_ISSUE_CATEGORY; } });
+Object.defineProperty(exports, "SUPPORT_ISSUE_CATEGORY_LABELS", { enumerable: true, get: function () { return support_intake_contract_1.SUPPORT_ISSUE_CATEGORY_LABELS; } });
+Object.defineProperty(exports, "SUPPORT_STATUS", { enumerable: true, get: function () { return support_intake_contract_1.SUPPORT_STATUS; } });
+Object.defineProperty(exports, "SUPPORT_STATUS_LABELS", { enumerable: true, get: function () { return support_intake_contract_1.SUPPORT_STATUS_LABELS; } });
+Object.defineProperty(exports, "SUPPORT_SEVERITY", { enumerable: true, get: function () { return support_intake_contract_1.SUPPORT_SEVERITY; } });
+Object.defineProperty(exports, "SUPPORT_SEVERITY_LABELS", { enumerable: true, get: function () { return support_intake_contract_1.SUPPORT_SEVERITY_LABELS; } });
+Object.defineProperty(exports, "supportIntakeSubmissionSchema", { enumerable: true, get: function () { return support_intake_contract_1.supportIntakeSubmissionSchema; } });
 //# sourceMappingURL=index.js.map
