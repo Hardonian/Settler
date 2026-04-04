@@ -351,7 +351,11 @@ describe("buildCrossRunIntelligenceSummary", () => {
     expect(summary.recurringFamilies.state).toBe("unavailable");
     expect(summary.recurringFamilies.reasonCodes).toContain("adjudication_history_query_failed");
     expect(summary.decisionMemory.state).toBe("unavailable");
-    expect(summary.runTimeline.state).toBe("available");
+    // Run rows exist, but without adjudication history cross-run intelligence is thin — not "fully available"
+    expect(summary.runTimeline.state).toBe("insufficient_history");
+    expect(summary.runTimeline.reasonCodes).toContain(
+      "adjudication_history_unavailable_for_intelligence"
+    );
   });
 
   it("returns timestamps as ISO strings, never raw Date objects", async () => {

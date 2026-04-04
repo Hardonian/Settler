@@ -1,6 +1,7 @@
 /**
  * Re-export canonical support intake contract from @settler/types.
- * Import the subpath (not the package barrel) so support-intake's tsc rootDir stays valid.
+ * Use the package entry (not a subpath) so Node16/tsconfig resolution and ts-jest
+ * agree without requiring package-exports path mapping in every consumer.
  * `SUPPORT_CATEGORY_LABELS` is a legacy alias for web operator inbox routes.
  */
 import {
@@ -9,7 +10,7 @@ import {
   supportIntakeSubmissionSchema,
   type SupportIntakeSubmission,
   type SupportIssueCategory,
-} from "@settler/types/support-intake-contract";
+} from "@settler/types";
 
 export {
   SUPPORT_ISSUE_CATEGORY,
