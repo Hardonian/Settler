@@ -1,31 +1,25 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { requireActiveSubscription } from '@/lib/security/billing-enforcement';
-import { withSecurity } from '@/lib/middleware/api-security';
+import { NextResponse } from "next/server";
+import { withSecurity } from "@/lib/middleware/api-security";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
-export const GET = withSecurity(async function GET(request: NextRequest) {
-  const subscriptionCheck = await requireActiveSubscription(request);
-  if (!subscriptionCheck.allowed) {
-    return subscriptionCheck.error || NextResponse.json(
-      { error: 'Subscription Required', message: 'This feature requires an active subscription' },
-      { status: 403 }
-    );
-  }
-  return NextResponse.json({ message: 'Feature temporarily unavailable' }, { status: 503 });
-},
-  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
-);
+function legacyTriageDeprecated() {
+  return NextResponse.json(
+    {
+      code: "LEGACY_SUPPORT_TRIAGE_DEPRECATED",
+      message:
+        "Legacy support triage endpoint is deprecated. Use /api/console/support/tickets for canonical intake queue reads.",
+      canonicalOperatorRoute: "/api/console/support/tickets",
+    },
+    { status: 410 }
+  );
+}
 
-export const POST = withSecurity(async function POST(request: NextRequest) {
-  const subscriptionCheck = await requireActiveSubscription(request);
-  if (!subscriptionCheck.allowed) {
-    return subscriptionCheck.error || NextResponse.json(
-      { error: 'Subscription Required', message: 'This feature requires an active subscription' },
-      { status: 403 }
-    );
-  }
-  return NextResponse.json({ message: 'Feature temporarily unavailable' }, { status: 503 });
-},
-  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
-);
+export const GET = withSecurity(async function GET() {
+  return legacyTriageDeprecated();
+});
+
+export const POST = withSecurity(async function POST() {
+  return legacyTriageDeprecated();
+});

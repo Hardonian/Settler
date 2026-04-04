@@ -493,16 +493,18 @@ export const ROUTE_CLASSIFICATIONS: Record<string, RouteClassification> = {
     tenantScoped: true,
   },
   "console/support/tickets": {
-    class: "tenant-scoped",
-    methods: ["GET", "POST"],
-    auth: "session",
-    tenantScoped: true,
-  },
-  "console/support/triage": {
     class: "admin-internal",
-    methods: ["POST"],
+    methods: ["GET", "POST"],
     auth: "session+adminRole",
     tenantScoped: false,
+    notes: "Operator intake queue over support_intake_submitted audit records.",
+  },
+  "console/support/triage": {
+    class: "legacy-dead",
+    methods: ["GET", "POST"],
+    auth: "session",
+    tenantScoped: false,
+    notes: "Legacy triage endpoint deprecated in favor of canonical intake queue reads.",
   },
   "console/tables/[table]": {
     class: "admin-internal",
@@ -1331,17 +1333,18 @@ export const ROUTE_CLASSIFICATIONS: Record<string, RouteClassification> = {
     tenantScoped: false,
   },
   "support/report-issue": {
-    class: "public-write",
+    class: "legacy-dead",
     methods: ["POST"],
-    auth: "none",
-    tenantScoped: false,
-    notes: "Bug reports. Rate-limited. No auth required to encourage reporting.",
+    auth: "session",
+    tenantScoped: true,
+    notes: "Legacy compatibility route. Translates to canonical /api/v1/support/intake.",
   },
   "support/tickets": {
-    class: "authenticated-user",
+    class: "legacy-dead",
     methods: ["GET", "POST"],
     auth: "session",
     tenantScoped: false,
+    notes: "Deprecated ticket API. Returns 410 and points callers to canonical intake routes.",
   },
 
   // ── User ──────────────────────────────────────────────────────────────────

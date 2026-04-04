@@ -85,7 +85,7 @@ export const visualProofRegistry: Record<string, VisualProofEntry[]> = {
       detail:
         "Trust and status pages expose uptime proxy, reliability signals, and operational disclosures.",
       refs: [
-        { label: "Trust", href: "/trust", type: "route" },
+        { label: "Security and audit", href: "/security-and-audit", type: "route" },
         { label: "Status", href: "/status", type: "route" },
         { label: "Transparency", href: "/transparency", type: "route" },
       ],
@@ -98,7 +98,7 @@ export const visualProofRegistry: Record<string, VisualProofEntry[]> = {
         "Security and audit pages map tenant safety, immutable logging, and evidence export boundaries.",
       refs: [
         { label: "Security and audit", href: "/security-and-audit", type: "route" },
-        { label: "Trust", href: "/trust", type: "route" },
+        { label: "Security and audit", href: "/security-and-audit", type: "route" },
         { label: "App audit", href: "/app/audit", type: "route" },
       ],
     },

@@ -23,6 +23,7 @@ const reconciliationRunFindFirstMock = jest.fn();
 const reconciliationRunFindManyMock = jest.fn();
 const reconciliationMatchCountMock = jest.fn();
 const prismaQueryRawMock = jest.fn();
+const resolveOperatorRunDetailForTenantsMock = jest.fn();
 
 jest.mock("@/lib/middleware/api-security", () => ({
   withSecurity: (handler: unknown) => handler,
@@ -32,6 +33,10 @@ jest.mock("@/middleware/billing-gate-universal", () => ({
   withUniversalBillingGate: (handler: unknown) => handler,
 }));
 
+jest.mock("@settler/reconciliation-core", () => ({
+  resolveOperatorRunDetailForTenants: (...args: unknown[]) =>
+    resolveOperatorRunDetailForTenantsMock(...args),
+}));
 jest.mock("@/lib/logger", () => ({
   createLogger: () => ({
     info: jest.fn(),
@@ -152,11 +157,11 @@ describe("run domain trust invariants", () => {
     reconciliationRunFindManyMock.mockReset();
     reconciliationMatchCountMock.mockReset();
     prismaQueryRawMock.mockReset();
+    resolveOperatorRunDetailForTenantsMock.mockReset();
   });
 
   test("run detail read blocks cross-tenant access", async () => {
-    reconJobFindFirstMock.mockResolvedValue(null);
-    reconciliationRunFindFirstMock.mockResolvedValue(null);
+    resolveOperatorRunDetailForTenantsMock.mockResolvedValue({ kind: "not_found" });
 
     resolveTenantMembershipScopeMock.mockResolvedValue({
       supabase: { from: jest.fn() },
@@ -174,108 +179,31 @@ describe("run domain trust invariants", () => {
   });
 
   test("run detail exposes effective configuration truth for operators", async () => {
-    const runRow = {
-      id: "run-a-1",
-      name: "Tenant A Run",
-      status: "completed",
-      created_at: "2026-01-01T00:00:00.000Z",
-      updated_at: "2026-01-01T01:00:00.000Z",
-      tenant_id: "tenant-a",
-      template_id: "tpl-1",
-      source_adapter: "stripe",
-      target_adapter: "netsuite",
-      validation_rules: [
-        { field: "amount", tolerance: 0.01 },
-        { field: "date", window: "24h" },
-      ],
-      recon_strategy: "deterministic",
-    };
-
-    const prismaJob = {
-      id: runRow.id,
-      tenantId: "tenant-a",
-      name: runRow.name,
-      status: runRow.status,
-      createdAt: new Date(runRow.created_at),
-      updatedAt: new Date(runRow.updated_at),
-      sourceAdapter: "stripe",
-      targetAdapter: "netsuite",
-      reconStrategy: "deterministic",
-      templateId: "tpl-1",
-      validationRules: runRow.validation_rules,
-      sourceConfigEncrypted: "enc-src",
-      targetConfigEncrypted: "enc-tgt",
-      metadata: {},
-    };
-
-    reconJobFindFirstMock.mockResolvedValue(prismaJob);
-    reconciliationRunFindFirstMock.mockResolvedValue(null);
-
-    const latestResult = {
-      id: "result-a-1",
-      recon_job_id: runRow.id,
-      status: "completed",
-      started_at: "2026-01-01T00:10:00.000Z",
-      completed_at: "2026-01-01T00:12:00.000Z",
-      source_count: 10,
-      target_count: 10,
-      matched_count: 8,
-      unmatched_source_count: 1,
-      unmatched_target_count: 1,
-      conflict_count: 0,
-      error_message: null,
-      metadata: { fingerprint: "fp-1" },
-      input_hash: "hash-1",
-      snapshot_id: "snapshot-1",
-    };
-
-    const latestResultPrisma = {
-      id: latestResult.id,
-      reconJobId: runRow.id,
-      tenantId: "tenant-a",
-      status: latestResult.status,
-      startedAt: new Date(latestResult.started_at),
-      completedAt: new Date(latestResult.completed_at),
-      sourceCount: latestResult.source_count,
-      targetCount: latestResult.target_count,
-      matchedCount: latestResult.matched_count,
-      unmatchedSourceCount: latestResult.unmatched_source_count,
-      unmatchedTargetCount: latestResult.unmatched_target_count,
-      conflictCount: latestResult.conflict_count,
-      errorMessage: null,
-      inputHash: latestResult.input_hash,
-      snapshotId: latestResult.snapshot_id,
-      summary: null,
-      metadata: latestResult.metadata,
-    };
-
-    reconResultFindFirstMock.mockResolvedValue(latestResultPrisma);
-    reconResultFindManyMock.mockResolvedValue([latestResultPrisma]);
-    reconResultCountMock.mockResolvedValue(1);
-    runDeltaFindFirstMock.mockResolvedValue(null);
-    runSnapshotFindFirstMock.mockResolvedValue({
-      id: "snapshot-1",
-      inputHash: "hash-1",
-      adapterConfigHashes: {},
-      jobConfig: {
-        reconStrategy: "deterministic",
-        validationRules: [
-          { field: "amount", tolerance: 0.01 },
-          { field: "date", window: "24h" },
-        ],
-        templateId: "tpl-1",
+    resolveOperatorRunDetailForTenantsMock.mockResolvedValue({
+      kind: "ok",
+      detail: {
+        id: "run-a-1",
+        runKind: "recon_job",
+        sourceModel: "recon_jobs",
+        detailHref: "/console/runs/run-a-1",
+        traceId: null,
+        status: "completed",
+        startedAt: "2026-01-01T00:10:00.000Z",
+        completedAt: "2026-01-01T00:12:00.000Z",
+        summarySemantics: { processed: 10, exceptioned: 2, unresolved: 0 },
+        resultContext: { latestResultId: "result-a-1" },
+        exceptions: { reviewRequired: 0 },
+        kindDetail: { kind: "recon_job" },
+        config: {
+          sourceAdapter: "stripe",
+          targetAdapter: "netsuite",
+          reconStrategy: "deterministic",
+          templateId: "tpl-1",
+          validationRuleCount: 2,
+          validationRuleLabels: ["amount • ±0.01", "date • 24h"],
+        },
       },
-      ruleVersions: [{ ruleId: "rule-amount", version: 2 }],
-      createdAt: new Date("2026-01-01T00:09:00.000Z"),
     });
-    reconAuditFindManyMock.mockResolvedValue([]);
-    reconciliationRunFindManyMock.mockResolvedValue([{ id: "ing-1" }]);
-    reconciliationMatchCountMock
-      .mockResolvedValueOnce(0)
-      .mockResolvedValueOnce(0)
-      .mockResolvedValueOnce(0)
-      .mockResolvedValueOnce(0)
-      .mockResolvedValueOnce(0);
 
     resolveTenantMembershipScopeMock.mockResolvedValue({
       supabase: { from: jest.fn() },
@@ -310,7 +238,25 @@ describe("run domain trust invariants", () => {
   });
 
   test("run detail uses canonical serializer boundary for ingestion_run responses", async () => {
-    reconJobFindFirstMock.mockResolvedValue(null);
+    resolveOperatorRunDetailForTenantsMock.mockResolvedValue({
+      kind: "ok",
+      detail: {
+        id: "ing-run-1",
+        runKind: "ingestion_run",
+        sourceModel: "reconciliation_runs",
+        detailHref: "/console/runs/ing-run-1",
+        traceId: "trace-ing-1",
+        status: "running",
+        startedAt: "2026-01-01T00:00:00.000Z",
+        completedAt: null,
+        summarySemantics: { processed: 24, exceptioned: 0, unresolved: 0 },
+        resultContext: { latestResultId: null },
+        exceptions: { reviewRequired: 0 },
+        kindDetail: { kind: "ingestion_run" },
+        config: { inputHash: null },
+      },
+    });
+
     reconciliationRunFindFirstMock.mockResolvedValue({
       id: "ing-run-1",
       tenantId: "tenant-a",

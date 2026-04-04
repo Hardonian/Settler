@@ -1,7 +1,7 @@
 /**
  * Admin Support Inbox
  * 
- * View and manage support tickets
+ * View and triage canonical support intake submissions
  */
 
 import { Suspense } from 'react';
@@ -53,9 +53,9 @@ export default function SupportPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">Support Inbox</h1>
+        <h1 className="text-3xl font-bold">Support intake inbox</h1>
         <p className="text-muted-foreground mt-2">
-          Manage and triage support tickets
+          Operator queue over tenant-scoped support intake with run/evidence context.
         </p>
       </div>
       <ErrorBoundary componentName="SupportPage">

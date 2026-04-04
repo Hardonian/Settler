@@ -22,6 +22,7 @@ const customJestConfig = {
     "^(\\.{1,2}/.*)\\.js$": "$1",
   },
   modulePathIgnorePatterns: ["<rootDir>/.next/"],
+  testPathIgnorePatterns: ["<rootDir>/src/__tests__/e2e/"],
   testMatch: ["**/__tests__/**/*.{js,jsx,ts,tsx}", "**/*.{spec,test}.{js,jsx,ts,tsx}"],
   collectCoverageFrom: [
     "src/**/*.{js,jsx,ts,tsx}",

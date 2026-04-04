@@ -33,19 +33,22 @@ jest.mock("@/lib/supabase/tenant-membership", () => {
 jest.mock("@settler/reconciliation-core", () => ({
   resolveOperatorRunDetailForTenants: (...args: unknown[]) =>
     resolveOperatorRunDetailForTenantsMock(...args),
-  toRunCompactProofSummary: (index: any) => ({
-    delta: index.comparison,
-    operatorSummary: {
-      signal: "strong",
-      pattern: "recovering_pattern",
-      changedSincePreviousRun: index.comparison.changedSincePriorRun,
-      proofPosture: "unchanged",
-      primaryReasonCodes: [],
-      recurringFamilies: [],
-      summary: "deterministic",
-      explainerCodes: ["signal_strong", "pattern_recovering"],
+  resolveRunCompactProofSummary: ({ proofpackIndex: index }: any) => ({
+    compactProofSummary: {
+      delta: index.comparison,
+      operatorSummary: {
+        signal: "strong",
+        pattern: "recovering_pattern",
+        changedSincePreviousRun: index.comparison.changedSincePriorRun,
+        proofPosture: "unchanged",
+        primaryReasonCodes: [],
+        recurringFamilies: [],
+        summary: "deterministic",
+        explainerCodes: ["signal_strong", "pattern_recovering"],
+      },
     },
   }),
+  canonicalMissingProofpackReasonForRunKind: () => "proofpack_unavailable",
   unavailableRunProofpackIndex: () => ({
     proofPackages: { state: "unavailable" },
     comparison: { state: "unavailable", changedSincePriorRun: "unavailable" },
@@ -101,7 +104,8 @@ describe("GET /api/runs/[id]/proofpack", () => {
             changedSincePriorRun: "changed",
             certainty: "high",
             reasonCodes: [],
-            summary: "Deterministic run-over-run differences detected versus the most recent comparable baseline.",
+            summary:
+              "Deterministic run-over-run differences detected versus the most recent comparable baseline.",
             baseline: {
               priorResultId: "result-1",
               priorResultStartedAt: "2025-12-31T00:00:00.000Z",
