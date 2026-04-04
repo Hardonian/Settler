@@ -1,7 +1,7 @@
 # Settler Product Overview
 
 **Version:** 1.0  
-**Last Updated:** January 2026  
+**Last Updated:** April 2026  
 **Classification:** External - Public
 
 ---
@@ -14,7 +14,7 @@
 
 ### One-Liner
 
-**Settler automates financial reconciliation across Stripe, Shopify, QuickBooks, and 50+ platforms—reducing hours of manual work with automatic matching and exception supervision.**
+**Settler is a reconciliation control plane: ingest normalized transactions (CSV and supported API paths), run deterministic matching, supervise exceptions with audit-grade evidence, and export proof-oriented artifacts—without claiming connectors or schedules that the runtime does not provide.**
 
 ---
 
@@ -37,16 +37,16 @@ Settler is reconciliation-as-a-service—a single API that normalizes, validates
 
 **How it works:**
 
-1. Connect your platforms (Stripe, Shopify, QuickBooks, etc.) via adapters
-2. Ingest transaction data (automatic normalization)
-3. Automatic reconciliation runs continuously (no configuration required)
-4. Review exceptions and export audit trails
+1. Bring transaction data via **CSV upload** and **supported API/ingestion paths** (see current adapter and integration docs—not a closed catalog of “50+” live connectors)
+2. Normalize and validate ingested rows against your run configuration
+3. Execute reconciliation on **demand** (console/API); **cron-style scheduled reconciliation runs are not a shipped product surface yet**
+4. Review exceptions, capture adjudications, and export deterministic evidence / proof-oriented bundles where enabled
 
 ### Key Benefits
 
 - ⚡ **5-minute integration** vs. weeks of custom code
 - 🔄 **Automatic reconciliation** vs. manual matching
-- 🔌 **Standard adapters** for 50+ platforms
+- 🔌 **Integration paths** that match what is implemented today (CSV-first; API ingestion where documented—verify before buying)
 - 🔒 **Compliance built-in** (SOC 2 planned Q3 2026, GDPR/CCPA compliant)
 - 📊 **Comprehensive reporting** with audit trails
 - 🚀 **Scalable** from 10K to 1M+ transactions/month
@@ -57,11 +57,11 @@ Settler is reconciliation-as-a-service—a single API that normalizes, validates
 
 ### Core Features
 
-**Multi-Platform Reconciliation**
+**Multi-source reconciliation (as implemented)**
 
-- Connect 50+ platforms (Stripe, Shopify, QuickBooks, PayPal, Square, Xero, NetSuite, etc.)
-- Normalize data across different formats
-- Real-time or scheduled reconciliation
+- Ingest via **CSV** and **documented API/integration surfaces** (no promise of a fixed “50+” pre-built connector catalog in this document)
+- Normalize data across supported formats for your configured run
+- **On-demand** reconciliation (manual trigger via console/API); scheduled/cron reconciliation runs are **not** marketed here as generally available
 
 **Deterministic Matching**
 
@@ -94,12 +94,14 @@ Settler is reconciliation-as-a-service—a single API that normalizes, validates
 
 ### Advanced Features (Growth+)
 
-- **Multi-Currency Support:** Reconcile transactions across different currencies
-- **Custom Adapters:** Build custom adapters for proprietary systems
-- **Scheduled Jobs:** Automated reconciliation on schedule
-- **Advanced Matching Rules:** Complex matching logic with custom rules
-- **Custom Webhooks:** Real-time notifications for reconciliation events
-- **Multi-Entity Support:** Manage multiple entities/accounts (Scale+)
+Positioning below is **aspirational or partial** unless your contract explicitly lists it as delivered for your tenant. Verify against [INTENTIONAL_BOUNDARIES.md](../getting-started/INTENTIONAL_BOUNDARIES.md) and live docs.
+
+- **Multi-Currency Support:** Partial—single-currency runs are the supported default; cross-currency scenarios need explicit validation
+- **Custom adapters / proprietary systems:** Engineering engagement—not a self-serve “unlimited adapters” claim without a statement of work
+- **Scheduled reconciliation runs:** Not a first-class product surface yet (use external schedulers calling the API if needed)
+- **Advanced Matching Rules:** Available where exposed in product/API—confirm for your plan
+- **Custom Webhooks:** Where enabled in your environment
+- **Multi-Entity Support:** Where contractually enabled (Scale+ / enterprise)
 
 ### Enterprise Features
 
@@ -149,7 +151,7 @@ Settler is reconciliation-as-a-service—a single API that normalizes, validates
 | API Rate Limit  | 500 requests/15 min      |
 | Webhooks        | ✅ Included              |
 | Reports         | JSON + CSV export        |
-| Scheduled Jobs  | ✅ Included              |
+| Scheduled reconciliation (cron) | ❌ Not included — use API + your scheduler |
 
 **Use Case:** Small e-commerce stores (100-1,000 orders/month), early-stage SaaS companies, freelancers managing multiple clients.
 
@@ -172,9 +174,9 @@ Settler is reconciliation-as-a-service—a single API that normalizes, validates
 | API Rate Limit          | 2,000 requests/15 min            |
 | Webhooks                | ✅ Included                      |
 | Reports                 | JSON + CSV + PDF export          |
-| Scheduled Jobs          | ✅ Included                      |
+| Scheduled reconciliation (cron) | ❌ Not included — use API + your scheduler |
 | Advanced Matching Rules | ✅ Included                      |
-| Multi-Currency          | ✅ Included                      |
+| Multi-Currency          | ⚠️ Partial — validate with your currencies |
 | Custom Webhooks         | ✅ Included                      |
 
 **Use Case:** Mid-market SaaS companies, growing e-commerce (1,000-10,000 orders/month), multi-platform operations, need for advanced features.
@@ -198,7 +200,7 @@ Settler is reconciliation-as-a-service—a single API that normalizes, validates
 | API Rate Limit           | 10,000 requests/15 min        |
 | Webhooks                 | ✅ Included                   |
 | Reports                  | All formats + White-label     |
-| Scheduled Jobs           | ✅ Included                   |
+| Scheduled reconciliation (cron) | ❌ Not included — use API + your scheduler |
 | Advanced Matching Rules  | ✅ Included                   |
 | Multi-Currency           | ✅ Included                   |
 | Custom Webhooks          | ✅ Included                   |
@@ -228,7 +230,7 @@ _Typically $1,000-$10,000+/month_
 | API Rate Limit           | Custom                                 |
 | Webhooks                 | ✅ Included                            |
 | Reports                  | All formats + White-label + Custom     |
-| Scheduled Jobs           | ✅ Included                            |
+| Scheduled reconciliation (cron) | ❌ Not included — use API + your scheduler |
 | Advanced Matching Rules  | ✅ Included                            |
 | Multi-Currency           | ✅ Included                            |
 | Custom Webhooks          | ✅ Included                            |

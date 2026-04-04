@@ -1,6 +1,6 @@
 # Intentional Boundaries
 
-**Last Updated:** 2026-03-18  
+**Last Updated:** 2026-04-04  
 **Purpose:** Document what is intentionally not production-complete and why.
 
 ---
@@ -50,11 +50,11 @@ Basic multi-currency support exists, but advanced scenarios are incomplete.
 
 ### Advanced Scheduling / Cron
 
-**Status:** Not yet built
+**Status:** Not yet built (reconciliation runs)
 
-Automated scheduling of reconciliation runs is not implemented.
+Workflow templates and some internal job queues may store `schedule_cron`-style fields or enqueue delayed work, but **there is no operator-facing, per-tenant cron that starts reconciliation runs on a cadence** with last-run / next-run truth in the product surface.
 
-**Workaround:** Trigger reconciliation manually via console or API.
+**Workaround:** Trigger reconciliation manually via console, API, or your own scheduler calling the API.
 
 ---
 
@@ -64,24 +64,25 @@ Automated scheduling of reconciliation runs is not implemented.
 
 **What's implemented:**
 - Basic error logging
-- Health check endpoints
+- Health check endpoints (`/health`, `/health/detailed`, `/health/ready`) including dependency checks
+- Detailed health exposes **distributed guard posture**: API rate limiting and webhook replay deduplication are `distributed_shared` only when Redis is healthy; otherwise guarantees are explicitly **degraded** (Postgres ledger / in-memory fallbacks may apply—see API code)
 
 **What's missing:**
 - Custom dashboards
-- Alerting thresholds
+- Alerting thresholds (beyond what you wire to health/metrics)
 - SLI/SLO tracking
 
 ---
 
 ### Rate Limiting
 
-**Status:** Fallback mode
+**Status:** Tiered guarantees (Redis → Postgres → in-memory)
 
-Rate limiting falls back to in-memory storage if Redis is unavailable.
+The API prefers **Redis** for shared rate limits and webhook replay keys. If Redis is down or unset, it attempts a **Postgres-backed** counter / replay ledger (`rate_limit_counters`, `webhook_replay_keys`). If that fails, it falls back to **per-process memory** (limits do not hold across instances).
 
 **Implication:**
-- Rate limits reset on server restart
-- Rate limits are per-instance
+- Without healthy Redis, limits are not reliably shared across horizontally scaled instances (Postgres path helps when migrations/tables exist; memory path is last resort).
+- For **production** deployments that must not boot without shared Redis, set `REDIS_REQUIRED_FOR_PRODUCTION=true` (API fails startup in `NODE_ENV=production` if Redis is missing or unreachable).
 
 ---
 

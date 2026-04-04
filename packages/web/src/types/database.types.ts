@@ -1,13 +1,16 @@
 /**
- * Supabase Database Types
+ * Supabase `Database` shape for the Next.js / Supabase client.
  *
- * CTO Mode: Type Safety
- * - Generated from Supabase schema
- * - Use these types instead of 'any'
- * - Run: supabase gen types typescript --project-id <project-ref> > src/types/database.types.ts
+ * This file is the **canonical hand-maintained contract** for tables the web app
+ * touches (profiles, jobs, receipts, etc.). It is intentionally not a full dump of
+ * every Postgres table in the monorepo (the API uses Prisma for most reconciliation
+ * data). When you add or rename Supabase-backed columns, update this file and run
+ * `pnpm --filter @settler/web typecheck`.
  *
- * TODO: Generate actual types from Supabase schema
- * For now, this is a placeholder structure
+ * Optional: to diff against a live Supabase project (does not replace this file
+ * wholesale without review):
+ *   pnpm run db:types
+ * (requires `SUPABASE_PROJECT_REF` and the Supabase CLI.)
  */
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
