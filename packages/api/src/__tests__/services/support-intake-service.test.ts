@@ -1,30 +1,41 @@
 import { submitSupportIntake } from "../../services/support/support-intake-service";
 
-jest.mock("../../db", () => ({
-  query: jest.fn().mockResolvedValue([]),
-}));
-
 jest.mock("../../services/events/event-bus", () => ({
   eventBus: {
     emitEvent: jest.fn().mockResolvedValue(undefined),
   },
 }));
 
+jest.mock("../../services/ops-intelligence/runtime-events", () => ({
+  emitOperatorRuntimeEvent: jest.fn().mockResolvedValue(undefined),
+}));
+
 jest.mock("../../infrastructure/db/prisma", () => ({
-  prisma: {},
+  prisma: {
+    auditLog: {
+      create: jest.fn().mockResolvedValue({}),
+    },
+  },
 }));
 
 jest.mock("@settler/reconciliation-core", () => ({
   resolveOperatorRunDetailForTenants: jest.fn(),
+  resolveRunCompactProofSummary: jest.fn((input: { compactProofSummary?: unknown }) => ({
+    compactProofSummary: input.compactProofSummary ?? { operatorSummary: { signal: "unknown" } },
+    fallbackReasonCode: null,
+  })),
   toRunCompactProofSummary: jest.fn((value: unknown) => value),
   unavailableRunProofpackIndex: jest.fn((reasonCode: string) => ({
     comparison: { reasonCodes: [reasonCode] },
   })),
 }));
 
-const { query } = require("../../db");
+const { prisma } = require("../../infrastructure/db/prisma");
 const { eventBus } = require("../../services/events/event-bus");
+const { emitOperatorRuntimeEvent } = require("../../services/ops-intelligence/runtime-events");
 const { resolveOperatorRunDetailForTenants } = require("@settler/reconciliation-core");
+
+const auditLogCreate = prisma.auditLog.create as jest.Mock;
 
 describe("support-intake-service run intelligence context", () => {
   beforeEach(() => {
@@ -32,10 +43,12 @@ describe("support-intake-service run intelligence context", () => {
   });
 
   it("embeds canonical run intelligence in audit/event payload when run_id is provided", async () => {
+    const runUuid = "11111111-1111-4111-8111-111111111111";
+
     resolveOperatorRunDetailForTenants.mockResolvedValue({
       kind: "ok",
       detail: {
-        id: "run-1",
+        id: runUuid,
         runKind: "recon_job",
         status: "completed",
         compactProofSummary: { operatorSummary: { signal: "strong" } },
@@ -52,15 +65,15 @@ describe("support-intake-service run intelligence context", () => {
       body: {
         category: "run_failure",
         description: "This is a long enough support description for validation.",
-        run_id: "run-1",
+        run_id: runUuid,
       },
     });
 
-    expect(query).toHaveBeenCalledTimes(1);
-    const metadata = JSON.parse(query.mock.calls[0][1][4]);
+    expect(auditLogCreate).toHaveBeenCalledTimes(1);
+    const metadata = auditLogCreate.mock.calls[0][0].data.metadata as Record<string, unknown>;
     expect(metadata.run_context).toMatchObject({
       state: "ok",
-      runId: "run-1",
+      runId: runUuid,
       runKind: "recon_job",
       status: "completed",
       compactProofSummary: {
@@ -72,10 +85,19 @@ describe("support-intake-service run intelligence context", () => {
       "support.issue.created",
       "tenant-1",
       expect.objectContaining({
-        runId: "run-1",
-        runIntelligence: expect.objectContaining({ state: "ok", runId: "run-1" }),
+        runId: runUuid,
+        runIntelligence: expect.objectContaining({ state: "ok", runId: runUuid }),
       }),
       expect.any(Object)
+    );
+
+    expect(emitOperatorRuntimeEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        eventType: "support_intake_submitted",
+        tenantId: "tenant-1",
+        runId: runUuid,
+        metadata: expect.objectContaining({ submission_id: expect.any(String) }),
+      })
     );
   });
 
@@ -95,7 +117,7 @@ describe("support-intake-service run intelligence context", () => {
       },
     });
 
-    const metadata = JSON.parse(query.mock.calls[0][1][4]);
+    const metadata = auditLogCreate.mock.calls[0][0].data.metadata as Record<string, unknown>;
     expect(metadata.run_context).toMatchObject({
       state: "unavailable",
       reason: "not_found",
