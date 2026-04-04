@@ -189,16 +189,17 @@ function computeOverallTrend(
   const avg = (arr: number[]) => arr.reduce((a, b) => a + b, 0) / arr.length;
   const olderAvg = avg(older);
   const newerAvg = avg(newer);
+  const delta = newerAvg - olderAvg;
 
-  // Std dev for volatility check
+  // Prefer explicit half-window direction when the signal is clear — avoids labeling a
+  // monotonic recovery (older low → newer high) as "volatile" solely due to spread.
+  if (delta > 0.03) return "improving";
+  if (delta < -0.03) return "regressing";
+
   const mean = avg(chrono);
   const variance = chrono.reduce((s, v) => s + (v - mean) ** 2, 0) / chrono.length;
   const stdDev = Math.sqrt(variance);
-
   if (stdDev > 0.12) return "volatile";
-  const delta = newerAvg - olderAvg;
-  if (delta > 0.03) return "improving";
-  if (delta < -0.03) return "regressing";
   return "stable";
 }
 
@@ -224,7 +225,12 @@ function familyTrend(stats: {
   return "stable";
 }
 
-function familyCertainty(totalOccurrences: number): RecurringExceptionFamily["certainty"] {
+function familyCertainty(
+  totalOccurrences: number,
+  unresolvedCount: number,
+  resolvedCount: number
+): RecurringExceptionFamily["certainty"] {
+  if (unresolvedCount > resolvedCount && totalOccurrences >= 3) return "high";
   if (totalOccurrences >= 5) return "high";
   if (totalOccurrences >= 2) return "medium";
   return "low";
@@ -531,7 +537,11 @@ async function buildRecurringFamilies(
         lastSeenAt: toIso(stats.lastSeenAt),
         topOutcome: topEntry?.[0] ?? null,
         trend,
-        certainty: familyCertainty(stats.totalOccurrences),
+        certainty: familyCertainty(
+          stats.totalOccurrences,
+          stats.unresolvedCount,
+          stats.resolvedCount
+        ),
         score,
       };
     })

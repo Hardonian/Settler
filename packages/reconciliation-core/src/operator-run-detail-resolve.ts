@@ -187,7 +187,7 @@ export async function resolveOperatorRunDetailForTenants(
             })
           : Promise.resolve(null),
         latestResult?.id
-          ? (prisma.$queryRaw`
+          ? (prisma.$queryRaw<DeterministicMatchRowLike[]>`
           SELECT
             stable_match_id,
             left_record_id,
