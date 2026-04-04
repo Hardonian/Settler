@@ -4,7 +4,7 @@ import { AuthRequest } from "../../middleware/auth";
 import { sendError } from "../../utils/api-response";
 import { handleRouteError } from "../../utils/error-handler";
 import { submitSupportIntake } from "../../services/support/support-intake-service";
-import { supportIntakeSubmissionSchema } from "../../services/support/support-intake-contract";
+import { supportIntakeSubmissionSchema } from "@settler/support-intake";
 
 const router: Router = Router();
 

@@ -52,6 +52,8 @@ export const supportIntakeSubmissionSchema = z.object({
       role: z.string().min(1).optional(),
     })
     .optional(),
+  /** Submitter-suggested urgency for operator triage (not an SLA commitment). */
+  operator_triage_priority: z.enum(["low", "medium", "high", "urgent"]).optional(),
 });
 
 export type SupportIntakeSubmission = z.infer<typeof supportIntakeSubmissionSchema>;

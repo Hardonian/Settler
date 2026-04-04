@@ -4,7 +4,7 @@ import {
   buildErrorObservabilityMetadata,
   createErrorSignature,
 } from "../../services/observability/error-taxonomy";
-import { supportIntakeSubmissionSchema } from "../../services/support/support-intake-contract";
+import { supportIntakeSubmissionSchema } from "@settler/support-intake";
 import { USAGE_EVENT_NAME, usageEventSchema } from "../../services/usage/usage-metering-contract";
 import { resolveCanonicalUsageEventName } from "../../services/usage/metering";
 import { DatabaseUsageMeterProvider } from "../../services/usage/usage-meter-provider-db";

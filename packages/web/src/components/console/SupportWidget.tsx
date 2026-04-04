@@ -141,12 +141,15 @@ export function SupportWidget({ defaultRoute, defaultRunId = "" }: SupportWidget
       <Card className="hover:shadow-lg transition-shadow">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-blue-600 dark:text-blue-400" aria-hidden="true" />
+            <MessageSquare
+              className="w-5 h-5 text-blue-600 dark:text-blue-400"
+              aria-hidden="true"
+            />
             Operator support intake
           </CardTitle>
           <CardDescription>
-            Evidence-oriented categories. Optional run UUID attaches compact proof summary context when
-            the run exists for this tenant.
+            Evidence-oriented categories. Optional run UUID attaches compact proof summary context
+            when the run exists for this tenant.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -170,7 +173,10 @@ export function SupportWidget({ defaultRoute, defaultRunId = "" }: SupportWidget
 
             <div>
               <Label htmlFor="support-category">Category</Label>
-              <Select value={category} onValueChange={(v) => setCategory(v as SupportIssueCategory)}>
+              <Select
+                value={category}
+                onValueChange={(v) => setCategory(v as SupportIssueCategory)}
+              >
                 <SelectTrigger id="support-category">
                   <SelectValue />
                 </SelectTrigger>
@@ -194,8 +200,8 @@ export function SupportWidget({ defaultRoute, defaultRunId = "" }: SupportWidget
                 autoComplete="off"
               />
               <p className="text-xs text-muted-foreground mt-1">
-                Non-UUID run references are kept in the text only; UUIDs link operator run context when
-                available.
+                Non-UUID run references are kept in the text only; UUIDs link operator run context
+                when available.
               </p>
             </div>
 

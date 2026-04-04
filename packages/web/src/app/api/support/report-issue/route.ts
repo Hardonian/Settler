@@ -1,75 +1,105 @@
 /**
- * Legacy compatibility route.
+ * POST /api/support/report-issue — legacy path; persists via canonical support intake (Prisma audit_logs).
  *
- * Canonical owner is POST /api/v1/support/intake.
- * This route translates old report-issue payloads into canonical support intake.
+ * Canonical owner: POST /api/v1/support/intake.
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { withSecurity } from "@/lib/middleware/api-security";
-import { authenticateRequest } from "@/lib/api/unified-auth";
-import { submitSupportIntake } from "@/lib/services/support-intake-service";
+import { prisma } from "@/shared/db/prismaClient";
+import {
+  buildTenantContextErrorResponse,
+  requireTenantRequestContext,
+} from "@/lib/api/tenant-context";
+import { buildSupportIntakeRunContext } from "@settler/reconciliation-core";
+import { submitSupportIntake, SUPPORT_ISSUE_CATEGORY } from "@settler/support-intake";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+const bodySchema = z.object({
+  subject: z.string().min(1).max(200),
+  description: z.string().min(20).max(5000),
+  category: z.string().optional(),
+  run_id: z.string().optional(),
+  context: z.record(z.string(), z.unknown()).optional(),
+});
+
 export const POST = withSecurity(
-  async function POST(request: NextRequest) {
-    const auth = await authenticateRequest(request);
-    if (!auth?.userId || !auth.tenantId) {
-      return NextResponse.json(
-        {
-          code: "UNAUTHORIZED",
-          message: "Authentication and tenant context are required.",
-        },
-        { status: 401 }
-      );
-    }
+  withUniversalBillingGate(
+    async function POST(request: NextRequest) {
+      try {
+        const { userId, tenantId } = await requireTenantRequestContext(request);
+        const raw = await request.json();
+        const parsed = bodySchema.safeParse(raw);
+        if (!parsed.success) {
+          return NextResponse.json(
+            {
+              error:
+                "subject (title) and description are required; description must be at least 20 characters",
+              code: "INVALID_REPORT_ISSUE",
+              details: parsed.error.flatten(),
+            },
+            { status: 400 }
+          );
+        }
 
-    const body = (await request.json().catch(() => ({}))) as {
-      subject?: string;
-      description?: string;
-      category?: string;
-      context?: { route?: string; module?: string };
-    };
+        const { subject, description, category, run_id, context } = parsed.data;
+        const routeFromContext =
+          context && typeof context === "object" && typeof context.route === "string"
+            ? context.route
+            : undefined;
 
-    const description = [body.subject?.trim(), body.description?.trim()].filter(Boolean).join("\n\n");
-    if (description.length < 20) {
-      return NextResponse.json(
-        {
-          code: "INVALID_SUPPORT_INTAKE",
-          message: "Description must be at least 20 characters when routed through report-issue.",
-        },
-        { status: 400 }
-      );
-    }
+        const categoryMap: Record<
+          string,
+          (typeof SUPPORT_ISSUE_CATEGORY)[keyof typeof SUPPORT_ISSUE_CATEGORY]
+        > = {
+          technical: SUPPORT_ISSUE_CATEGORY.DOCS_OTHER,
+          billing: SUPPORT_ISSUE_CATEGORY.BILLING_USAGE,
+          feature_request: SUPPORT_ISSUE_CATEGORY.DOCS_OTHER,
+          bug: SUPPORT_ISSUE_CATEGORY.RUN_FAILURE,
+          other: SUPPORT_ISSUE_CATEGORY.DOCS_OTHER,
+        };
 
-    const stored = await submitSupportIntake({
-      userId: auth.userId,
-      tenantId: auth.tenantId,
-      path: request.nextUrl.pathname,
-      body: {
-        tenant_id: auth.tenantId,
-        category: body.category ?? "docs_other",
-        description,
-        route: body.context?.route ?? "/console/report-issue",
-        module: body.context?.module ?? "legacy_report_issue_route",
-      },
-    });
+        const canonicalCategory =
+          category && category in categoryMap
+            ? categoryMap[category]!
+            : SUPPORT_ISSUE_CATEGORY.DOCS_OTHER;
 
-    return NextResponse.json(
-      {
-        accepted: true,
-        submission_id: stored.submissionId,
-        tenant_id: stored.tenantId,
-        created_at: stored.createdAt,
-        deprecated_route: true,
-        canonical_route: "/api/v1/support/intake",
-        trust_state: "degraded",
-        degraded_reason_code: "legacy_report_issue_route_translated",
-      },
-      { status: 202 }
-    );
-  },
+        const fullDescription = `${subject.trim()}\n\n${description.trim()}`;
+
+        const stored = await submitSupportIntake({
+          prisma,
+          userId,
+          tenantId,
+          path: request.nextUrl.pathname,
+          body: {
+            category: canonicalCategory,
+            description: fullDescription,
+            run_id,
+            route: routeFromContext,
+            module: category ?? undefined,
+          },
+          resolveRunContext: (tid, rid) => buildSupportIntakeRunContext(prisma, tid, rid),
+        });
+
+        return NextResponse.json({
+          accepted: true,
+          submission_id: stored.submissionId,
+          tenant_id: stored.tenantId,
+          created_at: stored.createdAt,
+          deprecated_route: true,
+          canonical_route: "/api/v1/support/intake",
+          trust_state: "degraded",
+          degraded_reason_code: "legacy_report_issue_route_translated",
+        });
+      } catch (error) {
+        return buildTenantContextErrorResponse(error);
+      }
+    },
+    { feature: "POST API" }
+  ),
   { rateLimit: { windowMs: 60_000, maxRequests: 20 }, requireAuth: true }
 );

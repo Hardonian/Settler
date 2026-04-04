@@ -40,12 +40,15 @@ export const POST = withSecurity(
                 ? "enterprise"
                 : canonicalPlan;
 
-        if (!normalizedProfilePlan || !["commercial", "enterprise", "free"].includes(normalizedProfilePlan)) {
+        if (
+          !normalizedProfilePlan ||
+          !["commercial", "enterprise", "free"].includes(normalizedProfilePlan)
+        ) {
           return NextResponse.json({ error: "Invalid plan type or plan code" }, { status: 400 });
         }
 
         // Update user plan
-         
+
         const { error: updateError } = (await (supabase.from("profiles") as any)
           .update({
             plan_type: normalizedProfilePlan,
@@ -59,7 +62,7 @@ export const POST = withSecurity(
         }
 
         // Get updated profile
-         
+
         const { data: profile } = (await supabase
           .from("profiles")
           .select("*")

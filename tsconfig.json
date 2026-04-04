@@ -39,6 +39,7 @@
       "@settler/protocol": ["./packages/protocol/src"],
       "@settler/reconciliation-core": ["./packages/reconciliation-core/src"],
       "@settler/reconciliation-core/*": ["./packages/reconciliation-core/src/*"],
+      "@settler/support-intake": ["./packages/support-intake/src"],
       "@settler/react-settler": ["./packages/react-settler/src"],
       "@jobforge/sdk-ts": ["./packages/jobforge-sdk-ts/src"],
       "@jobforge/shared": ["./packages/jobforge-shared/src"],

@@ -25,64 +25,14 @@ jest.mock("../../infrastructure/db/prisma", () => {
   };
 });
 
-jest.mock(
-  "@settler/reconciliation-core",
-  () => ({
-    decodeMergedRunsCursor: jest.fn(),
-    encodeMergedRunsCursor: jest.fn((cursor: unknown) => JSON.stringify(cursor)),
-    fetchMergedReconciliationRunsPage: jest.fn(),
-    mapCanonicalListItemToApiRunsLegacyRow: jest.fn((row: any) => ({
-      runKind: row.runKind,
-      sourceModel: row.provenance.sourceModel,
-      id: row.id,
-      detailHref: `/console/runs/${row.id}`,
-      name: row.name,
-      status: row.lifecycle.status,
-      statusLabel: row.lifecycle.statusLabel,
-      startedAt: row.timestamps.startedAt ?? row.timestamps.createdAt,
-      completedAt: row.timestamps.completedAt,
-      summary: {
-        total: row.summary.total,
-        sourceCount: row.summary.sourceCount,
-        targetCount: row.summary.targetCount,
-        matched: row.summary.matched,
-        unmatched: row.summary.unmatched,
-        unmatchedSourceCount: row.summary.unmatchedSourceCount,
-        unmatchedTargetCount: row.summary.unmatchedTargetCount,
-        conflicts: row.summary.conflicts,
-      },
-      summarySemantics: {
-        processed: row.summary.processed,
-        matchedWithTolerance: row.summary.matchedWithTolerance,
-        exceptioned: row.summary.exceptioned,
-        unresolved: row.summary.unresolved,
-        ignored: row.summary.ignored,
-        resolved: row.summary.resolved,
-      },
-      summaryState: row.summaryState,
-      progress: row.lifecycle.progressPercent,
-      progressState: row.lifecycle.progressState,
-      isTerminal: row.lifecycle.isTerminal,
-      provenance: row.provenance,
-      configDrift: {
-        status: row.configDrift.status,
-        adapter: "none",
-      },
-      ingestionId: row.provenance.ingestionId,
-      sourceAdapter: row.adapters.sourceAdapter,
-      targetAdapter: row.adapters.targetAdapter,
-    })),
-    MergedRunsCursorError: class MergedRunsCursorError extends Error {},
-    resolveOperatorRunDetailForTenants: jest.fn(),
-  }),
-  { virtual: true }
-);
+jest.mock("@settler/reconciliation-core");
 
 const { prisma: mockedPrisma } = require("../../infrastructure/db/prisma");
 const mockReconResult = mockedPrisma.reconResult;
 const {
   decodeMergedRunsCursor: mockDecodeMergedRunsCursor,
   fetchMergedReconciliationRunsPage: mockFetchMergedReconciliationRunsPage,
+  scanMergedRunsForLegacyPage: mockScanMergedRunsForLegacyPage,
   resolveOperatorRunDetailForTenants: mockResolveOperatorRunDetail,
 } = require("@settler/reconciliation-core");
 
@@ -108,6 +58,11 @@ jest.mock("../../utils/logger", () => ({
   logError: jest.fn(),
   logWarn: jest.fn(),
 }));
+
+function simulationRunUuid(side: "A" | "B", idx: number): string {
+  const suffix = String(idx).padStart(12, "0");
+  return side === "A" ? `aaaaaaaa-aaaa-4aaa-8aaa-${suffix}` : `bbbbbbbb-bbbb-4bbb-8bbb-${suffix}`;
+}
 
 function buildApp(tenantId: string, userId = "operator-sim"): express.Express {
   const app = express();
@@ -190,6 +145,44 @@ describe("Runs pre-go-live simulation", () => {
     mockFetchMergedReconciliationRunsPage.mockReset();
     mockDecodeMergedRunsCursor.mockReset();
     mockResolveOperatorRunDetail.mockReset();
+    mockScanMergedRunsForLegacyPage.mockReset();
+    mockScanMergedRunsForLegacyPage.mockImplementation(
+      async (input: {
+        prisma: unknown;
+        tenantId: string;
+        page: number;
+        limit: number;
+        filters?: { status?: string; search?: string };
+        batchSize?: number;
+      }) => {
+        const merged = await mockFetchMergedReconciliationRunsPage({
+          prisma: input.prisma,
+          tenantId: input.tenantId,
+          limit: input.batchSize ?? 100,
+          cursorState: null,
+          runKind: "all",
+          encodeCursor: JSON.stringify,
+        });
+        const { mapCanonicalListItemToApiRunsLegacyRow } = require("@settler/reconciliation-core");
+        const legacyRows = merged.runs.map((r: unknown) =>
+          mapCanonicalListItemToApiRunsLegacyRow(r)
+        );
+        return {
+          data: legacyRows,
+          pagination: {
+            page: input.page,
+            limit: input.limit,
+            total: legacyRows.length,
+            totalPages: Math.max(1, Math.ceil(legacyRows.length / input.limit)),
+          },
+          filters: {
+            status: input.filters?.status?.trim().toLowerCase() || undefined,
+            search: input.filters?.search?.trim().toLowerCase() || undefined,
+          },
+          pagesScanned: 1,
+        };
+      }
+    );
   });
 
   it("sustains bursty multi-tenant list/detail polling without tenant scope drift", async () => {
@@ -198,7 +191,12 @@ describe("Runs pre-go-live simulation", () => {
 
     mockFetchMergedReconciliationRunsPage.mockImplementation(({ tenantId }: { tenantId: string }) =>
       Promise.resolve({
-        runs: [buildCanonicalListItem(tenantId, `${tenantId}-run-1`)],
+        runs: [
+          buildCanonicalListItem(
+            tenantId,
+            tenantId === "tenant-A" ? simulationRunUuid("A", 0) : simulationRunUuid("B", 0)
+          ),
+        ],
         next_cursor: null,
         pagination: {
           limit: 100,
@@ -235,9 +233,9 @@ describe("Runs pre-go-live simulation", () => {
 
     const requests = Array.from({ length: 20 }).flatMap((_, idx) => [
       request(appA).get(`/api/runs?page=${(idx % 3) + 1}&limit=10`),
-      request(appA).get(`/api/runs/tenant-A-run-${idx}`),
+      request(appA).get(`/api/runs/${simulationRunUuid("A", idx)}`),
       request(appB).get(`/api/runs?page=${(idx % 3) + 1}&limit=10`),
-      request(appB).get(`/api/runs/tenant-B-run-${idx}`),
+      request(appB).get(`/api/runs/${simulationRunUuid("B", idx)}`),
     ]);
 
     const responses = await Promise.all(requests);
@@ -268,9 +266,9 @@ describe("Runs pre-go-live simulation", () => {
       .mockResolvedValueOnce({ kind: "recon_enrichment_failed", message: "snapshot timeout" });
 
     const [ok, missing, degraded] = await Promise.all([
-      request(app).get("/api/runs/run-ok"),
-      request(app).get("/api/runs/run-missing"),
-      request(app).get("/api/runs/run-degraded"),
+      request(app).get("/api/runs/11111111-1111-4111-8111-111111111111"),
+      request(app).get("/api/runs/22222222-2222-4222-8222-222222222222"),
+      request(app).get("/api/runs/33333333-3333-4333-8333-333333333333"),
     ]);
 
     expect(ok.status).toBe(200);
@@ -325,9 +323,10 @@ describe("Runs pre-go-live simulation", () => {
       };
     });
 
+    const failedRunId = "44444444-4444-4444-8444-444444444444";
     const [first, second] = await Promise.all([
-      request(app).post("/api/runs/run-failed/retry"),
-      request(app).post("/api/runs/run-failed/retry"),
+      request(app).post(`/api/runs/${failedRunId}/retry`),
+      request(app).post(`/api/runs/${failedRunId}/retry`),
     ]);
 
     const statuses = [first.status, second.status].sort((a, b) => a - b);
@@ -359,7 +358,7 @@ describe("Runs pre-go-live simulation", () => {
       startedAt: new Date(),
     });
 
-    const res = await request(app).post("/api/runs/run-txn/retry");
+    const res = await request(app).post("/api/runs/55555555-5555-4555-8555-555555555555/retry");
     expect(res.status).toBe(201);
     expect(mockedPrisma.$transaction).toHaveBeenCalledWith(expect.any(Function), {
       isolationLevel: "Serializable",

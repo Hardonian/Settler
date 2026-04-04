@@ -187,19 +187,32 @@ function computeOverallTrend(
   const newer = chrono.slice(mid);
 
   const avg = (arr: number[]) => arr.reduce((a, b) => a + b, 0) / arr.length;
+  const stdev = (arr: number[]) => {
+    if (arr.length < 2) return 0;
+    const m = avg(arr);
+    return Math.sqrt(arr.reduce((s, v) => s + (v - m) ** 2, 0) / arr.length);
+  };
+
   const olderAvg = avg(older);
   const newerAvg = avg(newer);
   const delta = newerAvg - olderAvg;
 
-  // Prefer explicit half-window direction when the signal is clear — avoids labeling a
-  // monotonic recovery (older low → newer high) as "volatile" solely due to spread.
-  if (delta > 0.03) return "improving";
-  if (delta < -0.03) return "regressing";
-
+  // Global volatility (mixed signals across the whole window)
   const mean = avg(chrono);
   const variance = chrono.reduce((s, v) => s + (v - mean) ** 2, 0) / chrono.length;
   const stdDev = Math.sqrt(variance);
+
+  // Two-phase shift: both halves stable but means diverge → trend, not "volatile"
+  const halfStable = stdev(older) <= 0.06 && stdev(newer) <= 0.06;
+  if (halfStable) {
+    if (delta > 0.03) return "improving";
+    if (delta < -0.03) return "regressing";
+    return "stable";
+  }
+
   if (stdDev > 0.12) return "volatile";
+  if (delta > 0.03) return "improving";
+  if (delta < -0.03) return "regressing";
   return "stable";
 }
 
@@ -230,8 +243,9 @@ function familyCertainty(
   unresolvedCount: number,
   resolvedCount: number
 ): RecurringExceptionFamily["certainty"] {
-  if (unresolvedCount > resolvedCount && totalOccurrences >= 3) return "high";
   if (totalOccurrences >= 5) return "high";
+  // Strong signal: repeated unresolved dominates — still actionable with fewer samples
+  if (totalOccurrences >= 3 && unresolvedCount > resolvedCount) return "high";
   if (totalOccurrences >= 2) return "medium";
   return "low";
 }
@@ -360,28 +374,14 @@ async function buildRunTimeline(
   };
 }
 
-// ─────────────────────────────────────────────
-// PANEL 2 — RECURRING EXCEPTION FAMILIES
-// ─────────────────────────────────────────────
+type AdjudicationLoad = { kind: "failed" } | { kind: "ok"; rows: AdjudicationMemoryRow[] };
 
-async function buildRecurringFamilies(
+async function loadAdjudicationHistory(
   prisma: ReconciliationCorePrismaClient,
   tenantIds: string[]
-): Promise<CrossRunIntelligenceSummary["recurringFamilies"]> {
-  if (tenantIds.length === 0) {
-    return {
-      state: "unavailable",
-      totalAdjudications: 0,
-      families: [],
-      reasonCodes: ["no_tenant_scope"],
-    };
-  }
-
-  let adjudications: AdjudicationMemoryRow[] = [];
-  let queryFailed = false;
-
+): Promise<AdjudicationLoad> {
   try {
-    adjudications = (await prisma.exceptionAdjudicationMemory.findMany({
+    const rows = (await prisma.exceptionAdjudicationMemory.findMany({
       where: { tenantId: { in: tenantIds } },
       orderBy: { createdAt: "desc" },
       take: 1000,
@@ -400,11 +400,31 @@ async function buildRecurringFamilies(
         completedAt: true,
       },
     })) as AdjudicationMemoryRow[];
+    return { kind: "ok", rows };
   } catch {
-    queryFailed = true;
+    return { kind: "failed" };
+  }
+}
+
+// ─────────────────────────────────────────────
+// PANEL 2 — RECURRING EXCEPTION FAMILIES
+// ─────────────────────────────────────────────
+
+async function buildRecurringFamilies(
+  prisma: ReconciliationCorePrismaClient,
+  tenantIds: string[],
+  load: AdjudicationLoad
+): Promise<CrossRunIntelligenceSummary["recurringFamilies"]> {
+  if (tenantIds.length === 0) {
+    return {
+      state: "unavailable",
+      totalAdjudications: 0,
+      families: [],
+      reasonCodes: ["no_tenant_scope"],
+    };
   }
 
-  if (queryFailed) {
+  if (load.kind === "failed") {
     return {
       state: "unavailable",
       totalAdjudications: 0,
@@ -412,6 +432,8 @@ async function buildRecurringFamilies(
       reasonCodes: ["adjudication_history_query_failed"],
     };
   }
+
+  const adjudications = load.rows;
 
   if (adjudications.length === 0) {
     return {
@@ -481,9 +503,7 @@ async function buildRecurringFamilies(
     stats.totalOccurrences++;
 
     const isResolved =
-      adj.outcome === "resolved" ||
-      adj.resolution === "matched" ||
-      adj.resolution === "manual";
+      adj.outcome === "resolved" || adj.resolution === "matched" || adj.resolution === "manual";
     if (isResolved) {
       stats.resolvedCount++;
     } else {
@@ -506,15 +526,11 @@ async function buildRecurringFamilies(
 
   const families: RecurringExceptionFamily[] = Array.from(familyMap.entries())
     .map(([, stats]) => {
-      const archetype = stats.archetypeId ? archetypeMap.get(stats.archetypeId) ?? null : null;
+      const archetype = stats.archetypeId ? (archetypeMap.get(stats.archetypeId) ?? null) : null;
       const avgDurationMs =
-        stats.durationCount > 0
-          ? Math.round(stats.totalDurationMs / stats.durationCount)
-          : null;
+        stats.durationCount > 0 ? Math.round(stats.totalDurationMs / stats.durationCount) : null;
 
-      const topEntry = Array.from(stats.outcomeCounts.entries()).sort(
-        (a, b) => b[1] - a[1]
-      )[0];
+      const topEntry = Array.from(stats.outcomeCounts.entries()).sort((a, b) => b[1] - a[1])[0];
 
       const score = scoreFamilyStats(stats);
       const trend = familyTrend({
@@ -563,8 +579,7 @@ async function buildRecurringFamilies(
 async function buildDecisionMemory(
   prisma: ReconciliationCorePrismaClient,
   tenantIds: string[],
-  recentAdjudications?: AdjudicationMemoryRow[],
-  archetypeCache?: Map<string, ArchetypeRow>
+  load: AdjudicationLoad
 ): Promise<CrossRunIntelligenceSummary["decisionMemory"]> {
   if (tenantIds.length === 0) {
     return {
@@ -575,59 +590,31 @@ async function buildDecisionMemory(
     };
   }
 
-  // Reuse already-fetched adjudications from the families panel when available
-  let adjudications = recentAdjudications;
-  let archetypeMap = archetypeCache ?? new Map<string, ArchetypeRow>();
+  if (load.kind === "failed") {
+    return {
+      state: "unavailable",
+      totalDecisions: 0,
+      recentDecisions: [],
+      reasonCodes: ["adjudication_history_query_failed"],
+    };
+  }
 
-  if (!adjudications) {
-    let queryFailed = false;
+  const adjudications = load.rows;
+  let archetypeMap = new Map<string, ArchetypeRow>();
+
+  // Fetch archetypes for display (same scope as families panel)
+  const ids = Array.from(
+    new Set(adjudications.map((a) => a.archetypeId).filter((id): id is string => id !== null))
+  );
+  if (ids.length > 0) {
     try {
-      adjudications = (await prisma.exceptionAdjudicationMemory.findMany({
-        where: { tenantId: { in: tenantIds } },
-        orderBy: { createdAt: "desc" },
-        take: 50,
-        select: {
-          id: true,
-          exceptionId: true,
-          archetypeId: true,
-          tenantId: true,
-          resolution: true,
-          resolutionReason: true,
-          outcome: true,
-          adjudicatorType: true,
-          adjudicationType: true,
-          durationMs: true,
-          createdAt: true,
-          completedAt: true,
-        },
-      })) as AdjudicationMemoryRow[];
+      const rows = (await prisma.exceptionArchetype.findMany({
+        where: { id: { in: ids }, tenantId: { in: tenantIds } },
+        select: { id: true, code: true, label: true, category: true, typicalResolution: true },
+      })) as ArchetypeRow[];
+      archetypeMap = new Map(rows.map((a) => [a.id, a]));
     } catch {
-      queryFailed = true;
-    }
-
-    if (queryFailed || !adjudications) {
-      return {
-        state: "unavailable",
-        totalDecisions: 0,
-        recentDecisions: [],
-        reasonCodes: ["decision_memory_query_failed"],
-      };
-    }
-
-    // Fetch archetypes for display
-    const ids = Array.from(
-      new Set(adjudications.map((a) => a.archetypeId).filter((id): id is string => id !== null))
-    );
-    if (ids.length > 0) {
-      try {
-        const rows = (await prisma.exceptionArchetype.findMany({
-          where: { id: { in: ids }, tenantId: { in: tenantIds } },
-          select: { id: true, code: true, label: true, category: true, typicalResolution: true },
-        })) as ArchetypeRow[];
-        archetypeMap = new Map(rows.map((a) => [a.id, a]));
-      } catch {
-        // Non-fatal — render without archetype labels
-      }
+      // Non-fatal — render without archetype labels
     }
   }
 
@@ -643,7 +630,7 @@ async function buildDecisionMemory(
   const recent = adjudications.slice(0, 10);
 
   const decisions: AdjudicationDecisionRecord[] = recent.map((adj) => {
-    const archetype = adj.archetypeId ? archetypeMap.get(adj.archetypeId) ?? null : null;
+    const archetype = adj.archetypeId ? (archetypeMap.get(adj.archetypeId) ?? null) : null;
     return {
       memoryId: adj.id,
       exceptionId: adj.exceptionId,
@@ -720,12 +707,28 @@ export async function buildCrossRunIntelligenceSummary(
     };
   }
 
-  // Run all three panels concurrently — failure in one does not affect others
-  const [runTimeline, recurringFamilies, decisionMemory] = await Promise.all([
+  const adjudicationLoad = await loadAdjudicationHistory(prisma, tenantIds);
+
+  const [runTimelineRaw, recurringFamilies, decisionMemory] = await Promise.all([
     buildRunTimeline(prisma, tenantIds),
-    buildRecurringFamilies(prisma, tenantIds),
-    buildDecisionMemory(prisma, tenantIds),
+    buildRecurringFamilies(prisma, tenantIds, adjudicationLoad),
+    buildDecisionMemory(prisma, tenantIds, adjudicationLoad),
   ]);
+
+  // When adjudication history cannot load, timeline alone is not enough for full intelligence — surface as thin history
+  const runTimeline: CrossRunIntelligenceSummary["runTimeline"] =
+    adjudicationLoad.kind === "failed" && runTimelineRaw.state === "available"
+      ? {
+          ...runTimelineRaw,
+          state: "insufficient_history",
+          reasonCodes: Array.from(
+            new Set([
+              ...runTimelineRaw.reasonCodes,
+              "adjudication_history_unavailable_for_intelligence",
+            ])
+          ),
+        }
+      : runTimelineRaw;
 
   const overallState: IntelligenceState =
     runTimeline.state === "unavailable" &&

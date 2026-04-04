@@ -50,7 +50,13 @@ const features: Feature[] = [
     enterprise: true,
   },
   { name: "Audit export support", oss: false, cloud: true, managed: true, enterprise: true },
-  { name: "Named operator coverage", oss: false, cloud: false, managed: true, enterprise: "Optional" },
+  {
+    name: "Named operator coverage",
+    oss: false,
+    cloud: false,
+    managed: true,
+    enterprise: "Optional",
+  },
 ];
 
 export function FeatureComparison() {

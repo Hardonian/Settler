@@ -30,16 +30,7 @@ jest.mock("../../infrastructure/db/prisma", () => {
   };
 });
 
-jest.mock(
-  "@settler/reconciliation-core",
-  () => ({
-    scanMergedRunsForLegacyPage: jest.fn(),
-    resolveOperatorRunDetailForTenants: jest.fn(),
-    buildRunProofpackIndexByRunId: jest.fn(),
-    toRunCompactProofSummary: jest.fn((value: unknown) => value),
-  }),
-  { virtual: true }
-);
+jest.mock("@settler/reconciliation-core");
 
 // Access mocked modules after jest.mock is applied
 const { prisma: mockedPrisma } = require("../../infrastructure/db/prisma");
@@ -47,6 +38,7 @@ const mockReconResult = mockedPrisma.reconResult;
 const {
   scanMergedRunsForLegacyPage: mockScanMergedRunsForLegacyPage,
   resolveOperatorRunDetailForTenants: mockResolveOperatorRunDetail,
+  fetchMergedReconciliationRunsPage: mockFetchMergedReconciliationRunsPage,
   buildRunProofpackIndexByRunId: mockBuildRunProofpackIndexByRunId,
   toRunCompactProofSummary: mockToRunCompactProofSummary,
 } = require("@settler/reconciliation-core");
@@ -158,8 +150,9 @@ describe("Runs Routes", () => {
     jest.clearAllMocks();
     mockScanMergedRunsForLegacyPage.mockReset();
     mockResolveOperatorRunDetail.mockReset();
+    mockFetchMergedReconciliationRunsPage.mockReset();
     mockBuildRunProofpackIndexByRunId.mockReset();
-    mockBuildRunProofpackIndexByRunId.mockResolvedValue(new Map());
+    mockBuildRunProofpackIndexByRunId.mockImplementation(() => Promise.resolve(new Map()));
     mockToRunCompactProofSummary.mockClear();
   });
 

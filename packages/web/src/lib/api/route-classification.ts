@@ -497,7 +497,8 @@ export const ROUTE_CLASSIFICATIONS: Record<string, RouteClassification> = {
     methods: ["GET", "POST"],
     auth: "session+adminRole",
     tenantScoped: false,
-    notes: "Operator intake queue over support_intake_submitted audit records.",
+    notes:
+      "GET: operator inbox over support_intake_submission audit rows (admin + active subscription). POST: tenant-scoped canonical intake via SupportWidget.",
   },
   "console/support/triage": {
     class: "legacy-dead",
@@ -1333,18 +1334,26 @@ export const ROUTE_CLASSIFICATIONS: Record<string, RouteClassification> = {
     tenantScoped: false,
   },
   "support/report-issue": {
-    class: "legacy-dead",
+    class: "authenticated-user",
     methods: ["POST"],
     auth: "session",
     tenantScoped: true,
-    notes: "Legacy compatibility route. Translates to canonical /api/v1/support/intake.",
+    notes:
+      "Legacy BFF path; translates to canonical support intake (prefer POST /api/v1/support/intake).",
   },
   "support/tickets": {
-    class: "legacy-dead",
-    methods: ["GET", "POST"],
-    auth: "session",
+    class: "admin-internal",
+    methods: ["GET"],
+    auth: "session+adminRole",
     tenantScoped: false,
-    notes: "Deprecated ticket API. Returns 410 and points callers to canonical intake routes.",
+    notes: "Operator inbox over canonical support_intake_submission audit rows.",
+  },
+  "v1/support/intake": {
+    class: "authenticated-user",
+    methods: ["POST"],
+    auth: "session",
+    tenantScoped: true,
+    notes: "Versioned BFF for POST /api/v1/support/intake — same persistence as OSS API route.",
   },
 
   // ── User ──────────────────────────────────────────────────────────────────

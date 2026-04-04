@@ -7,7 +7,6 @@
 
 import { Router, Request, Response } from "express";
 import { z } from "zod";
-import { authMiddleware } from "../middleware/auth";
 import {
   retentionPolicyService,
   retentionPeriodToDays,
@@ -18,8 +17,7 @@ import { logInfo, logError } from "../utils/logger";
 
 const router: Router = Router();
 
-// All retention routes require authentication
-router.use(authMiddleware);
+// Authentication is applied by the versioned protected router (`configureProtectedRouter`).
 
 // Validation schemas
 const retentionPolicySchema = z.object({
