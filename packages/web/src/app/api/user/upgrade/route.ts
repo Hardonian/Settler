@@ -8,6 +8,7 @@ import { sendPaidWelcomeEmail, LifecycleUser } from "@/lib/stubs/email-lifecycle
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { appLogger } from "@/lib/utils/logger";
 import { withSecurity } from "@/lib/middleware/api-security";
+import { mapLegacyPlanId, PlanCode } from "@/domain/billing/planConfig";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs"; // Ensure Node.js runtime for Supabase
@@ -25,18 +26,29 @@ export const POST = withSecurity(
           return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
         }
 
-        const { planType: rawPlanType } = await request.json();
-        const planType = rawPlanType as string;
+        const { planType: rawPlanType, planCode: rawPlanCode } = await request.json();
+        const planType = rawPlanType as string | undefined;
+        const planCode = rawPlanCode as PlanCode | undefined;
 
-        if (!["commercial", "enterprise"].includes(planType)) {
-          return NextResponse.json({ error: "Invalid plan type" }, { status: 400 });
+        const canonicalPlan = planCode ?? (planType ? mapLegacyPlanId(planType) : null);
+        const normalizedProfilePlan =
+          canonicalPlan === "starter"
+            ? "free"
+            : canonicalPlan === "growth"
+              ? "commercial"
+              : canonicalPlan === "scale"
+                ? "enterprise"
+                : canonicalPlan;
+
+        if (!normalizedProfilePlan || !["commercial", "enterprise", "free"].includes(normalizedProfilePlan)) {
+          return NextResponse.json({ error: "Invalid plan type or plan code" }, { status: 400 });
         }
 
         // Update user plan
          
         const { error: updateError } = (await (supabase.from("profiles") as any)
           .update({
-            plan_type: planType,
+            plan_type: normalizedProfilePlan,
             subscription_start_date: new Date().toISOString(),
             updated_at: new Date().toISOString(),
           })
@@ -70,7 +82,12 @@ export const POST = withSecurity(
               firstName: profile.name?.split(" ")[0],
               industry: profile.industry,
               companyName: profile.company_name,
-              planType: planType as "free" | "enterprise" | "trial" | "commercial" | undefined,
+              planType: normalizedProfilePlan as
+                | "free"
+                | "enterprise"
+                | "trial"
+                | "commercial"
+                | undefined,
             };
 
             await sendPaidWelcomeEmail(lifecycleUser);
@@ -80,7 +97,11 @@ export const POST = withSecurity(
           }
         }
 
-        return NextResponse.json({ success: true, planType });
+        return NextResponse.json({
+          success: true,
+          planType: normalizedProfilePlan,
+          planCode: canonicalPlan,
+        });
       } catch (error) {
         appLogger.error("Upgrade error", error);
         // Never return 500 - return graceful error response
