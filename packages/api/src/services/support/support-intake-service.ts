@@ -10,8 +10,7 @@ import {
   resolveOperatorRunDetailForTenants,
 } from "@settler/reconciliation-core";
 
-const UUID_RE =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function toRunUuid(runId: string | undefined): string | null {
   const t = runId?.trim();
@@ -124,12 +123,15 @@ async function persistSupportIntakeToAuditLog(params: {
         submission_id: params.submissionId,
         path: params.path,
         category: params.payload.category,
+        severity: params.payload.severity ?? "medium",
+        status: "open",
         run_id: params.payload.run_id ?? null,
         route: params.payload.route ?? null,
         module: params.payload.module ?? null,
         description: params.payload.description,
         contact: params.payload.contact ?? {},
         run_context: params.runContext,
+        operator_notes: null,
       } as Prisma.InputJsonValue,
     },
   });

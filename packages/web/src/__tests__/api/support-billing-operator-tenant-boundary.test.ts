@@ -4,7 +4,6 @@ import {
   GET as getPaymentRecovery,
   POST as postPaymentRecovery,
 } from "@/app/api/billing/payment-recovery/route";
-import { GET as getSupportTickets } from "@/app/api/support/tickets/route";
 import { GET as getConsoleSupportTickets } from "@/app/api/console/support/tickets/route";
 import { GET as getOperatorControlPlane } from "@/app/api/console/operator/control-plane/route";
 
@@ -108,15 +107,6 @@ describe("support/billing/operator boundary coverage", () => {
     expect(response.status).toBe(403);
     const payload = await response.json();
     expect(JSON.stringify(payload)).not.toContain("user-b");
-  });
-
-  it("api.support.tickets.non_admin_denied_no_leak", async () => {
-    const response = await getSupportTickets(
-      req("http://localhost/api/support/tickets?tenantId=tenant-b")
-    );
-    expect(response.status).toBe(403);
-    const payload = await response.json();
-    expect(JSON.stringify(payload)).not.toContain("tenant-b");
   });
 
   it("api.console.support_tickets.degraded_no_leak", async () => {

@@ -29,6 +29,47 @@ export const SUPPORT_ISSUE_CATEGORY_LABELS: Record<SupportIssueCategory, string>
   [SUPPORT_ISSUE_CATEGORY.DOCS_OTHER]: "Docs / product question / other",
 };
 
+/**
+ * Canonical support lifecycle statuses.
+ * Owned by @settler/types — consumed by operator inbox, API, and admin surfaces.
+ */
+export const SUPPORT_STATUS = {
+  OPEN: "open",
+  IN_PROGRESS: "in_progress",
+  WAITING_ON_TENANT: "waiting_on_tenant",
+  RESOLVED: "resolved",
+  CLOSED: "closed",
+} as const;
+
+export type SupportStatus = (typeof SUPPORT_STATUS)[keyof typeof SUPPORT_STATUS];
+
+export const SUPPORT_STATUS_LABELS: Record<SupportStatus, string> = {
+  [SUPPORT_STATUS.OPEN]: "Open",
+  [SUPPORT_STATUS.IN_PROGRESS]: "In progress",
+  [SUPPORT_STATUS.WAITING_ON_TENANT]: "Waiting on tenant",
+  [SUPPORT_STATUS.RESOLVED]: "Resolved",
+  [SUPPORT_STATUS.CLOSED]: "Closed",
+};
+
+/**
+ * Canonical support severity levels for operator triage.
+ */
+export const SUPPORT_SEVERITY = {
+  LOW: "low",
+  MEDIUM: "medium",
+  HIGH: "high",
+  CRITICAL: "critical",
+} as const;
+
+export type SupportSeverity = (typeof SUPPORT_SEVERITY)[keyof typeof SUPPORT_SEVERITY];
+
+export const SUPPORT_SEVERITY_LABELS: Record<SupportSeverity, string> = {
+  [SUPPORT_SEVERITY.LOW]: "Low",
+  [SUPPORT_SEVERITY.MEDIUM]: "Medium",
+  [SUPPORT_SEVERITY.HIGH]: "High",
+  [SUPPORT_SEVERITY.CRITICAL]: "Critical",
+};
+
 export const supportIntakeSubmissionSchema = z.object({
   tenant_id: z.string().min(1),
   run_id: z.string().min(1).optional(),
@@ -42,6 +83,15 @@ export const supportIntakeSubmissionSchema = z.object({
     SUPPORT_ISSUE_CATEGORY.BILLING_USAGE,
     SUPPORT_ISSUE_CATEGORY.DOCS_OTHER,
   ]),
+  severity: z
+    .enum([
+      SUPPORT_SEVERITY.LOW,
+      SUPPORT_SEVERITY.MEDIUM,
+      SUPPORT_SEVERITY.HIGH,
+      SUPPORT_SEVERITY.CRITICAL,
+    ])
+    .optional()
+    .default(SUPPORT_SEVERITY.MEDIUM),
   description: z.string().min(20).max(5000),
   route: z.string().min(1).optional(),
   module: z.string().min(1).optional(),
@@ -55,3 +105,24 @@ export const supportIntakeSubmissionSchema = z.object({
 });
 
 export type SupportIntakeSubmission = z.infer<typeof supportIntakeSubmissionSchema>;
+
+/**
+ * Operator-facing support submission record shape.
+ * Used by the admin support inbox to display canonical support data.
+ */
+export interface SupportSubmissionRecord {
+  submissionId: string;
+  tenantId: string;
+  userId: string | null;
+  category: SupportIssueCategory;
+  severity: SupportSeverity;
+  status: SupportStatus;
+  description: string;
+  runId: string | null;
+  route: string | null;
+  module: string | null;
+  contact: { user_id?: string; email?: string; role?: string } | null;
+  runContextState: string | null;
+  operatorNotes: string | null;
+  createdAt: string;
+}

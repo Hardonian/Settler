@@ -1,30 +1,34 @@
 /**
- * Admin Support Inbox
- * 
- * View and manage support tickets
+ * Operator Support Inbox
+ *
+ * Admin view of canonical support submissions from AuditLog.
+ * Replaces legacy ops_support_tickets-backed inbox.
  */
 
-import { Suspense } from 'react';
-import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
-import { getUserRole, UserRole } from '@/shared/auth/roles';
-import { SupportInbox } from '@/components/support/SupportInbox';
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle } from 'lucide-react';
-import { ErrorBoundary } from '@/components/ui/error-boundary';
+import { Suspense } from "react";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { getUserRole, UserRole } from "@/shared/auth/roles";
+import { OperatorSupportInbox } from "@/components/console/OperatorSupportInbox";
+import { ConsolePageHeader } from "@/components/console/ConsolePageHeader";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { AlertCircle } from "lucide-react";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 async function SupportContent() {
   const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    redirect('/console');
+    redirect("/console");
   }
 
-  // Check if user is admin
   const role = await getUserRole(user.id);
   const isAdmin = role === UserRole.SUPER_ADMIN;
 
@@ -35,10 +39,10 @@ async function SupportContent() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <AlertCircle className="h-5 w-5 text-destructive" />
-              Access Denied
+              Access denied
             </CardTitle>
             <CardDescription>
-              This page is restricted to administrators only.
+              The support inbox is restricted to operators and administrators.
             </CardDescription>
           </CardHeader>
         </Card>
@@ -46,20 +50,24 @@ async function SupportContent() {
     );
   }
 
-  return <SupportInbox userId={user.id} />;
+  return (
+    <div className="space-y-6">
+      <ConsolePageHeader
+        title="Support inbox"
+        description="Canonical view of all tenant support submissions. Triage, update status, and add operator notes."
+      />
+      <OperatorSupportInbox />
+    </div>
+  );
 }
 
 export default function SupportPage() {
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Support Inbox</h1>
-        <p className="text-muted-foreground mt-2">
-          Manage and triage support tickets
-        </p>
-      </div>
       <ErrorBoundary componentName="SupportPage">
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense
+          fallback={<div className="text-muted-foreground text-sm">Loading support inbox…</div>}
+        >
           <SupportContent />
         </Suspense>
       </ErrorBoundary>

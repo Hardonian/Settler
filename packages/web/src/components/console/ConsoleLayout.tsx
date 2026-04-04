@@ -66,6 +66,7 @@ const labelToIcon: Record<string, LucideIcon> = {
   Workflows: Zap,
   "Billing & Plan": CreditCard,
   Settings,
+  "Support inbox": Headphones,
   "Report issue": Headphones,
   "Site Designer": Building2,
   "Replay Lab": ScanSearch,

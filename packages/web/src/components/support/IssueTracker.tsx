@@ -29,10 +29,10 @@ export function IssueTracker() {
 
   const fetchTickets = async () => {
     try {
-      const response = await fetch("/api/support/tickets");
+      const response = await fetch("/api/v1/support/submissions");
       if (response.ok) {
         const data = await response.json();
-        setTickets(data.tickets || []);
+        setTickets(data.submissions || []);
       }
     } catch (error) {
       console.error("Failed to fetch tickets:", error);

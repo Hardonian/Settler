@@ -19,11 +19,20 @@ import {
 } from "@/components/ui/select";
 import { MessageSquare, CheckCircle2, AlertCircle } from "lucide-react";
 import { ConsoleErrorBoundary } from "./ErrorBoundary";
-import { SUPPORT_ISSUE_CATEGORY_LABELS, type SupportIssueCategory } from "@settler/types";
+import {
+  SUPPORT_ISSUE_CATEGORY_LABELS,
+  SUPPORT_SEVERITY_LABELS,
+  type SupportIssueCategory,
+  type SupportSeverity,
+} from "@settler/types";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const CATEGORY_ENTRIES = Object.entries(SUPPORT_ISSUE_CATEGORY_LABELS) as Array<
   [SupportIssueCategory, string]
+>;
+
+const SEVERITY_ENTRIES = Object.entries(SUPPORT_SEVERITY_LABELS) as Array<
+  [SupportSeverity, string]
 >;
 
 export interface SupportWidgetProps {
@@ -38,6 +47,7 @@ export function SupportWidget({ defaultRoute, defaultRunId = "" }: SupportWidget
   const [description, setDescription] = useState("");
   const [runId, setRunId] = useState(defaultRunId);
   const [category, setCategory] = useState<SupportIssueCategory>("run_failure");
+  const [severity, setSeverity] = useState<SupportSeverity>("medium");
   const [moduleHint, setModuleHint] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -76,6 +86,7 @@ export function SupportWidget({ defaultRoute, defaultRunId = "" }: SupportWidget
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           category,
+          severity,
           description: fullDescription,
           run_id: runId.trim() || undefined,
           route: defaultRoute?.trim() || undefined,
@@ -104,6 +115,7 @@ export function SupportWidget({ defaultRoute, defaultRunId = "" }: SupportWidget
       setRunId(defaultRunId);
       setModuleHint("");
       setCategory("run_failure");
+      setSeverity("medium");
     } catch (error: unknown) {
       console.error("Support intake failed:", error);
       setErrorMessage("Network error. Check connectivity and try again.");
@@ -141,12 +153,15 @@ export function SupportWidget({ defaultRoute, defaultRunId = "" }: SupportWidget
       <Card className="hover:shadow-lg transition-shadow">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-blue-600 dark:text-blue-400" aria-hidden="true" />
+            <MessageSquare
+              className="w-5 h-5 text-blue-600 dark:text-blue-400"
+              aria-hidden="true"
+            />
             Operator support intake
           </CardTitle>
           <CardDescription>
-            Evidence-oriented categories. Optional run UUID attaches compact proof summary context when
-            the run exists for this tenant.
+            Evidence-oriented categories. Optional run UUID attaches compact proof summary context
+            when the run exists for this tenant.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -170,12 +185,31 @@ export function SupportWidget({ defaultRoute, defaultRunId = "" }: SupportWidget
 
             <div>
               <Label htmlFor="support-category">Category</Label>
-              <Select value={category} onValueChange={(v) => setCategory(v as SupportIssueCategory)}>
+              <Select
+                value={category}
+                onValueChange={(v) => setCategory(v as SupportIssueCategory)}
+              >
                 <SelectTrigger id="support-category">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {CATEGORY_ENTRIES.map(([value, label]) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="support-severity">Severity</Label>
+              <Select value={severity} onValueChange={(v) => setSeverity(v as SupportSeverity)}>
+                <SelectTrigger id="support-severity">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {SEVERITY_ENTRIES.map(([value, label]) => (
                     <SelectItem key={value} value={value}>
                       {label}
                     </SelectItem>
@@ -194,8 +228,8 @@ export function SupportWidget({ defaultRoute, defaultRunId = "" }: SupportWidget
                 autoComplete="off"
               />
               <p className="text-xs text-muted-foreground mt-1">
-                Non-UUID run references are kept in the text only; UUIDs link operator run context when
-                available.
+                Non-UUID run references are kept in the text only; UUIDs link operator run context
+                when available.
               </p>
             </div>
 
