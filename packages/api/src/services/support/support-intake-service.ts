@@ -1,13 +1,23 @@
 import crypto from "crypto";
-import { query } from "../../db";
+import type { Prisma } from "@prisma/client";
 import { logError } from "../../utils/logger";
 import { supportIntakeSubmissionSchema, SupportIntakeSubmission } from "./support-intake-contract";
 import { eventBus } from "../events/event-bus";
+import { emitOperatorRuntimeEvent } from "../ops-intelligence/runtime-events";
 import { prisma } from "../../infrastructure/db/prisma";
 import {
   resolveRunCompactProofSummary,
   resolveOperatorRunDetailForTenants,
 } from "@settler/reconciliation-core";
+
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function toRunUuid(runId: string | undefined): string | null {
+  const t = runId?.trim();
+  if (!t || !UUID_RE.test(t)) return null;
+  return t;
+}
 
 export interface StoredSupportIntake {
   submissionId: string;
@@ -40,6 +50,24 @@ export async function submitSupportIntake(params: {
       submissionId,
       payload: parsed,
       runContext,
+    });
+
+    await emitOperatorRuntimeEvent({
+      eventType: "support_intake_submitted",
+      tenantId: params.tenantId,
+      runId: toRunUuid(parsed.run_id),
+      metadata: {
+        submission_id: submissionId,
+        category: parsed.category,
+        path: params.path,
+        route: parsed.route ?? null,
+        module: parsed.module ?? null,
+        description_length: parsed.description.length,
+        run_context_state:
+          runContext && typeof runContext === "object" && "state" in runContext
+            ? (runContext as { state?: string }).state
+            : null,
+      },
     });
 
     await eventBus.emitEvent(
@@ -86,16 +114,15 @@ async function persistSupportIntakeToAuditLog(params: {
   payload: SupportIntakeSubmission;
   runContext: Record<string, unknown> | null;
 }): Promise<void> {
-  await query(
-    `INSERT INTO audit_logs (event, user_id, tenant_id, path, metadata)
-     VALUES ($1, $2, $3, $4, $5::jsonb)`,
-    [
-      "support_intake_submitted",
-      params.userId,
-      params.tenantId,
-      params.path,
-      JSON.stringify({
+  await prisma.auditLog.create({
+    data: {
+      userId: params.userId,
+      tenantId: params.tenantId,
+      action: "support_intake_submitted",
+      resourceType: "support",
+      metadata: {
         submission_id: params.submissionId,
+        path: params.path,
         category: params.payload.category,
         run_id: params.payload.run_id ?? null,
         route: params.payload.route ?? null,
@@ -103,9 +130,9 @@ async function persistSupportIntakeToAuditLog(params: {
         description: params.payload.description,
         contact: params.payload.contact ?? {},
         run_context: params.runContext,
-      }),
-    ]
-  );
+      } as Prisma.InputJsonValue,
+    },
+  });
 }
 
 async function buildSupportRunContext(

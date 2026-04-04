@@ -1,27 +1,14 @@
 import { Router } from "express";
-import { z } from "zod";
 import { tenantMiddleware } from "../../middleware/tenant";
 import { AuthRequest } from "../../middleware/auth";
 import { sendError } from "../../utils/api-response";
 import { handleRouteError } from "../../utils/error-handler";
 import { submitSupportIntake } from "../../services/support/support-intake-service";
+import { supportIntakeSubmissionSchema } from "../../services/support/support-intake-contract";
 
 const router: Router = Router();
 
-const supportIntakeRequestSchema = z.object({
-  category: z.string().min(1),
-  description: z.string().min(20),
-  run_id: z.string().optional(),
-  route: z.string().optional(),
-  module: z.string().optional(),
-  contact: z
-    .object({
-      user_id: z.string().optional(),
-      email: z.string().email().optional(),
-      role: z.string().optional(),
-    })
-    .optional(),
-});
+const supportIntakeRequestSchema = supportIntakeSubmissionSchema.omit({ tenant_id: true });
 
 router.post("/intake", tenantMiddleware, async (req: AuthRequest, res) => {
   try {
@@ -48,7 +35,7 @@ router.post("/intake", tenantMiddleware, async (req: AuthRequest, res) => {
       userId: req.userId,
       tenantId: req.tenantId,
       path: req.originalUrl,
-      body: parseResult.data,
+      body: { ...parseResult.data, tenant_id: req.tenantId },
     });
 
     return res.status(202).json({

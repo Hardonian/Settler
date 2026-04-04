@@ -50,7 +50,7 @@ export function setNestedValue(obj: Record<string, unknown>, path: string, value
   const parts = path.split(".");
   let current: Record<string, unknown> = obj;
   for (let i = 0; i < parts.length - 1; i++) {
-    const part = parts[i];
+    const part = parts[i]!;
     if (!(part in current) || typeof current[part] !== "object" || current[part] === null) {
       current[part] = {};
     }

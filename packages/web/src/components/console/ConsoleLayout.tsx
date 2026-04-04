@@ -29,6 +29,7 @@ import {
   Bot,
   PlayCircle,
   AlertTriangle,
+  Headphones,
   type LucideIcon,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -65,6 +66,7 @@ const labelToIcon: Record<string, LucideIcon> = {
   Workflows: Zap,
   "Billing & Plan": CreditCard,
   Settings,
+  "Report issue": Headphones,
   "Site Designer": Building2,
   "Replay Lab": ScanSearch,
   "Audit Trail": ShieldCheck,

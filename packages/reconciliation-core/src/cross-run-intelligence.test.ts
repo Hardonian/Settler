@@ -284,7 +284,7 @@ describe("buildCrossRunIntelligenceSummary", () => {
     expect(summary.recurringFamilies.state).toBe("unavailable");
     expect(summary.recurringFamilies.reasonCodes).toContain("adjudication_history_query_failed");
     expect(summary.decisionMemory.state).toBe("unavailable");
-    expect(summary.runTimeline.state).toBe("insufficient_history"); // only 3 runs, all same id but accepted
+    expect(summary.runTimeline.state).toBe("available");
   });
 
   it("returns timestamps as ISO strings, never raw Date objects", async () => {

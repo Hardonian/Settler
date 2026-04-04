@@ -282,6 +282,15 @@ export interface ReconciliationSummary {
   effectiveRate: number; // Average effective rate
 }
 
+// Support intake (canonical operator/evidence-aligned categories)
+export {
+  SUPPORT_ISSUE_CATEGORY,
+  SUPPORT_ISSUE_CATEGORY_LABELS,
+  supportIntakeSubmissionSchema,
+  type SupportIntakeSubmission,
+  type SupportIssueCategory,
+} from "./support-intake-contract";
+
 // Run types (for reconciliation runs/executions)
 export {
   Run,
