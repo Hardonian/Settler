@@ -119,6 +119,9 @@ describe("support/billing/operator boundary coverage", () => {
     );
     expect(response.status).toBe(410);
     const payload = await response.json();
+    expect(payload.status).toBe("deprecated");
+    expect(payload.trustState).toBe("unavailable");
+    expect(payload.degradedReasonCode).toBe("legacy_support_tickets_route_removed");
     expect(JSON.stringify(payload)).not.toContain("tenant-b");
   });
 
