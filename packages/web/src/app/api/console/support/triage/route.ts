@@ -11,6 +11,9 @@ function legacyTriageDeprecated() {
       message:
         "Legacy support triage endpoint is deprecated. Use /api/console/support/tickets for canonical intake queue reads.",
       canonicalOperatorRoute: "/api/console/support/tickets",
+      trustState: "unavailable",
+      degradedReasonCode: "legacy_support_triage_route_removed",
+      status: "deprecated",
     },
     { status: 410 }
   );

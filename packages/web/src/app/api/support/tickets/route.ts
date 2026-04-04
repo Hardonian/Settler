@@ -18,6 +18,9 @@ function deprecated() {
         "Legacy support ticket endpoints are deprecated. Use /api/v1/support/intake for submission and /api/console/support/tickets for operator triage.",
       canonicalSubmissionRoute: "/api/v1/support/intake",
       canonicalOperatorRoute: "/api/console/support/tickets",
+      trustState: "unavailable",
+      degradedReasonCode: "legacy_support_tickets_route_removed",
+      status: "deprecated",
     },
     { status: 410 }
   );

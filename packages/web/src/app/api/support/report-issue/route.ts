@@ -65,6 +65,8 @@ export const POST = withSecurity(
         created_at: stored.createdAt,
         deprecated_route: true,
         canonical_route: "/api/v1/support/intake",
+        trust_state: "degraded",
+        degraded_reason_code: "legacy_report_issue_route_translated",
       },
       { status: 202 }
     );
