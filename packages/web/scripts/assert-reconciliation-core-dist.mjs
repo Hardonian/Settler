@@ -26,8 +26,10 @@ function newestMtimeMs(dir, exts) {
     for (const name of readdirSync(d, { withFileTypes: true })) {
       const p = join(d, name.name);
       if (name.isDirectory()) {
+        if (name.name === "__tests__") continue;
         walk(p);
       } else if (exts.some((e) => name.name.endsWith(e))) {
+        if (name.name.endsWith(".test.ts") || name.name.endsWith(".test.tsx")) continue;
         const t = statSync(p).mtimeMs;
         if (t > max) max = t;
       }
