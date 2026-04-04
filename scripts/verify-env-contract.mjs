@@ -1,6 +1,15 @@
 #!/usr/bin/env node
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import dotenv from "dotenv";
+
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const envLocalPath = path.join(repoRoot, ".env.local");
+if (existsSync(envLocalPath)) {
+  dotenv.config({ path: envLocalPath, override: false });
+}
 
 const manifest = JSON.parse(
   readFileSync(new URL("../config/env.required.json", import.meta.url), "utf8")

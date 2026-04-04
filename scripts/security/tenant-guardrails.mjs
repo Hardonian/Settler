@@ -79,17 +79,17 @@ export const highRiskRouteRules = [
   {
     route: "/api/v1/runs (express)",
     classification: "tenant-bound",
-    file: "packages/api/src/routes/runs.ts",
+    file: "packages/api/src/routes/v1/runs.ts",
     mustInclude: [
       { token: "requirePermission(Permission.JOBS_READ)", reason: "read authz required" },
-      { token: "req.tenantId!", reason: "tenant scope must come from authenticated request" },
+      { token: "req.tenantId", reason: "tenant scope must come from authenticated request" },
       {
-        token: "resolveOperatorRunDetailForTenants(",
-        reason: "detail route must stay on canonical shared resolver",
+        token: "WHERE rr.id = $1 AND rr.tenant_id = $2",
+        reason: "run detail SQL must constrain by tenant_id",
       },
       {
-        token: "where: { id: runId2, tenantId }",
-        reason: "retry mutation must stay tenant-scoped",
+        token: "WHERE id = $1 AND tenant_id = $2",
+        reason: "retry mutation SQL must constrain by tenant_id",
       },
     ],
     manualValidation:
@@ -101,8 +101,14 @@ export const highRiskRouteRules = [
     file: "packages/api/src/routes/exceptions.ts",
     mustInclude: [
       { token: "requirePermission(Permission.REPORTS_READ)", reason: "read authz required" },
-      { token: "ExceptionReviewService", reason: "mutations must flow through shared review service" },
-      { token: "tenantId = req.tenantId!", reason: "tenant scope must come from authenticated request" },
+      {
+        token: "ExceptionReviewService",
+        reason: "mutations must flow through shared review service",
+      },
+      {
+        token: "tenantId = req.tenantId!",
+        reason: "tenant scope must come from authenticated request",
+      },
       { token: "validateExceptionAccess(", reason: "object-level access guard required" },
     ],
     manualValidation:
@@ -114,7 +120,10 @@ export const highRiskRouteRules = [
     file: "packages/api/src/routes/exception-intelligence.ts",
     mustInclude: [
       { token: "requirePermission(Permission.OPERATOR_READ)", reason: "read authz required" },
-      { token: "const tenantId = req.tenantId!", reason: "tenant scope must come from authenticated request" },
+      {
+        token: "const tenantId = req.tenantId!",
+        reason: "tenant scope must come from authenticated request",
+      },
       {
         token: "where: { id: exceptionId, tenantId }",
         reason: "lookup must stay tenant-scoped before intelligence reads",
@@ -129,7 +138,10 @@ export const highRiskRouteRules = [
     classification: "tenant-bound",
     file: "packages/api/src/index.ts",
     mustInclude: [
-      { token: 'router.use(authMiddleware);', reason: "protected router must authenticate before tenant mounts" },
+      {
+        token: "router.use(authMiddleware);",
+        reason: "protected router must authenticate before tenant mounts",
+      },
       {
         token: 'router.use("/tenant", tenantMiddleware, tenantDataRouter);',
         reason: "tenant data routes must keep explicit tenant middleware",
@@ -229,6 +241,11 @@ const classificationRules = [
     prefix: "packages/web/src/app/api/exports",
     class: "tenant",
     reason: "Export endpoints expose tenant-bound artifacts.",
+  },
+  {
+    prefix: "packages/web/src/app/api/exceptions",
+    class: "tenant",
+    reason: "Exception list/detail/proofpack APIs expose tenant-scoped reconciliation data.",
   },
   {
     prefix: "packages/web/src/app/api/imports",
@@ -471,12 +488,20 @@ function discoverApiRoutes(repoRoot) {
     }
   }
 
-  walk(path.join(repoRoot, "packages", "web", "src", "app", "api"), (entry) => entry === "route.ts");
+  walk(
+    path.join(repoRoot, "packages", "web", "src", "app", "api"),
+    (entry) => entry === "route.ts"
+  );
   walk(path.join(repoRoot, "packages", "api", "src", "routes"), (entry, fullPath) => {
     if (!entry.endsWith(".ts")) return false;
     if (["authz-helpers.ts", "route-helpers.ts"].includes(entry)) return false;
     const content = readFileSync(fullPath, "utf8");
-    return content.includes("Router(") || content.includes("router.") || content.includes("v1Router.") || content.includes("v2Router.");
+    return (
+      content.includes("Router(") ||
+      content.includes("router.") ||
+      content.includes("v1Router.") ||
+      content.includes("v2Router.")
+    );
   });
 
   return routes.sort((a, b) => a.localeCompare(b));

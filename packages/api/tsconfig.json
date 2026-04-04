@@ -7,7 +7,10 @@
     "declarationMap": false,
     "exactOptionalPropertyTypes": false,
     "skipLibCheck": true,
-    "paths": {},
+    "paths": {
+      "@settler/adapters": ["../adapters/dist/index"],
+      "@settler/adapters/*": ["../adapters/dist/*"]
+    },
     "types": ["node", "jest"]
   },
   "include": ["src/**/*"],
