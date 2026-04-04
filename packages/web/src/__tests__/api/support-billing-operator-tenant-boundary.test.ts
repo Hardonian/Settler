@@ -74,6 +74,9 @@ jest.mock("@/shared/db/prismaClient", () => ({
   prisma: {
     $queryRaw: jest.fn(async () => []),
     $executeRaw: jest.fn(async () => 1),
+    auditLog: {
+      findMany: jest.fn(async () => []),
+    },
   },
 }));
 
@@ -110,20 +113,20 @@ describe("support/billing/operator boundary coverage", () => {
     expect(JSON.stringify(payload)).not.toContain("user-b");
   });
 
-  it("api.support.tickets.non_admin_denied_no_leak", async () => {
+  it("api.support.tickets.legacy_deprecated_no_leak", async () => {
     const response = await getSupportTickets(
       req("http://localhost/api/support/tickets?tenantId=tenant-b")
     );
-    expect(response.status).toBe(403);
+    expect(response.status).toBe(410);
     const payload = await response.json();
     expect(JSON.stringify(payload)).not.toContain("tenant-b");
   });
 
-  it("api.console.support_tickets.degraded_no_leak", async () => {
+  it("api.console.support_tickets.non_admin_denied_no_leak", async () => {
     const response = await getConsoleSupportTickets(
       req("http://localhost/api/console/support/tickets?tenantId=tenant-b")
     );
-    expect(response.status).toBe(503);
+    expect(response.status).toBe(403);
     const payload = await response.json();
     expect(JSON.stringify(payload)).not.toContain("tenant-b");
   });

@@ -22,7 +22,9 @@ describe("run-detail helpers", () => {
 
     expect(summary.configSource).toBe("snapshot");
     expect(summary.definitionDriftDetected).toBe(false);
-    expect(summary.definitionDriftNotes).toEqual([]);
+    expect(summary.definitionDriftNotes).toEqual([
+      "Adapter drift could not be fully evaluated from available safe fingerprints.",
+    ]);
   });
 
   test("flags definition drift when current job settings diverge from snapshot", () => {
@@ -48,9 +50,10 @@ describe("run-detail helpers", () => {
     expect(summary.definitionDriftDetected).toBe(true);
     expect(summary.definitionDriftNotes).toEqual(
       expect.arrayContaining([
-        "Reconciliation strategy changed since this result was captured.",
-        "Template reference changed since this result was captured.",
-        "Validation rule count changed since this result was captured.",
+        "Reconciliation strategy changed since this run executed.",
+        "Template reference changed since this run executed.",
+        "Validation rule definitions changed since this run executed.",
+        "Adapter drift could not be fully evaluated from available safe fingerprints.",
       ])
     );
   });
@@ -63,6 +66,8 @@ describe("run-detail helpers", () => {
 
     expect(summary.configSource).toBe("job_definition");
     expect(summary.definitionDriftDetected).toBe(false);
-    expect(summary.definitionDriftNotes).toEqual([]);
+    expect(summary.definitionDriftNotes).toEqual([
+      "Adapter drift could not be fully evaluated from available safe fingerprints.",
+    ]);
   });
 });

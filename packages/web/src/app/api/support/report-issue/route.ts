@@ -1,135 +1,73 @@
 /**
- * Report Issue API
- * 
- * Create a support ticket from in-app issue reporter
+ * Legacy compatibility route.
+ *
+ * Canonical owner is POST /api/v1/support/intake.
+ * This route translates old report-issue payloads into canonical support intake.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { triageTicket, storeTriageResult } from '@/lib/services/triage-engine';
-import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
-import { appLogger } from '@/lib/utils/logger';
-import { withSecurity } from '@/lib/middleware/api-security';
+import { NextRequest, NextResponse } from "next/server";
+import { withSecurity } from "@/lib/middleware/api-security";
+import { authenticateRequest } from "@/lib/api/unified-auth";
+import { submitSupportIntake } from "@/lib/services/support-intake-service";
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 export const POST = withSecurity(
-  withUniversalBillingGate(async function POST(request: NextRequest) {
-  try {
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  async function POST(request: NextRequest) {
+    const auth = await authenticateRequest(request);
+    if (!auth?.userId || !auth.tenantId) {
+      return NextResponse.json(
+        {
+          code: "UNAUTHORIZED",
+          message: "Authentication and tenant context are required.",
+        },
+        { status: 401 }
+      );
     }
 
-    const body = await request.json();
-    const { subject, description, category, context } = body;
+    const body = (await request.json().catch(() => ({}))) as {
+      subject?: string;
+      description?: string;
+      category?: string;
+      context?: { route?: string; module?: string };
+    };
 
-    if (!subject || !description) {
+    const description = [body.subject?.trim(), body.description?.trim()].filter(Boolean).join("\n\n");
+    if (description.length < 20) {
       return NextResponse.json(
-        { error: 'subject and description required' },
+        {
+          code: "INVALID_SUPPORT_INTAKE",
+          message: "Description must be at least 20 characters when routed through report-issue.",
+        },
         { status: 400 }
       );
     }
 
-    // Get user's organization (if any)
-    const { data: orgMember } = await supabase
-      .from('organization_members')
-      .select('organization_id')
-      .eq('user_id', user.id)
-      .limit(1)
-      .single();
-
-    type OrgMemberRow = {
-      organization_id?: string | null;
-    };
-    const orgMemberData = orgMember as OrgMemberRow | null;
-    const orgId = orgMemberData?.organization_id || null;
-
-    // Create ticket
-    const { data: ticket, error: ticketError } = await supabase
-      .from('ops_support_tickets')
-      .insert({
-        user_id: user.id,
-        organization_id: orgId,
-        subject,
+    const stored = await submitSupportIntake({
+      userId: auth.userId,
+      tenantId: auth.tenantId,
+      path: request.nextUrl.pathname,
+      body: {
+        tenant_id: auth.tenantId,
+        category: body.category ?? "docs_other",
         description,
-        category: category || null,
-        context: context || {},
-        status: 'open',
-        priority: 'medium',
-      } as never)
-      .select()
-      .single();
-
-    if (ticketError || !ticket) {
-      appLogger.error('Failed to create ticket', ticketError);
-      return NextResponse.json(
-      {
-        success: false,
-        error: 'Failed to create ticket',
-        message: 'Please try again later or contact support if the issue persists',
-      },
-      { status: 200 }
-    );
-    }
-
-    type TicketRow = {
-      id: string;
-      ticket_number: string;
-      subject: string;
-      status: string;
-      priority: string;
-    };
-    const ticketData = ticket as TicketRow;
-
-    // Auto-triage ticket
-    try {
-      const triageResult = await triageTicket(ticketData.id);
-      await storeTriageResult(ticketData.id, triageResult);
-
-      // Update ticket with triage results
-      await supabase
-        .from('ops_support_tickets')
-        // @ts-expect-error - Supabase type inference issue
-        .update({
-          priority: triageResult.suggestedPriority,
-          category: triageResult.suggestedCategory || category,
-          triage_result: {
-            score: triageResult.triageScore,
-            confidence: triageResult.confidence,
-            rules: triageResult.triageRulesApplied,
-          },
-        })
-        .eq('id', ticketData.id);
-    } catch (triageError) {
-      appLogger.error('Auto-triage failed (non-fatal)', triageError);
-      // Continue even if triage fails
-    }
-
-    return NextResponse.json({
-      ticket: {
-        id: ticketData.id,
-        ticketNumber: ticketData.ticket_number,
-        subject: ticketData.subject,
-        status: ticketData.status,
-        priority: ticketData.priority,
+        route: body.context?.route ?? "/console/report-issue",
+        module: body.context?.module ?? "legacy_report_issue_route",
       },
     });
-  } catch (error) {
-    appLogger.error('Report issue error', error);
-    // Never return 500 - return graceful error response
+
     return NextResponse.json(
-      { 
-        success: false,
-        error: error instanceof Error ? error.message : 'Failed to report issue',
-        message: 'Please try again later or contact support if the issue persists',
+      {
+        accepted: true,
+        submission_id: stored.submissionId,
+        tenant_id: stored.tenantId,
+        created_at: stored.createdAt,
+        deprecated_route: true,
+        canonical_route: "/api/v1/support/intake",
       },
-      { status: 200 }
+      { status: 202 }
     );
-  }
-}, { feature: 'POST API' }),
-  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: true }
+  },
+  { rateLimit: { windowMs: 60_000, maxRequests: 20 }, requireAuth: true }
 );

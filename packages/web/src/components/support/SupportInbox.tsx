@@ -1,7 +1,7 @@
 /**
- * Support Inbox Component
+ * Operator support intake inbox.
  *
- * Admin view of support tickets with triage results
+ * Canonical view over support_intake_submitted audit records.
  */
 
 "use client";
@@ -18,19 +18,20 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
-import { Eye } from "lucide-react";
 
-interface SupportTicket {
+interface SupportIntakeRow {
   id: string;
-  ticketNumber: string;
+  submissionId: string;
+  tenantId: string | null;
+  userId: string | null;
   subject: string;
-  status: string;
-  priority: string;
   category: string | null;
-  triageResult: any;
+  status: "submitted";
+  route: string | null;
+  module: string | null;
+  runId: string | null;
+  runContextState: string;
   createdAt: string;
-  userEmail?: string;
 }
 
 interface SupportInboxProps {
@@ -38,25 +39,26 @@ interface SupportInboxProps {
 }
 
 export function SupportInbox({ userId: _userId }: SupportInboxProps) {
-  const [tickets, setTickets] = useState<SupportTicket[]>([]);
+  const [rows, setRows] = useState<SupportIntakeRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchTickets() {
+    async function fetchIntakes() {
       try {
-        const response = await fetch("/api/support/tickets");
+        const response = await fetch("/api/console/support/tickets");
         if (!response.ok) throw new Error("Failed to fetch");
-        const data = await response.json();
-        setTickets(data.tickets || []);
+        const data = (await response.json()) as { items?: SupportIntakeRow[] };
+        setRows(Array.isArray(data.items) ? data.items : []);
       } catch (error) {
-        console.error("Failed to fetch tickets:", error);
-        setTickets([]);
+        console.error("Failed to fetch support intakes:", error);
+        setRows([]);
       } finally {
         setLoading(false);
       }
     }
-    fetchTickets();
-    const interval = setInterval(fetchTickets, 30000); // Refresh every 30s
+
+    fetchIntakes();
+    const interval = setInterval(fetchIntakes, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -64,7 +66,7 @@ export function SupportInbox({ userId: _userId }: SupportInboxProps) {
     return (
       <Card>
         <CardHeader>
-          <Skeleton className="h-6 w-48" />
+          <Skeleton className="h-6 w-56" />
         </CardHeader>
         <CardContent>
           <Skeleton className="h-64 w-full" />
@@ -73,69 +75,55 @@ export function SupportInbox({ userId: _userId }: SupportInboxProps) {
     );
   }
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "critical":
-        return "destructive";
-      case "high":
-        return "destructive";
-      case "medium":
-        return "default";
-      case "low":
-        return "secondary";
-      default:
-        return "secondary";
-    }
-  };
-
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Support Tickets</CardTitle>
+        <CardTitle>Support intake queue</CardTitle>
         <CardDescription>
-          {tickets.length} ticket{tickets.length !== 1 ? "s" : ""}
+          {rows.length} intake submission{rows.length !== 1 ? "s" : ""}
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {tickets.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No support tickets</p>
+        {rows.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            No support intake submissions recorded yet.
+          </p>
         ) : (
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Ticket #</TableHead>
-                <TableHead>Subject</TableHead>
-                <TableHead>Priority</TableHead>
+                <TableHead>Submission</TableHead>
+                <TableHead>Tenant</TableHead>
                 <TableHead>Category</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>Run context</TableHead>
+                <TableHead>Route/module</TableHead>
                 <TableHead>Created</TableHead>
-                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {tickets.map((ticket) => (
-                <TableRow key={ticket.id}>
-                  <TableCell className="font-mono text-xs">{ticket.ticketNumber}</TableCell>
-                  <TableCell>{ticket.subject}</TableCell>
+              {rows.map((row) => (
+                <TableRow key={row.id}>
                   <TableCell>
-                    <Badge variant={getPriorityColor(ticket.priority)}>{ticket.priority}</Badge>
+                    <div className="space-y-1">
+                      <code className="text-xs bg-muted px-1 py-0.5 rounded">{row.submissionId}</code>
+                      <p className="text-sm">{row.subject}</p>
+                    </div>
+                  </TableCell>
+                  <TableCell className="font-mono text-xs">{row.tenantId ?? "unknown"}</TableCell>
+                  <TableCell>
+                    {row.category ? <Badge variant="outline">{row.category}</Badge> : "—"}
                   </TableCell>
                   <TableCell>
-                    {ticket.category ? (
-                      <Badge variant="outline">{ticket.category}</Badge>
-                    ) : (
-                      <span className="text-muted-foreground">—</span>
-                    )}
+                    <Badge variant={row.runContextState === "ok" ? "default" : "secondary"}>
+                      {row.runContextState}
+                    </Badge>
+                    {row.runId ? <p className="text-xs text-muted-foreground mt-1">{row.runId}</p> : null}
                   </TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{ticket.status}</Badge>
+                  <TableCell className="text-xs text-muted-foreground">
+                    {row.route ?? "—"}
+                    {row.module ? ` · ${row.module}` : ""}
                   </TableCell>
-                  <TableCell>{new Date(ticket.createdAt).toLocaleDateString()}</TableCell>
-                  <TableCell>
-                    <Button variant="ghost" size="sm">
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
+                  <TableCell>{new Date(row.createdAt).toLocaleString()}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

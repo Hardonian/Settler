@@ -6,11 +6,13 @@ import { APP_AUTH_PREFIXES, isAppAuthRequiredRoute } from "@/lib/auth/route-gati
 
 describe("middleware /app-only auth gating", () => {
   it("locks auth-required prefixes to /app only", () => {
-    expect(APP_AUTH_PREFIXES).toEqual(["/app"]);
+    expect(APP_AUTH_PREFIXES).toEqual(["/app", "/admin"]);
     expect(isAppAuthRequiredRoute("/app")).toBe(true);
     expect(isAppAuthRequiredRoute("/app/workflows")).toBe(true);
     expect(isAppAuthRequiredRoute("/")).toBe(false);
     expect(isAppAuthRequiredRoute("/platform")).toBe(false);
+    expect(isAppAuthRequiredRoute("/admin")).toBe(true);
+    expect(isAppAuthRequiredRoute("/admin/tenants")).toBe(true);
     expect(isAppAuthRequiredRoute("/console")).toBe(false);
     expect(isAppAuthRequiredRoute("/dashboard")).toBe(false);
   });
