@@ -1,7 +1,5 @@
 /**
- * Operator support intake inbox.
- *
- * Canonical view over support_intake_submitted audit records.
+ * Operator support intake inbox — canonical rows from Prisma audit_logs (support_intake_submission).
  */
 
 "use client";
@@ -18,47 +16,123 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface SupportIntakeRow {
   id: string;
   submissionId: string;
+  ticketNumber: string;
   tenantId: string | null;
   userId: string | null;
-  subject: string;
-  category: string | null;
-  status: "submitted";
+  categoryLabel: string;
+  operatorTriagePriority: string;
   route: string | null;
   module: string | null;
   runId: string | null;
-  runContextState: string;
+  runContextState: string | null;
+  descriptionPreview: string;
+  fullDescription: string;
   createdAt: string;
+  sourcePath: string | null;
 }
 
 interface SupportInboxProps {
   userId: string;
 }
 
+function normalizeRow(raw: Record<string, unknown>): SupportIntakeRow {
+  const id = String(raw.id ?? "");
+  const submissionId = String(raw.submissionId ?? raw.submission_id ?? id);
+  const ticketNumber =
+    typeof raw.ticketNumber === "string"
+      ? raw.ticketNumber
+      : submissionId.length >= 8
+        ? submissionId.slice(0, 8)
+        : submissionId;
+
+  const subject = typeof raw.subject === "string" ? raw.subject : "";
+  const descPreview =
+    typeof raw.descriptionPreview === "string"
+      ? raw.descriptionPreview
+      : subject || "(no description)";
+
+  const categoryLabel =
+    typeof raw.categoryLabel === "string"
+      ? raw.categoryLabel
+      : typeof raw.category === "string"
+        ? raw.category
+        : "—";
+
+  const priority =
+    typeof raw.operatorTriagePriority === "string"
+      ? raw.operatorTriagePriority
+      : typeof raw.priority === "string"
+        ? raw.priority
+        : "medium";
+
+  const runCtx =
+    raw.runContextState === null || raw.runContextState === undefined
+      ? null
+      : String(raw.runContextState);
+
+  return {
+    id,
+    submissionId,
+    ticketNumber,
+    tenantId: typeof raw.tenantId === "string" || raw.tenantId === null ? raw.tenantId : null,
+    userId: typeof raw.userId === "string" || raw.userId === null ? raw.userId : null,
+    categoryLabel,
+    operatorTriagePriority: priority,
+    route: typeof raw.route === "string" || raw.route === null ? raw.route : null,
+    module: typeof raw.module === "string" || raw.module === null ? raw.module : null,
+    runId: typeof raw.runId === "string" || raw.runId === null ? raw.runId : null,
+    runContextState: runCtx,
+    descriptionPreview: descPreview,
+    fullDescription: typeof raw.fullDescription === "string" ? raw.fullDescription : descPreview,
+    createdAt: typeof raw.createdAt === "string" ? raw.createdAt : "",
+    sourcePath:
+      typeof raw.sourcePath === "string" || raw.sourcePath === null ? raw.sourcePath : null,
+  };
+}
+
 export function SupportInbox({ userId: _userId }: SupportInboxProps) {
   const [rows, setRows] = useState<SupportIntakeRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [degraded, setDegraded] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchIntakes() {
       try {
         const response = await fetch("/api/console/support/tickets");
-        if (!response.ok) throw new Error("Failed to fetch");
-        const data = (await response.json()) as { items?: SupportIntakeRow[] };
-        setRows(Array.isArray(data.items) ? data.items : []);
-      } catch (error) {
-        console.error("Failed to fetch support intakes:", error);
+        const data = (await response.json()) as Record<string, unknown>;
+        if (!response.ok) {
+          setDegraded(Boolean(data.degraded));
+          setErrorMessage(typeof data.error === "string" ? data.error : "Failed to load inbox");
+          setRows([]);
+          return;
+        }
+        setDegraded(Boolean(data.degraded));
+        setErrorMessage(null);
+
+        const rawList = Array.isArray(data.items)
+          ? data.items
+          : Array.isArray(data.tickets)
+            ? data.tickets
+            : [];
+        setRows(rawList.map((r) => normalizeRow(r as Record<string, unknown>)));
+      } catch {
         setRows([]);
+        setDegraded(true);
+        setErrorMessage("Failed to load support inbox");
       } finally {
         setLoading(false);
       }
     }
 
-    fetchIntakes();
-    const interval = setInterval(fetchIntakes, 30000);
+    void fetchIntakes();
+    const interval = setInterval(() => void fetchIntakes(), 30_000);
     return () => clearInterval(interval);
   }, []);
 
@@ -75,55 +149,94 @@ export function SupportInbox({ userId: _userId }: SupportInboxProps) {
     );
   }
 
+  const priorityVariant = (p: string) => {
+    switch (p) {
+      case "urgent":
+      case "high":
+        return "destructive" as const;
+      case "medium":
+        return "default" as const;
+      default:
+        return "secondary" as const;
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Support intake queue</CardTitle>
+        <CardTitle>Support intake</CardTitle>
         <CardDescription>
-          {rows.length} intake submission{rows.length !== 1 ? "s" : ""}
+          {rows.length} submission{rows.length !== 1 ? "s" : ""} — canonical audit trail
+          (tenant-scoped records).
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        {rows.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            No support intake submissions recorded yet.
-          </p>
-        ) : (
+      <CardContent className="space-y-4">
+        {degraded && errorMessage && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{errorMessage}</AlertDescription>
+          </Alert>
+        )}
+        {rows.length === 0 && !degraded ? (
+          <p className="text-sm text-muted-foreground">No support intake submissions yet.</p>
+        ) : rows.length === 0 ? null : (
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Submission</TableHead>
+                <TableHead>ID</TableHead>
                 <TableHead>Tenant</TableHead>
                 <TableHead>Category</TableHead>
-                <TableHead>Run context</TableHead>
-                <TableHead>Route/module</TableHead>
+                <TableHead>Priority</TableHead>
+                <TableHead>Run</TableHead>
+                <TableHead>Context</TableHead>
                 <TableHead>Created</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {rows.map((row) => (
                 <TableRow key={row.id}>
-                  <TableCell>
-                    <div className="space-y-1">
-                      <code className="text-xs bg-muted px-1 py-0.5 rounded">{row.submissionId}</code>
-                      <p className="text-sm">{row.subject}</p>
+                  <TableCell className="font-mono text-xs align-top">
+                    <div>{row.ticketNumber}</div>
+                    <div className="text-muted-foreground normal-case mt-1 text-[11px] break-all">
+                      {row.submissionId}
+                    </div>
+                    {row.sourcePath && (
+                      <div className="text-muted-foreground normal-case mt-1">{row.sourcePath}</div>
+                    )}
+                  </TableCell>
+                  <TableCell className="font-mono text-xs align-top max-w-[140px] break-all">
+                    {row.tenantId ?? "—"}
+                  </TableCell>
+                  <TableCell className="align-top">
+                    <Badge variant="outline">{row.categoryLabel}</Badge>
+                    {row.route && (
+                      <div className="text-xs text-muted-foreground mt-1 truncate max-w-[200px]">
+                        {row.route}
+                      </div>
+                    )}
+                    {row.module && (
+                      <div className="text-xs text-muted-foreground mt-0.5">{row.module}</div>
+                    )}
+                  </TableCell>
+                  <TableCell className="align-top">
+                    <Badge variant={priorityVariant(row.operatorTriagePriority)}>
+                      {row.operatorTriagePriority}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="font-mono text-xs align-top">{row.runId ?? "—"}</TableCell>
+                  <TableCell className="text-xs align-top max-w-[220px]">
+                    {row.runContextState && (
+                      <div>
+                        Run intel: <span className="font-mono">{row.runContextState}</span>
+                      </div>
+                    )}
+                    <div className="text-muted-foreground mt-1 whitespace-pre-wrap break-words">
+                      {row.descriptionPreview}
                     </div>
                   </TableCell>
-                  <TableCell className="font-mono text-xs">{row.tenantId ?? "unknown"}</TableCell>
-                  <TableCell>
-                    {row.category ? <Badge variant="outline">{row.category}</Badge> : "—"}
+                  <TableCell className="text-xs whitespace-nowrap align-top">
+                    {row.createdAt ? new Date(row.createdAt).toLocaleString() : "—"}
                   </TableCell>
-                  <TableCell>
-                    <Badge variant={row.runContextState === "ok" ? "default" : "secondary"}>
-                      {row.runContextState}
-                    </Badge>
-                    {row.runId ? <p className="text-xs text-muted-foreground mt-1">{row.runId}</p> : null}
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">
-                    {row.route ?? "—"}
-                    {row.module ? ` · ${row.module}` : ""}
-                  </TableCell>
-                  <TableCell>{new Date(row.createdAt).toLocaleString()}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

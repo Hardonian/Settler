@@ -31,8 +31,8 @@ async function ReportIssueContent() {
         title="Report an issue"
         description={
           <>
-            Opens a tenant-scoped support intake. When you include a run identifier, Settler attaches
-            compact proof summary context for triage—not narrative “AI” conclusions.
+            Opens a tenant-scoped support intake. When you include a run identifier, Settler
+            attaches compact proof summary context for triage—not narrative “AI” conclusions.
           </>
         }
       />
@@ -41,8 +41,8 @@ async function ReportIssueContent() {
         <AlertTitle>What happens next</AlertTitle>
         <AlertDescription>
           Your submission is written to the audit trail and operator runtime signals. You receive a
-          submission reference to share with your team or Settler support. Response SLAs depend on your
-          plan.
+          submission reference to share with your team or Settler support. Response SLAs depend on
+          your plan.
         </AlertDescription>
       </Alert>
       <SupportWidget defaultRoute="/console/report-issue" />

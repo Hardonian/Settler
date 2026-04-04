@@ -31,6 +31,16 @@ jest.mock("../../services/capabilities/telemetry", () => ({
   observeCapabilityStatus: jest.fn(),
 }));
 
+jest.mock("../../routes/authz-helpers", () => {
+  const actual = jest.requireActual(
+    "../../routes/authz-helpers"
+  ) as typeof import("../../routes/authz-helpers");
+  return {
+    ...actual,
+    authorizeTenantActionOr403: jest.fn().mockResolvedValue(true),
+  };
+});
+
 describe("operator alerts tenant scope routing", () => {
   beforeEach(() => {
     jest.clearAllMocks();

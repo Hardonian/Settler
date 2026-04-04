@@ -1,41 +1,27 @@
 import { submitSupportIntake } from "../../services/support/support-intake-service";
 
+jest.mock("../../infrastructure/db/prisma", () => ({
+  prisma: {
+    auditLog: {
+      create: jest.fn().mockResolvedValue({ id: "audit-1" }),
+    },
+    $executeRaw: jest.fn().mockResolvedValue(undefined),
+  },
+}));
+
 jest.mock("../../services/events/event-bus", () => ({
   eventBus: {
     emitEvent: jest.fn().mockResolvedValue(undefined),
   },
 }));
 
-jest.mock("../../services/ops-intelligence/runtime-events", () => ({
-  emitOperatorRuntimeEvent: jest.fn().mockResolvedValue(undefined),
-}));
-
-jest.mock("../../infrastructure/db/prisma", () => ({
-  prisma: {
-    auditLog: {
-      create: jest.fn().mockResolvedValue({}),
-    },
-  },
-}));
-
 jest.mock("@settler/reconciliation-core", () => ({
-  resolveOperatorRunDetailForTenants: jest.fn(),
-  resolveRunCompactProofSummary: jest.fn((input: { compactProofSummary?: unknown }) => ({
-    compactProofSummary: input.compactProofSummary ?? { operatorSummary: { signal: "unknown" } },
-    fallbackReasonCode: null,
-  })),
-  toRunCompactProofSummary: jest.fn((value: unknown) => value),
-  unavailableRunProofpackIndex: jest.fn((reasonCode: string) => ({
-    comparison: { reasonCodes: [reasonCode] },
-  })),
+  buildSupportIntakeRunContext: jest.fn(),
 }));
 
 const { prisma } = require("../../infrastructure/db/prisma");
 const { eventBus } = require("../../services/events/event-bus");
-const { emitOperatorRuntimeEvent } = require("../../services/ops-intelligence/runtime-events");
-const { resolveOperatorRunDetailForTenants } = require("@settler/reconciliation-core");
-
-const auditLogCreate = prisma.auditLog.create as jest.Mock;
+const { buildSupportIntakeRunContext } = require("@settler/reconciliation-core");
 
 describe("support-intake-service run intelligence context", () => {
   beforeEach(() => {
@@ -45,16 +31,13 @@ describe("support-intake-service run intelligence context", () => {
   it("embeds canonical run intelligence in audit/event payload when run_id is provided", async () => {
     const runUuid = "11111111-1111-4111-8111-111111111111";
 
-    resolveOperatorRunDetailForTenants.mockResolvedValue({
-      kind: "ok",
-      detail: {
-        id: runUuid,
-        runKind: "recon_job",
-        status: "completed",
-        compactProofSummary: { operatorSummary: { signal: "strong" } },
-        proofpackIndex: {
-          comparison: { reasonCodes: ["history_window_evaluated"] },
-        },
+    buildSupportIntakeRunContext.mockResolvedValue({
+      state: "ok",
+      runId: runUuid,
+      runKind: "recon_job",
+      status: "completed",
+      compactProofSummary: {
+        operatorSummary: { signal: "strong" },
       },
     });
 
@@ -69,9 +52,9 @@ describe("support-intake-service run intelligence context", () => {
       },
     });
 
-    expect(auditLogCreate).toHaveBeenCalledTimes(1);
-    const metadata = auditLogCreate.mock.calls[0][0].data.metadata as Record<string, unknown>;
-    expect(metadata.run_context).toMatchObject({
+    expect(prisma.auditLog.create).toHaveBeenCalledTimes(1);
+    const changes = prisma.auditLog.create.mock.calls[0][0].data.changes as Record<string, unknown>;
+    expect(changes.run_context).toMatchObject({
       state: "ok",
       runId: runUuid,
       runKind: "recon_job",
@@ -80,6 +63,8 @@ describe("support-intake-service run intelligence context", () => {
         operatorSummary: { signal: "strong" },
       },
     });
+
+    expect(prisma.$executeRaw).toHaveBeenCalled();
 
     expect(eventBus.emitEvent).toHaveBeenCalledWith(
       "support.issue.created",
@@ -90,20 +75,13 @@ describe("support-intake-service run intelligence context", () => {
       }),
       expect.any(Object)
     );
-
-    expect(emitOperatorRuntimeEvent).toHaveBeenCalledWith(
-      expect.objectContaining({
-        eventType: "support_intake_submitted",
-        tenantId: "tenant-1",
-        runId: runUuid,
-        metadata: expect.objectContaining({ submission_id: expect.any(String) }),
-      })
-    );
   });
 
   it("records explicit unavailable semantics when run lookup fails", async () => {
-    resolveOperatorRunDetailForTenants.mockResolvedValue({
-      kind: "not_found",
+    buildSupportIntakeRunContext.mockResolvedValue({
+      state: "unavailable",
+      reason: "not_found",
+      runId: "missing-run",
     });
 
     await submitSupportIntake({
@@ -117,8 +95,8 @@ describe("support-intake-service run intelligence context", () => {
       },
     });
 
-    const metadata = auditLogCreate.mock.calls[0][0].data.metadata as Record<string, unknown>;
-    expect(metadata.run_context).toMatchObject({
+    const changes = prisma.auditLog.create.mock.calls[0][0].data.changes as Record<string, unknown>;
+    expect(changes.run_context).toMatchObject({
       state: "unavailable",
       reason: "not_found",
       runId: "missing-run",

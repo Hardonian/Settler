@@ -43,6 +43,15 @@ function shouldUseGlobalScope(req: AuthRequest): boolean {
 }
 
 router.use("/operator", async (req: AuthRequest, res: Response, next) => {
+  /** Platform-scoped alert check — no tenant header required (solo operator / global monitors). */
+  const isGlobalAlertCheck =
+    req.method === "POST" &&
+    (req.path === "/alerts/check" || req.path.endsWith("/alerts/check")) &&
+    req.query.scope === "global";
+  if (isGlobalAlertCheck) {
+    return next();
+  }
+
   const tenantId = requireTenantContext(req, res);
   if (!tenantId) return;
   if (

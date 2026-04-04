@@ -39,7 +39,8 @@ export const COMMERCIAL_OFFERS: CommercialOffer[] = [
     name: "Cloud API",
     headlinePrice: `$${planConfigs.growth.monthlyPrice.toLocaleString()}`,
     period: "/mo",
-    description: "Usage-based control plane with metered reconciliation volume and exception supervision.",
+    description:
+      "Usage-based control plane with metered reconciliation volume and exception supervision.",
     ctaLabel: "Start Cloud",
     ctaHref: "/signup",
     evidencePosture: "Hosted run evidence, replay detail, and usage telemetry",
@@ -65,7 +66,8 @@ export const COMMERCIAL_OFFERS: CommercialOffer[] = [
     code: "enterprise",
     name: "Enterprise Dedicated",
     headlinePrice: "Custom",
-    description: "Dedicated/VPC/on-prem deployment with contractual controls and custom policy envelope.",
+    description:
+      "Dedicated/VPC/on-prem deployment with contractual controls and custom policy envelope.",
     ctaLabel: "Contact Enterprise",
     ctaHref: "/contact",
     evidencePosture: "Audit export controls, retention controls, and architecture review",
@@ -74,4 +76,3 @@ export const COMMERCIAL_OFFERS: CommercialOffer[] = [
     planCode: "enterprise",
   },
 ];
-

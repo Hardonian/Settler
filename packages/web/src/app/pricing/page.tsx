@@ -55,47 +55,49 @@ export default function PricingPage() {
                   )}
 
                   <CardHeader className="p-8">
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="p-2 rounded-lg bg-primary/10 text-primary">
-                      <Icon className="h-5 w-5" />
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <CardTitle className="text-xl font-bold">{offer.name}</CardTitle>
                     </div>
-                    <CardTitle className="text-xl font-bold">{offer.name}</CardTitle>
-                  </div>
-                  <div className="flex items-baseline gap-1 mt-2">
-                    <span className="text-4xl font-bold tracking-tight">{offer.headlinePrice}</span>
-                    {offer.period && (
-                      <span className="text-sm font-medium text-muted-foreground">
-                        {offer.period}
+                    <div className="flex items-baseline gap-1 mt-2">
+                      <span className="text-4xl font-bold tracking-tight">
+                        {offer.headlinePrice}
                       </span>
-                    )}
-                  </div>
-                  <CardDescription className="mt-4 leading-relaxed font-medium min-h-[3rem]">
-                    {offer.description}
-                  </CardDescription>
+                      {offer.period && (
+                        <span className="text-sm font-medium text-muted-foreground">
+                          {offer.period}
+                        </span>
+                      )}
+                    </div>
+                    <CardDescription className="mt-4 leading-relaxed font-medium min-h-[3rem]">
+                      {offer.description}
+                    </CardDescription>
                   </CardHeader>
 
                   <CardContent className="flex-1 flex flex-col p-8 pt-0">
-                  <div className="space-y-4 mb-8 flex-1">
-                    {features.map((feature) => (
-                      <div key={feature} className="flex items-start gap-3">
-                        <div className="mt-1 rounded-full bg-primary/10 p-1">
-                          <Check className="h-3 w-3 text-primary" />
+                    <div className="space-y-4 mb-8 flex-1">
+                      {features.map((feature) => (
+                        <div key={feature} className="flex items-start gap-3">
+                          <div className="mt-1 rounded-full bg-primary/10 p-1">
+                            <Check className="h-3 w-3 text-primary" />
+                          </div>
+                          <span className="text-sm font-medium text-foreground">{feature}</span>
                         </div>
-                        <span className="text-sm font-medium text-foreground">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
 
-                  <Button
-                    asChild
-                    variant={popular ? "default" : "outline"}
-                    className={`w-full h-12 font-bold group ${popular ? "text-lg" : ""}`}
-                  >
-                    <Link href={offer.ctaHref} className="flex items-center justify-center gap-2">
-                      {offer.ctaLabel}
-                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                    </Link>
-                  </Button>
+                    <Button
+                      asChild
+                      variant={popular ? "default" : "outline"}
+                      className={`w-full h-12 font-bold group ${popular ? "text-lg" : ""}`}
+                    >
+                      <Link href={offer.ctaHref} className="flex items-center justify-center gap-2">
+                        {offer.ctaLabel}
+                        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                      </Link>
+                    </Button>
                   </CardContent>
                 </Card>
               );

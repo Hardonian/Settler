@@ -113,11 +113,11 @@ describe("support/billing/operator boundary coverage", () => {
     expect(JSON.stringify(payload)).not.toContain("user-b");
   });
 
-  it("api.support.tickets.legacy_deprecated_no_leak", async () => {
+  it("api.support.tickets.admin_inbox_non_admin_denied_no_leak", async () => {
     const response = await getSupportTickets(
       req("http://localhost/api/support/tickets?tenantId=tenant-b")
     );
-    expect(response.status).toBe(410);
+    expect(response.status).toBe(403);
     const payload = await response.json();
     expect(JSON.stringify(payload)).not.toContain("tenant-b");
   });

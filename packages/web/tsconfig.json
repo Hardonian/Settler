@@ -55,7 +55,8 @@
       "@settler/types": ["../types/dist"],
       "@settler/types/*": ["../types/dist/*"],
       "@settler/reconciliation-core": ["../reconciliation-core/dist"],
-      "@settler/reconciliation-core/*": ["../reconciliation-core/dist/*"]
+      "@settler/reconciliation-core/*": ["../reconciliation-core/dist/*"],
+      "@settler/support-intake": ["../support-intake/src"]
     }
   },
   "include": [
