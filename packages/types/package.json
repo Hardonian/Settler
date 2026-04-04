@@ -9,6 +9,10 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./support-intake-contract": {
+      "types": "./dist/support-intake-contract.d.ts",
+      "default": "./dist/support-intake-contract.js"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {

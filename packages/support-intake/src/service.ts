@@ -5,6 +5,14 @@ import { supportIntakeSubmissionSchema, type SupportIntakeSubmission } from "./c
 export const SUPPORT_INTAKE_RESOURCE_TYPE = "support_intake_submission";
 export const SUPPORT_INTAKE_ACTION = "support_intake_submitted";
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function toRunUuidColumn(runId: string | null | undefined): string | null {
+  const t = runId?.trim();
+  if (!t || !UUID_RE.test(t)) return null;
+  return t;
+}
+
 /**
  * Best-effort signal for operator consoles; fails silently if the table is absent (some environments).
  */
@@ -16,6 +24,9 @@ export async function emitSupportIntakeRuntimeSignal(
     submissionId: string;
     category: string;
     path: string;
+    route?: string | null;
+    module?: string | null;
+    descriptionLength: number;
     runContext: Record<string, unknown> | null;
   }
 ): Promise<void> {
@@ -23,6 +34,7 @@ export async function emitSupportIntakeRuntimeSignal(
     params.runContext && typeof params.runContext === "object" && "state" in params.runContext
       ? params.runContext.state
       : null;
+  const runUuid = toRunUuidColumn(params.runId);
   try {
     await prisma.$executeRaw`
       INSERT INTO operator_runtime_events (
@@ -39,8 +51,8 @@ export async function emitSupportIntakeRuntimeSignal(
         created_at
       ) VALUES (
         'support_intake_submitted',
-        ${params.tenantId},
-        ${params.runId ?? null},
+        ${params.tenantId}::uuid,
+        ${runUuid}::uuid,
         NULL,
         NULL,
         '{}'::jsonb,
@@ -50,6 +62,9 @@ export async function emitSupportIntakeRuntimeSignal(
           submission_id: params.submissionId,
           category: params.category,
           path: params.path,
+          route: params.route ?? null,
+          module: params.module ?? null,
+          description_length: params.descriptionLength,
           run_context_state: runContextState,
         })}::jsonb,
         NOW(),
@@ -162,6 +177,9 @@ export async function submitSupportIntake(params: {
     submissionId,
     category: parsed.category,
     path: params.path,
+    route: parsed.route ?? null,
+    module: parsed.module ?? null,
+    descriptionLength: parsed.description.length,
     runContext,
   });
 

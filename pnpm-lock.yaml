@@ -745,9 +745,9 @@ importers:
       '@prisma/client':
         specifier: ^7.1.0
         version: 7.5.0(prisma@7.5.0(@types/react@18.3.28)(better-sqlite3@12.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3))(typescript@5.9.3)
-      '@settler/reconciliation-core':
+      '@settler/types':
         specifier: workspace:*
-        version: link:../reconciliation-core
+        version: link:../types
       zod:
         specifier: ^3.23.8
         version: 3.25.76

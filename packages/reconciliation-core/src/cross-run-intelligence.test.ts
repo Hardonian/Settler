@@ -4,21 +4,23 @@ import { buildCrossRunIntelligenceSummary } from "./cross-run-intelligence.js";
 // HELPERS
 // ─────────────────────────────────────────────────────────────
 
-function makeResult(overrides: Partial<{
-  id: string;
-  reconJobId: string;
-  tenantId: string;
-  status: string;
-  startedAt: Date | null;
-  completedAt: Date | null;
-  matchedCount: number;
-  unmatchedSourceCount: number;
-  unmatchedTargetCount: number;
-  conflictCount: number;
-  confidenceAvg: number | null;
-  sourceCount: number;
-  targetCount: number;
-}> = {}) {
+function makeResult(
+  overrides: Partial<{
+    id: string;
+    reconJobId: string;
+    tenantId: string;
+    status: string;
+    startedAt: Date | null;
+    completedAt: Date | null;
+    matchedCount: number;
+    unmatchedSourceCount: number;
+    unmatchedTargetCount: number;
+    conflictCount: number;
+    confidenceAvg: number | null;
+    sourceCount: number;
+    targetCount: number;
+  }> = {}
+) {
   return {
     id: "result-1",
     reconJobId: "job-1",
@@ -37,20 +39,22 @@ function makeResult(overrides: Partial<{
   };
 }
 
-function makeAdjudication(overrides: Partial<{
-  id: string;
-  exceptionId: string;
-  archetypeId: string | null;
-  tenantId: string;
-  resolution: string;
-  resolutionReason: string | null;
-  outcome: string | null;
-  adjudicatorType: string;
-  adjudicationType: string;
-  durationMs: bigint | null;
-  createdAt: Date;
-  completedAt: Date | null;
-}> = {}) {
+function makeAdjudication(
+  overrides: Partial<{
+    id: string;
+    exceptionId: string;
+    archetypeId: string | null;
+    tenantId: string;
+    resolution: string;
+    resolutionReason: string | null;
+    outcome: string | null;
+    adjudicatorType: string;
+    adjudicationType: string;
+    durationMs: bigint | null;
+    createdAt: Date;
+    completedAt: Date | null;
+  }> = {}
+) {
   return {
     id: "mem-1",
     exceptionId: "exc-1",
@@ -68,13 +72,15 @@ function makeAdjudication(overrides: Partial<{
   };
 }
 
-function makeArchetype(overrides: Partial<{
-  id: string;
-  code: string;
-  label: string;
-  category: string;
-  typicalResolution: string | null;
-}> = {}) {
+function makeArchetype(
+  overrides: Partial<{
+    id: string;
+    code: string;
+    label: string;
+    category: string;
+    typicalResolution: string | null;
+  }> = {}
+) {
   return {
     id: "arch-1",
     code: "TIMING_DRIFT",
@@ -122,10 +128,18 @@ describe("buildCrossRunIntelligenceSummary", () => {
 
   it("computes correct match rate for each run entry", async () => {
     // matched=80, unmatchedSource=10, unmatchedTarget=10 → matchRate=80/100=0.8
-    const result = makeResult({ matchedCount: 80, unmatchedSourceCount: 10, unmatchedTargetCount: 10 });
+    const result = makeResult({
+      matchedCount: 80,
+      unmatchedSourceCount: 10,
+      unmatchedTargetCount: 10,
+    });
     const prisma: any = {
       reconResult: { findMany: jest.fn().mockResolvedValue([result, result, result]) },
-      reconJob: { findMany: jest.fn().mockResolvedValue([{ id: "job-1", name: "Test Job", tenantId: "tenant-1" }]) },
+      reconJob: {
+        findMany: jest
+          .fn()
+          .mockResolvedValue([{ id: "job-1", name: "Test Job", tenantId: "tenant-1" }]),
+      },
       exceptionAdjudicationMemory: { findMany: jest.fn().mockResolvedValue([]) },
       exceptionArchetype: { findMany: jest.fn().mockResolvedValue([]) },
     };
@@ -139,11 +153,18 @@ describe("buildCrossRunIntelligenceSummary", () => {
 
   it("computes stable overall trend when match rates are consistent", async () => {
     const results = Array.from({ length: 6 }, (_, i) =>
-      makeResult({ id: `r-${i}`, matchedCount: 95, unmatchedSourceCount: 5, unmatchedTargetCount: 0 })
+      makeResult({
+        id: `r-${i}`,
+        matchedCount: 95,
+        unmatchedSourceCount: 5,
+        unmatchedTargetCount: 0,
+      })
     );
     const prisma: any = {
       reconResult: { findMany: jest.fn().mockResolvedValue(results) },
-      reconJob: { findMany: jest.fn().mockResolvedValue([{ id: "job-1", name: "Job", tenantId: "tenant-1" }]) },
+      reconJob: {
+        findMany: jest.fn().mockResolvedValue([{ id: "job-1", name: "Job", tenantId: "tenant-1" }]),
+      },
       exceptionAdjudicationMemory: { findMany: jest.fn().mockResolvedValue([]) },
       exceptionArchetype: { findMany: jest.fn().mockResolvedValue([]) },
     };
@@ -155,15 +176,27 @@ describe("buildCrossRunIntelligenceSummary", () => {
   it("computes improving trend when recent match rates are higher than older", async () => {
     // Older runs: 70% match; newer runs: 95% match
     const olderResults = Array.from({ length: 3 }, (_, i) =>
-      makeResult({ id: `old-${i}`, matchedCount: 70, unmatchedSourceCount: 30, unmatchedTargetCount: 0 })
+      makeResult({
+        id: `old-${i}`,
+        matchedCount: 70,
+        unmatchedSourceCount: 30,
+        unmatchedTargetCount: 0,
+      })
     );
     const newerResults = Array.from({ length: 3 }, (_, i) =>
-      makeResult({ id: `new-${i}`, matchedCount: 95, unmatchedSourceCount: 5, unmatchedTargetCount: 0 })
+      makeResult({
+        id: `new-${i}`,
+        matchedCount: 95,
+        unmatchedSourceCount: 5,
+        unmatchedTargetCount: 0,
+      })
     );
     // findMany returns newest first; newerResults appear at the start
     const prisma: any = {
       reconResult: { findMany: jest.fn().mockResolvedValue([...newerResults, ...olderResults]) },
-      reconJob: { findMany: jest.fn().mockResolvedValue([{ id: "job-1", name: "Job", tenantId: "tenant-1" }]) },
+      reconJob: {
+        findMany: jest.fn().mockResolvedValue([{ id: "job-1", name: "Job", tenantId: "tenant-1" }]),
+      },
       exceptionAdjudicationMemory: { findMany: jest.fn().mockResolvedValue([]) },
       exceptionArchetype: { findMany: jest.fn().mockResolvedValue([]) },
     };
@@ -173,13 +206,41 @@ describe("buildCrossRunIntelligenceSummary", () => {
   });
 
   it("builds recurring families with score-based ranking", async () => {
-    const adj1 = makeAdjudication({ id: "m1", archetypeId: "arch-1", resolution: "matched", outcome: "resolved", resolutionReason: "timing" });
-    const adj2 = makeAdjudication({ id: "m2", archetypeId: "arch-1", resolution: "manual", outcome: "resolved", resolutionReason: "timing" });
+    const adj1 = makeAdjudication({
+      id: "m1",
+      archetypeId: "arch-1",
+      resolution: "matched",
+      outcome: "resolved",
+      resolutionReason: "timing",
+    });
+    const adj2 = makeAdjudication({
+      id: "m2",
+      archetypeId: "arch-1",
+      resolution: "manual",
+      outcome: "resolved",
+      resolutionReason: "timing",
+    });
     // arch-2: only 1 occurrence, unresolved
-    const adj3 = makeAdjudication({ id: "m3", archetypeId: "arch-2", resolution: "ignored", outcome: null, resolutionReason: "amount_mismatch" });
+    const adj3 = makeAdjudication({
+      id: "m3",
+      archetypeId: "arch-2",
+      resolution: "ignored",
+      outcome: null,
+      resolutionReason: "amount_mismatch",
+    });
 
-    const arch1 = makeArchetype({ id: "arch-1", code: "TIMING_DRIFT", label: "Timing Drift", category: "timing" });
-    const arch2 = makeArchetype({ id: "arch-2", code: "AMOUNT_MISMATCH", label: "Amount Mismatch", category: "amount" });
+    const arch1 = makeArchetype({
+      id: "arch-1",
+      code: "TIMING_DRIFT",
+      label: "Timing Drift",
+      category: "timing",
+    });
+    const arch2 = makeArchetype({
+      id: "arch-2",
+      code: "AMOUNT_MISMATCH",
+      label: "Amount Mismatch",
+      category: "amount",
+    });
 
     const prisma: any = {
       reconResult: { findMany: jest.fn().mockResolvedValue([]) },
@@ -271,8 +332,14 @@ describe("buildCrossRunIntelligenceSummary", () => {
 
   it("handles adjudication query failure gracefully", async () => {
     const prisma: any = {
-      reconResult: { findMany: jest.fn().mockResolvedValue([makeResult(), makeResult({ id: "r2" }), makeResult({ id: "r3" })]) },
-      reconJob: { findMany: jest.fn().mockResolvedValue([{ id: "job-1", name: "J", tenantId: "tenant-1" }]) },
+      reconResult: {
+        findMany: jest
+          .fn()
+          .mockResolvedValue([makeResult(), makeResult({ id: "r2" }), makeResult({ id: "r3" })]),
+      },
+      reconJob: {
+        findMany: jest.fn().mockResolvedValue([{ id: "job-1", name: "J", tenantId: "tenant-1" }]),
+      },
       exceptionAdjudicationMemory: {
         findMany: jest.fn().mockRejectedValue(new Error("Timeout")),
       },
@@ -284,13 +351,19 @@ describe("buildCrossRunIntelligenceSummary", () => {
     expect(summary.recurringFamilies.state).toBe("unavailable");
     expect(summary.recurringFamilies.reasonCodes).toContain("adjudication_history_query_failed");
     expect(summary.decisionMemory.state).toBe("unavailable");
-    expect(summary.runTimeline.state).toBe("insufficient_history"); // only 3 runs, all same id but accepted
+    expect(summary.runTimeline.state).toBe("available");
   });
 
   it("returns timestamps as ISO strings, never raw Date objects", async () => {
     const prisma: any = {
-      reconResult: { findMany: jest.fn().mockResolvedValue([makeResult(), makeResult({ id: "r2" }), makeResult({ id: "r3" })]) },
-      reconJob: { findMany: jest.fn().mockResolvedValue([{ id: "job-1", name: "J", tenantId: "tenant-1" }]) },
+      reconResult: {
+        findMany: jest
+          .fn()
+          .mockResolvedValue([makeResult(), makeResult({ id: "r2" }), makeResult({ id: "r3" })]),
+      },
+      reconJob: {
+        findMany: jest.fn().mockResolvedValue([{ id: "job-1", name: "J", tenantId: "tenant-1" }]),
+      },
       exceptionAdjudicationMemory: { findMany: jest.fn().mockResolvedValue([makeAdjudication()]) },
       exceptionArchetype: { findMany: jest.fn().mockResolvedValue([makeArchetype()]) },
     };

@@ -29,9 +29,11 @@ describe("support-intake-service run intelligence context", () => {
   });
 
   it("embeds canonical run intelligence in audit/event payload when run_id is provided", async () => {
+    const runUuid = "11111111-1111-4111-8111-111111111111";
+
     buildSupportIntakeRunContext.mockResolvedValue({
       state: "ok",
-      runId: "run-1",
+      runId: runUuid,
       runKind: "recon_job",
       status: "completed",
       compactProofSummary: {
@@ -46,7 +48,7 @@ describe("support-intake-service run intelligence context", () => {
       body: {
         category: "run_failure",
         description: "This is a long enough support description for validation.",
-        run_id: "run-1",
+        run_id: runUuid,
       },
     });
 
@@ -54,7 +56,7 @@ describe("support-intake-service run intelligence context", () => {
     const changes = prisma.auditLog.create.mock.calls[0][0].data.changes as Record<string, unknown>;
     expect(changes.run_context).toMatchObject({
       state: "ok",
-      runId: "run-1",
+      runId: runUuid,
       runKind: "recon_job",
       status: "completed",
       compactProofSummary: {
@@ -68,8 +70,8 @@ describe("support-intake-service run intelligence context", () => {
       "support.issue.created",
       "tenant-1",
       expect.objectContaining({
-        runId: "run-1",
-        runIntelligence: expect.objectContaining({ state: "ok", runId: "run-1" }),
+        runId: runUuid,
+        runIntelligence: expect.objectContaining({ state: "ok", runId: runUuid }),
       }),
       expect.any(Object)
     );

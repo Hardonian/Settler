@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@prisma/client": "^7.1.0",
+    "@settler/types": "workspace:*",
     "zod": "^3.23.8"
   },
   "devDependencies": {

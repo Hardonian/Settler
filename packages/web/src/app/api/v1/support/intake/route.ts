@@ -1,9 +1,14 @@
 /**
- * POST /api/v1/support/intake — canonical tenant-scoped support intake (Next BFF).
+ * POST /api/v1/support/intake
+ *
+ * Canonical tenant-scoped support intake (Next BFF): Prisma audit + operator runtime signal
+ * via @settler/support-intake, with run intelligence when run_id is provided.
+ *
+ * ROUTE_CLASS: session-service
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
+import { supportIntakeSubmissionSchema, SUPPORT_ISSUE_CATEGORY_LABELS } from "@settler/types";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { withSecurity } from "@/lib/middleware/api-security";
 import { prisma } from "@/shared/db/prismaClient";
@@ -13,64 +18,91 @@ import {
 } from "@/lib/api/tenant-context";
 import { buildSupportIntakeRunContext } from "@settler/reconciliation-core";
 import { submitSupportIntake } from "@settler/support-intake";
+import { getCorrelationId, addCorrelationHeaders } from "@/lib/monitoring/correlation";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-const bodySchema = z.object({
-  category: z.string().min(1),
-  description: z.string().min(20).max(5000),
-  run_id: z.string().optional(),
-  route: z.string().optional(),
-  module: z.string().optional(),
-  contact: z
-    .object({
-      user_id: z.string().optional(),
-      email: z.string().email().optional(),
-      role: z.string().optional(),
-    })
-    .optional(),
-  operator_triage_priority: z.enum(["low", "medium", "high", "urgent"]).optional(),
-});
+const bodySchema = supportIntakeSubmissionSchema.omit({ tenant_id: true });
 
 export const POST = withSecurity(
   withUniversalBillingGate(
     async function POST(request: NextRequest) {
-      try {
-        const { userId, tenantId } = await requireTenantRequestContext(request);
-        const raw = await request.json();
-        const parsed = bodySchema.safeParse(raw);
-        if (!parsed.success) {
-          return NextResponse.json(
-            {
-              error: "Support intake request is invalid",
-              code: "INVALID_SUPPORT_INTAKE",
-              details: parsed.error.flatten(),
-            },
-            { status: 400 }
-          );
-        }
+      const correlationId = await getCorrelationId();
 
+      let userId: string;
+      let tenantId: string;
+      try {
+        const ctx = await requireTenantRequestContext(request);
+        userId = ctx.userId;
+        tenantId = ctx.tenantId;
+      } catch (error) {
+        return addCorrelationHeaders(buildTenantContextErrorResponse(error), correlationId);
+      }
+
+      let json: unknown;
+      try {
+        json = await request.json();
+      } catch {
+        const res = NextResponse.json(
+          {
+            code: "INVALID_JSON",
+            message: "Request body must be JSON.",
+            correlation_id: correlationId,
+          },
+          { status: 400 }
+        );
+        return addCorrelationHeaders(res, correlationId);
+      }
+
+      const parsed = bodySchema.safeParse(json);
+      if (!parsed.success) {
+        const res = NextResponse.json(
+          {
+            code: "INVALID_SUPPORT_INTAKE",
+            message: "Support intake request is invalid.",
+            issues: parsed.error.flatten(),
+            categories: SUPPORT_ISSUE_CATEGORY_LABELS,
+            correlation_id: correlationId,
+          },
+          { status: 400 }
+        );
+        return addCorrelationHeaders(res, correlationId);
+      }
+
+      try {
         const stored = await submitSupportIntake({
           prisma,
           userId,
           tenantId,
           path: request.nextUrl.pathname,
-          body: parsed.data,
+          body: { ...parsed.data, tenant_id: tenantId },
           resolveRunContext: (tid, runId) => buildSupportIntakeRunContext(prisma, tid, runId),
         });
 
-        return NextResponse.json(
+        const res = NextResponse.json(
           {
             accepted: true,
             submission_id: stored.submissionId,
             tenant_id: stored.tenantId,
             created_at: stored.createdAt,
+            correlation_id: correlationId,
           },
           { status: 202 }
         );
-      } catch (error) {
-        return buildTenantContextErrorResponse(error);
+        return addCorrelationHeaders(res, correlationId);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Support intake failed";
+        const res = NextResponse.json(
+          {
+            code: "SUPPORT_INTAKE_FAILED",
+            message,
+            correlation_id: correlationId,
+            retryable: true,
+          },
+          { status: 503 }
+        );
+        return addCorrelationHeaders(res, correlationId);
       }
     },
     { feature: "POST API" }
