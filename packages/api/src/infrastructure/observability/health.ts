@@ -4,6 +4,7 @@
  */
 
 import { query } from "../../db";
+import { getDistributedGuarantees } from "../../services/distributed-guards";
 import { getRedisClient } from "../../utils/cache";
 import { getLedgerService } from "../../domain/services/LedgerService";
 import { getOpenFgaAuthorizationService } from "../../services/authz/openfga-authorization-service";
@@ -236,7 +237,7 @@ export class HealthCheckService {
 
   async checkAll(): Promise<HealthStatus> {
     const redisClient = this.getRedisClient();
-    const [database, redis, sentry, supabase, ledger, openfga] = await Promise.all([
+    const [database, redis, sentry, supabase, ledger, openfga, guarantees] = await Promise.all([
       this.checkDatabase(),
       redisClient
         ? this.checkRedis()
@@ -249,7 +250,26 @@ export class HealthCheckService {
       this.checkSupabase(),
       this.checkTigerBeetle(),
       this.checkOpenFga(),
+      getDistributedGuarantees(),
     ]);
+
+    const ts = new Date().toISOString();
+    const rateLimitGuaranteeCheck: HealthCheck =
+      guarantees.rateLimiting === "distributed_shared"
+        ? { status: "healthy", timestamp: ts }
+        : {
+            status: "degraded",
+            error: `API rate limiting guarantee is "${guarantees.rateLimiting}" (not shared across instances unless Redis is healthy; Postgres bucket or in-memory fallback may apply)`,
+            timestamp: ts,
+          };
+    const webhookReplayGuaranteeCheck: HealthCheck =
+      guarantees.webhookReplayDedup === "distributed_shared"
+        ? { status: "healthy", timestamp: ts }
+        : {
+            status: "degraded",
+            error: `Webhook replay deduplication guarantee is "${guarantees.webhookReplayDedup}" (not shared across instances unless Redis is healthy; Postgres or in-memory fallback may apply)`,
+            timestamp: ts,
+          };
 
     const checks = {
       database,
@@ -258,6 +278,8 @@ export class HealthCheckService {
       supabase,
       tigerbeetle: ledger,
       openfga,
+      rate_limit_guarantee: rateLimitGuaranteeCheck,
+      webhook_replay_guarantee: webhookReplayGuaranteeCheck,
     };
 
     const classification = this.classifyChecks(checks);

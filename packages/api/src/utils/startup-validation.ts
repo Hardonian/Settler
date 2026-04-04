@@ -124,6 +124,47 @@ async function validateRedis(): Promise<ValidationResult> {
   }
 }
 
+function redisRequiredForProduction(): boolean {
+  const v = process.env.REDIS_REQUIRED_FOR_PRODUCTION;
+  return v === "true" || v === "1";
+}
+
+/**
+ * Production gate: optional fail-closed boot when Redis is mandatory for your deployment.
+ * See `REDIS_REQUIRED_FOR_PRODUCTION` in config/env.schema.ts.
+ */
+export async function validateRedisProductionRequirement(): Promise<ValidationResult | null> {
+  if (config.nodeEnv !== "production" || !redisRequiredForProduction()) {
+    return null;
+  }
+
+  const redis = getRedisClient();
+  if (!redis) {
+    return {
+      name: "redis_production_requirement",
+      status: "error",
+      message:
+        "REDIS_REQUIRED_FOR_PRODUCTION is enabled but Redis is not configured (set UPSTASH_REDIS_REST_URL + TOKEN or REDIS_URL)",
+    };
+  }
+
+  try {
+    await redis.ping();
+    return {
+      name: "redis_production_requirement",
+      status: "ok",
+      message: "Redis reachable (production requirement satisfied)",
+    };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return {
+      name: "redis_production_requirement",
+      status: "error",
+      message: `REDIS_REQUIRED_FOR_PRODUCTION is enabled but Redis ping failed: ${message}`,
+    };
+  }
+}
+
 /**
  * Validate encryption key format
  */
@@ -238,6 +279,10 @@ export async function validateStartup(): Promise<StartupValidation> {
   try {
     const redisResult = await validateRedis();
     results.push(redisResult);
+    const redisProdGate = await validateRedisProductionRequirement();
+    if (redisProdGate) {
+      results.push(redisProdGate);
+    }
   } catch (error: unknown) {
     results.push({
       name: "redis",

@@ -444,6 +444,22 @@ export const ENV_VAR_SCHEMA: EnvVarSpec[] = [
     secret: false,
     platforms: ['github', 'vercel', 'local'],
   },
+  {
+    name: 'REDIS_REQUIRED_FOR_PRODUCTION',
+    description:
+      'When true, API boot fails in NODE_ENV=production if Redis is missing or unreachable (distributed rate limits + webhook replay use Redis first)',
+    type: 'boolean',
+    required: false,
+    scope: 'runtime',
+    exposure: 'server-only',
+    criticality: 'optional',
+    environments: ['staging', 'production'],
+    defaultValue: false,
+    secret: false,
+    platforms: ['github', 'vercel', 'docker'],
+    notes:
+      'Recommended for multi-instance production so limits/replay are not silently per-process. Without Redis the API still falls back to Postgres then in-memory (see distributed-guards).',
+  },
 
   // ============================================================================
   // SECURITY & AUTHENTICATION
