@@ -21,6 +21,7 @@ const supportIntakeRequestSchema = z.object({
       role: z.string().optional(),
     })
     .optional(),
+  operator_triage_priority: z.enum(["low", "medium", "high", "urgent"]).optional(),
 });
 
 router.post("/intake", tenantMiddleware, async (req: AuthRequest, res) => {

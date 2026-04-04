@@ -157,6 +157,7 @@ describe("knowledge route authz", () => {
 
     expect(response.status).toBe(200);
     expect(queryDecisionsMock).toHaveBeenCalledWith({
+      tenantId: "tenant-1",
       status: "accepted",
       decisionMaker: undefined,
       tag: undefined,

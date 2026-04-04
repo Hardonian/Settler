@@ -105,7 +105,7 @@ describe("exports routes", () => {
       tenantId: "tenant-123",
       status: "completed",
       signedUrl: "https://example.com/exports/export-2.csv",
-      signedUrlExpiresAt: new Date("2026-04-01T12:00:00Z"),
+      signedUrlExpiresAt: new Date("2099-04-01T12:00:00Z"),
       fileSizeBytes: 2048,
       format: "csv",
     });
@@ -115,7 +115,7 @@ describe("exports routes", () => {
     expect(res.status).toBe(200);
     expect(res.body.data).toMatchObject({
       downloadUrl: "https://example.com/exports/export-2.csv",
-      expiresAt: "2026-04-01T12:00:00.000Z",
+      expiresAt: "2099-04-01T12:00:00.000Z",
       fileSizeBytes: 2048,
       format: "csv",
     });

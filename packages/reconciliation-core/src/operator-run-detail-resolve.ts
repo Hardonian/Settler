@@ -150,7 +150,7 @@ export async function resolveOperatorRunDetailForTenants(
     const latestResult = resolved.latestResultRecord;
     const snapshotId = latestResult?.snapshot_id ?? null;
 
-    const [audits, exceptionCountResult, runDeltaRecord, snapshotRecord, deterministicRows] =
+    const [audits, exceptionCountResult, runDeltaRecord, snapshotRecord, deterministicRowsRaw] =
       await Promise.all([
         prisma.reconAudit.findMany({
           where: { reconJobId: runId, tenantId: job.tenantId },
@@ -187,7 +187,7 @@ export async function resolveOperatorRunDetailForTenants(
             })
           : Promise.resolve(null),
         latestResult?.id
-          ? (prisma.$queryRaw`
+          ? prisma.$queryRaw`
           SELECT
             stable_match_id,
             left_record_id,
@@ -203,15 +203,17 @@ export async function resolveOperatorRunDetailForTenants(
           ORDER BY matched_at DESC
           LIMIT 250
         `.catch((err: unknown) => {
-            console.warn(
-              "[settler] deterministic_match_results query failed for run",
-              latestResult?.id,
-              err instanceof Error ? err.message : String(err)
-            );
-            return [] as DeterministicMatchRowLike[];
-          }))
+              console.warn(
+                "[settler] deterministic_match_results query failed for run",
+                latestResult?.id,
+                err instanceof Error ? err.message : String(err)
+              );
+              return [] as DeterministicMatchRowLike[];
+            })
           : Promise.resolve([]),
       ]);
+
+    const deterministicRows = deterministicRowsRaw as DeterministicMatchRowLike[];
 
     const persistedResultCount = resolved.persistedResultCount;
     const previousRecord = resolved.previousResultRecord;
