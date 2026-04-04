@@ -1,7 +1,5 @@
 /**
- * Support Inbox Component
- *
- * Admin view of support tickets with triage results
+ * Operator inbox — canonical support intake rows (Prisma audit_logs).
  */
 
 "use client";
@@ -18,19 +16,26 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
-import { Eye } from "lucide-react";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
-interface SupportTicket {
+interface SupportIntakeRow {
   id: string;
+  submissionId: string;
   ticketNumber: string;
-  subject: string;
-  status: string;
-  priority: string;
-  category: string | null;
-  triageResult: any;
+  tenantId: string | null;
+  userId: string | null;
+  category: string;
+  categoryLabel: string;
+  operatorTriagePriority: string;
+  route: string | null;
+  module: string | null;
+  runId: string | null;
+  runContextState: string | null;
+  descriptionPreview: string;
+  fullDescription: string;
   createdAt: string;
-  userEmail?: string;
+  sourcePath: string | null;
 }
 
 interface SupportInboxProps {
@@ -38,25 +43,35 @@ interface SupportInboxProps {
 }
 
 export function SupportInbox({ userId: _userId }: SupportInboxProps) {
-  const [tickets, setTickets] = useState<SupportTicket[]>([]);
+  const [rows, setRows] = useState<SupportIntakeRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [degraded, setDegraded] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchTickets() {
       try {
         const response = await fetch("/api/support/tickets");
-        if (!response.ok) throw new Error("Failed to fetch");
         const data = await response.json();
-        setTickets(data.tickets || []);
-      } catch (error) {
-        console.error("Failed to fetch tickets:", error);
-        setTickets([]);
+        if (!response.ok) {
+          setDegraded(Boolean(data.degraded));
+          setErrorMessage(typeof data.error === "string" ? data.error : "Failed to load inbox");
+          setRows([]);
+          return;
+        }
+        setDegraded(Boolean(data.degraded));
+        setErrorMessage(null);
+        setRows(data.tickets || []);
+      } catch {
+        setRows([]);
+        setDegraded(true);
+        setErrorMessage("Failed to load support inbox");
       } finally {
         setLoading(false);
       }
     }
-    fetchTickets();
-    const interval = setInterval(fetchTickets, 30000); // Refresh every 30s
+    void fetchTickets();
+    const interval = setInterval(fetchTickets, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -73,68 +88,87 @@ export function SupportInbox({ userId: _userId }: SupportInboxProps) {
     );
   }
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "critical":
-        return "destructive";
+  const priorityVariant = (p: string) => {
+    switch (p) {
+      case "urgent":
       case "high":
-        return "destructive";
+        return "destructive" as const;
       case "medium":
-        return "default";
-      case "low":
-        return "secondary";
+        return "default" as const;
       default:
-        return "secondary";
+        return "secondary" as const;
     }
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Support Tickets</CardTitle>
+        <CardTitle>Support intake</CardTitle>
         <CardDescription>
-          {tickets.length} ticket{tickets.length !== 1 ? "s" : ""}
+          {rows.length} submission{rows.length !== 1 ? "s" : ""} — canonical audit trail
+          (tenant-scoped records).
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        {tickets.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No support tickets</p>
-        ) : (
+      <CardContent className="space-y-4">
+        {degraded && errorMessage && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{errorMessage}</AlertDescription>
+          </Alert>
+        )}
+        {rows.length === 0 && !degraded ? (
+          <p className="text-sm text-muted-foreground">No support intake submissions yet.</p>
+        ) : rows.length === 0 ? null : (
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Ticket #</TableHead>
-                <TableHead>Subject</TableHead>
-                <TableHead>Priority</TableHead>
+                <TableHead>ID</TableHead>
+                <TableHead>Tenant</TableHead>
                 <TableHead>Category</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>Priority</TableHead>
+                <TableHead>Run</TableHead>
+                <TableHead>Context</TableHead>
                 <TableHead>Created</TableHead>
-                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {tickets.map((ticket) => (
-                <TableRow key={ticket.id}>
-                  <TableCell className="font-mono text-xs">{ticket.ticketNumber}</TableCell>
-                  <TableCell>{ticket.subject}</TableCell>
-                  <TableCell>
-                    <Badge variant={getPriorityColor(ticket.priority)}>{ticket.priority}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    {ticket.category ? (
-                      <Badge variant="outline">{ticket.category}</Badge>
-                    ) : (
-                      <span className="text-muted-foreground">—</span>
+              {rows.map((row) => (
+                <TableRow key={row.id}>
+                  <TableCell className="font-mono text-xs align-top">
+                    <div>{row.ticketNumber}</div>
+                    {row.sourcePath && (
+                      <div className="text-muted-foreground normal-case mt-1">{row.sourcePath}</div>
                     )}
                   </TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{ticket.status}</Badge>
+                  <TableCell className="font-mono text-xs align-top max-w-[140px] break-all">
+                    {row.tenantId ?? "—"}
                   </TableCell>
-                  <TableCell>{new Date(ticket.createdAt).toLocaleDateString()}</TableCell>
-                  <TableCell>
-                    <Button variant="ghost" size="sm">
-                      <Eye className="h-4 w-4" />
-                    </Button>
+                  <TableCell className="align-top">
+                    <Badge variant="outline">{row.categoryLabel}</Badge>
+                    {row.route && (
+                      <div className="text-xs text-muted-foreground mt-1 truncate max-w-[200px]">
+                        {row.route}
+                      </div>
+                    )}
+                  </TableCell>
+                  <TableCell className="align-top">
+                    <Badge variant={priorityVariant(row.operatorTriagePriority)}>
+                      {row.operatorTriagePriority}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="font-mono text-xs align-top">{row.runId ?? "—"}</TableCell>
+                  <TableCell className="text-xs align-top max-w-[220px]">
+                    {row.runContextState && (
+                      <div>
+                        Run intel: <span className="font-mono">{row.runContextState}</span>
+                      </div>
+                    )}
+                    <div className="text-muted-foreground mt-1 whitespace-pre-wrap break-words">
+                      {row.descriptionPreview}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-xs whitespace-nowrap align-top">
+                    {new Date(row.createdAt).toLocaleString()}
                   </TableCell>
                 </TableRow>
               ))}

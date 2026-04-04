@@ -493,10 +493,12 @@ export const ROUTE_CLASSIFICATIONS: Record<string, RouteClassification> = {
     tenantScoped: true,
   },
   "console/support/tickets": {
-    class: "tenant-scoped",
+    class: "authenticated-user",
     methods: ["GET", "POST"],
     auth: "session",
     tenantScoped: true,
+    notes:
+      "POST: tenant-scoped canonical support intake. GET: operator inbox (admin role + active subscription).",
   },
   "console/support/triage": {
     class: "admin-internal",
@@ -1331,17 +1333,25 @@ export const ROUTE_CLASSIFICATIONS: Record<string, RouteClassification> = {
     tenantScoped: false,
   },
   "support/report-issue": {
-    class: "public-write",
+    class: "authenticated-user",
     methods: ["POST"],
-    auth: "none",
-    tenantScoped: false,
-    notes: "Bug reports. Rate-limited. No auth required to encourage reporting.",
+    auth: "session",
+    tenantScoped: true,
+    notes: "Canonical support intake (legacy path); tenant-scoped Prisma audit_logs.",
   },
   "support/tickets": {
-    class: "authenticated-user",
-    methods: ["GET", "POST"],
-    auth: "session",
+    class: "admin-internal",
+    methods: ["GET"],
+    auth: "session+adminRole",
     tenantScoped: false,
+    notes: "Operator inbox over canonical support_intake_submission audit rows.",
+  },
+  "v1/support/intake": {
+    class: "authenticated-user",
+    methods: ["POST"],
+    auth: "session",
+    tenantScoped: true,
+    notes: "Versioned BFF for POST /api/v1/support/intake — same persistence as OSS API route.",
   },
 
   // ── User ──────────────────────────────────────────────────────────────────

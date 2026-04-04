@@ -116,6 +116,7 @@ export function ReportIssue({ onSuccess }: ReportIssueProps) {
               placeholder="Please provide as much detail as possible..."
               rows={6}
               required
+              minLength={20}
             />
           </div>
 
@@ -127,8 +128,8 @@ export function ReportIssue({ onSuccess }: ReportIssueProps) {
           )}
 
           <div className="text-xs text-muted-foreground">
-            We'll automatically capture your current page, browser info, and other context to help
-            diagnose the issue.
+            Description must be at least 20 characters so operators have enough context. We also
+            capture the current page and browser info automatically.
           </div>
 
           <Button type="submit" disabled={submitting} className="w-full">

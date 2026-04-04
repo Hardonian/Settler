@@ -1,93 +1,112 @@
 /**
- * Support Tickets API
- * 
- * List support tickets for admin
+ * Operator support inbox — lists canonical support intake records from Prisma audit_logs.
  */
 
-import { NextResponse } from 'next/server';
-import { requireAdmin } from '@/lib/api/auth-gate';
-import { prisma } from '@/shared/db/prismaClient';
-import { createClient } from '@/lib/supabase/server';
-import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
-import { appLogger } from '@/lib/utils/logger';
-import { withSecurity } from '@/lib/middleware/api-security';
+import { NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/api/auth-gate";
+import { prisma } from "@/shared/db/prismaClient";
+import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
+import { appLogger } from "@/lib/utils/logger";
+import { withSecurity } from "@/lib/middleware/api-security";
+import {
+  SUPPORT_CATEGORY_LABELS,
+  SUPPORT_INTAKE_RESOURCE_TYPE,
+  type SupportIssueCategory,
+} from "@settler/support-intake";
+import type { Prisma } from "@prisma/client";
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
+type SupportInboxAuditRow = {
+  id: string;
+  tenantId: string | null;
+  userId: string | null;
+  createdAt: Date;
+  changes: Prisma.JsonValue;
+  metadata: Prisma.JsonValue;
+};
+
+type IntakeChanges = {
+  submission_id?: string;
+  category?: string;
+  run_id?: string | null;
+  route?: string | null;
+  module?: string | null;
+  description?: string;
+  operator_triage_priority?: string | null;
+  path?: string;
+  run_context?: Record<string, unknown> | null;
+};
 
 export const GET = withSecurity(
-  withUniversalBillingGate(async function GET(request: Request) {
-     
-    const adminCheck = await requireAdmin(request as any);
-  if (!adminCheck.isAdmin) {
-    return adminCheck.error!;
-  }
-
-  try {
-    const tickets = await prisma.$queryRaw<Array<{
-      id: string;
-      ticket_number: string;
-      subject: string;
-      status: string;
-      priority: string;
-      category: string | null;
-      triage_result: Record<string, unknown> | null;
-      created_at: Date;
-      user_id: string;
-    }>>`
-      SELECT 
-        id,
-        ticket_number,
-        subject,
-        status,
-        priority,
-        category,
-        triage_result,
-        created_at,
-        user_id
-      FROM ops_support_tickets
-      ORDER BY created_at DESC
-      LIMIT 100
-    `;
-
-    // Get user emails from Supabase auth
-    const supabase = await createClient();
-    const userIds = tickets.map((t) => t.user_id);
-    const userMap = new Map<string, string>();
-    
-    for (const userId of userIds) {
-      try {
-        const { data: { user } } = await supabase.auth.admin.getUserById(userId);
-        if (user?.email) {
-          userMap.set(userId, user.email);
-        }
-      } catch {
-        // Skip if user not found
+  withUniversalBillingGate(
+    async function GET(request: Request) {
+      const adminCheck = await requireAdmin(request as never);
+      if (!adminCheck.isAdmin) {
+        return adminCheck.error!;
       }
-    }
 
-    const ticketsWithUsers = tickets.map((ticket) => ({
-      id: ticket.id,
-      ticketNumber: ticket.ticket_number,
-      subject: ticket.subject,
-      status: ticket.status,
-      priority: ticket.priority,
-      category: ticket.category,
-      triageResult: ticket.triage_result,
-      createdAt: ticket.created_at.toISOString(),
-      userEmail: userMap.get(ticket.user_id) || undefined,
-    }));
+      try {
+        const rows: SupportInboxAuditRow[] = await prisma.auditLog.findMany({
+          where: { resourceType: SUPPORT_INTAKE_RESOURCE_TYPE },
+          orderBy: { createdAt: "desc" },
+          take: 200,
+          select: {
+            id: true,
+            tenantId: true,
+            userId: true,
+            createdAt: true,
+            changes: true,
+            metadata: true,
+          },
+        });
 
-    return NextResponse.json({ tickets: ticketsWithUsers });
-  } catch (error) {
-    appLogger.error('Failed to fetch support tickets', error);
-    // Never return 500 - return empty array with graceful error message
-    return NextResponse.json({ 
-      tickets: [],
-      error: 'Unable to fetch tickets at this time',
-      message: 'Please try again later'
-    }, { status: 200 });
-  }
-}, { feature: 'GET API' }),
+        const tickets = rows.map((row) => {
+          const c = (row.changes ?? {}) as IntakeChanges;
+          const category = (c.category ?? "docs_other") as SupportIssueCategory;
+          const label = SUPPORT_CATEGORY_LABELS[category] ?? category;
+          const desc = typeof c.description === "string" ? c.description : "";
+          const preview = desc.length > 120 ? `${desc.slice(0, 117)}…` : desc;
+          const runCtx = c.run_context;
+          const runState =
+            runCtx && typeof runCtx === "object" && "state" in runCtx ? String(runCtx.state) : null;
+
+          return {
+            id: row.id,
+            submissionId: c.submission_id ?? row.id,
+            ticketNumber: c.submission_id ? c.submission_id.slice(0, 8) : row.id.slice(0, 8),
+            tenantId: row.tenantId,
+            userId: row.userId,
+            category,
+            categoryLabel: label,
+            operatorTriagePriority: c.operator_triage_priority ?? "medium",
+            route: c.route ?? null,
+            module: c.module ?? null,
+            runId: c.run_id ?? null,
+            runContextState: runState,
+            descriptionPreview: preview,
+            fullDescription: desc,
+            createdAt: row.createdAt.toISOString(),
+            sourcePath: typeof c.path === "string" ? c.path : null,
+          };
+        });
+
+        return NextResponse.json({ tickets, source: "support_intake_audit_logs" });
+      } catch (error) {
+        appLogger.error("Failed to fetch support intake inbox", error);
+        return NextResponse.json(
+          {
+            tickets: [],
+            source: "support_intake_audit_logs",
+            error: "Unable to fetch support intake records",
+            degraded: true,
+          },
+          { status: 503 }
+        );
+      }
+    },
+    { feature: "GET API" }
+  ),
   { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
 );
