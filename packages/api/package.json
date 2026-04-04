@@ -71,8 +71,8 @@
   },
   "scripts": {
     "pretest": "cd ../.. && node scripts/assert-node-version.mjs",
-    "prebuild": "cd ../.. && node scripts/assert-node-version.mjs && pnpm run prisma:generate && pnpm --filter @settler/reconciliation-core run build",
-    "pretypecheck": "cd ../.. && node scripts/assert-node-version.mjs && pnpm run prisma:generate && pnpm --filter @settler/reconciliation-core run build",
+    "prebuild": "cd ../.. && node scripts/assert-node-version.mjs && pnpm run prisma:generate && pnpm --filter @settler/support-intake run build && pnpm --filter @settler/reconciliation-core run build",
+    "pretypecheck": "cd ../.. && node scripts/assert-node-version.mjs && pnpm run prisma:generate && pnpm --filter @settler/support-intake run build && pnpm --filter @settler/reconciliation-core run build",
     "build": "tsc --skipLibCheck --noEmit false",
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
@@ -115,6 +115,7 @@
     "@settler/edge-ai-core": "workspace:*",
     "@settler/proofs": "workspace:*",
     "@settler/reconciliation-core": "workspace:*",
+    "@settler/support-intake": "workspace:*",
     "@settler/sdk": "workspace:*",
     "@settler/types": "workspace:*",
     "@supabase/supabase-js": "^2.39.0",

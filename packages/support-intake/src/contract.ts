@@ -37,6 +37,20 @@ export const supportIntakeSubmissionSchema = z.object({
       role: z.string().min(1).optional(),
     })
     .optional(),
+  /** Submitter-suggested urgency for operator triage (not an SLA commitment). */
+  operator_triage_priority: z.enum(["low", "medium", "high", "urgent"]).optional(),
 });
 
 export type SupportIntakeSubmission = z.infer<typeof supportIntakeSubmissionSchema>;
+
+/** Human-readable labels for UI (tenant console, docs). */
+export const SUPPORT_CATEGORY_LABELS: Record<SupportIssueCategory, string> = {
+  [SUPPORT_ISSUE_CATEGORY.RUN_FAILURE]: "Run / job failure",
+  [SUPPORT_ISSUE_CATEGORY.DATA_MISMATCH]: "Data mismatch / exception",
+  [SUPPORT_ISSUE_CATEGORY.IMPORT_EXPORT]: "Import / export",
+  [SUPPORT_ISSUE_CATEGORY.REPLAY_DIVERGENCE]: "Replay / determinism",
+  [SUPPORT_ISSUE_CATEGORY.AUTH_ACCESS]: "Auth / access",
+  [SUPPORT_ISSUE_CATEGORY.PERFORMANCE]: "Performance / latency",
+  [SUPPORT_ISSUE_CATEGORY.BILLING_USAGE]: "Billing / usage",
+  [SUPPORT_ISSUE_CATEGORY.DOCS_OTHER]: "Docs / other",
+};

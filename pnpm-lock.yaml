@@ -185,6 +185,9 @@ importers:
       '@settler/sdk':
         specifier: workspace:*
         version: link:../sdk
+      '@settler/support-intake':
+        specifier: workspace:*
+        version: link:../support-intake
       '@settler/types':
         specifier: workspace:*
         version: link:../types
@@ -737,6 +740,22 @@ importers:
 
   packages/sdk-java: {}
 
+  packages/support-intake:
+    dependencies:
+      '@prisma/client':
+        specifier: ^7.1.0
+        version: 7.5.0(prisma@7.5.0(@types/react@18.3.28)(better-sqlite3@12.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3))(typescript@5.9.3)
+      '@settler/reconciliation-core':
+        specifier: workspace:*
+        version: link:../reconciliation-core
+      zod:
+        specifier: ^3.23.8
+        version: 3.25.76
+    devDependencies:
+      typescript:
+        specifier: ^5.3.3
+        version: 5.9.3
+
   packages/types:
     dependencies:
       '@types/node':
@@ -811,6 +830,9 @@ importers:
       '@settler/sdk':
         specifier: workspace:*
         version: link:../sdk
+      '@settler/support-intake':
+        specifier: workspace:*
+        version: link:../support-intake
       '@settler/types':
         specifier: workspace:*
         version: link:../types
