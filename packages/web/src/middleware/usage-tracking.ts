@@ -165,9 +165,11 @@ export async function checkUsageLimit(
   const currentUsage = await getCurrentUsage(billingAccountId, "monthly");
   const totalUsage = currentUsage.totalTransactions + additionalTransactions;
 
+  const includedVolume = plan.includedTransactions;
+
   // Only starter-equivalent has a hard included-volume cap in the commercial spine
   if (canonicalPlanId === "starter") {
-    const allowed = totalUsage <= plan.includedTransactions;
+    const allowed = totalUsage <= includedVolume;
     return {
       allowed,
       currentUsage: currentUsage.totalTransactions,
@@ -179,7 +181,7 @@ export async function checkUsageLimit(
   return {
     allowed: true,
     currentUsage: currentUsage.totalTransactions,
-    limit: includedVolume > 0 ? includedVolume : Infinity,
+    limit: Infinity,
     wouldExceed: false,
   };
 }

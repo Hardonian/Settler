@@ -89,7 +89,10 @@ function computeNextRuns(cron: string, timezone: string, count: number): Date[] 
   const parts = cron.trim().split(/\s+/);
   if (parts.length < 5) return runs;
 
-  const [minuteField, hourField, dayOfMonthField, , dayOfWeekField] = parts;
+  const minuteField = parts[0] ?? "*";
+  const hourField = parts[1] ?? "*";
+  const dayOfMonthField = parts[2] ?? "*";
+  const dayOfWeekField = parts[4] ?? "*";
 
   // Parse simple numeric or wildcard values
   const parseField = (field: string): number | null => {
@@ -106,7 +109,10 @@ function computeNextRuns(cron: string, timezone: string, count: number): Date[] 
   const targetDayOfWeek = parseField(dayOfWeekField);
 
   // Step values
-  const hourStep = hourField.startsWith("*/") ? parseInt(hourField.slice(2), 10) : null;
+  const hourStep =
+    hourField.startsWith("*/") && hourField.length > 2
+      ? parseInt(hourField.slice(2), 10)
+      : null;
 
   // Start from now, advance until we find `count` matching times
   const now = new Date();

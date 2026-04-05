@@ -99,12 +99,16 @@ export async function listMeaningfulChanges(
           : undefined;
 
         const sourceReliability = getSourceReliabilityScore(result.recon_job_id ?? "unknown");
+        const summaryRecord =
+          result.summary != null && typeof result.summary === "object" && !Array.isArray(result.summary)
+            ? (result.summary as Record<string, unknown>)
+            : {};
         const explanation = generateExplanation(
           {
             type: "reconciliation",
             sourceId: result.recon_job_id ?? "unknown",
             timestamp: new Date(result.started_at),
-            rawData: result.summary ?? {},
+            rawData: summaryRecord,
           },
           delta
         );
@@ -122,7 +126,7 @@ export async function listMeaningfulChanges(
             type: "reconciliation",
             sourceId: result.recon_job_id ?? "unknown",
             timestamp: new Date(result.started_at),
-            rawData: result.summary ?? {},
+            rawData: summaryRecord,
           },
           explanation,
           impact,

@@ -38,7 +38,7 @@ export const GET = withSecurity(
           orderBy: { createdAt: "desc" },
         });
 
-        const items = jobs.map((job) => {
+        const items = jobs.map((job: (typeof jobs)[number]) => {
           const latestResult = job.results[0] ?? null;
           return {
             id: job.id,
