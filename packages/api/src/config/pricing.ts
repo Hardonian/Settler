@@ -3,7 +3,7 @@
  * Defines pricing tiers, feature gates, and revenue calculations
  *
  * NOTE: This file is for Edge AI pricing tiers only.
- * Main reconciliation pricing is defined in config/plans.ts
+ * Main reconciliation pricing lives in `@settler/types` commercial spine (see `commercial-spine.ts`).
  */
 
 export enum PricingTier {
