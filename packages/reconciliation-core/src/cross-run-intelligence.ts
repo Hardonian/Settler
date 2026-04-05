@@ -52,9 +52,19 @@ export interface RecurringExceptionFamily {
   firstSeenAt: string | null;
   lastSeenAt: string | null;
   topOutcome: string | null;
+  /**
+   * Raw adjudication mix signal: strengthening = backlog-like (more unresolved than resolved in sample).
+   * @deprecated Prefer {@link recurrencePosture} for operator-facing posture labels.
+   */
   trend: "strengthening" | "weakening" | "stable";
+  /** Operator-facing recurrence posture derived from adjudication history only (no synthetic health). */
+  recurrencePosture: "worsening" | "improving" | "stable";
   certainty: "high" | "medium" | "low";
   score: number;
+  /** Short, evidence-backed reasons for rank (counts, outcomes, time window). */
+  prioritizationReasons: string[];
+  /** Bounded prompts tied to recorded outcomes — not prescriptions. */
+  suggestedNextActions: string[];
 }
 
 export interface AdjudicationDecisionRecord {
@@ -236,6 +246,82 @@ function familyTrend(stats: {
   if (stats.unresolvedCount > stats.resolvedCount) return "strengthening";
   if (stats.resolvedCount > 0 && stats.unresolvedCount === 0) return "weakening";
   return "stable";
+}
+
+function recurrencePostureFromTrend(
+  trend: RecurringExceptionFamily["trend"]
+): RecurringExceptionFamily["recurrencePosture"] {
+  if (trend === "strengthening") return "worsening";
+  if (trend === "weakening") return "improving";
+  return "stable";
+}
+
+function buildFamilyPrioritization(
+  stats: {
+    totalOccurrences: number;
+    unresolvedCount: number;
+    resolvedCount: number;
+    lastSeenAt: Date | null;
+    firstSeenAt: Date | null;
+  },
+  topOutcome: string | null,
+  archetypeLabel: string | null
+): string[] {
+  const reasons: string[] = [];
+  reasons.push(
+    `${stats.totalOccurrences} adjudication${stats.totalOccurrences === 1 ? "" : "s"} in rolling history`
+  );
+  if (stats.unresolvedCount > 0) {
+    reasons.push(`${stats.unresolvedCount} unresolved in sample`);
+  }
+  if (stats.resolvedCount > 0) {
+    reasons.push(`${stats.resolvedCount} resolved in sample`);
+  }
+  if (topOutcome) {
+    reasons.push(`dominant outcome: ${topOutcome}`);
+  }
+  if (stats.lastSeenAt) {
+    const days = (Date.now() - stats.lastSeenAt.getTime()) / (24 * 60 * 60 * 1000);
+    if (days <= 7) {
+      reasons.push("activity within last 7 days");
+    } else if (days <= 30) {
+      reasons.push("last activity within 30 days");
+    } else {
+      reasons.push("older than 30 days since last adjudication in sample");
+    }
+  }
+  if (archetypeLabel) {
+    reasons.push(`archetype: ${archetypeLabel}`);
+  }
+  return reasons;
+}
+
+function buildFamilySuggestedActions(
+  stats: {
+    unresolvedCount: number;
+    resolvedCount: number;
+    totalOccurrences: number;
+  },
+  archetypeCategory: string | null,
+  topOutcome: string | null
+): string[] {
+  const actions: string[] = [];
+  if (stats.unresolvedCount > 0) {
+    actions.push("Review open exceptions in this family and record an adjudication so memory compounds.");
+  }
+  if (stats.totalOccurrences >= 3 && stats.unresolvedCount > stats.resolvedCount) {
+    actions.push("Consider policy or mapping review: unresolved volume exceeds resolved in this sample.");
+  }
+  if (archetypeCategory) {
+    actions.push(`Validate exception archetype category “${archetypeCategory}” still matches operational reality.`);
+  }
+  if (topOutcome === "dismissed" || topOutcome === "ignored") {
+    actions.push("Top outcome is dismiss/ignore — confirm this is intentional for recurring money movement.");
+  }
+  if (actions.length === 0) {
+    actions.push("No extra action beyond normal queue hygiene; posture is stable in this sample.");
+  }
+  return actions.slice(0, 4);
 }
 
 function familyCertainty(
@@ -538,6 +624,27 @@ async function buildRecurringFamilies(
         resolvedCount: stats.resolvedCount,
         lastSeenAt: stats.lastSeenAt,
       });
+      const topOutcome = topEntry?.[0] ?? null;
+      const prioritizationReasons = buildFamilyPrioritization(
+        {
+          totalOccurrences: stats.totalOccurrences,
+          unresolvedCount: stats.unresolvedCount,
+          resolvedCount: stats.resolvedCount,
+          lastSeenAt: stats.lastSeenAt,
+          firstSeenAt: stats.firstSeenAt,
+        },
+        topOutcome,
+        archetype?.label ?? null
+      );
+      const suggestedNextActions = buildFamilySuggestedActions(
+        {
+          unresolvedCount: stats.unresolvedCount,
+          resolvedCount: stats.resolvedCount,
+          totalOccurrences: stats.totalOccurrences,
+        },
+        archetype?.category ?? null,
+        topOutcome
+      );
 
       return {
         archetypeId: stats.archetypeId,
@@ -551,14 +658,17 @@ async function buildRecurringFamilies(
         avgDurationMs,
         firstSeenAt: toIso(stats.firstSeenAt),
         lastSeenAt: toIso(stats.lastSeenAt),
-        topOutcome: topEntry?.[0] ?? null,
+        topOutcome,
         trend,
+        recurrencePosture: recurrencePostureFromTrend(trend),
         certainty: familyCertainty(
           stats.totalOccurrences,
           stats.unresolvedCount,
           stats.resolvedCount
         ),
         score,
+        prioritizationReasons,
+        suggestedNextActions,
       };
     })
     .sort((a, b) => b.score - a.score || b.totalOccurrences - a.totalOccurrences)

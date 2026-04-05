@@ -259,6 +259,9 @@ describe("buildCrossRunIntelligenceSummary", () => {
     expect(summary.recurringFamilies.families[0]!.totalOccurrences).toBe(2);
     expect(summary.recurringFamilies.families[0]!.resolvedCount).toBe(2);
     expect(summary.recurringFamilies.families[0]!.trend).toBe("weakening");
+    expect(summary.recurringFamilies.families[0]!.recurrencePosture).toBe("improving");
+    expect(summary.recurringFamilies.families[0]!.prioritizationReasons.length).toBeGreaterThan(0);
+    expect(summary.recurringFamilies.families[0]!.suggestedNextActions.length).toBeGreaterThan(0);
     expect(summary.recurringFamilies.families[0]!.certainty).toBe("medium");
   });
 
@@ -280,6 +283,7 @@ describe("buildCrossRunIntelligenceSummary", () => {
     const family = summary.recurringFamilies.families[0]!;
     expect(family.unresolvedCount).toBeGreaterThan(0);
     expect(family.trend).toBe("strengthening");
+    expect(family.recurrencePosture).toBe("worsening");
     expect(family.certainty).toBe("high");
   });
 
