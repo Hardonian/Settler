@@ -156,28 +156,32 @@ export async function checkUsageLimit(
   limit: number;
   wouldExceed: boolean;
 }> {
-  const { getPlan } = await import("@/config/pricing-simple");
-  const plan = getPlan(planId);
+  const { mapLegacyPlanId, getReconciliationVolumeLimit, planConfigs } = await import(
+    "@/domain/billing/planConfig"
+  );
+  const planCode = mapLegacyPlanId(planId);
+  const includedVolume = getReconciliationVolumeLimit(planCode);
+  /** Only starter-equivalent plans hard-cap included reconciliation volume; paid tiers bill overage. */
+  const hasHardMonthlyCap =
+    planCode === "starter" && includedVolume > 0 && planConfigs[planCode].monthlyPrice === 0;
 
   const currentUsage = await getCurrentUsage(billingAccountId, "monthly");
   const totalUsage = currentUsage.totalTransactions + additionalTransactions;
 
-  // Free tier has hard limit
-  if (planId === "free") {
-    const allowed = totalUsage <= plan.includedTransactions;
+  if (hasHardMonthlyCap) {
+    const allowed = totalUsage <= includedVolume;
     return {
       allowed,
       currentUsage: currentUsage.totalTransactions,
-      limit: plan.includedTransactions,
-      wouldExceed: totalUsage > plan.includedTransactions,
+      limit: includedVolume,
+      wouldExceed: totalUsage > includedVolume,
     };
   }
 
-  // Paid tiers have no hard limit (just billing)
   return {
     allowed: true,
     currentUsage: currentUsage.totalTransactions,
-    limit: Infinity,
+    limit: includedVolume > 0 ? includedVolume : Infinity,
     wouldExceed: false,
   };
 }
