@@ -77,6 +77,8 @@ export function rateLimitMiddleware() {
       if (result.guarantee) {
         res.setHeader("X-RateLimit-Guarantee", result.guarantee);
       }
+      const mode = result.guarantee === "distributed_shared" ? "distributed" : "local-fallback";
+      res.setHeader("X-Rate-Limit-Mode", mode);
     }
 
     if (!result.allowed) {

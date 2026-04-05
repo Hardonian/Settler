@@ -29,11 +29,25 @@ interface RateLimitStore {
 const fallbackStore: RateLimitStore = {};
 let emittedProductionFallbackWarning = false;
 
+// Track whether the last check used Redis or fell back to memory
+let lastCheckUsedRedis = false;
+
+function getRateLimitMode(): "distributed" | "local-fallback" {
+  return lastCheckUsedRedis ? "distributed" : "local-fallback";
+}
+
 function warnOnProductionLocalFallback() {
   if (process.env.NODE_ENV !== "production" || emittedProductionFallbackWarning) return;
   emittedProductionFallbackWarning = true;
   console.warn(
-    "[RateLimit] Redis limiter unavailable in production; using process-local fallback (risk: cross-instance drift). Configure UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN."
+    JSON.stringify({
+      level: "warn",
+      message: "Rate limiting falling back to in-memory mode",
+      component: "rate-limiter-redis",
+      mode: "local-fallback",
+      risk: "Rate limits are per-instance and reset on restart",
+      action: "Configure UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN for distributed rate limiting",
+    })
   );
 }
 
@@ -124,13 +138,17 @@ export function rateLimitRedis(
 
     const result = await safeRedisOperation(
       async (client) => {
+        lastCheckUsedRedis = true;
         return await checkRedisRateLimit(client, key, config.windowMs, config.maxRequests);
       },
       () => {
+        lastCheckUsedRedis = false;
         warnOnProductionLocalFallback();
         return checkMemoryRateLimit(key, config.windowMs, config.maxRequests);
       }
     );
+
+    const rateLimitMode = getRateLimitMode();
 
     if (!result.allowed) {
       const retryAfter = Math.ceil((result.resetTime - Date.now()) / 1000);
@@ -148,16 +166,19 @@ export function rateLimitRedis(
             "X-RateLimit-Limit": config.maxRequests.toString(),
             "X-RateLimit-Remaining": "0",
             "X-RateLimit-Reset": result.resetTime.toString(),
+            "X-Rate-Limit-Mode": rateLimitMode,
           },
         }
       );
     }
 
-    // Add rate limit headers
+    // Add rate limit headers (these are informational; the actual response
+    // is produced downstream, but middleware consumers may inspect them)
     const response = new NextResponse();
     response.headers.set("X-RateLimit-Limit", config.maxRequests.toString());
     response.headers.set("X-RateLimit-Remaining", result.remaining.toString());
     response.headers.set("X-RateLimit-Reset", result.resetTime.toString());
+    response.headers.set("X-Rate-Limit-Mode", rateLimitMode);
 
     return null; // Continue to next middleware
   };

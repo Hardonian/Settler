@@ -2,6 +2,8 @@ import { Router, Request, Response } from "express";
 import { query } from "../db";
 import { pool } from "../db";
 import { HealthCheckService } from "../infrastructure/observability/health";
+import { tokenBucket } from "../infrastructure/rate-limiting/TokenBucket";
+import { getDistributedGuarantees } from "../services/distributed-guards";
 
 const router: Router = Router();
 const healthCheckService = new HealthCheckService();
@@ -70,12 +72,19 @@ router.get("/", async (_req: Request, res: Response) => {
 
 // Detailed health check with dependency checks
 router.get("/detailed", async (_req: Request, res: Response) => {
-  const health = await healthCheckService.checkAll();
+  const [health, distributedGuarantees] = await Promise.all([
+    healthCheckService.checkAll(),
+    getDistributedGuarantees(),
+  ]);
   res.status(health.status === "unhealthy" ? 503 : 200).json({
     status: health.status,
     checks: health.checks,
     blocking: health.blocking,
     degraded: health.degraded,
+    rateLimiting: {
+      tokenBucketMode: tokenBucket.mode,
+      distributedGuarantee: distributedGuarantees.rateLimiting,
+    },
     timestamp: health.timestamp,
     service: "settler-api",
     version: "1.0.0",

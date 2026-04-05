@@ -18,7 +18,11 @@ import {
   ProofsCard,
   ProvenanceCard,
   SeverityBadge,
+  SimilarCasesCard,
   StatusBadge,
+  WhyFlaggedCard,
+  type SimilarCase,
+  type WhyFlaggedData,
 } from "./components";
 
 interface ExceptionProvenance {
@@ -68,6 +72,8 @@ interface ExceptionDetail {
   proofSummary: ProofSummary;
   auditTrail: AuditTrailEntry[];
   operatorSummary: OperatorSummary;
+  similarCases?: SimilarCase[];
+  whyFlagged?: WhyFlaggedData;
 }
 
 async function fetchExceptionDetail(exceptionId: string): Promise<ExceptionDetail> {
@@ -207,7 +213,13 @@ export default async function ExceptionDetailPage({ params }: { params: { except
 
       <div className="grid gap-6 xl:grid-cols-3">
         <div className="xl:col-span-2 space-y-6">
+          {exception.whyFlagged ? (
+            <WhyFlaggedCard data={exception.whyFlagged} />
+          ) : null}
           <ExceptionActionPanel exceptionId={exceptionId} status={exception.status} />
+          {exception.similarCases && exception.similarCases.length > 0 ? (
+            <SimilarCasesCard cases={exception.similarCases} />
+          ) : null}
           <MemoriesCard memories={exception.adjudicationMemories} />
           <ProvenanceCard auditTrail={exception.auditTrail} />
         </div>

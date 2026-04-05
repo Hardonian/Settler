@@ -1,13 +1,17 @@
 /**
  * Supabase Database Types
  *
- * CTO Mode: Type Safety
- * - Generated from Supabase schema
- * - Use these types instead of 'any'
- * - Run: supabase gen types typescript --project-id <project-ref> > src/types/database.types.ts
+ * Derived from Prisma schema (prisma/schema.prisma) and Supabase migrations.
+ * These types provide the Database["public"]["Tables"] access pattern used
+ * by Supabase client code throughout the web package.
  *
- * TODO: Generate actual types from Supabase schema
- * For now, this is a placeholder structure
+ * To regenerate from live Supabase instance:
+ *   supabase gen types typescript --project-id <project-ref> > src/types/database.types.ts
+ *
+ * To verify against Prisma schema:
+ *   npx prisma generate && compare with this file
+ *
+ * Last synced with schema: 2026-04-05
  */
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
@@ -808,41 +812,67 @@ export interface Database {
           id: string;
           recon_job_id: string;
           tenant_id: string;
+          execution_id: string | null;
+          snapshot_id: string | null;
+          input_hash: string | null;
           status: string;
-          total_amount_unmatched: number;
-          currency: string;
-          unmatched_source_count: number;
           started_at: string;
           completed_at: string | null;
-          summary: Record<string, unknown> | null;
-          data: unknown;
+          source_count: number;
+          target_count: number;
+          matched_count: number;
+          unmatched_source_count: number;
+          unmatched_target_count: number;
+          conflict_count: number;
+          total_amount_source: number | null;
+          total_amount_target: number | null;
+          total_amount_matched: number | null;
+          total_amount_unmatched: number | null;
+          currency: string | null;
+          confidence_avg: number | null;
+          confidence_min: number | null;
+          confidence_max: number | null;
+          duration_ms: number | null;
+          error_message: string | null;
+          error_stack: string | null;
+          summary: Json;
+          metadata: Json;
+          proof_capsule: Json | null;
+          created_at: string;
+          updated_at: string;
         };
         Insert: {
           id?: string;
           recon_job_id: string;
           tenant_id: string;
-          status: string;
-          total_amount_unmatched?: number;
-          currency?: string;
-          unmatched_source_count?: number;
-          started_at: string;
-          completed_at?: string | null;
-          summary?: Record<string, unknown> | null;
-          data?: unknown;
-        };
-        Update: {
-          id?: string;
-          recon_job_id?: string;
-          tenant_id?: string;
+          execution_id?: string | null;
+          snapshot_id?: string | null;
+          input_hash?: string | null;
           status?: string;
-          total_amount_unmatched?: number;
-          currency?: string;
-          unmatched_source_count?: number;
           started_at?: string;
           completed_at?: string | null;
-          summary?: Record<string, unknown> | null;
-          data?: unknown;
+          source_count?: number;
+          target_count?: number;
+          matched_count?: number;
+          unmatched_source_count?: number;
+          unmatched_target_count?: number;
+          conflict_count?: number;
+          total_amount_source?: number | null;
+          total_amount_target?: number | null;
+          total_amount_matched?: number | null;
+          total_amount_unmatched?: number | null;
+          currency?: string | null;
+          confidence_avg?: number | null;
+          confidence_min?: number | null;
+          confidence_max?: number | null;
+          duration_ms?: number | null;
+          error_message?: string | null;
+          error_stack?: string | null;
+          summary?: Json;
+          metadata?: Json;
+          proof_capsule?: Json | null;
         };
+        Update: Partial<Database["public"]["Tables"]["recon_results"]["Insert"]>;
       };
       recon_jobs: {
         Row: {
