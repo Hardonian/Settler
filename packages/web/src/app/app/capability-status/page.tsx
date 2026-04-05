@@ -6,13 +6,21 @@ import { CheckCircle, AlertTriangle, XCircle, Clock } from 'lucide-react';
 type StatusPayload = {
   overallStatus?: string;
   systems?: Array<{ name?: string; status?: string }>;
+  connectivity?: {
+    checks?: Record<string, { ok?: boolean; status?: string; reason?: string }>;
+    degraded_reasons?: string[];
+    timestamp?: string;
+  };
   error?: string;
 };
 
 type HealthPayload = {
+  kind?: string;
   status?: string;
-  allCylindersFiring?: boolean;
+  healthy?: boolean;
+  degraded_reasons?: string[];
   timestamp?: string;
+  error?: string;
 };
 
 type Capability = {
@@ -81,7 +89,7 @@ export default async function CapabilityStatusPage() {
     loadCapabilities(),
   ]);
 
-  const allServicesNominal = health?.allCylindersFiring === true;
+  const connectivityHealthy = health?.healthy === true;
   const healthStatus = health?.status ?? 'unavailable';
 
   return (
@@ -94,7 +102,8 @@ export default async function CapabilityStatusPage() {
           Availability and operational posture
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Combines runtime status endpoints with the surfaced capability registry.
+          Combines runtime status endpoints with the surfaced capability registry. Health here means
+          point-in-time dependency connectivity — not KPIs, engagement, or historical uptime.
         </p>
       </section>
 
@@ -123,6 +132,12 @@ export default async function CapabilityStatusPage() {
                   ))}
                 </ul>
               )}
+              {status.connectivity?.degraded_reasons &&
+                status.connectivity.degraded_reasons.length > 0 && (
+                  <p className="mt-3 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:bg-amber-950/40 dark:text-amber-200 font-mono break-all">
+                    {status.connectivity.degraded_reasons.join(' · ')}
+                  </p>
+                )}
               {status.error && (
                 <p className="mt-3 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-700">
                   {status.error}
@@ -136,7 +151,7 @@ export default async function CapabilityStatusPage() {
 
         {/* Health check */}
         <article className="rounded-lg border border-border bg-card p-4">
-          <h2 className="font-semibold text-foreground">Health Check</h2>
+          <h2 className="font-semibold text-foreground">Runtime connectivity</h2>
           {health ? (
             <>
               <div className="mt-3 flex items-center gap-2">
@@ -144,15 +159,25 @@ export default async function CapabilityStatusPage() {
                 <span className="text-sm font-medium capitalize text-foreground">{healthStatus}</span>
               </div>
               <div className="mt-3 flex items-center gap-2">
-                {allServicesNominal ? (
+                {connectivityHealthy ? (
                   <CheckCircle className="h-4 w-4 text-green-600 shrink-0" aria-hidden="true" />
                 ) : (
                   <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0" aria-hidden="true" />
                 )}
                 <span className="text-sm text-muted-foreground">
-                  {allServicesNominal ? 'All services nominal' : 'One or more services degraded'}
+                  {connectivityHealthy
+                    ? 'Core probes succeeded'
+                    : 'One or more connectivity probes failed — see degraded reasons'}
                 </span>
               </div>
+              {health.degraded_reasons && health.degraded_reasons.length > 0 && (
+                <p className="mt-3 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:bg-amber-950/40 dark:text-amber-200 font-mono break-all">
+                  {health.degraded_reasons.join(' · ')}
+                </p>
+              )}
+              {health.error && (
+                <p className="mt-3 text-sm text-amber-700 dark:text-amber-400">{health.error}</p>
+              )}
               <p className="mt-3 text-xs text-muted-foreground">
                 Last checked: {formatTimestamp(health.timestamp)}
               </p>
