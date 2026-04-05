@@ -72,12 +72,12 @@ export default function HomePage() {
           actions={
             <>
               <Button asChild>
-                <UiLink href="/app/runs">
-                  Open Console <ArrowRight className="ml-1 h-4 w-4" />
+                <UiLink href="/console">
+                  Open console <ArrowRight className="ml-1 h-4 w-4" />
                 </UiLink>
               </Button>
               <Button variant="outline" asChild>
-                <UiLink href="/docs">Read docs</UiLink>
+                <UiLink href="/docs/quickstart">15-minute quickstart</UiLink>
               </Button>
             </>
           }
@@ -123,9 +123,9 @@ export default function HomePage() {
             <div className="space-y-8">
               <h2 className="text-3xl font-bold tracking-tight">Operator-Grade Triage</h2>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Settler doesn't just find mismatches; it empowers operators to resolve them with
-                institutional-grade confidence. AI-assisted review compresses resolution time by
-                surfacing the exact context needed for every decision.
+                Exceptions carry deterministic &quot;why&quot; context and operator decisions stay
+                auditable. Where AI is enabled, it is advisory, evidence-linked, and bounded — humans
+                keep final authority.
               </p>
               <Button asChild variant="outline">
                 <UiLink href="/platform">
@@ -160,8 +160,8 @@ export default function HomePage() {
                 },
                 {
                   role: "Operator",
-                  href: "/app/runs",
-                  desc: "Exception handling, controls, and run operations.",
+                  href: "/console",
+                  desc: "Workbench, exceptions, runs, and billing in one console.",
                 },
                 {
                   role: "Architecture reviewer",

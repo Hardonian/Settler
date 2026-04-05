@@ -133,15 +133,20 @@ export function getDefaultPlan(): PlanConfig {
  * Map legacy planId to new planCode
  */
 export function mapLegacyPlanId(planId: string): PlanCode {
+  const normalized = planId?.trim().toLowerCase() ?? "";
+  if (normalized === "starter" || normalized === "growth" || normalized === "scale") {
+    return normalized;
+  }
   const mapping: Record<string, PlanCode> = {
-    base: 'starter',
-    free: 'starter',
-    pro: 'growth',
-    commercial: 'growth',
-    enterprise: 'scale',
-    scale: 'scale',
+    base: "starter",
+    free: "starter",
+    trial: "starter",
+    pro: "growth",
+    commercial: "growth",
+    enterprise: "enterprise",
+    scale: "scale",
   };
-  return mapping[planId] || 'starter';
+  return mapping[normalized] || "starter";
 }
 
 /**

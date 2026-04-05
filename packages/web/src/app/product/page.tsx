@@ -43,6 +43,46 @@ export default function ProductPage() {
           }
         />
 
+        <div id="product-pillars" className="scroll-mt-24">
+          <Section className="py-16 lg:py-24 border-t border-border/40">
+            <div className="text-center space-y-3 max-w-3xl mx-auto mb-12">
+              <h2 className="text-2xl font-bold tracking-tight">Product pillars</h2>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                How the console and docs are organized: reconciliation core, exception operations,
+                evidence and audit, and the control plane (API, webhooks, billing, settings).
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-16">
+              {[
+                {
+                  title: "Reconciliation core",
+                  body: "Runs, policies, schedules, and replay surfaces for deterministic execution truth.",
+                },
+                {
+                  title: "Exception ops",
+                  body: "Queues, severity, analytics, and bounded AI insights with explicit degraded states.",
+                },
+                {
+                  title: "Evidence + audit",
+                  body: "Proof explorer, audits, and audit trail for replayable, exportable artifacts.",
+                },
+                {
+                  title: "Control plane",
+                  body: "API keys, webhooks, workflows, billing, diagnostics, and tenant settings.",
+                },
+              ].map((pillar) => (
+                <div
+                  key={pillar.title}
+                  className="rounded-xl border border-border/60 bg-card/40 p-5 text-left"
+                >
+                  <h3 className="text-sm font-semibold text-foreground">{pillar.title}</h3>
+                  <p className="mt-2 text-xs text-muted-foreground leading-relaxed">{pillar.body}</p>
+                </div>
+              ))}
+            </div>
+          </Section>
+        </div>
+
         <Section className="py-20 lg:py-32">
           <div className="text-center space-y-4 max-w-3xl mx-auto mb-16">
             <h2 className="text-3xl font-bold tracking-tight">The Settlement Pipeline</h2>
