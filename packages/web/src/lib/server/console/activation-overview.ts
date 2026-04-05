@@ -7,6 +7,8 @@ import {
   type ReadinessState,
 } from "@/lib/activation/readiness";
 import type {
+  ActivationMilestone,
+  ActivationMilestoneId,
   ConsoleActivationCounts,
   ConsoleActivationOverview,
   ConsoleActivationTask,
@@ -123,6 +125,60 @@ export async function getConsoleActivationOverview(): Promise<ConsoleActivationO
     finalizedProofPackages: 0,
   };
 
+  const emptyMilestones = (
+    args: Partial<Record<ActivationMilestoneId, ActivationMilestone>> = {}
+  ): ActivationMilestone[] => {
+    const base: ActivationMilestone[] = [
+      {
+        id: "workspace_created",
+        label: "Workspace created",
+        achieved: false,
+        achievedAt: null,
+        evidenceSummary: "No workspace membership recorded for this account.",
+      },
+      {
+        id: "source_connected",
+        label: "Source connected",
+        achieved: false,
+        achievedAt: null,
+        evidenceSummary: "No connected integration credentials on record.",
+      },
+      {
+        id: "first_run_completed",
+        label: "First reconciliation run",
+        achieved: false,
+        achievedAt: null,
+        evidenceSummary: "No reconciliation runs found for accessible workspaces.",
+      },
+      {
+        id: "first_exception_reviewed",
+        label: "First exception adjudication recorded",
+        achieved: false,
+        achievedAt: null,
+        evidenceSummary: "No adjudication memory rows yet.",
+      },
+      {
+        id: "first_proof_finalized",
+        label: "First finalized proof package",
+        achieved: false,
+        achievedAt: null,
+        evidenceSummary: "No finalized proof packages yet.",
+      },
+      {
+        id: "first_schedule_configured",
+        label: "Scheduled workflow configured",
+        achieved: false,
+        achievedAt: null,
+        evidenceSummary: "No recon job with a cron schedule found.",
+      },
+    ];
+    const map = new Map(base.map((m) => [m.id, m]));
+    for (const m of Object.values(args)) {
+      if (m) map.set(m.id, m);
+    }
+    return Array.from(map.values());
+  };
+
   if (!envValidation.isValid) {
     const journeyChecks: ReadinessCheck[] = [
       {
@@ -142,6 +198,7 @@ export async function getConsoleActivationOverview(): Promise<ConsoleActivationO
       overallState: resolveReadinessState([...systemChecks, ...journeyChecks]),
       authState: "unauthenticated",
       counts: emptyCounts,
+      milestones: emptyMilestones(),
       workspaces: [],
       systemChecks,
       journeyChecks,
@@ -188,6 +245,7 @@ export async function getConsoleActivationOverview(): Promise<ConsoleActivationO
       overallState: resolveReadinessState([...systemChecks, ...journeyChecks]),
       authState: "unauthenticated",
       counts: emptyCounts,
+      milestones: emptyMilestones(),
       workspaces: [],
       systemChecks,
       journeyChecks,
@@ -222,6 +280,7 @@ export async function getConsoleActivationOverview(): Promise<ConsoleActivationO
       overallState: resolveReadinessState(systemChecks),
       authState: "unauthenticated",
       counts: emptyCounts,
+      milestones: emptyMilestones(),
       workspaces: [],
       systemChecks,
       journeyChecks: [
@@ -323,6 +382,7 @@ export async function getConsoleActivationOverview(): Promise<ConsoleActivationO
   let databaseAvailable = hasDatabaseRuntimeConfig();
   let lastRunAt: string | null = null;
   let lastDecisionAt: string | null = null;
+  let milestones: ActivationMilestone[] = emptyMilestones();
   const counts: ConsoleActivationCounts = { ...emptyCounts };
   counts.workspaces = tenantIds.length;
   counts.activeWorkspaces = tenantIds.length;
@@ -334,16 +394,20 @@ export async function getConsoleActivationOverview(): Promise<ConsoleActivationO
         workspaceEntities,
         runCount,
         lastRun,
+        firstCompletedRun,
         unresolvedExceptions,
         adjudicationMemories,
         lastDecision,
+        firstAdjudication,
         evidenceArtifactCount,
         degradedEvidenceArtifactCount,
         finalizedProofPackages,
+        firstFinalizedProof,
+        scheduledReconJobs,
       ] = await Promise.all([
         prisma.tenant.findMany({
           where: { id: { in: tenantIds } },
-          select: { id: true, name: true, slug: true, isActive: true },
+          select: { id: true, name: true, slug: true, isActive: true, createdAt: true },
           orderBy: { name: "asc" },
         }),
         prisma.reconciliationRun.count({
@@ -353,6 +417,11 @@ export async function getConsoleActivationOverview(): Promise<ConsoleActivationO
           where: { tenantId: { in: tenantIds } },
           select: { createdAt: true },
           orderBy: { createdAt: "desc" },
+        }),
+        prisma.reconciliationRun.findFirst({
+          where: { tenantId: { in: tenantIds }, status: "completed" },
+          select: { startedAt: true, completedAt: true },
+          orderBy: { startedAt: "asc" },
         }),
         prisma.reconciliationMatch.count({
           where: {
@@ -369,6 +438,11 @@ export async function getConsoleActivationOverview(): Promise<ConsoleActivationO
           select: { completedAt: true, createdAt: true },
           orderBy: [{ completedAt: "desc" }, { createdAt: "desc" }],
         }),
+        prisma.exceptionAdjudicationMemory.findFirst({
+          where: { tenantId: { in: tenantIds } },
+          select: { createdAt: true },
+          orderBy: { createdAt: "asc" },
+        }),
         prisma.evidenceArtifact.count({
           where: { tenantId: { in: tenantIds } },
         }),
@@ -382,6 +456,18 @@ export async function getConsoleActivationOverview(): Promise<ConsoleActivationO
           where: {
             tenantId: { in: tenantIds },
             status: "finalized",
+          },
+        }),
+        prisma.proofPackage.findFirst({
+          where: { tenantId: { in: tenantIds }, status: "finalized" },
+          select: { createdAt: true },
+          orderBy: { createdAt: "asc" },
+        }),
+        prisma.reconJob.count({
+          where: {
+            tenantId: { in: tenantIds },
+            deletedAt: null,
+            AND: [{ scheduleCron: { not: null } }, { scheduleCron: { not: "" } }],
           },
         }),
       ]);
@@ -401,12 +487,129 @@ export async function getConsoleActivationOverview(): Promise<ConsoleActivationO
       lastRunAt = lastRun?.createdAt.toISOString() ?? null;
       lastDecisionAt =
         lastDecision?.completedAt?.toISOString() ?? lastDecision?.createdAt.toISOString() ?? null;
+
+      let earliestWorkspace: (typeof workspaceEntities)[number] | null = null;
+      for (const row of workspaceEntities) {
+        if (!earliestWorkspace || row.createdAt < earliestWorkspace.createdAt) {
+          earliestWorkspace = row;
+        }
+      }
+      const integrationSyncAt =
+        (connectedIntegrations || [])
+          .map((r) => r.last_sync_at)
+          .filter((v): v is string => Boolean(v))
+          .sort()[0] ?? null;
+
+      milestones = emptyMilestones({
+        workspace_created: {
+          id: "workspace_created",
+          label: "Workspace created",
+          achieved: workspaceEntities.length > 0,
+          achievedAt: earliestWorkspace?.createdAt.toISOString() ?? null,
+          evidenceSummary:
+            workspaceEntities.length > 0
+              ? `Earliest workspace row in Prisma tenants: ${earliestWorkspace?.name ?? "workspace"}.`
+              : "No tenant rows returned for current memberships.",
+        },
+        source_connected: {
+          id: "source_connected",
+          label: "Source connected",
+          achieved: (connectedIntegrations?.length ?? 0) > 0,
+          achievedAt: integrationSyncAt,
+          evidenceSummary:
+            (connectedIntegrations?.length ?? 0) > 0
+              ? `${connectedIntegrations?.length} integration_credentials row(s) with is_connected=true.`
+              : "No connected integration_credentials for this user.",
+        },
+        first_run_completed: {
+          id: "first_run_completed",
+          label: "First reconciliation run",
+          achieved: Boolean(firstCompletedRun),
+          achievedAt:
+            firstCompletedRun?.completedAt?.toISOString() ??
+            firstCompletedRun?.startedAt.toISOString() ??
+            null,
+          evidenceSummary: firstCompletedRun
+            ? "First completed reconciliation_runs row for accessible tenants."
+            : "No completed reconciliation_runs row yet.",
+        },
+        first_exception_reviewed: {
+          id: "first_exception_reviewed",
+          label: "First exception adjudication recorded",
+          achieved: adjudicationMemories > 0,
+          achievedAt: firstAdjudication?.createdAt.toISOString() ?? null,
+          evidenceSummary:
+            adjudicationMemories > 0
+              ? `exception_adjudication_memories count=${adjudicationMemories} (first at ${firstAdjudication?.createdAt.toISOString() ?? "unknown"}).`
+              : "No exception_adjudication_memories rows yet.",
+        },
+        first_proof_finalized: {
+          id: "first_proof_finalized",
+          label: "First finalized proof package",
+          achieved: finalizedProofPackages > 0,
+          achievedAt: firstFinalizedProof?.createdAt.toISOString() ?? null,
+          evidenceSummary:
+            finalizedProofPackages > 0
+              ? `proof_packages finalized count=${finalizedProofPackages}.`
+              : "No finalized proof_packages rows yet.",
+        },
+        first_schedule_configured: {
+          id: "first_schedule_configured",
+          label: "Scheduled workflow configured",
+          achieved: scheduledReconJobs > 0,
+          achievedAt: null,
+          evidenceSummary:
+            scheduledReconJobs > 0
+              ? `${scheduledReconJobs} recon_jobs row(s) with non-empty schedule_cron.`
+              : "No recon_jobs with schedule_cron set for accessible tenants.",
+        },
+      });
     } catch (error) {
       databaseAvailable = false;
       appLogger.error("[Console Activation] Failed to load database-backed overview", error);
+      milestones = emptyMilestones({
+        workspace_created: {
+          id: "workspace_created",
+          label: "Workspace created",
+          achieved: false,
+          achievedAt: null,
+          evidenceSummary: "Database read failed; workspace milestone could not be verified.",
+        },
+        source_connected: {
+          id: "source_connected",
+          label: "Source connected",
+          achieved: (connectedIntegrations?.length ?? 0) > 0,
+          achievedAt: null,
+          evidenceSummary:
+            (connectedIntegrations?.length ?? 0) > 0
+              ? "Supabase reports connected integrations; Prisma-backed milestones are unavailable."
+              : "Could not verify integrations after database error.",
+        },
+      });
     }
   } else {
     counts.activeWorkspaces = tenantIds.length;
+    if (tenantIds.length > 0) {
+      milestones = emptyMilestones({
+        workspace_created: {
+          id: "workspace_created",
+          label: "Workspace created",
+          achieved: true,
+          achievedAt: null,
+          evidenceSummary: "Tenant membership exists in Supabase; Prisma was not queried for createdAt.",
+        },
+        source_connected: {
+          id: "source_connected",
+          label: "Source connected",
+          achieved: (connectedIntegrations?.length ?? 0) > 0,
+          achievedAt: null,
+          evidenceSummary:
+            (connectedIntegrations?.length ?? 0) > 0
+              ? "integration_credentials rows present; deeper connector health not evaluated here."
+              : "No connected integrations in Supabase.",
+        },
+      });
+    }
   }
 
   const integrationCheck: ReadinessCheck =
@@ -600,6 +803,7 @@ export async function getConsoleActivationOverview(): Promise<ConsoleActivationO
     overallState: resolveReadinessState(allChecks),
     authState: "authenticated",
     counts,
+    milestones,
     workspaces: workspaceRows,
     systemChecks,
     journeyChecks,

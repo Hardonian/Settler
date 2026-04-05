@@ -15,6 +15,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { formatDistanceToNow, format } from "date-fns";
+import { PREMIUM_PACKS } from "@settler/types";
 import {
   TrendingUp,
   TrendingDown,
@@ -338,6 +339,33 @@ function RunQualityTimeline({
 
 type FamilyTrend = CrossRunIntelligenceSummary["recurringFamilies"]["families"][number]["trend"];
 type FamilyCertainty = CrossRunIntelligenceSummary["recurringFamilies"]["families"][number]["certainty"];
+type RecurrencePosture =
+  CrossRunIntelligenceSummary["recurringFamilies"]["families"][number]["recurrencePosture"];
+
+function RecurrencePosturePill({ posture }: { posture: RecurrencePosture }) {
+  if (posture === "worsening") {
+    return (
+      <Badge variant="destructive" size="sm" className="gap-1">
+        <TrendingUp className="h-2.5 w-2.5" aria-hidden="true" />
+        Worsening
+      </Badge>
+    );
+  }
+  if (posture === "improving") {
+    return (
+      <Badge variant="success" size="sm" className="gap-1">
+        <TrendingDown className="h-2.5 w-2.5" aria-hidden="true" />
+        Improving
+      </Badge>
+    );
+  }
+  return (
+    <Badge variant="secondary" size="sm" className="gap-1">
+      <Minus className="h-2.5 w-2.5" aria-hidden="true" />
+      Stable
+    </Badge>
+  );
+}
 
 function FamilyTrendPill({ trend }: { trend: FamilyTrend }) {
   if (trend === "strengthening") {
@@ -410,6 +438,7 @@ function RecurringFamilyRow({
               {family.archetypeCategory}
             </Badge>
           )}
+          <RecurrencePosturePill posture={family.recurrencePosture} />
           <FamilyTrendPill trend={family.trend} />
         </div>
 
@@ -459,6 +488,27 @@ function RecurringFamilyRow({
             </>
           )}
         </div>
+
+        {family.prioritizationReasons.length > 0 && (
+          <ul className="text-[10px] text-muted-foreground/70 list-disc pl-4 space-y-0.5">
+            {family.prioritizationReasons.map((r) => (
+              <li key={r}>{r}</li>
+            ))}
+          </ul>
+        )}
+
+        {family.suggestedNextActions.length > 0 && (
+          <div className="rounded-md border border-border/40 bg-muted/10 px-2.5 py-2">
+            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">
+              Bounded next checks
+            </p>
+            <ul className="text-[10px] text-muted-foreground/80 list-disc pl-4 space-y-0.5">
+              {family.suggestedNextActions.map((a) => (
+                <li key={a}>{a}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -641,11 +691,17 @@ export default function IntelligenceTimelinePage() {
     <div className="flex flex-col gap-6 p-6">
       {/* Page header */}
       <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight">Reconciliation Intelligence</h1>
+      <div>
+        <h1 className="text-xl font-semibold tracking-tight">Reconciliation Intelligence</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Cross-run pattern analysis, exception family memory, and operator decision history.
             Settler learns from your reconciliation history over time.
+          </p>
+          <p className="mt-2 text-xs text-muted-foreground/80 border-l-2 border-primary/30 pl-3">
+            <span className="font-medium text-foreground">{PREMIUM_PACKS.exceptionIntelligence.name}.</span>{" "}
+            {PREMIUM_PACKS.exceptionIntelligence.publicDescriptor} Requires an active subscription or the{" "}
+            <span className="font-mono text-[10px]">{PREMIUM_PACKS.exceptionIntelligence.integrationId}</span>{" "}
+            add-on when sold standalone.
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">

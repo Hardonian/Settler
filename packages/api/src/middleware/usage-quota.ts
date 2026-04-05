@@ -6,7 +6,7 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthRequest } from "./auth";
 import { query } from "../db";
-import { getPlanLimits, getPlanFeatures } from "../config/plans";
+import { getPlanLimits, getPlanFeatures } from "../config/commercial-quota";
 import { sendError } from "../utils/api-response";
 import { logInfo } from "../utils/logger";
 import { checkQuotaExceeded, trackReconciliationExecution } from "../services/usage/tracker";

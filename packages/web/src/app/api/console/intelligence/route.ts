@@ -14,7 +14,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { withSecurity } from "@/lib/middleware/api-security";
-import { requireActiveSubscription } from "@/lib/security/billing-enforcement";
+import { requireActiveSubscriptionOrExceptionIntelligencePack } from "@/lib/security/billing-enforcement";
 import { resolveTenantMembershipScope } from "@/lib/supabase/tenant-membership";
 import { prisma } from "@/shared/db/prismaClient";
 import { buildCrossRunIntelligenceSummary } from "@settler/reconciliation-core";
@@ -24,14 +24,14 @@ export const dynamic = "force-dynamic";
 export const GET = withSecurity(
   async function GET(request: NextRequest): Promise<NextResponse> {
     // Billing gate
-    const billing = await requireActiveSubscription(request);
+    const billing = await requireActiveSubscriptionOrExceptionIntelligencePack(request);
     if (!billing.allowed) {
       return (
         billing.error ??
         NextResponse.json(
           {
-            error: "Subscription required",
-            code: "SUBSCRIPTION_REQUIRED",
+            error: "Subscription or Exception Intelligence Pack required",
+            code: "INTELLIGENCE_PACK_OR_SUBSCRIPTION_REQUIRED",
           },
           { status: 403 }
         )
