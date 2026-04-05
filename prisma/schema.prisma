@@ -1036,6 +1036,10 @@ model Tenant {
   navigation         TenantNavigation?
   pages              TenantPage[]
   experiments        Experiment[]
+  operatorCustomizationStates OperatorCustomizationState[]
+  operatorCustomizationProposals OperatorCustomizationProposal[]
+  operatorCustomizationAudits OperatorCustomizationAudit[]
+  operatorInteractionSignals OperatorInteractionSignal[]
 
   @@index([slug])
   @@index([primaryDomain])
@@ -2232,4 +2236,85 @@ model ApprovalDelegation {
   @@index([delegateId])
   @@index([isActive])
   @@map("approval_delegations")
+}
+
+// ============================================================================
+// OPERATOR CUSTOMIZATION STUDIO
+// Versioned presentation/workflow layout for admin console; tenant + user scoped.
+// Does not store reconciliation truth — only module visibility, order, labels, thresholds.
+// ============================================================================
+
+model OperatorCustomizationState {
+  id               String    @id @default(uuid())
+  tenantId         String    @db.Uuid
+  userId           String    @db.Uuid
+  surface          String // e.g. admin_dashboard
+  schemaVersion    String    @default("1")
+  draftConfig      Json      @default("{}")
+  publishedConfig  Json      @default("{}")
+  publishedAt      DateTime?
+  draftUpdatedAt   DateTime  @default(now())
+  metadata         Json      @default("{}")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, userId, surface])
+  @@index([tenantId])
+  @@index([userId])
+  @@map("operator_customization_states")
+}
+
+model OperatorCustomizationProposal {
+  id                     String    @id @default(uuid())
+  tenantId               String    @db.Uuid
+  userId                 String    @db.Uuid
+  surface                String
+  status                 String    @default("pending") // pending, applied, rejected
+  naturalLanguageRequest String    @db.Text
+  structuredPatch        Json      @default("{}")
+  rationale              String?   @db.Text
+  inferenceMode          String    @default("rules") // rules | degraded_unavailable
+  createdAt              DateTime  @default(now())
+  appliedAt              DateTime?
+  rejectedAt             DateTime?
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, createdAt(sort: Desc)])
+  @@index([userId])
+  @@index([status])
+  @@map("operator_customization_proposals")
+}
+
+model OperatorCustomizationAudit {
+  id        String   @id @default(uuid())
+  tenantId  String   @db.Uuid
+  userId    String?  @db.Uuid
+  action    String
+  surface   String?
+  details   Json     @default("{}")
+  createdAt DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, createdAt(sort: Desc)])
+  @@map("operator_customization_audits")
+}
+
+model OperatorInteractionSignal {
+  id         String   @id @default(uuid())
+  tenantId   String   @db.Uuid
+  userId     String?  @db.Uuid
+  signalType String // module_view, layout_reorder, etc.
+  moduleId   String
+  metadata   Json     @default("{}")
+  createdAt  DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, moduleId, createdAt(sort: Desc)])
+  @@index([userId])
+  @@map("operator_interaction_signals")
 }
