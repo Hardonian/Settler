@@ -40,7 +40,7 @@ describe('/investor/reality fallback behavior', () => {
         active_tenants: 12,
         status: 'proven',
       },
-      reliability: { uptime_proxy: 99.9, failure_events: 0 },
+      reliability: { uptime_proxy: null, hard_500_count: 0, failure_events: 0 },
       risk_index: 0,
       evidence_index: 100,
       last_updated: '2025-01-01T00:00:00.000Z',

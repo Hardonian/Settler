@@ -36,12 +36,36 @@ export function TrustBadges() {
   }
 
   const badges: TrustBadge[] = [
-    { name: 'SOC 2 Planned Q3 2026', icon: '/assets/icons/soc2-badge.svg', description: 'Enterprise security certification planned' },
-    { name: 'GDPR Compliant', icon: '/assets/icons/gdpr-badge.svg', description: 'EU data protection compliant' },
-    { name: 'PCI-DSS Ready', icon: '/assets/icons/payment-secure-badge.svg', description: 'Payment security standards' },
-    { name: '99.99% Uptime', icon: '/assets/icons/uptime-badge.svg', description: 'SLA-backed availability (Enterprise)' },
-    { name: 'Bank-Level Encryption', icon: '/assets/icons/encryption-badge.svg', description: 'AES-256 encryption at rest' },
-    { name: '30-Day Guarantee', icon: '/assets/icons/money-back-badge.svg', description: 'Money-back guarantee' },
+    {
+      name: 'SOC 2 — program in progress',
+      icon: '/assets/icons/soc2-badge.svg',
+      description: 'Type II audit planned; not a completed attestation yet.',
+    },
+    {
+      name: 'Privacy & data rights',
+      icon: '/assets/icons/gdpr-badge.svg',
+      description: 'Processor workflows and DPA — not a legal “compliant” badge.',
+    },
+    {
+      name: 'Card data — scope minimization',
+      icon: '/assets/icons/payment-secure-badge.svg',
+      description: 'Design for least cardholder data; PCI posture is deployment-specific.',
+    },
+    {
+      name: 'Public connectivity status',
+      icon: '/assets/icons/uptime-badge.svg',
+      description: 'Live probes only — no historical uptime % or default SLA claim.',
+    },
+    {
+      name: 'Encryption in transit & at rest',
+      icon: '/assets/icons/encryption-badge.svg',
+      description: 'TLS and storage encryption depend on your deployment configuration.',
+    },
+    {
+      name: '30-Day Guarantee',
+      icon: '/assets/icons/money-back-badge.svg',
+      description: 'Where offered on your plan terms.',
+    },
   ];
 
   const prefersReducedMotion =

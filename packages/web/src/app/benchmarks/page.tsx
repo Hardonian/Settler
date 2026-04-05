@@ -10,7 +10,7 @@ import { CheckCircle2, AlertTriangle } from "lucide-react";
 export const metadata: Metadata = {
   title: "Benchmarks - Settler",
   description:
-    "Performance benchmarks for the Settler reconciliation engine: API latency, reconciliation throughput, evidence generation timing, and determinism verification.",
+    "Illustrative performance scenarios for the Settler reconciliation engine. Figures are not live production guarantees unless backed by your benchmarks and monitoring.",
 };
 
 export default function BenchmarksPage() {
@@ -20,7 +20,7 @@ export default function BenchmarksPage() {
     { label: "Evidence Gen", value: "<120ms", sub: "Per Run (SHA-256)" },
     { label: "Replay Verify", value: "<200ms", sub: "Hash Confirmation" },
     { label: "Determinism Pass Rate", value: "100%", sub: "Identical Inputs → Identical Hash" },
-    { label: "Uptime SLA", value: "99.99%", sub: "Enterprise Tier" },
+    { label: "Hosted SLA", value: "By contract", sub: "Not implied by this page" },
     { label: "Tenant Isolation Tests", value: "0 leaks", sub: "Across All CI Runs" },
     { label: "Mismatch Triage", value: "<3s", sub: "AI-Assisted Context Load" },
   ];

@@ -17,7 +17,9 @@ export type InvestorRealityData = {
     status: 'proven' | 'assumed' | 'broken';
   };
   reliability: {
+    /** Never inferred from a single counter — use external monitoring for SLA/uptime %. */
     uptime_proxy: number | null;
+    hard_500_count: number;
     failure_events: number;
   };
   evidence_index: number;
@@ -42,6 +44,7 @@ const DEFAULT_INVESTOR_REALITY_DATA: InvestorRealityData = {
   },
   reliability: {
     uptime_proxy: null,
+    hard_500_count: 0,
     failure_events: 0,
   },
   evidence_index: 0,
@@ -98,7 +101,8 @@ export async function getInvestorRealityData(): Promise<InvestorRealityData> {
         status: usageStatus,
       },
       reliability: {
-        uptime_proxy: hard500Count === 0 ? 99.9 : null,
+        uptime_proxy: null,
+        hard_500_count: hard500Count,
         failure_events: failureEvents,
       },
       evidence_index: Math.round((evidenceSignals.filter((status) => status === 'proven').length / evidenceSignals.length) * 100),
