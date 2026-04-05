@@ -14,6 +14,7 @@ import {
   Settings,
   Flag,
   Palette,
+  Paintbrush,
   FlaskConical,
   BarChart3,
   Activity,
@@ -57,6 +58,7 @@ const adminNavSections: { label: string; items: NavItem[] }[] = [
     label: "Configuration",
     items: [
       { href: "/admin/settings", label: "Settings", icon: Settings },
+      { href: "/admin/operator-customization", label: "Customization", icon: Paintbrush },
       { href: "/admin/branding", label: "Branding", icon: Palette },
       { href: "/admin/flags", label: "Feature Flags", icon: Flag },
       { href: "/admin/pages", label: "Pages", icon: FileText },
