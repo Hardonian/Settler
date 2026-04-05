@@ -30,6 +30,7 @@ import {
   PlayCircle,
   AlertTriangle,
   Headphones,
+  CalendarClock,
   type LucideIcon,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -41,11 +42,10 @@ import { CONSOLE_ROUTE_REGISTRY, type ConsoleRouteEntry } from "@/lib/console/ro
 import { OperationalRouteNotice } from "@/components/shared/OperationalRouteNotice";
 
 const navSectionOrder = [
-  "Operations",
-  "Intelligence",
-  "Developer",
-  "Settings",
-  "Enterprise",
+  "Reconciliation core",
+  "Exception ops",
+  "Evidence + audit",
+  "Control plane",
   "Administration",
 ] as const;
 
@@ -72,6 +72,7 @@ const labelToIcon: Record<string, LucideIcon> = {
   "Audit Trail": ShieldCheck,
   "Operator Console": Bot,
   "Tenant Observability": Building2,
+  Schedules: CalendarClock,
 };
 
 function maturityBadge(entry: ConsoleRouteEntry) {

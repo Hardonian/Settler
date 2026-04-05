@@ -9,6 +9,7 @@ import { Check, ArrowRight, Zap, Shield, Globe, LucideIcon } from "lucide-react"
 import Link from "next/link";
 import { VisualGrid } from "@/components/site/infographics";
 import { COMMERCIAL_OFFERS, OfferCode } from "@/domain/billing/commercialModel";
+import { PREMIUM_PACKS } from "@/domain/billing/premiumPacks";
 
 export const metadata = {
   title: "Pricing | Settler",
@@ -108,6 +109,46 @@ export default function PricingPage() {
 
       {/* Feature Comparison */}
       <FeatureComparison />
+
+      <Section className="border-t border-border/40 py-16 sm:py-20 bg-muted/10">
+        <div className="mx-auto max-w-7xl">
+          <SectionHeader
+            title="Capability packs"
+            description="Additive overlays on volume plans — each maps to real console routes today. Managed reliability is contractual (Managed / Enterprise), not a UI toggle."
+          />
+          <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {PREMIUM_PACKS.map((pack) => (
+              <Card key={pack.code} className="border-border/50 h-full flex flex-col">
+                <CardHeader>
+                  <CardTitle className="text-lg">{pack.name}</CardTitle>
+                  <CardDescription className="leading-relaxed">{pack.summary}</CardDescription>
+                </CardHeader>
+                <CardContent className="flex-1 flex flex-col justify-end pt-0">
+                  {pack.consoleRoutes.length > 0 ? (
+                    <div>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                        Console surfaces
+                      </p>
+                      <ul className="text-xs text-muted-foreground space-y-1 font-mono">
+                        {pack.consoleRoutes.map((r) => (
+                          <li key={r}>{r}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground italic">
+                      Delivered via contract / operator engagement — no dedicated pack page in-app.
+                    </p>
+                  )}
+                  <p className="text-[11px] text-muted-foreground/80 mt-4">
+                    Typical base: <span className="font-medium">{pack.suggestedBasePlan}</span>
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </Section>
 
       {/* FAQ */}
       <Section className="border-t border-border/40 py-16 sm:py-20">

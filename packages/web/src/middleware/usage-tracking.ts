@@ -171,15 +171,15 @@ export async function checkUsageLimit(
     return {
       allowed,
       currentUsage: currentUsage.totalTransactions,
-      limit: plan.includedTransactions,
-      wouldExceed: totalUsage > plan.includedTransactions,
+      limit: includedVolume,
+      wouldExceed: totalUsage > includedVolume,
     };
   }
 
   return {
     allowed: true,
     currentUsage: currentUsage.totalTransactions,
-    limit: Infinity,
+    limit: includedVolume > 0 ? includedVolume : Infinity,
     wouldExceed: false,
   };
 }

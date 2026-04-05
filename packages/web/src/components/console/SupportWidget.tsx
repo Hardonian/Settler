@@ -4,7 +4,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,6 +43,35 @@ export function SupportWidget({ defaultRoute, defaultRunId = "" }: SupportWidget
   const [submitted, setSubmitted] = useState(false);
   const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [copyFeedback, setCopyFeedback] = useState<string | null>(null);
+
+  const contextBundle = useMemo(() => {
+    const lines = [
+      "=== Settler support context bundle (paste into email or ticket) ===",
+      `Category: ${SUPPORT_ISSUE_CATEGORY_LABELS[category]} (${category})`,
+      subject.trim() ? `Title: ${subject.trim()}` : "Title: (none)",
+      runId.trim() ? `Run UUID: ${runId.trim()}` : "Run UUID: (not provided)",
+      moduleHint.trim() ? `Module hint: ${moduleHint.trim()}` : "Module hint: (none)",
+      defaultRoute?.trim() ? `Console route: ${defaultRoute.trim()}` : "Console route: (none)",
+      "",
+      "Details:",
+      description.trim() || "(draft — add at least 20 characters before submit)",
+      "",
+      "Note: Submitting the form also records tenant-scoped intake with audit attribution.",
+    ];
+    return lines.join("\n");
+  }, [category, subject, runId, moduleHint, description, defaultRoute]);
+
+  const copyBundle = async () => {
+    setCopyFeedback(null);
+    try {
+      await navigator.clipboard.writeText(contextBundle);
+      setCopyFeedback("Copied to clipboard");
+      setTimeout(() => setCopyFeedback(null), 2500);
+    } catch {
+      setCopyFeedback("Copy failed — select the text manually");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -227,6 +256,27 @@ export function SupportWidget({ defaultRoute, defaultRunId = "" }: SupportWidget
                 required
                 minLength={20}
                 maxLength={5000}
+              />
+            </div>
+
+            <div className="rounded-lg border border-border/60 bg-muted/20 p-4 space-y-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <Label htmlFor="support-context-bundle" className="text-sm">
+                  Copy-paste context bundle
+                </Label>
+                <Button type="button" variant="outline" size="sm" onClick={() => void copyBundle()}>
+                  Copy bundle
+                </Button>
+              </div>
+              {copyFeedback ? (
+                <p className="text-xs text-muted-foreground">{copyFeedback}</p>
+              ) : null}
+              <Textarea
+                id="support-context-bundle"
+                readOnly
+                value={contextBundle}
+                rows={10}
+                className="font-mono text-xs"
               />
             </div>
 

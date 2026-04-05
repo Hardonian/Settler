@@ -23,12 +23,12 @@ export type ConsoleMaturityClass =
 
 export type RuntimeDependencyClass = "none" | "supabase" | "stripe" | "providers" | "hybrid";
 
+/** Product IA pillars (canonical console grouping). Keep in sync with marketing `COMMERCIAL_OFFERS`. */
 export type ConsoleNavSection =
-  | "Operations"
-  | "Intelligence"
-  | "Developer"
-  | "Settings"
-  | "Enterprise"
+  | "Reconciliation core"
+  | "Exception ops"
+  | "Evidence + audit"
+  | "Control plane"
   | "Administration";
 
 export interface ConsoleRouteEntry {
@@ -57,7 +57,7 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
   {
     href: "/console",
     label: "Workbench",
-    section: "Operations",
+    section: "Reconciliation core",
     domain: "overview",
     maturity: "runtime-degraded-without-env",
     runtimeDependency: "hybrid",
@@ -78,7 +78,7 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
   {
     href: "/console/reconciliations",
     label: "Reconciliations",
-    section: "Operations",
+    section: "Reconciliation core",
     domain: "reconciliations",
     maturity: "runtime-operational",
     runtimeDependency: "hybrid",
@@ -99,7 +99,7 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
   {
     href: "/console/runs",
     label: "Runs",
-    section: "Operations",
+    section: "Reconciliation core",
     domain: "reconciliations",
     maturity: "runtime-operational",
     runtimeDependency: "hybrid",
@@ -120,7 +120,7 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
   {
     href: "/console/exceptions",
     label: "Exceptions",
-    section: "Operations",
+    section: "Exception ops",
     domain: "reconciliations",
     maturity: "runtime-operational",
     runtimeDependency: "supabase",
@@ -141,7 +141,7 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
   {
     href: "/console/audits",
     label: "Audits",
-    section: "Operations",
+    section: "Evidence + audit",
     domain: "audits",
     maturity: "runtime-degraded-without-tenant",
     runtimeDependency: "supabase",
@@ -162,7 +162,7 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
   {
     href: "/console/proof-explorer",
     label: "Proof Explorer",
-    section: "Operations",
+    section: "Evidence + audit",
     domain: "audits",
     maturity: "runtime-degraded-without-tenant",
     runtimeDependency: "supabase",
@@ -184,7 +184,7 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
   {
     href: "/console/policies",
     label: "Policies",
-    section: "Operations",
+    section: "Reconciliation core",
     domain: "policies",
     maturity: "runtime-operational",
     runtimeDependency: "supabase",
@@ -205,7 +205,7 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
   {
     href: "/console/control-plane",
     label: "Control Plane",
-    section: "Operations",
+    section: "Control plane",
     domain: "control-plane",
     maturity: "runtime-operational",
     runtimeDependency: "hybrid",
@@ -226,7 +226,7 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
   {
     href: "/console/analytics",
     label: "Analytics",
-    section: "Intelligence",
+    section: "Exception ops",
     domain: "analytics",
     maturity: "runtime-degraded-without-env",
     runtimeDependency: "hybrid",
@@ -247,7 +247,7 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
   {
     href: "/console/insights",
     label: "AI Insights",
-    section: "Intelligence",
+    section: "Exception ops",
     domain: "analytics",
     maturity: "runtime-degraded-without-provider",
     runtimeDependency: "providers",
@@ -268,7 +268,7 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
   {
     href: "/console/diagnostics",
     label: "Diagnostics",
-    section: "Intelligence",
+    section: "Control plane",
     domain: "diagnostics",
     maturity: "runtime-degraded-without-env",
     runtimeDependency: "hybrid",
@@ -289,7 +289,7 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
   {
     href: "/console/api-keys",
     label: "API Keys",
-    section: "Developer",
+    section: "Control plane",
     domain: "developer",
     maturity: "runtime-operational",
     runtimeDependency: "supabase",
@@ -310,7 +310,7 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
   {
     href: "/console/webhooks",
     label: "Webhooks",
-    section: "Developer",
+    section: "Control plane",
     domain: "developer",
     maturity: "runtime-degraded-without-provider",
     runtimeDependency: "providers",
@@ -332,7 +332,7 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
   {
     href: "/console/workflows",
     label: "Workflows",
-    section: "Developer",
+    section: "Control plane",
     domain: "developer",
     maturity: "thin",
     runtimeDependency: "hybrid",
@@ -351,9 +351,30 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
     dataMode: "restricted",
   },
   {
+    href: "/console/schedules",
+    label: "Schedules",
+    section: "Control plane",
+    domain: "developer",
+    maturity: "runtime-operational",
+    runtimeDependency: "hybrid",
+    authRequired: true,
+    tenantScopeRequired: true,
+    roleRestriction: "none",
+    envRequired: true,
+    databaseRequired: true,
+    stripeRequired: false,
+    supabaseRequired: true,
+    externalProviderRequired: false,
+    explicitDisclosureRequired: false,
+    degradedBehavior: "Shows schedule list or empty state when none exist.",
+    navTreatment: "secondary",
+    ctaRestrictions: "none",
+    dataMode: "operational",
+  },
+  {
     href: "/console/billing",
     label: "Billing & Plan",
-    section: "Settings",
+    section: "Control plane",
     domain: "billing",
     maturity: "runtime-degraded-without-provider",
     runtimeDependency: "stripe",
@@ -375,7 +396,7 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
   {
     href: "/console/settings",
     label: "Settings",
-    section: "Settings",
+    section: "Control plane",
     domain: "settings",
     maturity: "runtime-operational",
     runtimeDependency: "supabase",
@@ -396,7 +417,7 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
   {
     href: "/console/report-issue",
     label: "Report issue",
-    section: "Settings",
+    section: "Control plane",
     domain: "settings",
     maturity: "runtime-operational",
     runtimeDependency: "supabase",
@@ -418,7 +439,7 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
   {
     href: "/console/site",
     label: "Site Designer",
-    section: "Settings",
+    section: "Control plane",
     domain: "site",
     maturity: "runtime-degraded-without-tenant",
     runtimeDependency: "supabase",
@@ -439,7 +460,7 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
   {
     href: "/console/replay",
     label: "Replay Lab",
-    section: "Enterprise",
+    section: "Reconciliation core",
     domain: "reconciliations",
     maturity: "thin",
     runtimeDependency: "none",
@@ -460,7 +481,7 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
   {
     href: "/console/audit-trail",
     label: "Audit Trail",
-    section: "Enterprise",
+    section: "Evidence + audit",
     domain: "audits",
     maturity: "runtime-degraded-without-tenant",
     runtimeDependency: "supabase",
@@ -482,7 +503,7 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
   {
     href: "/console/operator",
     label: "Operator Console",
-    section: "Enterprise",
+    section: "Control plane",
     domain: "control-plane",
     maturity: "runtime-degraded-without-env",
     runtimeDependency: "hybrid",
