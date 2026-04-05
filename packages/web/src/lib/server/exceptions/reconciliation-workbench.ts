@@ -1,5 +1,30 @@
 import type { PrismaClient } from "@prisma/client";
 import type { ReadinessState } from "@/lib/activation/readiness";
+
+/** Row from similar-resolved adjudication memory query (similarity scoring input). */
+type SimilarResolvedMemoryRow = {
+  exceptionId: string;
+  resolution: string;
+  resolutionReason: string | null;
+  archetypeId: string | null;
+  createdAt: Date;
+  confidence: unknown;
+  adjudicatorId: string;
+  archetype: { code: string; label: string } | null;
+};
+
+/** Scored similar case before stripping internal `_score`. */
+type SimilarScoredCaseRow = {
+  exceptionId: string;
+  resolution: string;
+  resolutionReason: string | null;
+  confidence: number | null;
+  adjudicatedAt: string;
+  adjudicatorId: string;
+  archetypeCode: string | null;
+  archetypeLabel: string | null;
+  _score: number;
+};
 import {
   EXCEPTION_MATCH_TYPES,
   operatorStatusToCanonical,
@@ -1366,7 +1391,7 @@ export async function getReconciliationWorkbenchExceptionDetail(
   const currentMatchType = row.matchType;
   const currentMatchReason = row.matchReason ?? "";
   const scoredSimilarCases = similarMemories
-    .map((mem) => {
+    .map((mem: SimilarResolvedMemoryRow): SimilarScoredCaseRow => {
       let score = 0;
       // Same archetype as current exception's top archetype
       if (topArchetype && mem.archetypeId === topArchetype.id) score += 0.4;
@@ -1385,7 +1410,8 @@ export async function getReconciliationWorkbenchExceptionDetail(
         exceptionId: mem.exceptionId,
         resolution: mem.resolution,
         resolutionReason: mem.resolutionReason,
-        confidence: mem.confidence != null ? Number(mem.confidence) : null,
+        confidence:
+          mem.confidence != null && mem.confidence !== "" ? Number(mem.confidence) : null,
         adjudicatedAt: mem.createdAt.toISOString(),
         adjudicatorId: mem.adjudicatorId,
         archetypeCode: mem.archetype?.code ?? null,
@@ -1393,10 +1419,14 @@ export async function getReconciliationWorkbenchExceptionDetail(
         _score: score,
       };
     })
-    .filter((c) => c._score > 0.1)
-    .sort((a, b) => b._score - a._score)
+    .filter((c: SimilarScoredCaseRow) => c._score > 0.1)
+    .sort((a: SimilarScoredCaseRow, b: SimilarScoredCaseRow) => b._score - a._score)
     .slice(0, 5)
-    .map(({ _score, ...rest }) => rest);
+    .map((item: SimilarScoredCaseRow) => {
+      const { _score, ...rest } = item;
+      void _score;
+      return rest;
+    });
 
   // Why-flagged: deterministic explanation of why this exception was created
   const primaryReasons: Array<{ reason: string; code: string; weight: number; evidence?: string }> = [];
