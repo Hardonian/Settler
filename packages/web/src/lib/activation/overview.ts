@@ -35,11 +35,29 @@ export interface ConsoleActivationTask {
   actionLabel: string;
 }
 
+export type ActivationMilestoneId =
+  | "workspace_created"
+  | "source_connected"
+  | "first_run_completed"
+  | "first_exception_reviewed"
+  | "first_proof_finalized"
+  | "first_schedule_configured";
+
+export interface ActivationMilestone {
+  id: ActivationMilestoneId;
+  label: string;
+  achieved: boolean;
+  achievedAt: string | null;
+  /** Short sentence citing what in the database backs this milestone. */
+  evidenceSummary: string;
+}
+
 export interface ConsoleActivationOverview {
   generatedAt: string;
   overallState: ReadinessState;
   authState: "authenticated" | "unauthenticated";
   counts: ConsoleActivationCounts;
+  milestones: ActivationMilestone[];
   workspaces: WorkspaceSummary[];
   systemChecks: ReadinessCheck[];
   journeyChecks: ReadinessCheck[];

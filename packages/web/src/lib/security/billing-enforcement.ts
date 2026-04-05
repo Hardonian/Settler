@@ -8,6 +8,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { PREMIUM_PACKS } from "@settler/types";
 import { authenticateRequest } from "@/lib/api/unified-auth";
 import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/observability/logger";
@@ -420,6 +421,45 @@ export async function requireAddOn(
       reason: "Error checking add-on",
     };
   }
+}
+
+/**
+ * Active subscription OR active purchase of the Exception Intelligence premium pack.
+ * Keeps base subscription enforcement while allowing a real add-on path for cross-run intelligence.
+ */
+export async function requireActiveSubscriptionOrExceptionIntelligencePack(
+  request: NextRequest,
+  userId?: string
+): Promise<BillingEnforcementResult> {
+  const base = await requireActiveSubscription(request, userId);
+  if (base.allowed) {
+    return base;
+  }
+
+  const pack = PREMIUM_PACKS.exceptionIntelligence;
+  const addOn = await requireAddOn(request, pack.integrationId, userId);
+  if (addOn.allowed) {
+    return addOn;
+  }
+
+  return {
+    allowed: false,
+    billingAccountId: addOn.billingAccountId,
+    planId: addOn.planId,
+    subscriptionStatus: addOn.subscriptionStatus,
+    error: NextResponse.json(
+      {
+        error: "Subscription or Exception Intelligence Pack required",
+        message:
+          "Cross-run exception intelligence requires an active plan or the Exception Intelligence Pack add-on.",
+        code: "INTELLIGENCE_PACK_OR_SUBSCRIPTION_REQUIRED",
+        pack_integration_id: pack.integrationId,
+        upgrade_required: true,
+      },
+      { status: 403 }
+    ),
+    reason: "No active subscription and no intelligence pack purchase",
+  };
 }
 
 /**

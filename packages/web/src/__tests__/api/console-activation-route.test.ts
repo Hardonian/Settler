@@ -37,6 +37,7 @@ describe("GET /api/console/activation", () => {
         degradedEvidenceArtifacts: 0,
         finalizedProofPackages: 0,
       },
+      milestones: [],
       workspaces: [],
       systemChecks: [],
       journeyChecks: [],

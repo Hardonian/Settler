@@ -6,6 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { PLAN_SPINE } from "@settler/types";
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database.types";
 
@@ -132,8 +133,8 @@ export async function getCurrentUsage(
       return sum + Number(event?.quantity || 0);
     }, 0) || 0;
 
-  // Calculate cost: $0.01 per transaction
-  const totalCost = totalTransactions * 0.01;
+  const unit = PLAN_SPINE.starter.limits.reconcile.pricePerReconciliation;
+  const totalCost = totalTransactions * unit;
 
   return {
     totalTransactions,
@@ -157,13 +158,15 @@ export async function checkUsageLimit(
   wouldExceed: boolean;
 }> {
   const { getPlan } = await import("@/config/pricing-simple");
-  const plan = getPlan(planId);
+  const { mapLegacyPlanId } = await import("@/domain/billing/planConfig");
+  const canonicalPlanId = mapLegacyPlanId(planId);
+  const plan = getPlan(canonicalPlanId);
 
   const currentUsage = await getCurrentUsage(billingAccountId, "monthly");
   const totalUsage = currentUsage.totalTransactions + additionalTransactions;
 
-  // Free tier has hard limit
-  if (planId === "free") {
+  // Only starter-equivalent has a hard included-volume cap in the commercial spine
+  if (canonicalPlanId === "starter") {
     const allowed = totalUsage <= plan.includedTransactions;
     return {
       allowed,
@@ -173,7 +176,6 @@ export async function checkUsageLimit(
     };
   }
 
-  // Paid tiers have no hard limit (just billing)
   return {
     allowed: true,
     currentUsage: currentUsage.totalTransactions,

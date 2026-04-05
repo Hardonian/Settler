@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/api/auth-gate";
 import { withSecurity } from "@/lib/middleware/api-security";
+import { PLAN_DEFAULT_MRR_USD } from "@settler/types";
 import { prisma } from "@/shared/db/prismaClient";
 
 export const dynamic = "force-dynamic";
@@ -670,12 +671,14 @@ async function buildPayload(days: number) {
         MAX(CASE
           WHEN s.status IN ('active','trialing','past_due') THEN
             CASE s.plan_id
-              WHEN 'starter' THEN 0
-              WHEN 'growth' THEN 900
-              WHEN 'scale' THEN 9900
-              WHEN 'enterprise' THEN 0
-              WHEN 'pro' THEN 900
-              WHEN 'base' THEN 0
+              WHEN 'starter' THEN ${PLAN_DEFAULT_MRR_USD.starter}
+              WHEN 'growth' THEN ${PLAN_DEFAULT_MRR_USD.growth}
+              WHEN 'scale' THEN ${PLAN_DEFAULT_MRR_USD.scale}
+              WHEN 'enterprise' THEN ${PLAN_DEFAULT_MRR_USD.enterprise}
+              WHEN 'pro' THEN ${PLAN_DEFAULT_MRR_USD.growth}
+              WHEN 'commercial' THEN ${PLAN_DEFAULT_MRR_USD.growth}
+              WHEN 'base' THEN ${PLAN_DEFAULT_MRR_USD.starter}
+              WHEN 'free' THEN ${PLAN_DEFAULT_MRR_USD.starter}
               ELSE 0
             END
           ELSE 0

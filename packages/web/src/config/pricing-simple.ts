@@ -1,118 +1,69 @@
 /**
- * SIMPLIFIED PRICING MODEL
- * 
- * Core value: "$0.01 per transaction"
- * 
- * This replaces the complex tiered model with a simple usage-based model.
+ * Simplified pricing helpers for legacy usage-tracking paths.
+ * Canonical numeric truth: `@settler/types` commercial spine → {@link planConfigs} in planConfig.
  */
+
+import { PLAN_SPINE, type PlanCode } from "@settler/types";
 
 export interface PricingPlan {
   id: string;
   name: string;
-  basePriceMonthly: number; // Base monthly fee (can be $0)
-  pricePerTransaction: number; // Price per transaction processed
-  includedTransactions: number; // Transactions included in base price
+  basePriceMonthly: number;
+  pricePerTransaction: number;
+  includedTransactions: number;
   description: string;
 }
 
-/**
- * SIMPLIFIED PRICING PLANS
- * 
- * Single base plan + usage-based pricing
- */
+function row(id: PlanCode): PricingPlan {
+  const spine = PLAN_SPINE[id];
+  return {
+    id: spine.code,
+    name: spine.name,
+    basePriceMonthly: spine.monthlyPrice,
+    pricePerTransaction: spine.limits.reconcile.pricePerReconciliation,
+    includedTransactions: spine.limits.reconcile.monthlyVolume,
+    description: spine.marketing.publicLine,
+  };
+}
+
 export const PRICING_PLANS: Record<string, PricingPlan> = {
-  // Free tier: Limited transactions, no base fee
   free: {
-    id: 'free',
-    name: 'Free',
+    id: "free",
+    name: "Free (legacy alias)",
     basePriceMonthly: 0,
-    pricePerTransaction: 0.01, // Still track, but free tier
-    includedTransactions: 100, // 100 free transactions/month
-    description: '100 transactions/month free, then $0.01 per transaction',
+    pricePerTransaction: PLAN_SPINE.starter.limits.reconcile.pricePerReconciliation,
+    includedTransactions: PLAN_SPINE.starter.limits.reconcile.monthlyVolume,
+    description: "Alias of starter for legacy callers; same included reconciliation volume as Starter.",
   },
-
-  // Starter: Base fee + usage
-  starter: {
-    id: 'starter',
-    name: 'Starter',
-    basePriceMonthly: 29, // $29/month base
-    pricePerTransaction: 0.01,
-    includedTransactions: 1000, // 1000 transactions included
-    description: '$29/month + $0.01 per transaction over 1,000',
-  },
-
-  // Growth: Higher base, more included
-  growth: {
-    id: 'growth',
-    name: 'Growth',
-    basePriceMonthly: 99, // $99/month base
-    pricePerTransaction: 0.01,
-    includedTransactions: 10000, // 10,000 transactions included
-    description: '$99/month + $0.01 per transaction over 10,000',
-  },
-
-  // Enterprise: Custom pricing
-  enterprise: {
-    id: 'enterprise',
-    name: 'Enterprise',
-    basePriceMonthly: 0, // Custom
-    pricePerTransaction: 0.01, // Can be negotiated lower
-    includedTransactions: 0, // Custom
-    description: 'Custom pricing, volume discounts available',
-  },
+  starter: row("starter"),
+  growth: row("growth"),
+  scale: row("scale"),
+  enterprise: row("enterprise"),
 };
 
-/**
- * Calculate monthly cost for a plan given transaction count
- */
-export function calculateMonthlyCost(
-  planId: string,
-  transactionCount: number
-): number {
-  const plan = PRICING_PLANS[planId];
+export function calculateMonthlyCost(planId: string, transactionCount: number): number {
+  const plan = PRICING_PLANS[planId] ?? PRICING_PLANS.starter;
   if (!plan) {
     throw new Error(`Unknown plan: ${planId}`);
   }
-
   const basePrice = plan.basePriceMonthly;
   const overage = Math.max(0, transactionCount - plan.includedTransactions);
   const usageCost = overage * plan.pricePerTransaction;
-
   return basePrice + usageCost;
 }
 
-/**
- * Get plan by ID
- */
 export function getPlan(planId: string): PricingPlan {
-  const plan = PRICING_PLANS[planId];
-  if (!plan) {
-    // Default to free if plan not found
-    return PRICING_PLANS.free!; // Non-null assertion: 'free' is always defined
-  }
-  return plan;
+  return PRICING_PLANS[planId] ?? PRICING_PLANS.free!;
 }
 
-/**
- * Check if transaction count exceeds plan limits
- */
-export function exceedsPlanLimit(
-  planId: string,
-  transactionCount: number
-): boolean {
+export function exceedsPlanLimit(planId: string, transactionCount: number): boolean {
   const plan = getPlan(planId);
-  // For free tier, check against included transactions
-  // For paid tiers, no hard limit (just billing)
-  if (planId === 'free') {
+  if (planId === "free" || planId === "starter") {
     return transactionCount > plan.includedTransactions;
   }
-  return false; // Paid plans have no hard limit
+  return false;
 }
 
-/**
- * Get usage-based pricing explanation
- */
 export function getPricingExplanation(planId: string): string {
-  const plan = getPlan(planId);
-  return plan.description;
+  return getPlan(planId).description;
 }
