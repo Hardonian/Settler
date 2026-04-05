@@ -76,17 +76,15 @@ Users submit positioning clarity input via the `PositioningFeedbackForm` compone
 5. Notification is created
 6. User sees personalized thank-you message
 
-### All-Cylinder Firing Check (KPIs)
+### Public health endpoint (runtime connectivity)
 
-Three quantifiable KPIs tracked via SQL Views:
+**Status Endpoint**: `GET /api/status/health`
 
-1. **KPI 1**: `SELECT COUNT(*) FROM profiles WHERE created_at > NOW() - INTERVAL '7 days' > 50`
-2. **KPI 2**: `SELECT COUNT(*) FROM activity_log WHERE created_at > NOW() - INTERVAL '1 hour' > 100`
-3. **KPI 3**: `SELECT AVG(post_views) FROM posts > 100` (Most engaged post engagement > 100)
+Returns **`kind: settler.runtime_connectivity`**: point-in-time probes for PostgreSQL (via Prisma), Supabase reachability, and required Supabase-related runtime environment validation. It does **not** aggregate product KPIs, engagement, or historical uptime.
 
-**Status Endpoint**: `/api/status/health`
+**Related**: `GET /api/status` includes the same connectivity block plus coarse subsystem labels for dashboards.
 
-Returns `"Status: Loud and High ✓"` only if all 3 KPIs are met.
+Canonical mapping: `docs/launch/CLAIMS_AND_EVIDENCE_REGISTRY.md`.
 
 ## 🛠️ Technical Implementation
 

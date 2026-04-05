@@ -7,6 +7,13 @@
 
 This document defines the data shapes, types, and API contracts used throughout the Settler web application. All data structures are typed with TypeScript.
 
+### Public status / health (canonical)
+
+- **`GET /api/status/health`** returns `kind: settler.runtime_connectivity` (database + Supabase + env probes). It is **not** the legacy `allCylindersFiring` KPI shape.
+- **`GET /api/status`** includes a `connectivity` object with the same probe results.
+
+Dashboard “cylinders” metrics may still exist for **internal/ecosystem** analytics; do not confuse them with production health probes.
+
 ## Entity Types
 
 ### Dashboard Metrics

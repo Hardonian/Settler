@@ -52,8 +52,8 @@ export default function ReceiptsPage() {
             <Zap className="w-8 h-8 text-electric-purple mb-4" />
             <h3 className="text-xl font-semibold mb-2">Fast & Reliable</h3>
             <p className="text-muted-foreground">
-              Process receipts in seconds. Built on Settler's enterprise infrastructure 
-              with 99.9% uptime SLA.
+              Process receipts in seconds. Availability and SLAs are contractual and monitored per
+              deployment — see the public status page for point-in-time connectivity only.
             </p>
           </div>
           <div className="p-6 rounded-lg border border-border/40 bg-white">

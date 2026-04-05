@@ -4,6 +4,12 @@
 **Status:** Production Reality  
 **Purpose:** Clear definition of uptime guarantees and SLA posture
 
+## Canonical alignment (2026-04-05)
+
+- **Customer-facing SLA** is contractual (order form / MSA), not implied by marketing pages.
+- **Public endpoints** `GET /api/status` and `GET /api/status/health` report **connectivity at request time** only — see `docs/launch/CLAIMS_AND_EVIDENCE_REGISTRY.md`.
+- **Commercial tier labels** in `packages/api/src/config/pricing.ts` may describe *offering intent*; they are not automatic proof of measured uptime unless backed by monitoring + contract.
+
 ## Overview
 
 This document defines **uptime guarantees** and **SLA posture** for Settler. It is designed to help enterprise customers understand what uptime they can expect.

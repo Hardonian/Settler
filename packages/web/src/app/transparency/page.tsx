@@ -50,10 +50,13 @@ const TransparencyDashboard: React.FC = () => {
             <div className="flex gap-3 min-w-max">
               <div className="flex flex-col gap-1 rounded-xl p-4 bg-muted/20 dark:bg-card/50 border border-slate-100 border-border min-w-[140px]">
                 <p className="text-muted-foreground dark:text-muted-foreground text-xs font-semibold uppercase tracking-wider">
-                  Match Rate
+                  Match outcomes
                 </p>
-                <p className="text-primary dark:text-primary font-bold text-2xl tracking-tight">
-                  99.9%
+                <p className="text-primary dark:text-primary font-bold text-xl tracking-tight leading-snug">
+                  Run-scoped
+                </p>
+                <p className="text-muted-foreground text-[10px] mt-1 leading-tight">
+                  Depends on data quality and policy — not a fleet-wide guarantee.
                 </p>
               </div>
               <div className="flex flex-col gap-1 rounded-xl p-4 bg-muted/20 dark:bg-card/50 border border-slate-100 border-border min-w-[140px]">

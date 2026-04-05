@@ -1,93 +1,88 @@
 /**
- * Claims Validation System
- * 
- * Tracks high-stakes claims (SOC2, PCI, uptime SLA, etc.) with evidence.
- * Prevents "investor bait" claims without proof.
+ * Canonical high-stakes claims registry for marketing and trust surfaces.
+ *
+ * - `proven`: machine-verifiable or audit-backed today (evidence URL required).
+ * - `documented_target`: design / operational target documented but not contractually or automatically proven.
+ * - `planned`: roadmap / certification in flight.
+ * - `deprecated`: must not be displayed.
  */
 
-export type ClaimStatus = 'proven' | 'planned' | 'deprecated';
+export type ClaimStatus = 'proven' | 'documented_target' | 'planned' | 'deprecated';
 
 export interface Claim {
   id: string;
   claim: string;
   status: ClaimStatus;
   evidenceUrl?: string;
-  plannedDate?: string; // ISO date string
+  plannedDate?: string;
   notes?: string;
 }
 
 /**
- * Claims registry - all high-stakes claims must be registered here
+ * All high-stakes claims must be registered here. Prefer `documented_target` over `proven`
+ * unless you can point to automated verification or a signed attestation.
  */
 export const CLAIMS: Claim[] = [
   {
     id: 'soc2',
-    claim: 'SOC 2 Type II Infrastructure Ready (Certification Planned Q3 2026)',
+    claim: 'SOC 2 Type II — certification program (not complete)',
     status: 'planned',
     plannedDate: '2026-Q3',
-    notes: 'SOC 2 Type II infrastructure ready. Certification planned Q3 2026.',
+    notes: 'Infrastructure readiness is not the same as a completed SOC 2 Type II audit.',
   },
   {
     id: 'pci',
-    claim: 'PCI DSS Compliant',
+    claim: 'PCI DSS — assessment not represented as complete',
     status: 'planned',
-    plannedDate: '2025-Q3',
-    notes: 'PCI compliance assessment planned',
+    plannedDate: 'TBD',
+    notes: 'Card data handling posture must be validated per deployment; no blanket PCI claim.',
   },
   {
-    id: 'uptime-99.9',
-    claim: '99.9% Uptime SLA',
-    status: 'proven',
-    evidenceUrl: '/trust',
-    notes: 'Uptime tracked and reported on trust page',
+    id: 'uptime-sla',
+    claim: 'Published uptime SLA percentage for hosted Settler',
+    status: 'documented_target',
+    notes:
+      'No default SLA-backed uptime percent is asserted in product surfaces. Customer SLAs are contractual and out of band.',
   },
   {
-    id: 'backup-rpo-5min',
-    claim: '5-minute RPO (Recovery Point Objective)',
-    status: 'proven',
-    evidenceUrl: '/trust',
-    notes: 'Backup strategy documented on trust page',
+    id: 'backup-rpo',
+    claim: 'Recovery Point Objective (RPO) for production data',
+    status: 'documented_target',
+    notes:
+      'RPO is deployment- and backup-configuration-dependent. Canonical operator context: repository `docs/launch/canonical-go-live-path.md` and your backup provider contract.',
   },
   {
-    id: 'backup-rto-1hr',
-    claim: '1-hour RTO (Recovery Time Objective)',
-    status: 'proven',
-    evidenceUrl: '/trust',
-    notes: 'Recovery objectives documented on trust page',
+    id: 'backup-rto',
+    claim: 'Recovery Time Objective (RTO) for production restore',
+    status: 'documented_target',
+    notes:
+      'RTO depends on infra, data size, and runbook execution. Canonical operator context: repository `docs/launch/canonical-go-live-path.md`.',
   },
   {
-    id: 'data-durability-11nines',
-    claim: '99.999999999% (11 nines) Data Durability',
-    status: 'proven',
-    evidenceUrl: '/trust',
-    notes: 'Data durability strategy uses multi-region replication',
+    id: 'data-durability',
+    claim: '11-nines object durability (cloud storage marketing figure)',
+    status: 'deprecated',
+    notes:
+      'Do not echo vendor durability marketing as a Settler-proven claim; durability is provider- and configuration-specific.',
   },
 ];
 
-/**
- * Get claim by ID
- */
 export function getClaim(id: string): Claim | undefined {
   return CLAIMS.find((c) => c.id === id);
 }
 
-/**
- * Get all proven claims
- */
 export function getProvenClaims(): Claim[] {
-  return CLAIMS.filter((c: any) => c.status === 'proven');
+  return CLAIMS.filter((c) => c.status === 'proven');
 }
 
-/**
- * Get all planned claims
- */
+export function getDocumentedTargetClaims(): Claim[] {
+  return CLAIMS.filter((c) => c.status === 'documented_target');
+}
+
 export function getPlannedClaims(): Claim[] {
-  return CLAIMS.filter((c: any) => c.status === 'planned');
+  return CLAIMS.filter((c) => c.status === 'planned');
 }
 
-/**
- * Check if a claim text matches any registered claim
- */
 export function findClaimByText(text: string): Claim | undefined {
   const normalizedText = text.toLowerCase().trim();
   return CLAIMS.find((claim) => {
@@ -96,23 +91,20 @@ export function findClaimByText(text: string): Claim | undefined {
   });
 }
 
-/**
- * Validate that a claim text is registered and has proper status
- */
 export function validateClaim(text: string): {
   isValid: boolean;
   claim?: Claim;
   warning?: string;
 } {
   const claim = findClaimByText(text);
-  
+
   if (!claim) {
     return {
       isValid: false,
       warning: `Unregistered claim: "${text}". All high-stakes claims must be registered in lib/claims.ts`,
     };
   }
-  
+
   if (claim.status === 'planned') {
     return {
       isValid: true,
@@ -120,7 +112,15 @@ export function validateClaim(text: string): {
       warning: `Planned claim: "${claim.claim}" (planned for ${claim.plannedDate || 'TBD'})`,
     };
   }
-  
+
+  if (claim.status === 'documented_target') {
+    return {
+      isValid: true,
+      claim,
+      warning: `Documented target (not proven SLA/attestation): "${claim.claim}"`,
+    };
+  }
+
   if (claim.status === 'deprecated') {
     return {
       isValid: false,
@@ -128,7 +128,7 @@ export function validateClaim(text: string): {
       warning: `Deprecated claim: "${claim.claim}" should not be displayed`,
     };
   }
-  
+
   return {
     isValid: true,
     claim,

@@ -1,173 +1,61 @@
 /**
- * Health Status Endpoint
- * 
- * All-Cylinder Firing Check: Verifies all 3 KPIs are met.
- * Returns "Status: Loud and High ✓" only if all KPIs pass.
+ * Public connectivity health — current reachability of core dependencies only.
+ *
+ * Does not report KPIs, engagement, historical uptime, or SLA posture.
+ * On failure, returns HTTP 200 with degraded envelope (no silent 500s for probes).
  */
 
-import { createAdminClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import { publicRoute } from '@/middleware/billing-gate-universal';
 import { appLogger } from '@/lib/utils/logger';
 import { withSecurity } from '@/lib/middleware/api-security';
+import {
+  connectivityHealthProbeFailed,
+  probeRuntimeConnectivityHealth,
+} from '@/lib/status/runtime-connectivity-health';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
-export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase admin client
-
-interface KPIHealthStatus {
-  newUsersWeek: number;
-  actionsLastHour: number;
-  topPostEngagement: number;
-  allCylindersFiring: boolean;
-}
+export const runtime = 'nodejs';
 
 export const GET = withSecurity(
   publicRoute(async function GET() {
-  try {
-    const supabase = await createAdminClient();
-
-    // Query the combined KPI health status view using RPC
-    let data, error;
     try {
-      const result = await supabase.rpc('get_kpi_health_status').single();
-      data = result.data;
-      error = result.error;
-    } catch (err) {
-      error = err as Error;
-    }
-    
-    // Fallback: Query individual views if RPC doesn't exist
-    if (error) {
-      appLogger.warn('RPC function not available, using fallback', { error: error instanceof Error ? error.message : String(error) });
-      const [kpi1, kpi2, kpi3] = await Promise.all([
-        supabase.from('kpi_new_users_week').select('count').single(),
-        supabase.from('kpi_actions_last_hour').select('count').single(),
-        supabase.from('kpi_most_engaged_post_today').select('total_engagement').single(),
-      ]);
-      
-      type KpiRow = { count?: number; total_engagement?: number } | null;
-      const newUsersWeek = (kpi1.data as KpiRow)?.count || 0;
-      const actionsLastHour = (kpi2.data as KpiRow)?.count || 0;
-      const topPostEngagement = (kpi3.data as KpiRow)?.total_engagement || 0;
-      
-      return NextResponse.json({
-        status: (newUsersWeek > 50 && actionsLastHour > 100 && topPostEngagement > 100) 
-          ? 'Loud and High ✓' 
-          : 'Building Momentum',
-        allCylindersFiring: newUsersWeek > 50 && actionsLastHour > 100 && topPostEngagement > 100,
-        kpis: {
-          kpi1: {
-            name: 'New Users This Week',
-            value: newUsersWeek,
-            threshold: 50,
-            passed: newUsersWeek > 50,
-          },
-          kpi2: {
-            name: 'Actions Completed in Last Hour',
-            value: actionsLastHour,
-            threshold: 100,
-            passed: actionsLastHour > 100,
-          },
-          kpi3: {
-            name: 'Most Engaged Post Engagement',
-            value: topPostEngagement,
-            threshold: 100,
-            passed: topPostEngagement > 100,
-          },
-        },
-        timestamp: new Date().toISOString(),
-      });
-    }
+      const health = await probeRuntimeConnectivityHealth();
 
-    if (!data) {
-      // Never return 500 - return degraded status with graceful error message
       return NextResponse.json(
         {
-          status: 'Building Momentum',
-          allCylindersFiring: false,
-          kpis: {
-            kpi1: { name: 'New Users This Week', value: 0, threshold: 50, passed: false },
-            kpi2: { name: 'Actions Completed in Last Hour', value: 0, threshold: 100, passed: false },
-            kpi3: { name: 'Most Engaged Post Engagement', value: 0, threshold: 100, passed: false },
-          },
-          error: 'Unable to fetch health status',
-          message: 'Please try again later',
-          timestamp: new Date().toISOString(),
+          kind: 'settler.runtime_connectivity',
+          status: health.overall,
+          healthy: health.overall === 'healthy',
+          checks: health.checks,
+          degraded_reasons: health.degraded_reasons,
+          timestamp: health.timestamp,
+          scope_note:
+            'Point-in-time connectivity only. No uptime percent, RPO/RTO, or incident history is implied.',
+        },
+        { status: 200 }
+      );
+    } catch (error) {
+      appLogger.error('Runtime connectivity health check error', error);
+      const ts = new Date().toISOString();
+      const failed = connectivityHealthProbeFailed(ts);
+      return NextResponse.json(
+        {
+          kind: 'settler.runtime_connectivity',
+          status: 'degraded',
+          healthy: false,
+          checks: failed.checks,
+          degraded_reasons: failed.degraded_reasons,
+          error: 'Unable to complete health probe',
+          message: 'Connectivity state unknown; treat as degraded.',
+          timestamp: ts,
+          scope_note:
+            'Point-in-time connectivity only. No uptime percent, RPO/RTO, or incident history is implied.',
         },
         { status: 200 }
       );
     }
-
-    type KpiHealthData = {
-      new_users_week?: number;
-      actions_last_hour?: number;
-      top_post_engagement?: number;
-      all_cylinders_firing?: boolean;
-    };
-    
-    const typedData = data as KpiHealthData;
-    const healthStatus: KPIHealthStatus = {
-      newUsersWeek: typedData.new_users_week || 0,
-      actionsLastHour: typedData.actions_last_hour || 0,
-      topPostEngagement: typedData.top_post_engagement || 0,
-      allCylindersFiring: typedData.all_cylinders_firing || false,
-    };
-
-    // Check if all KPIs meet thresholds
-    const kpi1Pass = healthStatus.newUsersWeek > 50;
-    const kpi2Pass = healthStatus.actionsLastHour > 100;
-    const kpi3Pass = healthStatus.topPostEngagement > 100;
-
-    const allPass = kpi1Pass && kpi2Pass && kpi3Pass;
-
-    return NextResponse.json(
-      {
-        status: allPass ? 'Loud and High ✓' : 'Building Momentum',
-        allCylindersFiring: allPass,
-        kpis: {
-          kpi1: {
-            name: 'New Users This Week',
-            value: healthStatus.newUsersWeek,
-            threshold: 50,
-            passed: kpi1Pass,
-          },
-          kpi2: {
-            name: 'Actions Completed in Last Hour',
-            value: healthStatus.actionsLastHour,
-            threshold: 100,
-            passed: kpi2Pass,
-          },
-          kpi3: {
-            name: 'Most Engaged Post Engagement',
-            value: healthStatus.topPostEngagement,
-            threshold: 100,
-            passed: kpi3Pass,
-          },
-        },
-        timestamp: new Date().toISOString(),
-      },
-      { status: 200 }
-    );
-  } catch (error) {
-    appLogger.error('Health check error', error);
-    // Never return 500 - return degraded status with graceful error message
-    return NextResponse.json(
-      {
-        status: 'Building Momentum',
-        allCylindersFiring: false,
-        kpis: {
-          kpi1: { name: 'New Users This Week', value: 0, threshold: 50, passed: false },
-          kpi2: { name: 'Actions Completed in Last Hour', value: 0, threshold: 100, passed: false },
-          kpi3: { name: 'Most Engaged Post Engagement', value: 0, threshold: 100, passed: false },
-        },
-        error: 'Unable to fetch health status',
-        message: 'Please try again later',
-        timestamp: new Date().toISOString(),
-      },
-      { status: 200 }
-    );
-  }
-}),
+  }),
   { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
 );

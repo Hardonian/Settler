@@ -1,5 +1,7 @@
 # Production Go-Live Checklist
 
+**Canonical operator sequence:** use `docs/launch/canonical-go-live-path.md` first (preflight → env → deploy → smoke → rollback). This checklist is a broader checklist; it does not override the canonical path when they conflict.
+
 ## Pre-Launch
 
 ### Infrastructure

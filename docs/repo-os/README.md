@@ -13,6 +13,10 @@ Settler is not a generic CRUD app. It is a reconciliation-intelligence and excep
 - **Contribution + quality gates:** `CONTRIBUTING.md` (root)
 - **Repo-OS operating doctrine (this file):** `docs/repo-os/README.md`
 - **Verification policy + command matrix:** `docs/repo-os/verification-matrix.md`
+- **Canonical go-live / rollback / smoke path:** `docs/launch/canonical-go-live-path.md`
+- **Claims ↔ evidence mapping (trust surfaces):** `docs/launch/CLAIMS_AND_EVIDENCE_REGISTRY.md`
+- **Enterprise buyer / pilot rubric (evidence-first):** `docs/launch/enterprise-buyer-pack.md`
+- **Tomorrow launch scope (core vs boundary):** `docs/launch/tomorrow-launch-scope.md`
 - **Execution checklist/report format:** `docs/repo-os/checklists/implementation-pass.md`
 - **Reusable execution prompt header:** `prompts/IMPLEMENTATION_EXECUTION_HEADER.md`
 

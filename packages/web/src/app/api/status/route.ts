@@ -3,7 +3,7 @@ import { addCorsHeaders, handleCors } from "@/lib/api/cors";
 import { publicRoute } from "@/middleware/billing-gate-universal";
 import { appLogger } from "@/lib/utils/logger";
 import { withSecurity } from "@/lib/middleware/api-security";
-import { validateSupabaseEnv } from "@/lib/env/validator";
+import { probeRuntimeConnectivityHealth } from "@/lib/status/runtime-connectivity-health";
 
 // Cache status for 30 seconds to reduce load while keeping it fresh
 export const revalidate = 30;
@@ -18,20 +18,12 @@ export const GET = withSecurity(
     if (corsResponse) return corsResponse;
 
     try {
-      // Check actual system health
-      const healthChecks = await Promise.allSettled([
-        // Check database connectivity
-        checkDatabaseHealth(),
-        // Check Supabase connectivity
-        checkSupabaseHealth(),
-        // Check local runtime readiness without same-app HTTP hops
-        checkApplicationRuntimeHealth(),
-      ]);
+      const connectivity = await probeRuntimeConnectivityHealth();
 
       // Uptime values are not measured historically — report only current connectivity status.
       // Do not display fabricated uptime percentages.
-      const apiOk = healthChecks[2].status === "fulfilled" && healthChecks[2].value === true;
-      const dbOk = healthChecks[0].status === "fulfilled" && healthChecks[0].value === true;
+      const apiOk = connectivity.checks.runtime_env.ok;
+      const dbOk = connectivity.checks.database.ok;
 
       const systems = [
         {
@@ -56,11 +48,18 @@ export const GET = withSecurity(
         },
       ];
 
-      // Determine overall status
       const hasDegraded = systems.some((s) => s.status === "degraded");
       const overallStatus = hasDegraded ? "degraded" : "operational";
 
-      const response = NextResponse.json({ systems, overallStatus });
+      const response = NextResponse.json({
+        systems,
+        overallStatus,
+        connectivity: {
+          checks: connectivity.checks,
+          degraded_reasons: connectivity.degraded_reasons,
+          timestamp: connectivity.timestamp,
+        },
+      });
 
       // Add caching headers for better performance
       response.headers.set("Cache-Control", "public, s-maxage=30, stale-while-revalidate=60");
@@ -86,42 +85,3 @@ export const GET = withSecurity(
   }),
   { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
 );
-
-/**
- * Check database health
- */
-async function checkDatabaseHealth(): Promise<boolean> {
-  try {
-    const { prisma } = await import("@/shared/db/prismaClient");
-    await prisma.$queryRaw`SELECT 1`;
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Check Supabase health
- */
-async function checkSupabaseHealth(): Promise<boolean> {
-  try {
-    const { createClient } = await import("@/lib/supabase/server");
-    const supabase = await createClient();
-    const { error } = await supabase.from("users").select("id").limit(1);
-    return !error;
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Check API health
- */
-async function checkApplicationRuntimeHealth(): Promise<boolean> {
-  try {
-    const envValidation = validateSupabaseEnv();
-    return envValidation.isValid;
-  } catch {
-    return false;
-  }
-}

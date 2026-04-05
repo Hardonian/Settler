@@ -26,7 +26,11 @@ type InvestorRealityPayload = {
     status: string;
   };
   usage: { dau: number; wau: number; active_tenants: number; status: string };
-  reliability: { uptime_proxy: number | null; failure_events: number };
+  reliability: {
+    uptime_proxy: number | null;
+    hard_500_count: number;
+    failure_events: number;
+  };
   risk_index: number;
   evidence_index: number;
   last_updated: string;
@@ -36,7 +40,7 @@ type InvestorRealityPayload = {
 const FALLBACK_DASHBOARD_DATA: InvestorRealityPayload = {
   revenue: { mrr: 0, mrr_growth: null, active_subscriptions: 0, churn: null, status: "assumed" },
   usage: { dau: 0, wau: 0, active_tenants: 0, status: "assumed" },
-  reliability: { uptime_proxy: null, failure_events: 0 },
+  reliability: { uptime_proxy: null, hard_500_count: 0, failure_events: 0 },
   risk_index: 0,
   evidence_index: 0,
   last_updated: new Date(0).toISOString(),
@@ -252,18 +256,29 @@ export async function InvestorDashboardContent() {
             <AlertTriangle className="w-5 h-5" />
             Reliability
           </CardTitle>
-          <CardDescription>System uptime and failure metrics</CardDescription>
+          <CardDescription>
+            Failure signals from operational metrics — not a substitute for external uptime/SLA monitoring.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <div className="text-sm text-muted-foreground mb-1">Uptime Proxy</div>
+              <div className="text-sm text-muted-foreground mb-1">Uptime % (not inferred here)</div>
               <div className="text-2xl font-bold">
-                {data.reliability.uptime_proxy ? `${data.reliability.uptime_proxy}%` : "N/A"}
+                {data.reliability.uptime_proxy != null
+                  ? `${data.reliability.uptime_proxy}%`
+                  : "Not published"}
               </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Historical availability requires monitoring evidence; we do not derive it from a single counter.
+              </p>
             </div>
             <div>
-              <div className="text-sm text-muted-foreground mb-1">Critical Failure Events</div>
+              <div className="text-sm text-muted-foreground mb-1">HTTP 5xx count (metric)</div>
+              <div className="text-2xl font-bold">{data.reliability.hard_500_count}</div>
+            </div>
+            <div>
+              <div className="text-sm text-muted-foreground mb-1">Critical failure events</div>
               <div className="text-2xl font-bold">{data.reliability.failure_events}</div>
             </div>
           </div>
