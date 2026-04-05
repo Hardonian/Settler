@@ -148,6 +148,31 @@ export type ReconciliationWorkbenchDetail = ReconciliationWorkbenchListItem & {
     details?: string;
   }>;
   operatorSummary: ExceptionOperatorSummary;
+  similarCases: Array<{
+    exceptionId: string;
+    resolution: string;
+    resolutionReason: string | null;
+    confidence: number | null;
+    adjudicatedAt: string;
+    adjudicatorId: string;
+    archetypeCode: string | null;
+    archetypeLabel: string | null;
+  }>;
+  whyFlagged: {
+    primaryReasons: Array<{
+      reason: string;
+      code: string;
+      weight: number;
+      evidence?: string;
+    }>;
+    secondaryReasons: Array<{
+      reason: string;
+      code: string;
+      weight: number;
+    }>;
+    confidence: number;
+    similarCaseCount: number;
+  };
 };
 
 export type ExceptionOperatorSummary = {
@@ -1069,6 +1094,7 @@ export async function getReconciliationWorkbenchExceptionDetail(
     proofPackages,
     provenance,
     topArchetypes,
+    similarMemories,
   ] = await Promise.all([
     targetIds.length > 0
       ? prisma.normalizedTransaction.findMany({
@@ -1172,6 +1198,21 @@ export async function getReconciliationWorkbenchExceptionDetail(
       },
     }),
     loadTopArchetypes(prisma, tenantId, [exceptionId]),
+    // Fetch similar resolved cases for compounding intelligence
+    prisma.exceptionAdjudicationMemory.findMany({
+      where: {
+        tenantId,
+        exceptionId: { not: exceptionId },
+        outcome: { in: ["resolved", "confirmed_dismissed"] },
+      },
+      include: {
+        archetype: {
+          select: { code: true, label: true },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+    }),
   ]);
 
   const topArchetype = topArchetypes.get(exceptionId) ?? null;
@@ -1321,6 +1362,100 @@ export async function getReconciliationWorkbenchExceptionDetail(
     proofSummary,
   });
 
+  // Compounding intelligence: score similar resolved cases by match type + resolution pattern
+  const currentMatchType = row.matchType;
+  const currentMatchReason = row.matchReason ?? "";
+  const scoredSimilarCases = similarMemories
+    .map((mem) => {
+      let score = 0;
+      // Same archetype as current exception's top archetype
+      if (topArchetype && mem.archetypeId === topArchetype.id) score += 0.4;
+      // Same resolution type suggests pattern
+      if (mem.resolution === latestMemory?.resolution) score += 0.2;
+      // Shared resolution reason keywords
+      const memReason = mem.resolutionReason ?? "";
+      if (memReason && currentMatchReason && memReason.includes(currentMatchReason.split(" ")[0])) {
+        score += 0.15;
+      }
+      // Recency boost: more recent = more relevant
+      const ageDays =
+        (Date.now() - mem.createdAt.getTime()) / (1000 * 60 * 60 * 24);
+      score += Math.max(0, 0.25 * (1 - ageDays / 90));
+      return {
+        exceptionId: mem.exceptionId,
+        resolution: mem.resolution,
+        resolutionReason: mem.resolutionReason,
+        confidence: mem.confidence != null ? Number(mem.confidence) : null,
+        adjudicatedAt: mem.createdAt.toISOString(),
+        adjudicatorId: mem.adjudicatorId,
+        archetypeCode: mem.archetype?.code ?? null,
+        archetypeLabel: mem.archetype?.label ?? null,
+        _score: score,
+      };
+    })
+    .filter((c) => c._score > 0.1)
+    .sort((a, b) => b._score - a._score)
+    .slice(0, 5)
+    .map(({ _score, ...rest }) => rest);
+
+  // Why-flagged: deterministic explanation of why this exception was created
+  const primaryReasons: Array<{ reason: string; code: string; weight: number; evidence?: string }> = [];
+  const secondaryReasons: Array<{ reason: string; code: string; weight: number }> = [];
+
+  if (row.amountDiff != null && Number(row.amountDiff) !== 0) {
+    primaryReasons.push({
+      reason: `Amount mismatch: ${Number(row.amountDiff).toFixed(2)} difference detected`,
+      code: "AMOUNT_MISMATCH",
+      weight: Math.min(Math.abs(Number(row.amountDiff)) / 100, 1.0),
+      evidence: row.sourceTransaction
+        ? `Source amount: ${Number(row.sourceTransaction.amount)}`
+        : undefined,
+    });
+  }
+  if (row.dateDiff != null && Math.abs(row.dateDiff) > 0) {
+    secondaryReasons.push({
+      reason: `Date drift: ${row.dateDiff} day(s) difference`,
+      code: "DATE_DRIFT",
+      weight: Math.min(Math.abs(row.dateDiff) / 30, 1.0),
+    });
+  }
+  const confidence = Number(row.confidence);
+  if (confidence < 0.8) {
+    primaryReasons.push({
+      reason: `Low match confidence: ${(confidence * 100).toFixed(1)}%`,
+      code: "LOW_CONFIDENCE",
+      weight: 1.0 - confidence,
+      evidence: "Confidence score below 0.8 threshold",
+    });
+  }
+  if (!row.targetTransactionId) {
+    primaryReasons.push({
+      reason: "No matching record found in target dataset",
+      code: "MISSING_IN_TARGET",
+      weight: 0.9,
+      evidence: `Source transaction ${row.sourceTransactionId} has no counterpart`,
+    });
+  }
+  if (currentMatchType === "conflict") {
+    primaryReasons.push({
+      reason: "Conflicting match: multiple potential matches detected",
+      code: "CONFLICT",
+      weight: 0.85,
+    });
+  }
+
+  const whyFlaggedConfidence =
+    primaryReasons.length > 0
+      ? primaryReasons.reduce((sum, r) => sum + r.weight, 0) / primaryReasons.length
+      : 0.5;
+
+  const whyFlagged = {
+    primaryReasons,
+    secondaryReasons,
+    confidence: Math.round(whyFlaggedConfidence * 10000) / 10000,
+    similarCaseCount: scoredSimilarCases.length,
+  };
+
   return {
     ...listItem,
     notes: row.notes,
@@ -1386,5 +1521,7 @@ export async function getReconciliationWorkbenchExceptionDetail(
     proofSummary,
     auditTrail,
     operatorSummary,
+    similarCases: scoredSimilarCases,
+    whyFlagged,
   };
 }

@@ -7,6 +7,8 @@
 
 import { FXConversion, Money } from '@settler/types';
 import { query } from '../../db';
+import { fxRateProviderManager } from '../../services/currency/fx-rate-provider';
+import { logInfo, logError } from '../../utils/logger';
 
 export interface FXRate {
   fromCurrency: string;
@@ -180,14 +182,70 @@ export class FXService {
   }
 
   /**
-   * Sync FX rates for a tenant
+   * Sync FX rates for a tenant from external providers.
+   * Fetches rates for common currency pairs relative to the tenant's base currency
+   * and stores them in the fx_conversions table for later lookups.
    */
-  async syncFXRates(_tenantId: string, _baseCurrency: string): Promise<number> {
-    // This would typically fetch rates from an external provider
-    // For now, return 0 as a placeholder
-    // TODO: Implement actual FX rate syncing from provider
-    // Parameters are prefixed with _ to indicate they're intentionally unused for now
-    return 0;
+  async syncFXRates(tenantId: string, baseCurrency: string): Promise<number> {
+    const TARGET_CURRENCIES = [
+      'USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY', 'INR', 'BRL',
+    ];
+
+    // Filter out the base currency itself
+    const targets = TARGET_CURRENCIES.filter(c => c !== baseCurrency);
+
+    let syncedCount = 0;
+    const rateDate = new Date();
+    const syncTransactionId = `fx_sync_${tenantId}_${rateDate.toISOString().split('T')[0]}`;
+
+    for (const targetCurrency of targets) {
+      try {
+        const result = await fxRateProviderManager.fetchRate(baseCurrency, targetCurrency, rateDate);
+
+        if (!result) {
+          logError('FX rate not available from any provider', null, {
+            tenantId,
+            baseCurrency,
+            targetCurrency,
+          });
+          continue;
+        }
+
+        // Store the rate as an fx_conversion record.
+        // Use amount 1 -> rate to represent a reference rate entry.
+        await this.recordFXConversion(
+          tenantId,
+          `${syncTransactionId}_${targetCurrency}`,
+          baseCurrency,
+          targetCurrency,
+          1,            // from: 1 unit of base currency
+          result.rate,  // to: equivalent in target currency
+          result.rate,
+          result.provider,
+          rateDate
+        );
+
+        syncedCount++;
+      } catch (error) {
+        logError('Failed to sync FX rate for currency pair', error, {
+          tenantId,
+          baseCurrency,
+          targetCurrency,
+        });
+        // Continue with the next currency
+      }
+    }
+
+    if (syncedCount > 0) {
+      logInfo('FX rates synced', {
+        tenantId,
+        baseCurrency,
+        syncedCount,
+        totalTargets: targets.length,
+      });
+    }
+
+    return syncedCount;
   }
 
   /**

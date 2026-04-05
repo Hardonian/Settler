@@ -365,6 +365,119 @@ export async function applyReconciliationWorkbenchAction(
       },
     });
 
+    // ── Auto-classify exception into an archetype on resolve/ignore ──
+    if (input.action !== "reopen") {
+      const amountDiff =
+        exception.amountDiff != null ? Number(exception.amountDiff) : null;
+      const dateDiff = exception.dateDiff;
+      const confidence = Number(exception.confidence);
+      const matchType = exception.matchType;
+
+      let archetypeCode: string;
+      let archetypeLabel: string;
+      let archetypeCategory: string;
+      let classificationConfidence: number;
+      const matchFeatures: Record<string, unknown> = {};
+
+      if (matchType === "duplicate") {
+        archetypeCode = "DUPLICATE";
+        archetypeLabel = "Duplicate Transaction";
+        archetypeCategory = "duplicate";
+        classificationConfidence = 0.95;
+        matchFeatures.matchType = matchType;
+      } else if (matchType === "conflict") {
+        archetypeCode = "CONFLICT";
+        archetypeLabel = "Conflicting Match";
+        archetypeCategory = "classification";
+        classificationConfidence = 0.9;
+        matchFeatures.matchType = matchType;
+      } else if (amountDiff != null && amountDiff !== 0) {
+        archetypeCode = "AMOUNT_MISMATCH";
+        archetypeLabel = "Amount Mismatch";
+        archetypeCategory = "amount";
+        const absDiff = Math.abs(amountDiff);
+        classificationConfidence = absDiff > 100 ? 0.95 : absDiff > 10 ? 0.85 : 0.7;
+        matchFeatures.amountDiff = amountDiff;
+      } else if (dateDiff != null && dateDiff !== 0) {
+        archetypeCode = "DATE_DRIFT";
+        archetypeLabel = "Date Drift";
+        archetypeCategory = "timing";
+        classificationConfidence = Math.abs(dateDiff) > 3 ? 0.9 : 0.75;
+        matchFeatures.dateDiff = dateDiff;
+      } else if (!exception.targetTransactionId) {
+        archetypeCode = "MISSING_IN_TARGET";
+        archetypeLabel = "Missing in Target";
+        archetypeCategory = "missing";
+        classificationConfidence = 0.9;
+        matchFeatures.targetTransactionId = null;
+      } else if (matchType?.includes("source")) {
+        archetypeCode = "MISSING_IN_SOURCE";
+        archetypeLabel = "Missing in Source";
+        archetypeCategory = "missing";
+        classificationConfidence = 0.85;
+        matchFeatures.matchType = matchType;
+      } else if (confidence < 0.8) {
+        archetypeCode = "LOW_CONFIDENCE";
+        archetypeLabel = "Low Confidence Match";
+        archetypeCategory = "classification";
+        classificationConfidence = 0.8 - confidence;
+        matchFeatures.confidence = confidence;
+      } else {
+        archetypeCode = "UNCLASSIFIED";
+        archetypeLabel = "Unclassified Exception";
+        archetypeCategory = "classification";
+        classificationConfidence = 0.5;
+      }
+
+      // Find or create the archetype for this tenant
+      let archetype = await tx.exceptionArchetype.findFirst({
+        where: { tenantId: input.tenantId, code: archetypeCode },
+        select: { id: true, occurrenceCount: true },
+      });
+
+      if (!archetype) {
+        archetype = await tx.exceptionArchetype.create({
+          data: {
+            tenantId: input.tenantId,
+            code: archetypeCode,
+            label: archetypeLabel,
+            category: archetypeCategory,
+            severityDefault: "medium",
+            resolutionTaxonomy: [],
+            isSystem: true,
+            occurrenceCount: 0,
+            metadata: {},
+          },
+          select: { id: true, occurrenceCount: true },
+        });
+      }
+
+      // Create classification linking exception to archetype
+      await tx.exceptionArchetypeClassification.create({
+        data: {
+          tenantId: input.tenantId,
+          exceptionId: exception.id,
+          archetypeId: archetype.id,
+          confidence: classificationConfidence,
+          matchFeatures: matchFeatures as Prisma.InputJsonValue,
+          classifiedBy: "system",
+          metadata: {
+            action: input.action,
+            memoryId: memory.id,
+          } as Prisma.InputJsonValue,
+        },
+      });
+
+      // Increment occurrence count and update last occurrence timestamp
+      await tx.exceptionArchetype.update({
+        where: { id: archetype.id },
+        data: {
+          occurrenceCount: archetype.occurrenceCount + 1,
+          lastOccurrenceAt: now,
+        },
+      });
+    }
+
     if (input.action !== "reopen") {
       const completeness = computeCompleteness({
         action: input.action,

@@ -129,6 +129,8 @@ export const GET = withSecurity(
           adjudicationMemories: detail.adjudicationMemories,
           evidenceSummary: detail.evidenceSummary,
           proofSummary: detail.proofSummary,
+          similarCases: detail.similarCases,
+          whyFlagged: detail.whyFlagged,
           trace_id: traceId,
         };
 

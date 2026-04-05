@@ -5,6 +5,7 @@
 
 import Redis from 'ioredis';
 import { config } from '../../config';
+import { logWarn, logInfo } from '../../utils/logger';
 
 export interface TokenBucketConfig {
   capacity: number; // Maximum tokens
@@ -12,8 +13,23 @@ export interface TokenBucketConfig {
   adaptive?: boolean; // Enable adaptive rate limiting
 }
 
+interface InMemoryBucket {
+  tokens: number;
+  lastRefill: number;
+}
+
+export type RateLimitMode = 'distributed' | 'local-fallback';
+
 export class TokenBucket {
   private redis: Redis;
+  private _mode: RateLimitMode = 'distributed';
+  private _fallbackWarningEmitted = false;
+  private inMemoryBuckets = new Map<string, InMemoryBucket>();
+
+  /** Current rate limiting mode */
+  get mode(): RateLimitMode {
+    return this._mode;
+  }
 
   constructor() {
     const redisOptions: {
@@ -32,6 +48,64 @@ export class TokenBucket {
       redisOptions.url = config.redis.url;
     }
     this.redis = new Redis(redisOptions);
+
+    this.redis.on('error', () => {
+      this.enterFallbackMode();
+    });
+
+    this.redis.on('ready', () => {
+      if (this._mode === 'local-fallback') {
+        logInfo('token_bucket_redis_recovered', {
+          component: 'TokenBucket',
+          previousMode: 'local-fallback',
+          newMode: 'distributed',
+        });
+        this._mode = 'distributed';
+        this._fallbackWarningEmitted = false;
+        this.inMemoryBuckets.clear();
+      }
+    });
+  }
+
+  private enterFallbackMode(): void {
+    this._mode = 'local-fallback';
+    if (!this._fallbackWarningEmitted) {
+      this._fallbackWarningEmitted = true;
+      logWarn('token_bucket_redis_fallback', {
+        severity: 'warning',
+        component: 'TokenBucket',
+        mode: 'local-fallback',
+        message: 'Redis unavailable for token bucket rate limiting; using in-memory fallback. Rate limits are per-instance and reset on restart.',
+      });
+    }
+  }
+
+  private consumeInMemory(
+    key: string,
+    tokens: number,
+    bucketConfig: TokenBucketConfig
+  ): { allowed: boolean; remaining: number; resetAt: Date } {
+    const now = Date.now();
+    const windowMs = (bucketConfig.capacity / bucketConfig.refillRate) * 1000;
+    let bucket = this.inMemoryBuckets.get(key);
+
+    if (!bucket) {
+      bucket = { tokens: bucketConfig.capacity, lastRefill: now };
+      this.inMemoryBuckets.set(key, bucket);
+    }
+
+    // Refill tokens based on elapsed time
+    const elapsed = (now - bucket.lastRefill) / 1000;
+    const tokensToAdd = Math.floor(elapsed * bucketConfig.refillRate);
+    bucket.tokens = Math.min(bucketConfig.capacity, bucket.tokens + tokensToAdd);
+    bucket.lastRefill = now;
+
+    if (bucket.tokens >= tokens) {
+      bucket.tokens -= tokens;
+      return { allowed: true, remaining: bucket.tokens, resetAt: new Date(now + windowMs) };
+    }
+
+    return { allowed: false, remaining: bucket.tokens, resetAt: new Date(bucket.lastRefill + windowMs) };
   }
 
   /**
@@ -79,22 +153,38 @@ export class TokenBucket {
       end
     `;
 
-    const result = await this.redis.eval(
-      luaScript,
-      1,
-      redisKey,
-      tokens.toString(),
-      config.capacity.toString(),
-      config.refillRate.toString(),
-      now.toString(),
-      windowMs.toString()
-    ) as [number, number, number];
+    try {
+      const result = await this.redis.eval(
+        luaScript,
+        1,
+        redisKey,
+        tokens.toString(),
+        config.capacity.toString(),
+        config.refillRate.toString(),
+        now.toString(),
+        windowMs.toString()
+      ) as [number, number, number];
 
-    const allowed = result[0] === 1;
-    const remaining = result[1];
-    const resetAt = new Date(result[2]);
+      const allowed = result[0] === 1;
+      const remaining = result[1];
+      const resetAt = new Date(result[2]);
 
-    return { allowed, remaining, resetAt };
+      if (this._mode === 'local-fallback') {
+        this._mode = 'distributed';
+        this._fallbackWarningEmitted = false;
+        this.inMemoryBuckets.clear();
+        logInfo('token_bucket_redis_recovered', {
+          component: 'TokenBucket',
+          previousMode: 'local-fallback',
+          newMode: 'distributed',
+        });
+      }
+
+      return { allowed, remaining, resetAt };
+    } catch {
+      this.enterFallbackMode();
+      return this.consumeInMemory(key, tokens, config);
+    }
   }
 
   /**
@@ -105,18 +195,30 @@ export class TokenBucket {
     const windowMs = (config.capacity / config.refillRate) * 1000;
     const redisKey = `rate_limit:${key}`;
 
-    const bucket = await this.redis.hmget(redisKey, 'tokens', 'lastRefill');
-    const currentTokens = bucket[0] ? parseFloat(bucket[0]) : config.capacity;
-    const lastRefill = bucket[1] ? parseFloat(bucket[1]) : now;
+    try {
+      const bucket = await this.redis.hmget(redisKey, 'tokens', 'lastRefill');
+      const currentTokens = bucket[0] ? parseFloat(bucket[0]) : config.capacity;
+      const lastRefill = bucket[1] ? parseFloat(bucket[1]) : now;
 
-    // Calculate tokens to add
-    const elapsed = (now - lastRefill) / 1000;
-    const tokensToAdd = Math.floor(elapsed * config.refillRate);
-    const tokens = Math.min(config.capacity, currentTokens + tokensToAdd);
+      // Calculate tokens to add
+      const elapsed = (now - lastRefill) / 1000;
+      const tokensToAdd = Math.floor(elapsed * config.refillRate);
+      const tokens = Math.min(config.capacity, currentTokens + tokensToAdd);
 
-    const resetAt = new Date(lastRefill + windowMs);
+      const resetAt = new Date(lastRefill + windowMs);
 
-    return { tokens, resetAt };
+      return { tokens, resetAt };
+    } catch {
+      // Fallback: return from in-memory state or full bucket
+      const memBucket = this.inMemoryBuckets.get(key);
+      if (memBucket) {
+        const elapsed = (now - memBucket.lastRefill) / 1000;
+        const tokensToAdd = Math.floor(elapsed * config.refillRate);
+        const tokens = Math.min(config.capacity, memBucket.tokens + tokensToAdd);
+        return { tokens, resetAt: new Date(memBucket.lastRefill + windowMs) };
+      }
+      return { tokens: config.capacity, resetAt: new Date(now + windowMs) };
+    }
   }
 
   /**

@@ -127,6 +127,7 @@ export function withRateLimit(
             "X-RateLimit-Remaining": result.remaining.toString(),
             "X-RateLimit-Reset": new Date(result.resetAt).toISOString(),
             "Retry-After": result.retryAfter?.toString() || "60",
+            "X-Rate-Limit-Mode": "local-only",
           },
         }
       );
@@ -138,6 +139,7 @@ export function withRateLimit(
     headers.set("X-RateLimit-Limit", config.maxRequests.toString());
     headers.set("X-RateLimit-Remaining", result.remaining.toString());
     headers.set("X-RateLimit-Reset", new Date(result.resetAt).toISOString());
+    headers.set("X-Rate-Limit-Mode", "local-only");
 
     return new NextResponseClass(response.body, {
       status: response.status,

@@ -7,7 +7,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge, type StatusType } from "@/components/ui/status-badge";
 import { cn } from "@/lib/utils";
-import { AlertTriangle, History, Info, Loader2, ShieldCheck, Workflow } from "lucide-react";
+import {
+  AlertTriangle,
+  GitCompare,
+  HelpCircle,
+  History,
+  Info,
+  Loader2,
+  ShieldCheck,
+  Workflow,
+} from "lucide-react";
 
 type ExceptionStatus = "pending" | "investigating" | "resolved" | "ignored";
 
@@ -582,6 +591,143 @@ export function ExceptionActionPanel({
             </Button>
           ))}
         </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+/* ─── Similar Cases (Compounding Intelligence) ──�� */
+
+export type SimilarCase = {
+  exceptionId: string;
+  resolution: string;
+  resolutionReason: string | null;
+  confidence: number | null;
+  adjudicatedAt: string;
+  adjudicatorId: string;
+  archetypeCode: string | null;
+  archetypeLabel: string | null;
+};
+
+export function SimilarCasesCard({ cases }: { cases: SimilarCase[] }) {
+  if (cases.length === 0) {
+    return null;
+  }
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base flex items-center gap-2">
+          <GitCompare className="w-4 h-4 text-muted-foreground" />
+          Similar Resolved Cases ({cases.length})
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <p className="text-xs text-muted-foreground">
+          Prior exceptions resolved with similar patterns. Use these to inform your decision.
+        </p>
+        {cases.map((c) => (
+          <div
+            key={`${c.exceptionId}-${c.adjudicatedAt}`}
+            className="rounded-lg border border-border/60 p-3 space-y-1"
+          >
+            <div className="flex items-center justify-between gap-2">
+              <Badge
+                variant={c.resolution === "ignored" ? "outline" : "default"}
+                className="capitalize text-xs"
+              >
+                {c.resolution}
+              </Badge>
+              {c.archetypeLabel ? (
+                <Badge variant="secondary" className="text-xs">
+                  {c.archetypeLabel}
+                </Badge>
+              ) : null}
+            </div>
+            {c.resolutionReason ? (
+              <p className="text-sm text-foreground">{c.resolutionReason}</p>
+            ) : null}
+            <p className="text-xs text-muted-foreground">
+              Resolved by {c.adjudicatorId.slice(0, 8)}... on{" "}
+              {new Date(c.adjudicatedAt).toLocaleDateString()}
+              {c.confidence != null ? ` (${Math.round(c.confidence * 100)}% confidence)` : ""}
+            </p>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
+/* ─── Why Flagged (Deterministic Explanation) ���── */
+
+export type WhyFlaggedData = {
+  primaryReasons: Array<{
+    reason: string;
+    code: string;
+    weight: number;
+    evidence?: string;
+  }>;
+  secondaryReasons: Array<{
+    reason: string;
+    code: string;
+    weight: number;
+  }>;
+  confidence: number;
+  similarCaseCount: number;
+};
+
+export function WhyFlaggedCard({ data }: { data: WhyFlaggedData }) {
+  const hasReasons = data.primaryReasons.length > 0 || data.secondaryReasons.length > 0;
+  if (!hasReasons) {
+    return null;
+  }
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base flex items-center gap-2">
+          <HelpCircle className="w-4 h-4 text-muted-foreground" />
+          Why Flagged
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {data.primaryReasons.map((r) => (
+          <div key={r.code} className="rounded-lg border border-border/60 p-3 space-y-1">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+              <span className="text-sm font-medium text-foreground">{r.reason}</span>
+            </div>
+            {r.evidence ? (
+              <p className="text-xs text-muted-foreground pl-5">{r.evidence}</p>
+            ) : null}
+            <div className="flex items-center gap-2 pl-5">
+              <div className="h-1.5 flex-1 rounded-full bg-muted overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-amber-500"
+                  style={{ width: `${Math.round(r.weight * 100)}%` }}
+                />
+              </div>
+              <span className="text-xs text-muted-foreground w-8 text-right">
+                {Math.round(r.weight * 100)}%
+              </span>
+            </div>
+          </div>
+        ))}
+        {data.secondaryReasons.map((r) => (
+          <div key={r.code} className="rounded-lg border border-border/40 p-3">
+            <div className="flex items-center gap-2">
+              <Info className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+              <span className="text-sm text-muted-foreground">{r.reason}</span>
+            </div>
+          </div>
+        ))}
+        {data.similarCaseCount > 0 ? (
+          <p className="text-xs text-muted-foreground">
+            {data.similarCaseCount} similar case{data.similarCaseCount !== 1 ? "s" : ""} found in
+            adjudication history.
+          </p>
+        ) : null}
       </CardContent>
     </Card>
   );
