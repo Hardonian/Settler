@@ -26,6 +26,17 @@ Ship only after these are complete:
 - Publish one canonical operator runbook with strict pass/fail deployment checks.
 - Complete trust-claim harmonization and claim-to-evidence mapping across surfaces.
 
+### Update (2026-04-05)
+
+The following are now **present in-repo** (verify in your environment before citing to buyers):
+
+- Canonical operator path: `docs/launch/canonical-go-live-path.md`
+- Claims ↔ evidence mapping: `docs/launch/CLAIMS_AND_EVIDENCE_REGISTRY.md` and `packages/web/src/lib/claims.ts`
+- Enterprise pilot rubric + shared-responsibility summary: `docs/launch/enterprise-buyer-pack.md`
+- Public `/api/status/health` aligned to **runtime connectivity** (not growth KPIs)
+
+**Still buyer- and deployment-specific:** measurable operational outcomes in *your* production, contractual SLA, and completed third-party audits.
+
 ## Residual risk if launched now
 
 - Enterprise buyers may see strong claims but insufficient operating proof.
