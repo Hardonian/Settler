@@ -20,6 +20,16 @@ helm upgrade --install settler deploy/helm/settler \
   --set secrets.INVESTOR_BEARER_TOKEN="..."
 ```
 
+## Packaging verification (CI / local)
+
+When the Helm CLI is on `PATH`:
+
+```bash
+pnpm run verify:helm-packaging
+```
+
+This runs `helm lint` and `helm template` only — it does not substitute for a live-cluster smoke.
+
 ## Smoke checks
 
 ```bash

@@ -88,7 +88,7 @@ export default async function StatusPage() {
       <AnimatedHero
         badge="System connectivity"
         title="Dependency reachability"
-        description="This page shows point-in-time checks for database, Supabase, and required runtime configuration. It does not publish uptime percentages, regional failover maps, incident timelines, or SLA-backed recovery objectives unless separately verified and linked."
+        description="This page shows point-in-time checks for database, Supabase, and required runtime configuration. It does not publish uptime percentages, regional failover maps, incident timelines, or vendor recovery commitments unless separately verified and linked."
       />
 
       <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto -mt-10 relative z-10">

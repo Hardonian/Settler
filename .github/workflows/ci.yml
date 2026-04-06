@@ -113,6 +113,14 @@ jobs:
       - name: Verify surface docs drift gate
         run: pnpm run verify:surface-docs && pnpm run verify:route-classes-doc && pnpm run verify:api-family-docs
 
+      - name: Install Helm (packaging verification)
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.4
+
+      - name: Enterprise packaging boundary (SCIM + Helm)
+        run: pnpm run verify:scim-posture && pnpm run verify:helm-packaging
+
   api-tests-serial:
     needs: conflict-markers
     runs-on: ubuntu-latest

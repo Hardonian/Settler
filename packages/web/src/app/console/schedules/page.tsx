@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { RefreshCw, Calendar, Clock, CalendarOff } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -66,6 +67,10 @@ export default function SchedulesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingJobId, setEditingJobId] = useState<string | null>(null);
+  const [scheduleCapability, setScheduleCapability] = useState<{
+    state: string;
+    reason?: string;
+  } | null>(null);
 
   const loadJobs = useCallback(async () => {
     setLoading(true);
@@ -143,9 +148,19 @@ export default function SchedulesPage() {
       <div className="space-y-6">
         <ConsolePageHeader
           title="Schedules"
-          description="Configure recurring schedules for your reconciliation jobs."
+          description="Store cron expressions and timezones for reconciliation jobs. Automatic execution requires a running scheduler worker and SCHEDULER_ENABLED≠false in the deployment."
           breadcrumbs={[{ label: "Console", href: "/console" }, { label: "Schedules" }]}
         />
+        {scheduleCapability?.state === "degraded" && (
+          <Alert variant="warning">
+            <AlertTitle>Scheduler not running in this environment</AlertTitle>
+            <AlertDescription>
+              {scheduleCapability.reason === "scheduler_disabled_by_env"
+                ? "SCHEDULER_ENABLED is false: schedules are saved as configuration only until the scheduler is enabled and a worker process is deployed."
+                : "Schedule execution may be unavailable. Check deployment configuration and worker health."}
+            </AlertDescription>
+          </Alert>
+        )}
         <EmptyState
           icon={Calendar}
           title="No reconciliation jobs"
@@ -168,7 +183,7 @@ export default function SchedulesPage() {
     <div className="space-y-6">
       <ConsolePageHeader
         title="Schedules"
-        description="Store cron + timezone on jobs for recurring runs. Execution requires the platform scheduler to be enabled in the deployment environment."
+        description="Cron and timezone configuration for jobs. Execution is automatic only when a scheduler worker is running and SCHEDULER_ENABLED is not false."
         breadcrumbs={[{ label: "Console", href: "/console" }, { label: "Schedules" }]}
         actions={
           <Button variant="outline" size="sm" onClick={handleRefresh}>
@@ -177,6 +192,17 @@ export default function SchedulesPage() {
           </Button>
         }
       />
+
+      {scheduleCapability?.state === "degraded" && (
+        <Alert variant="warning">
+          <AlertTitle>Scheduler not running in this environment</AlertTitle>
+          <AlertDescription>
+            {scheduleCapability.reason === "scheduler_disabled_by_env"
+              ? "SCHEDULER_ENABLED is false: cron rows are configuration only. Enable the scheduler and run the worker process to obtain automatic executions."
+              : "Automatic execution may be unavailable. Validate worker deployment and SCHEDULER_ENABLED."}
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="flex flex-wrap items-center gap-2">
         <Badge variant={scheduledJobs.length > 0 ? "info" : "outline"}>
@@ -208,7 +234,7 @@ export default function SchedulesPage() {
               Scheduled Jobs
             </CardTitle>
             <CardDescription>
-              Jobs with active cron schedules. When the deployment scheduler is enabled, these run automatically.
+              Jobs with saved cron expressions. Runs occur only when a scheduler worker is active and enabled in the environment.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 pt-5">
@@ -235,7 +261,7 @@ export default function SchedulesPage() {
               Unscheduled Jobs
             </CardTitle>
             <CardDescription>
-              Jobs without a recurring schedule. Add a schedule to automate execution.
+              Jobs without a recurring schedule. Add a schedule to persist automation intent (requires an active scheduler worker for runs).
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 pt-5">

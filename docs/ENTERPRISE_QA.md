@@ -8,7 +8,7 @@
 - Session/JWT flows where configured in deployment
 - OIDC SSO for Okta / Entra / Google Workspace in config-gated mode
 
-Verification: `pnpm run verify:enterprise-identity`.
+Verification: `pnpm run verify:enterprise-identity` (env contract; exit **2** = degraded). Aggregate: `pnpm run verify:enterprise-posture`.
 
 ## SAML support
 
@@ -16,7 +16,7 @@ SAML is not asserted as GA in this repository path.
 
 ## SCIM lifecycle provisioning
 
-Staged, non-GA. Treat as roadmap/integration tranche, not deployed default.
+Not implemented in application code. Boundary: `pnpm run verify:scim-posture`.
 
 ## Tenant isolation
 
@@ -36,7 +36,7 @@ Verification:
 
 ## Self-hosted deployment
 
-Canonical packaging is the Helm chart at `deploy/helm/settler`.
+Canonical packaging is the Helm chart at `deploy/helm/settler`. Packaging check: `pnpm run verify:helm-packaging` (requires `helm`; not a live-cluster attestation).
 
 Includes:
 

@@ -27,15 +27,18 @@ export const ENTERPRISE_CAPABILITY_TRUTH: readonly EnterpriseCapabilityTruth[] =
     customerLabel: "Config-gated",
     operatorBoundary:
       "OIDC env contracts are implemented; interoperability remains config-gated until per-provider smoke validation is present for a target deployment.",
-    verificationPath: ["pnpm run verify:enterprise-identity", "IdP-specific smoke tests (Okta/Entra/Google Workspace)"],
+    verificationPath: [
+      "pnpm run verify:enterprise-identity (exit 0 = env contract complete for all three IdPs; exit 2 = degraded)",
+      "IdP-specific runtime SSO smoke (not shipped in this script)",
+    ],
   },
   {
     capability: "SCIM lifecycle provisioning",
-    state: "staged",
-    customerLabel: "Staged",
+    state: "missing",
+    customerLabel: "Not in application",
     operatorBoundary:
-      "Enterprise lifecycle is documented, but route-level provisioning verification is not yet complete.",
-    verificationPath: ["Route + fixture lifecycle tests (pending)", "Deprovisioning evidence bundle (pending)"],
+      "No SCIM API routes ship in this repository; directory sync and automated user lifecycle are out of scope until implemented.",
+    verificationPath: ["pnpm run verify:scim-posture"],
   },
   {
     capability: "Audit export / SIEM handoff",

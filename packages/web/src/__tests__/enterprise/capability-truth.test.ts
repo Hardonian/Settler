@@ -11,7 +11,7 @@ describe("enterprise capability truth contract", () => {
     );
 
     expect(sso?.state).toBe("implemented_unverified");
-    expect(scim?.state).toBe("staged");
+    expect(scim?.state).toBe("missing");
   });
 
   it("keeps verification paths non-empty for all listed capabilities", () => {

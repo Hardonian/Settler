@@ -29,6 +29,15 @@ Run when routes, docs, policy, or API contract semantics change:
 - `pnpm verify:api-family-docs`
 - `pnpm verify:routes`
 
+### Enterprise / identity / self-hosted boundary scripts
+
+| Command | Proves | Exit semantics |
+| --- | --- | --- |
+| `pnpm run verify:scim-posture` | SCIM is not implemented in app code (`not_applicable`) | **0** |
+| `pnpm run verify:helm-packaging` | Helm lint + template for `deploy/helm/settler` | **0** pass, **1** if `helm` missing or lint/template fails |
+| `pnpm run verify:enterprise-identity` | OIDC env key contract for three IdPs | **0** all configured, **2** degraded/partial, **1** strict failure |
+| `pnpm run verify:enterprise-posture` | Runs the three above in sequence | **0** / **2** / **1** (worst child, with SCIM expected 0) |
+
 ## 4. Tenant and security verification
 
 Run for any auth/tenant/security/data-path change:

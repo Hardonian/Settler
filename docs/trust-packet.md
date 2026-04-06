@@ -45,7 +45,7 @@ Settler is multi-tenant by design. Tenant isolation is enforced at multiple laye
 | JWT Bearer token | Console sessions, user auth | Supabase Auth, short-lived tokens |
 | Webhook signatures | Event verification | HMAC-SHA256, timestamp validation |
 
-SSO (SAML/OIDC) support is available for enterprise deployments.
+OIDC SSO is **configuration-gated** (Okta, Entra ID, Google Workspace env contracts). It is not operational until configured and validated per deployment. SAML is not asserted as GA in this repository path. SCIM directory sync is **not implemented** in application code (`pnpm run verify:scim-posture`).
 
 ## Audit logging
 

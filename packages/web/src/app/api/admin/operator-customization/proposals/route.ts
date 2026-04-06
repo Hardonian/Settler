@@ -5,6 +5,10 @@ import { withSecurity } from "@/lib/middleware/api-security";
 import { CustomizationPatchSchema } from "@/lib/operator-customization/schema";
 import { buildProposalFromNaturalLanguage } from "@/lib/operator-customization/proposal-rules";
 import { handleOperatorCustomizationRoute } from "@/lib/server/operator-customization/operator-customization-route-guard";
+import {
+  getOperatorCustomizationEntitlementsForTenant,
+  isPresetIdEntitled,
+} from "@/lib/server/operator-customization/operator-customization-entitlements";
 import { resolveCustomizationTenantId } from "@/lib/server/operator-customization/tenant-context";
 import { prisma } from "@/shared/db/prismaClient";
 
@@ -31,6 +35,8 @@ export const POST = withSecurity(
 
       const resolved = await resolveCustomizationTenantId(body.data.tenantId ?? null);
       if (!resolved.ok) return resolved.response;
+
+      const entitlements = await getOperatorCustomizationEntitlementsForTenant(resolved.tenant.tenantId);
 
       const built = buildProposalFromNaturalLanguage(body.data.request);
       if (!built.ok) {
@@ -66,6 +72,19 @@ export const POST = withSecurity(
       const parsedPatch = CustomizationPatchSchema.safeParse(built.patch);
       if (!parsedPatch.success) {
         return NextResponse.json({ error: "patch_invalid", issues: parsedPatch.error.issues }, { status: 500 });
+      }
+
+      const presetId = parsedPatch.data.lastAppliedPresetId;
+      if (presetId && !isPresetIdEntitled(presetId, entitlements)) {
+        return NextResponse.json(
+          {
+            error: "advanced_presets_require_plan",
+            code: "advanced_presets_require_plan",
+            message:
+              "This proposal applies a preset that requires Growth, Scale, or Enterprise. Upgrade the tenant billing plan or use a baseline intent (for example solo operator or reset to default).",
+          },
+          { status: 403 }
+        );
       }
 
       const row = await prisma.operatorCustomizationProposal.create({
