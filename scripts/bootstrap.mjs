@@ -30,8 +30,11 @@ copyIfMissing(".env.local.example", ".env.local");
 
 run("pnpm", ["install"], "Install dependencies");
 run("pnpm", ["run", "repo-integrity"], "Validate monorepo contract");
+run("pnpm", ["run", "verify:setup"], "Check local prerequisites and degraded-state blockers");
 run("pnpm", ["run", "doctor", "--", "--skip-pipeline", "--first-run"], "Run first-run doctor");
 
 console.log("\n✅ Bootstrap completed. Next commands:");
 console.log("   pnpm run demo     # guided deterministic demo");
 console.log("   pnpm run dev:stack # web + api local stack");
+console.log("   pnpm run dev:teardown # stop local processes started by dev:stack");
+console.log("   pnpm run demo:reset # clear demo fixtures before next eval pass");

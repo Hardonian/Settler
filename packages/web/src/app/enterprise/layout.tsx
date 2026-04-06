@@ -5,7 +5,7 @@ import { generateMetadata } from "@/lib/metadata";
 export const metadata: Metadata = generateMetadata({
   title: "Enterprise Solutions - Custom Reconciliation Platform",
   description:
-    "Enterprise-grade reconciliation with SOC 2 Type II, SSO, SAML, RBAC, unlimited scale, dedicated support, and on-premise deployment options. Custom solutions for large organizations.",
+    "Enterprise reconciliation for tenant isolation, deterministic evidence, and governed operations. Identity and lifecycle capabilities are explicitly status-scoped (implemented vs staged).",
   keywords: [
     "enterprise reconciliation",
     "enterprise API",

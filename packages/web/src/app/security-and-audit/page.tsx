@@ -73,7 +73,7 @@ const securityPillars = [
     items: [
       "Owner / Admin / Reviewer / Viewer roles",
       "Workspace-scoped API keys",
-      "SSO / OAuth via standard providers",
+      "SSO/OIDC capability is configuration-gated and verified per deployment",
     ],
   },
   {

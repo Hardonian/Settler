@@ -35,7 +35,7 @@ const pillars = [
   },
 ];
 
-const certifications = ["SOC 2 Type II", "GDPR", "HIPAA", "ISO 27001"];
+const certifications = ["SOC 2 alignment (audit pending)", "GDPR support", "HIPAA-mapped controls"];
 
 const technicalDetails = [
   {
@@ -46,7 +46,7 @@ const technicalDetails = [
   {
     icon: BadgeCheck,
     title: "Access Control & SSO",
-    body: "Role-based access control (RBAC) with granular permissions. SAML 2.0 and OIDC supported for Single Sign-On.",
+    body: "Role-based access control (RBAC) is implemented. SSO/SAML/OIDC is environment and IdP dependent and must be validated before production rollout.",
   },
   {
     icon: AlertTriangle,
