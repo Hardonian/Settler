@@ -10,6 +10,7 @@ import { ErrorState } from "@/components/ui/error-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatusBadge, type StatusType } from "@/components/ui/status-badge";
 import { ConsolePageHeader } from "@/components/console/ConsolePageHeader";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { safeFetch } from "@/lib/safe-fetch";
 import { ScheduleConfigPanel, type ScheduleJob } from "./components";
 
@@ -59,6 +60,9 @@ function describeCron(cron: string): string {
 
 export default function SchedulesPage() {
   const [jobs, setJobs] = useState<ScheduleJob[]>([]);
+  const [scheduleCapability, setScheduleCapability] = useState<SchedulesApiResponse["capability"] | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingJobId, setEditingJobId] = useState<string | null>(null);
@@ -69,9 +73,11 @@ export default function SchedulesPage() {
 
     if (result.success && result.data) {
       setJobs(result.data.items ?? []);
+      setScheduleCapability(result.data.capability ?? null);
       setError(null);
     } else {
       setJobs([]);
+      setScheduleCapability(null);
       setError(result.error?.message ?? "Failed to load schedules");
     }
     setLoading(false);
@@ -155,11 +161,14 @@ export default function SchedulesPage() {
   // Main render
   // ---------------------------------------------------------------------------
 
+  const schedulerDegraded =
+    scheduleCapability?.state === "degraded" && scheduleCapability.reason === "scheduler_disabled_by_env";
+
   return (
     <div className="space-y-6">
       <ConsolePageHeader
         title="Schedules"
-        description="Configure recurring schedules for your reconciliation jobs. The backend scheduler picks up cron expressions and runs jobs automatically."
+        description="Store cron + timezone on jobs for recurring runs. Execution requires the platform scheduler to be enabled in the deployment environment."
         breadcrumbs={[{ label: "Console", href: "/console" }, { label: "Schedules" }]}
         actions={
           <Button variant="outline" size="sm" onClick={handleRefresh}>
@@ -178,6 +187,18 @@ export default function SchedulesPage() {
         </Badge>
       </div>
 
+      {schedulerDegraded && (
+        <Alert variant="warning" data-testid="schedules-scheduler-disabled-banner">
+          <AlertTitle>Scheduler disabled in this environment</AlertTitle>
+          <AlertDescription>
+            Cron rows are saved, but automatic runs require{" "}
+            <code className="rounded bg-muted px-1 py-0.5 text-xs">SCHEDULER_ENABLED</code> not set to{" "}
+            <code className="rounded bg-muted px-1 py-0.5 text-xs">false</code> on the server. Reason code:{" "}
+            <code className="rounded bg-muted px-1 py-0.5 text-xs">scheduler_disabled_by_env</code>.
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Scheduled jobs */}
       {scheduledJobs.length > 0 && (
         <Card className="border-border/70 shadow-sm">
@@ -187,7 +208,7 @@ export default function SchedulesPage() {
               Scheduled Jobs
             </CardTitle>
             <CardDescription>
-              Jobs with active cron schedules. The scheduler will execute these automatically.
+              Jobs with active cron schedules. When the deployment scheduler is enabled, these run automatically.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 pt-5">
