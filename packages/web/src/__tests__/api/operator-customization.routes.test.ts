@@ -6,6 +6,8 @@ import {
   POST as postProposal,
 } from "@/app/api/admin/operator-customization/proposals/route";
 import { POST as postApplyProposal } from "@/app/api/admin/operator-customization/proposals/[id]/apply/route";
+import { POST as postPublish } from "@/app/api/admin/operator-customization/publish/route";
+import { POST as postDismissSuggestion } from "@/app/api/admin/operator-customization/suggestions/dismiss/route";
 
 jest.mock("@/lib/middleware/api-security", () => ({
   withSecurity: (handler: unknown) => handler,
@@ -41,6 +43,9 @@ jest.mock("@/shared/db/prismaClient", () => ({
     operatorCustomizationAudit: {
       create: jest.fn(),
     },
+    operatorSuggestionDismissal: {
+      upsert: jest.fn(),
+    },
   },
 }));
 
@@ -49,6 +54,7 @@ jest.mock("@/domain/billing/entitlements", () => ({
 }));
 
 import { getAccountPlanCode } from "@/domain/billing/entitlements";
+import { isSuperAdmin } from "@/lib/auth/super-admin";
 import { prisma } from "@/shared/db/prismaClient";
 
 const prismaMock = prisma as jest.Mocked<typeof prisma>;
@@ -72,13 +78,58 @@ describe("operator customization API", () => {
     prismaMock.operatorCustomizationState.findUnique.mockResolvedValue(null as never);
     prismaMock.operatorCustomizationState.upsert.mockResolvedValue({} as never);
     prismaMock.operatorCustomizationAudit.create.mockResolvedValue({} as never);
+    prismaMock.operatorSuggestionDismissal.upsert.mockResolvedValue({} as never);
     (getAccountPlanCode as jest.Mock).mockResolvedValue("starter");
     prismaMock.tenant.findUnique.mockResolvedValue({ billingAccountId: null });
+  });
+
+  it("GET returns 403 when not super-admin", async () => {
+    (isSuperAdmin as jest.Mock).mockResolvedValueOnce(false);
+    const response = await getCustomization(req("http://localhost/api/admin/operator-customization"));
+    expect(response.status).toBe(403);
+    (isSuperAdmin as jest.Mock).mockResolvedValue(true);
   });
 
   it("GET returns 400 when multiple tenants and tenantId omitted", async () => {
     prismaMock.tenant.count.mockResolvedValue(2);
     const response = await getCustomization(req("http://localhost/api/admin/operator-customization"));
+    expect(response.status).toBe(400);
+    const j = await response.json();
+    expect(j.code).toBe("ambiguous_tenant");
+  });
+
+  it("PUT returns 400 when multiple tenants and tenantId omitted", async () => {
+    prismaMock.tenant.count.mockResolvedValue(2);
+    const { defaultAdminDashboardCustomization } = await import("@/lib/operator-customization/registry");
+    const response = await putCustomization(
+      req("http://localhost/api/admin/operator-customization", {
+        method: "PUT",
+        body: { draft: defaultAdminDashboardCustomization() },
+      })
+    );
+    expect(response.status).toBe(400);
+    const j = await response.json();
+    expect(j.code).toBe("ambiguous_tenant");
+  });
+
+  it("POST publish returns 400 when multiple tenants and tenantId omitted", async () => {
+    prismaMock.tenant.count.mockResolvedValue(2);
+    const response = await postPublish(
+      req("http://localhost/api/admin/operator-customization/publish", { method: "POST", body: {} })
+    );
+    expect(response.status).toBe(400);
+    const j = await response.json();
+    expect(j.code).toBe("ambiguous_tenant");
+  });
+
+  it("POST suggestion dismiss returns 400 when multiple tenants and tenantId omitted", async () => {
+    prismaMock.tenant.count.mockResolvedValue(2);
+    const response = await postDismissSuggestion(
+      req("http://localhost/api/admin/operator-customization/suggestions/dismiss", {
+        method: "POST",
+        body: { suggestionKey: "exceptions_overview", suggestionKind: "pin_module" },
+      })
+    );
     expect(response.status).toBe(400);
     const j = await response.json();
     expect(j.code).toBe("ambiguous_tenant");
@@ -142,6 +193,27 @@ describe("operator customization API", () => {
     expect(prismaMock.operatorCustomizationProposal.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { tenantId: T1, userId: "00000000-0000-0000-0000-000000000099" },
+      })
+    );
+  });
+
+  it("POST proposal create uses resolved tenant id in prisma create", async () => {
+    prismaMock.tenant.findFirst.mockResolvedValue({ id: T1, slug: "a" });
+    prismaMock.tenant.count.mockResolvedValue(2);
+    prismaMock.operatorCustomizationProposal.create.mockResolvedValue({
+      id: "prop-new",
+      status: "pending",
+    } as never);
+    const response = await postProposal(
+      req("http://localhost/api/admin/operator-customization/proposals", {
+        method: "POST",
+        body: { tenantId: T1, request: "pin exceptions module" },
+      })
+    );
+    expect(response.status).toBe(200);
+    expect(prismaMock.operatorCustomizationProposal.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ tenantId: T1, userId: "00000000-0000-0000-0000-000000000099" }),
       })
     );
   });

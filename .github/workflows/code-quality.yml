@@ -20,6 +20,12 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm run lint
       - run: pnpm run format:check
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.4
+      - name: Helm chart smoke (lint + template)
+        run: pnpm run verify:self-hosted-artifacts
 
   typecheck:
     name: TypeScript Type Check

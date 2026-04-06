@@ -335,7 +335,10 @@
     "verify:helm-packaging": "node scripts/verify-helm-packaging.mjs",
     "verify:enterprise-posture": "node scripts/verify-enterprise-posture.mjs",
     "verify:adapters": "node scripts/verify-adapter-registry.mjs",
-    "verify:observability-surface": "node scripts/verify-observability-surface.mjs"
+    "verify:observability-surface": "node scripts/verify-observability-surface.mjs",
+    "verify:self-hosted-artifacts": "node scripts/verify-self-hosted-artifacts.mjs",
+    "verify:pilot-evidence-index": "node scripts/pilot-evidence-index.mjs",
+    "verify:scim-surface": "node scripts/verify-scim-surface.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",
