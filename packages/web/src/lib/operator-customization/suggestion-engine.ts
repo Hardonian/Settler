@@ -16,6 +16,9 @@ const WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
 const MIN_VISITS = 8;
 const MAX_SUGGESTIONS = 3;
 
+const SURFACE = "admin_dashboard";
+const KIND = "pin_module";
+
 export async function computeModuleVisitSuggestions(
   prisma: PrismaClient,
   tenantId: string,
@@ -38,8 +41,18 @@ export async function computeModuleVisitSuggestions(
 
   type Row = (typeof rows)[number];
 
+  let dismissedKeys = new Set<string>();
+  if (userId) {
+    const dismissals = await prisma.operatorSuggestionDismissal.findMany({
+      where: { tenantId, userId, surface: SURFACE, suggestionKind: KIND },
+      select: { suggestionKey: true },
+    });
+    dismissedKeys = new Set(dismissals.map((d: { suggestionKey: string }) => d.suggestionKey));
+  }
+
   const sorted = rows
     .filter((r: Row) => r._count.moduleId >= MIN_VISITS)
+    .filter((r: Row) => !dismissedKeys.has(r.moduleId))
     .sort((a: Row, b: Row) => b._count.moduleId - a._count.moduleId)
     .slice(0, MAX_SUGGESTIONS);
 

@@ -16,13 +16,20 @@ import { ADMIN_DASHBOARD_MODULE_REGISTRY } from "@/lib/operator-customization/re
 import { OPERATOR_CUSTOMIZATION_PRESETS } from "@/lib/operator-customization/presets";
 import type { CustomizationPatch, ModulePlacement, OperatorSurfaceCustomization } from "@/lib/operator-customization/schema";
 
+const PREMIUM_PRESET_IDS = new Set(["buyer_demo", "exception_ops"]);
+
 type StudioPayload = {
   draft: OperatorSurfaceCustomization;
   published: OperatorSurfaceCustomization;
   publishedAt: string | null;
   draftUpdatedAt: string;
   registry: Array<(typeof ADMIN_DASHBOARD_MODULE_REGISTRY)[string]>;
-  degraded?: { inference: string; message: string };
+  tenant?: { id: string; slug: string; multiTenantEnvironment: boolean };
+  entitlements?: {
+    planCode: string;
+    capabilities: Record<string, boolean>;
+  };
+  degraded?: { inference: string; message: string; code?: string };
 };
 
 export default function OperatorCustomizationStudioPage() {
@@ -35,46 +42,105 @@ export default function OperatorCustomizationStudioPage() {
     patch: CustomizationPatch;
     rationale: string;
     inferenceMode: string;
+    explanationEvidence?: Record<string, unknown>;
   } | null>(null);
   const [proposalError, setProposalError] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<
-    Array<{ kind: string; moduleId: string; evidence: { visitsInWindow: number }; message: string }>
+    Array<{
+      kind: string;
+      moduleId: string;
+      evidence: { visitsInWindow: number; windowHours?: number };
+      message: string;
+    }>
   >([]);
-  const [dismissed, setDismissed] = useState<Set<string>>(() => new Set());
+  const [tenantOptions, setTenantOptions] = useState<Array<{ id: string; slug: string; name: string }>>([]);
+  const [selectedTenantId, setSelectedTenantId] = useState<string | null>(null);
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+
+  const tenantQuery = useMemo(
+    () => (selectedTenantId ? `?tenantId=${encodeURIComponent(selectedTenantId)}` : ""),
+    [selectedTenantId]
+  );
+
+  const persistBody = useCallback(
+    (extra: Record<string, unknown> = {}) =>
+      selectedTenantId ? { tenantId: selectedTenantId, ...extra } : { ...extra },
+    [selectedTenantId]
+  );
+
+  const loadTenants = useCallback(async () => {
+    const res = await fetch("/api/admin/operator-customization/tenants", { credentials: "include" });
+    if (!res.ok) return;
+    const json = (await res.json()) as { items: Array<{ id: string; slug: string; name: string }> };
+    const items = json.items ?? [];
+    setTenantOptions(items);
+    if (items.length === 1) {
+      setSelectedTenantId(items[0]!.id);
+    }
+  }, []);
 
   const load = useCallback(async () => {
     setLoadError(null);
-    const res = await fetch("/api/admin/operator-customization", { credentials: "include" });
+    if (tenantOptions.length > 1 && !selectedTenantId) {
+      setPayload(null);
+      return;
+    }
+    const res = await fetch(`/api/admin/operator-customization${tenantQuery}`, { credentials: "include" });
     if (!res.ok) {
-      setLoadError(`Failed to load (${res.status})`);
+      const b = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        code?: string;
+        message?: string;
+        activeTenantCount?: number;
+      };
+      const msg =
+        b.message ||
+        (b.code === "ambiguous_tenant"
+          ? "Select a workspace below — multiple active tenants require an explicit target."
+          : typeof b.error === "string"
+            ? b.error
+            : `Failed to load (${res.status})`);
+      setLoadError(msg);
       setPayload(null);
       return;
     }
     const json = (await res.json()) as StudioPayload;
     setPayload(json);
-  }, []);
+    if (json.tenant?.id) {
+      setSelectedTenantId(json.tenant.id);
+    }
+  }, [tenantQuery, tenantOptions.length, selectedTenantId]);
 
   const loadSuggestions = useCallback(async () => {
-    const res = await fetch("/api/admin/operator-customization/suggestions", { credentials: "include" });
+    if (tenantOptions.length > 1 && !selectedTenantId) return;
+    const res = await fetch(`/api/admin/operator-customization/suggestions${tenantQuery}`, {
+      credentials: "include",
+    });
     if (!res.ok) return;
     const json = (await res.json()) as {
       suggestions: Array<{
         kind: string;
         moduleId: string;
-        evidence: { visitsInWindow: number };
+        evidence: { visitsInWindow: number; windowHours?: number };
         message: string;
       }>;
     };
     setSuggestions(json.suggestions ?? []);
-  }, []);
+  }, [tenantQuery, tenantOptions.length, selectedTenantId]);
 
   useEffect(() => {
+    void loadTenants();
+  }, [loadTenants]);
+
+  useEffect(() => {
+    if (tenantOptions.length > 1 && !selectedTenantId) return;
     void load();
     void loadSuggestions();
-  }, [load, loadSuggestions]);
+  }, [load, loadSuggestions, tenantOptions.length, selectedTenantId]);
 
   const draft = payload?.draft;
   const published = payload?.published;
+  const advancedOk = payload?.entitlements?.capabilities?.advanced_presets === true;
 
   const sortedDraft = useMemo(() => {
     if (!draft) return [];
@@ -104,18 +170,31 @@ export default function OperatorCustomizationStudioPage() {
 
   async function saveDraft(next: OperatorSurfaceCustomization) {
     setBusy(true);
+    setSaveStatus("saving");
     try {
       const res = await fetch("/api/admin/operator-customization", {
         method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ draft: next }),
+        body: JSON.stringify(persistBody({ draft: next })),
       });
       if (!res.ok) {
-        const b = await res.json().catch(() => ({}));
-        setLoadError(typeof b.error === "string" ? b.error : "save_failed");
+        const b = (await res.json().catch(() => ({}))) as {
+          error?: string;
+          code?: string;
+          message?: string;
+          planCode?: string;
+        };
+        setSaveStatus("error");
+        setLoadError(
+          b.code === "advanced_presets_require_plan"
+            ? `This preset requires a Growth (or higher) plan for this workspace (current: ${b.planCode ?? "unknown"}).`
+            : b.message || (typeof b.error === "string" ? b.error : "save_failed")
+        );
         return;
       }
+      setSaveStatus("saved");
+      setLoadError(null);
       await load();
     } finally {
       setBusy(false);
@@ -149,12 +228,18 @@ export default function OperatorCustomizationStudioPage() {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ signalType: "layout_reorder", moduleId }),
+      body: JSON.stringify(persistBody({ signalType: "layout_reorder", moduleId })),
     }).catch(() => {});
     void saveDraft({ ...draft, modules: nextModules });
   }
 
   async function applyPreset(presetId: string) {
+    if (!advancedOk && PREMIUM_PRESET_IDS.has(presetId)) {
+      setLoadError(
+        "That preset is gated to Growth+ on the workspace billing plan. Default and Solo operator remain available on Starter."
+      );
+      return;
+    }
     const preset = OPERATOR_CUSTOMIZATION_PRESETS.find((p) => p.id === presetId);
     if (!preset || !draft) return;
     const c = preset.customization();
@@ -168,12 +253,18 @@ export default function OperatorCustomizationStudioPage() {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
+        body: JSON.stringify(persistBody()),
       });
       if (!res.ok) {
-        setLoadError("publish_failed");
+        const b = (await res.json().catch(() => ({}))) as { code?: string; planCode?: string };
+        setLoadError(
+          b.code === "advanced_presets_require_plan"
+            ? `Cannot publish: draft references a preset that requires Growth+ (plan: ${b.planCode ?? "unknown"}).`
+            : "publish_failed"
+        );
         return;
       }
+      setLoadError(null);
       await load();
     } finally {
       setBusy(false);
@@ -187,12 +278,13 @@ export default function OperatorCustomizationStudioPage() {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
+        body: JSON.stringify(persistBody()),
       });
       if (!res.ok) {
         setLoadError("revert_failed");
         return;
       }
+      setLoadError(null);
       await load();
     } finally {
       setBusy(false);
@@ -206,7 +298,7 @@ export default function OperatorCustomizationStudioPage() {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ request: promptText }),
+      body: JSON.stringify(persistBody({ request: promptText })),
     });
     const json = await res.json().catch(() => ({}));
     if (!res.ok) {
@@ -218,6 +310,7 @@ export default function OperatorCustomizationStudioPage() {
       patch: json.proposal.patch,
       rationale: json.proposal.rationale,
       inferenceMode: json.proposal.inferenceMode,
+      explanationEvidence: json.proposal.explanationEvidence,
     });
   }
 
@@ -229,35 +322,63 @@ export default function OperatorCustomizationStudioPage() {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
+        body: JSON.stringify(persistBody()),
       });
       if (!res.ok) {
-        setLoadError("apply_proposal_failed");
+        const b = (await res.json().catch(() => ({}))) as { code?: string };
+        setLoadError(
+          b.code === "advanced_presets_require_plan"
+            ? "Proposal would apply a Growth+ preset — upgrade the workspace plan or edit the draft."
+            : "apply_proposal_failed"
+        );
         return;
       }
       setProposal(null);
       setPromptText("");
+      setLoadError(null);
       await load();
     } finally {
       setBusy(false);
     }
   }
 
-  if (!payload && !loadError) {
+  async function dismissSuggestion(moduleId: string) {
+    const res = await fetch("/api/admin/operator-customization/suggestions/dismiss", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(
+        persistBody({
+          surface: "admin_dashboard",
+          suggestionKind: "pin_module",
+          suggestionKey: moduleId,
+          reasonCategory: "operator_dismissed",
+        })
+      ),
+    });
+    if (res.ok) {
+      await loadSuggestions();
+    }
+  }
+
+  const awaitingTenantPick = tenantOptions.length > 1 && !selectedTenantId;
+
+  if (!payload && !loadError && !awaitingTenantPick) {
     return (
-      <div className="p-8">
+      <div className="p-8" data-testid="operator-customization-loading">
         <p className="text-muted-foreground">Loading studio…</p>
       </div>
     );
   }
 
   return (
-    <div className="p-4 sm:p-8 max-w-5xl space-y-6">
+    <div className="p-4 sm:p-8 max-w-5xl space-y-6" data-testid="operator-customization-studio">
       <div>
         <h1 className="text-2xl font-bold">Operator Customization Studio</h1>
         <p className="text-sm text-muted-foreground mt-1">
           Presentation-only layout for the admin dashboard. Does not change reconciliation results, evidence, or run
-          health semantics.
+          health semantics. Draft saves are persisted; publish makes the layout live for your operator session on this
+          workspace.
         </p>
         <p className="text-sm mt-2">
           <Link href="/admin" className="underline underline-offset-2">
@@ -266,18 +387,80 @@ export default function OperatorCustomizationStudioPage() {
         </p>
       </div>
 
+      {tenantOptions.length > 1 ? (
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Workspace target</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            <p className="text-muted-foreground text-xs">
+              Multiple active tenants exist. Customization writes are scoped to the workspace you select.
+            </p>
+            <label className="sr-only" htmlFor="tenant-select">
+              Workspace
+            </label>
+            <select
+              id="tenant-select"
+              data-testid="operator-customization-tenant-select"
+              className="border rounded-md px-3 py-2 text-sm bg-background"
+              value={selectedTenantId ?? ""}
+              onChange={(e) => {
+                const v = e.target.value || null;
+                setSelectedTenantId(v);
+                setPayload(null);
+                setLoadError(null);
+              }}
+            >
+              <option value="">Select workspace…</option>
+              {tenantOptions.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name} ({t.slug})
+                </option>
+              ))}
+            </select>
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {payload?.tenant ? (
+        <p className="text-xs text-muted-foreground" data-testid="operator-customization-tenant-context">
+          Workspace: <span className="font-mono">{payload.tenant.slug}</span>
+          {payload.entitlements ? (
+            <>
+              {" "}
+              · Plan: <span className="font-mono">{payload.entitlements.planCode}</span>
+            </>
+          ) : null}
+        </p>
+      ) : null}
+
       {loadError ? (
-        <p className="text-sm text-destructive" role="alert">
+        <p className="text-sm text-destructive" role="alert" data-testid="operator-customization-error">
           {loadError}
         </p>
+      ) : null}
+
+      {saveStatus !== "idle" ? (
+        <p className="text-xs text-muted-foreground" data-testid="operator-customization-save-status">
+          {saveStatus === "saving" ? "Saving draft…" : saveStatus === "saved" ? "Draft saved (server)" : "Save failed"}
+        </p>
+      ) : null}
+
+      {awaitingTenantPick ? (
+        <p className="text-sm text-muted-foreground">Choose a workspace to load customization.</p>
       ) : null}
 
       {payload?.degraded ? (
         <Card className="border-amber-500/40">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Inference posture</CardTitle>
+            <CardTitle className="text-sm">Advisory proposals</CardTitle>
           </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">{payload.degraded.message}</CardContent>
+          <CardContent className="text-sm text-muted-foreground space-y-1">
+            <p>{payload.degraded.message}</p>
+            {payload.degraded.code ? (
+              <p className="text-xs font-mono">Code: {payload.degraded.code}</p>
+            ) : null}
+          </CardContent>
         </Card>
       ) : null}
 
@@ -307,13 +490,18 @@ export default function OperatorCustomizationStudioPage() {
             )}
           </div>
           <div className="flex flex-wrap gap-2 pt-2">
-            <Button size="sm" onClick={() => void publish()} disabled={busy || !draft}>
+            <Button
+              size="sm"
+              onClick={() => void publish()}
+              disabled={busy || !draft || awaitingTenantPick}
+              data-testid="operator-customization-publish"
+            >
               Publish draft
             </Button>
-            <Button size="sm" variant="outline" onClick={() => void revertDraft()} disabled={busy}>
+            <Button size="sm" variant="outline" onClick={() => void revertDraft()} disabled={busy || awaitingTenantPick}>
               Revert draft to published
             </Button>
-            <Button size="sm" variant="secondary" onClick={() => void load()} disabled={busy}>
+            <Button size="sm" variant="secondary" onClick={() => void load()} disabled={busy || awaitingTenantPick}>
               Refresh
             </Button>
           </div>
@@ -325,11 +513,27 @@ export default function OperatorCustomizationStudioPage() {
           <CardTitle className="text-base">Presets</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
-          {OPERATOR_CUSTOMIZATION_PRESETS.map((p) => (
-            <Button key={p.id} size="sm" variant="outline" onClick={() => void applyPreset(p.id)} disabled={busy}>
-              {p.label}
-            </Button>
-          ))}
+          {OPERATOR_CUSTOMIZATION_PRESETS.map((p) => {
+            const gated = PREMIUM_PRESET_IDS.has(p.id) && !advancedOk;
+            return (
+              <Button
+                key={p.id}
+                size="sm"
+                variant="outline"
+                onClick={() => void applyPreset(p.id)}
+                disabled={busy || gated}
+                title={gated ? "Requires Growth+ plan for this workspace" : undefined}
+                data-testid={`operator-customization-preset-${p.id}`}
+              >
+                {p.label}
+                {gated ? (
+                  <Badge variant="secondary" className="ml-2 text-[9px]">
+                    Growth+
+                  </Badge>
+                ) : null}
+              </Button>
+            );
+          })}
         </CardContent>
       </Card>
 
@@ -467,29 +671,44 @@ export default function OperatorCustomizationStudioPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Prompt → proposal (review before apply)</CardTitle>
+          <CardTitle className="text-base">Rules-based proposal (review before apply)</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
+          <p className="text-xs text-muted-foreground">
+            Advisory only: deterministic pattern match to a patch. Does not auto-publish; does not change reconciliation
+            truth.
+          </p>
           <Textarea
             value={promptText}
             onChange={(e) => setPromptText(e.target.value)}
             rows={3}
             placeholder='Try: "solo operator layout" or "hide activity feed"'
             aria-label="Customization request"
+            data-testid="operator-customization-proposal-input"
           />
-          <Button size="sm" onClick={() => void submitProposal()} disabled={busy || !promptText.trim()}>
+          <Button
+            size="sm"
+            onClick={() => void submitProposal()}
+            disabled={busy || !promptText.trim() || awaitingTenantPick}
+            data-testid="operator-customization-proposal-generate"
+          >
             Generate proposal
           </Button>
           {proposalError ? <p className="text-sm text-destructive">{proposalError}</p> : null}
           {proposal ? (
-            <div className="border rounded-md p-3 space-y-2 text-sm">
+            <div className="border rounded-md p-3 space-y-2 text-sm" data-testid="operator-customization-proposal-panel">
               <p className="font-medium">Rationale</p>
               <p className="text-muted-foreground">{proposal.rationale}</p>
               <p className="text-xs text-muted-foreground">Mode: {proposal.inferenceMode}</p>
+              {proposal.explanationEvidence ? (
+                <pre className="text-xs bg-muted p-2 rounded-md overflow-x-auto">
+                  {JSON.stringify(proposal.explanationEvidence, null, 2)}
+                </pre>
+              ) : null}
               <pre className="text-xs bg-muted p-2 rounded-md overflow-x-auto">
                 {JSON.stringify(proposal.patch, null, 2)}
               </pre>
-              <Button size="sm" onClick={() => void applyProposal()} disabled={busy}>
+              <Button size="sm" onClick={() => void applyProposal()} disabled={busy} data-testid="operator-customization-proposal-apply">
                 Apply to draft (not published)
               </Button>
             </div>
@@ -503,30 +722,34 @@ export default function OperatorCustomizationStudioPage() {
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
           <p className="text-muted-foreground text-xs">
-            Based on recorded module views (tenant-scoped). Dismiss is local to this browser session only.
+            Based on recorded module views (tenant-scoped). Dismiss is stored for this workspace and your operator
+            account (not session-only).
           </p>
-          {suggestions.filter((s) => !dismissed.has(s.moduleId)).length === 0 ? (
+          {suggestions.length === 0 ? (
             <p className="text-muted-foreground">No suggestions right now.</p>
           ) : (
-            suggestions
-              .filter((s) => !dismissed.has(s.moduleId))
-              .map((s) => (
-                <div key={s.moduleId} className="border rounded-md p-3 flex flex-col sm:flex-row sm:justify-between gap-2">
-                  <div>
-                    <p>{s.message}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Evidence: {s.evidence.visitsInWindow} views (7d window)
-                    </p>
-                  </div>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => setDismissed((prev) => new Set(prev).add(s.moduleId))}
-                  >
-                    Dismiss
-                  </Button>
+            suggestions.map((s) => (
+              <div
+                key={s.moduleId}
+                className="border rounded-md p-3 flex flex-col sm:flex-row sm:justify-between gap-2"
+                data-testid={`operator-customization-suggestion-${s.moduleId}`}
+              >
+                <div>
+                  <p>{s.message}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Evidence: {s.evidence.visitsInWindow} views (7d window)
+                  </p>
                 </div>
-              ))
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => void dismissSuggestion(s.moduleId)}
+                  data-testid={`operator-customization-suggestion-dismiss-${s.moduleId}`}
+                >
+                  Dismiss (saved)
+                </Button>
+              </div>
+            ))
           )}
         </CardContent>
       </Card>

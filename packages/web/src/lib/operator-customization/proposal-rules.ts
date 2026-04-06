@@ -12,13 +12,20 @@ export type ProposalBuildResult =
       patch: CustomizationPatch;
       rationale: string;
       inferenceMode: InferenceMode;
+      /** Bounded, machine-auditable metadata (no free-form claims). */
+      explanationEvidence: Record<string, unknown>;
     }
-  | { ok: false; reason: string; inferenceMode: InferenceMode };
+  | { ok: false; reason: string; inferenceMode: InferenceMode; explanationEvidence: Record<string, unknown> };
 
-function applyPreset(presetId: string, rationale: string): ProposalBuildResult {
+function applyPreset(presetId: string, rationale: string, ruleId: string): ProposalBuildResult {
   const preset = getPresetById(presetId);
   if (!preset) {
-    return { ok: false, reason: `Unknown preset: ${presetId}`, inferenceMode: "rules" };
+    return {
+      ok: false,
+      reason: `Unknown preset: ${presetId}`,
+      inferenceMode: "rules",
+      explanationEvidence: { engine: "rules", ruleId: "unknown_preset", presetId },
+    };
   }
   const full = preset.customization();
   return {
@@ -30,44 +37,65 @@ function applyPreset(presetId: string, rationale: string): ProposalBuildResult {
     },
     rationale,
     inferenceMode: "rules",
+    explanationEvidence: {
+      engine: "rules",
+      ruleId,
+      presetId,
+      proposalLane: "rules",
+    },
   };
 }
 
 export function buildProposalFromNaturalLanguage(request: string): ProposalBuildResult {
   const trimmed = request.trim();
   if (!trimmed) {
-    return { ok: false, reason: "Empty request.", inferenceMode: "rules" };
+    return {
+      ok: false,
+      reason: "Empty request.",
+      inferenceMode: "rules",
+      explanationEvidence: { engine: "rules", ruleId: "empty_request" },
+    };
   }
 
   if (/solo|single\s*operator|one\s*person|compact/i.test(trimmed)) {
     return applyPreset(
       "solo_operator",
-      "Matched solo-operator intent: Solo operator preset (compact path; activity feed off)."
+      "Matched solo-operator intent: Solo operator preset (compact path; activity feed off).",
+      "intent_solo_operator"
     );
   }
   if (/buyer|demo|enterprise\s*pitch|sales/i.test(trimmed)) {
-    return applyPreset("buyer_demo", "Matched buyer-demo intent: Buyer demo preset.");
+    return applyPreset("buyer_demo", "Matched buyer-demo intent: Buyer demo preset.", "intent_buyer_demo");
   }
   if (/exception|queue|heatmap|ops\s*first/i.test(trimmed)) {
     return applyPreset(
       "exception_ops",
-      "Matched exception-ops intent: heatmap ordered before KPI tiles."
+      "Matched exception-ops intent: heatmap ordered before KPI tiles.",
+      "intent_exception_ops"
     );
   }
   if (/default|reset|baseline/i.test(trimmed)) {
-    return applyPreset("default", "Reset to default layout and standard operating mode.");
+    return applyPreset("default", "Reset to default layout and standard operating mode.", "intent_reset_default");
   }
 
   if (/hide\s*activity|no\s*activity\s*feed|disable\s*activity/i.test(trimmed)) {
     return applyPreset(
       "solo_operator",
-      "Activity feed hidden via Solo operator preset (other modules unchanged vs that preset)."
+      "Activity feed hidden via Solo operator preset (other modules unchanged vs that preset).",
+      "intent_hide_activity"
     );
   }
 
   if (/finance|executive|summary|kpi/i.test(trimmed)) {
     const preset = getPresetById("default");
-    if (!preset) return { ok: false, reason: "Default preset missing.", inferenceMode: "rules" };
+    if (!preset) {
+      return {
+        ok: false,
+        reason: "Default preset missing.",
+        inferenceMode: "rules",
+        explanationEvidence: { engine: "rules", ruleId: "default_preset_missing" },
+      };
+    }
     const full = preset.customization();
     return {
       ok: true,
@@ -87,6 +115,12 @@ export function buildProposalFromNaturalLanguage(request: string): ProposalBuild
       rationale:
         "Finance/leadership wording: KPI title/help only; data still from GET /api/admin/metrics.",
       inferenceMode: "rules",
+      explanationEvidence: {
+        engine: "rules",
+        ruleId: "intent_finance_kpi_labels",
+        moduleId: "kpi_tiles",
+        proposalLane: "rules",
+      },
     };
   }
 
@@ -95,6 +129,7 @@ export function buildProposalFromNaturalLanguage(request: string): ProposalBuild
     reason:
       "No rules match. Try: solo operator, buyer demo, exception ops, hide activity feed, finance summary, or reset to default.",
     inferenceMode: "rules",
+    explanationEvidence: { engine: "rules", ruleId: "no_match" },
   };
 }
 

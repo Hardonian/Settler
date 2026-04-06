@@ -44,6 +44,7 @@ describe("operator customization", () => {
     expect(p.ok).toBe(true);
     if (p.ok) {
       expect(p.patch.lastAppliedPresetId).toBe("solo_operator");
+      expect(p.explanationEvidence).toMatchObject({ engine: "rules", ruleId: "intent_solo_operator" });
       const preset = getPresetById("solo_operator");
       expect(preset).toBeDefined();
     }
@@ -52,5 +53,8 @@ describe("operator customization", () => {
   it("proposal rules reject unsupported phrasing", () => {
     const p = buildProposalFromNaturalLanguage("make the database faster");
     expect(p.ok).toBe(false);
+    if (!p.ok) {
+      expect(p.explanationEvidence.ruleId).toBe("no_match");
+    }
   });
 });

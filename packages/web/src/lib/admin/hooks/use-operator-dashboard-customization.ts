@@ -10,7 +10,9 @@ export type CustomizationApiResponse = {
   published: OperatorSurfaceCustomization;
   publishedAt: string | null;
   draftUpdatedAt: string;
-  degraded?: { inference: string; message: string };
+  tenant?: { id: string; slug: string; multiTenantEnvironment?: boolean };
+  entitlements?: { planCode: string; capabilities: Record<string, boolean> };
+  degraded?: { inference: string; message: string; code?: string };
 };
 
 export function useOperatorDashboardCustomization() {
@@ -52,13 +54,17 @@ export function useOperatorDashboardCustomization() {
   };
 }
 
-export function recordModuleViewSignal(moduleId: string): void {
+export function recordModuleViewSignal(moduleId: string, tenantId?: string | null): void {
   try {
     void fetch("/api/admin/operator-customization/signals", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ signalType: "module_view", moduleId }),
+      body: JSON.stringify({
+        signalType: "module_view",
+        moduleId,
+        ...(tenantId ? { tenantId } : {}),
+      }),
     });
   } catch {
     /* non-blocking */
