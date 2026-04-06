@@ -1,7 +1,10 @@
 /** @jest-environment node */
 
 import { GET as getCustomization, PUT as putCustomization } from "@/app/api/admin/operator-customization/route";
-import { GET as getProposals } from "@/app/api/admin/operator-customization/proposals/route";
+import {
+  GET as getProposals,
+  POST as postProposal,
+} from "@/app/api/admin/operator-customization/proposals/route";
 import { POST as postApplyProposal } from "@/app/api/admin/operator-customization/proposals/[id]/apply/route";
 
 jest.mock("@/lib/middleware/api-security", () => ({
@@ -114,6 +117,21 @@ describe("operator customization API", () => {
     expect(response.status).toBe(403);
     const j = await response.json();
     expect(j.code).toBe("advanced_presets_require_plan");
+  });
+
+  it("POST proposals rejects buyer_demo intent on starter plan (server-enforced)", async () => {
+    prismaMock.tenant.findFirst.mockResolvedValue({ id: T1, slug: "solo" });
+    prismaMock.tenant.count.mockResolvedValue(1);
+    const response = await postProposal(
+      req("http://localhost/api/admin/operator-customization/proposals", {
+        method: "POST",
+        body: { tenantId: T1, request: "buyer demo layout" },
+      })
+    );
+    expect(response.status).toBe(403);
+    const j = await response.json();
+    expect(j.code).toBe("advanced_presets_require_plan");
+    expect(prismaMock.operatorCustomizationProposal.create).not.toHaveBeenCalled();
   });
 
   it("proposals GET lists only current user rows for tenant", async () => {

@@ -31,6 +31,7 @@ import { AdminErrorBoundary } from "@/components/admin/error-boundary";
 import { MobileMenu } from "@/components/admin/mobile-menu";
 import { SkipLinks } from "@/components/admin/accessibility-skip-links";
 import { OperationalRouteNotice } from "@/components/shared/OperationalRouteNotice";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -169,7 +170,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
         {/* Main Content */}
         <main className="flex-1 lg:ml-60 overflow-auto" role="main" id="main-content">
-          <div className="p-4">
+          <div className="space-y-3 p-4">
+            <Alert variant="info">
+              <AlertTitle>Internal control plane</AlertTitle>
+              <AlertDescription>
+                Admin routes require a super-admin role (platform operator). Tenant administrators use the Console for
+                tenant-scoped operations; delegated tenant admin for control-plane surfaces is not exposed here.
+              </AlertDescription>
+            </Alert>
             <OperationalRouteNotice />
           </div>
           {children}

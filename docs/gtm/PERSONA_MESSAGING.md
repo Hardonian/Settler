@@ -188,7 +188,7 @@ console.log(result.summary); // { matched: 100, unmatched: 5 }
 
 ### Key Features
 
-- SSO (SAML 2.0, OIDC)
+- OIDC SSO (Okta, Entra ID, Google Workspace) — configuration-gated; SAML not GA in this repository path
 - RBAC
 - Comprehensive audit logs
 - BYOK encryption

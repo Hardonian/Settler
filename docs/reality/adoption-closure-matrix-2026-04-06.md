@@ -19,7 +19,7 @@ This matrix maps each material recommendation theme from the report to current S
 | Reversible teardown / cleanup | Partial → tightened | `scripts/dev-teardown.mjs` (new), `pnpm dev:teardown`, `pnpm tb:stop`, `pnpm demo:reset` | New deterministic teardown entrypoint added; destructive DB reset remains explicit/manual. |
 | Deterministic first-value walkthrough | Partial | `pnpm demo:settler`, `scripts/settler-demo.ts`, `scripts/verify-replay.mjs`, `scripts/verify-determinism.mjs` | Present but depends on local infra availability and environment quality. |
 | OIDC / SAML enterprise SSO | Partial (truth-gated) | `packages/web/src/lib/enterprise/capabilityTruth.ts`, enterprise/pricing/security surfaces now render explicit state boundaries | Requires full runtime integration evidence matrix per IdP before claiming general availability. |
-| SCIM provisioning | Partial / staged | `docs/reality/enterprise-capability-truth.md` and web capability truth table mark SCIM as staged, not GA | Need route-level SCIM contract verification and fixture-based provisioning tests for verified status. |
+| SCIM provisioning | Missing (bounded) | `verify:scim-posture`, capability truth table `missing` | No application SCIM routes; boundary is explicit — implement + test only if product scope expands. |
 | Tenant lifecycle + deprovisioning | Partial | `scripts/tenant-create.ts`, tenant/security verification commands in `package.json` | Need documented end-to-end deprovision + data export/delete runbook with runtime checks. |
 | Audit logs / who-did-what-when | Partial | `packages/api/src/routes/v1/audit-trail.ts`, audit viewers in web UI, audit-related tests/scripts | Need clearer SIEM export contract and evidence for enterprise integrations. |
 | SIEM exportability | Partial | export surfaces and operational tabs/docs exist | Need explicit vendor-neutral export format + validation fixtures. |
@@ -45,9 +45,8 @@ This matrix maps each material recommendation theme from the report to current S
 
 The following are intentionally deferred because they require deeper runtime integration passes beyond safe single-pass scope:
 
-1. Full SCIM route + provisioning lifecycle verification.
-2. IdP-by-IdP SSO validation matrix (Okta, Entra ID, Google Workspace, etc.).
-3. SIEM export schema/versioned contract tests.
-4. Cross-SDK parity smoke suite across all language SDKs.
+1. IdP-by-IdP SSO validation matrix (Okta, Entra ID, Google Workspace, etc.).
+2. SIEM export schema/versioned contract tests.
+3. Cross-SDK parity smoke suite across all language SDKs.
 
 These remain high-leverage and should be the next implementation tranche after this pass.

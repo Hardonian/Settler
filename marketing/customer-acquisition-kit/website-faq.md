@@ -346,7 +346,7 @@ We follow SOC 2 controls today and will be fully certified soon.
 - ✅ Unlimited reconciliations
 - ✅ Dedicated infrastructure
 - ✅ SOC 2 Type II certification
-- ✅ SSO (SAML, OIDC)
+- OIDC SSO (Okta, Entra ID, Google Workspace) — **configuration-gated**; requires deployment-specific IdP setup and validation (not turnkey in-repo)
 - ✅ Custom SLAs (99.99% uptime)
 - ✅ Dedicated account manager
 - ✅ VPC peering / private endpoints

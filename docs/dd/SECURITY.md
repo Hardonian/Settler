@@ -6,7 +6,7 @@
 
 - **API Keys:** Scoped with expiration
 - **JWT Tokens:** Short-lived with refresh
-- **SSO:** SAML 2.0 and OIDC support (enterprise)
+- **SSO:** OIDC env contracts (Okta, Entra ID, Google Workspace) are configuration-gated; SAML is not GA in this repository path. Use `pnpm run verify:enterprise-identity` for env-key posture only.
 
 ### Authorization
 

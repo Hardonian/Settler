@@ -44,4 +44,4 @@ The self-hosted stack includes:
 
 ## Enterprise Support
 
-For HA configurations, Kubernetes helm charts, and SSO integration, please contact [enterprise@settler.dev](mailto:enterprise@settler.dev).
+For HA configurations, the canonical Helm chart is at `deploy/helm/settler` (`pnpm run verify:helm-packaging` when `helm` is installed). OIDC SSO is configuration-gated per deployment. For assisted rollout, contact [enterprise@settler.dev](mailto:enterprise@settler.dev).

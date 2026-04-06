@@ -49,7 +49,7 @@ Settler is a modern, API-first reconciliation platform built for the cloud-nativ
 - Data retention policies configurable
 
 **Enterprise Security Features:**
-- SSO (SAML, OIDC) for single sign-on
+- OIDC SSO (Okta, Entra ID, Google Workspace) — configuration-gated; SAML not GA in this repository path; SCIM not implemented in app code
 - IP allowlisting for API access
 - Dedicated infrastructure (VPC peering, private endpoints)
 - Custom SLAs (99.99% uptime available)
@@ -407,7 +407,7 @@ const report = await client.reports.get(job.id);
 - ✅ GDPR compliance (built-in)
 - ✅ PCI-DSS Level 1 (on-demand)
 - ✅ HIPAA-ready (on-demand)
-- ✅ SSO (SAML, OIDC)
+- OIDC SSO — configuration-gated (per-deployment IdP validation required)
 - ✅ IP allowlisting
 - ✅ VPC peering
 - ✅ Private endpoints
