@@ -11,7 +11,6 @@ import { ErrorState } from "@/components/ui/error-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatusBadge, type StatusType } from "@/components/ui/status-badge";
 import { ConsolePageHeader } from "@/components/console/ConsolePageHeader";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { safeFetch } from "@/lib/safe-fetch";
 import { ScheduleConfigPanel, type ScheduleJob } from "./components";
 

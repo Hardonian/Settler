@@ -5,7 +5,6 @@ import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
-  CheckCircle2,
   AlertCircle,
   Settings,
   Shield,
@@ -101,11 +100,11 @@ export default function RunPage() {
         <div className="p-4 rounded-full bg-red-500/10 text-red-500">
           <AlertCircle className="w-12 h-12" />
         </div>
-        <CardTitle className="text-2xl">Reconciliation Intelligence Unavailable</CardTitle>
+        <CardTitle className="text-2xl">Run detail unavailable</CardTitle>
         <CardDescription className="max-w-md mx-auto">
           {error instanceof Error
             ? error.message
-            : "The requested run detail could not be resolved. This may be due to a transient network issue or invalid scope."}
+            : "The requested run detail could not be loaded. This may be due to a transient network issue or an invalid run ID."}
         </CardDescription>
         <div className="flex gap-3 pt-4">
           <Button variant="outline" onClick={() => router.back()}>
@@ -163,7 +162,7 @@ export default function RunPage() {
             onClick={handleRetry}
           >
             <RotateCcw className="w-4 h-4 mr-2" />
-            Re-run Intelligence
+            Retry run
           </Button>
         </div>
       </div>
@@ -172,7 +171,7 @@ export default function RunPage() {
         <DetailCard
           label="Operational State"
           value={run.status.toUpperCase()}
-          subtext={run.isTerminal ? "Execution Finalized" : "Running Intelligence Engine"}
+          subtext={run.isTerminal ? "Terminal" : "In progress"}
           status={run.status}
         />
         <DetailCard
@@ -188,10 +187,14 @@ export default function RunPage() {
           icon={BarChart3}
         />
         <DetailCard
-          label="Compliance Confidence"
-          value="99.9%"
-          subtext="Cryptographic Trust"
-          icon={CheckCircle2}
+          label="Proof signal"
+          value={run.compactProofSummary.operatorSummary.signal.replace(/_/g, " ").toUpperCase()}
+          subtext={
+            run.compactProofSummary.operatorSummary.proofPosture !== "unavailable"
+              ? `Posture ${run.compactProofSummary.operatorSummary.proofPosture}`
+              : "Posture unavailable"
+          }
+          icon={Shield}
         />
       </div>
 
@@ -222,9 +225,9 @@ export default function RunPage() {
       <Tabs defaultValue="statistics" className="w-full">
         <div className="flex items-center justify-between border-b border-border/40 pb-px mb-8 sticky top-0 bg-background/80 backdrop-blur-xl z-20">
           <TabsList className="bg-transparent h-12 p-0 gap-8">
-            <TabTrigger value="statistics" label="Performance & Variance" icon={BarChart3} />
-            <TabTrigger value="stages" label="Worker Lifecycle" icon={History} />
-            <TabTrigger value="config" label="Intelligence Config" icon={Settings} />
+            <TabTrigger value="statistics" label="Statistics" icon={BarChart3} />
+            <TabTrigger value="stages" label="Stages" icon={History} />
+            <TabTrigger value="config" label="Configuration" icon={Settings} />
             <TabTrigger value="provenance" label="Proof & Provenance" icon={Shield} />
           </TabsList>
           {isRefetching && (
