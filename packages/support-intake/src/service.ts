@@ -1,6 +1,25 @@
 import crypto from "crypto";
-import type { Prisma, PrismaClient } from "@prisma/client";
 import { supportIntakeSubmissionSchema, type SupportIntakeSubmission } from "./contract";
+
+type JsonPrimitive = string | number | boolean | null;
+type JsonValue = JsonPrimitive | { [key: string]: JsonValue } | JsonValue[];
+
+interface SupportIntakePrismaClient {
+  $executeRaw(query: TemplateStringsArray, ...values: unknown[]): Promise<unknown>;
+  auditLog: {
+    create(args: {
+      data: {
+        userId: string;
+        tenantId: string;
+        action: string;
+        resourceType: string;
+        resourceId: string;
+        changes: JsonValue;
+        metadata: JsonValue;
+      };
+    }): Promise<unknown>;
+  };
+}
 
 export const SUPPORT_INTAKE_RESOURCE_TYPE = "support_intake_submission";
 export const SUPPORT_INTAKE_ACTION = "support_intake_submitted";
@@ -17,7 +36,7 @@ function toRunUuidColumn(runId: string | null | undefined): string | null {
  * Best-effort signal for operator consoles; fails silently if the table is absent (some environments).
  */
 export async function emitSupportIntakeRuntimeSignal(
-  prisma: PrismaClient,
+  prisma: SupportIntakePrismaClient,
   params: {
     tenantId: string;
     runId?: string | null;
@@ -95,7 +114,7 @@ export interface SubmitSupportIntakeHooks {
 }
 
 async function persistSupportIntakeToAuditLog(params: {
-  prisma: PrismaClient;
+  prisma: SupportIntakePrismaClient;
   submissionId: string;
   userId: string;
   tenantId: string;
@@ -103,17 +122,17 @@ async function persistSupportIntakeToAuditLog(params: {
   payload: SupportIntakeSubmission;
   runContext: Record<string, unknown> | null;
 }): Promise<void> {
-  const changes: Prisma.InputJsonValue = {
+  const changes: JsonValue = {
     submission_id: params.submissionId,
     category: params.payload.category,
     run_id: params.payload.run_id ?? null,
     route: params.payload.route ?? null,
     module: params.payload.module ?? null,
     description: params.payload.description,
-    contact: (params.payload.contact ?? {}) as Prisma.InputJsonValue,
+    contact: (params.payload.contact ?? {}) as JsonValue,
     operator_triage_priority: params.payload.operator_triage_priority ?? null,
     path: params.path,
-    run_context: params.runContext ? (params.runContext as unknown as Prisma.InputJsonValue) : null,
+    run_context: params.runContext ? (params.runContext as unknown as JsonValue) : null,
   };
 
   await params.prisma.auditLog.create({
@@ -133,7 +152,7 @@ async function persistSupportIntakeToAuditLog(params: {
 }
 
 export async function submitSupportIntake(params: {
-  prisma: PrismaClient;
+  prisma: SupportIntakePrismaClient;
   userId: string;
   tenantId: string;
   path: string;
