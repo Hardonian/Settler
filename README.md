@@ -68,14 +68,24 @@ Global helper scripts are available for managing the local TigerBeetle container
 
 ## Documentation Hub
 
-- [What Works Today](docs/getting-started/WHAT_WORKS.md) — Core functional workflows
+**Getting started:**
 - [Quickstart](docs/getting-started/quickstart.md) — Fastest path to running locally
+- [Canonical Local Setup](SETUP.md) — Full local development setup
 - [Demo Walkthrough](docs/getting-started/DEMO_WALKTHROUGH.md) — Step-by-step demo guide
-- [Verification Commands](docs/VERIFICATION_COMMANDS.md) — All verification commands
-- [Common Setup Traps](docs/troubleshooting/SETUP_TRAPS.md) — Avoid setup issues
+- [Starter Kits](examples/starter-kits/) — Runnable example projects
+- [What Works Today](docs/getting-started/WHAT_WORKS.md) — Core functional workflows
 - [Intentional Boundaries](docs/getting-started/INTENTIONAL_BOUNDARIES.md) — What's not production-ready
+- [Common Setup Traps](docs/troubleshooting/SETUP_TRAPS.md) — Avoid setup issues
+
+**Evaluation and pilot:**
+- [Pilot Runbook](docs/pilot-runbook.md) — Run a pilot with go/no-go scorecard
+- [Trust Packet](docs/trust-packet.md) — Security, privacy, and procurement info
+- [Teardown Guide](docs/getting-started/teardown.md) — Clean removal and offboarding
+
+**Reference:**
 - [Architecture (Canonical)](docs/architecture/platform-architecture.md)
-- [Canonical Local Setup](SETUP.md)
+- [API Reference](docs/API_REFERENCE.md)
+- [Verification Commands](docs/VERIFICATION_COMMANDS.md) — All verification commands
 - [Security Policy](SECURITY.md)
 
 ## Contributing

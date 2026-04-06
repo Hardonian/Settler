@@ -1,0 +1,22 @@
+{
+  "name": "settler-recon-starter",
+  "version": "1.0.0",
+  "description": "Quickstart: reconcile Stripe payments against your bank statement with Settler",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "reconcile": "tsx src/index.ts",
+    "check-results": "tsx src/check-results.ts"
+  },
+  "dependencies": {
+    "@settler/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

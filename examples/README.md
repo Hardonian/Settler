@@ -507,10 +507,19 @@ function verifyWebhook(payload: string, signature: string, secret: string): bool
 
 ---
 
-## Contributing
+## Starter Kits
 
-Have a use case that's not covered? Submit a PR with your example!
+Runnable, self-contained projects you can clone and use immediately:
+
+| Kit | Description | Command |
+|-----|-------------|---------|
+| [settler-recon-starter](starter-kits/settler-recon-starter/) | End-to-end reconciliation (Stripe → ledger) | `cd starter-kits/settler-recon-starter && npm install && npm start` |
+| [settler-workflow-starter](starter-kits/settler-workflow-starter/) | Webhook-driven pipeline (reconcile → export) | `cd starter-kits/settler-workflow-starter && npm install && npm start` |
+
+Each kit includes `package.json`, TypeScript source, `.env.example`, and a README with instructions.
 
 ---
 
-**Last Updated:** 2026-01-15
+## Contributing
+
+Have a use case that's not covered? Submit a PR with your example!
