@@ -5,7 +5,7 @@ import {
 
 describe("enterprise capability truth contract", () => {
   it("contains explicit SSO and SCIM boundaries", () => {
-    const sso = ENTERPRISE_CAPABILITY_TRUTH.find((item) => item.capability === "SSO (SAML/OIDC)");
+    const sso = ENTERPRISE_CAPABILITY_TRUTH.find((item) => item.capability === "SSO (OIDC)");
     const scim = ENTERPRISE_CAPABILITY_TRUTH.find(
       (item) => item.capability === "SCIM lifecycle provisioning"
     );

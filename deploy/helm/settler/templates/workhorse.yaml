@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "settler.fullname" . }}-workhorse
+spec:
+  replicas: {{ .Values.replicaCount.workhorse }}
+  selector:
+    matchLabels: { app: {{ include "settler.fullname" . }}, component: workhorse }
+  template:
+    metadata:
+      labels: { app: {{ include "settler.fullname" . }}, component: workhorse }
+    spec:
+      containers:
+        - name: workhorse
+          image: {{ .Values.images.workhorse | quote }}
+          command: ["python", "-m", "settler_workhorse.cli", "worker"]
+          envFrom:
+            - configMapRef: { name: {{ include "settler.fullname" . }}-config }
+            - secretRef: { name: {{ include "settler.fullname" . }}-secrets }
+          resources: {{- toYaml .Values.resources.workhorse | nindent 12 }}

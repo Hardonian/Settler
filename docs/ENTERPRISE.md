@@ -1,69 +1,35 @@
-# Enterprise Features
+# Enterprise Features (Truth-Bounded)
 
-Enterprise plans include advanced features for large organizations.
+This page is intentionally constrained to capabilities with executable verification paths.
 
-## SSO (Single Sign-On)
+## Identity
 
-### SAML 2.0
+- **OIDC SSO (config-gated)** for Okta, Microsoft Entra ID, and Google Workspace.
+- Verification command: `pnpm run verify:enterprise-identity`.
+- **SAML is not GA in this repository path.** Do not present SAML as production-ready without an explicit runtime proof bundle.
 
-Configure SAML SSO for your organization:
+## Lifecycle Provisioning
 
-1. Provide your IdP metadata
-2. Configure attribute mapping
-3. Enable SSO for your tenant
+- **SCIM lifecycle is staged** in this pass and remains non-GA.
+- Buyer-facing scope must remain: “manual provisioning + API key/OIDC access controls”.
 
-### OIDC
+## Tenant Security
 
-OpenID Connect support for modern identity providers.
+- Tenant-scoped authorization and cross-tenant guardrails are verified via:
+  - `pnpm run verify:tenant`
+  - `pnpm run test:cross-tenant`
 
-## RBAC (Role-Based Access Control)
+## Audit / Export
 
-Define custom roles with granular permissions:
+- Audit export is tenant scoped and should be validated with:
+  - `pnpm run verify:security:evidence`
+  - `pnpm run verify:observability-surface`
 
-- **Admin** - Full access
-- **Developer** - API access, job management
-- **Viewer** - Read-only access
-- **Custom** - Define your own roles
+## Self-hosted Deployment
 
-## Audit Logs
+- Canonical packaging: `deploy/helm/settler`.
+- Includes: web/api/workhorse, migration job, health probes, rollback/upgrade flow.
 
-Comprehensive audit logging for:
-- All API requests
-- Configuration changes
-- Data access
-- User actions
+## Operator Scheduling
 
-## BYOK (Bring Your Own Key)
-
-Encrypt data with your own encryption keys.
-
-## Dedicated Tenants
-
-Isolated infrastructure for enterprise customers:
-- Dedicated database
-- Custom SLAs
-- Priority support
-
-## SLA Guarantees
-
-- **99.9% Uptime** - Standard SLA
-- **99.99% Uptime** - Premium SLA
-- **99.999% Uptime** - Enterprise SLA
-
-## Data Residency
-
-Choose data residency region:
-- US (default)
-- EU
-- APAC
-- Custom regions available
-
-## Support
-
-- **24/7 Support** - Round-the-clock assistance
-- **Dedicated Account Manager** - Personal support
-- **Custom Integrations** - Tailored solutions
-
----
-
-**Contact sales@settler.io for enterprise inquiries**
+- Schedule API validates cron + timezone and emits explicit degraded reasons for invalid payloads.

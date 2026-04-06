@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "settler.fullname" . }}-web
+spec:
+  replicas: {{ .Values.replicaCount.web }}
+  selector:
+    matchLabels: { app: {{ include "settler.fullname" . }}, component: web }
+  template:
+    metadata:
+      labels: { app: {{ include "settler.fullname" . }}, component: web }
+    spec:
+      containers:
+        - name: web
+          image: {{ .Values.images.web | quote }}
+          ports: [{ containerPort: 3000 }]
+          envFrom:
+            - configMapRef: { name: {{ include "settler.fullname" . }}-config }
+            - secretRef: { name: {{ include "settler.fullname" . }}-secrets }
+          env:
+            - name: API_BASE_URL
+              value: http://{{ include "settler.fullname" . }}-api:4000
+          readinessProbe:
+            httpGet: { path: /api/health, port: 3000 }
+          livenessProbe:
+            httpGet: { path: /api/health, port: 3000 }
+          resources: {{- toYaml .Values.resources.web | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "settler.fullname" . }}-web
+spec:
+  type: {{ .Values.service.web.type }}
+  selector: { app: {{ include "settler.fullname" . }}, component: web }
+  ports:
+    - port: {{ .Values.service.web.port }}
+      targetPort: 3000
