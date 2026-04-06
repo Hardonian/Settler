@@ -12,6 +12,7 @@ import {
   IsolationVaultVisual,
   VisualGrid,
 } from "@/components/site/infographics";
+import { CapabilityTruthTable } from "@/components/enterprise/CapabilityTruthTable";
 import {
   Shield,
   Lock,
@@ -235,6 +236,10 @@ export default function EnterprisePage() {
 
       <Section className="bg-muted/10">
         <VisualGrid />
+      </Section>
+
+      <Section className="py-20" containerClassName="max-w-6xl">
+        <CapabilityTruthTable />
       </Section>
 
       <Section className="py-24" containerClassName="max-w-4xl text-center">

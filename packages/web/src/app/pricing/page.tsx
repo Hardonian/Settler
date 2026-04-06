@@ -179,8 +179,9 @@ export default function PricingPage() {
                 Is the Enterprise plan available on-prem?
               </h3>
               <p className="text-sm leading-relaxed text-muted-foreground">
-                Yes. For highly regulated industries, we provide a containerized version of the
-                Settler stack for air-gapped or VPC deployments.
+                Enterprise deployment options are engagement-scoped. VPC and on-prem availability
+                depend on architecture review, support model, and verified identity/export controls
+                in your environment.
               </p>
             </div>
           </div>

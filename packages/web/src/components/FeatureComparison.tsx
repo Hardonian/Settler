@@ -46,8 +46,8 @@ const features: Feature[] = [
     name: "SSO / policy controls",
     oss: false,
     cloud: false,
-    managed: "Optional",
-    enterprise: true,
+    managed: "Config-gated",
+    enterprise: "Implemented / staged by capability",
   },
   { name: "Audit export support", oss: false, cloud: true, managed: true, enterprise: true },
   {
