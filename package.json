@@ -300,6 +300,7 @@
     "verify:api-family-docs": "node scripts/verify-api-family-docs.mjs",
     "verify:capability-registry": "node scripts/verify-capability-registry.mjs",
     "test:surface-commands": "node --test scripts/__tests__/surface-commands.test.mjs",
+    "test:verify-enterprise-boundary": "node --test scripts/__tests__/verify-enterprise-boundary-contract.test.mjs",
     "demo:settler": "node scripts/surface-command-runner.mjs demo:settler",
     "replay:run": "node scripts/surface-command-runner.mjs replay:run",
     "simulate:settler": "node scripts/surface-command-runner.mjs simulate:settler",
@@ -330,6 +331,9 @@
     "verify:operational-route-truth": "pnpm --filter @settler/web exec tsx scripts/verify-operational-route-truth.ts",
     "verify:styles": "node scripts/verify-styles.mjs",
     "verify:enterprise-identity": "node scripts/verify-enterprise-identity.mjs",
+    "verify:scim-posture": "node scripts/verify-scim-posture.mjs",
+    "verify:helm-packaging": "node scripts/verify-helm-packaging.mjs",
+    "verify:enterprise-posture": "node scripts/verify-enterprise-posture.mjs",
     "verify:adapters": "node scripts/verify-adapter-registry.mjs",
     "verify:observability-surface": "node scripts/verify-observability-surface.mjs"
   },

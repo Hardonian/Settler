@@ -98,6 +98,7 @@
     "contracts",
     "crates",
     "demo",
+    "deploy",
     "design",
     "design-system",
     "dlq-tools.ts",
