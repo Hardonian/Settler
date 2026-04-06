@@ -1,0 +1,18 @@
+{{- if .Values.migrationJob.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "settler.fullname" . }}-migrate
+spec:
+  backoffLimit: {{ .Values.migrationJob.backoffLimit }}
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: migrate
+          image: {{ .Values.images.api | quote }}
+          command: ["pnpm", "prisma:migrate"]
+          envFrom:
+            - secretRef: { name: {{ include "settler.fullname" . }}-secrets }
+            - configMapRef: { name: {{ include "settler.fullname" . }}-config }
+{{- end }}

@@ -22,12 +22,12 @@ export const ENTERPRISE_CAPABILITY_TRUTH: readonly EnterpriseCapabilityTruth[] =
     verificationPath: ["pnpm run verify:tenant", "pnpm run test:cross-tenant"],
   },
   {
-    capability: "SSO (SAML/OIDC)",
+    capability: "SSO (OIDC)",
     state: "implemented_unverified",
     customerLabel: "Config-gated",
     operatorBoundary:
-      "Configuration flags exist, but general IdP interoperability is not marked GA without per-IdP evidence.",
-    verificationPath: ["SUPABASE_ENTERPRISE_SSO_* env contract", "IdP-specific smoke tests (required before GA claim)"],
+      "OIDC env contracts are implemented; interoperability remains config-gated until per-provider smoke validation is present for a target deployment.",
+    verificationPath: ["pnpm run verify:enterprise-identity", "IdP-specific smoke tests (Okta/Entra/Google Workspace)"],
   },
   {
     capability: "SCIM lifecycle provisioning",

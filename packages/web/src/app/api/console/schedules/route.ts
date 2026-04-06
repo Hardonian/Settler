@@ -14,6 +14,7 @@ import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { appLogger } from "@/lib/utils/logger";
 import { withSecurity } from "@/lib/middleware/api-security";
 import { prisma } from "@/shared/db/prismaClient";
+import { validateScheduleCron, validateScheduleTimezone } from "@/lib/scheduling/schedule-contract";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -61,9 +62,12 @@ export const GET = withSecurity(
           };
         });
 
+        const schedulerEnabled = process.env.SCHEDULER_ENABLED !== "false";
         return NextResponse.json({
           items,
-          capability: { state: "available" },
+          capability: schedulerEnabled
+            ? { state: "available" }
+            : { state: "degraded", reason: "scheduler_disabled_by_env" },
         });
       } catch (error) {
         if (
@@ -127,15 +131,21 @@ export const PATCH = withSecurity(
           );
         }
 
-        // Basic cron validation (5 or 6 fields)
-        if (scheduleCron !== null && scheduleCron !== undefined) {
-          const parts = scheduleCron.trim().split(/\s+/);
-          if (parts.length < 5 || parts.length > 6) {
-            return NextResponse.json(
-              { error: "Invalid cron expression. Expected 5 or 6 fields." },
-              { status: 400 }
-            );
-          }
+        const cronValidation = validateScheduleCron(scheduleCron);
+        if (!cronValidation.valid) {
+          return NextResponse.json(
+            { error: cronValidation.errors.join(" "), capability: { state: "degraded", reason: "invalid_cron_expression" } },
+            { status: 400 }
+          );
+        }
+
+        const tzToValidate = scheduleCron === null ? (scheduleTimezone || existing.scheduleTimezone) : (scheduleTimezone || existing.scheduleTimezone);
+        const timezoneValidation = validateScheduleTimezone(tzToValidate);
+        if (!timezoneValidation.valid) {
+          return NextResponse.json(
+            { error: timezoneValidation.errors.join(" "), capability: { state: "degraded", reason: "invalid_schedule_timezone" } },
+            { status: 400 }
+          );
         }
 
         const updated = await prisma.reconJob.update({

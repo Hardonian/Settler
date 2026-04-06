@@ -1,0 +1,63 @@
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+images:
+  api: ghcr.io/settler/api:latest
+  web: ghcr.io/settler/web:latest
+  workhorse: ghcr.io/settler/workhorse:latest
+
+replicaCount:
+  api: 2
+  web: 2
+  workhorse: 1
+
+service:
+  api:
+    type: ClusterIP
+    port: 4000
+  web:
+    type: ClusterIP
+    port: 3000
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: settler.local
+      paths:
+        - path: /
+          pathType: Prefix
+          service: web
+          port: 3000
+  tls: []
+
+env:
+  NODE_ENV: production
+  API_PORT: "4000"
+  WEB_PORT: "3000"
+  SCHEDULER_ENABLED: "true"
+
+secrets:
+  DATABASE_URL: ""
+  NEXTAUTH_SECRET: ""
+  SUPABASE_URL: ""
+  SUPABASE_SERVICE_ROLE_KEY: ""
+  INVESTOR_API_KEY: ""
+  INVESTOR_BEARER_TOKEN: ""
+
+resources:
+  api:
+    requests: { cpu: 200m, memory: 512Mi }
+    limits: { cpu: 1, memory: 1Gi }
+  web:
+    requests: { cpu: 200m, memory: 512Mi }
+    limits: { cpu: 1, memory: 1Gi }
+  workhorse:
+    requests: { cpu: 100m, memory: 256Mi }
+    limits: { cpu: 500m, memory: 512Mi }
+
+migrationJob:
+  enabled: true
+  backoffLimit: 2
