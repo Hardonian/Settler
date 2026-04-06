@@ -113,7 +113,7 @@ router.get(
     );
     if (!capability) return;
 
-    const exports = complianceExportSystem.listExports(tenantId);
+    const exports = await complianceExportSystem.listExportsFromDb(tenantId);
 
     res.json({
       data: exports,
@@ -162,7 +162,7 @@ router.get(
     if (!id) {
       return res.status(400).json({ error: "Export ID is required" });
     }
-    const export_ = complianceExportSystem.getExport(id);
+    const export_ = await complianceExportSystem.getExportFromDb(id, tenantId);
 
     if (!export_) {
       return res.status(404).json({

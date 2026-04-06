@@ -3,6 +3,8 @@ import { supportIntakeSubmissionSchema, type SupportIntakeSubmission } from "./c
 
 type JsonPrimitive = string | number | boolean | null;
 type JsonValue = JsonPrimitive | { [key: string]: JsonValue } | JsonValue[];
+// InputJsonValue excludes top-level null to match Prisma's InputJsonValue constraint.
+type InputJsonObject = { [key: string]: JsonValue | undefined };
 
 interface SupportIntakePrismaClient {
   $executeRaw(query: TemplateStringsArray, ...values: unknown[]): Promise<unknown>;
@@ -14,8 +16,8 @@ interface SupportIntakePrismaClient {
         action: string;
         resourceType: string;
         resourceId: string;
-        changes: JsonValue;
-        metadata: JsonValue;
+        changes: InputJsonObject;
+        metadata: InputJsonObject;
       };
     }): Promise<unknown>;
   };
@@ -122,7 +124,7 @@ async function persistSupportIntakeToAuditLog(params: {
   payload: SupportIntakeSubmission;
   runContext: Record<string, unknown> | null;
 }): Promise<void> {
-  const changes: JsonValue = {
+  const changes: InputJsonObject = {
     submission_id: params.submissionId,
     category: params.payload.category,
     run_id: params.payload.run_id ?? null,
@@ -135,6 +137,11 @@ async function persistSupportIntakeToAuditLog(params: {
     run_context: params.runContext ? (params.runContext as unknown as JsonValue) : null,
   };
 
+  const metadata: InputJsonObject = {
+    intake_version: 1,
+    path: params.path,
+  };
+
   await params.prisma.auditLog.create({
     data: {
       userId: params.userId,
@@ -143,10 +150,7 @@ async function persistSupportIntakeToAuditLog(params: {
       resourceType: SUPPORT_INTAKE_RESOURCE_TYPE,
       resourceId: params.submissionId,
       changes,
-      metadata: {
-        intake_version: 1,
-        path: params.path,
-      },
+      metadata,
     },
   });
 }
