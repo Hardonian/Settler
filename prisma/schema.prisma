@@ -1040,6 +1040,7 @@ model Tenant {
   operatorCustomizationProposals OperatorCustomizationProposal[]
   operatorCustomizationAudits OperatorCustomizationAudit[]
   operatorInteractionSignals OperatorInteractionSignal[]
+  operatorSuggestionDismissals OperatorSuggestionDismissal[]
 
   @@index([slug])
   @@index([primaryDomain])
@@ -2275,7 +2276,9 @@ model OperatorCustomizationProposal {
   naturalLanguageRequest String    @db.Text
   structuredPatch        Json      @default("{}")
   rationale              String?   @db.Text
-  inferenceMode          String    @default("rules") // rules | degraded_unavailable
+  inferenceMode          String    @default("rules") // rules | degraded_unavailable | premium_llm (future lane)
+  proposalLane           String    @default("rules") // rules | premium_llm — packaging / audit only; never auto-publish
+  explanationEvidence    Json      @default("{}") // bounded metadata: matched rule ids, registry version, etc.
   createdAt              DateTime  @default(now())
   appliedAt              DateTime?
   rejectedAt             DateTime?
@@ -2317,4 +2320,23 @@ model OperatorInteractionSignal {
   @@index([tenantId, moduleId, createdAt(sort: Desc)])
   @@index([userId])
   @@map("operator_interaction_signals")
+}
+
+/** Durable dismissal of a suggestion (tenant + user); not reconciliation truth. */
+model OperatorSuggestionDismissal {
+  id              String   @id @default(uuid())
+  tenantId        String   @db.Uuid
+  userId          String   @db.Uuid // actor who dismissed (same scope as customization draft)
+  surface         String
+  suggestionKind  String // e.g. pin_module
+  suggestionKey   String // e.g. module_id for pin_module
+  reasonCategory  String?
+  metadata        Json     @default("{}")
+  dismissedAt     DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, userId, surface, suggestionKind, suggestionKey])
+  @@index([tenantId, userId, surface])
+  @@map("operator_suggestion_dismissals")
 }

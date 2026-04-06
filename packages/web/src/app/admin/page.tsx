@@ -62,6 +62,13 @@ export default function AdminDashboard() {
     return m;
   }, [layout.modules]);
 
+  /** Only attach tenant to signals when workspace is unambiguous (single active tenant). */
+  const signalTenantId = useMemo(() => {
+    const t = customization?.tenant;
+    if (t && !t.multiTenantEnvironment) return t.id;
+    return null;
+  }, [customization?.tenant]);
+
   const operatingModeLabel =
     layout.operatingMode === "solo_operator"
       ? "Solo operator"
@@ -96,7 +103,7 @@ export default function AdminDashboard() {
         </div>
         <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           {isModuleEnabled(placementById, "trust_connection") && (
-            <ModuleViewTracker moduleId="trust_connection">
+            <ModuleViewTracker moduleId="trust_connection" tenantId={signalTenantId}>
               <div className="flex items-center gap-2">
                 <SecurityBadge />
                 <SystemStatusCard
@@ -117,7 +124,7 @@ export default function AdminDashboard() {
           )}
 
           {isModuleEnabled(placementById, "time_range") && (
-            <ModuleViewTracker moduleId="time_range">
+            <ModuleViewTracker moduleId="time_range" tenantId={signalTenantId}>
               <div className="flex gap-2">
                 {(["24h", "7d", "30d"] as const).map((range) => (
                   <Button
@@ -156,7 +163,7 @@ export default function AdminDashboard() {
         switch (placement.moduleId) {
           case "usage_warning":
             return (
-              <ModuleViewTracker key={placement.moduleId} moduleId="usage_warning">
+              <ModuleViewTracker key={placement.moduleId} moduleId="usage_warning" tenantId={signalTenantId}>
                 {kpis && kpis.totalVolume > 0 ? (
                   <UsageWarning
                     current={kpis.totalVolume}
@@ -168,7 +175,7 @@ export default function AdminDashboard() {
             );
           case "kpi_tiles":
             return (
-              <ModuleViewTracker key={placement.moduleId} moduleId="kpi_tiles">
+              <ModuleViewTracker key={placement.moduleId} moduleId="kpi_tiles" tenantId={signalTenantId}>
                 <ModuleChrome placement={placement} moduleId="kpi_tiles">
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {isLoading ? (
@@ -239,7 +246,7 @@ export default function AdminDashboard() {
             );
           case "exception_heatmap":
             return (
-              <ModuleViewTracker key={placement.moduleId} moduleId="exception_heatmap">
+              <ModuleViewTracker key={placement.moduleId} moduleId="exception_heatmap" tenantId={signalTenantId}>
                 <ModuleChrome placement={placement} moduleId="exception_heatmap">
                   <Card>
                     <CardContent className="pt-6">
@@ -291,7 +298,7 @@ export default function AdminDashboard() {
             );
           case "activity_feed":
             return (
-              <ModuleViewTracker key={placement.moduleId} moduleId="activity_feed">
+              <ModuleViewTracker key={placement.moduleId} moduleId="activity_feed" tenantId={signalTenantId}>
                 <ModuleChrome placement={placement} moduleId="activity_feed">
                   <Card>
                     <CardContent className="pt-6">
@@ -391,13 +398,21 @@ function ModuleChrome({
   );
 }
 
-function ModuleViewTracker({ moduleId, children }: { moduleId: string; children: React.ReactNode }) {
+function ModuleViewTracker({
+  moduleId,
+  tenantId,
+  children,
+}: {
+  moduleId: string;
+  tenantId?: string | null;
+  children: React.ReactNode;
+}) {
   const sent = useRef(false);
   useEffect(() => {
     if (sent.current) return;
     sent.current = true;
-    recordModuleViewSignal(moduleId);
-  }, [moduleId]);
+    recordModuleViewSignal(moduleId, tenantId);
+  }, [moduleId, tenantId]);
   return <>{children}</>;
 }
 

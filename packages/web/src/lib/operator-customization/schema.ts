@@ -46,5 +46,6 @@ export type CustomizationPatch = z.infer<typeof CustomizationPatchSchema>;
 export const ProposalStatusSchema = z.enum(["pending", "applied", "rejected"]);
 export type ProposalStatus = z.infer<typeof ProposalStatusSchema>;
 
-export const InferenceModeSchema = z.enum(["rules", "degraded_unavailable"]);
+/** `premium_llm` reserved for future advisory lane; never implies autonomous publish. */
+export const InferenceModeSchema = z.enum(["rules", "degraded_unavailable", "premium_llm"]);
 export type InferenceMode = z.infer<typeof InferenceModeSchema>;
