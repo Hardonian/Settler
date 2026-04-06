@@ -1,6 +1,8 @@
 import { Router, Response } from "express";
 import { z } from "zod";
 import { AuthRequest } from "../middleware/auth";
+import { requirePermission } from "../middleware/authorization";
+import { Permission } from "../infrastructure/security/Permissions";
 import { buildReconciliationExport } from "../services/reconciliation/export-contract";
 import { handleRouteError } from "../utils/error-handler";
 
@@ -24,7 +26,7 @@ const querySchema = z.object({
     .default("0"),
 });
 
-router.get("/", async (req: AuthRequest, res: Response) => {
+router.get("/", requirePermission(Permission.REPORTS_EXPORT), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId;
     if (!tenantId) {

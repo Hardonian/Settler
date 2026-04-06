@@ -8,6 +8,8 @@
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
 import { enforceFreezeState } from "../../middleware/governance";
+import { requirePermission } from "../../middleware/authorization";
+import { Permission } from "../../infrastructure/security/Permissions";
 import { logError, logInfo } from "../../utils/logger";
 import {
   autoReviewMatch,
@@ -26,7 +28,7 @@ const router: Router = Router();
  * POST /api/v1/automated-review/run/:runId
  * Trigger automated review for a reconciliation run
  */
-router.post("/run/:runId", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
+router.post("/run/:runId", enforceFreezeState(), requirePermission(Permission.JOBS_EXECUTE), async (req: AuthRequest, res: Response) => {
   try {
     const runIdParam = req.params["runId"];
     const runId = Array.isArray(runIdParam) ? (runIdParam[0] ?? "") : (runIdParam ?? "");
@@ -74,7 +76,7 @@ router.post("/run/:runId", enforceFreezeState(), async (req: AuthRequest, res: R
  * POST /api/v1/automated-review/match/:matchId
  * Trigger automated review for a single match
  */
-router.post("/match/:matchId", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
+router.post("/match/:matchId", enforceFreezeState(), requirePermission(Permission.JOBS_EXECUTE), async (req: AuthRequest, res: Response) => {
   try {
     const matchIdParam = req.params["matchId"];
     const matchId = Array.isArray(matchIdParam) ? (matchIdParam[0] ?? "") : (matchIdParam ?? "");
@@ -114,7 +116,7 @@ router.post("/match/:matchId", enforceFreezeState(), async (req: AuthRequest, re
  * GET /api/v1/automated-review/run/:runId/statistics
  * Get review statistics for a reconciliation run
  */
-router.get("/run/:runId/statistics", async (req: AuthRequest, res: Response) => {
+router.get("/run/:runId/statistics", requirePermission(Permission.JOBS_READ), async (req: AuthRequest, res: Response) => {
   try {
     const runIdParam2 = req.params["runId"];
     const runId = Array.isArray(runIdParam2) ? (runIdParam2[0] ?? "") : (runIdParam2 ?? "");
@@ -151,7 +153,7 @@ router.get("/run/:runId/statistics", async (req: AuthRequest, res: Response) => 
  * GET /api/v1/automated-review/run/:runId/quality
  * Get quality metrics and alerts for a reconciliation run
  */
-router.get("/run/:runId/quality", async (req: AuthRequest, res: Response) => {
+router.get("/run/:runId/quality", requirePermission(Permission.JOBS_READ), async (req: AuthRequest, res: Response) => {
   try {
     const runIdParam3 = req.params["runId"];
     const runId = Array.isArray(runIdParam3) ? (runIdParam3[0] ?? "") : (runIdParam3 ?? "");
@@ -190,7 +192,7 @@ router.get("/run/:runId/quality", async (req: AuthRequest, res: Response) => {
  * GET /api/v1/automated-review/run/:runId/report
  * Generate comprehensive quality report for a reconciliation run
  */
-router.get("/run/:runId/report", async (req: AuthRequest, res: Response) => {
+router.get("/run/:runId/report", requirePermission(Permission.JOBS_READ), async (req: AuthRequest, res: Response) => {
   try {
     const runIdParam4 = req.params["runId"];
     const runId = Array.isArray(runIdParam4) ? (runIdParam4[0] ?? "") : (runIdParam4 ?? "");

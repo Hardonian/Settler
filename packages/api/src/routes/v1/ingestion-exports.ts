@@ -5,6 +5,8 @@
 
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
+import { requirePermission } from "../../middleware/authorization";
+import { Permission } from "../../infrastructure/security/Permissions";
 import { logError, logInfo } from "../../utils/logger";
 import {
   createExport,
@@ -22,7 +24,7 @@ const router: Router = Router();
  * POST /api/v1/ingestion/exports
  * Create an export
  */
-router.post("/", checkExportLimit(), async (req: AuthRequest, res: Response) => {
+router.post("/", requirePermission(Permission.REPORTS_EXPORT), checkExportLimit(), async (req: AuthRequest, res: Response) => {
   try {
     const { type, format, reconciliationRunId, ingestionId } = req.body;
     const tenantId = req.tenantId!;
@@ -95,7 +97,7 @@ router.post("/", checkExportLimit(), async (req: AuthRequest, res: Response) => 
  * GET /api/v1/ingestion/exports/:exportId
  * Get export details
  */
-router.get("/:exportId", async (req: AuthRequest, res: Response) => {
+router.get("/:exportId", requirePermission(Permission.REPORTS_READ), async (req: AuthRequest, res: Response) => {
   try {
     const { exportId } = req.params;
     const tenantId = req.tenantId!;
@@ -147,7 +149,7 @@ router.get("/:exportId", async (req: AuthRequest, res: Response) => {
  * GET /api/v1/ingestion/exports
  * List exports
  */
-router.get("/", async (req: AuthRequest, res: Response) => {
+router.get("/", requirePermission(Permission.REPORTS_READ), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const limit = parseInt(req.query.limit as string) || 50;

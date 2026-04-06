@@ -6,6 +6,8 @@
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
 import { enforceFreezeState } from "../../middleware/governance";
+import { requirePermission } from "../../middleware/authorization";
+import { Permission } from "../../infrastructure/security/Permissions";
 import { logError, logInfo } from "../../utils/logger";
 import {
   matchReceiptsToTransactions,
@@ -19,7 +21,7 @@ const router: Router = Router();
  * POST /api/v1/receipt-matching/match
  * Match receipts to transactions
  */
-router.post("/match", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
+router.post("/match", enforceFreezeState(), requirePermission(Permission.OPERATOR_WRITE), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const { reconciliationRunId, receipts, transactions } = req.body;
@@ -64,7 +66,7 @@ router.post("/match", enforceFreezeState(), async (req: AuthRequest, res: Respon
  * GET /api/v1/receipt-matching/matches/:reconciliationRunId
  * Get receipt matches for a reconciliation run
  */
-router.get("/matches/:reconciliationRunId", async (req: AuthRequest, res: Response) => {
+router.get("/matches/:reconciliationRunId", requirePermission(Permission.OPERATOR_READ), async (req: AuthRequest, res: Response) => {
   try {
     const reconciliationRunIdParam = req.params["reconciliationRunId"];
     const reconciliationRunId = Array.isArray(reconciliationRunIdParam)
@@ -103,6 +105,7 @@ router.get("/matches/:reconciliationRunId", async (req: AuthRequest, res: Respon
 router.post(
   "/links/:linkId/verify",
   enforceFreezeState(),
+  requirePermission(Permission.OPERATOR_WRITE),
   async (req: AuthRequest, res: Response) => {
     try {
       const linkIdParam = req.params["linkId"];

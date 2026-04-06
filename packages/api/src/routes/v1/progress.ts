@@ -5,6 +5,8 @@
 
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
+import { requirePermission } from "../../middleware/authorization";
+import { Permission } from "../../infrastructure/security/Permissions";
 import { logError, logInfo } from "../../utils/logger";
 import {
   getReconciliationProgress,
@@ -20,7 +22,7 @@ const router: Router = Router();
  * GET /api/v1/progress/reconciliation-runs/:runId
  * Get progress for a reconciliation run
  */
-router.get("/reconciliation-runs/:runId", async (req: AuthRequest, res: Response) => {
+router.get("/reconciliation-runs/:runId", requirePermission(Permission.JOBS_READ), async (req: AuthRequest, res: Response) => {
   try {
     const runIdParam = req.params["runId"];
     const runId = Array.isArray(runIdParam) ? (runIdParam[0] ?? "") : (runIdParam ?? "");
@@ -62,7 +64,7 @@ router.get("/reconciliation-runs/:runId", async (req: AuthRequest, res: Response
  * GET /api/v1/progress/reconciliation-results/:resultId
  * Get progress for a reconciliation result
  */
-router.get("/reconciliation-results/:resultId", async (req: AuthRequest, res: Response) => {
+router.get("/reconciliation-results/:resultId", requirePermission(Permission.JOBS_READ), async (req: AuthRequest, res: Response) => {
   try {
     const resultIdParam = req.params["resultId"];
     const resultId = Array.isArray(resultIdParam)
@@ -106,7 +108,7 @@ router.get("/reconciliation-results/:resultId", async (req: AuthRequest, res: Re
  * POST /api/v1/progress/checkpoints
  * Create a checkpoint
  */
-router.post("/checkpoints", async (req: AuthRequest, res: Response) => {
+router.post("/checkpoints", requirePermission(Permission.JOBS_WRITE), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const { jobId, checkpointData, transactionsProcessed } = req.body;
@@ -146,7 +148,7 @@ router.post("/checkpoints", async (req: AuthRequest, res: Response) => {
  * GET /api/v1/progress/checkpoints/jobs/:jobId
  * Get latest checkpoint for a job
  */
-router.get("/checkpoints/jobs/:jobId", async (req: AuthRequest, res: Response) => {
+router.get("/checkpoints/jobs/:jobId", requirePermission(Permission.JOBS_READ), async (req: AuthRequest, res: Response) => {
   try {
     const jobIdParam = req.params["jobId"];
     const jobId = Array.isArray(jobIdParam) ? (jobIdParam[0] ?? "") : (jobIdParam ?? "");
@@ -188,7 +190,7 @@ router.get("/checkpoints/jobs/:jobId", async (req: AuthRequest, res: Response) =
  * POST /api/v1/progress/checkpoints/:checkpointId/resume
  * Resume from a checkpoint
  */
-router.post("/checkpoints/:checkpointId/resume", async (req: AuthRequest, res: Response) => {
+router.post("/checkpoints/:checkpointId/resume", requirePermission(Permission.JOBS_EXECUTE), async (req: AuthRequest, res: Response) => {
   try {
     const checkpointIdParam = req.params["checkpointId"];
     const checkpointId = Array.isArray(checkpointIdParam)

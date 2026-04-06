@@ -10,6 +10,8 @@
 
 import { Router, Response } from 'express';
 import { authMiddleware, AuthRequest } from '../middleware/auth';
+import { requirePermission } from '../middleware/authorization';
+import { Permission } from '../infrastructure/security/Permissions';
 import { logInfo, logError } from '../utils/logger';
 
 const router: Router = Router();
@@ -18,7 +20,7 @@ const router: Router = Router();
  * Create batch reconciliation jobs
  * POST /api/v1/batch/jobs
  */
-router.post('/jobs', authMiddleware, async (req: AuthRequest, res: Response) => {
+router.post('/jobs', authMiddleware, requirePermission(Permission.JOBS_WRITE), async (req: AuthRequest, res: Response) => {
   try {
     const { jobs } = req.body;
 
@@ -69,7 +71,7 @@ router.post('/jobs', authMiddleware, async (req: AuthRequest, res: Response) => 
  * Get batch status
  * GET /api/v1/batch/:batchId
  */
-router.get('/:batchId', authMiddleware, async (req: AuthRequest, res: Response) => {
+router.get('/:batchId', authMiddleware, requirePermission(Permission.JOBS_READ), async (req: AuthRequest, res: Response) => {
   try {
     const { batchId } = req.params;
 
@@ -97,7 +99,7 @@ router.get('/:batchId', authMiddleware, async (req: AuthRequest, res: Response) 
  * Get batch results
  * GET /api/v1/batch/:batchId/results
  */
-router.get('/:batchId/results', authMiddleware, async (req: AuthRequest, res: Response) => {
+router.get('/:batchId/results', authMiddleware, requirePermission(Permission.REPORTS_READ), async (req: AuthRequest, res: Response) => {
   try {
     const { batchId } = req.params;
     const limit = parseInt(req.query.limit as string, 10) || 50;
