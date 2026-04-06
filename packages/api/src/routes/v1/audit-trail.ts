@@ -5,6 +5,8 @@
 
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
+import { requirePermission } from "../../middleware/authorization";
+import { Permission } from "../../infrastructure/security/Permissions";
 import { logError, logInfo } from "../../utils/logger";
 import {
   getAuditLogs,
@@ -18,8 +20,9 @@ const router: Router = Router();
 /**
  * GET /api/v1/audit-trail/logs
  * Get audit logs with filtering
+ * Requires ADMIN_AUDIT permission — audit logs are sensitive compliance evidence.
  */
-router.get("/logs", async (req: AuthRequest, res: Response) => {
+router.get("/logs", requirePermission(Permission.ADMIN_AUDIT), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const {
@@ -74,8 +77,9 @@ router.get("/logs", async (req: AuthRequest, res: Response) => {
 /**
  * POST /api/v1/audit-trail/exports
  * Create audit export
+ * Requires ADMIN_AUDIT permission — exports carry full audit evidence payload.
  */
-router.post("/exports", async (req: AuthRequest, res: Response) => {
+router.post("/exports", requirePermission(Permission.ADMIN_AUDIT), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const userId = req.userId!;
@@ -108,8 +112,9 @@ router.post("/exports", async (req: AuthRequest, res: Response) => {
 /**
  * GET /api/v1/audit-trail/exports/:exportId
  * Get audit export
+ * Requires ADMIN_AUDIT permission — export download is as sensitive as the logs themselves.
  */
-router.get("/exports/:exportId", async (req: AuthRequest, res: Response) => {
+router.get("/exports/:exportId", requirePermission(Permission.ADMIN_AUDIT), async (req: AuthRequest, res: Response) => {
   try {
     const exportIdParam = req.params["exportId"];
     const exportId = Array.isArray(exportIdParam)

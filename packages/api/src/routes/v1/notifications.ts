@@ -5,6 +5,8 @@
 
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
+import { requirePermission } from "../../middleware/authorization";
+import { Permission } from "../../infrastructure/security/Permissions";
 import { logError, logInfo } from "../../utils/logger";
 import {
   getNotificationPreferences,
@@ -19,7 +21,7 @@ const router: Router = Router();
  * GET /api/v1/notifications/preferences
  * Get notification preferences
  */
-router.get("/preferences", async (req: AuthRequest, res: Response) => {
+router.get("/preferences", requirePermission(Permission.OPERATOR_READ), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const userId = req.userId;
@@ -44,7 +46,7 @@ router.get("/preferences", async (req: AuthRequest, res: Response) => {
  * PUT /api/v1/notifications/preferences
  * Update notification preferences
  */
-router.put("/preferences", async (req: AuthRequest, res: Response) => {
+router.put("/preferences", requirePermission(Permission.OPERATOR_WRITE), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const userId = req.userId;
@@ -80,7 +82,7 @@ router.put("/preferences", async (req: AuthRequest, res: Response) => {
  * GET /api/v1/notifications/logs
  * Get notification logs
  */
-router.get("/logs", async (req: AuthRequest, res: Response) => {
+router.get("/logs", requirePermission(Permission.OPERATOR_READ), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const userId = req.userId;

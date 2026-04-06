@@ -11,6 +11,8 @@
 import { Router, Response } from "express";
 import { authMiddleware, AuthRequest } from "../middleware/auth";
 import { enforceFreezeState } from "../middleware/governance";
+import { requirePermission } from "../middleware/authorization";
+import { Permission } from "../infrastructure/security/Permissions";
 import { logInfo, logError } from "../utils/logger";
 import { generateRequestSignature, verifyRequestSignature } from "../middleware/request-signing";
 
@@ -20,7 +22,7 @@ const router: Router = Router();
  * Test webhook endpoint (for development/testing)
  * POST /api/v1/webhooks/test
  */
-router.post("/test", authMiddleware, async (req: AuthRequest, res: Response) => {
+router.post("/test", authMiddleware, requirePermission(Permission.WEBHOOKS_READ), async (req: AuthRequest, res: Response) => {
   try {
     const { payload, secret, algorithm = "sha256" } = req.body;
 
@@ -63,7 +65,7 @@ router.post("/test", authMiddleware, async (req: AuthRequest, res: Response) => 
  * Verify webhook signature
  * POST /api/v1/webhooks/verify
  */
-router.post("/verify", authMiddleware, async (req: AuthRequest, res: Response) => {
+router.post("/verify", authMiddleware, requirePermission(Permission.WEBHOOKS_READ), async (req: AuthRequest, res: Response) => {
   try {
     const { payload, signature, timestamp, secret, algorithm = "sha256" } = req.body;
 
@@ -104,6 +106,7 @@ router.post("/verify", authMiddleware, async (req: AuthRequest, res: Response) =
 router.post(
   "/replay",
   authMiddleware,
+  requirePermission(Permission.WEBHOOKS_WRITE),
   enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
@@ -148,7 +151,7 @@ router.post(
  * Get webhook delivery status
  * GET /api/v1/webhooks/:webhookId/status
  */
-router.get("/:webhookId/status", authMiddleware, async (req: AuthRequest, res: Response) => {
+router.get("/:webhookId/status", authMiddleware, requirePermission(Permission.WEBHOOKS_READ), async (req: AuthRequest, res: Response) => {
   try {
     const { webhookId } = req.params;
 

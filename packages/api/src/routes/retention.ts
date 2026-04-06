@@ -5,7 +5,7 @@
  * Provides metrics display, policy management, and worker control.
  */
 
-import { Router, Request, Response } from "express";
+import { Router, Response } from "express";
 import { z } from "zod";
 import {
   retentionPolicyService,
@@ -14,10 +14,15 @@ import {
 import { retentionMetricsService } from "../services/retention/retention-metrics";
 import { getTTLWorker } from "../services/retention/ttl-worker";
 import { logInfo, logError } from "../utils/logger";
+import { AuthRequest } from "../middleware/auth";
+import { requirePermission } from "../middleware/authorization";
+import { Permission } from "../infrastructure/security/Permissions";
 
 const router: Router = Router();
 
 // Authentication is applied by the versioned protected router (`configureProtectedRouter`).
+// Authorization: all retention routes are admin-only — they expose cross-tenant data
+// and control the TTL worker that deletes data irreversibly.
 
 // Validation schemas
 const retentionPolicySchema = z.object({
@@ -59,7 +64,7 @@ const workerConfigSchema = z.object({
  *
  * Get overall retention metrics summary
  */
-router.get("/metrics", async (_req: Request, res: Response) => {
+router.get("/metrics", requirePermission(Permission.ADMIN_READ), async (_req: AuthRequest, res: Response) => {
   try {
     const metrics = await retentionMetricsService.getMetricsSummary();
 
@@ -89,7 +94,7 @@ router.get("/metrics", async (_req: Request, res: Response) => {
  *
  * Get daily retention metrics
  */
-router.get("/metrics/daily", async (req: Request, res: Response) => {
+router.get("/metrics/daily", requirePermission(Permission.ADMIN_READ), async (req: AuthRequest, res: Response) => {
   try {
     const days = parseInt(req.query.days as string) || 30;
     const metrics = await retentionMetricsService.getDailyMetrics(days);
@@ -120,7 +125,7 @@ router.get("/metrics/daily", async (req: Request, res: Response) => {
  *
  * Get retention metrics by tenant
  */
-router.get("/metrics/tenants", async (_req: Request, res: Response) => {
+router.get("/metrics/tenants", requirePermission(Permission.ADMIN_READ), async (_req: AuthRequest, res: Response) => {
   try {
     const metrics = await retentionMetricsService.getAllTenantMetrics();
 
@@ -151,7 +156,7 @@ router.get("/metrics/tenants", async (_req: Request, res: Response) => {
  *
  * Get retention metrics for specific tenant
  */
-router.get("/metrics/tenants/:tenantId", async (req: Request, res: Response) => {
+router.get("/metrics/tenants/:tenantId", requirePermission(Permission.ADMIN_READ), async (req: AuthRequest, res: Response) => {
   try {
     const tenantIdParam = req.params["tenantId"];
     const tenantId = Array.isArray(tenantIdParam)
@@ -187,7 +192,7 @@ router.get("/metrics/tenants/:tenantId", async (req: Request, res: Response) => 
  *
  * Get all tenant retention policies
  */
-router.get("/policies", async (_req: Request, res: Response) => {
+router.get("/policies", requirePermission(Permission.ADMIN_READ), async (_req: AuthRequest, res: Response) => {
   try {
     const policies = await retentionPolicyService.getAllTenantRetentionPolicies();
 
@@ -233,7 +238,7 @@ router.get("/policies", async (_req: Request, res: Response) => {
  *
  * Get retention policy for a specific tenant
  */
-router.get("/policies/:tenantId", async (req: Request, res: Response) => {
+router.get("/policies/:tenantId", requirePermission(Permission.ADMIN_READ), async (req: AuthRequest, res: Response) => {
   try {
     const tenantIdParam2 = req.params["tenantId"];
     const tenantId = Array.isArray(tenantIdParam2)
@@ -283,7 +288,7 @@ router.get("/policies/:tenantId", async (req: Request, res: Response) => {
  *
  * Set custom retention policy for a tenant
  */
-router.put("/policies/:tenantId", async (req: Request, res: Response) => {
+router.put("/policies/:tenantId", requirePermission(Permission.ADMIN_WRITE), async (req: AuthRequest, res: Response) => {
   try {
     const tenantIdParam3 = req.params["tenantId"];
     const tenantId = Array.isArray(tenantIdParam3)
@@ -346,7 +351,7 @@ router.put("/policies/:tenantId", async (req: Request, res: Response) => {
  *
  * Reset tenant retention policy to default
  */
-router.delete("/policies/:tenantId", async (req: Request, res: Response) => {
+router.delete("/policies/:tenantId", requirePermission(Permission.ADMIN_WRITE), async (req: AuthRequest, res: Response) => {
   try {
     const tenantIdParam4 = req.params["tenantId"];
     const tenantId = Array.isArray(tenantIdParam4)
@@ -398,7 +403,7 @@ router.delete("/policies/:tenantId", async (req: Request, res: Response) => {
  *
  * Get TTL worker status and stats
  */
-router.get("/worker", async (_req: Request, res: Response) => {
+router.get("/worker", requirePermission(Permission.ADMIN_READ), async (_req: AuthRequest, res: Response) => {
   try {
     const worker = getTTLWorker();
     const stats = worker.getStats();
@@ -434,7 +439,7 @@ router.get("/worker", async (_req: Request, res: Response) => {
  *
  * Manually trigger a TTL worker run
  */
-router.post("/worker/run", async (req: Request, res: Response) => {
+router.post("/worker/run", requirePermission(Permission.ADMIN_WRITE), async (req: AuthRequest, res: Response) => {
   try {
     const dryRun = req.query.dryRun === "true";
     const worker = getTTLWorker();
@@ -475,7 +480,7 @@ router.post("/worker/run", async (req: Request, res: Response) => {
  *
  * Update TTL worker configuration
  */
-router.put("/worker/config", async (req: Request, res: Response) => {
+router.put("/worker/config", requirePermission(Permission.ADMIN_WRITE), async (req: AuthRequest, res: Response) => {
   try {
     const config = workerConfigSchema.parse(req.body);
     const worker = getTTLWorker();
@@ -515,7 +520,7 @@ router.put("/worker/config", async (req: Request, res: Response) => {
  *
  * Toggle dry-run mode
  */
-router.post("/worker/dry-run", async (req: Request, res: Response) => {
+router.post("/worker/dry-run", requirePermission(Permission.ADMIN_WRITE), async (req: AuthRequest, res: Response) => {
   try {
     const { enabled } = req.body;
     const worker = getTTLWorker();

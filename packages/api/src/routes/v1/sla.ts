@@ -5,6 +5,8 @@
 
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
+import { requirePermission } from "../../middleware/authorization";
+import { Permission } from "../../infrastructure/security/Permissions";
 import { logError, logInfo } from "../../utils/logger";
 import {
   createSLAAgreement,
@@ -20,7 +22,7 @@ const router: Router = Router();
  * POST /api/v1/sla/agreements
  * Create SLA agreement
  */
-router.post("/agreements", async (req: AuthRequest, res: Response) => {
+router.post("/agreements", requirePermission(Permission.ADMIN_WRITE), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const { slaType, targetValue, measurementPeriod, startDate, endDate } = req.body;
@@ -64,7 +66,7 @@ router.post("/agreements", async (req: AuthRequest, res: Response) => {
  * POST /api/v1/sla/metrics
  * Record SLA metric
  */
-router.post("/metrics", async (req: AuthRequest, res: Response) => {
+router.post("/metrics", requirePermission(Permission.ADMIN_WRITE), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const { slaAgreementId, metricType, measuredValue, measurementDate, measurementPeriod } =
@@ -113,7 +115,7 @@ router.post("/metrics", async (req: AuthRequest, res: Response) => {
  * GET /api/v1/sla/violations
  * Get SLA violations
  */
-router.get("/violations", async (req: AuthRequest, res: Response) => {
+router.get("/violations", requirePermission(Permission.ADMIN_READ), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const { resolved, acknowledged, severity, limit = 100, offset = 0 } = req.query;
@@ -149,7 +151,7 @@ router.get("/violations", async (req: AuthRequest, res: Response) => {
  * POST /api/v1/sla/violations/:violationId/acknowledge
  * Acknowledge SLA violation
  */
-router.post("/violations/:violationId/acknowledge", async (req: AuthRequest, res: Response) => {
+router.post("/violations/:violationId/acknowledge", requirePermission(Permission.ADMIN_WRITE), async (req: AuthRequest, res: Response) => {
   try {
     const violationIdParam = req.params["violationId"];
     const violationId = Array.isArray(violationIdParam)

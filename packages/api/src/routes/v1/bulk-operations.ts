@@ -6,6 +6,8 @@
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
 import { enforceFreezeState } from "../../middleware/governance";
+import { requirePermission } from "../../middleware/authorization";
+import { Permission } from "../../infrastructure/security/Permissions";
 import { logError, logInfo } from "../../utils/logger";
 import {
   createBulkOperation,
@@ -20,7 +22,7 @@ const router: Router = Router();
  * POST /api/v1/bulk-operations
  * Create a bulk operation
  */
-router.post("/", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
+router.post("/", enforceFreezeState(), requirePermission(Permission.JOBS_WRITE), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const userId = req.userId!;
@@ -75,7 +77,7 @@ router.post("/", enforceFreezeState(), async (req: AuthRequest, res: Response) =
  * GET /api/v1/bulk-operations/:operationId
  * Get bulk operation status
  */
-router.get("/:operationId", async (req: AuthRequest, res: Response) => {
+router.get("/:operationId", requirePermission(Permission.JOBS_READ), async (req: AuthRequest, res: Response) => {
   try {
     const operationIdParam = req.params["operationId"];
     const operationId = Array.isArray(operationIdParam)

@@ -6,6 +6,8 @@
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
 import { enforceFreezeState } from "../../middleware/governance";
+import { requirePermission } from "../../middleware/authorization";
+import { Permission } from "../../infrastructure/security/Permissions";
 import { logError, logInfo } from "../../utils/logger";
 import {
   createMultiSourceJob,
@@ -26,7 +28,7 @@ function isValidUserId(userId: string | undefined): boolean {
  * POST /api/v1/multi-source-reconciliation/jobs
  * Create a multi-source reconciliation job
  */
-router.post("/jobs", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
+router.post("/jobs", enforceFreezeState(), requirePermission(Permission.JOBS_WRITE), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const userId = req.userId!;
@@ -85,7 +87,7 @@ router.post("/jobs", enforceFreezeState(), async (req: AuthRequest, res: Respons
  * GET /api/v1/multi-source-reconciliation/jobs/:jobId
  * Get multi-source job details
  */
-router.get("/jobs/:jobId", async (req: AuthRequest, res: Response) => {
+router.get("/jobs/:jobId", requirePermission(Permission.JOBS_READ), async (req: AuthRequest, res: Response) => {
   try {
     const jobIdParam = req.params["jobId"];
     const jobId = Array.isArray(jobIdParam) ? (jobIdParam[0] ?? "") : (jobIdParam ?? "");
@@ -127,7 +129,7 @@ router.get("/jobs/:jobId", async (req: AuthRequest, res: Response) => {
  * POST /api/v1/multi-source-reconciliation/jobs/:jobId/run
  * Run multi-source reconciliation
  */
-router.post("/jobs/:jobId/run", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
+router.post("/jobs/:jobId/run", enforceFreezeState(), requirePermission(Permission.JOBS_EXECUTE), async (req: AuthRequest, res: Response) => {
   try {
     const { jobId } = req.params;
     const { reconRunId } = req.body;
@@ -179,6 +181,7 @@ router.post("/jobs/:jobId/run", enforceFreezeState(), async (req: AuthRequest, r
 router.post(
   "/conflicts/:conflictId/resolve",
   enforceFreezeState(),
+  requirePermission(Permission.JOBS_WRITE),
   async (req: AuthRequest, res: Response) => {
     try {
       const { conflictId } = req.params;

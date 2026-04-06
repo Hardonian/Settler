@@ -330,24 +330,35 @@ async function getCurrentUsage(
 /**
  * Check if plan meets requirement
  */
+/**
+ * Numeric plan hierarchy used for feature-gate comparisons.
+ *
+ * CANONICAL ALIGNMENT: this must stay consistent with
+ * `mapLegacyPlanTypeToPlanCode` in `@settler/types/commercial-spine`.
+ * The canonical function maps: free→starter, base→starter, pro→growth.
+ * Levels here must reflect those equivalences — `free` is starter-equivalent (1),
+ * not a sub-starter tier (0).
+ */
+const PLAN_HIERARCHY: Record<string, number> = {
+  free: 1,       // canonical: free → starter
+  starter: 1,
+  growth: 2,
+  scale: 3,
+  enterprise: 4,
+  // Legacy Stripe plan IDs (canonical: base → starter, pro → growth)
+  base: 1,
+  pro: 2,
+  trial: 2,      // canonical: trial → growth
+  commercial: 2, // canonical: commercial → growth
+};
+
 function planMeetsRequirement(userPlan: string, requiredPlan?: string): boolean {
   if (!requiredPlan) {
     return true;
   }
 
-  const planHierarchy: Record<string, number> = {
-    free: 0,
-    starter: 1,
-    growth: 2,
-    scale: 3,
-    enterprise: 4,
-    // Legacy plan names (for backward compatibility)
-    base: 1, // Maps to starter
-    pro: 2, // Maps to growth
-  };
-
-  const userPlanLevel = planHierarchy[userPlan] || 0;
-  const requiredPlanLevel = planHierarchy[requiredPlan] || 0;
+  const userPlanLevel = PLAN_HIERARCHY[userPlan] ?? 0;
+  const requiredPlanLevel = PLAN_HIERARCHY[requiredPlan] ?? 0;
 
   return userPlanLevel >= requiredPlanLevel;
 }

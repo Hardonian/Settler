@@ -6,6 +6,8 @@
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
 import { enforceFreezeState } from "../../middleware/governance";
+import { requirePermission } from "../../middleware/authorization";
+import { Permission } from "../../infrastructure/security/Permissions";
 import { logError, logInfo } from "../../utils/logger";
 import { isApiError, ValidationError } from "../../utils/typed-errors";
 import { sendProblemJson } from "../../utils/problem-json";
@@ -140,7 +142,7 @@ function respondIngestionWorkbenchGate(
  * POST /api/v1/reconciliation/run
  * Run reconciliation for an ingestion
  */
-router.post("/run", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
+router.post("/run", enforceFreezeState(), requirePermission(Permission.JOBS_EXECUTE), async (req: AuthRequest, res: Response) => {
   try {
     const body = req.body as ReconciliationRunRequestBody;
     const config = body.config;
@@ -271,7 +273,7 @@ router.post("/run", enforceFreezeState(), async (req: AuthRequest, res: Response
  * GET /api/v1/reconciliation/runs
  * Merged list: recon jobs + ingestion reconciliation runs with dual-stream cursor pagination.
  */
-router.get("/runs", async (req: AuthRequest, res: Response) => {
+router.get("/runs", requirePermission(Permission.JOBS_READ), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const limitRaw = parseInt(String(req.query.limit || "50"), 10);
@@ -345,7 +347,7 @@ router.get("/runs", async (req: AuthRequest, res: Response) => {
  * GET /api/v1/reconciliation/runs/:runId
  * Canonical reconciliation run detail (recon job or ingestion run), with legacy field names under legacy_v1.
  */
-router.get("/runs/:runId", async (req: AuthRequest, res: Response) => {
+router.get("/runs/:runId", requirePermission(Permission.JOBS_READ), async (req: AuthRequest, res: Response) => {
   try {
     const runId = paramString(req.params.runId);
     const tenantId = req.tenantId!;
@@ -394,7 +396,7 @@ router.get("/runs/:runId", async (req: AuthRequest, res: Response) => {
  * GET /api/v1/reconciliation/runs/:runId/matches
  * Get reconciliation matches (ingestion reconciliation_runs only)
  */
-router.get("/runs/:runId/matches", async (req: AuthRequest, res: Response) => {
+router.get("/runs/:runId/matches", requirePermission(Permission.JOBS_READ), async (req: AuthRequest, res: Response) => {
   try {
     const runId = paramString(req.params.runId);
     const tenantId = req.tenantId!;
@@ -498,7 +500,7 @@ router.get("/runs/:runId/matches", async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.get("/runs/:runId/workbench", async (req: AuthRequest, res: Response) => {
+router.get("/runs/:runId/workbench", requirePermission(Permission.JOBS_READ), async (req: AuthRequest, res: Response) => {
   try {
     const runId = paramString(req.params.runId);
     const tenantId = req.tenantId!;
@@ -576,7 +578,7 @@ router.get("/runs/:runId/workbench", async (req: AuthRequest, res: Response) => 
   }
 });
 
-router.get("/runs/:runId/compare/:otherRunId", async (req: AuthRequest, res: Response) => {
+router.get("/runs/:runId/compare/:otherRunId", requirePermission(Permission.JOBS_READ), async (req: AuthRequest, res: Response) => {
   try {
     const runId = paramString(req.params.runId);
     const otherRunId = paramString(req.params.otherRunId);
@@ -635,7 +637,7 @@ router.get("/runs/:runId/compare/:otherRunId", async (req: AuthRequest, res: Res
   }
 });
 
-router.get("/runs/:runId/workbench/export", async (req: AuthRequest, res: Response) => {
+router.get("/runs/:runId/workbench/export", requirePermission(Permission.REPORTS_EXPORT), async (req: AuthRequest, res: Response) => {
   try {
     const runId = paramString(req.params.runId);
     const tenantId = req.tenantId!;
@@ -697,7 +699,7 @@ router.get("/runs/:runId/workbench/export", async (req: AuthRequest, res: Respon
  * PATCH /api/v1/reconciliation/matches/:matchId
  * Update match (e.g., mark as reviewed)
  */
-router.patch("/matches/:matchId", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
+router.patch("/matches/:matchId", enforceFreezeState(), requirePermission(Permission.JOBS_WRITE), async (req: AuthRequest, res: Response) => {
   try {
     const matchId = paramString(req.params.matchId);
     const { reviewed, reviewState } = req.body as { reviewed?: boolean; reviewState?: ReviewState };

@@ -7,6 +7,8 @@ import { Router, Response } from "express";
 import multer from "multer";
 import { AuthRequest } from "../../middleware/auth";
 import { enforceFreezeState } from "../../middleware/governance";
+import { requirePermission } from "../../middleware/authorization";
+import { Permission } from "../../infrastructure/security/Permissions";
 import { logError, logInfo } from "../../utils/logger";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -32,6 +34,7 @@ import {
   isBackgroundJobPaused,
 } from "../../services/operator-mode/kill-switches";
 import { canRunBackgroundJob } from "../../services/operator-mode/cost-controls";
+import { encrypt } from "../../infrastructure/security/encryption";
 
 const router: Router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -172,7 +175,7 @@ async function loadSchemaDriftBaseline(
  * POST /api/v1/ingestion/sources
  * Create a new ingestion source (connector or CSV)
  */
-router.post("/sources", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
+router.post("/sources", enforceFreezeState(), requirePermission(Permission.OPERATOR_WRITE), async (req: AuthRequest, res: Response) => {
   try {
     const { name, type, connectorType, config, configMetadata } = req.body;
     const tenantId = req.tenantId!;
@@ -196,7 +199,8 @@ router.post("/sources", enforceFreezeState(), async (req: AuthRequest, res: Resp
     }
 
     const sourceId = uuidv4();
-    const encryptedConfig = config ? JSON.stringify(config) : null; // TODO: Encrypt properly
+    // Connector configs contain OAuth tokens and API keys — encrypt at rest with AES-256-GCM.
+    const encryptedConfig = config ? encrypt(JSON.stringify(config)) : null;
 
     await query(
       `INSERT INTO ingestion_sources (
@@ -243,7 +247,7 @@ router.post("/sources", enforceFreezeState(), async (req: AuthRequest, res: Resp
  * GET /api/v1/ingestion/sources
  * List ingestion sources
  */
-router.get("/sources", async (req: AuthRequest, res: Response) => {
+router.get("/sources", requirePermission(Permission.OPERATOR_READ), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
 
@@ -290,6 +294,7 @@ router.post(
   "/preview",
   upload.single("file"),
   enforceFreezeState(),
+  requirePermission(Permission.OPERATOR_WRITE),
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId;
@@ -382,6 +387,7 @@ router.post(
   "/upload",
   upload.single("file"),
   enforceFreezeState(),
+  requirePermission(Permission.OPERATOR_WRITE),
   checkIngestionLimit(),
   async (req: AuthRequest, res: Response) => {
     try {
@@ -675,7 +681,7 @@ router.post(
  * GET /api/v1/ingestion/:ingestionId
  * Get ingestion details
  */
-router.get("/:ingestionId", async (req: AuthRequest, res: Response) => {
+router.get("/:ingestionId", requirePermission(Permission.OPERATOR_READ), async (req: AuthRequest, res: Response) => {
   try {
     const { ingestionId } = req.params;
     const tenantId = req.tenantId!;
@@ -731,7 +737,7 @@ router.get("/:ingestionId", async (req: AuthRequest, res: Response) => {
  * GET /api/v1/ingestion/:ingestionId/transactions
  * Get normalized transactions for an ingestion
  */
-router.get("/:ingestionId/transactions", async (req: AuthRequest, res: Response) => {
+router.get("/:ingestionId/transactions", requirePermission(Permission.OPERATOR_READ), async (req: AuthRequest, res: Response) => {
   try {
     const { ingestionId } = req.params;
     const tenantId = req.tenantId!;
@@ -796,7 +802,7 @@ router.get("/:ingestionId/transactions", async (req: AuthRequest, res: Response)
  * GET /api/v1/ingestion/workbench/recent
  * Get recent ingestion workbench summaries for control-plane linking
  */
-router.get("/workbench/recent", async (req: AuthRequest, res: Response) => {
+router.get("/workbench/recent", requirePermission(Permission.OPERATOR_READ), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId;
     if (!tenantId) {
@@ -858,6 +864,7 @@ router.get("/workbench/recent", async (req: AuthRequest, res: Response) => {
 router.post(
   "/:ingestionId/retry",
   enforceFreezeState(),
+  requirePermission(Permission.OPERATOR_WRITE),
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId;
