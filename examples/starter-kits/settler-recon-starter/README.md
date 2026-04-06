@@ -1,81 +1,65 @@
 # Settler Recon Starter
 
-Quickstart template for building reconciliation workflows with Settler.dev.
+Runnable quickstart for reconciling payment transactions with Settler.
 
-## Getting Started
+## What this does
 
-1. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+1. Creates a reconciliation job (Stripe payments → internal ledger)
+2. Executes the job and waits for results
+3. Prints a match/unmatch summary
+4. Lists any exceptions that need manual review
 
-2. **Set up your API key:**
-   ```bash
-   export SETTLER_API_KEY=sk_your_api_key
-   ```
+## Prerequisites
 
-3. **Run the example:**
-   ```bash
-   npm start
-   ```
+- Node.js 20+
+- A Settler API key (get one at **Settings → API Keys** in the console, or use a local dev instance)
 
-## Example: Basic Reconciliation
+## Quick start
 
-```javascript
-const { SettlerClient } = require('@settler/sdk');
+```bash
+# 1. Install
+npm install
 
-const client = new SettlerClient({
-  apiKey: process.env.SETTLER_API_KEY,
-});
+# 2. Configure
+cp .env.example .env
+# Edit .env and set SETTLER_API_KEY
 
-async function reconcile() {
-  // Create reconciliation job
-  const job = await client.recon.jobs.create({
-    name: 'Monthly Reconciliation',
-    sourceAdapter: 'stripe',
-    targetAdapter: 'internal_ledger',
-    reconStrategy: 'deterministic',
-  });
-
-  // Execute reconciliation
-  const result = await client.recon.jobs.execute(job.id);
-
-  // View results
-  console.log('Matched:', result.matchedCount);
-  console.log('Unmatched:', result.unmatchedSourceCount);
-}
+# 3. Run
+npm start
 ```
 
-## Example: With Drift Detection
+### Point to a local Settler instance
 
-```javascript
-async function reconcileWithDrift() {
-  const job = await client.recon.jobs.create({
-    name: 'Reconciliation with Drift Detection',
-    sourceAdapter: 'stripe',
-    targetAdapter: 'internal_ledger',
-    reconStrategy: 'deterministic',
-  });
+If you're running Settler locally (`pnpm dev` from the monorepo root):
 
-  const result = await client.recon.jobs.execute(job.id);
-
-  // Check for drift
-  const drifts = await client.drift.list({
-    reconJobId: job.id,
-  });
-
-  if (drifts.length > 0) {
-    console.log('Drift detected:', drifts);
-    // Auto-repair if enabled
-    for (const drift of drifts) {
-      await client.drift.autoRepair(drift.id);
-    }
-  }
-}
+```bash
+SETTLER_BASE_URL=http://localhost:4000 npm start
 ```
 
-## Next Steps
+## Scripts
 
-- [Documentation](https://docs.settler.io)
-- [API Reference](https://docs.settler.io/api-reference)
-- [Examples](https://github.com/settler/examples)
+| Command              | Description                                |
+| -------------------- | ------------------------------------------ |
+| `npm start`          | Run the reconciliation example             |
+| `npm run check-results` | Fetch results for a previous job (set `JOB_ID`) |
+
+## Project structure
+
+```
+settler-recon-starter/
+├── src/
+│   ├── index.ts           # Main reconciliation flow
+│   └── check-results.ts   # Fetch results for a previous job
+├── .env.example           # Environment template
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+
+## Next steps
+
+- Swap `stripe` / `internal_ledger` adapters for your real data sources
+- Add a webhook listener instead of polling for results
+- Set up scheduled reconciliation with `schedule: "0 2 * * *"`
+- Explore the [SDK reference](../../packages/sdk/README.md) for the full API surface
+- See [examples/](../../) for more use cases (multi-currency, exception handling, etc.)

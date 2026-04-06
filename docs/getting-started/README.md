@@ -92,3 +92,6 @@ pnpm check
 - **Architecture Overview:** [`docs/architecture/platform-architecture.md`](../architecture/platform-architecture.md)
 - **Using the CLI:** [`packages/cli/README.md`](../../packages/cli/README.md)
 - **API Reference:** [`docs/api/README.md`](../api/README.md)
+- **Starter Kits:** [`examples/starter-kits/`](../../examples/starter-kits/) - Runnable example projects
+- **Pilot Runbook:** [`docs/pilot-runbook.md`](../pilot-runbook.md) - Run a pilot with go/no-go scorecard
+- **Teardown Guide:** [`teardown.md`](./teardown.md) - Clean removal and offboarding

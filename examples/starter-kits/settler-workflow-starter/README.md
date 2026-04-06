@@ -1,95 +1,66 @@
 # Settler Workflow Starter
 
-Quickstart template for building workflow orchestration with Settler.dev.
+Runnable quickstart for a webhook-driven reconciliation pipeline with Settler.
 
-## Getting Started
+## What this does
 
-1. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+1. Registers a webhook for reconciliation events
+2. Creates and executes a reconciliation job
+3. Exports results as CSV
+4. Receives real-time events via a local webhook server
 
-2. **Set up your API key:**
-   ```bash
-   export SETTLER_API_KEY=sk_your_api_key
-   ```
+## Prerequisites
 
-3. **Run the example:**
-   ```bash
-   npm start
-   ```
+- Node.js 20+
+- A Settler API key (get one at **Settings → API Keys** in the console, or use a local dev instance)
 
-## Example: Simple Workflow
+## Quick start
 
-```javascript
-const { SettlerClient } = require('@settler/sdk');
+```bash
+# 1. Install
+npm install
 
-const client = new SettlerClient({
-  apiKey: process.env.SETTLER_API_KEY,
-});
+# 2. Configure
+cp .env.example .env
+# Edit .env and set SETTLER_API_KEY
 
-async function runWorkflow() {
-  // Create workflow
-  const workflow = await client.workflows.create({
-    name: 'Monthly Reconciliation Workflow',
-    steps: [
-      {
-        id: 'ingest',
-        type: 'ingestion',
-        config: { adapter: 'stripe' },
-        onSuccess: 'transform',
-      },
-      {
-        id: 'transform',
-        type: 'transform',
-        config: { recipeId: 'recipe_123' },
-        onSuccess: 'recon',
-      },
-      {
-        id: 'recon',
-        type: 'recon',
-        config: { jobId: 'job_123' },
-        onSuccess: 'audit',
-      },
-      {
-        id: 'audit',
-        type: 'audit',
-        config: { format: 'pdf' },
-      },
-    ],
-  });
+# 3. Start the webhook receiver (terminal 1)
+npm run webhook-server
 
-  // Execute workflow
-  const run = await client.workflows.execute(workflow.id);
-  console.log('Workflow completed:', run.status);
-}
+# 4. Run the pipeline (terminal 2)
+npm start
 ```
 
-## Example: Scheduled Workflow
+### Point to a local Settler instance
 
-```javascript
-async function scheduledWorkflow() {
-  const workflow = await client.workflows.create({
-    name: 'Daily Reconciliation',
-    steps: [
-      // ... workflow steps
-    ],
-    triggers: [
-      {
-        type: 'schedule',
-        config: {
-          cron: '0 0 * * *', // Daily at midnight
-        },
-      },
-    ],
-  });
-
-  console.log('Workflow scheduled:', workflow.id);
-}
+```bash
+SETTLER_BASE_URL=http://localhost:4000 npm start
 ```
 
-## Next Steps
+## Scripts
 
-- [Workflow Documentation](https://docs.settler.io/workflows)
-- [API Reference](https://docs.settler.io/api-reference)
-- [Examples](https://github.com/settler/examples)
+| Command                | Description                              |
+| ---------------------- | ---------------------------------------- |
+| `npm start`            | Create job, run reconciliation, export   |
+| `npm run webhook-server` | Start the local webhook event receiver |
+
+## Project structure
+
+```
+settler-workflow-starter/
+├── src/
+│   ├── index.ts           # Pipeline: register webhook → reconcile → export
+│   └── webhook-server.ts  # Local HTTP server that receives Settler events
+├── .env.example           # Environment template
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+
+## Next steps
+
+- Deploy the webhook server behind a public URL (ngrok, Cloudflare Tunnel, etc.)
+- Add `schedule` to the job config for automated daily runs
+- Handle `exception.created` events to route exceptions to Slack or PagerDuty
+- Explore the [SDK reference](../../packages/sdk/README.md) for the full API surface
+- See [examples/](../../) for more use cases (multi-provider, multi-currency, etc.)
