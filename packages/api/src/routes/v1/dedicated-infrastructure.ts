@@ -5,6 +5,8 @@
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
 import { enforceFreezeState } from "../../middleware/governance";
+import { requirePermission } from "../../middleware/authorization";
+import { Permission } from "../../infrastructure/security/Permissions";
 import { logError } from "../../utils/logger";
 import {
   provisionDedicatedInfrastructure,
@@ -15,7 +17,7 @@ import {
 
 const router: Router = Router();
 
-router.post("/", enforceFreezeState(), async (req: AuthRequest, res: Response) => {
+router.post("/", requirePermission(Permission.ADMIN_WRITE), enforceFreezeState(), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const {
@@ -56,7 +58,7 @@ router.post("/", enforceFreezeState(), async (req: AuthRequest, res: Response) =
   }
 });
 
-router.get("/", async (req: AuthRequest, res: Response) => {
+router.get("/", requirePermission(Permission.ADMIN_READ), async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const { isActive, infrastructureType } = req.query;
@@ -77,7 +79,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.get("/:infrastructureId", async (req: AuthRequest, res: Response) => {
+router.get("/:infrastructureId", requirePermission(Permission.ADMIN_READ), async (req: AuthRequest, res: Response) => {
   try {
     const infrastructureIdParam = req.params["infrastructureId"];
     const infrastructureId = Array.isArray(infrastructureIdParam)
@@ -116,6 +118,7 @@ router.get("/:infrastructureId", async (req: AuthRequest, res: Response) => {
 
 router.delete(
   "/:infrastructureId",
+  requirePermission(Permission.ADMIN_WRITE),
   enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {

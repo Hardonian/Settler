@@ -32,6 +32,7 @@ import {
   isBackgroundJobPaused,
 } from "../../services/operator-mode/kill-switches";
 import { canRunBackgroundJob } from "../../services/operator-mode/cost-controls";
+import { encrypt } from "../../infrastructure/security/encryption";
 
 const router: Router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -196,7 +197,8 @@ router.post("/sources", enforceFreezeState(), async (req: AuthRequest, res: Resp
     }
 
     const sourceId = uuidv4();
-    const encryptedConfig = config ? JSON.stringify(config) : null; // TODO: Encrypt properly
+    // Connector configs contain OAuth tokens and API keys — encrypt at rest with AES-256-GCM.
+    const encryptedConfig = config ? encrypt(JSON.stringify(config)) : null;
 
     await query(
       `INSERT INTO ingestion_sources (

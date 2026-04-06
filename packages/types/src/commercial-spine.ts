@@ -370,13 +370,16 @@ export function mapLegacyPlanTypeToPlanCode(planType: string): PlanCode {
   if (t === "starter" || t === "growth" || t === "scale" || t === "enterprise") {
     return t as PlanCode;
   }
-  const legacyMap: Record<LegacyPlanType, PlanCode> = {
-    free: "starter",
+  // Stripe/subscription-era plan IDs that predate the canonical PlanCode taxonomy.
+  // These must stay here so billing-gating middleware aligns with the canonical hierarchy.
+  const extendedMap: Record<string, PlanCode> = {
+    free: "starter",   // free tier → starter capability level
     trial: "growth",
     commercial: "growth",
-    enterprise: "enterprise",
+    base: "starter",   // legacy "base" plan → starter
+    pro: "growth",     // legacy "pro" plan → growth
   };
-  return legacyMap[t as LegacyPlanType] ?? "starter";
+  return extendedMap[t] ?? "starter";
 }
 
 export function getLegacyQuotaProfile(planCode: PlanCode): LegacyQuotaProfile {
