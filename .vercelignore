@@ -37,11 +37,9 @@ tests/
 # CI/CD (not needed in deployment)
 .github/
 
-# Root scripts directory (not needed in deployment)
-# IMPORTANT: Use /scripts/ (anchored) not scripts/ (unanchored)
-# Unanchored scripts/ matches ALL directories named "scripts" at any depth,
-# including packages/web/scripts/ which contains build-time assert-build-env.mjs
-/scripts/
+# Keep root scripts included.
+# Vercel install/build invokes root scripts via package lifecycle hooks (preinstall/postinstall/prebuild).
+# Excluding /scripts causes install-time MODULE_NOT_FOUND failures.
 
 # Other
 .DS_Store
