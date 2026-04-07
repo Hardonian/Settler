@@ -150,21 +150,24 @@ export default function ArchitecturePage() {
             Immutable Evidence by Design
           </h2>
           <p className="text-lg text-slate-400 font-medium leading-relaxed max-w-3xl mx-auto">
-            We don&apos;t just reconcile data; we generate a cryptographically valid proof of every
-            outcome. Learn why the world&apos;s leading financial institutions trust our
-            deterministic architecture.
+            Every reconciliation run generates a cryptographically verifiable proof chain — a
+            tamper-evident audit trail you can inspect, export, and share with auditors.
           </p>
           <div className="pt-8 flex flex-col sm:flex-row justify-center gap-6">
-            <Button size="lg" className="h-14 px-8 font-extrabold bg-primary hover:bg-primary/90">
-              Technical Whitepaper
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="h-14 px-8 font-bold text-white border-white/20 hover:bg-white/10 bg-transparent"
-            >
-              Security Hardening Spec
-            </Button>
+            <Link href="/docs/architecture">
+              <Button size="lg" className="h-14 px-8 font-extrabold bg-primary hover:bg-primary/90">
+                Read the Architecture Docs
+              </Button>
+            </Link>
+            <Link href="/security-and-audit">
+              <Button
+                variant="outline"
+                size="lg"
+                className="h-14 px-8 font-bold text-white border-white/20 hover:bg-white/10 bg-transparent"
+              >
+                Security &amp; Audit Model
+              </Button>
+            </Link>
           </div>
         </div>
       </Section>
