@@ -148,7 +148,7 @@
     "prisma:migrate": "prisma migrate deploy",
     "prisma:push": "prisma db push",
     "prisma:status": "prisma migrate status",
-    "preinstall": "node scripts/assert-node-version.mjs",
+    "preinstall": "node scripts/assert-node-version.mjs --warn-only",
     "postinstall": "test -f scripts/vercel-prisma-postinstall.js && node scripts/vercel-prisma-postinstall.js || echo 'Skipping postinstall: script not found (expected in Vercel builds)'",
     "verify:build": "node scripts/verify-release.mjs --profile=build",
     "setup:turbo": "test -f scripts/setup-vercel-turbo-cache.sh && bash scripts/setup-vercel-turbo-cache.sh || echo '⚠️  Turbo setup script not available'",

@@ -18,34 +18,34 @@ export const metadata: Metadata = {
 const contactChannels = [
   {
     icon: Calendar,
-    title: "Strategic Consultation",
+    title: "Strategic consultation",
     description:
-      "Complimentary 30-minute session to review your reconciliation architecture and identify the optimal deployment approach.",
-    cta: "Schedule a Session",
-    href: "mailto:sales@settler.dev?subject=Strategic%20Consultation%20Request",
+      "30-minute session to scope your reconciliation requirements, review your data sources, and identify the right deployment path — cloud, managed ops, or enterprise.",
+    cta: "Schedule a session",
+    href: "mailto:hello@settler.dev?subject=Strategic%20Consultation%20Request",
     primary: true,
   },
   {
     icon: FileText,
-    title: "Integration Review",
+    title: "Managed operations inquiry",
     description:
-      "Request a technical review of your integration requirements, adapter needs, and reconciliation workflow design.",
-    cta: "Request a Review",
-    href: "mailto:engineering@settler.dev?subject=Integration%20Review%20Request",
+      "Interested in operator-assisted reconciliation? Tell us about your data sources, volume, and close schedule. We'll send a written scope with deliverables and pricing.",
+    cta: "Start the conversation",
+    href: "mailto:hello@settler.dev?subject=Managed%20Operations%20Inquiry",
     primary: false,
   },
   {
     icon: Mail,
-    title: "General Inquiries",
+    title: "General and support",
     description:
-      "Questions about the platform, licensing, or partnership opportunities. We respond within one business day.",
-    cta: "Send a Message",
-    href: "mailto:support@settler.dev",
+      "Questions about the platform, licensing, partnership, or a specific technical issue. We respond within one business day.",
+    cta: "Send a message",
+    href: "mailto:hello@settler.dev",
     primary: false,
   },
   {
     icon: MessageSquare,
-    title: "Developer Community",
+    title: "Developer community",
     description:
       "Join the Settler community on Discord for technical discussions, adapter development, and open-source collaboration.",
     cta: "Join Discord",
@@ -184,7 +184,7 @@ export default function ContactPage() {
             asChild
             className="bg-white px-8 py-6 text-lg font-semibold text-slate-900 hover:bg-slate-100"
           >
-            <UiLink href="mailto:sales@settler.dev?subject=Strategic%20Consultation%20Request">
+            <UiLink href="mailto:hello@settler.dev?subject=Strategic%20Consultation%20Request">
               Schedule a Session <ArrowRight className="h-5 w-5" aria-hidden="true" />
             </UiLink>
           </Button>

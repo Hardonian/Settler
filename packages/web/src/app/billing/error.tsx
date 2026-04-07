@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { AlertTriangle } from 'lucide-react';
-import Link from 'next/link';
+import { useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle } from "lucide-react";
+import Link from "next/link";
 
 /**
  * Public Billing Error Boundary
@@ -20,10 +20,10 @@ export default function PublicBillingError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error('[Public Billing Error]', {
+    console.error("[Public Billing Error]", {
       message: error.message,
       digest: error.digest,
-      ...(process.env.NODE_ENV === 'development' ? { stack: error.stack } : {}),
+      ...(process.env.NODE_ENV === "development" ? { stack: error.stack } : {}),
     });
   }, [error]);
 
@@ -35,9 +35,7 @@ export default function PublicBillingError({
             <AlertTriangle className="h-5 w-5 text-warning" aria-hidden="true" />
             <CardTitle>Oops! Something Went Wrong</CardTitle>
           </div>
-          <CardDescription>
-            We encountered an error loading this page.
-          </CardDescription>
+          <CardDescription>We encountered an error loading this page.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
@@ -45,7 +43,8 @@ export default function PublicBillingError({
               <strong>No payment has been processed</strong>
             </p>
             <p className="text-sm text-blue-800 dark:text-blue-200">
-              If you were trying to subscribe or make a payment, don't worry - nothing has been charged.
+              If you were trying to subscribe or make a payment, don't worry - nothing has been
+              charged.
             </p>
           </div>
 
@@ -72,18 +71,13 @@ export default function PublicBillingError({
 
           <div className="border-t pt-4">
             <p className="text-xs text-muted-foreground">
-              Need help? Email us at{' '}
-              <a
-                href="mailto:support@settler.dev"
-                className="text-primary hover:underline"
-              >
-                support@settler.dev
+              Need help? Email us at{" "}
+              <a href="mailto:hello@settler.dev" className="text-primary hover:underline">
+                hello@settler.dev
               </a>
             </p>
             {error.digest && (
-              <p className="text-xs text-muted-foreground mt-1">
-                Reference: {error.digest}
-              </p>
+              <p className="text-xs text-muted-foreground mt-1">Reference: {error.digest}</p>
             )}
           </div>
         </CardContent>

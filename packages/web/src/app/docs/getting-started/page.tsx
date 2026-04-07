@@ -135,14 +135,17 @@ export default function GettingStartedPage() {
         {/* Header */}
         <section className="border-b border-border/40 bg-muted/10 py-16 px-4">
           <div className="max-w-4xl mx-auto">
-            <Badge variant="outline" className="mb-4 text-xs font-semibold tracking-widest uppercase">
+            <Badge
+              variant="outline"
+              className="mb-4 text-xs font-semibold tracking-widest uppercase"
+            >
               Documentation
             </Badge>
             <h1 className="text-4xl font-bold tracking-tight mb-4">Getting started</h1>
             <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl">
               Settler matches financial records across systems, surfaces every mismatch as a
-              structured exception, and produces auditable proof for each run. This guide covers
-              two paths: managed cloud and self-hosted open source.
+              structured exception, and produces auditable proof for each run. This guide covers two
+              paths: managed cloud and self-hosted open source.
             </p>
             <div className="flex flex-wrap gap-3 mt-8">
               <Button asChild>
@@ -238,12 +241,29 @@ export default function GettingStartedPage() {
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {[
+                {
+                  href: "/docs/pilot",
+                  label: "Pilot guide",
+                  desc: "First value in 30 minutes — checkpoints included.",
+                },
                 { href: "/docs/api", label: "API reference", desc: "Full REST API documentation." },
                 { href: "/docs/sdk", label: "SDK guide", desc: "TypeScript/Node.js SDK." },
-                { href: "/docs/integrations", label: "Integrations", desc: "Available data source adapters." },
+                {
+                  href: "/docs/integrations",
+                  label: "Integrations",
+                  desc: "Available data source adapters.",
+                },
                 { href: "/docs/auth", label: "Auth & RBAC", desc: "Roles, scopes, and API keys." },
-                { href: "/docs/webhooks", label: "Webhooks", desc: "Real-time event notifications." },
-                { href: "/pricing", label: "Pricing", desc: "Cloud, managed ops, and enterprise tiers." },
+                {
+                  href: "/docs/webhooks",
+                  label: "Webhooks",
+                  desc: "Real-time event notifications.",
+                },
+                {
+                  href: "/pricing",
+                  label: "Pricing",
+                  desc: "Cloud, managed ops, and enterprise tiers.",
+                },
               ].map((item) => (
                 <Link
                   key={item.href}

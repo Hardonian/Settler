@@ -17,7 +17,7 @@ const primaryNavigationItems = [
   { href: "/platform", label: "Platform" },
   { href: "/capabilities", label: "Capabilities" },
   { href: "/product", label: "Product" },
-  ...(siteMode === "enterprise" ? [{ href: "/enterprise", label: "Enterprise" }] : []),
+  { href: "/enterprise", label: "Enterprise" },
   { href: "/pricing", label: "Pricing" },
   { href: "/docs", label: "Docs" },
 ];

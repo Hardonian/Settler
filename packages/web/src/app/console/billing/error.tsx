@@ -95,7 +95,7 @@ export default function BillingError({
               <Link href="/console">Back to Console</Link>
             </Button>
             <Button asChild variant="outline">
-              <a href="mailto:support@settler.dev">Contact Support</a>
+              <a href="mailto:hello@settler.dev">Contact Support</a>
             </Button>
           </div>
 

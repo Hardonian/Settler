@@ -63,10 +63,19 @@ export default function Support() {
       icon: "📧",
       title: "Email Support",
       description: "Get help via email (response within 24 hours)",
-      link: "mailto:support@settler.dev",
+      link: "mailto:hello@settler.dev",
       linkText: "Email Us",
       external: true,
       tier: "Commercial+",
+    },
+    {
+      icon: "🛠",
+      title: "Managed Operations",
+      description:
+        "Operator-assisted reconciliation: onboarding, exception triage, monthly close, and audit packets",
+      link: "/managed",
+      linkText: "See what's included",
+      tier: "Managed Ops",
     },
     {
       icon: "🚀",
@@ -195,7 +204,7 @@ export default function Support() {
     {
       question: "Can I use Settler on-premise?",
       answer:
-        "Yes! Enterprise plans include on-premise deployment options for maximum security and compliance. We provide Docker containers and deployment guides. Contact our sales team at enterprise@settler.dev to discuss your requirements.",
+        "Yes! Enterprise plans include on-premise deployment options for maximum security and compliance. We provide Docker containers and deployment guides. Contact our sales team at hello@settler.dev to discuss your requirements.",
     },
     {
       question: "What security certifications do you have?",
@@ -407,10 +416,7 @@ export default function Support() {
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             {escalationLevels.map((level, index) => (
-              <Card
-                key={index}
-                className="bg-card dark:bg-background border-border border-border"
-              >
+              <Card key={index} className="bg-card dark:bg-background border-border border-border">
                 <CardHeader>
                   <Badge variant="outline" className="w-fit mb-2">
                     {level.level}
@@ -452,10 +458,7 @@ export default function Support() {
           </p>
           <div className="space-y-4">
             {severityLevels.map((severity, index) => (
-              <Card
-                key={index}
-                className="bg-card dark:bg-background border-border border-border"
-              >
+              <Card key={index} className="bg-card dark:bg-background border-border border-border">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg text-foreground dark:text-white">
@@ -539,7 +542,7 @@ export default function Support() {
             title="Still Need Help?"
             description="Our support team is ready to assist you. Get in touch via email or schedule a call with our sales team."
             primaryAction="Email Support"
-            primaryLink="mailto:support@settler.dev"
+            primaryLink="mailto:hello@settler.dev"
             secondaryAction="Contact Sales"
             secondaryLink="/enterprise"
             variant="gradient"

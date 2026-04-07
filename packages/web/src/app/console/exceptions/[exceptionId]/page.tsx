@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { safeFetch } from "@/lib/safe-fetch";
+import { ExceptionProofpackDownload } from "./ExceptionProofpackDownload";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import {
@@ -165,6 +166,7 @@ export default async function ExceptionDetailPage({ params }: { params: { except
             </p>
           </div>
         </div>
+        <ExceptionProofpackDownload exceptionId={exception.id} />
       </div>
 
       {exception.statusDetail ? (
@@ -213,9 +215,7 @@ export default async function ExceptionDetailPage({ params }: { params: { except
 
       <div className="grid gap-6 xl:grid-cols-3">
         <div className="xl:col-span-2 space-y-6">
-          {exception.whyFlagged ? (
-            <WhyFlaggedCard data={exception.whyFlagged} />
-          ) : null}
+          {exception.whyFlagged ? <WhyFlaggedCard data={exception.whyFlagged} /> : null}
           <ExceptionActionPanel exceptionId={exceptionId} status={exception.status} />
           {exception.similarCases && exception.similarCases.length > 0 ? (
             <SimilarCasesCard cases={exception.similarCases} />

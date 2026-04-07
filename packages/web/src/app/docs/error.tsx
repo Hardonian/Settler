@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { BookOpen, Search } from 'lucide-react';
-import Link from 'next/link';
+import { useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { BookOpen, Search } from "lucide-react";
+import Link from "next/link";
 
 /**
  * Documentation Error Boundary
@@ -20,10 +20,10 @@ export default function DocsError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.warn('[Docs Error]', {
+    console.warn("[Docs Error]", {
       message: error.message,
       digest: error.digest,
-      ...(process.env.NODE_ENV === 'development' ? { stack: error.stack } : {}),
+      ...(process.env.NODE_ENV === "development" ? { stack: error.stack } : {}),
     });
   }, [error]);
 
@@ -35,13 +35,12 @@ export default function DocsError({
             <BookOpen className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
             <CardTitle>Documentation Page Error</CardTitle>
           </div>
-          <CardDescription>
-            We couldn't load this documentation page.
-          </CardDescription>
+          <CardDescription>We couldn't load this documentation page.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <p className="text-sm text-muted-foreground">
-            The page you&apos;re looking for might have been moved, or there could be a temporary issue.
+            The page you&apos;re looking for might have been moved, or there could be a temporary
+            issue.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -80,12 +79,12 @@ export default function DocsError({
               <div>
                 <p className="text-sm font-medium mb-1">Can&apos;t find what you need?</p>
                 <p className="text-xs text-muted-foreground">
-                  Try our{' '}
+                  Try our{" "}
                   <Link href="/docs" className="text-primary hover:underline">
                     documentation search
-                  </Link>
-                  {' '}or{' '}
-                  <a href="mailto:support@settler.dev" className="text-primary hover:underline">
+                  </Link>{" "}
+                  or{" "}
+                  <a href="mailto:hello@settler.dev" className="text-primary hover:underline">
                     contact support
                   </a>
                   .
@@ -94,11 +93,9 @@ export default function DocsError({
             </div>
           </div>
 
-          {process.env.NODE_ENV === 'development' && error.message && (
+          {process.env.NODE_ENV === "development" && error.message && (
             <div className="bg-muted/30 border border-border rounded-lg p-3">
-              <p className="text-xs font-mono text-foreground break-words">
-                {error.message}
-              </p>
+              <p className="text-xs font-mono text-foreground break-words">{error.message}</p>
             </div>
           )}
         </CardContent>

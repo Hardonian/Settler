@@ -1,5 +1,5 @@
-import { getImageUrl } from '@/lib/images/image-config';
-import { generateProductSchema } from '@/lib/seo/structured-data';
+import { getImageUrl } from "@/lib/images/image-config";
+import { generateProductSchema } from "@/lib/seo/structured-data";
 
 interface StructuredDataProps {
   data: Record<string, any>;
@@ -9,7 +9,7 @@ interface StructuredDataProps {
 export function StructuredData({ data, id }: StructuredDataProps) {
   return (
     <script
-      id={id || 'structured-data'}
+      id={id || "structured-data"}
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(data, null, 0) }}
     />
@@ -18,29 +18,29 @@ export function StructuredData({ data, id }: StructuredDataProps) {
 
 export function OrganizationSchema() {
   const schema = {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    name: 'Settler.dev',
-    url: 'https://settler.dev',
-    logo: getImageUrl('logoMain'),
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Settler.dev",
+    url: "https://settler.dev",
+    logo: getImageUrl("logoMain"),
     description:
-      'Open-source reconciliation engine for deterministic, inspectable financial data matching.',
+      "Open-source reconciliation engine for deterministic, inspectable financial data matching.",
     sameAs: [
-      'https://github.com/shardie-github/Settler-API',
-      'https://twitter.com/settler_io',
-      'https://discord.gg/settler',
+      "https://github.com/shardie-github/Settler-API",
+      "https://twitter.com/settler_io",
+      "https://discord.gg/settler",
     ],
     contactPoint: {
-      '@type': 'ContactPoint',
-      email: 'support@settler.dev',
-      contactType: 'Customer Support',
-      availableLanguage: ['en'],
+      "@type": "ContactPoint",
+      email: "hello@settler.dev",
+      contactType: "Customer Support",
+      availableLanguage: ["en"],
     },
     founder: {
-      '@type': 'Person',
-      name: 'Scott Hardie',
-      email: 'scottrmhardie@gmail.com',
-      url: 'https://linkedin.com/in/scottrmhardie',
+      "@type": "Person",
+      name: "Scott Hardie",
+      email: "scottrmhardie@gmail.com",
+      url: "https://linkedin.com/in/scottrmhardie",
     },
   };
 
@@ -56,13 +56,13 @@ export function SoftwareApplicationSchema() {
 
 export function FAQSchema({ faqs }: { faqs: Array<{ question: string; answer: string }> }) {
   const schema = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
     mainEntity: faqs.map((faq) => ({
-      '@type': 'Question',
+      "@type": "Question",
       name: faq.question,
       acceptedAnswer: {
-        '@type': 'Answer',
+        "@type": "Answer",
         text: faq.answer,
       },
     })),
@@ -73,22 +73,21 @@ export function FAQSchema({ faqs }: { faqs: Array<{ question: string; answer: st
 
 export function WebSiteSchema() {
   const schema = {
-    '@context': 'https://schema.org',
-    '@type': 'WebSite',
-    name: 'Settler.dev',
-    url: 'https://settler.dev',
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Settler.dev",
+    url: "https://settler.dev",
     description:
-      'Open-source reconciliation engine for deterministic, inspectable financial data matching.',
+      "Open-source reconciliation engine for deterministic, inspectable financial data matching.",
     potentialAction: {
-      '@type': 'SearchAction',
+      "@type": "SearchAction",
       target: {
-        '@type': 'EntryPoint',
-        urlTemplate: 'https://settler.dev/support?search={search_term_string}',
+        "@type": "EntryPoint",
+        urlTemplate: "https://settler.dev/support?search={search_term_string}",
       },
-      'query-input': 'required name=search_term_string',
+      "query-input": "required name=search_term_string",
     },
   };
 
   return <StructuredData data={schema} id="website-schema" />;
 }
-
