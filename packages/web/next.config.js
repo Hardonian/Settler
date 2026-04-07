@@ -71,6 +71,8 @@ const nextConfig = {
     "bcrypt", // Password hashing (server-only)
     "jsonwebtoken", // JWT signing (server-only)
     "nodemailer", // Email (server-only)
+    "@jobforge/sdk-ts", // Server-only JobForge SDK
+    "@jobforge/shared", // Server-only JobForge shared types
   ],
   typescript: {
     // Scale-Readiness: Type safety enforced during development, not deployment

@@ -66,10 +66,6 @@ export default function SchedulesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingJobId, setEditingJobId] = useState<string | null>(null);
-  const [scheduleCapability, setScheduleCapability] = useState<{
-    state: string;
-    reason?: string;
-  } | null>(null);
 
   const loadJobs = useCallback(async () => {
     setLoading(true);
