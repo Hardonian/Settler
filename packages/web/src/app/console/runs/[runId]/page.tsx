@@ -14,6 +14,7 @@ import {
   Zap,
   Loader2,
   Activity,
+  FileDown,
 } from "lucide-react";
 
 import {
@@ -44,6 +45,7 @@ export default function RunPage() {
   const router = useRouter();
   const runId = Array.isArray(params.runId) ? params.runId[0] : params.runId;
   const [autoRefresh, setAutoRefresh] = useState(true);
+  const [exporting, setExporting] = useState(false);
 
   // Use React Query for efficient fetching, polling, and data synchronization
   const {
@@ -79,6 +81,39 @@ export default function RunPage() {
       console.error("Retry failed:", err);
     }
   }, [runId, run, refetch]);
+
+  const handleExport = useCallback(async () => {
+    if (!runId) return;
+    setExporting(true);
+    try {
+      const response = await fetch("/api/exports", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "csv",
+          format: "all",
+          reconciliationRunId: runId,
+        }),
+      });
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        const cap = (body as { capability?: { reason?: string } }).capability;
+        console.error("Export failed:", cap?.reason ?? response.statusText);
+        return;
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `run-${runId.slice(0, 8)}-results.csv`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Export error:", err);
+    } finally {
+      setExporting(false);
+    }
+  }, [runId]);
 
   if (isLoading) {
     return (
@@ -155,6 +190,18 @@ export default function RunPage() {
           >
             <Activity className={`w-4 h-4 mr-2 ${autoRefresh ? "animate-pulse" : ""}`} />
             {autoRefresh ? "Auto-Refresh Active" : "Auto-Refresh Paused"}
+          </Button>
+          <Button
+            variant="outline"
+            disabled={!run.isTerminal || exporting}
+            onClick={() => void handleExport()}
+          >
+            {exporting ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <FileDown className="w-4 h-4 mr-2" />
+            )}
+            {exporting ? "Exporting…" : "Export results"}
           </Button>
           <Button
             className="bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20"
@@ -256,6 +303,7 @@ export default function RunPage() {
             metadata={run.metadata}
             traceId={provenanceSignals.traceId}
             inputHash={provenanceSignals.inputHash}
+            runId={runId ?? undefined}
           />
         </TabsContent>
       </Tabs>

@@ -1,7 +1,8 @@
 "use client";
 
-import React, { memo } from "react";
-import { Database, User, Shield, Info } from "lucide-react";
+import React, { memo, useState } from "react";
+import { Database, User, Shield, Info, Download, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { OperatorRunDetail } from "@/types/operator-run-detail";
 
 interface RunProvenanceProps {
@@ -9,6 +10,7 @@ interface RunProvenanceProps {
   metadata?: Record<string, any>;
   traceId?: string | null;
   inputHash?: string | null;
+  runId?: string;
 }
 
 export const RunProvenance = memo(function RunProvenance({
@@ -16,6 +18,7 @@ export const RunProvenance = memo(function RunProvenance({
   metadata,
   traceId,
   inputHash,
+  runId,
 }: RunProvenanceProps) {
   const actorId = typeof metadata?.userId === "string" ? metadata.userId : null;
   const sourceScopeId = provenance.reconJobId ?? provenance.ingestionId ?? "unlinked";
@@ -23,8 +26,64 @@ export const RunProvenance = memo(function RunProvenance({
     .filter(Boolean)
     .join(" -> ");
 
+  const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
+
+  const handleDownloadProofpack = async () => {
+    if (!runId) return;
+    setDownloading(true);
+    setDownloadError(null);
+    try {
+      const response = await fetch(`/api/runs/${runId}/proofpack`);
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        throw new Error((body as { error?: string }).error ?? `HTTP ${response.status}`);
+      }
+      const artifact = await response.json();
+      const blob = new Blob([JSON.stringify(artifact, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `proofpack-${runId.slice(0, 8)}.json`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setDownloadError(err instanceof Error ? err.message : "Download failed");
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
+      {runId ? (
+        <div className="flex items-center justify-between p-4 rounded-xl border bg-card/40">
+          <div className="space-y-0.5">
+            <p className="text-sm font-semibold">Proofpack artifact</p>
+            <p className="text-xs text-muted-foreground">
+              Download the full run evidence artifact as JSON — includes input hashes, proof
+              posture, exception summary, recurrence state, and provenance chain.
+            </p>
+            {downloadError ? (
+              <p className="text-xs text-red-500 mt-1">{downloadError}</p>
+            ) : null}
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => void handleDownloadProofpack()}
+            disabled={downloading}
+            className="ml-4 flex-shrink-0"
+          >
+            {downloading ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Download className="w-4 h-4 mr-2" />
+            )}
+            {downloading ? "Downloading…" : "Download proofpack"}
+          </Button>
+        </div>
+      ) : null}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="space-y-4">
           <SectionHeader icon={Info} label="Lifecycle Metadata" />

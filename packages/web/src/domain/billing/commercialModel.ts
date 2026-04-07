@@ -55,8 +55,8 @@ export const COMMERCIAL_OFFERS: CommercialOffer[] = [
     period: "/mo",
     description:
       "Operator-assisted reconciliation operations: onboarding, exception triage, monthly close, and audit packet prep.",
-    ctaLabel: "Discuss Managed Ops",
-    ctaHref: "/contact",
+    ctaLabel: "See what's included",
+    ctaHref: "/managed",
     evidencePosture: "Shared operator proofpacks, escalation ledger, and monthly close evidence",
     deployment: "Hosted with human-in-the-loop",
     supportModel: "Named operator + escalation",
