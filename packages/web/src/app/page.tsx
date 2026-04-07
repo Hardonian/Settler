@@ -72,12 +72,12 @@ export default function HomePage() {
           actions={
             <>
               <Button asChild>
-                <UiLink href="/console">
-                  Open console <ArrowRight className="ml-1 h-4 w-4" />
+                <UiLink href="/demo/console">
+                  Open showcase console <ArrowRight className="ml-1 h-4 w-4" />
                 </UiLink>
               </Button>
               <Button variant="outline" asChild>
-                <UiLink href="/docs/quickstart">15-minute quickstart</UiLink>
+                <UiLink href="/signup">Start free — no card required</UiLink>
               </Button>
             </>
           }
@@ -124,8 +124,8 @@ export default function HomePage() {
               <h2 className="text-3xl font-bold tracking-tight">Operator-Grade Triage</h2>
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Exceptions carry deterministic &quot;why&quot; context and operator decisions stay
-                auditable. Where AI is enabled, it is advisory, evidence-linked, and bounded — humans
-                keep final authority.
+                auditable. Where AI is enabled, it is advisory, evidence-linked, and bounded —
+                humans keep final authority.
               </p>
               <Button asChild variant="outline">
                 <UiLink href="/platform">

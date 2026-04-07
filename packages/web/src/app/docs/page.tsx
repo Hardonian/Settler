@@ -27,6 +27,7 @@ const guideCategories = [
     icon: Zap,
     description: "Quick start guides for developers and financial operations teams.",
     links: [
+      { name: "Pilot guide: first 30 minutes", href: "/docs/pilot" },
       { name: "5-Minute Introduction", href: "/docs/quickstart" },
       { name: "Core Architecture Concepts", href: "/docs/architecture/platform-architecture" },
       { name: "Install the CLI & SDK", href: "/docs/getting-started" },

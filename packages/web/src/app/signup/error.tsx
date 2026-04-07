@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { AlertCircle } from 'lucide-react';
-import Link from 'next/link';
+import { useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { AlertCircle } from "lucide-react";
+import Link from "next/link";
 
 /**
  * Signup Error Boundary
@@ -20,21 +20,21 @@ export default function SignupError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error('[Signup Error]', {
+    console.error("[Signup Error]", {
       message: error.message,
       digest: error.digest,
       timestamp: new Date().toISOString(),
-      ...(process.env.NODE_ENV === 'development' ? { stack: error.stack } : {}),
+      ...(process.env.NODE_ENV === "development" ? { stack: error.stack } : {}),
     });
 
     // Track auth errors in production
-    if (process.env.NODE_ENV === 'production' && typeof window !== 'undefined') {
+    if (process.env.NODE_ENV === "production" && typeof window !== "undefined") {
       try {
-        fetch('/api/admin/exceptions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        fetch("/api/admin/exceptions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            type: 'auth_error',
+            type: "auth_error",
             message: error.message,
             digest: error.digest,
             url: window.location.href,
@@ -86,23 +86,19 @@ export default function SignupError({
           <div className="bg-muted/30 rounded-lg p-3 text-xs text-muted-foreground">
             <p className="font-medium mb-1">Still having trouble?</p>
             <p>
-              Email us at{' '}
-              <a href="mailto:support@settler.dev" className="text-primary underline">
-                support@settler.dev
+              Email us at{" "}
+              <a href="mailto:hello@settler.dev" className="text-primary underline">
+                hello@settler.dev
               </a>
             </p>
             {error.digest && (
-              <p className="mt-2 text-muted-foreground">
-                Error Reference: {error.digest}
-              </p>
+              <p className="mt-2 text-muted-foreground">Error Reference: {error.digest}</p>
             )}
           </div>
 
-          {process.env.NODE_ENV === 'development' && error.message && (
+          {process.env.NODE_ENV === "development" && error.message && (
             <div className="bg-destructive/5 border border-destructive/20 rounded-lg p-3">
-              <p className="text-xs font-mono text-destructive break-words">
-                {error.message}
-              </p>
+              <p className="text-xs font-mono text-destructive break-words">{error.message}</p>
             </div>
           )}
         </CardContent>

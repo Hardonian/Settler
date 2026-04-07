@@ -134,7 +134,7 @@ export function Chatbot({ className }: ChatbotProps) {
       const errorMessage: Message = {
         id: `error_${Date.now()}`,
         role: "assistant",
-        content: "Sorry, I encountered an error. Please try again or contact support@settler.dev",
+        content: "Sorry, I encountered an error. Please try again or contact hello@settler.dev",
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);

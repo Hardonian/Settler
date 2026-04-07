@@ -92,8 +92,38 @@ export function Workbench() {
   const headline = overview ? getActivationHeadline(overview) : "Loading activation truth";
   const summary = overview ? getActivationSummary(overview) : "Loading readiness checks.";
 
+  const isNewWorkspace =
+    overview &&
+    overview.counts.reconciliationRuns === 0 &&
+    overview.overallState !== "fully_operational";
+
   return (
     <div className="space-y-8 pb-12">
+      {isNewWorkspace ? (
+        <div className="rounded-xl border border-primary/30 bg-primary/5 p-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-foreground">
+                Welcome — run your first reconciliation
+              </p>
+              <p className="text-xs text-muted-foreground leading-relaxed max-w-xl">
+                No runs yet. Follow the pilot guide to connect a data source, trigger a run, and
+                download your first proofpack artifact — takes about 30 minutes.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2 shrink-0">
+              <Button asChild size="sm">
+                <Link href="/docs/pilot">
+                  Pilot guide <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+                </Link>
+              </Button>
+              <Button asChild size="sm" variant="outline">
+                <Link href="/console/onboarding">Start onboarding</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="max-w-4xl space-y-4">
           <div className="flex flex-wrap items-center gap-3">
