@@ -39,6 +39,7 @@ import { RunStages } from "./components/RunStages";
 import { RunConfiguration } from "./components/RunConfiguration";
 import { RunStatistics } from "./components/RunStatistics";
 import { RunProvenance } from "./components/RunProvenance";
+import { RunOperatorTruthPanel } from "./components/RunOperatorTruthPanel";
 
 export default function RunPage() {
   const params = useParams();
@@ -238,8 +239,8 @@ export default function RunPage() {
           value={run.compactProofSummary.operatorSummary.signal.replace(/_/g, " ").toUpperCase()}
           subtext={
             run.compactProofSummary.operatorSummary.proofPosture !== "unavailable"
-              ? `Posture ${run.compactProofSummary.operatorSummary.proofPosture}`
-              : "Posture unavailable"
+              ? `Evidence posture: ${run.compactProofSummary.operatorSummary.proofPosture.replace(/_/g, " ")}`
+              : "Evidence posture unavailable for this run"
           }
           icon={Shield}
         />
@@ -248,26 +249,28 @@ export default function RunPage() {
       {run.proofpackIndex ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <DetailCard
-            label="History Trend"
-            value={run.proofpackIndex.comparison.history.trend.toUpperCase()}
-            subtext={`certainty ${run.proofpackIndex.comparison.history.certainty}`}
+            label="Comparable history"
+            value={run.proofpackIndex.comparison.history.trend.replace(/_/g, " ").toUpperCase()}
+            subtext={run.proofpackIndex.comparison.history.summary}
           />
           <DetailCard
-            label="Recurring Families"
-            value={run.proofpackIndex.recurrence.topRecurringFamilies.length.toString()}
+            label="Recurring exception families"
+            value={run.proofpackIndex.recurrence.topRecurringFamilies.length.toLocaleString()}
             subtext={
               run.proofpackIndex.recurrence.topRecurringFamilies[0]
-                ? `top ${run.proofpackIndex.recurrence.topRecurringFamilies[0].family}`
-                : "No ranked families yet"
+                ? `Largest cluster: ${run.proofpackIndex.recurrence.topRecurringFamilies[0].family}`
+                : "No ranked families in index window"
             }
           />
           <DetailCard
-            label="Proof Coverage"
+            label="Proof package coverage"
             value={`${run.proofpackIndex.proofPackages.finalized}/${run.proofpackIndex.proofPackages.total}`}
-            subtext={run.proofpackIndex.proofPackages.state}
+            subtext={`${run.proofpackIndex.proofPackages.state.replace(/_/g, " ")}${run.proofpackIndex.proofPackages.missingEvidenceCount > 0 ? ` · ${run.proofpackIndex.proofPackages.missingEvidenceCount} missing evidence` : ""}`}
           />
         </div>
       ) : null}
+
+      <RunOperatorTruthPanel run={run} />
 
       <Tabs defaultValue="statistics" className="w-full">
         <div className="flex items-center justify-between border-b border-border/40 pb-px mb-8 sticky top-0 bg-background/80 backdrop-blur-xl z-20">
@@ -286,7 +289,12 @@ export default function RunPage() {
         </div>
 
         <TabsContent value="statistics" className="mt-0 focus-visible:outline-none ring-0">
-          <RunStatistics summary={run.summary} runDelta={run.runDelta} />
+          <RunStatistics
+            summary={run.summary}
+            runDelta={run.runDelta}
+            configDrift={run.configDrift}
+            compactProofSummary={run.compactProofSummary}
+          />
         </TabsContent>
 
         <TabsContent value="stages" className="mt-0 focus-visible:outline-none ring-0">
