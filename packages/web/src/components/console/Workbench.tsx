@@ -93,9 +93,7 @@ export function Workbench() {
   const summary = overview ? getActivationSummary(overview) : "Loading readiness checks.";
 
   const isNewWorkspace =
-    overview &&
-    overview.counts.reconciliationRuns === 0 &&
-    overview.overallState !== "fully_operational";
+    overview && overview.counts.reconciliationRuns === 0 && overview.overallState !== "ready";
 
   return (
     <div className="space-y-8 pb-12">

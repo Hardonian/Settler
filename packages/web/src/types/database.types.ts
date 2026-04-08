@@ -11,7 +11,10 @@
  * To verify against Prisma schema:
  *   npx prisma generate && compare with this file
  *
- * Last synced with schema: 2026-04-05
+ * Truth posture: this hand-maintained type map is transitional and may lag live schema.
+ * Use runtime guards + degraded-state handling where schema certainty is required.
+ *
+ * Last manually reviewed: 2026-04-08
  */
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];

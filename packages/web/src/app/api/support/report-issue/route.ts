@@ -47,6 +47,9 @@ export const POST = withSecurity(
         }
 
         const { subject, description, category, run_id, context } = parsed.data;
+        const intakePrisma = prisma as unknown as Parameters<
+          typeof submitSupportIntake
+        >[0]["prisma"];
         const routeFromContext =
           context && typeof context === "object" && typeof context.route === "string"
             ? context.route
@@ -71,7 +74,7 @@ export const POST = withSecurity(
         const fullDescription = `${subject.trim()}\n\n${description.trim()}`;
 
         const stored = await submitSupportIntake({
-          prisma,
+          prisma: intakePrisma,
           userId,
           tenantId,
           path: request.nextUrl.pathname,

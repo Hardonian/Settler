@@ -28,7 +28,7 @@
 - [x] Page templates created:
   - [x] Dashboard
   - [x] ReconJobViewer
-  - [x] WorkflowBuilderPage
+  - [x] WorkflowBuilderPage (retired; not present in launch route tree)
 - [x] Components integrate with Recon Core API
 
 ### ✅ Section 4: Developer Experience
@@ -124,6 +124,7 @@
 ## Verification
 
 All integration points verified:
+
 - ✅ No broken imports
 - ✅ All services exported correctly
 - ✅ API routes properly mounted

@@ -110,7 +110,6 @@ export async function enqueueJob(request: EnqueueJobRequest): Promise<EnqueueJob
     }
 
     // Call RPC function to enqueue
-    // @ts-expect-error - Database RPC type definition issue
     const { data: jobId, error } = await supabase.rpc("enqueue_job", {
       p_tenant_id: tenantId,
       p_type: request.type,
@@ -312,10 +311,9 @@ export async function getJobStats(): Promise<{
     };
 
     counts?.forEach((row) => {
-      // @ts-expect-error - Type inference issue with row status
-      if (row.status in stats) {
-        // @ts-expect-error - Type inference issue with row status
-        stats[row.status as keyof Omit<JobStats, "total">]++;
+      const status = typeof row.status === "string" ? row.status : null;
+      if (status && status in stats && status !== "total") {
+        stats[status as keyof Omit<JobStats, "total">]++;
       }
     });
 
@@ -351,7 +349,6 @@ export async function cancelJob(jobId: string): Promise<{ success: boolean; erro
 
     const { error } = await supabase
       .from("jobs")
-      // @ts-expect-error - Database table update type issue
       .update({
         status: "canceled",
         locked_by: null,
@@ -401,7 +398,6 @@ export async function retryJob(
       return { success: false, error: "No tenant context" };
     }
 
-    // @ts-expect-error - Database RPC type definition issue
     const { error } = await supabase.rpc("retry_job", {
       p_job_id: jobId,
       p_delay: delayMs ? `${delayMs} milliseconds` : "0 seconds",
@@ -451,7 +447,6 @@ export async function createTestJob(testData?: Record<string, unknown>): Promise
       };
     }
 
-    // @ts-expect-error - Database RPC type definition issue
     const { data: jobId, error } = await supabase.rpc("create_test_job", {
       p_tenant_id: tenantId,
       p_test_data: testData || { message: "smoke test" },

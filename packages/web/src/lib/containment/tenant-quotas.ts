@@ -9,9 +9,9 @@
  * (Supabase) tables as available.
  */
 
-import { prisma } from '@/shared/db/prismaClient';
-import { Prisma } from '@prisma/client';
-import { createAdminClient } from '@/lib/supabase/server';
+import { prisma } from "@/shared/db/prismaClient";
+import { Prisma } from "@prisma/client";
+import { createAdminClient } from "@/lib/supabase/server";
 
 export interface TenantQuota {
   tenantId: string;
@@ -37,7 +37,7 @@ export interface QuotaCheckResult {
 // Tier-based quota matrix
 // ---------------------------------------------------------------------------
 
-const QUOTA_BY_PLAN: Record<string, Omit<TenantQuota, 'tenantId'>> = {
+const QUOTA_BY_PLAN: Record<string, Omit<TenantQuota, "tenantId">> = {
   free: {
     requestsPerMinute: 30,
     jobsPerHour: 10,
@@ -68,7 +68,13 @@ const QUOTA_BY_PLAN: Record<string, Omit<TenantQuota, 'tenantId'>> = {
   },
 };
 
-const DEFAULT_QUOTA = QUOTA_BY_PLAN.starter;
+const DEFAULT_QUOTA: Omit<TenantQuota, "tenantId"> = QUOTA_BY_PLAN.starter ?? {
+  requestsPerMinute: 100,
+  jobsPerHour: 50,
+  maxConcurrentJobs: 5,
+  maxRecordsPerRun: 10000,
+  maxExportSizeMB: 100,
+};
 
 // ---------------------------------------------------------------------------
 // Public API
@@ -83,19 +89,19 @@ export async function getTenantQuota(tenantId: string): Promise<TenantQuota> {
 
     // Look up active subscription for this tenant
     const { data: subscription } = await admin
-      .from('subscriptions')
-      .select('plan_id, plan_name, status')
-      .eq('billing_account_id', tenantId)
-      .in('status', ['active', 'trialing'])
-      .order('created_at', { ascending: false })
+      .from("subscriptions")
+      .select("plan_id, plan_name, status")
+      .eq("billing_account_id", tenantId)
+      .in("status", ["active", "trialing"])
+      .order("created_at", { ascending: false })
       .limit(1)
       .single();
 
-    const planKey = (subscription?.plan_id ?? subscription?.plan_name ?? 'starter')
+    const planKey = (subscription?.plan_id ?? subscription?.plan_name ?? "starter")
       .toLowerCase()
-      .split('_')[0]; // e.g. "pro_annual" → "pro"
+      .split("_")[0]; // e.g. "pro_annual" → "pro"
 
-    const tierQuota = QUOTA_BY_PLAN[planKey] ?? DEFAULT_QUOTA;
+    const tierQuota: Omit<TenantQuota, "tenantId"> = QUOTA_BY_PLAN[planKey] ?? DEFAULT_QUOTA;
 
     return { tenantId, ...tierQuota };
   } catch {
@@ -115,17 +121,17 @@ export async function checkRequestRateLimit(tenantId: string): Promise<QuotaChec
     const oneMinuteAgo = new Date(Date.now() - 60 * 1000).toISOString();
 
     const { count } = await admin
-      .from('ai_usage_events')
-      .select('id', { count: 'exact', head: true })
-      .eq('tenant_id', tenantId)
-      .gte('created_at', oneMinuteAgo);
+      .from("ai_usage_events")
+      .select("id", { count: "exact", head: true })
+      .eq("tenant_id", tenantId)
+      .gte("created_at", oneMinuteAgo);
 
     const requestsLastMinute = count ?? 0;
 
     if (requestsLastMinute >= quota.requestsPerMinute) {
       return {
         allowed: false,
-        reason: 'Rate limit exceeded',
+        reason: "Rate limit exceeded",
         retryAfter: 60,
         currentUsage: { requestsLastMinute, jobsLastHour: 0, concurrentJobs: 0 },
       };
@@ -136,7 +142,7 @@ export async function checkRequestRateLimit(tenantId: string): Promise<QuotaChec
       currentUsage: { requestsLastMinute, jobsLastHour: 0, concurrentJobs: 0 },
     };
   } catch (error) {
-    console.error('[Quota] Error checking rate limit:', error);
+    console.error("[Quota] Error checking rate limit:", error);
     return { allowed: true }; // fail open
   }
 }
@@ -146,7 +152,7 @@ export async function checkRequestRateLimit(tenantId: string): Promise<QuotaChec
  */
 export async function checkJobQuota(
   tenantId: string,
-  estimatedRecords?: number,
+  estimatedRecords?: number
 ): Promise<QuotaCheckResult> {
   const quota = await getTenantQuota(tenantId);
 
@@ -155,7 +161,7 @@ export async function checkJobQuota(
     if (concurrentJobs >= quota.maxConcurrentJobs) {
       return {
         allowed: false,
-        reason: 'Maximum concurrent jobs reached',
+        reason: "Maximum concurrent jobs reached",
         retryAfter: 300,
         currentUsage: { requestsLastMinute: 0, jobsLastHour: 0, concurrentJobs },
       };
@@ -166,7 +172,7 @@ export async function checkJobQuota(
     if (jobsLastHour >= quota.jobsPerHour) {
       return {
         allowed: false,
-        reason: 'Job quota exceeded for this hour',
+        reason: "Job quota exceeded for this hour",
         retryAfter: 3600,
         currentUsage: { requestsLastMinute: 0, jobsLastHour, concurrentJobs },
       };
@@ -185,7 +191,7 @@ export async function checkJobQuota(
       currentUsage: { requestsLastMinute: 0, jobsLastHour, concurrentJobs },
     };
   } catch (error) {
-    console.error('[Quota] Error checking job quota:', error);
+    console.error("[Quota] Error checking job quota:", error);
     return { allowed: true }; // fail open
   }
 }
@@ -227,21 +233,23 @@ async function getJobCountSince(tenantId: string, since: Date): Promise<number> 
  */
 export async function recordUsage(
   tenantId: string,
-  type: 'request' | 'job' | 'export',
-  metadata?: Record<string, unknown>,
+  type: "request" | "job" | "export",
+  metadata?: Record<string, unknown>
 ): Promise<void> {
   try {
-    await prisma.usageEvent.create({
-      data: {
-        billingAccountId: tenantId,
-        eventType: type,
-        quantity: 1,
-        metadata: (metadata ?? {}) as Prisma.InputJsonValue,
-      },
-    }).catch(() => {
-      // Ignore errors — usage tracking is best-effort
-    });
+    await prisma.usageEvent
+      .create({
+        data: {
+          billingAccountId: tenantId,
+          eventType: type,
+          quantity: 1,
+          metadata: (metadata ?? {}) as Prisma.InputJsonValue,
+        },
+      })
+      .catch(() => {
+        // Ignore errors — usage tracking is best-effort
+      });
   } catch (error) {
-    console.error('[Quota] Error recording usage:', error);
+    console.error("[Quota] Error recording usage:", error);
   }
 }

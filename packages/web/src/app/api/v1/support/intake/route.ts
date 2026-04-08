@@ -71,8 +71,11 @@ export const POST = withSecurity(
       }
 
       try {
+        const intakePrisma = prisma as unknown as Parameters<
+          typeof submitSupportIntake
+        >[0]["prisma"];
         const stored = await submitSupportIntake({
-          prisma,
+          prisma: intakePrisma,
           userId,
           tenantId,
           path: request.nextUrl.pathname,
