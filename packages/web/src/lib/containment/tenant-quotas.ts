@@ -1,19 +1,24 @@
 /**
  * Tenant Quotas & Rate Limiting
- * 
+ *
  * Implements per-tenant quotas and rate limits to prevent one tenant
  * from spiking global costs or starving queues.
+ *
+ * Quota tiers are resolved from the `subscriptions` table via Supabase.
+ * Usage counters query the `recon_jobs` (Prisma) and `ai_usage_events`
+ * (Supabase) tables as available.
  */
 
 import { prisma } from '@/shared/db/prismaClient';
 import { Prisma } from '@prisma/client';
+import { createAdminClient } from '@/lib/supabase/server';
 
 export interface TenantQuota {
   tenantId: string;
   requestsPerMinute: number;
   jobsPerHour: number;
   maxConcurrentJobs: number;
-  maxRecordsPerRun: number; // Tier-based
+  maxRecordsPerRun: number;
   maxExportSizeMB: number;
 }
 
@@ -28,200 +33,215 @@ export interface QuotaCheckResult {
   };
 }
 
-/**
- * Get tenant quota configuration
- * 
- * In production, this should fetch from database based on subscription tier.
- */
-export async function getTenantQuota(tenantId: string): Promise<TenantQuota> {
-  // Default quotas (can be overridden by subscription tier)
-  const defaultQuota: TenantQuota = {
-    tenantId,
+// ---------------------------------------------------------------------------
+// Tier-based quota matrix
+// ---------------------------------------------------------------------------
+
+const QUOTA_BY_PLAN: Record<string, Omit<TenantQuota, 'tenantId'>> = {
+  free: {
+    requestsPerMinute: 30,
+    jobsPerHour: 10,
+    maxConcurrentJobs: 2,
+    maxRecordsPerRun: 5000,
+    maxExportSizeMB: 25,
+  },
+  starter: {
     requestsPerMinute: 100,
     jobsPerHour: 50,
     maxConcurrentJobs: 5,
     maxRecordsPerRun: 10000,
     maxExportSizeMB: 100,
-  };
+  },
+  pro: {
+    requestsPerMinute: 300,
+    jobsPerHour: 200,
+    maxConcurrentJobs: 10,
+    maxRecordsPerRun: 100000,
+    maxExportSizeMB: 500,
+  },
+  enterprise: {
+    requestsPerMinute: 1000,
+    jobsPerHour: 1000,
+    maxConcurrentJobs: 50,
+    maxRecordsPerRun: 1000000,
+    maxExportSizeMB: 2048,
+  },
+};
 
-  // TODO: Fetch from database based on subscription tier
-  // For now, return default
-  return defaultQuota;
+const DEFAULT_QUOTA = QUOTA_BY_PLAN.starter;
+
+// ---------------------------------------------------------------------------
+// Public API
+// ---------------------------------------------------------------------------
+
+/**
+ * Get tenant quota configuration resolved from the subscriptions table.
+ */
+export async function getTenantQuota(tenantId: string): Promise<TenantQuota> {
+  try {
+    const admin = await createAdminClient();
+
+    // Look up active subscription for this tenant
+    const { data: subscription } = await admin
+      .from('subscriptions')
+      .select('plan_id, plan_name, status')
+      .eq('billing_account_id', tenantId)
+      .in('status', ['active', 'trialing'])
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    const planKey = (subscription?.plan_id ?? subscription?.plan_name ?? 'starter')
+      .toLowerCase()
+      .split('_')[0]; // e.g. "pro_annual" → "pro"
+
+    const tierQuota = QUOTA_BY_PLAN[planKey] ?? DEFAULT_QUOTA;
+
+    return { tenantId, ...tierQuota };
+  } catch {
+    return { tenantId, ...DEFAULT_QUOTA };
+  }
 }
 
 /**
- * Check if tenant has exceeded request rate limit
+ * Check if tenant has exceeded request rate limit.
+ * Queries ai_usage_events for request count in the last minute.
  */
-export async function checkRequestRateLimit(
-  tenantId: string
-): Promise<QuotaCheckResult> {
+export async function checkRequestRateLimit(tenantId: string): Promise<QuotaCheckResult> {
   const quota = await getTenantQuota(tenantId);
-  
+
   try {
-    // Query usage events or telemetry table
-    // This is a placeholder - actual implementation depends on your telemetry schema
-    const requestsLastMinute = 0; // TODO: Query actual count
-    
+    const admin = await createAdminClient();
+    const oneMinuteAgo = new Date(Date.now() - 60 * 1000).toISOString();
+
+    const { count } = await admin
+      .from('ai_usage_events')
+      .select('id', { count: 'exact', head: true })
+      .eq('tenant_id', tenantId)
+      .gte('created_at', oneMinuteAgo);
+
+    const requestsLastMinute = count ?? 0;
+
     if (requestsLastMinute >= quota.requestsPerMinute) {
       return {
         allowed: false,
         reason: 'Rate limit exceeded',
         retryAfter: 60,
-        currentUsage: {
-          requestsLastMinute,
-          jobsLastHour: 0,
-          concurrentJobs: 0,
-        },
+        currentUsage: { requestsLastMinute, jobsLastHour: 0, concurrentJobs: 0 },
       };
     }
 
     return {
       allowed: true,
-      currentUsage: {
-        requestsLastMinute,
-        jobsLastHour: 0,
-        concurrentJobs: 0,
-      },
+      currentUsage: { requestsLastMinute, jobsLastHour: 0, concurrentJobs: 0 },
     };
   } catch (error) {
     console.error('[Quota] Error checking rate limit:', error);
-    // Fail open - allow request
-    return { allowed: true };
+    return { allowed: true }; // fail open
   }
 }
 
 /**
- * Check if tenant can create a new job
+ * Check if tenant can create a new reconciliation job.
  */
 export async function checkJobQuota(
   tenantId: string,
-  estimatedRecords?: number
+  estimatedRecords?: number,
 ): Promise<QuotaCheckResult> {
   const quota = await getTenantQuota(tenantId);
 
   try {
-    // Check concurrent jobs
     const concurrentJobs = await getConcurrentJobCount(tenantId);
     if (concurrentJobs >= quota.maxConcurrentJobs) {
       return {
         allowed: false,
         reason: 'Maximum concurrent jobs reached',
-        retryAfter: 300, // 5 minutes
-        currentUsage: {
-          requestsLastMinute: 0,
-          jobsLastHour: 0,
-          concurrentJobs,
-        },
+        retryAfter: 300,
+        currentUsage: { requestsLastMinute: 0, jobsLastHour: 0, concurrentJobs },
       };
     }
 
-    // Check jobs per hour
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
     const jobsLastHour = await getJobCountSince(tenantId, oneHourAgo);
     if (jobsLastHour >= quota.jobsPerHour) {
       return {
         allowed: false,
         reason: 'Job quota exceeded for this hour',
-        retryAfter: 3600, // 1 hour
-        currentUsage: {
-          requestsLastMinute: 0,
-          jobsLastHour,
-          concurrentJobs,
-        },
+        retryAfter: 3600,
+        currentUsage: { requestsLastMinute: 0, jobsLastHour, concurrentJobs },
       };
     }
 
-    // Check records per run limit
     if (estimatedRecords && estimatedRecords > quota.maxRecordsPerRun) {
       return {
         allowed: false,
         reason: `Job exceeds maximum records per run (${quota.maxRecordsPerRun})`,
-        currentUsage: {
-          requestsLastMinute: 0,
-          jobsLastHour,
-          concurrentJobs,
-        },
+        currentUsage: { requestsLastMinute: 0, jobsLastHour, concurrentJobs },
       };
     }
 
     return {
       allowed: true,
-      currentUsage: {
-        requestsLastMinute: 0,
-        jobsLastHour,
-        concurrentJobs,
-      },
+      currentUsage: { requestsLastMinute: 0, jobsLastHour, concurrentJobs },
     };
   } catch (error) {
     console.error('[Quota] Error checking job quota:', error);
-    // Fail open - allow job creation
-    return { allowed: true };
+    return { allowed: true }; // fail open
   }
 }
 
-/**
- * Get count of concurrent jobs for a tenant
- */
+// ---------------------------------------------------------------------------
+// Internal helpers
+// ---------------------------------------------------------------------------
+
 async function getConcurrentJobCount(tenantId: string): Promise<number> {
   try {
-    // Query jobs table for running jobs
-    // This is a placeholder - actual implementation depends on your jobs schema
-    const runningJobs = await prisma.$queryRaw<Array<{ count: bigint }>>`
+    const rows = await prisma.$queryRaw<Array<{ count: bigint }>>`
       SELECT COUNT(*) as count
-      FROM jobs
+      FROM recon_jobs
       WHERE tenant_id = ${tenantId}
         AND status IN ('queued', 'running')
     `.catch(() => [{ count: BigInt(0) }]);
-
-    return Number(runningJobs[0]?.count || 0);
-  } catch (error) {
-    console.error('[Quota] Error getting concurrent job count:', error);
+    return Number(rows[0]?.count ?? 0);
+  } catch {
     return 0;
   }
 }
 
-/**
- * Get count of jobs created since a timestamp
- */
 async function getJobCountSince(tenantId: string, since: Date): Promise<number> {
   try {
-    const jobs = await prisma.$queryRaw<Array<{ count: bigint }>>`
+    const rows = await prisma.$queryRaw<Array<{ count: bigint }>>`
       SELECT COUNT(*) as count
-      FROM jobs
+      FROM recon_jobs
       WHERE tenant_id = ${tenantId}
         AND created_at >= ${since}
     `.catch(() => [{ count: BigInt(0) }]);
-
-    return Number(jobs[0]?.count || 0);
-  } catch (error) {
-    console.error('[Quota] Error getting job count:', error);
+    return Number(rows[0]?.count ?? 0);
+  } catch {
     return 0;
   }
 }
 
 /**
- * Record usage for quota tracking
+ * Record usage for quota / billing tracking.
  */
 export async function recordUsage(
   tenantId: string,
   type: 'request' | 'job' | 'export',
-  metadata?: Record<string, unknown>
+  metadata?: Record<string, unknown>,
 ): Promise<void> {
   try {
-    // Record in usage events table
-    // This is a placeholder - actual implementation depends on your telemetry schema
     await prisma.usageEvent.create({
       data: {
-        billingAccountId: tenantId, // Assuming tenantId maps to billingAccountId
+        billingAccountId: tenantId,
         eventType: type,
         quantity: 1,
-        metadata: (metadata || {}) as Prisma.InputJsonValue,
+        metadata: (metadata ?? {}) as Prisma.InputJsonValue,
       },
     }).catch(() => {
-      // Ignore errors - usage tracking is best-effort
+      // Ignore errors — usage tracking is best-effort
     });
   } catch (error) {
     console.error('[Quota] Error recording usage:', error);
-    // Don't throw - usage tracking is best-effort
   }
 }

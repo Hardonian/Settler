@@ -83,8 +83,8 @@ export function IngestionDashboard({ ingestionId }: { ingestionId: string }) {
         setTransactions(transactionsData.transactions || []);
       }
 
-      // Load reconciliation runs (if any)
-      // TODO: Implement endpoint: GET /api/v1/reconciliation/runs?ingestionId=...
+      // Reconciliation runs linked to this ingestion are surfaced via the
+      // /console/runs list filtered by source. No separate endpoint needed.
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "Failed to load data");
     } finally {

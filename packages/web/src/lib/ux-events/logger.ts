@@ -17,27 +17,17 @@ const MAX_LOCAL_EVENTS = 100;
  */
 let localEvents: UXEventType[] = [];
 
-// Metadata function kept for future use when backend analytics is implemented
-// function getMetadata(): UXEventMetadata {
-//   if (typeof window === 'undefined') {
-//     return {};
-//   }
-//
-//   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-//
-//   let screenSize: 'mobile' | 'tablet' | 'desktop' = 'desktop';
-//   if (window.innerWidth < 768) {
-//     screenSize = 'mobile';
-//   } else if (window.innerWidth < 1024) {
-//     screenSize = 'tablet';
-//   }
-//
-//   return {
-//     reducedMotion,
-//     screenSize,
-//     userAgent: navigator.userAgent.split(' ').slice(0, 3).join(' '), // Sanitized
-//   };
-// }
+/**
+ * Send events to backend analytics ingest endpoint (fire-and-forget)
+ */
+async function sendToBackend(event: UXEventType): Promise<void> {
+  await fetch("/api/v1/analytics", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(event),
+    keepalive: true,
+  });
+}
 
 /**
  * Generate unique event ID
@@ -87,9 +77,12 @@ export function logUXEvent(
     }
   }
 
-  // TODO: Send to backend analytics (stub for now)
-  // In production, this would send to your analytics service
-  // sendToBackend(fullEvent, getMetadata()).catch(console.error);
+  // Send to backend analytics endpoint (fire-and-forget, never throws)
+  if (typeof window !== "undefined" && process.env.NODE_ENV !== "development") {
+    sendToBackend(fullEvent).catch(() => {
+      // Silently discard — analytics must never surface errors to the user
+    });
+  }
 }
 
 /**

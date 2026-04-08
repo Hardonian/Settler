@@ -71,8 +71,10 @@ const nextConfig = {
     "bcrypt", // Password hashing (server-only)
     "jsonwebtoken", // JWT signing (server-only)
     "nodemailer", // Email (server-only)
-    "@jobforge/sdk-ts", // Server-only JobForge SDK
-    "@jobforge/shared", // Server-only JobForge shared types
+    // NOTE: @jobforge/sdk-ts and @jobforge/shared are NOT listed here.
+    // They use ESM dist output that webpack can't require() as an external.
+    // Instead they are resolved via webpack aliases below (same pattern as
+    // @settler/reconciliation-core) so webpack bundles them into the server output.
   ],
   typescript: {
     // Scale-Readiness: Type safety enforced during development, not deployment
@@ -124,6 +126,16 @@ const nextConfig = {
         "@settler/reconciliation-core": path.resolve(
           __dirname,
           "../reconciliation-core/dist/index.js"
+        ),
+        // Workspace packages with ESM dist output — resolve directly so webpack
+        // can bundle them instead of trying to require() them as CJS externals.
+        "@jobforge/sdk-ts": path.resolve(
+          __dirname,
+          "../../packages/jobforge-sdk-ts/dist/index.js"
+        ),
+        "@jobforge/shared": path.resolve(
+          __dirname,
+          "../../packages/jobforge-shared/dist/index.js"
         ),
         "@settler/api/lib/email-lifecycle": path.resolve(
           __dirname,
