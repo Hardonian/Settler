@@ -4,6 +4,7 @@ import {
   validateTenantId,
 } from "../../infrastructure/tenancy/TenantEnforcement";
 import {
+  canonicalMissingProofpackReasonForRunKind,
   resolveRunCompactProofSummary,
   resolveOperatorRunDetailForTenants,
   type RunCompactProofSummary,
@@ -194,7 +195,10 @@ export async function buildReconciliationExport(
   };
 }
 
-async function buildHistoricalIntelligence(tenantId: string, runId: string): Promise<{
+async function buildHistoricalIntelligence(
+  tenantId: string,
+  runId: string
+): Promise<{
   summary: RunCompactProofSummary;
   context: ReconciliationExportDocument["historicalIntelligenceContext"];
 }> {
@@ -219,8 +223,7 @@ async function buildHistoricalIntelligence(tenantId: string, runId: string): Pro
       runKind: resolved.detail.runKind,
       compactProofSummary: resolved.detail.compactProofSummary,
       proofpackIndex: resolved.detail.proofpackIndex,
-      fallbackReasonCode:
-        resolved.detail.runKind === "ingestion_run" ? "ingestion_run_history_not_comparable" : "run_proofpack_missing",
+      fallbackReasonCode: canonicalMissingProofpackReasonForRunKind(resolved.detail.runKind),
     });
     return {
       summary: summaryResolution.compactProofSummary,

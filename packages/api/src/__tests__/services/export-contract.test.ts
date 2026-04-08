@@ -16,6 +16,8 @@ jest.mock("../../infrastructure/db/prisma", () => ({
 }));
 
 jest.mock("@settler/reconciliation-core", () => ({
+  canonicalMissingProofpackReasonForRunKind: (runKind: string) =>
+    runKind === "ingestion_run" ? "ingestion_run_history_not_comparable" : "run_proofpack_missing",
   resolveOperatorRunDetailForTenants: (...args: unknown[]) =>
     resolveOperatorRunDetailForTenantsMock(...args),
   toRunCompactProofSummary: (index: any) => ({
