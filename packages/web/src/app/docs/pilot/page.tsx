@@ -52,7 +52,7 @@ const pilotSteps = [
       "The fastest path to your first result is a CSV upload — no credentials required. If you have a Stripe account, connect it directly for a live integration.",
     actions: [
       { label: "Open onboarding", href: "/console/onboarding", primary: true },
-      { label: "View integrations", href: "/console/integrations", primary: false },
+      { label: "View integrations", href: "/dashboard/integrations", primary: false },
     ],
     checkpoints: [
       "At least one data source connected or CSV uploaded",
@@ -142,7 +142,7 @@ const afterFirstRun = [
     title: "Connect your second data source",
     description:
       "The real power of reconciliation is matching across two systems. Add your second adapter (bank, accounting system, ERP) to run cross-system matching.",
-    href: "/console/integrations",
+    href: "/dashboard/integrations",
     icon: Database,
   },
   {
