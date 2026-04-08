@@ -40,7 +40,7 @@ const {
   resolveOperatorRunDetailForTenants: mockResolveOperatorRunDetail,
   fetchMergedReconciliationRunsPage: mockFetchMergedReconciliationRunsPage,
   buildRunProofpackIndexByRunId: mockBuildRunProofpackIndexByRunId,
-  toRunCompactProofSummary: mockToRunCompactProofSummary,
+  resolveRunCompactProofSummary: mockResolveRunCompactProofSummary,
 } = require("@settler/reconciliation-core");
 
 // Mock governance middleware
@@ -153,7 +153,14 @@ describe("Runs Routes", () => {
     mockFetchMergedReconciliationRunsPage.mockReset();
     mockBuildRunProofpackIndexByRunId.mockReset();
     mockBuildRunProofpackIndexByRunId.mockImplementation(() => Promise.resolve(new Map()));
-    mockToRunCompactProofSummary.mockClear();
+    mockResolveRunCompactProofSummary.mockReset();
+    mockResolveRunCompactProofSummary.mockImplementation(({ proofpackIndex }: any) => ({
+      compactProofSummary: proofpackIndex
+        ? { delta: { state: proofpackIndex.comparison?.state ?? "unavailable" } }
+        : { delta: { state: "unavailable" } },
+      source: proofpackIndex ? "proofpack_index" : "fallback_unavailable",
+      fallbackReasonCode: proofpackIndex ? null : "run_proofpack_missing",
+    }));
   });
 
   describe("GET /api/runs", () => {
@@ -273,6 +280,10 @@ describe("Runs Routes", () => {
         summary: { total: 100, matched: 95, unmatched: 5, conflicts: 0 },
       });
       expect(res.body.data[0].compactProofSummary).toBeDefined();
+      expect(res.body.data[0].compactProofSummaryContext).toEqual({
+        source: "proofpack_index",
+        fallbackReasonCode: null,
+      });
 
       expect(mockScanMergedRunsForLegacyPage).toHaveBeenCalledWith(
         expect.objectContaining({

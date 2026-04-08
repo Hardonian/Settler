@@ -21,10 +21,11 @@ import { Permission } from "../infrastructure/security/Permissions";
 import { enforceFreezeState } from "../middleware/governance";
 
 import {
+  type ApiRunsListLegacyItem,
   scanMergedRunsForLegacyPage,
   resolveOperatorRunDetailForTenants,
   buildRunProofpackIndexByRunId,
-  toRunCompactProofSummary,
+  resolveRunCompactProofSummary,
 } from "@settler/reconciliation-core";
 import { handleRouteError } from "../utils/error-handler";
 import {
@@ -85,14 +86,24 @@ router.get(
       const indexByRun = await buildRunProofpackIndexByRunId({
         prisma,
         tenantId,
-        runs: result.data.map((row) => ({ id: row.id, runKind: row.runKind })),
+        runs: result.data.map((row: ApiRunsListLegacyItem) => ({
+          id: row.id,
+          runKind: row.runKind,
+        })),
       });
 
-      const rowsWithSignals = result.data.map((row) => {
-        const index = indexByRun.get(row.id);
+      const rowsWithSignals = result.data.map((row: ApiRunsListLegacyItem) => {
+        const summaryResolution = resolveRunCompactProofSummary({
+          runKind: row.runKind,
+          proofpackIndex: indexByRun.get(row.id),
+        });
         return {
           ...row,
-          compactProofSummary: index ? toRunCompactProofSummary(index) : undefined,
+          compactProofSummary: summaryResolution.compactProofSummary,
+          compactProofSummaryContext: {
+            source: summaryResolution.source,
+            fallbackReasonCode: summaryResolution.fallbackReasonCode,
+          },
         };
       });
 

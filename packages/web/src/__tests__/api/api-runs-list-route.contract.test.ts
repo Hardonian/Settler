@@ -37,7 +37,8 @@ jest.mock("@settler/reconciliation-core", () => {
     decodeMergedRunsCursor: (...args: unknown[]) => decodeMergedRunsCursorMock(...args),
     mapCanonicalListItemToApiRunsLegacyRow: (...args: unknown[]) =>
       mapCanonicalListItemToApiRunsLegacyRowMock(...args),
-    buildRunProofpackIndexByRunId: (...args: unknown[]) => buildRunProofpackIndexByRunIdMock(...args),
+    buildRunProofpackIndexByRunId: (...args: unknown[]) =>
+      buildRunProofpackIndexByRunIdMock(...args),
   };
 });
 
@@ -291,6 +292,10 @@ describe("GET /api/runs", () => {
     expect(body.items[0].sourceModel).toBe("recon_jobs");
     expect(body.items[0].compactProofSummary.proofPackages.state).toBe("setup_required");
     expect(body.items[0].compactProofSummary.delta.state).toBe("unavailable");
+    expect(body.items[0].compactProofSummaryContext).toEqual({
+      source: "proofpack_index",
+      fallbackReasonCode: null,
+    });
     expect(body.items[0].detailHref).toBe("/console/runs/job-1");
     expect(body.next_cursor).toBe("next");
     expect(body.response_meta.pagination_mode).toBe("merged_cursor");

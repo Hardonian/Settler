@@ -26,7 +26,7 @@ import {
   mapCanonicalListItemToApiRunsLegacyRow,
   MergedRunsCursorError,
   buildRunProofpackIndexByRunId,
-  toRunCompactProofSummary,
+  resolveRunCompactProofSummary,
   type MergedRunsCursorV1,
 } from "@settler/reconciliation-core";
 import {
@@ -38,7 +38,11 @@ import {
 export const runtime = "nodejs";
 
 type RunListItemWithSignals = ReturnType<typeof mapCanonicalListItemToApiRunsLegacyRow> & {
-  compactProofSummary?: ReturnType<typeof toRunCompactProofSummary>;
+  compactProofSummary: ReturnType<typeof resolveRunCompactProofSummary>["compactProofSummary"];
+  compactProofSummaryContext: {
+    source: ReturnType<typeof resolveRunCompactProofSummary>["source"];
+    fallbackReasonCode: ReturnType<typeof resolveRunCompactProofSummary>["fallbackReasonCode"];
+  };
 };
 
 function resolveTenantIdForRuns(
@@ -77,10 +81,17 @@ async function withRunCompactProofSignals(
   const indexByRun = await buildRunProofpackIndexByRunId({ prisma, tenantId, runs: rows });
   return rows.map((row) => {
     const legacy = mapCanonicalListItemToApiRunsLegacyRow(row);
-    const index = indexByRun.get(row.id);
+    const summaryResolution = resolveRunCompactProofSummary({
+      runKind: row.runKind,
+      proofpackIndex: indexByRun.get(row.id),
+    });
     return {
       ...legacy,
-      compactProofSummary: index ? toRunCompactProofSummary(index) : undefined,
+      compactProofSummary: summaryResolution.compactProofSummary,
+      compactProofSummaryContext: {
+        source: summaryResolution.source,
+        fallbackReasonCode: summaryResolution.fallbackReasonCode,
+      },
     };
   });
 }
