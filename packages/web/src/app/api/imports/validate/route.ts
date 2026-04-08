@@ -89,7 +89,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Enqueue validation job
-    // @ts-expect-error - Database RPC type definition issue
     const { data: jobId, error } = await client.rpc("enqueue_python_job", {
       p_tenant_id: tenant_id,
       p_workspace_id: null,

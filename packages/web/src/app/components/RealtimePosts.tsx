@@ -9,6 +9,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import { MessageSquare, TrendingUp, Eye } from "lucide-react";
 
 interface Post {
@@ -18,6 +19,19 @@ interface Post {
   upvotes: number;
   downvotes: number;
   created_at: string;
+}
+
+function isPostRecord(value: unknown): value is Post {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Record<string, unknown>;
+  return (
+    typeof candidate.id === "string" &&
+    typeof candidate.title === "string" &&
+    typeof candidate.views === "number" &&
+    typeof candidate.upvotes === "number" &&
+    typeof candidate.downvotes === "number" &&
+    typeof candidate.created_at === "string"
+  );
 }
 
 export function RealtimePosts() {
@@ -71,18 +85,20 @@ export function RealtimePosts() {
               table: "posts",
               filter: "status=eq.published",
             },
-            (payload) => {
+            (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => {
               // eslint-disable-next-line no-console
               console.log("Post change received:", payload);
 
-              if (payload.eventType === "INSERT") {
-                setPosts((prev) => [payload.new as Post, ...prev].slice(0, 10));
-              } else if (payload.eventType === "UPDATE") {
+              if (payload.eventType === "INSERT" && isPostRecord(payload.new)) {
+                const nextPost: Post = payload.new;
+                setPosts((prev) => [nextPost, ...prev].slice(0, 10));
+              } else if (payload.eventType === "UPDATE" && isPostRecord(payload.new)) {
+                const updatedPost: Post = payload.new;
                 setPosts((prev) =>
-                  prev.map((post) => (post.id === payload.new.id ? (payload.new as Post) : post))
+                  prev.map((post) => (post.id === updatedPost.id ? updatedPost : post))
                 );
               } else if (payload.eventType === "DELETE") {
-                setPosts((prev) => prev.filter((post: any) => post.id !== payload.old.id));
+                setPosts((prev) => prev.filter((post) => post.id !== payload.old.id));
               }
             }
           )

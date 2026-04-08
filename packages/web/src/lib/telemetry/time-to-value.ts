@@ -8,6 +8,8 @@
 import { ProductEvents } from "./product-events";
 import { logger } from "@/lib/observability/logger";
 
+const TTV_DEGRADED_REASON = "time_to_value_storage_not_implemented";
+
 export interface TimeToValueMetrics {
   userId: string;
   tenantId: string | null;
@@ -132,7 +134,7 @@ export async function trackFirstReconciliation(
       tenantId,
       runId,
       degraded: true,
-      degradedReason: "time_to_value_storage_not_implemented",
+      degradedReason: TTV_DEGRADED_REASON,
     });
   } catch (error) {
     await logger.error("Failed to track first reconciliation", {
@@ -200,8 +202,11 @@ export async function trackFirstFeatureFlagUsed(
  */
 export async function getTimeToValueMetrics(userId: string): Promise<TimeToValueMetrics | null> {
   try {
-    // Simplified implementation - would query timeToValue table if it existed
-    // For now, return null (can be enhanced with actual table)
+    await logger.warn("Time-to-value metrics requested without persisted storage", {
+      userId,
+      degraded: true,
+      degradedReason: TTV_DEGRADED_REASON,
+    });
     return null;
   } catch (error) {
     await logger.error("Failed to get time-to-value metrics", {
@@ -227,7 +232,7 @@ export async function getTimeToValueStats(): Promise<{
   try {
     await logger.warn("Time-to-value stats requested without persisted storage", {
       degraded: true,
-      degradedReason: "time_to_value_storage_not_implemented",
+      degradedReason: TTV_DEGRADED_REASON,
     });
     return {
       averageSeconds: 0,

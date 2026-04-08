@@ -183,6 +183,7 @@ export const POST = withSecurity(
       }
 
       const { subject, description, category, priority } = parsed.data;
+      const intakePrisma = prisma as unknown as Parameters<typeof submitSupportIntake>[0]["prisma"];
       const categoryMap: Record<
         string,
         (typeof SUPPORT_ISSUE_CATEGORY)[keyof typeof SUPPORT_ISSUE_CATEGORY]
@@ -195,7 +196,7 @@ export const POST = withSecurity(
       };
 
       const stored = await submitSupportIntake({
-        prisma,
+        prisma: intakePrisma,
         userId,
         tenantId,
         path: request.nextUrl.pathname,

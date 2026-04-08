@@ -110,7 +110,6 @@ export async function enqueuePythonJob(
     }
 
     // Call the database function to enqueue
-    // @ts-expect-error - Database RPC type definition issue
     const { data: jobId, error: enqueueError } = await supabase.rpc("enqueue_python_job", {
       p_tenant_id: tenantId,
       p_workspace_id: null, // Optional: can be extended later
@@ -208,7 +207,6 @@ export async function getPythonJobStats(): Promise<PythonJobStats | null> {
 
     const tenantId = session.user.user_metadata.tenant_id;
 
-    // @ts-expect-error - Database RPC type definition issue
     const { data, error } = await supabase.rpc("get_python_job_stats", {
       p_tenant_id: tenantId,
     });
@@ -267,7 +265,6 @@ export async function cancelPythonJob(jobId: string): Promise<boolean> {
     // Use RPC for atomic cancel with RLS
     const { error } = await supabase
       .from("python_jobs")
-      // @ts-expect-error - Database table update type issue
       .update({
         status: "cancelled",
         locked_at: null,

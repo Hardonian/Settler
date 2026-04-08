@@ -40,18 +40,20 @@ All routes must return `200` or a Problem+JSON error (`application/problem+json`
 | `/auth/callback` | ✅ 200 | OAuth callback |
 | `/auth/signup`   | ✅ 200 | Registration   |
 
-### Authenticated App Routes (`/app/*`)
+### Authenticated Console Routes (`/console/*`, canonical)
 
-| Path                  | Status | Auth Required |
-| --------------------- | ------ | ------------- |
-| `/app/executions`     | ✅ 200 | ✅            |
-| `/app/reconciliation` | ✅ 200 | ✅            |
-| `/app/replay`         | ✅ 200 | ✅            |
-| `/app/proofs`         | ✅ 200 | ✅            |
-| `/app/audit`          | ✅ 200 | ✅            |
-| `/app/system-health`  | ✅ 200 | ✅            |
-| `/app/billing`        | ✅ 200 | ✅            |
-| `/app/settings`       | ✅ 200 | ✅            |
+| Path                       | Status | Auth Required |
+| -------------------------- | ------ | ------------- |
+| `/console`                 | ✅ 200 | ✅            |
+| `/console/runs`            | ✅ 200 | ✅            |
+| `/console/reconciliations` | ✅ 200 | ✅            |
+| `/console/replay-lab`      | ✅ 200 | ✅            |
+| `/console/proof-explorer`  | ✅ 200 | ✅            |
+| `/console/audits`          | ✅ 200 | ✅            |
+| `/console/diagnostics`     | ✅ 200 | ✅            |
+| `/console/settings`        | ✅ 200 | ✅            |
+
+> Legacy `/app/*` aliases may still exist for backward compatibility but are not the canonical operator route language.
 
 ### Admin Routes (`/admin/*`)
 

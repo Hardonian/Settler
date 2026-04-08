@@ -24,7 +24,7 @@ const CLIENT_CACHE_TTL = 60000; // 1 minute
  * IMPORTANT: This client is request-scoped because it depends on cookies().
  * Never cache it globally, otherwise auth state can leak across users/tenants.
  */
-export async function createClient(): Promise<SupabaseClient<Database>> {
+export async function createClient(): Promise<SupabaseClient> {
   // Use validator to get env vars with proper error handling
   let supabaseUrl: string;
   let supabaseAnonKey: string;
@@ -50,7 +50,7 @@ export async function createClient(): Promise<SupabaseClient<Database>> {
           error: { message: "Supabase not configured", status: 500 },
         }),
       },
-    } as unknown as SupabaseClient<Database>;
+    } as unknown as SupabaseClient;
   }
 
   // Get cookie store with error handling
@@ -75,7 +75,7 @@ export async function createClient(): Promise<SupabaseClient<Database>> {
           /* no-op */
         },
       },
-    }) as SupabaseClient<Database>;
+    }) as SupabaseClient;
 
     return fallbackClient;
   }
@@ -109,7 +109,7 @@ export async function createClient(): Promise<SupabaseClient<Database>> {
         }
       },
     },
-  }) as SupabaseClient<Database>;
+  }) as SupabaseClient;
 
   return client;
 }
@@ -120,10 +120,10 @@ export async function createClient(): Promise<SupabaseClient<Database>> {
  * Gracefully handles errors to prevent crashes
  * Optimized with connection reuse
  */
-let cachedAdminClient: SupabaseClient<Database> | null = null;
+let cachedAdminClient: SupabaseClient | null = null;
 let adminClientCacheTimestamp = 0;
 
-export async function createAdminClient(): Promise<SupabaseClient<Database>> {
+export async function createAdminClient(): Promise<SupabaseClient> {
   // Get URL from validator
   let supabaseUrl: string;
   try {
@@ -135,7 +135,7 @@ export async function createAdminClient(): Promise<SupabaseClient<Database>> {
       error: errorMessage,
       stack: error instanceof Error ? error.stack : undefined,
     });
-    return {} as SupabaseClient<Database>;
+    return {} as SupabaseClient;
   }
 
   const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
@@ -145,7 +145,7 @@ export async function createAdminClient(): Promise<SupabaseClient<Database>> {
       "[Supabase Admin] SERVICE_ROLE_KEY not set - admin features may not work"
     );
     // Return a minimal mock client that will fail gracefully
-    return {} as SupabaseClient<Database>;
+    return {} as SupabaseClient;
   }
 
   // Reuse cached admin client if available and fresh
@@ -158,7 +158,7 @@ export async function createAdminClient(): Promise<SupabaseClient<Database>> {
     // Use regular supabase client with service role key (bypasses RLS)
     const { createClient: createSupabaseClient } = await import("@supabase/supabase-js");
 
-    const adminClient = createSupabaseClient<Database>(supabaseUrl, supabaseServiceRoleKey, {
+    const adminClient = createSupabaseClient(supabaseUrl, supabaseServiceRoleKey, {
       auth: {
         autoRefreshToken: false,
         persistSession: false,
@@ -186,7 +186,7 @@ export async function createAdminClient(): Promise<SupabaseClient<Database>> {
     });
     // Return a minimal mock client to prevent crashes
     // This will fail on actual operations but won't crash the page
-    const fallbackClient = {} as SupabaseClient<Database>;
+    const fallbackClient = {} as SupabaseClient;
     cachedAdminClient = fallbackClient;
     adminClientCacheTimestamp = now;
     return fallbackClient;

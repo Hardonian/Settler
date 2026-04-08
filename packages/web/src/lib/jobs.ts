@@ -104,7 +104,6 @@ export async function enqueueJob({
   try {
     const adminClient = await createAdminClient();
 
-    // @ts-expect-error - Database RPC type definition issue
     const { data: jobId, error } = await adminClient.rpc("enqueue_job", {
       p_tenant_id: tenantId,
       p_type: type,
@@ -142,7 +141,6 @@ export async function getJob(jobId: string, tenantId: string): Promise<Job | Api
     const client = await createClient();
 
     // Set tenant context for RLS
-    // @ts-expect-error - Database RPC type definition issue
     await client.rpc("set_tenant_context", { tenant_id: tenantId });
 
     const { data: job, error } = await client.from("jobs").select("*").eq("id", jobId).single();
@@ -185,7 +183,6 @@ export async function listJobs({
     const client = await createClient();
 
     // Set tenant context for RLS
-    // @ts-expect-error - Database RPC type definition issue
     await client.rpc("set_tenant_context", { tenant_id: tenantId });
 
     // Build query
@@ -237,7 +234,6 @@ export async function getJobResult(jobId: string, tenantId: string): Promise<Job
     const client = await createClient();
 
     // Set tenant context for RLS
-    // @ts-expect-error - Database RPC type definition issue
     await client.rpc("set_tenant_context", { tenant_id: tenantId });
 
     const { data: result, error } = await client
@@ -255,8 +251,8 @@ export async function getJobResult(jobId: string, tenantId: string): Promise<Job
           return createErrorResponse("Job not found");
         }
 
-        // @ts-expect-error - Type inference issue with job row
-        if (job.status === "running" || job.status === "queued") {
+        const jobStatus = typeof job.status === "string" ? job.status : "";
+        if (jobStatus === "running" || jobStatus === "queued") {
           return createErrorResponse("Job result not yet available - job is still processing");
         }
 
