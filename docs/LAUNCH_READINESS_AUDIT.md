@@ -1,6 +1,8 @@
 # Settler Launch Readiness Audit
 
 **Date:** January 2026  
+**Status:** Historical audit snapshot — route and runtime posture have changed since this draft.  
+**Canonical sources:** `docs/launch/tomorrow-launch-scope.md`, `docs/launch/CLAIMS_AND_EVIDENCE_REGISTRY.md`, `docs/verification/route-flow-matrix.md`.  
 **Purpose:** Cold-eyed review of Settler's readiness for public launch  
 **Audience:** Solo founder operations
 
@@ -19,11 +21,13 @@ Settler has a solid technical foundation with reconciliation engine, receipts AP
 ### 1. Value Proposition Clarity
 
 #### Current State
+
 - ✅ Clear technical positioning: "API Infrastructure for Financial Evidence"
 - ✅ Core primitives well-defined (reconciliation, receipts, convert, flags)
 - ✅ Developer-first messaging
 
 #### Gaps Identified
+
 - 🔴 **Pain Point Clarity:** Homepage focuses on "what" not "why now"
   - Missing: Specific pain points (manual reconciliation errors, compliance failures)
   - Missing: Cost of inaction (time wasted, errors, compliance risk)
@@ -33,6 +37,7 @@ Settler has a solid technical foundation with reconciliation engine, receipts AP
   - Missing: Comparison with manual processes, custom solutions, other tools
 
 #### Recommendations
+
 1. Add "Problem Statement" section to homepage
 2. Create use-case-specific landing pages (e-commerce, fintech, accounting)
 3. Add ROI calculator with real scenarios
@@ -45,11 +50,13 @@ Settler has a solid technical foundation with reconciliation engine, receipts AP
 ### 2. Pricing vs. Actual Deliverables
 
 #### Current State
+
 - ✅ Clear pricing tiers (Free, Commercial $99/mo, Enterprise)
 - ✅ Usage limits defined
 - ✅ Trial period mentioned (14 days)
 
 #### Gaps Identified
+
 - 🔴 **Trial Automation:** Trial mentioned but not automatically provisioned
   - Signup creates account but doesn't start trial timer
   - No trial expiration handling
@@ -63,6 +70,7 @@ Settler has a solid technical foundation with reconciliation engine, receipts AP
   - Missing: Feature flag evaluation latency
 
 #### Recommendations
+
 1. **CRITICAL:** Implement automated trial provisioning on signup
 2. Add usage meters to console dashboard
 3. Add usage-based upgrade prompts
@@ -75,12 +83,14 @@ Settler has a solid technical foundation with reconciliation engine, receipts AP
 ### 3. Onboarding Friction
 
 #### Current State
+
 - ✅ Signup flow exists
 - ✅ Console available after signup
 - ✅ Onboarding progress tracking table exists
 - ✅ Email sequence skeleton exists (not integrated)
 
 #### Gaps Identified
+
 - 🔴 **No Automated Onboarding:** User signs up → lands in console → no guidance
   - Missing: Welcome tour
   - Missing: First reconciliation setup wizard
@@ -97,6 +107,7 @@ Settler has a solid technical foundation with reconciliation engine, receipts AP
   - Missing: Trial completion checklist
 
 #### Recommendations
+
 1. **CRITICAL:** Integrate email service (Resend/SendGrid)
 2. **CRITICAL:** Create onboarding wizard component
 3. Add onboarding progress UI to console
@@ -110,11 +121,13 @@ Settler has a solid technical foundation with reconciliation engine, receipts AP
 ### 4. Trust Signals (Technical + Business)
 
 #### Current State
+
 - ✅ Security badges mentioned (SOC 2, ISO 27001)
 - ✅ Trust badges component exists
 - ✅ Open source (MIT license) mentioned
 
 #### Gaps Identified
+
 - 🟡 **Technical Trust:** Missing concrete proof
   - No uptime status page
   - No public API status
@@ -130,6 +143,7 @@ Settler has a solid technical foundation with reconciliation engine, receipts AP
   - No incident history
 
 #### Recommendations
+
 1. Create status page (status.settler.dev)
 2. Add customer logos (even if early customers)
 3. Add testimonials section
@@ -143,12 +157,14 @@ Settler has a solid technical foundation with reconciliation engine, receipts AP
 ### 5. Operational Fragility for Solo Founder
 
 #### Current State
+
 - ✅ Operations runbook exists
 - ✅ Daily checklist exists
 - ✅ Billing automation exists (Stripe webhooks)
 - ✅ Usage tracking exists
 
 #### Gaps Identified
+
 - 🔴 **Manual Monitoring:** Founder must manually check dashboards
   - No automated health checks
   - No alerting for failures
@@ -165,6 +181,7 @@ Settler has a solid technical foundation with reconciliation engine, receipts AP
   - No self-service troubleshooting
 
 #### Recommendations
+
 1. **CRITICAL:** Implement automated health checks + alerting
 2. **CRITICAL:** Implement automated diagnostics
 3. Add webhook retry automation
@@ -180,16 +197,19 @@ Settler has a solid technical foundation with reconciliation engine, receipts AP
 #### Scale Analysis
 
 **At 10 Users:**
+
 - ✅ Current system handles easily
 - 🟡 Manual onboarding becomes burden
 
 **At 100 Users:**
+
 - 🟡 Database queries may slow (no pagination checks)
 - 🟡 Email sending may hit rate limits
 - 🔴 Support tickets become unmanageable (no automation)
 - 🟡 Billing reconciliation becomes manual burden
 
 **At 1,000 Users:**
+
 - 🔴 Database performance issues (no query optimization)
 - 🔴 API rate limiting needed (exists but not tuned)
 - 🔴 Email infrastructure needs scaling
@@ -197,6 +217,7 @@ Settler has a solid technical foundation with reconciliation engine, receipts AP
 - 🔴 Billing reconciliation breaks (manual process)
 
 #### Recommendations
+
 1. Add database query performance monitoring
 2. Implement pagination everywhere
 3. Add rate limiting tuning

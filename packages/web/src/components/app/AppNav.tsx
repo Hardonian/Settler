@@ -32,7 +32,7 @@ const navSections = [
       { name: "Run Explorer", href: "/app/runs", icon: Play },
       { name: "Truth Explorer", href: "/app/proofs", icon: ShieldCheck },
       { name: "Replay Lab", href: "/app/replay", icon: RefreshCcw },
-      { name: "Policy Lab", href: "/app/policies", icon: FlaskConical },
+      { name: "Policy Lab", href: "/console/policies", icon: FlaskConical },
     ],
   },
   {
@@ -49,7 +49,7 @@ const navSections = [
   {
     label: "Governance",
     items: [
-      { name: "Audit Surfaces", href: "/app/audit", icon: FileSearch },
+      { name: "Audit Surfaces", href: "/console/audits", icon: FileSearch },
       { name: "Tenant Isolation Controls", href: "/app/settings", icon: Settings },
     ],
   },

@@ -224,21 +224,18 @@ observabilityRouter.get("/logs", async (req: Request, res: Response) => {
  */
 observabilityRouter.get("/traces", async (req: Request, res: Response) => {
   try {
-    // Reserved for future user/tenant filtering
-    void (req as AuthenticatedRequest).userId;
-    void (req as AuthenticatedRequest).tenantId;
-    // Reserved for future tracing backend integration
-    void req.query.traceId;
-    void req.query.jobId;
-    void req.query.startDate;
-    void req.query.endDate;
-    void req.query.limit;
+    const userId = (req as AuthenticatedRequest).userId;
+    const tenantId = (req as AuthenticatedRequest).tenantId;
 
-    // In a real implementation, this would query your tracing backend (Jaeger, Zipkin, etc.)
-    // For now, return a placeholder response
-    res.json({
-      data: [],
-      message: "Tracing requires OTLP endpoint configuration",
+    if (!userId || !tenantId) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+
+    res.status(501).json({
+      error: "tracing_unavailable",
+      message: "Distributed tracing is not enabled for this environment.",
+      degraded: true,
       documentation: "https://docs.settler.io/observability/tracing",
     });
   } catch (error) {

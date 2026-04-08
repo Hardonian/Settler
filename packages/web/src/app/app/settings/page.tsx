@@ -7,7 +7,7 @@ import { Settings, FileSearch, Search, ArrowRight } from "lucide-react";
 
 const auditLinks = [
   {
-    href: "/app/audit",
+    href: "/console/audits",
     label: "Audit Surfaces",
     description: "Inspect all tenant-scoped audit events",
     icon: FileSearch,
@@ -46,8 +46,8 @@ export default function SettingsPage() {
         <CardContent className="p-5">
           <p className="text-sm text-muted-foreground leading-relaxed mb-4">
             Tenant isolation verification artifacts are tracked under{" "}
-            <code className="code-inline">security/evidence</code>.
-            Route-level controls are visible in the audit surfaces.
+            <code className="code-inline">security/evidence</code>. Route-level controls are visible
+            in the audit surfaces.
           </p>
           <div className="grid gap-2 sm:grid-cols-2">
             {auditLinks.map((link) => (
@@ -58,18 +58,22 @@ export default function SettingsPage() {
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-muted/60 group-hover:bg-primary/10 transition-colors">
-                    <link.icon className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors" aria-hidden="true" />
+                    <link.icon
+                      className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors"
+                      aria-hidden="true"
+                    />
                   </div>
                   <div className="min-w-0">
                     <p className="text-xs font-semibold text-foreground group-hover:text-primary transition-colors">
                       {link.label}
                     </p>
-                    <p className="text-[10px] text-muted-foreground truncate">
-                      {link.description}
-                    </p>
+                    <p className="text-[10px] text-muted-foreground truncate">{link.description}</p>
                   </div>
                 </div>
-                <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0 ml-2" aria-hidden="true" />
+                <ArrowRight
+                  className="h-3.5 w-3.5 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0 ml-2"
+                  aria-hidden="true"
+                />
               </Link>
             ))}
           </div>

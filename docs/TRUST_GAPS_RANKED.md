@@ -2,6 +2,8 @@
 
 **Version:** 1.0  
 **Last Updated:** January 2026  
+**Doc State:** Historical prioritization draft — verify any claim against current evidence before reuse.  
+**Canonical sources:** `docs/launch/CLAIMS_AND_EVIDENCE_REGISTRY.md`, `docs/launch/enterprise-buyer-pack.md`, `docs/verification/route-flow-matrix.md`.  
 **Status:** Action Items — Must Address for Trust & Credibility  
 **Purpose:** Prioritized list of trust gaps that must be addressed to build credibility
 
@@ -10,6 +12,7 @@
 ## Overview
 
 This document ranks trust gaps by **business impact** (revenue risk, deal blockers, adoption barriers). Each gap includes:
+
 - Current state
 - Impact assessment
 - Risk if unaddressed
@@ -17,6 +20,7 @@ This document ranks trust gaps by **business impact** (revenue risk, deal blocke
 - Priority level
 
 **Priority Levels:**
+
 - **P0 (Critical):** Blocks enterprise deals, high revenue risk
 - **P1 (High):** Blocks mid-market deals, moderate revenue risk
 - **P2 (Medium):** Slows adoption, low revenue risk
@@ -29,23 +33,27 @@ This document ranks trust gaps by **business impact** (revenue risk, deal blocke
 ### 1. SOC 2 Certification Missing
 
 **Current State:**
+
 - SOC 2 Type II "planned Q3 2026" — not certified
 - GDPR/CCPA compliant (good, but not enough for enterprise)
 - Security practices in place, but no third-party validation
 
 **Impact:**
+
 - **Enterprise Deals:** Blocks procurement for enterprise customers
 - **Revenue Risk:** $50K-$500K+ per blocked deal
 - **Sales Cycle:** Adds 3-6 months to sales cycle (certification wait)
 - **Competitive:** Competitors with SOC 2 win deals
 
 **Risk if Unaddressed:**
+
 - Enterprise buyers cannot proceed without SOC 2
 - Procurement teams require SOC 2 for vendor approval
 - Sales cycles extend indefinitely waiting for certification
 - Lost deals to competitors with SOC 2
 
 **Recommended Mitigation:**
+
 1. **Immediate (0-3 months):**
    - Publish security audit results (redacted)
    - Offer security questionnaire (self-assessment)
@@ -72,24 +80,28 @@ This document ranks trust gaps by **business impact** (revenue risk, deal blocke
 ### 2. No Public Customer References
 
 **Current State:**
+
 - No public case studies
 - No customer testimonials
 - No public customer logos
 - No success stories published
 
 **Impact:**
+
 - **Buyer Confidence:** Perceived as unproven, early-stage risk
 - **Revenue Risk:** $10K-$100K+ per lost deal (buyer hesitation)
 - **Sales Cycle:** Longer sales cycles (buyers need proof)
 - **Competitive:** Competitors with references win deals
 
 **Risk if Unaddressed:**
+
 - Buyers hesitate without proof others have succeeded
 - Enterprise buyers require references for risk assessment
 - Sales cycles extend while collecting references
 - Lost deals to competitors with references
 
 **Recommended Mitigation:**
+
 1. **Immediate (0-1 month):**
    - Collect customer success stories (with permission)
    - Create anonymous case studies (if customers prefer)
@@ -118,24 +130,28 @@ This document ranks trust gaps by **business impact** (revenue risk, deal blocke
 ### 3. Uptime SLA Only for Enterprise
 
 **Current State:**
+
 - "Best-effort" uptime for Starter/Professional tiers
 - No uptime guarantee for non-Enterprise
 - Target 99.5% uptime (not guaranteed)
 - SLA-backed uptime only for Enterprise
 
 **Impact:**
+
 - **Production Risk:** Perceived as unreliable for production use
 - **Revenue Risk:** $5K-$50K+ per lost deal (reliability concerns)
 - **Adoption:** Slows adoption for production-critical use cases
 - **Competitive:** Competitors with SLAs win deals
 
 **Risk if Unaddressed:**
+
 - Buyers hesitate to use in production without SLA
 - Mid-market buyers require SLAs for production systems
 - Adoption slows for production-critical use cases
 - Lost deals to competitors with SLAs
 
 **Recommended Mitigation:**
+
 1. **Immediate (0-1 month):**
    - Publish uptime metrics (historical)
    - Create status page (public)
@@ -162,24 +178,28 @@ This document ranks trust gaps by **business impact** (revenue risk, deal blocke
 ### 4. No Public Security Audit
 
 **Current State:**
+
 - No public security audit results
 - No penetration test results published
 - Security practices documented, but not validated
 - No third-party security validation
 
 **Impact:**
+
 - **Security Concerns:** Security-conscious buyers want validation
 - **Revenue Risk:** $5K-$50K+ per lost deal (security concerns)
 - **Adoption:** Slows adoption for security-sensitive use cases
 - **Competitive:** Competitors with audits win deals
 
 **Risk if Unaddressed:**
+
 - Security-conscious buyers hesitate without validation
 - Enterprise buyers require security audits for procurement
 - Adoption slows for security-sensitive use cases
 - Lost deals to competitors with security audits
 
 **Recommended Mitigation:**
+
 1. **Immediate (0-1 month):**
    - Conduct security audit (internal or third-party)
    - Publish security audit results (redacted)
@@ -208,24 +228,28 @@ This document ranks trust gaps by **business impact** (revenue risk, deal blocke
 ### 5. Limited Platform Coverage
 
 **Current State:**
+
 - 7 platform adapters (Stripe, Shopify, QuickBooks, PayPal, Square, Xero, NetSuite)
 - No custom adapters for non-Enterprise
 - Roadmap mentioned but not public
 - Custom adapter option for Enterprise only
 
 **Impact:**
+
 - **Fit Risk:** Buyers may need platforms we don't support
 - **Revenue Risk:** $1K-$10K+ per lost deal (platform missing)
 - **Adoption:** Slows adoption if platform not supported
 - **Competitive:** Competitors with more platforms win deals
 
 **Risk if Unaddressed:**
+
 - Buyers say "not for us" if platform missing
 - Sales cycles extend while evaluating platform fit
 - Adoption slows for unsupported platforms
 - Lost deals to competitors with more platforms
 
 **Recommended Mitigation:**
+
 1. **Immediate (0-1 month):**
    - Publish public roadmap (platform priorities)
    - Create platform request form (collect demand)
@@ -252,24 +276,28 @@ This document ranks trust gaps by **business impact** (revenue risk, deal blocke
 ### 6. No Public Performance Benchmarks
 
 **Current State:**
+
 - No public performance benchmarks
 - No scalability metrics published
 - Volume limits stated, but not proven
 - No load testing results published
 
 **Impact:**
+
 - **Scalability Concerns:** Buyers want proof it scales
 - **Revenue Risk:** $1K-$10K+ per lost deal (scalability concerns)
 - **Adoption:** Slows adoption for high-volume use cases
 - **Competitive:** Competitors with benchmarks win deals
 
 **Risk if Unaddressed:**
+
 - Buyers hesitate without proof of scalability
 - High-volume buyers require performance guarantees
 - Adoption slows for high-volume use cases
 - Lost deals to competitors with proven scalability
 
 **Recommended Mitigation:**
+
 1. **Immediate (0-1 month):**
    - Conduct load testing (internal)
    - Publish performance benchmarks (throughput, latency)
@@ -296,24 +324,28 @@ This document ranks trust gaps by **business impact** (revenue risk, deal blocke
 ### 7. Support Model Unclear
 
 **Current State:**
+
 - "Best-effort" support for Starter/Professional
 - Unclear response time commitments
 - Support channels documented, but SLAs unclear
 - Enterprise support has custom SLA
 
 **Impact:**
+
 - **Support Concerns:** Buyers want to know what support they'll get
 - **Revenue Risk:** $1K-$10K+ per lost deal (support concerns)
 - **Adoption:** Slows adoption for production-critical use cases
 - **Competitive:** Competitors with clear support win deals
 
 **Risk if Unaddressed:**
+
 - Buyers hesitate without clear support commitments
 - Production-critical buyers require support SLAs
 - Adoption slows for production-critical use cases
 - Lost deals to competitors with clear support
 
 **Recommended Mitigation:**
+
 1. **Immediate (0-1 month):**
    - Publish support SLAs (response time commitments)
    - Create support page (channels, hours, SLAs)
@@ -342,24 +374,28 @@ This document ranks trust gaps by **business impact** (revenue risk, deal blocke
 ### 8. No Public Roadmap
 
 **Current State:**
+
 - Roadmap mentioned in docs but not public
 - No public feature requests
 - No public voting on features
 - No public communication about future plans
 
 **Impact:**
+
 - **Uncertainty:** Buyers want to know what's coming
 - **Revenue Risk:** $500-$5K+ per lost deal (uncertainty)
 - **Adoption:** Slows adoption if feature missing
 - **Competitive:** Competitors with roadmaps win deals
 
 **Risk if Unaddressed:**
+
 - Buyers hesitate without visibility into future
 - Sales cycles extend while evaluating roadmap fit
 - Adoption slows if feature not on roadmap
 - Lost deals to competitors with public roadmaps
 
 **Recommended Mitigation:**
+
 1. **Immediate (0-1 month):**
    - Publish public roadmap (high-level)
    - Create feature request form
@@ -386,24 +422,28 @@ This document ranks trust gaps by **business impact** (revenue risk, deal blocke
 ### 9. Limited Integration Examples
 
 **Current State:**
+
 - Some examples in docs, but limited
 - No comprehensive integration guides
 - No code samples for all platforms
 - No integration templates
 
 **Impact:**
+
 - **Integration Friction:** Developers want code examples
 - **Revenue Risk:** $500-$5K+ per lost deal (integration friction)
 - **Adoption:** Slows adoption if integration is difficult
 - **Competitive:** Competitors with better docs win deals
 
 **Risk if Unaddressed:**
+
 - Developers hesitate without code examples
 - Integration takes longer without examples
 - Adoption slows if integration is difficult
 - Lost deals to competitors with better docs
 
 **Recommended Mitigation:**
+
 1. **Immediate (0-1 month):**
    - Expand code examples (all platforms)
    - Create integration guides (step-by-step)
@@ -430,24 +470,28 @@ This document ranks trust gaps by **business impact** (revenue risk, deal blocke
 ### 10. No Public Status Page
 
 **Current State:**
+
 - No public status page
 - No uptime metrics published
 - No incident history published
 - No real-time status updates
 
 **Impact:**
+
 - **Reliability Concerns:** Buyers want to know if service is up
 - **Revenue Risk:** $500-$5K+ per lost deal (reliability concerns)
 - **Adoption:** Slows adoption if reliability unclear
 - **Competitive:** Competitors with status pages win deals
 
 **Risk if Unaddressed:**
+
 - Buyers hesitate without visibility into reliability
 - Production-critical buyers require status pages
 - Adoption slows if reliability unclear
 - Lost deals to competitors with status pages
 
 **Recommended Mitigation:**
+
 1. **Immediate (0-1 month):**
    - Create public status page (status.settler.io)
    - Publish uptime metrics (historical)
@@ -476,19 +520,23 @@ This document ranks trust gaps by **business impact** (revenue risk, deal blocke
 ### Priority Breakdown
 
 **P0 (Critical):** 2 gaps
+
 - SOC 2 Certification Missing
 - No Public Customer References
 
 **P1 (High):** 2 gaps
+
 - Uptime SLA Only for Enterprise
 - No Public Security Audit
 
 **P2 (Medium):** 3 gaps
+
 - Limited Platform Coverage
 - No Public Performance Benchmarks
 - Support Model Unclear
 
 **P3 (Low):** 3 gaps
+
 - No Public Roadmap
 - Limited Integration Examples
 - No Public Status Page
@@ -496,6 +544,7 @@ This document ranks trust gaps by **business impact** (revenue risk, deal blocke
 ### Recommended Action Plan
 
 **Month 1 (Immediate):**
+
 1. Begin SOC 2 Type I audit
 2. Collect customer success stories
 3. Publish uptime metrics and status page
@@ -503,6 +552,7 @@ This document ranks trust gaps by **business impact** (revenue risk, deal blocke
 5. Publish public roadmap
 
 **Month 2-3 (Short-term):**
+
 1. Complete SOC 2 Type I audit
 2. Publish 2-3 case studies
 3. Add SLA add-on for Professional tier
@@ -510,6 +560,7 @@ This document ranks trust gaps by **business impact** (revenue risk, deal blocke
 5. Add 2-3 high-demand platforms
 
 **Month 4-6 (Long-term):**
+
 1. Complete SOC 2 Type II certification
 2. Maintain library of 5-10 case studies
 3. Include SLA in Professional tier (standard)
@@ -519,6 +570,7 @@ This document ranks trust gaps by **business impact** (revenue risk, deal blocke
 ### Success Metrics
 
 **Trust Signals Added:**
+
 - SOC 2 Type II certification (P0)
 - 5+ customer case studies (P0)
 - Public status page with uptime metrics (P1)
@@ -526,6 +578,7 @@ This document ranks trust gaps by **business impact** (revenue risk, deal blocke
 - Public roadmap with quarterly updates (P2)
 
 **Business Impact:**
+
 - Reduced sales cycle time (trust signals reduce buyer hesitation)
 - Increased enterprise deal conversion (SOC 2 unlocks enterprise deals)
 - Improved mid-market adoption (references build confidence)
