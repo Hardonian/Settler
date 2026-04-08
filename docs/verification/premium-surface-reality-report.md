@@ -1,6 +1,6 @@
 # Premium Surface Reality Report
 
-Date: 2026-03-12
+Date: 2026-04-08
 
 ## Scope
 
@@ -35,4 +35,5 @@ Validated discoverability + route viability for premium/enterprise claims:
 
 ## Residual Risk
 
+- This report is contract-oriented and must be paired with current `pnpm verify:*` command output for go-live decisions.
 - Browser E2E reality gate currently blocked by missing required startup env vars in this container; this prevents a full “click-through” truth statement for premium actions.

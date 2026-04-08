@@ -48,4 +48,4 @@ This prints the recommended local service startup commands for web, API, event-l
 
 ## Status
 
-This package is actively expanded. Command families under `future.ts` are available but vary in maturity; treat advanced governance/arena/support flows as evolving operator tooling.
+This package is actively expanded. Commands loaded from `src/commands/future.ts` are **experimental** and not part of Settler's launch-critical CLI contract; avoid using them for production automation unless explicitly version-pinned and validated in your environment.

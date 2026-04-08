@@ -1,6 +1,6 @@
 # Route + Flow Matrix (Reality Pass)
 
-Date: 2026-03-12
+Date: 2026-04-08
 
 ## Method
 
@@ -33,3 +33,7 @@ Date: 2026-03-12
 - **Renders confirmed:** major site, docs, console, and enterprise surfaces compile and appear in Next route manifest.
 - **Works confirmed (data/contracts):** API/data behavior mostly proven at contract/unit level (`api`, `web`, `cli` tests), including tenant isolation and degraded behavior tests.
 - **Not fully proven in this environment:** full browser E2E reality run due missing required startup env (`DATABASE_URL` / `NEXT_PUBLIC_SUPABASE_URL`).
+
+## Environment note
+
+Current validation in this pass is constrained by missing required build environment keys in this container (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `DATABASE_URL`). Route/build assertions should be interpreted as contract-level unless rerun in a fully seeded env.

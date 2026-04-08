@@ -113,77 +113,77 @@ const commandRegistry: Record<
   },
 
   capsule: {
-    description: "Create/verify deterministic time capsules",
+    description: "[experimental] Create/verify deterministic time capsules",
     load: async () => {
       const { capsuleCommand } = await import("./commands/future");
       return { command: capsuleCommand };
     },
   },
   proof: {
-    description: "Proof mode verification utilities",
+    description: "[experimental] Proof mode verification utilities",
     load: async () => {
       const { proofCommand } = await import("./commands/future");
       return { command: proofCommand };
     },
   },
   flow: {
-    description: "Export reconciliation flow explorer artifacts",
+    description: "[experimental] Export reconciliation flow explorer artifacts",
     load: async () => {
       const { flowCommand } = await import("./commands/future");
       return { command: flowCommand };
     },
   },
   lineage: {
-    description: "Export tenant topology/data lineage artifacts",
+    description: "[experimental] Export tenant topology/data lineage artifacts",
     load: async () => {
       const { lineageCommand } = await import("./commands/future");
       return { command: lineageCommand };
     },
   },
   rules: {
-    description: "Manage rules marketplace registry",
+    description: "[experimental] Manage rules marketplace registry",
     load: async () => {
       const { rulesCommand } = await import("./commands/future");
       return { command: rulesCommand };
     },
   },
   init: {
-    description: "Generate governed templates",
+    description: "[experimental] Generate governed templates",
     load: async () => {
       const { initCommand } = await import("./commands/future");
       return { command: initCommand };
     },
   },
   explain: {
-    description: "Human-readable reconciliation explain output",
+    description: "[experimental] Human-readable reconciliation explain output",
     load: async () => {
       const { explainCommand } = await import("./commands/future");
       return { command: explainCommand };
     },
   },
   operator: {
-    description: "Local-first operator telemetry mode",
+    description: "[experimental] Local-first operator telemetry mode",
     load: async () => {
       const { operatorCommand } = await import("./commands/future");
       return { command: operatorCommand };
     },
   },
   arena: {
-    description: "Run deterministic audit arena scorecards",
+    description: "[experimental] Run deterministic audit arena scorecards",
     load: async () => {
       const { arenaCommand } = await import("./commands/future");
       return { command: arenaCommand };
     },
   },
   support: {
-    description: "Offline-first support bot CLI",
+    description: "[experimental] Offline-first support bot CLI",
     load: async () => {
       const { supportCommand } = await import("./commands/future");
       return { command: supportCommand };
     },
   },
   profile: {
-    description: "Gamification profile (cosmetic only)",
+    description: "[experimental] Gamification profile (cosmetic only)",
     load: async () => {
       const { profileCommand } = await import("./commands/future");
       return { command: profileCommand };
