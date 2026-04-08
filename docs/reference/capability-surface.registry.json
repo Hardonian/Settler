@@ -15,7 +15,10 @@
     },
     {
       "name": "Run Explorer",
-      "evidence": ["packages/web/src/app/app/runs/page.tsx", "packages/web/src/app/app/runs/[id]/page.tsx"],
+      "evidence": [
+        "packages/web/src/app/app/runs/page.tsx",
+        "packages/web/src/app/app/runs/[id]/page.tsx"
+      ],
       "cli": ["pnpm replay:run"],
       "ui": ["/app/runs", "/app/runs/[id]", "/admin/runs"],
       "api": ["/api/v1/runs/:id", "/api/admin/runs"],
@@ -26,7 +29,10 @@
     },
     {
       "name": "Truth Explorer",
-      "evidence": ["packages/web/src/app/app/proofs/page.tsx", "packages/web/src/components/proof/ProofExplorer.tsx"],
+      "evidence": [
+        "packages/web/src/app/app/proofs/page.tsx",
+        "packages/web/src/components/proof/ProofExplorer.tsx"
+      ],
       "cli": ["pnpm replay:run"],
       "ui": ["/app/proofs", "/app/proofs/[id]", "/proof-explorer"],
       "api": ["/api/v1/runs/:id/trust-explorer/*"],
@@ -37,9 +43,19 @@
     },
     {
       "name": "Deterministic replay",
-      "evidence": ["packages/cli/src/tools/replay-runner.ts", "packages/web/src/app/replay-lab/page.tsx"],
+      "evidence": [
+        "packages/cli/src/tools/replay-runner.ts",
+        "packages/web/src/app/console/replay/page.tsx",
+        "packages/web/src/app/app/replay/page.tsx"
+      ],
       "cli": ["pnpm replay:run"],
-      "ui": ["/replay-lab", "/app/runs/[id]"],
+      "ui": [
+        "/console/replay (canonical)",
+        "/app/replay (legacy redirect)",
+        "/console/replay-lab (legacy redirect)",
+        "/replay-lab (marketing)",
+        "/app/runs/[id]"
+      ],
       "api": ["/api/v1/runs/:id/replay"],
       "docs": ["docs/replay/README.md"],
       "visibility": "OSS + operator",
@@ -48,7 +64,10 @@
     },
     {
       "name": "Policy simulation",
-      "evidence": ["packages/web/src/components/proof/ProofExplorer.tsx", "scripts/simulate-settler.ts"],
+      "evidence": [
+        "packages/web/src/components/proof/ProofExplorer.tsx",
+        "scripts/simulate-settler.ts"
+      ],
       "cli": ["pnpm simulate:settler"],
       "ui": ["/app/policies", "Truth Explorer policy context"],
       "api": ["/api/v1/runs/:id/trust-explorer/findPolicyImpact"],
@@ -60,7 +79,11 @@
     {
       "name": "Synthetic reconciliation foundry",
       "evidence": ["packages/cli/src/index.ts", "test-data/TEST_DATA_FOUNDRY.md"],
-      "cli": ["pnpm generate:test-data:smoke", "pnpm verify:test-data", "pnpm test:reconciliation:e2e"],
+      "cli": [
+        "pnpm generate:test-data:smoke",
+        "pnpm verify:test-data",
+        "pnpm test:reconciliation:e2e"
+      ],
       "ui": ["Docs/demo surfaced"],
       "api": ["CLI-first (no dedicated HTTP family)"],
       "docs": ["test-data/TEST_DATA_FOUNDRY.md"],
@@ -70,7 +93,11 @@
     },
     {
       "name": "Operator telemetry and capability status",
-      "evidence": ["scripts/doctor.mjs", "packages/web/src/app/api/status/route.ts", "packages/web/src/app/app/capability-status/page.tsx"],
+      "evidence": [
+        "scripts/doctor.mjs",
+        "packages/web/src/app/api/status/route.ts",
+        "packages/web/src/app/app/capability-status/page.tsx"
+      ],
       "cli": ["pnpm doctor", "pnpm suite-doctor:json"],
       "ui": ["/app/capability-status", "/status", "/app/system-health"],
       "api": ["/api/status", "/api/status/health"],
@@ -81,7 +108,10 @@
     },
     {
       "name": "Alerts and live operations",
-      "evidence": ["packages/web/src/components/console/AlertsView.tsx", "packages/web/src/components/console/LiveActivityFeed.tsx"],
+      "evidence": [
+        "packages/web/src/components/console/AlertsView.tsx",
+        "packages/web/src/components/console/LiveActivityFeed.tsx"
+      ],
       "cli": ["pnpm verify:production-parity"],
       "ui": ["/app/alerts", "/operator/incidents", "/admin/ops"],
       "api": ["/api/console/alerts", "/api/admin/stream"],
@@ -92,7 +122,11 @@
     },
     {
       "name": "Tenant administration and isolation",
-      "evidence": ["scripts/tenant-create.ts", "scripts/verify-tenant-coverage.ts", "scripts/security/cross-tenant-runner.mjs"],
+      "evidence": [
+        "scripts/tenant-create.ts",
+        "scripts/verify-tenant-coverage.ts",
+        "scripts/security/cross-tenant-runner.mjs"
+      ],
       "cli": ["pnpm tenant:create", "pnpm verify:tenant", "pnpm test:cross-tenant"],
       "ui": ["/app/settings", "/admin/settings"],
       "api": ["Tenant-scoped /api/* families from route inventory"],
@@ -118,7 +152,7 @@
         "pnpm demo:settler",
         "Open /app",
         "Inspect /app/runs and /app/proofs",
-        "Replay in /replay-lab"
+        "Replay in /console/replay (or /replay-lab for public marketing narrative)"
       ]
     }
   ],
