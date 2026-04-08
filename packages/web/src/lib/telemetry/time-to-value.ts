@@ -120,25 +120,14 @@ export async function trackFirstReconciliation(
 ): Promise<void> {
   try {
     // Persisted time-to-value storage is not yet implemented.
-    // Emit an explicit degraded signal instead of synthetic completion timing.
-    await ProductEvents.onboarding.completed({
-      totalDuration: 0,
-      stepsCompleted: 4,
-      completionRate: 1.0,
+    // Do not emit synthetic completion metrics that could be interpreted as measured truth.
+    await ProductEvents.engagement.featureUsed({
+      featureName: "time_to_value_tracking",
+      featureCategory: "observability",
     });
 
-    await ProductEvents.jobs.runCompleted({
-      jobId: runId,
-      executionId: runId,
-      duration: 0,
-      matched: 0,
-      unmatched: 0,
-      errors: 0,
-      success: true,
-    });
-
-    // Log metric for monitoring
-    await logger.info("Time-to-value completed", {
+    // Log degraded telemetry state for operator visibility.
+    await logger.warn("Time-to-value completion observed in degraded mode", {
       userId,
       tenantId,
       runId,

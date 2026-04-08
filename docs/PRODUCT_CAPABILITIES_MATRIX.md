@@ -1,5 +1,7 @@
 # Settler Product Capabilities Matrix (Evidence-Backed)
 
+_Last reviewed: 2026-04-08._
+
 This matrix tracks what is currently implemented in-repo and how each capability maps to operator-facing value.
 
 | Capability                       | Product/API Surface                                                                                                             | Problem Solved                                                                                | Differentiation Signal                                                             | Maturity                                                                   |
