@@ -26,8 +26,54 @@ export interface PlanConfig {
   limits: ServiceLimits;
 }
 
+const FALLBACK_PLAN_SPINE: Record<PlanCode, Omit<PlanConfig, "stripePriceId">> = {
+  starter: {
+    code: "starter",
+    name: "Starter",
+    description: "First 10,000 reconciliations free",
+    monthlyPrice: 0,
+    limits: {
+      reconcile: { monthlyVolume: 10_000, pricePerReconciliation: 0.01 },
+      exceptions: { includedRate: 0.01, pricePerException: 0.1 },
+    },
+  },
+  growth: {
+    code: "growth",
+    name: "Growth",
+    description: "For growing businesses",
+    monthlyPrice: 900,
+    limits: {
+      reconcile: { monthlyVolume: 100_000, pricePerReconciliation: 0.01 },
+      exceptions: { includedRate: 0.01, pricePerException: 0.1 },
+    },
+  },
+  scale: {
+    code: "scale",
+    name: "Scale",
+    description: "For high-volume operations",
+    monthlyPrice: 9_900,
+    limits: {
+      reconcile: { monthlyVolume: 1_000_000, pricePerReconciliation: 0.01 },
+      exceptions: { includedRate: 0.01, pricePerException: 0.1 },
+    },
+  },
+  enterprise: {
+    code: "enterprise",
+    name: "Enterprise",
+    description: "Dedicated deployment, custom controls, and enterprise support",
+    monthlyPrice: 0,
+    limits: {
+      reconcile: { monthlyVolume: 1_000_000, pricePerReconciliation: 0.01 },
+      exceptions: { includedRate: 0.01, pricePerException: 0.1 },
+    },
+  },
+};
+
+const runtimePlanSpine =
+  (PLAN_SPINE as Record<PlanCode, Omit<PlanConfig, "stripePriceId">>) ?? FALLBACK_PLAN_SPINE;
+
 function planRow(code: PlanCode, stripePriceId?: string): PlanConfig {
-  const row = PLAN_SPINE[code];
+  const row = runtimePlanSpine[code];
   return {
     code: row.code,
     name: row.name,

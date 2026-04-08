@@ -154,7 +154,7 @@ export default function ArchitecturePage() {
             tamper-evident audit trail you can inspect, export, and share with auditors.
           </p>
           <div className="pt-8 flex flex-col sm:flex-row justify-center gap-6">
-            <Link href="/docs/architecture">
+            <Link href="/docs/architecture/platform-architecture">
               <Button size="lg" className="h-14 px-8 font-extrabold bg-primary hover:bg-primary/90">
                 Read the Architecture Docs
               </Button>
