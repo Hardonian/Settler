@@ -17,7 +17,7 @@ import {
   ReconciliationRunForIntegrity,
 } from "./integrity";
 
-export const EXPORT_SCHEMA_VERSION = "1.0.0" as const;
+export const EXPORT_SCHEMA_VERSION = "1.1.0" as const;
 
 interface IntegrityChainEntry {
   runId: string;
@@ -40,6 +40,7 @@ export interface ReconciliationExportDocument {
     chainValid: boolean;
   };
   historicalIntelligence: RunCompactProofSummary;
+  exceptionFamilyHighlights: RunCompactProofSummary["operatorSummary"]["recurringFamilies"];
   historicalIntelligenceContext: {
     runId: string;
     runKind: "recon_job" | "ingestion_run" | "unknown";
@@ -185,6 +186,7 @@ export async function buildReconciliationExport(
       chainValid: chainVerification.valid,
     },
     historicalIntelligence: historicalIntelligence.summary,
+    exceptionFamilyHighlights: historicalIntelligence.summary.operatorSummary.recurringFamilies,
     historicalIntelligenceContext: historicalIntelligence.context,
     pagination: {
       limit: matchLimit,

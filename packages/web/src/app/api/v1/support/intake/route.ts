@@ -2,7 +2,7 @@
  * POST /api/v1/support/intake
  *
  * Canonical tenant-scoped support intake (Next BFF): Prisma audit + operator runtime signal
- * via @settler/support-intake, with run intelligence when run_id is provided.
+ * via @settler/support-intake, with run and exception intelligence when identifiers are provided.
  *
  * ROUTE_CLASS: session-service
  */

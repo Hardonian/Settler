@@ -31,7 +31,14 @@ jest.mock("@settler/reconciliation-core", () => ({
       changedSincePreviousRun: "unchanged",
       proofPosture: "unchanged",
       primaryReasonCodes: index.comparison.reasonCodes,
-      recurringFamilies: [],
+      recurringFamilies: [
+        {
+          family: "bank_window",
+          trend: "strengthening",
+          certainty: "high",
+          reasonCodes: ["recurring_family_signal_present"],
+        },
+      ],
       summary: "stable",
       explainerCodes: ["signal_strong", "pattern_stable"],
     },
@@ -61,7 +68,14 @@ jest.mock("@settler/reconciliation-core", () => ({
             changedSincePreviousRun: "unchanged",
             proofPosture: "unchanged",
             primaryReasonCodes: input.proofpackIndex.comparison.reasonCodes,
-            recurringFamilies: [],
+            recurringFamilies: [
+              {
+                family: "bank_window",
+                trend: "strengthening",
+                certainty: "high",
+                reasonCodes: ["recurring_family_signal_present"],
+              },
+            ],
             summary: "stable",
             explainerCodes: ["signal_strong", "pattern_stable"],
           },
@@ -159,6 +173,12 @@ describe("buildReconciliationExport historical intelligence", () => {
       "signal_strong",
       "pattern_recovering",
     ]);
+    expect(document?.exceptionFamilyHighlights).toEqual([
+      expect.objectContaining({
+        family: "bank_window",
+        trend: "strengthening",
+      }),
+    ]);
   });
 
   it("preserves explicit fallback reason when canonical detail lookup is unavailable", async () => {
@@ -178,5 +198,6 @@ describe("buildReconciliationExport historical intelligence", () => {
     expect(document?.historicalIntelligence.delta.reasonCodes).toContain(
       "export_run_detail_not_found"
     );
+    expect(document?.exceptionFamilyHighlights).toEqual([]);
   });
 });

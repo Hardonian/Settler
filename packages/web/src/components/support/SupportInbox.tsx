@@ -31,6 +31,10 @@ interface SupportIntakeRow {
   module: string | null;
   runId: string | null;
   runContextState: string | null;
+  exceptionId: string | null;
+  exceptionContextState: string | null;
+  familyLabel: string | null;
+  familyState: string | null;
   descriptionPreview: string;
   fullDescription: string;
   createdAt: string;
@@ -88,6 +92,16 @@ function normalizeRow(raw: Record<string, unknown>): SupportIntakeRow {
     module: typeof raw.module === "string" || raw.module === null ? raw.module : null,
     runId: typeof raw.runId === "string" || raw.runId === null ? raw.runId : null,
     runContextState: runCtx,
+    exceptionId:
+      typeof raw.exceptionId === "string" || raw.exceptionId === null ? raw.exceptionId : null,
+    exceptionContextState:
+      typeof raw.exceptionContextState === "string" || raw.exceptionContextState === null
+        ? raw.exceptionContextState
+        : null,
+    familyLabel:
+      typeof raw.familyLabel === "string" || raw.familyLabel === null ? raw.familyLabel : null,
+    familyState:
+      typeof raw.familyState === "string" || raw.familyState === null ? raw.familyState : null,
     descriptionPreview: descPreview,
     fullDescription: typeof raw.fullDescription === "string" ? raw.fullDescription : descPreview,
     createdAt: typeof raw.createdAt === "string" ? raw.createdAt : "",
@@ -228,6 +242,26 @@ export function SupportInbox({ userId: _userId }: SupportInboxProps) {
                     {row.runContextState && (
                       <div>
                         Run intel: <span className="font-mono">{row.runContextState}</span>
+                      </div>
+                    )}
+                    {row.exceptionContextState && (
+                      <div>
+                        Exception intel:{" "}
+                        <span className="font-mono">{row.exceptionContextState}</span>
+                      </div>
+                    )}
+                    {row.familyLabel && (
+                      <div className="mt-1">
+                        Family:{" "}
+                        <span className="font-medium">
+                          {row.familyLabel}
+                          {row.familyState ? ` (${row.familyState})` : ""}
+                        </span>
+                      </div>
+                    )}
+                    {row.exceptionId && (
+                      <div className="text-muted-foreground mt-1 font-mono break-all">
+                        Exception: {row.exceptionId}
                       </div>
                     )}
                     <div className="text-muted-foreground mt-1 whitespace-pre-wrap break-words">

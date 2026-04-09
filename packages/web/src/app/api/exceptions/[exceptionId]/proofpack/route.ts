@@ -61,7 +61,7 @@ export const GET = withSecurity(
         };
 
         const artifact = {
-          schemaVersion: "proofpack.exception.v2",
+          schemaVersion: "proofpack.exception.v3",
           generatedAt: new Date().toISOString(),
           tenantScoped: true,
           exception: {
@@ -102,10 +102,12 @@ export const GET = withSecurity(
                   ? "bounded"
                   : "low",
           },
+          familySummary: detail.familySummary,
           changeSincePreviousRun: changeComparison,
           recurringContext: {
             memoryCount: detail.operatorSummary.memoryCount,
             recurringResolutionReason: detail.operatorSummary.recurringResolutionReason,
+            familySummary: detail.familySummary,
           },
           operatorAction: {
             nextStep: detail.operatorSummary.nextStep,

@@ -31,12 +31,19 @@ export interface SupportWidgetProps {
   defaultRoute?: string;
   /** When opened from run detail, pre-fill run UUID for proof-context attachment. */
   defaultRunId?: string;
+  /** When opened from an exception detail, pre-fill exception UUID for family-context attachment. */
+  defaultExceptionId?: string;
 }
 
-export function SupportWidget({ defaultRoute, defaultRunId = "" }: SupportWidgetProps) {
+export function SupportWidget({
+  defaultRoute,
+  defaultRunId = "",
+  defaultExceptionId = "",
+}: SupportWidgetProps) {
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
   const [runId, setRunId] = useState(defaultRunId);
+  const [exceptionId, setExceptionId] = useState(defaultExceptionId);
   const [category, setCategory] = useState<SupportIssueCategory>("run_failure");
   const [moduleHint, setModuleHint] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -51,6 +58,9 @@ export function SupportWidget({ defaultRoute, defaultRunId = "" }: SupportWidget
       `Category: ${SUPPORT_ISSUE_CATEGORY_LABELS[category]} (${category})`,
       subject.trim() ? `Title: ${subject.trim()}` : "Title: (none)",
       runId.trim() ? `Run UUID: ${runId.trim()}` : "Run UUID: (not provided)",
+      exceptionId.trim()
+        ? `Exception UUID: ${exceptionId.trim()}`
+        : "Exception UUID: (not provided)",
       moduleHint.trim() ? `Module hint: ${moduleHint.trim()}` : "Module hint: (none)",
       defaultRoute?.trim() ? `Console route: ${defaultRoute.trim()}` : "Console route: (none)",
       "",
@@ -60,7 +70,7 @@ export function SupportWidget({ defaultRoute, defaultRunId = "" }: SupportWidget
       "Note: Submitting the form also records tenant-scoped intake with audit attribution.",
     ];
     return lines.join("\n");
-  }, [category, subject, runId, moduleHint, description, defaultRoute]);
+  }, [category, subject, runId, exceptionId, moduleHint, description, defaultRoute]);
 
   const copyBundle = async () => {
     setCopyFeedback(null);
@@ -107,6 +117,7 @@ export function SupportWidget({ defaultRoute, defaultRunId = "" }: SupportWidget
           category,
           description: fullDescription,
           run_id: runId.trim() || undefined,
+          exception_id: exceptionId.trim() || undefined,
           route: defaultRoute?.trim() || undefined,
           module: moduleHint.trim() || undefined,
         }),
@@ -131,6 +142,7 @@ export function SupportWidget({ defaultRoute, defaultRunId = "" }: SupportWidget
       setSubject("");
       setDescription("");
       setRunId(defaultRunId);
+      setExceptionId(defaultExceptionId);
       setModuleHint("");
       setCategory("run_failure");
     } catch (error: unknown) {
@@ -177,8 +189,8 @@ export function SupportWidget({ defaultRoute, defaultRunId = "" }: SupportWidget
             Operator support intake
           </CardTitle>
           <CardDescription>
-            Evidence-oriented categories. Optional run UUID attaches compact proof summary context
-            when the run exists for this tenant.
+            Evidence-oriented categories. Optional run and exception UUIDs attach canonical proof
+            and family-memory context when they exist for this tenant.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -231,6 +243,21 @@ export function SupportWidget({ defaultRoute, defaultRunId = "" }: SupportWidget
               <p className="text-xs text-muted-foreground mt-1">
                 Non-UUID run references are kept in the text only; UUIDs link operator run context
                 when available.
+              </p>
+            </div>
+
+            <div>
+              <Label htmlFor="support-exception-id">Exception ID (optional)</Label>
+              <Input
+                id="support-exception-id"
+                value={exceptionId}
+                onChange={(e) => setExceptionId(e.target.value)}
+                placeholder="UUID of the exception"
+                autoComplete="off"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                UUIDs attach canonical exception family context. Non-UUID references are preserved
+                in the ticket, but cannot be enriched automatically.
               </p>
             </div>
 

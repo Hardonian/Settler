@@ -13,7 +13,10 @@ import {
   buildTenantContextErrorResponse,
   requireTenantRequestContext,
 } from "@/lib/api/tenant-context";
-import { buildSupportIntakeRunContext } from "@settler/reconciliation-core";
+import {
+  buildSupportIntakeExceptionContext,
+  buildSupportIntakeRunContext,
+} from "@settler/reconciliation-core";
 import { submitSupportIntake, SUPPORT_ISSUE_CATEGORY } from "@settler/support-intake";
 
 export const dynamic = "force-dynamic";
@@ -24,6 +27,7 @@ const bodySchema = z.object({
   description: z.string().min(20).max(5000),
   category: z.string().optional(),
   run_id: z.string().optional(),
+  exception_id: z.string().optional(),
   context: z.record(z.string(), z.unknown()).optional(),
 });
 
@@ -46,7 +50,7 @@ export const POST = withSecurity(
           );
         }
 
-        const { subject, description, category, run_id, context } = parsed.data;
+        const { subject, description, category, run_id, exception_id, context } = parsed.data;
         const intakePrisma = prisma as unknown as Parameters<
           typeof submitSupportIntake
         >[0]["prisma"];
@@ -82,10 +86,13 @@ export const POST = withSecurity(
             category: canonicalCategory,
             description: fullDescription,
             run_id,
+            exception_id,
             route: routeFromContext,
             module: category ?? undefined,
           },
           resolveRunContext: (tid, rid) => buildSupportIntakeRunContext(prisma, tid, rid),
+          resolveExceptionContext: (tid, exceptionId) =>
+            buildSupportIntakeExceptionContext(prisma, tid, exceptionId),
         });
 
         return NextResponse.json({

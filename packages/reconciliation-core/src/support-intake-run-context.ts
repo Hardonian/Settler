@@ -6,7 +6,11 @@
  */
 
 import type { CanonicalExceptionStatus, OperatorExceptionStatus } from "./exception-workbench.js";
-import { EXCEPTION_MATCH_TYPES, toCanonicalExceptionStatus, toOperatorExceptionStatus } from "./exception-workbench.js";
+import {
+  EXCEPTION_MATCH_TYPES,
+  toCanonicalExceptionStatus,
+  toOperatorExceptionStatus,
+} from "./exception-workbench.js";
 import {
   buildExceptionFamilySummary,
   predictExceptionArchetype,

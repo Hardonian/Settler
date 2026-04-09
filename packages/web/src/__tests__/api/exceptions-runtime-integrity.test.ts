@@ -316,10 +316,19 @@ describe("exceptions runtime integrity", () => {
 
     expect(response.status).toBe(200);
     const payload = await response.json();
+    expect(payload.artifact.schemaVersion).toBe("proofpack.exception.v3");
     expect(payload.artifact.completeness.isExportReady).toBe(false);
     expect(payload.artifact.changeSincePreviousRun.available).toBe(false);
     expect(payload.artifact.changeSincePreviousRun.state).toBe("unavailable");
     expect(payload.artifact.completeness.degradedEvidenceReasons).toContain("source_unavailable");
+    expect(payload.artifact.familySummary).toMatchObject({
+      familyCode: "AMOUNT_MISMATCH",
+      state: "building",
+    });
+    expect(payload.artifact.recurringContext.familySummary).toMatchObject({
+      familyCode: "AMOUNT_MISMATCH",
+      state: "building",
+    });
   });
 
   test("returns 404 when a requested run scope does not exist", async () => {

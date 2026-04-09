@@ -32,7 +32,8 @@ async function ReportIssueContent() {
         description={
           <>
             Opens a tenant-scoped support intake. When you include a run identifier, Settler
-            attaches compact proof summary context for triage—not narrative “AI” conclusions.
+            attaches compact proof summary context for triage. When you include an exception
+            identifier, Settler also attaches canonical family-memory context.
           </>
         }
       />

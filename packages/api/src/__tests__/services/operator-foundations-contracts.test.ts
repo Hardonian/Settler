@@ -41,6 +41,7 @@ describe("operator foundations contracts", () => {
     const parsed = supportIntakeSubmissionSchema.parse({
       tenant_id: "tenant_a",
       run_id: "run_1",
+      exception_id: "exception_1",
       category: "run_failure",
       description: "Reconciliation run fails after upload validation in production env.",
       route: "POST /v1/reconciliation/run",
@@ -49,6 +50,7 @@ describe("operator foundations contracts", () => {
     });
 
     expect(parsed.category).toBe("run_failure");
+    expect(parsed.exception_id).toBe("exception_1");
   });
 
   it("maps legacy metric types to canonical usage events", () => {
