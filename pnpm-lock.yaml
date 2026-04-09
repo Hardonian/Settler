@@ -292,8 +292,8 @@ importers:
         specifier: 0.16.77
         version: 0.16.77
       uuid:
-        specifier: ^9.0.1
-        version: 9.0.1
+        specifier: ^13.0.0
+        version: 13.0.0
       winston:
         specifier: ^3.11.0
         version: 3.19.0
@@ -426,8 +426,8 @@ importers:
         specifier: ^5.3.3
         version: 5.9.3
       uuid:
-        specifier: ^9.0.1
-        version: 9.0.1
+        specifier: ^13.0.0
+        version: 13.0.0
     devDependencies:
       '@types/jest':
         specifier: ^29.5.11
@@ -487,8 +487,8 @@ importers:
         specifier: ^3.0.3
         version: 3.0.3
       uuid:
-        specifier: ^9.0.1
-        version: 9.0.1
+        specifier: ^13.0.0
+        version: 13.0.0
       winston:
         specifier: ^3.11.0
         version: 3.19.0
