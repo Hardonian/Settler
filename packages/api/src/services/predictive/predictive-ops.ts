@@ -301,29 +301,147 @@ export class PredictiveOps {
       if (prediction.severity === "critical" || prediction.probability > 0.8) {
         logWarn("Taking preemptive action", { prediction });
 
-        // Adjust routing
+        // Adjust routing to cheaper models for cost predictions
         if (prediction.type === "cost") {
-          // TODO: Adjust AI routing to cheaper models
+          await this.adjustAIRouting("economy");
         }
 
-        // Propose new workflows
+        // Propose new workflows for template predictions
         if (prediction.type === "template") {
-          // TODO: Propose workflow improvements
+          await this.proposeWorkflowImprovement(prediction);
         }
 
-        // Warn users
-        // TODO: Send notifications
+        // Send notifications for critical predictions
+        await this.sendPredictionAlert(prediction);
 
-        // Split workloads
-        if (prediction.type === "transformation") {
-          // TODO: Split heavy transformations
+        // Split heavy transformations
+        if (prediction.type === "transformation" && prediction.metadata?.operationId) {
+          await this.enableWorkloadSplitting(prediction.metadata.operationId as string);
         }
 
-        // Cache heavy operations
-        if (prediction.type === "transformation") {
-          // TODO: Enable caching
+        // Enable caching for heavy operations
+        if (prediction.type === "transformation" && prediction.metadata?.cacheKey) {
+          await this.enableCaching(prediction.metadata.cacheKey as string);
         }
       }
+    }
+  }
+
+  /**
+   * Adjust AI model routing based on cost constraints
+   */
+  private async adjustAIRouting(mode: "economy" | "balanced" | "performance"): Promise<void> {
+    const { aiConfig } = await import("../../config/ai-config");
+    
+    switch (mode) {
+      case "economy":
+        aiConfig.modelTier = "basic";
+        aiConfig.maxTokens = 2000;
+        logInfo("AI routing adjusted to economy mode");
+        break;
+      case "performance":
+        aiConfig.modelTier = "advanced";
+        aiConfig.maxTokens = 8000;
+        logInfo("AI routing adjusted to performance mode");
+        break;
+      default:
+        aiConfig.modelTier = "standard";
+        aiConfig.maxTokens = 4000;
+        logInfo("AI routing adjusted to balanced mode");
+    }
+  }
+
+  /**
+   * Propose workflow improvements based on patterns
+   */
+  private async proposeWorkflowImprovement(prediction: FailurePrediction): Promise<void> {
+    try {
+      const { prisma } = await import("../../infrastructure/db/prisma");
+      
+      await prisma.workflowImprovement.create({
+        data: {
+          title: `Auto-proposed: ${prediction.description}`,
+          description: prediction.recommendedAction || "Improvement based on failure prediction",
+          predictedImpact: prediction.metadata?.impact as string || "medium",
+          confidence: prediction.probability,
+          status: "proposed",
+          createdAt: new Date(),
+        },
+      });
+      
+      logInfo("Workflow improvement proposed", { predictionId: prediction.id });
+    } catch (error) {
+      logError("Failed to propose workflow improvement", error);
+    }
+  }
+
+  /**
+   * Send prediction alert to notification service
+   */
+  private async sendPredictionAlert(prediction: FailurePrediction): Promise<void> {
+    try {
+      const { notificationService } = await import("../notifications/notification-service");
+      
+      if (notificationService?.hasAnyConfiguration?.()) {
+        await notificationService.sendNotification({
+          severity: prediction.severity === "critical" ? "critical" : "warning",
+          title: `Predictive Alert: ${prediction.type} Failure Predicted`,
+          message: `${prediction.description} (Probability: ${(prediction.probability * 100).toFixed(1)}%)`,
+          connectorId: "system",
+          tenantId: "system",
+          metadata: {
+            predictionId: prediction.id,
+            type: prediction.type,
+            probability: prediction.probability,
+            recommendedAction: prediction.recommendedAction,
+          },
+          timestamp: new Date(),
+        });
+      }
+    } catch (error) {
+      logError("Failed to send prediction alert", error);
+    }
+  }
+
+  /**
+   * Enable workload splitting for heavy operations
+   */
+  private async enableWorkloadSplitting(operationId: string): Promise<void> {
+    try {
+      const { prisma } = await import("../../infrastructure/db/prisma");
+      
+      await prisma.operationConfig.upsert({
+        where: { operationId },
+        update: { enableSplitting: true, updatedAt: new Date() },
+        create: { 
+          operationId, 
+          enableSplitting: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      });
+      
+      logInfo("Workload splitting enabled", { operationId });
+    } catch (error) {
+      logError("Failed to enable workload splitting", error);
+    }
+  }
+
+  /**
+   * Enable caching for heavy operations
+   */
+  private async enableCaching(cacheKey: string): Promise<void> {
+    try {
+      const { cacheManager } = await import("../../infrastructure/cache/cache-manager");
+      
+      await cacheManager.enableCache(cacheKey, {
+        ttl: 3600, // 1 hour default
+        tags: ["predictive-ops", "heavy-ops"],
+      });
+      
+      logInfo("Caching enabled", { cacheKey });
+    } catch (error) {
+      logError("Failed to enable caching", error);
     }
   }
 }
