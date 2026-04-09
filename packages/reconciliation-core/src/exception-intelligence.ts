@@ -116,6 +116,7 @@ const KEYWORD_RULES: Array<{ code: string; pattern: RegExp }> = [
       /\bfalse positive(?:s)?\b|\bnot actionable\b|\bexpected gap\b|\bbenign\b|\bexpected\b/i,
   },
   {
+    // cspell:ignore investigat escalat
     code: "REOPENED_FOR_INVESTIGATION",
     pattern: /\bre-?open(?:ed)?\b|\b[i]nvestigat(?:e|ion)\b|\bfollow(?:\s|-)?up\b|\b[e]scalat/i,
   },
