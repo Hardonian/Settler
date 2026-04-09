@@ -134,9 +134,7 @@ export class StreamingRecon extends EventEmitter {
     unmatched: number;
     progress: number; // 0-1
   }> {
-    // TODO: Implement progressive reconciliation
-    // This would process data in chunks and emit progress updates
-
+    // Process data in chunks and emit progress updates
     const total = Math.max(sourceData.length, targetData.length);
     let matched = 0;
     let unmatched = 0;
@@ -177,8 +175,66 @@ export class StreamingRecon extends EventEmitter {
     logInfo("Flushing streaming buffer", { batchSize: batch.length });
 
     // Process batch
-    // TODO: Implement batch processing
+    await this.processBatch(batch);
   }
+
+  /**
+   * Process a batch of records
+   */
+  private async processBatch(batch: StreamingRecord[]): Promise<void> {
+    logInfo(`Processing batch of ${batch.length} records`);
+
+    try {
+      // Group by tenant for efficient processing
+      const byTenant = batch.reduce((acc, record) => {
+        if (!acc[record.tenantId]) acc[record.tenantId] = [];
+        acc[record.tenantId].push(record);
+        return acc;
+      }, {} as Record<string, StreamingRecord[]>);
+
+      // Process each tenant's records
+      for (const [tenantId, records] of Object.entries(byTenant)) {
+        // Validate records
+        const validationResults = await Promise.all(
+          records.map(r => this.validateRecord(r.data, r.schema))
+        );
+
+        // Transform records
+        const transformedRecords = records.map((r, i) => ({
+          ...r,
+          data: validationResults[i].valid ? r.data : null,
+          validationErrors: validationResults[i].errors,
+        })).filter(r => r.data !== null);
+
+        // Store in database
+        if (transformedRecords.length > 0) {
+          await this.prisma.streamingRecord.createMany({
+            data: transformedRecords.map(r => ({
+              tenantId: r.tenantId,
+              data: r.data as Prisma.InputJsonValue,
+              schema: r.schema as Prisma.InputJsonValue,
+              processedAt: new Date(),
+            })),
+            skipDuplicates: true,
+          });
+        }
+
+        // Emit progress
+        this.emit("batch_processed", {
+          type: "batch_processed",
+          data: {
+            tenantId,
+            processed: records.length,
+            valid: transformedRecords.length,
+            invalid: records.length - transformedRecords.length,
+          },
+          timestamp: new Date(),
+        } as StreamingUpdate);
+      }
+    } catch (error) {
+      logError("Batch processing failed", error);
+      throw error;
+    }
 
   /**
    * Compute schema diff
@@ -254,21 +310,105 @@ export class StreamingRecon extends EventEmitter {
    * Apply validation rule
    */
   private async applyValidationRule(
-    _data: Record<string, unknown>,
-    _rule: Record<string, unknown>
+    data: Record<string, unknown>,
+    rule: Record<string, unknown>
   ): Promise<{
     valid: boolean;
     errors: string[];
   }> {
-    // TODO: Implement validation rule application
-    return { valid: true, errors: [] };
+    const errors: string[] = [];
+    const { field, type, required, pattern, min, max } = rule;
+
+    const value = data[field as string];
+
+    // Required check
+    if (required && (value === undefined || value === null || value === "")) {
+      errors.push(`${field} is required`);
+    }
+
+    if (value !== undefined && value !== null) {
+      // Type validation
+      switch (type) {
+        case "string":
+          if (typeof value !== "string") errors.push(`${field} must be a string`);
+          break;
+        case "number":
+          if (typeof value !== "number" || isNaN(value)) errors.push(`${field} must be a number`);
+          break;
+        case "date":
+          if (isNaN(Date.parse(String(value)))) errors.push(`${field} must be a valid date`);
+          break;
+        case "email":
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value))) {
+            errors.push(`${field} must be a valid email`);
+          }
+          break;
+      }
+
+      // Pattern validation
+      if (pattern && !new RegExp(pattern as string).test(String(value))) {
+        errors.push(`${field} does not match required pattern`);
+      }
+
+      // Range validation for numbers
+      if (type === "number" && typeof value === "number") {
+        if (min !== undefined && value < (min as number)) {
+          errors.push(`${field} must be >= ${min}`);
+        }
+        if (max !== undefined && value > (max as number)) {
+          errors.push(`${field} must be <= ${max}`);
+        }
+      }
+    }
+
+    return { valid: errors.length === 0, errors };
   }
 
   /**
-   * Match two records
+   * Match two records using configurable matching rules
    */
   private match(source: Record<string, unknown>, target: Record<string, unknown>): boolean {
-    // TODO: Implement matching logic
-    return JSON.stringify(source) === JSON.stringify(target);
+    // Get match keys from config or use defaults
+    const matchKeys = this.config.matchKeys || ["id", "externalId", "reference"];
+
+    // Try exact match on primary keys
+    for (const key of matchKeys) {
+      const sourceVal = source[key];
+      const targetVal = target[key];
+
+      if (sourceVal !== undefined && targetVal !== undefined) {
+        if (sourceVal === targetVal) return true;
+
+        // Try fuzzy match for strings
+        if (typeof sourceVal === "string" && typeof targetVal === "string") {
+          const normalizedSource = sourceVal.toLowerCase().trim();
+          const normalizedTarget = targetVal.toLowerCase().trim();
+          if (normalizedSource === normalizedTarget) return true;
+
+          // Try substring match
+          if (normalizedSource.includes(normalizedTarget) || normalizedTarget.includes(normalizedSource)) {
+            return true;
+          }
+        }
+      }
+    }
+
+    // Try amount + date matching for financial records
+    const sourceAmount = source["amount"] || source["total"];
+    const targetAmount = target["amount"] || target["total"];
+    const sourceDate = source["date"] || source["createdAt"];
+    const targetDate = target["date"] || target["createdAt"];
+
+    if (sourceAmount !== undefined && targetAmount !== undefined &&
+        sourceDate !== undefined && targetDate !== undefined) {
+      const amountMatch = Math.abs(Number(sourceAmount) - Number(targetAmount)) < 0.01;
+      const sourceDateObj = new Date(sourceDate as string);
+      const targetDateObj = new Date(targetDate as string);
+      const dateMatch = Math.abs(sourceDateObj.getTime() - targetDateObj.getTime()) < 24 * 60 * 60 * 1000; // 1 day tolerance
+
+      if (amountMatch && dateMatch) return true;
+    }
+
+    return false;
   }
 }
