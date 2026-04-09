@@ -1,23 +1,23 @@
-import { Metadata } from 'next';
-import { CodeBlock } from '@/components/docs/CodeBlock';
+import { Metadata } from "next";
+import { CodeBlock } from "@/components/docs/CodeBlock";
 
 export const metadata: Metadata = {
-  title: 'Auth & Security - Docs',
-  description: 'Authentication and security best practices',
+  title: "Auth & Security - Docs",
+  description: "Authentication and security best practices",
 };
 
 export default function AuthPage() {
   return (
     <div className="prose prose-slate dark:prose-invert max-w-none">
       <h1>Authentication & Security</h1>
-      
+
       <section>
         <h2>API Keys</h2>
         <p>
-          Settler uses API keys to authenticate requests. You can create and manage API keys in the{' '}
+          Settler uses API keys to authenticate requests. You can create and manage API keys in the{" "}
           <a href="/console/api-keys">Console</a>.
         </p>
-        
+
         <h3>Using API Keys</h3>
         <CodeBlock
           code={`import { Settler } from '@settler/sdk';
@@ -27,7 +27,7 @@ const client = new Settler({
 });`}
           language="typescript"
         />
-        
+
         <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 my-4">
           <p className="text-sm text-yellow-800 dark:text-yellow-200">
             <strong>⚠️ Security Best Practices:</strong>
@@ -53,7 +53,7 @@ const client = new Settler({
       <section>
         <h2>Rate Limiting</h2>
         <p>
-          API requests are rate-limited per workspace. See{' '}
+          API requests are rate-limited per workspace. See{" "}
           <a href="/docs/status">Status & Limits</a> for current limits.
         </p>
       </section>

@@ -48,7 +48,7 @@
     "source": "shopify",
     "shopify_order_id": "gid://shopify/Order/5003",
     "shopify_order_number": "1003",
-    "amount": 299.00,
+    "amount": 299.0,
     "currency": "USD",
     "timestamp": "2024-01-17T09:18:00Z",
     "status": "completed",
@@ -58,7 +58,7 @@
         "id": "li_003",
         "title": "Enterprise Plan - Annual",
         "quantity": 1,
-        "price": 299.00
+        "price": 299.0
       }
     ],
     "fulfillment_status": "fulfilled",
@@ -94,7 +94,7 @@
     "source": "shopify",
     "shopify_order_id": "gid://shopify/Order/5005",
     "shopify_order_number": "1005",
-    "amount": 199.50,
+    "amount": 199.5,
     "currency": "USD",
     "timestamp": "2024-01-19T11:32:00Z",
     "status": "completed",
@@ -104,7 +104,7 @@
         "id": "li_005",
         "title": "Pro Plan - Quarterly",
         "quantity": 1,
-        "price": 199.50
+        "price": 199.5
       }
     ],
     "fulfillment_status": "fulfilled",
@@ -117,7 +117,7 @@
     "source": "shopify",
     "shopify_order_id": "gid://shopify/Order/5006",
     "shopify_order_number": "1006",
-    "amount": 150.00,
+    "amount": 150.0,
     "currency": "USD",
     "timestamp": "2024-01-20T13:00:00Z",
     "status": "completed",
@@ -127,13 +127,13 @@
         "id": "li_006a",
         "title": "Item A",
         "quantity": 1,
-        "price": 100.00
+        "price": 100.0
       },
       {
         "id": "li_006b",
         "title": "Item B",
         "quantity": 1,
-        "price": 50.00
+        "price": 50.0
       }
     ],
     "fulfillment_status": "partial",

@@ -11,15 +11,17 @@ Common issues and solutions for Settler API.
 **Solutions:**
 
 1. **Check API Key Format**
+
    ```bash
    # Correct format
    sk_live_1234567890abcdef
-   
+
    # Wrong format
    rk_1234567890  # Old format
    ```
 
 2. **Verify API Key in Header**
+
    ```bash
    curl -H "X-API-Key: sk_your_api_key" https://api.settler.io/api/v1/jobs
    ```
@@ -48,6 +50,7 @@ Common issues and solutions for Settler API.
 **Solutions:**
 
 1. **Check Rate Limit Headers**
+
    ```http
    X-RateLimit-Limit: 100
    X-RateLimit-Remaining: 0
@@ -55,13 +58,14 @@ Common issues and solutions for Settler API.
    ```
 
 2. **Implement Exponential Backoff**
+
    ```typescript
    async function requestWithRetry(fn: () => Promise<any>, retries = 3) {
      try {
        return await fn();
      } catch (error) {
        if (error.status === 429 && retries > 0) {
-         await new Promise(resolve => setTimeout(resolve, 1000 * (4 - retries)));
+         await new Promise((resolve) => setTimeout(resolve, 1000 * (4 - retries)));
          return requestWithRetry(fn, retries - 1);
        }
        throw error;
@@ -80,6 +84,7 @@ Common issues and solutions for Settler API.
 **Solutions:**
 
 1. **Check Job Logs**
+
    ```bash
    curl https://api.settler.io/api/v1/jobs/job_123/logs
    ```
@@ -100,21 +105,22 @@ Common issues and solutions for Settler API.
 **Solutions:**
 
 1. **Review Matching Rules**
+
    ```typescript
    // Too strict
    rules: {
      matching: [
        { field: "order_id", type: "exact" },
        { field: "amount", type: "exact", tolerance: 0 }, // No tolerance
-     ]
+     ];
    }
-   
+
    // Better
    rules: {
      matching: [
        { field: "order_id", type: "exact" },
        { field: "amount", type: "exact", tolerance: 0.01 }, // Allow small variance
-     ]
+     ];
    }
    ```
 
@@ -126,9 +132,7 @@ Common issues and solutions for Settler API.
 3. **Use Fuzzy Matching**
    ```typescript
    rules: {
-     matching: [
-       { field: "reference", type: "fuzzy", threshold: 0.8 },
-     ]
+     matching: [{ field: "reference", type: "fuzzy", threshold: 0.8 }];
    }
    ```
 
@@ -141,6 +145,7 @@ Common issues and solutions for Settler API.
 **Solutions:**
 
 1. **List Available Adapters**
+
    ```bash
    curl https://api.settler.io/api/v1/adapters
    ```
@@ -156,12 +161,13 @@ Common issues and solutions for Settler API.
 **Solutions:**
 
 1. **Verify Credentials**
+
    ```typescript
    // Test adapter connection
    const adapter = new StripeAdapter();
    await adapter.fetch({
      dateRange: { start: new Date(), end: new Date() },
-     config: { apiKey: "sk_test_..." }
+     config: { apiKey: "sk_test_..." },
    });
    ```
 
@@ -187,9 +193,10 @@ Common issues and solutions for Settler API.
    - Should return 200 status code
 
 2. **Check Webhook Secret**
+
    ```typescript
    // Verify webhook signature
-   const signature = req.headers['x-settler-signature'];
+   const signature = req.headers["x-settler-signature"];
    const isValid = verifyWebhookSignature(payload, signature, secret);
    ```
 
@@ -210,11 +217,12 @@ Common issues and solutions for Settler API.
    - Check webhook status endpoint
 
 2. **Implement Idempotency**
+
    ```typescript
    // Handle duplicate webhooks
    const processedIds = new Set();
-   
-   app.post('/webhooks', (req, res) => {
+
+   app.post("/webhooks", (req, res) => {
      const eventId = req.body.id;
      if (processedIds.has(eventId)) {
        return res.status(200).json({ received: true });
@@ -233,11 +241,13 @@ Common issues and solutions for Settler API.
 **Solutions:**
 
 1. **Update SDK Version**
+
    ```bash
    npm install @settler/sdk@latest
    ```
 
 2. **Check TypeScript Version**
+
    ```bash
    npm install typescript@^5.3.0 --save-dev
    ```
@@ -254,15 +264,17 @@ Common issues and solutions for Settler API.
 **Solutions:**
 
 1. **Install SDK**
+
    ```bash
    npm install @settler/sdk
    ```
 
 2. **Check Package Scope**
+
    ```typescript
    // Correct
    import Settler from "@settler/sdk";
-   
+
    // Wrong
    import Settler from "settler-sdk";
    ```
@@ -280,12 +292,13 @@ Common issues and solutions for Settler API.
    - Use pagination for large datasets
 
 2. **Use Async Operations**
+
    ```typescript
    // Trigger async job execution
    const execution = await client.jobs.run(jobId);
-   
+
    // Poll for completion
-   while (execution.status === 'running') {
+   while (execution.status === "running") {
      await sleep(5000);
      execution = await client.jobs.getExecution(execution.id);
    }
@@ -317,11 +330,11 @@ If you're still experiencing issues:
 
 ## Common Error Codes
 
-| Code | Meaning | Solution |
-|------|---------|----------|
-| 400 | Bad Request | Check request format and validation |
-| 401 | Unauthorized | Verify API key or token |
-| 403 | Forbidden | Check API key permissions |
-| 404 | Not Found | Verify resource ID exists |
-| 429 | Rate Limited | Implement backoff, check limits |
-| 500 | Server Error | Retry request, contact support |
+| Code | Meaning      | Solution                            |
+| ---- | ------------ | ----------------------------------- |
+| 400  | Bad Request  | Check request format and validation |
+| 401  | Unauthorized | Verify API key or token             |
+| 403  | Forbidden    | Check API key permissions           |
+| 404  | Not Found    | Verify resource ID exists           |
+| 429  | Rate Limited | Implement backoff, check limits     |
+| 500  | Server Error | Retry request, contact support      |

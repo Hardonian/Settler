@@ -1,6 +1,6 @@
 /**
  * Collect Reality Metrics
- * 
+ *
  * This function collects reality metrics from actual data sources and updates
  * the canonical reality_metrics table. It should be run periodically (e.g., hourly).
  */
@@ -75,11 +75,7 @@ serve(async (req) => {
     const { data: failed7d, error: failed7dError } = await supabase
       .from("stripe_events")
       .select("id", { count: "exact" })
-      .in("type", [
-        "invoice.payment_failed",
-        "charge.failed",
-        "payment_intent.payment_failed",
-      ])
+      .in("type", ["invoice.payment_failed", "charge.failed", "payment_intent.payment_failed"])
       .gte("received_at", sevenDaysAgo.toISOString());
 
     if (!failed7dError) {
@@ -95,11 +91,7 @@ serve(async (req) => {
     const { data: failed30d, error: failed30dError } = await supabase
       .from("stripe_events")
       .select("id", { count: "exact" })
-      .in("type", [
-        "invoice.payment_failed",
-        "charge.failed",
-        "payment_intent.payment_failed",
-      ])
+      .in("type", ["invoice.payment_failed", "charge.failed", "payment_intent.payment_failed"])
       .gte("received_at", thirtyDaysAgo.toISOString());
 
     if (!failed30dError) {
@@ -121,10 +113,13 @@ serve(async (req) => {
       .gte("cancelled_at", thirtyDaysAgo.toISOString());
 
     if (!cancelledError) {
-      const churnRate = Array.isArray(cancelled) && cancelled.length > 0 
-        ? (cancelled.length / Math.max(Array.isArray(activeSubscriptions) ? activeSubscriptions.length : 1, 1)) * 100
-        : 0;
-      
+      const churnRate =
+        Array.isArray(cancelled) && cancelled.length > 0
+          ? (cancelled.length /
+              Math.max(Array.isArray(activeSubscriptions) ? activeSubscriptions.length : 1, 1)) *
+            100
+          : 0;
+
       await supabase.rpc("upsert_reality_metric", {
         p_category: "revenue",
         p_name: "churn",

@@ -1,15 +1,15 @@
 /**
  * Usage Limit Enforcement Middleware
- * 
+ *
  * Enforces usage limits before API execution to prevent free tier abuse.
  * Checks usage_counters table and returns 429 if limit exceeded.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/shared/db/prismaClient';
-import { getCorrelationId, createLogger } from '@/lib/monitoring/correlation';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/shared/db/prismaClient";
+import { getCorrelationId, createLogger } from "@/lib/monitoring/correlation";
 
-export type ServiceType = 'reconcile' | 'exceptions';
+export type ServiceType = "reconcile" | "exceptions";
 
 interface UsageLimitCheck {
   allowed: boolean;
@@ -25,17 +25,18 @@ interface UsageLimitCheck {
 export async function checkUsageLimit(
   billingAccountId: string,
   service: ServiceType,
-  period: 'daily' | 'monthly' = 'monthly'
+  period: "daily" | "monthly" = "monthly"
 ): Promise<UsageLimitCheck> {
   const correlationId = await getCorrelationId();
-  const logger = await createLogger({ route: 'usage-limits', method: 'check' });
+  const logger = await createLogger({ route: "usage-limits", method: "check" });
 
   try {
     // Get current period start
     const now = new Date();
-    const periodStart = period === 'daily'
-      ? new Date(now.getFullYear(), now.getMonth(), now.getDate())
-      : new Date(now.getFullYear(), now.getMonth(), 1);
+    const periodStart =
+      period === "daily"
+        ? new Date(now.getFullYear(), now.getMonth(), now.getDate())
+        : new Date(now.getFullYear(), now.getMonth(), 1);
 
     // Get or create usage counter
     let counter = await prisma.usageCounter.findUnique({
@@ -55,7 +56,7 @@ export async function checkUsageLimit(
       const subscription = await prisma.subscription.findFirst({
         where: {
           billingAccountId,
-          status: 'active',
+          status: "active",
         },
         select: {
           planId: true,
@@ -69,8 +70,8 @@ export async function checkUsageLimit(
       };
 
       // Get plan code to determine limit
-      const planId = subscription?.planId || 'base';
-      const isPaidPlan = planId !== 'base';
+      const planId = subscription?.planId || "base";
+      const isPaidPlan = planId !== "base";
       const limit = isPaidPlan ? -1 : defaultLimits[service]; // -1 = unlimited for paid plans
 
       counter = await prisma.usageCounter.create({
@@ -91,11 +92,12 @@ export async function checkUsageLimit(
     const allowed = limit === -1 || current < limit;
 
     // Calculate reset time
-    const resetAt = period === 'daily'
-      ? new Date(periodStart.getTime() + 24 * 60 * 60 * 1000)
-      : new Date(periodStart.getFullYear(), periodStart.getMonth() + 1, 1);
+    const resetAt =
+      period === "daily"
+        ? new Date(periodStart.getTime() + 24 * 60 * 60 * 1000)
+        : new Date(periodStart.getFullYear(), periodStart.getMonth() + 1, 1);
 
-    logger.info('Usage limit checked', {
+    logger.info("Usage limit checked", {
       correlationId,
       billingAccountId,
       service,
@@ -114,13 +116,13 @@ export async function checkUsageLimit(
       resetAt,
     };
   } catch (error) {
-    logger.error('Error checking usage limit', {
+    logger.error("Error checking usage limit", {
       correlationId,
       billingAccountId,
       service,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : "Unknown error",
     });
-    
+
     // On error, allow request (fail open) but log
     return {
       allowed: true,
@@ -138,14 +140,15 @@ export async function checkUsageLimit(
 export async function incrementUsageCounter(
   billingAccountId: string,
   service: ServiceType,
-  period: 'daily' | 'monthly' = 'monthly',
+  period: "daily" | "monthly" = "monthly",
   amount: number = 1
 ): Promise<void> {
   try {
     const now = new Date();
-    const periodStart = period === 'daily'
-      ? new Date(now.getFullYear(), now.getMonth(), now.getDate())
-      : new Date(now.getFullYear(), now.getMonth(), 1);
+    const periodStart =
+      period === "daily"
+        ? new Date(now.getFullYear(), now.getMonth(), now.getDate())
+        : new Date(now.getFullYear(), now.getMonth(), 1);
 
     await prisma.usageCounter.upsert({
       where: {
@@ -171,10 +174,10 @@ export async function incrementUsageCounter(
       },
     });
   } catch (error) {
-    console.error('[Usage Limits] Error incrementing counter:', {
+    console.error("[Usage Limits] Error incrementing counter:", {
       billingAccountId,
       service,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : "Unknown error",
     });
     // Don't throw - usage tracking is non-critical
   }
@@ -193,9 +196,9 @@ export async function enforceUsageLimit(
 
   if (!check.allowed) {
     const correlationId = await getCorrelationId();
-    const logger = await createLogger({ route: 'usage-limits', method: 'enforce' });
-    
-    logger.warn('Usage limit exceeded', {
+    const logger = await createLogger({ route: "usage-limits", method: "enforce" });
+
+    logger.warn("Usage limit exceeded", {
       correlationId,
       billingAccountId,
       service,
@@ -205,7 +208,7 @@ export async function enforceUsageLimit(
 
     return NextResponse.json(
       {
-        error: 'Usage limit exceeded',
+        error: "Usage limit exceeded",
         service,
         current: check.current,
         limit: check.limit,
@@ -215,12 +218,13 @@ export async function enforceUsageLimit(
       {
         status: 429,
         headers: {
-          'Retry-After': check.resetAt
+          "Retry-After": check.resetAt
             ? Math.ceil((check.resetAt.getTime() - Date.now()) / 1000).toString()
-            : '3600',
-          'X-RateLimit-Limit': check.limit === -1 ? 'unlimited' : check.limit.toString(),
-          'X-RateLimit-Remaining': check.remaining === -1 ? 'unlimited' : check.remaining.toString(),
-          'X-RateLimit-Reset': check.resetAt?.toISOString() || '',
+            : "3600",
+          "X-RateLimit-Limit": check.limit === -1 ? "unlimited" : check.limit.toString(),
+          "X-RateLimit-Remaining":
+            check.remaining === -1 ? "unlimited" : check.remaining.toString(),
+          "X-RateLimit-Reset": check.resetAt?.toISOString() || "",
         },
       }
     );

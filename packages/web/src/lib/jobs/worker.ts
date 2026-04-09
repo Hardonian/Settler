@@ -1,19 +1,19 @@
 /**
  * Background Job Worker
- * 
+ *
  * Processes jobs from the queue with retries, backoff, and dead-letter handling.
  */
 
-import { createClient } from '@/lib/supabase/server';
-import { getNextAvailableAt, shouldRetry } from '@/lib/backoff';
-import { createLogger, generateCorrelationId } from '@/lib/logger';
+import { createClient } from "@/lib/supabase/server";
+import { getNextAvailableAt, shouldRetry } from "@/lib/backoff";
+import { createLogger, generateCorrelationId } from "@/lib/logger";
 
 export interface Job {
   id: string;
   workspace_id: string;
   type: string;
   payload: Record<string, unknown>;
-  status: 'queued' | 'running' | 'succeeded' | 'failed' | 'dead';
+  status: "queued" | "running" | "succeeded" | "failed" | "dead";
   idempotency_key?: string;
   run_id?: string;
   attempts: number;
@@ -39,16 +39,16 @@ export async function claimNextJob(): Promise<Job | null> {
   try {
     // Find next available job (not locked or lock expired)
     const { data: jobs, error } = await (supabase
-      .from('jobs' as any)
-      .select('*')
-      .eq('status', 'queued')
-      .lte('available_at', new Date().toISOString())
+      .from("jobs" as any)
+      .select("*")
+      .eq("status", "queued")
+      .lte("available_at", new Date().toISOString())
       .or(`locked_at.is.null,locked_at.lt.${new Date(Date.now() - LOCK_TIMEOUT_MS).toISOString()}`)
-      .order('available_at', { ascending: true })
+      .order("available_at", { ascending: true })
       .limit(1) as any);
 
     if (error) {
-      logger.error('Failed to query jobs', error as Error);
+      logger.error("Failed to query jobs", error as Error);
       return null;
     }
 
@@ -59,24 +59,24 @@ export async function claimNextJob(): Promise<Job | null> {
     const job = jobs[0];
 
     // Try to lock the job
-    const { data: updated, error: lockError } = await ((supabase.from('jobs' as any) as any)
+    const { data: updated, error: lockError } = await ((supabase.from("jobs" as any) as any)
       .update({
-        status: 'running',
+        status: "running",
         locked_at: new Date().toISOString(),
         locked_by: WORKER_ID,
       } as any)
-      .eq('id', job.id)
-      .eq('status', 'queued') // Optimistic locking
+      .eq("id", job.id)
+      .eq("status", "queued") // Optimistic locking
       .select()
       .single() as any);
 
     if (lockError || !updated) {
       // Job was claimed by another worker
-      logger.debug('Job already claimed by another worker', { jobId: job.id });
+      logger.debug("Job already claimed by another worker", { jobId: job.id });
       return null;
     }
 
-    logger.info('Claimed job', {
+    logger.info("Claimed job", {
       jobId: updated.id,
       type: updated.type,
       workspaceId: updated.workspace_id,
@@ -87,7 +87,7 @@ export async function claimNextJob(): Promise<Job | null> {
       workspace_id: updated.workspace_id,
       type: updated.type,
       payload: updated.payload || {},
-      status: updated.status as Job['status'],
+      status: updated.status as Job["status"],
       idempotency_key: updated.idempotency_key || undefined,
       run_id: updated.run_id || undefined,
       attempts: updated.attempts,
@@ -96,7 +96,7 @@ export async function claimNextJob(): Promise<Job | null> {
       available_at: new Date(updated.available_at),
     };
   } catch (error) {
-    logger.error('Error claiming job', error as Error);
+    logger.error("Error claiming job", error as Error);
     return null;
   }
 }
@@ -115,13 +115,13 @@ export async function executeJob(job: Job, handler: JobHandler): Promise<void> {
 
   const attemptNo = job.attempts + 1;
 
-  logger.info('Executing job', {
+  logger.info("Executing job", {
     type: job.type,
     attempt: attemptNo,
   });
 
   // Record attempt start
-  await (supabase.from('job_attempts' as any).insert({
+  await (supabase.from("job_attempts" as any).insert({
     job_id: job.id,
     attempt_no: attemptNo,
     started_at: new Date().toISOString(),
@@ -131,24 +131,24 @@ export async function executeJob(job: Job, handler: JobHandler): Promise<void> {
     await handler(job);
 
     // Success
-    await ((supabase.from('jobs' as any) as any)
+    await (supabase.from("jobs" as any) as any)
       .update({
-        status: 'succeeded',
+        status: "succeeded",
         locked_at: null,
         locked_by: null,
         updated_at: new Date().toISOString(),
       } as any)
-      .eq('id', job.id));
+      .eq("id", job.id);
 
-    await ((supabase.from('job_attempts' as any) as any)
+    await (supabase.from("job_attempts" as any) as any)
       .update({
         finished_at: new Date().toISOString(),
         ok: true,
       } as any)
-      .eq('job_id', job.id)
-      .eq('attempt_no', attemptNo));
+      .eq("job_id", job.id)
+      .eq("attempt_no", attemptNo);
 
-    logger.info('Job succeeded', { jobId: job.id });
+    logger.info("Job succeeded", { jobId: job.id });
   } catch (error) {
     const errorObj = {
       message: error instanceof Error ? error.message : String(error),
@@ -157,17 +157,17 @@ export async function executeJob(job: Job, handler: JobHandler): Promise<void> {
       timestamp: new Date().toISOString(),
     };
 
-    logger.error('Job failed', error as Error, { jobId: job.id, attempt: attemptNo });
+    logger.error("Job failed", error as Error, { jobId: job.id, attempt: attemptNo });
 
     // Record attempt failure
-    await ((supabase.from('job_attempts' as any) as any)
+    await (supabase.from("job_attempts" as any) as any)
       .update({
         finished_at: new Date().toISOString(),
         ok: false,
         error: errorObj,
       } as any)
-      .eq('job_id', job.id)
-      .eq('attempt_no', attemptNo));
+      .eq("job_id", job.id)
+      .eq("attempt_no", attemptNo);
 
     // Check if should retry
     if (shouldRetry(attemptNo, job.max_attempts)) {
@@ -181,25 +181,22 @@ export async function executeJob(job: Job, handler: JobHandler): Promise<void> {
 /**
  * Schedule retry with backoff
  */
-export async function scheduleRetry(
-  job: Job,
-  error: Record<string, unknown>
-): Promise<void> {
+export async function scheduleRetry(job: Job, error: Record<string, unknown>): Promise<void> {
   const supabase = await createClient();
   const logger = createLogger({ jobId: job.id });
 
   const nextAttempt = job.attempts + 1;
   const availableAt = getNextAvailableAt(nextAttempt);
 
-  logger.info('Scheduling retry', {
+  logger.info("Scheduling retry", {
     jobId: job.id,
     attempt: nextAttempt,
     availableAt: availableAt.toISOString(),
   });
 
-  await ((supabase.from('jobs' as any) as any)
+  await (supabase.from("jobs" as any) as any)
     .update({
-      status: 'queued',
+      status: "queued",
       attempts: nextAttempt,
       available_at: availableAt.toISOString(),
       last_error: error,
@@ -207,23 +204,20 @@ export async function scheduleRetry(
       locked_by: null,
       updated_at: new Date().toISOString(),
     } as any)
-    .eq('id', job.id));
+    .eq("id", job.id);
 }
 
 /**
  * Move job to dead letter queue
  */
-export async function deadLetter(
-  job: Job,
-  error: Record<string, unknown>
-): Promise<void> {
+export async function deadLetter(job: Job, error: Record<string, unknown>): Promise<void> {
   const supabase = await createClient();
   const logger = createLogger({ jobId: job.id });
 
-  logger.error('Moving job to dead letter queue', undefined, { jobId: job.id });
+  logger.error("Moving job to dead letter queue", undefined, { jobId: job.id });
 
   // Create dead letter entry
-  await (supabase.from('dead_letters' as any).insert({
+  await (supabase.from("dead_letters" as any).insert({
     job_id: job.id,
     workspace_id: job.workspace_id,
     type: job.type,
@@ -232,24 +226,21 @@ export async function deadLetter(
   } as any) as any);
 
   // Update job status
-  await ((supabase.from('jobs' as any) as any)
+  await (supabase.from("jobs" as any) as any)
     .update({
-      status: 'dead',
+      status: "dead",
       locked_at: null,
       locked_by: null,
       last_error: error,
       updated_at: new Date().toISOString(),
     } as any)
-    .eq('id', job.id));
+    .eq("id", job.id);
 }
 
 /**
  * Process a batch of jobs
  */
-export async function processJobs(
-  handler: JobHandler,
-  maxJobs: number = 10
-): Promise<number> {
+export async function processJobs(handler: JobHandler, maxJobs: number = 10): Promise<number> {
   let processed = 0;
 
   for (let i = 0; i < maxJobs; i++) {

@@ -7,6 +7,7 @@
 ## Overview
 
 This template helps you:
+
 - **Track progress:** Monitor pilot progress, usage, value realization
 - **Address concerns:** Identify and address issues early
 - **Build relationship:** Maintain regular communication
@@ -19,9 +20,11 @@ This template helps you:
 ## Check-In Schedule
 
 ### Day 3 Check-In
+
 **Purpose:** Ensure setup is going smoothly
 
 **Focus:**
+
 - Setup progress
 - Any issues or blockers
 - Questions or concerns
@@ -29,9 +32,11 @@ This template helps you:
 ---
 
 ### Day 7 Check-In
+
 **Purpose:** Ensure first value achieved
 
 **Focus:**
+
 - First reconciliation completed
 - Value realized
 - Usage and engagement
@@ -39,9 +44,11 @@ This template helps you:
 ---
 
 ### Day 14 Check-In
+
 **Purpose:** Conversion discussion
 
 **Focus:**
+
 - Pilot results
 - Value realized
 - Conversion decision
@@ -51,9 +58,11 @@ This template helps you:
 ## Check-In Email Template
 
 ### Day 3 Check-In
+
 **Subject:** "How's your Settler pilot going?"
 
 **Body:**
+
 ```
 Hi [Name],
 
@@ -72,9 +81,11 @@ If you need help with anything, let me know. I'm here to help.
 ---
 
 ### Day 7 Check-In
+
 **Subject:** "Pilot check-in: How's it going?"
 
 **Body:**
+
 ```
 Hi [Name],
 
@@ -98,9 +109,11 @@ I'd love to hear your feedback. Let me know if you'd like to schedule a quick ca
 ---
 
 ### Day 14 Check-In
+
 **Subject:** "Your pilot ends today: Ready to upgrade?"
 
 **Body:**
+
 ```
 Hi [Name],
 
@@ -130,6 +143,7 @@ Your 14-day pilot ends today. Based on your pilot results, Settler looks like a 
 ## Check-In Call Script
 
 ### Opening (2 minutes)
+
 **Goal:** Build rapport, check in on progress
 
 **Script:**
@@ -138,6 +152,7 @@ Your 14-day pilot ends today. Based on your pilot results, Settler looks like a 
 ---
 
 ### Progress Check (5 minutes)
+
 **Goal:** Understand progress, identify issues
 
 **Questions:**
@@ -165,15 +180,18 @@ Your 14-day pilot ends today. Based on your pilot results, Settler looks like a 
 ---
 
 ### Issue Resolution (5 minutes)
+
 **Goal:** Address issues, provide solutions
 
 **If Issues:**
+
 - Listen to concerns
 - Provide solutions
 - Offer to help troubleshoot
 - Schedule follow-up if needed
 
 **If No Issues:**
+
 - Confirm everything is working
 - Answer any questions
 - Provide tips for getting more value
@@ -181,12 +199,14 @@ Your 14-day pilot ends today. Based on your pilot results, Settler looks like a 
 ---
 
 ### Value Reinforcement (3 minutes)
+
 **Goal:** Reinforce value, build confidence
 
 **Script:**
 "Based on what you've shared, Settler is working well for you. You've processed [X] transactions, achieved [Y]% accuracy, and saved [Z] hours. That's exactly the kind of value we want you to see."
 
 **Key Points:**
+
 - Time saved
 - Accuracy improved
 - Cost savings
@@ -195,21 +215,25 @@ Your 14-day pilot ends today. Based on your pilot results, Settler looks like a 
 ---
 
 ### Next Steps (2 minutes)
+
 **Goal:** Set expectations, confirm timeline
 
 **Script:**
 "Great! You're on track. Here's what to expect:
 
 **Remaining Pilot:**
-- [X] days left
+
+- [x] days left
 - Continue using Settler
 - Let me know if you have questions
 
 **After Pilot:**
+
 - If you see value, upgrade to paid plan ($99/month Starter)
 - If not, no obligation—pilot expires
 
 **Next Check-In:**
+
 - Day 14: Conversion discussion
 
 Does that work for you?"
@@ -219,18 +243,21 @@ Does that work for you?"
 ## Check-In Checklist
 
 ### Pre-Call/Email
+
 - [ ] **Review pilot progress:** Check usage, reconciliations, value
 - [ ] **Prepare questions:** Based on pilot progress
 - [ ] **Review documentation:** Be ready to answer questions
 - [ ] **Schedule call:** If needed, schedule check-in call
 
 ### During Call/Email
+
 - [ ] **Check progress:** Understand current status
 - [ ] **Address issues:** Resolve any problems
 - [ ] **Reinforce value:** Highlight value realized
 - [ ] **Set next steps:** Confirm timeline, next check-in
 
 ### Post-Call/Email
+
 - [ ] **Send follow-up:** Thank you email with next steps
 - [ ] **Document notes:** Record check-in notes in CRM
 - [ ] **Update pipeline:** Update pipeline status
@@ -241,7 +268,9 @@ Does that work for you?"
 ## Common Issues & Solutions
 
 ### Issue: Setup Not Complete
+
 **Solution:**
+
 - Offer to help with setup
 - Provide setup guides
 - Schedule setup call
@@ -250,7 +279,9 @@ Does that work for you?"
 ---
 
 ### Issue: No First Reconciliation
+
 **Solution:**
+
 - Help run first reconciliation
 - Provide step-by-step guide
 - Offer screen share session
@@ -259,7 +290,9 @@ Does that work for you?"
 ---
 
 ### Issue: Not Seeing Value
+
 **Solution:**
+
 - Understand what they expected
 - Show value metrics (time saved, accuracy)
 - Provide use case examples
@@ -268,7 +301,9 @@ Does that work for you?"
 ---
 
 ### Issue: Technical Difficulties
+
 **Solution:**
+
 - Troubleshoot issues
 - Provide technical support
 - Escalate if needed
@@ -279,12 +314,14 @@ Does that work for you?"
 ## Check-In Metrics
 
 ### Key Metrics
+
 - **Check-In Rate:** % of pilots with check-ins (target: 100%)
 - **Issue Resolution:** % of issues resolved (target: 90%+)
 - **Value Realization:** % seeing value (target: 80%+)
 - **Conversion Rate:** % converting after check-ins (target: 30%+)
 
 ### Tracking
+
 - **CRM:** Track check-ins, issues, resolutions
 - **Dashboard:** Monitor check-in metrics
 - **Review:** Weekly review of check-in performance

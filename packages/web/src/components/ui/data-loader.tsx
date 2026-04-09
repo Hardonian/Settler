@@ -1,14 +1,14 @@
 /**
  * DataLoader Component
- * 
+ *
  * Reusable component for handling loading, error, and empty states
  * when fetching data with React Query.
  */
 
-'use client';
+"use client";
 
-import { ReactNode } from 'react';
-import { Loader2, AlertCircle, Inbox } from 'lucide-react';
+import { ReactNode } from "react";
+import { Loader2, AlertCircle, Inbox } from "lucide-react";
 
 export interface DataLoaderProps<T> {
   /**
@@ -76,11 +76,9 @@ export function DataLoader<T>({
       errorComponent?.(error as Error) || (
         <div className="flex flex-col items-center justify-center py-12">
           <AlertCircle className="w-8 h-8 text-red-600 dark:text-red-400 mb-4" />
-          <p className="text-red-600 dark:text-red-400 font-semibold mb-2">
-            Error loading data
-          </p>
+          <p className="text-red-600 dark:text-red-400 font-semibold mb-2">Error loading data</p>
           <p className="text-slate-600 dark:text-slate-400 text-sm">
-            {error instanceof Error ? error.message : 'An unexpected error occurred'}
+            {error instanceof Error ? error.message : "An unexpected error occurred"}
           </p>
         </div>
       )

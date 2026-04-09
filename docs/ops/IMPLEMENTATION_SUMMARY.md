@@ -10,6 +10,7 @@
 **Deliverable:** `ops/vercel_parity_report.md`
 
 **Findings:**
+
 - Repository structure analyzed
 - Workspace packages validated (all have valid package.json)
 - Vercel configuration documented
@@ -43,12 +44,13 @@
 **Changes Made:**
 
 1. **Updated `vercel.json`:**
+
    ```json
    {
      "buildCommand": "cd packages/web && npm run build:vercel",
      "installCommand": "npm ci --prefer-offline --no-audit --omit=optional",
      "framework": "nextjs",
-     "outputDirectory": "packages/web/.next",  // ← Added
+     "outputDirectory": "packages/web/.next", // ← Added
      "regions": ["iad1", "sfo1", "lhr1", "syd1"]
    }
    ```
@@ -88,6 +90,7 @@
 **Status:** Already Implemented
 
 **Existing Protections:**
+
 - ✅ Error boundaries (`ErrorBoundary` component)
 - ✅ Route-level error handling (`error.tsx` files)
 - ✅ Global error handler (`app/error.tsx`)

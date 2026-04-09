@@ -1,6 +1,6 @@
 /**
  * Console Types
- * 
+ *
  * Shared types for Console operations
  * Re-exported from shared/types/console.ts for convenience
  */
@@ -15,4 +15,4 @@ export type {
   Activity,
   ReceiptListItem,
   FeatureFlag,
-} from '@/shared/types/console';
+} from "@/shared/types/console";

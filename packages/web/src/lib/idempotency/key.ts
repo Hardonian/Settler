@@ -1,10 +1,10 @@
 /**
  * Idempotency Key Generation & Validation
- * 
+ *
  * Generates deterministic idempotency keys for operations to prevent duplicate effects.
  */
 
-import { createHash } from 'crypto';
+import { createHash } from "crypto";
 
 export interface IdempotencyKeyOptions {
   tenantId: string;
@@ -16,9 +16,9 @@ export interface IdempotencyKeyOptions {
 
 /**
  * Generate a deterministic idempotency key
- * 
+ *
  * Format: {tenantId}:{operation}:{timeWindow}:{payloadHash}
- * 
+ *
  * This ensures:
  * - Same operation + payload in same window = same key
  * - Different tenants = different keys
@@ -39,24 +39,16 @@ export function generateIdempotencyKey(options: IdempotencyKeyOptions): string {
 
   // Create deterministic payload hash
   const payloadStr = JSON.stringify(payload, Object.keys(payload).sort());
-  const payloadHash = createHash('sha256')
-    .update(payloadStr)
-    .digest('hex')
-    .substring(0, 16); // First 16 chars for brevity
+  const payloadHash = createHash("sha256").update(payloadStr).digest("hex").substring(0, 16); // First 16 chars for brevity
 
   // Build key components
-  const components = [
-    tenantId,
-    operation,
-    windowStart.toString(),
-    payloadHash,
-  ];
+  const components = [tenantId, operation, windowStart.toString(), payloadHash];
 
   if (userId) {
     components.push(userId);
   }
 
-  return components.join(':');
+  return components.join(":");
 }
 
 /**
@@ -69,18 +61,18 @@ export function parseIdempotencyKey(key: string): {
   payloadHash: string;
   userId?: string;
 } | null {
-  const parts = key.split(':');
+  const parts = key.split(":");
   if (parts.length < 4) {
     return null;
   }
 
   const [tenantId, operation, windowStartStr, payloadHash, ...rest] = parts;
-  
+
   if (!tenantId || !operation || !windowStartStr || !payloadHash) {
     return null;
   }
-  
-  const userId = rest.length > 0 ? rest.join(':') : undefined;
+
+  const userId = rest.length > 0 ? rest.join(":") : undefined;
 
   return {
     tenantId,
@@ -94,10 +86,7 @@ export function parseIdempotencyKey(key: string): {
 /**
  * Check if an idempotency key is still valid (within time window)
  */
-export function isIdempotencyKeyValid(
-  key: string,
-  timeWindowMinutes: number = 60
-): boolean {
+export function isIdempotencyKeyValid(key: string, timeWindowMinutes: number = 60): boolean {
   const parsed = parseIdempotencyKey(key);
   if (!parsed) {
     return false;

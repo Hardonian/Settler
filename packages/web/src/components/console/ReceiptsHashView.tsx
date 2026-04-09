@@ -1,24 +1,24 @@
 /**
  * Receipts Hash View Component
- * 
+ *
  * Displays receipts with hash chain for tamper-evident audit trail.
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Receipt, Shield, CheckCircle2, AlertTriangle, Copy, Eye } from 'lucide-react';
-import type { Receipt as ReceiptType } from '@/lib/domain/types';
+} from "@/components/ui/dialog";
+import { Receipt, Shield, CheckCircle2, AlertTriangle, Copy, Eye } from "lucide-react";
+import type { Receipt as ReceiptType } from "@/lib/domain/types";
 
 interface ReceiptsHashViewProps {
   limit?: number;
@@ -54,8 +54,8 @@ export function ReceiptsHashView({ limit = 50 }: ReceiptsHashViewProps) {
       const data = await res.json();
       setReceipts(data.receipts || []);
     } catch (error: unknown) {
-      console.error('Failed to fetch receipts:', error);
-      setError(error instanceof Error ? error.message : 'Failed to load receipts');
+      console.error("Failed to fetch receipts:", error);
+      setError(error instanceof Error ? error.message : "Failed to load receipts");
       setReceipts([]);
     } finally {
       setLoading(false);
@@ -76,10 +76,10 @@ export function ReceiptsHashView({ limit = 50 }: ReceiptsHashViewProps) {
       const data = await res.json();
       setVerificationResult(data.verification);
     } catch (error: unknown) {
-      console.error('Failed to verify receipt:', error);
+      console.error("Failed to verify receipt:", error);
       setVerificationResult({
         valid: false,
-        issues: [error instanceof Error ? error.message : 'Verification failed'],
+        issues: [error instanceof Error ? error.message : "Verification failed"],
       });
     } finally {
       setVerifying(null);
@@ -121,9 +121,7 @@ export function ReceiptsHashView({ limit = 50 }: ReceiptsHashViewProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-foreground mb-2">
-            Receipts
-          </h2>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Receipts</h2>
           <p className="text-muted-foreground">
             Tamper-evident receipts with hash chain integrity verification.
           </p>
@@ -138,9 +136,7 @@ export function ReceiptsHashView({ limit = 50 }: ReceiptsHashViewProps) {
           <CardContent className="py-12 text-center">
             <Receipt className="w-12 h-12 mx-auto mb-4 text-muted-foreground/60" />
             <h3 className="text-lg font-semibold mb-2">No receipts yet</h3>
-            <p className="text-muted-foreground">
-              Receipts will appear here once created.
-            </p>
+            <p className="text-muted-foreground">Receipts will appear here once created.</p>
           </CardContent>
         </Card>
       ) : (
@@ -249,41 +245,43 @@ export function ReceiptsHashView({ limit = 50 }: ReceiptsHashViewProps) {
                   </div>
 
                   {/* Verification Result */}
-                  {verifying !== receipt.id && verificationResult && selectedReceipt?.id === receipt.id && (
-                    <div
-                      className={`p-4 rounded-lg border ${
-                        verificationResult.valid
-                          ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                          : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
-                      }`}
-                    >
-                      <div className="flex items-start gap-2">
-                        {verificationResult.valid ? (
-                          <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
-                        ) : (
-                          <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
-                        )}
-                        <div>
-                          <p
-                            className={`text-sm font-medium mb-1 ${
-                              verificationResult.valid
-                                ? 'text-green-900 dark:text-green-300'
-                                : 'text-red-900 dark:text-red-300'
-                            }`}
-                          >
-                            {verificationResult.valid ? 'Chain Valid' : 'Chain Invalid'}
-                          </p>
-                          {verificationResult.issues.length > 0 && (
-                            <ul className="text-xs text-red-800 dark:text-red-400 list-disc list-inside">
-                              {verificationResult.issues.map((issue, idx) => (
-                                <li key={idx}>{issue}</li>
-                              ))}
-                            </ul>
+                  {verifying !== receipt.id &&
+                    verificationResult &&
+                    selectedReceipt?.id === receipt.id && (
+                      <div
+                        className={`p-4 rounded-lg border ${
+                          verificationResult.valid
+                            ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800"
+                            : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
+                        }`}
+                      >
+                        <div className="flex items-start gap-2">
+                          {verificationResult.valid ? (
+                            <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+                          ) : (
+                            <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
                           )}
+                          <div>
+                            <p
+                              className={`text-sm font-medium mb-1 ${
+                                verificationResult.valid
+                                  ? "text-green-900 dark:text-green-300"
+                                  : "text-red-900 dark:text-red-300"
+                              }`}
+                            >
+                              {verificationResult.valid ? "Chain Valid" : "Chain Invalid"}
+                            </p>
+                            {verificationResult.issues.length > 0 && (
+                              <ul className="text-xs text-red-800 dark:text-red-400 list-disc list-inside">
+                                {verificationResult.issues.map((issue, idx) => (
+                                  <li key={idx}>{issue}</li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
                   {/* Metadata */}
                   <div className="flex items-center gap-4 text-xs text-muted-foreground">
@@ -302,9 +300,7 @@ export function ReceiptsHashView({ limit = 50 }: ReceiptsHashViewProps) {
         <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Receipt Details</DialogTitle>
-            <DialogDescription>
-              {selectedReceipt?.narrative.summary}
-            </DialogDescription>
+            <DialogDescription>{selectedReceipt?.narrative.summary}</DialogDescription>
           </DialogHeader>
           {selectedReceipt && (
             <div className="space-y-4">

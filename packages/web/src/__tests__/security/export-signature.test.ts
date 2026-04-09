@@ -1,6 +1,6 @@
-import { signExportPayload } from '@/lib/security/export-signature';
+import { signExportPayload } from "@/lib/security/export-signature";
 
-describe('export signature controls', () => {
+describe("export signature controls", () => {
   const original = process.env.EXPORT_SIGNING_KEY;
 
   afterEach(() => {
@@ -11,18 +11,18 @@ describe('export signature controls', () => {
     }
   });
 
-  it('requires signing key', () => {
+  it("requires signing key", () => {
     delete process.env.EXPORT_SIGNING_KEY;
-    expect(() => signExportPayload('payload')).toThrow('EXPORT_SIGNING_KEY is required');
+    expect(() => signExportPayload("payload")).toThrow("EXPORT_SIGNING_KEY is required");
   });
 
-  it('returns deterministic signature for same payload', () => {
-    process.env.EXPORT_SIGNING_KEY = 'test-signing-key';
+  it("returns deterministic signature for same payload", () => {
+    process.env.EXPORT_SIGNING_KEY = "test-signing-key";
 
-    const first = signExportPayload('export-data');
-    const second = signExportPayload('export-data');
+    const first = signExportPayload("export-data");
+    const second = signExportPayload("export-data");
 
     expect(first.signature).toBe(second.signature);
-    expect(first.algorithm).toBe('hmac-sha256');
+    expect(first.algorithm).toBe("hmac-sha256");
   });
 });

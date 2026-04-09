@@ -3,7 +3,7 @@
  * Sets appropriate cache headers for safe GET endpoints
  */
 
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from "express";
 
 export interface CacheOptions {
   maxAge?: number; // Cache duration in seconds
@@ -30,21 +30,21 @@ export function setCacheHeaders(res: Response, options: CacheOptions = {}): void
   } = options;
 
   if (noStore) {
-    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader("Cache-Control", "no-store");
     return;
   }
 
   if (noCache) {
-    res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+    res.setHeader("Cache-Control", "no-cache, must-revalidate");
     return;
   }
 
   const directives: string[] = [];
 
   if (isPrivate) {
-    directives.push('private');
+    directives.push("private");
   } else {
-    directives.push('public');
+    directives.push("public");
   }
 
   if (maxAge > 0) {
@@ -60,10 +60,10 @@ export function setCacheHeaders(res: Response, options: CacheOptions = {}): void
   }
 
   if (mustRevalidate) {
-    directives.push('must-revalidate');
+    directives.push("must-revalidate");
   }
 
-  res.setHeader('Cache-Control', directives.join(', '));
+  res.setHeader("Cache-Control", directives.join(", "));
 }
 
 /**
@@ -72,7 +72,7 @@ export function setCacheHeaders(res: Response, options: CacheOptions = {}): void
 export function cacheMiddleware(options: CacheOptions = {}) {
   return (req: Request, res: Response, next: NextFunction): void => {
     // Only apply to GET/HEAD requests
-    if (req.method !== 'GET' && req.method !== 'HEAD') {
+    if (req.method !== "GET" && req.method !== "HEAD") {
       return next();
     }
 

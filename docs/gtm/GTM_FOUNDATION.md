@@ -23,27 +23,28 @@
 
 ### vs. ETL Tools
 
-| Feature | Settler.dev | ETL Tools |
-|---------|-------------|-----------|
-| Reconciliation | ✅ Core | ❌ |
-| Drift Detection | ✅ AI-driven | ❌ |
-| Vertical Modules | ✅ | ❌ |
-| Developer API | ✅ First-class | Partial |
+| Feature          | Settler.dev    | ETL Tools |
+| ---------------- | -------------- | --------- |
+| Reconciliation   | ✅ Core        | ❌        |
+| Drift Detection  | ✅ AI-driven   | ❌        |
+| Vertical Modules | ✅             | ❌        |
+| Developer API    | ✅ First-class | Partial   |
 
 ### vs. Data Quality Tools
 
-| Feature | Settler.dev | Data Quality |
-|---------|-------------|--------------|
-| Reconciliation | ✅ Core | ❌ |
-| Workflow OS | ✅ | ❌ |
-| Self-Healing | ✅ | ❌ |
-| Vertical Modules | ✅ | ❌ |
+| Feature          | Settler.dev | Data Quality |
+| ---------------- | ----------- | ------------ |
+| Reconciliation   | ✅ Core     | ❌           |
+| Workflow OS      | ✅          | ❌           |
+| Self-Healing     | ✅          | ❌           |
+| Vertical Modules | ✅          | ❌           |
 
 ## ICP Definitions
 
 ### Ideal Customer Profile
 
 **Primary ICP:**
+
 - **Size:** 50-5,000 employees
 - **Industry:** FinTech, E-commerce, SaaS, LegalTech, EdTech
 - **Pain:** Data reconciliation, schema drift, workflow orchestration
@@ -51,6 +52,7 @@
 - **Technical:** Engineering team, API-first mindset
 
 **Secondary ICP:**
+
 - **Size:** 5,000+ employees
 - **Industry:** Enterprise, regulated industries
 - **Pain:** Compliance, audit trails, multi-region
@@ -64,11 +66,13 @@
 **Target:** Legal tech companies, contract management platforms
 
 **Pain Points:**
+
 - Contract version comparison
 - Obligation tracking
 - Risk assessment
 
 **Solution:**
+
 - Contract diff engine
 - Obligation mapping
 - Risk scoring workflows
@@ -81,11 +85,13 @@
 **Target:** FinTech companies, payment processors, accounting software
 
 **Pain Points:**
+
 - Payment reconciliation
 - Ledger reconciliation
 - Accounting drift
 
 **Solution:**
+
 - Ledger reconciliation
 - Accounting drift detection
 - Financial mapping templates
@@ -98,11 +104,13 @@
 **Target:** EdTech companies, LMS platforms, assessment tools
 
 **Pain Points:**
+
 - QTI validation
 - Learning outcome mapping
 - LMS compatibility
 
 **Solution:**
+
 - QTI validator
 - Learning outcome mapping
 - LMS compatibility checks
@@ -115,11 +123,13 @@
 **Target:** Regulated industries, compliance teams
 
 **Pain Points:**
+
 - Policy comparison
 - Privacy drift
 - Data retention audit
 
 **Solution:**
+
 - Policy comparison engine
 - Privacy drift detection
 - Data retention audit
@@ -132,11 +142,13 @@
 **Target:** Data teams, engineering teams
 
 **Pain Points:**
+
 - Schema drift
 - API contract changes
 - Data pipeline orchestration
 
 **Solution:**
+
 - Schema drift detection
 - OpenAPI contract versioning
 - Workflow orchestration

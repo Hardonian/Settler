@@ -1,9 +1,9 @@
 /**
  * Strategic Governor Agent (CEO Replacement)
- * 
+ *
  * Replaces: CEO / Strategy role
  * Runs: Weekly (every Monday)
- * 
+ *
  * What it does:
  * - Ingests metrics (usage, churn, errors, revenue)
  * - Compares against business goals
@@ -27,7 +27,7 @@ async function callOpenAI(
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -161,15 +161,16 @@ serve(async (req) => {
       .select("plan_id, status, current_period_start, current_period_end")
       .eq("status", "active");
 
-    const mrr = subscriptions?.reduce((sum, s) => {
-      // Simplified MRR calculation (would need actual plan pricing)
-      const planMultiplier: Record<string, number> = {
-        base: 29,
-        pro: 99,
-        enterprise: 299,
-      };
-      return sum + (planMultiplier[s.plan_id as string] || 0);
-    }, 0) || 0;
+    const mrr =
+      subscriptions?.reduce((sum, s) => {
+        // Simplified MRR calculation (would need actual plan pricing)
+        const planMultiplier: Record<string, number> = {
+          base: 29,
+          pro: 99,
+          enterprise: 299,
+        };
+        return sum + (planMultiplier[s.plan_id as string] || 0);
+      }, 0) || 0;
 
     // Churn metrics
     const { data: cancelledSubs } = await supabase
@@ -264,7 +265,8 @@ serve(async (req) => {
       backlog.push({
         priority: 1,
         title: "Increase user acquisition",
-        description: "User growth is below target. Need to improve signup conversion and marketing reach.",
+        description:
+          "User growth is below target. Need to improve signup conversion and marketing reach.",
         category: "growth",
         rationale: `Only ${newUsers?.length || 0} new users this week (target: 50). Growth trend: ${goals.find((g) => g.metric === "user_growth")?.trend}.`,
         driving_metrics: {
@@ -361,7 +363,8 @@ serve(async (req) => {
       backlog.push({
         priority: 6,
         title: "Improve receipt parsing accuracy",
-        description: "Receipt API has high usage but also high error rate. Improve parsing reliability.",
+        description:
+          "Receipt API has high usage but also high error rate. Improve parsing reliability.",
         category: "feature",
         rationale: `${receiptUsage} receipt uploads with ${receiptErrors} errors (${((receiptErrors / receiptUsage) * 100).toFixed(1)}% error rate).`,
         driving_metrics: {
@@ -436,10 +439,7 @@ serve(async (req) => {
     // ========================================================================
 
     // Clear old proposed items
-    await supabase
-      .from("strategic_backlog")
-      .delete()
-      .eq("status", "proposed");
+    await supabase.from("strategic_backlog").delete().eq("status", "proposed");
 
     // Insert new backlog items
     for (const item of backlog) {

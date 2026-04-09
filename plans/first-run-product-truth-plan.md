@@ -3,6 +3,7 @@
 ## Executive Summary
 
 The goal is to make incompleteness truthful and navigable. The app should never betray the user by:
+
 - Showing misleading blank states
 - Having broken redirects
 - Crashing when env or seed data is absent
@@ -26,7 +27,7 @@ The goal is to make incompleteness truthful and navigable. The app should never 
    - Has `NoTenantScreen` for users without workspace assignment
 
 3. **Empty State Components**
-   - `BrandMessages.empty` in `messaging.ts` 
+   - `BrandMessages.empty` in `messaging.ts`
    - Consistent `EmptyState` components in `/components/ui/empty-state.tsx` and `/components/console/EmptyState.tsx`
 
 4. **Demo Data Infrastructure**
@@ -38,42 +39,54 @@ The goal is to make incompleteness truthful and navigable. The app should never 
 ## Issues Identified
 
 ### 1. Homepage CTA Misleads
+
 **Location:** `packages/web/src/app/page.tsx`
 **Issue:** "Open Console" links to `/app/runs` without indicating:
+
 - Login required (will redirect)
 - Local setup may be incomplete
 - No "what to do next" after clicking
 
 ### 2. No Local vs Production Context
+
 **Issue:** No visual distinction between:
+
 - Running locally (needs .env setup)
 - Connected to production (works out of box)
 - Missing demo data
 
-### 3. NoTenantScreen Lacks Actionable Guidance  
+### 3. NoTenantScreen Lacks Actionable Guidance
+
 **Location:** `packages/web/src/app/app/layout.tsx`
 **Issue:** Shows "No workspace assigned" but:
+
 - Doesn't explain how to create one
 - No link to onboarding
 - Links to docs which may not help
 
 ### 4. EnvErrorPanel Needs Enhancement
+
 **Location:** `packages/web/src/components/env/EnvErrorPanel.tsx`
 **Current:** Shows missing vars and links to setup-check
 **Missing:**
+
 - Clear distinction between "first run" vs "broken config"
 - Quick actions for local dev
 
 ### 5. Empty States Lack Differentiation
+
 **Location:** `packages/web/src/lib/brand/messaging.ts`
 **Issue:** Messages like "No runs yet" don't clarify:
+
 - Is this because no data seeded?
 - Is this because setup incomplete?
 - What should user do first?
 
 ### 6. Console Pages Have No First-Run Guidance
+
 **Location:** Various console pages (`runs`, `api-keys`, `webhooks`, etc.)
 **Issue:** Empty states show CTAs like "Create API Key" but:
+
 - New users don't know what API key is for
 - No onboarding flow guidance
 - No demo data option
@@ -83,35 +96,43 @@ The goal is to make incompleteness truthful and navigable. The app should never 
 ## Implementation Tasks
 
 ### Task 1: Enhance Homepage with Environment Context
+
 **Files:** `packages/web/src/app/page.tsx`
 
 **Changes:**
+
 - Add environment indicator badge (Local Dev / Production)
 - Modify CTA to show login requirement tooltip
 - Add "Getting Started" section for first-time users
 
 ### Task 2: Improve NoTenantScreen with Setup Wizard
+
 **Files:** `packages/web/src/app/app/layout.tsx`
 
 **Changes:**
+
 - Add link to workspace creation/onboarding
 - Show "Create your workspace" as primary CTA
 - Add admin contact info if already has access
 
 ### Task 3: Enhance EnvErrorPanel with First-Run Context
+
 **Files:** `packages/web/src/components/env/EnvErrorPanel.tsx`
 
 **Changes:**
+
 - Detect if first-run (no .env.local exists)
 - Show "Welcome - Let's get started" for first-run
 - Add "Run seed data" button for local dev
 - Show setup checklist progress
 
 ### Task 4: Differentiate Empty State Messages
+
 **Files:** `packages/web/src/lib/brand/messaging.ts`
 
 **Changes:**
 Add new message categories:
+
 ```typescript
 empty: {
   // Existing...
@@ -125,25 +146,31 @@ empty: {
 ```
 
 ### Task 5: Add First-Run Guidance to Console Pages
+
 **Files:** Various console pages (`/console/runs`, `/console/api-keys`, etc.)
 
 **Changes:**
+
 - Detect if first visit (no data + no setup)
 - Show contextual "What to do next" panel
 - Add "Load Demo Data" option for exploration
 
 ### Task 6: Add Demo Data Seeding to Empty States
+
 **Files:** `packages/web/src/components/console/EmptyState.tsx`
 
 **Changes:**
+
 - Check if demo data exists
 - If no data + first-run, show "Load Demo Data" CTA
 - Link to appropriate seed script
 
 ### Task 7: Add Local Dev Mode Banner
+
 **Files:** Create new `LocalDevBanner` component
 
 **Changes:**
+
 - Detect `NODE_ENV === 'development'`
 - Show subtle banner when running locally
 - Link to .env setup instructions
@@ -163,14 +190,14 @@ empty: {
 
 ## Key Files to Modify
 
-| File | Change Type |
-|------|-------------|
-| `packages/web/src/app/page.tsx` | Enhancement |
-| `packages/web/src/app/app/layout.tsx` | Enhancement |
-| `packages/web/src/components/env/EnvErrorPanel.tsx` | Enhancement |
-| `packages/web/src/lib/brand/messaging.ts` | New content |
-| `packages/web/src/components/console/EmptyState.tsx` | Enhancement |
-| `packages/web/src/components/ui/empty-state.tsx` | Enhancement |
+| File                                                      | Change Type   |
+| --------------------------------------------------------- | ------------- |
+| `packages/web/src/app/page.tsx`                           | Enhancement   |
+| `packages/web/src/app/app/layout.tsx`                     | Enhancement   |
+| `packages/web/src/components/env/EnvErrorPanel.tsx`       | Enhancement   |
+| `packages/web/src/lib/brand/messaging.ts`                 | New content   |
+| `packages/web/src/components/console/EmptyState.tsx`      | Enhancement   |
+| `packages/web/src/components/ui/empty-state.tsx`          | Enhancement   |
 | New: `packages/web/src/components/env/LocalDevBanner.tsx` | New component |
 
 ---

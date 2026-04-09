@@ -1,17 +1,16 @@
 /**
  * Predictive Operations
- * 
+ *
  * Predict failures before they occur
  * Part 9: Predictive Ops, Meta-Models & Next-Gen Pipelines
  */
 
- 
-import { PrismaClient } from '@prisma/client';
-import { logWarn } from '../../utils/logger';
+import { PrismaClient } from "@prisma/client";
+import { logWarn } from "../../utils/logger";
 
 export interface FailurePrediction {
-  type: 'drift' | 'mapping' | 'template' | 'transformation' | 'cost';
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  type: "drift" | "mapping" | "template" | "transformation" | "cost";
+  severity: "low" | "medium" | "high" | "critical";
   probability: number; // 0-1
   timeframe: string; // e.g., "within 24 hours"
   description: string;
@@ -66,7 +65,7 @@ export class PredictiveOps {
 
     const drifts = await this.prisma.driftEvent.findMany({
       take: 1000,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
 
     // Analyze drift frequency
@@ -74,15 +73,15 @@ export class PredictiveOps {
 
     if (driftFrequency > 10) {
       predictions.push({
-        type: 'drift',
-        severity: 'high',
+        type: "drift",
+        severity: "high",
         probability: 0.8,
-        timeframe: 'within 24 hours',
+        timeframe: "within 24 hours",
         description: `High drift frequency (${driftFrequency.toFixed(1)} per day) - likely to continue`,
         recommendedActions: [
-          'Review schema stability',
-          'Add drift detection rules',
-          'Consider schema versioning',
+          "Review schema stability",
+          "Add drift detection rules",
+          "Consider schema versioning",
         ],
       });
     }
@@ -106,21 +105,21 @@ export class PredictiveOps {
         where: {
           name: mapping.name,
         },
-        orderBy: { updatedAt: 'desc' },
+        orderBy: { updatedAt: "desc" },
         take: 10,
       });
 
       if (updates.length > 5) {
         predictions.push({
-          type: 'mapping',
-          severity: 'medium',
+          type: "mapping",
+          severity: "medium",
           probability: 0.6,
-          timeframe: 'within 7 days',
+          timeframe: "within 7 days",
           description: `Mapping "${mapping.name}" has been updated ${updates.length} times - high volatility`,
           recommendedActions: [
-            'Stabilize mapping template',
-            'Add versioning',
-            'Document mapping changes',
+            "Stabilize mapping template",
+            "Add versioning",
+            "Document mapping changes",
           ],
         });
       }
@@ -151,22 +150,22 @@ export class PredictiveOps {
         const failures = await this.prisma.reconResult.findMany({
           where: {
             reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
-            status: 'failed',
+            status: "failed",
           },
           take: 10,
         });
 
         if (failures.length > 5) {
           predictions.push({
-            type: 'template',
-            severity: 'high',
+            type: "template",
+            severity: "high",
             probability: 0.7,
-            timeframe: 'within 48 hours',
+            timeframe: "within 48 hours",
             description: `Template "${template.name}" has high failure rate (${failures.length}/${jobs.length})`,
             recommendedActions: [
-              'Review template logic',
-              'Add error handling',
-              'Consider template update',
+              "Review template logic",
+              "Add error handling",
+              "Consider template update",
             ],
           });
         }
@@ -194,32 +193,44 @@ export class PredictiveOps {
       });
 
       // Check execution times
-      const results: Array<{ completedAt: Date | null; startedAt: Date | null }> = await this.prisma.reconResult.findMany({
-        where: {
-          reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
-        },
-        take: 50,
-      });
+      const results: Array<{ completedAt: Date | null; startedAt: Date | null }> =
+        await this.prisma.reconResult.findMany({
+          where: {
+            reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
+          },
+          take: 50,
+        });
 
       const durations = results
-        .filter((r: { completedAt: Date | null; startedAt: Date | null }): r is { completedAt: Date; startedAt: Date } => r.completedAt !== null && r.startedAt !== null)
-        .map((r: { completedAt: Date; startedAt: Date }) => r.completedAt.getTime() - r.startedAt.getTime());
-      
-      const avgDuration = durations.length > 0
-        ? durations.reduce((a: number, b: number) => a + b, 0) / durations.length
-        : 0;
+        .filter(
+          (r: {
+            completedAt: Date | null;
+            startedAt: Date | null;
+          }): r is { completedAt: Date; startedAt: Date } =>
+            r.completedAt !== null && r.startedAt !== null
+        )
+        .map(
+          (r: { completedAt: Date; startedAt: Date }) =>
+            r.completedAt.getTime() - r.startedAt.getTime()
+        );
 
-      if (avgDuration > 30000) { // > 30 seconds
+      const avgDuration =
+        durations.length > 0
+          ? durations.reduce((a: number, b: number) => a + b, 0) / durations.length
+          : 0;
+
+      if (avgDuration > 30000) {
+        // > 30 seconds
         predictions.push({
-          type: 'transformation',
-          severity: 'medium',
+          type: "transformation",
+          severity: "medium",
           probability: 0.6,
-          timeframe: 'within 24 hours',
+          timeframe: "within 24 hours",
           description: `Transform "${transform.name}" has slow execution (${(avgDuration / 1000).toFixed(1)}s avg)`,
           recommendedActions: [
-            'Optimize transformation logic',
-            'Add caching',
-            'Consider parallelization',
+            "Optimize transformation logic",
+            "Add caching",
+            "Consider parallelization",
           ],
         });
       }
@@ -236,7 +247,7 @@ export class PredictiveOps {
 
     const usageEvents = await this.prisma.usageEvent.findMany({
       where: {
-        eventType: 'ai_tokens',
+        eventType: "ai_tokens",
         timestamp: {
           gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // Last 7 days
         },
@@ -248,9 +259,9 @@ export class PredictiveOps {
     const dailyCosts = new Map<string, number>();
     for (const event of usageEvents) {
       if (!event.timestamp) continue;
-      const date = event.timestamp.toISOString().split('T')[0];
+      const date = event.timestamp.toISOString().split("T")[0];
       if (!date) continue;
-      const cost = Number(event.quantity) * 0.002 / 1000; // $0.002 per 1K tokens
+      const cost = (Number(event.quantity) * 0.002) / 1000; // $0.002 per 1K tokens
       dailyCosts.set(date, (dailyCosts.get(date) || 0) + cost);
     }
 
@@ -258,20 +269,22 @@ export class PredictiveOps {
     const costs = Array.from(dailyCosts.values()).sort((a, b) => a - b);
     if (costs.length > 3) {
       const recentAvg = costs.slice(-3).reduce((a: number, b: number) => a + b, 0) / 3;
-      const olderAvg = costs.slice(0, -3).reduce((a: number, b: number) => a + b, 0) / Math.max(1, costs.length - 3);
+      const olderAvg =
+        costs.slice(0, -3).reduce((a: number, b: number) => a + b, 0) /
+        Math.max(1, costs.length - 3);
 
       if (recentAvg > olderAvg * 1.5) {
         predictions.push({
-          type: 'cost',
-          severity: 'high',
+          type: "cost",
+          severity: "high",
           probability: 0.8,
-          timeframe: 'within 7 days',
+          timeframe: "within 7 days",
           description: `AI costs increasing (${((recentAvg / olderAvg - 1) * 100).toFixed(0)}% increase)`,
           recommendedActions: [
-            'Review AI model selection',
-            'Optimize token usage',
-            'Consider cheaper models',
-            'Add cost limits',
+            "Review AI model selection",
+            "Optimize token usage",
+            "Consider cheaper models",
+            "Add cost limits",
           ],
         });
       }
@@ -285,16 +298,16 @@ export class PredictiveOps {
    */
   async takePreemptiveActions(predictions: FailurePrediction[]): Promise<void> {
     for (const prediction of predictions) {
-      if (prediction.severity === 'critical' || prediction.probability > 0.8) {
-        logWarn('Taking preemptive action', { prediction });
+      if (prediction.severity === "critical" || prediction.probability > 0.8) {
+        logWarn("Taking preemptive action", { prediction });
 
         // Adjust routing
-        if (prediction.type === 'cost') {
+        if (prediction.type === "cost") {
           // TODO: Adjust AI routing to cheaper models
         }
 
         // Propose new workflows
-        if (prediction.type === 'template') {
+        if (prediction.type === "template") {
           // TODO: Propose workflow improvements
         }
 
@@ -302,12 +315,12 @@ export class PredictiveOps {
         // TODO: Send notifications
 
         // Split workloads
-        if (prediction.type === 'transformation') {
+        if (prediction.type === "transformation") {
           // TODO: Split heavy transformations
         }
 
         // Cache heavy operations
-        if (prediction.type === 'transformation') {
+        if (prediction.type === "transformation") {
           // TODO: Enable caching
         }
       }

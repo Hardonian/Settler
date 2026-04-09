@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
+import { useEffect, useRef, useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface AnimatedCodeBlockProps {
   code: string;
@@ -19,9 +19,9 @@ export function AnimatedCodeBlock({
   code,
   title,
   description,
-  language = 'typescript',
+  language = "typescript",
 }: AnimatedCodeBlockProps) {
-  const [displayedCode, setDisplayedCode] = useState('');
+  const [displayedCode, setDisplayedCode] = useState("");
   const [isVisible, setIsVisible] = useState(false);
   const codeRef = useRef<HTMLPreElement>(null);
 
@@ -51,8 +51,8 @@ export function AnimatedCodeBlock({
     if (!isVisible) return;
 
     const prefersReducedMotion =
-      typeof window !== 'undefined' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     if (prefersReducedMotion) {
       // Show all code immediately for reduced motion
@@ -79,13 +79,11 @@ export function AnimatedCodeBlock({
   return (
     <Card
       className={cn(
-        'max-w-4xl mx-auto',
-        'bg-slate-900 border-slate-800',
-        'shadow-2xl',
-        'transition-all duration-300',
-        isVisible 
-          ? 'opacity-100 translate-y-0' 
-          : 'opacity-0 translate-y-8'
+        "max-w-4xl mx-auto",
+        "bg-slate-900 border-slate-800",
+        "shadow-2xl",
+        "transition-all duration-300",
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
       )}
       role="region"
       aria-labelledby="code-title"
@@ -106,11 +104,7 @@ export function AnimatedCodeBlock({
           role="code"
           aria-label={`${language} code example`}
         >
-          <code
-            className="text-sm text-green-400 font-mono"
-            aria-live="polite"
-            aria-atomic="true"
-          >
+          <code className="text-sm text-green-400 font-mono" aria-live="polite" aria-atomic="true">
             {displayedCode}
             {isVisible && displayedCode.length < code.length && (
               <span className="animate-pulse">|</span>

@@ -1,6 +1,6 @@
 /**
  * Subscription Access Control
- * 
+ *
  * Defines access levels based on subscription tier:
  * - unsubscribed: No subscription
  * - subscribed_unpaid: Has subscription but payment failed/pending
@@ -8,11 +8,11 @@
  * - enterprise: Enterprise plan
  */
 
-export type SubscriptionTier = 
-  | 'unsubscribed'
-  | 'subscribed_unpaid'
-  | 'subscribed_paid'
-  | 'enterprise';
+export type SubscriptionTier =
+  | "unsubscribed"
+  | "subscribed_unpaid"
+  | "subscribed_paid"
+  | "enterprise";
 
 export interface SubscriptionStatus {
   tier: SubscriptionTier;
@@ -108,45 +108,45 @@ export function determineSubscriptionTier(
 ): SubscriptionTier {
   // No subscription at all
   if (!subscription) {
-    return 'unsubscribed';
+    return "unsubscribed";
   }
 
   // Check if enterprise plan
-  const planName = (subscription.plan_name || subscription.plan_id || '').toLowerCase();
-  if (planName.includes('enterprise') || planName.includes('enterprise')) {
-    return 'enterprise';
+  const planName = (subscription.plan_name || subscription.plan_id || "").toLowerCase();
+  if (planName.includes("enterprise") || planName.includes("enterprise")) {
+    return "enterprise";
   }
 
   // Check subscription status
-  const status = (subscription.status || '').toLowerCase();
-  
+  const status = (subscription.status || "").toLowerCase();
+
   // Active subscription
-  if (status === 'active') {
+  if (status === "active") {
     // Check if billing account is active and paid
-    const billingStatus = (billingAccount?.status || '').toLowerCase();
-    if (billingStatus === 'active' && billingAccount) {
+    const billingStatus = (billingAccount?.status || "").toLowerCase();
+    if (billingStatus === "active" && billingAccount) {
       // Check if payment is current (period hasn't ended)
       if (subscription.current_period_end) {
         const periodEnd = new Date(subscription.current_period_end);
         const now = new Date();
         if (periodEnd > now) {
-          return 'subscribed_paid';
+          return "subscribed_paid";
         }
       }
       // If no period end info, assume paid if status is active
-      return 'subscribed_paid';
+      return "subscribed_paid";
     }
     // Active subscription but billing issues
-    return 'subscribed_unpaid';
+    return "subscribed_unpaid";
   }
 
   // Cancelled, past_due, etc.
-  if (status === 'cancelled' || status === 'past_due' || status === 'unpaid') {
-    return 'subscribed_unpaid';
+  if (status === "cancelled" || status === "past_due" || status === "unpaid") {
+    return "subscribed_unpaid";
   }
 
   // Default to unpaid if subscription exists but status unclear
-  return 'subscribed_unpaid';
+  return "subscribed_unpaid";
 }
 
 /**
@@ -159,10 +159,7 @@ export function getAccessLevel(tier: SubscriptionTier): AccessLevel {
 /**
  * Check if user has access to a feature
  */
-export function hasAccess(
-  tier: SubscriptionTier,
-  feature: keyof AccessLevel
-): boolean {
+export function hasAccess(tier: SubscriptionTier, feature: keyof AccessLevel): boolean {
   const access = getAccessLevel(tier);
   return access[feature] as boolean;
 }

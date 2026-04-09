@@ -1,11 +1,11 @@
 /**
  * Route Transition Metrics
- * 
+ *
  * Tracks navigation performance, hydration, and client bundle load times.
  */
 
-import { analytics } from '../analytics';
-import { logger } from '../logging/logger';
+import { analytics } from "../analytics";
+import { logger } from "../logging/logger";
 
 interface RouteMetrics {
   route: string;
@@ -29,7 +29,7 @@ class RouteMetricsCollector {
       transitionStart: performance.now(),
     });
 
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       logger.debug(`Route transition started: ${route}`);
     }
   }
@@ -44,12 +44,12 @@ class RouteMetricsCollector {
     metric.transitionEnd = performance.now();
     const transitionTime = metric.transitionEnd - metric.transitionStart;
 
-    analytics.trackEvent('route_transition', {
+    analytics.trackEvent("route_transition", {
       route,
       duration: Math.round(transitionTime),
     });
 
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       logger.debug(`Route transition completed: ${route} (${Math.round(transitionTime)}ms)`);
     }
   }
@@ -81,12 +81,12 @@ class RouteMetricsCollector {
     metric.hydrationEnd = performance.now();
     const hydrationTime = (metric.hydrationEnd || 0) - (metric.hydrationStart || 0);
 
-    analytics.trackEvent('route_hydration', {
+    analytics.trackEvent("route_hydration", {
       route,
       duration: Math.round(hydrationTime),
     });
 
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       logger.debug(`Route hydrated: ${route} (${Math.round(hydrationTime)}ms)`);
     }
 
@@ -116,12 +116,12 @@ class RouteMetricsCollector {
 
     const loadTime = endTime - startTime;
 
-    analytics.trackEvent('bundle_load', {
+    analytics.trackEvent("bundle_load", {
       route,
       duration: Math.round(loadTime),
     });
 
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       logger.debug(`Bundle loaded: ${route} (${Math.round(loadTime)}ms)`);
     }
   }
@@ -144,7 +144,7 @@ class RouteMetricsCollector {
 export const routeMetrics = new RouteMetricsCollector();
 
 // Track Next.js route changes
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   let lastRoute = window.location.pathname;
 
   // Track initial route

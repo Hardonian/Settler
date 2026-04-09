@@ -345,9 +345,7 @@ export function ReconciliationView({
                     </TableCell>
                     <TableCell className="max-w-sm">
                       <div className="space-y-1">
-                        <p className="text-sm text-foreground">
-                          {item.explanation.summary}
-                        </p>
+                        <p className="text-sm text-foreground">{item.explanation.summary}</p>
                         {item.explanation.suggestedNextStep && (
                           <p className="text-xs text-muted-foreground">
                             Next: {item.explanation.suggestedNextStep}

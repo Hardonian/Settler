@@ -22,10 +22,7 @@
             "legendFormat": "Completed"
           }
         ],
-        "yaxes": [
-          { "format": "short", "label": "Reconciliations/sec" },
-          { "format": "short" }
-        ]
+        "yaxes": [{ "format": "short", "label": "Reconciliations/sec" }, { "format": "short" }]
       },
       {
         "id": 2,
@@ -46,10 +43,7 @@
             "legendFormat": "Max Accuracy"
           }
         ],
-        "yaxes": [
-          { "format": "percent", "label": "Accuracy" },
-          { "format": "short" }
-        ]
+        "yaxes": [{ "format": "percent", "label": "Accuracy" }, { "format": "short" }]
       },
       {
         "id": 3,
@@ -86,10 +80,7 @@
             "legendFormat": "p99"
           }
         ],
-        "yaxes": [
-          { "format": "s", "label": "Duration" },
-          { "format": "short" }
-        ]
+        "yaxes": [{ "format": "s", "label": "Duration" }, { "format": "short" }]
       },
       {
         "id": 5,

@@ -1,14 +1,14 @@
 /**
  * Console Feature Flags Domain
- * 
+ *
  * Manages feature flags for the Developer Console.
  * Uses Prisma with billing account scoping for tenant isolation.
  */
 
-import { prisma } from '@/shared/db/prismaClient';
-import { createClient } from '@/lib/supabase/server';
-import { evaluateFlag } from '@/domain/featureFlags/evaluator';
-import { Environment } from '@/domain/featureFlags/types';
+import { prisma } from "@/shared/db/prismaClient";
+import { createClient } from "@/lib/supabase/server";
+import { evaluateFlag } from "@/domain/featureFlags/evaluator";
+import { Environment } from "@/domain/featureFlags/types";
 
 export interface FeatureFlagListItem {
   id: string;
@@ -38,27 +38,29 @@ export interface UpdateFlagEnvironmentInput {
 async function verifyBillingAccountAccess(billingAccountId: string): Promise<boolean> {
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (!user) {
       return false;
     }
-    
+
     // Check if billing account exists and belongs to user
-    if (!prisma || typeof prisma.billingAccount === 'undefined') {
+    if (!prisma || typeof prisma.billingAccount === "undefined") {
       return false;
     }
-    
+
     const billingAccount = await prisma.billingAccount.findFirst({
       where: {
         id: billingAccountId,
         userId: user.id,
       },
     });
-    
+
     return !!billingAccount;
   } catch (error) {
-    console.error('[verifyBillingAccountAccess] Error:', error);
+    console.error("[verifyBillingAccountAccess] Error:", error);
     return false;
   }
 }
@@ -75,16 +77,16 @@ export async function listFeatureFlags(
     // Verify billing account access
     const hasAccess = await verifyBillingAccountAccess(billingAccountId);
     if (!hasAccess) {
-      console.warn('[listFeatureFlags] Access denied for billing account:', billingAccountId);
+      console.warn("[listFeatureFlags] Access denied for billing account:", billingAccountId);
       return [];
     }
-    
+
     // Check if Prisma is available
-    if (!prisma || typeof prisma.featureFlag === 'undefined') {
-      console.warn('[listFeatureFlags] Prisma client not available, returning empty list');
+    if (!prisma || typeof prisma.featureFlag === "undefined") {
+      console.warn("[listFeatureFlags] Prisma client not available, returning empty list");
       return [];
     }
-    
+
     const flags = await prisma.featureFlag.findMany({
       where: {
         billingAccountId,
@@ -94,7 +96,7 @@ export async function listFeatureFlags(
       include: {
         environments: true,
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
 
     return flags.map((flag: (typeof flags)[number]) => ({
@@ -114,7 +116,7 @@ export async function listFeatureFlags(
       updatedAt: flag.updatedAt,
     }));
   } catch (error) {
-    console.error('[listFeatureFlags] Error:', error);
+    console.error("[listFeatureFlags] Error:", error);
     // Return empty array instead of throwing to prevent 500 errors
     return [];
   }
@@ -138,7 +140,7 @@ export async function updateFlagEnvironment(
   });
 
   if (!flag) {
-    throw new Error('Feature flag not found');
+    throw new Error("Feature flag not found");
   }
 
   // Update or create environment setting

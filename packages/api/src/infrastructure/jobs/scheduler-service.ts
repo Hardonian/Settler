@@ -1,11 +1,11 @@
 /**
  * Job Scheduler Service - Production Ready
- * 
+ *
  * Executes scheduled reconciliation jobs based on cron expressions.
- * 
+ *
  * Dependencies:
  * - node-cron: npm install node-cron @types/node-cron
- * 
+ *
  * Enterprise-ready with:
  * - Type-safe Prisma queries
  * - Comprehensive error handling
@@ -16,20 +16,18 @@
  * - Graceful shutdown
  */
 
- 
-import { PrismaClient } from '@prisma/client';
-import { logInfo, logError, logWarn } from '../../utils/logger';
-import { ReconCoreEngine } from '../../services/recon-core';
+import { PrismaClient } from "@prisma/client";
+import { logInfo, logError, logWarn } from "../../utils/logger";
+import { ReconCoreEngine } from "../../services/recon-core";
 
 // Dynamic import for node-cron (allows graceful degradation)
-let cron: typeof import('node-cron') | null = null;
+let cron: typeof import("node-cron") | null = null;
 
 try {
-   
-  cron = require('node-cron');
+  cron = require("node-cron");
 } catch {
-  logWarn('[JobScheduler] node-cron not installed. Scheduled jobs will not run.');
-  logWarn('[JobScheduler] Install with: npm install node-cron @types/node-cron');
+  logWarn("[JobScheduler] node-cron not installed. Scheduled jobs will not run.");
+  logWarn("[JobScheduler] Install with: npm install node-cron @types/node-cron");
 }
 
 interface ScheduledJob {
@@ -45,7 +43,7 @@ interface ScheduledJob {
 export class JobSchedulerService {
   private prisma: PrismaClient;
   private reconEngine: ReconCoreEngine;
-   
+
   private cronJobs: Map<string, { task: any; job: ScheduledJob }> = new Map();
   private isRunning = false;
   private healthCheckInterval: NodeJS.Timeout | null = null;
@@ -61,16 +59,16 @@ export class JobSchedulerService {
    */
   async start(): Promise<void> {
     if (this.isRunning) {
-      logWarn('[JobScheduler] Already running');
+      logWarn("[JobScheduler] Already running");
       return;
     }
 
     if (!cron) {
-      logError('[JobScheduler] Cannot start: node-cron not installed');
+      logError("[JobScheduler] Cannot start: node-cron not installed");
       return;
     }
 
-    logInfo('[JobScheduler] Starting scheduler...');
+    logInfo("[JobScheduler] Starting scheduler...");
     this.isRunning = true;
 
     // Load and schedule all active jobs
@@ -79,18 +77,18 @@ export class JobSchedulerService {
     // Set up health check (every minute)
     this.healthCheckInterval = setInterval(() => {
       this.healthCheck().catch((error) => {
-        logError('[JobScheduler] Health check failed:', error);
+        logError("[JobScheduler] Health check failed:", error);
       });
     }, 60000);
 
     // Reload jobs periodically (every 5 minutes) to pick up new/changed jobs
     this.reloadInterval = setInterval(async () => {
       await this.reloadJobs().catch((error) => {
-        logError('[JobScheduler] Reload failed:', error);
+        logError("[JobScheduler] Reload failed:", error);
       });
     }, 300000);
 
-    logInfo('[JobScheduler] Scheduler started');
+    logInfo("[JobScheduler] Scheduler started");
   }
 
   /**
@@ -101,12 +99,12 @@ export class JobSchedulerService {
       return;
     }
 
-    logInfo('[JobScheduler] Stopping scheduler...');
+    logInfo("[JobScheduler] Stopping scheduler...");
     this.isRunning = false;
 
     // Stop all cron jobs
     for (const [jobId, { task }] of this.cronJobs.entries()) {
-      if (task && typeof task.stop === 'function') {
+      if (task && typeof task.stop === "function") {
         task.stop();
       }
       logInfo(`[JobScheduler] Stopped cron job: ${jobId}`);
@@ -124,7 +122,7 @@ export class JobSchedulerService {
       this.reloadInterval = null;
     }
 
-    logInfo('[JobScheduler] Scheduler stopped');
+    logInfo("[JobScheduler] Scheduler stopped");
   }
 
   /**
@@ -134,7 +132,7 @@ export class JobSchedulerService {
     try {
       const jobs = await this.prisma.reconJob.findMany({
         where: {
-          status: 'active',
+          status: "active",
           scheduleCron: { not: null },
           deletedAt: null,
         },
@@ -163,7 +161,7 @@ export class JobSchedulerService {
         }
       }
     } catch (error) {
-      logError('[JobScheduler] Failed to load jobs:', error);
+      logError("[JobScheduler] Failed to load jobs:", error);
       throw error;
     }
   }
@@ -176,7 +174,7 @@ export class JobSchedulerService {
       // Get current jobs from database
       const dbJobs = await this.prisma.reconJob.findMany({
         where: {
-          status: 'active',
+          status: "active",
           scheduleCron: { not: null },
           deletedAt: null,
         },
@@ -201,7 +199,11 @@ export class JobSchedulerService {
       // Schedule new or updated jobs
       for (const dbJob of dbJobs) {
         const existing = this.cronJobs.get(dbJob.id);
-        if (!existing || existing.job.scheduleCron !== dbJob.scheduleCron || existing.job.scheduleTimezone !== dbJob.scheduleTimezone) {
+        if (
+          !existing ||
+          existing.job.scheduleCron !== dbJob.scheduleCron ||
+          existing.job.scheduleTimezone !== dbJob.scheduleTimezone
+        ) {
           if (dbJob.scheduleCron) {
             await this.scheduleJob({
               id: dbJob.id,
@@ -216,7 +218,7 @@ export class JobSchedulerService {
         }
       }
     } catch (error) {
-      logError('[JobScheduler] Failed to reload jobs:', error);
+      logError("[JobScheduler] Failed to reload jobs:", error);
       throw error;
     }
   }
@@ -226,7 +228,7 @@ export class JobSchedulerService {
    */
   async scheduleJob(job: ScheduledJob): Promise<void> {
     if (!cron) {
-      logError('[JobScheduler] Cannot schedule job: node-cron not installed');
+      logError("[JobScheduler] Cannot schedule job: node-cron not installed");
       return;
     }
 
@@ -251,7 +253,7 @@ export class JobSchedulerService {
         },
         {
           scheduled: true,
-          timezone: job.scheduleTimezone || 'UTC',
+          timezone: job.scheduleTimezone || "UTC",
         }
       );
 
@@ -291,13 +293,15 @@ export class JobSchedulerService {
       const dbJob = await this.prisma.reconJob.findFirst({
         where: {
           id: job.id,
-          status: 'active',
+          status: "active",
           deletedAt: null,
         },
       });
 
       if (!dbJob) {
-        logWarn(`[JobScheduler] Job ${job.id} no longer exists or is inactive, unscheduling`, { jobId: job.id });
+        logWarn(`[JobScheduler] Job ${job.id} no longer exists or is inactive, unscheduling`, {
+          jobId: job.id,
+        });
         await this.unscheduleJob(job.id);
         return;
       }
@@ -306,10 +310,10 @@ export class JobSchedulerService {
       const runningResult = await this.prisma.reconResult.findFirst({
         where: {
           reconJobId: job.id,
-          status: 'running',
+          status: "running",
         },
         orderBy: {
-          startedAt: 'desc',
+          startedAt: "desc",
         },
       });
 
@@ -317,7 +321,10 @@ export class JobSchedulerService {
         const runningDuration = Date.now() - runningResult.startedAt.getTime();
         // If job has been running for more than 1 hour, consider it stuck
         if (runningDuration > 3600000) {
-          logWarn(`[JobScheduler] Job ${job.id} appears stuck, allowing new execution`, { jobId: job.id, runningDuration });
+          logWarn(`[JobScheduler] Job ${job.id} appears stuck, allowing new execution`, {
+            jobId: job.id,
+            runningDuration,
+          });
         } else {
           logWarn(`[JobScheduler] Job ${job.id} is already running, skipping`, { jobId: job.id });
           return;
@@ -352,7 +359,7 @@ export class JobSchedulerService {
       });
     } catch (error) {
       const duration = Date.now() - startTime;
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
       const errorStack = error instanceof Error ? error.stack : undefined;
 
       logError(`[JobScheduler] Job ${job.id} execution failed`, error, {
@@ -369,7 +376,7 @@ export class JobSchedulerService {
           data: {
             reconJobId: job.id,
             tenantId: job.tenantId,
-            status: 'failed',
+            status: "failed",
             startedAt: new Date(),
             completedAt: new Date(),
             errorMessage: errorMessage,
@@ -391,14 +398,14 @@ export class JobSchedulerService {
       // Send failure notification
       if (failedResultId) {
         try {
-          const { notifyJobFailure } = await import('../../services/notifications/job-failure');
+          const { notifyJobFailure } = await import("../../services/notifications/job-failure");
           await notifyJobFailure(this.prisma, {
             jobId: job.id,
             resultId: failedResultId,
             errorMessage: errorMessage,
             errorStack: errorStack,
             tenantId: job.tenantId,
-            userId: 'system',
+            userId: "system",
           });
         } catch (notificationError) {
           // Don't fail if notification fails
@@ -417,16 +424,18 @@ export class JobSchedulerService {
     try {
       // Verify we have active cron jobs
       const activeJobCount = this.cronJobs.size;
-      
+
       // Verify database connection
       await this.prisma.$queryRaw`SELECT 1`;
 
       // Log health status (only if there are jobs to avoid spam)
       if (activeJobCount > 0) {
-        logInfo(`[JobScheduler] Health check OK - ${activeJobCount} active jobs`, { activeJobCount });
+        logInfo(`[JobScheduler] Health check OK - ${activeJobCount} active jobs`, {
+          activeJobCount,
+        });
       }
     } catch (error) {
-      logError('[JobScheduler] Health check failed', error);
+      logError("[JobScheduler] Health check failed", error);
     }
   }
 

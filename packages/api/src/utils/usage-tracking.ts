@@ -1,6 +1,6 @@
 /**
  * Usage Tracking Utility
- * 
+ *
  * Tracks usage events for billing and entitlement enforcement.
  * Works with Supabase client used in API routes.
  */

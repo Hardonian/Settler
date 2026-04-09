@@ -1,6 +1,6 @@
 /**
  * Generate Weekly Founder Briefing
- * 
+ *
  * Weekly scheduled function to generate founder briefings from insights.
  * Runs via cron (typically Monday mornings).
  */

@@ -1,6 +1,6 @@
 /**
  * Shared Console Types
- * 
+ *
  * Types shared across SDK, CLI, and Console UI
  */
 

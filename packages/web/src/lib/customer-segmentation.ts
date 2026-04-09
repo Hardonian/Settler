@@ -53,7 +53,7 @@ export async function getUserSegments(userId: string): Promise<CustomerSegment[]
     segment_name: string;
     segment_metadata: Record<string, unknown>;
   };
-  
+
   return (data || []).map((s: SegmentRow) => ({
     userId: s.user_id,
     segmentType: s.segment_type as SegmentType,
@@ -93,11 +93,11 @@ export async function autoSegmentUser(userId: string): Promise<void> {
     total_jobs_created?: number;
     usage_percentage?: number;
   };
-  
+
   const userData = user as UserRow;
   const lifecycleData = lifecycle as LifecycleRow;
   const metricsData = metrics as MetricsRow | null;
-  
+
   // Billing segments
   const billingSegment = userData.plan_type || "free_tier";
   await assignSegment(userId, "billing", billingSegment);

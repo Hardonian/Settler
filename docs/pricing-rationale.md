@@ -6,6 +6,7 @@
 ## Model: Base Plan + Metered Add-Ons
 
 ### Core Principle
+
 - **One primary paid tier** that is immediately compelling
 - **Usage-based add-ons** tied to measurable compute/storage
 - **Clear upgrade paths** with minimal cognitive load
@@ -13,8 +14,9 @@
 ## Plan Structure
 
 ### Free Tier
+
 - **Purpose**: Proof of concept, not free-forever trap
-- **Limits**: 
+- **Limits**:
   - 100 reconciliations/month (hard cap)
   - 10 receipts/month
   - 1 export/month
@@ -23,20 +25,23 @@
 - **Upgrade Pressure**: Clear limits force upgrade decision at ~100 reconciliations
 
 ### Starter Plan ($99/month)
+
 - **Target**: Small businesses processing 5k-10k transactions/month
 - **Volume**: 10,000 reconciliations/month included
-- **Add-ons**: 
+- **Add-ons**:
   - $0.10 per exception requiring manual review (beyond 1% exception rate)
   - Additional connectors: $20/month each (beyond 5 included)
 - **Value Prop**: Automates reconciliation for ~$0.01 per transaction
 
 ### Growth Plan ($299/month)
+
 - **Target**: Scaling businesses processing 50k-100k transactions/month
 - **Volume**: 100,000 reconciliations/month included
 - **Add-ons**: Same exception pricing, unlimited connectors
 - **Value Prop**: Volume discount brings cost per transaction to ~$0.003
 
 ### Enterprise (Custom)
+
 - **Target**: Large organizations with custom requirements
 - **Volume**: Unlimited
 - **Add-ons**: Custom pricing for exceptions, connectors, retention, SLA
@@ -53,6 +58,7 @@
 ## Enforcement Points
 
 All limits enforced in code via `packages/web/src/lib/entitlements/index.ts`:
+
 - Reconciliations: `UsageCounter` table tracks monthly usage
 - Receipts: `ReceiptUpload` table tracks monthly usage
 - Exports: `Export` table tracks monthly usage

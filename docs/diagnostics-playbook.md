@@ -17,12 +17,14 @@ Developer guide for debugging, tracing errors, reading logs, interpreting perfor
 ### 1. Identify the Issue
 
 **Symptoms to look for:**
+
 - User reports error
 - Analytics shows error spike
 - Performance degradation
 - Missing data or broken UI
 
 **First steps:**
+
 1. Check browser console for errors
 2. Review Sentry (if enabled) for error reports
 3. Check analytics for error events
@@ -31,6 +33,7 @@ Developer guide for debugging, tracing errors, reading logs, interpreting perfor
 ### 2. Gather Context
 
 **Information to collect:**
+
 - Error message and stack trace
 - User ID (if available)
 - Session ID
@@ -39,18 +42,19 @@ Developer guide for debugging, tracing errors, reading logs, interpreting perfor
 - Steps to reproduce
 
 **Tools:**
+
 ```typescript
-import { diagnostics } from '@/lib/diagnostics';
-import { logger } from '@/lib/logging/logger';
+import { diagnostics } from "@/lib/diagnostics";
+import { logger } from "@/lib/logging/logger";
 
 // Get recent diagnostic events
-const events = diagnostics.getEvents('fetch_failure');
-console.log('Recent fetch failures:', events);
+const events = diagnostics.getEvents("fetch_failure");
+console.log("Recent fetch failures:", events);
 
 // Check logs
-logger.info('Debug context', {
-  userId: '123',
-  sessionId: 'abc',
+logger.info("Debug context", {
+  userId: "123",
+  sessionId: "abc",
   url: window.location.href,
 });
 ```
@@ -58,16 +62,19 @@ logger.info('Debug context', {
 ### 3. Trace the Error
 
 **Error boundary logs:**
+
 - Check component error boundaries
 - Review error.tsx and global-error.tsx logs
 - Check Sentry for full error context
 
 **API errors:**
+
 - Review fetch failure diagnostics
 - Check network tab for failed requests
 - Review retry attempts
 
 **Component errors:**
+
 - Check component error diagnostics
 - Review React DevTools
 - Check hydration errors
@@ -97,32 +104,35 @@ import { ErrorBoundary } from '@/components/ui/error-boundary';
 **3. Check Diagnostics**
 
 ```typescript
-import { diagnostics } from '@/lib/diagnostics';
+import { diagnostics } from "@/lib/diagnostics";
 
 // Get all errors
 const errors = diagnostics.getEvents();
 
 // Filter by type
-const fetchErrors = diagnostics.getEvents('fetch_failure');
-const componentErrors = diagnostics.getEvents('component_error');
-const hydrationErrors = diagnostics.getEvents('hydration_error');
+const fetchErrors = diagnostics.getEvents("fetch_failure");
+const componentErrors = diagnostics.getEvents("component_error");
+const hydrationErrors = diagnostics.getEvents("hydration_error");
 ```
 
 ### Error Types
 
 **Fetch Failures:**
+
 - Check network connectivity
 - Verify API endpoint is accessible
 - Review retry attempts
 - Check timeout settings
 
 **Component Errors:**
+
 - Review component code
 - Check props and state
 - Verify dependencies
 - Review React DevTools
 
 **Hydration Errors:**
+
 - Check server/client mismatch
 - Review HTML structure
 - Verify data serialization
@@ -133,30 +143,35 @@ const hydrationErrors = diagnostics.getEvents('hydration_error');
 ### Log Levels
 
 **Debug:**
+
 - Development-only detailed information
 - Component lifecycle events
 - API request/response details
 - Performance measurements
 
 **Info:**
+
 - General application flow
 - User actions
 - Successful operations
 - State changes
 
 **Warn:**
+
 - Non-critical issues
 - Deprecated features
 - Performance warnings
 - Slow operations
 
 **Error:**
+
 - Failed operations
 - API errors
 - Component errors
 - User-facing errors
 
 **Critical:**
+
 - System failures
 - Data loss risks
 - Security issues
@@ -165,11 +180,13 @@ const hydrationErrors = diagnostics.getEvents('hydration_error');
 ### Log Locations
 
 **Development:**
+
 - Browser console (always)
 - Network tab (API requests)
 - React DevTools (component state)
 
 **Production:**
+
 - Vercel Edge logs
 - Sentry (if enabled)
 - Custom logging endpoint
@@ -204,26 +221,31 @@ const hydrationErrors = diagnostics.getEvents('hydration_error');
 ### Web Vitals
 
 **LCP (Largest Contentful Paint):**
+
 - **Good:** ≤ 2.5s
 - **Needs Improvement:** 2.5s - 4.0s
 - **Poor:** > 4.0s
 
 **FID (First Input Delay):**
+
 - **Good:** ≤ 100ms
 - **Needs Improvement:** 100ms - 300ms
 - **Poor:** > 300ms
 
 **CLS (Cumulative Layout Shift):**
+
 - **Good:** ≤ 0.1
 - **Needs Improvement:** 0.1 - 0.25
 - **Poor:** > 0.25
 
 **INP (Interaction to Next Paint):**
+
 - **Good:** ≤ 200ms
 - **Needs Improvement:** 200ms - 500ms
 - **Poor:** > 500ms
 
 **TTFB (Time to First Byte):**
+
 - **Good:** ≤ 800ms
 - **Needs Improvement:** 800ms - 1.8s
 - **Poor:** > 1.8s
@@ -231,16 +253,19 @@ const hydrationErrors = diagnostics.getEvents('hydration_error');
 ### Route Metrics
 
 **Transition Duration:**
+
 - Target: < 200ms
 - Acceptable: < 500ms
 - Slow: > 500ms
 
 **Hydration Time:**
+
 - Target: < 100ms
 - Acceptable: < 300ms
 - Slow: > 300ms
 
 **Bundle Load Time:**
+
 - Target: < 1s
 - Acceptable: < 2s
 - Slow: > 2s
@@ -248,18 +273,20 @@ const hydrationErrors = diagnostics.getEvents('hydration_error');
 ### Performance Analysis
 
 **Check analytics for web_vital events:**
+
 ```typescript
 // In analytics dashboard, filter by:
-event_name = 'web_vital'
-rating = 'poor'
+event_name = "web_vital";
+rating = "poor";
 ```
 
 **Review route metrics:**
-```typescript
-import { routeMetrics } from '@/lib/performance/route-metrics';
 
-const metrics = routeMetrics.getMetrics('/dashboard');
-console.log('Route metrics:', metrics);
+```typescript
+import { routeMetrics } from "@/lib/performance/route-metrics";
+
+const metrics = routeMetrics.getMetrics("/dashboard");
+console.log("Route metrics:", metrics);
 ```
 
 ## Verifying Analytics
@@ -276,6 +303,7 @@ NEXT_PUBLIC_LOG_LEVEL=debug
 **2. Check Browser Console**
 
 All events should log to console in development:
+
 ```
 [DEBUG] Telemetry: button_click - Sign Up { variant: 'primary', location: 'header' }
 [INFO] Web Vital: LCP { value: 2500, rating: 'good' }
@@ -296,18 +324,21 @@ All events should log to console in development:
 ### Common Analytics Issues
 
 **Events not firing:**
+
 1. Check provider initialization
 2. Verify environment variables
 3. Check browser console for errors
 4. Verify provider scripts loaded
 
 **Events firing but not appearing:**
+
 1. Check provider dashboard delay
 2. Verify event names match
 3. Check filters in dashboard
 4. Verify user identification
 
 **Duplicate events:**
+
 1. Check for multiple provider instances
 2. Verify single initialization
 3. Check for event bubbling
@@ -318,10 +349,12 @@ All events should log to console in development:
 ### Issue: Analytics Not Tracking
 
 **Symptoms:**
+
 - No events in analytics dashboard
 - Console shows initialization errors
 
 **Solutions:**
+
 1. Check `NEXT_PUBLIC_ANALYTICS_PROVIDERS` environment variable
 2. Verify provider credentials (API keys, measurement IDs)
 3. Check browser console for errors
@@ -331,10 +364,12 @@ All events should log to console in development:
 ### Issue: Errors Not Being Reported
 
 **Symptoms:**
+
 - Errors occur but don't appear in Sentry/analytics
 - Error boundaries not catching errors
 
 **Solutions:**
+
 1. Verify error boundaries are properly placed
 2. Check Sentry configuration (if enabled)
 3. Verify error tracking in analytics
@@ -344,10 +379,12 @@ All events should log to console in development:
 ### Issue: Performance Metrics Missing
 
 **Symptoms:**
+
 - No Web Vitals in analytics
 - Route metrics not tracking
 
 **Solutions:**
+
 1. Verify Web Vitals initialization
 2. Check browser support for PerformanceObserver
 3. Verify route metrics collection
@@ -357,10 +394,12 @@ All events should log to console in development:
 ### Issue: Session Replay Not Working
 
 **Symptoms:**
+
 - No recordings in session replay tool
 - Scripts not loading
 
 **Solutions:**
+
 1. Verify `NEXT_PUBLIC_ENABLE_SESSION_REPLAY=true`
 2. Check provider configuration
 3. Verify site ID/API key
@@ -372,11 +411,13 @@ All events should log to console in development:
 ### Development Tools
 
 **Browser Extensions:**
+
 - React DevTools
 - Redux DevTools (if using Redux)
 - Vue DevTools (if using Vue)
 
 **Browser Console:**
+
 ```typescript
 // Access analytics instance
 window.__analytics__ = analytics;
@@ -391,46 +432,50 @@ window.__logger__ = logger;
 ### Debugging Utilities
 
 **Check Analytics Status:**
+
 ```typescript
-import { analytics } from '@/lib/analytics';
+import { analytics } from "@/lib/analytics";
 
 // Check if initialized
-console.log('Analytics initialized:', analytics.initialized);
+console.log("Analytics initialized:", analytics.initialized);
 
 // Manually track event
-analytics.trackEvent('debug_test', { test: true });
+analytics.trackEvent("debug_test", { test: true });
 ```
 
 **Check Diagnostics:**
+
 ```typescript
-import { diagnostics } from '@/lib/diagnostics';
+import { diagnostics } from "@/lib/diagnostics";
 
 // Get all events
 const allEvents = diagnostics.getEvents();
 
 // Get specific type
-const fetchErrors = diagnostics.getEvents('fetch_failure');
+const fetchErrors = diagnostics.getEvents("fetch_failure");
 
 // Clear events
 diagnostics.clear();
 ```
 
 **Check Logs:**
+
 ```typescript
-import { logger } from '@/lib/logging/logger';
+import { logger } from "@/lib/logging/logger";
 
 // Set user ID for context
-logger.setUserId('user-123');
+logger.setUserId("user-123");
 
 // Log debug info
-logger.debug('Debug message', { context: 'value' });
+logger.debug("Debug message", { context: "value" });
 ```
 
 ### Performance Monitoring
 
 **Web Vitals:**
+
 ```typescript
-import { reportWebVitals } from '@/lib/performance/web-vitals';
+import { reportWebVitals } from "@/lib/performance/web-vitals";
 
 // In Next.js app
 export function onPerfEntry(metric: any) {
@@ -439,12 +484,13 @@ export function onPerfEntry(metric: any) {
 ```
 
 **Route Metrics:**
+
 ```typescript
-import { routeMetrics } from '@/lib/performance/route-metrics';
+import { routeMetrics } from "@/lib/performance/route-metrics";
 
 // Get metrics for current route
 const metrics = routeMetrics.getMetrics(window.location.pathname);
-console.log('Route metrics:', metrics);
+console.log("Route metrics:", metrics);
 ```
 
 ## Best Practices
@@ -461,12 +507,14 @@ console.log('Route metrics:', metrics);
 ## Getting Help
 
 **Internal Resources:**
+
 - Check `/docs/observability-architecture.md`
 - Review `/docs/event-catalog.md`
 - Check component error boundaries
 - Review Sentry dashboard
 
 **External Resources:**
+
 - Provider documentation (Vercel, GA4, PostHog, Sentry)
 - Next.js error handling docs
 - Web Vitals documentation

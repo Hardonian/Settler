@@ -60,9 +60,9 @@ function describeCron(cron: string): string {
 
 export default function SchedulesPage() {
   const [jobs, setJobs] = useState<ScheduleJob[]>([]);
-  const [scheduleCapability, setScheduleCapability] = useState<SchedulesApiResponse["capability"] | null>(
-    null
-  );
+  const [scheduleCapability, setScheduleCapability] = useState<
+    SchedulesApiResponse["capability"] | null
+  >(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingJobId, setEditingJobId] = useState<string | null>(null);
@@ -172,7 +172,8 @@ export default function SchedulesPage() {
   // ---------------------------------------------------------------------------
 
   const schedulerDegraded =
-    scheduleCapability?.state === "degraded" && scheduleCapability.reason === "scheduler_disabled_by_env";
+    scheduleCapability?.state === "degraded" &&
+    scheduleCapability.reason === "scheduler_disabled_by_env";
 
   return (
     <div className="space-y-6">
@@ -203,9 +204,7 @@ export default function SchedulesPage() {
         <Badge variant={scheduledJobs.length > 0 ? "info" : "outline"}>
           {scheduledJobs.length} scheduled
         </Badge>
-        <Badge variant="outline">
-          {unscheduledJobs.length} unscheduled
-        </Badge>
+        <Badge variant="outline">{unscheduledJobs.length} unscheduled</Badge>
       </div>
 
       {schedulerDegraded && (
@@ -213,8 +212,9 @@ export default function SchedulesPage() {
           <AlertTitle>Scheduler disabled in this environment</AlertTitle>
           <AlertDescription>
             Cron rows are saved, but automatic runs require{" "}
-            <code className="rounded bg-muted px-1 py-0.5 text-xs">SCHEDULER_ENABLED</code> not set to{" "}
-            <code className="rounded bg-muted px-1 py-0.5 text-xs">false</code> on the server. Reason code:{" "}
+            <code className="rounded bg-muted px-1 py-0.5 text-xs">SCHEDULER_ENABLED</code> not set
+            to <code className="rounded bg-muted px-1 py-0.5 text-xs">false</code> on the server.
+            Reason code:{" "}
             <code className="rounded bg-muted px-1 py-0.5 text-xs">scheduler_disabled_by_env</code>.
           </AlertDescription>
         </Alert>
@@ -229,7 +229,8 @@ export default function SchedulesPage() {
               Scheduled Jobs
             </CardTitle>
             <CardDescription>
-              Jobs with saved cron expressions. Runs occur only when a scheduler worker is active and enabled in the environment.
+              Jobs with saved cron expressions. Runs occur only when a scheduler worker is active
+              and enabled in the environment.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 pt-5">
@@ -256,7 +257,8 @@ export default function SchedulesPage() {
               Unscheduled Jobs
             </CardTitle>
             <CardDescription>
-              Jobs without a recurring schedule. Add a schedule to persist automation intent (requires an active scheduler worker for runs).
+              Jobs without a recurring schedule. Add a schedule to persist automation intent
+              (requires an active scheduler worker for runs).
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 pt-5">
@@ -316,9 +318,7 @@ function JobRow({ job, isEditing, onEdit, onSaved }: JobRowProps) {
             <div className="grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2 md:grid-cols-4">
               <div>
                 <span className="text-xs text-muted-foreground">Cron</span>
-                <div className="font-mono text-xs text-foreground">
-                  {job.scheduleCron ?? "---"}
-                </div>
+                <div className="font-mono text-xs text-foreground">{job.scheduleCron ?? "---"}</div>
               </div>
               <div>
                 <span className="text-xs text-muted-foreground">Timezone</span>
@@ -334,15 +334,14 @@ function JobRow({ job, isEditing, onEdit, onSaved }: JobRowProps) {
               </div>
               <div>
                 <span className="text-xs text-muted-foreground">Last status</span>
-                <div className="text-xs text-foreground">
-                  {job.lastExecution?.status ?? "---"}
-                </div>
+                <div className="text-xs text-foreground">{job.lastExecution?.status ?? "---"}</div>
               </div>
             </div>
 
             {/* Adapters */}
             <div className="text-xs text-muted-foreground">
-              {[job.sourceAdapter, job.targetAdapter].filter(Boolean).join(" -> ") || "No adapters configured"}
+              {[job.sourceAdapter, job.targetAdapter].filter(Boolean).join(" -> ") ||
+                "No adapters configured"}
             </div>
           </div>
 
@@ -356,9 +355,7 @@ function JobRow({ job, isEditing, onEdit, onSaved }: JobRowProps) {
       </div>
 
       {/* Inline editor */}
-      {isEditing && (
-        <ScheduleConfigPanel job={job} onSaved={onSaved} />
-      )}
+      {isEditing && <ScheduleConfigPanel job={job} onSaved={onSaved} />}
     </div>
   );
 }

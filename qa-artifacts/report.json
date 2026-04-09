@@ -243,9 +243,7 @@
       "status": 500,
       "title": "500: Internal Server Error",
       "links": [],
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 500 ()"
-      ],
+      "consoleErrors": ["Failed to load resource: the server responded with a status of 500 ()"],
       "consoleWarnings": [],
       "networkErrors": [
         {

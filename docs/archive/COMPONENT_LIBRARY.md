@@ -26,7 +26,9 @@
     <label>Field Name</label>
     <input type="text" className="input" />
   </div>
-  <button type="submit" className="btn btn-primary">Submit</button>
+  <button type="submit" className="btn btn-primary">
+    Submit
+  </button>
 </form>
 ```
 
@@ -56,9 +58,7 @@
   <div className="card-header">
     <h3>Card Title</h3>
   </div>
-  <div className="card-body">
-    Card content
-  </div>
+  <div className="card-body">Card content</div>
 </div>
 ```
 
@@ -71,14 +71,15 @@ Visualizes reconciliation differences.
 **Location:** `/packages/web/src/components/recon/DiffViewer.tsx`
 
 **Usage:**
+
 ```tsx
 <DiffViewer
   items={[
     {
-      field: 'amount',
+      field: "amount",
       source: 100,
       target: 100,
-      status: 'matched',
+      status: "matched",
       confidence: 1.0,
     },
   ]}
@@ -93,12 +94,11 @@ Visualizes and inspects data schemas.
 **Location:** `/packages/web/src/components/recon/SchemaInspector.tsx`
 
 **Usage:**
+
 ```tsx
 <SchemaInspector
   schema={{
-    fields: [
-      { name: 'id', type: 'string', required: true },
-    ],
+    fields: [{ name: "id", type: "string", required: true }],
   }}
   onFieldSelect={(field) => console.log(field)}
 />
@@ -113,11 +113,9 @@ Drag-and-drop workflow orchestration.
 **Location:** `/packages/web/src/components/workflows/WorkflowBuilder.tsx`
 
 **Usage:**
+
 ```tsx
-<WorkflowBuilder
-  initialSteps={[]}
-  onSave={(steps) => console.log(steps)}
-/>
+<WorkflowBuilder initialSteps={[]} onSave={(steps) => console.log(steps)} />
 ```
 
 ## Page Templates

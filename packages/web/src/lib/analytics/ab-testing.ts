@@ -43,10 +43,7 @@ function simpleHash(str: string): number {
 /**
  * Get variant for user based on test configuration
  */
-export function getVariant(
-  test: ABTest,
-  userId: string
-): ABTestVariant | null {
+export function getVariant(test: ABTest, userId: string): ABTestVariant | null {
   if (!test.active) {
     return null;
   }
@@ -81,10 +78,10 @@ export async function trackABTestConversion(
   conversionEvent: string
 ): Promise<void> {
   try {
-    await fetch('/api/analytics/ab-test', {
-      method: 'POST',
+    await fetch("/api/analytics/ab-test", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         testId,
@@ -94,10 +91,10 @@ export async function trackABTestConversion(
         timestamp: new Date().toISOString(),
       }),
     }).catch((error) => {
-      console.error('Failed to track A/B test conversion:', error);
+      console.error("Failed to track A/B test conversion:", error);
     });
   } catch (error) {
-    console.error('A/B test tracking error:', error);
+    console.error("A/B test tracking error:", error);
   }
 }
 
@@ -106,23 +103,23 @@ export async function trackABTestConversion(
  */
 export const AB_TESTS: Record<string, ABTest> = {
   pricing_page_cta: {
-    id: 'pricing_page_cta',
-    name: 'Pricing Page CTA',
+    id: "pricing_page_cta",
+    name: "Pricing Page CTA",
     variants: [
-      { id: 'control', name: 'Start Free Trial', weight: 50 },
-      { id: 'variant_a', name: 'Get Started Free', weight: 50 },
+      { id: "control", name: "Start Free Trial", weight: 50 },
+      { id: "variant_a", name: "Get Started Free", weight: 50 },
     ],
     active: true,
-    startDate: new Date('2026-01-01'),
+    startDate: new Date("2026-01-01"),
   },
   homepage_hero: {
-    id: 'homepage_hero',
-    name: 'Homepage Hero Copy',
+    id: "homepage_hero",
+    name: "Homepage Hero Copy",
     variants: [
-      { id: 'control', name: 'Current', weight: 50 },
-      { id: 'variant_a', name: 'Alternative', weight: 50 },
+      { id: "control", name: "Current", weight: 50 },
+      { id: "variant_a", name: "Alternative", weight: 50 },
     ],
     active: false,
-    startDate: new Date('2026-01-01'),
+    startDate: new Date("2026-01-01"),
   },
 };

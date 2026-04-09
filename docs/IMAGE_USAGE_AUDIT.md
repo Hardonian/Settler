@@ -1,11 +1,13 @@
 # Image Usage Audit
 
 ## Summary
+
 **Status**: ⚠️ **Partially Complete** - Most images are embedded, but some infographics and badges are not being used.
 
 ## Images Currently Embedded
 
 ### ✅ Trust Badges (Used)
+
 - **Location**: `/public/assets/icons/`
 - **Components**: `EnhancedTrustBadges`, `TrustBadges`
 - **Pages**: Homepage (via `TrustSignalBanner`), Pricing page
@@ -18,6 +20,7 @@
   - `payment-secure-badge.svg` ✅
 
 ### ✅ Integration Logos (Used)
+
 - **Location**: `/public/assets/icons/integrations/`
 - **Component**: `IntegrationLogos`
 - **Status**: Component exists but needs to be added to homepage
@@ -33,6 +36,7 @@
   - `xero-logo.svg` ✅
 
 ### ✅ Payment Processor Badges (Used)
+
 - **Location**: `/public/assets/icons/`
 - **Component**: `PaymentTypes`
 - **Status**: Used in billing/payment pages
@@ -41,6 +45,7 @@
   - `paypal-payment-badge.svg` ✅
 
 ### ✅ Favicon & App Icons (Used)
+
 - **Location**: `/public/`
 - **Usage**: Layout metadata, PWA manifest
 - **Files**:
@@ -49,6 +54,7 @@
   - `icon-512x512.svg` ✅
 
 ### ✅ OpenGraph Image (Generated)
+
 - **Location**: `/app/opengraph-image.tsx`
 - **Status**: Dynamically generated, referenced in layout metadata
 - **Usage**: Social media sharing, SEO
@@ -56,6 +62,7 @@
 ## Images NOT Currently Embedded
 
 ### ❌ Infographics (Not Used)
+
 - **Location**: `/public/assets/infographics/`
 - **Status**: Files exist but not referenced in any components
 - **Files**:
@@ -65,6 +72,7 @@
 - **Recommendation**: Add to relevant pages (architecture, pricing, ROI calculator)
 
 ### ❌ Unused Badges
+
 - **Location**: `/public/assets/icons/`
 - **Files**:
   - `community-badge.svg` ❌
@@ -73,6 +81,7 @@
   - `payment-types.svg` ❌
 
 ### ⚠️ Customer Logos (Placeholder Only)
+
 - **Component**: `CustomerLogos`
 - **Status**: Uses emoji placeholders instead of actual logo images
 - **Recommendation**: Replace with actual customer logo images

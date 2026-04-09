@@ -44,9 +44,7 @@ export function ReasonForChangeDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">{title}</DialogTitle>
-          <DialogDescription className="text-muted-foreground">
-            {description}
-          </DialogDescription>
+          <DialogDescription className="text-muted-foreground">{description}</DialogDescription>
         </DialogHeader>
         <div className="py-4">
           <label htmlFor="reason" className="text-sm font-semibold text-foreground mb-2 block">
@@ -61,7 +59,10 @@ export function ReasonForChangeDialog({
             autoFocus
           />
           <p className="mt-2 text-[11px] text-muted-foreground italic">
-            This action will be recorded in the audit trail with Trace ID: <span className="font-mono bg-muted/40 px-1 rounded">TRC-{Math.random().toString(36).substring(7).toUpperCase()}</span>
+            This action will be recorded in the audit trail with Trace ID:{" "}
+            <span className="font-mono bg-muted/40 px-1 rounded">
+              TRC-{Math.random().toString(36).substring(7).toUpperCase()}
+            </span>
           </p>
         </div>
         <DialogFooter className="gap-2 sm:gap-0">

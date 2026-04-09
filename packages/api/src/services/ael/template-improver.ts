@@ -1,17 +1,16 @@
 /**
  * Continuous Template Improvement
- * 
+ *
  * Automatically generates improved templates
  * Part 7: Autonomous AIOS Evolution
  */
 
- 
-import { PrismaClient, Prisma } from '@prisma/client';
-import { logInfo } from '../../utils/logger';
+import { PrismaClient, Prisma } from "@prisma/client";
+import { logInfo } from "../../utils/logger";
 
 export interface TemplateImprovement {
   templateId: string;
-  templateType: 'mapping' | 'transform' | 'validation';
+  templateType: "mapping" | "transform" | "validation";
   currentVersion: string;
   proposedVersion: string;
   improvements: string[];
@@ -69,22 +68,22 @@ export class TemplateImprover {
       const failures = await this.prisma.reconResult.findMany({
         where: {
           reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
-          status: 'failed',
+          status: "failed",
         },
         take: 10,
       });
 
       if (failures.length > 5) {
-        const currentVersion = template.version ? String(template.version) : '1.0.0';
+        const currentVersion = template.version ? String(template.version) : "1.0.0";
         improvements.push({
           templateId: template.id,
-          templateType: 'mapping',
+          templateType: "mapping",
           currentVersion,
           proposedVersion: this.incrementVersion(currentVersion),
           improvements: [
-            'Add error handling for missing fields',
-            'Improve field matching logic',
-            'Add fallback mappings',
+            "Add error handling for missing fields",
+            "Improve field matching logic",
+            "Add fallback mappings",
           ],
           backwardCompatible: true,
           confidence: 0.8,
@@ -122,27 +121,31 @@ export class TemplateImprover {
       });
 
       const durations = results
-        .filter((r: { completedAt: Date | null; startedAt: Date | null }) => r.completedAt && r.startedAt)
+        .filter(
+          (r: { completedAt: Date | null; startedAt: Date | null }) => r.completedAt && r.startedAt
+        )
         .map((r: { completedAt: Date | null; startedAt: Date | null }) => {
           if (!r.completedAt || !r.startedAt) return 0;
           return r.completedAt.getTime() - r.startedAt.getTime();
         });
-      
-      const avgDuration = durations.length > 0
-        ? durations.reduce((a: number, b: number) => a + b, 0) / durations.length
-        : 0;
 
-      if (avgDuration > 10000) { // > 10 seconds
-        const currentVersion = recipe.version ? String(recipe.version) : '1.0.0';
+      const avgDuration =
+        durations.length > 0
+          ? durations.reduce((a: number, b: number) => a + b, 0) / durations.length
+          : 0;
+
+      if (avgDuration > 10000) {
+        // > 10 seconds
+        const currentVersion = recipe.version ? String(recipe.version) : "1.0.0";
         improvements.push({
           templateId: recipe.id,
-          templateType: 'transform',
+          templateType: "transform",
           currentVersion,
           proposedVersion: this.incrementVersion(currentVersion),
           improvements: [
-            'Optimize transformation logic',
-            'Add caching for repeated operations',
-            'Parallelize independent transforms',
+            "Optimize transformation logic",
+            "Add caching for repeated operations",
+            "Parallelize independent transforms",
           ],
           backwardCompatible: true,
           confidence: 0.7,
@@ -170,13 +173,17 @@ export class TemplateImprover {
       const allJobs = await this.prisma.reconJob.findMany({
         select: { id: true, validationRules: true },
       });
-      
+
       const jobs = allJobs.filter((job: { id: string; validationRules: unknown }) => {
         const rules = job.validationRules;
         if (Array.isArray(rules)) {
-          return rules.some((r: unknown) => 
-            (typeof r === 'object' && r !== null && 'id' in r && (r as { id: string }).id === rule.id) ||
-            r === rule.id
+          return rules.some(
+            (r: unknown) =>
+              (typeof r === "object" &&
+                r !== null &&
+                "id" in r &&
+                (r as { id: string }).id === rule.id) ||
+              r === rule.id
           );
         }
         return false;
@@ -186,7 +193,7 @@ export class TemplateImprover {
       const results = await this.prisma.reconResult.findMany({
         where: {
           reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
-          status: 'failed',
+          status: "failed",
         },
         take: 1,
       });
@@ -195,13 +202,13 @@ export class TemplateImprover {
         // ValidationRule doesn't have a version field, use '1.0.0' as default
         improvements.push({
           templateId: rule.id,
-          templateType: 'validation',
-          currentVersion: '1.0.0',
-          proposedVersion: this.incrementVersion('1.0.0'),
+          templateType: "validation",
+          currentVersion: "1.0.0",
+          proposedVersion: this.incrementVersion("1.0.0"),
           improvements: [
-            'Tighten validation criteria',
-            'Add additional checks',
-            'Improve error messages',
+            "Tighten validation criteria",
+            "Add additional checks",
+            "Improve error messages",
           ],
           backwardCompatible: true,
           confidence: 0.6,
@@ -216,10 +223,10 @@ export class TemplateImprover {
    * Increment version number
    */
   private incrementVersion(version: string): string {
-    const parts = version.split('.');
-    const major = parseInt(parts[0] ?? '1', 10) || 1;
-    const minor = parseInt(parts[1] ?? '0', 10) || 0;
-    const patch = parseInt(parts[2] ?? '0', 10) || 0;
+    const parts = version.split(".");
+    const major = parseInt(parts[0] ?? "1", 10) || 1;
+    const minor = parseInt(parts[1] ?? "0", 10) || 0;
+    const patch = parseInt(parts[2] ?? "0", 10) || 0;
     return `${major}.${minor}.${patch + 1}`;
   }
 
@@ -228,16 +235,16 @@ export class TemplateImprover {
    */
   async applyImprovement(improvement: TemplateImprovement): Promise<void> {
     // Create new version of template
-    if (improvement.templateType === 'mapping') {
+    if (improvement.templateType === "mapping") {
       const template = await this.prisma.mappingTemplate.findUnique({
         where: { id: improvement.templateId },
       });
 
       if (template) {
         // Parse version string to number (e.g., "1.0.1" -> 1)
-        const versionParts = improvement.proposedVersion.split('.');
-        const versionNumber = parseInt(versionParts[0] ?? '1', 10) || 1;
-        
+        const versionParts = improvement.proposedVersion.split(".");
+        const versionNumber = parseInt(versionParts[0] ?? "1", 10) || 1;
+
         await this.prisma.mappingTemplate.create({
           data: {
             tenantId: template.tenantId,
@@ -259,6 +266,6 @@ export class TemplateImprover {
     }
     // Similar for transform and validation...
 
-    logInfo('Template improvement applied', { improvement });
+    logInfo("Template improvement applied", { improvement });
   }
 }

@@ -11,7 +11,9 @@ export type PresetDefinition = {
 };
 
 function cloneDefault(): OperatorSurfaceCustomization {
-  return JSON.parse(JSON.stringify(defaultAdminDashboardCustomization())) as OperatorSurfaceCustomization;
+  return JSON.parse(
+    JSON.stringify(defaultAdminDashboardCustomization())
+  ) as OperatorSurfaceCustomization;
 }
 
 /** Compact solo layout: highest-signal blocks first; optional modules off by default where safe. */
@@ -22,7 +24,12 @@ function soloOperatorDashboard(): OperatorSurfaceCustomization {
   c.modules = [
     { moduleId: "trust_connection", enabled: true, order: 0 },
     { moduleId: "time_range", enabled: true, order: 1 },
-    { moduleId: "usage_warning", enabled: true, order: 2, thresholdOverrides: { usageWarningVolume: 500_000 } },
+    {
+      moduleId: "usage_warning",
+      enabled: true,
+      order: 2,
+      thresholdOverrides: { usageWarningVolume: 500_000 },
+    },
     { moduleId: "kpi_tiles", enabled: true, order: 3 },
     { moduleId: "exception_heatmap", enabled: true, order: 4 },
     { moduleId: "activity_feed", enabled: false, order: 5 },
@@ -72,7 +79,8 @@ export const OPERATOR_CUSTOMIZATION_PRESETS: PresetDefinition[] = [
   {
     id: "solo_operator",
     label: "Solo operator",
-    description: "Compact signal path: connectivity, range, usage attention, KPIs, heatmap; activity feed off.",
+    description:
+      "Compact signal path: connectivity, range, usage attention, KPIs, heatmap; activity feed off.",
     scope: "system",
     customization: soloOperatorDashboard,
   },

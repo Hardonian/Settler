@@ -20,8 +20,8 @@ Complete step-by-step guide to deploy the Reality System.
 3. Paste and execute
 4. Verify tables created:
    ```sql
-   SELECT table_name FROM information_schema.tables 
-   WHERE table_schema = 'public' 
+   SELECT table_name FROM information_schema.tables
+   WHERE table_schema = 'public'
    AND table_name IN ('reality_metrics', 'reality_events', 'weekly_snapshots');
    ```
 
@@ -205,7 +205,7 @@ Supabase Dashboard → Edge Functions → [Function Name] → Logs
 ### Check Cron Job Runs
 
 ```sql
-SELECT 
+SELECT
   jobid,
   jobname,
   runid,
@@ -225,7 +225,7 @@ LIMIT 20;
 ### Check Metrics Status
 
 ```sql
-SELECT 
+SELECT
   category,
   COUNT(*) as total,
   COUNT(*) FILTER (WHERE status = 'proven') as proven,

@@ -1,11 +1,11 @@
 /**
  * Lossy Export Service
- * 
+ *
  * Makes exports explicitly lossy by excluding derived artifacts, confidence scores,
  * and longitudinal insights. This creates switching friction by making exports incomplete.
- * 
+ *
  * PHASE: Data Moat Reinforcement
- * 
+ *
  * Based on narrative compression requirements:
  * - Exports should exclude derived artifacts
  * - Exports should exclude longitudinal insights
@@ -13,8 +13,8 @@
  * - This creates switching friction (customers lose value when exporting)
  */
 
-import { logError, logInfo } from '../../utils/logger';
-import { query } from '../../db';
+import { logError, logInfo } from "../../utils/logger";
+import { query } from "../../db";
 
 export interface ExportOptions {
   includeDerivedArtifacts?: boolean; // Default: false (lossy)
@@ -33,13 +33,13 @@ export interface LossyExportResult {
 
 /**
  * Lossy Export Service
- * 
+ *
  * Creates exports that exclude proprietary data to create switching friction
  */
 export class LossyExportService {
   /**
    * Create a lossy export of reconciliation data
-   * 
+   *
    * Excludes:
    * - Derived artifacts (pattern insights, rule optimizations)
    * - Confidence scores (proprietary matching intelligence)
@@ -70,7 +70,7 @@ export class LossyExportService {
       );
 
       if (runResult.length === 0) {
-        throw new Error('Reconciliation run not found');
+        throw new Error("Reconciliation run not found");
       }
 
       const run = runResult[0] as {
@@ -85,9 +85,9 @@ export class LossyExportService {
       };
 
       // Extract adapter info from metadata if available
-      const metadata = typeof run.metadata === 'string' ? JSON.parse(run.metadata) : run.metadata;
-      const sourceAdapter = (metadata as { source_adapter?: string })?.source_adapter || 'unknown';
-      const targetAdapter = (metadata as { target_adapter?: string })?.target_adapter || 'unknown';
+      const metadata = typeof run.metadata === "string" ? JSON.parse(run.metadata) : run.metadata;
+      const sourceAdapter = (metadata as { source_adapter?: string })?.source_adapter || "unknown";
+      const targetAdapter = (metadata as { target_adapter?: string })?.target_adapter || "unknown";
 
       // Get matches (with or without confidence scores)
       const matchesQuery = includeConfidenceScores
@@ -123,13 +123,13 @@ export class LossyExportService {
       // Exclude derived artifacts
       const excludedFields: string[] = [];
       if (!includeDerivedArtifacts) {
-        excludedFields.push('pattern_insights', 'rule_optimizations', 'matching_suggestions');
+        excludedFields.push("pattern_insights", "rule_optimizations", "matching_suggestions");
       }
       if (!includeConfidenceScores) {
-        excludedFields.push('confidence', 'confidence_history', 'confidence_trend');
+        excludedFields.push("confidence", "confidence_history", "confidence_trend");
       }
       if (!includeLongitudinalInsights) {
-        excludedFields.push('historical_patterns', 'trend_analysis', 'anomaly_detection');
+        excludedFields.push("historical_patterns", "trend_analysis", "anomaly_detection");
       }
 
       // Create export record
@@ -158,7 +158,7 @@ export class LossyExportService {
 
       const exportId = (exportResult[0] as { id: string }).id;
 
-      logInfo('Created lossy export', {
+      logInfo("Created lossy export", {
         exportId,
         tenantId,
         reconciliationRunId,
@@ -173,7 +173,7 @@ export class LossyExportService {
         warning: this.generateWarning(excludedFields),
       };
     } catch (error) {
-      logError('Failed to create lossy export', error, {
+      logError("Failed to create lossy export", error, {
         tenantId,
         reconciliationRunId,
       });
@@ -186,23 +186,25 @@ export class LossyExportService {
    */
   private generateWarning(excludedFields: string[]): string {
     if (excludedFields.length === 0) {
-      return 'Full export includes all data.';
+      return "Full export includes all data.";
     }
 
     const warnings: string[] = [];
 
-    if (excludedFields.includes('confidence')) {
-      warnings.push('Confidence scores excluded');
+    if (excludedFields.includes("confidence")) {
+      warnings.push("Confidence scores excluded");
     }
-    if (excludedFields.includes('pattern_insights')) {
-      warnings.push('Pattern insights excluded');
+    if (excludedFields.includes("pattern_insights")) {
+      warnings.push("Pattern insights excluded");
     }
-    if (excludedFields.includes('historical_patterns')) {
-      warnings.push('Historical patterns excluded');
+    if (excludedFields.includes("historical_patterns")) {
+      warnings.push("Historical patterns excluded");
     }
 
-    return `This export excludes proprietary data: ${warnings.join(', ')}. ` +
-      'To access full data including confidence scores and insights, continue using Settler.';
+    return (
+      `This export excludes proprietary data: ${warnings.join(", ")}. ` +
+      "To access full data including confidence scores and insights, continue using Settler."
+    );
   }
 
   /**
@@ -221,9 +223,9 @@ export class LossyExportService {
         return false;
       }
 
-      return (result[0] as { lossy: string }).lossy === 'true';
+      return (result[0] as { lossy: string }).lossy === "true";
     } catch (error) {
-      logError('Failed to check if export is lossy', error, { exportId });
+      logError("Failed to check if export is lossy", error, { exportId });
       return false;
     }
   }
@@ -249,10 +251,10 @@ export class LossyExportService {
         return [];
       }
 
-      const parsed = typeof metadata === 'string' ? JSON.parse(metadata) : metadata;
+      const parsed = typeof metadata === "string" ? JSON.parse(metadata) : metadata;
       return (parsed as { excluded_fields?: string[] }).excluded_fields || [];
     } catch (error) {
-      logError('Failed to get excluded fields', error, { exportId });
+      logError("Failed to get excluded fields", error, { exportId });
       return [];
     }
   }

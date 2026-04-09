@@ -1,19 +1,18 @@
 /**
  * Alert Manager
- * 
+ *
  * Centralized service for managing and dispatching system alerts.
  * Supports multiple channels (Email, Slack, Webhook) and severity levels.
  */
 
- 
-import { PrismaClient } from '@prisma/client';
-import { sendEmail } from '../../lib/email';
-import { logError, logInfo } from '../../utils/logger';
+import { PrismaClient } from "@prisma/client";
+import { sendEmail } from "../../lib/email";
+import { logError, logInfo } from "../../utils/logger";
 
 export enum AlertSeverity {
-  INFO = 'info',
-  WARNING = 'warning',
-  CRITICAL = 'critical',
+  INFO = "info",
+  WARNING = "warning",
+  CRITICAL = "critical",
 }
 
 export interface AlertParams {
@@ -43,11 +42,11 @@ export class AlertManager {
         INSERT INTO alerts (
           id, tenant_id, type, message, severity, metadata, created_at
         ) VALUES (
-          gen_random_uuid(), ${tenantId}::uuid, ${type}, ${message}, ${severity}, ${metadata ? JSON.stringify(metadata) : '{}'}::jsonb, NOW()
+          gen_random_uuid(), ${tenantId}::uuid, ${type}, ${message}, ${severity}, ${metadata ? JSON.stringify(metadata) : "{}"}::jsonb, NOW()
         )
       `.catch((err) => {
         // Fallback if table doesn't exist or other DB error
-        logError('Failed to persist alert to DB', err);
+        logError("Failed to persist alert to DB", err);
       });
 
       // 2. Fetch Notification Settings
@@ -71,7 +70,7 @@ export class AlertManager {
           html: `
             <h2>System Alert</h2>
             <p><strong>Type:</strong> ${type}</p>
-            <p><strong>Severity:</strong> <span style="color: ${severity === 'critical' ? 'red' : 'orange'}">${severity.toUpperCase()}</span></p>
+            <p><strong>Severity:</strong> <span style="color: ${severity === "critical" ? "red" : "orange"}">${severity.toUpperCase()}</span></p>
             <p><strong>Message:</strong> ${message}</p>
             <pre>${JSON.stringify(metadata, null, 2)}</pre>
           `,
@@ -82,9 +81,8 @@ export class AlertManager {
       // await this.sendSlackAlert(...)
 
       logInfo(`Alert dispatched: ${type} (${severity}) for tenant ${tenantId}`);
-
     } catch (error) {
-      logError('Failed to dispatch alert', error);
+      logError("Failed to dispatch alert", error);
     }
   }
 }

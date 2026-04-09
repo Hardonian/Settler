@@ -11,6 +11,7 @@ Follow the canonical setup sequence defined in [SETUP.md](../SETUP.md) for the m
 Includes JobForge adapters, extended QA/security verification, and full workspace checks.
 
 After completing the canonical setup sequence, run:
+
 ```bash
 pnpm run verify
 pnpm run repo-integrity

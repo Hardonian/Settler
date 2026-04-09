@@ -1,13 +1,13 @@
 /**
  * Continuous Reconciliation Graph Types
- * 
+ *
  * Graph-based reconciliation that updates continuously as transactions occur.
  * Each transaction is a node; reconciliation is edge relationships.
  */
 
 export interface ReconciliationNode {
   id: string;
-  type: 'transaction' | 'match' | 'unmatched' | 'error';
+  type: "transaction" | "match" | "unmatched" | "error";
   jobId: string;
   sourceId?: string;
   targetId?: string;
@@ -23,7 +23,7 @@ export interface ReconciliationEdge {
   id: string;
   source: string; // Node ID
   target: string; // Node ID
-  type: 'matches' | 'conflicts' | 'related' | 'derived';
+  type: "matches" | "conflicts" | "related" | "derived";
   confidence: number;
   metadata?: Record<string, unknown>;
   createdAt: Date;
@@ -39,7 +39,7 @@ export interface ReconciliationGraph {
 export interface GraphQuery {
   jobId: string;
   nodeId?: string;
-  nodeType?: ReconciliationNode['type'];
+  nodeType?: ReconciliationNode["type"];
   sourceId?: string;
   targetId?: string;
   dateRange?: {
@@ -58,7 +58,7 @@ export interface GraphUpdate {
 }
 
 export interface RealTimeUpdate {
-  type: 'node_added' | 'node_updated' | 'edge_added' | 'edge_updated' | 'graph_updated';
+  type: "node_added" | "node_updated" | "edge_added" | "edge_updated" | "graph_updated";
   data: ReconciliationNode | ReconciliationEdge | ReconciliationGraph;
   timestamp: Date;
 }

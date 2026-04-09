@@ -2,16 +2,16 @@
  * Zod schemas for runtime validation
  */
 
-import { z } from 'zod'
+import { z } from "zod";
 
 export const jobStatusSchema = z.enum([
-  'queued',
-  'running',
-  'succeeded',
-  'failed',
-  'dead',
-  'canceled',
-])
+  "queued",
+  "running",
+  "succeeded",
+  "failed",
+  "dead",
+  "canceled",
+]);
 
 export const jobRowSchema = z.object({
   id: z.string().uuid(),
@@ -33,7 +33,7 @@ export const jobRowSchema = z.object({
   result_id: z.string().uuid().nullable(),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
-})
+});
 
 export const enqueueJobParamsSchema = z.object({
   tenant_id: z.string().uuid(),
@@ -42,13 +42,13 @@ export const enqueueJobParamsSchema = z.object({
   idempotency_key: z.string().optional(),
   run_at: z.string().datetime().optional(),
   max_attempts: z.number().int().min(1).max(10).optional(),
-})
+});
 
 export const completeJobParamsSchema = z.object({
   job_id: z.string().uuid(),
   worker_id: z.string().min(1),
-  status: z.enum(['succeeded', 'failed']),
+  status: z.enum(["succeeded", "failed"]),
   error: z.record(z.unknown()).optional(),
   result: z.record(z.unknown()).optional(),
   artifact_ref: z.string().optional(),
-})
+});

@@ -1,11 +1,11 @@
 /**
  * PII Detection and Sanitization
- * 
+ *
  * Detects and sanitizes PII in logs, error messages, and API responses
  * to prevent data leaks and ensure compliance.
  */
 
-import { logger } from '@/lib/observability/logger';
+import { logger } from "@/lib/observability/logger";
 
 // Common PII patterns
 const PII_PATTERNS = {
@@ -22,9 +22,9 @@ const PII_PATTERNS = {
 // Sanitization functions
 const SANITIZERS = {
   email: (value: string) => {
-    const [local, domain] = value.split('@');
+    const [local, domain] = value.split("@");
     if (!local || !domain) {
-      return '***@***';
+      return "***@***";
     }
     return `${local.substring(0, 2)}***@${domain}`;
   },
@@ -38,7 +38,7 @@ const SANITIZERS = {
     return `****-****-****-${value.slice(-4)}`;
   },
   ipAddress: (value: string) => {
-    return `***.***.***.${value.split('.').pop()}`;
+    return `***.***.***.${value.split(".").pop()}`;
   },
   uuid: (value: string) => {
     return `${value.substring(0, 8)}-****-****-****-${value.slice(-12)}`;
@@ -70,7 +70,7 @@ export function detectPII(text: string): PIIDetectionResult {
       detectedTypes.push(type);
       sanitized = sanitized.replace(pattern, (match) => {
         const sanitizer = SANITIZERS[type as keyof typeof SANITIZERS];
-        return sanitizer ? sanitizer(match) : '***';
+        return sanitizer ? sanitizer(match) : "***";
       });
     }
   }
@@ -92,7 +92,7 @@ export function sanitizeObject<T>(obj: T, depth = 0): T {
     return obj;
   }
 
-  if (typeof obj === 'string') {
+  if (typeof obj === "string") {
     const result = detectPII(obj);
     return (result.detected ? result.sanitized : obj) as T;
   }
@@ -101,15 +101,11 @@ export function sanitizeObject<T>(obj: T, depth = 0): T {
     return obj.map((item) => sanitizeObject(item, depth + 1)) as T;
   }
 
-  if (obj && typeof obj === 'object') {
+  if (obj && typeof obj === "object") {
     const sanitized: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(obj)) {
       // Skip known safe keys
-      if (
-        ['id', 'userId', 'tenantId', 'timestamp', 'createdAt', 'updatedAt'].includes(
-          key
-        )
-      ) {
+      if (["id", "userId", "tenantId", "timestamp", "createdAt", "updatedAt"].includes(key)) {
         sanitized[key] = value;
       } else {
         sanitized[key] = sanitizeObject(value, depth + 1);
@@ -157,10 +153,13 @@ export function sanitizeError(error: Error): Error {
     const sanitizedError = new Error(result.sanitized);
     sanitizedError.name = error.name;
     sanitizedError.stack = error.stack
-      ? error.stack.split('\n').map((line) => {
-          const lineResult = detectPII(line);
-          return lineResult.detected ? lineResult.sanitized : line;
-        }).join('\n')
+      ? error.stack
+          .split("\n")
+          .map((line) => {
+            const lineResult = detectPII(line);
+            return lineResult.detected ? lineResult.sanitized : line;
+          })
+          .join("\n")
       : undefined;
     return sanitizedError;
   }
@@ -171,14 +170,11 @@ export function sanitizeError(error: Error): Error {
 /**
  * Audit PII usage (for compliance)
  */
-export async function auditPIIUsage(
-  context: string,
-  data: Record<string, unknown>
-): Promise<void> {
+export async function auditPIIUsage(context: string, data: Record<string, unknown>): Promise<void> {
   const result = detectPII(JSON.stringify(data));
 
   if (result.detected) {
-    await logger.warn('PII detected in data', {
+    await logger.warn("PII detected in data", {
       context,
       piiTypes: result.types,
       dataSize: result.originalLength,

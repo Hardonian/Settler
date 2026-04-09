@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import type { PlanCode } from "@/domain/billing/planConfig";
-import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
-import { appLogger } from '@/lib/utils/logger';
-import { withSecurity } from '@/lib/middleware/api-security';
+import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
+import { appLogger } from "@/lib/utils/logger";
+import { withSecurity } from "@/lib/middleware/api-security";
 
 export const dynamic = "force-dynamic";
-export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
+export const runtime = "nodejs"; // Ensure Node.js runtime for Supabase
 
 // Type definitions for better type safety
 interface UsageEvent {
@@ -35,7 +35,7 @@ const PLAN_LIMITS: Readonly<Record<PlanCode, number>> = {
   enterprise: 1000000,
 } as const;
 
-const DEFAULT_PLAN: PlanCode = 'starter';
+const DEFAULT_PLAN: PlanCode = "starter";
 const WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
 
 // Type guard to check if a string is a valid PlanCode
@@ -45,22 +45,22 @@ function isValidPlanCode(plan: string): plan is PlanCode {
 
 // Safely extract plan code from metadata (supports both 'plan' and 'planCode' fields)
 function extractPlanCode(metadata: SubscriptionMetadata | null | undefined): PlanCode {
-  if (!metadata || typeof metadata !== 'object') {
+  if (!metadata || typeof metadata !== "object") {
     return DEFAULT_PLAN;
   }
-  
+
   // Try planCode first (preferred field name)
   const planCode = metadata.planCode;
-  if (typeof planCode === 'string' && isValidPlanCode(planCode)) {
+  if (typeof planCode === "string" && isValidPlanCode(planCode)) {
     return planCode;
   }
-  
+
   // Fallback to plan field
   const plan = metadata.plan;
-  if (typeof plan === 'string' && isValidPlanCode(plan)) {
+  if (typeof plan === "string" && isValidPlanCode(plan)) {
     return plan;
   }
-  
+
   return DEFAULT_PLAN;
 }
 
@@ -72,118 +72,126 @@ function getPlanLimit(planCode: PlanCode): number {
 // Safely parse usage events
 function parseUsageEvents(events: unknown): Record<string, number> {
   const usageByType: Record<string, number> = {};
-  
+
   if (!Array.isArray(events)) {
     return usageByType;
   }
-  
+
   for (const event of events) {
-    if (event && typeof event === 'object') {
+    if (event && typeof event === "object") {
       const usageEvent = event as UsageEvent;
-      const eventType = typeof usageEvent.event_type === 'string' 
-        ? usageEvent.event_type 
-        : 'unknown';
-      const quantity = typeof usageEvent.quantity === 'number' && usageEvent.quantity > 0
-        ? usageEvent.quantity 
-        : 1;
+      const eventType =
+        typeof usageEvent.event_type === "string" ? usageEvent.event_type : "unknown";
+      const quantity =
+        typeof usageEvent.quantity === "number" && usageEvent.quantity > 0
+          ? usageEvent.quantity
+          : 1;
       usageByType[eventType] = (usageByType[eventType] ?? 0) + quantity;
     }
   }
-  
+
   return usageByType;
 }
 
 export const GET = withSecurity(
-  withUniversalBillingGate(async function GET(_request: NextRequest) {
-  try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
+  withUniversalBillingGate(
+    async function GET(_request: NextRequest) {
+      try {
+        const supabase = await createClient();
+        const {
+          data: { user },
+          error: authError,
+        } = await supabase.auth.getUser();
 
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+        if (authError || !user) {
+          return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
 
-    // Fetch quota data from database
-    const { prisma } = await import('@/shared/db/prismaClient');
-    
-    // Get tenant ID from user's billing account
-    const billingAccount = await prisma.billingAccount.findFirst({
-      where: { userId: user.id },
-      select: { tenantId: true },
-    });
+        // Fetch quota data from database
+        const { prisma } = await import("@/shared/db/prismaClient");
 
-    if (!billingAccount?.tenantId) {
-      return NextResponse.json({ quotas: [] });
-    }
+        // Get tenant ID from user's billing account
+        const billingAccount = await prisma.billingAccount.findFirst({
+          where: { userId: user.id },
+          select: { tenantId: true },
+        });
 
-    // Get subscription to determine limits
-    const subscription = await prisma.subscription.findFirst({
-      where: { billingAccountId: billingAccount.tenantId },
-      select: { metadata: true, stripePriceId: true },
-    });
+        if (!billingAccount?.tenantId) {
+          return NextResponse.json({ quotas: [] });
+        }
 
-    // Extract plan code with type safety
-    const planCode = extractPlanCode(subscription?.metadata as SubscriptionMetadata | null);
-    const baseLimit = getPlanLimit(planCode);
+        // Get subscription to determine limits
+        const subscription = await prisma.subscription.findFirst({
+          where: { billingAccountId: billingAccount.tenantId },
+          select: { metadata: true, stripePriceId: true },
+        });
 
-    // Get actual usage from usage_events
-    const now = new Date();
-    const weekStart = new Date(now.getTime() - WEEK_IN_MS);
-    
-    // Calculate usage from usage_events table
-    const { data: usageEvents, error: usageError } = await supabase
-      .from('usage_events')
-      .select('event_type, quantity')
-      .eq('user_id', user.id)
-      .gte('created_at', weekStart.toISOString());
+        // Extract plan code with type safety
+        const planCode = extractPlanCode(subscription?.metadata as SubscriptionMetadata | null);
+        const baseLimit = getPlanLimit(planCode);
 
-    // Handle usage query errors gracefully
-    if (usageError) {
-      // Use dynamic import to avoid circular dependencies
-      import('@/lib/utils/logger').then(({ appLogger }) => {
-        appLogger.warn("Error fetching usage events", { error: usageError.message });
-      }).catch(() => {
-        // Silent fail if logger unavailable
-      });
-    }
+        // Get actual usage from usage_events
+        const now = new Date();
+        const weekStart = new Date(now.getTime() - WEEK_IN_MS);
 
-    const usageByType = parseUsageEvents(usageEvents);
-    const resetAt = new Date(now.getTime() + WEEK_IN_MS).toISOString();
+        // Calculate usage from usage_events table
+        const { data: usageEvents, error: usageError } = await supabase
+          .from("usage_events")
+          .select("event_type, quantity")
+          .eq("user_id", user.id)
+          .gte("created_at", weekStart.toISOString());
 
-    const quotas: QuotaItem[] = [
-      {
-        endpoint: "/api/reconcile",
-        limit: baseLimit,
-        used: usageByType.reconciliation ?? 0,
-        resetAt,
-      },
-      {
-        endpoint: "/api/integrations/sync",
-        limit: baseLimit,
-        used: usageByType.integration_sync ?? 0,
-        resetAt,
-      },
-      {
-        endpoint: "/api/webhooks",
-        limit: baseLimit * 2,
-        used: usageByType.webhook ?? 0,
-        resetAt,
-      },
-    ];
+        // Handle usage query errors gracefully
+        if (usageError) {
+          // Use dynamic import to avoid circular dependencies
+          import("@/lib/utils/logger")
+            .then(({ appLogger }) => {
+              appLogger.warn("Error fetching usage events", { error: usageError.message });
+            })
+            .catch(() => {
+              // Silent fail if logger unavailable
+            });
+        }
 
-    return NextResponse.json({ quotas });
-  } catch (error) {
-    appLogger.error("Error in quota GET", error);
-    // Never return 500 - return empty quotas with graceful error message
-    return NextResponse.json({ 
-      quotas: [],
-      error: "Unable to fetch quota information at this time",
-      message: "Please try again later"
-    }, { status: 200 });
-  }
-}, { feature: 'GET API' }),
+        const usageByType = parseUsageEvents(usageEvents);
+        const resetAt = new Date(now.getTime() + WEEK_IN_MS).toISOString();
+
+        const quotas: QuotaItem[] = [
+          {
+            endpoint: "/api/reconcile",
+            limit: baseLimit,
+            used: usageByType.reconciliation ?? 0,
+            resetAt,
+          },
+          {
+            endpoint: "/api/integrations/sync",
+            limit: baseLimit,
+            used: usageByType.integration_sync ?? 0,
+            resetAt,
+          },
+          {
+            endpoint: "/api/webhooks",
+            limit: baseLimit * 2,
+            used: usageByType.webhook ?? 0,
+            resetAt,
+          },
+        ];
+
+        return NextResponse.json({ quotas });
+      } catch (error) {
+        appLogger.error("Error in quota GET", error);
+        // Never return 500 - return empty quotas with graceful error message
+        return NextResponse.json(
+          {
+            quotas: [],
+            error: "Unable to fetch quota information at this time",
+            message: "Please try again later",
+          },
+          { status: 200 }
+        );
+      }
+    },
+    { feature: "GET API" }
+  ),
   { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
 );

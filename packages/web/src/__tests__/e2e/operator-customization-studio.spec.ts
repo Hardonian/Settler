@@ -11,12 +11,16 @@ const BASE = process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000";
 const adminStorage = process.env.PLAYWRIGHT_ADMIN_STORAGE_STATE;
 
 test.describe("operator customization API (unauthenticated)", () => {
-  test("GET /api/admin/operator-customization returns 401 or 403 without session", async ({ request }) => {
+  test("GET /api/admin/operator-customization returns 401 or 403 without session", async ({
+    request,
+  }) => {
     const res = await request.get(`${BASE}/api/admin/operator-customization`);
     expect([401, 403]).toContain(res.status());
   });
 
-  test("PUT /api/admin/operator-customization returns 401 or 403 without session", async ({ request }) => {
+  test("PUT /api/admin/operator-customization returns 401 or 403 without session", async ({
+    request,
+  }) => {
     const res = await request.put(`${BASE}/api/admin/operator-customization`, {
       data: { draft: { schemaVersion: "1", operatingMode: "standard", modules: [] } },
       headers: { "Content-Type": "application/json" },

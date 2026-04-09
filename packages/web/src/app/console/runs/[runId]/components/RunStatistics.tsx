@@ -60,8 +60,8 @@ export const RunStatistics = memo(function RunStatistics({
         </div>
         {!runDelta ? (
           <p className="text-xs text-muted-foreground mb-4 border border-dashed rounded-lg p-3">
-            No prior-run delta is recorded for this run yet. When available, input stability, pattern
-            changes, and config drift flags appear here.
+            No prior-run delta is recorded for this run yet. When available, input stability,
+            pattern changes, and config drift flags appear here.
           </p>
         ) : null}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -112,11 +112,7 @@ export const RunStatistics = memo(function RunStatistics({
                       : "bg-muted/40 text-muted-foreground border-border/60"
                 }`}
               >
-                {runDelta
-                  ? runDelta.configDriftDetected
-                    ? "YES"
-                    : "NO"
-                  : "N/A"}
+                {runDelta ? (runDelta.configDriftDetected ? "YES" : "NO") : "N/A"}
               </span>
             </div>
             <div className="flex items-center justify-between p-3 rounded-lg border bg-background/50">
@@ -157,7 +153,10 @@ export const RunStatistics = memo(function RunStatistics({
               {runDelta?.resolvedPatterns && runDelta.resolvedPatterns.length > 0 ? (
                 <ul className="w-full space-y-2 text-left">
                   {runDelta.resolvedPatterns.map((p, i) => (
-                    <li key={i} className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                    <li
+                      key={i}
+                      className="flex items-center gap-2 text-green-600 dark:text-green-400"
+                    >
                       <CheckCircle2 className="w-3 h-3 shrink-0" />
                       <span>{p}</span>
                     </li>

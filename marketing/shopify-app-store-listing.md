@@ -16,6 +16,7 @@
 Settler automates order reconciliation for Shopify stores. Match Shopify orders with Stripe payments, PayPal transactions, and QuickBooks accounting—all automatically. No more manual spreadsheets.
 
 **Key Features:**
+
 - Deterministic order-to-payment matching
 - Audit-ready proof capsules (RPC) for every job
 - Exception queue for unmatched orders
@@ -24,6 +25,7 @@ Settler automates order reconciliation for Shopify stores. Match Shopify orders 
 - Tamper-evident audit trail
 
 **Pricing:**
+
 - Free: 1,000 reconciliations/month
 - Starter: $29/month (10,000/month)
 - Growth: $99/month (100,000/month)
@@ -105,6 +107,7 @@ Settler automates order reconciliation for Shopify stores. Match Shopify orders 
 **Title:** "Automating Order Reconciliation for Shopify Merchants"
 
 **Content:**
+
 - How Settler integrates with Shopify
 - Benefits for merchants
 - Case study (if available)
@@ -115,6 +118,7 @@ Settler automates order reconciliation for Shopify stores. Match Shopify orders 
 **Title:** "Reconciliation Automation for Shopify Stores"
 
 **Content:**
+
 - Live demo
 - Q&A session
 - Best practices
@@ -124,6 +128,7 @@ Settler automates order reconciliation for Shopify stores. Match Shopify orders 
 **Title:** "How [Merchant] Automated Order Reconciliation"
 
 **Content:**
+
 - Merchant story
 - Results (time saved, accuracy improved)
 - ROI calculation
@@ -133,9 +138,11 @@ Settler automates order reconciliation for Shopify stores. Match Shopify orders 
 ## App Store Listing Copy
 
 ### App Name
+
 **Settler - Order Reconciliation**
 
 ### Tagline
+
 **Automate order reconciliation with Stripe, PayPal, and accounting systems**
 
 ### Description
@@ -143,6 +150,7 @@ Settler automates order reconciliation for Shopify stores. Match Shopify orders 
 Settler automates order reconciliation for Shopify stores. Match Shopify orders with Stripe payments, PayPal transactions, and QuickBooks accounting—all automatically.
 
 **Features:**
+
 - ✅ Automatic order-to-payment matching
 - ✅ Exception queue for unmatched orders
 - ✅ Real-time reconciliation via webhooks
@@ -150,6 +158,7 @@ Settler automates order reconciliation for Shopify stores. Match Shopify orders 
 - ✅ Complete audit trail
 
 **How It Works:**
+
 1. Connect your payment providers (Stripe, PayPal, etc.)
 2. Configure matching rules
 3. Automatic reconciliation runs daily
@@ -157,12 +166,14 @@ Settler automates order reconciliation for Shopify stores. Match Shopify orders 
 5. Export to accounting or sync directly
 
 **Benefits:**
+
 - Save 10+ hours per week
 - 99%+ accuracy (vs. 85-95% manual)
 - Prevent revenue leakage
 - Ensure compliance
 
 **Pricing:**
+
 - Free: 1,000 reconciliations/month
 - Starter: $29/month (10,000/month)
 - Growth: $99/month (100,000/month)

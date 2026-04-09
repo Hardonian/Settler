@@ -1,14 +1,14 @@
 #!/usr/bin/env tsx
 /**
  * ESLint Config Dependency Validator
- * 
+ *
  * Validates that all ESLint configs referenced in extends are available
  * as dependencies. This prevents build failures when configs are missing.
  */
 
-import { existsSync, readFileSync, readdirSync } from 'fs';
-import { join, dirname } from 'path';
-import { execSync } from 'child_process';
+import { existsSync, readFileSync, readdirSync } from "fs";
+import { join, dirname } from "path";
+import { execSync } from "child_process";
 
 interface ESLintConfig {
   extends?: string | string[];
@@ -34,27 +34,27 @@ class ESLintConfigValidator {
    * Validate all ESLint configs in the monorepo
    */
   validate(): boolean {
-    console.log('🔍 Validating ESLint config dependencies...\n');
+    console.log("🔍 Validating ESLint config dependencies...\n");
 
     // Check root ESLint config
-    this.validateConfig(this.rootDir, '.eslintrc.js');
-    this.validateConfig(this.rootDir, '.eslintrc.json');
-    this.validateConfig(this.rootDir, '.eslintrc.yaml');
-    this.validateConfig(this.rootDir, '.eslintrc.yml');
+    this.validateConfig(this.rootDir, ".eslintrc.js");
+    this.validateConfig(this.rootDir, ".eslintrc.json");
+    this.validateConfig(this.rootDir, ".eslintrc.yaml");
+    this.validateConfig(this.rootDir, ".eslintrc.yml");
 
     // Check all packages
-    const packagesDir = join(this.rootDir, 'packages');
+    const packagesDir = join(this.rootDir, "packages");
     if (existsSync(packagesDir)) {
       const packages = readdirSync(packagesDir, { withFileTypes: true })
-        .filter(dirent => dirent.isDirectory())
-        .map(dirent => dirent.name);
+        .filter((dirent) => dirent.isDirectory())
+        .map((dirent) => dirent.name);
 
       for (const pkg of packages) {
         const pkgPath = join(packagesDir, pkg);
-        this.validateConfig(pkgPath, '.eslintrc.js');
-        this.validateConfig(pkgPath, '.eslintrc.json');
-        this.validateConfig(pkgPath, '.eslintrc.yaml');
-        this.validateConfig(pkgPath, '.eslintrc.yml');
+        this.validateConfig(pkgPath, ".eslintrc.js");
+        this.validateConfig(pkgPath, ".eslintrc.json");
+        this.validateConfig(pkgPath, ".eslintrc.yaml");
+        this.validateConfig(pkgPath, ".eslintrc.yml");
       }
     }
 
@@ -87,7 +87,9 @@ class ESLintConfigValidator {
         }
       }
     } catch (error) {
-      result.errors.push(`Failed to parse config: ${error instanceof Error ? error.message : String(error)}`);
+      result.errors.push(
+        `Failed to parse config: ${error instanceof Error ? error.message : String(error)}`
+      );
     }
 
     if (result.missing.length > 0 || result.errors.length > 0) {
@@ -99,10 +101,10 @@ class ESLintConfigValidator {
    * Load ESLint config from file
    */
   private loadConfig(configPath: string): ESLintConfig {
-    const content = readFileSync(configPath, 'utf-8');
-    const ext = configPath.split('.').pop();
+    const content = readFileSync(configPath, "utf-8");
+    const ext = configPath.split(".").pop();
 
-    if (ext === 'js') {
+    if (ext === "js") {
       // For JS files, we need to evaluate them
       // This is a simplified version - in production you might want to use a proper parser
       try {
@@ -111,11 +113,13 @@ class ESLintConfigValidator {
         return require(configPath);
       } catch (error) {
         // If require fails, try to parse as JSON-like
-        throw new Error(`Failed to load JS config: ${error instanceof Error ? error.message : String(error)}`);
+        throw new Error(
+          `Failed to load JS config: ${error instanceof Error ? error.message : String(error)}`
+        );
       }
-    } else if (ext === 'json') {
+    } else if (ext === "json") {
       return JSON.parse(content);
-    } else if (ext === 'yaml' || ext === 'yml') {
+    } else if (ext === "yaml" || ext === "yml") {
       // Would need yaml parser - for now, skip
       return {};
     }
@@ -131,12 +135,12 @@ class ESLintConfigValidator {
       return [];
     }
 
-    if (typeof config.extends === 'string') {
+    if (typeof config.extends === "string") {
       return [config.extends];
     }
 
     if (Array.isArray(config.extends)) {
-      return config.extends.filter((e): e is string => typeof e === 'string');
+      return config.extends.filter((e): e is string => typeof e === "string");
     }
 
     return [];
@@ -148,10 +152,10 @@ class ESLintConfigValidator {
   private isConfigAvailable(packagePath: string, configName: string): boolean {
     // Handle special configs that don't need packages
     if (
-      configName === 'eslint:recommended' ||
-      configName === 'eslint:all' ||
-      configName.startsWith('plugin:') ||
-      configName.startsWith('next/')
+      configName === "eslint:recommended" ||
+      configName === "eslint:all" ||
+      configName.startsWith("plugin:") ||
+      configName.startsWith("next/")
     ) {
       return true; // These are built-in or provided by eslint/next
     }
@@ -164,10 +168,10 @@ class ESLintConfigValidator {
     }
 
     // Check package.json for the dependency
-    const packageJsonPath = join(packagePath, 'package.json');
+    const packageJsonPath = join(packagePath, "package.json");
     if (!existsSync(packageJsonPath)) {
       // Check root package.json
-      const rootPackageJson = join(this.rootDir, 'package.json');
+      const rootPackageJson = join(this.rootDir, "package.json");
       if (existsSync(rootPackageJson)) {
         return this.hasDependency(rootPackageJson, basePackage);
       }
@@ -182,7 +186,7 @@ class ESLintConfigValidator {
    */
   private getBasePackage(configName: string): string | null {
     // Handle eslint-config-* packages
-    if (configName.startsWith('eslint-config-')) {
+    if (configName.startsWith("eslint-config-")) {
       return configName;
     }
 
@@ -194,7 +198,7 @@ class ESLintConfigValidator {
     }
 
     // Handle unprefixed configs (e.g., "prettier" -> "eslint-config-prettier")
-    if (!configName.includes('/') && !configName.includes(':')) {
+    if (!configName.includes("/") && !configName.includes(":")) {
       return `eslint-config-${configName}`;
     }
 
@@ -206,7 +210,7 @@ class ESLintConfigValidator {
    */
   private hasDependency(packageJsonPath: string, packageName: string): boolean {
     try {
-      const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
+      const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
       const allDeps = {
         ...packageJson.dependencies,
         ...packageJson.devDependencies,
@@ -219,13 +223,13 @@ class ESLintConfigValidator {
       }
 
       // Check if it's installed in node_modules
-      const nodeModulesPath = join(dirname(packageJsonPath), 'node_modules', packageName);
+      const nodeModulesPath = join(dirname(packageJsonPath), "node_modules", packageName);
       if (existsSync(nodeModulesPath)) {
         return true;
       }
 
       // Check root node_modules
-      const rootNodeModules = join(this.rootDir, 'node_modules', packageName);
+      const rootNodeModules = join(this.rootDir, "node_modules", packageName);
       if (existsSync(rootNodeModules)) {
         return true;
       }
@@ -241,24 +245,25 @@ class ESLintConfigValidator {
    */
   private report(): boolean {
     if (this.results.length === 0) {
-      console.log('✅ All ESLint config dependencies are available!\n');
+      console.log("✅ All ESLint config dependencies are available!\n");
       return true;
     }
 
-    console.log('❌ Found ESLint config dependency issues:\n');
+    console.log("❌ Found ESLint config dependency issues:\n");
 
     for (const result of this.results) {
-      const relativePath = result.packagePath.replace(this.rootDir, '.').replace(/^\.\//, '') || 'root';
+      const relativePath =
+        result.packagePath.replace(this.rootDir, ".").replace(/^\.\//, "") || "root";
       console.log(`📦 ${relativePath}/${result.configFile}`);
 
       if (result.errors.length > 0) {
-        console.log('  Errors:');
-        result.errors.forEach(err => console.log(`    ❌ ${err}`));
+        console.log("  Errors:");
+        result.errors.forEach((err) => console.log(`    ❌ ${err}`));
       }
 
       if (result.missing.length > 0) {
-        console.log('  Missing dependencies:');
-        result.missing.forEach(missing => {
+        console.log("  Missing dependencies:");
+        result.missing.forEach((missing) => {
           const basePkg = this.getBasePackage(missing);
           console.log(`    ❌ ${missing}`);
           if (basePkg) {
@@ -266,7 +271,7 @@ class ESLintConfigValidator {
           }
         });
       }
-      console.log('');
+      console.log("");
     }
 
     return false;

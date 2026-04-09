@@ -1,12 +1,11 @@
 /**
  * Compliance Module - Policy Comparison
- * 
+ *
  * Part of Phase IV: Vertical Modules
  */
 
- 
-import { PrismaClient } from '@prisma/client';
-import { logInfo } from '../../../utils/logger';
+import { PrismaClient } from "@prisma/client";
+import { logInfo } from "../../../utils/logger";
 
 export interface PolicyDiff {
   added: string[];
@@ -20,7 +19,7 @@ export interface PolicyDiff {
   violations: Array<{
     section: string;
     violation: string;
-    severity: 'low' | 'medium' | 'high' | 'critical';
+    severity: "low" | "medium" | "high" | "critical";
   }>;
 }
 
@@ -44,7 +43,7 @@ export class PolicyComparisonService {
     // TODO: Implement policy comparison using AI
     // Detect changes, compliance violations, etc.
 
-    logInfo('Privacy policy comparison completed', { tenantId });
+    logInfo("Privacy policy comparison completed", { tenantId });
 
     return {
       added: [],
@@ -65,13 +64,13 @@ export class PolicyComparisonService {
   ): Promise<{
     driftDetected: boolean;
     changes: string[];
-    riskLevel: 'low' | 'medium' | 'high';
+    riskLevel: "low" | "medium" | "high";
   }> {
     // Use drift detection service
     return {
       driftDetected: false,
       changes: [],
-      riskLevel: 'low',
+      riskLevel: "low",
     };
   }
 

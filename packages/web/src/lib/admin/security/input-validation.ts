@@ -1,10 +1,10 @@
 /**
  * Input Validation Utilities
- * 
+ *
  * Sanitization and validation for admin inputs.
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * Sanitize string input
@@ -12,7 +12,7 @@ import { z } from 'zod';
 export function sanitizeString(input: string): string {
   return input
     .trim()
-    .replace(/[<>]/g, '') // Remove potential HTML tags
+    .replace(/[<>]/g, "") // Remove potential HTML tags
     .slice(0, 10000); // Max length
 }
 
@@ -43,23 +43,25 @@ export const PaginationSchema = z.object({
 /**
  * Validate time range
  */
-export const TimeRangeSchema = z.enum(['24h', '7d', '30d', 'custom']);
+export const TimeRangeSchema = z.enum(["24h", "7d", "30d", "custom"]);
 
 /**
  * Validate status filter
  */
-export const StatusFilterSchema = z.enum(['all', 'new', 'in_review', 'resolved', 'exported']).optional();
+export const StatusFilterSchema = z
+  .enum(["all", "new", "in_review", "resolved", "exported"])
+  .optional();
 
 /**
  * Validate severity filter
  */
-export const SeverityFilterSchema = z.enum(['all', 'info', 'warn', 'critical']).optional();
+export const SeverityFilterSchema = z.enum(["all", "info", "warn", "critical"]).optional();
 
 /**
  * Sanitize search query
  */
 export function sanitizeSearchQuery(query: string): string {
   return sanitizeString(query)
-    .replace(/[%_]/g, '') // Remove SQL wildcards
+    .replace(/[%_]/g, "") // Remove SQL wildcards
     .slice(0, 200); // Max length
 }

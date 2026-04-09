@@ -1,20 +1,20 @@
 /**
  * Feature Flags API Marketing Page
- * 
+ *
  * Product page for Settler Feature Flags API - a free developer toolkit for feature flag management.
  */
 
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Navigation } from '@/components/Navigation';
-import { Footer } from '@/components/Footer';
-import { ToggleLeft, Code, Zap, Gift } from 'lucide-react';
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
+import { ToggleLeft, Code, Zap, Gift } from "lucide-react";
 
 export default function FeatureFlagsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-white">
       <Navigation />
-      
+
       <main className="container mx-auto px-4 py-16">
         {/* Hero Section */}
         <div className="text-center mb-16">
@@ -25,7 +25,8 @@ export default function FeatureFlagsPage() {
             Feature Flags API
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-4">
-            A simple, developer-friendly feature flag service. LaunchDarkly-lite, built by developers for developers.
+            A simple, developer-friendly feature flag service. LaunchDarkly-lite, built by
+            developers for developers.
           </p>
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-medium mb-8">
             <Gift className="w-4 h-4" />
@@ -45,9 +46,9 @@ export default function FeatureFlagsPage() {
         <div className="bg-background rounded-lg p-8 mb-16 text-center">
           <h2 className="text-2xl font-bold text-white mb-4">Why We Built This</h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            We know what it's like to wrestle with feature flags. Most services are expensive, 
-            over-engineered, or require complex setup. We built a simple API that just works. 
-            It's free because we're developers too, and we want to help you ship faster.
+            We know what it's like to wrestle with feature flags. Most services are expensive,
+            over-engineered, or require complex setup. We built a simple API that just works. It's
+            free because we're developers too, and we want to help you ship faster.
           </p>
         </div>
 
@@ -57,8 +58,8 @@ export default function FeatureFlagsPage() {
             <Code className="w-8 h-8 text-electric-purple mb-4" />
             <h3 className="text-xl font-semibold mb-2">Simple API</h3>
             <p className="text-muted-foreground">
-              RESTful endpoints that make sense. Create flags, set environments, evaluate values. 
-              No SDK complexity.
+              RESTful endpoints that make sense. Create flags, set environments, evaluate values. No
+              SDK complexity.
             </p>
           </div>
           <div className="p-6 rounded-lg border border-border bg-card">
@@ -72,7 +73,7 @@ export default function FeatureFlagsPage() {
             <ToggleLeft className="w-8 h-8 text-electric-indigo mb-4" />
             <h3 className="text-xl font-semibold mb-2">Environments & Overrides</h3>
             <p className="text-muted-foreground">
-              Organize flags by environment (prod, staging, dev). Override per-user or per-tenant 
+              Organize flags by environment (prod, staging, dev). Override per-user or per-tenant
               for testing.
             </p>
           </div>
@@ -85,7 +86,7 @@ export default function FeatureFlagsPage() {
             <div>
               <p className="text-sm text-muted-foreground mb-2">Create a flag:</p>
               <pre className="text-sm text-muted-foreground overflow-x-auto">
-{`POST /api/v1/feature-flags
+                {`POST /api/v1/feature-flags
 {
   "key": "new-dashboard",
   "name": "New Dashboard UI",
@@ -97,7 +98,7 @@ export default function FeatureFlagsPage() {
             <div>
               <p className="text-sm text-muted-foreground mb-2">Evaluate in your app:</p>
               <pre className="text-sm text-muted-foreground overflow-x-auto">
-{`POST /api/v1/feature-flags/evaluate
+                {`POST /api/v1/feature-flags/evaluate
 {
   "flagKey": "new-dashboard",
   "environment": "production",
@@ -150,7 +151,8 @@ Response:
         <div className="text-center bg-gradient-to-r from-electric-purple to-electric-indigo rounded-lg p-12 text-white">
           <h2 className="text-3xl font-bold mb-4">Start Using Feature Flags Today</h2>
           <p className="text-lg mb-6 opacity-90">
-            Free forever. No credit card. No limits on evaluations. Just simple, reliable feature flags.
+            Free forever. No credit card. No limits on evaluations. Just simple, reliable feature
+            flags.
           </p>
           <Button asChild size="lg" variant="secondary">
             <Link href="/console/playground/flags">Try Playground</Link>

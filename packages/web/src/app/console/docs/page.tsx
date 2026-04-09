@@ -386,9 +386,7 @@ export default function DocsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-foreground mb-2">
-          Developer Documentation
-        </h1>
+        <h1 className="text-3xl font-bold text-foreground mb-2">Developer Documentation</h1>
         <p className="text-muted-foreground">
           Complete guides for SDKs, CLI, and API endpoints. Get started in minutes.
         </p>
@@ -607,9 +605,7 @@ export default function DocsPage() {
                         </span>
                         <code className="text-sm font-mono">{endpoint.path}</code>
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        {endpoint.description}
-                      </p>
+                      <p className="text-sm text-muted-foreground">{endpoint.description}</p>
                     </div>
 
                     <Tabs
@@ -655,12 +651,8 @@ export default function DocsPage() {
 
       {/* CLI Commands Reference */}
       <div className="mt-12">
-        <h2 className="text-2xl font-bold text-foreground mb-4">
-          CLI Commands Reference
-        </h2>
-        <p className="text-muted-foreground mb-6">
-          Complete command-line interface documentation.
-        </p>
+        <h2 className="text-2xl font-bold text-foreground mb-4">CLI Commands Reference</h2>
+        <p className="text-muted-foreground mb-6">Complete command-line interface documentation.</p>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">

@@ -6,7 +6,7 @@
  * writes always succeed regardless of auth state.
  */
 
-import { createAdminClient } from '@/lib/supabase/server';
+import { createAdminClient } from "@/lib/supabase/server";
 
 // ---------------------------------------------------------------------------
 // Internal helpers
@@ -15,11 +15,11 @@ import { createAdminClient } from '@/lib/supabase/server';
 async function insertAnalyticsEvent(
   userId: string,
   event: string,
-  properties?: Record<string, unknown>,
+  properties?: Record<string, unknown>
 ): Promise<void> {
   try {
     const admin = await createAdminClient();
-    const { error } = await admin.from('analytics_events').insert({
+    const { error } = await admin.from("analytics_events").insert({
       user_id: userId,
       event,
       properties: properties ?? null,
@@ -27,25 +27,25 @@ async function insertAnalyticsEvent(
     if (error) throw error;
   } catch (err) {
     // eslint-disable-next-line no-console
-    console.error('[analytics] Failed to insert analytics_event:', err);
+    console.error("[analytics] Failed to insert analytics_event:", err);
   }
 }
 
 async function insertActivityLog(
   activityType: string,
-  metadata?: Record<string, unknown>,
+  metadata?: Record<string, unknown>
 ): Promise<void> {
   try {
     const admin = await createAdminClient();
-    const { error } = await admin.from('activity_log').insert({
+    const { error } = await admin.from("activity_log").insert({
       activity_type: activityType,
-      entity_type: 'analytics',
+      entity_type: "analytics",
       metadata: metadata ?? {},
     });
     if (error) throw error;
   } catch (err) {
     // eslint-disable-next-line no-console
-    console.error('[analytics] Failed to insert activity_log:', err);
+    console.error("[analytics] Failed to insert activity_log:", err);
   }
 }
 
@@ -68,7 +68,7 @@ export async function saveAnalyticsEvent(data: {
       await insertActivityLog(data.type, properties);
     }
   } catch (error) {
-    console.error('Failed to save analytics event:', error);
+    console.error("Failed to save analytics event:", error);
   }
 }
 
@@ -93,12 +93,12 @@ export async function saveSDKDownload(data: {
       ipAddress: data.ipAddress,
     };
     if (data.userId) {
-      await insertAnalyticsEvent(data.userId, 'sdk_download', properties);
+      await insertAnalyticsEvent(data.userId, "sdk_download", properties);
     } else {
-      await insertActivityLog('sdk_download', properties);
+      await insertActivityLog("sdk_download", properties);
     }
   } catch (error) {
-    console.error('Failed to save SDK download:', error);
+    console.error("Failed to save SDK download:", error);
   }
 }
 
@@ -123,12 +123,12 @@ export async function savePlaygroundUsage(data: {
       metadata: data.metadata,
     };
     if (data.userId) {
-      await insertAnalyticsEvent(data.userId, 'playground_usage', properties);
+      await insertAnalyticsEvent(data.userId, "playground_usage", properties);
     } else {
-      await insertActivityLog('playground_usage', properties);
+      await insertActivityLog("playground_usage", properties);
     }
   } catch (error) {
-    console.error('Failed to save playground usage:', error);
+    console.error("Failed to save playground usage:", error);
   }
 }
 
@@ -151,12 +151,12 @@ export async function saveChatbotConversation(data: {
       metadata: data.metadata,
     };
     if (data.userId) {
-      await insertAnalyticsEvent(data.userId, 'chatbot_conversation', properties);
+      await insertAnalyticsEvent(data.userId, "chatbot_conversation", properties);
     } else {
-      await insertActivityLog('chatbot_conversation', properties);
+      await insertActivityLog("chatbot_conversation", properties);
     }
   } catch (error) {
-    console.error('Failed to save chatbot conversation:', error);
+    console.error("Failed to save chatbot conversation:", error);
   }
 }
 
@@ -174,7 +174,7 @@ export async function saveChatbotAnalytics(data: {
       await insertActivityLog(`chatbot_${data.type}`, properties);
     }
   } catch (error) {
-    console.error('Failed to save chatbot analytics:', error);
+    console.error("Failed to save chatbot analytics:", error);
   }
 }
 
@@ -186,12 +186,12 @@ export async function getSDKDownloadStats(_startDate?: Date, _endDate?: Date) {
   try {
     const admin = await createAdminClient();
     let query = admin
-      .from('activity_log')
-      .select('metadata', { count: 'exact', head: false })
-      .eq('activity_type', 'sdk_download');
+      .from("activity_log")
+      .select("metadata", { count: "exact", head: false })
+      .eq("activity_type", "sdk_download");
 
-    if (_startDate) query = query.gte('created_at', _startDate.toISOString());
-    if (_endDate) query = query.lte('created_at', _endDate.toISOString());
+    if (_startDate) query = query.gte("created_at", _startDate.toISOString());
+    if (_endDate) query = query.lte("created_at", _endDate.toISOString());
 
     const { data, count } = await query;
 
@@ -213,7 +213,7 @@ export async function getSDKDownloadStats(_startDate?: Date, _endDate?: Date) {
       total: 45000,
       weekly: 1250,
       monthly: 5200,
-      byPackage: { '@settler/sdk': 35000, '@settler/react-settler': 10000 },
+      byPackage: { "@settler/sdk": 35000, "@settler/react-settler": 10000 },
     };
   }
 }
@@ -222,9 +222,9 @@ export async function getPlaygroundStats() {
   try {
     const admin = await createAdminClient();
     const { data, count } = await admin
-      .from('activity_log')
-      .select('metadata', { count: 'exact', head: false })
-      .eq('activity_type', 'playground_usage');
+      .from("activity_log")
+      .select("metadata", { count: "exact", head: false })
+      .eq("activity_type", "playground_usage");
 
     const usageByFeature: Record<string, number> = {};
     for (const row of data ?? []) {
@@ -244,7 +244,7 @@ export async function getPlaygroundStats() {
       usageByFeature: {
         reconciliation: 1200,
         receipts: 800,
-        'feature-flags': 600,
+        "feature-flags": 600,
         conversion: 400,
         cli: 200,
       },
@@ -256,18 +256,18 @@ export async function getChatbotAnalytics() {
   try {
     const admin = await createAdminClient();
     const { count } = await admin
-      .from('activity_log')
-      .select('id', { count: 'exact', head: true })
-      .like('activity_type', 'chatbot_%');
+      .from("activity_log")
+      .select("id", { count: "exact", head: true })
+      .like("activity_type", "chatbot_%");
 
     return {
       totalInteractions: count ?? 1250,
       averageResponseTime: 1.2,
       satisfactionScore: 4.6,
       popularQuestions: [
-        { question: 'What is Settler?', count: 45 },
-        { question: 'How do I get started?', count: 32 },
-        { question: 'What platforms do you support?', count: 28 },
+        { question: "What is Settler?", count: 45 },
+        { question: "How do I get started?", count: 32 },
+        { question: "What platforms do you support?", count: 28 },
       ],
     };
   } catch {
@@ -276,9 +276,9 @@ export async function getChatbotAnalytics() {
       averageResponseTime: 1.2,
       satisfactionScore: 4.6,
       popularQuestions: [
-        { question: 'What is Settler?', count: 45 },
-        { question: 'How do I get started?', count: 32 },
-        { question: 'What platforms do you support?', count: 28 },
+        { question: "What is Settler?", count: 45 },
+        { question: "How do I get started?", count: 32 },
+        { question: "What platforms do you support?", count: 28 },
       ],
     };
   }

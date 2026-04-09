@@ -299,10 +299,10 @@
 
 ### Findings Log
 
-| Finding | Severity | Owner | Due Date | Status | Notes |
-|---------|----------|-------|----------|--------|-------|
-| [Finding 1] | High | [Name] | [Date] | Open | [Notes] |
-| [Finding 2] | Medium | [Name] | [Date] | In Progress | [Notes] |
+| Finding     | Severity | Owner  | Due Date | Status      | Notes   |
+| ----------- | -------- | ------ | -------- | ----------- | ------- |
+| [Finding 1] | High     | [Name] | [Date]   | Open        | [Notes] |
+| [Finding 2] | Medium   | [Name] | [Date]   | In Progress | [Notes] |
 
 ### Remediation Process
 
@@ -360,11 +360,13 @@
 ## Audit Contacts
 
 **Internal:**
+
 - Compliance Officer: [Name] [Email]
 - Security Lead: [Name] [Email]
 - Engineering Lead: [Name] [Email]
 
 **External:**
+
 - Audit Firm: [Name] [Email]
 - Legal Counsel: [Name] [Email]
 

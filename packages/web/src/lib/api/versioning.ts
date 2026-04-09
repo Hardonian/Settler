@@ -1,15 +1,15 @@
 /**
  * API Versioning Strategy
- * 
+ *
  * Handles API version negotiation and routing.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
-export type ApiVersion = 'v1' | 'v2';
+export type ApiVersion = "v1" | "v2";
 
-const CURRENT_VERSION: ApiVersion = 'v1';
-const SUPPORTED_VERSIONS: ApiVersion[] = ['v1'];
+const CURRENT_VERSION: ApiVersion = "v1";
+const SUPPORTED_VERSIONS: ApiVersion[] = ["v1"];
 
 /**
  * Extract API version from request
@@ -25,7 +25,7 @@ export function extractApiVersion(request: NextRequest): ApiVersion | null {
   }
 
   // Check Accept header: application/vnd.settler.v1+json
-  const acceptHeader = request.headers.get('accept');
+  const acceptHeader = request.headers.get("accept");
   if (acceptHeader) {
     const versionMatch = acceptHeader.match(/application\/vnd\.settler\.(v\d+)\+json/);
     if (versionMatch) {
@@ -37,7 +37,7 @@ export function extractApiVersion(request: NextRequest): ApiVersion | null {
   }
 
   // Check X-API-Version header
-  const versionHeader = request.headers.get('x-api-version');
+  const versionHeader = request.headers.get("x-api-version");
   if (versionHeader && SUPPORTED_VERSIONS.includes(versionHeader as ApiVersion)) {
     return versionHeader as ApiVersion;
   }
@@ -61,7 +61,7 @@ export function createVersionedErrorResponse(
   status: number = 400
 ): NextResponse {
   const version = getApiVersion(request);
-  
+
   return NextResponse.json(
     {
       error,
@@ -71,8 +71,8 @@ export function createVersionedErrorResponse(
     {
       status,
       headers: {
-        'X-API-Version': version,
-        'Content-Type': `application/vnd.settler.${version}+json`,
+        "X-API-Version": version,
+        "Content-Type": `application/vnd.settler.${version}+json`,
       },
     }
   );
@@ -87,7 +87,7 @@ export function createVersionedResponse<T>(
   status: number = 200
 ): NextResponse {
   const version = getApiVersion(request);
-  
+
   return NextResponse.json(
     {
       data,
@@ -97,8 +97,8 @@ export function createVersionedResponse<T>(
     {
       status,
       headers: {
-        'X-API-Version': version,
-        'Content-Type': `application/vnd.settler.${version}+json`,
+        "X-API-Version": version,
+        "Content-Type": `application/vnd.settler.${version}+json`,
       },
     }
   );
@@ -116,11 +116,11 @@ export function isVersionSupported(version: string): version is ApiVersion {
  */
 export function validateApiVersion(request: NextRequest): NextResponse | null {
   const version = extractApiVersion(request);
-  
+
   if (version && !isVersionSupported(version)) {
     return createVersionedErrorResponse(
       request,
-      `Unsupported API version: ${version}. Supported versions: ${SUPPORTED_VERSIONS.join(', ')}`,
+      `Unsupported API version: ${version}. Supported versions: ${SUPPORTED_VERSIONS.join(", ")}`,
       400
     );
   }

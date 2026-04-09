@@ -29,6 +29,7 @@ The observability system provides comprehensive monitoring, analytics, error tra
 The analytics system uses a unified abstraction layer (`/lib/analytics/index.ts`) that supports multiple providers simultaneously.
 
 **Supported Providers:**
+
 - Vercel Analytics (built-in)
 - Google Analytics 4 (GA4)
 - PostHog
@@ -58,30 +59,30 @@ NEXT_PUBLIC_ANALYTICS_TOKEN=your-token
 ### Usage
 
 ```typescript
-import { analytics } from '@/lib/analytics';
+import { analytics } from "@/lib/analytics";
 
 // Track page view
-analytics.trackPageView('/dashboard', {
-  title: 'Dashboard',
+analytics.trackPageView("/dashboard", {
+  title: "Dashboard",
   referrer: document.referrer,
 });
 
 // Track custom event
-analytics.trackEvent('button_click', {
-  button_name: 'Sign Up',
-  location: 'header',
+analytics.trackEvent("button_click", {
+  button_name: "Sign Up",
+  location: "header",
 });
 
 // Track error
 analytics.trackError(error, {
-  component: 'CheckoutForm',
-  user_id: '123',
+  component: "CheckoutForm",
+  user_id: "123",
 });
 
 // Identify user
-analytics.identify('user-123', {
-  email: 'user@example.com',
-  plan: 'pro',
+analytics.identify("user-123", {
+  email: "user@example.com",
+  plan: "pro",
 });
 ```
 
@@ -106,6 +107,7 @@ Multiple layers of error boundaries catch errors at different levels:
 ### Error Reporting
 
 Errors are automatically:
+
 1. Logged via the logging system
 2. Tracked in analytics
 3. Sent to diagnostics system
@@ -121,6 +123,7 @@ NEXT_PUBLIC_SENTRY_DSN=https://xxx@xxx.ingest.sentry.io/xxx
 ```
 
 **Features:**
+
 - Error tracking with stack traces
 - Session replay for errors
 - Performance monitoring
@@ -169,6 +172,7 @@ Automatically tracks Core Web Vitals:
 ### Route Transition Metrics
 
 Tracks:
+
 - Route transition duration
 - Hydration time
 - Bundle load time
@@ -181,7 +185,7 @@ Web Vitals are automatically collected and sent to analytics. No manual tracking
 For Next.js, use the `reportWebVitals` function:
 
 ```typescript
-import { reportWebVitals } from '@/lib/performance/web-vitals';
+import { reportWebVitals } from "@/lib/performance/web-vitals";
 
 export function onPerfEntry(metric: any) {
   reportWebVitals(metric);
@@ -201,6 +205,7 @@ export function onPerfEntry(metric: any) {
 ### Log Outputs
 
 Logs are sent to:
+
 1. Console (development or when `NEXT_PUBLIC_ENABLE_CONSOLE_LOGS=true`)
 2. Analytics (for errors and critical issues)
 3. Custom endpoint (if `NEXT_PUBLIC_LOGGING_ENDPOINT` configured)
@@ -209,13 +214,13 @@ Logs are sent to:
 ### Usage
 
 ```typescript
-import { logger } from '@/lib/logging/logger';
+import { logger } from "@/lib/logging/logger";
 
-logger.debug('Debug message', { context: 'value' });
-logger.info('Info message', { userId: '123' });
-logger.warn('Warning message', { issue: 'slow-api' });
-logger.error('Error message', error, { component: 'Form' });
-logger.critical('Critical error', error, { system: 'payment' });
+logger.debug("Debug message", { context: "value" });
+logger.info("Info message", { userId: "123" });
+logger.warn("Warning message", { issue: "slow-api" });
+logger.error("Error message", error, { component: "Form" });
+logger.critical("Critical error", error, { system: "payment" });
 ```
 
 ## Telemetry System
@@ -272,10 +277,10 @@ The diagnostics system automatically tracks:
 ### Usage
 
 ```typescript
-import { diagnostics } from '@/lib/diagnostics';
+import { diagnostics } from "@/lib/diagnostics";
 
 // Get recent events
-const events = diagnostics.getEvents('fetch_failure');
+const events = diagnostics.getEvents("fetch_failure");
 
 // Clear events
 diagnostics.clear();

@@ -87,9 +87,7 @@ export default function EvidencePage() {
                 <span className="rounded-md bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary uppercase tracking-wide">
                   GET
                 </span>
-                <code className="code-inline text-sm">
-                  /api/v1/runs/:id/evidence
-                </code>
+                <code className="code-inline text-sm">/api/v1/runs/:id/evidence</code>
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
@@ -143,7 +141,10 @@ export default function EvidencePage() {
             >
               <div className="flex items-center gap-3 min-w-0">
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/40 group-hover:bg-primary/10 transition-colors">
-                  <link.icon className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" aria-hidden="true" />
+                  <link.icon
+                    className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors"
+                    aria-hidden="true"
+                  />
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors truncate">

@@ -273,7 +273,9 @@ async function handleToolCall(params: unknown): Promise<unknown> {
         const lines = raw.split("\n").filter((l) => l.trim().length > 0);
         let offsets: Record<string, unknown> = {};
         try {
-          offsets = JSON.parse(await fs.readFile(path.join(bbDir, "consumer-offsets.json"), "utf8"));
+          offsets = JSON.parse(
+            await fs.readFile(path.join(bbDir, "consumer-offsets.json"), "utf8")
+          );
         } catch {
           // no offsets file
         }

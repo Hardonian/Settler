@@ -7,6 +7,7 @@
 ## Overview
 
 These templates are designed to be:
+
 - **Copy-paste ready:** Minimal customization required
 - **Persona-specific:** Tailored to each ICP
 - **Outcome-focused:** Clear value proposition, clear CTA
@@ -19,11 +20,13 @@ These templates are designed to be:
 ## Template 1: Cold Intro (E-commerce Finance Manager)
 
 ### Subject Line Options
+
 - "Stop spending 2 days every month reconciling payments"
 - "Automate payment reconciliation in 30 minutes"
 - "Save 20 hours/month on reconciliation"
 
 ### Email Body
+
 ```
 Hi [Name],
 
@@ -40,6 +43,7 @@ Would you like to try a 14-day pilot? No credit card required.
 ```
 
 ### Customization Notes
+
 - Replace `[Name]` with contact's first name
 - Replace `[Company]` with company name
 - Add specific detail if known (e.g., "I noticed you use Stripe + Shopify")
@@ -49,11 +53,13 @@ Would you like to try a 14-day pilot? No credit card required.
 ## Template 2: Warm Referral (SaaS Operations Lead)
 
 ### Subject Line Options
+
 - "Eliminate currency conversion errors"
 - "Multi-currency reconciliation automation"
 - "[Referrer Name] suggested I reach out"
 
 ### Email Body
+
 ```
 Hi [Name],
 
@@ -72,6 +78,7 @@ P.S. [Referrer Name] is using Settler to save 15+ hours/month on reconciliation.
 ```
 
 ### Customization Notes
+
 - Replace `[Referrer Name]` with actual referrer
 - Add specific detail about referrer's success if appropriate
 
@@ -80,11 +87,13 @@ P.S. [Referrer Name] is using Settler to save 15+ hours/month on reconciliation.
 ## Template 3: Pilot Invite (After Discovery Call)
 
 ### Subject Line Options
+
 - "14-day pilot: Settler reconciliation automation"
 - "Your pilot is ready"
 - "Next steps: Settler pilot"
 
 ### Email Body
+
 ```
 Hi [Name],
 
@@ -116,6 +125,7 @@ Thanks for the conversation today. Based on your needs, I'd like to offer you a 
 ```
 
 ### Customization Notes
+
 - Add specific use case discussed in discovery call
 - Include specific integrations mentioned
 
@@ -124,11 +134,13 @@ Thanks for the conversation today. Based on your needs, I'd like to offer you a 
 ## Template 4: Follow-Up (After Initial Outreach)
 
 ### Subject Line Options
+
 - "Re: [Previous Subject]"
 - "Following up: Settler pilot"
 - "Quick check-in"
 
 ### Email Body (Day 5)
+
 ```
 Hi [Name],
 
@@ -140,6 +152,7 @@ If so, I'd love to show you how Settler can automate this. 14-day pilot, no cred
 ```
 
 ### Email Body (Day 10)
+
 ```
 Hi [Name],
 
@@ -151,6 +164,7 @@ If reconciliation isn't a priority right now, no problem. I'll reconnect in 3 mo
 ```
 
 ### Customization Notes
+
 - Adjust timing based on your follow-up cadence
 - Personalize based on previous interactions
 
@@ -159,11 +173,13 @@ If reconciliation isn't a priority right now, no problem. I'll reconnect in 3 mo
 ## Template 5: Demo Invite (After Qualification)
 
 ### Subject Line Options
+
 - "Demo: Settler reconciliation automation"
 - "30-minute demo: See Settler in action"
 - "Demo invitation: Settler"
 
 ### Email Body
+
 ```
 Hi [Name],
 
@@ -184,6 +200,7 @@ Thanks for your interest in Settler. I'd like to show you how Settler automates 
 ```
 
 ### Customization Notes
+
 - Include calendar link if using scheduling tool
 - Add specific use case discussed
 
@@ -192,11 +209,13 @@ Thanks for your interest in Settler. I'd like to show you how Settler automates 
 ## Template 6: Conversion Follow-Up (After Pilot)
 
 ### Subject Line Options
+
 - "Ready to upgrade? Your pilot results"
 - "Your pilot results: Ready to convert?"
 - "Next steps: Upgrade to paid plan"
 
 ### Email Body
+
 ```
 Hi [Name],
 
@@ -219,6 +238,7 @@ Based on your pilot results, Settler looks like a great fit. You've processed [X
 ```
 
 ### Customization Notes
+
 - Include specific pilot results (transactions processed, accuracy, time saved)
 - Add specific value realized
 
@@ -227,6 +247,7 @@ Based on your pilot results, Settler looks like a great fit. You've processed [X
 ## Email Best Practices
 
 ### Do's
+
 - ✅ **Personalize:** Use contact's name, company name
 - ✅ **Be specific:** Include specific details (use case, integrations)
 - ✅ **Clear CTA:** One clear call-to-action per email
@@ -234,6 +255,7 @@ Based on your pilot results, Settler looks like a great fit. You've processed [X
 - ✅ **Value-focused:** Lead with value, not features
 
 ### Don'ts
+
 - ❌ **Don't oversell:** Avoid hype, buzzwords
 - ❌ **Don't be vague:** Avoid generic language
 - ❌ **Don't ask for too much:** One CTA per email
@@ -245,18 +267,21 @@ Based on your pilot results, Settler looks like a great fit. You've processed [X
 ## Follow-Up Cadence
 
 ### Standard Cadence
+
 - **Day 1:** Initial outreach
 - **Day 5:** First follow-up
 - **Day 10:** Second follow-up
 - **Day 14:** Final follow-up (then pause)
 
 ### After Demo
+
 - **Day 1:** Thank you email, pilot signup link
 - **Day 3:** Check-in: "Did you get a chance to sign up?"
 - **Day 7:** Check-in: "How's the pilot going?"
 - **Day 14:** Conversion discussion
 
 ### After Pilot Signup
+
 - **Day 1:** Welcome email, onboarding guide
 - **Day 3:** Check-in: "How's setup going?"
 - **Day 7:** Value check: "Have you run your first reconciliation?"

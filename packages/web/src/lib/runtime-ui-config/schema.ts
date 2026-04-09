@@ -56,4 +56,3 @@ export function safeParsePublicRuntimeUiConfig(input: unknown): PublicRuntimeUiC
   // Safe defaults if config is missing or invalid
   return PublicRuntimeUiConfigSchema.parse({});
 }
-

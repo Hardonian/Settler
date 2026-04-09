@@ -11,13 +11,13 @@ This guide walks enterprise customers through the onboarding process for Settler
 
 ### Onboarding Timeline
 
-| Phase | Duration | Activities |
-|-------|----------|------------|
-| **Kickoff** | Day 1 | Initial call, requirements gathering, access setup |
-| **Configuration** | Days 2-5 | Adapter setup, job configuration, testing |
-| **Integration** | Days 6-10 | API integration, webhook setup, monitoring |
-| **Production** | Days 11-14 | Go-live, monitoring, optimization |
-| **Handoff** | Day 15+ | Documentation, training, support transition |
+| Phase             | Duration   | Activities                                         |
+| ----------------- | ---------- | -------------------------------------------------- |
+| **Kickoff**       | Day 1      | Initial call, requirements gathering, access setup |
+| **Configuration** | Days 2-5   | Adapter setup, job configuration, testing          |
+| **Integration**   | Days 6-10  | API integration, webhook setup, monitoring         |
+| **Production**    | Days 11-14 | Go-live, monitoring, optimization                  |
+| **Handoff**       | Day 15+    | Documentation, training, support transition        |
 
 ---
 
@@ -38,11 +38,13 @@ This guide walks enterprise customers through the onboarding process for Settler
 ### Kickoff Call Agenda (60 minutes)
 
 **1. Introductions (5 min)**
+
 - Project stakeholders
 - Roles and responsibilities
 - Communication channels
 
 **2. Requirements Gathering (30 min)**
+
 - Reconciliation use cases
 - Platform integrations needed
 - Matching rules and logic
@@ -50,12 +52,14 @@ This guide walks enterprise customers through the onboarding process for Settler
 - Compliance needs
 
 **3. Technical Architecture (15 min)**
+
 - Current infrastructure
 - Integration approach (API, webhooks)
 - Security requirements
 - Data residency preferences
 
 **4. Next Steps (10 min)**
+
 - Access provisioning
 - Configuration tasks
 - Timeline and milestones
@@ -64,18 +68,21 @@ This guide walks enterprise customers through the onboarding process for Settler
 ### Access Setup
 
 **Enterprise Account Creation:**
+
 1. Account manager creates enterprise account
 2. SSO configuration (if applicable)
 3. API keys generated (scoped by environment)
 4. Access granted to dashboard and API
 
 **Initial Access:**
+
 - **Dashboard:** `https://app.settler.io`
 - **API:** `https://api.settler.io`
 - **Documentation:** `https://docs.settler.io`
 - **Support Portal:** `https://support.settler.io`
 
 **API Keys Provided:**
+
 - **Production:** `sk_live_...` (for production use)
 - **Staging:** `sk_test_...` (for testing)
 - **Read-only:** `sk_live_..._readonly` (for monitoring)
@@ -93,20 +100,22 @@ This guide walks enterprise customers through the onboarding process for Settler
 ```typescript
 // Example: Stripe adapter configuration
 const stripeConfig = {
-  adapter: 'stripe',
+  adapter: "stripe",
   config: {
     apiKey: process.env.STRIPE_SECRET_KEY,
     webhookSecret: process.env.STRIPE_WEBHOOK_SECRET, // Optional
-  }
+  },
 };
 ```
 
 **Setup Steps:**
+
 1. Create Stripe API key (with read permissions)
 2. Configure webhook endpoint (if using real-time reconciliation)
 3. Test adapter connection via API
 
 **API Test:**
+
 ```bash
 curl -X POST https://api.settler.io/api/v1/adapters/stripe/test \
   -H "X-API-Key: sk_test_..." \
@@ -119,16 +128,17 @@ curl -X POST https://api.settler.io/api/v1/adapters/stripe/test \
 ```typescript
 // Example: Shopify adapter configuration
 const shopifyConfig = {
-  adapter: 'shopify',
+  adapter: "shopify",
   config: {
     apiKey: process.env.SHOPIFY_API_KEY,
-    shopDomain: 'your-shop.myshopify.com',
+    shopDomain: "your-shop.myshopify.com",
     webhookSecret: process.env.SHOPIFY_WEBHOOK_SECRET, // Optional
-  }
+  },
 };
 ```
 
 **Setup Steps:**
+
 1. Create Shopify private app (with read permissions)
 2. Configure webhook endpoint (if using real-time reconciliation)
 3. Test adapter connection via API
@@ -138,18 +148,19 @@ const shopifyConfig = {
 ```typescript
 // Example: QuickBooks adapter configuration
 const quickbooksConfig = {
-  adapter: 'quickbooks',
+  adapter: "quickbooks",
   config: {
     clientId: process.env.QB_CLIENT_ID,
     clientSecret: process.env.QB_CLIENT_SECRET,
     realmId: process.env.QB_REALM_ID,
     accessToken: process.env.QB_ACCESS_TOKEN,
     refreshToken: process.env.QB_REFRESH_TOKEN,
-  }
+  },
 };
 ```
 
 **Setup Steps:**
+
 1. Create QuickBooks app (via Intuit Developer)
 2. Complete OAuth flow (get access/refresh tokens)
 3. Test adapter connection via API
@@ -159,7 +170,7 @@ const quickbooksConfig = {
 **Create your first reconciliation job:**
 
 ```typescript
-import Settler from '@settler/sdk';
+import Settler from "@settler/sdk";
 
 const client = new Settler({
   apiKey: process.env.SETTLER_API_KEY,
@@ -167,47 +178,47 @@ const client = new Settler({
 
 // Create reconciliation job
 const job = await client.jobs.create({
-  name: 'Shopify-Stripe Reconciliation',
+  name: "Shopify-Stripe Reconciliation",
   source: {
-    adapter: 'shopify',
+    adapter: "shopify",
     config: {
       apiKey: process.env.SHOPIFY_API_KEY,
-      shopDomain: 'your-shop.myshopify.com',
+      shopDomain: "your-shop.myshopify.com",
     },
   },
   target: {
-    adapter: 'stripe',
+    adapter: "stripe",
     config: {
       apiKey: process.env.STRIPE_SECRET_KEY,
     },
   },
   rules: {
     matching: [
-      { field: 'order_id', type: 'exact' },
-      { field: 'amount', type: 'exact', tolerance: 0.01 },
-      { field: 'date', type: 'range', days: 1 },
+      { field: "order_id", type: "exact" },
+      { field: "amount", type: "exact", tolerance: 0.01 },
+      { field: "date", type: "range", days: 1 },
     ],
-    conflictResolution: 'last-wins',
+    conflictResolution: "last-wins",
   },
-  schedule: '0 2 * * *', // Daily at 2 AM UTC
+  schedule: "0 2 * * *", // Daily at 2 AM UTC
 });
 ```
 
 **Matching Rules Explained:**
 
-| Rule Type | Description | Use Case |
-|-----------|-------------|----------|
-| **exact** | Exact match required | Order IDs, transaction IDs |
-| **fuzzy** | Fuzzy matching (threshold 0-1) | Customer names, descriptions |
+| Rule Type | Description                    | Use Case                        |
+| --------- | ------------------------------ | ------------------------------- |
+| **exact** | Exact match required           | Order IDs, transaction IDs      |
+| **fuzzy** | Fuzzy matching (threshold 0-1) | Customer names, descriptions    |
 | **range** | Match within date/amount range | Date tolerance, amount rounding |
 
 **Conflict Resolution Strategies:**
 
-| Strategy | Description | Use Case |
-|----------|-------------|----------|
-| **first-wins** | Use first value encountered | Historical data |
-| **last-wins** | Use most recent value | Real-time updates |
-| **manual** | Flag for manual review | High-value transactions |
+| Strategy       | Description                 | Use Case                |
+| -------------- | --------------------------- | ----------------------- |
+| **first-wins** | Use first value encountered | Historical data         |
+| **last-wins**  | Use most recent value       | Real-time updates       |
+| **manual**     | Flag for manual review      | High-value transactions |
 
 ### Step 3: Testing
 
@@ -232,6 +243,7 @@ console.log(report.summary);
 ```
 
 **Validation Checklist:**
+
 - [ ] Job runs successfully
 - [ ] Matching rules work as expected
 - [ ] Unmatched transactions are flagged correctly
@@ -248,8 +260,8 @@ console.log(report.summary);
 
 ```typescript
 // Example: Express.js webhook handler
-import express from 'express';
-import Settler from '@settler/sdk';
+import express from "express";
+import Settler from "@settler/sdk";
 
 const app = express();
 const settler = new Settler({
@@ -257,26 +269,26 @@ const settler = new Settler({
 });
 
 // Webhook endpoint for reconciliation events
-app.post('/webhooks/reconcile', async (req, res) => {
+app.post("/webhooks/reconcile", async (req, res) => {
   const { event, data } = req.body;
-  
+
   switch (event) {
-    case 'reconciliation.matched':
+    case "reconciliation.matched":
       // Handle matched transaction
       await handleMatchedTransaction(data);
       break;
-      
-    case 'reconciliation.mismatch':
+
+    case "reconciliation.mismatch":
       // Handle mismatch (alert finance team)
       await alertFinanceTeam(data);
       break;
-      
-    case 'reconciliation.error':
+
+    case "reconciliation.error":
       // Handle error (log, retry, etc.)
       await handleError(data);
       break;
   }
-  
+
   res.json({ received: true });
 });
 ```
@@ -288,27 +300,21 @@ app.post('/webhooks/reconcile', async (req, res) => {
 ```typescript
 // Create webhook endpoint
 const webhook = await settler.webhooks.create({
-  url: 'https://your-app.com/webhooks/reconcile',
-  events: [
-    'reconciliation.matched',
-    'reconciliation.mismatch',
-    'reconciliation.error',
-  ],
+  url: "https://your-app.com/webhooks/reconcile",
+  events: ["reconciliation.matched", "reconciliation.mismatch", "reconciliation.error"],
   secret: process.env.WEBHOOK_SECRET, // Optional
 });
 
 // Verify webhook signature
 function verifyWebhookSignature(payload, signature, secret) {
-  const hmac = crypto.createHmac('sha256', secret);
-  const digest = hmac.update(payload).digest('hex');
-  return crypto.timingSafeEqual(
-    Buffer.from(signature),
-    Buffer.from(digest)
-  );
+  const hmac = crypto.createHmac("sha256", secret);
+  const digest = hmac.update(payload).digest("hex");
+  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest));
 }
 ```
 
 **Webhook Security Best Practices:**
+
 - ✅ Use webhook secrets to verify signatures
 - ✅ Use HTTPS only for webhook endpoints
 - ✅ Implement idempotency (handle duplicate events)
@@ -322,22 +328,22 @@ function verifyWebhookSignature(payload, signature, secret) {
 // Monitor job execution
 async function monitorJob(jobId: string) {
   const job = await settler.jobs.get(jobId);
-  
-  if (job.status === 'failed') {
+
+  if (job.status === "failed") {
     // Alert team
     await sendAlert({
-      severity: 'high',
+      severity: "high",
       message: `Job ${jobId} failed`,
       details: job.error,
     });
   }
-  
+
   // Check for unmatched transactions
   const report = await settler.reports.get(jobId);
   if (report.summary.unmatched > 0) {
     // Alert finance team
     await sendAlert({
-      severity: 'medium',
+      severity: "medium",
       message: `${report.summary.unmatched} unmatched transactions`,
       details: report.unmatched,
     });
@@ -349,6 +355,7 @@ setInterval(() => monitorJob(jobId), 60 * 60 * 1000);
 ```
 
 **Monitoring Checklist:**
+
 - [ ] Job execution monitoring (success/failure)
 - [ ] Unmatched transaction alerts
 - [ ] Error rate monitoring
@@ -377,21 +384,24 @@ setInterval(() => monitorJob(jobId), 60 * 60 * 1000);
 **Production Deployment Steps:**
 
 1. **Switch to Production API Keys:**
+
    ```bash
    export SETTLER_API_KEY="sk_live_..."
    ```
 
 2. **Update Webhook URLs:**
+
    ```typescript
    await settler.webhooks.update(webhookId, {
-     url: 'https://your-production-app.com/webhooks/reconcile',
+     url: "https://your-production-app.com/webhooks/reconcile",
    });
    ```
 
 3. **Enable Scheduled Jobs:**
+
    ```typescript
    await settler.jobs.update(jobId, {
-     status: 'active',
+     status: "active",
    });
    ```
 
@@ -403,12 +413,14 @@ setInterval(() => monitorJob(jobId), 60 * 60 * 1000);
 ### Step 3: Post-Go-Live Monitoring
 
 **First 24 Hours:**
+
 - Monitor job executions every hour
 - Review reconciliation reports
 - Check for unmatched transactions
 - Verify webhook deliveries
 
 **First Week:**
+
 - Daily reconciliation report review
 - Weekly team sync on results
 - Optimize matching rules if needed
@@ -421,6 +433,7 @@ setInterval(() => monitorJob(jobId), 60 * 60 * 1000);
 ### Documentation
 
 **Documentation Provided:**
+
 - [ ] API reference documentation
 - [ ] Integration guides for your platforms
 - [ ] Dashboard user guide
@@ -430,6 +443,7 @@ setInterval(() => monitorJob(jobId), 60 * 60 * 1000);
 ### Training
 
 **Training Sessions:**
+
 - [ ] Dashboard training (1 hour)
 - [ ] API integration training (1 hour)
 - [ ] Troubleshooting training (30 min)
@@ -438,12 +452,14 @@ setInterval(() => monitorJob(jobId), 60 * 60 * 1000);
 ### Support Transition
 
 **Support Channels:**
+
 - **Email:** support@settler.io
 - **Slack:** #settler-support (Enterprise)
 - **Phone:** (Enterprise only)
 - **Dashboard:** In-app support chat
 
 **Support SLAs:**
+
 - **Critical Issues:** 1-hour response (Enterprise)
 - **High Priority:** 4-hour response (Enterprise)
 - **Medium Priority:** 24-hour response
@@ -516,11 +532,13 @@ A: Enterprise customers have custom limits. Overage charges are discussed and ap
 ### Getting Help
 
 **During Onboarding:**
+
 - **Account Manager:** Your dedicated point of contact
 - **Technical Support:** support@settler.io
 - **Slack Channel:** #settler-enterprise (invite-only)
 
 **After Onboarding:**
+
 - **Support Portal:** https://support.settler.io
 - **Documentation:** https://docs.settler.io
 - **API Reference:** https://docs.settler.io/api

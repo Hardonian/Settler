@@ -19,8 +19,12 @@ async function main(): Promise<void> {
   console.log(`flags.canonicalize=${flags.canonicalize}`);
   console.log(`flags.executionMode=${flags.executionMode}`);
   console.log(`flags.shadowMode=${flags.shadowMode}`);
-  console.log(`flags.primaryAllowlist=${Array.from(flags.primaryAllowlist).join(",") || "<empty>"}`);
-  console.log(`flags.disabledOperations=${Array.from(flags.disabledOperations).join(",") || "<empty>"}`);
+  console.log(
+    `flags.primaryAllowlist=${Array.from(flags.primaryAllowlist).join(",") || "<empty>"}`
+  );
+  console.log(
+    `flags.disabledOperations=${Array.from(flags.disabledOperations).join(",") || "<empty>"}`
+  );
   console.log(`runner.mode=${runner.mode}`);
   console.log(`runner.reason=${runner.reason ?? "<none>"}`);
 
@@ -58,6 +62,6 @@ async function main(): Promise<void> {
 
 main().catch((error) => {
   console.error("\n❌ Kernel health diagnostics failed.");
-  console.error(error instanceof Error ? error.stack ?? error.message : String(error));
+  console.error(error instanceof Error ? (error.stack ?? error.message) : String(error));
   process.exit(1);
 });

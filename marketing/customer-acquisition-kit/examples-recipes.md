@@ -24,7 +24,7 @@ Reconcile Shopify orders with Stripe payments.
 import Settler from "@settler/sdk";
 
 const settler = new Settler({
-  apiKey: process.env.SETTLER_API_KEY
+  apiKey: process.env.SETTLER_API_KEY,
 });
 
 // Create reconciliation job
@@ -34,24 +34,24 @@ const job = await settler.jobs.create({
     adapter: "shopify",
     config: {
       apiKey: process.env.SHOPIFY_API_KEY,
-      shopDomain: process.env.SHOPIFY_SHOP_DOMAIN
-    }
+      shopDomain: process.env.SHOPIFY_SHOP_DOMAIN,
+    },
   },
   target: {
     adapter: "stripe",
     config: {
-      apiKey: process.env.STRIPE_SECRET_KEY
-    }
+      apiKey: process.env.STRIPE_SECRET_KEY,
+    },
   },
   rules: {
     matching: [
       { field: "order_id", type: "exact" },
       { field: "amount", type: "exact", tolerance: 0.01 },
-      { field: "date", type: "range", days: 1 }
+      { field: "date", type: "range", days: 1 },
     ],
-    conflictResolution: "last-wins"
+    conflictResolution: "last-wins",
   },
-  schedule: "0 2 * * *" // Daily at 2 AM
+  schedule: "0 2 * * *", // Daily at 2 AM
 });
 
 console.log("Job created:", job.data.id);
@@ -59,7 +59,7 @@ console.log("Job created:", job.data.id);
 // Get report
 const report = await settler.reports.get(job.data.id, {
   startDate: "2026-01-01",
-  endDate: "2026-01-31"
+  endDate: "2026-01-31",
 });
 
 console.log(`Matched: ${report.data.summary.matched}`);
@@ -79,24 +79,24 @@ const job = await settler.jobs.create({
     config: {
       url: process.env.WOOCOMMERCE_URL,
       consumerKey: process.env.WOOCOMMERCE_CONSUMER_KEY,
-      consumerSecret: process.env.WOOCOMMERCE_CONSUMER_SECRET
-    }
+      consumerSecret: process.env.WOOCOMMERCE_CONSUMER_SECRET,
+    },
   },
   target: {
     adapter: "paypal",
     config: {
       clientId: process.env.PAYPAL_CLIENT_ID,
       clientSecret: process.env.PAYPAL_CLIENT_SECRET,
-      mode: "live"
-    }
+      mode: "live",
+    },
   },
   rules: {
     matching: [
       { field: "order_id", type: "exact" },
       { field: "amount", type: "exact", tolerance: 0.01 },
-      { field: "customer_email", type: "exact" }
-    ]
-  }
+      { field: "customer_email", type: "exact" },
+    ],
+  },
 });
 ```
 
@@ -112,33 +112,33 @@ const job = await settler.jobs.create({
       adapter: "shopify",
       config: {
         apiKey: process.env.SHOPIFY_API_KEY,
-        shopDomain: process.env.SHOPIFY_SHOP_DOMAIN
-      }
+        shopDomain: process.env.SHOPIFY_SHOP_DOMAIN,
+      },
     },
     {
       adapter: "woocommerce",
       config: {
         url: process.env.WOOCOMMERCE_URL,
         consumerKey: process.env.WOOCOMMERCE_CONSUMER_KEY,
-        consumerSecret: process.env.WOOCOMMERCE_CONSUMER_SECRET
-      }
-    }
+        consumerSecret: process.env.WOOCOMMERCE_CONSUMER_SECRET,
+      },
+    },
   ],
   target: {
     adapter: "quickbooks",
     config: {
       clientId: process.env.QB_CLIENT_ID,
       clientSecret: process.env.QB_CLIENT_SECRET,
-      realmId: process.env.QB_REALM_ID
-    }
+      realmId: process.env.QB_REALM_ID,
+    },
   },
   rules: {
     matching: [
       { field: "order_id", type: "fuzzy", threshold: 0.8 },
       { field: "amount", type: "exact", tolerance: 0.01 },
-      { field: "date", type: "range", days: 2 }
-    ]
-  }
+      { field: "date", type: "range", days: 2 },
+    ],
+  },
 });
 ```
 
@@ -156,8 +156,8 @@ const job = await settler.jobs.create({
   source: {
     adapter: "stripe",
     config: {
-      apiKey: process.env.STRIPE_SECRET_KEY
-    }
+      apiKey: process.env.STRIPE_SECRET_KEY,
+    },
   },
   target: {
     adapter: "custom",
@@ -172,16 +172,16 @@ const job = await settler.jobs.create({
           created_at as date
         FROM subscriptions
         WHERE status = 'active'
-      `
-    }
+      `,
+    },
   },
   rules: {
     matching: [
       { field: "subscription_id", type: "exact" },
       { field: "amount", type: "exact", tolerance: 0.01 },
-      { field: "date", type: "range", days: 1 }
-    ]
-  }
+      { field: "date", type: "range", days: 1 },
+    ],
+  },
 });
 ```
 
@@ -195,36 +195,36 @@ const job = await settler.jobs.create({
   sources: [
     {
       adapter: "stripe",
-      config: { apiKey: process.env.STRIPE_SECRET_KEY }
+      config: { apiKey: process.env.STRIPE_SECRET_KEY },
     },
     {
       adapter: "paypal",
       config: {
         clientId: process.env.PAYPAL_CLIENT_ID,
-        clientSecret: process.env.PAYPAL_CLIENT_SECRET
-      }
+        clientSecret: process.env.PAYPAL_CLIENT_SECRET,
+      },
     },
     {
       adapter: "square",
-      config: { accessToken: process.env.SQUARE_ACCESS_TOKEN }
-    }
+      config: { accessToken: process.env.SQUARE_ACCESS_TOKEN },
+    },
   ],
   target: {
     adapter: "quickbooks",
     config: {
       clientId: process.env.QB_CLIENT_ID,
       clientSecret: process.env.QB_CLIENT_SECRET,
-      realmId: process.env.QB_REALM_ID
-    }
+      realmId: process.env.QB_REALM_ID,
+    },
   },
   rules: {
     matching: [
       { field: "transaction_id", type: "fuzzy", threshold: 0.8 },
       { field: "amount", type: "exact", tolerance: 0.01 },
       { field: "customer_email", type: "exact" },
-      { field: "date", type: "range", days: 1 }
-    ]
-  }
+      { field: "date", type: "range", days: 1 },
+    ],
+  },
 });
 ```
 
@@ -245,45 +245,41 @@ const job = await settler.jobs.create({
     adapter: "shopify",
     config: {
       apiKey: process.env.SHOPIFY_API_KEY,
-      shopDomain: process.env.SHOPIFY_SHOP_DOMAIN
-    }
+      shopDomain: process.env.SHOPIFY_SHOP_DOMAIN,
+    },
   },
   target: {
     adapter: "stripe",
     config: {
-      apiKey: process.env.STRIPE_SECRET_KEY
-    }
+      apiKey: process.env.STRIPE_SECRET_KEY,
+    },
   },
   rules: {
     matching: [
       { field: "order_id", type: "exact" },
-      { field: "amount", type: "exact", tolerance: 0.01 }
-    ]
-  }
+      { field: "amount", type: "exact", tolerance: 0.01 },
+    ],
+  },
 });
 
 // Set up webhook
 const webhook = await settler.webhooks.create({
   url: "https://your-app.com/webhooks/reconcile",
-  events: [
-    "reconciliation.matched",
-    "reconciliation.mismatch",
-    "reconciliation.error"
-  ],
-  secret: process.env.WEBHOOK_SECRET
+  events: ["reconciliation.matched", "reconciliation.mismatch", "reconciliation.error"],
+  secret: process.env.WEBHOOK_SECRET,
 });
 
 // Handle webhook events
 app.post("/webhooks/reconcile", async (req, res) => {
   const { event, data } = req.body;
-  
+
   switch (event) {
     case "reconciliation.matched":
       console.log("Transaction matched:", data.matchId);
       // Update your database
       await updateTransactionStatus(data.sourceId, "matched");
       break;
-      
+
     case "reconciliation.mismatch":
       console.log("Mismatch detected:", data.sourceId);
       // Alert finance team
@@ -291,17 +287,17 @@ app.post("/webhooks/reconcile", async (req, res) => {
         jobId: data.jobId,
         sourceId: data.sourceId,
         expectedAmount: data.expectedAmount,
-        actualAmount: data.actualAmount
+        actualAmount: data.actualAmount,
       });
       break;
-      
+
     case "reconciliation.error":
       console.error("Reconciliation error:", data.error);
       // Log error
       await logError(data);
       break;
   }
-  
+
   res.json({ received: true });
 });
 
@@ -324,24 +320,24 @@ const job = await settler.jobs.create({
     config: {
       clientId: process.env.QB_CLIENT_ID,
       clientSecret: process.env.QB_CLIENT_SECRET,
-      realmId: process.env.QB_REALM_ID
-    }
+      realmId: process.env.QB_REALM_ID,
+    },
   },
   target: {
     adapter: "bank_csv",
     config: {
       fileUrl: process.env.BANK_STATEMENT_URL,
-      format: "ofx" // or "csv", "qif"
-    }
+      format: "ofx", // or "csv", "qif"
+    },
   },
   rules: {
     matching: [
       { field: "transaction_id", type: "fuzzy", threshold: 0.8 },
       { field: "amount", type: "exact", tolerance: 0.01 },
       { field: "date", type: "range", days: 2 },
-      { field: "description", type: "fuzzy", threshold: 0.7 }
-    ]
-  }
+      { field: "description", type: "fuzzy", threshold: 0.7 },
+    ],
+  },
 });
 ```
 
@@ -357,23 +353,23 @@ const job = await settler.jobs.create({
     config: {
       clientId: process.env.XERO_CLIENT_ID,
       clientSecret: process.env.XERO_CLIENT_SECRET,
-      tenantId: process.env.XERO_TENANT_ID
-    }
+      tenantId: process.env.XERO_TENANT_ID,
+    },
   },
   target: {
     adapter: "stripe",
     config: {
-      apiKey: process.env.STRIPE_SECRET_KEY
-    }
+      apiKey: process.env.STRIPE_SECRET_KEY,
+    },
   },
   rules: {
     matching: [
       { field: "invoice_id", type: "exact" },
       { field: "amount", type: "exact", tolerance: 0.01 },
       { field: "customer_email", type: "exact" },
-      { field: "date", type: "range", days: 1 }
-    ]
-  }
+      { field: "date", type: "range", days: 1 },
+    ],
+  },
 });
 ```
 
@@ -392,14 +388,14 @@ const job = await settler.jobs.create({
     adapter: "shopify",
     config: {
       apiKey: process.env.SHOPIFY_API_KEY,
-      shopDomain: process.env.SHOPIFY_SHOP_DOMAIN
-    }
+      shopDomain: process.env.SHOPIFY_SHOP_DOMAIN,
+    },
   },
   target: {
     adapter: "stripe",
     config: {
-      apiKey: process.env.STRIPE_SECRET_KEY
-    }
+      apiKey: process.env.STRIPE_SECRET_KEY,
+    },
   },
   rules: {
     matching: [
@@ -413,15 +409,15 @@ const job = await settler.jobs.create({
             const targetOrderId = target.metadata.order_id;
             return sourceOrderId === targetOrderId;
           }
-        `
+        `,
       },
       {
         field: "amount",
         type: "exact",
-        tolerance: 0.01
-      }
-    ]
-  }
+        tolerance: 0.01,
+      },
+    ],
+  },
 });
 ```
 
@@ -436,14 +432,14 @@ const job = await settler.jobs.create({
     adapter: "shopify",
     config: {
       apiKey: process.env.SHOPIFY_API_KEY,
-      shopDomain: process.env.SHOPIFY_SHOP_DOMAIN
-    }
+      shopDomain: process.env.SHOPIFY_SHOP_DOMAIN,
+    },
   },
   target: {
     adapter: "stripe",
     config: {
-      apiKey: process.env.STRIPE_SECRET_KEY
-    }
+      apiKey: process.env.STRIPE_SECRET_KEY,
+    },
   },
   rules: {
     matching: [
@@ -455,11 +451,11 @@ const job = await settler.jobs.create({
         currencyConversion: {
           enabled: true,
           baseCurrency: "USD",
-          provider: "fixer" // or "openexchangerates"
-        }
-      }
-    ]
-  }
+          provider: "fixer", // or "openexchangerates"
+        },
+      },
+    ],
+  },
 });
 ```
 
@@ -474,38 +470,38 @@ const job = await settler.jobs.create({
     adapter: "shopify",
     config: {
       apiKey: process.env.SHOPIFY_API_KEY,
-      shopDomain: process.env.SHOPIFY_SHOP_DOMAIN
-    }
+      shopDomain: process.env.SHOPIFY_SHOP_DOMAIN,
+    },
   },
   target: {
     adapter: "stripe",
     config: {
-      apiKey: process.env.STRIPE_SECRET_KEY
-    }
+      apiKey: process.env.STRIPE_SECRET_KEY,
+    },
   },
   rules: {
     matching: [
       { field: "order_id", type: "exact" },
-      { field: "amount", type: "exact", tolerance: 0.01 }
-    ]
+      { field: "amount", type: "exact", tolerance: 0.01 },
+    ],
   },
-  schedule: "0 2 * * *" // Daily at 2 AM
+  schedule: "0 2 * * *", // Daily at 2 AM
 });
 
 // Set up webhook for alerts
 const webhook = await settler.webhooks.create({
   url: "https://your-app.com/webhooks/reconcile-alerts",
-  events: ["reconciliation.completed", "reconciliation.mismatch"]
+  events: ["reconciliation.completed", "reconciliation.mismatch"],
 });
 
 // Handle alerts
 app.post("/webhooks/reconcile-alerts", async (req, res) => {
   const { event, data } = req.body;
-  
+
   if (event === "reconciliation.completed") {
     const report = await settler.reports.get(data.jobId);
     const { accuracy, unmatched } = report.data.summary;
-    
+
     // Send email if accuracy is low
     if (accuracy < 95 || unmatched > 5) {
       await sendEmail({
@@ -515,11 +511,11 @@ app.post("/webhooks/reconcile-alerts", async (req, res) => {
           Reconciliation completed with issues:
           - Accuracy: ${accuracy}%
           - Unmatched: ${unmatched} transactions
-        `
+        `,
       });
     }
   }
-  
+
   res.json({ received: true });
 });
 ```
@@ -536,26 +532,23 @@ import { NextRequest, NextResponse } from "next/server";
 import Settler from "@settler/sdk";
 
 const settler = new Settler({
-  apiKey: process.env.SETTLER_API_KEY
+  apiKey: process.env.SETTLER_API_KEY,
 });
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    
+
     const job = await settler.jobs.create({
       name: body.name,
       source: body.source,
       target: body.target,
-      rules: body.rules
+      rules: body.rules,
     });
-    
+
     return NextResponse.json({ job: job.data });
   } catch (error) {
-    return NextResponse.json(
-      { error: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
@@ -564,10 +557,7 @@ export async function GET(req: NextRequest) {
     const jobs = await settler.jobs.list();
     return NextResponse.json({ jobs: jobs.data });
   } catch (error) {
-    return NextResponse.json(
-      { error: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 ```
@@ -582,39 +572,28 @@ import Settler from "@settler/sdk";
 
 const router = express.Router();
 
-function verifyWebhook(
-  payload: string,
-  signature: string,
-  secret: string
-): boolean {
+function verifyWebhook(payload: string, signature: string, secret: string): boolean {
   const [timestamp, hash] = signature.split(",");
   const [t, v1] = hash.split("=");
-  
+
   const expectedSignature = crypto
     .createHmac("sha256", secret)
     .update(`${timestamp}.${payload}`)
     .digest("hex");
-  
-  return crypto.timingSafeEqual(
-    Buffer.from(v1),
-    Buffer.from(expectedSignature)
-  );
+
+  return crypto.timingSafeEqual(Buffer.from(v1), Buffer.from(expectedSignature));
 }
 
 router.post("/reconcile", async (req, res) => {
   const signature = req.headers["x-settler-signature"] as string;
-  const isValid = verifyWebhook(
-    JSON.stringify(req.body),
-    signature,
-    process.env.WEBHOOK_SECRET!
-  );
-  
+  const isValid = verifyWebhook(JSON.stringify(req.body), signature, process.env.WEBHOOK_SECRET!);
+
   if (!isValid) {
     return res.status(401).json({ error: "Invalid signature" });
   }
-  
+
   const { event, data } = req.body;
-  
+
   // Process webhook event
   switch (event) {
     case "reconciliation.matched":
@@ -627,7 +606,7 @@ router.post("/reconcile", async (req, res) => {
       await handleError(data);
       break;
   }
-  
+
   res.json({ received: true });
 });
 
@@ -635,7 +614,7 @@ async function handleMatched(data: any) {
   // Update database
   await db.transactions.update({
     where: { id: data.sourceId },
-    data: { status: "matched", matchedAt: new Date() }
+    data: { status: "matched", matchedAt: new Date() },
   });
 }
 
@@ -643,7 +622,7 @@ async function handleMismatch(data: any) {
   // Alert finance team
   await sendSlackMessage({
     channel: "#finance-alerts",
-    text: `Mismatch detected: ${data.sourceId}`
+    text: `Mismatch detected: ${data.sourceId}`,
   });
 }
 
@@ -662,18 +641,15 @@ export default router;
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import Settler from "@settler/sdk";
 
-export default async function handler(
-  req: VercelRequest,
-  res: VercelResponse
-) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
-  
+
   const settler = new Settler({
-    apiKey: process.env.SETTLER_API_KEY
+    apiKey: process.env.SETTLER_API_KEY,
   });
-  
+
   try {
     const job = await settler.jobs.create(req.body);
     return res.status(201).json({ job: job.data });
@@ -694,25 +670,22 @@ export default {
     if (request.method !== "POST") {
       return new Response("Method not allowed", { status: 405 });
     }
-    
+
     const settler = new Settler({
-      apiKey: env.SETTLER_API_KEY
+      apiKey: env.SETTLER_API_KEY,
     });
-    
+
     try {
       const body = await request.json();
       const job = await settler.jobs.create(body);
-      
+
       return new Response(JSON.stringify({ job: job.data }), {
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
       });
     } catch (error) {
-      return new Response(
-        JSON.stringify({ error: error.message }),
-        { status: 500 }
-      );
+      return new Response(JSON.stringify({ error: error.message }), { status: 500 });
     }
-  }
+  },
 };
 ```
 
@@ -724,23 +697,23 @@ import Settler from "@settler/sdk";
 import cron from "node-cron";
 
 const settler = new Settler({
-  apiKey: process.env.SETTLER_API_KEY
+  apiKey: process.env.SETTLER_API_KEY,
 });
 
 // Run reconciliation daily at 2 AM
 cron.schedule("0 2 * * *", async () => {
   try {
     const jobs = await settler.jobs.list({ status: "active" });
-    
+
     for (const job of jobs.data) {
       console.log(`Running reconciliation for job: ${job.id}`);
-      
+
       const execution = await settler.jobs.run(job.id);
       console.log(`Execution started: ${execution.data.id}`);
-      
+
       // Wait for completion (poll or use webhooks)
       await waitForCompletion(execution.data.id);
-      
+
       // Get report
       const report = await settler.reports.get(job.id);
       console.log(`Accuracy: ${report.data.summary.accuracy}%`);

@@ -1,4 +1,5 @@
 # GitOps-Friendly Configuration
+
 ## Version-Controlled Job Configuration
 
 Settler supports GitOps-friendly configuration using YAML or JSON files. This allows you to version control your reconciliation jobs, track changes, and deploy via CI/CD.
@@ -35,12 +36,12 @@ jobs:
           type: range
           days: 1
       conflictResolution: last-wins
-    schedule: "0 2 * * *"  # Daily at 2 AM
+    schedule: "0 2 * * *" # Daily at 2 AM
     enabled: true
     tags:
       - production
       - ecommerce
-  
+
   - name: Multi-Gateway Reconciliation
     sources:
       - adapter: stripe
@@ -66,7 +67,7 @@ jobs:
         - field: customer_email
           type: exact
       conflictResolution: manual-review
-    schedule: "0 3 * * *"  # Daily at 3 AM
+    schedule: "0 3 * * *" # Daily at 3 AM
     enabled: true
     tags:
       - production
@@ -160,16 +161,16 @@ settler debug validate-config settler-jobs.yaml
 ### SDK
 
 ```typescript
-import { SettlerClient } from '@settler/sdk';
-import * as fs from 'fs';
-import * as yaml from 'yaml';
+import { SettlerClient } from "@settler/sdk";
+import * as fs from "fs";
+import * as yaml from "yaml";
 
 const client = new SettlerClient({
   apiKey: process.env.SETTLER_API_KEY,
 });
 
 // Load and parse config file
-const configFile = fs.readFileSync('settler-jobs.yaml', 'utf-8');
+const configFile = fs.readFileSync("settler-jobs.yaml", "utf-8");
 const config = yaml.parse(configFile);
 
 // Create jobs from config
@@ -206,19 +207,19 @@ on:
   push:
     branches: [main]
     paths:
-      - 'settler-jobs.yaml'
+      - "settler-jobs.yaml"
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Validate Config
         run: |
           npm install -g @settler/cli
           settler debug validate-config settler-jobs.yaml
-      
+
       - name: Apply Jobs
         env:
           SETTLER_API_KEY: ${{ secrets.SETTLER_API_KEY }}
@@ -286,28 +287,28 @@ workflows:
 ### Job Configuration Schema
 
 ```yaml
-name: string                    # Required: Job name
-source:                         # Required: Single source adapter
-  adapter: string              # Required: Adapter name
-  config: object                # Required: Adapter configuration
-sources:                        # Optional: Multiple source adapters
+name: string # Required: Job name
+source: # Required: Single source adapter
+  adapter: string # Required: Adapter name
+  config: object # Required: Adapter configuration
+sources: # Optional: Multiple source adapters
   - adapter: string
     config: object
-target:                         # Required: Target adapter
-  adapter: string              # Required: Adapter name
-  config: object                # Required: Adapter configuration
-rules:                          # Required: Matching rules
-  matching:                    # Required: Array of matching rules
-    - field: string            # Required: Field name
-      type: string             # Required: exact | fuzzy | range
-      tolerance?: number       # Optional: Tolerance for numeric fields
-      threshold?: number       # Optional: Threshold for fuzzy matching (0-1)
-      days?: number            # Optional: Days for range matching
-  conflictResolution: string  # Optional: last-wins | first-wins | manual-review
-schedule?: string              # Optional: Cron expression
-enabled?: boolean              # Optional: Enable/disable job (default: true)
-tags?: string[]                # Optional: Tags for organization
-metadata?: object              # Optional: Custom metadata
+target: # Required: Target adapter
+  adapter: string # Required: Adapter name
+  config: object # Required: Adapter configuration
+rules: # Required: Matching rules
+  matching: # Required: Array of matching rules
+    - field: string # Required: Field name
+      type: string # Required: exact | fuzzy | range
+      tolerance?: number # Optional: Tolerance for numeric fields
+      threshold?: number # Optional: Threshold for fuzzy matching (0-1)
+      days?: number # Optional: Days for range matching
+  conflictResolution: string # Optional: last-wins | first-wins | manual-review
+schedule?: string # Optional: Cron expression
+enabled?: boolean # Optional: Enable/disable job (default: true)
+tags?: string[] # Optional: Tags for organization
+metadata?: object # Optional: Custom metadata
 ```
 
 ---
@@ -375,7 +376,7 @@ jobs:
   - name: Production Job
     tags: [production]
     # ...
-  
+
   - name: Development Job
     tags: [development]
     # ...

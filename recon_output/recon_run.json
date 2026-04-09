@@ -4,11 +4,7 @@
   "completed_at": "2026-02-01T00:54:08.794186",
   "total_source": 5,
   "total_target": 5,
-  "match_keys": [
-    "external_id",
-    "amount",
-    "date"
-  ],
+  "match_keys": ["external_id", "amount", "date"],
   "matched_count": 5,
   "mismatched_count": 0,
   "source_orphan_count": 0,

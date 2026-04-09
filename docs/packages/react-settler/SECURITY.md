@@ -7,22 +7,22 @@ React.Settler is built with enterprise-grade security in mind. This document out
 Always validate user input before passing it to React.Settler components:
 
 ```tsx
-import { useValidation, sanitizeString } from '@settler/react-settler';
+import { useValidation, sanitizeString } from "@settler/react-settler";
 
 function MyComponent() {
   const { validateTransaction } = useValidation();
-  
+
   const handleSubmit = (data: unknown) => {
     // Sanitize input
     const sanitized = sanitizeString(String(data));
-    
+
     // Validate transaction
     const result = validateTransaction(data as ReconciliationTransaction);
     if (!result.valid) {
       // Handle validation errors
       return;
     }
-    
+
     // Use validated data
   };
 }
@@ -44,7 +44,7 @@ All string values are sanitized using `sanitizeString()` before rendering.
 Configure CSP headers in your application:
 
 ```
-Content-Security-Policy: 
+Content-Security-Policy:
   default-src 'self';
   script-src 'self' 'unsafe-inline';
   style-src 'self' 'unsafe-inline';
@@ -57,7 +57,7 @@ Content-Security-Policy:
 Enable audit logging for compliance:
 
 ```tsx
-import { setAuditLogHandler } from '@settler/react-settler';
+import { setAuditLogHandler } from "@settler/react-settler";
 
 setAuditLogHandler((entry) => {
   // Send to your audit log service
@@ -70,11 +70,11 @@ setAuditLogHandler((entry) => {
 Enable PII masking in telemetry:
 
 ```tsx
-import { setTelemetryConfig } from '@settler/react-settler';
+import { setTelemetryConfig } from "@settler/react-settler";
 
 setTelemetryConfig({
   scrubPII: true,
-  trackUsers: false
+  trackUsers: false,
 });
 ```
 
@@ -83,7 +83,7 @@ setTelemetryConfig({
 Use ErrorBoundary to catch and handle errors securely:
 
 ```tsx
-import { ErrorBoundary } from '@settler/react-settler';
+import { ErrorBoundary } from "@settler/react-settler";
 
 <ErrorBoundary
   onError={(error, errorInfo) => {
@@ -92,7 +92,7 @@ import { ErrorBoundary } from '@settler/react-settler';
   }}
 >
   <YourComponent />
-</ErrorBoundary>
+</ErrorBoundary>;
 ```
 
 ## Security Context
@@ -100,19 +100,19 @@ import { ErrorBoundary } from '@settler/react-settler';
 Provide security context for access control:
 
 ```tsx
-import { ReconciliationDashboard } from '@settler/react-settler';
+import { ReconciliationDashboard } from "@settler/react-settler";
 
 <ReconciliationDashboard
   config={{
     securityContext: {
-      userId: 'user-123',
-      permissions: ['read:transactions', 'write:exceptions'],
-      roles: ['operator']
-    }
+      userId: "user-123",
+      permissions: ["read:transactions", "write:exceptions"],
+      roles: ["operator"],
+    },
   }}
 >
   {/* Components */}
-</ReconciliationDashboard>
+</ReconciliationDashboard>;
 ```
 
 ## Rate Limiting
@@ -121,10 +121,13 @@ Implement rate limiting in your backend:
 
 ```tsx
 // Backend example
-app.use('/api/reconciliation', rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
-}));
+app.use(
+  "/api/reconciliation",
+  rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
+  })
+);
 ```
 
 ## Secure Data Transmission

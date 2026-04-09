@@ -3,8 +3,8 @@
  * Manages snapshots for event-sourced aggregates
  */
 
-import { IEventStore } from './EventStore';
-import { SnapshotEnvelope } from '../../domain/eventsourcing/EventEnvelope';
+import { IEventStore } from "./EventStore";
+import { SnapshotEnvelope } from "../../domain/eventsourcing/EventEnvelope";
 
 export interface SnapshotPolicy {
   snapshotEveryNEvents: number;
@@ -36,12 +36,11 @@ export class SnapshotService {
     }
 
     // Check if we've exceeded the snapshot interval
-    const eventsSinceSnapshot =
-      await this.eventStore.getEventsAfterSnapshot(
-        aggregateId,
-        aggregateType,
-        snapshot.snapshot_version
-      );
+    const eventsSinceSnapshot = await this.eventStore.getEventsAfterSnapshot(
+      aggregateId,
+      aggregateType,
+      snapshot.snapshot_version
+    );
 
     return eventsSinceSnapshot.length >= this.policy.snapshotEveryNEvents;
   }
@@ -55,14 +54,9 @@ export class SnapshotService {
     snapshotData: T,
     eventId: string
   ): Promise<void> {
-    const latestSnapshot = await this.eventStore.getLatestSnapshot(
-      aggregateId,
-      aggregateType
-    );
+    const latestSnapshot = await this.eventStore.getLatestSnapshot(aggregateId, aggregateType);
 
-    const nextVersion = latestSnapshot
-      ? latestSnapshot.snapshot_version + 1
-      : 1;
+    const nextVersion = latestSnapshot ? latestSnapshot.snapshot_version + 1 : 1;
 
     const snapshot: SnapshotEnvelope<T> = {
       aggregate_id: aggregateId,
@@ -85,10 +79,7 @@ export class SnapshotService {
     initialState: T,
     applyEvent: (state: T, event: unknown) => T
   ): Promise<T> {
-    const snapshot = await this.eventStore.getLatestSnapshot(
-      aggregateId,
-      aggregateType
-    );
+    const snapshot = await this.eventStore.getLatestSnapshot(aggregateId, aggregateType);
 
     let state: T = initialState;
 

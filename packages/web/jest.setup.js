@@ -1,28 +1,28 @@
 // Learn more: https://github.com/testing-library/jest-dom
-import '@testing-library/jest-dom';
-import { TextDecoder, TextEncoder } from 'util';
+import "@testing-library/jest-dom";
+import { TextDecoder, TextEncoder } from "util";
 
-if (typeof global.TextEncoder === 'undefined') {
+if (typeof global.TextEncoder === "undefined") {
   global.TextEncoder = TextEncoder;
 }
 
-if (typeof global.TextDecoder === 'undefined') {
+if (typeof global.TextDecoder === "undefined") {
   global.TextDecoder = TextDecoder;
 }
 
-if (typeof global.Headers === 'undefined') {
+if (typeof global.Headers === "undefined") {
   global.Headers = class Headers {};
 }
-if (typeof global.Request === 'undefined') {
+if (typeof global.Request === "undefined") {
   global.Request = class Request {
     constructor(input, init = {}) {
-      this.url = typeof input === 'string' ? input : input?.url || '';
-      this.method = init.method || 'GET';
+      this.url = typeof input === "string" ? input : input?.url || "";
+      this.method = init.method || "GET";
       this.headers = init.headers || {};
     }
   };
 }
-if (typeof global.Response === 'undefined') {
+if (typeof global.Response === "undefined") {
   global.Response = class Response {
     constructor(body = null, init = {}) {
       this.body = body;
@@ -34,26 +34,25 @@ if (typeof global.Response === 'undefined') {
     }
   };
 }
-if (typeof global.fetch === 'undefined') {
+if (typeof global.fetch === "undefined") {
   global.fetch = jest.fn(async () => new global.Response(null));
 }
 
-
 // Mock Next.js router
-jest.mock('next/navigation', () => ({
+jest.mock("next/navigation", () => ({
   useRouter() {
     return {
       push: jest.fn(),
       replace: jest.fn(),
       prefetch: jest.fn(),
       back: jest.fn(),
-      pathname: '/',
+      pathname: "/",
       query: {},
-      asPath: '/',
+      asPath: "/",
     };
   },
   usePathname() {
-    return '/';
+    return "/";
   },
   useSearchParams() {
     return new URLSearchParams();
@@ -61,18 +60,18 @@ jest.mock('next/navigation', () => ({
 }));
 
 // Mock environment variables
-process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co';
-process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
+process.env.NEXT_PUBLIC_SUPABASE_URL = "https://test.supabase.co";
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "test-anon-key";
 
 // Suppress console errors in tests (optional, remove if you want to see them)
 const originalError = console.error;
 beforeAll(() => {
   console.error = (...args) => {
     if (
-      typeof args[0] === 'string' &&
-      (args[0].includes('Warning: ReactDOM.render') ||
-        args[0].includes('Warning: validateDOMNesting') ||
-        args[0].includes('Warning: useLayoutEffect does nothing on the server'))
+      typeof args[0] === "string" &&
+      (args[0].includes("Warning: ReactDOM.render") ||
+        args[0].includes("Warning: validateDOMNesting") ||
+        args[0].includes("Warning: useLayoutEffect does nothing on the server"))
     ) {
       return;
     }

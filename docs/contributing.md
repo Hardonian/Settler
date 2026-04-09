@@ -154,6 +154,7 @@ Use GitHub Issues to report bugs or request features.
 Clear description of the bug
 
 **Steps to Reproduce**
+
 1. Step one
 2. Step two
 3. Step three
@@ -165,6 +166,7 @@ What should happen
 What actually happens
 
 **Environment**
+
 - Node version:
 - npm version:
 - OS:

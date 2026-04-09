@@ -3,13 +3,8 @@
  * Defines a single reconciliation matching rule
  */
 
-import {
-  ReconciliationRule,
-  RuleField,
-  RuleType,
-  RuleTolerance
-} from '@settler/protocol';
-import { useCompilationContext } from '../context';
+import { ReconciliationRule, RuleField, RuleType, RuleTolerance } from "@settler/protocol";
+import { useCompilationContext } from "../context";
 
 export interface MatchRuleProps {
   id: string;
@@ -33,20 +28,22 @@ export function MatchRule({
   type,
   tolerance,
   priority,
-  enabled = true
+  enabled = true,
 }: MatchRuleProps) {
   const context = useCompilationContext();
 
   // In config mode, add rule to the most recent ruleset
-  if (context.mode === 'config') {
+  if (context.mode === "config") {
     if (!context.config.rulesets || context.config.rulesets.length === 0) {
       // Create a default ruleset if none exists
-      context.config.rulesets = [{
-        id: 'default-ruleset',
-        name: 'Default Rules',
-        rules: [],
-        priority: 'exact-first'
-      }];
+      context.config.rulesets = [
+        {
+          id: "default-ruleset",
+          name: "Default Rules",
+          rules: [],
+          priority: "exact-first",
+        },
+      ];
     }
 
     const ruleset = context.config.rulesets[context.config.rulesets.length - 1];
@@ -60,14 +57,14 @@ export function MatchRule({
       type,
       ...(tolerance ? { tolerance: tolerance as RuleTolerance } : {}),
       ...(priority !== undefined ? { priority } : {}),
-      enabled
+      enabled,
     };
 
     ruleset.rules.push(rule);
   }
 
   // In UI mode, render rule display (optional)
-  if (context.mode === 'ui') {
+  if (context.mode === "ui") {
     return (
       <div data-rule-id={id} data-rule-field={field} data-rule-type={type}>
         <strong>{name}</strong>

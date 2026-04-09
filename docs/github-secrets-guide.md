@@ -6,13 +6,13 @@ This guide explains how to set secrets in GitHub for CI/CD workflows and deploym
 
 The following secrets are required for the `auth_edge_guard` Supabase Edge Function:
 
-| Secret Name | Description | Example Value | Required |
-|------------|-------------|---------------|----------|
-| `UPSTASH_REDIS_REST_URL` | Upstash Redis REST API URL | `https://pretty-buck-23396.upstash.io` | Yes |
-| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis REST API token | `AVtkAAIncDJjZmUxNTlhNmMyMjI0YmNjYTk5YjY4YzI2YzEyZjUyN3AyMjMzOTY` | Yes |
-| `IP_RPM` | Rate limit per IP (requests per minute) | `300` | No |
-| `USER_RPM` | Rate limit per user (requests per minute) | `900` | No |
-| `CACHE_MAX_AGE` | Authentication cache TTL in seconds | `90` | No |
+| Secret Name                | Description                               | Example Value                                                     | Required |
+| -------------------------- | ----------------------------------------- | ----------------------------------------------------------------- | -------- |
+| `UPSTASH_REDIS_REST_URL`   | Upstash Redis REST API URL                | `https://pretty-buck-23396.upstash.io`                            | Yes      |
+| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis REST API token              | `AVtkAAIncDJjZmUxNTlhNmMyMjI0YmNjYTk5YjY4YzI2YzEyZjUyN3AyMjMzOTY` | Yes      |
+| `IP_RPM`                   | Rate limit per IP (requests per minute)   | `300`                                                             | No       |
+| `USER_RPM`                 | Rate limit per user (requests per minute) | `900`                                                             | No       |
+| `CACHE_MAX_AGE`            | Authentication cache TTL in seconds       | `90`                                                              | No       |
 
 ## Setting GitHub Secrets
 
@@ -76,6 +76,7 @@ To verify secrets are set:
    - You'll see a list of all secrets (values are masked)
 
 2. **GitHub CLI**:
+
    ```bash
    gh secret list
    ```

@@ -51,9 +51,7 @@ function createRng(initialSeed: number) {
 const rng = createRng(DEMO_SEED);
 
 function seededUuid(): string {
-  const hex = Array.from({ length: 32 }, () =>
-    Math.floor(rng.next() * 16).toString(16)
-  ).join("");
+  const hex = Array.from({ length: 32 }, () => Math.floor(rng.next() * 16).toString(16)).join("");
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-4${hex.slice(13, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 }
 
@@ -408,8 +406,12 @@ function generateDemoDataset() {
   }
 
   // 5 fuzzy matches (small amount difference — e.g., currency rounding, partial refund)
-  const fuzzyPairs: Array<{ stripeId: string; bankId: string; stripAmount: number; bankAmount: number }> =
-    [];
+  const fuzzyPairs: Array<{
+    stripeId: string;
+    bankId: string;
+    stripAmount: number;
+    bankAmount: number;
+  }> = [];
   for (let i = 0; i < 5; i++) {
     const baseAmount = randomAmount(1000, 8000);
     const diff = Number((rng.next() * 15 + 0.5).toFixed(2));
@@ -884,21 +886,13 @@ async function seedDatabase(dataset: ReturnType<typeof generateDemoDataset>, res
       await prisma.normalizedTransaction
         .deleteMany({ where: { tenantId: DEMO_TENANT_ID } })
         .catch(() => {});
-      await prisma.rawRecord
-        .deleteMany({ where: { tenantId: DEMO_TENANT_ID } })
-        .catch(() => {});
-      await prisma.ingestion
-        .deleteMany({ where: { tenantId: DEMO_TENANT_ID } })
-        .catch(() => {});
+      await prisma.rawRecord.deleteMany({ where: { tenantId: DEMO_TENANT_ID } }).catch(() => {});
+      await prisma.ingestion.deleteMany({ where: { tenantId: DEMO_TENANT_ID } }).catch(() => {});
       await prisma.ingestionSource
         .deleteMany({ where: { tenantId: DEMO_TENANT_ID } })
         .catch(() => {});
-      await prisma.auditLog
-        .deleteMany({ where: { tenantId: DEMO_TENANT_ID } })
-        .catch(() => {});
-      await prisma.export
-        .deleteMany({ where: { tenantId: DEMO_TENANT_ID } })
-        .catch(() => {});
+      await prisma.auditLog.deleteMany({ where: { tenantId: DEMO_TENANT_ID } }).catch(() => {});
+      await prisma.export.deleteMany({ where: { tenantId: DEMO_TENANT_ID } }).catch(() => {});
       await prisma.tenant.deleteMany({ where: { slug: DEMO_TENANT_SLUG } }).catch(() => {});
       console.log("   ✓ Demo tenant data cleared");
     }
@@ -1173,9 +1167,7 @@ async function main() {
       console.log("\n⚠️  Database seed skipped — see JSON files in demo/data/");
     }
   } else {
-    console.log(
-      "\n⚠️  DATABASE_URL not set — JSON files written to demo/data/ for manual import."
-    );
+    console.log("\n⚠️  DATABASE_URL not set — JSON files written to demo/data/ for manual import.");
   }
 
   console.log("\n" + "═".repeat(52));

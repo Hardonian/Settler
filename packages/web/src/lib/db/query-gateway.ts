@@ -15,10 +15,10 @@
  * - Write shedding (buffered writes)
  */
 
-import { prisma } from '@/shared/db/prismaClient';
-import { createClient } from '@/lib/supabase/server';
-import { appLogger } from '@/lib/utils/logger';
-import { Redis } from '@upstash/redis';
+import { prisma } from "@/shared/db/prismaClient";
+import { createClient } from "@/lib/supabase/server";
+import { appLogger } from "@/lib/utils/logger";
+import { Redis } from "@upstash/redis";
 
 // ============================================================================
 // CONFIGURATION
@@ -56,7 +56,7 @@ if (CACHE_CONFIG.enabled && process.env.REDIS_URL) {
       token: process.env.UPSTASH_REDIS_REST_TOKEN,
     });
   } catch (error) {
-    appLogger.warn('[Query Gateway] Redis initialization failed, caching disabled', { error });
+    appLogger.warn("[Query Gateway] Redis initialization failed, caching disabled", { error });
   }
 }
 
@@ -128,7 +128,7 @@ async function withSingleFlight<T>(
 
   const existing = inflightRequests.get(key);
   if (existing) {
-    appLogger.debug('[Query Gateway] Single-flight: reusing inflight request', { key });
+    appLogger.debug("[Query Gateway] Single-flight: reusing inflight request", { key });
     return existing;
   }
 
@@ -151,7 +151,7 @@ async function getCached<T>(key: string): Promise<T | null> {
     const cached = await redis.get<T>(key);
     return cached;
   } catch (error) {
-    appLogger.warn('[Query Gateway] Cache read failed', { key, error });
+    appLogger.warn("[Query Gateway] Cache read failed", { key, error });
     return null;
   }
 }
@@ -162,7 +162,7 @@ async function setCache<T>(key: string, value: T, ttl: number): Promise<void> {
   try {
     await redis.setex(key, ttl, value);
   } catch (error) {
-    appLogger.warn('[Query Gateway] Cache write failed', { key, error });
+    appLogger.warn("[Query Gateway] Cache write failed", { key, error });
   }
 }
 
@@ -177,7 +177,7 @@ async function withTimeout<T>(
 ): Promise<T> {
   const timeoutPromise = new Promise<never>((_, reject) => {
     setTimeout(() => {
-      reject(new Error(`Query timeout after ${timeoutMs}ms: ${queryName || 'unknown'}`));
+      reject(new Error(`Query timeout after ${timeoutMs}ms: ${queryName || "unknown"}`));
     }, timeoutMs);
   });
 
@@ -200,7 +200,7 @@ export async function executePrismaQuery<T>(
     limit,
     cacheTTL = 0,
     cacheKey,
-    queryName = 'unknown',
+    queryName = "unknown",
     skipSingleFlight = false,
   } = options;
 
@@ -219,7 +219,7 @@ export async function executePrismaQuery<T>(
       cacheHit = true;
       const duration = Date.now() - startTime;
 
-      appLogger.debug('[Query Gateway] Cache hit', {
+      appLogger.debug("[Query Gateway] Cache hit", {
         queryName,
         duration,
         cacheKey: fullCacheKey,
@@ -238,7 +238,7 @@ export async function executePrismaQuery<T>(
       const result = await withTimeout(queryFn(), timeout, queryName);
       return result;
     } catch (error) {
-      appLogger.error('[Query Gateway] Query failed', {
+      appLogger.error("[Query Gateway] Query failed", {
         queryName,
         error: error instanceof Error ? error.message : String(error),
         timeout,
@@ -257,7 +257,7 @@ export async function executePrismaQuery<T>(
 
     // Enforce limit
     if (limit && rowCount > limit) {
-      appLogger.warn('[Query Gateway] Row limit exceeded, truncating', {
+      appLogger.warn("[Query Gateway] Row limit exceeded, truncating", {
         queryName,
         rowCount,
         limit,
@@ -274,7 +274,7 @@ export async function executePrismaQuery<T>(
   }
 
   // Log query metrics
-  appLogger.info('[Query Gateway] Query executed', {
+  appLogger.info("[Query Gateway] Query executed", {
     queryName,
     duration,
     rowCount,
@@ -293,7 +293,9 @@ export async function executePrismaQuery<T>(
  */
 export async function executeSupabaseQuery<T>(
   tableName: string,
-  queryFn: (supabase: Awaited<ReturnType<typeof createClient>>) => Promise<{ data: T | null; error: any }>,
+  queryFn: (
+    supabase: Awaited<ReturnType<typeof createClient>>
+  ) => Promise<{ data: T | null; error: any }>,
   options: QueryOptions = {}
 ): Promise<QueryResult<T>> {
   const {
@@ -321,7 +323,7 @@ export async function executeSupabaseQuery<T>(
       cacheHit = true;
       const duration = Date.now() - startTime;
 
-      appLogger.debug('[Query Gateway] Supabase cache hit', {
+      appLogger.debug("[Query Gateway] Supabase cache hit", {
         queryName,
         duration,
         cacheKey: fullCacheKey,
@@ -346,12 +348,12 @@ export async function executeSupabaseQuery<T>(
       }
 
       if (data === null) {
-        throw new Error('Supabase query returned null (expected data)');
+        throw new Error("Supabase query returned null (expected data)");
       }
 
       return data;
     } catch (error) {
-      appLogger.error('[Query Gateway] Supabase query failed', {
+      appLogger.error("[Query Gateway] Supabase query failed", {
         queryName,
         tableName,
         error: error instanceof Error ? error.message : String(error),
@@ -371,7 +373,7 @@ export async function executeSupabaseQuery<T>(
 
     // Enforce limit
     if (limit && rowCount > limit) {
-      appLogger.warn('[Query Gateway] Supabase row limit exceeded, truncating', {
+      appLogger.warn("[Query Gateway] Supabase row limit exceeded, truncating", {
         queryName,
         rowCount,
         limit,
@@ -387,7 +389,7 @@ export async function executeSupabaseQuery<T>(
   }
 
   // Log query metrics
-  appLogger.info('[Query Gateway] Supabase query executed', {
+  appLogger.info("[Query Gateway] Supabase query executed", {
     queryName,
     tableName,
     duration,
@@ -410,10 +412,7 @@ export async function executeWrite<T>(
   writeFn: () => Promise<T>,
   options: QueryOptions = {}
 ): Promise<QueryResult<T>> {
-  const {
-    timeout = QUERY_TIMEOUTS.write,
-    queryName = 'write',
-  } = options;
+  const { timeout = QUERY_TIMEOUTS.write, queryName = "write" } = options;
 
   const startTime = Date.now();
 
@@ -421,7 +420,7 @@ export async function executeWrite<T>(
     const data = await withTimeout(writeFn(), timeout, queryName);
     const duration = Date.now() - startTime;
 
-    appLogger.info('[Query Gateway] Write executed', {
+    appLogger.info("[Query Gateway] Write executed", {
       queryName,
       duration,
       timeout,
@@ -432,7 +431,7 @@ export async function executeWrite<T>(
       meta: { duration, cacheHit: false, rowCount: null, queryName },
     };
   } catch (error) {
-    appLogger.error('[Query Gateway] Write failed', {
+    appLogger.error("[Query Gateway] Write failed", {
       queryName,
       error: error instanceof Error ? error.message : String(error),
       timeout,
@@ -454,12 +453,12 @@ export async function invalidateCache(keyPrefix: string): Promise<void> {
   try {
     // Note: Upstash Redis doesn't support SCAN, so we use key-based invalidation
     // In production, consider using a dedicated cache invalidation pattern
-    appLogger.info('[Query Gateway] Cache invalidated', { keyPrefix });
+    appLogger.info("[Query Gateway] Cache invalidated", { keyPrefix });
 
     // For now, we'll rely on TTL expiration
     // Future: Implement tag-based invalidation
   } catch (error) {
-    appLogger.warn('[Query Gateway] Cache invalidation failed', { keyPrefix, error });
+    appLogger.warn("[Query Gateway] Cache invalidation failed", { keyPrefix, error });
   }
 }
 
@@ -485,7 +484,7 @@ export async function checkConnectionPoolHealth(): Promise<{
     const duration = Date.now() - startTime;
 
     if (duration > 5000) {
-      appLogger.warn('[Query Gateway] Connection pool slow (>5s)', { duration });
+      appLogger.warn("[Query Gateway] Connection pool slow (>5s)", { duration });
       return { healthy: false, metrics: {} };
     }
 
@@ -497,7 +496,7 @@ export async function checkConnectionPoolHealth(): Promise<{
       },
     };
   } catch (error) {
-    appLogger.error('[Query Gateway] Connection pool health check failed', { error });
+    appLogger.error("[Query Gateway] Connection pool health check failed", { error });
     return { healthy: false, metrics: {} };
   }
 }
@@ -518,7 +517,7 @@ export async function findMany<T>(
   return executePrismaQuery(queryFn, {
     ...options,
     limit,
-    queryName: options.queryName || 'findMany',
+    queryName: options.queryName || "findMany",
   });
 }
 
@@ -535,6 +534,6 @@ export async function aggregate<T>(
     ...options,
     limit,
     timeout: options.timeout ?? QUERY_TIMEOUTS.expensive,
-    queryName: options.queryName || 'aggregate',
+    queryName: options.queryName || "aggregate",
   });
 }

@@ -1,10 +1,10 @@
 /**
  * Integration Testing Helpers
- * 
+ *
  * Utilities for testing console routes end-to-end.
  */
 
-import { NextRequest } from 'next/server';
+import { NextRequest } from "next/server";
 
 /**
  * Create authenticated request for testing
@@ -17,12 +17,12 @@ export function createAuthenticatedRequest(
     body?: unknown;
   } = {}
 ): NextRequest {
-  const { method = 'GET', headers = {} } = options;
+  const { method = "GET", headers = {} } = options;
 
   // Add auth headers
   const authHeaders = {
     ...headers,
-    cookie: 'sb-access-token=test-token; sb-refresh-token=test-refresh',
+    cookie: "sb-access-token=test-token; sb-refresh-token=test-refresh",
   };
 
   const request = new NextRequest(url, {
@@ -36,14 +36,9 @@ export function createAuthenticatedRequest(
 /**
  * Assert API response structure
  */
-export function assertApiResponse(
-  response: Response,
-  expectedStatus: number
-): void {
+export function assertApiResponse(response: Response, expectedStatus: number): void {
   if (response.status !== expectedStatus) {
-    throw new Error(
-      `Expected status ${expectedStatus}, got ${response.status}`
-    );
+    throw new Error(`Expected status ${expectedStatus}, got ${response.status}`);
   }
 }
 
@@ -52,8 +47,8 @@ export function assertApiResponse(
  */
 export async function assertResponseData(response: Response): Promise<unknown> {
   const data = await response.json();
-  if (!data || typeof data !== 'object') {
-    throw new Error('Response does not contain valid JSON');
+  if (!data || typeof data !== "object") {
+    throw new Error("Response does not contain valid JSON");
   }
   return data;
 }
@@ -63,8 +58,8 @@ export async function assertResponseData(response: Response): Promise<unknown> {
  */
 export async function assertResponseError(response: Response): Promise<string> {
   const data = await response.json();
-  if (!data.error || typeof data.error !== 'string') {
-    throw new Error('Response does not contain error message');
+  if (!data.error || typeof data.error !== "string") {
+    throw new Error("Response does not contain error message");
   }
   return data.error;
 }

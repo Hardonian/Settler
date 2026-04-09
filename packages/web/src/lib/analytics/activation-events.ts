@@ -1,21 +1,21 @@
 /**
  * Activation Event Tracking
- * 
+ *
  * Tracks "aha" moments and activation milestones for user lifecycle analysis.
  * Helps identify silent churn and measure product-market fit.
  */
 
-import { prisma } from '@/shared/db/prismaClient';
-import { createClient } from '@/lib/supabase/server';
-import type { Database, Json } from '@/types/database.types';
+import { prisma } from "@/shared/db/prismaClient";
+import { createClient } from "@/lib/supabase/server";
+import type { Database, Json } from "@/types/database.types";
 
 export type ActivationEventType =
-  | 'first_receipt_parsed'
-  | 'first_api_key_created'
-  | 'first_reconciliation_run'
-  | 'first_feature_flag_created'
-  | 'first_webhook_configured'
-  | 'first_integration_connected';
+  | "first_receipt_parsed"
+  | "first_api_key_created"
+  | "first_reconciliation_run"
+  | "first_feature_flag_created"
+  | "first_webhook_configured"
+  | "first_integration_connected";
 
 interface ActivationEvent {
   userId: string;
@@ -46,10 +46,10 @@ export async function trackActivationEvent(event: ActivationEvent): Promise<void
 
     // Insert activation event into activity_log
     const supabase = await createClient();
-    const activityData: Database['public']['Tables']['activity_log']['Insert'] = {
+    const activityData: Database["public"]["Tables"]["activity_log"]["Insert"] = {
       user_id: event.userId,
       activity_type: event.eventType,
-      entity_type: 'activation',
+      entity_type: "activation",
       entity_id: event.billingAccountId || null,
       metadata: {
         billingAccountId: event.billingAccountId,
@@ -57,13 +57,11 @@ export async function trackActivationEvent(event: ActivationEvent): Promise<void
         ...event.metadata,
       } as Json,
     };
-    
-    const { error } = await supabase
-      .from('activity_log')
-      .insert(activityData as any);
+
+    const { error } = await supabase.from("activity_log").insert(activityData as any);
 
     if (error) {
-      console.error('[Activation Events] Failed to track event:', {
+      console.error("[Activation Events] Failed to track event:", {
         eventType: event.eventType,
         userId: event.userId,
         error: error.message,
@@ -71,10 +69,10 @@ export async function trackActivationEvent(event: ActivationEvent): Promise<void
       // Don't throw - activation tracking is non-critical
     }
   } catch (error) {
-    console.error('[Activation Events] Error tracking activation event:', {
+    console.error("[Activation Events] Error tracking activation event:", {
       eventType: event.eventType,
       userId: event.userId,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : "Unknown error",
     });
     // Don't throw - activation tracking is non-critical
   }
@@ -90,10 +88,10 @@ export async function hasActivationMilestone(
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
-      .from('activity_log')
-      .select('id')
-      .eq('user_id', userId)
-      .eq('activity_type', eventType)
+      .from("activity_log")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("activity_type", eventType)
       .limit(1)
       .single();
 
@@ -103,10 +101,10 @@ export async function hasActivationMilestone(
 
     return true;
   } catch (error) {
-    console.error('[Activation Events] Error checking milestone:', {
+    console.error("[Activation Events] Error checking milestone:", {
       eventType,
       userId,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : "Unknown error",
     });
     return false;
   }
@@ -118,12 +116,12 @@ export async function hasActivationMilestone(
  */
 export async function getActivationScore(userId: string): Promise<number> {
   const milestones: ActivationEventType[] = [
-    'first_receipt_parsed',
-    'first_api_key_created',
-    'first_reconciliation_run',
-    'first_feature_flag_created',
-    'first_webhook_configured',
-    'first_integration_connected',
+    "first_receipt_parsed",
+    "first_api_key_created",
+    "first_reconciliation_run",
+    "first_feature_flag_created",
+    "first_webhook_configured",
+    "first_integration_connected",
   ];
 
   let completed = 0;

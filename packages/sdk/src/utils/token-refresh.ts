@@ -37,8 +37,7 @@ export class TokenManager {
   async getToken(): Promise<string> {
     const now = Date.now();
     const needsRefresh =
-      !this.tokenInfo ||
-      this.tokenInfo.expiresAt - now < this.config.refreshThreshold;
+      !this.tokenInfo || this.tokenInfo.expiresAt - now < this.config.refreshThreshold;
 
     if (needsRefresh) {
       // If a refresh is already in progress, wait for it

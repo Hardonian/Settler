@@ -58,6 +58,7 @@ Choose ONE of the following:
 ### Step 4: Collect Initial Metrics
 
 - [ ] **Trigger initial metric collection**
+
   ```bash
   curl -X POST "https://your-project.supabase.co/functions/v1/collect-reality-metrics" \
     -H "Authorization: Bearer YOUR_SERVICE_ROLE_KEY" \
@@ -92,6 +93,7 @@ Choose ONE of the following:
 ### Phase 5: Money Reality
 
 - [ ] **Run validation**
+
   ```bash
   npx tsx scripts/validate-reality-phases.ts 5
   ```
@@ -112,6 +114,7 @@ Choose ONE of the following:
 ### Phase 6: User Reality
 
 - [ ] **Run validation**
+
   ```bash
   npx tsx scripts/validate-reality-phases.ts 6
   ```
@@ -131,6 +134,7 @@ Choose ONE of the following:
 ### Phase 7: Tenant Isolation
 
 - [ ] **Run validation**
+
   ```bash
   npx tsx scripts/validate-reality-phases.ts 7
   ```
@@ -150,6 +154,7 @@ Choose ONE of the following:
 ### Phase 8: Failure Injection
 
 - [ ] **Run validation**
+
   ```bash
   npx tsx scripts/validate-reality-phases.ts 8
   ```
@@ -166,6 +171,7 @@ Choose ONE of the following:
 ### Phase 9: Deployment Reality
 
 - [ ] **Run validation**
+
   ```bash
   npx tsx scripts/validate-reality-phases.ts 9
   ```
@@ -182,6 +188,7 @@ Choose ONE of the following:
 ### Phase 10: Admin Self-Sufficiency
 
 - [ ] **Run validation**
+
   ```bash
   npx tsx scripts/validate-reality-phases.ts 10
   ```
@@ -199,6 +206,7 @@ Choose ONE of the following:
 ### Phase 11: Economic Reality
 
 - [ ] **Run validation**
+
   ```bash
   npx tsx scripts/validate-reality-phases.ts 11
   ```
@@ -215,6 +223,7 @@ Choose ONE of the following:
 ### Phase 12: Legal & Risk Reality
 
 - [ ] **Run validation**
+
   ```bash
   npx tsx scripts/validate-reality-phases.ts 12
   ```
@@ -231,6 +240,7 @@ Choose ONE of the following:
 ### Phase 13: GTM Reality
 
 - [ ] **Run validation**
+
   ```bash
   npx tsx scripts/validate-reality-phases.ts 13
   ```
@@ -247,6 +257,7 @@ Choose ONE of the following:
 ### Phase 14: Competitive & Defensibility
 
 - [ ] **Run validation**
+
   ```bash
   npx tsx scripts/validate-reality-phases.ts 14
   ```
@@ -263,6 +274,7 @@ Choose ONE of the following:
 ### Phase 15: Investor Hostile Review
 
 - [ ] **Run validation**
+
   ```bash
   npx tsx scripts/validate-reality-phases.ts 15
   ```
@@ -280,6 +292,7 @@ Choose ONE of the following:
 ### Run All Phases
 
 - [ ] **Run all validation phases**
+
   ```bash
   npx tsx scripts/validate-reality-phases.ts all
   ```

@@ -17,12 +17,14 @@ Settler is the open-source reconciliation engine for engineering, finance, and o
 ## For Who / Not For Who
 
 ### Built for
+
 - **Engineering teams** building financial data pipelines who need deterministic, testable reconciliation
 - **Finance and operations teams** who reconcile across Stripe, banks, ERPs, and ledgers and need audit-ready evidence
 - **Compliance and risk teams** who need to prove that reconciliation processes are controlled, repeatable, and inspectable
 - **Platform teams** evaluating infrastructure for financial workflow correctness
 
 ### Not built for
+
 - Teams looking for a general-purpose data pipeline or ETL tool
 - Teams that need real-time payment processing (Settler is post-transaction reconciliation)
 - Teams with no reconciliation pain — if your current process works and is auditable, you may not need Settler

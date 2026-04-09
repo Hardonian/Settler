@@ -17,21 +17,25 @@ A Rules Engine that stores user mapping rules and learned patterns that improve 
 ## How It Compounds
 
 ### Phase 1: User Creates Rules
+
 - User maps "Stripe Payment" → "Shopify Order"
 - User normalizes vendor names ("Stripe Inc" → "Stripe")
 - User sets amount tolerance ($0.50 difference is OK)
 
 ### Phase 2: Rules Learn
+
 - Each rule usage is tracked (`rule_usage_events`)
 - Success rate calculated: `matched_count / total_usage`
 - Rules with high success rate are prioritized
 
 ### Phase 3: Match Rate Improves
+
 - Better rules → more matches → less manual work
 - User sees value → uses more → creates more rules
 - Cycle repeats: **compounding effect**
 
 ### Phase 4: Switching Cost Grows
+
 - User has 50+ custom rules
 - Rules are domain-specific (their vendors, their mappings)
 - Switching to competitor = rebuild all rules
@@ -40,11 +44,13 @@ A Rules Engine that stores user mapping rules and learned patterns that improve 
 ## Database Schema
 
 ### `reconciliation_rules`
+
 - Stores user-defined rules
 - Tracks `match_count` and `success_rate`
 - Auto-updates via trigger on `rule_usage_events`
 
 ### `rule_usage_events`
+
 - Tracks each time a rule is used
 - Records whether it matched and confidence
 - Used to calculate success rate

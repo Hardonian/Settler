@@ -46,13 +46,13 @@ Go to **Console > Exceptions** (`/console/exceptions`):
 
 ## Key Concepts
 
-| Term | Meaning |
-|------|---------|
-| **Run** | A single reconciliation execution comparing source vs target records |
-| **Match** | A source record successfully paired with a target record |
-| **Exception** | A discrepancy requiring operator review |
-| **Tolerance** | How much difference is allowed before flagging a mismatch |
-| **Adapter** | A connector to an external system (Stripe, Shopify, bank, etc.) |
+| Term          | Meaning                                                              |
+| ------------- | -------------------------------------------------------------------- |
+| **Run**       | A single reconciliation execution comparing source vs target records |
+| **Match**     | A source record successfully paired with a target record             |
+| **Exception** | A discrepancy requiring operator review                              |
+| **Tolerance** | How much difference is allowed before flagging a mismatch            |
+| **Adapter**   | A connector to an external system (Stripe, Shopify, bank, etc.)      |
 
 For the complete glossary, see **Console > Docs > Glossary** (`/console/docs/glossary`).
 
@@ -61,18 +61,21 @@ For the complete glossary, see **Console > Docs > Glossary** (`/console/docs/glo
 ## Common Workflows
 
 ### Triage Exceptions
+
 1. Open Exceptions page, filter to "Pending" status
 2. Review each exception's type, severity, and description
 3. For each: Resolve (if fixed), Investigate (if unclear), or Ignore (if noise)
 4. All actions are logged in the audit trail
 
 ### Monitor Match Rate
+
 1. Check the Runs page for recent run summaries
 2. Look at the "Matched" vs "Unmatched" counts
 3. If match rate drops, check the exception queue for new patterns
 4. Adjust tolerance rules if needed
 
 ### Connect a New Integration
+
 1. Go to Settings or use the Integrations page
 2. Select the adapter (Stripe, Shopify, QuickBooks, etc.)
 3. Authenticate via OAuth or enter API credentials

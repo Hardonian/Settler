@@ -10,226 +10,152 @@
       "table": "index_usage_snapshots",
       "schema": "analytics",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "audit_log",
       "schema": "app_private",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "memberships",
       "schema": "app_private",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "profiles_enterprise",
       "schema": "app_private",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "usage_events_enterprise",
       "schema": "app_private",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "account_balances",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "activation_checklist",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "activity_log",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "activity_logs",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "add_on_purchases",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "add_ons",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "advisor_findings",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "advisors_findings",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "affiliate_conversions",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "affiliates",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "agent_runs",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "ai_analyses",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "ai_analysis_usage",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "ai_usage_events",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "ai_usage_quotas",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "alert_notifications",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "alert_rules",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "alerts",
       "schema": "public",
       "apiRoute": "console/usage/alerts",
       "hasCRUD": false,
-      "missingOperations": [
-        "Frontend component"
-      ]
+      "missingOperations": ["Frontend component"]
     },
     {
       "table": "analytics_events",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "anomaly_events",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "api_keys",
@@ -243,217 +169,147 @@
       "table": "architecture_violations",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "audit_logs",
       "schema": "public",
       "apiRoute": "admin/audit-logs",
       "hasCRUD": false,
-      "missingOperations": [
-        "Frontend component"
-      ]
+      "missingOperations": ["Frontend component"]
     },
     {
       "table": "automated_decisions",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "billing_accounts",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "billing_customers",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "billing_disputes",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "billing_reconciliation_log",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "billing_subscriptions",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "blocked_ips",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "canned_responses",
       "schema": "public",
       "apiRoute": "support/canned-responses",
       "hasCRUD": false,
-      "missingOperations": [
-        "Frontend component"
-      ]
+      "missingOperations": ["Frontend component"]
     },
     {
       "table": "chat_message_embeddings",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "chat_messages",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "chat_threads",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "chatbot_analytics",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "chatbot_conversations",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "circuit_breakers",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "cms_audit",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "cms_media",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "cms_page_versions",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "cms_pages",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "confidence_events",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "console_activities",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "contacts",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     },
     {
       "table": "contract_versions",
       "schema": "public",
       "hasCRUD": false,
-      "missingOperations": [
-        "API route",
-        "Frontend component"
-      ]
+      "missingOperations": ["API route", "Frontend component"]
     }
   ]
 }

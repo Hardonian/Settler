@@ -21,7 +21,10 @@ import { prisma } from "@/shared/db/prismaClient";
 import { Prisma } from "@prisma/client";
 import { handleApiError } from "@/lib/api/error-handler";
 import { withSecurity } from "@/lib/middleware/api-security";
-import { safeParsePublicRuntimeUiConfig, PublicRuntimeUiConfigSchema } from "@/lib/runtime-ui-config/schema";
+import {
+  safeParsePublicRuntimeUiConfig,
+  PublicRuntimeUiConfigSchema,
+} from "@/lib/runtime-ui-config/schema";
 import { getRuntimeEnvKey, resolvePublicRuntimeUiConfig } from "@/lib/runtime-ui-config/server";
 
 export const dynamic = "force-dynamic";
@@ -67,7 +70,7 @@ export const GET = withSecurity(
       const metadata = (tenant?.metadata ?? {}) as unknown;
       const storedEnv =
         isPlainObject(metadata) && isPlainObject(metadata.uiConfigByEnv)
-          ? (metadata.uiConfigByEnv as Record<string, unknown>)[environment] ?? null
+          ? ((metadata.uiConfigByEnv as Record<string, unknown>)[environment] ?? null)
           : null;
 
       const storedGlobal = isPlainObject(metadata) ? (metadata.uiConfig ?? null) : null;
@@ -75,7 +78,11 @@ export const GET = withSecurity(
       const resolved = resolvePublicRuntimeUiConfig({
         tenantMetadata: metadata,
         tenantBranding: tenant?.branding
-          ? { borderRadiusScale: tenant.branding.borderRadiusScale ? Number(tenant.branding.borderRadiusScale) : null }
+          ? {
+              borderRadiusScale: tenant.branding.borderRadiusScale
+                ? Number(tenant.branding.borderRadiusScale)
+                : null,
+            }
           : null,
       });
 
@@ -134,14 +141,19 @@ export const PUT = withSecurity(
         data: { metadata: JSON.parse(JSON.stringify(nextMetadata)) as Prisma.InputJsonValue },
       });
 
-      return NextResponse.json({ success: true, environment, scope: body.scope, config: sanitized }, { status: 200 });
+      return NextResponse.json(
+        { success: true, environment, scope: body.scope, config: sanitized },
+        { status: 200 }
+      );
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return NextResponse.json({ error: "Invalid request", details: error.issues }, { status: 400 });
+        return NextResponse.json(
+          { error: "Invalid request", details: error.issues },
+          { status: 400 }
+        );
       }
       return handleApiError(error, "Failed to update UI config");
     }
   },
   { rateLimit: { windowMs: 60_000, maxRequests: 20 }, requireAuth: true }
 );
-

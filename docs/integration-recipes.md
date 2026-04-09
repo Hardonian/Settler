@@ -119,10 +119,7 @@ const paypalJob = await client.jobs.create({
 });
 
 // Run all jobs
-await Promise.all([
-  client.jobs.run(stripeJob.data.id),
-  client.jobs.run(paypalJob.data.id),
-]);
+await Promise.all([client.jobs.run(stripeJob.data.id), client.jobs.run(paypalJob.data.id)]);
 ```
 
 ## Real-Time Webhook Reconciliation
@@ -143,7 +140,7 @@ const settler = new Settler({
 // Webhook endpoint to receive Shopify orders
 app.post("/webhooks/shopify", async (req, res) => {
   const order = req.body;
-  
+
   // Forward to Settler for processing
   await fetch("https://api.settler.io/api/v1/webhooks/receive/shopify", {
     method: "POST",
@@ -153,20 +150,20 @@ app.post("/webhooks/shopify", async (req, res) => {
     },
     body: JSON.stringify(order),
   });
-  
+
   res.status(200).json({ received: true });
 });
 
 // Receive reconciliation results from Settler
 app.post("/webhooks/reconcile", async (req, res) => {
   const { event, data } = req.body;
-  
+
   switch (event) {
     case "reconciliation.matched":
       console.log(`✅ Matched: ${data.sourceId} ↔ ${data.targetId}`);
       // Update your database, send notification, etc.
       break;
-      
+
     case "reconciliation.mismatch":
       console.error(`⚠️ Mismatch: ${data.sourceId}`);
       console.error(`Expected: ${data.expectedAmount}, Actual: ${data.actualAmount}`);
@@ -178,13 +175,13 @@ app.post("/webhooks/reconcile", async (req, res) => {
         actual: data.actualAmount,
       });
       break;
-      
+
     case "reconciliation.error":
       console.error(`❌ Error: ${data.error}`);
       // Log error, notify ops team
       break;
   }
-  
+
   res.status(200).json({ received: true });
 });
 
@@ -210,20 +207,20 @@ const transporter = nodemailer.createTransport({
 
 async function runDailyReconciliation() {
   const jobs = await client.jobs.list();
-  
+
   for (const job of jobs.data) {
     // Run job
     await client.jobs.run(job.id);
-    
+
     // Wait for completion (in production, use polling)
-    await new Promise(resolve => setTimeout(resolve, 60000));
-    
+    await new Promise((resolve) => setTimeout(resolve, 60000));
+
     // Get report
     const report = await client.reports.get(job.id, {
       startDate: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
       endDate: new Date().toISOString(),
     });
-    
+
     // Email report
     await transporter.sendMail({
       to: "finance@yourcompany.com",
@@ -236,14 +233,21 @@ async function runDailyReconciliation() {
         <p><strong>Errors:</strong> ${report.data.summary.errors}</p>
         <p><strong>Accuracy:</strong> ${report.data.summary.accuracy}%</p>
         
-        ${report.data.unmatched.length > 0 ? `
+        ${
+          report.data.unmatched.length > 0
+            ? `
           <h3>Unmatched Items</h3>
           <ul>
-            ${report.data.unmatched.map(item => 
-              `<li>${item.sourceId || item.targetId}: $${item.amount} - ${item.reason}</li>`
-            ).join("")}
+            ${report.data.unmatched
+              .map(
+                (item) =>
+                  `<li>${item.sourceId || item.targetId}: $${item.amount} - ${item.reason}</li>`
+              )
+              .join("")}
           </ul>
-        ` : ""}
+        `
+            : ""
+        }
       `,
     });
   }
@@ -266,28 +270,25 @@ const client = new Settler({
   apiKey: process.env.SETTLER_API_KEY!,
 });
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
-  
+
   try {
     const { jobId, startDate, endDate } = req.body;
-    
+
     const report = await client.reports.get(jobId, {
       startDate,
       endDate,
     });
-    
+
     res.status(200).json(report.data);
   } catch (error) {
     console.error("Reconciliation error:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: "Failed to generate report",
-      message: error instanceof Error ? error.message : "Unknown error"
+      message: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -308,7 +309,7 @@ const client = new Settler({
 export function ReconciliationStatus({ jobId }: { jobId: string }) {
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     async function fetchReport() {
       try {
@@ -323,16 +324,16 @@ export function ReconciliationStatus({ jobId }: { jobId: string }) {
         setLoading(false);
       }
     }
-    
+
     fetchReport();
     const interval = setInterval(fetchReport, 60000); // Refresh every minute
-    
+
     return () => clearInterval(interval);
   }, [jobId]);
-  
+
   if (loading) return <div>Loading...</div>;
   if (!report) return <div>No report available</div>;
-  
+
   return (
     <div>
       <h3>Reconciliation Status</h3>
@@ -341,7 +342,7 @@ export function ReconciliationStatus({ jobId }: { jobId: string }) {
         <p>Unmatched: {report.summary.unmatched}</p>
         <p>Accuracy: {report.summary.accuracy}%</p>
       </div>
-      
+
       {report.summary.unmatched > 0 && (
         <div className="alert">
           ⚠️ {report.summary.unmatched} unmatched transactions found
@@ -409,7 +410,7 @@ async function reconcileWithRetry(jobId: string, retries = 3) {
   for (let i = 0; i < retries; i++) {
     try {
       const execution = await client.jobs.run(jobId);
-      
+
       // Poll for completion
       while (true) {
         const status = await client.jobs.getExecution(execution.data.id);
@@ -419,11 +420,11 @@ async function reconcileWithRetry(jobId: string, retries = 3) {
         if (status.data.status === "failed") {
           throw new Error(`Job failed: ${status.data.error}`);
         }
-        await new Promise(resolve => setTimeout(resolve, 5000));
+        await new Promise((resolve) => setTimeout(resolve, 5000));
       }
     } catch (error) {
       if (i === retries - 1) throw error;
-      await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+      await new Promise((resolve) => setTimeout(resolve, 1000 * (i + 1)));
     }
   }
 }

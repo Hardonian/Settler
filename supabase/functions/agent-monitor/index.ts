@@ -1,6 +1,6 @@
 /**
  * Agent Monitor & Dead-Man Switch System
- * 
+ *
  * Monitors all agents for missed runs and triggers alerts
  * Runs: Every 30 minutes via cron
  */
@@ -108,9 +108,8 @@ serve(async (req) => {
         .order("started_at", { ascending: false })
         .limit(1);
 
-      const lastRun = recentRuns && recentRuns.length > 0
-        ? new Date(recentRuns[0].started_at)
-        : null;
+      const lastRun =
+        recentRuns && recentRuns.length > 0 ? new Date(recentRuns[0].started_at) : null;
 
       if (!lastRun) {
         // Agent has never run
@@ -119,22 +118,27 @@ serve(async (req) => {
           issue: "Agent has never run",
           severity: "critical",
           last_run: null,
-          expected_run: new Date(now.getTime() - schedule.expected_interval_hours * 60 * 60 * 1000).toISOString(),
+          expected_run: new Date(
+            now.getTime() - schedule.expected_interval_hours * 60 * 60 * 1000
+          ).toISOString(),
           hours_overdue: schedule.expected_interval_hours,
         });
         continue;
       }
 
       const hoursSinceLastRun = (now.getTime() - lastRun.getTime()) / (1000 * 60 * 60);
-      const expectedRun = new Date(lastRun.getTime() + schedule.expected_interval_hours * 60 * 60 * 1000);
+      const expectedRun = new Date(
+        lastRun.getTime() + schedule.expected_interval_hours * 60 * 60 * 1000
+      );
       const hoursOverdue = hoursSinceLastRun - schedule.expected_interval_hours;
 
       if (hoursOverdue > schedule.grace_period_hours) {
-        const severity = hoursOverdue > schedule.expected_interval_hours * 2
-          ? "critical"
-          : hoursOverdue > schedule.expected_interval_hours
-            ? "high"
-            : "medium";
+        const severity =
+          hoursOverdue > schedule.expected_interval_hours * 2
+            ? "critical"
+            : hoursOverdue > schedule.expected_interval_hours
+              ? "high"
+              : "medium";
 
         issues.push({
           agent_type: schedule.agent_type,

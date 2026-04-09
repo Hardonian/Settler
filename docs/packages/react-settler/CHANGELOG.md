@@ -5,6 +5,7 @@ All notable changes to React.Settler will be documented in this file.
 ## [0.1.0] - 2024-01-01
 
 ### Added
+
 - Initial release
 - Core components: ReconciliationDashboard, TransactionTable, ExceptionTable, MetricCard, RuleSet, MatchRule
 - Config compiler for extracting JSON from React trees
@@ -17,6 +18,7 @@ All notable changes to React.Settler will be documented in this file.
 - Comprehensive documentation: security guide, performance guide, testing guide
 
 ### Security
+
 - XSS protection via automatic string sanitization
 - Input validation hooks
 - PII masking in telemetry
@@ -24,12 +26,14 @@ All notable changes to React.Settler will be documented in this file.
 - Security context for access control
 
 ### Performance
+
 - Memoized components
 - Virtualized table for large datasets
 - Debounced search
 - Optimized filtering and sorting hooks
 
 ### Developer Experience
+
 - TypeScript support throughout
 - React hooks for common operations
 - Testing utilities

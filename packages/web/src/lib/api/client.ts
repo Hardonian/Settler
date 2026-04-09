@@ -1,13 +1,13 @@
 /**
  * API Client with Resilience
- * 
+ *
  * Provides a resilient API client with retries, timeouts, circuit breakers,
  * and user-friendly error handling
  */
 
-import { withResilience, ResilienceConfig } from '@/lib/resilience';
-import { getErrorMessage, isRetryableError } from '@/lib/ux/error-messages';
-import { toast } from '@/lib/ux/toast';
+import { withResilience, ResilienceConfig } from "@/lib/resilience";
+import { getErrorMessage, isRetryableError } from "@/lib/ux/error-messages";
+import { toast } from "@/lib/ux/toast";
 
 export interface ApiClientConfig {
   baseUrl: string;
@@ -24,9 +24,9 @@ export interface ApiClientConfig {
 }
 
 export class ApiClient {
-  private config: Required<Omit<ApiClientConfig, 'circuitBreaker' | 'onError'>> & {
-    circuitBreaker?: ApiClientConfig['circuitBreaker'];
-    onError?: ApiClientConfig['onError'];
+  private config: Required<Omit<ApiClientConfig, "circuitBreaker" | "onError">> & {
+    circuitBreaker?: ApiClientConfig["circuitBreaker"];
+    onError?: ApiClientConfig["onError"];
   };
 
   constructor(config: ApiClientConfig) {
@@ -38,7 +38,7 @@ export class ApiClient {
       },
       showToastOnError: true,
       ...config,
-      baseUrl: config.baseUrl.replace(/\/$/, ''), // Remove trailing slash
+      baseUrl: config.baseUrl.replace(/\/$/, ""), // Remove trailing slash
     };
   }
 
@@ -46,7 +46,7 @@ export class ApiClient {
    * Make GET request
    */
   async get<T>(path: string, options?: RequestInit): Promise<T> {
-    return this.request<T>(path, { ...options, method: 'GET' });
+    return this.request<T>(path, { ...options, method: "GET" });
   }
 
   /**
@@ -55,10 +55,10 @@ export class ApiClient {
   async post<T>(path: string, body?: unknown, options?: RequestInit): Promise<T> {
     return this.request<T>(path, {
       ...options,
-      method: 'POST',
+      method: "POST",
       body: body ? JSON.stringify(body) : undefined,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         ...options?.headers,
       },
     });
@@ -70,10 +70,10 @@ export class ApiClient {
   async put<T>(path: string, body?: unknown, options?: RequestInit): Promise<T> {
     return this.request<T>(path, {
       ...options,
-      method: 'PUT',
+      method: "PUT",
       body: body ? JSON.stringify(body) : undefined,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         ...options?.headers,
       },
     });
@@ -83,7 +83,7 @@ export class ApiClient {
    * Make DELETE request
    */
   async delete<T>(path: string, options?: RequestInit): Promise<T> {
-    return this.request<T>(path, { ...options, method: 'DELETE' });
+    return this.request<T>(path, { ...options, method: "DELETE" });
   }
 
   /**
@@ -91,38 +91,37 @@ export class ApiClient {
    */
   private async request<T>(path: string, options: RequestInit = {}): Promise<T> {
     const url = `${this.config.baseUrl}${path}`;
-    
+
     const resilienceConfig: ResilienceConfig<T> = {
       timeout: this.config.timeout,
       retry: {
         maxAttempts: this.config.retry.maxAttempts,
         initialDelay: this.config.retry.initialDelay,
       },
-      circuitBreaker: this.config.circuitBreaker ? {
-        serviceName: this.config.circuitBreaker.serviceName,
-      } : undefined,
+      circuitBreaker: this.config.circuitBreaker
+        ? {
+            serviceName: this.config.circuitBreaker.serviceName,
+          }
+        : undefined,
     };
 
     try {
-      const response = await withResilience(
-        async () => {
-          const response = await fetch(url, {
-            ...options,
-            headers: {
-              ...options.headers,
-            },
-          });
+      const response = await withResilience(async () => {
+        const response = await fetch(url, {
+          ...options,
+          headers: {
+            ...options.headers,
+          },
+        });
 
-          if (!response.ok) {
-            const error = new Error(`HTTP ${response.status}: ${response.statusText}`);
-            (error as Error & { status: number }).status = response.status;
-            throw error;
-          }
+        if (!response.ok) {
+          const error = new Error(`HTTP ${response.status}: ${response.statusText}`);
+          (error as Error & { status: number }).status = response.status;
+          throw error;
+        }
 
-          return response.json() as Promise<T>;
-        },
-        resilienceConfig
-      );
+        return response.json() as Promise<T>;
+      }, resilienceConfig);
 
       return response;
     } catch (error) {
@@ -156,7 +155,7 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
  * Default API client (can be configured per route)
  */
 export const apiClient = createApiClient({
-  baseUrl: process.env.NEXT_PUBLIC_API_URL || '/api',
+  baseUrl: process.env.NEXT_PUBLIC_API_URL || "/api",
   timeout: 30000,
   retry: {
     maxAttempts: 3,
@@ -183,7 +182,7 @@ export async function fetchWithFallback<T>(
   try {
     return await apiClient.get<T>(url, options);
   } catch {
-    if (typeof fallback === 'function') {
+    if (typeof fallback === "function") {
       return await (fallback as () => T | Promise<T>)();
     }
     return fallback;
@@ -193,14 +192,11 @@ export async function fetchWithFallback<T>(
 /**
  * Defensive fetch (convenience function with error handling)
  */
-export async function defensiveFetch<T>(
-  url: string,
-  options?: RequestInit
-): Promise<T | null> {
+export async function defensiveFetch<T>(url: string, options?: RequestInit): Promise<T | null> {
   try {
     return await apiClient.get<T>(url, options);
   } catch (error) {
-    console.error('[defensiveFetch] Failed:', error);
+    console.error("[defensiveFetch] Failed:", error);
     return null;
   }
 }

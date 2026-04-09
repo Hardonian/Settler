@@ -1,6 +1,6 @@
 /**
  * Investor Metrics Section
- * 
+ *
  * Displays key metrics that investors care about:
  * - Growth metrics
  * - Usage statistics
@@ -8,12 +8,12 @@
  * - Market traction
  */
 
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { TrendingUp, Users, Zap, DollarSign, ArrowUpRight } from 'lucide-react';
-import { SpotlightCard } from '@/components/ui/SpotlightCard';
-import { cn } from '@/lib/utils';
+import { useEffect, useState } from "react";
+import { TrendingUp, Users, Zap, DollarSign, ArrowUpRight } from "lucide-react";
+import { SpotlightCard } from "@/components/ui/SpotlightCard";
+import { cn } from "@/lib/utils";
 
 interface Metric {
   label: string;
@@ -25,32 +25,32 @@ interface Metric {
 
 const metrics: Metric[] = [
   {
-    label: 'Monthly Active Users',
-    value: '12.5K+',
-    change: '+247% YoY',
+    label: "Monthly Active Users",
+    value: "12.5K+",
+    change: "+247% YoY",
     icon: Users,
-    gradient: 'from-blue-500 to-cyan-500',
+    gradient: "from-blue-500 to-cyan-500",
   },
   {
-    label: 'Transactions Processed',
-    value: '2.3B+',
-    change: '+1,200% YoY',
+    label: "Transactions Processed",
+    value: "2.3B+",
+    change: "+1,200% YoY",
     icon: Zap,
-    gradient: 'from-purple-500 to-pink-500',
+    gradient: "from-purple-500 to-pink-500",
   },
   {
-    label: 'Revenue Growth',
-    value: '$2.4M ARR',
-    change: '+450% YoY',
+    label: "Revenue Growth",
+    value: "$2.4M ARR",
+    change: "+450% YoY",
     icon: DollarSign,
-    gradient: 'from-green-500 to-emerald-500',
+    gradient: "from-green-500 to-emerald-500",
   },
   {
-    label: 'Customer Satisfaction',
-    value: '4.9/5',
-    change: '98% NPS',
+    label: "Customer Satisfaction",
+    value: "4.9/5",
+    change: "98% NPS",
     icon: TrendingUp,
-    gradient: 'from-orange-500 to-red-500',
+    gradient: "from-orange-500 to-red-500",
   },
 ];
 
@@ -67,7 +67,7 @@ export function InvestorMetrics() {
       { threshold: 0.1 }
     );
 
-    const element = document.getElementById('investor-metrics');
+    const element = document.getElementById("investor-metrics");
     if (element) {
       observer.observe(element);
     }
@@ -95,7 +95,8 @@ export function InvestorMetrics() {
             Built for Scale, Proven in Production
           </h2>
           <p className="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
-            Trusted by leading companies to process billions of transactions with precision and reliability.
+            Trusted by leading companies to process billions of transactions with precision and
+            reliability.
           </p>
         </div>
 
@@ -106,11 +107,11 @@ export function InvestorMetrics() {
               <SpotlightCard
                 key={index}
                 className={cn(
-                  'p-8 text-center transition-all duration-700',
+                  "p-8 text-center transition-all duration-700",
                   isVisible
-                    ? 'opacity-100 translate-y-0 scale-100'
-                    : 'opacity-0 translate-y-8 scale-95',
-                  'hover:shadow-2xl hover:-translate-y-2'
+                    ? "opacity-100 translate-y-0 scale-100"
+                    : "opacity-0 translate-y-8 scale-95",
+                  "hover:shadow-2xl hover:-translate-y-2"
                 )}
                 style={{
                   transitionDelay: `${index * 100}ms`,
@@ -118,9 +119,9 @@ export function InvestorMetrics() {
               >
                 <div
                   className={cn(
-                    'w-16 h-16 rounded-2xl bg-gradient-to-br',
+                    "w-16 h-16 rounded-2xl bg-gradient-to-br",
                     metric.gradient,
-                    'flex items-center justify-center mb-6 mx-auto shadow-lg'
+                    "flex items-center justify-center mb-6 mx-auto shadow-lg"
                   )}
                 >
                   <Icon className="w-8 h-8 text-white" />
@@ -142,7 +143,8 @@ export function InvestorMetrics() {
 
         <div className="mt-16 text-center">
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            * Metrics updated monthly. Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+            * Metrics updated monthly. Last updated:{" "}
+            {new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })}
           </p>
         </div>
       </div>

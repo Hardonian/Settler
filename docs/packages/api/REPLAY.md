@@ -11,41 +11,41 @@ Event replay allows you to rebuild read models from scratch and test new algorit
 Rebuild all projections from the event store:
 
 ```typescript
-import { PostgresEventStore } from '../infrastructure/eventsourcing/EventStore';
-import { ReconciliationProjectionHandlers } from '../application/cqrs/projections/ReconciliationProjections';
+import { PostgresEventStore } from "../infrastructure/eventsourcing/EventStore";
+import { ReconciliationProjectionHandlers } from "../application/cqrs/projections/ReconciliationProjections";
 
 const eventStore = new PostgresEventStore();
 const projectionHandlers = new ReconciliationProjectionHandlers();
 
 // Get all reconciliation events
-const events = await eventStore.getEventsByType('ReconciliationStarted');
+const events = await eventStore.getEventsByType("ReconciliationStarted");
 
 for (const event of events) {
   const reconciliationId = event.aggregate_id;
-  const allEvents = await eventStore.getEvents(reconciliationId, 'reconciliation');
-  
+  const allEvents = await eventStore.getEvents(reconciliationId, "reconciliation");
+
   // Replay events to rebuild projection
   for (const e of allEvents) {
     switch (e.event_type) {
-      case 'ReconciliationStarted':
+      case "ReconciliationStarted":
         await projectionHandlers.handleReconciliationStarted(e);
         break;
-      case 'OrdersFetched':
+      case "OrdersFetched":
         await projectionHandlers.handleOrdersFetched(e);
         break;
-      case 'PaymentsFetched':
+      case "PaymentsFetched":
         await projectionHandlers.handlePaymentsFetched(e);
         break;
-      case 'RecordMatched':
+      case "RecordMatched":
         await projectionHandlers.handleRecordMatched(e);
         break;
-      case 'RecordUnmatched':
+      case "RecordUnmatched":
         await projectionHandlers.handleRecordUnmatched(e);
         break;
-      case 'ReconciliationCompleted':
+      case "ReconciliationCompleted":
         await projectionHandlers.handleReconciliationCompleted(e);
         break;
-      case 'ReconciliationFailed':
+      case "ReconciliationFailed":
         await projectionHandlers.handleReconciliationFailed(e);
         break;
     }
@@ -60,11 +60,13 @@ Rebuild projections for a specific reconciliation:
 ```typescript
 async function rebuildReconciliationProjection(reconciliationId: string) {
   // Clear existing projection
-  await db.query('DELETE FROM reconciliation_summary WHERE reconciliation_id = $1', [reconciliationId]);
-  
+  await db.query("DELETE FROM reconciliation_summary WHERE reconciliation_id = $1", [
+    reconciliationId,
+  ]);
+
   // Get all events
-  const events = await eventStore.getEvents(reconciliationId, 'reconciliation');
-  
+  const events = await eventStore.getEvents(reconciliationId, "reconciliation");
+
   // Replay events
   for (const event of events) {
     await applyEventToProjection(event);
@@ -115,9 +117,9 @@ async function replayEventsInRange(startDate: Date, endDate: Date) {
     WHERE created_at >= $1 AND created_at <= $2
     ORDER BY created_at ASC
   `;
-  
+
   const events = await db.query(query, [startDate, endDate]);
-  
+
   for (const event of events) {
     await applyEventToProjection(event);
   }
@@ -131,14 +133,14 @@ async function replayEventsInRange(startDate: Date, endDate: Date) {
 For large aggregates, use snapshots for faster reconstruction:
 
 ```typescript
-import { SnapshotService } from '../infrastructure/eventsourcing/SnapshotService';
+import { SnapshotService } from "../infrastructure/eventsourcing/SnapshotService";
 
 const snapshotService = new SnapshotService(eventStore);
 
 // Rebuild aggregate from snapshot + tail events
 const state = await snapshotService.rebuildAggregate(
   reconciliationId,
-  'reconciliation',
+  "reconciliation",
   initialState,
   applyEvent
 );
@@ -151,7 +153,7 @@ Manually create a snapshot:
 ```typescript
 const snapshot = await snapshotService.createSnapshot(
   reconciliationId,
-  'reconciliation',
+  "reconciliation",
   currentState,
   lastEventId
 );
@@ -214,7 +216,7 @@ Content-Type: application/json
 ### Step 1: Extract Historical Data
 
 ```typescript
-const events = await eventStore.getEvents(reconciliationId, 'reconciliation');
+const events = await eventStore.getEvents(reconciliationId, "reconciliation");
 const orders = extractOrders(events);
 const payments = extractPayments(events);
 ```
@@ -235,7 +237,7 @@ console.log({
   originalCount: originalMatches.length,
   newCount: newMatches.length,
   differences: comparison.differences,
-  accuracy: comparison.accuracy
+  accuracy: comparison.accuracy,
 });
 ```
 
@@ -247,7 +249,7 @@ if (comparison.accuracy > threshold) {
   await deployNewAlgorithm();
 } else {
   // Keep original algorithm
-  console.log('New algorithm does not improve accuracy');
+  console.log("New algorithm does not improve accuracy");
 }
 ```
 
@@ -295,11 +297,11 @@ If snapshot is corrupted:
 
 ```typescript
 // Rebuild from all events (ignore snapshot)
-const events = await eventStore.getEvents(reconciliationId, 'reconciliation');
+const events = await eventStore.getEvents(reconciliationId, "reconciliation");
 const state = rebuildFromEvents(events, initialState);
 
 // Create new snapshot
-await snapshotService.createSnapshot(reconciliationId, 'reconciliation', state, lastEventId);
+await snapshotService.createSnapshot(reconciliationId, "reconciliation", state, lastEventId);
 ```
 
 ## Performance Tips

@@ -1,12 +1,12 @@
 /**
  * Session Replay Abstraction Layer
- * 
+ *
  * Provides unified interface for session replay and heatmap tools.
  */
 
-import { logger } from '../logging/logger';
+import { logger } from "../logging/logger";
 
-export type SessionReplayProvider = 'hotjar' | 'fullstory' | 'clarity' | 'none';
+export type SessionReplayProvider = "hotjar" | "fullstory" | "clarity" | "none";
 
 interface SessionReplayConfig {
   provider: SessionReplayProvider;
@@ -20,8 +20,9 @@ class SessionReplay {
   private initialized = false;
 
   constructor() {
-    const provider = (process.env.NEXT_PUBLIC_SESSION_REPLAY_PROVIDER || 'none') as SessionReplayProvider;
-    const enabled = process.env.NEXT_PUBLIC_ENABLE_SESSION_REPLAY === 'true';
+    const provider = (process.env.NEXT_PUBLIC_SESSION_REPLAY_PROVIDER ||
+      "none") as SessionReplayProvider;
+    const enabled = process.env.NEXT_PUBLIC_ENABLE_SESSION_REPLAY === "true";
 
     this.config = {
       provider,
@@ -35,7 +36,7 @@ class SessionReplay {
    * Initialize session replay provider
    */
   init() {
-    if (!this.config.enabled || this.config.provider === 'none' || typeof window === 'undefined') {
+    if (!this.config.enabled || this.config.provider === "none" || typeof window === "undefined") {
       return;
     }
 
@@ -45,13 +46,13 @@ class SessionReplay {
 
     try {
       switch (this.config.provider) {
-        case 'hotjar':
+        case "hotjar":
           this.initHotjar();
           break;
-        case 'fullstory':
+        case "fullstory":
           this.initFullStory();
           break;
-        case 'clarity':
+        case "clarity":
           this.initClarity();
           break;
       }
@@ -59,7 +60,10 @@ class SessionReplay {
       this.initialized = true;
       logger.info(`Session replay initialized: ${this.config.provider}`);
     } catch (error) {
-      logger.error('Failed to initialize session replay', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        "Failed to initialize session replay",
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   }
 
@@ -68,11 +72,11 @@ class SessionReplay {
    */
   private initHotjar() {
     if (!this.config.siteId) {
-      logger.warn('Hotjar site ID not configured');
+      logger.warn("Hotjar site ID not configured");
       return;
     }
 
-    const script = document.createElement('script');
+    const script = document.createElement("script");
     script.innerHTML = `
       (function(h,o,t,j,a,r){
         h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
@@ -91,11 +95,11 @@ class SessionReplay {
    */
   private initFullStory() {
     if (!this.config.siteId) {
-      logger.warn('FullStory org ID not configured');
+      logger.warn("FullStory org ID not configured");
       return;
     }
 
-    const script = document.createElement('script');
+    const script = document.createElement("script");
     script.innerHTML = `
       window['_fs_debug'] = false;
       window['_fs_host'] = 'fullstory.com';
@@ -128,12 +132,12 @@ class SessionReplay {
    */
   private initClarity() {
     if (!this.config.siteId) {
-      logger.warn('Clarity project ID not configured');
+      logger.warn("Clarity project ID not configured");
       return;
     }
 
-    const script = document.createElement('script');
-    script.type = 'text/javascript';
+    const script = document.createElement("script");
+    script.type = "text/javascript";
     script.innerHTML = `
       (function(c,l,a,r,i,t,y){
         c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
@@ -148,27 +152,32 @@ class SessionReplay {
    * Identify user (where supported)
    */
   identify(userId: string, traits?: Record<string, any>) {
-    if (!this.initialized || this.config.provider === 'none') return;
+    if (!this.initialized || this.config.provider === "none") return;
 
     try {
       switch (this.config.provider) {
-        case 'hotjar':
-          if (typeof window !== 'undefined' && window.hj) {
-            window.hj('identify', userId, traits);
+        case "hotjar":
+          if (typeof window !== "undefined" && window.hj) {
+            window.hj("identify", userId, traits);
           }
           break;
-        case 'fullstory':
-          if (typeof window !== 'undefined' && window._fs_namespace) {
-            const fsNamespace = window[window._fs_namespace] as { identify?: (userId: string, traits?: Record<string, unknown>) => void } | undefined;
+        case "fullstory":
+          if (typeof window !== "undefined" && window._fs_namespace) {
+            const fsNamespace = window[window._fs_namespace] as
+              | { identify?: (userId: string, traits?: Record<string, unknown>) => void }
+              | undefined;
             fsNamespace?.identify?.(userId, traits);
           }
           break;
-        case 'clarity':
+        case "clarity":
           // Clarity doesn't support user identification
           break;
       }
     } catch (error) {
-      logger.warn('Failed to identify user in session replay', error instanceof Error ? error : new Error(String(error)));
+      logger.warn(
+        "Failed to identify user in session replay",
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   }
 }
@@ -176,6 +185,6 @@ class SessionReplay {
 export const sessionReplay = new SessionReplay();
 
 // Initialize on client-side if enabled
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   sessionReplay.init();
 }

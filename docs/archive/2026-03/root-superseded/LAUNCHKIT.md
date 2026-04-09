@@ -79,7 +79,6 @@ Expected outputs:
 3. Assets are attached to the tagged GitHub release.
 4. Standard repo quality gates still run via `pnpm verify`, site mode matrix, and security workflows.
 
-
 ## Registry safety model
 
 - `settler adapters search/install` and `settler rules search/install` are **metadata-only** operations.

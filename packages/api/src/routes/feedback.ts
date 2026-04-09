@@ -264,13 +264,11 @@ router.get(
           reason: "Support intake storage is not configured in this OSS deployment",
         };
         observeCapabilityStatus(capability, "/feedback");
-        res
-          .status(200)
-          .json({
-            data: [],
-            capability,
-            pagination: { limit: 0, offset: 0, total: 0, totalPages: 0 },
-          });
+        res.status(200).json({
+          data: [],
+          capability,
+          pagination: { limit: 0, offset: 0, total: 0, totalPages: 0 },
+        });
         return;
       }
       handleRouteError(res, error, "Failed to list feedback", 500, { userId: req.userId });

@@ -38,6 +38,7 @@ psql $DATABASE_URL -f supabase/migrations/PATCH.sql
 ```
 
 This idempotent patch will:
+
 - Add missing extensions
 - Create missing critical tables
 - Enable RLS where needed
@@ -112,6 +113,7 @@ This runs comprehensive verification queries to ensure everything is correct.
 Based on migration analysis, the following tables are expected:
 
 **Billing & Subscriptions:**
+
 - `billing_accounts` - User billing accounts
 - `subscriptions` - Active subscriptions
 - `add_ons` - Available add-ons
@@ -121,18 +123,21 @@ Based on migration analysis, the following tables are expected:
 - `usage_counters` - Usage counters
 
 **Multi-Tenant:**
+
 - `tenants` - Tenant/organization records
 - `tenant_users` - User-tenant relationships
 - `tenant_branding` - Tenant branding config
 - `tenant_pages` - Tenant page builder content
 
 **Reconciliation:**
+
 - `recon_jobs` - Reconciliation job definitions
 - `recon_results` - Reconciliation execution results
 - `recon_templates` - Job templates
 - `recon_audits` - Audit trail
 
 **Ingestion:**
+
 - `ingestion_sources` - Data source configurations
 - `ingestions` - Ingestion runs
 - `raw_records` - Raw ingested data
@@ -141,20 +146,24 @@ Based on migration analysis, the following tables are expected:
 - `reconciliation_matches` - Match results
 
 **Receipts API:**
+
 - `receipt_uploads` - Uploaded receipt files
 - `receipts` - Parsed receipt data
 - `receipt_items` - Receipt line items
 
 **Feature Flags:**
+
 - `feature_flags` - Feature flag definitions
 - `feature_flag_environments` - Environment-specific values
 - `feature_flag_overrides` - User/tenant overrides
 
 **Webhooks:**
+
 - `webhooks` - Webhook configurations
 - `webhook_deliveries` - Delivery attempts
 
 **API:**
+
 - `api_keys` - API key management
 - `idempotency_keys` - Request idempotency
 - `api_call_logs` - API call logging
@@ -199,12 +208,14 @@ CREATE POLICY "service_role_access" ON table_name
 ### "Function does not exist" errors
 
 If you see errors about missing functions, ensure:
+
 1. Extensions are installed (`uuid-ossp`, `pgcrypto`)
 2. Helper functions are created (`get_user_tenant_ids`, `current_tenant_id`)
 
 ### RLS blocking queries
 
 If RLS is blocking legitimate queries:
+
 1. Check that user has proper tenant membership
 2. Verify `get_user_tenant_ids()` returns expected tenant IDs
 3. Check JWT claims include `tenant_id` if using JWT-based tenant context
@@ -212,6 +223,7 @@ If RLS is blocking legitimate queries:
 ### Missing tables
 
 If tables are missing:
+
 1. Check migration order - ensure base migrations ran first
 2. Run `PATCH.sql` to create missing critical tables
 3. For non-critical tables, run the specific migration file

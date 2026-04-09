@@ -1,14 +1,16 @@
 /**
  * Reconciliation Job Viewer Page Template
- * 
+ *
  * Part of Section 3: UI/UX Design System
  */
 
-import React, { useState } from 'react';
-import { DiffViewer } from '../src/components/recon/DiffViewer';
+import React, { useState } from "react";
+import { DiffViewer } from "../src/components/recon/DiffViewer";
 
 export const ReconJobViewer: React.FC<{ jobId: string }> = ({ jobId }) => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'results' | 'drift' | 'audit'>('overview');
+  const [activeTab, setActiveTab] = useState<"overview" | "results" | "drift" | "audit">(
+    "overview"
+  );
 
   return (
     <div className="recon-job-viewer">
@@ -21,32 +23,32 @@ export const ReconJobViewer: React.FC<{ jobId: string }> = ({ jobId }) => {
       </div>
       <div className="job-tabs">
         <button
-          className={`tab ${activeTab === 'overview' ? 'active' : ''}`}
-          onClick={() => setActiveTab('overview')}
+          className={`tab ${activeTab === "overview" ? "active" : ""}`}
+          onClick={() => setActiveTab("overview")}
         >
           Overview
         </button>
         <button
-          className={`tab ${activeTab === 'results' ? 'active' : ''}`}
-          onClick={() => setActiveTab('results')}
+          className={`tab ${activeTab === "results" ? "active" : ""}`}
+          onClick={() => setActiveTab("results")}
         >
           Results
         </button>
         <button
-          className={`tab ${activeTab === 'drift' ? 'active' : ''}`}
-          onClick={() => setActiveTab('drift')}
+          className={`tab ${activeTab === "drift" ? "active" : ""}`}
+          onClick={() => setActiveTab("drift")}
         >
           Drift Detection
         </button>
         <button
-          className={`tab ${activeTab === 'audit' ? 'active' : ''}`}
-          onClick={() => setActiveTab('audit')}
+          className={`tab ${activeTab === "audit" ? "active" : ""}`}
+          onClick={() => setActiveTab("audit")}
         >
           Audit Trail
         </button>
       </div>
       <div className="job-content">
-        {activeTab === 'overview' && (
+        {activeTab === "overview" && (
           <div className="overview-tab">
             <div className="job-info">
               <h2>Job Configuration</h2>
@@ -71,28 +73,28 @@ export const ReconJobViewer: React.FC<{ jobId: string }> = ({ jobId }) => {
             </div>
           </div>
         )}
-        {activeTab === 'results' && (
+        {activeTab === "results" && (
           <div className="results-tab">
             <DiffViewer
               items={[
                 {
-                  field: 'transaction_123',
-                  source: { amount: 100, currency: 'USD' },
-                  target: { amount: 100, currency: 'USD' },
-                  status: 'matched',
+                  field: "transaction_123",
+                  source: { amount: 100, currency: "USD" },
+                  target: { amount: 100, currency: "USD" },
+                  status: "matched",
                   confidence: 1.0,
                 },
               ]}
             />
           </div>
         )}
-        {activeTab === 'drift' && (
+        {activeTab === "drift" && (
           <div className="drift-tab">
             <h2>Drift Events</h2>
             <p>No drift detected</p>
           </div>
         )}
-        {activeTab === 'audit' && (
+        {activeTab === "audit" && (
           <div className="audit-tab">
             <h2>Audit Trail</h2>
             <div className="audit-log">

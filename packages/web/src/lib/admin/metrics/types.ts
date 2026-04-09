@@ -1,17 +1,17 @@
 /**
  * Admin Dashboard Metric Contracts
- * 
+ *
  * TypeScript types and Zod schemas for snapshot and delta events.
  * Ensures type safety and validation across the admin dashboard system.
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 // ============================================================================
 // Time Range Types
 // ============================================================================
 
-export const TimeRangeSchema = z.enum(['24h', '7d', '30d', 'custom']);
+export const TimeRangeSchema = z.enum(["24h", "7d", "30d", "custom"]);
 export type TimeRange = z.infer<typeof TimeRangeSchema>;
 
 // ============================================================================
@@ -57,7 +57,7 @@ export type TrendData = z.infer<typeof TrendDataSchema>;
 
 export const ExceptionHeatmapSchema = z.object({
   source: z.string(),
-  severity: z.enum(['info', 'warn', 'critical']),
+  severity: z.enum(["info", "warn", "critical"]),
   count: z.number().int().min(0),
 });
 export type ExceptionHeatmap = z.infer<typeof ExceptionHeatmapSchema>;
@@ -68,7 +68,13 @@ export type ExceptionHeatmap = z.infer<typeof ExceptionHeatmapSchema>;
 
 export const ActivityFeedItemSchema = z.object({
   id: z.string().uuid(),
-  type: z.enum(['run_completed', 'exception_created', 'exception_resolved', 'match_reviewed', 'export_created']),
+  type: z.enum([
+    "run_completed",
+    "exception_created",
+    "exception_resolved",
+    "match_reviewed",
+    "export_created",
+  ]),
   timestamp: z.string(),
   message: z.string(),
   metadata: z.record(z.string(), z.unknown()).optional(),
@@ -93,10 +99,10 @@ export type MetricsSnapshot = z.infer<typeof MetricsSnapshotSchema>;
 // Exception Queue Item
 // ============================================================================
 
-export const ExceptionStatusSchema = z.enum(['new', 'in_review', 'resolved', 'exported']);
+export const ExceptionStatusSchema = z.enum(["new", "in_review", "resolved", "exported"]);
 export type ExceptionStatus = z.infer<typeof ExceptionStatusSchema>;
 
-export const ExceptionSeveritySchema = z.enum(['info', 'warn', 'critical']);
+export const ExceptionSeveritySchema = z.enum(["info", "warn", "critical"]);
 export type ExceptionSeverity = z.infer<typeof ExceptionSeveritySchema>;
 
 export const ExceptionItemSchema = z.object({
@@ -123,7 +129,7 @@ export type ExceptionItem = z.infer<typeof ExceptionItemSchema>;
 // Reconciliation Run
 // ============================================================================
 
-export const RunStatusSchema = z.enum(['pending', 'running', 'completed', 'failed']);
+export const RunStatusSchema = z.enum(["pending", "running", "completed", "failed"]);
 export type RunStatus = z.infer<typeof RunStatusSchema>;
 
 export const ReconciliationRunSchema = z.object({
@@ -175,43 +181,45 @@ export type AuditItem = z.infer<typeof AuditItemSchema>;
 // ============================================================================
 
 export const MetricsDeltaSchema = z.object({
-  type: z.literal('metrics_delta'),
+  type: z.literal("metrics_delta"),
   kpis: KPIMetricsSchema.partial(),
   timestamp: z.string(),
 });
 export type MetricsDelta = z.infer<typeof MetricsDeltaSchema>;
 
 export const ExceptionsDeltaSchema = z.object({
-  type: z.literal('exceptions_delta'),
+  type: z.literal("exceptions_delta"),
   added: z.array(ExceptionItemSchema).optional(),
   updated: z.array(ExceptionItemSchema).optional(),
   removed: z.array(z.string().uuid()).optional(),
-  counts: z.object({
-    new: z.number().int().min(0),
-    in_review: z.number().int().min(0),
-    resolved: z.number().int().min(0),
-    exported: z.number().int().min(0),
-  }).optional(),
+  counts: z
+    .object({
+      new: z.number().int().min(0),
+      in_review: z.number().int().min(0),
+      resolved: z.number().int().min(0),
+      exported: z.number().int().min(0),
+    })
+    .optional(),
   timestamp: z.string(),
 });
 export type ExceptionsDelta = z.infer<typeof ExceptionsDeltaSchema>;
 
 export const RunDeltaSchema = z.object({
-  type: z.literal('run_delta'),
+  type: z.literal("run_delta"),
   run: ReconciliationRunSchema,
   timestamp: z.string(),
 });
 export type RunDelta = z.infer<typeof RunDeltaSchema>;
 
 export const HealthDeltaSchema = z.object({
-  type: z.literal('health'),
-  status: z.enum(['connected', 'reconnecting', 'offline']),
+  type: z.literal("health"),
+  status: z.enum(["connected", "reconnecting", "offline"]),
   latency: z.number().min(0).nullable(),
   timestamp: z.string(),
 });
 export type HealthDelta = z.infer<typeof HealthDeltaSchema>;
 
-export const StreamEventSchema = z.discriminatedUnion('type', [
+export const StreamEventSchema = z.discriminatedUnion("type", [
   MetricsDeltaSchema,
   ExceptionsDeltaSchema,
   RunDeltaSchema,
@@ -224,7 +232,7 @@ export type StreamEvent = z.infer<typeof StreamEventSchema>;
 // ============================================================================
 
 export const MetricsQueryParamsSchema = z.object({
-  range: TimeRangeSchema.default('24h'),
+  range: TimeRangeSchema.default("24h"),
   startDate: z.string().datetime().optional(),
   endDate: z.string().datetime().optional(),
   tenantId: z.string().uuid().optional(),

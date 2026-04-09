@@ -19,11 +19,13 @@ This document defines **how Settler competes** and **why it wins**. It eliminate
 **Advantage:** Deep understanding of reconciliation algorithms and financial compliance.
 
 **Why It Matters:**
+
 - High-accuracy matching (90%+ for common cases)
 - Domain-specific matching logic
 - Compliance built-in (GDPR, CCPA)
 
 **Why Hard to Copy:**
+
 - Requires years of domain expertise
 - Complex matching algorithms
 - Compliance requirements
@@ -37,11 +39,13 @@ This document defines **how Settler competes** and **why it wins**. It eliminate
 **Advantage:** Event-sourced matching engine with deterministic reconciliation.
 
 **Why It Matters:**
+
 - Deterministic results (same inputs = same outputs)
 - Audit trail built-in
 - Reproducible reconciliation
 
 **Why Hard to Copy:**
+
 - Requires architectural expertise
 - Complex event processing
 - Deterministic algorithms
@@ -55,11 +59,13 @@ This document defines **how Settler competes** and **why it wins**. It eliminate
 **Advantage:** Row-Level Security (RLS) at database level with complete tenant isolation.
 
 **Why It Matters:**
+
 - Secure multi-tenancy
 - Compliance requirements met
 - Enterprise-ready security
 
 **Why Hard to Copy:**
+
 - Requires security expertise
 - Complex RLS policies
 - Compliance requirements
@@ -73,11 +79,13 @@ This document defines **how Settler competes** and **why it wins**. It eliminate
 **Advantage:** RESTful API design with developer-friendly integration.
 
 **Why It Matters:**
+
 - Easy integration
 - Developer experience
 - Flexible deployment
 
 **Why Hard to Copy:**
+
 - Requires API design expertise
 - Developer experience matters
 - Integration complexity
@@ -91,11 +99,13 @@ This document defines **how Settler competes** and **why it wins**. It eliminate
 ### What Settler Competes With
 
 **Direct Competitors:**
+
 - **Manual Reconciliation:** Spreadsheet-based, error-prone, time-consuming
 - **Custom Scripts:** One-off solutions, maintenance burden, limited scalability
 - **Accounting Software:** General-purpose, not API-first, limited integration
 
 **Competitive Advantages:**
+
 - ✅ Automated vs manual
 - ✅ API-first vs UI-only
 - ✅ Specialized vs general-purpose
@@ -106,6 +116,7 @@ This document defines **how Settler competes** and **why it wins**. It eliminate
 ### What Settler Does NOT Compete With
 
 **Does NOT Compete With:**
+
 - **General-Purpose Automation:** Different use case (automation vs reconciliation)
 - **Payment Processors:** Different value proposition (processing vs reconciliation)
 - **Data Warehouses:** Different use case (storage vs reconciliation)
@@ -122,6 +133,7 @@ This document defines **how Settler competes** and **why it wins**. It eliminate
 **Strategy:** Prioritize accuracy over speed.
 
 **Why:**
+
 - Reconciliation errors are costly
 - Accuracy builds trust
 - Speed can be optimized later
@@ -135,6 +147,7 @@ This document defines **how Settler competes** and **why it wins**. It eliminate
 **Strategy:** Build compliance into the platform.
 
 **Why:**
+
 - Compliance is a requirement, not a feature
 - Built-in compliance reduces risk
 - Compliance enables enterprise sales
@@ -148,6 +161,7 @@ This document defines **how Settler competes** and **why it wins**. It eliminate
 **Strategy:** Prioritize API over UI.
 
 **Why:**
+
 - Developers need APIs, not UIs
 - APIs enable integration
 - APIs scale better
@@ -161,6 +175,7 @@ This document defines **how Settler competes** and **why it wins**. It eliminate
 **Strategy:** Focus on reconciliation, not general automation.
 
 **Why:**
+
 - Specialization enables accuracy
 - General solutions are mediocre
 - Specialization builds moat
@@ -216,16 +231,19 @@ This document defines **how Settler competes** and **why it wins**. It eliminate
 ### Potential Threats
 
 **1. Large Tech Companies**
+
 - **Threat:** Build reconciliation into existing platforms
 - **Mitigation:** Specialization and domain expertise
 - **Risk:** Medium
 
 **2. Open Source Alternatives**
+
 - **Threat:** Open-source reconciliation tools
 - **Mitigation:** Managed service and compliance
 - **Risk:** Low
 
 **3. Accounting Software**
+
 - **Threat:** Add reconciliation features
 - **Mitigation:** API-first and specialization
 - **Risk:** Medium
@@ -235,14 +253,17 @@ This document defines **how Settler competes** and **why it wins**. It eliminate
 ### Unlikely Threats
 
 **1. General-Purpose Automation Platforms**
+
 - **Why Unlikely:** Different use case, different value proposition
 - **Risk:** Low
 
 **2. Payment Processors**
+
 - **Why Unlikely:** Different value proposition, different market
 - **Risk:** Low
 
 **3. Data Warehouses**
+
 - **Why Unlikely:** Different use case, different market
 - **Risk:** Low
 
@@ -273,6 +294,7 @@ This document defines **how Settler competes** and **why it wins**. It eliminate
 ## Summary
 
 Settler's competitive boundaries:
+
 - ✅ **Competitive Advantages:** Domain expertise, event-sourced architecture, multi-tenant isolation, API-first design
 - ✅ **Competitive Boundaries:** Specialized reconciliation vs general automation
 - ✅ **Differentiation Strategies:** Accuracy over speed, compliance built-in, API-first over UI-first, specialized over general
@@ -281,6 +303,7 @@ Settler's competitive boundaries:
 - ✅ **Competitive Positioning:** Reconciliation API for developers, reconciliation platform for businesses
 
 **Key Principles:**
+
 - Constraints are differentiation
 - Use limitations as strengths
 - Specialization enables accuracy

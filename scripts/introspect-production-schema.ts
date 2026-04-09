@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Production Database Schema Introspection
- * 
+ *
  * Connects to live Supabase production and enumerates:
  * - All schemas, tables, columns, types, enums
  * - Constraints (PK, FK, UNIQUE, CHECK)
@@ -10,13 +10,13 @@
  * - Policies (including permissive vs restrictive)
  * - Functions, triggers, views
  * - Edge-function-dependent tables
- * 
+ *
  * This is the SOURCE OF TRUTH for what actually exists in production.
  */
 
-import { Pool } from 'pg';
-import * as fs from 'fs';
-import * as path from 'path';
+import { Pool } from "pg";
+import * as fs from "fs";
+import * as path from "path";
 
 interface TableInfo {
   schema: string;
@@ -38,7 +38,7 @@ interface ColumnInfo {
 
 interface ConstraintInfo {
   name: string;
-  type: 'PRIMARY KEY' | 'FOREIGN KEY' | 'UNIQUE' | 'CHECK' | 'NOT NULL';
+  type: "PRIMARY KEY" | "FOREIGN KEY" | "UNIQUE" | "CHECK" | "NOT NULL";
   definition: string;
 }
 
@@ -83,18 +83,18 @@ interface ViewInfo {
 
 async function introspectProductionSchema() {
   const databaseUrl = process.env.DATABASE_URL;
-  
+
   if (!databaseUrl) {
-    throw new Error('DATABASE_URL environment variable is required');
+    throw new Error("DATABASE_URL environment variable is required");
   }
 
-  console.log('🔍 Connecting to production database...');
+  console.log("🔍 Connecting to production database...");
   const pool = new Pool({ connectionString: databaseUrl });
 
   try {
     // Test connection
-    await pool.query('SELECT NOW()');
-    console.log('✅ Connected to production database');
+    await pool.query("SELECT NOW()");
+    console.log("✅ Connected to production database");
 
     const output: {
       timestamp: string;
@@ -107,7 +107,7 @@ async function introspectProductionSchema() {
       enums: Array<{ schema: string; name: string; values: string[] }>;
     } = {
       timestamp: new Date().toISOString(),
-      database: databaseUrl.split('@')[1]?.split('/')[0] || 'unknown',
+      database: databaseUrl.split("@")[1]?.split("/")[0] || "unknown",
       schemas: [],
       tables: [],
       functions: [],
@@ -117,18 +117,18 @@ async function introspectProductionSchema() {
     };
 
     // Get schemas
-    console.log('📋 Enumerating schemas...');
+    console.log("📋 Enumerating schemas...");
     const schemasResult = await pool.query(`
       SELECT schema_name 
       FROM information_schema.schemata 
       WHERE schema_name NOT IN ('pg_catalog', 'information_schema', 'pg_toast')
       ORDER BY schema_name
     `);
-    output.schemas = schemasResult.rows.map(r => r.schema_name);
+    output.schemas = schemasResult.rows.map((r) => r.schema_name);
     console.log(`✅ Found ${output.schemas.length} schemas`);
 
     // Get enums
-    console.log('📋 Enumerating enums...');
+    console.log("📋 Enumerating enums...");
     const enumsResult = await pool.query(`
       SELECT 
         n.nspname as schema,
@@ -141,7 +141,7 @@ async function introspectProductionSchema() {
       GROUP BY n.nspname, t.typname
       ORDER BY n.nspname, t.typname
     `);
-    output.enums = enumsResult.rows.map(r => ({
+    output.enums = enumsResult.rows.map((r) => ({
       schema: r.schema,
       name: r.name,
       values: r.values,
@@ -151,21 +151,25 @@ async function introspectProductionSchema() {
     // Get tables for each schema
     for (const schema of output.schemas) {
       console.log(`📋 Enumerating tables in schema: ${schema}...`);
-      
-      const tablesResult = await pool.query(`
+
+      const tablesResult = await pool.query(
+        `
         SELECT table_name
         FROM information_schema.tables
         WHERE table_schema = $1
         AND table_type = 'BASE TABLE'
         ORDER BY table_name
-      `, [schema]);
+      `,
+        [schema]
+      );
 
       for (const tableRow of tablesResult.rows) {
         const tableName = tableRow.table_name;
         console.log(`  📊 Processing table: ${schema}.${tableName}`);
 
         // Get columns
-        const columnsResult = await pool.query(`
+        const columnsResult = await pool.query(
+          `
           SELECT 
             column_name,
             data_type,
@@ -176,18 +180,21 @@ async function introspectProductionSchema() {
           FROM information_schema.columns
           WHERE table_schema = $1 AND table_name = $2
           ORDER BY ordinal_position
-        `, [schema, tableName]);
+        `,
+          [schema, tableName]
+        );
 
-        const columns: ColumnInfo[] = columnsResult.rows.map(r => ({
+        const columns: ColumnInfo[] = columnsResult.rows.map((r) => ({
           name: r.column_name,
           type: r.udt_name || r.data_type,
-          nullable: r.is_nullable === 'YES',
+          nullable: r.is_nullable === "YES",
           default: r.column_default,
-          identity: r.is_identity === 'YES' ? true : undefined,
+          identity: r.is_identity === "YES" ? true : undefined,
         }));
 
         // Get constraints
-        const constraintsResult = await pool.query(`
+        const constraintsResult = await pool.query(
+          `
           SELECT 
             tc.constraint_name,
             tc.constraint_type,
@@ -196,16 +203,19 @@ async function introspectProductionSchema() {
           JOIN pg_constraint c ON c.conname = tc.constraint_name
           WHERE tc.table_schema = $1 AND tc.table_name = $2
           ORDER BY tc.constraint_type, tc.constraint_name
-        `, [schema, tableName]);
+        `,
+          [schema, tableName]
+        );
 
-        const constraints: ConstraintInfo[] = constraintsResult.rows.map(r => ({
+        const constraints: ConstraintInfo[] = constraintsResult.rows.map((r) => ({
           name: r.constraint_name,
-          type: r.constraint_type as ConstraintInfo['type'],
+          type: r.constraint_type as ConstraintInfo["type"],
           definition: r.definition,
         }));
 
         // Get indexes
-        const indexesResult = await pool.query(`
+        const indexesResult = await pool.query(
+          `
           SELECT 
             i.relname as index_name,
             ix.indisunique as is_unique,
@@ -217,26 +227,32 @@ async function introspectProductionSchema() {
           WHERE n.nspname = $1 AND t.relname = $2
           AND NOT ix.indisprimary
           ORDER BY i.relname
-        `, [schema, tableName]);
+        `,
+          [schema, tableName]
+        );
 
-        const indexes: IndexInfo[] = indexesResult.rows.map(r => ({
+        const indexes: IndexInfo[] = indexesResult.rows.map((r) => ({
           name: r.index_name,
           unique: r.is_unique,
           definition: r.definition,
         }));
 
         // Check RLS enabled
-        const rlsResult = await pool.query(`
+        const rlsResult = await pool.query(
+          `
           SELECT relforcerowsecurity
           FROM pg_class c
           JOIN pg_namespace n ON n.oid = c.relnamespace
           WHERE n.nspname = $1 AND c.relname = $2
-        `, [schema, tableName]);
+        `,
+          [schema, tableName]
+        );
 
         const rlsEnabled = rlsResult.rows[0]?.relforcerowsecurity || false;
 
         // Get RLS policies
-        const policiesResult = await pool.query(`
+        const policiesResult = await pool.query(
+          `
           SELECT 
             policyname as name,
             permissive,
@@ -247,9 +263,11 @@ async function introspectProductionSchema() {
           FROM pg_policies
           WHERE schemaname = $1 AND tablename = $2
           ORDER BY policyname
-        `, [schema, tableName]);
+        `,
+          [schema, tableName]
+        );
 
-        const policies: PolicyInfo[] = policiesResult.rows.map(r => ({
+        const policies: PolicyInfo[] = policiesResult.rows.map((r) => ({
           name: r.name,
           permissive: r.permissive,
           roles: r.roles,
@@ -271,7 +289,7 @@ async function introspectProductionSchema() {
     }
 
     // Get functions
-    console.log('📋 Enumerating functions...');
+    console.log("📋 Enumerating functions...");
     const functionsResult = await pool.query(`
       SELECT 
         n.nspname as schema,
@@ -291,7 +309,7 @@ async function introspectProductionSchema() {
       ORDER BY n.nspname, p.proname
     `);
 
-    output.functions = functionsResult.rows.map(r => ({
+    output.functions = functionsResult.rows.map((r) => ({
       schema: r.schema,
       name: r.name,
       returnType: r.return_type,
@@ -302,7 +320,7 @@ async function introspectProductionSchema() {
     console.log(`✅ Found ${output.functions.length} functions`);
 
     // Get triggers
-    console.log('📋 Enumerating triggers...');
+    console.log("📋 Enumerating triggers...");
     const triggersResult = await pool.query(`
       SELECT 
         n.nspname as schema,
@@ -317,7 +335,7 @@ async function introspectProductionSchema() {
       ORDER BY n.nspname, c.relname, t.tgname
     `);
 
-    output.triggers = triggersResult.rows.map(r => {
+    output.triggers = triggersResult.rows.map((r) => {
       // Parse trigger definition to extract event and timing
       const def = r.definition;
       const eventMatch = def.match(/BEFORE|AFTER|INSTEAD OF/);
@@ -326,15 +344,15 @@ async function introspectProductionSchema() {
         schema: r.schema,
         table: r.table,
         name: r.name,
-        event: eventTypeMatch?.[0] || 'UNKNOWN',
-        timing: eventMatch?.[0] || 'UNKNOWN',
-        function: def.match(/EXECUTE FUNCTION\s+([^(]+)/)?.[1] || 'UNKNOWN',
+        event: eventTypeMatch?.[0] || "UNKNOWN",
+        timing: eventMatch?.[0] || "UNKNOWN",
+        function: def.match(/EXECUTE FUNCTION\s+([^(]+)/)?.[1] || "UNKNOWN",
       };
     });
     console.log(`✅ Found ${output.triggers.length} triggers`);
 
     // Get views
-    console.log('📋 Enumerating views...');
+    console.log("📋 Enumerating views...");
     const viewsResult = await pool.query(`
       SELECT 
         table_schema as schema,
@@ -345,7 +363,7 @@ async function introspectProductionSchema() {
       ORDER BY table_schema, table_name
     `);
 
-    output.views = viewsResult.rows.map(r => ({
+    output.views = viewsResult.rows.map((r) => ({
       schema: r.schema,
       name: r.name,
       definition: r.definition,
@@ -353,27 +371,28 @@ async function introspectProductionSchema() {
     console.log(`✅ Found ${output.views.length} views`);
 
     // Write output
-    const outputPath = path.join(__dirname, '..', 'supabase', 'production-schema.json');
+    const outputPath = path.join(__dirname, "..", "supabase", "production-schema.json");
     fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
     console.log(`✅ Schema introspection complete. Output written to: ${outputPath}`);
 
     // Print summary
-    console.log('\n📊 Summary:');
+    console.log("\n📊 Summary:");
     console.log(`  Schemas: ${output.schemas.length}`);
     console.log(`  Tables: ${output.tables.length}`);
     console.log(`  Functions: ${output.functions.length}`);
     console.log(`  Triggers: ${output.triggers.length}`);
     console.log(`  Views: ${output.views.length}`);
     console.log(`  Enums: ${output.enums.length}`);
-    console.log(`  Tables with RLS: ${output.tables.filter(t => t.rlsEnabled).length}`);
-    console.log(`  Total policies: ${output.tables.reduce((sum, t) => sum + t.policies.length, 0)}`);
-
+    console.log(`  Tables with RLS: ${output.tables.filter((t) => t.rlsEnabled).length}`);
+    console.log(
+      `  Total policies: ${output.tables.reduce((sum, t) => sum + t.policies.length, 0)}`
+    );
   } finally {
     await pool.end();
   }
 }
 
-introspectProductionSchema().catch(err => {
-  console.error('❌ Error:', err);
+introspectProductionSchema().catch((err) => {
+  console.error("❌ Error:", err);
   process.exit(1);
 });

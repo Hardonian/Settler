@@ -26,11 +26,7 @@ interface ShareButtonProps {
   artifactName?: string;
 }
 
-export function ShareButton({
-  artifactType,
-  artifactId,
-  artifactName,
-}: ShareButtonProps) {
+export function ShareButton({ artifactType, artifactId, artifactName }: ShareButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isPublic, setIsPublic] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
@@ -76,12 +72,7 @@ export function ShareButton({
 
   return (
     <>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => setIsOpen(true)}
-        className="gap-2"
-      >
+      <Button variant="outline" size="sm" onClick={() => setIsOpen(true)} className="gap-2">
         <Share2 className="h-4 w-4" />
         Share
       </Button>
@@ -99,10 +90,7 @@ export function ShareButton({
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <Label htmlFor="public">Make public</Label>
-                <Switch
-                  checked={isPublic}
-                  onCheckedChange={setIsPublic}
-                />
+                <Switch checked={isPublic} onCheckedChange={setIsPublic} />
               </div>
               <p className="text-sm text-muted-foreground">
                 {isPublic
@@ -130,12 +118,7 @@ export function ShareButton({
                 <Label>Shareable Link</Label>
                 <div className="flex gap-2 mt-2">
                   <Input value={shareUrl} readOnly className="flex-1" />
-                  <Button
-                    onClick={handleCopy}
-                    variant="outline"
-                    size="sm"
-                    className="gap-2"
-                  >
+                  <Button onClick={handleCopy} variant="outline" size="sm" className="gap-2">
                     {copied ? (
                       <>
                         <Check className="h-4 w-4" />

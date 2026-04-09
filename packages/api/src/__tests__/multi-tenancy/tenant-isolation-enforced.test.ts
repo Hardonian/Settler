@@ -41,20 +41,24 @@ describe("UserRepository tenant isolation", () => {
     dataRetentionDays: 365,
   });
 
-
-
   // --- Guard rail tests (no DB needed) ---
 
   it("findById rejects missing tenantId", async () => {
-    await expect(repo.findById("any-id", "")).rejects.toThrow(/tenantId is required|Invalid or missing tenantId/);
+    await expect(repo.findById("any-id", "")).rejects.toThrow(
+      /tenantId is required|Invalid or missing tenantId/
+    );
   });
 
   it("findByEmail rejects missing tenantId", async () => {
-    await expect(repo.findByEmail("a@b.com", "")).rejects.toThrow(/tenantId is required|Invalid or missing tenantId/);
+    await expect(repo.findByEmail("a@b.com", "")).rejects.toThrow(
+      /tenantId is required|Invalid or missing tenantId/
+    );
   });
 
   it("save rejects missing tenantId", async () => {
-    await expect(repo.save(userA, "")).rejects.toThrow(/tenantId is required|Invalid or missing tenantId/);
+    await expect(repo.save(userA, "")).rejects.toThrow(
+      /tenantId is required|Invalid or missing tenantId/
+    );
   });
 
   it("save rejects tenant mismatch", async () => {
@@ -63,15 +67,21 @@ describe("UserRepository tenant isolation", () => {
   });
 
   it("delete rejects missing tenantId", async () => {
-    await expect(repo.delete("any-id", "")).rejects.toThrow(/tenantId is required|Invalid or missing tenantId/);
+    await expect(repo.delete("any-id", "")).rejects.toThrow(
+      /tenantId is required|Invalid or missing tenantId/
+    );
   });
 
   it("findAll rejects missing tenantId", async () => {
-    await expect(repo.findAll("", 10, 0)).rejects.toThrow(/tenantId is required|Invalid or missing tenantId/);
+    await expect(repo.findAll("", 10, 0)).rejects.toThrow(
+      /tenantId is required|Invalid or missing tenantId/
+    );
   });
 
   it("count rejects missing tenantId", async () => {
-    await expect(repo.count("")).rejects.toThrow(/tenantId is required|Invalid or missing tenantId/);
+    await expect(repo.count("")).rejects.toThrow(
+      /tenantId is required|Invalid or missing tenantId/
+    );
   });
 });
 
@@ -82,11 +92,15 @@ describe("JobRepository tenant isolation", () => {
   const repo = new JobRepository();
 
   it("findById rejects missing tenantId", async () => {
-    await expect(repo.findById("any-id", "", "any-user")).rejects.toThrow(/tenantId is required|Invalid or missing tenantId/);
+    await expect(repo.findById("any-id", "", "any-user")).rejects.toThrow(
+      /tenantId is required|Invalid or missing tenantId/
+    );
   });
 
   it("findByUserId rejects missing tenantId", async () => {
-    await expect(repo.findByUserId("", "any-user", 1, 10)).rejects.toThrow(/tenantId is required|Invalid or missing tenantId/);
+    await expect(repo.findByUserId("", "any-user", 1, 10)).rejects.toThrow(
+      /tenantId is required|Invalid or missing tenantId/
+    );
   });
 
   it("create rejects missing tenantId", async () => {
@@ -111,7 +125,9 @@ describe("JobRepository tenant isolation", () => {
   });
 
   it("delete rejects missing tenantId", async () => {
-    await expect(repo.delete("id", "", "uid")).rejects.toThrow(/tenantId is required|Invalid or missing tenantId/);
+    await expect(repo.delete("id", "", "uid")).rejects.toThrow(
+      /tenantId is required|Invalid or missing tenantId/
+    );
   });
 });
 
@@ -132,9 +148,9 @@ describe("assertTenantScoped guard", () => {
   });
 
   it("REJECTS SELECT on webhook_configs WITHOUT tenant_id", () => {
-    expect(() =>
-      assertTenantScoped("SELECT * FROM webhook_configs WHERE adapter = $1")
-    ).toThrow("TENANT ISOLATION VIOLATION");
+    expect(() => assertTenantScoped("SELECT * FROM webhook_configs WHERE adapter = $1")).toThrow(
+      "TENANT ISOLATION VIOLATION"
+    );
   });
 
   it("allows SELECT on tenant-scoped table with tenant_id", () => {
@@ -242,6 +258,8 @@ describe("matchTransaction tenant isolation", () => {
 describe("getAuditLogs tenant isolation", () => {
   it("rejects missing tenantId", async () => {
     const { getAuditLogs } = await import("../../services/audit-trail");
-    await expect(getAuditLogs("", {})).rejects.toThrow(/tenantId is required|Invalid or missing tenantId/);
+    await expect(getAuditLogs("", {})).rejects.toThrow(
+      /tenantId is required|Invalid or missing tenantId/
+    );
   });
 });

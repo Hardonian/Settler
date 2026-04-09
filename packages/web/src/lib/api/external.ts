@@ -32,19 +32,16 @@ export interface ExternalMetrics {
  * Returns unavailable=true with zero counts when the API cannot be reached.
  */
 export async function getGitHubStats(
-  owner: string = 'Hardonian',
-  repo: string = 'Settler'
+  owner: string = "Hardonian",
+  repo: string = "Settler"
 ): Promise<GitHubRepoStats> {
   try {
-    const response = await fetch(
-      `https://api.github.com/repos/${owner}/${repo}`,
-      {
-        headers: {
-          Accept: 'application/vnd.github.v3+json',
-        },
-        next: { revalidate: 3600 }, // Cache for 1 hour
-      }
-    );
+    const response = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
+      headers: {
+        Accept: "application/vnd.github.v3+json",
+      },
+      next: { revalidate: 3600 }, // Cache for 1 hour
+    });
 
     if (!response.ok) {
       throw new Error(`GitHub API error: ${response.status}`);
@@ -60,7 +57,7 @@ export async function getGitHubStats(
       lastUpdated: data.updated_at || new Date().toISOString(),
     };
   } catch (error) {
-    console.warn('GitHub API unavailable:', error);
+    console.warn("GitHub API unavailable:", error);
     return {
       stars: 0,
       forks: 0,
@@ -76,23 +73,18 @@ export async function getGitHubStats(
  * Fetch NPM package download statistics.
  * Returns unavailable=true with zero counts when the registry cannot be reached.
  */
-export async function getNPMStats(
-  packageName: string = '@settler/sdk'
-): Promise<NPMStats> {
+export async function getNPMStats(packageName: string = "@settler/sdk"): Promise<NPMStats> {
   try {
-    const packageResponse = await fetch(
-      `https://registry.npmjs.org/${packageName}`,
-      {
-        next: { revalidate: 3600 }, // Cache for 1 hour
-      }
-    );
+    const packageResponse = await fetch(`https://registry.npmjs.org/${packageName}`, {
+      next: { revalidate: 3600 }, // Cache for 1 hour
+    });
 
     if (!packageResponse.ok) {
       throw new Error(`NPM API error: ${packageResponse.status}`);
     }
 
     const packageData = await packageResponse.json();
-    const latestVersion = packageData['dist-tags']?.latest || '0.0.0';
+    const latestVersion = packageData["dist-tags"]?.latest || "0.0.0";
     const lastModified = packageData.time?.modified || new Date().toISOString();
 
     return {
@@ -101,10 +93,10 @@ export async function getNPMStats(
       lastUpdated: lastModified,
     };
   } catch (error) {
-    console.warn('NPM API unavailable:', error);
+    console.warn("NPM API unavailable:", error);
     return {
       downloads: 0,
-      version: 'unavailable',
+      version: "unavailable",
       lastUpdated: new Date().toISOString(),
       unavailable: true,
     };
@@ -116,10 +108,7 @@ export async function getNPMStats(
  * Aggregates data from multiple sources for dashboard display
  */
 export async function getExternalMetrics(): Promise<ExternalMetrics> {
-  const [githubStats, npmStats] = await Promise.all([
-    getGitHubStats(),
-    getNPMStats(),
-  ]);
+  const [githubStats, npmStats] = await Promise.all([getGitHubStats(), getNPMStats()]);
 
   return {
     github: githubStats,

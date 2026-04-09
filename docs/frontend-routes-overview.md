@@ -1,6 +1,7 @@
 # Front-End Route Index
 
 ## Marketing
+
 - `/` (Homepage): Main landing page. Positioning: "API infrastructure for financial evidence".
 - `/pricing`: Pricing tiers and features.
 - `/why-settler`: Core value proposition and "Why Us".
@@ -24,6 +25,7 @@
 - `/legal/dpa`: Data Processing Agreement.
 
 ## Documentation
+
 - `/docs`: Documentation home.
 - `/docs/api`: API Reference.
 - `/docs/cli`: CLI Reference and guides.
@@ -31,6 +33,7 @@
 - `/docs/quickstart`: specific getting started guides.
 
 ## Console / App
+
 - `/console`: Main user dashboard.
 - `/console/api-keys`: API key creation and management.
 - `/console/billing`: Plan management and invoices.
@@ -42,4 +45,5 @@
 - `/realtime-dashboard`: Live metrics view.
 
 ## Internal / Ops
+
 - `/console/site`: CMS/Site builder for dynamic pages (internal tool).

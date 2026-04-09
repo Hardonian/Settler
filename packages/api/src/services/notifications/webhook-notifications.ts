@@ -1,17 +1,16 @@
 /**
  * Webhook Notification Service
- * 
+ *
  * Sends webhook notifications for job events
  */
 
- 
-import { PrismaClient, Prisma } from '@prisma/client';
-import { logInfo, logError } from '../../utils/logger';
+import { PrismaClient, Prisma } from "@prisma/client";
+import { logInfo, logError } from "../../utils/logger";
 
 interface WebhookNotificationParams {
   tenantId: string;
   userId: string;
-  eventType: 'job_failed' | 'job_completed' | 'job_progress';
+  eventType: "job_failed" | "job_completed" | "job_progress";
   jobId: string;
   resultId?: string;
   errorMessage?: string;
@@ -33,7 +32,7 @@ export async function sendWebhookNotification(
     const webhooks = await prisma.webhook.findMany({
       where: {
         tenantId: tenantId,
-        status: 'active',
+        status: "active",
         deletedAt: null,
       },
       select: {
@@ -77,12 +76,12 @@ export async function sendWebhookNotification(
 
     // Send webhook
     const response = await fetch(webhook.url, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'X-Settler-Event': eventType,
-        'X-Settler-Webhook-Id': webhook.id,
-        ...(signature ? { 'X-Settler-Signature': signature } : {}),
+        "Content-Type": "application/json",
+        "X-Settler-Event": eventType,
+        "X-Settler-Webhook-Id": webhook.id,
+        ...(signature ? { "X-Settler-Signature": signature } : {}),
       },
       body: JSON.stringify(payload),
     });
@@ -97,21 +96,21 @@ export async function sendWebhookNotification(
         webhookId: webhook.id,
         url: webhook.url,
         payload: payload as Prisma.InputJsonValue,
-        status: 'delivered',
+        status: "delivered",
         statusCode: response.status,
         responseBody: await response.text().catch(() => null),
         attempts: 1,
       },
     });
 
-    logInfo('Webhook notification sent', {
+    logInfo("Webhook notification sent", {
       webhookId: webhook.id,
       eventType,
       jobId,
       status: response.status,
     });
   } catch (error) {
-    logError('Failed to send webhook notification', error, {
+    logError("Failed to send webhook notification", error, {
       tenantId,
       eventType,
       jobId,
@@ -120,7 +119,7 @@ export async function sendWebhookNotification(
     // Log failed delivery
     try {
       const failedWebhook = await prisma.webhook.findFirst({
-        where: { tenantId, status: 'active', deletedAt: null },
+        where: { tenantId, status: "active", deletedAt: null },
         select: { id: true, url: true },
       });
 
@@ -130,15 +129,15 @@ export async function sendWebhookNotification(
             webhookId: failedWebhook.id,
             url: failedWebhook.url,
             payload: { jobId, errorMessage, jobName, eventType } as Prisma.InputJsonValue,
-            status: 'failed',
-            errorMessage: error instanceof Error ? error.message : 'Unknown error',
+            status: "failed",
+            errorMessage: error instanceof Error ? error.message : "Unknown error",
             attempts: 1,
           },
         });
       }
     } catch (logErr) {
       // Don't fail if logging fails - use logger if available, otherwise silent fail
-      logError('Failed to log webhook delivery failure', logErr);
+      logError("Failed to log webhook delivery failure", logErr);
     }
   }
 }
@@ -152,16 +151,16 @@ async function signWebhookPayload(payload: string, secret: string): Promise<stri
   const payloadData = encoder.encode(payload);
 
   const cryptoKey = await crypto.subtle.importKey(
-    'raw',
+    "raw",
     keyData,
-    { name: 'HMAC', hash: 'SHA-256' },
+    { name: "HMAC", hash: "SHA-256" },
     false,
-    ['sign']
+    ["sign"]
   );
 
-  const signature = await crypto.subtle.sign('HMAC', cryptoKey, payloadData);
+  const signature = await crypto.subtle.sign("HMAC", cryptoKey, payloadData);
   const hashArray = Array.from(new Uint8Array(signature));
-  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 
   return hashHex;
 }

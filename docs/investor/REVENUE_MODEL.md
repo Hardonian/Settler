@@ -50,14 +50,17 @@
 ### Revenue Projections
 
 **Year 1:**
+
 - 100 customers @ $50K ARR average = $5M ARR
 - Mix: 50% Starter, 30% Pro, 20% Business
 
 **Year 2:**
+
 - 500 customers @ $60K ARR average = $30M ARR
 - Mix: 40% Starter, 35% Pro, 25% Business
 
 **Year 3:**
+
 - 1,000 customers @ $70K ARR average = $70M ARR
 - Mix: 30% Starter, 40% Pro, 30% Business/Enterprise
 
@@ -117,21 +120,25 @@
 ## Unit Economics
 
 **Customer Acquisition Cost (CAC):**
+
 - SMB: $500
 - Mid-market: $5,000
 - Enterprise: $50,000
 
 **Lifetime Value (LTV):**
+
 - SMB: $5,000 (5 years)
 - Mid-market: $50,000 (5 years)
 - Enterprise: $500,000 (5 years)
 
 **LTV:CAC Ratio:**
+
 - SMB: 10:1
 - Mid-market: 10:1
 - Enterprise: 10:1
 
 **Payback Period:**
+
 - SMB: 6 months
 - Mid-market: 12 months
 - Enterprise: 18 months

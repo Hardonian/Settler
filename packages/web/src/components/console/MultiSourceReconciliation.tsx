@@ -3,17 +3,30 @@
  * Handles reconciliation with multiple source adapters
  */
 
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
-import { AlertTriangle, CheckCircle2, RefreshCw, Play, X } from 'lucide-react';
+import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { AlertTriangle, CheckCircle2, RefreshCw, Play, X } from "lucide-react";
 
 interface SourceAdapter {
   adapter: string;
@@ -43,12 +56,12 @@ export function MultiSourceReconciliation() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sourceAdapters, setSourceAdapters] = useState<SourceAdapter[]>([]);
-  const [targetAdapter, setTargetAdapter] = useState<string>('');
-  const [conflictStrategy, setConflictStrategy] = useState<string>('manual');
+  const [targetAdapter, setTargetAdapter] = useState<string>("");
+  const [conflictStrategy, setConflictStrategy] = useState<string>("manual");
   const [running, setRunning] = useState(false);
 
   const handleAddSource = () => {
-    setSourceAdapters([...sourceAdapters, { adapter: '', config: {} }]);
+    setSourceAdapters([...sourceAdapters, { adapter: "", config: {} }]);
   };
 
   const handleRemoveSource = (index: number) => {
@@ -63,12 +76,12 @@ export function MultiSourceReconciliation() {
 
   const handleCreateJob = async () => {
     if (sourceAdapters.length < 2) {
-      setError('At least 2 source adapters are required');
+      setError("At least 2 source adapters are required");
       return;
     }
 
     if (!targetAdapter) {
-      setError('Target adapter is required');
+      setError("Target adapter is required");
       return;
     }
 
@@ -76,9 +89,9 @@ export function MultiSourceReconciliation() {
       setLoading(true);
       setError(null);
 
-      const res = await fetch('/api/v1/multi-source-reconciliation/jobs', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/v1/multi-source-reconciliation/jobs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           sourceAdapters: sourceAdapters.filter((s: any) => s.adapter),
           targetAdapter,
@@ -89,13 +102,13 @@ export function MultiSourceReconciliation() {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.message || 'Failed to create job');
+        throw new Error(data.message || "Failed to create job");
       }
 
       const data = await res.json();
       setJob(data);
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'Failed to create job');
+      setError(error instanceof Error ? error.message : "Failed to create job");
     } finally {
       setLoading(false);
     }
@@ -109,9 +122,9 @@ export function MultiSourceReconciliation() {
       setError(null);
 
       // Create a reconciliation run first
-      const runRes = await fetch('/api/v1/reconciliation/run', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const runRes = await fetch("/api/v1/reconciliation/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ingestionId: null, // Multi-source doesn't use ingestion
           config: {},
@@ -119,14 +132,14 @@ export function MultiSourceReconciliation() {
       });
 
       if (!runRes.ok) {
-        throw new Error('Failed to create reconciliation run');
+        throw new Error("Failed to create reconciliation run");
       }
 
       const runData = await runRes.json();
 
       const res = await fetch(`/api/v1/multi-source-reconciliation/jobs/${job.id}/run`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           reconRunId: runData.runId,
         }),
@@ -134,13 +147,13 @@ export function MultiSourceReconciliation() {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.message || 'Failed to run reconciliation');
+        throw new Error(data.message || "Failed to run reconciliation");
       }
 
       const data = await res.json();
       setJob({ ...job, conflicts: data.conflicts });
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'Failed to run reconciliation');
+      setError(error instanceof Error ? error.message : "Failed to run reconciliation");
     } finally {
       setRunning(false);
     }
@@ -150,16 +163,19 @@ export function MultiSourceReconciliation() {
     if (!job) return;
 
     try {
-      const res = await fetch(`/api/v1/multi-source-reconciliation/conflicts/${conflictId}/resolve`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          resolutionStrategy: strategy,
-        }),
-      });
+      const res = await fetch(
+        `/api/v1/multi-source-reconciliation/conflicts/${conflictId}/resolve`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            resolutionStrategy: strategy,
+          }),
+        }
+      );
 
       if (!res.ok) {
-        throw new Error('Failed to resolve conflict');
+        throw new Error("Failed to resolve conflict");
       }
 
       // Refresh job to get updated conflicts
@@ -169,7 +185,7 @@ export function MultiSourceReconciliation() {
         setJob(jobData);
       }
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'Failed to resolve conflict');
+      setError(error instanceof Error ? error.message : "Failed to resolve conflict");
     }
   };
 
@@ -274,7 +290,11 @@ export function MultiSourceReconciliation() {
                   </Badge>
                 </div>
                 <Button onClick={handleRunReconciliation} disabled={running}>
-                  {running ? <RefreshCw className="h-4 w-4 mr-2 animate-spin" /> : <Play className="h-4 w-4 mr-2" />}
+                  {running ? (
+                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Play className="h-4 w-4 mr-2" />
+                  )}
                   Run Reconciliation
                 </Button>
               </div>

@@ -208,21 +208,21 @@ export function withAuthGate<T extends (...args: any[]) => Promise<NextResponse>
         const requiredTierLevel = tierOrder[options.requiredTier] ?? 0;
 
         if (userTier < requiredTierLevel) {
-          await logger.warn('Subscription tier insufficient', {
+          await logger.warn("Subscription tier insufficient", {
             trace_id: await getTraceId(request),
             route: request.nextUrl.pathname,
             user_tier: subscription.tier,
             required_tier: options.requiredTier,
-            feature: options.feature || 'this feature',
+            feature: options.feature || "this feature",
           });
 
           return NextResponse.json(
             {
-              error: `Subscription required: ${options.feature || 'This feature'} requires ${options.requiredTier} subscription`,
+              error: `Subscription required: ${options.feature || "This feature"} requires ${options.requiredTier} subscription`,
               code: ErrorCode.FORBIDDEN,
               tier: subscription.tier,
               required_tier: options.requiredTier,
-              upgrade_url: '/console/billing',
+              upgrade_url: "/console/billing",
               timestamp: new Date().toISOString(),
             },
             { status: 403 }

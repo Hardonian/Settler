@@ -1,11 +1,11 @@
 /**
  * Motion Tokens
- * 
+ *
  * Canonical timing, easing, and spring configurations for consistent motion.
  * All durations respect prefers-reduced-motion.
  */
 
-import { SpringOptions, Easing } from 'framer-motion';
+import { SpringOptions, Easing } from "framer-motion";
 
 /**
  * Duration tokens (in seconds)
@@ -58,28 +58,28 @@ export const motionSprings = {
     damping: 20,
     mass: 1,
   } satisfies SpringOptions,
-  
+
   /** Default spring - balanced */
   default: {
     stiffness: 300,
     damping: 30,
     mass: 1,
   } satisfies SpringOptions,
-  
+
   /** Snappy spring - quick response */
   snappy: {
     stiffness: 400,
     damping: 25,
     mass: 0.8,
   } satisfies SpringOptions,
-  
+
   /** Bouncy spring - playful */
   bouncy: {
     stiffness: 300,
     damping: 15,
     mass: 1,
   } satisfies SpringOptions,
-  
+
   /** Stiff spring - minimal bounce */
   stiff: {
     stiffness: 500,
@@ -146,8 +146,8 @@ export const motionScales = {
  * Returns duration 0 if user prefers reduced motion
  */
 export function getReducedMotionDuration(duration: number): number {
-  if (typeof window === 'undefined') return duration;
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (typeof window === "undefined") return duration;
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   return prefersReducedMotion ? 0 : duration;
 }
 
@@ -156,8 +156,8 @@ export function getReducedMotionDuration(duration: number): number {
  * Returns a stiff, non-bouncy spring if user prefers reduced motion
  */
 export function getReducedMotionSpring(spring: SpringOptions): SpringOptions {
-  if (typeof window === 'undefined') return spring;
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (typeof window === "undefined") return spring;
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (prefersReducedMotion) {
     return {
       stiffness: 1000,

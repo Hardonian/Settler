@@ -1,12 +1,12 @@
 /**
  * WASM-Powered Transforms
- * 
+ *
  * Secure, sandboxed, fast deterministic computation
  * Part 10: Next-Gen Data Plane & Processing Layers
  */
 
 export interface SchemaDefinition {
-  type: 'object' | 'array' | 'string' | 'number' | 'boolean';
+  type: "object" | "array" | "string" | "number" | "boolean";
   properties?: Record<string, SchemaDefinition>;
   items?: SchemaDefinition;
   required?: string[];

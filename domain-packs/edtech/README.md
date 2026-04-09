@@ -19,7 +19,7 @@ Industry-specific templates and workflows for education technology.
 ## Usage
 
 ```javascript
-const { SettlerClient } = require('@settler/sdk');
+const { SettlerClient } = require("@settler/sdk");
 
 const client = new SettlerClient({
   apiKey: process.env.SETTLER_API_KEY,
@@ -28,7 +28,7 @@ const client = new SettlerClient({
 // Use EdTech module
 const result = await client.edtech.validateQTI(qtiContent);
 
-console.log('QTI validation:', result);
+console.log("QTI validation:", result);
 ```
 
 ## Templates

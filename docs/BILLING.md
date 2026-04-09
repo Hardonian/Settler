@@ -5,6 +5,7 @@ This guide covers setting up Stripe integration, testing billing flows, and unde
 ## Overview
 
 Settler uses Stripe for subscription management with the following features:
+
 - **Plan Tiers**: Free, Pro ($99/month), Scale ($499/month)
 - **Usage Tracking**: Ingestion jobs, exports, reconciliations, receipts, feature flags
 - **Entitlement Enforcement**: Server-side middleware checks limits before operations
@@ -65,6 +66,7 @@ npx prisma migrate dev
 ```
 
 Key tables:
+
 - `billing_accounts`: User billing accounts
 - `subscriptions`: Active subscriptions
 - `usage_events`: Individual usage events
@@ -74,6 +76,7 @@ Key tables:
 ## Plan Limits
 
 ### Free Plan
+
 - **Reconciliations**: 1,000/month
 - **Receipts**: 100/month
 - **Feature Flags**: 100k evaluations/month
@@ -81,6 +84,7 @@ Key tables:
 - **Exports**: 50/month
 
 ### Pro Plan ($99/month)
+
 - **Reconciliations**: 100,000/month
 - **Receipts**: 10,000/month
 - **Feature Flags**: 1M evaluations/month
@@ -91,6 +95,7 @@ Key tables:
 - **Priority Support**: Enabled
 
 ### Scale Plan ($499/month)
+
 - **Reconciliations**: 1M/month
 - **Receipts**: 100k/month
 - **Feature Flags**: 10M evaluations/month
@@ -108,22 +113,26 @@ Key tables:
 Use these test card numbers in Stripe Checkout:
 
 **Successful Payment:**
+
 - Card: `4242 4242 4242 4242`
 - Expiry: Any future date (e.g., `12/34`)
 - CVC: Any 3 digits (e.g., `123`)
 - ZIP: Any 5 digits (e.g., `12345`)
 
 **Requires Authentication (3D Secure):**
+
 - Card: `4000 0025 0000 3155`
 - Expiry: Any future date
 - CVC: Any 3 digits
 
 **Declined Card:**
+
 - Card: `4000 0000 0000 0002`
 - Expiry: Any future date
 - CVC: Any 3 digits
 
 **Insufficient Funds:**
+
 - Card: `4000 0000 0000 9995`
 - Expiry: Any future date
 - CVC: Any 3 digits
@@ -189,6 +198,7 @@ To enable demo mode, simply omit `STRIPE_SECRET_KEY` from environment variables.
 ## Usage Tracking
 
 Usage is tracked automatically when:
+
 - **Ingestions**: Created via `/api/v1/ingestion/upload` or ingestion sources
 - **Exports**: Created via `/api/v1/ingestion/exports`
 - **Reconciliations**: Tracked via reconciliation service
@@ -204,9 +214,9 @@ Usage events are stored in `usage_events` table and aggregated daily in `usage_a
 API routes use middleware to check limits:
 
 ```typescript
-import { checkIngestionLimit, checkExportLimit } from '@/middleware/usage-enforcement';
+import { checkIngestionLimit, checkExportLimit } from "@/middleware/usage-enforcement";
 
-router.post('/upload', checkIngestionLimit(), async (req, res) => {
+router.post("/upload", checkIngestionLimit(), async (req, res) => {
   // Route handler
 });
 ```
@@ -216,9 +226,9 @@ router.post('/upload', checkIngestionLimit(), async (req, res) => {
 Frontend checks entitlements before showing UI:
 
 ```typescript
-import { checkEntitlement } from '@/domain/billing/entitlements';
+import { checkEntitlement } from "@/domain/billing/entitlements";
 
-const result = await checkEntitlement(billingAccountId, 'ingestions');
+const result = await checkEntitlement(billingAccountId, "ingestions");
 if (!result.allowed) {
   // Show upgrade prompt
 }
@@ -237,6 +247,7 @@ The system includes hooks for retention (currently stubbed, ready for implementa
 ### Email Notifications
 
 Email hooks are stubbed in:
+
 - `packages/api/src/routes/billing.ts` (webhook handlers)
 - Can be extended with email service integration
 
@@ -281,6 +292,7 @@ Before going live:
 ## Support
 
 For billing-related issues:
+
 - Check Stripe Dashboard for payment status
 - Review application logs for webhook processing
 - Verify database state matches Stripe state

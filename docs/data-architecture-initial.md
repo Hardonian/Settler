@@ -6,10 +6,12 @@
 ## Current Stack
 
 ### Framework
+
 - **Next.js 14** with `app/` router (Server Components + Route Handlers)
 - No `pages/` directory - fully migrated to App Router
 
 ### State Management Libraries
+
 - **None installed** - No React Query, SWR, Zustand, Redux, or other state management libraries
 - Pure React hooks (`useState`, `useEffect`) for client-side state
 - Server Components for server-side data fetching
@@ -17,12 +19,14 @@
 ### Data Fetching Patterns
 
 #### Server Components (Good Pattern)
+
 - `dashboard/page.tsx`: Fetches data directly in Server Component using Supabase server client
 - Uses `createClient()` from `@/lib/supabase/server`
 - Multiple sequential Supabase queries with error handling
 - No caching strategy - fetches fresh on every request
 
 #### Client Components (Anti-Patterns Found)
+
 1. **realtime-dashboard/page.tsx**:
    - Uses `useState` + `useEffect` for EventSource connection
    - Manual state management for connection status, logs, errors
@@ -38,11 +42,13 @@
 ### Current Data Access Layer
 
 #### Supabase Clients
+
 - `/lib/supabase/client.ts`: Browser client for Client Components
 - `/lib/supabase/server.ts`: Server client for Server Components/Route Handlers
 - Both properly configured with SSR support
 
 #### API Client
+
 - `/lib/api/client.ts`: Defensive fetch wrapper with retries, timeouts, error handling
 - Used for external API calls (GitHub, NPM metrics)
 - Not used for internal data fetching

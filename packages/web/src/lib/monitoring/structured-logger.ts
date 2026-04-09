@@ -1,18 +1,18 @@
 /**
  * Structured Logger with Reliability Context
- * 
+ *
  * Enhanced logger that includes tenant_id, operation, duration_ms, status
  * and propagates correlation IDs.
  */
 
-import { createLogger as createCorrelationLogger, CorrelationLogger } from './correlation';
+import { createLogger as createCorrelationLogger, CorrelationLogger } from "./correlation";
 
 export interface StructuredLogContext {
   tenantId?: string;
   userId?: string;
   operation: string;
   durationMs?: number;
-  status?: 'success' | 'failure' | 'pending';
+  status?: "success" | "failure" | "pending";
   errorCode?: string;
   [key: string]: unknown;
 }
@@ -76,7 +76,7 @@ export class StructuredLogger {
       durationMs,
       errorCode: error?.name,
       errorMessage: error?.message,
-      status: 'failure',
+      status: "failure",
     });
   }
 
@@ -89,7 +89,7 @@ export class StructuredLogger {
       ...this.context,
       ...extraContext,
       durationMs,
-      status: 'success',
+      status: "success",
     });
   }
 

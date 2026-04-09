@@ -1,17 +1,17 @@
 #!/usr/bin/env node
 
 const payload = {
-  adapter: 'stripe-basic-adapter',
-  eventType: 'payment.succeeded',
+  adapter: "stripe-basic-adapter",
+  eventType: "payment.succeeded",
   amount: 1099,
-  currency: 'usd',
+  currency: "usd",
 };
 
-if (payload.adapter !== 'stripe-basic-adapter') {
-  console.error('adapter mismatch');
+if (payload.adapter !== "stripe-basic-adapter") {
+  console.error("adapter mismatch");
   process.exit(1);
 }
 
-console.log('adapter:', payload.adapter);
-console.log('fixture:', JSON.stringify(payload));
-console.log('result: ok');
+console.log("adapter:", payload.adapter);
+console.log("fixture:", JSON.stringify(payload));
+console.log("result: ok");

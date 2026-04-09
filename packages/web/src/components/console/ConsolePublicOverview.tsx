@@ -1,51 +1,61 @@
 /**
  * Console Public Overview Component
- * 
+ *
  * Shows an overview of the Developer Console for visitors who are not signed in.
  */
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { Key, BarChart3, Receipt, ToggleLeft, BookOpen, CreditCard, Zap, Shield, Code } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import {
+  Key,
+  BarChart3,
+  Receipt,
+  ToggleLeft,
+  BookOpen,
+  CreditCard,
+  Zap,
+  Shield,
+  Code,
+} from "lucide-react";
 
 export function ConsolePublicOverview() {
   const features = [
     {
       icon: Key,
-      title: 'API Key Management',
-      description: 'Create, manage, and revoke API keys with granular permissions and scopes.',
-      color: 'text-blue-600 dark:text-blue-400',
+      title: "API Key Management",
+      description: "Create, manage, and revoke API keys with granular permissions and scopes.",
+      color: "text-blue-600 dark:text-blue-400",
     },
     {
       icon: BarChart3,
-      title: 'Usage Analytics',
-      description: 'Monitor API usage, track performance metrics, and analyze service breakdowns.',
-      color: 'text-green-600 dark:text-green-400',
+      title: "Usage Analytics",
+      description: "Monitor API usage, track performance metrics, and analyze service breakdowns.",
+      color: "text-green-600 dark:text-green-400",
     },
     {
       icon: Receipt,
-      title: 'Receipt Processing',
-      description: 'Upload and manage receipts with automatic parsing and data extraction.',
-      color: 'text-purple-600 dark:text-purple-400',
+      title: "Receipt Processing",
+      description: "Upload and manage receipts with automatic parsing and data extraction.",
+      color: "text-purple-600 dark:text-purple-400",
     },
     {
       icon: ToggleLeft,
-      title: 'Feature Flags',
-      description: 'Control feature rollouts with environment-specific flags and A/B testing.',
-      color: 'text-orange-600 dark:text-orange-400',
+      title: "Feature Flags",
+      description: "Control feature rollouts with environment-specific flags and A/B testing.",
+      color: "text-orange-600 dark:text-orange-400",
     },
     {
       icon: CreditCard,
-      title: 'Billing & Plans',
-      description: 'View usage-based billing, manage subscriptions, and track spending.',
-      color: 'text-indigo-600 dark:text-indigo-400',
+      title: "Billing & Plans",
+      description: "View usage-based billing, manage subscriptions, and track spending.",
+      color: "text-indigo-600 dark:text-indigo-400",
     },
     {
       icon: BookOpen,
-      title: 'API Documentation',
-      description: 'Interactive API docs with code examples and live playground.',
-      color: 'text-pink-600 dark:text-pink-400',
+      title: "API Documentation",
+      description: "Interactive API docs with code examples and live playground.",
+      color: "text-pink-600 dark:text-pink-400",
     },
   ];
 
@@ -53,11 +63,10 @@ export function ConsolePublicOverview() {
     <div className="space-y-12">
       {/* Hero Section */}
       <div className="text-center space-y-6">
-        <h1 className="text-4xl md:text-5xl font-bold text-foreground">
-          Developer Console
-        </h1>
+        <h1 className="text-4xl md:text-5xl font-bold text-foreground">Developer Console</h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Manage your API keys, monitor usage, and control your Settler integration from one unified dashboard.
+          Manage your API keys, monitor usage, and control your Settler integration from one unified
+          dashboard.
         </p>
         <div className="flex gap-4 justify-center pt-4">
           <Button asChild size="lg">
@@ -79,7 +88,9 @@ export function ConsolePublicOverview() {
           return (
             <Card key={feature.title} className="hover:shadow-lg transition-shadow">
               <CardHeader>
-                <div className={`w-12 h-12 rounded-lg bg-muted/40 flex items-center justify-center mb-2`}>
+                <div
+                  className={`w-12 h-12 rounded-lg bg-muted/40 flex items-center justify-center mb-2`}
+                >
                   <Icon className={`w-6 h-6 ${feature.color}`} />
                 </div>
                 <CardTitle className="text-lg">{feature.title}</CardTitle>
@@ -99,7 +110,8 @@ export function ConsolePublicOverview() {
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">
-              Track API calls, errors, and performance metrics in real-time with live activity feeds.
+              Track API calls, errors, and performance metrics in real-time with live activity
+              feeds.
             </p>
           </CardContent>
         </Card>
@@ -142,7 +154,12 @@ export function ConsolePublicOverview() {
             <Button asChild size="lg" variant="secondary">
               <Link href="/signup">Create Account</Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="border-white text-white hover:bg-white/10"
+            >
               <Link href="/pricing">View Pricing</Link>
             </Button>
           </div>

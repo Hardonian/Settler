@@ -8,8 +8,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 interface RateLimitResult {
@@ -39,7 +38,7 @@ async function checkRateLimit(
     // Use Upstash Redis REST API with sliding window rate limiting
     // Key format: rate_limit:{identifier}:{window}
     const windowKey = `${key}:${Math.floor(Date.now() / 1000 / windowSeconds)}`;
-    
+
     // Increment counter and get TTL
     const response = await fetch(`${restUrl}/pipeline`, {
       method: "POST",
@@ -107,11 +106,7 @@ async function getCache(key: string): Promise<string | null> {
 /**
  * Set cache value in Redis
  */
-async function setCache(
-  key: string,
-  value: string,
-  ttlSeconds: number
-): Promise<void> {
+async function setCache(key: string, value: string, ttlSeconds: number): Promise<void> {
   const restUrl = Deno.env.get("UPSTASH_REDIS_REST_URL");
   const restToken = Deno.env.get("UPSTASH_REDIS_REST_TOKEN");
 
@@ -176,7 +171,7 @@ serve(async (req) => {
 
     // Get authorization header
     const authHeader = req.headers.get("Authorization");
-    
+
     if (!authHeader) {
       return new Response(
         JSON.stringify({
@@ -193,7 +188,7 @@ serve(async (req) => {
     // Check cache for user authentication (to reduce Supabase calls)
     const cacheKey = `auth:${authHeader.substring(0, 50)}`;
     const cachedAuth = await getCache(cacheKey);
-    
+
     let userId: string | null = null;
     let userEmail: string | null = null;
 
@@ -237,11 +232,7 @@ serve(async (req) => {
       userEmail = user.email || null;
 
       // Cache authentication result
-      await setCache(
-        cacheKey,
-        JSON.stringify({ userId, userEmail }),
-        cacheMaxAge
-      );
+      await setCache(cacheKey, JSON.stringify({ userId, userEmail }), cacheMaxAge);
     }
 
     // Check user-based rate limit (per minute)

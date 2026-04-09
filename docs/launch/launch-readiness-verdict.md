@@ -35,7 +35,7 @@ The following are now **present in-repo** (verify in your environment before cit
 - Enterprise pilot rubric + shared-responsibility summary: `docs/launch/enterprise-buyer-pack.md`
 - Public `/api/status/health` aligned to **runtime connectivity** (not growth KPIs)
 
-**Still buyer- and deployment-specific:** measurable operational outcomes in *your* production, contractual SLA, and completed third-party audits.
+**Still buyer- and deployment-specific:** measurable operational outcomes in _your_ production, contractual SLA, and completed third-party audits.
 
 ## Residual risk if launched now
 

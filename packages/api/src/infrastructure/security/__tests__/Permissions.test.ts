@@ -44,17 +44,21 @@ describe("permission matrix contract", () => {
     expect(PermissionChecker.hasPermission(UserRole.ADMIN, [], Permission.ADMIN_READ)).toBe(true);
     expect(PermissionChecker.hasPermission(UserRole.ADMIN, [], Permission.ADMIN_WRITE)).toBe(true);
     expect(PermissionChecker.hasPermission(UserRole.ADMIN, [], Permission.ADMIN_AUDIT)).toBe(true);
-    expect(PermissionChecker.hasPermission(UserRole.ADMIN, [], Permission.OPERATOR_READ)).toBe(true);
-    expect(PermissionChecker.hasPermission(UserRole.ADMIN, [], Permission.OPERATOR_WRITE)).toBe(true);
+    expect(PermissionChecker.hasPermission(UserRole.ADMIN, [], Permission.OPERATOR_READ)).toBe(
+      true
+    );
+    expect(PermissionChecker.hasPermission(UserRole.ADMIN, [], Permission.OPERATOR_WRITE)).toBe(
+      true
+    );
   });
 
   it("grants operator read to developer but keeps operator write closed", () => {
     expect(PermissionChecker.hasPermission(UserRole.DEVELOPER, [], Permission.OPERATOR_READ)).toBe(
       true
     );
-    expect(
-      PermissionChecker.hasPermission(UserRole.DEVELOPER, [], Permission.OPERATOR_WRITE)
-    ).toBe(false);
+    expect(PermissionChecker.hasPermission(UserRole.DEVELOPER, [], Permission.OPERATOR_WRITE)).toBe(
+      false
+    );
   });
 
   it("ensures every route-guard permission is reachable by at least one built-in role", () => {

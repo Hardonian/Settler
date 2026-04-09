@@ -1,12 +1,12 @@
 /**
  * Usage Accounting Service
- * 
+ *
  * Aggregates usage events and calculates current period usage for billing.
  * Optimized with efficient queries and proper error handling.
  */
 
-import { prisma } from '@/shared/db/prismaClient';
-import { ServiceCode } from './planConfig';
+import { prisma } from "@/shared/db/prismaClient";
+import { ServiceCode } from "./planConfig";
 
 export interface ServiceUsage {
   service: ServiceCode;
@@ -32,8 +32,8 @@ export async function getCurrentBillingPeriod(
   billingAccountId: string
 ): Promise<{ start: Date; end: Date }> {
   // Validate input
-  if (!billingAccountId || typeof billingAccountId !== 'string') {
-    throw new Error('Invalid billing account ID');
+  if (!billingAccountId || typeof billingAccountId !== "string") {
+    throw new Error("Invalid billing account ID");
   }
 
   // Get active subscription with optimized query
@@ -41,14 +41,14 @@ export async function getCurrentBillingPeriod(
     where: {
       billingAccountId,
       status: {
-        in: ['active', 'trialing'],
+        in: ["active", "trialing"],
       },
     },
     select: {
       currentPeriodStart: true,
       currentPeriodEnd: true,
     },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: "desc" },
   });
 
   if (subscription) {
@@ -77,21 +77,26 @@ export async function getServiceUsage(
   endDate: Date
 ): Promise<number> {
   // Validate inputs
-  if (!billingAccountId || typeof billingAccountId !== 'string') {
-    throw new Error('Invalid billing account ID');
+  if (!billingAccountId || typeof billingAccountId !== "string") {
+    throw new Error("Invalid billing account ID");
   }
-  if (!(startDate instanceof Date) || !(endDate instanceof Date) || isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-    throw new Error('Invalid date range');
+  if (
+    !(startDate instanceof Date) ||
+    !(endDate instanceof Date) ||
+    isNaN(startDate.getTime()) ||
+    isNaN(endDate.getTime())
+  ) {
+    throw new Error("Invalid date range");
   }
   if (startDate > endDate) {
-    throw new Error('Start date must be before end date');
+    throw new Error("Start date must be before end date");
   }
 
   // Map service codes to eventType patterns
   // Usage events use format: "service:operation" (e.g., "settler-reconcile:run")
   const eventTypePatterns: Record<ServiceCode, string> = {
-    reconcile: 'settler-reconcile',
-    exceptions: 'settler-exception:review', // Exceptions requiring human review
+    reconcile: "settler-reconcile",
+    exceptions: "settler-exception:review", // Exceptions requiring human review
   };
 
   const pattern = eventTypePatterns[service];
@@ -124,20 +129,18 @@ export async function getServiceUsage(
  * Get usage for all services in current period
  * Optimized with parallel queries
  */
-export async function getAccountUsage(
-  billingAccountId: string
-): Promise<AccountUsage> {
+export async function getAccountUsage(billingAccountId: string): Promise<AccountUsage> {
   // Validate input
-  if (!billingAccountId || typeof billingAccountId !== 'string') {
-    throw new Error('Invalid billing account ID');
+  if (!billingAccountId || typeof billingAccountId !== "string") {
+    throw new Error("Invalid billing account ID");
   }
 
   const period = await getCurrentBillingPeriod(billingAccountId);
 
   // Parallel queries for better performance
   const [reconcileUsage, exceptionsUsage] = await Promise.all([
-    getServiceUsage(billingAccountId, 'reconcile', period.start, period.end),
-    getServiceUsage(billingAccountId, 'exceptions', period.start, period.end),
+    getServiceUsage(billingAccountId, "reconcile", period.start, period.end),
+    getServiceUsage(billingAccountId, "exceptions", period.start, period.end),
   ]);
 
   return {

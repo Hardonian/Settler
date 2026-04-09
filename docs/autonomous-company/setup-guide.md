@@ -21,6 +21,7 @@ supabase db push
 ```
 
 This creates all necessary tables:
+
 - `agent_runs` - Tracks agent executions
 - `strategic_backlog` - Strategic priorities
 - `architecture_violations` - Code quality issues
@@ -184,7 +185,7 @@ curl -X POST https://your-project.supabase.co/functions/v1/agent-orchestrator \
 ### View Agent Runs
 
 ```sql
-SELECT 
+SELECT
   agent_type,
   status,
   started_at,
@@ -199,7 +200,7 @@ LIMIT 50;
 ### View Strategic Backlog
 
 ```sql
-SELECT 
+SELECT
   priority,
   title,
   category,
@@ -214,15 +215,15 @@ ORDER BY priority;
 ### View Architecture Violations
 
 ```sql
-SELECT 
+SELECT
   violation_type,
   severity,
   violation_description,
   suggested_action
 FROM architecture_violations
 WHERE status = 'open'
-ORDER BY 
-  CASE severity 
+ORDER BY
+  CASE severity
     WHEN 'critical' THEN 1
     WHEN 'high' THEN 2
     WHEN 'medium' THEN 3
@@ -233,15 +234,15 @@ ORDER BY
 ### View Financial Insights
 
 ```sql
-SELECT 
+SELECT
   insight_type,
   title,
   urgency,
   recommended_action
 FROM financial_insights
 WHERE status = 'active'
-ORDER BY 
-  CASE urgency 
+ORDER BY
+  CASE urgency
     WHEN 'critical' THEN 1
     WHEN 'high' THEN 2
     WHEN 'medium' THEN 3
@@ -297,6 +298,7 @@ jobs:
 ### Agent Not Running
 
 1. Check agent status:
+
    ```bash
    curl -X POST https://your-project.supabase.co/functions/v1/agent-orchestrator \
      -H "Authorization: Bearer YOUR_SERVICE_ROLE_KEY" \
@@ -331,4 +333,4 @@ jobs:
 
 ---
 
-*Last updated: 2026-01-27*
+_Last updated: 2026-01-27_

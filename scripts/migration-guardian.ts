@@ -175,7 +175,7 @@ function constructSupabaseUrl(env: Record<string, string>): string | null {
 
   // Use session pooler format for IPv4 connectivity
   const projectRef = hostMatch[1];
-  const region = env.DB_REGION || 'us-west-2';
+  const region = env.DB_REGION || "us-west-2";
   const host = `aws-0-${region}.pooler.supabase.com`;
   const password = env.SUPABASE_DB_PASSWORD || env.DB_PASSWORD;
   if (!password) return null;

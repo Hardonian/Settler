@@ -6,7 +6,15 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
    * Visual style variant
    * @default 'default'
    */
-  variant?: "default" | "secondary" | "destructive" | "outline" | "success" | "warning" | "info" | "processing";
+  variant?:
+    | "default"
+    | "secondary"
+    | "destructive"
+    | "outline"
+    | "success"
+    | "warning"
+    | "info"
+    | "processing";
 
   /**
    * Size variant
@@ -26,7 +34,8 @@ const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
       success: "border-transparent bg-success/15 text-success border border-success/25",
       warning: "border-transparent bg-warning/15 text-warning border border-warning/25",
       info: "border-transparent bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/25",
-      processing: "border-transparent bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/25 animate-pulse",
+      processing:
+        "border-transparent bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/25 animate-pulse",
     };
 
     const sizes = {

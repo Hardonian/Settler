@@ -1,10 +1,10 @@
 /**
  * DOM Reality Utilities
- * 
+ *
  * Helper functions for analyzing DOM rendering, CSS root causes, and generating reports.
  */
 
-import { Page } from '@playwright/test';
+import { Page } from "@playwright/test";
 
 export interface ElementAnalysis {
   selector: string;
@@ -19,21 +19,18 @@ export interface ElementAnalysis {
 /**
  * Analyze a specific element's rendering state
  */
-export async function analyzeElement(
-  page: Page,
-  selector: string
-): Promise<ElementAnalysis> {
+export async function analyzeElement(page: Page, selector: string): Promise<ElementAnalysis> {
   return await page.evaluate(
     ({ selector }) => {
       const el = document.querySelector(selector) as HTMLElement;
       if (!el) {
         return {
           selector,
-          tagName: 'UNKNOWN',
+          tagName: "UNKNOWN",
           isVisible: false,
           computedStyles: {},
           boundingBox: null,
-          rootCause: 'Element not found in DOM',
+          rootCause: "Element not found in DOM",
         };
       }
 
@@ -43,17 +40,17 @@ export async function analyzeElement(
       // Determine root cause if invisible
       let rootCause: string | undefined;
       if (
-        computed.display === 'none' ||
-        computed.visibility === 'hidden' ||
-        computed.opacity === '0' ||
+        computed.display === "none" ||
+        computed.visibility === "hidden" ||
+        computed.opacity === "0" ||
         rect.width === 0 ||
         rect.height === 0
       ) {
-        if (computed.display === 'none') rootCause = 'display: none';
-        else if (computed.visibility === 'hidden') rootCause = 'visibility: hidden';
-        else if (computed.opacity === '0') rootCause = 'opacity: 0';
-        else if (rect.width === 0) rootCause = 'zero width (likely collapsed flex/grid)';
-        else if (rect.height === 0) rootCause = 'zero height (likely collapsed flex/grid)';
+        if (computed.display === "none") rootCause = "display: none";
+        else if (computed.visibility === "hidden") rootCause = "visibility: hidden";
+        else if (computed.opacity === "0") rootCause = "opacity: 0";
+        else if (rect.width === 0) rootCause = "zero width (likely collapsed flex/grid)";
+        else if (rect.height === 0) rootCause = "zero height (likely collapsed flex/grid)";
       }
 
       // Try to find CSS source
@@ -61,7 +58,7 @@ export async function analyzeElement(
       try {
         const sheet = (computed as any).parentRule?.parentStyleSheet;
         if (sheet) {
-          cssSource = sheet.href || 'inline';
+          cssSource = sheet.href || "inline";
         }
       } catch {
         // Can't access stylesheet
@@ -71,9 +68,9 @@ export async function analyzeElement(
         selector,
         tagName: el.tagName,
         isVisible:
-          computed.display !== 'none' &&
-          computed.visibility !== 'hidden' &&
-          computed.opacity !== '0' &&
+          computed.display !== "none" &&
+          computed.visibility !== "hidden" &&
+          computed.opacity !== "0" &&
           rect.width > 0 &&
           rect.height > 0,
         computedStyles: {
@@ -111,16 +108,22 @@ export async function findElementsWithCSSIssues(
   return await page.evaluate(() => {
     const issues: Array<{ selector: string; issue: string; styles: Record<string, string> }> = [];
 
-    document.querySelectorAll('*').forEach((el) => {
+    document.querySelectorAll("*").forEach((el) => {
       if (el.nodeType !== Node.ELEMENT_NODE) return;
       const htmlEl = el as HTMLElement;
       const computed = window.getComputedStyle(htmlEl);
 
       // Check for problematic CSS patterns
-      if (computed.position === 'absolute' && !computed.top && !computed.bottom && !computed.left && !computed.right) {
+      if (
+        computed.position === "absolute" &&
+        !computed.top &&
+        !computed.bottom &&
+        !computed.left &&
+        !computed.right
+      ) {
         issues.push({
           selector: generateSelector(htmlEl),
-          issue: 'absolute positioning without anchor (top/left/right/bottom)',
+          issue: "absolute positioning without anchor (top/left/right/bottom)",
           styles: {
             position: computed.position,
             top: computed.top,
@@ -129,10 +132,16 @@ export async function findElementsWithCSSIssues(
         });
       }
 
-      if (computed.position === 'fixed' && !computed.top && !computed.bottom && !computed.left && !computed.right) {
+      if (
+        computed.position === "fixed" &&
+        !computed.top &&
+        !computed.bottom &&
+        !computed.left &&
+        !computed.right
+      ) {
         issues.push({
           selector: generateSelector(htmlEl),
-          issue: 'fixed positioning without anchor',
+          issue: "fixed positioning without anchor",
           styles: {
             position: computed.position,
             top: computed.top,
@@ -144,7 +153,7 @@ export async function findElementsWithCSSIssues(
       if (computed.zIndex && parseInt(computed.zIndex) > 1000) {
         issues.push({
           selector: generateSelector(htmlEl),
-          issue: 'excessive z-index (potential stacking context issue)',
+          issue: "excessive z-index (potential stacking context issue)",
           styles: {
             zIndex: computed.zIndex,
             position: computed.position,
@@ -152,10 +161,10 @@ export async function findElementsWithCSSIssues(
         });
       }
 
-      if (computed.overflow === 'hidden' && htmlEl.scrollHeight > htmlEl.clientHeight) {
+      if (computed.overflow === "hidden" && htmlEl.scrollHeight > htmlEl.clientHeight) {
         issues.push({
           selector: generateSelector(htmlEl),
-          issue: 'overflow: hidden clipping content',
+          issue: "overflow: hidden clipping content",
           styles: {
             overflow: computed.overflow,
             height: computed.height,
@@ -172,16 +181,16 @@ export async function findElementsWithCSSIssues(
       while (el && el.nodeType === Node.ELEMENT_NODE) {
         let selector = el.nodeName.toLowerCase();
         if (el.className) {
-          const classes = el.className.toString().split(' ').filter(Boolean);
+          const classes = el.className.toString().split(" ").filter(Boolean);
           if (classes.length > 0) {
-            selector += '.' + classes[0];
+            selector += "." + classes[0];
           }
         }
         path.unshift(selector);
         el = el.parentElement as Element;
         if (path.length > 3) break; // Limit depth
       }
-      return path.join(' > ');
+      return path.join(" > ");
     }
   });
 }
@@ -193,15 +202,19 @@ export async function detectTailwindConflicts(page: Page): Promise<string[]> {
   return await page.evaluate(() => {
     const conflicts: string[] = [];
 
-    document.querySelectorAll('[class*="hidden"][class*="block"], [class*="opacity-0"][class*="opacity-100"]').forEach((el) => {
-      const classes = el.className.toString();
-      if (classes.includes('hidden') && classes.includes('block')) {
-        conflicts.push(`Conflicting visibility classes: ${classes}`);
-      }
-      if (classes.includes('opacity-0') && classes.includes('opacity-100')) {
-        conflicts.push(`Conflicting opacity classes: ${classes}`);
-      }
-    });
+    document
+      .querySelectorAll(
+        '[class*="hidden"][class*="block"], [class*="opacity-0"][class*="opacity-100"]'
+      )
+      .forEach((el) => {
+        const classes = el.className.toString();
+        if (classes.includes("hidden") && classes.includes("block")) {
+          conflicts.push(`Conflicting visibility classes: ${classes}`);
+        }
+        if (classes.includes("opacity-0") && classes.includes("opacity-100")) {
+          conflicts.push(`Conflicting opacity classes: ${classes}`);
+        }
+      });
 
     return conflicts;
   });
@@ -227,17 +240,17 @@ export async function measurePaintMetrics(page: Page): Promise<{
         firstInputDelay?: number;
       } = {};
 
-      if ('PerformanceObserver' in window) {
+      if ("PerformanceObserver" in window) {
         try {
           // FCP
           const fcpObserver = new PerformanceObserver((list) => {
             for (const entry of list.getEntries()) {
-              if (entry.name === 'first-contentful-paint') {
+              if (entry.name === "first-contentful-paint") {
                 metrics.firstContentfulPaint = entry.startTime;
               }
             }
           });
-          fcpObserver.observe({ entryTypes: ['paint'] });
+          fcpObserver.observe({ entryTypes: ["paint"] });
 
           // LCP
           const lcpObserver = new PerformanceObserver((list) => {
@@ -245,7 +258,7 @@ export async function measurePaintMetrics(page: Page): Promise<{
             const lastEntry = entries[entries.length - 1] as any;
             metrics.largestContentfulPaint = lastEntry.renderTime || lastEntry.loadTime;
           });
-          lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
+          lcpObserver.observe({ entryTypes: ["largest-contentful-paint"] });
 
           // FID
           const fidObserver = new PerformanceObserver((list) => {
@@ -253,7 +266,7 @@ export async function measurePaintMetrics(page: Page): Promise<{
               metrics.firstInputDelay = (entry as any).processingStart - entry.startTime;
             }
           });
-          fidObserver.observe({ entryTypes: ['first-input'] });
+          fidObserver.observe({ entryTypes: ["first-input"] });
 
           setTimeout(() => {
             fcpObserver.disconnect();
@@ -286,9 +299,9 @@ export function generateSelector(element: Element): string {
     let selector = current.nodeName.toLowerCase();
 
     if (current.className) {
-      const classes = current.className.toString().split(' ').filter(Boolean);
+      const classes = current.className.toString().split(" ").filter(Boolean);
       if (classes.length > 0) {
-        selector += '.' + classes[0];
+        selector += "." + classes[0];
       }
     }
 
@@ -305,13 +318,16 @@ export function generateSelector(element: Element): string {
     if (path.length > 5) break; // Limit depth
   }
 
-  return path.join(' > ');
+  return path.join(" > ");
 }
 
 /**
  * Compare two DOM structures
  */
-export function compareDOM(dom1: string, dom2: string): {
+export function compareDOM(
+  dom1: string,
+  dom2: string
+): {
   added: string[];
   removed: string[];
   changed: string[];
@@ -339,7 +355,7 @@ function extractNodeSignatures(html: string): string[] {
     if (idMatch) {
       signatures.push(`#${idMatch[1]}`);
     } else if (classMatch && tagNameMatch) {
-      const firstClass = classMatch[1].split(' ')[0];
+      const firstClass = classMatch[1].split(" ")[0];
       signatures.push(`${tagNameMatch[1]}.${firstClass}`);
     } else if (tagNameMatch) {
       signatures.push(tagNameMatch[1]);

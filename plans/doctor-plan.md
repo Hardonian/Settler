@@ -8,7 +8,7 @@ Create a comprehensive self-check mechanism (`scripts/doctor.ts`) that helps ope
 
 ```
 PostgreSQL:  localhost:5432 (DB_HOST, DB_PORT)
-Redis:       localhost:6379 (REDIS_HOST, REDIS_PORT)  
+Redis:       localhost:6379 (REDIS_HOST, REDIS_PORT)
 TigerBeetle: localhost:4300 (TIGERBEETLE_ADDRESS)
 Web:         localhost:3000 (default)
 API:         localhost:4000 (default)
@@ -17,40 +17,47 @@ API:         localhost:4000 (default)
 ## Implementation Checklist
 
 ### 1. Core Toolchain Checks
+
 - [ ] Node.js version >= 24.x (check .nvmrc)
 - [ ] pnpm version >= 10.13
 - [ ] Docker/Docker Compose availability
 - [ ] Git availability
 
 ### 2. Environment Variables
+
 - [ ] Required vars: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY
 - [ ] Database URL: DATABASE_URL or DB_HOST/DB_PORT combination
 - [ ] Production secrets (when NODE_ENV=production)
 
 ### 3. Docker Services Connectivity
+
 - [ ] PostgreSQL: port 5432 reachable
 - [ ] Redis: port 6379 reachable
 - [ ] TigerBeetle: port 4300 reachable
 - [ ] Docker daemon running
 
 ### 4. Database Health
+
 - [ ] Prisma client generated
 - [ ] Database schema up-to-date (migration status)
 - [ ] Database connectivity verified
 - [ ] Seed data present (optional for dev)
 
 ### 5. Workspace Integrity
+
 - [ ] node_modules installed
 - [ ] pnpm-lock.yaml present
 - [ ] Critical workspace files exist
 
 ### 6. Build Prerequisites
+
 - [ ] TypeScript compiles without errors
 - [ ] Lint passes
 
 ## Output Format
 
 ### Human-Readable
+
 ```
 🏥 Settler Doctor - Local Environment Health Check
 ==================================================
@@ -84,6 +91,7 @@ API:         localhost:4000 (default)
 ```
 
 ### Machine-Readable (JSON)
+
 ```json
 {
   "status": "warning",
@@ -107,22 +115,24 @@ API:         localhost:4000 (default)
 ```
 
 ## Exit Codes
+
 - `0`: All checks passed
 - `1`: One or more failures (blocking issues)
 - `2`: Warnings only (non-blocking)
 
 ## Remediation Guidance Examples
 
-| Check | Failure | Remediation |
-|-------|---------|-------------|
-| Node.js | Version mismatch | Run `nvm use 24.12.0` or `nvm install` |
-| Docker | Not running | Start Docker Desktop or run `dockerd` |
-| PostgreSQL | Port unreachable | Run `pnpm tb:start` to start services |
-| Prisma | Not generated | Run `pnpm prisma:generate` |
-| Migrations | Pending | Run `pnpm db:migrate` |
-| node_modules | Missing | Run `pnpm install` |
+| Check        | Failure          | Remediation                            |
+| ------------ | ---------------- | -------------------------------------- |
+| Node.js      | Version mismatch | Run `nvm use 24.12.0` or `nvm install` |
+| Docker       | Not running      | Start Docker Desktop or run `dockerd`  |
+| PostgreSQL   | Port unreachable | Run `pnpm tb:start` to start services  |
+| Prisma       | Not generated    | Run `pnpm prisma:generate`             |
+| Migrations   | Pending          | Run `pnpm db:migrate`                  |
+| node_modules | Missing          | Run `pnpm install`                     |
 
 ## File Location
+
 - Script: `scripts/doctor.ts`
 - Entry point in package.json: Already configured as `doctor` -> `node scripts/doctor.mjs`
 - Note: Will replace the existing doctor implementation at `scripts/doctor.ts`

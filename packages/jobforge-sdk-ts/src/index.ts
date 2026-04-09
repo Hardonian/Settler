@@ -2,8 +2,8 @@
  * @jobforge/sdk-ts - TypeScript SDK for JobForge
  */
 
-export { JobForgeClient } from './client'
-export type { JobForgeClientConfig } from './client'
+export { JobForgeClient } from "./client";
+export type { JobForgeClientConfig } from "./client";
 
 // Re-export shared types
 export type {
@@ -22,4 +22,4 @@ export type {
   JobHandler,
   JobContext,
   JobTypeRegistry,
-} from '@jobforge/shared'
+} from "@jobforge/shared";

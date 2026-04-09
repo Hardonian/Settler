@@ -102,7 +102,9 @@ export function ReviewQueuePanel() {
                         : "bg-amber-500"
                     )}
                   />
-                  <span className="text-xs font-mono font-bold text-muted-foreground">{item.id}</span>
+                  <span className="text-xs font-mono font-bold text-muted-foreground">
+                    {item.id}
+                  </span>
                 </div>
                 <Badge
                   variant={
@@ -127,7 +129,9 @@ export function ReviewQueuePanel() {
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Confidence</p>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">
+                    Confidence
+                  </p>
                   <div
                     className={cn(
                       "flex items-center gap-1 text-xs font-bold",
@@ -173,13 +177,17 @@ export function ReviewQueuePanel() {
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
                   Transaction ID
                 </p>
-                <p className="text-sm font-mono text-foreground dark:text-muted-foreground">TX_99283811</p>
+                <p className="text-sm font-mono text-foreground dark:text-muted-foreground">
+                  TX_99283811
+                </p>
               </div>
               <div className="p-4">
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
                   Transaction ID
                 </p>
-                <p className="text-sm font-mono text-foreground dark:text-muted-foreground">TX_99283811</p>
+                <p className="text-sm font-mono text-foreground dark:text-muted-foreground">
+                  TX_99283811
+                </p>
               </div>
             </div>
 

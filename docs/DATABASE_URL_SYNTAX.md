@@ -15,11 +15,13 @@ postgresql://postgres:[YOUR-PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres
 ```
 
 **Example:**
+
 ```
 postgresql://postgres:mySecurePassword123@db.abcdefghijklmnop.supabase.co:5432/postgres
 ```
 
 **Where to find:**
+
 - Supabase Dashboard → Settings → Database → Connection string
 - Select "Direct connection" (not pooling)
 - Copy the connection string and replace `[YOUR-PASSWORD]` with your actual password
@@ -31,11 +33,13 @@ postgresql://postgres.[PROJECT-REF]:[YOUR-PASSWORD]@aws-0-[REGION].pooler.supaba
 ```
 
 **Example:**
+
 ```
 postgresql://postgres.abcdefghijklmnop:mySecurePassword123@aws-0-us-east-1.pooler.supabase.com:6543/postgres
 ```
 
 **Benefits:**
+
 - Better for serverless environments
 - Handles connection pooling automatically
 - Port 6543 (pooler) vs 5432 (direct)
@@ -47,6 +51,7 @@ postgresql://[user]:[password]@localhost:[port]/[database]
 ```
 
 **Example:**
+
 ```
 postgresql://postgres:postgres@localhost:5432/settler
 ```
@@ -61,14 +66,14 @@ postgresql://postgres:postgres@localhost:54322/postgres
 
 ## URL Components Explained
 
-| Component | Description | Example |
-|-----------|-------------|---------|
-| `postgresql://` | Protocol | `postgresql://` (or `postgres://`) |
-| `postgres` | Username | `postgres` (default Supabase user) |
-| `[YOUR-PASSWORD]` | Password | Your database password |
-| `db.[PROJECT-REF]` | Hostname | `db.abcdefghijklmnop.supabase.co` |
-| `5432` | Port | `5432` (direct) or `6543` (pooler) |
-| `postgres` | Database name | `postgres` (default) |
+| Component          | Description   | Example                            |
+| ------------------ | ------------- | ---------------------------------- |
+| `postgresql://`    | Protocol      | `postgresql://` (or `postgres://`) |
+| `postgres`         | Username      | `postgres` (default Supabase user) |
+| `[YOUR-PASSWORD]`  | Password      | Your database password             |
+| `db.[PROJECT-REF]` | Hostname      | `db.abcdefghijklmnop.supabase.co`  |
+| `5432`             | Port          | `5432` (direct) or `6543` (pooler) |
+| `postgres`         | Database name | `postgres` (default)               |
 
 ## Query Parameters (Optional)
 
@@ -80,14 +85,15 @@ postgresql://postgres:password@host:5432/postgres?sslmode=require&connection_lim
 
 ### Common Parameters
 
-| Parameter | Description | Example |
-|-----------|-------------|---------|
-| `sslmode` | SSL mode | `require`, `prefer`, `disable` |
-| `connection_limit` | Max connections | `5`, `10`, `20` |
-| `pool_timeout` | Connection timeout (seconds) | `20`, `30` |
-| `schema` | Default schema | `public` |
+| Parameter          | Description                  | Example                        |
+| ------------------ | ---------------------------- | ------------------------------ |
+| `sslmode`          | SSL mode                     | `require`, `prefer`, `disable` |
+| `connection_limit` | Max connections              | `5`, `10`, `20`                |
+| `pool_timeout`     | Connection timeout (seconds) | `20`, `30`                     |
+| `schema`           | Default schema               | `public`                       |
 
 **Example with parameters:**
+
 ```
 postgresql://postgres:password@db.project.supabase.co:5432/postgres?sslmode=require&connection_limit=5
 ```
@@ -96,19 +102,20 @@ postgresql://postgres:password@db.project.supabase.co:5432/postgres?sslmode=requ
 
 If your password contains special characters, URL-encode them:
 
-| Character | Encoded |
-|-----------|---------|
-| `@` | `%40` |
-| `:` | `%3A` |
-| `/` | `%2F` |
-| `#` | `%23` |
-| `?` | `%3F` |
-| `&` | `%26` |
-| `=` | `%3D` |
-| `%` | `%25` |
-| ` ` (space) | `%20` |
+| Character   | Encoded |
+| ----------- | ------- |
+| `@`         | `%40`   |
+| `:`         | `%3A`   |
+| `/`         | `%2F`   |
+| `#`         | `%23`   |
+| `?`         | `%3F`   |
+| `&`         | `%26`   |
+| `=`         | `%3D`   |
+| `%`         | `%25`   |
+| ` ` (space) | `%20`   |
 
 **Example:**
+
 ```
 # Password: "my@pass:word"
 postgresql://postgres:my%40pass%3Aword@db.project.supabase.co:5432/postgres
@@ -135,6 +142,7 @@ postgresql://postgres:my%40pass%3Aword@db.project.supabase.co:5432/postgres
 ### Method 3: From .env.connection File
 
 If you have a `.env.connection` file:
+
 ```bash
 cat .env.connection
 ```
@@ -150,6 +158,7 @@ export DATABASE_URL="postgresql://postgres:password@db.project.supabase.co:5432/
 ### Option 2: .env File (Local Development)
 
 Create `.env` file:
+
 ```bash
 DATABASE_URL=postgresql://postgres:password@db.project.supabase.co:5432/postgres
 ```
@@ -177,12 +186,14 @@ node -e "const { Pool } = require('pg'); const pool = new Pool({ connectionStrin
 ### Issue: Connection Refused
 
 **Possible causes:**
+
 - Wrong hostname
 - Wrong port
 - Firewall blocking connection
 - Database not accessible
 
 **Solution:**
+
 - Verify hostname format: `db.[PROJECT-REF].supabase.co`
 - Check port: `5432` for direct, `6543` for pooler
 - Ensure IP allowlist allows your IP (Supabase Dashboard → Settings → Database → Connection pooling)
@@ -190,11 +201,13 @@ node -e "const { Pool } = require('pg'); const pool = new Pool({ connectionStrin
 ### Issue: Authentication Failed
 
 **Possible causes:**
+
 - Wrong password
 - Special characters not URL-encoded
 - Wrong username
 
 **Solution:**
+
 - Reset password in Supabase Dashboard
 - URL-encode special characters in password
 - Use `postgres` as username (not your Supabase account email)
@@ -205,6 +218,7 @@ node -e "const { Pool } = require('pg'); const pool = new Pool({ connectionStrin
 
 **Solution:**
 Add `?sslmode=require` to connection string:
+
 ```
 postgresql://postgres:password@db.project.supabase.co:5432/postgres?sslmode=require
 ```

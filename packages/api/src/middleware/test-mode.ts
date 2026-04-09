@@ -23,7 +23,7 @@ export async function checkTestMode(req: AuthRequest): Promise<boolean> {
       [req.userId]
     );
 
-    return users.length > 0 && users[0] ? (users[0].test_mode_enabled === true) : false;
+    return users.length > 0 && users[0] ? users[0].test_mode_enabled === true : false;
   } catch {
     return false;
   }

@@ -3,11 +3,11 @@
  * Implements Zero Trust principles: Never trust, always verify
  */
 
-import jwt from 'jsonwebtoken';
-import { config } from '../../config';
-import { User, UserRole } from '../../domain/entities/User';
-import { verifyApiKey } from '../../utils/hash';
-import { query } from '../../db';
+import jwt from "jsonwebtoken";
+import { config } from "../../config";
+import { User, UserRole } from "../../domain/entities/User";
+import { verifyApiKey } from "../../utils/hash";
+import { query } from "../../db";
 // Logger imports removed - not used in this file
 
 export interface TokenPayload {
@@ -15,7 +15,7 @@ export interface TokenPayload {
   tenantId: string;
   role: UserRole;
   scopes: string[];
-  type: 'access' | 'refresh';
+  type: "access" | "refresh";
   jti: string; // JWT ID for revocation tracking
   iat: number;
   exp: number;
@@ -34,14 +34,14 @@ export interface AuthContext {
 export class ZeroTrustAuth {
   private static readonly ACCESS_TOKEN_TTL = 15 * 60; // 15 minutes
   private static readonly REFRESH_TOKEN_TTL = 7 * 24 * 60 * 60; // 7 days
-  private static readonly JWT_ALGORITHM = 'HS256';
+  private static readonly JWT_ALGORITHM = "HS256";
 
   /**
    * Generate short-lived access token (15 minutes)
    */
   static generateAccessToken(user: User, scopes: string[]): string {
     if (!config.jwt.secret) {
-      throw new Error('JWT_SECRET not configured');
+      throw new Error("JWT_SECRET not configured");
     }
 
     const jti = crypto.randomUUID();
@@ -52,7 +52,7 @@ export class ZeroTrustAuth {
       tenantId: user.tenantId,
       role: user.role,
       scopes,
-      type: 'access',
+      type: "access",
       jti,
       iat: now,
       exp: now + this.ACCESS_TOKEN_TTL,
@@ -60,8 +60,8 @@ export class ZeroTrustAuth {
 
     return jwt.sign(payload, config.jwt.secret, {
       algorithm: this.JWT_ALGORITHM,
-      issuer: 'settler-api',
-      audience: 'settler-client',
+      issuer: "settler-api",
+      audience: "settler-client",
     });
   }
 
@@ -70,7 +70,7 @@ export class ZeroTrustAuth {
    */
   static generateRefreshToken(user: User): string {
     if (!config.jwt.refreshSecret) {
-      throw new Error('JWT_REFRESH_SECRET not configured');
+      throw new Error("JWT_REFRESH_SECRET not configured");
     }
 
     const jti = crypto.randomUUID();
@@ -81,7 +81,7 @@ export class ZeroTrustAuth {
       tenantId: user.tenantId,
       role: user.role,
       scopes: [], // Refresh tokens don't have scopes
-      type: 'refresh',
+      type: "refresh",
       jti,
       iat: now,
       exp: now + this.REFRESH_TOKEN_TTL,
@@ -89,8 +89,8 @@ export class ZeroTrustAuth {
 
     return jwt.sign(payload, config.jwt.refreshSecret, {
       algorithm: this.JWT_ALGORITHM,
-      issuer: 'settler-api',
-      audience: 'settler-client',
+      issuer: "settler-api",
+      audience: "settler-client",
     });
   }
 
@@ -99,18 +99,18 @@ export class ZeroTrustAuth {
    */
   static verifyAccessToken(token: string): TokenPayload {
     if (!config.jwt.secret) {
-      throw new Error('JWT_SECRET not configured');
+      throw new Error("JWT_SECRET not configured");
     }
 
     try {
       const decoded = jwt.verify(token, config.jwt.secret, {
         algorithms: [this.JWT_ALGORITHM],
-        issuer: 'settler-api',
-        audience: 'settler-client',
+        issuer: "settler-api",
+        audience: "settler-client",
       }) as TokenPayload;
 
-      if (decoded.type !== 'access') {
-        throw new Error('Invalid token type');
+      if (decoded.type !== "access") {
+        throw new Error("Invalid token type");
       }
 
       // Check if token is revoked (in production, check Redis/DB)
@@ -118,11 +118,11 @@ export class ZeroTrustAuth {
 
       return decoded;
     } catch (error: any) {
-      if (error.name === 'TokenExpiredError') {
-        throw new Error('Access token expired');
+      if (error.name === "TokenExpiredError") {
+        throw new Error("Access token expired");
       }
-      if (error.name === 'JsonWebTokenError') {
-        throw new Error('Invalid access token');
+      if (error.name === "JsonWebTokenError") {
+        throw new Error("Invalid access token");
       }
       throw error;
     }
@@ -133,27 +133,27 @@ export class ZeroTrustAuth {
    */
   static verifyRefreshToken(token: string): TokenPayload {
     if (!config.jwt.refreshSecret) {
-      throw new Error('JWT_REFRESH_SECRET not configured');
+      throw new Error("JWT_REFRESH_SECRET not configured");
     }
 
     try {
       const decoded = jwt.verify(token, config.jwt.refreshSecret, {
         algorithms: [this.JWT_ALGORITHM],
-        issuer: 'settler-api',
-        audience: 'settler-client',
+        issuer: "settler-api",
+        audience: "settler-client",
       }) as TokenPayload;
 
-      if (decoded.type !== 'refresh') {
-        throw new Error('Invalid token type');
+      if (decoded.type !== "refresh") {
+        throw new Error("Invalid token type");
       }
 
       return decoded;
     } catch (error: any) {
-      if (error.name === 'TokenExpiredError') {
-        throw new Error('Refresh token expired');
+      if (error.name === "TokenExpiredError") {
+        throw new Error("Refresh token expired");
       }
-      if (error.name === 'JsonWebTokenError') {
-        throw new Error('Invalid refresh token');
+      if (error.name === "JsonWebTokenError") {
+        throw new Error("Invalid refresh token");
       }
       throw error;
     }
@@ -168,8 +168,8 @@ export class ZeroTrustAuth {
     userAgent: string
   ): Promise<AuthContext> {
     // Never trust - always verify
-    if (!apiKey.startsWith('rk_')) {
-      throw new Error('Invalid API key format');
+    if (!apiKey.startsWith("rk_")) {
+      throw new Error("Invalid API key format");
     }
 
     const prefix = apiKey.substring(0, 12);
@@ -201,13 +201,13 @@ export class ZeroTrustAuth {
       await query(
         `INSERT INTO audit_logs (event, ip, user_agent, metadata)
          VALUES ($1, $2, $3, $4)`,
-        ['api_key_auth_failed', ipAddress, userAgent, JSON.stringify({ prefix })]
+        ["api_key_auth_failed", ipAddress, userAgent, JSON.stringify({ prefix })]
       );
-      throw new Error('Invalid API key');
+      throw new Error("Invalid API key");
     }
 
     if (!keys[0]) {
-      throw new Error('API key not found');
+      throw new Error("API key not found");
     }
     const keyRecord = keys[0];
 
@@ -217,19 +217,19 @@ export class ZeroTrustAuth {
       await query(
         `INSERT INTO audit_logs (event, api_key_id, ip, user_agent, metadata)
          VALUES ($1, $2, $3, $4, $5)`,
-        ['api_key_auth_failed', keyRecord.id, ipAddress, userAgent, JSON.stringify({ prefix })]
+        ["api_key_auth_failed", keyRecord.id, ipAddress, userAgent, JSON.stringify({ prefix })]
       );
-      throw new Error('Invalid API key');
+      throw new Error("Invalid API key");
     }
 
     // Check revocation
     if (keyRecord.revoked_at) {
-      throw new Error('API key revoked');
+      throw new Error("API key revoked");
     }
 
     // Check expiration
     if (keyRecord.expires_at && new Date(keyRecord.expires_at) < new Date()) {
-      throw new Error('API key expired');
+      throw new Error("API key expired");
     }
 
     // Check IP whitelist (least privilege)
@@ -238,17 +238,14 @@ export class ZeroTrustAuth {
         await query(
           `INSERT INTO audit_logs (event, api_key_id, ip, user_agent, metadata)
            VALUES ($1, $2, $3, $4, $5)`,
-          ['api_key_ip_blocked', keyRecord.id, ipAddress, userAgent, JSON.stringify({ ipAddress })]
+          ["api_key_ip_blocked", keyRecord.id, ipAddress, userAgent, JSON.stringify({ ipAddress })]
         );
-        throw new Error('IP address not whitelisted');
+        throw new Error("IP address not whitelisted");
       }
     }
 
     // Update last used
-    await query(
-      `UPDATE api_keys SET last_used_at = NOW() WHERE id = $1`,
-      [keyRecord.id]
-    );
+    await query(`UPDATE api_keys SET last_used_at = NOW() WHERE id = $1`, [keyRecord.id]);
 
     return {
       userId: keyRecord.user_id,

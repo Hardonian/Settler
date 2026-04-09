@@ -1,13 +1,13 @@
 /**
  * Client wrapper for Welcome Banner
- * 
+ *
  * Handles URL param checking and localStorage state
  */
 
-'use client';
+"use client";
 
-import { Suspense } from 'react';
-import { WelcomeBanner } from './WelcomeBanner';
+import { Suspense } from "react";
+import { WelcomeBanner } from "./WelcomeBanner";
 
 export function WelcomeBannerClient({ userName }: { userName?: string }) {
   return (

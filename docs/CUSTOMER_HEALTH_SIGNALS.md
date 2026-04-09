@@ -7,6 +7,7 @@
 ## Overview
 
 Customer health signals help you:
+
 - **Prevent churn:** Identify at-risk customers early
 - **Drive expansion:** Identify upsell opportunities
 - **Improve retention:** Proactive outreach to at-risk customers
@@ -19,6 +20,7 @@ Customer health signals help you:
 ## Health Signals (Positive)
 
 ### High Usage
+
 **Signal:** Usage >70% of plan limits
 **Health Score:** +10 points
 **Action:** Upgrade prompt, expansion opportunity
@@ -26,6 +28,7 @@ Customer health signals help you:
 ---
 
 ### Consistent Usage
+
 **Signal:** Usage consistent month-over-month
 **Health Score:** +5 points
 **Action:** Maintain, monitor
@@ -33,6 +36,7 @@ Customer health signals help you:
 ---
 
 ### High Engagement
+
 **Signal:** Logins >10 times/month
 **Health Score:** +5 points
 **Action:** Maintain, monitor
@@ -40,6 +44,7 @@ Customer health signals help you:
 ---
 
 ### Multiple Integrations
+
 **Signal:** Connected >3 integrations
 **Health Score:** +5 points
 **Action:** Maintain, monitor
@@ -47,6 +52,7 @@ Customer health signals help you:
 ---
 
 ### API Integration
+
 **Signal:** Using API (not just Console)
 **Health Score:** +5 points
 **Action:** Maintain, monitor
@@ -54,6 +60,7 @@ Customer health signals help you:
 ---
 
 ### Support Engagement
+
 **Signal:** Responds to support, provides feedback
 **Health Score:** +5 points
 **Action:** Maintain, monitor
@@ -63,6 +70,7 @@ Customer health signals help you:
 ## Health Signals (Negative)
 
 ### Low Usage
+
 **Signal:** Usage <30% of plan limits
 **Health Score:** -10 points
 **Action:** Re-engagement campaign, check-in
@@ -70,6 +78,7 @@ Customer health signals help you:
 ---
 
 ### Usage Decline
+
 **Signal:** Usage drops >50% month-over-month
 **Health Score:** -15 points
 **Action:** Proactive outreach, understand why
@@ -77,6 +86,7 @@ Customer health signals help you:
 ---
 
 ### Engagement Decline
+
 **Signal:** Logins drop >50% month-over-month
 **Health Score:** -10 points
 **Action:** Re-engagement campaign, check-in
@@ -84,6 +94,7 @@ Customer health signals help you:
 ---
 
 ### No First Value
+
 **Signal:** No successful reconciliation after 7 days
 **Health Score:** -20 points
 **Action:** Onboarding support, intervention
@@ -91,6 +102,7 @@ Customer health signals help you:
 ---
 
 ### Payment Failures
+
 **Signal:** Payment failures >2 attempts
 **Health Score:** -15 points
 **Action:** Payment retry, update payment method
@@ -98,6 +110,7 @@ Customer health signals help you:
 ---
 
 ### Support Tickets Increase
+
 **Signal:** Support tickets increase >100% month-over-month
 **Health Score:** -10 points
 **Action:** Investigate issues, fix problems
@@ -107,11 +120,13 @@ Customer health signals help you:
 ## Health Score Calculation
 
 ### Scoring System
+
 - **Positive Signals:** +5 to +10 points each
 - **Negative Signals:** -10 to -20 points each
 - **Total Score:** Sum of all signals
 
 ### Health Levels
+
 - **Healthy (50+ points):** Low churn risk, expansion opportunity
 - **At Risk (0-49 points):** Medium churn risk, proactive outreach
 - **Critical (<0 points):** High churn risk, immediate intervention
@@ -121,7 +136,9 @@ Customer health signals help you:
 ## Health-Based Actions
 
 ### Healthy Customers (50+ points)
+
 **Actions:**
+
 - ✅ Maintain: Continue current support level
 - ✅ Monitor: Track usage, engagement
 - ✅ Expand: Upsell opportunities (upgrade, add-ons)
@@ -129,7 +146,9 @@ Customer health signals help you:
 ---
 
 ### At-Risk Customers (0-49 points)
+
 **Actions:**
+
 - ⚠️ Proactive Outreach: Check-in, understand issues
 - ⚠️ Re-engagement: Show value, provide support
 - ⚠️ Monitor: Track closely, intervene if needed
@@ -137,7 +156,9 @@ Customer health signals help you:
 ---
 
 ### Critical Customers (<0 points)
+
 **Actions:**
+
 - 🚨 Immediate Intervention: Proactive outreach, understand why
 - 🚨 Support: Offer help, fix issues
 - 🚨 Retention: Discount, extended trial, custom terms
@@ -147,11 +168,13 @@ Customer health signals help you:
 ## Health Tracking
 
 ### Automated Tracking
+
 - **Database:** Track health signals in database
 - **Dashboard:** Display health scores in admin dashboard
 - **Alerts:** Alert on critical health signals
 
 ### Manual Tracking
+
 - **Weekly Review:** Review health scores weekly
 - **Monthly Review:** Review health trends monthly
 - **Quarterly Review:** Review health strategy quarterly

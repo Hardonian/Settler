@@ -1,14 +1,14 @@
 /**
  * Server-side tenant utilities
- * 
+ *
  * For use in Server Components, Server Actions, and Route Handlers
  */
 
-import { headers } from 'next/headers';
-import { resolveTenant, getTenantById } from '@/shared/tenant/tenantResolver';
-import { brandingToTheme } from '@/components/tenant/TenantThemeProvider';
-import { TenantNavigationItem, TenantTheme } from '@/shared/tenant/types';
-import { createClient } from '@/lib/supabase/server';
+import { headers } from "next/headers";
+import { resolveTenant, getTenantById } from "@/shared/tenant/tenantResolver";
+import { brandingToTheme } from "@/components/tenant/TenantThemeProvider";
+import { TenantNavigationItem, TenantTheme } from "@/shared/tenant/types";
+import { createClient } from "@/lib/supabase/server";
 
 export interface TenantContext {
   tenantId: string;
@@ -26,8 +26,8 @@ export interface TenantContext {
 
 // Default fallback tenant context
 const DEFAULT_CONTEXT: TenantContext = {
-  tenantId: '',
-  tenantSlug: 'default',
+  tenantId: "",
+  tenantSlug: "default",
   theme: null,
   branding: null,
   navigation: null,
@@ -40,8 +40,8 @@ function isBuildTime(): boolean {
   // During build, headers() will throw or return empty values
   // Check for common build-time indicators
   return (
-    process.env.NEXT_PHASE === 'phase-production-build' ||
-    process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL
+    process.env.NEXT_PHASE === "phase-production-build" ||
+    (process.env.NODE_ENV === "production" && !process.env.VERCEL_URL)
   );
 }
 
@@ -63,22 +63,22 @@ export async function getTenantContext(): Promise<TenantContext> {
       headersList = await headers();
     } catch (error) {
       // If headers() fails (e.g., during static generation), return default
-      if (error instanceof Error && error.message.includes('DYNAMIC_SERVER_USAGE')) {
+      if (error instanceof Error && error.message.includes("DYNAMIC_SERVER_USAGE")) {
         return DEFAULT_CONTEXT;
       }
       throw error;
     }
 
-    const host = headersList.get('host') || '';
-    const pathname = headersList.get('x-pathname') || '';
-    
+    const host = headersList.get("host") || "";
+    const pathname = headersList.get("x-pathname") || "";
+
     // If no host, we're likely in build context
     if (!host) {
       return DEFAULT_CONTEXT;
     }
-    
+
     // Create a mock Request object for tenant resolution
-    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
+    const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
     const url = `${protocol}://${host}${pathname}`;
     const request = new Request(url, {
       headers: {
@@ -90,13 +90,15 @@ export async function getTenantContext(): Promise<TenantContext> {
     let userId: string | null = null;
     try {
       const supabase = await createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       userId = user?.id || null;
     } catch (error) {
       // Auth not available, continue without user
       // Only log in development to avoid build noise
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('Failed to get user from Supabase:', error);
+      if (process.env.NODE_ENV === "development") {
+        console.warn("Failed to get user from Supabase:", error);
       }
     }
 
@@ -106,12 +108,12 @@ export async function getTenantContext(): Promise<TenantContext> {
       resolution = await resolveTenant(request, userId);
     } catch (error) {
       // Only log errors in development or if it's not a build-time issue
-      if (process.env.NODE_ENV === 'development' || !isBuildTime()) {
-        console.error('Failed to resolve tenant:', error);
+      if (process.env.NODE_ENV === "development" || !isBuildTime()) {
+        console.error("Failed to resolve tenant:", error);
       }
       return DEFAULT_CONTEXT;
     }
-    
+
     if (!resolution.tenantId) {
       return DEFAULT_CONTEXT;
     }
@@ -122,8 +124,8 @@ export async function getTenantContext(): Promise<TenantContext> {
       tenant = await getTenantById(resolution.tenantId);
     } catch (error) {
       // Only log errors in development
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Failed to fetch tenant by ID:', error);
+      if (process.env.NODE_ENV === "development") {
+        console.error("Failed to fetch tenant by ID:", error);
       }
       // Return context with tenant ID but no branding/navigation if fetch fails
       return {
@@ -134,7 +136,7 @@ export async function getTenantContext(): Promise<TenantContext> {
         navigation: null,
       };
     }
-    
+
     if (!tenant) {
       return {
         tenantId: resolution.tenantId,
@@ -149,7 +151,9 @@ export async function getTenantContext(): Promise<TenantContext> {
     const theme = tenant.branding
       ? brandingToTheme({
           ...tenant.branding,
-          borderRadiusScale: tenant.branding.borderRadiusScale ? Number(tenant.branding.borderRadiusScale) : null,
+          borderRadiusScale: tenant.branding.borderRadiusScale
+            ? Number(tenant.branding.borderRadiusScale)
+            : null,
         })
       : null;
 
@@ -173,8 +177,8 @@ export async function getTenantContext(): Promise<TenantContext> {
   } catch (error) {
     // Catch any unexpected errors and return default context
     // Only log in development to avoid build noise
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Unexpected error in getTenantContext:', error);
+    if (process.env.NODE_ENV === "development") {
+      console.error("Unexpected error in getTenantContext:", error);
     }
     return DEFAULT_CONTEXT;
   }
@@ -213,8 +217,8 @@ export async function getTenantPage(
   tenantId: string,
   slug: string
 ): Promise<TenantPageWithExperiment | null> {
-  const { prisma } = await import('@/shared/db/prismaClient');
-  const { resolveExperimentVariant } = await import('./experimentResolver');
+  const { prisma } = await import("@/shared/db/prismaClient");
+  const { resolveExperimentVariant } = await import("./experimentResolver");
 
   const page = await prisma.tenantPage.findUnique({
     where: {
@@ -239,29 +243,29 @@ export async function getTenantPage(
 
   // Resolve experiment variant if active
   const experiment = await resolveExperimentVariant(tenantId, page.id);
-  
+
   // Merge experiment blocks override with base blocks
   const baseBlocks = Array.isArray(page.blocks) ? page.blocks : [];
   let finalBlocks = baseBlocks;
   if (experiment.blocksOverride && Array.isArray(experiment.blocksOverride)) {
     // Simple merge: experiment blocks override base blocks
     // In production, you might want more sophisticated merging
-    finalBlocks = experiment.blocksOverride.length > 0 
-      ? experiment.blocksOverride 
-      : finalBlocks;
+    finalBlocks = experiment.blocksOverride.length > 0 ? experiment.blocksOverride : finalBlocks;
   }
 
   return {
     ...page,
     blocks: finalBlocks,
-    experiment: experiment.experimentId ? {
-      id: experiment.experimentId,
-      variantKey: experiment.variantKey,
-    } : null,
+    experiment: experiment.experimentId
+      ? {
+          id: experiment.experimentId,
+          variantKey: experiment.variantKey,
+        }
+      : null,
   };
 }
 const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
+  typeof value === "object" && value !== null && !Array.isArray(value);
 
 const isTenantNavigationItem = (value: unknown): value is TenantNavigationItem => {
   if (!isRecord(value)) {
@@ -269,11 +273,11 @@ const isTenantNavigationItem = (value: unknown): value is TenantNavigationItem =
   }
 
   const type = value.type;
-  if (type !== 'internal' && type !== 'external') {
+  if (type !== "internal" && type !== "external") {
     return false;
   }
 
-  if (typeof value.label !== 'string' || typeof value.href !== 'string') {
+  if (typeof value.label !== "string" || typeof value.href !== "string") {
     return false;
   }
 

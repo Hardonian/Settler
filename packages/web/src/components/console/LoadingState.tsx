@@ -1,19 +1,19 @@
 /**
  * Loading State Component
- * 
+ *
  * Consistent loading UI across console pages.
  */
 
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from "@/components/ui/card";
 
 interface LoadingStateProps {
   message?: string;
   fullHeight?: boolean;
 }
 
-export function LoadingState({ message = 'Loading...', fullHeight = false }: LoadingStateProps) {
+export function LoadingState({ message = "Loading...", fullHeight = false }: LoadingStateProps) {
   return (
-    <div className={fullHeight ? 'flex items-center justify-center min-h-[60vh]' : ''}>
+    <div className={fullHeight ? "flex items-center justify-center min-h-[60vh]" : ""}>
       <Card>
         <CardContent className="py-12">
           <div className="flex flex-col items-center justify-center">

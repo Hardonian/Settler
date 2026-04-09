@@ -3,9 +3,9 @@
  * Manages database connections with tenant context for RLS
  */
 
-import { Pool, PoolClient } from 'pg';
-import { config } from '../../config';
-import { TenantContext } from './TenantContext';
+import { Pool, PoolClient } from "pg";
+import { config } from "../../config";
+import { TenantContext } from "./TenantContext";
 
 export class TenantConnectionPool {
   private pool: Pool;
@@ -26,15 +26,17 @@ export class TenantConnectionPool {
       query_timeout: 30000,
     });
 
-    this.pool.on('error', (err) => {
+    this.pool.on("error", (err) => {
       // Import logger dynamically to avoid circular dependencies
-      import('../../utils/logger').then(({ logError }) => {
-        logError('Unexpected error on idle client', err);
-      }).catch(() => {
-        // Fallback if logger fails
-         
-        console.error('Unexpected error on idle client', err);
-      });
+      import("../../utils/logger")
+        .then(({ logError }) => {
+          logError("Unexpected error on idle client", err);
+        })
+        .catch(() => {
+          // Fallback if logger fails
+
+          console.error("Unexpected error on idle client", err);
+        });
     });
   }
 
@@ -50,11 +52,7 @@ export class TenantConnectionPool {
   /**
    * Execute a query with tenant context
    */
-  async query<T = unknown>(
-    tenantId: string,
-    text: string,
-    params?: unknown[]
-  ): Promise<T[]> {
+  async query<T = unknown>(tenantId: string, text: string, params?: unknown[]): Promise<T[]> {
     const client = await this.getConnection(tenantId);
     try {
       const result = await client.query(text, params);
@@ -68,18 +66,15 @@ export class TenantConnectionPool {
   /**
    * Execute a transaction with tenant context
    */
-  async transaction<T>(
-    tenantId: string,
-    callback: (client: PoolClient) => Promise<T>
-  ): Promise<T> {
+  async transaction<T>(tenantId: string, callback: (client: PoolClient) => Promise<T>): Promise<T> {
     const client = await this.getConnection(tenantId);
     try {
-      await client.query('BEGIN');
+      await client.query("BEGIN");
       const result = await callback(client);
-      await client.query('COMMIT');
+      await client.query("COMMIT");
       return result;
     } catch (error) {
-      await client.query('ROLLBACK');
+      await client.query("ROLLBACK");
       throw error;
     } finally {
       await TenantContext.clearTenantContext(client);

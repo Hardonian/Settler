@@ -3,31 +3,31 @@
  * Adds tracing, metrics, and logging to HTTP requests
  */
 
-import { Request, Response, NextFunction } from 'express';
-import { trace, SpanStatusCode, context } from '@opentelemetry/api';
-import { httpRequestDuration, httpRequestTotal, httpRequestErrors } from '../infrastructure/observability/metrics';
-import { logPerformance } from '../utils/logger';
-import { AuthRequest } from './auth';
+import { Request, Response, NextFunction } from "express";
+import { trace, SpanStatusCode, context } from "@opentelemetry/api";
+import {
+  httpRequestDuration,
+  httpRequestTotal,
+  httpRequestErrors,
+} from "../infrastructure/observability/metrics";
+import { logPerformance } from "../utils/logger";
+import { AuthRequest } from "./auth";
 
-const tracer = trace.getTracer('settler-api');
+const tracer = trace.getTracer("settler-api");
 
-export function observabilityMiddleware(
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void {
+export function observabilityMiddleware(req: Request, res: Response, next: NextFunction): void {
   const startTime = Date.now();
   const method = req.method;
   const route = req.route?.path || req.path;
-  const tenantId = (req as AuthRequest).tenantId || (req as AuthRequest).userId || 'unknown';
+  const tenantId = (req as AuthRequest).tenantId || (req as AuthRequest).userId || "unknown";
 
   // Create span for this request
   const span = tracer.startSpan(`http.${method.toLowerCase()}`, {
     attributes: {
-      'http.method': method,
-      'http.route': route,
-      'http.url': req.url,
-      'tenant.id': tenantId,
+      "http.method": method,
+      "http.route": route,
+      "http.url": req.url,
+      "tenant.id": tenantId,
     },
   });
 
@@ -49,12 +49,17 @@ export function observabilityMiddleware(
     return originalJson.call(this, body);
   };
 
-  res.end = function (this: Response, chunk?: unknown, encoding?: BufferEncoding | (() => void), cb?: () => void) {
+  res.end = function (
+    this: Response,
+    chunk?: unknown,
+    encoding?: BufferEncoding | (() => void),
+    cb?: () => void
+  ) {
     recordMetrics();
-    if (typeof encoding === 'function') {
+    if (typeof encoding === "function") {
       // encoding is actually a callback function (two-arg overload: end(chunk, cb))
       originalEnd(chunk, encoding);
-    } else if (encoding !== undefined && typeof encoding === 'string') {
+    } else if (encoding !== undefined && typeof encoding === "string") {
       // encoding is a BufferEncoding string (three-arg overload: end(chunk, encoding, cb))
       originalEnd(chunk, encoding, cb);
     } else if (cb !== undefined) {
@@ -71,8 +76,8 @@ export function observabilityMiddleware(
     const statusCode = res.statusCode;
 
     // Update span
-    span.setAttribute('http.status_code', statusCode);
-    span.setAttribute('http.response_size', res.get('content-length') || 0);
+    span.setAttribute("http.status_code", statusCode);
+    span.setAttribute("http.response_size", res.get("content-length") || 0);
 
     if (statusCode >= 400) {
       span.setStatus({
@@ -85,7 +90,7 @@ export function observabilityMiddleware(
       httpRequestErrors.inc({
         method,
         route,
-        error_type: statusCode >= 500 ? 'server_error' : 'client_error',
+        error_type: statusCode >= 500 ? "server_error" : "client_error",
         tenant_id: tenantId,
       });
     } else {
@@ -123,7 +128,7 @@ export function observabilityMiddleware(
   }
 
   // Handle errors
-  res.on('finish', () => {
+  res.on("finish", () => {
     if (!res.headersSent) {
       recordMetrics();
     }

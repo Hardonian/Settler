@@ -47,6 +47,7 @@ Settler uses a **three-tier model** that creates a clear upgrade path from free/
 **Target:** Individual developers, small projects, evaluation
 
 **Value Proposition:**
+
 - Free forever
 - Core protocol types and utilities
 - Basic React components
@@ -54,12 +55,14 @@ Settler uses a **three-tier model** that creates a clear upgrade path from free/
 - MIT License (no restrictions)
 
 **Purpose:**
+
 - Build developer community
 - Enable evaluation and experimentation
 - Create network effects
 - Generate leads for paid tiers
 
 **Upgrade Triggers:**
+
 - Need platform integrations (Shopify, Stripe, etc.)
 - Need advanced features (virtualization, telemetry)
 - Need production support
@@ -72,6 +75,7 @@ Settler uses a **three-tier model** that creates a clear upgrade path from free/
 **Target:** Small businesses, startups, side projects
 
 **Value Proposition:**
+
 - Affordable entry point
 - Production-ready reconciliation
 - Receipt parsing (10K/month)
@@ -79,11 +83,13 @@ Settler uses a **three-tier model** that creates a clear upgrade path from free/
 - Email support (48-hour response)
 
 **Use Cases:**
+
 - E-commerce stores (Shopify, WooCommerce)
 - Small SaaS companies
 - Freelancers/consultants
 
 **Upgrade Triggers:**
+
 - Usage exceeds tier limits (100K reconciliations/month)
 - Need faster support response
 - Need priority features
@@ -95,17 +101,20 @@ Settler uses a **three-tier model** that creates a clear upgrade path from free/
 **Target:** Growing businesses, established SaaS companies
 
 **Value Proposition:**
+
 - Higher usage limits (1M reconciliations/month)
 - Priority support (24-hour response)
 - Advanced features
 - Production SLA (99.9% uptime)
 
 **Use Cases:**
+
 - Mid-market SaaS companies
 - E-commerce platforms (100+ orders/day)
 - Marketplaces with multi-party transactions
 
 **Upgrade Triggers:**
+
 - Need unlimited usage
 - Need SLA guarantees (99.99%)
 - Need dedicated support
@@ -119,6 +128,7 @@ Settler uses a **three-tier model** that creates a clear upgrade path from free/
 **Target:** Large organizations, regulated industries
 
 **Value Proposition:**
+
 - Unlimited usage
 - SLA guarantees (99.99% uptime)
 - Dedicated support (24/7)
@@ -128,6 +138,7 @@ Settler uses a **three-tier model** that creates a clear upgrade path from free/
 - Compliance certifications
 
 **Use Cases:**
+
 - Enterprise SaaS companies
 - Financial services
 - Healthcare (HIPAA)
@@ -142,17 +153,20 @@ Settler uses a **three-tier model** that creates a clear upgrade path from free/
 ### OSS → Starter ($0 → $99/month)
 
 **Value Delivered:**
+
 - Production-ready reconciliation API
 - Receipt parsing (10K/month)
 - Feature flags (1M evaluations/month)
 - Email support
 
 **Upgrade Motivation:**
+
 - Need platform integrations
 - Need production support
 - Need advanced features
 
 **Conversion Strategy:**
+
 - Self-serve onboarding
 - Developer Console access
 - Clear value demonstration
@@ -163,6 +177,7 @@ Settler uses a **three-tier model** that creates a clear upgrade path from free/
 ### Starter → Professional ($99 → $499/month)
 
 **Value Delivered:**
+
 - 10x usage increase (100K → 1M reconciliations/month)
 - 10x receipt parsing (10K → 100K/month)
 - 10x feature flags (1M → 10M evaluations/month)
@@ -170,11 +185,13 @@ Settler uses a **three-tier model** that creates a clear upgrade path from free/
 - Production SLA (99.9% uptime)
 
 **Upgrade Motivation:**
+
 - Usage growth (natural expansion)
 - Need faster support
 - Need SLA guarantees
 
 **Conversion Strategy:**
+
 - Usage-based alerts
 - Proactive support outreach
 - Value demonstration (time saved, reliability)
@@ -184,6 +201,7 @@ Settler uses a **three-tier model** that creates a clear upgrade path from free/
 ### Professional → Enterprise ($499 → Custom)
 
 **Value Delivered:**
+
 - Unlimited usage
 - SLA guarantees (99.99% uptime)
 - Dedicated support (24/7)
@@ -192,12 +210,14 @@ Settler uses a **three-tier model** that creates a clear upgrade path from free/
 - Data residency options
 
 **Upgrade Motivation:**
+
 - Need unlimited usage
 - Need enterprise features (SSO, RBAC)
 - Need compliance certifications
 - Need custom integrations
 
 **Conversion Strategy:**
+
 - Enterprise sales process
 - Custom demos and POCs
 - Compliance support
@@ -212,6 +232,7 @@ Settler uses a **three-tier model** that creates a clear upgrade path from free/
 **Positioning:** Modern, developer-first alternative to legacy ERP systems
 
 **Key Messages:**
+
 - ✅ API-first, self-serve (vs. complex, consultant-heavy)
 - ✅ Fast implementation (days vs. months)
 - ✅ Lower cost (subscription vs. license + maintenance)
@@ -222,6 +243,7 @@ Settler uses a **three-tier model** that creates a clear upgrade path from free/
 **Positioning:** Comprehensive reconciliation platform (not vendor-locked)
 
 **Key Messages:**
+
 - ✅ Multi-system reconciliation (not single-vendor)
 - ✅ Comprehensive audit trails
 - ✅ Enterprise-grade security and compliance
@@ -232,6 +254,7 @@ Settler uses a **three-tier model** that creates a clear upgrade path from free/
 **Positioning:** Faster, cheaper, better-maintained than building in-house
 
 **Key Messages:**
+
 - ✅ Faster time-to-market (weeks vs. months/years)
 - ✅ Lower total cost of ownership
 - ✅ Ongoing maintenance and updates

@@ -110,9 +110,7 @@ function computeNextRuns(cron: string, timezone: string, count: number): Date[] 
 
   // Step values
   const hourStep =
-    hourField.startsWith("*/") && hourField.length > 2
-      ? parseInt(hourField.slice(2), 10)
-      : null;
+    hourField.startsWith("*/") && hourField.length > 2 ? parseInt(hourField.slice(2), 10) : null;
 
   // Start from now, advance until we find `count` matching times
   const now = new Date();
@@ -133,11 +131,7 @@ function computeNextRuns(cron: string, timezone: string, count: number): Date[] 
 
     const minuteMatch = targetMinute === null || min === targetMinute;
     const hourMatch =
-      targetHour !== null
-        ? hr === targetHour
-        : hourStep
-          ? hr % hourStep === 0
-          : true;
+      targetHour !== null ? hr === targetHour : hourStep ? hr % hourStep === 0 : true;
     const domMatch = targetDayOfMonth === null || dom === targetDayOfMonth;
     const dowMatch = targetDayOfWeek === null || dow === targetDayOfWeek;
 
@@ -260,7 +254,10 @@ export function ScheduleConfigPanel({ job, onSaved }: ScheduleConfigPanelProps) 
 
         {/* Custom cron input */}
         <div className="space-y-1.5">
-          <label htmlFor={`cron-${job.id}`} className="block text-xs font-medium text-muted-foreground">
+          <label
+            htmlFor={`cron-${job.id}`}
+            className="block text-xs font-medium text-muted-foreground"
+          >
             Cron expression
           </label>
           <input
@@ -281,7 +278,10 @@ export function ScheduleConfigPanel({ job, onSaved }: ScheduleConfigPanelProps) 
 
         {/* Timezone selector */}
         <div className="space-y-1.5">
-          <label htmlFor={`tz-${job.id}`} className="block text-xs font-medium text-muted-foreground">
+          <label
+            htmlFor={`tz-${job.id}`}
+            className="block text-xs font-medium text-muted-foreground"
+          >
             Timezone
           </label>
           <select

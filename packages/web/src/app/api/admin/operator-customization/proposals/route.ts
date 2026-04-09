@@ -30,13 +30,18 @@ export const POST = withSecurity(
 
       const body = PostBodySchema.safeParse(await request.json().catch(() => null));
       if (!body.success) {
-        return NextResponse.json({ error: "invalid_body", issues: body.error.issues }, { status: 400 });
+        return NextResponse.json(
+          { error: "invalid_body", issues: body.error.issues },
+          { status: 400 }
+        );
       }
 
       const resolved = await resolveCustomizationTenantId(body.data.tenantId ?? null);
       if (!resolved.ok) return resolved.response;
 
-      const entitlements = await getOperatorCustomizationEntitlementsForTenant(resolved.tenant.tenantId);
+      const entitlements = await getOperatorCustomizationEntitlementsForTenant(
+        resolved.tenant.tenantId
+      );
 
       const built = buildProposalFromNaturalLanguage(body.data.request);
       if (!built.ok) {
@@ -71,7 +76,10 @@ export const POST = withSecurity(
 
       const parsedPatch = CustomizationPatchSchema.safeParse(built.patch);
       if (!parsedPatch.success) {
-        return NextResponse.json({ error: "patch_invalid", issues: parsedPatch.error.issues }, { status: 500 });
+        return NextResponse.json(
+          { error: "patch_invalid", issues: parsedPatch.error.issues },
+          { status: 500 }
+        );
       }
 
       const presetId = parsedPatch.data.lastAppliedPresetId;

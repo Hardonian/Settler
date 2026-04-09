@@ -76,10 +76,11 @@ Settler-Version: v1
 
 ```typescript
 // v1 endpoint (deprecated)
-app.get('/api/v1/old-endpoint',
-  deprecateEndpoint('2026-12-31T00:00:00Z', '/docs/migrations/v1-to-v2'),
+app.get(
+  "/api/v1/old-endpoint",
+  deprecateEndpoint("2026-12-31T00:00:00Z", "/docs/migrations/v1-to-v2"),
   (req, res) => {
-    res.json({ message: 'Use /api/v2/new-endpoint instead' });
+    res.json({ message: "Use /api/v2/new-endpoint instead" });
   }
 );
 ```

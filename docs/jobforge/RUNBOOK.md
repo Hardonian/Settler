@@ -191,11 +191,11 @@ WHERE status IN ('failed', 'dead')
 
 ```typescript
 await client.enqueueJob({
-  tenant_id: 'system',
-  type: 'system.cleanup.old_jobs',
+  tenant_id: "system",
+  type: "system.cleanup.old_jobs",
   payload: { days_to_keep: 30 },
   idempotency_key: `cleanup-${new Date().toISOString().slice(0, 10)}`,
-})
+});
 ```
 
 ### Vacuum & Analyze
@@ -228,7 +228,7 @@ groups:
            sum(rate(jobforge_jobs_total[1h]))) > 0.1
         for: 5m
         annotations:
-          summary: 'High job failure rate ({{ $value }}%)'
+          summary: "High job failure rate ({{ $value }}%)"
 ```
 
 ## Backfills
@@ -251,19 +251,19 @@ WHERE status = 'failed'
 ### Bulk Enqueue
 
 ```typescript
-const jobs = []
+const jobs = [];
 for (const item of items) {
   jobs.push(
     client.enqueueJob({
       tenant_id: tenantId,
-      type: 'backfill.process_item',
+      type: "backfill.process_item",
       payload: { item_id: item.id },
       idempotency_key: `backfill-${item.id}`,
     })
-  )
+  );
 }
 
-await Promise.all(jobs)
+await Promise.all(jobs);
 ```
 
 ## Disaster Recovery
@@ -325,13 +325,13 @@ Store large payloads externally:
 // Instead of:
 await client.enqueueJob({
   payload: { large_data: hugeObject }, // Bad: >100KB
-})
+});
 
 // Do this:
-const ref = await uploadToStorage(hugeObject)
+const ref = await uploadToStorage(hugeObject);
 await client.enqueueJob({
   payload: { data_ref: ref }, // Good: small payload
-})
+});
 ```
 
 ---

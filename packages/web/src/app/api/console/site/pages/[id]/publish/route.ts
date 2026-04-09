@@ -74,4 +74,3 @@ export const POST = withSecurity(
   },
   { rateLimit: { windowMs: 60_000, maxRequests: 20 }, requireAuth: true }
 );
-

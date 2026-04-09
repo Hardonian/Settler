@@ -1,16 +1,15 @@
 /**
  * Usage Simulation Engine
- * 
+ *
  * Analyzes usage patterns and simulates costs
  * Part of Section 9: Pricing Intelligence
  */
 
- 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 // logInfo imported but unused - may be used in future
 
 export interface UsageSimulation {
-  period: 'daily' | 'weekly' | 'monthly';
+  period: "daily" | "weekly" | "monthly";
   reconComparisons: number;
   validations: number;
   transformations: number;
@@ -45,7 +44,7 @@ export class UsageSimulator {
    */
   async simulateUsage(
     tenantId: string,
-    period: 'daily' | 'weekly' | 'monthly' = 'monthly'
+    period: "daily" | "weekly" | "monthly" = "monthly"
   ): Promise<UsageSimulation> {
     // Get historical usage
     const historicalUsage = await this.getHistoricalUsage(tenantId, period);
@@ -66,12 +65,9 @@ export class UsageSimulator {
   /**
    * Get historical usage
    */
-  private async getHistoricalUsage(
-    tenantId: string,
-    period: 'daily' | 'weekly' | 'monthly'
-  ) {
+  private async getHistoricalUsage(tenantId: string, period: "daily" | "weekly" | "monthly") {
     const startDate = this.getStartDate(period);
-    
+
     const usageEvents = await this.prisma.usageEvent.findMany({
       where: {
         tenantId,
@@ -94,30 +90,30 @@ export class UsageSimulator {
 
     for (const event of usageEvents) {
       const quantity = Number(event.quantity);
-      
+
       switch (event.eventType) {
-        case 'recon_comparison':
+        case "recon_comparison":
           usage.reconComparisons += quantity;
           break;
-        case 'validation':
+        case "validation":
           usage.validations += quantity;
           break;
-        case 'transformation':
+        case "transformation":
           usage.transformations += quantity;
           break;
-        case 'mapping':
+        case "mapping":
           usage.mappings += quantity;
           break;
-        case 'workflow_step':
+        case "workflow_step":
           usage.workflowSteps += quantity;
           break;
-        case 'ai_tokens':
+        case "ai_tokens":
           usage.aiTokens += quantity;
           break;
-        case 'storage':
+        case "storage":
           usage.storageBytes += quantity;
           break;
-        case 'webhook_trigger':
+        case "webhook_trigger":
           usage.webhookTriggers += quantity;
           break;
       }
@@ -131,11 +127,11 @@ export class UsageSimulator {
    */
   private projectUsage(
     historical: HistoricalUsage,
-    _period: 'daily' | 'weekly' | 'monthly'
+    _period: "daily" | "weekly" | "monthly"
   ): HistoricalUsage {
     // Simple projection: assume 10% growth
     const growthFactor = 1.1;
-    
+
     return {
       reconComparisons: Math.round(historical.reconComparisons * growthFactor),
       validations: Math.round(historical.validations * growthFactor),
@@ -159,7 +155,7 @@ export class UsageSimulator {
       mapping: 0.005 / 1000,
       workflowStep: 0.001,
       aiToken: 0.002 / 1000, // Average
-      storage: 0.10 / (1024 * 1024 * 1024), // Per GB
+      storage: 0.1 / (1024 * 1024 * 1024), // Per GB
       webhook: 0.001,
     };
 
@@ -178,14 +174,14 @@ export class UsageSimulator {
   /**
    * Get start date for period
    */
-  private getStartDate(period: 'daily' | 'weekly' | 'monthly'): Date {
+  private getStartDate(period: "daily" | "weekly" | "monthly"): Date {
     const now = new Date();
     switch (period) {
-      case 'daily':
+      case "daily":
         return new Date(now.getTime() - 24 * 60 * 60 * 1000);
-      case 'weekly':
+      case "weekly":
         return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-      case 'monthly':
+      case "monthly":
         return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
     }
   }

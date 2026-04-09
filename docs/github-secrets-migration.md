@@ -6,21 +6,21 @@ This document lists all required GitHub Secrets for automated Supabase migration
 
 ### Supabase Credentials
 
-| Secret Name | Description | Where to Find |
-|------------|-------------|---------------|
-| `SUPABASE_ACCESS_TOKEN` | Personal access token for Supabase CLI | [Supabase Dashboard → Account → Access Tokens](https://supabase.com/dashboard/account/tokens) |
-| `SUPABASE_PROJECT_REF` | Project reference ID | Found in project URL: `https://[PROJECT_REF].supabase.co` |
-| `SUPABASE_DB_PASSWORD` | Database password | Project Settings → Database → Database Password |
-| `SUPABASE_URL` | Full Supabase project URL | `https://[PROJECT_REF].supabase.co` |
-| `SUPABASE_SERVICE_ROLE_KEY` | Service role key (bypasses RLS) | Project Settings → API → Service Role Key |
-| `SUPABASE_ANON_KEY` | Anonymous/public key | Project Settings → API → Anon/Public Key |
+| Secret Name                 | Description                            | Where to Find                                                                                 |
+| --------------------------- | -------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `SUPABASE_ACCESS_TOKEN`     | Personal access token for Supabase CLI | [Supabase Dashboard → Account → Access Tokens](https://supabase.com/dashboard/account/tokens) |
+| `SUPABASE_PROJECT_REF`      | Project reference ID                   | Found in project URL: `https://[PROJECT_REF].supabase.co`                                     |
+| `SUPABASE_DB_PASSWORD`      | Database password                      | Project Settings → Database → Database Password                                               |
+| `SUPABASE_URL`              | Full Supabase project URL              | `https://[PROJECT_REF].supabase.co`                                                           |
+| `SUPABASE_SERVICE_ROLE_KEY` | Service role key (bypasses RLS)        | Project Settings → API → Service Role Key                                                     |
+| `SUPABASE_ANON_KEY`         | Anonymous/public key                   | Project Settings → API → Anon/Public Key                                                      |
 
 ### Database Connection (Alternative)
 
-| Secret Name | Description | Where to Find |
-|------------|-------------|---------------|
-| `DATABASE_URL` | Full PostgreSQL connection string | `postgresql://postgres:[PASSWORD]@db.[PROJECT_REF].supabase.co:5432/postgres` |
-| `DIRECT_URL` | Direct database URL (for migrations) | Same as DATABASE_URL for Supabase |
+| Secret Name    | Description                          | Where to Find                                                                 |
+| -------------- | ------------------------------------ | ----------------------------------------------------------------------------- |
+| `DATABASE_URL` | Full PostgreSQL connection string    | `postgresql://postgres:[PASSWORD]@db.[PROJECT_REF].supabase.co:5432/postgres` |
+| `DIRECT_URL`   | Direct database URL (for migrations) | Same as DATABASE_URL for Supabase                                             |
 
 ## How to Set GitHub Secrets
 
@@ -40,6 +40,7 @@ migrate
 ```
 
 The workflow will:
+
 1. Check for pending migrations
 2. Apply them automatically
 3. Comment back with the result
@@ -59,9 +60,11 @@ gh workflow run migrate-on-comment.yml
 ## Migration Files Location
 
 All migration files have been archived to:
+
 - `archive/deprecated_code/migrations/`
 
 Active migrations are managed through:
+
 - Supabase CLI (`supabase db push`)
 - GitHub Actions workflows
 - Direct database connections (when CLI unavailable)
@@ -69,15 +72,18 @@ Active migrations are managed through:
 ## Troubleshooting
 
 ### Migration fails with "authentication failed"
+
 - Check `SUPABASE_ACCESS_TOKEN` is valid and not expired
 - Verify `SUPABASE_PROJECT_REF` matches your project
 
 ### Migration fails with "connection refused"
+
 - Verify `SUPABASE_DB_PASSWORD` is correct
 - Check IP allowlist in Supabase dashboard
 - Ensure `DATABASE_URL` format is correct
 
 ### "No migrations to apply"
+
 - All migrations are already applied
 - Check migration status: `supabase migration list`
 

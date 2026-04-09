@@ -1,25 +1,25 @@
 /**
  * Alerts View Component
- * 
+ *
  * Displays intelligent alerts with explanations and threshold tracking.
  */
 
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { AlertTriangle, CheckCircle2, Info, Bell } from 'lucide-react';
-import type { Alert } from '@/lib/domain/types';
+} from "@/components/ui/dialog";
+import { AlertTriangle, CheckCircle2, Info, Bell } from "lucide-react";
+import type { Alert } from "@/lib/domain/types";
 
 interface AlertsViewProps {
   includeAcknowledged?: boolean;
@@ -43,7 +43,7 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
       setError(null);
 
       const params = new URLSearchParams();
-      if (includeAcknowledged) params.append('includeAcknowledged', 'true');
+      if (includeAcknowledged) params.append("includeAcknowledged", "true");
 
       const res = await fetch(`/api/console/alerts?${params.toString()}`);
 
@@ -54,8 +54,8 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
       const data = await res.json();
       setAlerts(data.alerts || []);
     } catch (error: unknown) {
-      console.error('Failed to fetch alerts:', error);
-      setError(error instanceof Error ? error.message : 'Failed to load alerts');
+      console.error("Failed to fetch alerts:", error);
+      setError(error instanceof Error ? error.message : "Failed to load alerts");
       setAlerts([]);
     } finally {
       setLoading(false);
@@ -67,7 +67,7 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
       setAcknowledging(alertId);
 
       const res = await fetch(`/api/console/alerts/${alertId}/acknowledge`, {
-        method: 'POST',
+        method: "POST",
       });
 
       if (!res.ok) {
@@ -77,18 +77,17 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
       // Refresh alerts
       await fetchAlerts();
     } catch (error: unknown) {
-      console.error('Failed to acknowledge alert:', error);
+      console.error("Failed to acknowledge alert:", error);
     } finally {
       setAcknowledging(null);
     }
   };
 
-
   const inferRunId = (alert: Alert): string | null => {
     const candidates: string[] = [];
 
     for (const evidence of alert.explanation.evidence ?? []) {
-      if (typeof evidence.value === 'string') {
+      if (typeof evidence.value === "string") {
         candidates.push(evidence.value);
       }
     }
@@ -98,7 +97,7 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
 
     for (const candidate of candidates) {
       const runMatch = candidate.match(/\brun[_:-]([A-Za-z0-9_-]+)/i);
-      if (runMatch) return runMatch[0].replace(':', '_').replace('-', '_');
+      if (runMatch) return runMatch[0].replace(":", "_").replace("-", "_");
 
       const uuidMatch = candidate.match(
         /\b[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b/i
@@ -109,25 +108,25 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
     return null;
   };
 
-  const getSeverityIcon = (severity: Alert['severity']) => {
+  const getSeverityIcon = (severity: Alert["severity"]) => {
     switch (severity) {
-      case 'critical':
+      case "critical":
         return <AlertTriangle className="w-5 h-5 text-red-600" />;
-      case 'warning':
+      case "warning":
         return <AlertTriangle className="w-5 h-5 text-orange-600" />;
-      case 'info':
+      case "info":
         return <Info className="w-5 h-5 text-blue-600" />;
     }
   };
 
-  const getSeverityColor = (severity: Alert['severity']) => {
+  const getSeverityColor = (severity: Alert["severity"]) => {
     switch (severity) {
-      case 'critical':
-        return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
-      case 'warning':
-        return 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400';
-      case 'info':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400';
+      case "critical":
+        return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
+      case "warning":
+        return "bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400";
+      case "info":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400";
     }
   };
 
@@ -155,15 +154,13 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
   }
 
   const unacknowledgedAlerts = alerts.filter((a) => !a.acknowledged);
-  const criticalAlerts = alerts.filter((a: any) => a.severity === 'critical' && !a.acknowledged);
+  const criticalAlerts = alerts.filter((a: any) => a.severity === "critical" && !a.acknowledged);
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-foreground mb-2">
-            Alerts
-          </h2>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Alerts</h2>
           <p className="text-muted-foreground">
             Intelligent alerts with explanations and threshold tracking.
           </p>
@@ -228,140 +225,140 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
           {alerts.map((alert) => {
             const runId = inferRunId(alert);
             return (
-            <Card
-              key={alert.id}
-              className={`hover:shadow-lg transition-shadow ${
-                alert.acknowledged ? 'opacity-60' : ''
-              }`}
-            >
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      {getSeverityIcon(alert.severity)}
-                      <Badge className={getSeverityColor(alert.severity)}>
-                        {alert.severity}
-                      </Badge>
-                      {alert.acknowledged && (
-                        <Badge variant="outline">Acknowledged</Badge>
-                      )}
-                    </div>
-                    <CardTitle className="text-lg">{alert.title}</CardTitle>
-                    <CardDescription className="mt-2">
-                      {alert.message}
-                    </CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {/* Explanation */}
-                  <div>
-                    <p className="text-sm font-medium mb-2">Why This Matters</p>
-                    <p className="text-sm text-muted-foreground">
-                      {alert.explanation.whyItMatters}
-                    </p>
-                  </div>
-
-                  {/* Threshold */}
-                  {alert.threshold && (
-                    <div className="p-4 bg-muted/10 rounded-lg">
-                      <p className="text-sm font-medium mb-2">Threshold Exceeded</p>
-                      <div className="flex items-center gap-4 text-sm">
-                        <div>
-                          <p className="text-muted-foreground">Threshold</p>
-                          <p className="font-bold">{alert.threshold.value}</p>
-                        </div>
-                        <div>
-                          <p className="text-muted-foreground">Actual</p>
-                          <p className="font-bold text-red-600">{alert.threshold.actual}</p>
-                        </div>
-                        <div>
-                          <p className="text-muted-foreground">Type</p>
-                          <p className="font-bold">{alert.threshold.type}</p>
-                        </div>
+              <Card
+                key={alert.id}
+                className={`hover:shadow-lg transition-shadow ${
+                  alert.acknowledged ? "opacity-60" : ""
+                }`}
+              >
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        {getSeverityIcon(alert.severity)}
+                        <Badge className={getSeverityColor(alert.severity)}>{alert.severity}</Badge>
+                        {alert.acknowledged && <Badge variant="outline">Acknowledged</Badge>}
                       </div>
+                      <CardTitle className="text-lg">{alert.title}</CardTitle>
+                      <CardDescription className="mt-2">{alert.message}</CardDescription>
                     </div>
-                  )}
-
-                  {/* Evidence */}
-                  {alert.explanation.evidence.length > 0 && (
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {/* Explanation */}
                     <div>
-                      <p className="text-sm font-medium mb-2">Evidence</p>
-                      <div className="flex flex-wrap gap-2">
-                        {alert.explanation.evidence.map((evidence, idx) => (
-                          <Badge key={idx} variant="outline" className="font-mono text-xs">
-                            {evidence.type}: {evidence.value.substring(0, 20)}...
-                          </Badge>
-                        ))}
+                      <p className="text-sm font-medium mb-2">Why This Matters</p>
+                      <p className="text-sm text-muted-foreground">
+                        {alert.explanation.whyItMatters}
+                      </p>
+                    </div>
+
+                    {/* Threshold */}
+                    {alert.threshold && (
+                      <div className="p-4 bg-muted/10 rounded-lg">
+                        <p className="text-sm font-medium mb-2">Threshold Exceeded</p>
+                        <div className="flex items-center gap-4 text-sm">
+                          <div>
+                            <p className="text-muted-foreground">Threshold</p>
+                            <p className="font-bold">{alert.threshold.value}</p>
+                          </div>
+                          <div>
+                            <p className="text-muted-foreground">Actual</p>
+                            <p className="font-bold text-red-600">{alert.threshold.actual}</p>
+                          </div>
+                          <div>
+                            <p className="text-muted-foreground">Type</p>
+                            <p className="font-bold">{alert.threshold.type}</p>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  )}
-
-                  {/* Suggested Next Step */}
-                  {alert.explanation.suggestedNextStep && (
-                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                      <p className="text-sm font-medium text-blue-900 dark:text-blue-300 mb-1">
-                        Suggested Next Step
-                      </p>
-                      <p className="text-sm text-blue-800 dark:text-blue-400">
-                        {alert.explanation.suggestedNextStep}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Actions */}
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setSelectedAlert(alert);
-                        setDetailDialogOpen(true);
-                      }}
-                    >
-                      View Details
-                    </Button>
-                    {runId && (
-                      <>
-                        <Link href={`/app/runs/${runId}`} className="inline-flex items-center rounded-md border border-border/40 px-3 py-1.5 text-sm font-medium text-foreground/80 hover:bg-muted/10">
-                          Open affected run
-                        </Link>
-                        <Link href={`/app/replay?runId=${runId}`} className="inline-flex items-center rounded-md border border-border/40 px-3 py-1.5 text-sm font-medium text-foreground/80 hover:bg-muted/10">
-                          Replay affected run
-                        </Link>
-                      </>
                     )}
-                    {!alert.acknowledged && (
+
+                    {/* Evidence */}
+                    {alert.explanation.evidence.length > 0 && (
+                      <div>
+                        <p className="text-sm font-medium mb-2">Evidence</p>
+                        <div className="flex flex-wrap gap-2">
+                          {alert.explanation.evidence.map((evidence, idx) => (
+                            <Badge key={idx} variant="outline" className="font-mono text-xs">
+                              {evidence.type}: {evidence.value.substring(0, 20)}...
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Suggested Next Step */}
+                    {alert.explanation.suggestedNextStep && (
+                      <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                        <p className="text-sm font-medium text-blue-900 dark:text-blue-300 mb-1">
+                          Suggested Next Step
+                        </p>
+                        <p className="text-sm text-blue-800 dark:text-blue-400">
+                          {alert.explanation.suggestedNextStep}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-2 flex-wrap">
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => acknowledgeAlert(alert.id)}
-                        disabled={acknowledging === alert.id}
+                        onClick={() => {
+                          setSelectedAlert(alert);
+                          setDetailDialogOpen(true);
+                        }}
                       >
-                        {acknowledging === alert.id ? (
-                          'Acknowledging...'
-                        ) : (
-                          <>
-                            <CheckCircle2 className="w-4 h-4 mr-2" />
-                            Acknowledge
-                          </>
-                        )}
+                        View Details
                       </Button>
-                    )}
-                  </div>
+                      {runId && (
+                        <>
+                          <Link
+                            href={`/app/runs/${runId}`}
+                            className="inline-flex items-center rounded-md border border-border/40 px-3 py-1.5 text-sm font-medium text-foreground/80 hover:bg-muted/10"
+                          >
+                            Open affected run
+                          </Link>
+                          <Link
+                            href={`/app/replay?runId=${runId}`}
+                            className="inline-flex items-center rounded-md border border-border/40 px-3 py-1.5 text-sm font-medium text-foreground/80 hover:bg-muted/10"
+                          >
+                            Replay affected run
+                          </Link>
+                        </>
+                      )}
+                      {!alert.acknowledged && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => acknowledgeAlert(alert.id)}
+                          disabled={acknowledging === alert.id}
+                        >
+                          {acknowledging === alert.id ? (
+                            "Acknowledging..."
+                          ) : (
+                            <>
+                              <CheckCircle2 className="w-4 h-4 mr-2" />
+                              Acknowledge
+                            </>
+                          )}
+                        </Button>
+                      )}
+                    </div>
 
-                  {/* Metadata */}
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                    <span>Created: {new Date(alert.createdAt).toLocaleString()}</span>
-                    {alert.acknowledgedAt && (
-                      <span>Acknowledged: {new Date(alert.acknowledgedAt).toLocaleString()}</span>
-                    )}
+                    {/* Metadata */}
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                      <span>Created: {new Date(alert.createdAt).toLocaleString()}</span>
+                      {alert.acknowledgedAt && (
+                        <span>Acknowledged: {new Date(alert.acknowledgedAt).toLocaleString()}</span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
+                </CardContent>
+              </Card>
+            );
           })}
         </div>
       )}
@@ -377,9 +374,7 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
             <div className="space-y-4">
               <div>
                 <p className="text-sm font-medium mb-2">Full Explanation</p>
-                <p className="text-sm text-muted-foreground">
-                  {selectedAlert.explanation.summary}
-                </p>
+                <p className="text-sm text-muted-foreground">{selectedAlert.explanation.summary}</p>
               </div>
               <div>
                 <p className="text-sm font-medium mb-2">Why This Matters</p>

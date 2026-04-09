@@ -1,23 +1,23 @@
 /**
  * Automation Gravity Service
- * 
+ *
  * PHASE 4: Irreversible Automation
- * 
+ *
  * Creates configuration gravity and progressive automation:
  * - Configuration accumulates over time
  * - More automation = less manual effort
  * - Competitor onboarding feels expensive
- * 
+ *
  * Goal: Onboarding cost is front-loaded, ongoing value compounds
  */
 
-import { supabase } from '../infrastructure/supabase/client';
-import { logError } from '../utils/logger';
+import { supabase } from "../infrastructure/supabase/client";
+import { logError } from "../utils/logger";
 
 export interface AutomationConfig {
   id: string;
   tenantId: string;
-  configType: 'mapping' | 'rule' | 'transformation' | 'validation' | 'schedule';
+  configType: "mapping" | "rule" | "transformation" | "validation" | "schedule";
   configKey: string;
   configValue: Record<string, unknown>;
   usageCount: number;
@@ -42,25 +42,25 @@ export class AutomationGravityService {
    */
   async storeConfiguration(
     tenantId: string,
-    configType: AutomationConfig['configType'],
+    configType: AutomationConfig["configType"],
     configKey: string,
     configValue: Record<string, unknown>
   ): Promise<AutomationConfig> {
     try {
       // Check if config exists
       const { data: existing } = await supabase
-        .from('usage_events')
-        .select('*')
-        .eq('tenant_id', tenantId)
-        .eq('event_type', `config:${configType}`)
-        .eq('metadata->>config_key', configKey)
+        .from("usage_events")
+        .select("*")
+        .eq("tenant_id", tenantId)
+        .eq("event_type", `config:${configType}`)
+        .eq("metadata->>config_key", configKey)
         .limit(1)
         .single();
 
       if (existing) {
         // Update existing config
         await supabase
-          .from('usage_events')
+          .from("usage_events")
           .update({
             metadata: {
               ...existing.metadata,
@@ -71,7 +71,7 @@ export class AutomationGravityService {
             },
             updated_at: new Date().toISOString(),
           })
-          .eq('id', existing.id);
+          .eq("id", existing.id);
 
         return {
           id: existing.id,
@@ -88,7 +88,7 @@ export class AutomationGravityService {
 
       // Create new config
       const { data: newConfig } = await supabase
-        .from('usage_events')
+        .from("usage_events")
         .insert({
           tenant_id: tenantId,
           event_type: `config:${configType}`,
@@ -116,7 +116,7 @@ export class AutomationGravityService {
         updatedAt: new Date(),
       };
     } catch (error) {
-      logError('Error storing configuration', error);
+      logError("Error storing configuration", error);
       throw error;
     }
   }
@@ -126,22 +126,22 @@ export class AutomationGravityService {
    */
   async recordConfigUsage(
     tenantId: string,
-    configType: AutomationConfig['configType'],
+    configType: AutomationConfig["configType"],
     configKey: string
   ): Promise<void> {
     try {
       const { data: config } = await supabase
-        .from('usage_events')
-        .select('*')
-        .eq('tenant_id', tenantId)
-        .eq('event_type', `config:${configType}`)
-        .eq('metadata->>config_key', configKey)
+        .from("usage_events")
+        .select("*")
+        .eq("tenant_id", tenantId)
+        .eq("event_type", `config:${configType}`)
+        .eq("metadata->>config_key", configKey)
         .limit(1)
         .single();
 
       if (config) {
         await supabase
-          .from('usage_events')
+          .from("usage_events")
           .update({
             metadata: {
               ...config.metadata,
@@ -150,10 +150,10 @@ export class AutomationGravityService {
             },
             updated_at: new Date().toISOString(),
           })
-          .eq('id', config.id);
+          .eq("id", config.id);
       }
     } catch (error) {
-      logError('Error recording config usage', error);
+      logError("Error recording config usage", error);
     }
   }
 
@@ -167,21 +167,19 @@ export class AutomationGravityService {
     reason: string
   ): Promise<void> {
     try {
-      await supabase
-        .from('usage_events')
-        .insert({
-          tenant_id: tenantId,
-          event_type: 'manual_intervention',
-          quantity: 1,
-          metadata: {
-            entity_type: entityType,
-            entity_id: entityId,
-            reason,
-            timestamp: new Date().toISOString(),
-          },
-        });
+      await supabase.from("usage_events").insert({
+        tenant_id: tenantId,
+        event_type: "manual_intervention",
+        quantity: 1,
+        metadata: {
+          entity_type: entityType,
+          entity_id: entityId,
+          reason,
+          timestamp: new Date().toISOString(),
+        },
+      });
     } catch (error) {
-      logError('Error recording manual intervention', error);
+      logError("Error recording manual intervention", error);
     }
   }
 
@@ -195,20 +193,18 @@ export class AutomationGravityService {
     timeSaved: number // seconds
   ): Promise<void> {
     try {
-      await supabase
-        .from('usage_events')
-        .insert({
-          tenant_id: tenantId,
-          event_type: 'automation_success',
-          quantity: timeSaved,
-          metadata: {
-            automation_type: automationType,
-            entity_id: entityId,
-            timestamp: new Date().toISOString(),
-          },
-        });
+      await supabase.from("usage_events").insert({
+        tenant_id: tenantId,
+        event_type: "automation_success",
+        quantity: timeSaved,
+        metadata: {
+          automation_type: automationType,
+          entity_id: entityId,
+          timestamp: new Date().toISOString(),
+        },
+      });
     } catch (error) {
-      logError('Error recording automation success', error);
+      logError("Error recording automation success", error);
     }
   }
 
@@ -219,31 +215,30 @@ export class AutomationGravityService {
     try {
       // Get total configs
       const { count: totalConfigs } = await supabase
-        .from('usage_events')
-        .select('*', { count: 'exact', head: true })
-        .eq('tenant_id', tenantId)
-        .like('event_type', 'config:%');
+        .from("usage_events")
+        .select("*", { count: "exact", head: true })
+        .eq("tenant_id", tenantId)
+        .like("event_type", "config:%");
 
       // Get active automations
       const { count: activeAutomations } = await supabase
-        .from('usage_events')
-        .select('*', { count: 'exact', head: true })
-        .eq('tenant_id', tenantId)
-        .like('event_type', 'automation_hook:%')
-        .eq('metadata->>is_active', true);
+        .from("usage_events")
+        .select("*", { count: "exact", head: true })
+        .eq("tenant_id", tenantId)
+        .like("event_type", "automation_hook:%")
+        .eq("metadata->>is_active", true);
 
       // Get manual interventions
       const { count: manualInterventions } = await supabase
-        .from('usage_events')
-        .select('*', { count: 'exact', head: true })
-        .eq('tenant_id', tenantId)
-        .eq('event_type', 'manual_intervention');
+        .from("usage_events")
+        .select("*", { count: "exact", head: true })
+        .eq("tenant_id", tenantId)
+        .eq("event_type", "manual_intervention");
 
       // Calculate automation efficiency
       const totalOperations = (activeAutomations || 0) + (manualInterventions || 0);
-      const automationEfficiency = totalOperations > 0
-        ? (activeAutomations || 0) / totalOperations
-        : 0;
+      const automationEfficiency =
+        totalOperations > 0 ? (activeAutomations || 0) / totalOperations : 0;
 
       // Estimate onboarding cost
       const onboardingCost = this.estimateOnboardingCost(totalConfigs || 0, activeAutomations || 0);
@@ -261,7 +256,7 @@ export class AutomationGravityService {
         timeToValue,
       };
     } catch (error) {
-      logError('Error getting automation gravity metrics', error);
+      logError("Error getting automation gravity metrics", error);
       return {
         tenantId,
         totalConfigs: 0,
@@ -304,27 +299,29 @@ export class AutomationGravityService {
   /**
    * Get progressive automation suggestions
    */
-  async getProgressiveAutomationSuggestions(tenantId: string): Promise<Array<{
-    type: string;
-    description: string;
-    estimatedTimeSaved: number;
-    priority: 'high' | 'medium' | 'low';
-  }>> {
+  async getProgressiveAutomationSuggestions(tenantId: string): Promise<
+    Array<{
+      type: string;
+      description: string;
+      estimatedTimeSaved: number;
+      priority: "high" | "medium" | "low";
+    }>
+  > {
     try {
       // Analyze manual interventions to suggest automations
       const { data: interventions } = await supabase
-        .from('usage_events')
-        .select('metadata')
-        .eq('tenant_id', tenantId)
-        .eq('event_type', 'manual_intervention')
-        .order('created_at', { ascending: false })
+        .from("usage_events")
+        .select("metadata")
+        .eq("tenant_id", tenantId)
+        .eq("event_type", "manual_intervention")
+        .order("created_at", { ascending: false })
         .limit(100);
 
       const suggestions: Array<{
         type: string;
         description: string;
         estimatedTimeSaved: number;
-        priority: 'high' | 'medium' | 'low';
+        priority: "high" | "medium" | "low";
       }> = [];
 
       // Group interventions by reason
@@ -340,17 +337,17 @@ export class AutomationGravityService {
       interventionGroups.forEach((count, reason) => {
         if (count >= 5) {
           suggestions.push({
-            type: 'automation',
+            type: "automation",
             description: `Automate ${reason} (${count} manual interventions)`,
             estimatedTimeSaved: count * 300, // 5 minutes per intervention
-            priority: count >= 10 ? 'high' : count >= 7 ? 'medium' : 'low',
+            priority: count >= 10 ? "high" : count >= 7 ? "medium" : "low",
           });
         }
       });
 
       return suggestions;
     } catch (error) {
-      logError('Error getting progressive automation suggestions', error);
+      logError("Error getting progressive automation suggestions", error);
       return [];
     }
   }

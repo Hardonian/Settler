@@ -3,18 +3,18 @@
  * Tests system behavior under load
  */
 
-import { TenantService } from '../../application/services/TenantService';
-import { TenantRepository } from '../../infrastructure/repositories/TenantRepository';
-import { UserRepository } from '../../infrastructure/repositories/UserRepository';
-import { QuotaService, QuotaType } from '../../application/services/QuotaService';
-import { TenantTier } from '../../domain/entities/Tenant';
-import { hashPassword } from '../../infrastructure/security/password';
-import { query } from '../../db';
+import { TenantService } from "../../application/services/TenantService";
+import { TenantRepository } from "../../infrastructure/repositories/TenantRepository";
+import { UserRepository } from "../../infrastructure/repositories/UserRepository";
+import { QuotaService, QuotaType } from "../../application/services/QuotaService";
+import { TenantTier } from "../../domain/entities/Tenant";
+import { hashPassword } from "../../infrastructure/security/password";
+import { query } from "../../db";
 
-const shouldRunDbTests = process.env.RUN_DB_TESTS === 'true';
+const shouldRunDbTests = process.env.RUN_DB_TESTS === "true";
 const describeLoadTests = shouldRunDbTests ? describe : describe.skip;
 
-describeLoadTests('Load Testing', () => {
+describeLoadTests("Load Testing", () => {
   let tenantService: TenantService;
   let quotaService: QuotaService;
 
@@ -25,13 +25,13 @@ describeLoadTests('Load Testing', () => {
     quotaService = new QuotaService(tenantRepo);
   });
 
-  describe('Concurrent Requests', () => {
-    it('should handle 100 concurrent quota checks', async () => {
+  describe("Concurrent Requests", () => {
+    it("should handle 100 concurrent quota checks", async () => {
       const { tenant } = await tenantService.createTenant({
-        name: 'Load Test Tenant',
+        name: "Load Test Tenant",
         slug: `load-test-${Date.now()}`,
         ownerEmail: `load-${Date.now()}@test.com`,
-        ownerPasswordHash: await hashPassword('password123'),
+        ownerPasswordHash: await hashPassword("password123"),
         tier: TenantTier.GROWTH,
       });
 
@@ -47,13 +47,13 @@ describeLoadTests('Load Testing', () => {
     });
   });
 
-  describe('Rate Limiting Under Load', () => {
-    it('should enforce rate limits under high load', async () => {
+  describe("Rate Limiting Under Load", () => {
+    it("should enforce rate limits under high load", async () => {
       const { tenant } = await tenantService.createTenant({
-        name: 'Rate Limit Test',
+        name: "Rate Limit Test",
         slug: `rate-limit-${Date.now()}`,
         ownerEmail: `rate-${Date.now()}@test.com`,
-        ownerPasswordHash: await hashPassword('password123'),
+        ownerPasswordHash: await hashPassword("password123"),
         tier: TenantTier.STARTER, // Lower tier = lower rate limit
       });
 
@@ -67,11 +67,7 @@ describeLoadTests('Load Testing', () => {
       for (let i = 0; i < requests; i++) {
         // In real implementation, this would use TokenBucket
         // For testing, we'll just verify the quota exists
-        const { allowed } = await quotaService.checkQuota(
-          tenant.id,
-          QuotaType.RATE_LIMIT,
-          1
-        );
+        const { allowed } = await quotaService.checkQuota(tenant.id, QuotaType.RATE_LIMIT, 1);
         results.push(allowed);
       }
 
@@ -81,18 +77,18 @@ describeLoadTests('Load Testing', () => {
     });
   });
 
-  describe('Database Connection Pooling', () => {
-    it('should handle multiple concurrent database queries', async () => {
+  describe("Database Connection Pooling", () => {
+    it("should handle multiple concurrent database queries", async () => {
       const { tenant } = await tenantService.createTenant({
-        name: 'DB Pool Test',
+        name: "DB Pool Test",
         slug: `db-pool-${Date.now()}`,
         ownerEmail: `db-${Date.now()}@test.com`,
-        ownerPasswordHash: await hashPassword('password123'),
+        ownerPasswordHash: await hashPassword("password123"),
         tier: TenantTier.SCALE,
       });
 
       const queries = Array.from({ length: 50 }, () =>
-        query('SELECT * FROM tenants WHERE id = $1', [tenant.id])
+        query("SELECT * FROM tenants WHERE id = $1", [tenant.id])
       );
 
       const results = await Promise.all(queries);

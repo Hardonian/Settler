@@ -11,9 +11,11 @@ Settler is maintained by a core team of maintainers who review and approve chang
 ## Roles
 
 ### Maintainers
+
 Review and merge changes, set technical direction, manage releases, and triage issues. Maintainers are listed in [CODEOWNERS](CODEOWNERS).
 
 ### Contributors
+
 Submit issues, pull requests, and documentation improvements. All contributors are expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md) and the guidelines in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Release Cadence

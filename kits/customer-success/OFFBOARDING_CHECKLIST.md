@@ -7,6 +7,7 @@
 ## Overview
 
 This checklist helps you:
+
 - **Handle cancellations:** Process cancellations gracefully
 - **Export data:** Help customers export their data
 - **Gather feedback:** Understand why they're leaving
@@ -19,6 +20,7 @@ This checklist helps you:
 ## Offboarding Triggers
 
 ### Pilot Non-Conversion
+
 **Trigger:** Pilot ends, customer doesn't convert
 
 **Action:** Offboard gracefully, gather feedback, reconnect later
@@ -26,6 +28,7 @@ This checklist helps you:
 ---
 
 ### Cancellation Request
+
 **Trigger:** Customer requests cancellation
 
 **Action:** Process cancellation, export data, gather feedback
@@ -33,6 +36,7 @@ This checklist helps you:
 ---
 
 ### Account Inactivity
+
 **Trigger:** Account inactive for 90+ days
 
 **Action:** Check in, offer help, or offboard if no response
@@ -42,9 +46,11 @@ This checklist helps you:
 ## Offboarding Process
 
 ### Step 1: Acknowledge Request
+
 **Action:** Acknowledge cancellation/non-conversion request
 
 **Email Template:**
+
 ```
 Hi [Name],
 
@@ -63,9 +69,11 @@ Let me know if you'd like to schedule a quick call or if you have questions.
 ---
 
 ### Step 2: Export Data
+
 **Action:** Help customer export their data
 
 **Email Template:**
+
 ```
 Hi [Name],
 
@@ -89,9 +97,11 @@ Here's how to export your data:
 ---
 
 ### Step 3: Gather Feedback
+
 **Action:** Understand why they're leaving
 
 **Email Template:**
+
 ```
 Hi [Name],
 
@@ -110,9 +120,11 @@ I'd love to understand why you're [cancelling / not converting]. Your feedback h
 ---
 
 ### Step 4: Process Cancellation
+
 **Action:** Process cancellation, confirm timeline
 
 **Email Template:**
+
 ```
 Hi [Name],
 
@@ -139,9 +151,11 @@ Your cancellation has been processed. Here's what to expect:
 ---
 
 ### Step 5: Follow-Up
+
 **Action:** Follow up after cancellation, reconnect later
 
 **Email Template (3 Months Later):**
+
 ```
 Hi [Name],
 
@@ -159,17 +173,20 @@ If you're still dealing with reconciliation challenges, I'd love to discuss how 
 ## Offboarding Checklist
 
 ### Pre-Offboarding
+
 - [ ] **Acknowledge request:** Respond to cancellation/non-conversion request
 - [ ] **Schedule call:** Offer to discuss (if appropriate)
 - [ ] **Prepare data export:** Guide customer on data export
 
 ### During Offboarding
+
 - [ ] **Export data:** Help customer export their data
 - [ ] **Gather feedback:** Understand why they're leaving
 - [ ] **Process cancellation:** Process cancellation, confirm timeline
 - [ ] **Set expectations:** Explain data retention, access timeline
 
 ### Post-Offboarding
+
 - [ ] **Send confirmation:** Send cancellation confirmation email
 - [ ] **Document feedback:** Record feedback in CRM
 - [ ] **Schedule reconnect:** Schedule reconnect in 3-6 months
@@ -211,11 +228,13 @@ If you're still dealing with reconciliation challenges, I'd love to discuss how 
 ## Feedback Analysis
 
 ### Track Feedback
+
 - **Category:** Wrong use case, budget, technical, timing, competition
 - **Details:** Specific feedback, concerns, suggestions
 - **Action Items:** What to improve based on feedback
 
 ### Use Feedback
+
 - **Product improvements:** Address common issues
 - **Sales improvements:** Improve qualification, messaging
 - **Support improvements:** Better onboarding, documentation
@@ -225,6 +244,7 @@ If you're still dealing with reconciliation challenges, I'd love to discuss how 
 ## Offboarding Best Practices
 
 ### Do's
+
 - ✅ **Be respectful:** Respect their decision, don't pressure
 - ✅ **Help export data:** Make data export easy
 - ✅ **Gather feedback:** Understand why they're leaving
@@ -232,6 +252,7 @@ If you're still dealing with reconciliation challenges, I'd love to discuss how 
 - ✅ **Learn from feedback:** Use feedback to improve
 
 ### Don'ts
+
 - ❌ **Don't pressure:** Don't try to convince them to stay
 - ❌ **Don't ignore feedback:** Listen to concerns, learn from them
 - ❌ **Don't burn bridges:** Maintain professional relationship

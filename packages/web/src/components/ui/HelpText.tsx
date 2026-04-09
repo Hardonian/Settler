@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { HelpCircle } from 'lucide-react';
-import { Tooltip } from './Tooltip';
+import { HelpCircle } from "lucide-react";
+import { Tooltip } from "./Tooltip";
 
 interface HelpTextProps {
   text: string;

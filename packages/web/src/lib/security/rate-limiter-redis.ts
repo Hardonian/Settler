@@ -46,7 +46,8 @@ function warnOnProductionLocalFallback() {
       component: "rate-limiter-redis",
       mode: "local-fallback",
       risk: "Rate limits are per-instance and reset on restart",
-      action: "Configure UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN for distributed rate limiting",
+      action:
+        "Configure UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN for distributed rate limiting",
     })
   );
 }

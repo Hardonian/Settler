@@ -1,12 +1,12 @@
 /**
  * Stripe Idempotency Utilities
- * 
+ *
  * CFO Mode: Accuracy & Idempotency
  * - All Stripe API calls must use idempotency keys
  * - Prevents double-charging or double-recording
  */
 
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Generate idempotency key for Stripe API calls
@@ -18,19 +18,19 @@ export function generateIdempotencyKey(
   additionalContext?: string
 ): string {
   const parts = [operation];
-  
+
   if (resourceId) {
     parts.push(resourceId);
   }
-  
+
   if (additionalContext) {
     parts.push(additionalContext);
   }
-  
+
   parts.push(Date.now().toString());
   parts.push(uuidv4().substring(0, 8));
-  
-  return parts.join('_');
+
+  return parts.join("_");
 }
 
 /**
@@ -38,7 +38,7 @@ export function generateIdempotencyKey(
  */
 export function generatePaymentIdempotencyKey(
   paymentIntentId: string,
-  operation: 'capture' | 'refund' | 'cancel' = 'capture'
+  operation: "capture" | "refund" | "cancel" = "capture"
 ): string {
   return generateIdempotencyKey(`stripe_${operation}`, paymentIntentId);
 }
@@ -46,10 +46,7 @@ export function generatePaymentIdempotencyKey(
 /**
  * Generate idempotency key for webhook processing
  */
-export function generateWebhookIdempotencyKey(
-  eventId: string,
-  eventType: string
-): string {
+export function generateWebhookIdempotencyKey(eventId: string, eventType: string): string {
   return generateIdempotencyKey(`webhook_${eventType}`, eventId);
 }
 
@@ -70,8 +67,8 @@ export async function stripeCallWithIdempotency<T>(
     if (
       retryOnConflict &&
       error &&
-      typeof error === 'object' &&
-      'statusCode' in error &&
+      typeof error === "object" &&
+      "statusCode" in error &&
       error.statusCode === 409
     ) {
       // Idempotent: previous call succeeded, return success

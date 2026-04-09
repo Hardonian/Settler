@@ -3,7 +3,7 @@
  * Defines the contract for execution data persistence
  */
 
-import { Execution } from '../entities/Execution';
+import { Execution } from "../entities/Execution";
 
 export interface IExecutionRepository {
   findById(id: string): Promise<Execution | null>;

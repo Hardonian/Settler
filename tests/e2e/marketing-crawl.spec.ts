@@ -1,40 +1,40 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
 const PUBLIC_ROUTES = [
-  '/',
-  '/about',
-  '/platform',
-  '/integrations',
-  '/trust',
-  '/contact',
-  '/privacy',
-  '/terms',
-  '/status',
+  "/",
+  "/about",
+  "/platform",
+  "/integrations",
+  "/trust",
+  "/contact",
+  "/privacy",
+  "/terms",
+  "/status",
 ] as const;
 
-test.describe('marketing crawl regression guard', () => {
+test.describe("marketing crawl regression guard", () => {
   for (const route of PUBLIC_ROUTES) {
     test(`renders ${route} without 500s or hydration issues`, async ({ page }) => {
       const consoleIssues: string[] = [];
 
-      page.on('pageerror', (error) => {
+      page.on("pageerror", (error) => {
         consoleIssues.push(`pageerror: ${error.message}`);
       });
 
-      page.on('console', (message) => {
+      page.on("console", (message) => {
         const text = message.text();
         const type = message.type();
-        if (type === 'error' || /hydration/i.test(text)) {
+        if (type === "error" || /hydration/i.test(text)) {
           consoleIssues.push(`${type}: ${text}`);
         }
       });
 
-      const response = await page.goto(route, { waitUntil: 'networkidle' });
+      const response = await page.goto(route, { waitUntil: "networkidle" });
 
       expect(response, `missing response for route ${route}`).not.toBeNull();
       expect(response!.status(), `route ${route} must return 200`).toBe(200);
 
-      await expect(page.locator('body')).toBeVisible();
+      await expect(page.locator("body")).toBeVisible();
       expect(consoleIssues, `console issues detected for route ${route}`).toEqual([]);
     });
   }

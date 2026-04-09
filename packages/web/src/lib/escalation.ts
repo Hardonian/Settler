@@ -47,26 +47,19 @@ export async function checkAndEscalateTickets(): Promise<void> {
   if (!tickets) return;
 
   for (const ticket of tickets as SupportTicket[]) {
-    const ageHours =
-      (Date.now() - new Date(ticket.created_at).getTime()) / (1000 * 60 * 60);
+    const ageHours = (Date.now() - new Date(ticket.created_at).getTime()) / (1000 * 60 * 60);
 
     for (const rule of rules as EscalationRule[]) {
       const condition = rule.trigger_condition;
 
       // Check if rule matches
-      const matchesSeverity =
-        !condition.severity || ticket.severity === condition.severity;
+      const matchesSeverity = !condition.severity || ticket.severity === condition.severity;
       const matchesAge = !condition.age_hours || ageHours >= condition.age_hours;
       const matchesStatus = !condition.status || ticket.status === condition.status;
 
       if (matchesSeverity && matchesAge && matchesStatus) {
         // Escalate
-        await escalateTicket(
-          ticket.id,
-          rule.id,
-          rule.target_user_id,
-          rule.action
-        );
+        await escalateTicket(ticket.id, rule.id, rule.target_user_id, rule.action);
       }
     }
   }

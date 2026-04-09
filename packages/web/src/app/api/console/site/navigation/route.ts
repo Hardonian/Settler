@@ -84,7 +84,11 @@ export const PUT = withSecurity(
         return NextResponse.json({ error: "No tenant found" }, { status: 400 });
       }
 
-      await requirePermission(auth.userId, SiteBuilderPermission.UPDATE_TENANT_NAVIGATION, tenantId);
+      await requirePermission(
+        auth.userId,
+        SiteBuilderPermission.UPDATE_TENANT_NAVIGATION,
+        tenantId
+      );
 
       const body = NavigationUpdateSchema.parse(await request.json());
 
@@ -112,11 +116,13 @@ export const PUT = withSecurity(
       );
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return NextResponse.json({ error: "Invalid request", details: error.issues }, { status: 400 });
+        return NextResponse.json(
+          { error: "Invalid request", details: error.issues },
+          { status: 400 }
+        );
       }
       return handleApiError(error, "Failed to update navigation");
     }
   },
   { rateLimit: { windowMs: 60_000, maxRequests: 30 }, requireAuth: true }
 );
-

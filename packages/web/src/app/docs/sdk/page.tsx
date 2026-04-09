@@ -1,55 +1,55 @@
 /**
  * SDK Documentation Hub Page
- * 
+ *
  * Overview of all available SDKs with links to detailed documentation
  */
 
-import { Navigation } from '@/components/Navigation';
-import { Footer } from '@/components/Footer';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import Link from 'next/link';
-import { Code2, Package, Zap, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+import { Code2, Package, Zap, CheckCircle2, ArrowRight } from "lucide-react";
 
 export default function DocsSdkPage() {
   const sdks = [
     {
-      name: 'Node.js/TypeScript',
-      description: 'Production-grade TypeScript SDK with full type safety',
-      href: '/docs/sdk/nodejs',
-      language: 'TypeScript',
-      status: 'stable',
-      features: ['Full TypeScript Support', 'Automatic Retries', 'Request Deduplication'],
-      install: 'npm install @settler/sdk',
+      name: "Node.js/TypeScript",
+      description: "Production-grade TypeScript SDK with full type safety",
+      href: "/docs/sdk/nodejs",
+      language: "TypeScript",
+      status: "stable",
+      features: ["Full TypeScript Support", "Automatic Retries", "Request Deduplication"],
+      install: "npm install @settler/sdk",
     },
     {
-      name: 'Python',
-      description: 'Pythonic SDK with async support and type hints',
-      href: '/docs/sdk/python',
-      language: 'Python 3.8+',
-      status: 'stable',
-      features: ['Async/Await Support', 'Type Hints', 'Production Ready'],
-      install: 'pip install settler-sdk',
+      name: "Python",
+      description: "Pythonic SDK with async support and type hints",
+      href: "/docs/sdk/python",
+      language: "Python 3.8+",
+      status: "stable",
+      features: ["Async/Await Support", "Type Hints", "Production Ready"],
+      install: "pip install settler-sdk",
     },
     {
-      name: 'Go',
-      description: 'Go SDK with context support and concurrent safety',
-      href: '/docs/sdk/go',
-      language: 'Go 1.21+',
-      status: 'stable',
-      features: ['Context Support', 'Concurrent Safe', 'Minimal Dependencies'],
-      install: 'go get github.com/settler/settler-go',
+      name: "Go",
+      description: "Go SDK with context support and concurrent safety",
+      href: "/docs/sdk/go",
+      language: "Go 1.21+",
+      status: "stable",
+      features: ["Context Support", "Concurrent Safe", "Minimal Dependencies"],
+      install: "go get github.com/settler/settler-go",
     },
     {
-      name: 'Ruby',
-      description: 'Ruby SDK with idiomatic Ruby patterns',
-      href: '/docs/sdk/ruby',
-      language: 'Ruby 3.0+',
-      status: 'beta',
-      features: ['Ruby Idioms', 'Gem Support', 'Full API Coverage'],
-      install: 'gem install settler-sdk',
+      name: "Ruby",
+      description: "Ruby SDK with idiomatic Ruby patterns",
+      href: "/docs/sdk/ruby",
+      language: "Ruby 3.0+",
+      status: "beta",
+      features: ["Ruby Idioms", "Gem Support", "Full API Coverage"],
+      install: "gem install settler-sdk",
     },
   ];
 
@@ -58,17 +58,13 @@ export default function DocsSdkPage() {
       <Navigation />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
-        <Breadcrumbs items={[
-          { label: 'Docs', href: '/docs' },
-          { label: 'SDK' },
-        ]} />
+        <Breadcrumbs items={[{ label: "Docs", href: "/docs" }, { label: "SDK" }]} />
 
         <div className="mt-8 mb-12">
-          <h1 className="text-4xl font-bold text-foreground mb-4">
-            SDK Documentation
-          </h1>
+          <h1 className="text-4xl font-bold text-foreground mb-4">SDK Documentation</h1>
           <p className="text-xl text-muted-foreground mb-8">
-            Choose your language and get started with Settler in minutes. All SDKs are production-ready with automatic retries, error handling, and full API coverage.
+            Choose your language and get started with Settler in minutes. All SDKs are
+            production-ready with automatic retries, error handling, and full API coverage.
           </p>
         </div>
 
@@ -82,7 +78,7 @@ export default function DocsSdkPage() {
                     <Code2 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                     <CardTitle className="text-2xl">{sdk.name}</CardTitle>
                   </div>
-                  <Badge variant={sdk.status === 'stable' ? 'default' : 'secondary'}>
+                  <Badge variant={sdk.status === "stable" ? "default" : "secondary"}>
                     {sdk.status}
                   </Badge>
                 </div>
@@ -97,7 +93,10 @@ export default function DocsSdkPage() {
                     <h3 className="font-semibold mb-2">Features</h3>
                     <ul className="space-y-1">
                       {sdk.features.map((feature, idx) => (
-                        <li key={idx} className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <li
+                          key={idx}
+                          className="flex items-center gap-2 text-sm text-muted-foreground"
+                        >
                           <CheckCircle2 className="w-4 h-4 text-green-600" />
                           {feature}
                         </li>

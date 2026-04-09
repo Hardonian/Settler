@@ -1,21 +1,21 @@
 /**
  * Connector Runtime Tests
- * 
+ *
  * Tests for connector runtime functionality
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { ConnectorRuntime, RuntimeConfig } from '@settler/adapters/src/connector-runtime';
-import { ConnectorDriver, ConnectorMetadata } from '@settler/adapters/src/connector-driver';
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { ConnectorRuntime, RuntimeConfig } from "@settler/adapters/src/connector-runtime";
+import { ConnectorDriver, ConnectorMetadata } from "@settler/adapters/src/connector-driver";
 
 // Mock Supabase client
-vi.mock('@supabase/supabase-js', () => ({
+vi.mock("@supabase/supabase-js", () => ({
   createClient: vi.fn(() => ({
     from: vi.fn(() => ({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
           single: vi.fn(() => ({
-            data: { id: 'connector-1' },
+            data: { id: "connector-1" },
             error: null,
           })),
         })),
@@ -23,7 +23,7 @@ vi.mock('@supabase/supabase-js', () => ({
       insert: vi.fn(() => ({
         select: vi.fn(() => ({
           single: vi.fn(() => ({
-            data: { id: 'sync-run-1' },
+            data: { id: "sync-run-1" },
             error: null,
           })),
         })),
@@ -42,34 +42,34 @@ vi.mock('@supabase/supabase-js', () => ({
   })),
 }));
 
-describe('ConnectorRuntime', () => {
+describe("ConnectorRuntime", () => {
   let runtime: ConnectorRuntime;
   let config: RuntimeConfig;
 
   beforeEach(() => {
     config = {
-      supabaseUrl: 'https://test.supabase.co',
-      supabaseServiceKey: 'test-key',
+      supabaseUrl: "https://test.supabase.co",
+      supabaseServiceKey: "test-key",
     };
     runtime = new ConnectorRuntime(config);
   });
 
-  it('should initialize runtime', () => {
+  it("should initialize runtime", () => {
     expect(runtime).toBeInstanceOf(ConnectorRuntime);
   });
 
-  it('should create sync run', async () => {
-    const syncRunId = await runtime.createSyncRun('tenant-1', 'plaid', {
-      since: new Date('2024-01-01'),
+  it("should create sync run", async () => {
+    const syncRunId = await runtime.createSyncRun("tenant-1", "plaid", {
+      since: new Date("2024-01-01"),
     });
 
     expect(syncRunId).toBeDefined();
   });
 
-  it('should update sync run', async () => {
+  it("should update sync run", async () => {
     await expect(
-      runtime.updateSyncRun('sync-run-1', {
-        status: 'completed',
+      runtime.updateSyncRun("sync-run-1", {
+        status: "completed",
         finishedAt: new Date(),
         transactionsSynced: 100,
       })
@@ -77,21 +77,21 @@ describe('ConnectorRuntime', () => {
   });
 });
 
-describe('ConnectorDriver Interface', () => {
-  it('should have required metadata', () => {
+describe("ConnectorDriver Interface", () => {
+  it("should have required metadata", () => {
     const metadata: ConnectorMetadata = {
-      id: 'test',
-      displayName: 'Test',
-      category: 'bank_feed',
-      authType: 'oauth2',
-      description: 'Test connector',
+      id: "test",
+      displayName: "Test",
+      category: "bank_feed",
+      authType: "oauth2",
+      description: "Test connector",
       supportsWebhooks: false,
       supportsPolling: true,
       requiredConfig: [],
       optionalConfig: [],
     };
 
-    expect(metadata.id).toBe('test');
-    expect(metadata.authType).toBe('oauth2');
+    expect(metadata.id).toBe("test");
+    expect(metadata.authType).toBe("oauth2");
   });
 });

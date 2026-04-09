@@ -24,4 +24,3 @@ The manifest captures:
 - Store evidence bundles alongside the exact input files and ruleset.
 - Use the manifest to validate hash integrity when sharing bundles.
 - Evidence bundles surface discrepancies; they do not guarantee correctness or compliance.
-

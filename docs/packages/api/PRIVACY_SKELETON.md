@@ -64,6 +64,7 @@
 ### Right of Access (Article 15)
 
 **Request Flow:**
+
 1. User submits access request via API or email
 2. System verifies identity
 3. System collects all user data
@@ -71,6 +72,7 @@
 5. System delivers within 30 days
 
 **Implementation:**
+
 ```typescript
 GET /api/v1/users/me/data-export
 ```
@@ -78,19 +80,22 @@ GET /api/v1/users/me/data-export
 ### Right to Rectification (Article 16)
 
 **Request Flow:**
+
 1. User updates data via API or dashboard
 2. System validates changes
 3. System updates records
 4. System logs change in audit log
 
 **Implementation:**
+
 ```typescript
-PATCH /api/v1/users/me
+PATCH / api / v1 / users / me;
 ```
 
 ### Right to Erasure (Article 17)
 
 **Request Flow:**
+
 1. User submits deletion request
 2. System verifies identity
 3. System schedules deletion (30-day grace period)
@@ -99,11 +104,13 @@ PATCH /api/v1/users/me
 6. System retains audit logs (legal requirement)
 
 **Implementation:**
+
 ```typescript
-DELETE /api/v1/users/me
+DELETE / api / v1 / users / me;
 ```
 
 **Retention Exception:**
+
 - Audit logs: 7 years (legal requirement)
 - Financial records: As required by law
 - Anonymized usage data: Retained for analytics
@@ -111,6 +118,7 @@ DELETE /api/v1/users/me
 ### Right to Restrict Processing (Article 18)
 
 **Implementation:**
+
 - Suspend tenant account
 - Stop processing reconciliation jobs
 - Retain data but don't process
@@ -118,12 +126,14 @@ DELETE /api/v1/users/me
 ### Right to Data Portability (Article 20)
 
 **Export Format:**
+
 - JSON format
 - Machine-readable
 - Includes all user data
 - Includes reconciliation jobs, reports, webhooks
 
 **Implementation:**
+
 ```typescript
 GET /api/v1/users/me/data-export
 ```
@@ -131,6 +141,7 @@ GET /api/v1/users/me/data-export
 ### Right to Object (Article 21)
 
 **Processing User Can Object To:**
+
 - Marketing communications (opt-out)
 - Analytics (via cookie preferences)
 - Legitimate interest processing (with justification)
@@ -138,16 +149,19 @@ GET /api/v1/users/me/data-export
 ## Data Retention Policies
 
 ### User Data
+
 - **Active Accounts**: Retained while account is active
 - **Deleted Accounts**: 30-day grace period, then deleted
 - **Audit Logs**: 7 years (legal requirement)
 
 ### Reconciliation Data
+
 - **Job Configurations**: Retained while account is active
 - **Execution Logs**: Configurable (default 365 days)
 - **Reports**: Configurable (default 365 days)
 
 ### Configuration
+
 ```typescript
 // Per-tenant configuration
 {
@@ -167,6 +181,7 @@ GET /api/v1/users/me/data-export
 ### Subprocessors
 
 List of subprocessors:
+
 - **Hosting**: AWS (US, EU regions)
 - **Database**: AWS RDS (US, EU regions)
 - **Analytics**: [Analytics provider]
@@ -184,7 +199,7 @@ List of subprocessors:
 
 - **Detection**: Automated monitoring + manual review
 - **Assessment**: Within 24 hours
-- **Notification**: 
+- **Notification**:
   - Supervisory authority: Within 72 hours (GDPR Article 33)
   - Data subjects: Without undue delay (GDPR Article 34)
 

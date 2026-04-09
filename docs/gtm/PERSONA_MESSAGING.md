@@ -27,7 +27,7 @@
 const job = await settler.recon.jobs.create({
   name: "Stripe Reconciliation",
   sourceAdapter: "stripe",
-  targetAdapter: "internal_ledger"
+  targetAdapter: "internal_ledger",
 });
 
 // Execute and get results

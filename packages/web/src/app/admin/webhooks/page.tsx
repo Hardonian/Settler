@@ -147,9 +147,7 @@ async function WebhookInboxContent() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-foreground mb-2">Webhook Inbox</h1>
-        <p className="text-muted-foreground">
-          Monitor Stripe webhook events and debug issues
-        </p>
+        <p className="text-muted-foreground">Monitor Stripe webhook events and debug issues</p>
       </div>
 
       {/* Stats */}
@@ -224,9 +222,7 @@ async function WebhookInboxContent() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-medium text-foreground">
-                            {event.type}
-                          </span>
+                          <span className="font-medium text-foreground">{event.type}</span>
                           <Badge variant="outline" className="text-xs">
                             {event.status}
                           </Badge>

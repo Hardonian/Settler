@@ -4,7 +4,7 @@
  */
 
 // Webhook utilities - imports removed as unused
-import { sanitizeString, generateSecureId } from '@settler/protocol';
+import { sanitizeString, generateSecureId } from "@settler/protocol";
 
 export interface WebhookPayload {
   id: string;
@@ -22,21 +22,21 @@ export interface WebhookHandler {
  * Webhook Event Types
  */
 export type ReconciliationWebhookEvent =
-  | 'transaction.created'
-  | 'transaction.updated'
-  | 'settlement.created'
-  | 'settlement.updated'
-  | 'exception.created'
-  | 'exception.resolved'
-  | 'reconciliation.completed'
-  | 'reconciliation.failed';
+  | "transaction.created"
+  | "transaction.updated"
+  | "settlement.created"
+  | "settlement.updated"
+  | "exception.created"
+  | "exception.resolved"
+  | "reconciliation.completed"
+  | "reconciliation.failed";
 
-import { requireFeature, FEATURE_FLAGS } from '../utils/licensing';
+import { requireFeature, FEATURE_FLAGS } from "../utils/licensing";
 
 /**
  * Webhook Manager
  * Manages webhook subscriptions and handlers
- * 
+ *
  * ⚠️ Commercial Feature: Requires Settler Commercial subscription
  */
 export class WebhookManager {
@@ -44,8 +44,8 @@ export class WebhookManager {
   private secret: string;
 
   constructor(secret?: string) {
-    requireFeature(FEATURE_FLAGS.WEBHOOK_MANAGER, 'Webhook Manager');
-    this.secret = secret || generateSecureId('webhook');
+    requireFeature(FEATURE_FLAGS.WEBHOOK_MANAGER, "Webhook Manager");
+    this.secret = secret || generateSecureId("webhook");
   }
 
   /**
@@ -74,12 +74,12 @@ export class WebhookManager {
    */
   async emit(event: ReconciliationWebhookEvent, data: unknown): Promise<void> {
     const handlers = this.handlers.get(event) || [];
-    
+
     const payload: WebhookPayload = {
-      id: generateSecureId('wh'),
+      id: generateSecureId("wh"),
       event,
       timestamp: new Date().toISOString(),
-      data: this.sanitizeData(data)
+      data: this.sanitizeData(data),
     };
 
     // Add signature if secret is set
@@ -88,7 +88,7 @@ export class WebhookManager {
     }
 
     // Call all handlers
-    await Promise.all(handlers.map(handler => handler(payload)));
+    await Promise.all(handlers.map((handler) => handler(payload)));
   }
 
   /**
@@ -107,13 +107,13 @@ export class WebhookManager {
    * Sanitize webhook data
    */
   private sanitizeData(data: unknown): unknown {
-    if (typeof data === 'string') {
+    if (typeof data === "string") {
       return sanitizeString(data);
     }
     if (Array.isArray(data)) {
-      return data.map(item => this.sanitizeData(item));
+      return data.map((item) => this.sanitizeData(item));
     }
-    if (data && typeof data === 'object') {
+    if (data && typeof data === "object") {
       const sanitized: Record<string, unknown> = {};
       for (const [key, value] of Object.entries(data)) {
         sanitized[sanitizeString(key)] = this.sanitizeData(value);
@@ -131,13 +131,13 @@ export class WebhookManager {
     const message = `${payload.id}:${payload.event}:${payload.timestamp}`;
     const encoder = new TextEncoder();
     const data = encoder.encode(message + this.secret);
-    
-    if (typeof crypto !== 'undefined' && crypto.subtle) {
-      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+
+    if (typeof crypto !== "undefined" && crypto.subtle) {
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
       const hashArray = Array.from(new Uint8Array(hashBuffer));
-      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
     }
-    
+
     // Fallback for environments without crypto.subtle
     return btoa(message + this.secret).substring(0, 64);
   }
@@ -157,22 +157,18 @@ export function createShopifyWebhookAdapter(webhookSecret: string) {
   const manager = createWebhookManager(webhookSecret);
 
   return {
-    handleShopifyWebhook: async (shopifyPayload: {
-      id: string;
-      event: string;
-      data: unknown;
-    }) => {
+    handleShopifyWebhook: async (shopifyPayload: { id: string; event: string; data: unknown }) => {
       // Map Shopify events to reconciliation events
       const eventMap: Record<string, ReconciliationWebhookEvent> = {
-        'orders/create': 'transaction.created',
-        'orders/paid': 'transaction.updated',
-        'payouts/create': 'settlement.created'
+        "orders/create": "transaction.created",
+        "orders/paid": "transaction.updated",
+        "payouts/create": "settlement.created",
       };
 
-      const reconciliationEvent = eventMap[shopifyPayload.event] || 'transaction.created';
+      const reconciliationEvent = eventMap[shopifyPayload.event] || "transaction.created";
       await manager.emit(reconciliationEvent, shopifyPayload.data);
     },
-    manager
+    manager,
   };
 }
 
@@ -190,14 +186,14 @@ export function createStripeWebhookAdapter(webhookSecret: string) {
     }) => {
       // Map Stripe events to reconciliation events
       const eventMap: Record<string, ReconciliationWebhookEvent> = {
-        'charge.succeeded': 'transaction.created',
-        'charge.refunded': 'transaction.updated',
-        'payout.paid': 'settlement.created'
+        "charge.succeeded": "transaction.created",
+        "charge.refunded": "transaction.updated",
+        "payout.paid": "settlement.created",
       };
 
-      const reconciliationEvent = eventMap[stripePayload.type] || 'transaction.created';
+      const reconciliationEvent = eventMap[stripePayload.type] || "transaction.created";
       await manager.emit(reconciliationEvent, stripePayload.data.object);
     },
-    manager
+    manager,
   };
 }

@@ -22,12 +22,24 @@ async function getTop() {
 
 function LatencyBadge({ ms }: { ms: number }) {
   if (ms >= 1000) {
-    return <Badge variant="destructive" size="sm">{Math.round(ms)}ms</Badge>;
+    return (
+      <Badge variant="destructive" size="sm">
+        {Math.round(ms)}ms
+      </Badge>
+    );
   }
   if (ms >= 500) {
-    return <Badge variant="warning" size="sm">{Math.round(ms)}ms</Badge>;
+    return (
+      <Badge variant="warning" size="sm">
+        {Math.round(ms)}ms
+      </Badge>
+    );
   }
-  return <Badge variant="success" size="sm">{Math.round(ms)}ms</Badge>;
+  return (
+    <Badge variant="success" size="sm">
+      {Math.round(ms)}ms
+    </Badge>
+  );
 }
 
 export default async function MetricsPage() {
@@ -50,7 +62,9 @@ export default async function MetricsPage() {
               <Clock className="w-4 h-4 text-primary" aria-hidden="true" />
               Top Slow Routes
             </CardTitle>
-            <Badge variant="outline" size="sm">7-day window</Badge>
+            <Badge variant="outline" size="sm">
+              7-day window
+            </Badge>
           </div>
         </CardHeader>
         <CardContent className="p-0">
@@ -59,7 +73,9 @@ export default async function MetricsPage() {
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-muted/40 border border-border/60">
                 <AlertCircle className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
               </div>
-              <h3 className="text-sm font-semibold text-foreground mb-1">No metrics collected yet</h3>
+              <h3 className="text-sm font-semibold text-foreground mb-1">
+                No metrics collected yet
+              </h3>
               <p className="text-xs text-muted-foreground max-w-sm leading-relaxed">
                 Route telemetry will appear here once your API endpoints begin receiving traffic.
                 Metrics are captured automatically from API route instrumentation.
@@ -105,8 +121,8 @@ export default async function MetricsPage() {
       <div className="notice-strip text-muted-foreground">
         <BarChart2 className="h-4 w-4 text-muted-foreground/60 shrink-0" aria-hidden="true" />
         <p className="text-xs leading-relaxed">
-          This surface reflects route-level event telemetry only. For full observability, connect
-          an APM integration in{" "}
+          This surface reflects route-level event telemetry only. For full observability, connect an
+          APM integration in{" "}
           <a href="/app/integrations" className="text-primary hover:underline font-medium">
             Integrations
           </a>

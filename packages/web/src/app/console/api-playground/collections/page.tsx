@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { EmptyState } from '@/components/EmptyState';
-import { Folder, Plus, FileJson, Download, Upload } from 'lucide-react';
-import Link from 'next/link';
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { EmptyState } from "@/components/EmptyState";
+import { Folder, Plus, FileJson, Download, Upload } from "lucide-react";
+import Link from "next/link";
 
 interface Collection {
   id: string;
@@ -23,7 +23,7 @@ interface Collection {
 
 export default function CollectionsPage() {
   const [collections, setCollections] = useState<Collection[]>([]);
-  const [newCollectionName, setNewCollectionName] = useState('');
+  const [newCollectionName, setNewCollectionName] = useState("");
   const [showCreate, setShowCreate] = useState(false);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function CollectionsPage() {
 
   const loadCollections = async () => {
     // Load from localStorage for now (will be DB-backed)
-    const stored = localStorage.getItem('api-playground-collections');
+    const stored = localStorage.getItem("api-playground-collections");
     if (stored) {
       try {
         setCollections(JSON.parse(stored));
@@ -44,7 +44,7 @@ export default function CollectionsPage() {
 
   const saveCollections = (newCollections: Collection[]) => {
     setCollections(newCollections);
-    localStorage.setItem('api-playground-collections', JSON.stringify(newCollections));
+    localStorage.setItem("api-playground-collections", JSON.stringify(newCollections));
   };
 
   const handleCreate = () => {
@@ -58,17 +58,17 @@ export default function CollectionsPage() {
     };
 
     saveCollections([...collections, newCollection]);
-    setNewCollectionName('');
+    setNewCollectionName("");
     setShowCreate(false);
   };
 
   const handleExport = (collection: Collection) => {
     const dataStr = JSON.stringify(collection, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const dataBlob = new Blob([dataStr], { type: "application/json" });
     const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-    link.download = `${collection.name.toLowerCase().replace(/\s+/g, '-')}.json`;
+    link.download = `${collection.name.toLowerCase().replace(/\s+/g, "-")}.json`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -86,15 +86,13 @@ export default function CollectionsPage() {
         requests: imported.requests?.map((req: any) => ({
           ...req,
           headers: Object.fromEntries(
-            Object.entries(req.headers || {}).filter(([k]) => 
-              k.toLowerCase() !== 'authorization'
-            )
+            Object.entries(req.headers || {}).filter(([k]) => k.toLowerCase() !== "authorization")
           ),
         })),
       };
       saveCollections([...collections, sanitized]);
     } catch {
-      alert('Invalid collection file');
+      alert("Invalid collection file");
     }
   };
 
@@ -113,12 +111,7 @@ export default function CollectionsPage() {
             New Collection
           </Button>
           <label>
-            <input
-              type="file"
-              accept=".json"
-              onChange={handleImport}
-              className="hidden"
-            />
+            <input type="file" accept=".json" onChange={handleImport} className="hidden" />
             <Button variant="outline" asChild>
               <span>
                 <Upload className="w-4 h-4 mr-2" />
@@ -161,7 +154,7 @@ export default function CollectionsPage() {
           title="No collections yet"
           description="Create a collection to organize your API requests"
           action={{
-            label: 'Create Collection',
+            label: "Create Collection",
             onClick: () => setShowCreate(true),
           }}
         />
@@ -175,7 +168,7 @@ export default function CollectionsPage() {
                   <CardTitle className="text-lg">{collection.name}</CardTitle>
                 </div>
                 <CardDescription>
-                  {collection.requests.length} request{collection.requests.length !== 1 ? 's' : ''}
+                  {collection.requests.length} request{collection.requests.length !== 1 ? "s" : ""}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -189,12 +182,7 @@ export default function CollectionsPage() {
                     <Download className="w-4 h-4 mr-2" />
                     Export
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    asChild
-                    className="flex-1"
-                  >
+                  <Button variant="outline" size="sm" asChild className="flex-1">
                     <Link href={`/console/api-playground?collection=${collection.id}`}>
                       <FileJson className="w-4 h-4 mr-2" />
                       Open

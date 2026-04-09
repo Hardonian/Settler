@@ -1,14 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-  ShieldCheck,
-  BadgeCheck,
-  Clock,
-  Lock,
-  ChevronDown,
-  AlertTriangle,
-} from "lucide-react";
+import { ShieldCheck, BadgeCheck, Clock, Lock, ChevronDown, AlertTriangle } from "lucide-react";
 import { DemoBanner } from "@/components/app/DemoBanner";
 
 const pillars = [

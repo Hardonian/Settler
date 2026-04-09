@@ -107,4 +107,4 @@ product feature.
 
 ---
 
-*For more detail on what Settler does and does not do, see `docs/CANONICAL_PRODUCT_NARRATIVE.md`.*
+_For more detail on what Settler does and does not do, see `docs/CANONICAL_PRODUCT_NARRATIVE.md`._

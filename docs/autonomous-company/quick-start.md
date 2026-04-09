@@ -96,7 +96,7 @@ Check agent status:
 Or query the database:
 
 ```sql
-SELECT 
+SELECT
   agent_type,
   status,
   started_at,
@@ -122,11 +122,13 @@ LIMIT 20;
 ### Functions not deploying
 
 Check Supabase CLI version:
+
 ```bash
 supabase --version
 ```
 
 Update if needed:
+
 ```bash
 npm install -g supabase@latest
 ```
@@ -151,4 +153,4 @@ npm install -g supabase@latest
 
 ---
 
-*Need help? Check the full [Setup Guide](./setup-guide.md)*
+_Need help? Check the full [Setup Guide](./setup-guide.md)_

@@ -1,5 +1,5 @@
-import { redirect } from 'next/navigation';
+import { redirect } from "next/navigation";
 
 export default function TermsPage() {
-  redirect('/legal/terms');
+  redirect("/legal/terms");
 }

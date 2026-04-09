@@ -2,42 +2,42 @@
  * User Domain Entity Tests
  */
 
-import { User, UserRole } from '../../domain/entities/User';
+import { User, UserRole } from "../../domain/entities/User";
 
-describe('User Entity', () => {
-  describe('create', () => {
-    it('should create a new user with required fields', () => {
+describe("User Entity", () => {
+  describe("create", () => {
+    it("should create a new user with required fields", () => {
       const user = User.create({
-        tenantId: 'tenant-123',
-        email: 'test@example.com',
-        passwordHash: 'hashed-password',
+        tenantId: "tenant-123",
+        email: "test@example.com",
+        passwordHash: "hashed-password",
         role: UserRole.DEVELOPER,
-        dataResidencyRegion: 'us',
+        dataResidencyRegion: "us",
         dataRetentionDays: 365,
       });
 
       expect(user.id).toBeDefined();
-      expect(user.email).toBe('test@example.com');
+      expect(user.email).toBe("test@example.com");
       expect(user.role).toBe(UserRole.DEVELOPER);
       expect(user.createdAt).toBeInstanceOf(Date);
     });
 
-    it('should generate a UUID for the user ID', () => {
+    it("should generate a UUID for the user ID", () => {
       const user1 = User.create({
-        tenantId: 'tenant-123',
-        email: 'user1@example.com',
-        passwordHash: 'hash1',
+        tenantId: "tenant-123",
+        email: "user1@example.com",
+        passwordHash: "hash1",
         role: UserRole.DEVELOPER,
-        dataResidencyRegion: 'us',
+        dataResidencyRegion: "us",
         dataRetentionDays: 365,
       });
 
       const user2 = User.create({
-        tenantId: 'tenant-123',
-        email: 'user2@example.com',
-        passwordHash: 'hash2',
+        tenantId: "tenant-123",
+        email: "user2@example.com",
+        passwordHash: "hash2",
         role: UserRole.DEVELOPER,
-        dataResidencyRegion: 'us',
+        dataResidencyRegion: "us",
         dataRetentionDays: 365,
       });
 
@@ -45,27 +45,27 @@ describe('User Entity', () => {
     });
   });
 
-  describe('isDeleted', () => {
-    it('should return false for active users', () => {
+  describe("isDeleted", () => {
+    it("should return false for active users", () => {
       const user = User.create({
-        tenantId: 'tenant-123',
-        email: 'test@example.com',
-        passwordHash: 'hash',
+        tenantId: "tenant-123",
+        email: "test@example.com",
+        passwordHash: "hash",
         role: UserRole.DEVELOPER,
-        dataResidencyRegion: 'us',
+        dataResidencyRegion: "us",
         dataRetentionDays: 365,
       });
 
       expect(user.isDeleted()).toBe(false);
     });
 
-    it('should return true for deleted users', () => {
+    it("should return true for deleted users", () => {
       const user = User.create({
-        tenantId: 'tenant-123',
-        email: 'test@example.com',
-        passwordHash: 'hash',
+        tenantId: "tenant-123",
+        email: "test@example.com",
+        passwordHash: "hash",
         role: UserRole.DEVELOPER,
-        dataResidencyRegion: 'us',
+        dataResidencyRegion: "us",
         dataRetentionDays: 365,
       });
 
@@ -74,14 +74,14 @@ describe('User Entity', () => {
     });
   });
 
-  describe('scheduleDeletion', () => {
-    it('should schedule deletion with grace period', () => {
+  describe("scheduleDeletion", () => {
+    it("should schedule deletion with grace period", () => {
       const user = User.create({
-        tenantId: 'tenant-123',
-        email: 'test@example.com',
-        passwordHash: 'hash',
+        tenantId: "tenant-123",
+        email: "test@example.com",
+        passwordHash: "hash",
         role: UserRole.DEVELOPER,
-        dataResidencyRegion: 'us',
+        dataResidencyRegion: "us",
         dataRetentionDays: 365,
       });
 
@@ -91,23 +91,23 @@ describe('User Entity', () => {
     });
   });
 
-  describe('updatePassword', () => {
-    it('should update password hash', () => {
+  describe("updatePassword", () => {
+    it("should update password hash", () => {
       const user = User.create({
-        tenantId: 'tenant-123',
-        email: 'test@example.com',
-        passwordHash: 'old-hash',
+        tenantId: "tenant-123",
+        email: "test@example.com",
+        passwordHash: "old-hash",
         role: UserRole.DEVELOPER,
-        dataResidencyRegion: 'us',
+        dataResidencyRegion: "us",
         dataRetentionDays: 365,
       });
 
       const originalUpdatedAt = user.updatedAt;
-      
+
       // Wait a bit to ensure timestamp changes
       setTimeout(() => {
-        user.updatePassword('new-hash');
-        expect(user.passwordHash).toBe('new-hash');
+        user.updatePassword("new-hash");
+        expect(user.passwordHash).toBe("new-hash");
         expect(user.updatedAt.getTime()).toBeGreaterThan(originalUpdatedAt.getTime());
       }, 10);
     });

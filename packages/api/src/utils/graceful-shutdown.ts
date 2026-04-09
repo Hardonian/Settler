@@ -3,10 +3,10 @@
  * Ensures clean shutdown of server, database connections, and background jobs
  */
 
-import { Server } from 'http';
-import { pool } from '../db';
-import { close as closeCache } from './cache';
-import { logInfo, logError } from './logger';
+import { Server } from "http";
+import { pool } from "../db";
+import { close as closeCache } from "./cache";
+import { logInfo, logError } from "./logger";
 
 interface ShutdownOptions {
   server: Server;
@@ -29,7 +29,7 @@ export function registerShutdownHandler(handler: () => Promise<void>): void {
  */
 export async function gracefulShutdown(options: ShutdownOptions): Promise<void> {
   if (shutdownInProgress) {
-    logInfo('Shutdown already in progress');
+    logInfo("Shutdown already in progress");
     return;
   }
 
@@ -37,11 +37,11 @@ export async function gracefulShutdown(options: ShutdownOptions): Promise<void> 
   const timeout = options.timeout || 30000; // 30 seconds default
   const startTime = Date.now();
 
-  logInfo('Starting graceful shutdown...');
+  logInfo("Starting graceful shutdown...");
 
   try {
     // 1. Stop accepting new requests
-    logInfo('Closing HTTP server...');
+    logInfo("Closing HTTP server...");
     await new Promise<void>((resolve, reject) => {
       options.server.close((err) => {
         if (err) {
@@ -51,13 +51,13 @@ export async function gracefulShutdown(options: ShutdownOptions): Promise<void> 
         }
       });
     });
-    logInfo('HTTP server closed');
+    logInfo("HTTP server closed");
 
     // 2. Wait for ongoing requests to complete (with timeout)
     const remainingTime = timeout - (Date.now() - startTime);
     if (remainingTime > 0) {
       logInfo(`Waiting up to ${remainingTime}ms for ongoing requests...`);
-      await new Promise(resolve => setTimeout(resolve, Math.min(remainingTime, 5000)));
+      await new Promise((resolve) => setTimeout(resolve, Math.min(remainingTime, 5000)));
     }
 
     // 3. Execute custom shutdown handlers
@@ -67,31 +67,31 @@ export async function gracefulShutdown(options: ShutdownOptions): Promise<void> 
         try {
           await handler();
         } catch (error) {
-          logError('Shutdown handler failed', error);
+          logError("Shutdown handler failed", error);
         }
       })
     );
 
     // 4. Close database connections
-    logInfo('Closing database connections...');
+    logInfo("Closing database connections...");
     await pool.end();
-    logInfo('Database connections closed');
+    logInfo("Database connections closed");
 
     // 5. Close cache connections
-    logInfo('Closing cache connections...');
+    logInfo("Closing cache connections...");
     await closeCache();
-    logInfo('Cache connections closed');
+    logInfo("Cache connections closed");
 
     // 6. Execute custom onShutdown callback
     if (options.onShutdown) {
-      logInfo('Executing custom shutdown callback...');
+      logInfo("Executing custom shutdown callback...");
       await options.onShutdown();
     }
 
     const duration = Date.now() - startTime;
     logInfo(`Graceful shutdown completed in ${duration}ms`);
   } catch (error) {
-    logError('Error during graceful shutdown', error);
+    logError("Error during graceful shutdown", error);
     throw error;
   }
 }
@@ -109,29 +109,29 @@ export function setupSignalHandlers(server: Server, options?: Partial<ShutdownOp
       });
       process.exit(0);
     } catch (error) {
-      logError('Error during shutdown', error);
+      logError("Error during shutdown", error);
       process.exit(1);
     }
   };
 
   // Handle SIGTERM (used by Docker, Kubernetes, etc.)
-  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on("SIGTERM", () => shutdown("SIGTERM"));
 
   // Handle SIGINT (Ctrl+C)
-  process.on('SIGINT', () => shutdown('SIGINT'));
+  process.on("SIGINT", () => shutdown("SIGINT"));
 
   // Handle uncaught exceptions
-  process.on('uncaughtException', (error) => {
-    logError('Uncaught exception', error);
-    shutdown('uncaughtException').finally(() => {
+  process.on("uncaughtException", (error) => {
+    logError("Uncaught exception", error);
+    shutdown("uncaughtException").finally(() => {
       process.exit(1);
     });
   });
 
   // Handle unhandled promise rejections
-  process.on('unhandledRejection', (reason, promise) => {
-    logError('Unhandled promise rejection', { reason, promise });
-    shutdown('unhandledRejection').finally(() => {
+  process.on("unhandledRejection", (reason, promise) => {
+    logError("Unhandled promise rejection", { reason, promise });
+    shutdown("unhandledRejection").finally(() => {
       process.exit(1);
     });
   });

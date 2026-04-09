@@ -1,26 +1,25 @@
 /**
  * Workflow Engine
- * 
+ *
  * Orchestrates complex data operations workflows
  * Part of Phase V: AIOS (Open Source Reconciliation Engine)
  */
 
- 
-import { PrismaClient, Prisma } from '@prisma/client';
-import { logInfo } from '../../utils/logger';
+import { PrismaClient, Prisma } from "@prisma/client";
+import { logInfo } from "../../utils/logger";
 
-export type WorkflowStepType = 
-  | 'ingestion'
-  | 'transform'
-  | 'validate'
-  | 'map'
-  | 'recon'
-  | 'drift_detection'
-  | 'audit'
-  | 'webhook'
-  | 'conditional'
-  | 'loop'
-  | 'timer';
+export type WorkflowStepType =
+  | "ingestion"
+  | "transform"
+  | "validate"
+  | "map"
+  | "recon"
+  | "drift_detection"
+  | "audit"
+  | "webhook"
+  | "conditional"
+  | "loop"
+  | "timer";
 
 export interface WorkflowStep {
   id: string;
@@ -30,12 +29,12 @@ export interface WorkflowStep {
   onFailure?: string; // Next step ID
   retry?: {
     maxAttempts: number;
-    backoff: 'linear' | 'exponential';
+    backoff: "linear" | "exponential";
   };
 }
 
 export interface WorkflowTrigger {
-  type: 'schedule' | 'event' | 'manual';
+  type: "schedule" | "event" | "manual";
   config: Record<string, unknown>;
 }
 
@@ -63,7 +62,7 @@ export class WorkflowEngine {
     input?: Record<string, unknown>
   ): Promise<{
     workflowRunId: string;
-    status: 'running' | 'completed' | 'failed';
+    status: "running" | "completed" | "failed";
     results: Record<string, unknown>;
   }> {
     // Create workflow run
@@ -72,8 +71,8 @@ export class WorkflowEngine {
         tenantId,
         workflowId,
         workflowName: workflowId,
-        status: 'running',
-        triggeredBy: 'api',
+        status: "running",
+        triggeredBy: "api",
         triggerEvent: (input || {}) as Prisma.InputJsonValue,
         executionGraph: {},
         stepResults: {},
@@ -89,7 +88,7 @@ export class WorkflowEngine {
       await this.prisma.workflowRun.update({
         where: { id: workflowRun.id },
         data: {
-          status: 'completed',
+          status: "completed",
           completedAt: new Date(),
           durationMs: BigInt(Date.now() - workflowRun.startedAt.getTime()),
         },
@@ -97,16 +96,16 @@ export class WorkflowEngine {
 
       return {
         workflowRunId: workflowRun.id,
-        status: 'completed',
+        status: "completed",
         results: {},
       };
     } catch (error) {
       await this.prisma.workflowRun.update({
         where: { id: workflowRun.id },
         data: {
-          status: 'failed',
+          status: "failed",
           completedAt: new Date(),
-          errorMessage: error instanceof Error ? error.message : 'Unknown error',
+          errorMessage: error instanceof Error ? error.message : "Unknown error",
         },
       });
 
@@ -121,11 +120,11 @@ export class WorkflowEngine {
     tenantId: string,
     workflowId: string,
     schedule: {
-      type: 'cron' | 'interval' | 'once';
+      type: "cron" | "interval" | "once";
       config: Record<string, unknown>;
     }
   ): Promise<void> {
     // TODO: Implement workflow scheduling
-    logInfo('Workflow scheduled', { tenantId, workflowId, schedule });
+    logInfo("Workflow scheduled", { tenantId, workflowId, schedule });
   }
 }

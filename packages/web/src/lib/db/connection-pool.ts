@@ -1,6 +1,6 @@
 /**
  * Database Connection Pool Manager
- * 
+ *
  * Optimizes database connections with:
  * - Connection pooling
  * - Health checks
@@ -9,7 +9,7 @@
  * - Timeout handling
  */
 
-import { checkDatabaseHealth } from '@/shared/db/prismaClient';
+import { checkDatabaseHealth } from "@/shared/db/prismaClient";
 
 export interface ConnectionPoolStats {
   healthy: boolean;
@@ -41,27 +41,29 @@ export async function executeWithRetry<T>(
   } catch (error: any) {
     // Check if it's a connection error
     const isConnectionError =
-      error?.code === 'P1001' || // Can't reach database server
-      error?.code === 'P1002' || // Connection timeout
-      error?.code === 'P1008' || // Operations timed out
-      error?.code === 'P1017' || // Server has closed the connection
-      error?.message?.includes('connection') ||
-      error?.message?.includes('timeout') ||
-      error?.message?.includes('ECONNREFUSED');
+      error?.code === "P1001" || // Can't reach database server
+      error?.code === "P1002" || // Connection timeout
+      error?.code === "P1008" || // Operations timed out
+      error?.code === "P1017" || // Server has closed the connection
+      error?.message?.includes("connection") ||
+      error?.message?.includes("timeout") ||
+      error?.message?.includes("ECONNREFUSED");
 
     if (isConnectionError && retries > 0) {
       poolStats.errorCount++;
-      console.warn(`[ConnectionPool] Connection error, retrying... (${MAX_RETRIES - retries + 1}/${MAX_RETRIES})`);
-      
+      console.warn(
+        `[ConnectionPool] Connection error, retrying... (${MAX_RETRIES - retries + 1}/${MAX_RETRIES})`
+      );
+
       // Wait before retry
       await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
-      
+
       // Check connection health before retry
       const healthy = await checkDatabaseHealth();
       if (!healthy) {
-        throw new Error('Database connection unhealthy');
+        throw new Error("Database connection unhealthy");
       }
-      
+
       return executeWithRetry(queryFn, retries - 1);
     }
 
@@ -80,14 +82,12 @@ export function getPoolStats(): ConnectionPoolStats {
 /**
  * Health check wrapper for database operations
  */
-export async function withHealthCheck<T>(
-  operation: () => Promise<T>
-): Promise<T> {
+export async function withHealthCheck<T>(operation: () => Promise<T>): Promise<T> {
   // Quick health check before operation
   const healthy = await checkDatabaseHealth();
   if (!healthy) {
     poolStats.healthy = false;
-    throw new Error('Database connection unhealthy');
+    throw new Error("Database connection unhealthy");
   }
 
   poolStats.lastCheck = new Date();

@@ -1,6 +1,6 @@
 /**
  * Performance Monitoring
- * 
+ *
  * Tracks API performance metrics:
  * - Response times
  * - Latency percentiles
@@ -8,7 +8,7 @@
  * - Error rates by endpoint
  */
 
-import { prisma } from '@/shared/db/prismaClient';
+import { prisma } from "@/shared/db/prismaClient";
 
 export interface PerformanceMetrics {
   endpoint: string;
@@ -58,15 +58,18 @@ export async function calculatePerformanceMetrics(
         timestamp: true,
         metadata: true,
       },
-      orderBy: { timestamp: 'asc' },
+      orderBy: { timestamp: "asc" },
     });
 
     // Group by endpoint
-    const endpointMetrics: Record<string, {
-      latencies: number[];
-      requests: number;
-      errors: number;
-    }> = {};
+    const endpointMetrics: Record<
+      string,
+      {
+        latencies: number[];
+        requests: number;
+        errors: number;
+      }
+    > = {};
 
     for (const event of events) {
       const endpoint = event.eventType;
@@ -81,13 +84,13 @@ export async function calculatePerformanceMetrics(
       endpointMetrics[endpoint].requests++;
 
       // Extract latency from metadata
-      if (event.metadata && typeof event.metadata === 'object') {
+      if (event.metadata && typeof event.metadata === "object") {
         const latency = (event.metadata as { latency?: number }).latency;
         if (latency) {
           endpointMetrics[endpoint].latencies.push(latency);
         }
 
-        if ('error' in event.metadata) {
+        if ("error" in event.metadata) {
           endpointMetrics[endpoint].errors++;
         }
       }
@@ -104,13 +107,13 @@ export async function calculatePerformanceMetrics(
 
     const byEndpoint: PerformanceMetrics[] = Object.entries(endpointMetrics).map(
       ([endpoint, data]) => {
-        const [method, path] = endpoint.split('-');
+        const [method, path] = endpoint.split("-");
         const latencies = data.latencies.length > 0 ? data.latencies : [0];
         const avg = latencies.reduce((a: number, b: any) => a + b, 0) / latencies.length;
 
         return {
           endpoint: path || endpoint,
-          method: method || 'GET',
+          method: method || "GET",
           p50: calculatePercentile(latencies, 50),
           p95: calculatePercentile(latencies, 95),
           p99: calculatePercentile(latencies, 99),
@@ -153,7 +156,7 @@ export async function calculatePerformanceMetrics(
       trends: { hourly, daily },
     };
   } catch (error) {
-    console.error('[Performance Monitor] Error:', error);
+    console.error("[Performance Monitor] Error:", error);
     return {
       overall: {
         avgLatency: 0,
@@ -177,10 +180,12 @@ export async function getCurrentUserPerformanceMetrics(
 ): Promise<PerformanceSummary> {
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (!user) {
-      throw new Error('Unauthorized');
+      throw new Error("Unauthorized");
     }
 
     const billingAccount = await prisma.billingAccount.findFirst({
@@ -189,22 +194,18 @@ export async function getCurrentUserPerformanceMetrics(
     });
 
     if (!billingAccount) {
-      throw new Error('Billing account not found');
+      throw new Error("Billing account not found");
     }
 
     const endDate = new Date();
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
 
-    return await calculatePerformanceMetrics(
-      billingAccount.id,
-      startDate,
-      endDate
-    );
+    return await calculatePerformanceMetrics(billingAccount.id, startDate, endDate);
   } catch (error) {
-    console.error('[Performance Monitor] Error:', error);
+    console.error("[Performance Monitor] Error:", error);
     throw error;
   }
 }
 
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from "@/lib/supabase/server";

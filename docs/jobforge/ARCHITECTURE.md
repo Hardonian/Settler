@@ -245,14 +245,14 @@ CREATE POLICY jobforge_jobs_select_policy ON jobforge_jobs
 
 ```typescript
 // Set tenant context before querying
-await supabase.rpc('set_config', {
-  setting: 'app.tenant_id',
+await supabase.rpc("set_config", {
+  setting: "app.tenant_id",
   value: tenantId,
   is_local: true,
-})
+});
 
 // Now queries only see tenant's data
-const { data } = await supabase.from('jobforge_jobs').select('*')
+const { data } = await supabase.from("jobforge_jobs").select("*");
 ```
 
 ### RPC Tenant Validation
@@ -399,7 +399,7 @@ Claim multiple jobs per poll:
 const jobs = await client.claimJobs({
   worker_id: workerId,
   limit: 10, // Process 10 jobs concurrently
-})
+});
 ```
 
 ## Security Model

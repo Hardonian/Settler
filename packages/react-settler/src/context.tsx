@@ -3,12 +3,12 @@
  * Provides compilation mode and config state to React components
  */
 
-import { createContext, useContext, ReactNode } from 'react';
+import { createContext, useContext, ReactNode } from "react";
 import {
   CompilationContext as ProtocolCompilationContext,
   ReconciliationConfig,
-  CompilationMode
-} from '@settler/protocol';
+  CompilationMode,
+} from "@settler/protocol";
 
 const CompilationContext = createContext<ProtocolCompilationContext | null>(null);
 
@@ -19,30 +19,26 @@ export interface CompilationProviderProps {
 }
 
 export function CompilationProvider({
-  mode = 'ui',
+  mode = "ui",
   config = {},
-  children
+  children,
 }: CompilationProviderProps) {
   const contextValue: ProtocolCompilationContext = {
     mode,
     config: config as Partial<ReconciliationConfig>,
-    widgetRegistry: new Map()
+    widgetRegistry: new Map(),
   };
 
-  return (
-    <CompilationContext.Provider value={contextValue}>
-      {children}
-    </CompilationContext.Provider>
-  );
+  return <CompilationContext.Provider value={contextValue}>{children}</CompilationContext.Provider>;
 }
 
 export function useCompilationContext(): ProtocolCompilationContext {
   const context = useContext(CompilationContext);
   if (!context) {
     return {
-      mode: 'ui',
+      mode: "ui",
       config: {},
-      widgetRegistry: new Map()
+      widgetRegistry: new Map(),
     };
   }
   return context;

@@ -47,7 +47,7 @@ export async function createCustomIntegration(
       ] as (string | number | boolean | null | Date)[]
     );
 
-    const integrationId = result[0]?.id || '';
+    const integrationId = result[0]?.id || "";
     logInfo("Custom integration created", {
       integrationId,
       tenantId,

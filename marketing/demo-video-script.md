@@ -34,10 +34,12 @@ const job = await settler.jobs.create({
   name: "Shopify-Stripe Reconciliation",
   source: { adapter: "shopify", config: { apiKey: "..." } },
   target: { adapter: "stripe", config: { apiKey: "..." } },
-  rules: { matching: [
-    { field: "order_id", type: "exact" },
-    { field: "amount", type: "exact", tolerance: 0.01 }
-  ]}
+  rules: {
+    matching: [
+      { field: "order_id", type: "exact" },
+      { field: "amount", type: "exact", tolerance: 0.01 },
+    ],
+  },
 });
 ```
 
@@ -46,6 +48,7 @@ That's it. Now let's run it and see the results."
 **[1:00-1:30] Results**
 
 "Here are the results:
+
 - 1,250 transactions matched automatically
 - 3 unmatched transactions (shown in exception queue)
 - 99.8% accuracy
@@ -55,6 +58,7 @@ The unmatched transactions are flagged for review. I can resolve them in bulk or
 **[1:30-2:00] Features**
 
 "Settler includes:
+
 - Real-time reconciliation via webhooks
 - Exception queue for unmatched items
 - Complete audit trail for compliance
@@ -66,6 +70,7 @@ You can export results to CSV or sync directly to QuickBooks."
 **[2:00-2:15] Pricing**
 
 "Pricing is simple:
+
 - Free tier: 1,000 reconciliations/month
 - Starter: $29/month for 10,000
 - Growth: $99/month for 100,000
@@ -103,6 +108,7 @@ Thanks for watching!"
 ---
 
 **Production Notes:**
+
 - Record in 1080p
 - Use screen recording for code/dashboard
 - Add captions/subtitles

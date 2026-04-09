@@ -8,7 +8,9 @@ import {
 export function CapabilityTruthTable() {
   return (
     <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-      <h3 className="text-xl font-semibold text-foreground">Implemented vs staged enterprise truth</h3>
+      <h3 className="text-xl font-semibold text-foreground">
+        Implemented vs staged enterprise truth
+      </h3>
       <p className="mt-2 text-sm text-muted-foreground">
         This table is contract-first: claims stay narrow until verification evidence exists.
       </p>
@@ -24,7 +26,10 @@ export function CapabilityTruthTable() {
           </thead>
           <tbody>
             {ENTERPRISE_CAPABILITY_TRUTH.map((row) => (
-              <tr key={row.capability} className="border-b border-border/70 align-top last:border-0">
+              <tr
+                key={row.capability}
+                className="border-b border-border/70 align-top last:border-0"
+              >
                 <td className="py-4 pr-4 font-medium text-foreground">{row.capability}</td>
                 <td className="py-4 pr-4">
                   <Badge variant="outline" className={getCapabilityStateBadgeClass(row.state)}>

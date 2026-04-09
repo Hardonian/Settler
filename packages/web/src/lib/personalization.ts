@@ -85,7 +85,7 @@ export async function getPersonalizedCTA(
 
     if (lifecycle) {
       const lifecycleData = lifecycle as UserLifecycle;
-      
+
       // High churn risk → retention CTA
       if (lifecycleData.churn_risk_score && lifecycleData.churn_risk_score > 0.7) {
         return {
@@ -97,7 +97,10 @@ export async function getPersonalizedCTA(
       }
 
       // Expansion opportunity → upgrade CTA
-      if (lifecycleData.expansion_opportunity_score && lifecycleData.expansion_opportunity_score > 0.6) {
+      if (
+        lifecycleData.expansion_opportunity_score &&
+        lifecycleData.expansion_opportunity_score > 0.6
+      ) {
         return {
           text: "Unlock Enterprise Features",
           href: "/enterprise",

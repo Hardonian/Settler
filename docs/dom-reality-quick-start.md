@@ -9,6 +9,7 @@ npm run qa:dom-reality
 ```
 
 This will:
+
 - Start the development server automatically
 - Test all 9 critical routes
 - Capture SSR, hydration, and final DOM states
@@ -22,6 +23,7 @@ npm run qa:dom-reality:report
 ```
 
 This will:
+
 - Aggregate all test results
 - Generate comprehensive JSON and Markdown reports
 - Provide fix recommendations
@@ -34,6 +36,7 @@ cat test-results/dom-reality-report.md
 ```
 
 Or open in your editor:
+
 ```bash
 code test-results/dom-reality-report.md
 ```
@@ -41,6 +44,7 @@ code test-results/dom-reality-report.md
 ## 📊 What Gets Tested
 
 ### Routes
+
 - `/` - Homepage
 - `/signup` - Sign up page
 - `/console` - Developer console
@@ -52,6 +56,7 @@ code test-results/dom-reality-report.md
 - `/runbooks` - Runbooks
 
 ### Scenarios
+
 - ✅ SSR HTML capture
 - ✅ Post-hydration DOM capture
 - ✅ Final painted DOM capture
@@ -71,29 +76,35 @@ code test-results/dom-reality-report.md
 # DOM Reality Enforcement Report
 
 ## Summary
+
 - Total Routes Tested: 9
 - Routes with Issues: X
 - Critical Issues: X
 - Warnings: X
 
 ## Route Status
-| Route | Status | Issues | Critical | Visible Nodes | Invisible Nodes | CLS |
-|-------|--------|--------|----------|---------------|-----------------|-----|
-| /     | ✅ pass | 0      | 0        | 1234         | 56              | 0.05|
+
+| Route | Status  | Issues | Critical | Visible Nodes | Invisible Nodes | CLS  |
+| ----- | ------- | ------ | -------- | ------------- | --------------- | ---- |
+| /     | ✅ pass | 0      | 0        | 1234          | 56              | 0.05 |
 
 ## Issues by Type
+
 - invisible: X
 - hydration_mismatch: X
 - layout_shift: X
 - accessibility: X
 
 ## Recommendations
+
 - Fix X hydration mismatch(es)
 - Review X invisible element(s)
 - ...
 
 ## Suggested Fixes
+
 ### [Route] Issue Description
+
 **Fix:** ...
 ```
 
@@ -145,25 +156,31 @@ code test-results/dom-reality-report.md
 **Element:** [selector]
 
 **What was wrong:**
+
 - Description
 
 **Why the fix works:**
+
 - Explanation
 
 **Files Changed:**
+
 - `path/to/file.tsx` - Description
 
 **Verification:**
+
 - Steps to verify
 ```
 
 ## 📈 CI/CD Integration
 
 Tests automatically run on:
+
 - Pull requests affecting frontend code
 - Pushes to main/develop branches
 
 Reports are:
+
 - Uploaded as GitHub Actions artifacts
 - Commented on PRs
 - Available for 30 days
@@ -175,6 +192,7 @@ Reports are:
 **Issue:** Server doesn't start
 
 **Solution:**
+
 ```bash
 # Check if port 3000 is available
 lsof -i :3000
@@ -190,6 +208,7 @@ kill -9 <PID>
 **Issue:** Tests take too long
 
 **Solution:**
+
 - Increase timeout in test file
 - Check network connectivity
 - Verify server is responding
@@ -199,6 +218,7 @@ kill -9 <PID>
 **Issue:** No reports generated
 
 **Solution:**
+
 ```bash
 # Check test results directory
 ls test-results/dom-reality-reports/
@@ -225,6 +245,7 @@ npm run qa:dom-reality:report
 ## ✅ Success Criteria
 
 Your frontend is healthy when:
+
 - ✅ No critical issues in reports
 - ✅ CLS < 0.1 (good) or < 0.25 (acceptable)
 - ✅ No hydration warnings in console

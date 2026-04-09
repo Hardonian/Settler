@@ -8,8 +8,8 @@ import {
   ReconciliationSettlement,
   ReconciliationException,
   ReconciliationRule,
-  Money
-} from './index';
+  Money,
+} from "./index";
 
 /**
  * Validation Result

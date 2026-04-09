@@ -10,13 +10,13 @@ The test phase revealed multiple seed scripts with potential reliability issues.
 
 ### Seed Scripts Found
 
-| Script | Purpose | Output |
-|--------|---------|--------|
-| `scripts/seed-demo.ts` | Generates demo JSON files | `demo/data/demo_stripe_transactions.json`, `demo_bank_transactions.json`, `demo_expected_matches.json` |
-| `scripts/generate-demo-data.ts` | Generates demo JSON files | `demo/data/stripe_normalized.json`, `bank_normalized.json`, `expected_matches.json` |
-| `scripts/seed-reconciliation-fixtures.ts` | Seeds database with test data | Database records (transactions, reconciliation runs) |
-| `scripts/seed-tenant.ts` | Seeds default tenant | Database tenant record |
-| `scripts/post-migration-seed.ts` | Seeds add-ons after migrations | Supabase add_ons table |
+| Script                                    | Purpose                        | Output                                                                                                 |
+| ----------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| `scripts/seed-demo.ts`                    | Generates demo JSON files      | `demo/data/demo_stripe_transactions.json`, `demo_bank_transactions.json`, `demo_expected_matches.json` |
+| `scripts/generate-demo-data.ts`           | Generates demo JSON files      | `demo/data/stripe_normalized.json`, `bank_normalized.json`, `expected_matches.json`                    |
+| `scripts/seed-reconciliation-fixtures.ts` | Seeds database with test data  | Database records (transactions, reconciliation runs)                                                   |
+| `scripts/seed-tenant.ts`                  | Seeds default tenant           | Database tenant record                                                                                 |
+| `scripts/post-migration-seed.ts`          | Seeds add-ons after migrations | Supabase add_ons table                                                                                 |
 
 ### Package.json Seed Commands
 
@@ -43,6 +43,7 @@ The test phase revealed multiple seed scripts with potential reliability issues.
 ### Phase 1: Consolidate Seed Commands
 
 **1.1 Standardize on `seed-demo.ts` as the canonical script**
+
 - Keep `scripts/seed-demo.ts` as the single source of truth
 - Deprecate `scripts/generate-demo-data.ts` or make it an alias
 - Update `package.json` to have clear, non-overlapping commands:
@@ -53,39 +54,46 @@ The test phase revealed multiple seed scripts with potential reliability issues.
   ```
 
 **1.2 Fix file output consistency**
+
 - Ensure `seed-demo.ts` outputs the correct file names that the playground expects
 - Current playground expects: `demo_stripe_transactions.json`, `demo_bank_transactions.json`, `demo_expected_matches.json`
 
 ### Phase 2: Add Seed Verification
 
 **2.1 Create `scripts/seed-verify.ts`**
+
 - Verify demo data files exist and are valid JSON
 - Check minimum record counts
 - Provide clear success/failure output
 - Exit with appropriate codes (0 = success, 1 = failure)
 
 **2.2 Add `--verify` flag to `seed-demo.ts`**
+
 - After seeding, optionally verify the output
 
 ### Phase 3: Improve Error Handling
 
 **3.1 Improve `ensureDemoData()` in playground.ts**
+
 - Add timeout handling for auto-generation
 - Add retry logic
 - Log errors more clearly
 - Return more actionable error messages
 
 **3.2 Add logging to seed scripts**
+
 - More detailed console output
 - Error context for debugging
 
 ### Phase 4: Update Doctor Script
 
 **4.1 Enhance `checkSeedData()` in `scripts/doctor.ts`**
+
 - Check for demo data files (not just database tenants)
 - Provide actionable remediation steps
 
 **4.2 Add demo data check**
+
 - Verify demo JSON files exist and are valid
 - Check file sizes to detect incomplete generation
 
@@ -112,7 +120,7 @@ graph TD
         B1 --> C1[Inconsistent JSON files]
         B2 --> C1
     end
-    
+
     subgraph "Future State"
         A3b[pnpm seed] --> B1b[seed-demo.ts]
         B1b --> C1b[Consistent JSON files]

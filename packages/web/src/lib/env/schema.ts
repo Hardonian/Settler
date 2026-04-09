@@ -113,10 +113,7 @@ const billingEnvSchema = z.object({
  * Email & Notifications (Optional)
  */
 const emailEnvSchema = z.object({
-  RESEND_API_KEY: z
-    .string()
-    .optional()
-    .describe("Resend API key for transactional emails"),
+  RESEND_API_KEY: z.string().optional().describe("Resend API key for transactional emails"),
 
   RESEND_FROM_EMAIL: z
     .string()
@@ -129,11 +126,7 @@ const emailEnvSchema = z.object({
  * Monitoring & Observability (Optional)
  */
 const monitoringEnvSchema = z.object({
-  SENTRY_DSN: z
-    .string()
-    .url()
-    .optional()
-    .describe("Sentry DSN for error tracking"),
+  SENTRY_DSN: z.string().url().optional().describe("Sentry DSN for error tracking"),
 
   NEXT_PUBLIC_ENABLE_SENTRY: z
     .enum(["true", "false"])
@@ -161,25 +154,16 @@ const cacheEnvSchema = z.object({
     .optional()
     .describe("Upstash Redis REST URL for serverless Redis"),
 
-  UPSTASH_REDIS_REST_TOKEN: z
-    .string()
-    .optional()
-    .describe("Upstash Redis REST token"),
+  UPSTASH_REDIS_REST_TOKEN: z.string().optional().describe("Upstash Redis REST token"),
 });
 
 /**
  * AI & External Services (Optional)
  */
 const externalServicesSchema = z.object({
-  OPENAI_API_KEY: z
-    .string()
-    .optional()
-    .describe("OpenAI API key for AI features"),
+  OPENAI_API_KEY: z.string().optional().describe("OpenAI API key for AI features"),
 
-  BUILDER_API_KEY: z
-    .string()
-    .optional()
-    .describe("Builder.io API key for visual page builder"),
+  BUILDER_API_KEY: z.string().optional().describe("Builder.io API key for visual page builder"),
 
   NEXT_PUBLIC_BUILDER_PUBLIC_KEY: z
     .string()

@@ -11,7 +11,7 @@
 
 The following environment variables should be configured in Vercel:
 
-#### Public Variables (NEXT_PUBLIC_*)
+#### Public Variables (NEXT*PUBLIC*\*)
 
 - `NEXT_PUBLIC_SETTLER_API_KEY` - API key for Settler SDK (used in mobile page demo)
 - `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL (if using Supabase)
@@ -35,19 +35,23 @@ The following environment variables should be configured in Vercel:
 ## Build Configuration
 
 ### Build Command
+
 ```bash
 cd ../.. && npx turbo run build --filter=@settler/web...
 ```
 
 ### Install Command
+
 ```bash
 npm install --frozen-lockfile
 ```
 
 ### Output Directory
+
 Next.js default (`.next`)
 
 ### Framework Preset
+
 Next.js (auto-detected)
 
 ---
@@ -55,7 +59,9 @@ Next.js (auto-detected)
 ## Routing & Rewrites
 
 ### Static Routes
+
 All routes are handled by Next.js App Router:
+
 - `/` - Home page
 - `/docs` - Documentation
 - `/pricing` - Pricing page
@@ -67,11 +73,14 @@ All routes are handled by Next.js App Router:
 - `/legal/*` - Legal pages
 
 ### API Routes
+
 - `/api/analytics` - Analytics endpoint
 - `/api/status/health` - Health check
 
 ### Rewrites
+
 Configured in `vercel.json`:
+
 - `/sw.js` → `/sw.js` (Service Worker)
 - `/manifest.json` → `/manifest.json` (PWA Manifest)
 
@@ -93,10 +102,12 @@ Security headers are configured in both `next.config.js` and `vercel.json`:
 ## Performance
 
 ### Build Settings
+
 - Node.js version: Check `.nvmrc` or use latest LTS
 - Build memory: 8GB (`NODE_OPTIONS=--max-old-space-size=8192`)
 
 ### Optimizations
+
 - Next.js Image Optimization enabled
 - SWC minification enabled
 - React Strict Mode enabled
@@ -107,10 +118,12 @@ Security headers are configured in both `next.config.js` and `vercel.json`:
 ## Monitoring
 
 ### Analytics
+
 - Vercel Analytics: Enabled (`@vercel/analytics/react`)
 - Speed Insights: Enabled (`@vercel/speed-insights/next`)
 
 ### Health Checks
+
 - `/api/status/health` - Health check endpoint
 - Monitor via Vercel Dashboard or external monitoring service
 
@@ -200,6 +213,7 @@ Security headers are configured in both `next.config.js` and `vercel.json`:
 ## Support
 
 For deployment issues:
+
 1. Check Vercel deployment logs
 2. Review build output
 3. Test locally with `npm run build && npm run start`

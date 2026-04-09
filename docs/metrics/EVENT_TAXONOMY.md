@@ -7,50 +7,56 @@ All events use `snake_case`. Events are grouped by category prefix.
 ## Core Events
 
 ### Navigation & Page Views
-| Event | Properties | Description |
-|-------|-----------|-------------|
-| `page_view` | `path`, `title`, `referrer` | Page load |
-| `session_start` | `returning: boolean` | New browsing session |
+
+| Event           | Properties                  | Description          |
+| --------------- | --------------------------- | -------------------- |
+| `page_view`     | `path`, `title`, `referrer` | Page load            |
+| `session_start` | `returning: boolean`        | New browsing session |
 
 ### CTA Interactions
-| Event | Properties | Description |
-|-------|-----------|-------------|
-| `cta_click` | `cta: string`, `location: string`, `destination: string` | Click on any call-to-action button |
-| `docs_cta_click` | `doc_section: string`, `destination: string` | Click on documentation CTA |
-| `github_outbound_click` | `location: string` | Click on link to GitHub |
+
+| Event                   | Properties                                               | Description                        |
+| ----------------------- | -------------------------------------------------------- | ---------------------------------- |
+| `cta_click`             | `cta: string`, `location: string`, `destination: string` | Click on any call-to-action button |
+| `docs_cta_click`        | `doc_section: string`, `destination: string`             | Click on documentation CTA         |
+| `github_outbound_click` | `location: string`                                       | Click on link to GitHub            |
 
 ### Product Usage
-| Event | Properties | Description |
-|-------|-----------|-------------|
-| `feature_used` | `feature: string`, `area: string` | User interacts with a product feature |
-| `reconciliation_run_started` | `source_count: number` | User initiates a reconciliation run |
-| `reconciliation_run_completed` | `match_count: number`, `mismatch_count: number`, `duration_ms: number` | Run completes |
-| `evidence_viewed` | `run_id: string`, `format: string` | User views evidence bundle |
-| `evidence_exported` | `run_id: string`, `format: string` | User exports evidence |
-| `replay_executed` | `original_run_id: string` | User replays a previous run |
-| `mismatch_reviewed` | `mismatch_id: string`, `resolution: string` | User reviews a mismatch |
-| `rule_created` | `rule_type: string` | User creates a matching rule |
-| `connection_added` | `adapter_type: string` | User adds a data source connection |
+
+| Event                          | Properties                                                             | Description                           |
+| ------------------------------ | ---------------------------------------------------------------------- | ------------------------------------- |
+| `feature_used`                 | `feature: string`, `area: string`                                      | User interacts with a product feature |
+| `reconciliation_run_started`   | `source_count: number`                                                 | User initiates a reconciliation run   |
+| `reconciliation_run_completed` | `match_count: number`, `mismatch_count: number`, `duration_ms: number` | Run completes                         |
+| `evidence_viewed`              | `run_id: string`, `format: string`                                     | User views evidence bundle            |
+| `evidence_exported`            | `run_id: string`, `format: string`                                     | User exports evidence                 |
+| `replay_executed`              | `original_run_id: string`                                              | User replays a previous run           |
+| `mismatch_reviewed`            | `mismatch_id: string`, `resolution: string`                            | User reviews a mismatch               |
+| `rule_created`                 | `rule_type: string`                                                    | User creates a matching rule          |
+| `connection_added`             | `adapter_type: string`                                                 | User adds a data source connection    |
 
 ### Onboarding
-| Event | Properties | Description |
-|-------|-----------|-------------|
-| `setup_start` | `method: string` | User begins setup process |
+
+| Event                  | Properties                            | Description                       |
+| ---------------------- | ------------------------------------- | --------------------------------- |
+| `setup_start`          | `method: string`                      | User begins setup process         |
 | `setup_step_completed` | `step: string`, `step_number: number` | User completes an onboarding step |
-| `setup_completed` | `duration_ms: number` | User completes full setup |
-| `demo_run_complete` | — | User successfully runs the demo |
+| `setup_completed`      | `duration_ms: number`                 | User completes full setup         |
+| `demo_run_complete`    | —                                     | User successfully runs the demo   |
 
 ### Forms & Contact
-| Event | Properties | Description |
-|-------|-----------|-------------|
-| `contact_form_open` | `source: string` | User opens contact form |
+
+| Event                 | Properties             | Description               |
+| --------------------- | ---------------------- | ------------------------- |
+| `contact_form_open`   | `source: string`       | User opens contact form   |
 | `demo_request_submit` | `company_size: string` | User submits demo request |
 
 ### Errors
-| Event | Properties | Description |
-|-------|-----------|-------------|
+
+| Event                | Properties                                   | Description                    |
+| -------------------- | -------------------------------------------- | ------------------------------ |
 | `error_boundary_hit` | `component: string`, `error_message: string` | React error boundary triggered |
-| `api_error` | `endpoint: string`, `status_code: number` | API request failed |
+| `api_error`          | `endpoint: string`, `status_code: number`    | API request failed             |
 
 ## Event Property Standards
 
@@ -71,9 +77,9 @@ Events are dispatched through the analytics abstraction layer (`lib/analytics/in
 
 ## Environment Behavior
 
-| Environment | Behavior |
-|-------------|----------|
-| Development | Events logged to console (debug mode) |
-| Preview/Staging | Events sent to staging provider instance |
-| Production | Events sent to production provider instance |
-| No provider configured | Graceful no-op, no errors |
+| Environment            | Behavior                                    |
+| ---------------------- | ------------------------------------------- |
+| Development            | Events logged to console (debug mode)       |
+| Preview/Staging        | Events sent to staging provider instance    |
+| Production             | Events sent to production provider instance |
+| No provider configured | Graceful no-op, no errors                   |

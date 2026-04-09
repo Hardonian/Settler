@@ -36,12 +36,7 @@ export function MarketingSectionHeader({
           {eyebrow}
         </p>
       ) : null}
-      <h2
-        className={cn(
-          "font-bold tracking-tight text-foreground",
-          titleClassName ?? "text-2xl"
-        )}
-      >
+      <h2 className={cn("font-bold tracking-tight text-foreground", titleClassName ?? "text-2xl")}>
         {title}
       </h2>
       {description ? (

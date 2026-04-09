@@ -3,7 +3,7 @@
  * Provides performance monitoring and optimization helpers
  */
 
-import { logWarn } from './logger';
+import { logWarn } from "./logger";
 
 /**
  * Measure execution time of async function
@@ -30,10 +30,7 @@ export async function measureAsync<T>(
 /**
  * Measure execution time of sync function
  */
-export function measureSync<T>(
-  fn: () => T,
-  label?: string
-): { result: T; duration: number } {
+export function measureSync<T>(fn: () => T, label?: string): { result: T; duration: number } {
   const start = performance.now();
   const result = fn();
   const duration = performance.now() - start;
@@ -116,7 +113,7 @@ export function memoize<TArgs extends unknown[], TReturn>(
 
   return (...args: TArgs): TReturn => {
     const key = keyGenerator ? keyGenerator(...args) : JSON.stringify(args);
-    
+
     if (cache.has(key)) {
       return cache.get(key)!;
     }

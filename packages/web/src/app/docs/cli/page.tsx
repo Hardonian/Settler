@@ -42,9 +42,7 @@ export default function DocsCliPage() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-2 text-foreground">
-                    yarn
-                  </h3>
+                  <h3 className="text-lg font-semibold mb-2 text-foreground">yarn</h3>
                   <div className="bg-card dark:bg-card/80 rounded-lg p-4 overflow-x-auto">
                     <pre className="text-green-400 text-sm">
                       <code>yarn global add @settler/cli</code>
@@ -52,9 +50,7 @@ export default function DocsCliPage() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-2 text-foreground">
-                    pnpm
-                  </h3>
+                  <h3 className="text-lg font-semibold mb-2 text-foreground">pnpm</h3>
                   <div className="bg-card dark:bg-card/80 rounded-lg p-4 overflow-x-auto">
                     <pre className="text-green-400 text-sm">
                       <code>pnpm add -g @settler/cli</code>
@@ -98,13 +94,9 @@ settler configure`}</code>
                     <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
                       COMMAND
                     </Badge>
-                    <h3 className="text-lg font-semibold text-foreground">
-                      settler jobs
-                    </h3>
+                    <h3 className="text-lg font-semibold text-foreground">settler jobs</h3>
                   </div>
-                  <p className="text-muted-foreground mb-2">
-                    Manage reconciliation jobs
-                  </p>
+                  <p className="text-muted-foreground mb-2">Manage reconciliation jobs</p>
                   <div className="bg-card dark:bg-card/80 rounded-lg p-4 overflow-x-auto">
                     <pre className="text-green-400 text-sm">
                       <code>{`settler jobs list
@@ -120,13 +112,9 @@ settler jobs run <job-id>`}</code>
                     <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
                       COMMAND
                     </Badge>
-                    <h3 className="text-lg font-semibold text-foreground">
-                      settler reports
-                    </h3>
+                    <h3 className="text-lg font-semibold text-foreground">settler reports</h3>
                   </div>
-                  <p className="text-muted-foreground mb-2">
-                    View reconciliation reports
-                  </p>
+                  <p className="text-muted-foreground mb-2">View reconciliation reports</p>
                   <div className="bg-card dark:bg-card/80 rounded-lg p-4 overflow-x-auto">
                     <pre className="text-green-400 text-sm">
                       <code>{`settler reports get <job-id>
@@ -140,9 +128,7 @@ settler reports export <job-id> --format json`}</code>
                     <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
                       COMMAND
                     </Badge>
-                    <h3 className="text-lg font-semibold text-foreground">
-                      settler adapters
-                    </h3>
+                    <h3 className="text-lg font-semibold text-foreground">settler adapters</h3>
                   </div>
                   <p className="text-muted-foreground mb-2">List available adapters</p>
                   <div className="bg-card dark:bg-card/80 rounded-lg p-4 overflow-x-auto">
@@ -157,13 +143,9 @@ settler reports export <job-id> --format json`}</code>
                     <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
                       COMMAND
                     </Badge>
-                    <h3 className="text-lg font-semibold text-foreground">
-                      settler webhooks
-                    </h3>
+                    <h3 className="text-lg font-semibold text-foreground">settler webhooks</h3>
                   </div>
-                  <p className="text-muted-foreground mb-2">
-                    Manage webhook subscriptions
-                  </p>
+                  <p className="text-muted-foreground mb-2">Manage webhook subscriptions</p>
                   <div className="bg-card dark:bg-card/80 rounded-lg p-4 overflow-x-auto">
                     <pre className="text-green-400 text-sm">
                       <code>{`settler webhooks list

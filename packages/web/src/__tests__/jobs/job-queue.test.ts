@@ -13,7 +13,9 @@ import type { Database } from "@/types/database.types";
 
 type SupabaseDb = SupabaseClient<Database>;
 
-const hasSupabaseAdminEnv = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.NEXT_PUBLIC_SUPABASE_URL);
+const hasSupabaseAdminEnv = Boolean(
+  process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.NEXT_PUBLIC_SUPABASE_URL
+);
 const describeIfSupabase = hasSupabaseAdminEnv ? describe : describe.skip;
 
 describeIfSupabase("Job Queue RLS and Concurrency", () => {

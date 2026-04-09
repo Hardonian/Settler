@@ -196,10 +196,16 @@ async function logNotification(
         tenant_id, user_id, event_type, channel, recipient, subject, body
       ) VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING id`,
-      [tenantId, userId || null, eventType, channel, recipient, subject || null, body || null] as (string | number | boolean | null | Date)[]
+      [tenantId, userId || null, eventType, channel, recipient, subject || null, body || null] as (
+        | string
+        | number
+        | boolean
+        | null
+        | Date
+      )[]
     );
 
-    const logId = result[0]?.id || '';
+    const logId = result[0]?.id || "";
     return logId;
   } catch (error) {
     logError("Failed to log notification", error, { tenantId, userId, eventType });
@@ -331,23 +337,15 @@ export async function notifyJobFailure(
     // Get user email
     let email: string | undefined;
     if (jobOwnerId) {
-      const userResult = await query(
-        `SELECT email FROM users WHERE id = $1`,
-        [jobOwnerId]
-      );
+      const userResult = await query(`SELECT email FROM users WHERE id = $1`, [jobOwnerId]);
       email = userResult.length > 0 ? (userResult[0]?.email as string) : undefined;
     }
 
-    await sendNotification(
-      tenantId,
-      "job_failed",
-      [{ userId: jobOwnerId, email }],
-      {
-        subject: "Job Failed",
-        body: `Job ${jobId} has failed: ${errorMessage}`,
-        metadata: { jobId, errorMessage },
-      }
-    );
+    await sendNotification(tenantId, "job_failed", [{ userId: jobOwnerId, email }], {
+      subject: "Job Failed",
+      body: `Job ${jobId} has failed: ${errorMessage}`,
+      metadata: { jobId, errorMessage },
+    });
   } catch (error) {
     logError("Failed to notify job failure", error, { tenantId, jobId });
     // Don't throw - notification failures shouldn't break the system

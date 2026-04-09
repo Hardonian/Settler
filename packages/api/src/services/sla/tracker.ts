@@ -1,12 +1,12 @@
 /**
  * SLA Tracking Service
- * 
+ *
  * Tracks support response times and SLA compliance.
  * Enforces SLA commitments for paid tiers.
  */
 
-import { supabase } from '../../infrastructure/supabase/client';
-import { logInfo, logError } from '../../utils/logger';
+import { supabase } from "../../infrastructure/supabase/client";
+import { logInfo, logError } from "../../utils/logger";
 
 interface SLAPolicy {
   tier: string;
@@ -18,24 +18,24 @@ interface SLAPolicy {
 // SLA policies per tier
 const SLA_POLICIES: Record<string, SLAPolicy> = {
   free: {
-    tier: 'free',
+    tier: "free",
     response_time_hours: 0, // No SLA (best-effort)
   },
   starter: {
-    tier: 'starter',
+    tier: "starter",
     response_time_hours: 24, // 24-hour response SLA
   },
   growth: {
-    tier: 'growth',
+    tier: "growth",
     response_time_hours: 24, // 24-hour response SLA
   },
   scale: {
-    tier: 'scale',
+    tier: "scale",
     response_time_hours: 4, // 4-hour response SLA
     resolution_time_hours: 48, // 48-hour resolution SLA
   },
   enterprise: {
-    tier: 'enterprise',
+    tier: "enterprise",
     response_time_hours: 1, // 1-hour response SLA
     resolution_time_hours: 24, // 24-hour resolution SLA
     uptime_percentage: 99.9, // 99.9% uptime SLA
@@ -48,14 +48,14 @@ const SLA_POLICIES: Record<string, SLAPolicy> = {
 export function getSLAPolicy(tierId: string): SLAPolicy {
   // Map legacy plan names
   const tierMap: Record<string, string> = {
-    base: 'starter',
-    pro: 'growth',
+    base: "starter",
+    pro: "growth",
   };
-  
+
   const mappedTier = tierMap[tierId] || tierId;
   const policy = SLA_POLICIES[mappedTier];
   // Return policy if found, otherwise return free policy (guaranteed to exist)
-  return policy ?? SLA_POLICIES['free']!;
+  return policy ?? SLA_POLICIES["free"]!;
 }
 
 /**
@@ -73,35 +73,33 @@ export async function recordSupportTicket(
   billingAccountId: string,
   ticketId: string,
   tierId: string,
-  priority: 'low' | 'medium' | 'high' | 'critical' = 'medium'
+  priority: "low" | "medium" | "high" | "critical" = "medium"
 ): Promise<{ sla_applies: boolean; sla_hours: number }> {
   const policy = getSLAPolicy(tierId);
-  
+
   if (!hasSLA(tierId)) {
     return { sla_applies: false, sla_hours: 0 };
   }
 
   try {
     // Record ticket with SLA tracking
-    const { error } = await supabase
-      .from('support_tickets')
-      .insert({
-        id: ticketId,
-        billing_account_id: billingAccountId,
-        tier_id: tierId,
-        priority,
-        sla_response_hours: policy.response_time_hours,
-        sla_resolution_hours: policy.resolution_time_hours,
-        created_at: new Date().toISOString(),
-        status: 'open',
-      });
+    const { error } = await supabase.from("support_tickets").insert({
+      id: ticketId,
+      billing_account_id: billingAccountId,
+      tier_id: tierId,
+      priority,
+      sla_response_hours: policy.response_time_hours,
+      sla_resolution_hours: policy.resolution_time_hours,
+      created_at: new Date().toISOString(),
+      status: "open",
+    });
 
     if (error) {
-      logError('Error recording support ticket', error);
+      logError("Error recording support ticket", error);
       return { sla_applies: false, sla_hours: 0 };
     }
 
-    logInfo('Recorded support ticket with SLA', {
+    logInfo("Recorded support ticket with SLA", {
       ticketId,
       billingAccountId,
       tierId,
@@ -110,7 +108,7 @@ export async function recordSupportTicket(
 
     return { sla_applies: true, sla_hours: policy.response_time_hours };
   } catch (error) {
-    logError('Error recording support ticket', error);
+    logError("Error recording support ticket", error);
     return { sla_applies: false, sla_hours: 0 };
   }
 }
@@ -125,13 +123,13 @@ export async function recordSupportResponse(
   try {
     // Get ticket
     const { data: ticket, error: fetchError } = await supabase
-      .from('support_tickets')
-      .select('created_at, sla_response_hours, tier_id')
-      .eq('id', ticketId)
+      .from("support_tickets")
+      .select("created_at, sla_response_hours, tier_id")
+      .eq("id", ticketId)
       .single();
 
     if (fetchError || !ticket) {
-      logError('Error fetching support ticket', fetchError);
+      logError("Error fetching support ticket", fetchError);
       return { sla_met: false, response_time_hours: 0, sla_hours: 0 };
     }
 
@@ -146,21 +144,21 @@ export async function recordSupportResponse(
 
     // Update ticket
     const { error: updateError } = await supabase
-      .from('support_tickets')
+      .from("support_tickets")
       .update({
         responded_at: respondedAt.toISOString(),
         response_time_hours: responseTimeHours,
         sla_met: slaMet,
-        status: 'responded',
+        status: "responded",
       })
-      .eq('id', ticketId);
+      .eq("id", ticketId);
 
     if (updateError) {
-      logError('Error updating support ticket', updateError);
+      logError("Error updating support ticket", updateError);
       return { sla_met: false, response_time_hours: responseTimeHours, sla_hours: slaHours };
     }
 
-    logInfo('Recorded support response', {
+    logInfo("Recorded support response", {
       ticketId,
       response_time_hours: responseTimeHours,
       sla_hours: slaHours,
@@ -169,7 +167,7 @@ export async function recordSupportResponse(
 
     return { sla_met: slaMet, response_time_hours: responseTimeHours, sla_hours: slaHours };
   } catch (error) {
-    logError('Error recording support response', error);
+    logError("Error recording support response", error);
     return { sla_met: false, response_time_hours: 0, sla_hours: 0 };
   }
 }
@@ -190,15 +188,15 @@ export async function getSLAComplianceMetrics(
 }> {
   try {
     const { data: tickets, error } = await supabase
-      .from('support_tickets')
-      .select('sla_met, response_time_hours')
-      .eq('billing_account_id', billingAccountId)
-      .gte('created_at', startDate.toISOString())
-      .lte('created_at', endDate.toISOString())
-      .not('responded_at', 'is', null);
+      .from("support_tickets")
+      .select("sla_met, response_time_hours")
+      .eq("billing_account_id", billingAccountId)
+      .gte("created_at", startDate.toISOString())
+      .lte("created_at", endDate.toISOString())
+      .not("responded_at", "is", null);
 
     if (error) {
-      logError('Error fetching SLA metrics', error);
+      logError("Error fetching SLA metrics", error);
       return {
         total_tickets: 0,
         sla_met: 0,
@@ -209,8 +207,8 @@ export async function getSLAComplianceMetrics(
     }
 
     const totalTickets = tickets?.length || 0;
-    const slaMet = tickets?.filter(t => t.sla_met === true).length || 0;
-    const slaMissed = tickets?.filter(t => t.sla_met === false).length || 0;
+    const slaMet = tickets?.filter((t) => t.sla_met === true).length || 0;
+    const slaMissed = tickets?.filter((t) => t.sla_met === false).length || 0;
     const slaPercentage = totalTickets > 0 ? (slaMet / totalTickets) * 100 : 0;
     const avgResponseTime =
       tickets?.reduce((sum, t) => sum + (t.response_time_hours || 0), 0) / totalTickets || 0;
@@ -223,7 +221,7 @@ export async function getSLAComplianceMetrics(
       avg_response_time_hours: avgResponseTime,
     };
   } catch (error) {
-    logError('Error calculating SLA compliance metrics', error);
+    logError("Error calculating SLA compliance metrics", error);
     return {
       total_tickets: 0,
       sla_met: 0,
@@ -244,13 +242,13 @@ export async function checkSLAViolations(): Promise<{
   try {
     // Get open tickets that may violate SLA
     const { data: tickets, error } = await supabase
-      .from('support_tickets')
-      .select('id, billing_account_id, tier_id, created_at, sla_response_hours, priority')
-      .eq('status', 'open')
-      .not('sla_response_hours', 'is', null);
+      .from("support_tickets")
+      .select("id, billing_account_id, tier_id, created_at, sla_response_hours, priority")
+      .eq("status", "open")
+      .not("sla_response_hours", "is", null);
 
     if (error) {
-      logError('Error fetching open tickets', error);
+      logError("Error fetching open tickets", error);
       return { violations: 0, alerts_sent: 0 };
     }
 
@@ -268,7 +266,7 @@ export async function checkSLAViolations(): Promise<{
         violations++;
 
         // Alert operations team (in production, send email/Slack alert)
-        logError('SLA VIOLATION DETECTED', new Error('SLA violation'), {
+        logError("SLA VIOLATION DETECTED", new Error("SLA violation"), {
           ticketId: ticket.id,
           billingAccountId: ticket.billing_account_id,
           tierId: ticket.tier_id,
@@ -279,18 +277,18 @@ export async function checkSLAViolations(): Promise<{
 
         // Update ticket status
         await supabase
-          .from('support_tickets')
+          .from("support_tickets")
           .update({
             sla_violated: true,
             sla_violated_at: now.toISOString(),
           })
-          .eq('id', ticket.id);
+          .eq("id", ticket.id);
 
         alertsSent++;
       }
     }
 
-    logInfo('Checked SLA violations', {
+    logInfo("Checked SLA violations", {
       violations,
       alerts_sent: alertsSent,
       total_tickets_checked: tickets?.length || 0,
@@ -298,7 +296,7 @@ export async function checkSLAViolations(): Promise<{
 
     return { violations, alerts_sent: alertsSent };
   } catch (error) {
-    logError('Error checking SLA violations', error);
+    logError("Error checking SLA violations", error);
     return { violations: 0, alerts_sent: 0 };
   }
 }

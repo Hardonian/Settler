@@ -7,6 +7,7 @@
 ## Overview
 
 This template helps you:
+
 - **Document results:** Capture pilot results, metrics, value
 - **Demonstrate value:** Show ROI, time savings, accuracy improvement
 - **Support conversion:** Provide evidence for conversion decision
@@ -19,9 +20,11 @@ This template helps you:
 ## Success Report Structure
 
 ### Executive Summary
+
 **Purpose:** High-level overview of pilot results
 
 **Content:**
+
 - Pilot duration (14 days)
 - Use case (what they were trying to solve)
 - Key results (transactions processed, accuracy, time saved)
@@ -30,6 +33,7 @@ This template helps you:
 ---
 
 ### Pilot Metrics
+
 **Purpose:** Quantify pilot results
 
 **Metrics:**
@@ -64,6 +68,7 @@ This template helps you:
 ---
 
 ### Value Realization
+
 **Purpose:** Show value achieved
 
 **Value Points:**
@@ -91,6 +96,7 @@ This template helps you:
 ---
 
 ### Success Criteria Assessment
+
 **Purpose:** Evaluate against success criteria
 
 **Primary Success Criteria:**
@@ -132,6 +138,7 @@ This template helps you:
 ---
 
 ### Recommendations
+
 **Purpose:** Provide conversion recommendation
 
 **Recommendation Options:**
@@ -156,6 +163,7 @@ This template helps you:
 ## Success Report Template
 
 ### For Customers
+
 ```
 # Settler Pilot Success Report
 
@@ -184,6 +192,7 @@ Based on your pilot results, Settler is a great fit for your use case. We recomm
 ---
 
 ### For Internal Use
+
 ```
 # Pilot Success Report: [Customer Name]
 
@@ -229,12 +238,15 @@ Based on your pilot results, Settler is a great fit for your use case. We recomm
 ## Conversion Discussion Script
 
 ### Opening
+
 "Thanks for your time. I've prepared a success report based on your pilot results. Let me walk you through it."
 
 ---
 
 ### Results Review
+
 "Here's what you achieved during the pilot:
+
 - Processed [X] transactions
 - Achieved [Y]% accuracy
 - Saved [Z] hours
@@ -244,17 +256,21 @@ That's exactly the kind of value we want you to see."
 ---
 
 ### Value Demonstration
+
 "Based on your volume, Settler would save you [X] hours/month. At [Y] per hour, that's $[Z]/month in labor costs. Plus, you eliminate errors and improve audit readiness."
 
 ---
 
 ### Conversion Ask
+
 "Based on these results, Settler looks like a great fit. Ready to upgrade to the Starter plan ($99/month)?"
 
 ---
 
 ### Objection Handling
+
 **If Objection:**
+
 - Listen to concern
 - Address concern
 - Provide additional information
@@ -265,6 +281,7 @@ That's exactly the kind of value we want you to see."
 ## Success Report Best Practices
 
 ### Do's
+
 - ✅ **Be specific:** Use actual numbers, not estimates
 - ✅ **Show value:** Highlight time savings, cost savings, ROI
 - ✅ **Be honest:** Don't oversell, be realistic
@@ -272,6 +289,7 @@ That's exactly the kind of value we want you to see."
 - ✅ **Make it easy:** Provide clear upgrade path
 
 ### Don'ts
+
 - ❌ **Don't oversell:** Avoid hype, be honest
 - ❌ **Don't be vague:** Use specific numbers, not general statements
 - ❌ **Don't ignore issues:** Address concerns, don't hide problems

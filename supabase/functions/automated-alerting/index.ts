@@ -53,7 +53,7 @@ serve(async (req) => {
     if (action === "digest") {
       const digestRequest = body as DigestRequest;
       const digest = await generateFounderDigest(supabaseClient, digestRequest);
-      
+
       // Send digest via email
       const founderEmail = Deno.env.get("FOUNDER_EMAIL") || Deno.env.get("ALERT_EMAIL");
       if (founderEmail) {
@@ -78,7 +78,7 @@ serve(async (req) => {
     // ========================================================================
     if (action === "check_deadman") {
       const deadmanResults = await checkDeadManSwitches(supabaseClient);
-      
+
       // If any agents are missing, create alerts
       if (deadmanResults.missing_agents.length > 0) {
         const alerts: Alert[] = deadmanResults.missing_agents.map((agent) => ({
@@ -117,15 +117,12 @@ serve(async (req) => {
     // ACTION: Send Alerts (default)
     // ========================================================================
     const alerts: Alert[] = body.alerts || [];
-    
+
     if (alerts.length === 0) {
-      return new Response(
-        JSON.stringify({ success: true, message: "No alerts to send" }),
-        {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ success: true, message: "No alerts to send" }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     await sendAlerts(supabaseClient, alerts);
@@ -142,18 +139,20 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error("Alerting error:", error);
-    
+
     // Fallback: Try direct email if alerting system fails
     const founderEmail = Deno.env.get("FOUNDER_EMAIL");
     if (founderEmail) {
       try {
-        await sendEmailAlert(founderEmail, [{
-          severity: "critical",
-          title: "Alerting System Failure",
-          message: `Automated alerting system failed: ${error instanceof Error ? error.message : String(error)}`,
-          check: "system",
-          source: "automated-alerting",
-        }]);
+        await sendEmailAlert(founderEmail, [
+          {
+            severity: "critical",
+            title: "Alerting System Failure",
+            message: `Automated alerting system failed: ${error instanceof Error ? error.message : String(error)}`,
+            check: "system",
+            source: "automated-alerting",
+          },
+        ]);
       } catch (fallbackError) {
         console.error("Fallback email also failed:", fallbackError);
       }
@@ -179,8 +178,11 @@ async function sendAlerts(supabaseClient: any, alerts: Alert[]): Promise<void> {
 
   // Send email alerts for critical/high/medium severity
   const alertEmail = Deno.env.get("ALERT_EMAIL") || Deno.env.get("FOUNDER_EMAIL");
-  
-  if (alertEmail && (criticalAlerts.length > 0 || highAlerts.length > 0 || mediumAlerts.length > 0)) {
+
+  if (
+    alertEmail &&
+    (criticalAlerts.length > 0 || highAlerts.length > 0 || mediumAlerts.length > 0)
+  ) {
     await sendEmailAlert(alertEmail, [...criticalAlerts, ...highAlerts, ...mediumAlerts]);
   }
 
@@ -191,20 +193,23 @@ async function sendAlerts(supabaseClient: any, alerts: Alert[]): Promise<void> {
   }
 
   // Log alerts to database
-  await supabaseClient.from("alerts").insert(
-    alerts.map((alert) => ({
-      severity: alert.severity,
-      title: alert.title,
-      message: alert.message,
-      check_type: alert.check || alert.source || "unknown",
-      source: alert.source || "unknown",
-      details: alert.details || {},
-      sent_at: new Date().toISOString(),
-      timestamp: alert.timestamp || new Date().toISOString(),
-    }))
-  ).catch((err) => {
-    console.warn("Failed to log alerts to database:", err);
-  });
+  await supabaseClient
+    .from("alerts")
+    .insert(
+      alerts.map((alert) => ({
+        severity: alert.severity,
+        title: alert.title,
+        message: alert.message,
+        check_type: alert.check || alert.source || "unknown",
+        source: alert.source || "unknown",
+        details: alert.details || {},
+        sent_at: new Date().toISOString(),
+        timestamp: alert.timestamp || new Date().toISOString(),
+      }))
+    )
+    .catch((err) => {
+      console.warn("Failed to log alerts to database:", err);
+    });
 }
 
 async function generateFounderDigest(supabaseClient: any, request: DigestRequest): Promise<any> {
@@ -242,9 +247,10 @@ async function generateFounderDigest(supabaseClient: any, request: DigestRequest
       enterprise: 299,
     };
 
-    const mrr = subscriptions?.reduce((sum, s) => {
-      return sum + (planMultiplier[s.plan_id as string] || 0);
-    }, 0) || 0;
+    const mrr =
+      subscriptions?.reduce((sum, s) => {
+        return sum + (planMultiplier[s.plan_id as string] || 0);
+      }, 0) || 0;
 
     digest.metrics = {
       new_users: newUsers?.length || 0,
@@ -288,7 +294,9 @@ async function generateFounderDigest(supabaseClient: any, request: DigestRequest
   if (request.include_insights !== false) {
     const criticalAlerts = digest.alerts.filter((a: any) => a.severity === "critical");
     if (criticalAlerts.length > 0) {
-      digest.insights.push(`🚨 ${criticalAlerts.length} critical alert(s) require immediate attention`);
+      digest.insights.push(
+        `🚨 ${criticalAlerts.length} critical alert(s) require immediate attention`
+      );
     }
 
     if (digest.metrics.new_users < 3) {
@@ -384,9 +392,10 @@ async function sendEmailAlert(email: string, alerts: Alert[]): Promise<void> {
   }
 
   const criticalCount = alerts.filter((a) => a.severity === "critical").length;
-  const subject = criticalCount > 0
-    ? `🚨 CRITICAL: ${criticalCount} Alert(s) - Settler`
-    : `⚠️ ${alerts.length} Alert(s) - Settler`;
+  const subject =
+    criticalCount > 0
+      ? `🚨 CRITICAL: ${criticalCount} Alert(s) - Settler`
+      : `⚠️ ${alerts.length} Alert(s) - Settler`;
 
   const html = `
     <!DOCTYPE html>
@@ -397,10 +406,12 @@ async function sendEmailAlert(email: string, alerts: Alert[]): Promise<void> {
     </head>
     <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333;">
       <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h1 style="color: ${criticalCount > 0 ? '#dc2626' : '#f59e0b'};">
-          ${criticalCount > 0 ? '🚨 CRITICAL ALERTS' : '⚠️ ALERTS'}
+        <h1 style="color: ${criticalCount > 0 ? "#dc2626" : "#f59e0b"};">
+          ${criticalCount > 0 ? "🚨 CRITICAL ALERTS" : "⚠️ ALERTS"}
         </h1>
-        ${alerts.map((alert) => `
+        ${alerts
+          .map(
+            (alert) => `
           <div style="background-color: ${getAlertColor(alert.severity)}; border-left: 4px solid ${getAlertBorderColor(alert.severity)}; padding: 16px; margin: 16px 0; border-radius: 4px;">
             <h2 style="margin: 0 0 8px; color: ${getAlertTextColor(alert.severity)};">
               ${alert.title}
@@ -408,11 +419,17 @@ async function sendEmailAlert(email: string, alerts: Alert[]): Promise<void> {
             <p style="margin: 0 0 8px; color: ${getAlertTextColor(alert.severity)};">
               ${alert.message}
             </p>
-            ${alert.check ? `<p style="margin: 0; font-size: 12px; color: ${getAlertTextColor(alert.severity)}; opacity: 0.8;">
+            ${
+              alert.check
+                ? `<p style="margin: 0; font-size: 12px; color: ${getAlertTextColor(alert.severity)}; opacity: 0.8;">
               Check: ${alert.check}
-            </p>` : ''}
+            </p>`
+                : ""
+            }
           </div>
-        `).join('')}
+        `
+          )
+          .join("")}
         <p style="margin-top: 24px; font-size: 14px; color: #6b7280;">
           <a href="${Deno.env.get("FRONTEND_URL") || "https://settler.dev"}/founder">View Dashboard</a>
         </p>
@@ -425,7 +442,7 @@ async function sendEmailAlert(email: string, alerts: Alert[]): Promise<void> {
     await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${resendApiKey}`,
+        Authorization: `Bearer ${resendApiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -462,35 +479,54 @@ async function sendDigestEmail(email: string, digest: any): Promise<void> {
         <h1>📊 ${digest.type === "daily" ? "Daily" : "Weekly"} Digest</h1>
         <p style="color: #6b7280;">${digest.date}</p>
         
-        ${digest.metrics ? `
+        ${
+          digest.metrics
+            ? `
           <h2>Metrics</h2>
           <ul>
             <li>New Users: ${digest.metrics.new_users || 0}</li>
             <li>MRR: $${digest.metrics.mrr || 0}</li>
             <li>Active Subscriptions: ${digest.metrics.active_subscriptions || 0}</li>
           </ul>
-        ` : ''}
+        `
+            : ""
+        }
         
-        ${digest.insights && digest.insights.length > 0 ? `
+        ${
+          digest.insights && digest.insights.length > 0
+            ? `
           <h2>Insights</h2>
           <ul>
-            ${digest.insights.map((i: string) => `<li>${i}</li>`).join('')}
+            ${digest.insights.map((i: string) => `<li>${i}</li>`).join("")}
           </ul>
-        ` : ''}
+        `
+            : ""
+        }
         
-        ${digest.recommendations && digest.recommendations.length > 0 ? `
+        ${
+          digest.recommendations && digest.recommendations.length > 0
+            ? `
           <h2>Recommendations</h2>
           <ul>
-            ${digest.recommendations.map((r: string) => `<li>${r}</li>`).join('')}
+            ${digest.recommendations.map((r: string) => `<li>${r}</li>`).join("")}
           </ul>
-        ` : ''}
+        `
+            : ""
+        }
         
-        ${digest.alerts && digest.alerts.length > 0 ? `
+        ${
+          digest.alerts && digest.alerts.length > 0
+            ? `
           <h2>Recent Alerts (${digest.alerts.length})</h2>
           <ul>
-            ${digest.alerts.slice(0, 5).map((a: any) => `<li><strong>${a.severity.toUpperCase()}</strong>: ${a.title}</li>`).join('')}
+            ${digest.alerts
+              .slice(0, 5)
+              .map((a: any) => `<li><strong>${a.severity.toUpperCase()}</strong>: ${a.title}</li>`)
+              .join("")}
           </ul>
-        ` : ''}
+        `
+            : ""
+        }
         
         <p style="margin-top: 24px; font-size: 14px; color: #6b7280;">
           <a href="${Deno.env.get("FRONTEND_URL") || "https://settler.dev"}/founder">View Full Dashboard</a>
@@ -504,7 +540,7 @@ async function sendDigestEmail(email: string, digest: any): Promise<void> {
     await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${resendApiKey}`,
+        Authorization: `Bearer ${resendApiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -522,20 +558,23 @@ async function sendDigestEmail(email: string, digest: any): Promise<void> {
 
 async function sendSlackAlert(webhookUrl: string, alerts: Alert[]): Promise<void> {
   const criticalCount = alerts.filter((a) => a.severity === "critical").length;
-  
+
   const blocks = [
     {
       type: "header",
       text: {
         type: "plain_text",
-        text: criticalCount > 0 ? `🚨 ${criticalCount} Critical Alert(s)` : `⚠️ ${alerts.length} Alert(s)`,
+        text:
+          criticalCount > 0
+            ? `🚨 ${criticalCount} Critical Alert(s)`
+            : `⚠️ ${alerts.length} Alert(s)`,
       },
     },
     ...alerts.map((alert) => ({
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `*${alert.title}*\n${alert.message}\n${alert.check ? `_Check: ${alert.check}_` : ''}`,
+        text: `*${alert.title}*\n${alert.message}\n${alert.check ? `_Check: ${alert.check}_` : ""}`,
       },
     })),
   ];

@@ -27,14 +27,14 @@ does manually in spreadsheets.
 
 ## Core workflows
 
-| Workflow | What it does |
-|----------|-------------|
-| **Connect** | One-time API setup to your platforms (Stripe, bank, Shopify, QuickBooks, etc.) |
-| **Ingest** | Pull transaction data on a schedule or on-demand |
-| **Reconcile** | Automatically match records across sources with confidence scoring |
-| **Review** | Surface exceptions — unmatched, fuzzy, or conflicting — for human decision |
-| **Export** | Download reconciliation reports in CSV, JSON, or Excel |
-| **Audit** | Full trail of every action, match, and change across your account |
+| Workflow      | What it does                                                                   |
+| ------------- | ------------------------------------------------------------------------------ |
+| **Connect**   | One-time API setup to your platforms (Stripe, bank, Shopify, QuickBooks, etc.) |
+| **Ingest**    | Pull transaction data on a schedule or on-demand                               |
+| **Reconcile** | Automatically match records across sources with confidence scoring             |
+| **Review**    | Surface exceptions — unmatched, fuzzy, or conflicting — for human decision     |
+| **Export**    | Download reconciliation reports in CSV, JSON, or Excel                         |
+| **Audit**     | Full trail of every action, match, and change across your account              |
 
 ---
 
@@ -80,13 +80,13 @@ health issue and elevated exceptions — not just a happy-path demo.
 
 ## Tiers
 
-| | Starter | Growth | Scale | Enterprise |
-|-|---------|--------|-------|-----------|
-| Transactions/month | Up to 10K | Up to 100K | Up to 500K | Unlimited |
-| Connectors | 2 | 5 | 15 | Unlimited |
-| Exports | CSV | CSV + JSON | All formats | All + white-label |
-| Audit trail | Basic | Full | Full | Full + retention |
-| Support | Docs | Email | SLA | Dedicated |
+|                    | Starter   | Growth     | Scale       | Enterprise        |
+| ------------------ | --------- | ---------- | ----------- | ----------------- |
+| Transactions/month | Up to 10K | Up to 100K | Up to 500K  | Unlimited         |
+| Connectors         | 2         | 5          | 15          | Unlimited         |
+| Exports            | CSV       | CSV + JSON | All formats | All + white-label |
+| Audit trail        | Basic     | Full       | Full        | Full + retention  |
+| Support            | Docs      | Email      | SLA         | Dedicated         |
 
 ---
 
@@ -99,5 +99,5 @@ health issue and elevated exceptions — not just a happy-path demo.
 
 ---
 
-*Settler does not provide legal, financial, or compliance advice. SOC 2 Type II planned Q3 2026.*
-*For current product status and known limitations, see `docs/CANONICAL_PRODUCT_NARRATIVE.md`.*
+_Settler does not provide legal, financial, or compliance advice. SOC 2 Type II planned Q3 2026._
+_For current product status and known limitations, see `docs/CANONICAL_PRODUCT_NARRATIVE.md`._

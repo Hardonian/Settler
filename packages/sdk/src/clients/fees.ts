@@ -64,6 +64,8 @@ export class FeesClient {
     if (params.startDate) query.startDate = params.startDate;
     if (params.endDate) query.endDate = params.endDate;
 
-    return this.client.request<EffectiveRateResponse>("GET", "/api/v1/fees/effective-rate", { query });
+    return this.client.request<EffectiveRateResponse>("GET", "/api/v1/fees/effective-rate", {
+      query,
+    });
   }
 }

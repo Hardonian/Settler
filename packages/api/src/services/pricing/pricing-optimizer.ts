@@ -1,19 +1,18 @@
 /**
  * Pricing Optimizer
- * 
+ *
  * Generates pricing recommendations
  * Part of Section 9: Pricing Intelligence
  */
 
- 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 // logInfo imported but unused - may be used in future
 
 export interface PricingRecommendation {
-  type: 'tier_adjustment' | 'usage_threshold' | 'overage_pricing' | 'enterprise_deal';
+  type: "tier_adjustment" | "usage_threshold" | "overage_pricing" | "enterprise_deal";
   recommendation: string;
   rationale: string;
-  impact: 'low' | 'medium' | 'high';
+  impact: "low" | "medium" | "high";
   estimatedRevenueChange: number;
 }
 
@@ -41,7 +40,7 @@ export class PricingOptimizer {
 
     // Analyze customer segments
     const segments = await this.analyzeSegments();
-    
+
     // Tier adjustments
     const tierRecommendations = await this.analyzeTiers(segments);
     recommendations.push(...tierRecommendations);
@@ -79,10 +78,10 @@ export class PricingOptimizer {
     // If many customers hitting limits, consider tier adjustments
     if (segments.highUsage > segments.mediumUsage * 2) {
       recommendations.push({
-        type: 'tier_adjustment',
-        recommendation: 'Increase Pro tier limits to reduce churn',
-        rationale: 'High usage customers hitting limits frequently',
-        impact: 'high',
+        type: "tier_adjustment",
+        recommendation: "Increase Pro tier limits to reduce churn",
+        rationale: "High usage customers hitting limits frequently",
+        impact: "high",
         estimatedRevenueChange: segments.highUsage * 100, // $100/month per customer
       });
     }
@@ -98,10 +97,10 @@ export class PricingOptimizer {
 
     // If customers consistently exceed limits, adjust thresholds
     recommendations.push({
-      type: 'usage_threshold',
-      recommendation: 'Adjust Starter tier threshold from 10K to 15K',
-      rationale: 'Customers consistently hitting 10K limit',
-      impact: 'medium',
+      type: "usage_threshold",
+      recommendation: "Adjust Starter tier threshold from 10K to 15K",
+      rationale: "Customers consistently hitting 10K limit",
+      impact: "medium",
       estimatedRevenueChange: 0, // No immediate revenue change
     });
 
@@ -116,10 +115,10 @@ export class PricingOptimizer {
 
     // If overage revenue is low, consider adjusting pricing
     recommendations.push({
-      type: 'overage_pricing',
-      recommendation: 'Reduce overage pricing to encourage usage',
-      rationale: 'Low overage revenue suggests pricing too high',
-      impact: 'medium',
+      type: "overage_pricing",
+      recommendation: "Reduce overage pricing to encourage usage",
+      rationale: "Low overage revenue suggests pricing too high",
+      impact: "medium",
       estimatedRevenueChange: -5000, // Short-term revenue decrease
     });
 
@@ -131,12 +130,14 @@ export class PricingOptimizer {
    */
   async generateEnterpriseRecommendations(_customerId: string): Promise<PricingRecommendation[]> {
     // TODO: Analyze customer usage and generate custom pricing
-    return [{
-      type: 'enterprise_deal',
-      recommendation: 'Custom pricing: $5K/month base + usage',
-      rationale: 'High-volume customer, custom pricing appropriate',
-      impact: 'high',
-      estimatedRevenueChange: 5000,
-    }];
+    return [
+      {
+        type: "enterprise_deal",
+        recommendation: "Custom pricing: $5K/month base + usage",
+        rationale: "High-volume customer, custom pricing appropriate",
+        impact: "high",
+        estimatedRevenueChange: 5000,
+      },
+    ];
   }
 }

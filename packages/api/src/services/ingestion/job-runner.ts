@@ -7,11 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 import { query } from "../../db";
 import { retryWithBackoff } from "../../utils/retry-with-backoff";
 import { logInfo, logWarn } from "../../utils/logger";
-import {
-  createIngestion,
-  updateIngestionStatus,
-  getIngestion,
-} from "./ingestion-service";
+import { createIngestion, updateIngestionStatus, getIngestion } from "./ingestion-service";
 import { IngestionJobConfig } from "./types";
 
 export interface JobRunnerOptions {
@@ -86,10 +82,7 @@ export async function runIngestionJob<T>(
 
   // Check idempotency
   if (config.idempotencyKey) {
-    const idempotencyCheck = await checkIdempotency(
-      config.idempotencyKey,
-      config.tenantId
-    );
+    const idempotencyCheck = await checkIdempotency(config.idempotencyKey, config.tenantId);
 
     if (idempotencyCheck.exists && idempotencyCheck.ingestionId) {
       logInfo("Idempotent ingestion request", {
@@ -191,9 +184,7 @@ export async function runIngestionJob<T>(
  * Process ingestion job (serverless-friendly)
  * Can be triggered by API call, webhook, or scheduled job
  */
-export async function processIngestionJob(
-  ingestionId: string
-): Promise<void> {
+export async function processIngestionJob(ingestionId: string): Promise<void> {
   const ingestion = await getIngestion(ingestionId);
 
   if (!ingestion) {

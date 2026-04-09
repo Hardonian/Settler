@@ -7,16 +7,13 @@ React.Settler includes built-in performance optimizations. This guide shows how 
 Use `VirtualizedTable` for large transaction lists:
 
 ```tsx
-import { VirtualizedTable } from '@settler/react-settler';
+import { VirtualizedTable } from "@settler/react-settler";
 
-<VirtualizedTable
-  transactions={transactions}
-  height={600}
-  rowHeight={50}
-/>
+<VirtualizedTable transactions={transactions} height={600} rowHeight={50} />;
 ```
 
 Benefits:
+
 - Renders only visible rows
 - Handles 10,000+ transactions smoothly
 - Reduces memory usage
@@ -26,12 +23,12 @@ Benefits:
 Components are memoized by default. Use filtered/sorted hooks for derived data:
 
 ```tsx
-import { useFilteredTransactions, useSortedTransactions } from '@settler/react-settler';
+import { useFilteredTransactions, useSortedTransactions } from "@settler/react-settler";
 
 function MyComponent({ transactions, filters }) {
   const filtered = useFilteredTransactions(transactions, filters);
-  const sorted = useSortedTransactions(filtered, 'date', 'desc');
-  
+  const sorted = useSortedTransactions(filtered, "date", "desc");
+
   return <TransactionTable transactions={sorted} />;
 }
 ```
@@ -41,14 +38,14 @@ function MyComponent({ transactions, filters }) {
 Debounce search inputs:
 
 ```tsx
-import { SearchBar } from '@settler/react-settler';
+import { SearchBar } from "@settler/react-settler";
 
 <SearchBar
   debounceMs={300}
   onSearch={(query) => {
     // Only fires after 300ms of no typing
   }}
-/>
+/>;
 ```
 
 ## Lazy Loading
@@ -56,22 +53,22 @@ import { SearchBar } from '@settler/react-settler';
 Load data incrementally:
 
 ```tsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 function MyComponent() {
   const [transactions, setTransactions] = useState([]);
   const [page, setPage] = useState(1);
-  
+
   useEffect(() => {
-    loadPage(page).then(data => {
-      setTransactions(prev => [...prev, ...data]);
+    loadPage(page).then((data) => {
+      setTransactions((prev) => [...prev, ...data]);
     });
   }, [page]);
-  
+
   return (
     <>
       <TransactionTable transactions={transactions} />
-      <button onClick={() => setPage(p => p + 1)}>Load More</button>
+      <button onClick={() => setPage((p) => p + 1)}>Load More</button>
     </>
   );
 }
@@ -82,11 +79,11 @@ function MyComponent() {
 Monitor performance in production:
 
 ```tsx
-import { setTelemetryConfig } from '@settler/react-settler';
+import { setTelemetryConfig } from "@settler/react-settler";
 
 setTelemetryConfig({
   trackPerformance: true,
-  sampleRate: 0.1 // Track 10% of events
+  sampleRate: 0.1, // Track 10% of events
 });
 ```
 

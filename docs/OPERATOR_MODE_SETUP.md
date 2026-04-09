@@ -36,6 +36,7 @@ The migration will run automatically when you push the migration file, or you ca
 ### Option A: Automatic (on push to main)
 
 Push the migration file to main branch:
+
 ```bash
 git add supabase/migrations/20260131000001_operator_mode.sql
 git commit -m "feat: add operator mode migration"
@@ -57,9 +58,9 @@ The workflow `.github/workflows/apply-operator-mode-migration.yml` will run auto
 After migration completes, verify tables were created:
 
 ```sql
-SELECT table_name 
-FROM information_schema.tables 
-WHERE table_schema = 'public' 
+SELECT table_name
+FROM information_schema.tables
+WHERE table_schema = 'public'
   AND table_name IN (
     'alert_rules',
     'alert_history',
@@ -261,6 +262,7 @@ curl -H "Authorization: Bearer $API_KEY" \
 ## Support
 
 For issues or questions:
+
 1. Check workflow logs in GitHub Actions
 2. Review `docs/OPERATOR_MODE.md` for detailed documentation
 3. Check `docs/OPERATOR_MODE_QUICK_START.md` for quick reference

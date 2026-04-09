@@ -1,11 +1,7 @@
 {
   "generated_at": "2026-03-11T05:19:08.929Z",
   "total_files": 1105,
-  "excluded_dirs": [
-    "node_modules",
-    ".git",
-    ".next"
-  ],
+  "excluded_dirs": ["node_modules", ".git", ".next"],
   "documents": [
     {
       "path": "docs/24-7-OPERATIONS_CHECKLIST.md",

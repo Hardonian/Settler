@@ -25,7 +25,7 @@ export type FlagKey = string;
 // Event Severity
 // ============================================================================
 
-export type EventSeverity = 'info' | 'warning' | 'critical';
+export type EventSeverity = "info" | "warning" | "critical";
 
 // ============================================================================
 // Impact Model
@@ -47,7 +47,7 @@ export interface Impact {
 // ============================================================================
 
 export interface Evidence {
-  type: 'hash' | 'source_ref' | 'transaction_id' | 'receipt_id';
+  type: "hash" | "source_ref" | "transaction_id" | "receipt_id";
   value: string;
   description?: string;
 }
@@ -74,7 +74,7 @@ export interface MeaningfulChange {
   explanation: Explanation;
   impact: Impact;
   owner?: UserId;
-  urgency: 'low' | 'medium' | 'high' | 'critical';
+  urgency: "low" | "medium" | "high" | "critical";
   confidence: number; // 0..1
   createdAt: Date;
 }
@@ -92,15 +92,15 @@ export interface ReconciliationItem {
   targetAmount: number;
   targetCurrency: string;
   delta: number;
-  status: 'matched' | 'unmatched' | 'conflict' | 'reviewed';
+  status: "matched" | "unmatched" | "conflict" | "reviewed";
   impact: Impact;
   explanation: Explanation;
   owner?: UserId;
-  urgency: 'low' | 'medium' | 'high' | 'critical';
+  urgency: "low" | "medium" | "high" | "critical";
   createdAt: Date;
 }
 
-import type { ReconciliationProofCapsule } from '@settler/protocol';
+import type { ReconciliationProofCapsule } from "@settler/protocol";
 
 /** Snapshot of tolerances and fuzzy settings used for a specific run (from run metadata). */
 export interface ReconciliationExecutionConfigSnapshot {
@@ -112,7 +112,7 @@ export interface ReconciliationExecutionConfigSnapshot {
 
 export interface ReconciliationConfigResolutionEntry {
   field: string;
-  source: 'request' | 'tenant_template' | 'system_default';
+  source: "request" | "tenant_template" | "system_default";
   value: unknown;
 }
 
@@ -120,7 +120,7 @@ export interface ReconciliationSummary {
   id: ReconciliationId;
   tenantId: TenantId;
   sourceId: SourceId;
-  status: 'running' | 'completed' | 'failed';
+  status: "running" | "completed" | "failed";
   totalDelta: number;
   currency: string;
   mismatchCount: number;
@@ -184,14 +184,14 @@ export interface Alert {
 // Feature Flag Types
 // ============================================================================
 
-export type FlagType = 'boolean' | 'number' | 'string' | 'json';
+export type FlagType = "boolean" | "number" | "string" | "json";
 
 export interface FlagDefinition {
   key: FlagKey;
   description: string;
   type: FlagType;
   default: boolean | number | string | Record<string, unknown>;
-  scope: 'tenant' | 'global';
+  scope: "tenant" | "global";
   validation?: {
     min?: number;
     max?: number;

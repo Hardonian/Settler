@@ -101,10 +101,7 @@ export const POST = withSecurity(
       });
     } catch (error) {
       appLogger.error("Error creating feature flag", error);
-      return NextResponse.json(
-        { error: "Failed to create feature flag" },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: "Failed to create feature flag" }, { status: 500 });
     }
   },
   {
@@ -188,10 +185,7 @@ export const GET = withSecurity(
     } catch (error) {
       const { appLogger } = await import("@/lib/utils/logger");
       appLogger.error("Error listing feature flags", error);
-      return NextResponse.json(
-        { error: "Failed to list feature flags" },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: "Failed to list feature flags" }, { status: 500 });
     }
   },
   {

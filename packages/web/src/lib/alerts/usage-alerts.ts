@@ -1,62 +1,57 @@
 /**
  * Usage Alerts
- * 
+ *
  * Proactive alerts when approaching usage limits.
  */
 
-import { prisma } from '@/shared/db/prismaClient';
-import { getCurrentUsage } from '@/lib/usage/tracking';
-import { getAccountPlanCode } from '@/domain/billing/entitlements';
+import { prisma } from "@/shared/db/prismaClient";
+import { getCurrentUsage } from "@/lib/usage/tracking";
+import { getAccountPlanCode } from "@/domain/billing/entitlements";
 
 export interface UsageAlert {
-  service: 'reconcile' | 'receipts' | 'featureFlags' | 'playground' | 'exceptions';
+  service: "reconcile" | "receipts" | "featureFlags" | "playground" | "exceptions";
   current: number;
   limit: number;
   remaining: number;
   percentage: number;
-  severity: 'info' | 'warning' | 'critical';
+  severity: "info" | "warning" | "critical";
   message: string;
 }
 
 /**
  * Check usage limits and generate alerts
  */
-export async function checkUsageAlerts(
-  billingAccountId: string
-): Promise<UsageAlert[]> {
+export async function checkUsageAlerts(billingAccountId: string): Promise<UsageAlert[]> {
   const alerts: UsageAlert[] = [];
 
   try {
-    await getAccountPlanCode(billingAccountId).catch(() => 'starter');
+    await getAccountPlanCode(billingAccountId).catch(() => "starter");
 
-    const services: Array<'reconcile' | 'exceptions'> = [
-      'reconcile',
-      'exceptions',
-    ];
+    const services: Array<"reconcile" | "exceptions"> = ["reconcile", "exceptions"];
 
     for (const service of services) {
       try {
-        const usage = await getCurrentUsage(billingAccountId, service, 'monthly');
-        
+        const usage = await getCurrentUsage(billingAccountId, service, "monthly");
+
         if (usage.limit === -1) continue; // Unlimited
 
         const percentage = (usage.current / usage.limit) * 100;
         const remaining = usage.remaining;
 
-        let severity: 'info' | 'warning' | 'critical' = 'info';
-        let message = '';
+        let severity: "info" | "warning" | "critical" = "info";
+        let message = "";
 
         if (percentage >= 100) {
-          severity = 'critical';
+          severity = "critical";
           message = `You've reached your ${service} limit. Upgrade to continue.`;
         } else if (percentage >= 90) {
-          severity = 'critical';
+          severity = "critical";
           message = `You're at ${Math.round(percentage)}% of your ${service} limit. Upgrade soon.`;
         } else if (percentage >= 75) {
-          severity = 'warning';
+          severity = "warning";
           message = `You're at ${Math.round(percentage)}% of your ${service} limit.`;
         } else if (percentage >= 50) {
-          severity = 'info';
+          severity = "info";
           message = `You've used ${Math.round(percentage)}% of your ${service} limit.`;
         }
 
@@ -76,7 +71,7 @@ export async function checkUsageAlerts(
       }
     }
   } catch (error) {
-    console.error('[Usage Alerts] Error:', error);
+    console.error("[Usage Alerts] Error:", error);
   }
 
   return alerts;
@@ -88,8 +83,10 @@ export async function checkUsageAlerts(
 export async function getCurrentUserUsageAlerts(): Promise<UsageAlert[]> {
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (!user) return [];
 
     const billingAccount = await prisma.billingAccount.findFirst({
@@ -101,9 +98,9 @@ export async function getCurrentUserUsageAlerts(): Promise<UsageAlert[]> {
 
     return await checkUsageAlerts(billingAccount.id);
   } catch (error) {
-    console.error('[Usage Alerts] Error getting alerts:', error);
+    console.error("[Usage Alerts] Error getting alerts:", error);
     return [];
   }
 }
 
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from "@/lib/supabase/server";

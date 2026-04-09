@@ -3,20 +3,33 @@
  * Shows SLA metrics, violations, and agreements
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Progress } from '@/components/ui/progress';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { AlertTriangle, CheckCircle2, Plus } from 'lucide-react';
-import { format } from 'date-fns';
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Progress } from "@/components/ui/progress";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { AlertTriangle, CheckCircle2, Plus } from "lucide-react";
+import { format } from "date-fns";
 
 interface SLAViolation {
   id: string;
@@ -36,9 +49,9 @@ export function SLADashboard() {
   const [error, setError] = useState<string | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newAgreement, setNewAgreement] = useState({
-    slaType: '',
-    targetValue: '',
-    measurementPeriod: 'monthly',
+    slaType: "",
+    targetValue: "",
+    measurementPeriod: "monthly",
   });
 
   useEffect(() => {
@@ -49,12 +62,12 @@ export function SLADashboard() {
   const fetchViolations = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/v1/sla/violations?resolved=false');
-      if (!res.ok) throw new Error('Failed to fetch violations');
+      const res = await fetch("/api/v1/sla/violations?resolved=false");
+      if (!res.ok) throw new Error("Failed to fetch violations");
       const data = await res.json();
       setViolations(data.data || []);
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'Failed to load violations');
+      setError(error instanceof Error ? error.message : "Failed to load violations");
     } finally {
       setLoading(false);
     }
@@ -65,9 +78,9 @@ export function SLADashboard() {
       setLoading(true);
       setError(null);
 
-      const res = await fetch('/api/v1/sla/agreements', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/v1/sla/agreements", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           slaType: newAgreement.slaType,
           targetValue: parseFloat(newAgreement.targetValue),
@@ -77,14 +90,14 @@ export function SLADashboard() {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.message || 'Failed to create agreement');
+        throw new Error(data.message || "Failed to create agreement");
       }
 
       setShowCreateForm(false);
-      setNewAgreement({ slaType: '', targetValue: '', measurementPeriod: 'monthly' });
+      setNewAgreement({ slaType: "", targetValue: "", measurementPeriod: "monthly" });
       await fetchViolations();
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'Failed to create agreement');
+      setError(error instanceof Error ? error.message : "Failed to create agreement");
     } finally {
       setLoading(false);
     }
@@ -93,31 +106,31 @@ export function SLADashboard() {
   const handleAcknowledgeViolation = async (violationId: string) => {
     try {
       const res = await fetch(`/api/v1/sla/violations/${violationId}/acknowledge`, {
-        method: 'POST',
+        method: "POST",
       });
 
-      if (!res.ok) throw new Error('Failed to acknowledge');
+      if (!res.ok) throw new Error("Failed to acknowledge");
       await fetchViolations();
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'Failed to acknowledge violation');
+      setError(error instanceof Error ? error.message : "Failed to acknowledge violation");
     }
   };
 
   const getSeverityBadge = (severity: string) => {
     const colors: Record<string, string> = {
-      critical: 'bg-red-600',
-      high: 'bg-orange-500',
-      medium: 'bg-yellow-500',
-      warning: 'bg-blue-500',
+      critical: "bg-red-600",
+      high: "bg-orange-500",
+      medium: "bg-yellow-500",
+      warning: "bg-blue-500",
     };
 
-    return <Badge className={colors[severity] || 'bg-gray-500'}>{severity.toUpperCase()}</Badge>;
+    return <Badge className={colors[severity] || "bg-gray-500"}>{severity.toUpperCase()}</Badge>;
   };
 
   const calculateCompliance = (measured: number, target: number, metricType: string) => {
     // For uptime: measured should be >= target
     // For latency: measured should be <= target
-    if (metricType.includes('latency') || metricType === 'error_rate') {
+    if (metricType.includes("latency") || metricType === "error_rate") {
       return Math.min(100, (target / measured) * 100);
     }
     return Math.min(100, (measured / target) * 100);
@@ -166,7 +179,9 @@ export function SLADashboard() {
                       <SelectItem value="latency_p95">Latency P95 (&lt;2000ms)</SelectItem>
                       <SelectItem value="latency_p99">Latency P99 (&lt;5000ms)</SelectItem>
                       <SelectItem value="error_rate">Error Rate (&lt;0.01%)</SelectItem>
-                      <SelectItem value="support_response">Support Response (&lt;4 hours)</SelectItem>
+                      <SelectItem value="support_response">
+                        Support Response (&lt;4 hours)
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -176,7 +191,9 @@ export function SLADashboard() {
                   <Input
                     type="number"
                     value={newAgreement.targetValue}
-                    onChange={(e) => setNewAgreement({ ...newAgreement, targetValue: e.target.value })}
+                    onChange={(e) =>
+                      setNewAgreement({ ...newAgreement, targetValue: e.target.value })
+                    }
                     placeholder="Enter target value"
                   />
                 </div>
@@ -185,7 +202,9 @@ export function SLADashboard() {
                   <Label>Measurement Period</Label>
                   <Select
                     value={newAgreement.measurementPeriod}
-                    onValueChange={(value) => setNewAgreement({ ...newAgreement, measurementPeriod: value })}
+                    onValueChange={(value) =>
+                      setNewAgreement({ ...newAgreement, measurementPeriod: value })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -245,7 +264,9 @@ export function SLADashboard() {
                           </div>
                         </TableCell>
                         <TableCell>{getSeverityBadge(violation.severity)}</TableCell>
-                        <TableCell>{format(new Date(violation.violationDate), 'MMM d, yyyy')}</TableCell>
+                        <TableCell>
+                          {format(new Date(violation.violationDate), "MMM d, yyyy")}
+                        </TableCell>
                         <TableCell>
                           {violation.acknowledged ? (
                             <Badge variant="outline">Acknowledged</Badge>

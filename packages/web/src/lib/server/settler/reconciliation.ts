@@ -16,9 +16,7 @@ import type {
 import { calculateImpact, generateExplanation } from "@/lib/judgment/rules";
 import { safeLogger } from "@/lib/observability/safe-logger";
 
-function asExecutionConfig(
-  raw: unknown
-): ReconciliationExecutionConfigSnapshot | undefined {
+function asExecutionConfig(raw: unknown): ReconciliationExecutionConfigSnapshot | undefined {
   if (!raw || typeof raw !== "object") return undefined;
   const o = raw as Record<string, unknown>;
   const amountTolerance = o.amountTolerance;
@@ -49,11 +47,7 @@ function asConfigResolution(raw: unknown): ReconciliationConfigResolutionEntry[]
     if (!v || typeof v !== "object") continue;
     const entry = v as Record<string, unknown>;
     const source = entry.source;
-    if (
-      source !== "request" &&
-      source !== "tenant_template" &&
-      source !== "system_default"
-    ) {
+    if (source !== "request" && source !== "tenant_template" && source !== "system_default") {
       continue;
     }
     entries.push({ field, source, value: entry.value });

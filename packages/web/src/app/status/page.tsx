@@ -17,10 +17,7 @@ type StatusPayload = {
   overallStatus?: string;
   systems?: Array<{ name?: string; status?: string }>;
   connectivity?: {
-    checks?: Record<
-      string,
-      { ok?: boolean; status?: string; reason?: string }
-    >;
+    checks?: Record<string, { ok?: boolean; status?: string; reason?: string }>;
     degraded_reasons?: string[];
     timestamp?: string;
   };
@@ -138,9 +135,13 @@ export default async function StatusPage() {
               </CardHeader>
               <CardContent>
                 <ul className="text-sm text-muted-foreground space-y-2 list-disc pl-5">
-                  <li>Historical uptime or SLA attainment (requires external monitoring and contract)</li>
+                  <li>
+                    Historical uptime or SLA attainment (requires external monitoring and contract)
+                  </li>
                   <li>RPO/RTO or durability claims (see canonical claims registry in docs)</li>
-                  <li>Multi-region failover or edge topology maps (deployment-specific; not inferred)</li>
+                  <li>
+                    Multi-region failover or edge topology maps (deployment-specific; not inferred)
+                  </li>
                   <li>Compliance certifications (only listed when audit-backed)</li>
                 </ul>
               </CardContent>

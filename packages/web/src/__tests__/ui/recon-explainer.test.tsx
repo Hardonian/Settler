@@ -17,8 +17,10 @@ describe("ReconResultExplainer", () => {
     render(<ReconResultExplainer run={run} rawCsv={csv} />);
 
     expect(screen.getByText("Reconciliation result")).toBeInTheDocument();
-    expect(screen.getByText('Run ID: demo-run-2024-09-14')).toBeInTheDocument();
+    expect(screen.getByText("Run ID: demo-run-2024-09-14")).toBeInTheDocument();
     expect(screen.getByText("CSV overlay annotations")).toBeInTheDocument();
-    expect(screen.getAllByText(/Payment and ledger entry line up exactly/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Payment and ledger entry line up exactly/).length).toBeGreaterThan(
+      0
+    );
   });
 });

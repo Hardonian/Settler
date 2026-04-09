@@ -1,6 +1,6 @@
 /**
  * Console API Testing Utilities
- * 
+ *
  * Test helpers for console API routes:
  * - Mock auth context
  * - Test data factories
@@ -8,8 +8,8 @@
  * - Assertion helpers
  */
 
-import { NextRequest } from 'next/server';
-import { UnifiedAuthContext } from '@/lib/api/unified-auth';
+import { NextRequest } from "next/server";
+import { UnifiedAuthContext } from "@/lib/api/unified-auth";
 
 /**
  * Create mock auth context for testing
@@ -18,10 +18,10 @@ export function createMockAuthContext(
   overrides: Partial<UnifiedAuthContext> = {}
 ): UnifiedAuthContext {
   return {
-    type: 'session',
-    userId: 'test-user-id',
-    billingAccountId: 'test-billing-account-id',
-    tenantId: 'test-tenant-id',
+    type: "session",
+    userId: "test-user-id",
+    billingAccountId: "test-billing-account-id",
+    tenantId: "test-tenant-id",
     ...overrides,
   };
 }
@@ -33,12 +33,12 @@ export function createMockApiKeyContext(
   overrides: Partial<UnifiedAuthContext> = {}
 ): UnifiedAuthContext {
   return {
-    type: 'api_key',
-    userId: 'test-user-id',
-    billingAccountId: 'test-billing-account-id',
-    tenantId: 'test-tenant-id',
-    apiKeyId: 'test-api-key-id',
-    scopes: ['*'],
+    type: "api_key",
+    userId: "test-user-id",
+    billingAccountId: "test-billing-account-id",
+    tenantId: "test-tenant-id",
+    apiKeyId: "test-api-key-id",
+    scopes: ["*"],
     ...overrides,
   };
 }
@@ -54,7 +54,7 @@ export function createMockRequest(
     body?: unknown;
   } = {}
 ): NextRequest {
-  const { method = 'GET', headers = {}, body } = options;
+  const { method = "GET", headers = {}, body } = options;
 
   const request = new NextRequest(url, {
     method,
@@ -78,9 +78,7 @@ export function assertApiResponse<T>(
   expectedData?: T
 ): void {
   if (response.status !== expectedStatus) {
-    throw new Error(
-      `Expected status ${expectedStatus}, got ${response.status}`
-    );
+    throw new Error(`Expected status ${expectedStatus}, got ${response.status}`);
   }
 
   if (expectedData !== undefined) {
@@ -94,19 +92,19 @@ export function assertApiResponse<T>(
  */
 export const TestData = {
   apiKey: () => ({
-    id: 'test-api-key-id',
-    name: 'Test API Key',
-    keyPrefix: 'rk_test',
+    id: "test-api-key-id",
+    name: "Test API Key",
+    keyPrefix: "rk_test",
     createdAt: new Date(),
-    scopes: ['*'],
+    scopes: ["*"],
   }),
 
   receipt: () => ({
-    id: 'test-receipt-id',
-    uploadId: 'test-upload-id',
-    vendor: 'Test Vendor',
+    id: "test-receipt-id",
+    uploadId: "test-upload-id",
+    vendor: "Test Vendor",
     date: new Date(),
-    currency: 'USD',
+    currency: "USD",
     total: 100.0,
     confidenceScore: 0.95,
     itemCount: 5,
@@ -114,11 +112,11 @@ export const TestData = {
   }),
 
   featureFlag: () => ({
-    id: 'test-flag-id',
-    key: 'test-flag',
-    name: 'Test Flag',
-    description: 'Test description',
-    type: 'boolean',
+    id: "test-flag-id",
+    key: "test-flag",
+    name: "Test Flag",
+    description: "Test description",
+    type: "boolean",
     isGlobal: false,
     defaultValue: false,
     environments: [],
@@ -127,10 +125,10 @@ export const TestData = {
   }),
 
   billingAccount: () => ({
-    id: 'test-billing-account-id',
-    userId: 'test-user-id',
-    email: 'test@example.com',
-    status: 'active',
-    tenantId: 'test-tenant-id',
+    id: "test-billing-account-id",
+    userId: "test-user-id",
+    email: "test@example.com",
+    status: "active",
+    tenantId: "test-tenant-id",
   }),
 };

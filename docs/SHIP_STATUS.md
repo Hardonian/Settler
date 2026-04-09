@@ -56,34 +56,40 @@
 ## Root Cause Analysis
 
 ### Build System
+
 - ✅ **Turbo.json exists** - Build pipeline configured correctly
 - ✅ **Workspace packages exist** - All required packages (@settler/types, @settler/api, etc.) are present
 - ✅ **Build succeeds** - `npm run build` completes successfully
 - ⚠️ **Typecheck/Lint** - Need to verify these pass consistently
 
 ### Source Structure
+
 - ✅ **packages/api/src exists** - Source files are present
 - ✅ **packages/api/api/index.ts exists** - Vercel handler exists
 - ✅ **packages/types/src exists** - Types package has source
 
 ### Dependencies
+
 - ⚠️ **node_modules committed** - Major hygiene issue
 - ✅ **package-lock.json** - Dependency lockfile exists
 
 ## Fix Plan
 
 ### Phase 1: Make the Monorepo Real (Reproducible Build)
+
 1. Remove committed node_modules
 2. Verify .gitignore excludes node_modules properly
 3. Audit and fix missing scripts
 4. Ensure build order is correct (types -> adapters -> api)
 
 ### Phase 2: Deployability (Vercel + Runtime Safety)
+
 1. Fix Vercel configuration for API routes
 2. Implement runtime-safe env validation
 3. Add Supabase connectivity hardening
 
 ### Phase 3: Product "Finish Line" Value Adds
+
 1. API contract stability (OpenAPI matches handlers)
 2. Idempotency middleware correctness
 3. Rate limiting per API key/tenant
@@ -94,11 +100,13 @@
 8. Console smoke test harness
 
 ### Phase 4: QA - "No Dead Clicks, No Hard 500s"
+
 1. Route inventory test
 2. 404 handler for unknown routes
 3. Graceful error handling everywhere
 
 ### Phase 5: Verification
+
 1. All commands pass: `npm ci`, `npm run lint`, `npm run typecheck`, `npm run build`, `npm test`
 2. GitHub Actions workflow
 3. Verification report

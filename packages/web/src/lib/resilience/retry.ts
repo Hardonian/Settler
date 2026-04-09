@@ -1,6 +1,6 @@
 /**
  * Retry Utility with Exponential Backoff
- * 
+ *
  * Provides configurable retry logic with exponential backoff,
  * jitter, and circuit breaker integration.
  */
@@ -24,11 +24,15 @@ const DEFAULT_CONFIG: RetryConfig = {
     // Default: retry on network errors and 5xx status codes
     if (error instanceof Error) {
       const message = error.message.toLowerCase();
-      if (message.includes('network') || message.includes('timeout') || message.includes('econnreset')) {
+      if (
+        message.includes("network") ||
+        message.includes("timeout") ||
+        message.includes("econnreset")
+      ) {
         return true;
       }
     }
-    if (error && typeof error === 'object' && 'status' in error) {
+    if (error && typeof error === "object" && "status" in error) {
       const status = (error as { status: number }).status;
       return status >= 500 && status < 600;
     }
@@ -43,7 +47,7 @@ export class RetryError extends Error {
     public readonly lastError: unknown
   ) {
     super(message);
-    this.name = 'RetryError';
+    this.name = "RetryError";
   }
 }
 
@@ -53,14 +57,14 @@ export class RetryError extends Error {
 function calculateDelay(attempt: number, config: RetryConfig): number {
   const exponentialDelay = config.initialDelay * Math.pow(config.backoffMultiplier, attempt - 1);
   const delay = Math.min(exponentialDelay, config.maxDelay);
-  
+
   if (config.jitter) {
     // Add ±20% jitter
     const jitterAmount = delay * 0.2;
     const jitter = (Math.random() * 2 - 1) * jitterAmount;
     return Math.max(0, delay + jitter);
   }
-  
+
   return delay;
 }
 
@@ -80,33 +84,29 @@ export async function withRetry<T>(
 ): Promise<T> {
   const finalConfig: RetryConfig = { ...DEFAULT_CONFIG, ...config };
   let lastError: unknown;
-  
+
   for (let attempt = 1; attempt <= finalConfig.maxAttempts; attempt++) {
     try {
       return await fn();
     } catch (error) {
       lastError = error;
-      
+
       // Check if error is retryable
       if (finalConfig.retryableErrors && !finalConfig.retryableErrors(error)) {
         throw error; // Don't retry non-retryable errors
       }
-      
+
       // If this is the last attempt, throw error
       if (attempt === finalConfig.maxAttempts) {
-        throw new RetryError(
-          `Failed after ${attempt} attempts`,
-          attempt,
-          lastError
-        );
+        throw new RetryError(`Failed after ${attempt} attempts`, attempt, lastError);
       }
-      
+
       // Calculate delay and wait before retry
       const delay = calculateDelay(attempt, finalConfig);
       await sleep(delay);
     }
   }
-  
+
   // Should never reach here, but TypeScript needs it
   throw new RetryError(
     `Failed after ${finalConfig.maxAttempts} attempts`,

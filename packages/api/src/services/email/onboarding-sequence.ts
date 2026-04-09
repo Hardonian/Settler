@@ -46,7 +46,7 @@ export async function sendDay0WelcomeEmail(userId: string): Promise<void> {
       await sendWelcomeEmail(
         user.email,
         user.name || undefined,
-        process.env.NEXT_PUBLIC_APP_URL || 'https://app.settler.dev'
+        process.env.NEXT_PUBLIC_APP_URL || "https://app.settler.dev"
       );
       logInfo("Day 0 welcome email sent successfully", { userId: user.id, email: user.email });
     } catch (emailError) {
@@ -86,15 +86,15 @@ export async function sendDay1OnboardingEmail(userId: string): Promise<void> {
     // Send Day 1 onboarding email
     try {
       const progressPercent = progress?.completionPercentage || 0;
-      const nextStepText = nextStep?.step || 'Get started';
-      const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://app.settler.dev'}/dashboard`;
-      
+      const nextStepText = nextStep?.step || "Get started";
+      const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || "https://app.settler.dev"}/dashboard`;
+
       await sendNotificationEmail(
         user.email,
-        'Continue your Settler setup',
-        `Hi ${user.name || 'there'},\n\nYou're ${progressPercent}% complete with onboarding. Your next step: ${nextStepText}.\n\nContinue your setup:`,
+        "Continue your Settler setup",
+        `Hi ${user.name || "there"},\n\nYou're ${progressPercent}% complete with onboarding. Your next step: ${nextStepText}.\n\nContinue your setup:`,
         dashboardUrl,
-        'Go to Dashboard',
+        "Go to Dashboard",
         user.name || undefined
       );
       logInfo("Day 1 onboarding email sent successfully", { userId: user.id });
@@ -132,24 +132,24 @@ export async function sendDay3ActivationEmail(userId: string): Promise<void> {
 
     // Send Day 3 activation email
     try {
-      const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://app.settler.dev'}/dashboard`;
-      
+      const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || "https://app.settler.dev"}/dashboard`;
+
       if (isComplete) {
         await sendNotificationEmail(
           user.email,
-          '🎉 Onboarding Complete!',
-          `Hi ${user.name || 'there'},\n\nCongratulations! You've completed onboarding and your account is fully activated.\n\nStart reconciling:`,
+          "🎉 Onboarding Complete!",
+          `Hi ${user.name || "there"},\n\nCongratulations! You've completed onboarding and your account is fully activated.\n\nStart reconciling:`,
           dashboardUrl,
-          'Go to Dashboard',
+          "Go to Dashboard",
           user.name || undefined
         );
       } else {
         await sendNotificationEmail(
           user.email,
-          'Complete your Settler setup',
-          `Hi ${user.name || 'there'},\n\nYou're almost there! Complete your setup to start using Settler.\n\nFinish setup:`,
+          "Complete your Settler setup",
+          `Hi ${user.name || "there"},\n\nYou're almost there! Complete your setup to start using Settler.\n\nFinish setup:`,
           dashboardUrl,
-          'Complete Setup',
+          "Complete Setup",
           user.name || undefined
         );
       }

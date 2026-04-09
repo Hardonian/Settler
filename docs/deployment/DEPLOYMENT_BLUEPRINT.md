@@ -5,6 +5,7 @@
 ### Frontend
 
 **Platform:** Vercel
+
 - **Benefits:** Automatic deployments, CDN, edge functions
 - **Configuration:** Next.js app with API routes
 - **Domain:** app.settler.io
@@ -12,6 +13,7 @@
 ### Backend
 
 **Platform:** Supabase + Vercel Edge Functions
+
 - **Database:** Supabase PostgreSQL
 - **Edge Functions:** Vercel Edge Functions for job orchestration
 - **Storage:** Supabase Storage (or S3/GCS)
@@ -19,6 +21,7 @@
 ### Queue System
 
 **Options:**
+
 1. **Supabase KV** (Recommended for start)
 2. **Durable Queues** (Vercel)
 3. **Redis** (For scale)
@@ -85,11 +88,11 @@ vercel deploy --prod
 
 ```typescript
 // Example dead-letter queue implementation
-const deadLetterQueue = new Queue('dead-letters', {
+const deadLetterQueue = new Queue("dead-letters", {
   defaultJobOptions: {
     attempts: 5,
     backoff: {
-      type: 'exponential',
+      type: "exponential",
       delay: 2000,
     },
   },
@@ -106,9 +109,9 @@ const deadLetterQueue = new Queue('dead-letters', {
 
 ```typescript
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get("/health", (req, res) => {
   res.json({
-    status: 'healthy',
+    status: "healthy",
     timestamp: new Date().toISOString(),
     database: await checkDatabase(),
     redis: await checkRedis(),
@@ -163,7 +166,7 @@ const createJobSchema = z.object({
 
 ```typescript
 // Structured logging for all API calls
-logger.info('API request', {
+logger.info("API request", {
   method: req.method,
   path: req.path,
   tenantId: req.tenantId,

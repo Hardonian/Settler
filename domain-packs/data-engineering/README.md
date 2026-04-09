@@ -19,7 +19,7 @@ Industry-specific templates and workflows for data engineering teams.
 ## Usage
 
 ```javascript
-const { SettlerClient } = require('@settler/sdk');
+const { SettlerClient } = require("@settler/sdk");
 
 const client = new SettlerClient({
   apiKey: process.env.SETTLER_API_KEY,
@@ -31,7 +31,7 @@ const drifts = await client.drift.detect({
   actualSchema: actualSchema,
 });
 
-console.log('Schema drifts:', drifts);
+console.log("Schema drifts:", drifts);
 ```
 
 ## Templates

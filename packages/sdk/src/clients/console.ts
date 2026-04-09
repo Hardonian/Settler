@@ -1,6 +1,6 @@
 /**
  * Console Client
- * 
+ *
  * Client for managing Console resources (API keys, usage, activities)
  */
 
@@ -106,10 +106,7 @@ export class ConsoleClient {
    * List all API keys
    */
   async listApiKeys(): Promise<PaginatedResponse<ApiKey>> {
-    const data = await this.client.request<{ keys: ApiKey[] }>(
-      "GET",
-      "/api/console/api-keys"
-    );
+    const data = await this.client.request<{ keys: ApiKey[] }>("GET", "/api/console/api-keys");
     return {
       data: data.keys || [],
       count: data.keys?.length || 0,
@@ -119,14 +116,10 @@ export class ConsoleClient {
   /**
    * Create a new API key
    */
-  async createApiKey(
-    request: CreateApiKeyRequest
-  ): Promise<CreateApiKeyResponse> {
-    return this.client.request<CreateApiKeyResponse>(
-      "POST",
-      "/api/console/api-keys",
-      { body: request }
-    );
+  async createApiKey(request: CreateApiKeyRequest): Promise<CreateApiKeyResponse> {
+    return this.client.request<CreateApiKeyResponse>("POST", "/api/console/api-keys", {
+      body: request,
+    });
   }
 
   /**

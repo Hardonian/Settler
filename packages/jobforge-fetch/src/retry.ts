@@ -1,4 +1,4 @@
-import type { RetryConfig } from './types'
+import type { RetryConfig } from "./types";
 
 /**
  * Default retry configuration
@@ -10,25 +10,25 @@ export const DEFAULT_RETRY_CONFIG: Required<RetryConfig> = {
   backoffMultiplier: 2,
   retryableStatusCodes: [408, 429, 500, 502, 503, 504],
   shouldRetry: () => true,
-}
+};
 
 /**
  * Calculate delay for next retry attempt using exponential backoff with jitter
  */
 export function calculateRetryDelay(attempt: number, config: Required<RetryConfig>): number {
-  const exponentialDelay = config.initialDelay * Math.pow(config.backoffMultiplier, attempt - 1)
-  const delayWithCap = Math.min(exponentialDelay, config.maxDelay)
+  const exponentialDelay = config.initialDelay * Math.pow(config.backoffMultiplier, attempt - 1);
+  const delayWithCap = Math.min(exponentialDelay, config.maxDelay);
 
   // Add jitter (±25% randomization) to prevent thundering herd
-  const jitter = delayWithCap * 0.25 * (Math.random() * 2 - 1)
-  return Math.floor(delayWithCap + jitter)
+  const jitter = delayWithCap * 0.25 * (Math.random() * 2 - 1);
+  return Math.floor(delayWithCap + jitter);
 }
 
 /**
  * Check if an HTTP status code should trigger a retry
  */
 export function isRetryableStatus(status: number, retryableStatusCodes: number[]): boolean {
-  return retryableStatusCodes.includes(status)
+  return retryableStatusCodes.includes(status);
 }
 
 /**
@@ -36,30 +36,30 @@ export function isRetryableStatus(status: number, retryableStatusCodes: number[]
  */
 export function isRetryableError(error: Error): boolean {
   // Network errors
-  if (error.name === 'TypeError' && error.message.includes('fetch')) {
-    return true
+  if (error.name === "TypeError" && error.message.includes("fetch")) {
+    return true;
   }
 
   // Timeout errors
-  if (error.name === 'AbortError' || error.name === 'TimeoutError') {
-    return true
+  if (error.name === "AbortError" || error.name === "TimeoutError") {
+    return true;
   }
 
   // Connection errors
   if (
-    error.message.includes('ECONNRESET') ||
-    error.message.includes('ETIMEDOUT') ||
-    error.message.includes('ENOTFOUND')
+    error.message.includes("ECONNRESET") ||
+    error.message.includes("ETIMEDOUT") ||
+    error.message.includes("ENOTFOUND")
   ) {
-    return true
+    return true;
   }
 
-  return false
+  return false;
 }
 
 /**
  * Sleep for specified duration
  */
 export function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms))
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

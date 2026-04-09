@@ -5,10 +5,10 @@ import { SettlerClient } from "@settler/sdk";
  */
 async function runDemo() {
   // Initialize the client
-  const client = new SettlerClient({ 
+  const client = new SettlerClient({
     apiKey: process.env.SETTLER_API_KEY || "demo_key",
     // Optional: connect to local or staging environment
-    baseUrl: process.env.SETTLER_API_URL 
+    baseUrl: process.env.SETTLER_API_URL,
   });
 
   console.log("🚀 Starting Settler SDK Demo...");
@@ -19,29 +19,30 @@ async function runDemo() {
     console.log("\n1. Reconciliation -----------------------------------");
     const job = await client.jobs.create({
       name: "E-commerce Recon Demo",
-      source: { 
-        adapter: "shopify", 
-        config: { apiKey: "demo_shopify" } 
+      source: {
+        adapter: "shopify",
+        config: { apiKey: "demo_shopify" },
       },
-      target: { 
-        adapter: "stripe", 
-        config: { apiKey: "demo_stripe" } 
+      target: {
+        adapter: "stripe",
+        config: { apiKey: "demo_stripe" },
       },
-      rules: { 
+      rules: {
         matching: [
           { field: "order_id", type: "exact" },
           { field: "amount", type: "exact", tolerance: 0.05 }, // 5 cent tolerance
-          { field: "date", type: "range", days: 2 } // 2 day window
+          { field: "date", type: "range", days: 2 }, // 2 day window
         ],
-        conflictResolution: "manual-review"
-      }
+        conflictResolution: "manual-review",
+      },
     });
     console.log(`✅ Created Job: ${job.id}`);
 
     // 2. RECEIPTS
     // Parse a receipt from a URL
     console.log("\n2. Receipts Parsing --------------------------------");
-    const receiptUrl = "https://raw.githubusercontent.com/settler/examples/main/receipts/starbucks.jpg";
+    const receiptUrl =
+      "https://raw.githubusercontent.com/settler/examples/main/receipts/starbucks.jpg";
     // In a real app, you might upload a file buffer instead
     const receipt = await client.receipts.parse(receiptUrl);
     console.log(`✅ Parsed Receipt: ${receipt.merchant.name}`);
@@ -54,7 +55,7 @@ async function runDemo() {
     const context = {
       userId: "user_123",
       email: "jane@example.com",
-      plan: "enterprise"
+      plan: "enterprise",
     };
     const flag = await client.flags.evaluate("new-dashboard", context, false);
     console.log(`✅ Flag 'new-dashboard': ${flag.value}`);
@@ -63,7 +64,7 @@ async function runDemo() {
     // 4. CONVERSION
     // Convert currency and units
     console.log("\n4. Conversion --------------------------------------");
-    
+
     // Currency
     const currency = await client.convert.currency(100, "USD", "EUR");
     console.log(`✅ Currency: 100 USD = ${currency.amount} EUR (Rate: ${currency.rate})`);
@@ -75,7 +76,6 @@ async function runDemo() {
     // Financial Formatting
     const fmt = await client.convert.financial(1234567.89, "number", "human-readable");
     console.log(`✅ Formatted: ${fmt}`); // e.g. "$1.23M"
-
   } catch (error) {
     console.error("❌ Error running demo:", error);
   }

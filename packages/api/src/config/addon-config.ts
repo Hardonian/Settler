@@ -5,7 +5,7 @@
  * without requiring database schema changes.
  */
 
-import { logError } from '../utils/logger';
+import { logError } from "../utils/logger";
 
 export interface AddOnConfig {
   integration_id: string;

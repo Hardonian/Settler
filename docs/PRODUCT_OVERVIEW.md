@@ -23,6 +23,7 @@ Settler is a **Open Source Reconciliation Engine** platform that automates finan
 **What it does:** Matches transactions across multiple platforms automatically using event-sourced matching algorithms.
 
 **Key Features:**
+
 - Event-sourced matching engine for high-volume processing
 - Deterministic math (no floating-point errors)
 - Custom matching rules (amount tolerance, date windows, fuzzy matching)
@@ -30,6 +31,7 @@ Settler is a **Open Source Reconciliation Engine** platform that automates finan
 - Multi-currency support with deterministic conversion
 
 **Use Cases:**
+
 - Payment reconciliation (Stripe ↔ QuickBooks)
 - E-commerce reconciliation (Shopify ↔ accounting systems)
 - Multi-platform transaction matching
@@ -40,12 +42,14 @@ Settler is a **Open Source Reconciliation Engine** platform that automates finan
 **What it does:** AI-powered OCR extracts structured data from receipts and invoices.
 
 **Key Features:**
+
 - Multi-format support (PDF, PNG, JPG)
 - Structured JSON output (vendor, date, total, line items, tax)
 - High accuracy OCR with confidence scores
 - Batch processing support
 
 **Use Cases:**
+
 - Expense management automation
 - Receipt data extraction for accounting
 - Invoice processing workflows
@@ -55,12 +59,14 @@ Settler is a **Open Source Reconciliation Engine** platform that automates finan
 **What it does:** Edge-evaluated feature flags for phased financial rollouts.
 
 **Key Features:**
+
 - Sub-10ms edge evaluation latency
 - Typed payloads with TypeScript support
 - Instant rollouts without deployments
 - A/B testing and gradual rollouts
 
 **Use Cases:**
+
 - Phased feature rollouts
 - A/B testing financial features
 - Emergency feature toggles
@@ -70,6 +76,7 @@ Settler is a **Open Source Reconciliation Engine** platform that automates finan
 **What it does:** Unified dashboard for managing API keys, monitoring usage, viewing receipts, and managing feature flags.
 
 **Key Features:**
+
 - API key management with scoped permissions
 - Real-time usage analytics
 - Receipt browser with search and filters
@@ -104,6 +111,7 @@ Settler is a **Open Source Reconciliation Engine** platform that automates finan
 **Primary:** Mid-market SaaS companies ($1M-$50M ARR) processing $100K+ monthly transactions across multiple platforms.
 
 **Characteristics:**
+
 - Multiple payment processors (Stripe, PayPal, Square)
 - E-commerce platforms (Shopify, WooCommerce)
 - Accounting systems (QuickBooks, Xero)
@@ -124,18 +132,21 @@ Settler is a **Open Source Reconciliation Engine** platform that automates finan
 ### Pricing Tiers
 
 **Starter:** $99/month
+
 - 100,000 reconciliations/month
 - 10,000 receipt parses/month
 - 1M feature flag evaluations/month
 - Email support
 
 **Professional:** $499/month
+
 - 1M reconciliations/month
 - 100,000 receipt parses/month
 - 10M feature flag evaluations/month
 - Priority support
 
 **Enterprise:** Custom pricing
+
 - Unlimited usage
 - SLA guarantees
 - Dedicated support
@@ -173,6 +184,7 @@ Settler is a **Open Source Reconciliation Engine** platform that automates finan
 ## Technical Architecture
 
 **Stack:**
+
 - Backend: Node.js/TypeScript, Express
 - Database: PostgreSQL (Supabase)
 - Cache: Redis (Upstash)
@@ -180,6 +192,7 @@ Settler is a **Open Source Reconciliation Engine** platform that automates finan
 - Deployment: Vercel (serverless)
 
 **Architecture Patterns:**
+
 - Hexagonal Architecture (Ports & Adapters)
 - CQRS (Command Query Responsibility Segregation)
 - Event-Driven (event sourcing)
@@ -190,6 +203,7 @@ Settler is a **Open Source Reconciliation Engine** platform that automates finan
 ## Security & Compliance
 
 **Current:**
+
 - AES-256 encryption at rest
 - TLS 1.3 in transit
 - Row-level security (RLS) for multi-tenant isolation
@@ -197,6 +211,7 @@ Settler is a **Open Source Reconciliation Engine** platform that automates finan
 - Rate limiting and DDoS protection
 
 **Planned (Q3 2026):**
+
 - SOC 2 Type II certification
 - ISO 27001 certification
 - GDPR compliance audit

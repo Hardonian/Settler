@@ -5,6 +5,7 @@ The autonomous agents leverage OpenAI API for enhanced reasoning, content genera
 ## Overview
 
 Agents use OpenAI API key (stored in GitHub secrets and Supabase secrets) to:
+
 - Generate AI-enhanced strategic insights
 - Create engaging content automatically
 - Provide better user support explanations
@@ -14,35 +15,42 @@ Agents use OpenAI API key (stored in GitHub secrets and Supabase secrets) to:
 ## Which Agents Use OpenAI?
 
 ### ✅ Strategic Governor Agent
+
 - **Usage**: Enhances backlog prioritization with AI reasoning
 - **Benefits**: Better strategic insights, more nuanced prioritization
 - **Fallback**: Works without OpenAI using rule-based prioritization
 
 ### ✅ User Intent Synthesizer Agent
+
 - **Usage**: Generates actionable recommendations from user behavior
 - **Benefits**: More insightful product recommendations
 - **Fallback**: Works without OpenAI using pattern-based insights
 
 ### ✅ Preemptive Support Agent
+
 - **Usage**: Generates personalized explanations for user errors
 - **Benefits**: More helpful, context-aware support messages
 - **Fallback**: Works without OpenAI using template-based explanations
 
 ### ✅ Organic Growth Agent
+
 - **Usage**: Generates engaging changelogs, case studies, and content
 - **Benefits**: Higher quality, more engaging content
 - **Fallback**: Works without OpenAI using template-based content
 
 ### ✅ Autonomous CFO Agent
+
 - **Usage**: Provides strategic financial analysis and recommendations
 - **Benefits**: More nuanced financial insights and recommendations
 - **Fallback**: Works without OpenAI using rule-based analysis
 
 ### ❌ Architecture Sentinel Agent
+
 - **Usage**: None (deterministic code analysis)
 - **Reason**: Code quality checks are rule-based and don't need AI
 
 ### ❌ Release Gatekeeper Agent
+
 - **Usage**: None (deterministic safety checks)
 - **Reason**: Safety checks are rule-based and don't need AI
 
@@ -76,6 +84,7 @@ export OPENAI_API_KEY=sk-your-key-here
 ## Cost Considerations
 
 OpenAI API usage is minimal:
+
 - **Strategic Governor**: ~1-2 API calls per week
 - **User Intent Synthesizer**: ~5-10 API calls per day
 - **Preemptive Support**: ~10-20 API calls per day (only for users with errors)
@@ -87,6 +96,7 @@ OpenAI API usage is minimal:
 ## Model Used
 
 Default model: `gpt-4o-mini`
+
 - Cost-effective
 - Fast responses
 - Good quality for agent tasks
@@ -118,6 +128,7 @@ npx tsx scripts/run-agent.ts strategic_governor
 ### Agents not using AI
 
 1. **Check if API key is set:**
+
    ```bash
    supabase secrets list
    ```
@@ -166,6 +177,7 @@ npx tsx scripts/run-agent.ts strategic_governor
 To disable OpenAI temporarily:
 
 1. Remove from Supabase secrets:
+
    ```bash
    supabase secrets unset OPENAI_API_KEY
    ```

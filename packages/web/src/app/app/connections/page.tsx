@@ -18,9 +18,7 @@ export default function ConnectionsPage() {
         variant="hero"
         actions={
           <Button size="sm" asChild>
-            <Link href="/app/integrations">
-              Add Connection
-            </Link>
+            <Link href="/app/integrations">Add Connection</Link>
           </Button>
         }
       />

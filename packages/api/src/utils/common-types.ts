@@ -6,9 +6,7 @@
 /**
  * Result type for operations that can fail
  */
-export type Result<T, E = Error> =
-  | { success: true; data: T }
-  | { success: false; error: E };
+export type Result<T, E = Error> = { success: true; data: T } | { success: false; error: E };
 
 /**
  * Option type for nullable values
@@ -23,27 +21,27 @@ export type Branded<T, B> = T & { __brand: B };
 /**
  * User ID type
  */
-export type UserId = Branded<string, 'UserId'>;
+export type UserId = Branded<string, "UserId">;
 
 /**
  * Tenant ID type
  */
-export type TenantId = Branded<string, 'TenantId'>;
+export type TenantId = Branded<string, "TenantId">;
 
 /**
  * Job ID type
  */
-export type JobId = Branded<string, 'JobId'>;
+export type JobId = Branded<string, "JobId">;
 
 /**
  * Execution ID type
  */
-export type ExecutionId = Branded<string, 'ExecutionId'>;
+export type ExecutionId = Branded<string, "ExecutionId">;
 
 /**
  * Webhook ID type
  */
-export type WebhookId = Branded<string, 'WebhookId'>;
+export type WebhookId = Branded<string, "WebhookId">;
 
 /**
  * Paginated response type
@@ -82,14 +80,14 @@ export function isNotNull<T>(value: T | null | undefined): value is T {
  * Type guard for checking if value is a string
  */
 export function isString(value: unknown): value is string {
-  return typeof value === 'string';
+  return typeof value === "string";
 }
 
 /**
  * Type guard for checking if value is a number
  */
 export function isNumber(value: unknown): value is number {
-  return typeof value === 'number' && !isNaN(value);
+  return typeof value === "number" && !isNaN(value);
 }
 
 /**
@@ -97,10 +95,10 @@ export function isNumber(value: unknown): value is number {
  */
 export function isPlainObject(value: unknown): value is Record<string, unknown> {
   return (
-    typeof value === 'object' &&
+    typeof value === "object" &&
     value !== null &&
     !Array.isArray(value) &&
-    Object.prototype.toString.call(value) === '[object Object]'
+    Object.prototype.toString.call(value) === "[object Object]"
   );
 }
 

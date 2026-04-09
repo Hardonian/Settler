@@ -208,12 +208,8 @@ export default function IntegrationDocsPage() {
                   <p className="text-muted-foreground">{integration.docs.setup}</p>
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-2 text-foreground">
-                    Configuration
-                  </h3>
-                  <p className="text-muted-foreground">
-                    {integration.docs.configuration}
-                  </p>
+                  <h3 className="font-semibold mb-2 text-foreground">Configuration</h3>
+                  <p className="text-muted-foreground">{integration.docs.configuration}</p>
                 </div>
               </CardContent>
             </Card>

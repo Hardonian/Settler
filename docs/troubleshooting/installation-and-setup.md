@@ -38,6 +38,7 @@ cp .env.local.example .env.local
 ## `pnpm install` fails with EACCES permission errors
 
 EACCES errors typically occur when:
+
 - Files in `node_modules` have incorrect ownership (from switching users or containers)
 - The pnpm store has permission issues
 - Previous interrupted installs left corrupted state

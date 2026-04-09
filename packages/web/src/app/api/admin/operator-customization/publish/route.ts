@@ -33,7 +33,9 @@ export const POST = withSecurity(
       const resolved = await resolveCustomizationTenantId(body.data.tenantId ?? null);
       if (!resolved.ok) return resolved.response;
 
-      const entitlements = await getOperatorCustomizationEntitlementsForTenant(resolved.tenant.tenantId);
+      const entitlements = await getOperatorCustomizationEntitlementsForTenant(
+        resolved.tenant.tenantId
+      );
 
       const before = await getCustomizationState(prisma, resolved.tenant.tenantId, userId);
       const pub = await publishDraft(prisma, resolved.tenant.tenantId, userId, entitlements);
@@ -50,15 +52,25 @@ export const POST = withSecurity(
           );
         }
         if ("errors" in pub) {
-          return NextResponse.json({ error: "validation_failed", errors: pub.errors }, { status: 400 });
+          return NextResponse.json(
+            { error: "validation_failed", errors: pub.errors },
+            { status: 400 }
+          );
         }
         return NextResponse.json({ error: "publish_failed" }, { status: 500 });
       }
 
-      await recordCustomizationAudit(prisma, resolved.tenant.tenantId, userId, "published", "admin_dashboard", {
-        beforePublished: before.published,
-        afterPublished: pub.published,
-      });
+      await recordCustomizationAudit(
+        prisma,
+        resolved.tenant.tenantId,
+        userId,
+        "published",
+        "admin_dashboard",
+        {
+          beforePublished: before.published,
+          afterPublished: pub.published,
+        }
+      );
 
       return NextResponse.json({ published: pub.published, publishedAt: new Date().toISOString() });
     });

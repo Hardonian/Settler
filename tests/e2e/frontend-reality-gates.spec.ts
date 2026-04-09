@@ -1,32 +1,32 @@
 /**
  * Frontend Reality Gates - Comprehensive Regression Tests
- * 
+ *
  * Ensures critical routes don't 500, navigation works, mobile layouts are correct,
  * and accessibility baseline is met. This test MUST pass in CI or build fails.
  */
 
-import { test, expect } from '@playwright/test';
-import AxeBuilder from '@axe-core/playwright';
+import { test, expect } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
 
 // Core routes to test
 const CRITICAL_ROUTES = [
-  '/',
-  '/pricing',
-  '/docs',
-  '/console',
-  '/playground',
-  '/signup',
-  '/login',
-  '/trust',
-  '/cookbook',
-  '/runbooks',
-  '/schematics',
+  "/",
+  "/pricing",
+  "/docs",
+  "/console",
+  "/playground",
+  "/signup",
+  "/login",
+  "/trust",
+  "/cookbook",
+  "/runbooks",
+  "/schematics",
 ];
 
 // Mobile viewports to test
 const MOBILE_VIEWPORTS = [
-  { width: 360, height: 800, name: 'Small Mobile' },
-  { width: 390, height: 844, name: 'iPhone 12/13' },
+  { width: 360, height: 800, name: "Small Mobile" },
+  { width: 390, height: 844, name: "iPhone 12/13" },
 ];
 
 // Allowed console error patterns (benign warnings)
@@ -41,25 +41,25 @@ const ALLOWED_CONSOLE_ERRORS = [
   /ad.*block/i,
 ];
 
-test.describe('Frontend Reality Gates', () => {
-  test.describe('Route Stability - No 500s', () => {
+test.describe("Frontend Reality Gates", () => {
+  test.describe("Route Stability - No 500s", () => {
     for (const route of CRITICAL_ROUTES) {
       test(`${route} should not return 500`, async ({ page }) => {
         const errors: string[] = [];
         const responses: Array<{ url: string; status: number }> = [];
 
-        page.on('pageerror', (error) => {
+        page.on("pageerror", (error) => {
           errors.push(error.message);
         });
 
-        page.on('response', (response) => {
+        page.on("response", (response) => {
           if (response.url().includes(route) || response.url().includes(page.url())) {
             responses.push({ url: response.url(), status: response.status() });
           }
         });
 
         const response = await page.goto(route, {
-          waitUntil: 'networkidle',
+          waitUntil: "networkidle",
           timeout: 30000,
         });
 
@@ -72,12 +72,12 @@ test.describe('Frontend Reality Gates', () => {
         expect(route500s.length).toBe(0);
 
         // Verify page renders (not blank)
-        const bodyText = await page.textContent('body');
+        const bodyText = await page.textContent("body");
         expect(bodyText).toBeTruthy();
         expect(bodyText?.length).toBeGreaterThan(0);
 
         // Verify no "Internal Error" or "500" text
-        expect(bodyText).not.toContain('Internal Error');
+        expect(bodyText).not.toContain("Internal Error");
         expect(bodyText).not.toMatch(/500.*error/i);
 
         // Check for critical unhandled exceptions
@@ -89,7 +89,7 @@ test.describe('Frontend Reality Gates', () => {
     }
   });
 
-  test.describe('Mobile Layout - No Horizontal Scroll', () => {
+  test.describe("Mobile Layout - No Horizontal Scroll", () => {
     for (const viewport of MOBILE_VIEWPORTS) {
       test(`no horizontal scroll at ${viewport.name} (${viewport.width}×${viewport.height})`, async ({
         page,
@@ -99,7 +99,7 @@ test.describe('Frontend Reality Gates', () => {
         for (const route of CRITICAL_ROUTES.slice(0, 5)) {
           // Test top 5 routes on mobile
           await page.goto(route, {
-            waitUntil: 'networkidle',
+            waitUntil: "networkidle",
             timeout: 30000,
           });
 
@@ -126,7 +126,7 @@ test.describe('Frontend Reality Gates', () => {
           });
 
           // Warn if overflow-x is not hidden or auto (but don't fail)
-          if (bodyOverflow !== 'hidden' && bodyOverflow !== 'auto' && bodyOverflow !== 'scroll') {
+          if (bodyOverflow !== "hidden" && bodyOverflow !== "auto" && bodyOverflow !== "scroll") {
             console.warn(
               `Body overflow-x is "${bodyOverflow}" on ${route} at ${viewport.name} - may cause horizontal scroll`
             );
@@ -136,14 +136,14 @@ test.describe('Frontend Reality Gates', () => {
     }
   });
 
-  test.describe('Mobile Layout - No Clipped Content', () => {
+  test.describe("Mobile Layout - No Clipped Content", () => {
     for (const viewport of MOBILE_VIEWPORTS) {
       test(`content not clipped at ${viewport.name}`, async ({ page }) => {
         await page.setViewportSize({ width: viewport.width, height: viewport.height });
 
-        for (const route of ['/', '/pricing', '/console', '/playground']) {
+        for (const route of ["/", "/pricing", "/console", "/playground"]) {
           await page.goto(route, {
-            waitUntil: 'networkidle',
+            waitUntil: "networkidle",
             timeout: 30000,
           });
 
@@ -154,25 +154,25 @@ test.describe('Frontend Reality Gates', () => {
             const issues: string[] = [];
 
             // Check for fixed heights that might clip content
-            const elementsWithFixedHeight = Array.from(
-              document.querySelectorAll('*')
-            ).filter((el) => {
-              const style = window.getComputedStyle(el);
-              const height = style.height;
-              return height && height !== 'auto' && height !== '100%' && parseFloat(height) > 0;
-            });
+            const elementsWithFixedHeight = Array.from(document.querySelectorAll("*")).filter(
+              (el) => {
+                const style = window.getComputedStyle(el);
+                const height = style.height;
+                return height && height !== "auto" && height !== "100%" && parseFloat(height) > 0;
+              }
+            );
 
             // Check for overflow: hidden on containers with scrollable content
-            const containersWithHiddenOverflow = Array.from(
-              document.querySelectorAll('*')
-            ).filter((el) => {
-              const style = window.getComputedStyle(el);
-              return (
-                style.overflow === 'hidden' &&
-                el.scrollHeight > el.clientHeight &&
-                el.scrollHeight > 100 // Only flag significant clipping
-              );
-            });
+            const containersWithHiddenOverflow = Array.from(document.querySelectorAll("*")).filter(
+              (el) => {
+                const style = window.getComputedStyle(el);
+                return (
+                  style.overflow === "hidden" &&
+                  el.scrollHeight > el.clientHeight &&
+                  el.scrollHeight > 100 // Only flag significant clipping
+                );
+              }
+            );
 
             if (containersWithHiddenOverflow.length > 5) {
               issues.push(
@@ -192,12 +192,12 @@ test.describe('Frontend Reality Gates', () => {
     }
   });
 
-  test.describe('Console Errors - Critical Only', () => {
-    test('no critical console errors on main routes', async ({ page }) => {
+  test.describe("Console Errors - Critical Only", () => {
+    test("no critical console errors on main routes", async ({ page }) => {
       const consoleErrors: Array<{ route: string; error: string }> = [];
 
-      page.on('console', (msg) => {
-        if (msg.type() === 'error') {
+      page.on("console", (msg) => {
+        if (msg.type() === "error") {
           const text = msg.text();
           // Only track non-allowed errors
           if (!ALLOWED_CONSOLE_ERRORS.some((pattern) => pattern.test(text))) {
@@ -209,7 +209,7 @@ test.describe('Frontend Reality Gates', () => {
         }
       });
 
-      page.on('pageerror', (error) => {
+      page.on("pageerror", (error) => {
         const text = error.message;
         if (!ALLOWED_CONSOLE_ERRORS.some((pattern) => pattern.test(text))) {
           consoleErrors.push({
@@ -221,27 +221,27 @@ test.describe('Frontend Reality Gates', () => {
 
       for (const route of CRITICAL_ROUTES.slice(0, 6)) {
         await page.goto(route, {
-          waitUntil: 'networkidle',
+          waitUntil: "networkidle",
           timeout: 30000,
         });
         await page.waitForTimeout(1000); // Wait for any async errors
       }
 
       if (consoleErrors.length > 0) {
-        console.error('Critical console errors found:', consoleErrors);
+        console.error("Critical console errors found:", consoleErrors);
         throw new Error(
           `Found ${consoleErrors.length} critical console error(s): ${consoleErrors
             .map((e) => `${e.route}: ${e.error}`)
-            .join('; ')}`
+            .join("; ")}`
         );
       }
     });
   });
 
-  test.describe('Navigation Links - No Dead Links', () => {
-    test('header navigation links work', async ({ page }) => {
-      await page.goto('/');
-      await page.waitForLoadState('networkidle');
+  test.describe("Navigation Links - No Dead Links", () => {
+    test("header navigation links work", async ({ page }) => {
+      await page.goto("/");
+      await page.waitForLoadState("networkidle");
 
       // Find navigation links
       const navLinks = page.locator('nav a, header a, [role="navigation"] a');
@@ -251,13 +251,13 @@ test.describe('Frontend Reality Gates', () => {
 
       for (const link of links.slice(0, 15)) {
         // Limit to first 15 to avoid timeout
-        const href = await link.getAttribute('href');
-        if (href && href.startsWith('/') && !href.startsWith('//')) {
+        const href = await link.getAttribute("href");
+        if (href && href.startsWith("/") && !href.startsWith("//")) {
           // Skip anchors and external links
-          if (!href.includes('#') && !href.includes('http')) {
+          if (!href.includes("#") && !href.includes("http")) {
             try {
               const response = await page.goto(href, {
-                waitUntil: 'networkidle',
+                waitUntil: "networkidle",
                 timeout: 10000,
               });
 
@@ -280,14 +280,14 @@ test.describe('Frontend Reality Gates', () => {
         throw new Error(
           `${failures.length} navigation link(s) returned 500: ${failures
             .map((f) => `${f.href} (${f.status})`)
-            .join(', ')}`
+            .join(", ")}`
         );
       }
     });
 
-    test('footer links work', async ({ page }) => {
-      await page.goto('/');
-      await page.waitForLoadState('networkidle');
+    test("footer links work", async ({ page }) => {
+      await page.goto("/");
+      await page.waitForLoadState("networkidle");
 
       // Find footer links (skip external links)
       const footerLinks = page.locator('footer a[href^="/"]');
@@ -297,11 +297,11 @@ test.describe('Frontend Reality Gates', () => {
 
       for (const link of links.slice(0, 10)) {
         // Limit to first 10 to avoid timeout
-        const href = await link.getAttribute('href');
-        if (href && href.startsWith('/') && !href.includes('#')) {
+        const href = await link.getAttribute("href");
+        if (href && href.startsWith("/") && !href.includes("#")) {
           try {
             const response = await page.goto(href, {
-              waitUntil: 'networkidle',
+              waitUntil: "networkidle",
               timeout: 10000,
             });
 
@@ -321,20 +321,20 @@ test.describe('Frontend Reality Gates', () => {
         throw new Error(
           `${failures.length} footer link(s) returned 500: ${failures
             .map((f) => `${f.href} (${f.status})`)
-            .join(', ')}`
+            .join(", ")}`
         );
       }
     });
   });
 
-  test.describe('Accessibility - Axe Checks', () => {
+  test.describe("Accessibility - Axe Checks", () => {
     // Test critical pages only for Axe (it's slower)
-    const A11Y_TEST_PAGES = ['/', '/pricing', '/console', '/playground'];
+    const A11Y_TEST_PAGES = ["/", "/pricing", "/console", "/playground"];
 
     for (const path of A11Y_TEST_PAGES) {
       test(`${path} should have no serious accessibility violations`, async ({ page }) => {
         await page.goto(path, {
-          waitUntil: 'networkidle',
+          waitUntil: "networkidle",
           timeout: 30000,
         });
 
@@ -343,16 +343,18 @@ test.describe('Frontend Reality Gates', () => {
 
         // Run axe-core accessibility scan
         const accessibilityScanResults = await new AxeBuilder({ page })
-          .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'best-practice'])
+          .withTags(["wcag2a", "wcag2aa", "wcag21aa", "best-practice"])
           .analyze();
 
         // Filter to only serious/critical violations
         const seriousViolations = accessibilityScanResults.violations.filter(
-          (violation) => violation.impact === 'serious' || violation.impact === 'critical'
+          (violation) => violation.impact === "serious" || violation.impact === "critical"
         );
 
         if (seriousViolations.length > 0) {
-          console.error(`\n❌ Found ${seriousViolations.length} serious accessibility violation(s) on ${path}:\n`);
+          console.error(
+            `\n❌ Found ${seriousViolations.length} serious accessibility violation(s) on ${path}:\n`
+          );
           seriousViolations.forEach((violation) => {
             console.error(`  [${violation.impact}] ${violation.id}: ${violation.description}`);
             console.error(`    Help: ${violation.helpUrl}`);
@@ -370,17 +372,17 @@ test.describe('Frontend Reality Gates', () => {
 
       test(`${path} should have proper heading hierarchy`, async ({ page }) => {
         await page.goto(path, {
-          waitUntil: 'networkidle',
+          waitUntil: "networkidle",
           timeout: 30000,
         });
 
         // Check for h1
-        const h1Count = await page.locator('h1').count();
+        const h1Count = await page.locator("h1").count();
         expect(h1Count).toBeGreaterThan(0);
         expect(h1Count).toBeLessThanOrEqual(2); // Allow up to 2 h1s (some pages have hero + main)
 
         // Check heading hierarchy (no skipping levels)
-        const headings = await page.locator('h1, h2, h3, h4, h5, h6').all();
+        const headings = await page.locator("h1, h2, h3, h4, h5, h6").all();
         let lastLevel = 0;
         let hasH1 = false;
 
@@ -412,12 +414,12 @@ test.describe('Frontend Reality Gates', () => {
 
       test(`${path} should have visible focus indicators`, async ({ page }) => {
         await page.goto(path, {
-          waitUntil: 'networkidle',
+          waitUntil: "networkidle",
           timeout: 30000,
         });
 
         // Find all interactive elements
-        const interactiveElements = await page.locator('a, button, input, select, textarea').all();
+        const interactiveElements = await page.locator("a, button, input, select, textarea").all();
 
         if (interactiveElements.length === 0) {
           return; // No interactive elements to test
@@ -433,8 +435,8 @@ test.describe('Frontend Reality Gates', () => {
             const outlineWidth = style.outlineWidth;
             const boxShadow = style.boxShadow;
             return (
-              (outline && outline !== 'none' && outlineWidth !== '0px') ||
-              (boxShadow && boxShadow !== 'none')
+              (outline && outline !== "none" && outlineWidth !== "0px") ||
+              (boxShadow && boxShadow !== "none")
             );
           });
 

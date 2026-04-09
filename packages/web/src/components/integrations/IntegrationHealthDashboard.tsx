@@ -109,9 +109,7 @@ export function IntegrationHealthDashboard() {
           <div className="space-y-4">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-muted-foreground">
-                  Overall Health
-                </span>
+                <span className="text-sm font-medium text-muted-foreground">Overall Health</span>
                 <span className="text-sm font-bold text-foreground">
                   {(overallHealth * 100).toFixed(0)}%
                 </span>

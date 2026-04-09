@@ -13,14 +13,14 @@ export interface ConversionEvent {
 
 // Conversion funnel stages
 export const CONVERSION_STAGES = {
-  PAGE_VIEW: 'page_view',
-  SIGNUP_START: 'signup_start',
-  SIGNUP_COMPLETE: 'signup_complete',
-  TRIAL_START: 'trial_start',
-  FIRST_RECONCILIATION: 'first_reconciliation',
-  FIRST_PAID_INVOICE: 'first_paid_invoice',
-  UPGRADE: 'upgrade',
-  CHURN: 'churn',
+  PAGE_VIEW: "page_view",
+  SIGNUP_START: "signup_start",
+  SIGNUP_COMPLETE: "signup_complete",
+  TRIAL_START: "trial_start",
+  FIRST_RECONCILIATION: "first_reconciliation",
+  FIRST_PAID_INVOICE: "first_paid_invoice",
+  UPGRADE: "upgrade",
+  CHURN: "churn",
 } as const;
 
 /**
@@ -33,13 +33,13 @@ export async function trackConversion(
   try {
     // Get session ID from localStorage or generate
     const sessionId =
-      typeof window !== 'undefined'
-        ? localStorage.getItem('analytics_session_id') ||
+      typeof window !== "undefined"
+        ? localStorage.getItem("analytics_session_id") ||
           `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
         : undefined;
 
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('analytics_session_id', sessionId || '');
+    if (typeof window !== "undefined") {
+      localStorage.setItem("analytics_session_id", sessionId || "");
     }
 
     const conversionEvent: ConversionEvent = {
@@ -47,25 +47,25 @@ export async function trackConversion(
       properties: {
         ...properties,
         sessionId,
-        url: typeof window !== 'undefined' ? window.location.href : undefined,
-        referrer: typeof window !== 'undefined' ? document.referrer : undefined,
+        url: typeof window !== "undefined" ? window.location.href : undefined,
+        referrer: typeof window !== "undefined" ? document.referrer : undefined,
       },
       timestamp: new Date(),
     };
 
     // Send to analytics endpoint
-    await fetch('/api/analytics/conversion', {
-      method: 'POST',
+    await fetch("/api/analytics/conversion", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(conversionEvent),
     }).catch((error) => {
-      console.error('Failed to track conversion:', error);
+      console.error("Failed to track conversion:", error);
       // Don't throw - analytics failures shouldn't break the app
     });
   } catch (error) {
-    console.error('Conversion tracking error:', error);
+    console.error("Conversion tracking error:", error);
   }
 }
 
@@ -80,7 +80,7 @@ export async function trackPageView(
   await trackConversion(CONVERSION_STAGES.PAGE_VIEW, {
     path,
     ...properties,
-    conversionStage: conversionStage || 'awareness',
+    conversionStage: conversionStage || "awareness",
   });
 }
 
@@ -89,7 +89,7 @@ export async function trackPageView(
  */
 export async function trackSignupStart(source?: string): Promise<void> {
   await trackConversion(CONVERSION_STAGES.SIGNUP_START, {
-    source: source || 'unknown',
+    source: source || "unknown",
   });
 }
 
@@ -125,7 +125,11 @@ export async function trackFirstReconciliation(userId: string, jobId: string): P
 /**
  * Track first paid invoice (conversion to paid)
  */
-export async function trackFirstPaidInvoice(userId: string, amount: number, plan: string): Promise<void> {
+export async function trackFirstPaidInvoice(
+  userId: string,
+  amount: number,
+  plan: string
+): Promise<void> {
   await trackConversion(CONVERSION_STAGES.FIRST_PAID_INVOICE, {
     userId,
     amount,
@@ -136,7 +140,11 @@ export async function trackFirstPaidInvoice(userId: string, amount: number, plan
 /**
  * Track upgrade
  */
-export async function trackUpgrade(userId: string, fromPlan: string, toPlan: string): Promise<void> {
+export async function trackUpgrade(
+  userId: string,
+  fromPlan: string,
+  toPlan: string
+): Promise<void> {
   await trackConversion(CONVERSION_STAGES.UPGRADE, {
     userId,
     fromPlan,
@@ -158,7 +166,7 @@ export async function trackChurn(userId: string, reason?: string): Promise<void>
  * Track playground visit
  */
 export async function trackPlaygroundVisit(): Promise<void> {
-  await trackConversion('playground_visit', {
-    path: typeof window !== 'undefined' ? window.location.pathname : undefined,
+  await trackConversion("playground_visit", {
+    path: typeof window !== "undefined" ? window.location.pathname : undefined,
   });
 }

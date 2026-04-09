@@ -50,6 +50,7 @@ The following checks run automatically on every PR and push to `main`/`develop`:
 **Command:** `npm run check:workspace`
 
 **Checks:**
+
 - No `node_modules` directories committed to git
 - All workspace packages have valid `package.json`
 - No phantom internal package references (`@settler/*`)
@@ -61,6 +62,7 @@ The following checks run automatically on every PR and push to `main`/`develop`:
 **Command:** `npm run validate:env`
 
 **Checks:**
+
 - Environment variable schema is valid
 - Required environment variables are documented
 
@@ -69,11 +71,13 @@ The following checks run automatically on every PR and push to `main`/`develop`:
 ### 3. Lint and Type Check (`lint-and-typecheck` job)
 
 **Commands:**
+
 - `npm run lint`
 - `npm run format:check`
 - `npm run typecheck`
 
 **Checks:**
+
 - ESLint rules pass
 - Prettier formatting is correct
 - TypeScript compilation succeeds
@@ -85,6 +89,7 @@ The following checks run automatically on every PR and push to `main`/`develop`:
 **Command:** `npm run test`
 
 **Checks:**
+
 - Unit tests pass
 - Integration tests pass
 - Test coverage meets threshold
@@ -94,10 +99,12 @@ The following checks run automatically on every PR and push to `main`/`develop`:
 ### 5. Build (`build` job)
 
 **Commands:**
+
 - `npm run build`
 - `npm run build:vercel` (in packages/web)
 
 **Checks:**
+
 - All workspace packages build successfully
 - Build artifacts are generated (`packages/api/dist`, `packages/web/.next`)
 - Vercel build command succeeds
@@ -109,6 +116,7 @@ The following checks run automatically on every PR and push to `main`/`develop`:
 **Command:** `npm run check:production`
 
 **Checks:**
+
 - Production readiness checks pass
 - Build artifacts exist
 
@@ -117,11 +125,13 @@ The following checks run automatically on every PR and push to `main`/`develop`:
 ### 7. Security Scan (`security-scan` job)
 
 **Commands:**
+
 - `npm audit`
 - Snyk scan
 - Semgrep SAST
 
 **Checks:**
+
 - No critical vulnerabilities
 - Security best practices followed
 

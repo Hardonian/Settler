@@ -7,7 +7,10 @@
 import { createClient } from "@supabase/supabase-js";
 
 class CredentialEncryptionError extends Error {
-  constructor(message: string, readonly code: string) {
+  constructor(
+    message: string,
+    readonly code: string
+  ) {
     super(message);
     this.name = "CredentialEncryptionError";
   }
@@ -67,7 +70,10 @@ export async function encryptCredentials(
   const iv = crypto.randomBytes(16);
 
   const cipher = crypto.createCipheriv(algorithm, key, iv);
-  const encrypted = Buffer.concat([cipher.update(JSON.stringify(credentials), "utf8"), cipher.final()]);
+  const encrypted = Buffer.concat([
+    cipher.update(JSON.stringify(credentials), "utf8"),
+    cipher.final(),
+  ]);
 
   const authTag = cipher.getAuthTag();
 

@@ -33,12 +33,14 @@ Subject to payment of subscription fees, Licensor grants Licensee a non-exclusiv
 ### 3.1 Commercial Tier ($99/month or $990/year)
 
 **Includes:**
+
 - All OSS features
 - All Commercial features listed above
 - Email support (48-hour response)
 - Updates and bug fixes
 
 **Restrictions:**
+
 - Single organization use
 - Non-transferable
 - No resale rights
@@ -46,6 +48,7 @@ Subject to payment of subscription fees, Licensor grants Licensee a non-exclusiv
 ### 3.2 Enterprise Tier (Custom Pricing)
 
 **Includes:**
+
 - All Commercial features
 - SSO and RBAC
 - Custom integrations
@@ -58,6 +61,7 @@ Subject to payment of subscription fees, Licensor grants Licensee a non-exclusiv
 ## 4. Restrictions
 
 Licensee may not:
+
 - Reverse engineer Commercial Features
 - Remove or alter license notices
 - Use Commercial Features to compete with Settler

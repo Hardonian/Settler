@@ -11,26 +11,31 @@
 #### Key Metrics
 
 **Activation:**
+
 - Signups: [X] (↑/↓ [Y]% from last week)
 - Activation rate: [X]% (↑/↓ [Y]% from last week)
 - Median time to first value: [X]h (↑/↓ [Y]% from last week)
 
 **Usage:**
+
 - Reconciliations run: [X] (↑/↓ [Y]% from last week)
 - Average accuracy: [X]% (↑/↓ [Y]% from last week)
 - Exception rate: [X]% (↑/↓ [Y]% from last week)
 
 **Revenue:**
+
 - MRR: $[X] (↑/↓ [Y]% from last week)
 - Paying customers: [X] (↑/↓ [Y] from last week)
 - Churn rate: [X]% (↑/↓ [Y]% from last week)
 
 **Support:**
+
 - Tickets: [X] (↑/↓ [Y] from last week)
 - Median response time: [X]h (↑/↓ [Y]% from last week)
 - Resolution rate: [X]% (↑/↓ [Y]% from last week)
 
 **Incidents:**
+
 - Incidents: [X]
 - Downtime: [X] minutes
 - Uptime: [X]%
@@ -38,17 +43,21 @@
 #### Major Events
 
 **Releases:**
+
 - [Release 1] - [Description]
 - [Release 2] - [Description]
 
 **Customer Conversations:**
+
 - [Customer 1] - [Key insight]
 - [Customer 2] - [Key insight]
 
 **Partnerships:**
+
 - [Partnership update]
 
 **Marketing:**
+
 - [Content published]
 - [Events attended]
 
@@ -59,18 +68,22 @@
 #### Hypotheses
 
 **Activation:**
+
 - [Hypothesis for activation metric change]
 - Tied to: [Marketing/Product action]
 
 **Usage:**
+
 - [Hypothesis for usage metric change]
 - Tied to: [Product/Support action]
 
 **Revenue:**
+
 - [Hypothesis for revenue metric change]
 - Tied to: [Sales/Marketing action]
 
 **Support:**
+
 - [Hypothesis for support metric change]
 - Tied to: [Support/Documentation action]
 
@@ -92,18 +105,22 @@
 #### Cross-Functional Todos
 
 **Engineering:**
+
 - [Todo 1]
 - [Todo 2]
 
 **Product:**
+
 - [Todo 1]
 - [Todo 2]
 
 **GTM:**
+
 - [Todo 1]
 - [Todo 2]
 
 **Support:**
+
 - [Todo 1]
 - [Todo 2]
 
@@ -174,6 +191,7 @@ Full details: [Link to weekly review doc]
 ## Internal Ops Review Agenda
 
 **Who Attends:**
+
 - Founder/CEO
 - Head of Engineering (if exists)
 - Head of Product (if exists)
@@ -181,6 +199,7 @@ Full details: [Link to weekly review doc]
 - Support Lead (if exists)
 
 **What's Reviewed:**
+
 1. **Metrics (10 min):** Activation, usage, revenue, support
 2. **Customer Insights (10 min):** Top pains, feature requests, quotes
 3. **Product Updates (10 min):** Releases, roadmap changes, blockers

@@ -1,9 +1,9 @@
 /**
  * Architecture Sentinel Agent (CTO Replacement)
- * 
+ *
  * Replaces: CTO / Tech Lead role
  * Runs: Daily (or on PR/commit events)
- * 
+ *
  * What it does:
  * - Scans repo structure
  * - Tracks file growth, dependency changes
@@ -21,7 +21,12 @@ const corsHeaders = {
 
 interface ArchitectureRule {
   name: string;
-  type: "complexity_creep" | "dependency_risk" | "performance_regression" | "rls_violation" | "file_size";
+  type:
+    | "complexity_creep"
+    | "dependency_risk"
+    | "performance_regression"
+    | "rls_violation"
+    | "file_size";
   threshold: number;
   severity: "low" | "medium" | "high" | "critical";
 }
@@ -93,7 +98,8 @@ serve(async (req) => {
         current_value: recentMigrations.length,
         threshold_value: 5,
         violation_description: `${recentMigrations.length} migrations in recent period. May indicate schema drift or lack of planning.`,
-        suggested_action: "Review migration history. Consider consolidating migrations or refactoring schema design.",
+        suggested_action:
+          "Review migration history. Consider consolidating migrations or refactoring schema design.",
       });
     }
 
@@ -103,10 +109,9 @@ serve(async (req) => {
     // ========================================================================
 
     // Check for RLS policy violations (critical security issue)
-    const { data: tablesWithoutRLS } = await supabase.rpc(
-      "check_rls_policies",
-      {}
-    ).catch(() => ({ data: null }));
+    const { data: tablesWithoutRLS } = await supabase
+      .rpc("check_rls_policies", {})
+      .catch(() => ({ data: null }));
 
     if (tablesWithoutRLS && Array.isArray(tablesWithoutRLS) && tablesWithoutRLS.length > 0) {
       violations.push({
@@ -116,7 +121,8 @@ serve(async (req) => {
         current_value: tablesWithoutRLS.length,
         threshold_value: 0,
         violation_description: `${tablesWithoutRLS.length} table(s) without Row Level Security policies. Critical security risk.`,
-        suggested_action: "Immediately add RLS policies to all tables. Review data access patterns.",
+        suggested_action:
+          "Immediately add RLS policies to all tables. Review data access patterns.",
       });
     }
 
@@ -137,7 +143,8 @@ serve(async (req) => {
         current_value: slowQueries.length,
         threshold_value: 0,
         violation_description: `${slowQueries.length} slow query(s) detected (>1s). Performance degradation detected.`,
-        suggested_action: "Review query performance. Add indexes, optimize queries, or consider caching.",
+        suggested_action:
+          "Review query performance. Add indexes, optimize queries, or consider caching.",
       });
     }
 
@@ -237,7 +244,8 @@ serve(async (req) => {
           current_value: topQuery.value,
           threshold_value: 10000,
           violation_description: `High query volume detected: ${topQuery.metric_name} with ${topQuery.value} queries. Ensure proper indexing.`,
-          suggested_action: "Review query patterns. Add indexes if missing. Consider query optimization.",
+          suggested_action:
+            "Review query patterns. Add indexes if missing. Consider query optimization.",
         });
       }
     }
@@ -270,7 +278,8 @@ serve(async (req) => {
           current_value: recentAvg,
           threshold_value: olderAvg * 1.3,
           violation_description: `API response time increased: ${recentAvg.toFixed(0)}ms (was ${olderAvg.toFixed(0)}ms). 30% degradation detected.`,
-          suggested_action: "Investigate API performance. Check for N+1 queries, missing indexes, or inefficient code paths.",
+          suggested_action:
+            "Investigate API performance. Check for N+1 queries, missing indexes, or inefficient code paths.",
         });
       }
     }

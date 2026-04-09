@@ -3,23 +3,21 @@
  * Helper functions for working with protocol types
  */
 
-import {
-  Money
-} from './index';
+import { Money } from "./index";
 
 /**
  * Sanitize string input to prevent XSS
  */
 export function sanitizeString(input: string): string {
-  if (typeof input !== 'string') {
-    return '';
+  if (typeof input !== "string") {
+    return "";
   }
 
   // Remove potentially dangerous characters
   return input
-    .replace(/[<>]/g, '') // Remove < and >
-    .replace(/javascript:/gi, '') // Remove javascript: protocol
-    .replace(/on\w+=/gi, '') // Remove event handlers
+    .replace(/[<>]/g, "") // Remove < and >
+    .replace(/javascript:/gi, "") // Remove javascript: protocol
+    .replace(/on\w+=/gi, "") // Remove event handlers
     .trim();
 }
 
@@ -27,7 +25,7 @@ export function sanitizeString(input: string): string {
  * Validate ISO 8601 date string
  */
 export function isValidISODate(dateString: string): boolean {
-  if (!dateString || typeof dateString !== 'string') {
+  if (!dateString || typeof dateString !== "string") {
     return false;
   }
 
@@ -39,7 +37,7 @@ export function isValidISODate(dateString: string): boolean {
  * Validate currency code (ISO 4217)
  */
 export function isValidCurrency(currency: string): boolean {
-  if (!currency || typeof currency !== 'string') {
+  if (!currency || typeof currency !== "string") {
     return false;
   }
 
@@ -51,11 +49,11 @@ export function isValidCurrency(currency: string): boolean {
  * Validate money amount
  */
 export function isValidMoney(money: Money): boolean {
-  if (!money || typeof money !== 'object') {
+  if (!money || typeof money !== "object") {
     return false;
   }
 
-  if (typeof money.value !== 'number' || isNaN(money.value) || !isFinite(money.value)) {
+  if (typeof money.value !== "number" || isNaN(money.value) || !isFinite(money.value)) {
     return false;
   }
 
@@ -69,15 +67,15 @@ export function isValidMoney(money: Money): boolean {
 /**
  * Format money for display
  */
-export function formatMoney(money: Money, locale: string = 'en-US'): string {
+export function formatMoney(money: Money, locale: string = "en-US"): string {
   if (!isValidMoney(money)) {
-    return 'Invalid';
+    return "Invalid";
   }
 
   try {
     return new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency: money.currency
+      style: "currency",
+      currency: money.currency,
     }).format(money.value);
   } catch {
     return `${money.currency} ${money.value.toFixed(2)}`;
@@ -90,7 +88,7 @@ export function formatMoney(money: Money, locale: string = 'en-US'): string {
 export function sanitizeTransactionMetadata(
   metadata?: Record<string, unknown>
 ): Record<string, unknown> | undefined {
-  if (!metadata || typeof metadata !== 'object') {
+  if (!metadata || typeof metadata !== "object") {
     return undefined;
   }
 
@@ -102,9 +100,9 @@ export function sanitizeTransactionMetadata(
     if (!sanitizedKey) continue;
 
     // Sanitize values
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       sanitized[sanitizedKey] = sanitizeString(value);
-    } else if (typeof value === 'number' || typeof value === 'boolean') {
+    } else if (typeof value === "number" || typeof value === "boolean") {
       sanitized[sanitizedKey] = value;
     } else if (value === null) {
       sanitized[sanitizedKey] = null;
@@ -119,7 +117,7 @@ export function sanitizeTransactionMetadata(
  * Validate transaction ID format
  */
 export function validateTransactionId(id: string): boolean {
-  if (!id || typeof id !== 'string') {
+  if (!id || typeof id !== "string") {
     return false;
   }
 
@@ -130,14 +128,14 @@ export function validateTransactionId(id: string): boolean {
 /**
  * Mask PII in strings
  */
-export function maskPII(input: string, maskChar: string = '*'): string {
-  if (!input || typeof input !== 'string') {
-    return '';
+export function maskPII(input: string, maskChar: string = "*"): string {
+  if (!input || typeof input !== "string") {
+    return "";
   }
 
   // Mask email addresses
   input = input.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, (email) => {
-    const [local, domain] = email.split('@');
+    const [local, domain] = email.split("@");
     if (!local || !domain) return email;
     return `${local[0]}${maskChar.repeat(Math.max(0, local.length - 2))}@${domain}`;
   });
@@ -153,9 +151,9 @@ export function maskPII(input: string, maskChar: string = '*'): string {
 /**
  * Generate secure random ID
  */
-export function generateSecureId(prefix: string = 'id'): string {
+export function generateSecureId(prefix: string = "id"): string {
   const randomBytes = new Uint8Array(16);
-  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+  if (typeof crypto !== "undefined" && crypto.getRandomValues) {
     crypto.getRandomValues(randomBytes);
   } else {
     // Fallback for environments without crypto
@@ -165,8 +163,8 @@ export function generateSecureId(prefix: string = 'id'): string {
   }
 
   const hex = Array.from(randomBytes)
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('');
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 
   return `${prefix}_${hex}`;
 }
@@ -175,7 +173,7 @@ export function generateSecureId(prefix: string = 'id'): string {
  * Deep clone object (for immutable updates)
  */
 export function deepClone<T>(obj: T): T {
-  if (obj === null || typeof obj !== 'object') {
+  if (obj === null || typeof obj !== "object") {
     return obj;
   }
 
@@ -184,10 +182,10 @@ export function deepClone<T>(obj: T): T {
   }
 
   if (obj instanceof Array) {
-    return obj.map(item => deepClone(item)) as unknown as T;
+    return obj.map((item) => deepClone(item)) as unknown as T;
   }
 
-  if (typeof obj === 'object') {
+  if (typeof obj === "object") {
     const cloned = {} as T;
     for (const key in obj) {
       if (Object.prototype.hasOwnProperty.call(obj, key)) {
@@ -216,7 +214,7 @@ function normalize(value: unknown): unknown {
     return value.toISOString();
   }
 
-  if (typeof value === 'object') {
+  if (typeof value === "object") {
     return Object.keys(value as Record<string, unknown>)
       .sort()
       .reduce<Record<string, unknown>>((acc, key) => {
@@ -235,11 +233,11 @@ export function stableStringify(value: unknown): string {
   return JSON.stringify(normalize(value));
 }
 
-import crypto from 'node:crypto';
+import crypto from "node:crypto";
 
 /**
  * Compute SHA-256 hash of data
  */
 export function stableHash(value: unknown): string {
-  return crypto.createHash('sha256').update(stableStringify(value)).digest('hex');
+  return crypto.createHash("sha256").update(stableStringify(value)).digest("hex");
 }

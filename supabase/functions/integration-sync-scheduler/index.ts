@@ -1,6 +1,6 @@
 /**
  * Integration Sync Scheduler
- * 
+ *
  * Scheduled function to sync all active connectors
  * Runs periodically (e.g., every hour) to sync data from all connected integrations
  */
@@ -41,9 +41,7 @@ serve(async (req) => {
     for (const connector of connectors || []) {
       try {
         // Check if sync is needed (e.g., last sync was more than 1 hour ago)
-        const lastSync = connector.last_sync_at
-          ? new Date(connector.last_sync_at)
-          : null;
+        const lastSync = connector.last_sync_at ? new Date(connector.last_sync_at) : null;
         const hoursSinceSync = lastSync
           ? (Date.now() - lastSync.getTime()) / (1000 * 60 * 60)
           : Infinity;

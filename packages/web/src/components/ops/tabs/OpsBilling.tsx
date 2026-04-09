@@ -1,12 +1,12 @@
 /**
  * Ops Billing Tab
- * 
+ *
  * Billing and subscription management
  */
 
-'use client';
+"use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function OpsBilling() {
   return (

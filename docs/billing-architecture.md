@@ -5,6 +5,7 @@ This document describes the billing and subscription system for Settler.dev.
 ## Overview
 
 Settler.dev uses Stripe for subscription management and billing. The system integrates with existing infrastructure:
+
 - `BillingAccount` - Links users to Stripe customers
 - `Subscription` - Tracks active subscriptions and plan details
 - `UsageEvent` - Records API usage for quota enforcement
@@ -76,6 +77,7 @@ Usage events use the format: `{service}:{operation}`
 ### Usage Aggregation
 
 Usage is aggregated by:
+
 - `billingAccountId`
 - `eventType` (service prefix)
 - `timestamp` (within billing period)
@@ -128,6 +130,7 @@ When quota is exceeded:
 Webhook endpoint: `/api/stripe/webhook`
 
 Handles events:
+
 - `customer.subscription.created` - New subscription
 - `customer.subscription.updated` - Subscription changes
 - `customer.subscription.deleted` - Subscription cancellation
@@ -136,6 +139,7 @@ Handles events:
 - `invoice.payment_failed` - Payment failure
 
 Webhook processing:
+
 1. Verify signature with `STRIPE_WEBHOOK_SECRET`
 2. Extract `billingAccountId` from subscription metadata
 3. Sync subscription state to local `Subscription` model
@@ -146,6 +150,7 @@ Webhook processing:
 ### Billing Page (`/console/billing`)
 
 Shows:
+
 - Current plan and subscription status
 - Usage vs limits for all services
 - Plan comparison and upgrade options
@@ -154,6 +159,7 @@ Shows:
 ### Usage Tracking
 
 Usage is displayed in:
+
 - Console Overview (`/console`)
 - Usage & Metrics (`/console/usage`)
 - Billing page (`/console/billing`)

@@ -427,10 +427,7 @@ export async function POST(request: NextRequest) {
       const userMessage = errorMessage.includes("OCR_FAILED")
         ? "Could not extract text from the image. Please try a clearer image."
         : "Failed to process receipt. Please try again.";
-      const response = NextResponse.json(
-        { error: userMessage },
-        { status: 500 }
-      );
+      const response = NextResponse.json({ error: userMessage }, { status: 500 });
       return addCorrelationHeaders(response, correlationId);
     }
   } catch (error) {

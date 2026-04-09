@@ -1,11 +1,11 @@
 /**
  * Idempotency Key Storage & Lookup
- * 
+ *
  * Manages idempotency keys in the database to prevent duplicate operations.
  */
 
-import { prisma } from '@/shared/db/prismaClient';
-import { IdempotencyKey, Prisma } from '@prisma/client';
+import { prisma } from "@/shared/db/prismaClient";
+import { IdempotencyKey, Prisma } from "@prisma/client";
 
 export interface IdempotencyResult<T = unknown> {
   isDuplicate: boolean;
@@ -16,9 +16,7 @@ export interface IdempotencyResult<T = unknown> {
 /**
  * Check if an idempotency key exists and return cached response if available
  */
-export async function checkIdempotencyKey<T = unknown>(
-  key: string
-): Promise<IdempotencyResult<T>> {
+export async function checkIdempotencyKey<T = unknown>(key: string): Promise<IdempotencyResult<T>> {
   try {
     const record = await prisma.idempotencyKey.findUnique({
       where: { key },
@@ -31,16 +29,18 @@ export async function checkIdempotencyKey<T = unknown>(
     // Check if expired
     if (record.expiresAt < new Date()) {
       // Clean up expired key
-      await prisma.idempotencyKey.delete({
-        where: { key },
-      }).catch(() => {
-        // Ignore cleanup errors
-      });
+      await prisma.idempotencyKey
+        .delete({
+          where: { key },
+        })
+        .catch(() => {
+          // Ignore cleanup errors
+        });
       return { isDuplicate: false, key };
     }
 
     // If completed, return cached response
-    if (record.status === 'completed' && record.response) {
+    if (record.status === "completed" && record.response) {
       return {
         isDuplicate: true,
         existingResponse: record.response as T,
@@ -49,7 +49,7 @@ export async function checkIdempotencyKey<T = unknown>(
     }
 
     // If pending, it's a duplicate request in progress
-    if (record.status === 'pending') {
+    if (record.status === "pending") {
       return {
         isDuplicate: true,
         key,
@@ -60,7 +60,7 @@ export async function checkIdempotencyKey<T = unknown>(
     return { isDuplicate: false, key };
   } catch (error) {
     // On error, assume not duplicate (fail open)
-    console.error('[Idempotency] Error checking key:', error);
+    console.error("[Idempotency] Error checking key:", error);
     return { isDuplicate: false, key };
   }
 }
@@ -78,7 +78,7 @@ export async function createIdempotencyKey(
       where: { key },
       create: {
         key,
-        status: 'pending',
+        status: "pending",
         expiresAt,
       },
       update: {
@@ -89,10 +89,10 @@ export async function createIdempotencyKey(
     return record;
   } catch (error) {
     // If unique constraint violation, key already exists
-    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
+    if (error && typeof error === "object" && "code" in error && error.code === "P2002") {
       return null; // Already exists
     }
-    console.error('[Idempotency] Error creating key:', error);
+    console.error("[Idempotency] Error creating key:", error);
     return null;
   }
 }
@@ -100,21 +100,18 @@ export async function createIdempotencyKey(
 /**
  * Mark an idempotency key as completed with response
  */
-export async function completeIdempotencyKey<T = unknown>(
-  key: string,
-  response: T
-): Promise<void> {
+export async function completeIdempotencyKey<T = unknown>(key: string, response: T): Promise<void> {
   try {
     await prisma.idempotencyKey.update({
       where: { key },
       data: {
-        status: 'completed',
+        status: "completed",
         response: response as Prisma.InputJsonValue,
         completedAt: new Date(),
       },
     });
   } catch (error) {
-    console.error('[Idempotency] Error completing key:', error);
+    console.error("[Idempotency] Error completing key:", error);
     // Don't throw - idempotency is best-effort
   }
 }
@@ -127,11 +124,11 @@ export async function failIdempotencyKey(key: string): Promise<void> {
     await prisma.idempotencyKey.update({
       where: { key },
       data: {
-        status: 'failed',
+        status: "failed",
       },
     });
   } catch (error) {
-    console.error('[Idempotency] Error failing key:', error);
+    console.error("[Idempotency] Error failing key:", error);
     // Don't throw
   }
 }
@@ -150,7 +147,7 @@ export async function cleanupExpiredIdempotencyKeys(): Promise<number> {
     });
     return result.count;
   } catch (error) {
-    console.error('[Idempotency] Error cleaning up expired keys:', error);
+    console.error("[Idempotency] Error cleaning up expired keys:", error);
     return 0;
   }
 }

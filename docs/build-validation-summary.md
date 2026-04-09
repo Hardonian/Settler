@@ -7,11 +7,13 @@ This document summarizes all the proactive safeguards implemented to prevent bui
 ## Issues Fixed
 
 ### 1. ESLint Config Dependencies ✅
+
 **Problem**: Packages extending root ESLint config were missing `eslint-config-prettier`.
 
 **Fixed Packages**:
+
 - `@settler/web` ✅
-- `@settler/sdk` ✅  
+- `@settler/sdk` ✅
 - `@settler/adapters` ✅
 - `@settler/cli` ✅
 - `@settler/api` ✅
@@ -19,9 +21,11 @@ This document summarizes all the proactive safeguards implemented to prevent bui
 **Solution**: Added `eslint-config-prettier: ^10.1.8` to all affected packages.
 
 ### 2. ESLint Error Rules Blocking Builds ✅
+
 **Problem**: Strict ESLint rules from `next/typescript` preset were causing build failures.
 
 **Solution**: Disabled problematic error-level rules in `packages/web/.eslintrc.json`:
+
 - `@typescript-eslint/no-unsafe-call`: "off"
 - `@typescript-eslint/require-await`: "off"
 - `@typescript-eslint/unbound-method`: "off"
@@ -31,13 +35,16 @@ This document summarizes all the proactive safeguards implemented to prevent bui
 - `prefer-rest-params`: "off"
 
 ### 3. Script References in Build Scripts ✅
+
 **Problem**: Build scripts referenced files in `scripts/` directory excluded by `.vercelignore`.
 
 **Fixed**:
+
 - `packages/web/build:vercel` - Made script optional with existence check
 - Root `package.json` scripts - Made optional where appropriate
 
 **Pattern Used**:
+
 ```bash
 test -f scripts/script.js && node scripts/script.js || echo '⚠️  Script not available'
 ```
@@ -45,7 +52,9 @@ test -f scripts/script.js && node scripts/script.js || echo '⚠️  Script not 
 ## Validation Tools Created
 
 ### 1. Build Safety Validator (`scripts/validate-build-safety.ts`)
+
 **Checks**:
+
 - Scripts referenced but not available (especially in Vercel)
 - Missing ESLint config dependencies
 - Packages extending root ESLint config without required dependencies
@@ -56,7 +65,9 @@ test -f scripts/script.js && node scripts/script.js || echo '⚠️  Script not 
 **Usage**: `npm run validate:build-safety`
 
 ### 2. ESLint Config Validator (`scripts/validate-eslint-config.ts`)
+
 **Checks**:
+
 - All ESLint configs in monorepo
 - Validates that all `extends` configs have corresponding dependencies
 - Reports missing dependencies with installation commands
@@ -64,7 +75,9 @@ test -f scripts/script.js && node scripts/script.js || echo '⚠️  Script not 
 **Usage**: `npm run validate:eslint-config`
 
 ### 3. Next.js Build Validator (`scripts/validate-nextjs-build.ts`)
+
 **Checks**:
+
 - Next.js configuration validity
 - TypeScript config extends
 - Required dependencies (PostCSS, Tailwind, etc.)
@@ -75,7 +88,9 @@ test -f scripts/script.js && node scripts/script.js || echo '⚠️  Script not 
 **Usage**: `npm run validate:nextjs`
 
 ### 4. Lint Config Validator (`scripts/validate-lint-config.ts`)
+
 **Checks**:
+
 - ESLint config will not block builds
 - Error-level rules that should be warnings/off
 - Next.js lint configuration
@@ -83,7 +98,9 @@ test -f scripts/script.js && node scripts/script.js || echo '⚠️  Script not 
 **Usage**: `npm run validate:lint-config`
 
 ### 5. Build Guardian (`scripts/build-guardian.ts`)
+
 **Comprehensive health checks**:
+
 - Prisma client generation
 - TypeScript configs
 - Package.json validation
@@ -98,14 +115,18 @@ test -f scripts/script.js && node scripts/script.js || echo '⚠️  Script not 
 ## Prevention Layers
 
 ### 1. Pre-Commit Hook (`.husky/pre-commit`)
+
 Runs before every commit:
+
 - ✅ ESLint config validation
 - ✅ Build safety validation
 - ✅ Lint configuration validation
 - ✅ TypeScript typecheck
 
 ### 2. CI Pipeline (`.github/workflows/ci.yml`)
+
 Runs on every PR/push:
+
 - ✅ ESLint config validation
 - ✅ Build safety validation
 - ✅ Next.js build validation
@@ -113,12 +134,16 @@ Runs on every PR/push:
 - ✅ Full lint and typecheck
 
 ### 3. Pre-Build Validation
+
 Runs before every build:
+
 - ✅ TypeScript typecheck
 - ✅ ESLint linting (with non-blocking rules)
 
 ### 4. Build Guardian
+
 Comprehensive health checks:
+
 - ✅ All validators integrated
 - ✅ Runs when scripts are available
 
@@ -141,15 +166,18 @@ npx tsx scripts/build-guardian.ts
 ## Configuration Files Updated
 
 ### ESLint Configuration
+
 - `packages/web/.eslintrc.json` - Set `root: true`, disabled blocking error rules
 - All packages extending root config - Added `eslint-config-prettier`
 
 ### Build Scripts
+
 - `packages/web/package.json` - Made scripts optional
 - `packages/web/build:vercel` - Added existence checks
 - Root `package.json` - Made validation scripts optional
 
 ### Next.js Configuration
+
 - `packages/web/next.config.js` - Updated ESLint config comments
 
 ## What's Protected
@@ -160,7 +188,7 @@ npx tsx scripts/build-guardian.ts
 ✅ **Lint Rules** - Error-level rules that block builds are disabled  
 ✅ **Next.js Config** - Next.js-specific configuration is validated  
 ✅ **TypeScript Paths** - Workspace package path mappings are validated  
-✅ **Dependencies** - Required dependencies are checked  
+✅ **Dependencies** - Required dependencies are checked
 
 ## Build Process Flow
 
@@ -174,6 +202,7 @@ npx tsx scripts/build-guardian.ts
 The build should now pass. All critical error-level ESLint rules have been disabled, and comprehensive validation is in place to catch issues before they reach production.
 
 To address the warnings incrementally:
+
 1. Fix `@typescript-eslint/no-unsafe-*` warnings by adding proper types
 2. Fix `@typescript-eslint/require-await` warnings by removing unnecessary async
 3. Fix `@typescript-eslint/unbound-method` warnings by using arrow functions

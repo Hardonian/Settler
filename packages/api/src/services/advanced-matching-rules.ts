@@ -22,7 +22,14 @@ export interface MatchingRule {
     fields: CustomField[];
     conditions?: Array<{
       field: string;
-      operator: "equals" | "contains" | "startsWith" | "endsWith" | "greaterThan" | "lessThan" | "between";
+      operator:
+        | "equals"
+        | "contains"
+        | "startsWith"
+        | "endsWith"
+        | "greaterThan"
+        | "lessThan"
+        | "between";
       value: unknown;
     }>;
     compositeOperator?: "AND" | "OR";
@@ -71,7 +78,7 @@ export async function createCustomMatchingRule(
       ] as (string | number | boolean | null | Date)[]
     );
 
-    const ruleId = result[0]?.id || '';
+    const ruleId = result[0]?.id || "";
     logInfo("Custom matching rule created", { ruleId, tenantId, userId, name: rule.name });
     return ruleId;
   } catch (error) {
@@ -227,7 +234,13 @@ export async function updateRulePerformanceMetrics(
       `UPDATE custom_matching_rules
        SET performance_metrics = $1, updated_at = now()
        WHERE id = $2 AND tenant_id = $3`,
-      [JSON.stringify(updatedMetrics), ruleId, tenantId] as (string | number | boolean | null | Date)[]
+      [JSON.stringify(updatedMetrics), ruleId, tenantId] as (
+        | string
+        | number
+        | boolean
+        | null
+        | Date
+      )[]
     );
 
     logInfo("Rule performance metrics updated", { ruleId, tenantId });
@@ -277,20 +290,21 @@ export async function testMatchingRule(
 
         case "range":
           if (typeof sourceValue === "number" && typeof targetValue === "number") {
-            const tolerance = typeof rule.ruleConfig.weight === "number" ? rule.ruleConfig.weight : 0.01;
+            const tolerance =
+              typeof rule.ruleConfig.weight === "number" ? rule.ruleConfig.weight : 0.01;
             const diff = Math.abs(sourceValue - targetValue);
             matched = diff <= tolerance;
             confidence = matched ? Math.max(0, 1.0 - diff / tolerance) : 0;
           }
           break;
 
-      case "custom":
-        // Custom logic would go here based on ruleConfig.conditions
-        if (rule.ruleConfig.conditions) {
-          matched = evaluateCustomConditions(rule.ruleConfig.conditions, sourceData, targetData);
-          confidence = matched ? 0.9 : 0;
-        }
-        break;
+        case "custom":
+          // Custom logic would go here based on ruleConfig.conditions
+          if (rule.ruleConfig.conditions) {
+            matched = evaluateCustomConditions(rule.ruleConfig.conditions, sourceData, targetData);
+            confidence = matched ? 0.9 : 0;
+          }
+          break;
       }
 
       matchDetails.push({
@@ -306,9 +320,10 @@ export async function testMatchingRule(
     }
 
     const overallConfidence = matchDetails.length > 0 ? totalConfidence / matchDetails.length : 0;
-    const matches = rule.ruleConfig.compositeOperator === "OR"
-      ? matchedFields > 0
-      : matchedFields === matchDetails.length;
+    const matches =
+      rule.ruleConfig.compositeOperator === "OR"
+        ? matchedFields > 0
+        : matchedFields === matchDetails.length;
 
     return {
       matches,
@@ -326,7 +341,9 @@ export async function testMatchingRule(
  */
 function getNestedValue(obj: Record<string, unknown>, path: string): unknown {
   return path.split(".").reduce((current, key) => {
-    return current && typeof current === "object" ? (current as Record<string, unknown>)[key] : undefined;
+    return current && typeof current === "object"
+      ? (current as Record<string, unknown>)[key]
+      : undefined;
   }, obj as unknown);
 }
 
@@ -372,7 +389,10 @@ function evaluateCustomConditions(
         break;
       case "greaterThan":
         if (typeof sourceValue === "number" && typeof conditionValue === "number") {
-          result = sourceValue > conditionValue && typeof targetValue === "number" && targetValue > conditionValue;
+          result =
+            sourceValue > conditionValue &&
+            typeof targetValue === "number" &&
+            targetValue > conditionValue;
         }
         break;
       // Add more operators as needed

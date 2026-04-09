@@ -92,9 +92,7 @@ export default function BlogPage() {
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
             Settler Blog
           </p>
-          <h1 className="text-4xl font-bold text-foreground mb-4">
-            Engineering &amp; Product
-          </h1>
+          <h1 className="text-4xl font-bold text-foreground mb-4">Engineering &amp; Product</h1>
           <p className="text-lg text-muted-foreground max-w-2xl">
             Deep dives into reconciliation infrastructure, integration patterns, audit evidence, and
             how Settler is built.
@@ -119,9 +117,7 @@ export default function BlogPage() {
               <h2 className="text-2xl font-bold text-foreground mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                 {featured.title}
               </h2>
-              <p className="text-muted-foreground mb-6 leading-relaxed">
-                {featured.description}
-              </p>
+              <p className="text-muted-foreground mb-6 leading-relaxed">{featured.description}</p>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <span className="flex items-center gap-1.5">
@@ -195,7 +191,9 @@ export default function BlogPage() {
 
         {/* Tags cloud */}
         <div className="mt-12 pt-10 border-t border-border/40 dark:border-border">
-          <p className="text-sm font-semibold text-foreground/80 dark:text-muted-foreground/60 mb-4">Topics</p>
+          <p className="text-sm font-semibold text-foreground/80 dark:text-muted-foreground/60 mb-4">
+            Topics
+          </p>
           <div className="flex flex-wrap gap-2">
             {Array.from(new Set(posts.flatMap((p) => p.tags))).map((tag) => (
               <span

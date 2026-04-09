@@ -1,12 +1,12 @@
 /**
  * Stripe API Rate Limit Handler
- * 
+ *
  * Handles Stripe API rate limits with exponential backoff.
  * Respects Stripe's rate limit headers and retries automatically.
  */
 
-import Stripe from 'stripe';
-import { getStripeClient } from '@/domain/billing/stripeService';
+import Stripe from "stripe";
+import { getStripeClient } from "@/domain/billing/stripeService";
 
 interface RateLimitInfo {
   limit: number;
@@ -18,9 +18,9 @@ interface RateLimitInfo {
  * Extract rate limit info from Stripe response headers
  */
 function extractRateLimitInfo(headers: Headers): RateLimitInfo | null {
-  const limit = headers.get('stripe-ratelimit-limit');
-  const remaining = headers.get('stripe-ratelimit-remaining');
-  const reset = headers.get('stripe-ratelimit-reset');
+  const limit = headers.get("stripe-ratelimit-limit");
+  const remaining = headers.get("stripe-ratelimit-remaining");
+  const reset = headers.get("stripe-ratelimit-reset");
 
   if (limit && remaining && reset) {
     return {
@@ -56,7 +56,7 @@ export async function safeStripeCall<T>(
 ): Promise<{ data: T; rateLimitInfo: RateLimitInfo | null }> {
   const stripe = getStripeClient();
   if (!stripe) {
-    throw new Error('Stripe is not configured (demo mode)');
+    throw new Error("Stripe is not configured (demo mode)");
   }
   let lastError: Error | null = null;
   let rateLimitInfo: RateLimitInfo | null = null;
@@ -74,15 +74,13 @@ export async function safeStripeCall<T>(
       lastError = error;
 
       // Check if it's a rate limit error
-      if (error?.type === 'StripeRateLimitError' || error?.statusCode === 429) {
+      if (error?.type === "StripeRateLimitError" || error?.statusCode === 429) {
         // Extract reset time from error if available
-        const resetTime = error?.headers?.['stripe-ratelimit-reset']
-          ? parseInt(error.headers['stripe-ratelimit-reset'], 10)
+        const resetTime = error?.headers?.["stripe-ratelimit-reset"]
+          ? parseInt(error.headers["stripe-ratelimit-reset"], 10)
           : Date.now() / 1000 + 60; // Default to 60 seconds
 
-        rateLimitInfo = extractRateLimitInfo(
-          new Headers(error.headers || {})
-        ) || {
+        rateLimitInfo = extractRateLimitInfo(new Headers(error.headers || {})) || {
           limit: 100, // Default Stripe limit
           remaining: 0,
           reset: resetTime,
@@ -100,14 +98,14 @@ export async function safeStripeCall<T>(
       }
 
       // For non-rate-limit errors, throw immediately
-      if (error?.type !== 'StripeRateLimitError' && error?.statusCode !== 429) {
+      if (error?.type !== "StripeRateLimitError" && error?.statusCode !== 429) {
         throw error;
       }
     }
   }
 
   // If we exhausted retries, throw the last error
-  throw lastError || new Error('Stripe API call failed after retries');
+  throw lastError || new Error("Stripe API call failed after retries");
 }
 
 /**
@@ -119,17 +117,18 @@ export function monitorStripeRateLimit(rateLimitInfo: RateLimitInfo | null): voi
     return;
   }
 
-  const usagePercent = ((rateLimitInfo.limit - rateLimitInfo.remaining) / rateLimitInfo.limit) * 100;
+  const usagePercent =
+    ((rateLimitInfo.limit - rateLimitInfo.remaining) / rateLimitInfo.limit) * 100;
 
   if (usagePercent >= 90) {
-    console.warn('[Stripe] Rate limit usage critical', {
+    console.warn("[Stripe] Rate limit usage critical", {
       limit: rateLimitInfo.limit,
       remaining: rateLimitInfo.remaining,
       usagePercent: usagePercent.toFixed(1),
       resetTime: new Date(rateLimitInfo.reset * 1000).toISOString(),
     });
   } else if (usagePercent >= 75) {
-    console.warn('[Stripe] Rate limit usage high', {
+    console.warn("[Stripe] Rate limit usage high", {
       limit: rateLimitInfo.limit,
       remaining: rateLimitInfo.remaining,
       usagePercent: usagePercent.toFixed(1),

@@ -5,155 +5,174 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
-import { appLogger } from '@/lib/utils/logger';
-import { withSecurity } from '@/lib/middleware/api-security';
+import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
+import { appLogger } from "@/lib/utils/logger";
+import { withSecurity } from "@/lib/middleware/api-security";
 import {
   assertNoAutonomousFinancialAction,
   buildAdvisoryPolicyMetadata,
-} from '@/lib/ai/advisory-policy';
+} from "@/lib/ai/advisory-policy";
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 export const GET = withSecurity(
-  withUniversalBillingGate(async function GET(request: NextRequest) {
-  try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+  withUniversalBillingGate(
+    async function GET(request: NextRequest) {
+      try {
+        const supabase = await createClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
 
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+        if (!user) {
+          return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
 
-    const { searchParams } = new URL(request.url);
-    const dataType = searchParams.get("type") || "receipts";
-    assertNoAutonomousFinancialAction({ requestedAction: searchParams.get("requestedAction") || undefined });
-
-    let insights: {
-      summary: string;
-      trends: Array<{ label: string; value: string; change?: string }>;
-      recommendations: string[];
-    } = {
-      summary: "",
-      trends: [],
-      recommendations: [],
-    };
-
-    if (dataType === "receipts") {
-      // Get receipt data
-      const { data: receipts } = await supabase
-        .from("receipts")
-        .select("total, merchant_name, created_at")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(50);
-
-      if (receipts && receipts.length > 0) {
-        const typedReceipts = receipts as Array<{ total: string | number; merchant_name: string | null; created_at: string }>;
-        const totalSpent = typedReceipts.reduce((sum: number, r: any) => sum + (parseFloat(String(r.total)) || 0), 0);
-        const avgSpent = totalSpent / typedReceipts.length;
-        const merchants = new Map<string, number>();
-        typedReceipts.forEach((r) => {
-          const merchant = r.merchant_name || "Unknown";
-          merchants.set(merchant, (merchants.get(merchant) || 0) + 1);
+        const { searchParams } = new URL(request.url);
+        const dataType = searchParams.get("type") || "receipts";
+        assertNoAutonomousFinancialAction({
+          requestedAction: searchParams.get("requestedAction") || undefined,
         });
-        const topMerchant = Array.from(merchants.entries()).sort((a, b) => b[1] - a[1])[0];
 
-        insights = {
-          summary: `You've processed ${typedReceipts.length} receipt${typedReceipts.length !== 1 ? "s" : ""} with a total value of $${totalSpent.toFixed(2)}. Your average receipt value is $${avgSpent.toFixed(2)}.`,
-          trends: [
-            {
-              label: "Total Processed",
-              value: String(typedReceipts.length),
-            },
-            {
-              label: "Total Value",
-              value: `$${totalSpent.toFixed(2)}`,
-            },
-            {
-              label: "Top Merchant",
-              value: topMerchant?.[0] || "N/A",
-            },
-          ],
-          recommendations: [
-            "Set up automated receipt processing with webhooks",
-            "Export receipts for accounting integration",
-            "Use receipt data for expense categorization",
-          ],
-        };
-      } else {
-        insights = {
-          summary: "You haven't processed any receipts yet. Start by uploading a receipt image or PDF.",
+        let insights: {
+          summary: string;
+          trends: Array<{ label: string; value: string; change?: string }>;
+          recommendations: string[];
+        } = {
+          summary: "",
           trends: [],
-          recommendations: [
-            "Upload your first receipt",
-            "Try the receipt parsing API",
-            "Check out receipt processing examples",
-          ],
+          recommendations: [],
         };
-      }
-    } else if (dataType === "usage") {
-      // Get usage data
-      const { data: usage } = await supabase
-        .from("usage_events")
-        .select("event_type, quantity, created_at")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(100);
 
-      if (usage && usage.length > 0) {
-        const typedUsage = usage as Array<{ event_type: string | null; quantity: number | null; created_at: string }>;
-        const usageByType = new Map<string, number>();
-        typedUsage.forEach((u) => {
-          const type = u.event_type || "unknown";
-          usageByType.set(type, (usageByType.get(type) || 0) + (u.quantity || 0));
+        if (dataType === "receipts") {
+          // Get receipt data
+          const { data: receipts } = await supabase
+            .from("receipts")
+            .select("total, merchant_name, created_at")
+            .eq("user_id", user.id)
+            .order("created_at", { ascending: false })
+            .limit(50);
+
+          if (receipts && receipts.length > 0) {
+            const typedReceipts = receipts as Array<{
+              total: string | number;
+              merchant_name: string | null;
+              created_at: string;
+            }>;
+            const totalSpent = typedReceipts.reduce(
+              (sum: number, r: any) => sum + (parseFloat(String(r.total)) || 0),
+              0
+            );
+            const avgSpent = totalSpent / typedReceipts.length;
+            const merchants = new Map<string, number>();
+            typedReceipts.forEach((r) => {
+              const merchant = r.merchant_name || "Unknown";
+              merchants.set(merchant, (merchants.get(merchant) || 0) + 1);
+            });
+            const topMerchant = Array.from(merchants.entries()).sort((a, b) => b[1] - a[1])[0];
+
+            insights = {
+              summary: `You've processed ${typedReceipts.length} receipt${typedReceipts.length !== 1 ? "s" : ""} with a total value of $${totalSpent.toFixed(2)}. Your average receipt value is $${avgSpent.toFixed(2)}.`,
+              trends: [
+                {
+                  label: "Total Processed",
+                  value: String(typedReceipts.length),
+                },
+                {
+                  label: "Total Value",
+                  value: `$${totalSpent.toFixed(2)}`,
+                },
+                {
+                  label: "Top Merchant",
+                  value: topMerchant?.[0] || "N/A",
+                },
+              ],
+              recommendations: [
+                "Set up automated receipt processing with webhooks",
+                "Export receipts for accounting integration",
+                "Use receipt data for expense categorization",
+              ],
+            };
+          } else {
+            insights = {
+              summary:
+                "You haven't processed any receipts yet. Start by uploading a receipt image or PDF.",
+              trends: [],
+              recommendations: [
+                "Upload your first receipt",
+                "Try the receipt parsing API",
+                "Check out receipt processing examples",
+              ],
+            };
+          }
+        } else if (dataType === "usage") {
+          // Get usage data
+          const { data: usage } = await supabase
+            .from("usage_events")
+            .select("event_type, quantity, created_at")
+            .eq("user_id", user.id)
+            .order("created_at", { ascending: false })
+            .limit(100);
+
+          if (usage && usage.length > 0) {
+            const typedUsage = usage as Array<{
+              event_type: string | null;
+              quantity: number | null;
+              created_at: string;
+            }>;
+            const usageByType = new Map<string, number>();
+            typedUsage.forEach((u) => {
+              const type = u.event_type || "unknown";
+              usageByType.set(type, (usageByType.get(type) || 0) + (u.quantity || 0));
+            });
+
+            const totalUsage = Array.from(usageByType.values()).reduce(
+              (sum: number, v: any) => sum + v,
+              0
+            );
+
+            insights = {
+              summary: `You've made ${totalUsage} API calls across ${usageByType.size} different service${usageByType.size !== 1 ? "s" : ""}. Your most used service is ${Array.from(usageByType.entries()).sort((a, b) => b[1] - a[1])[0]?.[0] || "N/A"}.`,
+              trends: Array.from(usageByType.entries())
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5)
+                .map(([type, count]) => ({
+                  label: type.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
+                  value: String(count),
+                })),
+              recommendations: [
+                "Set up usage alerts to monitor your API consumption",
+                "Review your usage patterns to optimize costs",
+                "Consider upgrading if you're approaching limits",
+              ],
+            };
+          }
+        }
+
+        const advisoryPolicy = buildAdvisoryPolicyMetadata({
+          dataType,
+          userId: user.id,
+          route: "data-insights",
         });
 
-        const totalUsage = Array.from(usageByType.values()).reduce((sum: number, v: any) => sum + v, 0);
-
-        insights = {
-          summary: `You've made ${totalUsage} API calls across ${usageByType.size} different service${usageByType.size !== 1 ? "s" : ""}. Your most used service is ${Array.from(usageByType.entries()).sort((a, b) => b[1] - a[1])[0]?.[0] || "N/A"}.`,
-          trends: Array.from(usageByType.entries())
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 5)
-            .map(([type, count]) => ({
-              label: type.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
-              value: String(count),
-            })),
-          recommendations: [
-            "Set up usage alerts to monitor your API consumption",
-            "Review your usage patterns to optimize costs",
-            "Consider upgrading if you're approaching limits",
-          ],
-        };
-      }
-    }
-
-    const advisoryPolicy = buildAdvisoryPolicyMetadata({
-      dataType,
-      userId: user.id,
-      route: "data-insights",
-    });
-
-    return NextResponse.json({
-      ...insights,
-      advisoryPolicy,
-    });
-   
+        return NextResponse.json({
+          ...insights,
+          advisoryPolicy,
+        });
       } catch (error) {
-    appLogger.error("AI data insights error", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Failed to generate insights',
-        message: 'Please try again later or contact support if the issue persists',
-      },
-      { status: 500 }
-    );
-  }
-}, { feature: 'GET API' }),
+        appLogger.error("AI data insights error", error);
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Failed to generate insights",
+            message: "Please try again later or contact support if the issue persists",
+          },
+          { status: 500 }
+        );
+      }
+    },
+    { feature: "GET API" }
+  ),
   { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
 );

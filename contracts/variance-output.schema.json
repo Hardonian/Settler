@@ -24,12 +24,7 @@
           "variance_id": { "type": "string" },
           "variance_type": {
             "type": "string",
-            "enum": [
-              "missing_left",
-              "missing_right",
-              "amount_delta",
-              "attribute_mismatch"
-            ]
+            "enum": ["missing_left", "missing_right", "amount_delta", "attribute_mismatch"]
           },
           "severity": { "type": "string", "enum": ["info", "warning", "critical"] },
           "left_record_id": { "type": ["string", "null"] },

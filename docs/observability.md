@@ -5,19 +5,19 @@ Complete observability, analytics, error reporting, and monitoring infrastructur
 ## Quick Start
 
 ```typescript
-import { analytics, logger, telemetry } from '@/lib/observability';
+import { analytics, logger, telemetry } from "@/lib/observability";
 
 // Track page view
-analytics.trackPageView('/dashboard');
+analytics.trackPageView("/dashboard");
 
 // Track event
-analytics.trackEvent('button_click', { button_name: 'Sign Up' });
+analytics.trackEvent("button_click", { button_name: "Sign Up" });
 
 // Log message
-logger.info('User logged in', { userId: '123' });
+logger.info("User logged in", { userId: "123" });
 
 // Track CTA
-telemetry.trackCTAClick('Sign Up', { location: 'header' });
+telemetry.trackCTAClick("Sign Up", { location: "header" });
 ```
 
 ## Features

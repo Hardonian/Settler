@@ -17,20 +17,20 @@ import {
   ReconciliationDashboard,
   TransactionTable,
   ExceptionTable,
-  MetricCard
-} from '@settler/react-settler';
+  MetricCard,
+} from "@settler/react-settler";
 
 function MyDashboard() {
   const transactions = [
     {
-      id: 'tx-1',
-      provider: 'stripe',
-      providerTransactionId: 'ch_123',
-      amount: { value: 100.00, currency: 'USD' },
-      currency: 'USD',
-      date: '2024-01-01T00:00:00Z',
-      status: 'succeeded'
-    }
+      id: "tx-1",
+      provider: "stripe",
+      providerTransactionId: "ch_123",
+      amount: { value: 100.0, currency: "USD" },
+      currency: "USD",
+      date: "2024-01-01T00:00:00Z",
+      status: "succeeded",
+    },
   ];
 
   return (
@@ -45,22 +45,13 @@ function MyDashboard() {
 ### 2. Define Rules
 
 ```tsx
-import {
-  ReconciliationDashboard,
-  RuleSet,
-  MatchRule
-} from '@settler/react-settler';
+import { ReconciliationDashboard, RuleSet, MatchRule } from "@settler/react-settler";
 
 function MyRules() {
   return (
     <ReconciliationDashboard>
       <RuleSet id="rules-1" name="Payment Matching">
-        <MatchRule
-          id="rule-1"
-          name="Exact Amount Match"
-          field="amount"
-          type="exact"
-        />
+        <MatchRule id="rule-1" name="Exact Amount Match" field="amount" type="exact" />
         <MatchRule
           id="rule-2"
           name="Date Range Match"
@@ -77,7 +68,7 @@ function MyRules() {
 ### 3. Compile to JSON
 
 ```tsx
-import { compileToJSON } from '@settler/react-settler';
+import { compileToJSON } from "@settler/react-settler";
 
 const workflow = (
   <ReconciliationDashboard>
@@ -94,6 +85,7 @@ console.log(json);
 ## Component Reference
 
 ### ReconciliationDashboard
+
 Main wrapper component.
 
 ```tsx
@@ -103,6 +95,7 @@ Main wrapper component.
 ```
 
 ### TransactionTable
+
 Display transactions.
 
 ```tsx
@@ -115,6 +108,7 @@ Display transactions.
 ```
 
 ### ExceptionTable
+
 Display exceptions.
 
 ```tsx
@@ -127,32 +121,25 @@ Display exceptions.
 ```
 
 ### MetricCard
+
 Display metrics.
 
 ```tsx
-<MetricCard
-  title="Match Rate"
-  value="95%"
-  subtitle="19 of 20 matched"
-  trend="up"
-/>
+<MetricCard title="Match Rate" value="95%" subtitle="19 of 20 matched" trend="up" />
 ```
 
 ### RuleSet
+
 Container for rules.
 
 ```tsx
-<RuleSet
-  id="rules-1"
-  name="My Rules"
-  priority="exact-first"
-  conflictResolution="manual-review"
->
+<RuleSet id="rules-1" name="My Rules" priority="exact-first" conflictResolution="manual-review">
   {children}
 </RuleSet>
 ```
 
 ### MatchRule
+
 Define a matching rule.
 
 ```tsx
@@ -187,6 +174,7 @@ Define a matching rule.
 ## Examples
 
 See `examples/` directory:
+
 - `basic-dashboard.tsx` - Simple dashboard
 - `rule-definition.tsx` - Rule definitions
 - `config-compilation.tsx` - Config compilation

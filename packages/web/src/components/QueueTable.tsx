@@ -75,7 +75,7 @@ const QueueTable: React.FC<QueueTableProps> = ({ items }) => {
                   </span>
                 </td>
                 <td className="px-6 py-4 text-sm">
-                  <Link 
+                  <Link
                     href={`/reconcile/${row.id}`}
                     className="text-teal-500 hover:text-teal-400 font-medium opacity-0 group-hover:opacity-100 transition-opacity"
                   >

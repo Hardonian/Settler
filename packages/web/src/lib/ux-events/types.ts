@@ -1,6 +1,6 @@
 /**
  * UX Event Types
- * 
+ *
  * Typed events for tracking user interactions and flow progress.
  * No PII, no secrets - only interaction patterns.
  */
@@ -23,7 +23,7 @@ export interface UXEvent {
  * Step viewed event
  */
 export interface StepViewedEvent extends UXEvent {
-  type: 'step_viewed';
+  type: "step_viewed";
   /** Step identifier */
   stepId: string;
   /** Step name/title */
@@ -36,7 +36,7 @@ export interface StepViewedEvent extends UXEvent {
  * Step completed event
  */
 export interface StepCompletedEvent extends UXEvent {
-  type: 'step_completed';
+  type: "step_completed";
   /** Step identifier */
   stepId: string;
   /** Step name/title */
@@ -51,7 +51,7 @@ export interface StepCompletedEvent extends UXEvent {
  * Flow started event
  */
 export interface FlowStartedEvent extends UXEvent {
-  type: 'flow_started';
+  type: "flow_started";
   /** Flow identifier */
   flowId: string;
   /** Flow name */
@@ -62,7 +62,7 @@ export interface FlowStartedEvent extends UXEvent {
  * Flow completed event
  */
 export interface FlowCompletedEvent extends UXEvent {
-  type: 'flow_completed';
+  type: "flow_completed";
   /** Flow identifier */
   flowId: string;
   /** Flow name */
@@ -79,7 +79,7 @@ export interface FlowCompletedEvent extends UXEvent {
  * Flow abandoned event
  */
 export interface FlowAbandonedEvent extends UXEvent {
-  type: 'flow_abandoned';
+  type: "flow_abandoned";
   /** Flow identifier */
   flowId: string;
   /** Flow name */
@@ -94,7 +94,7 @@ export interface FlowAbandonedEvent extends UXEvent {
  * Error occurred event
  */
 export interface ErrorOccurredEvent extends UXEvent {
-  type: 'error_occurred';
+  type: "error_occurred";
   /** Error message (sanitized, no PII) */
   errorMessage: string;
   /** Error type/code */
@@ -111,7 +111,7 @@ export interface ErrorOccurredEvent extends UXEvent {
  * Retry attempted event
  */
 export interface RetryAttemptedEvent extends UXEvent {
-  type: 'retry_attempted';
+  type: "retry_attempted";
   /** Flow identifier */
   flowId: string;
   /** Step identifier */
@@ -124,13 +124,13 @@ export interface RetryAttemptedEvent extends UXEvent {
  * Success feedback shown event
  */
 export interface SuccessFeedbackShownEvent extends UXEvent {
-  type: 'success_feedback_shown';
+  type: "success_feedback_shown";
   /** Flow identifier */
   flowId?: string;
   /** Step identifier */
   stepId?: string;
   /** Feedback type */
-  feedbackType: 'toast' | 'badge' | 'achievement';
+  feedbackType: "toast" | "badge" | "achievement";
 }
 
 /**
@@ -153,7 +153,7 @@ export interface UXEventMetadata {
   /** User agent (sanitized) */
   userAgent?: string;
   /** Screen size category */
-  screenSize?: 'mobile' | 'tablet' | 'desktop';
+  screenSize?: "mobile" | "tablet" | "desktop";
   /** Reduced motion preference */
   reducedMotion?: boolean;
 }

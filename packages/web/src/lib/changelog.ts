@@ -1,8 +1,8 @@
-import fs from 'fs';
-import path from 'path';
-import matter from 'gray-matter';
+import fs from "fs";
+import path from "path";
+import matter from "gray-matter";
 
-const contentDirectory = path.join(process.cwd(), 'content/changelog');
+const contentDirectory = path.join(process.cwd(), "content/changelog");
 
 export interface ChangelogPost {
   slug: string;
@@ -22,11 +22,11 @@ export function getAllChangelogPosts(): ChangelogPost[] {
 
   const fileNames = fs.readdirSync(contentDirectory);
   const allPostsData = fileNames
-    .filter((fileName: any) => fileName.endsWith('.mdx'))
+    .filter((fileName: any) => fileName.endsWith(".mdx"))
     .map((fileName) => {
-      const slug = fileName.replace(/\.mdx$/, '');
+      const slug = fileName.replace(/\.mdx$/, "");
       const fullPath = path.join(contentDirectory, fileName);
-      const fileContents = fs.readFileSync(fullPath, 'utf8');
+      const fileContents = fs.readFileSync(fullPath, "utf8");
       const { data, content } = matter(fileContents);
 
       return {
@@ -49,7 +49,7 @@ export function getAllChangelogPosts(): ChangelogPost[] {
 export function getChangelogPost(slug: string): ChangelogPost | null {
   try {
     const fullPath = path.join(contentDirectory, `${slug}.mdx`);
-    const fileContents = fs.readFileSync(fullPath, 'utf8');
+    const fileContents = fs.readFileSync(fullPath, "utf8");
     const { data, content } = matter(fileContents);
 
     return {

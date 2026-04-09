@@ -1,14 +1,14 @@
 #!/usr/bin/env tsx
 /**
  * Apply All Migrations to Supabase Backend
- * 
+ *
  * This script applies all migrations in order and verifies they were successful.
  */
 
-import { Client } from 'pg';
-import * as fs from 'fs';
-import * as path from 'path';
-import { fileURLToPath } from 'url';
+import { Client } from "pg";
+import * as fs from "fs";
+import * as path from "path";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,19 +21,19 @@ function getDatabaseUrl(): string {
   }
 
   // Try .env.connection file
-  const envConnectionPath = path.join(process.cwd(), '.env.connection');
+  const envConnectionPath = path.join(process.cwd(), ".env.connection");
   if (fs.existsSync(envConnectionPath)) {
-    const content = fs.readFileSync(envConnectionPath, 'utf-8');
+    const content = fs.readFileSync(envConnectionPath, "utf-8");
     const match = content.match(/DATABASE_URL=(.+)/);
     if (match && match[1]) {
       let url = match[1].trim();
       // Remove brackets from password if present
-      url = url.replace(/\[([^\]]+)\]/g, '$1');
+      url = url.replace(/\[([^\]]+)\]/g, "$1");
       return url;
     }
   }
 
-  throw new Error('DATABASE_URL not found. Set it in environment or .env.connection file');
+  throw new Error("DATABASE_URL not found. Set it in environment or .env.connection file");
 }
 
 interface MigrationFile {
@@ -43,10 +43,11 @@ interface MigrationFile {
 }
 
 async function getMigrationFiles(): Promise<MigrationFile[]> {
-  const migrationsDir = path.join(process.cwd(), 'supabase/migrations');
-  const files = fs.readdirSync(migrationsDir)
-    .filter(f => f.endsWith('.sql') && !f.startsWith('_') && f !== 'rollback_template.sql')
-    .map(f => ({
+  const migrationsDir = path.join(process.cwd(), "supabase/migrations");
+  const files = fs
+    .readdirSync(migrationsDir)
+    .filter((f) => f.endsWith(".sql") && !f.startsWith("_") && f !== "rollback_template.sql")
+    .map((f) => ({
       name: f,
       path: path.join(migrationsDir, f),
       timestamp: getTimestampFromFilename(f),
@@ -95,120 +96,128 @@ async function getAppliedMigrations(client: Client): Promise<Set<string>> {
       return new Set();
     }
 
-    const result = await client.query('SELECT version FROM public.schema_migrations ORDER BY version');
-    return new Set(result.rows.map(r => r.version));
+    const result = await client.query(
+      "SELECT version FROM public.schema_migrations ORDER BY version"
+    );
+    return new Set(result.rows.map((r) => r.version));
   } catch (error) {
-    console.error('Error checking applied migrations:', error);
+    console.error("Error checking applied migrations:", error);
     return new Set();
   }
 }
 
 async function markMigrationApplied(client: Client, version: string): Promise<void> {
   await client.query(
-    'INSERT INTO public.schema_migrations (version) VALUES ($1) ON CONFLICT (version) DO NOTHING',
+    "INSERT INTO public.schema_migrations (version) VALUES ($1) ON CONFLICT (version) DO NOTHING",
     [version]
   );
 }
 
 async function applyMigration(client: Client, migration: MigrationFile): Promise<boolean> {
-  const content = fs.readFileSync(migration.path, 'utf-8');
-  
+  const content = fs.readFileSync(migration.path, "utf-8");
+
   console.log(`\n📄 Applying: ${migration.name}`);
-  console.log('─'.repeat(60));
+  console.log("─".repeat(60));
 
   try {
     // Execute migration in a transaction
-    await client.query('BEGIN');
-    
+    await client.query("BEGIN");
+
     // Execute the migration SQL
     await client.query(content);
-    
+
     // Mark as applied
     await markMigrationApplied(client, migration.name);
-    
-    await client.query('COMMIT');
-    
+
+    await client.query("COMMIT");
+
     console.log(`✅ Successfully applied: ${migration.name}`);
     return true;
   } catch (error) {
-    await client.query('ROLLBACK');
+    await client.query("ROLLBACK");
     console.error(`❌ Failed to apply ${migration.name}:`, error);
-    
+
     if (error instanceof Error) {
-      console.error('Error message:', error.message);
-      if (error.message.includes('already exists')) {
-        console.log('⚠️  Migration may have already been applied. Marking as applied...');
+      console.error("Error message:", error.message);
+      if (error.message.includes("already exists")) {
+        console.log("⚠️  Migration may have already been applied. Marking as applied...");
         try {
           await markMigrationApplied(client, migration.name);
           return true;
         } catch (markError) {
-          console.error('Failed to mark migration:', markError);
+          console.error("Failed to mark migration:", markError);
         }
       }
     }
-    
+
     return false;
   }
 }
 
 async function verifyDatabaseState(client: Client): Promise<void> {
-  console.log('\n' + '='.repeat(60));
-  console.log('🔍 Verifying Database State');
-  console.log('='.repeat(60));
+  console.log("\n" + "=".repeat(60));
+  console.log("🔍 Verifying Database State");
+  console.log("=".repeat(60));
 
   // Check critical tables
   const criticalTables = [
-    'billing_accounts',
-    'subscriptions',
-    'add_ons',
-    'add_on_purchases',
-    'recon_jobs',
-    'receipt_uploads',
-    'receipts',
-    'feature_flags',
-    'usage_events',
-    'tenants',
+    "billing_accounts",
+    "subscriptions",
+    "add_ons",
+    "add_on_purchases",
+    "recon_jobs",
+    "receipt_uploads",
+    "receipts",
+    "feature_flags",
+    "usage_events",
+    "tenants",
   ];
 
-  console.log('\n📊 Tables:');
+  console.log("\n📊 Tables:");
   for (const table of criticalTables) {
-    const result = await client.query(`
+    const result = await client.query(
+      `
       SELECT EXISTS (
         SELECT FROM information_schema.tables 
         WHERE table_schema = 'public' 
         AND table_name = $1
       );
-    `, [table]);
-    
+    `,
+      [table]
+    );
+
     const exists = result.rows[0].exists;
-    console.log(`  ${exists ? '✅' : '❌'} ${table}`);
+    console.log(`  ${exists ? "✅" : "❌"} ${table}`);
   }
 
   // Check critical functions
   const criticalFunctions = [
-    'has_active_subscription',
-    'has_plan_or_higher',
-    'has_add_on_purchase',
-    'get_user_billing_account_id',
-    'get_user_org_ids',
+    "has_active_subscription",
+    "has_plan_or_higher",
+    "has_add_on_purchase",
+    "get_user_billing_account_id",
+    "get_user_org_ids",
   ];
 
-  console.log('\n⚙️  Functions:');
+  console.log("\n⚙️  Functions:");
   for (const func of criticalFunctions) {
-    const result = await client.query(`
+    const result = await client.query(
+      `
       SELECT EXISTS (
         SELECT FROM information_schema.routines 
         WHERE routine_schema = 'public' 
         AND routine_name = $1
       );
-    `, [func]);
-    
+    `,
+      [func]
+    );
+
     const exists = result.rows[0].exists;
-    console.log(`  ${exists ? '✅' : '❌'} ${func}()`);
+    console.log(`  ${exists ? "✅" : "❌"} ${func}()`);
   }
 
   // Check RLS policies
-  console.log('\n🔒 RLS Policies:');
+  console.log("\n🔒 RLS Policies:");
   const rlsResult = await client.query(`
     SELECT t.tablename, COUNT(p.policyname) as policy_count
     FROM pg_tables t
@@ -221,11 +230,11 @@ async function verifyDatabaseState(client: Client): Promise<void> {
 
   for (const row of rlsResult.rows) {
     const count = parseInt(row.policy_count, 10);
-    console.log(`  ${count > 0 ? '✅' : '❌'} ${row.tablename}: ${count} policies`);
+    console.log(`  ${count > 0 ? "✅" : "❌"} ${row.tablename}: ${count} policies`);
   }
 
   // Check triggers
-  console.log('\n🎯 Triggers:');
+  console.log("\n🎯 Triggers:");
   const triggerResult = await client.query(`
     SELECT trigger_name, event_object_table
     FROM information_schema.triggers
@@ -239,17 +248,17 @@ async function verifyDatabaseState(client: Client): Promise<void> {
       console.log(`  ✅ ${row.trigger_name} on ${row.event_object_table}`);
     }
   } else {
-    console.log('  ⚠️  No subscription enforcement triggers found');
+    console.log("  ⚠️  No subscription enforcement triggers found");
   }
 }
 
 async function main() {
-  console.log('🚀 Starting Migration Application Process');
-  console.log('='.repeat(60));
+  console.log("🚀 Starting Migration Application Process");
+  console.log("=".repeat(60));
 
   const databaseUrl = getDatabaseUrl();
   console.log(`\n📡 Connecting to database...`);
-  console.log(`   URL: ${databaseUrl.replace(/:[^:@]+@/, ':****@')}`);
+  console.log(`   URL: ${databaseUrl.replace(/:[^:@]+@/, ":****@")}`);
 
   const client = new Client({
     connectionString: databaseUrl,
@@ -257,7 +266,7 @@ async function main() {
 
   try {
     await client.connect();
-    console.log('✅ Connected to database\n');
+    console.log("✅ Connected to database\n");
 
     // Get migration files
     const migrations = await getMigrationFiles();
@@ -268,10 +277,10 @@ async function main() {
     console.log(`📝 Found ${applied.size} already applied migrations\n`);
 
     // Filter out already applied migrations
-    const pending = migrations.filter(m => !applied.has(m.name));
+    const pending = migrations.filter((m) => !applied.has(m.name));
 
     if (pending.length === 0) {
-      console.log('✅ All migrations are already applied!\n');
+      console.log("✅ All migrations are already applied!\n");
     } else {
       console.log(`🔄 Applying ${pending.length} pending migrations...\n`);
 
@@ -288,9 +297,9 @@ async function main() {
         }
       }
 
-      console.log('\n' + '='.repeat(60));
-      console.log('📊 Migration Summary');
-      console.log('='.repeat(60));
+      console.log("\n" + "=".repeat(60));
+      console.log("📊 Migration Summary");
+      console.log("=".repeat(60));
       console.log(`✅ Successful: ${successCount}`);
       console.log(`❌ Failed: ${failCount}`);
       console.log(`📋 Total: ${pending.length}`);
@@ -299,12 +308,11 @@ async function main() {
     // Verify database state
     await verifyDatabaseState(client);
 
-    console.log('\n' + '='.repeat(60));
-    console.log('✅ Migration process completed!');
-    console.log('='.repeat(60));
-
+    console.log("\n" + "=".repeat(60));
+    console.log("✅ Migration process completed!");
+    console.log("=".repeat(60));
   } catch (error) {
-    console.error('\n❌ Fatal error:', error);
+    console.error("\n❌ Fatal error:", error);
     process.exit(1);
   } finally {
     await client.end();

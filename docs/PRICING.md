@@ -22,6 +22,7 @@ Settler uses a **usage-based pricing model** with a simple base fee plus per-tra
 - **Use Case:** Testing, small projects, evaluation
 
 **Limitations:**
+
 - 100 transactions/month included
 - Basic features only
 - Community support
@@ -36,6 +37,7 @@ Settler uses a **usage-based pricing model** with a simple base fee plus per-tra
 **Example:** 2,500 transactions/month = $29 + (1,500 × $0.01) = $44/month
 
 **Features:**
+
 - All Free tier features
 - Priority support
 - API access
@@ -51,6 +53,7 @@ Settler uses a **usage-based pricing model** with a simple base fee plus per-tra
 **Example:** 25,000 transactions/month = $99 + (15,000 × $0.01) = $249/month
 
 **Features:**
+
 - All Starter tier features
 - Advanced analytics
 - Custom integrations
@@ -64,6 +67,7 @@ Settler uses a **usage-based pricing model** with a simple base fee plus per-tra
 - **Use Case:** Large enterprises, high-volume processors
 
 **Features:**
+
 - All Growth tier features
 - Dedicated support
 - Custom SLA
@@ -82,20 +86,24 @@ Monthly Cost = Base Price + (Overage Transactions × $0.01)
 ```
 
 Where:
+
 - **Overage Transactions** = Max(0, Total Transactions - Included Transactions)
 
 ### Examples
 
 **Free Tier:**
+
 - 50 transactions: $0 + (0 × $0.01) = **$0**
 - 150 transactions: $0 + (50 × $0.01) = **$0.50**
 
 **Starter Tier:**
+
 - 500 transactions: $29 + (0 × $0.01) = **$29**
 - 2,500 transactions: $29 + (1,500 × $0.01) = **$44**
 - 5,000 transactions: $29 + (4,000 × $0.01) = **$69**
 
 **Growth Tier:**
+
 - 5,000 transactions: $99 + (0 × $0.01) = **$99**
 - 25,000 transactions: $99 + (15,000 × $0.01) = **$249**
 - 50,000 transactions: $99 + (40,000 × $0.01) = **$499**
@@ -109,6 +117,7 @@ Where:
 **Location:** `config/pricing-simple.ts`
 
 **Key Functions:**
+
 - `calculateMonthlyCost(planId, transactionCount)` - Calculate monthly cost
 - `exceedsPlanLimit(planId, transactionCount)` - Check if limit exceeded
 - `getPlan(planId)` - Get plan details
@@ -121,6 +130,7 @@ Where:
 4. **Limits:** Enforced at API level, not just billing
 
 **Code References:**
+
 - Subscription access: `packages/web/src/lib/subscription-access.ts`
 - Billing service: `packages/web/src/domain/billing/stripeService.ts`
 - Usage tracking: `usage_events` table
@@ -139,22 +149,26 @@ Where:
 ### Feature Limits
 
 **Free Tier:**
+
 - Basic reconciliation only
 - Limited API calls (100/day)
 - Community support
 
 **Starter Tier:**
+
 - Full reconciliation features
 - 1,000 API calls/day
 - Email support
 
 **Growth Tier:**
+
 - All features
 - 10,000 API calls/day
 - Priority support
 - SLA guarantee
 
 **Enterprise Tier:**
+
 - All features
 - Unlimited API calls
 - Dedicated support
@@ -185,6 +199,7 @@ Where:
 5. **Receipts:** Automatic receipt emails
 
 **Implementation:**
+
 - Stripe integration: `packages/web/src/domain/billing/stripeService.ts`
 - Webhook handler: `packages/web/src/app/api/stripe/webhook/route.ts`
 - Customer portal: `/api/stripe/portal`

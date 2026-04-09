@@ -3,10 +3,8 @@
  * Optimizations for reconciliation components
  */
 
-import { useMemo, useState, useEffect } from 'react';
-import {
-  ReconciliationTransaction
-} from '@settler/protocol';
+import { useMemo, useState, useEffect } from "react";
+import { ReconciliationTransaction } from "@settler/protocol";
 
 /**
  * Memoized filter function
@@ -22,7 +20,7 @@ export function useFilteredTransactions(
   }
 ) {
   return useMemo(() => {
-    return transactions.filter(tx => {
+    return transactions.filter((tx) => {
       // Provider filter
       if (filters.provider && filters.provider.length > 0) {
         if (!filters.provider.includes(tx.provider)) {
@@ -66,8 +64,11 @@ export function useFilteredTransactions(
           tx.providerTransactionId,
           tx.referenceId,
           tx.provider,
-          tx.status
-        ].filter(Boolean).join(' ').toLowerCase();
+          tx.status,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
 
         if (!searchableText.includes(searchLower)) {
           return false;
@@ -85,7 +86,7 @@ export function useFilteredTransactions(
 export function useSortedTransactions(
   transactions: ReconciliationTransaction[],
   sortBy?: keyof ReconciliationTransaction,
-  sortOrder: 'asc' | 'desc' = 'asc'
+  sortOrder: "asc" | "desc" = "asc"
 ) {
   return useMemo(() => {
     if (!sortBy) {
@@ -99,14 +100,12 @@ export function useSortedTransactions(
       if (aVal === undefined || aVal === null) return 1;
       if (bVal === undefined || bVal === null) return -1;
 
-      if (typeof aVal === 'string' && typeof bVal === 'string') {
-        return sortOrder === 'asc'
-          ? aVal.localeCompare(bVal)
-          : bVal.localeCompare(aVal);
+      if (typeof aVal === "string" && typeof bVal === "string") {
+        return sortOrder === "asc" ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
       }
 
-      if (typeof aVal === 'number' && typeof bVal === 'number') {
-        return sortOrder === 'asc' ? aVal - bVal : bVal - aVal;
+      if (typeof aVal === "number" && typeof bVal === "number") {
+        return sortOrder === "asc" ? aVal - bVal : bVal - aVal;
       }
 
       return 0;

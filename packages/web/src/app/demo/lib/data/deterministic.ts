@@ -1,6 +1,6 @@
 /**
  * Deterministic Utilities
- * 
+ *
  * Provides deterministic hashing and ID generation for demo data.
  * All functions are pure and produce the same output for the same input.
  */

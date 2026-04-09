@@ -1,6 +1,6 @@
 /**
  * Supabase Client Configuration
- * 
+ *
  * Configured for:
  * - PostgreSQL database (main data)
  * - Realtime subscriptions (stream processing)
@@ -8,19 +8,19 @@
  * - Edge Functions (serverless compute)
  */
 
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { config } from '../../config';
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { config } from "../../config";
 
 // Supabase configuration
 const supabaseUrl = process.env.SUPABASE_URL || config.database.host;
-const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
-type PRetryModule = typeof import('p-retry');
+type PRetryModule = typeof import("p-retry");
 let pRetryModulePromise: Promise<PRetryModule> | null = null;
 
 const getPRetryModule = (): Promise<PRetryModule> => {
   if (!pRetryModulePromise) {
-    pRetryModulePromise = import('p-retry');
+    pRetryModulePromise = import("p-retry");
   }
   return pRetryModulePromise;
 };
@@ -29,15 +29,17 @@ const getPRetryModule = (): Promise<PRetryModule> => {
 function createSupabaseClient(): SupabaseClient {
   if (!supabaseUrl || !supabaseKey) {
     // In production/preview, throw error
-    if (config.nodeEnv === 'production' || config.nodeEnv === 'preview') {
-      throw new Error('Missing Supabase configuration. Set SUPABASE_URL and SUPABASE_ANON_KEY environment variables.');
+    if (config.nodeEnv === "production" || config.nodeEnv === "preview") {
+      throw new Error(
+        "Missing Supabase configuration. Set SUPABASE_URL and SUPABASE_ANON_KEY environment variables."
+      );
     }
     // In development, create a mock client that will fail gracefully
     // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
-     
-    console.warn('⚠️  Supabase not configured. Some features may not work.');
-    return createClient('https://placeholder.supabase.co', 'placeholder-key', {
-      db: { schema: 'public' },
+
+    console.warn("⚠️  Supabase not configured. Some features may not work.");
+    return createClient("https://placeholder.supabase.co", "placeholder-key", {
+      db: { schema: "public" },
       auth: { persistSession: false, autoRefreshToken: false },
     });
   }
@@ -48,11 +50,11 @@ function createSupabaseClient(): SupabaseClient {
       persistSession: false, // Server-side, no session persistence needed
     },
     db: {
-      schema: 'public',
+      schema: "public",
     },
     global: {
       headers: {
-        'x-client-info': 'settler-api@1.0.0',
+        "x-client-info": "settler-api@1.0.0",
       },
     },
   });
@@ -81,14 +83,14 @@ export const supabaseRealtime: SupabaseClient = (() => {
   if (!supabaseRealtimeClient) {
     if (!supabaseUrl || !supabaseKey) {
       // Return mock client in development if not configured
-      if (config.nodeEnv !== 'production' && config.nodeEnv !== 'preview') {
-        return createClient('https://placeholder.supabase.co', 'placeholder-key', {
-          db: { schema: 'public' },
+      if (config.nodeEnv !== "production" && config.nodeEnv !== "preview") {
+        return createClient("https://placeholder.supabase.co", "placeholder-key", {
+          db: { schema: "public" },
           realtime: { params: { eventsPerSecond: 10 } },
           auth: { persistSession: false, autoRefreshToken: false },
         });
       }
-      throw new Error('Missing Supabase configuration for Realtime client.');
+      throw new Error("Missing Supabase configuration for Realtime client.");
     }
     supabaseRealtimeClient = createClient(supabaseUrl, supabaseKey, {
       realtime: {
@@ -116,12 +118,12 @@ export async function checkSupabaseHealth(): Promise<{
   const start = Date.now();
   try {
     // Simple health check - try to query a system table
-    const { error } = await supabase.from('_health_check').select('1').limit(1).single();
-    
+    const { error } = await supabase.from("_health_check").select("1").limit(1).single();
+
     // If table doesn't exist, try a simple RPC call
-    if (error && error.code === 'PGRST116') {
+    if (error && error.code === "PGRST116") {
       // Table doesn't exist, try a simple query
-      const { error: rpcError } = await supabase.rpc('version');
+      const { error: rpcError } = await supabase.rpc("version");
       if (rpcError) {
         return {
           healthy: false,
@@ -129,7 +131,7 @@ export async function checkSupabaseHealth(): Promise<{
           error: rpcError.message,
         };
       }
-    } else if (error && error.code !== 'PGRST116') {
+    } else if (error && error.code !== "PGRST116") {
       return {
         healthy: false,
         latency: Date.now() - start,
@@ -145,7 +147,7 @@ export async function checkSupabaseHealth(): Promise<{
     return {
       healthy: false,
       latency: Date.now() - start,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : "Unknown error",
     };
   }
 }
@@ -153,17 +155,14 @@ export async function checkSupabaseHealth(): Promise<{
 /**
  * Helper function to execute SQL queries with retry logic
  */
-export async function executeSQL<T = unknown>(
-  query: string,
-  params?: unknown[]
-): Promise<T[]> {
+export async function executeSQL<T = unknown>(query: string, params?: unknown[]): Promise<T[]> {
   const pRetryModule = await getPRetryModule();
   const pRetry = pRetryModule.default;
   const { AbortError } = pRetryModule;
 
   return pRetry(
     async () => {
-      const { data, error } = await supabase.rpc('execute_sql', {
+      const { data, error } = await supabase.rpc("execute_sql", {
         query_text: query,
         query_params: params || [],
       });
@@ -171,10 +170,10 @@ export async function executeSQL<T = unknown>(
       if (error) {
         // Retry on transient errors
         if (
-          error.message.includes('connection') ||
-          error.message.includes('timeout') ||
-          error.message.includes('ECONNREFUSED') ||
-          error.message.includes('ETIMEDOUT')
+          error.message.includes("connection") ||
+          error.message.includes("timeout") ||
+          error.message.includes("ECONNREFUSED") ||
+          error.message.includes("ETIMEDOUT")
         ) {
           throw new Error(`Transient Supabase error: ${error.message}`);
         }
@@ -188,11 +187,11 @@ export async function executeSQL<T = unknown>(
       retries: 3,
       minTimeout: 1000,
       maxTimeout: 5000,
-        onFailedAttempt: (error: { attemptNumber: number; message: string }) => {
-          // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
-           
-          console.warn(`Supabase query retry attempt ${error.attemptNumber}: ${error.message}`);
-        },
+      onFailedAttempt: (error: { attemptNumber: number; message: string }) => {
+        // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
+
+        console.warn(`Supabase query retry attempt ${error.attemptNumber}: ${error.message}`);
+      },
     }
   );
 }
@@ -200,9 +199,7 @@ export async function executeSQL<T = unknown>(
 /**
  * Helper function for transactions
  */
-export async function transaction<T>(
-  callback: (client: SupabaseClient) => Promise<T>
-): Promise<T> {
+export async function transaction<T>(callback: (client: SupabaseClient) => Promise<T>): Promise<T> {
   // Supabase doesn't have explicit transactions in JS client
   // Use PostgreSQL transactions via RPC or direct SQL
   return await callback(supabase);
@@ -220,25 +217,25 @@ export async function initializeSupabaseExtensions(): Promise<void> {
       async () => {
         // Enable pgvector extension for vector database
         try {
-          await supabase.rpc('exec_sql', {
-            sql: 'CREATE EXTENSION IF NOT EXISTS vector;',
+          await supabase.rpc("exec_sql", {
+            sql: "CREATE EXTENSION IF NOT EXISTS vector;",
           });
         } catch {
           // Extension might already exist or not be available
           // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
-           
-          console.warn('pgvector extension not available or already enabled');
+
+          console.warn("pgvector extension not available or already enabled");
         }
 
         // Enable uuid-ossp extension (if not already enabled)
         try {
-          await supabase.rpc('exec_sql', {
+          await supabase.rpc("exec_sql", {
             sql: 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";',
           });
         } catch {
           // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
-           
-          console.warn('uuid-ossp extension not available or already enabled');
+
+          console.warn("uuid-ossp extension not available or already enabled");
         }
       },
       {
@@ -247,15 +244,17 @@ export async function initializeSupabaseExtensions(): Promise<void> {
         maxTimeout: 5000,
         onFailedAttempt: (error: { attemptNumber: number; message: string }) => {
           // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
-           
-          console.warn(`Supabase extension initialization retry ${error.attemptNumber}: ${error.message}`);
+
+          console.warn(
+            `Supabase extension initialization retry ${error.attemptNumber}: ${error.message}`
+          );
         },
       }
     );
   } catch (error) {
     // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
-     
-    console.warn('Failed to initialize Supabase extensions after retries:', error);
+
+    console.warn("Failed to initialize Supabase extensions after retries:", error);
     // Don't throw - extensions may already exist
   }
 }

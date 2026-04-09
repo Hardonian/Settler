@@ -14,6 +14,7 @@ The Founder Ops Command Center provides comprehensive operational monitoring and
 **Route:** `/console/ops` (tab: Overview)
 
 **Features:**
+
 - System health status (R/Y/G indicators)
 - Key metrics at a glance:
   - Total customers
@@ -26,6 +27,7 @@ The Founder Ops Command Center provides comprehensive operational monitoring and
 **API:** `GET /api/ops/overview`
 
 **Data Sources:**
+
 - `billing_accounts` table
 - `ops_errors` table
 - `ops_jobs` table
@@ -37,6 +39,7 @@ The Founder Ops Command Center provides comprehensive operational monitoring and
 **Route:** `/console/ops` (tab: Customers)
 
 **Features:**
+
 - List all customers
 - Customer status overview
 - Usage per customer
@@ -45,6 +48,7 @@ The Founder Ops Command Center provides comprehensive operational monitoring and
 **API:** `GET /api/ops/customers`
 
 **Data Sources:**
+
 - `billing_accounts` table
 - `users` table
 - `ops_usage_aggregates` table
@@ -54,11 +58,13 @@ The Founder Ops Command Center provides comprehensive operational monitoring and
 **Route:** `/console/ops` (tab: Usage)
 
 **Features:**
+
 - Usage metrics and analytics
 - Endpoint-level usage tracking
 - Time-series usage data
 
 **Data Sources:**
+
 - `ops_usage_aggregates` table
 
 ### 4. Jobs & Queues
@@ -66,12 +72,14 @@ The Founder Ops Command Center provides comprehensive operational monitoring and
 **Route:** `/console/ops` (tab: Jobs)
 
 **Features:**
+
 - Job queue monitoring
 - Job status tracking
 - Failed job management
 - Job retry controls
 
 **Data Sources:**
+
 - `ops_jobs` table
 
 ### 5. Webhooks Monitoring
@@ -79,12 +87,14 @@ The Founder Ops Command Center provides comprehensive operational monitoring and
 **Route:** `/console/ops` (tab: Webhooks)
 
 **Features:**
+
 - Webhook delivery status
 - Failed webhook tracking
 - Retry management
 - Event type filtering
 
 **Data Sources:**
+
 - `ops_webhooks` table
 
 ### 6. Error Monitoring
@@ -92,12 +102,14 @@ The Founder Ops Command Center provides comprehensive operational monitoring and
 **Route:** `/console/ops` (tab: Errors)
 
 **Features:**
+
 - Error log viewing
 - Error severity filtering
 - Error resolution tracking
 - Route-level error analysis
 
 **Data Sources:**
+
 - `ops_errors` table
 
 ### 7. Billing Management
@@ -105,12 +117,14 @@ The Founder Ops Command Center provides comprehensive operational monitoring and
 **Route:** `/console/ops` (tab: Billing)
 
 **Features:**
+
 - Billing account management
 - Subscription status
 - Stripe integration status
 - Revenue metrics
 
 **Data Sources:**
+
 - `billing_accounts` table
 - Stripe API (via service)
 
@@ -119,6 +133,7 @@ The Founder Ops Command Center provides comprehensive operational monitoring and
 **Route:** `/console/ops` (tab: Exports)
 
 **Features:**
+
 - CSV export functionality
 - Export types:
   - Customers
@@ -136,6 +151,7 @@ The Founder Ops Command Center provides comprehensive operational monitoring and
 **Route:** `/console/ops` (tab: Runbooks)
 
 **Features:**
+
 - Operational procedures
 - Deployment guides
 - Troubleshooting steps
@@ -146,31 +162,37 @@ The Founder Ops Command Center provides comprehensive operational monitoring and
 ## Database Schema
 
 ### ops_errors
+
 - Error tracking and monitoring
 - Severity levels: info, warning, error, critical
 - Route and context capture
 
 ### ops_jobs
+
 - Job queue management
 - Status tracking: pending, processing, completed, failed, cancelled
 - Retry logic
 
 ### ops_webhooks
+
 - Webhook delivery tracking
 - Status: pending, delivered, failed, retrying
 - Retry management
 
 ### ops_usage_aggregates
+
 - Daily usage aggregates
 - Endpoint-level tracking
 - Organization and user-level metrics
 
 ### ops_support_tickets
+
 - Support ticket management
 - Auto-triage results
 - Priority and category assignment
 
 ### ops_audit_logs
+
 - Audit trail for all operations
 - User action tracking
 - Change history
@@ -180,6 +202,7 @@ The Founder Ops Command Center provides comprehensive operational monitoring and
 **Required Role:** `SUPER_ADMIN`
 
 **Enforcement:**
+
 - Route-level: Check `getUserRole()` returns `SUPER_ADMIN`
 - API-level: Use `requireAdmin()` helper
 - Database-level: RLS policies on all `ops_*` tables

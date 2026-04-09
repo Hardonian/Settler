@@ -3,8 +3,8 @@
  * Zero Trust: No secrets in code or logs
  */
 
-import { config } from '../../config';
-import { logError } from '../../utils/logger';
+import { config } from "../../config";
+import { logError } from "../../utils/logger";
 
 export interface SecretConfig {
   name: string;
@@ -53,15 +53,14 @@ export class SecretsManager {
 
     if (missing.length > 0) {
       throw new Error(
-        `Missing required secrets: ${missing.join(', ')}\n` +
-        `Please set these environment variables.`
+        `Missing required secrets: ${missing.join(", ")}\n` +
+          `Please set these environment variables.`
       );
     }
 
     if (invalid.length > 0) {
       throw new Error(
-        `Invalid secrets: ${invalid.join(', ')}\n` +
-        `Please check your environment configuration.`
+        `Invalid secrets: ${invalid.join(", ")}\n` + `Please check your environment configuration.`
       );
     }
   }
@@ -96,7 +95,7 @@ export class SecretsManager {
   static redactSecret(value: string, _secretName: string): string {
     // Never log full secrets
     if (value.length <= 8) {
-      return '***';
+      return "***";
     }
     return `${value.substring(0, 4)}...${value.substring(value.length - 4)}`;
   }
@@ -118,32 +117,32 @@ export class SecretsManager {
 // Required secrets configuration
 export const REQUIRED_SECRETS: SecretConfig[] = [
   {
-    name: 'JWT_SECRET',
+    name: "JWT_SECRET",
     required: true,
     validator: (v) => v.length >= 32,
-    description: 'JWT signing secret (min 32 chars)',
+    description: "JWT signing secret (min 32 chars)",
   },
   {
-    name: 'JWT_REFRESH_SECRET',
+    name: "JWT_REFRESH_SECRET",
     required: true,
     validator: (v) => v.length >= 32,
-    description: 'JWT refresh token secret (min 32 chars)',
+    description: "JWT refresh token secret (min 32 chars)",
   },
   {
-    name: 'ENCRYPTION_KEY',
+    name: "ENCRYPTION_KEY",
     required: true,
     validator: (v) => v.length === 32 || v.length === 64,
-    description: 'AES encryption key (32 or 64 bytes)',
+    description: "AES encryption key (32 or 64 bytes)",
   },
   {
-    name: 'DB_PASSWORD',
+    name: "DB_PASSWORD",
     required: true,
     validator: (v) => v.length >= 8,
-    description: 'Database password (min 8 chars)',
+    description: "Database password (min 8 chars)",
   },
 ];
 
 // Validate secrets on module load (in production and preview)
-if (config.nodeEnv === 'production' || config.nodeEnv === 'preview') {
+if (config.nodeEnv === "production" || config.nodeEnv === "preview") {
   SecretsManager.validateSecrets(REQUIRED_SECRETS);
 }

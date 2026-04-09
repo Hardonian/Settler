@@ -25,6 +25,7 @@
 ## Validation Tools Created
 
 ### 1. `scripts/validate-build-safety.ts`
+
 - Checks for scripts referenced but not available
 - Validates ESLint config dependencies
 - Checks packages extending root config
@@ -32,11 +33,13 @@
 - Checks Next.js transpilePackages
 
 ### 2. `scripts/validate-eslint-config.ts`
+
 - Validates all ESLint configs in monorepo
 - Checks that all `extends` configs have dependencies
 - Reports missing dependencies
 
 ### 3. `scripts/validate-nextjs-build.ts`
+
 - Validates Next.js configuration
 - Checks TypeScript config extends
 - Validates dependencies (PostCSS, Tailwind, etc.)
@@ -44,11 +47,13 @@
 - Validates instrumentation hook
 
 ### 4. `scripts/validate-lint-config.ts`
+
 - Validates lint configuration won't block builds
 - Checks for problematic error-level rules
 - Ensures Next.js lint config is correct
 
 ### 5. Enhanced `scripts/build-guardian.ts`
+
 - Integrated all validators
 - Comprehensive health checks
 - Gracefully handles missing scripts
@@ -56,12 +61,14 @@
 ## Prevention Layers
 
 ### Pre-Commit Hook
+
 - ✅ ESLint config validation
 - ✅ Build safety validation
 - ✅ Lint configuration validation
 - ✅ TypeScript typecheck
 
 ### CI Pipeline
+
 - ✅ ESLint config validation
 - ✅ Build safety validation
 - ✅ Next.js build validation
@@ -69,12 +76,14 @@
 - ✅ Full lint and typecheck
 
 ### Pre-Build Validation
+
 - ✅ TypeScript typecheck
 - ✅ ESLint linting (non-blocking)
 
 ## Files Modified
 
 ### Package Configurations
+
 - `packages/web/package.json` - Added eslint-config-prettier, made scripts optional
 - `packages/sdk/package.json` - Added eslint-config-prettier
 - `packages/adapters/package.json` - Added eslint-config-prettier
@@ -82,17 +91,21 @@
 - `packages/api/package.json` - Added eslint-config-prettier
 
 ### ESLint Configurations
+
 - `packages/web/.eslintrc.json` - Set root: true, disabled blocking error rules
 - Root `.eslintrc.js` - Already had prettier config
 
 ### Build Scripts
+
 - `packages/web/package.json` - Updated build:vercel to be optional
 - Root `package.json` - Added validation scripts, made scripts optional
 
 ### Next.js Configuration
+
 - `packages/web/next.config.js` - Updated ESLint config comments
 
 ### CI/CD
+
 - `.github/workflows/ci.yml` - Added all validators
 - `.husky/pre-commit` - Added validation checks
 
@@ -122,11 +135,12 @@ npx tsx scripts/build-guardian.ts
 ✅ **TypeScript Paths** - Workspace package mappings validated  
 ✅ **Dependencies** - Required dependencies checked  
 ✅ **Instrumentation** - Instrumentation hook validated  
-✅ **PostCSS/Tailwind** - Config dependencies validated  
+✅ **PostCSS/Tailwind** - Config dependencies validated
 
 ## Build Should Now Succeed
 
 All critical issues have been resolved:
+
 - ✅ ESLint config dependencies installed
 - ✅ Blocking error rules disabled
 - ✅ Script references made optional

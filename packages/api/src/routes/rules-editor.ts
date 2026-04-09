@@ -16,7 +16,7 @@ import { calculateConfidenceScore } from "../services/confidence-scoring";
 const router: Router = Router();
 
 // Reserved for future rule creation endpoint
- 
+
 const _createRuleSchema = z.object({
   body: z.object({
     name: z.string().min(1).max(255),
@@ -31,34 +31,42 @@ const _createRuleSchema = z.object({
 
 const previewRuleSchema = z.object({
   body: z.object({
-    rules: z.array(z.object({
-      field: z.string(),
-      type: z.enum(["exact", "fuzzy", "range"]),
-      tolerance: z.number().optional(),
-      threshold: z.number().optional(),
-      days: z.number().optional(),
-    })),
-    sampleData: z.object({
-      source: z.record(z.unknown()),
-      target: z.record(z.unknown()),
-    }).optional(),
+    rules: z.array(
+      z.object({
+        field: z.string(),
+        type: z.enum(["exact", "fuzzy", "range"]),
+        tolerance: z.number().optional(),
+        threshold: z.number().optional(),
+        days: z.number().optional(),
+      })
+    ),
+    sampleData: z
+      .object({
+        source: z.record(z.unknown()),
+        target: z.record(z.unknown()),
+      })
+      .optional(),
   }),
 });
 
 const analyzeImpactSchema = z.object({
   body: z.object({
-    rules: z.array(z.object({
-      field: z.string(),
-      type: z.enum(["exact", "fuzzy", "range"]),
-      tolerance: z.number().optional(),
-      threshold: z.number().optional(),
-      days: z.number().optional(),
-    })),
-    historicalData: z.object({
-      totalTransactions: z.number(),
-      matchedTransactions: z.number(),
-      unmatchedTransactions: z.number(),
-    }).optional(),
+    rules: z.array(
+      z.object({
+        field: z.string(),
+        type: z.enum(["exact", "fuzzy", "range"]),
+        tolerance: z.number().optional(),
+        threshold: z.number().optional(),
+        days: z.number().optional(),
+      })
+    ),
+    historicalData: z
+      .object({
+        totalTransactions: z.number(),
+        matchedTransactions: z.number(),
+        unmatchedTransactions: z.number(),
+      })
+      .optional(),
   }),
 });
 
@@ -91,7 +99,7 @@ router.get(
           description: "Balanced accuracy with tolerance for variations",
           rules: [
             { field: "order_id", type: "fuzzy" as const, threshold: 0.85 },
-            { field: "amount", type: "exact" as const, tolerance: 0.10 },
+            { field: "amount", type: "exact" as const, tolerance: 0.1 },
             { field: "date", type: "range" as const, days: 2 },
           ],
           estimatedAccuracy: 0.92,
@@ -107,15 +115,15 @@ router.get(
             { field: "amount", type: "exact" as const, tolerance: 0.01 },
             { field: "date", type: "range" as const, days: 3 },
           ],
-          estimatedAccuracy: 0.90,
-          estimatedMatchRate: 0.90,
+          estimatedAccuracy: 0.9,
+          estimatedMatchRate: 0.9,
           useCase: "Multi-platform reconciliation with timing delays",
         },
       ];
 
       // Filter by adapter if specified
       const filteredTemplates = adapter
-        ? templates.filter(t => t.useCase.toLowerCase().includes(adapter.toLowerCase()))
+        ? templates.filter((t) => t.useCase.toLowerCase().includes(adapter.toLowerCase()))
         : templates;
 
       res.json({
@@ -161,7 +169,7 @@ router.post(
 
       // Generate preview insights
       const insights = {
-        wouldMatch: confidence.score >= 0.80,
+        wouldMatch: confidence.score >= 0.8,
         confidence: confidence.score,
         breakdown: confidence.breakdown,
         factors: confidence.factors,
@@ -258,11 +266,11 @@ function generateRecommendations(
 ): string[] {
   const recommendations: string[] = [];
 
-  if (confidence.score < 0.80) {
+  if (confidence.score < 0.8) {
     recommendations.push("Consider adding more matching fields to increase confidence");
   }
 
-  const lowScoreRules = confidence.breakdown.filter(b => b.score < 0.5);
+  const lowScoreRules = confidence.breakdown.filter((b) => b.score < 0.5);
   if (lowScoreRules.length > 0) {
     recommendations.push(
       `${lowScoreRules.length} rule(s) have low confidence. Consider adjusting tolerance or using fuzzy matching.`
@@ -270,7 +278,9 @@ function generateRecommendations(
   }
 
   if (confidence.factors.exactMatches === 0) {
-    recommendations.push("No exact matches found. Consider adding at least one exact match rule for better accuracy");
+    recommendations.push(
+      "No exact matches found. Consider adding at least one exact match rule for better accuracy"
+    );
   }
 
   return recommendations;
@@ -289,18 +299,18 @@ function calculateEstimatedMatchRate(rules: unknown[]): number {
   baseRate += rangeRules * 0.03;
   baseRate -= exactRules * 0.02;
 
-  return Math.min(0.98, Math.max(0.70, baseRate));
+  return Math.min(0.98, Math.max(0.7, baseRate));
 }
 
 function calculateEstimatedAccuracy(rules: unknown[]): number {
   const exactRules = rules.filter((r: any) => r.type === "exact").length;
   const fuzzyRules = rules.filter((r: any) => r.type === "fuzzy").length;
 
-  let baseAccuracy = 0.90;
+  let baseAccuracy = 0.9;
   baseAccuracy += exactRules * 0.02;
   baseAccuracy -= fuzzyRules * 0.03;
 
-  return Math.min(0.99, Math.max(0.80, baseAccuracy));
+  return Math.min(0.99, Math.max(0.8, baseAccuracy));
 }
 
 function estimateExecutionTime(rules: unknown[]): string {
@@ -321,7 +331,11 @@ function calculateComplexity(rules: unknown[]): "low" | "medium" | "high" {
 
 function generateImpactRecommendations(
   rules: unknown[],
-  historicalData?: { totalTransactions: number; matchedTransactions: number; unmatchedTransactions: number }
+  historicalData?: {
+    totalTransactions: number;
+    matchedTransactions: number;
+    unmatchedTransactions: number;
+  }
 ): string[] {
   const recommendations: string[] = [];
 
@@ -337,7 +351,7 @@ function generateImpactRecommendations(
     }
   }
 
-  if (estimatedAccuracy < 0.90) {
+  if (estimatedAccuracy < 0.9) {
     recommendations.push("Consider adding more exact match rules to improve accuracy");
   }
 
@@ -380,7 +394,8 @@ function generateRuleSuggestions(
       ],
       estimatedAccuracy: 0.95,
       estimatedMatchRate: 0.92,
-      reasoning: "Shopify orders typically include Stripe payment IDs in metadata. Date range accounts for processing delays.",
+      reasoning:
+        "Shopify orders typically include Stripe payment IDs in metadata. Date range accounts for processing delays.",
     });
   }
 
@@ -395,7 +410,8 @@ function generateRuleSuggestions(
       ],
       estimatedAccuracy: 0.93,
       estimatedMatchRate: 0.88,
-      reasoning: "Stripe charge IDs map to QuickBooks transactions. Fuzzy email matching handles formatting differences.",
+      reasoning:
+        "Stripe charge IDs map to QuickBooks transactions. Fuzzy email matching handles formatting differences.",
     });
   }
 
@@ -407,9 +423,10 @@ function generateRuleSuggestions(
         { field: "transaction_id", type: "exact" },
         { field: "amount", type: "exact", tolerance: 0.01 },
       ],
-      estimatedAccuracy: 0.90,
+      estimatedAccuracy: 0.9,
       estimatedMatchRate: 0.85,
-      reasoning: "Standard exact matching on transaction ID and amount with small tolerance for rounding.",
+      reasoning:
+        "Standard exact matching on transaction ID and amount with small tolerance for rounding.",
     });
   }
 

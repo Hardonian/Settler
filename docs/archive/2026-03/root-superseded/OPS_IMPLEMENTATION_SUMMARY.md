@@ -12,6 +12,7 @@ This document summarizes the implementation of the "Solo-Operator Tech Autopilot
 ### A) Founder Ops Autopilot (Daily/Weekly Reports) ✅
 
 **Files Created:**
+
 - `packages/api/src/ops/reports/daily-report.ts` - Daily report generator
 - `packages/api/src/ops/reports/weekly-report.ts` - Weekly report generator
 - `scripts/ops-daily-report.ts` - Daily report script
@@ -20,16 +21,19 @@ This document summarizes the implementation of the "Solo-Operator Tech Autopilot
 - `.github/workflows/ops-weekly-report.yml` - Weekly report GitHub Action
 
 **Commands:**
+
 - `npm run ops:daily` - Generate daily founder report
 - `npm run ops:weekly` - Generate weekly founder report
 
 **Output:**
+
 - `ops/reports/FOUNDERS_DAILY_REPORT.md` - Daily markdown report
 - `ops/reports/FOUNDERS_DAILY_REPORT.json` - Daily JSON data
 - `ops/reports/FOUNDERS_WEEKLY_REPORT.md` - Weekly markdown report
 - `ops/reports/FOUNDERS_WEEKLY_REPORT.json` - Weekly JSON data
 
 **GitHub Actions:**
+
 - Daily reports run at 07:40 and 16:40 America/Toronto (11:40 and 21:40 UTC)
 - Weekly reports run Monday at 07:40 America/Toronto
 - Reports uploaded as workflow artifacts
@@ -37,12 +41,15 @@ This document summarizes the implementation of the "Solo-Operator Tech Autopilot
 ### B) Ops Doctor - "One Command to Rule Them All" ✅
 
 **Files Created:**
+
 - `scripts/ops-doctor.ts` - Comprehensive health check wrapper
 
 **Command:**
+
 - `npm run ops:doctor` - Run all health checks
 
 **Checks Included:**
+
 1. Lint check
 2. Typecheck
 3. Route registry generation
@@ -53,17 +60,20 @@ This document summarizes the implementation of the "Solo-Operator Tech Autopilot
 8. Build check
 
 **Output:**
+
 - `ops/reports/DOCTOR_SUMMARY.md` - Health check summary
 
 ### C) Activation Funnel Instrumentation ✅
 
 **Files Created:**
+
 - `packages/api/src/ops/activation-funnel.ts` - Lifecycle event emission system
 - `packages/api/src/routes/ops/activation-funnel.ts` - API route (Express)
 - `packages/web/src/app/api/ops/activation-funnel/route.ts` - Next.js API route
 - `packages/web/src/app/console/admin/activation/page.tsx` - Admin UI panel
 
 **Event Types:**
+
 - `user.signed_up`
 - `tenant.created`
 - `provider.connected`
@@ -76,6 +86,7 @@ This document summarizes the implementation of the "Solo-Operator Tech Autopilot
 - `billing.subscription_canceled`
 
 **Usage:**
+
 - Events emitted via `emitLifecycleEvent()` function
 - Metrics available at `/console/admin/activation`
 - API endpoint: `/api/ops/activation-funnel`
@@ -83,32 +94,39 @@ This document summarizes the implementation of the "Solo-Operator Tech Autopilot
 ### D) Billing Ops Hardening ✅
 
 **Files Created:**
+
 - `packages/api/src/ops/billing-hardening.ts` - Billing status and entitlement checks
 - `scripts/ops-billing-evidence.ts` - Billing evidence pack generator
 
 **Features:**
+
 - Billing status derivation (`active`, `past_due`, `unpaid`, `canceled`, `trialing`, `free`)
 - Entitlement checks with usage-based gating
 - Graceful degradation (read-only access when past_due/unpaid)
 - Billing portal URL generation
 
 **Command:**
+
 - `npm run ops:billing:evidence --tenant <tenant-id>` - Generate evidence pack
 
 **Output:**
+
 - `ops/packs/billing-evidence/billing-evidence-<tenant-id>.json`
 - `ops/packs/billing-evidence/billing-evidence-<tenant-id>.md`
 
 ### E) Status / Health / Incident Readiness ✅
 
 **Files Created:**
+
 - `packages/web/src/app/api/admin/health/route.ts` - Internal admin health endpoint
 
 **Endpoints:**
+
 - `/status` - Public status page (already existed, enhanced)
 - `/api/admin/health` - Internal detailed health metrics
 
 **Features:**
+
 - Component status (web, api, db, stripe webhooks, connectors)
 - Webhook failure tracking
 - Reconciliation error counts
@@ -118,9 +136,11 @@ This document summarizes the implementation of the "Solo-Operator Tech Autopilot
 ### F) Partner / Agency Mode (Minimal) ✅
 
 **Files Created:**
+
 - `supabase/migrations/20250101000000_add_partner_mode.sql` - Partner mode migration
 
 **Features:**
+
 - `PartnerTenantAccess` table for partner-tenant mapping
 - RLS policies for partner access
 - `partner_admin` role support
@@ -130,12 +150,15 @@ This document summarizes the implementation of the "Solo-Operator Tech Autopilot
 ### G) Procurement Pack Generator ✅
 
 **Files Created:**
+
 - `scripts/ops-procurement-pack.ts` - Procurement pack generator
 
 **Command:**
+
 - `npm run ops:procurement:pack` - Generate procurement pack
 
 **Contents:**
+
 - Terms of Service summary
 - Privacy Policy summary
 - DPA summary
@@ -144,6 +167,7 @@ This document summarizes the implementation of the "Solo-Operator Tech Autopilot
 - Security one-pager
 
 **Output:**
+
 - `ops/packs/procurement/PROCUREMENT_PACK.md`
 - `ops/packs/procurement/PROCUREMENT_PACK.json`
 - Legal documents copied to pack directory
@@ -157,12 +181,15 @@ This document summarizes the implementation of the "Solo-Operator Tech Autopilot
 ### I) QA + Verification Harness ✅
 
 **Files Updated:**
+
 - `README.md` - Added Solo Operator Runbook section
 
 **Existing Commands:**
+
 - `npm run qa:smoke` - Smoke tests (already existed)
 
 **Documentation:**
+
 - Solo Operator Runbook added to README
 - Daily/weekly workflow documented
 - On-call procedures documented

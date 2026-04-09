@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useRef, useState, MouseEvent, KeyboardEvent } from 'react';
-import { cn } from '@/lib/utils';
+import { useRef, useState, MouseEvent, KeyboardEvent } from "react";
+import { cn } from "@/lib/utils";
 
 interface SpotlightCardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
@@ -16,9 +16,9 @@ export function SpotlightCard({
   children,
   className,
   style,
-  spotlightColor = 'rgba(6, 182, 212, 0.3)',
+  spotlightColor = "rgba(6, 182, 212, 0.3)",
   spotlightSize = 300,
-  borderColor = 'rgba(168, 85, 247, 0.5)',
+  borderColor = "rgba(168, 85, 247, 0.5)",
   onClick,
   onKeyDown,
   ...rest
@@ -49,13 +49,13 @@ export function SpotlightCard({
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (onKeyDown) {
       onKeyDown(e);
-    } else if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+    } else if (onClick && (e.key === "Enter" || e.key === " ")) {
       e.preventDefault();
       // Create a synthetic mouse event for keyboard activation
       // Using 'unknown' as intermediate type to satisfy TypeScript's type checking
       const syntheticEvent = {
         ...e,
-        type: 'click',
+        type: "click",
       } as unknown as React.MouseEvent<HTMLDivElement>;
       onClick(syntheticEvent);
     }
@@ -65,9 +65,9 @@ export function SpotlightCard({
     <div
       ref={cardRef}
       className={cn(
-        'relative group rounded-2xl p-6 overflow-hidden',
-        'glass transition-all duration-200',
-        'hover:shadow-2xl hover:shadow-electric-cyan/20',
+        "relative group rounded-2xl p-6 overflow-hidden",
+        "glass transition-all duration-200",
+        "hover:shadow-2xl hover:shadow-electric-cyan/20",
         className
       )}
       onMouseMove={handleMouseMove}
@@ -76,7 +76,7 @@ export function SpotlightCard({
       onClick={onClick}
       onKeyDown={handleKeyDown}
       style={{
-        cursor: onClick ? 'pointer' : 'default',
+        cursor: onClick ? "pointer" : "default",
         ...style,
       }}
       {...rest}
@@ -95,11 +95,11 @@ export function SpotlightCard({
           className="absolute inset-0 rounded-2xl pointer-events-none"
           style={{
             background: `radial-gradient(${spotlightSize * 1.5}px circle at ${mousePosition.x}px ${mousePosition.y}px, ${borderColor}, transparent 60%)`,
-            WebkitMaskImage: 'linear-gradient(#fff, #fff), linear-gradient(#fff, #fff)',
-            WebkitMaskComposite: 'xor',
-            maskImage: 'linear-gradient(#fff, #fff), linear-gradient(#fff, #fff)',
-            maskComposite: 'exclude',
-            padding: '1px',
+            WebkitMaskImage: "linear-gradient(#fff, #fff), linear-gradient(#fff, #fff)",
+            WebkitMaskComposite: "xor",
+            maskImage: "linear-gradient(#fff, #fff), linear-gradient(#fff, #fff)",
+            maskComposite: "exclude",
+            padding: "1px",
           }}
         />
       )}

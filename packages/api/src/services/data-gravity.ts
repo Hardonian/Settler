@@ -1,29 +1,29 @@
 /**
  * Data Gravity Service
- * 
+ *
  * PHASE 2: Data Gravity & Switching Friction
- * 
+ *
  * Creates accumulated intelligence that improves over time:
  * - Canonical internal data models
  * - Derived artifacts users cannot easily recreate
  * - Longitudinal insights (patterns over time, deltas, drift)
- * 
+ *
  * Goal: User value increases the longer they stay, exports are possible but lossy
  */
 
-import { supabase } from '../infrastructure/supabase/client';
-import { logError } from '../utils/logger';
+import { supabase } from "../infrastructure/supabase/client";
+import { logError } from "../utils/logger";
 
 export interface LongitudinalInsight {
   id: string;
   tenantId: string;
-  insightType: 'pattern' | 'anomaly' | 'trend' | 'correlation' | 'baseline';
+  insightType: "pattern" | "anomaly" | "trend" | "correlation" | "baseline";
   entityType: string; // 'reconciliation', 'transaction', 'integration', etc.
   entityId?: string;
   metric: string;
   value: number;
   historicalValues: Array<{ date: Date; value: number }>;
-  trend: 'increasing' | 'decreasing' | 'stable' | 'volatile';
+  trend: "increasing" | "decreasing" | "stable" | "volatile";
   confidence: number; // 0-1
   firstObserved: Date;
   lastObserved: Date;
@@ -35,7 +35,11 @@ export interface LongitudinalInsight {
 export interface DerivedArtifact {
   id: string;
   tenantId: string;
-  artifactType: 'reconciliation_pattern' | 'matching_rule' | 'validation_baseline' | 'drift_profile';
+  artifactType:
+    | "reconciliation_pattern"
+    | "matching_rule"
+    | "validation_baseline"
+    | "drift_profile";
   sourceEntityType: string;
   sourceEntityIds: string[];
   derivedData: Record<string, unknown>;
@@ -71,17 +75,15 @@ export class DataGravityService {
       const now = new Date();
 
       // Store raw data point
-      await supabase
-        .from('usage_events')
-        .insert({
-          tenant_id: tenantId,
-          event_type: `data_point:${entityType}:${metric}`,
-          quantity: value,
-          metadata: {
-            entity_id: entityId,
-            ...metadata,
-          },
-        });
+      await supabase.from("usage_events").insert({
+        tenant_id: tenantId,
+        event_type: `data_point:${entityType}:${metric}`,
+        quantity: value,
+        metadata: {
+          entity_id: entityId,
+          ...metadata,
+        },
+      });
 
       // Update or create longitudinal insight
       await this.updateLongitudinalInsight(tenantId, entityType, entityId, metric, value, now);
@@ -89,7 +91,7 @@ export class DataGravityService {
       // Check for pattern detection
       await this.detectPatterns(tenantId, entityType, entityId);
     } catch (error) {
-      logError('Error recording data point', error);
+      logError("Error recording data point", error);
     }
   }
 
@@ -107,16 +109,19 @@ export class DataGravityService {
     try {
       // Get existing insight
       const { data: existing } = await supabase
-        .from('usage_events')
-        .select('*')
-        .eq('tenant_id', tenantId)
-        .eq('event_type', `insight:${entityType}:${metric}`)
-        .order('timestamp', { ascending: false })
+        .from("usage_events")
+        .select("*")
+        .eq("tenant_id", tenantId)
+        .eq("event_type", `insight:${entityType}:${metric}`)
+        .order("timestamp", { ascending: false })
         .limit(1)
         .single();
 
       if (existing) {
-        const historicalValues = (existing.metadata?.historicalValues || []) as Array<{ date: string; value: number }>;
+        const historicalValues = (existing.metadata?.historicalValues || []) as Array<{
+          date: string;
+          value: number;
+        }>;
         historicalValues.push({
           date: timestamp.toISOString(),
           value,
@@ -125,9 +130,7 @@ export class DataGravityService {
         // Keep only last 365 days
         const oneYearAgo = new Date(timestamp);
         oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-        const filteredValues = historicalValues.filter(
-          (v) => new Date(v.date) >= oneYearAgo
-        );
+        const filteredValues = historicalValues.filter((v) => new Date(v.date) >= oneYearAgo);
 
         // Calculate trend
         const trend = this.calculateTrend(filteredValues);
@@ -135,7 +138,7 @@ export class DataGravityService {
 
         // Update insight
         await supabase
-          .from('usage_events')
+          .from("usage_events")
           .update({
             quantity: value,
             metadata: {
@@ -147,27 +150,25 @@ export class DataGravityService {
             },
             updated_at: timestamp.toISOString(),
           })
-          .eq('id', existing.id);
+          .eq("id", existing.id);
       } else {
         // Create new insight
-        await supabase
-          .from('usage_events')
-          .insert({
-            tenant_id: tenantId,
-            event_type: `insight:${entityType}:${metric}`,
-            quantity: value,
-            metadata: {
-              entity_id: entityId,
-              historicalValues: [{ date: timestamp.toISOString(), value }],
-              trend: 'stable',
-              confidence: 0.5,
-              firstObserved: timestamp.toISOString(),
-              lastObserved: timestamp.toISOString(),
-            },
-          });
+        await supabase.from("usage_events").insert({
+          tenant_id: tenantId,
+          event_type: `insight:${entityType}:${metric}`,
+          quantity: value,
+          metadata: {
+            entity_id: entityId,
+            historicalValues: [{ date: timestamp.toISOString(), value }],
+            trend: "stable",
+            confidence: 0.5,
+            firstObserved: timestamp.toISOString(),
+            lastObserved: timestamp.toISOString(),
+          },
+        });
       }
     } catch (error) {
-      logError('Error updating longitudinal insight', error);
+      logError("Error updating longitudinal insight", error);
     }
   }
 
@@ -182,12 +183,12 @@ export class DataGravityService {
     try {
       // Get historical data for this entity
       const { data: historical } = await supabase
-        .from('usage_events')
-        .select('*')
-        .eq('tenant_id', tenantId)
-        .like('event_type', `data_point:${entityType}:%`)
-        .eq('metadata->>entity_id', entityId)
-        .order('timestamp', { ascending: false })
+        .from("usage_events")
+        .select("*")
+        .eq("tenant_id", tenantId)
+        .like("event_type", `data_point:${entityType}:%`)
+        .eq("metadata->>entity_id", entityId)
+        .order("timestamp", { ascending: false })
         .limit(100);
 
       if (!historical || historical.length < 10) {
@@ -202,14 +203,16 @@ export class DataGravityService {
         await this.createDerivedArtifact(tenantId, entityType, entityId, pattern);
       }
     } catch (error) {
-      logError('Error detecting patterns', error);
+      logError("Error detecting patterns", error);
     }
   }
 
   /**
    * Analyze patterns in historical data
    */
-  private analyzePatterns(historical: any[]): Array<{ type: string; pattern: Record<string, unknown> }> {
+  private analyzePatterns(
+    historical: any[]
+  ): Array<{ type: string; pattern: Record<string, unknown> }> {
     const patterns: Array<{ type: string; pattern: Record<string, unknown> }> = [];
 
     // Simple pattern detection: recurring values, trends, cycles
@@ -221,7 +224,7 @@ export class DataGravityService {
     // Detect volatility
     if (stdDev / avg > 0.3) {
       patterns.push({
-        type: 'volatile',
+        type: "volatile",
         pattern: {
           average: avg,
           stdDev,
@@ -235,10 +238,10 @@ export class DataGravityService {
       const trend = this.detectLinearTrend(values);
       if (Math.abs(trend.slope) > avg * 0.1) {
         patterns.push({
-          type: 'trend',
+          type: "trend",
           pattern: {
             slope: trend.slope,
-            direction: trend.slope > 0 ? 'increasing' : 'decreasing',
+            direction: trend.slope > 0 ? "increasing" : "decreasing",
             strength: Math.abs(trend.slope) / avg,
           },
         });
@@ -276,8 +279,8 @@ export class DataGravityService {
    */
   private calculateTrend(
     historicalValues: Array<{ date: string; value: number }>
-  ): 'increasing' | 'decreasing' | 'stable' | 'volatile' {
-    if (historicalValues.length < 2) return 'stable';
+  ): "increasing" | "decreasing" | "stable" | "volatile" {
+    if (historicalValues.length < 2) return "stable";
 
     const values = historicalValues.map((v) => v.value);
     const trend = this.detectLinearTrend(values);
@@ -288,18 +291,16 @@ export class DataGravityService {
       // Check volatility
       const variance = values.reduce((sum, v) => sum + Math.pow(v - avg, 2), 0) / values.length;
       const stdDev = Math.sqrt(variance);
-      return stdDev / avg > 0.3 ? 'volatile' : 'stable';
+      return stdDev / avg > 0.3 ? "volatile" : "stable";
     }
 
-    return trend.slope > 0 ? 'increasing' : 'decreasing';
+    return trend.slope > 0 ? "increasing" : "decreasing";
   }
 
   /**
    * Calculate confidence based on data quality
    */
-  private calculateConfidence(
-    historicalValues: Array<{ date: string; value: number }>
-  ): number {
+  private calculateConfidence(historicalValues: Array<{ date: string; value: number }>): number {
     if (historicalValues.length === 0) return 0;
 
     // More data points = higher confidence
@@ -315,12 +316,12 @@ export class DataGravityService {
     // Recency = higher confidence (more recent data is better)
     const now = new Date();
     const lastValue = historicalValues[historicalValues.length - 1];
-    const daysSinceLastUpdate = lastValue 
+    const daysSinceLastUpdate = lastValue
       ? (now.getTime() - new Date(lastValue.date).getTime()) / (1000 * 60 * 60 * 24)
       : 30; // Default to max if no data
     const recencyScore = Math.max(0, 1 - daysSinceLastUpdate / 30);
 
-    return (dataPointsScore * 0.4 + consistencyScore * 0.4 + recencyScore * 0.2);
+    return dataPointsScore * 0.4 + consistencyScore * 0.4 + recencyScore * 0.2;
   }
 
   /**
@@ -335,18 +336,18 @@ export class DataGravityService {
     try {
       // Check if artifact already exists
       const { data: existing } = await supabase
-        .from('usage_events')
-        .select('*')
-        .eq('tenant_id', tenantId)
-        .eq('event_type', `artifact:${entityType}:${pattern.type}`)
-        .eq('metadata->>source_entity_id', entityId)
+        .from("usage_events")
+        .select("*")
+        .eq("tenant_id", tenantId)
+        .eq("event_type", `artifact:${entityType}:${pattern.type}`)
+        .eq("metadata->>source_entity_id", entityId)
         .limit(1)
         .single();
 
       if (existing) {
         // Update existing artifact
         await supabase
-          .from('usage_events')
+          .from("usage_events")
           .update({
             metadata: {
               ...existing.metadata,
@@ -355,27 +356,25 @@ export class DataGravityService {
               updated_at: new Date().toISOString(),
             },
           })
-          .eq('id', existing.id);
+          .eq("id", existing.id);
       } else {
         // Create new artifact
-        await supabase
-          .from('usage_events')
-          .insert({
-            tenant_id: tenantId,
-            event_type: `artifact:${entityType}:${pattern.type}`,
-            quantity: 1,
-            metadata: {
-              artifactType: pattern.type,
-              sourceEntityType: entityType,
-              sourceEntityId: entityId,
-              derivedData: pattern.pattern,
-              usageCount: 0,
-              createdAt: new Date().toISOString(),
-            },
-          });
+        await supabase.from("usage_events").insert({
+          tenant_id: tenantId,
+          event_type: `artifact:${entityType}:${pattern.type}`,
+          quantity: 1,
+          metadata: {
+            artifactType: pattern.type,
+            sourceEntityType: entityType,
+            sourceEntityId: entityId,
+            derivedData: pattern.pattern,
+            usageCount: 0,
+            createdAt: new Date().toISOString(),
+          },
+        });
       }
     } catch (error) {
-      logError('Error creating derived artifact', error);
+      logError("Error creating derived artifact", error);
     }
   }
 
@@ -386,36 +385,38 @@ export class DataGravityService {
     try {
       // Get total data points
       const { count: totalDataPoints } = await supabase
-        .from('usage_events')
-        .select('*', { count: 'exact', head: true })
-        .eq('tenant_id', tenantId);
+        .from("usage_events")
+        .select("*", { count: "exact", head: true })
+        .eq("tenant_id", tenantId);
 
       // Get historical depth
       const { data: oldest } = await supabase
-        .from('usage_events')
-        .select('timestamp')
-        .eq('tenant_id', tenantId)
-        .order('timestamp', { ascending: true })
+        .from("usage_events")
+        .select("timestamp")
+        .eq("tenant_id", tenantId)
+        .order("timestamp", { ascending: true })
         .limit(1)
         .single();
 
       const historicalDepth = oldest
-        ? Math.floor((new Date().getTime() - new Date(oldest.timestamp).getTime()) / (1000 * 60 * 60 * 24))
+        ? Math.floor(
+            (new Date().getTime() - new Date(oldest.timestamp).getTime()) / (1000 * 60 * 60 * 24)
+          )
         : 0;
 
       // Get derived artifacts count
       const { count: derivedArtifacts } = await supabase
-        .from('usage_events')
-        .select('*', { count: 'exact', head: true })
-        .eq('tenant_id', tenantId)
-        .like('event_type', 'artifact:%');
+        .from("usage_events")
+        .select("*", { count: "exact", head: true })
+        .eq("tenant_id", tenantId)
+        .like("event_type", "artifact:%");
 
       // Get longitudinal insights count
       const { count: longitudinalInsights } = await supabase
-        .from('usage_events')
-        .select('*', { count: 'exact', head: true })
-        .eq('tenant_id', tenantId)
-        .like('event_type', 'insight:%');
+        .from("usage_events")
+        .select("*", { count: "exact", head: true })
+        .eq("tenant_id", tenantId)
+        .like("event_type", "insight:%");
 
       // Estimate switching cost (cost to recreate data elsewhere)
       // This is a function of data volume, complexity, and historical depth
@@ -443,7 +444,7 @@ export class DataGravityService {
         dataValue,
       };
     } catch (error) {
-      logError('Error getting data gravity metrics', error);
+      logError("Error getting data gravity metrics", error);
       return {
         tenantId,
         totalDataPoints: 0,
@@ -503,7 +504,10 @@ export class DataGravityService {
   /**
    * Generate export (lossy - excludes derived artifacts and insights)
    */
-  async generateExport(tenantId: string, _format: 'csv' | 'json' = 'json'): Promise<{
+  async generateExport(
+    tenantId: string,
+    _format: "csv" | "json" = "json"
+  ): Promise<{
     data: any[];
     metadata: {
       totalRecords: number;
@@ -515,11 +519,11 @@ export class DataGravityService {
     try {
       // Export only raw data points, not derived artifacts or insights
       const { data: rawData } = await supabase
-        .from('usage_events')
-        .select('*')
-        .eq('tenant_id', tenantId)
-        .like('event_type', 'data_point:%')
-        .order('timestamp', { ascending: true });
+        .from("usage_events")
+        .select("*")
+        .eq("tenant_id", tenantId)
+        .like("event_type", "data_point:%")
+        .order("timestamp", { ascending: true });
 
       return {
         data: rawData || [],
@@ -527,11 +531,11 @@ export class DataGravityService {
           totalRecords: rawData?.length || 0,
           exportedAt: new Date(),
           lossy: true,
-          excludedTypes: ['artifact', 'insight', 'pattern', 'baseline'],
+          excludedTypes: ["artifact", "insight", "pattern", "baseline"],
         },
       };
     } catch (error) {
-      logError('Error generating export', error);
+      logError("Error generating export", error);
       throw error;
     }
   }

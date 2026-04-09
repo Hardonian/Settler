@@ -1,6 +1,6 @@
 /**
  * Input Sanitization
- * 
+ *
  * Security utilities for sanitizing user input to prevent:
  * - XSS attacks
  * - SQL injection (via Prisma, but defense in depth)
@@ -13,12 +13,12 @@
  * Sanitize string input
  */
 export function sanitizeString(input: string, maxLength = 10000): string {
-  if (typeof input !== 'string') {
-    return '';
+  if (typeof input !== "string") {
+    return "";
   }
 
   // Remove null bytes
-  let sanitized = input.replace(/\0/g, '');
+  let sanitized = input.replace(/\0/g, "");
 
   // Trim whitespace
   sanitized = sanitized.trim();
@@ -38,7 +38,7 @@ export function sanitizeUrl(url: string): string | null {
   try {
     const parsed = new URL(url);
     // Only allow http/https
-    if (!['http:', 'https:'].includes(parsed.protocol)) {
+    if (!["http:", "https:"].includes(parsed.protocol)) {
       return null;
     }
     return parsed.toString();
@@ -52,14 +52,14 @@ export function sanitizeUrl(url: string): string | null {
  */
 export function sanitizePath(path: string): string {
   // Remove path traversal attempts
-  let sanitized = path.replace(/\.\./g, '').replace(/\/\//g, '/');
-  
+  let sanitized = path.replace(/\.\./g, "").replace(/\/\//g, "/");
+
   // Remove leading/trailing slashes
-  sanitized = sanitized.replace(/^\/+|\/+$/g, '');
-  
+  sanitized = sanitized.replace(/^\/+|\/+$/g, "");
+
   // Only allow alphanumeric, hyphens, underscores, and forward slashes
-  sanitized = sanitized.replace(/[^a-zA-Z0-9\-_\/]/g, '');
-  
+  sanitized = sanitized.replace(/[^a-zA-Z0-9\-_\/]/g, "");
+
   return sanitized;
 }
 
@@ -79,23 +79,26 @@ export function sanitizeObject<T extends Record<string, unknown>>(
   const sanitized = {} as T;
 
   for (const [key, value] of Object.entries(obj)) {
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       let sanitizedValue: string | null = sanitizeString(value, maxStringLength);
-      
-      if (sanitizeUrls && key.toLowerCase().includes('url')) {
+
+      if (sanitizeUrls && key.toLowerCase().includes("url")) {
         sanitizedValue = sanitizeUrl(sanitizedValue) || sanitizedValue;
       }
-      
-      if (sanitizePaths && (key.toLowerCase().includes('path') || key.toLowerCase().includes('file'))) {
+
+      if (
+        sanitizePaths &&
+        (key.toLowerCase().includes("path") || key.toLowerCase().includes("file"))
+      ) {
         sanitizedValue = sanitizePath(sanitizedValue);
       }
-      
+
       (sanitized as Record<string, unknown>)[key] = sanitizedValue;
     } else if (Array.isArray(value)) {
       (sanitized as Record<string, unknown>)[key] = value.map((item) =>
-        typeof item === 'string' ? sanitizeString(item, maxStringLength) : item
+        typeof item === "string" ? sanitizeString(item, maxStringLength) : item
       );
-    } else if (value && typeof value === 'object') {
+    } else if (value && typeof value === "object") {
       (sanitized as Record<string, unknown>)[key] = sanitizeObject(
         value as Record<string, unknown>,
         options
@@ -128,13 +131,13 @@ export function isValidEmail(email: string): boolean {
  * Escape HTML to prevent XSS
  */
 export function escapeHtml(text: string | undefined): string {
-  if (!text) return '';
+  if (!text) return "";
   const map: Record<string, string> = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#039;',
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;",
   };
   return text.replace(/[&<>"']/g, (m) => map[m as keyof typeof map] ?? m);
 }

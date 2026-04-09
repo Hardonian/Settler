@@ -1,13 +1,13 @@
 /**
  * Subscription & Tier Management
- * 
+ *
  * Handles subscription tier detection and feature gating for console features.
  */
 
-import { createClient } from '@/lib/supabase/server';
-import { prisma } from '@/shared/db/prismaClient';
+import { createClient } from "@/lib/supabase/server";
+import { prisma } from "@/shared/db/prismaClient";
 
-export type SubscriptionTier = 'free' | 'pro' | 'enterprise' | 'unauthenticated';
+export type SubscriptionTier = "free" | "pro" | "enterprise" | "unauthenticated";
 
 export interface SubscriptionInfo {
   tier: SubscriptionTier;
@@ -25,7 +25,7 @@ export interface SubscriptionInfo {
   };
 }
 
-const TIER_FEATURES: Record<SubscriptionTier, SubscriptionInfo['features']> = {
+const TIER_FEATURES: Record<SubscriptionTier, SubscriptionInfo["features"]> = {
   unauthenticated: {
     playgroundRequestsPerDay: 10,
     playgroundRequestsPerMinute: 2,
@@ -74,11 +74,13 @@ const TIER_FEATURES: Record<SubscriptionTier, SubscriptionInfo['features']> = {
 export async function getSubscriptionInfo(): Promise<SubscriptionInfo> {
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (!user) {
       return {
-        tier: 'unauthenticated',
+        tier: "unauthenticated",
         features: TIER_FEATURES.unauthenticated,
       };
     }
@@ -89,9 +91,9 @@ export async function getSubscriptionInfo(): Promise<SubscriptionInfo> {
       include: {
         subscriptions: {
           where: {
-            status: { in: ['active', 'trialing'] },
+            status: { in: ["active", "trialing"] },
           },
-          orderBy: { createdAt: 'desc' },
+          orderBy: { createdAt: "desc" },
           take: 1,
         },
       },
@@ -99,7 +101,7 @@ export async function getSubscriptionInfo(): Promise<SubscriptionInfo> {
 
     if (!billingAccount) {
       return {
-        tier: 'free',
+        tier: "free",
         features: TIER_FEATURES.free,
       };
     }
@@ -107,35 +109,35 @@ export async function getSubscriptionInfo(): Promise<SubscriptionInfo> {
     const subscription = billingAccount.subscriptions[0];
     if (!subscription) {
       return {
-        tier: 'free',
+        tier: "free",
         features: TIER_FEATURES.free,
       };
     }
 
     // Determine tier from planId
-    const planId = subscription.planId?.toLowerCase() || 'base';
-    
-    let tier: SubscriptionTier = 'free';
-    
-    if (planId.includes('enterprise') || planId.includes('custom')) {
-      tier = 'enterprise';
-    } else if (planId.includes('pro') || planId.includes('growth') || planId.includes('paid')) {
-      tier = 'pro';
+    const planId = subscription.planId?.toLowerCase() || "base";
+
+    let tier: SubscriptionTier = "free";
+
+    if (planId.includes("enterprise") || planId.includes("custom")) {
+      tier = "enterprise";
+    } else if (planId.includes("pro") || planId.includes("growth") || planId.includes("paid")) {
+      tier = "pro";
     } else {
-      tier = 'free';
+      tier = "free";
     }
 
     return {
       tier,
-      planCode: planId !== 'base' ? planId : undefined,
+      planCode: planId !== "base" ? planId : undefined,
       status: subscription.status || undefined,
       features: TIER_FEATURES[tier],
     };
   } catch (error) {
-    console.error('[getSubscriptionInfo] Error:', error);
+    console.error("[getSubscriptionInfo] Error:", error);
     // Default to unauthenticated on error
     return {
-      tier: 'unauthenticated',
+      tier: "unauthenticated",
       features: TIER_FEATURES.unauthenticated,
     };
   }
@@ -144,20 +146,26 @@ export async function getSubscriptionInfo(): Promise<SubscriptionInfo> {
 /**
  * Check if user has access to a feature
  */
-export async function hasFeatureAccess(feature: keyof SubscriptionInfo['features']): Promise<boolean> {
+export async function hasFeatureAccess(
+  feature: keyof SubscriptionInfo["features"]
+): Promise<boolean> {
   const info = await getSubscriptionInfo();
   const featureValue = info.features[feature];
-  return typeof featureValue === 'boolean' ? featureValue : false;
+  return typeof featureValue === "boolean" ? featureValue : false;
 }
 
 /**
  * Check if user can make a playground request
  * Now checks actual usage against limits using real-time tracking
  */
-export async function canMakePlaygroundRequest(): Promise<{ allowed: boolean; reason?: string; remaining?: number }> {
+export async function canMakePlaygroundRequest(): Promise<{
+  allowed: boolean;
+  reason?: string;
+  remaining?: number;
+}> {
   try {
     const info = await getSubscriptionInfo();
-    
+
     // Enterprise has unlimited
     if (info.features.playgroundRequestsPerDay === -1) {
       return { allowed: true, remaining: -1 };
@@ -165,10 +173,12 @@ export async function canMakePlaygroundRequest(): Promise<{ allowed: boolean; re
 
     // Get billing account ID for usage tracking
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (!user) {
-      return { allowed: false, reason: 'Not authenticated', remaining: 0 };
+      return { allowed: false, reason: "Not authenticated", remaining: 0 };
     }
 
     const billingAccount = await prisma.billingAccount.findFirst({
@@ -182,8 +192,8 @@ export async function canMakePlaygroundRequest(): Promise<{ allowed: boolean; re
     }
 
     // Check actual usage using usage tracking service
-    const { getCurrentUsage } = await import('@/lib/usage/tracking');
-    const usage = await getCurrentUsage(billingAccount.id, 'playground', 'daily');
+    const { getCurrentUsage } = await import("@/lib/usage/tracking");
+    const usage = await getCurrentUsage(billingAccount.id, "playground", "daily");
 
     return {
       allowed: usage.allowed,
@@ -191,7 +201,7 @@ export async function canMakePlaygroundRequest(): Promise<{ allowed: boolean; re
       remaining: usage.remaining === -1 ? undefined : usage.remaining,
     };
   } catch (error) {
-    console.error('[canMakePlaygroundRequest] Error:', error);
+    console.error("[canMakePlaygroundRequest] Error:", error);
     // Fail open - allow request if tracking fails
     const info = await getSubscriptionInfo();
     return { allowed: true, remaining: info.features.playgroundRequestsPerDay };

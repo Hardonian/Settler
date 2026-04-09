@@ -1,20 +1,19 @@
 /**
  * Agent-Driven Learning Loops
- * 
+ *
  * Agents that continuously learn and improve
  * Part 7: Autonomous AIOS Evolution
  */
 
- 
-import type { PrismaClient } from '@prisma/client';
+import type { PrismaClient } from "@prisma/client";
 
 export interface LearningInsight {
-  type: 'transform' | 'mapping' | 'schema' | 'validation' | 'workflow';
+  type: "transform" | "mapping" | "schema" | "validation" | "workflow";
   issue: string;
   currentState: Record<string, unknown>;
   proposedImprovement: Record<string, unknown>;
   confidence: number;
-  impact: 'low' | 'medium' | 'high';
+  impact: "low" | "medium" | "high";
 }
 
 export class AgentLearningLoops {
@@ -77,27 +76,27 @@ export class AgentLearningLoops {
         },
         select: { id: true },
       });
-      
+
       const results = await this.prisma.reconResult.findMany({
         where: {
           reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
-          status: 'failed',
+          status: "failed",
         },
         take: 10,
       });
 
       if (results.length > 5) {
         insights.push({
-          type: 'transform',
+          type: "transform",
           issue: `Transform "${transform.name}" has high failure rate`,
           currentState: { errorRate: results.length / 10 },
           proposedImprovement: {
-            action: 'optimize_transform',
+            action: "optimize_transform",
             transformId: transform.id,
-            suggestedChanges: 'add_error_handling',
+            suggestedChanges: "add_error_handling",
           },
           confidence: 0.8,
-          impact: 'high',
+          impact: "high",
         });
       }
     }
@@ -113,7 +112,7 @@ export class AgentLearningLoops {
 
     const drifts = await this.prisma.driftEvent.findMany({
       take: 100,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
 
     // Group by mapping template (through reconJob)
@@ -125,7 +124,10 @@ export class AgentLearningLoops {
           select: { mappingTemplateId: true },
         });
         if (job?.mappingTemplateId) {
-          mappingGroups.set(job.mappingTemplateId, (mappingGroups.get(job.mappingTemplateId) || 0) + 1);
+          mappingGroups.set(
+            job.mappingTemplateId,
+            (mappingGroups.get(job.mappingTemplateId) || 0) + 1
+          );
         }
       }
     }
@@ -134,16 +136,16 @@ export class AgentLearningLoops {
     for (const [mappingId, count] of mappingGroups.entries()) {
       if (count > 10) {
         insights.push({
-          type: 'mapping',
+          type: "mapping",
           issue: `Mapping template has ${count} drift events`,
           currentState: { driftCount: count },
           proposedImprovement: {
-            action: 'update_mapping_template',
+            action: "update_mapping_template",
             mappingId,
-            suggestedChanges: 'add_flexible_field_matching',
+            suggestedChanges: "add_flexible_field_matching",
           },
           confidence: 0.9,
-          impact: 'medium',
+          impact: "medium",
         });
       }
     }
@@ -172,16 +174,16 @@ export class AgentLearningLoops {
     for (const [contractId, count] of versionCounts.entries()) {
       if (count > 5) {
         insights.push({
-          type: 'schema',
+          type: "schema",
           issue: `Schema has ${count} versions - high volatility`,
           currentState: { versionCount: count },
           proposedImprovement: {
-            action: 'stabilize_schema',
+            action: "stabilize_schema",
             contractId,
-            suggestedChanges: 'add_versioning_strategy',
+            suggestedChanges: "add_versioning_strategy",
           },
           confidence: 0.7,
-          impact: 'medium',
+          impact: "medium",
         });
       }
     }
@@ -206,13 +208,17 @@ export class AgentLearningLoops {
       const allJobs = await this.prisma.reconJob.findMany({
         select: { id: true, validationRules: true },
       });
-      
+
       const usage = allJobs.filter((job: { id: string; validationRules: unknown }) => {
         const rules = job.validationRules;
         if (Array.isArray(rules)) {
-          return rules.some((r: unknown) => 
-            (typeof r === 'object' && r !== null && 'id' in r && (r as { id: string }).id === rule.id) ||
-            r === rule.id
+          return rules.some(
+            (r: unknown) =>
+              (typeof r === "object" &&
+                r !== null &&
+                "id" in r &&
+                (r as { id: string }).id === rule.id) ||
+              r === rule.id
           );
         }
         return false;
@@ -220,16 +226,16 @@ export class AgentLearningLoops {
 
       if (usage.length === 0) {
         insights.push({
-          type: 'validation',
+          type: "validation",
           issue: `Validation rule "${rule.name}" is never used`,
           currentState: { usageCount: 0 },
           proposedImprovement: {
-            action: 'deprecate_or_remove',
+            action: "deprecate_or_remove",
             ruleId: rule.id,
-            suggestedChanges: 'mark_as_unused',
+            suggestedChanges: "mark_as_unused",
           },
           confidence: 1.0,
-          impact: 'low',
+          impact: "low",
         });
       }
     }
@@ -245,7 +251,7 @@ export class AgentLearningLoops {
 
     // Analyze common failure patterns
     const failures = await this.prisma.reconResult.findMany({
-      where: { status: 'failed' },
+      where: { status: "failed" },
       take: 100,
     });
 
@@ -259,16 +265,16 @@ export class AgentLearningLoops {
 
     if (failurePatterns.size > 0) {
       insights.push({
-        type: 'workflow',
-        issue: 'Generate synthetic test cases for robustness',
+        type: "workflow",
+        issue: "Generate synthetic test cases for robustness",
         currentState: { failurePatterns: Array.from(failurePatterns) },
         proposedImprovement: {
-          action: 'generate_synthetic_tests',
+          action: "generate_synthetic_tests",
           patterns: Array.from(failurePatterns),
-          suggestedChanges: 'add_robustness_tests',
+          suggestedChanges: "add_robustness_tests",
         },
         confidence: 0.8,
-        impact: 'high',
+        impact: "high",
       });
     }
 
@@ -283,28 +289,29 @@ export class AgentLearningLoops {
 
     const workflows = await this.prisma.workflowRun.findMany({
       take: 1000,
-      orderBy: { startedAt: 'desc' },
+      orderBy: { startedAt: "desc" },
     });
 
     // Find slow workflows
-    const slowWorkflows = workflows.filter((w: { completedAt: Date | null; startedAt: Date | null }) => {
-      const duration = w.completedAt && w.startedAt
-        ? w.completedAt.getTime() - w.startedAt.getTime()
-        : 0;
-      return duration > 60000; // > 1 minute
-    });
+    const slowWorkflows = workflows.filter(
+      (w: { completedAt: Date | null; startedAt: Date | null }) => {
+        const duration =
+          w.completedAt && w.startedAt ? w.completedAt.getTime() - w.startedAt.getTime() : 0;
+        return duration > 60000; // > 1 minute
+      }
+    );
 
     if (slowWorkflows.length > 10) {
       insights.push({
-        type: 'workflow',
+        type: "workflow",
         issue: `${slowWorkflows.length} workflows taking > 1 minute`,
         currentState: { slowWorkflowCount: slowWorkflows.length },
         proposedImprovement: {
-          action: 'optimize_workflow_steps',
-          suggestedChanges: 'parallelize_steps',
+          action: "optimize_workflow_steps",
+          suggestedChanges: "parallelize_steps",
         },
         confidence: 0.9,
-        impact: 'high',
+        impact: "high",
       });
     }
 

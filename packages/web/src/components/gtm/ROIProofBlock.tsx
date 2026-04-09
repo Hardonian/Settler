@@ -1,18 +1,18 @@
 /**
  * ROI Proof Block Component
- * 
+ *
  * PHASE 4: ROI & PROOF GENERATION
- * 
+ *
  * Displays computed proof artifacts showing real value delivered.
  * These are not marketing claims - they are computed from actual usage.
  */
 
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle2, Clock, DollarSign, TrendingUp, AlertCircle } from 'lucide-react';
-import { type ROIMetrics } from '@/lib/gtm/value-events';
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CheckCircle2, Clock, DollarSign, TrendingUp, AlertCircle } from "lucide-react";
+import { type ROIMetrics } from "@/lib/gtm/value-events";
 
 interface ROIProofBlockProps {
   billingAccountId?: string;
@@ -44,13 +44,13 @@ export function ROIProofBlock({
         const response = await fetch(
           `/api/gtm/roi?billingAccountId=${billingAccountId}&startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`
         );
-        
+
         if (response.ok) {
           const roi = await response.json();
           setMetrics(roi);
         }
       } catch (error: unknown) {
-        console.error('[ROIProofBlock] Failed to load metrics:', error);
+        console.error("[ROIProofBlock] Failed to load metrics:", error);
       } finally {
         setLoading(false);
       }
@@ -93,9 +93,7 @@ export function ROIProofBlock({
               <div className="text-2xl font-bold text-foreground">
                 {metrics.totalReconciliations.toLocaleString()}
               </div>
-              <div className="text-sm text-muted-foreground">
-                Reconciliations completed
-              </div>
+              <div className="text-sm text-muted-foreground">Reconciliations completed</div>
             </div>
           </div>
 
@@ -107,9 +105,7 @@ export function ROIProofBlock({
                 <div className="text-2xl font-bold text-foreground">
                   {metrics.totalRecordsProcessed.toLocaleString()}
                 </div>
-                <div className="text-sm text-muted-foreground">
-                  Records processed
-                </div>
+                <div className="text-sm text-muted-foreground">Records processed</div>
               </div>
             </div>
           )}
@@ -122,9 +118,7 @@ export function ROIProofBlock({
                 <div className="text-2xl font-bold text-foreground">
                   {metrics.totalTimeSavedHours.toFixed(1)}h
                 </div>
-                <div className="text-sm text-muted-foreground">
-                  Estimated time saved
-                </div>
+                <div className="text-sm text-muted-foreground">Estimated time saved</div>
               </div>
             </div>
           )}
@@ -137,9 +131,7 @@ export function ROIProofBlock({
                 <div className="text-2xl font-bold text-foreground">
                   ${metrics.estimatedCostSavings.toFixed(0)}
                 </div>
-                <div className="text-sm text-muted-foreground">
-                  Estimated cost savings
-                </div>
+                <div className="text-sm text-muted-foreground">Estimated cost savings</div>
               </div>
             </div>
           )}
@@ -152,9 +144,7 @@ export function ROIProofBlock({
                 <div className="text-2xl font-bold text-foreground">
                   {metrics.exceptionsDetected.toLocaleString()}
                 </div>
-                <div className="text-sm text-muted-foreground">
-                  Exceptions detected
-                </div>
+                <div className="text-sm text-muted-foreground">Exceptions detected</div>
               </div>
             </div>
           )}
@@ -167,9 +157,7 @@ export function ROIProofBlock({
                 <div className="text-2xl font-bold text-foreground">
                   {metrics.integrationsConnected}
                 </div>
-                <div className="text-sm text-muted-foreground">
-                  Integrations connected
-                </div>
+                <div className="text-sm text-muted-foreground">Integrations connected</div>
               </div>
             </div>
           )}
@@ -178,11 +166,10 @@ export function ROIProofBlock({
         {/* Amount Reconciled */}
         {metrics.totalAmountReconciled > 0 && (
           <div className="mt-4 p-4 bg-muted/10 rounded-lg">
-            <div className="text-sm text-muted-foreground mb-1">
-              Total amount reconciled
-            </div>
+            <div className="text-sm text-muted-foreground mb-1">Total amount reconciled</div>
             <div className="text-3xl font-bold text-foreground">
-              ${metrics.totalAmountReconciled.toLocaleString(undefined, {
+              $
+              {metrics.totalAmountReconciled.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}

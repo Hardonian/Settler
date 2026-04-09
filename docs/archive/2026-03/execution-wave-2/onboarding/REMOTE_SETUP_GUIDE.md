@@ -33,6 +33,7 @@ pnpm tsx scripts/run-migrations-remote.ts
 ```
 
 This will:
+
 - ✅ Create `api_call_logs` table
 - ✅ Add performance indexes
 - ✅ Create log retention policy
@@ -86,8 +87,8 @@ After setup, verify everything works:
 ### 1. Check Migrations Applied
 
 ```sql
-SELECT version, applied_at 
-FROM schema_migrations 
+SELECT version, applied_at
+FROM schema_migrations
 ORDER BY applied_at;
 ```
 
@@ -95,7 +96,7 @@ ORDER BY applied_at;
 
 ```sql
 SELECT EXISTS (
-  SELECT FROM information_schema.tables 
+  SELECT FROM information_schema.tables
   WHERE table_name = 'api_call_logs'
 );
 ```
@@ -103,29 +104,29 @@ SELECT EXISTS (
 ### 3. Check Indexes
 
 ```sql
-SELECT indexname 
-FROM pg_indexes 
+SELECT indexname
+FROM pg_indexes
 WHERE tablename = 'api_call_logs';
 ```
 
 ### 4. Check RLS Policies
 
 ```sql
-SELECT policyname, cmd 
-FROM pg_policies 
+SELECT policyname, cmd
+FROM pg_policies
 WHERE tablename = 'api_call_logs';
 ```
 
 ### 5. Check Super Admin
 
 ```sql
-SELECT 
+SELECT
   u.email,
   ba.metadata->>'role' as billing_role,
   u.raw_user_meta_data->>'role' as user_role
 FROM auth.users u
 LEFT JOIN billing_accounts ba ON ba.user_id = u.id
-WHERE 
+WHERE
   ba.metadata->>'role' = 'SUPER_ADMIN'
   OR u.raw_user_meta_data->>'role' = 'SUPER_ADMIN'
   OR u.email LIKE '%@settler.dev';
@@ -136,15 +137,18 @@ WHERE
 ### Connection Issues
 
 **Error: "connection refused"**
+
 - Check firewall rules
 - Verify connection string format
 - Ensure SSL mode is set correctly
 
 **Error: "SSL required"**
+
 - Add `?sslmode=require` to connection string
 - For pooler: Use port 6543 (not 5432)
 
 **Error: "authentication failed"**
+
 - Verify username and password
 - Check database user permissions
 - Ensure user has CREATE TABLE permissions
@@ -152,25 +156,30 @@ WHERE
 ### Migration Issues
 
 **Error: "relation already exists"**
+
 - Table already created, safe to skip
 - Or drop and recreate: `DROP TABLE api_call_logs CASCADE;`
 
 **Error: "permission denied"**
+
 - Ensure database user has CREATE/ALTER permissions
 - May need to run as superuser or database owner
 
 **Error: "function already exists"**
+
 - Function already created, safe to skip
 - Or drop: `DROP FUNCTION cleanup_old_api_logs();`
 
 ### Super Admin Issues
 
 **User not found**
+
 - Verify email exists in `auth.users` table
 - Check for typos in email address
 - User may need to sign up first
 
 **Role not applying**
+
 - Check both `billing_accounts.metadata` and `auth.users.raw_user_meta_data`
 - Verify user_id matches
 - Try both methods (billing_account and user metadata)

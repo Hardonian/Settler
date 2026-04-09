@@ -35,6 +35,7 @@ This document confirms the completion of Parts 7-14: Autonomous AIOS Evolution, 
    - Maintains backward compatibility
 
 ### API Routes
+
 - `GET /api/v1/ael/evolve` - Run evolution cycle
 - `GET /api/v1/ael/log` - Get evolution log
 
@@ -104,6 +105,7 @@ This document confirms the completion of Parts 7-14: Autonomous AIOS Evolution, 
    - Based on priority, cost, SLA tier, workload shape, observed errors
 
 ### API Routes
+
 - `GET /api/v1/predictive/failures` - Predict failures
 - `POST /api/v1/predictive/complexity` - Evaluate job complexity
 
@@ -243,6 +245,7 @@ This document confirms the completion of Parts 7-14: Autonomous AIOS Evolution, 
 ### Service Exports
 
 All services are properly exported:
+
 - `/packages/api/src/services/ael/index.ts`
 - `/packages/api/src/services/rewrite/index.ts`
 - `/packages/api/src/services/predictive/index.ts`
@@ -254,6 +257,7 @@ All services are properly exported:
 ### API Integration
 
 New routes added to `/packages/api/src/routes/v1/index.ts`:
+
 - `/api/v1/ael/*` - Autonomous Evolution Layer
 - `/api/v1/predictive/*` - Predictive Operations
 

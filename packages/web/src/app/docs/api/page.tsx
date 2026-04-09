@@ -3,11 +3,7 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  ArrowRight,
-  Copy,
-  Zap,
-} from "lucide-react";
+import { ArrowRight, Copy, Zap } from "lucide-react";
 import Link from "next/link";
 
 export const metadata: Metadata = {

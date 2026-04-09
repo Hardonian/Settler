@@ -9,16 +9,19 @@
 ## Quick Reference
 
 ### Emergency Contacts
+
 - **Database Admin**: Check Supabase dashboard
 - **On-Call**: Check PagerDuty/Opsgenie
 - **Escalation**: CTO/Tech Lead
 
 ### Key Endpoints
+
 - **Health Check**: `/api/admin/health`
 - **Metrics**: `/api/admin/metrics`
 - **Database Dashboard**: Supabase Dashboard → Database
 
 ### Key Metrics
+
 - **P95 Query Latency**: Target <100ms, Alert >500ms
 - **Connection Pool Saturation**: Target <75%, Alert >90%
 - **Slow Queries**: Target <5/day, Alert >20/day
@@ -32,6 +35,7 @@
 ### 1. Database Slow / High Latency
 
 **Symptoms**:
+
 - API response times >2s
 - Users reporting slow page loads
 - P95 latency >1s
@@ -51,16 +55,17 @@ curl https://api.settler.dev/api/admin/health | jq '.database.slowQueries'
 
 **Diagnosis**:
 
-| Symptom | Likely Cause | Action |
-|---------|-------------|--------|
-| Many slow queries (>20) | N+1 query regression | Identify query, optimize or add index |
-| High p95 latency, low cache hit (<30%) | Cache not working | Check Redis connection, restart if needed |
-| High connection pool usage (>90%) | Connection leak or storm | Restart app, investigate connection handling |
-| Specific query consistently slow | Missing index or table scan | Run EXPLAIN ANALYZE, add index |
+| Symptom                                | Likely Cause                | Action                                       |
+| -------------------------------------- | --------------------------- | -------------------------------------------- |
+| Many slow queries (>20)                | N+1 query regression        | Identify query, optimize or add index        |
+| High p95 latency, low cache hit (<30%) | Cache not working           | Check Redis connection, restart if needed    |
+| High connection pool usage (>90%)      | Connection leak or storm    | Restart app, investigate connection handling |
+| Specific query consistently slow       | Missing index or table scan | Run EXPLAIN ANALYZE, add index               |
 
 **Resolution Steps**:
 
 #### A. Identify Slow Query
+
 ```sql
 -- Connect to database
 psql $DATABASE_URL
@@ -80,6 +85,7 @@ SELECT * FROM vw_index_usage WHERE usage_category = 'UNUSED';
 ```
 
 #### B. Optimize Query
+
 ```sql
 -- Run EXPLAIN ANALYZE on slow query
 EXPLAIN ANALYZE SELECT ...;
@@ -94,6 +100,7 @@ CREATE INDEX CONCURRENTLY idx_new_index ON table_name (column_name);
 ```
 
 #### C. Restart Services (if needed)
+
 ```bash
 # Restart Next.js app (Vercel)
 vercel redeploy --force
@@ -107,6 +114,7 @@ vercel redeploy --force
 ### 2. Connection Pool Exhausted
 
 **Symptoms**:
+
 - Errors: "Connection pool timeout"
 - Errors: "Too many connections"
 - API returning 500 errors
@@ -141,6 +149,7 @@ ORDER BY duration DESC;
 **Resolution Steps**:
 
 #### A. Kill Long-Running Queries
+
 ```sql
 -- Identify long-running queries
 SELECT
@@ -166,6 +175,7 @@ WHERE state = 'idle'
 ```
 
 #### B. Increase Connection Limit (Temporary)
+
 ```typescript
 // In prisma/schema.prisma
 datasource db {
@@ -177,6 +187,7 @@ datasource db {
 ```
 
 #### C. Identify Connection Leak
+
 ```bash
 # Check for leaked connections in code
 grep -r "prisma\." packages/web/src | grep -v "prisma\.\$" | wc -l
@@ -189,6 +200,7 @@ grep -r "prisma\." packages/web/src | grep -v "prisma\.\$" | wc -l
 ### 3. High Write Pressure / MVCC Bloat
 
 **Symptoms**:
+
 - Queries getting slower over time
 - Table sizes growing rapidly
 - Dead row percentage >20%
@@ -217,6 +229,7 @@ ORDER BY dead_pct DESC;
 **Resolution Steps**:
 
 #### A. Manual VACUUM (if needed)
+
 ```sql
 -- Run VACUUM on bloated table
 VACUUM (VERBOSE, ANALYZE) usage_events;
@@ -227,6 +240,7 @@ VACUUM FULL usage_events;
 ```
 
 #### B. Check Write Buffer Status
+
 ```bash
 # Check if write buffer is working
 curl https://api.settler.dev/api/admin/health | jq '.database.writeBuffer'
@@ -237,6 +251,7 @@ redis-cli -u $REDIS_URL ping
 ```
 
 #### C. Disable Write Buffering (if causing issues)
+
 ```typescript
 // Temporarily disable in lib/db/write-buffer.ts
 const BUFFER_CONFIG = {
@@ -250,6 +265,7 @@ const BUFFER_CONFIG = {
 ### 4. Cache Not Working / Low Hit Rate
 
 **Symptoms**:
+
 - Cache hit rate <30%
 - High query load despite caching
 - Redis errors in logs
@@ -270,6 +286,7 @@ redis-cli -u $REDIS_URL INFO memory
 **Resolution Steps**:
 
 #### A. Verify Redis Configuration
+
 ```bash
 # Check environment variables
 echo $REDIS_URL
@@ -285,6 +302,7 @@ redis.ping().then(console.log);
 ```
 
 #### B. Clear Cache (if corrupted)
+
 ```bash
 # Flush all cache keys (use with caution)
 redis-cli -u $REDIS_URL FLUSHDB
@@ -294,6 +312,7 @@ redis-cli -u $REDIS_URL --scan --pattern 'query:*' | xargs redis-cli -u $REDIS_U
 ```
 
 #### C. Increase Cache TTL (if too aggressive)
+
 ```typescript
 // In lib/db/query-gateway.ts
 const CACHE_CONFIG = {
@@ -307,6 +326,7 @@ const CACHE_CONFIG = {
 ### 5. Index Not Being Used
 
 **Symptoms**:
+
 - Query still slow after adding index
 - EXPLAIN shows "Seq Scan" instead of "Index Scan"
 
@@ -326,6 +346,7 @@ EXPLAIN SELECT ...;
 **Resolution Steps**:
 
 #### A. Verify Query Uses Index
+
 ```sql
 -- Check if query matches index columns
 -- Index: (tenant_id, created_at DESC)
@@ -335,6 +356,7 @@ EXPLAIN SELECT ...;
 ```
 
 #### B. Update Table Statistics
+
 ```sql
 -- Force ANALYZE to update query planner stats
 ANALYZE usage_events;
@@ -345,6 +367,7 @@ EXPLAIN SELECT ...;
 ```
 
 #### C. Check Index Bloat
+
 ```sql
 -- If index is bloated, REINDEX
 REINDEX INDEX CONCURRENTLY idx_name;
@@ -357,24 +380,28 @@ REINDEX INDEX CONCURRENTLY idx_name;
 ### Key Queries for Monitoring
 
 #### A. Check Slow Queries (Last Hour)
+
 ```typescript
 // GET /api/admin/health
-const { database } = await fetch('/api/admin/health').then(r => r.json());
+const { database } = await fetch("/api/admin/health").then((r) => r.json());
 console.log(database.slowQueries); // Last 20 slow queries
 ```
 
 #### B. Check Connection Pool Health
+
 ```typescript
-const { database } = await fetch('/api/admin/health').then(r => r.json());
+const { database } = await fetch("/api/admin/health").then((r) => r.json());
 console.log(database.connectionPool.healthy); // true/false
 ```
 
 #### C. Check Table Bloat
+
 ```sql
 SELECT * FROM vw_table_bloat WHERE dead_row_percentage > 10;
 ```
 
 #### D. Check Index Usage
+
 ```sql
 SELECT * FROM vw_index_usage WHERE usage_category = 'UNUSED';
 ```
@@ -386,11 +413,13 @@ SELECT * FROM vw_index_usage WHERE usage_category = 'UNUSED';
 ### Weekly Tasks
 
 1. **Review Slow Queries**
+
    ```bash
    curl https://api.settler.dev/api/admin/health | jq '.database.slowQueries' > slow_queries_$(date +%Y%m%d).json
    ```
 
 2. **Check Unused Indexes**
+
    ```sql
    SELECT * FROM vw_index_usage WHERE usage_category = 'UNUSED' AND pg_size_bytes > 10485760; -- >10MB
    -- Consider dropping unused large indexes
@@ -477,6 +506,7 @@ curl https://api.settler.dev/api/health
 **Impact**: X users affected, X% error rate
 
 ### Timeline
+
 - HH:MM - Initial alert
 - HH:MM - Investigation started
 - HH:MM - Root cause identified
@@ -484,16 +514,20 @@ curl https://api.settler.dev/api/health
 - HH:MM - Incident resolved
 
 ### Root Cause
+
 [Describe technical root cause]
 
 ### Resolution
+
 [Describe fix applied]
 
 ### Action Items
+
 - [ ] Task 1
 - [ ] Task 2
 
 ### Lessons Learned
+
 - What went well
 - What could be improved
 ```

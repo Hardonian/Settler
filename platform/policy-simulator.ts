@@ -83,10 +83,26 @@ export class PolicySimulator {
       const execMeta = (execution as Execution & { metrics?: Record<string, number> }).metrics;
       if (execMeta) {
         const checks: Array<{ metric: string; actual: number; limit: number }> = [
-          { metric: "compute_units", actual: execMeta.compute_units ?? 0, limit: policy.budgets.maxComputeUnits },
-          { metric: "memory_units", actual: execMeta.memory_units ?? 0, limit: policy.budgets.maxMemoryUnits },
-          { metric: "cas_io_units", actual: execMeta.cas_io_units ?? 0, limit: policy.budgets.maxCasIoUnits },
-          { metric: "replay_calls", actual: execMeta.replay_calls ?? 0, limit: policy.budgets.maxReplayCalls },
+          {
+            metric: "compute_units",
+            actual: execMeta.compute_units ?? 0,
+            limit: policy.budgets.maxComputeUnits,
+          },
+          {
+            metric: "memory_units",
+            actual: execMeta.memory_units ?? 0,
+            limit: policy.budgets.maxMemoryUnits,
+          },
+          {
+            metric: "cas_io_units",
+            actual: execMeta.cas_io_units ?? 0,
+            limit: policy.budgets.maxCasIoUnits,
+          },
+          {
+            metric: "replay_calls",
+            actual: execMeta.replay_calls ?? 0,
+            limit: policy.budgets.maxReplayCalls,
+          },
         ];
 
         for (const check of checks) {
@@ -143,10 +159,16 @@ export class PolicySimulator {
         allowedDelta: resultB.executionsAllowed - resultA.executionsAllowed,
         deniedDelta: resultB.executionsDenied - resultA.executionsDenied,
         newViolations: resultB.budgetViolations.filter(
-          (bv) => !resultA.budgetViolations.some((av) => av.executionId === bv.executionId && av.metric === bv.metric)
+          (bv) =>
+            !resultA.budgetViolations.some(
+              (av) => av.executionId === bv.executionId && av.metric === bv.metric
+            )
         ),
         resolvedViolations: resultA.budgetViolations.filter(
-          (av) => !resultB.budgetViolations.some((bv) => bv.executionId === av.executionId && bv.metric === av.metric)
+          (av) =>
+            !resultB.budgetViolations.some(
+              (bv) => bv.executionId === av.executionId && bv.metric === av.metric
+            )
         ),
       },
     };

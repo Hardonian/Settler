@@ -3,8 +3,8 @@
  * Per-tenant and per-user feature flags with A/B testing and kill switches
  */
 
-import { query } from '../../db';
-import { logInfo, logWarn } from '../../utils/logger';
+import { query } from "../../db";
+import { logInfo, logWarn } from "../../utils/logger";
 
 export interface FeatureFlag {
   id: string;
@@ -31,11 +31,7 @@ export class FeatureFlagService {
   /**
    * Check if a feature is enabled for tenant/user
    */
-  async isEnabled(
-    flagName: string,
-    tenantId: string,
-    userId?: string
-  ): Promise<boolean> {
+  async isEnabled(flagName: string, tenantId: string, userId?: string): Promise<boolean> {
     // 1. Check user-specific flag
     if (userId) {
       const userFlag = await this.getFlag(flagName, tenantId, userId);
@@ -49,7 +45,7 @@ export class FeatureFlagService {
     if (tenantFlag) {
       // Check rollout percentage for A/B testing
       if (tenantFlag.rolloutPercentage < 100) {
-        const hash = this.hashString(`${tenantId}:${userId || ''}:${flagName}`);
+        const hash = this.hashString(`${tenantId}:${userId || ""}:${flagName}`);
         const percentage = (hash % 100) + 1;
         return percentage <= tenantFlag.rolloutPercentage;
       }
@@ -60,7 +56,7 @@ export class FeatureFlagService {
     const globalFlag = await this.getFlag(flagName);
     if (globalFlag) {
       if (globalFlag.rolloutPercentage < 100) {
-        const hash = this.hashString(`${tenantId}:${userId || ''}:${flagName}`);
+        const hash = this.hashString(`${tenantId}:${userId || ""}:${flagName}`);
         const percentage = (hash % 100) + 1;
         return percentage <= globalFlag.rolloutPercentage;
       }
@@ -73,11 +69,7 @@ export class FeatureFlagService {
   /**
    * Get feature flag
    */
-  async getFlag(
-    flagName: string,
-    tenantId?: string,
-    userId?: string
-  ): Promise<FeatureFlag | null> {
+  async getFlag(flagName: string, tenantId?: string, userId?: string): Promise<FeatureFlag | null> {
     let sql = `
       SELECT id, name, description, enabled, rollout_percentage as "rolloutPercentage",
              tenant_id as "tenantId", user_id as "userId", conditions, created_at as "createdAt", updated_at as "updatedAt"
@@ -151,7 +143,7 @@ export class FeatureFlagService {
         ]
       );
 
-      logInfo('Feature flag updated', {
+      logInfo("Feature flag updated", {
         flagName,
         tenantId: options.tenantId,
         userId: options.userId,
@@ -187,11 +179,11 @@ export class FeatureFlagService {
           options.changedBy || null,
           JSON.stringify({ enabled: false }),
           JSON.stringify({ enabled, rolloutPercentage: options.rolloutPercentage || 100 }),
-          options.reason || 'Flag created',
+          options.reason || "Flag created",
         ]
       );
 
-      logInfo('Feature flag created', {
+      logInfo("Feature flag created", {
         flagName,
         tenantId: options.tenantId,
         userId: options.userId,
@@ -223,7 +215,7 @@ export class FeatureFlagService {
       [changedBy || null, reason, flagName]
     );
 
-    logWarn('Kill switch activated', { flagName, reason, changedBy });
+    logWarn("Kill switch activated", { flagName, reason, changedBy });
   }
 
   /**
@@ -248,7 +240,7 @@ export class FeatureFlagService {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32-bit integer
     }
     return Math.abs(hash);

@@ -13,6 +13,7 @@ Settler is a Open Source Reconciliation Engine platform that automates financial
 ### Who is Settler for?
 
 Settler is designed for:
+
 - **SaaS companies** processing recurring revenue across multiple platforms
 - **E-commerce businesses** needing order-to-payment reconciliation
 - **Marketplaces** handling multi-party transactions
@@ -49,6 +50,7 @@ No. We use Stripe for payment processing. Stripe handles all credit card data. W
 ### How do I report a security vulnerability?
 
 Email security@settler.io with:
+
 - Description of the vulnerability
 - Steps to reproduce
 - Potential impact
@@ -75,6 +77,7 @@ Yes. You can delete your account and all associated data via the dashboard or AP
 ### Do you share my data with third parties?
 
 No. We do not sell your data. We only share data with:
+
 - Service providers (hosting, payment processing) under strict agreements
 - Legal requirements (when required by law)
 - Business transfers (in connection with merger/acquisition)
@@ -96,6 +99,7 @@ See [Product Overview](./PRODUCT_OVERVIEW.md) for details.
 ### What happens if I exceed my tier limits?
 
 Options:
+
 1. Automatic upgrade to next tier
 2. Overage charges at tier rates
 3. Service throttling (configurable)
@@ -119,11 +123,13 @@ Credit cards, ACH (Enterprise), wire transfer (Enterprise).
 ### What APIs do you support?
 
 Currently:
+
 - Stripe (payment processor)
 - Shopify (e-commerce)
 - Database adapters (PostgreSQL, MySQL)
 
 Planned (Q1-Q3 2026):
+
 - QuickBooks, Xero (accounting)
 - PayPal, Square (payments)
 - NetSuite (ERP)
@@ -132,6 +138,7 @@ Planned (Q1-Q3 2026):
 ### Do you have SDKs?
 
 Yes:
+
 - **TypeScript/JavaScript** (`@settler/sdk`) — Available
 - **Python** (`settler-python`) — Planned
 - **Go** (`settler-go`) — Planned
@@ -140,6 +147,7 @@ Yes:
 ### What are your API rate limits?
 
 Rate limits vary by tier:
+
 - **Starter:** 100 requests/15 minutes
 - **Professional:** 500 requests/15 minutes
 - **Enterprise:** Custom limits
@@ -147,6 +155,7 @@ Rate limits vary by tier:
 ### Do you support webhooks?
 
 Yes. Webhooks are available for:
+
 - Reconciliation job completion
 - Receipt parsing completion
 - Feature flag changes
@@ -168,6 +177,7 @@ SOC 2 Type II certification is planned for Q3 2026. We're currently working towa
 ### Are you GDPR compliant?
 
 Yes. We comply with GDPR requirements:
+
 - Data minimization
 - Right to access (data export API)
 - Right to erasure (data deletion API)
@@ -207,6 +217,7 @@ Yes. Training available for Enterprise customers. Contact enterprise@settler.io.
 ### Is Settler open source?
 
 Settler follows an open-core model:
+
 - **OSS Components:** `@settler/protocol` (MIT License)
 - **Commercial Platform:** Proprietary SaaS platform
 
@@ -227,6 +238,7 @@ Yes. Contributions welcome for OSS components. See [CONTRIBUTING.md](../CONTRIBU
 ### What are the usage limits?
 
 Limits vary by tier:
+
 - **Reconciliations:** 100K/month (Starter) to Unlimited (Enterprise)
 - **Receipt Parses:** 10K/month (Starter) to Unlimited (Enterprise)
 - **Feature Flag Evaluations:** 1M/month (Starter) to Unlimited (Enterprise)

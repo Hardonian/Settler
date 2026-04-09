@@ -15,10 +15,6 @@ export const metadata: Metadata = generateMetadata({
   canonical: "https://settler.dev/community",
 });
 
-export default function CommunityLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function CommunityLayout({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }

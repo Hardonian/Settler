@@ -1,23 +1,23 @@
 /**
  * CLI Playground Component
- * 
+ *
  * Interactive CLI playground with code editor, request builder, and response viewer.
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { useState, useEffect, useCallback } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 // Using native select for now - can be enhanced with a proper Select component later
-import { Badge } from '@/components/ui/badge';
-import { CodeEditor } from './CodeEditor';
-import { RequestResponseViewer, type RequestResponseViewerProps } from './RequestResponseViewer';
-import { FeatureGate, UsageLimit } from './FeatureGate';
-import { Terminal, Play, History, Trash2, Loader2, Sparkles, ArrowRight } from 'lucide-react';
-import Link from 'next/link';
+import { Badge } from "@/components/ui/badge";
+import { CodeEditor } from "./CodeEditor";
+import { RequestResponseViewer, type RequestResponseViewerProps } from "./RequestResponseViewer";
+import { FeatureGate, UsageLimit } from "./FeatureGate";
+import { Terminal, Play, History, Trash2, Loader2, Sparkles, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 interface RequestHistory {
   id: string;
@@ -30,69 +30,88 @@ interface RequestHistory {
 
 const defaultRequests = {
   receipts: {
-    name: 'Parse Receipt',
-    method: 'POST',
-    url: '/api/v1/receipts',
-    body: JSON.stringify({
-      fileUrl: 'https://example.com/receipt.jpg',
-      mimeType: 'image/jpeg',
-    }, null, 2),
+    name: "Parse Receipt",
+    method: "POST",
+    url: "/api/v1/receipts",
+    body: JSON.stringify(
+      {
+        fileUrl: "https://example.com/receipt.jpg",
+        mimeType: "image/jpeg",
+      },
+      null,
+      2
+    ),
   },
   reconcile: {
-    name: 'Create Reconciliation Job',
-    method: 'POST',
-    url: '/api/v1/recon/jobs',
-    body: JSON.stringify({
-      name: 'Monthly Reconciliation',
-      sourceAdapter: 'stripe',
-      targetAdapter: 'shopify',
-    }, null, 2),
+    name: "Create Reconciliation Job",
+    method: "POST",
+    url: "/api/v1/recon/jobs",
+    body: JSON.stringify(
+      {
+        name: "Monthly Reconciliation",
+        sourceAdapter: "stripe",
+        targetAdapter: "shopify",
+      },
+      null,
+      2
+    ),
   },
   flags: {
-    name: 'Evaluate Feature Flag',
-    method: 'POST',
-    url: '/api/v1/feature-flags/evaluate',
-    body: JSON.stringify({
-      flagKey: 'new-dashboard',
-      environment: 'production',
-      context: { userId: 'user_123' },
-    }, null, 2),
+    name: "Evaluate Feature Flag",
+    method: "POST",
+    url: "/api/v1/feature-flags/evaluate",
+    body: JSON.stringify(
+      {
+        flagKey: "new-dashboard",
+        environment: "production",
+        context: { userId: "user_123" },
+      },
+      null,
+      2
+    ),
   },
 };
 
 interface CLIPlaygroundProps {
-  subscriptionTier?: 'free' | 'pro' | 'enterprise' | 'unauthenticated';
+  subscriptionTier?: "free" | "pro" | "enterprise" | "unauthenticated";
 }
 
-export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlaygroundProps) {
-  const [method, setMethod] = useState('POST');
-  const [url, setUrl] = useState('/api/v1/receipts');
+export function CLIPlayground({ subscriptionTier = "unauthenticated" }: CLIPlaygroundProps) {
+  const [method, setMethod] = useState("POST");
+  const [url, setUrl] = useState("/api/v1/receipts");
   const [body, setBody] = useState(defaultRequests.receipts.body);
-  const [requestName, setRequestName] = useState('');
+  const [requestName, setRequestName] = useState("");
   const [isRunning, setIsRunning] = useState(false);
-  const [request, setRequest] = useState<RequestResponseViewerProps['request']>();
-  const [response, setResponse] = useState<RequestResponseViewerProps['response']>();
-  const [error, setError] = useState<RequestResponseViewerProps['error']>();
+  const [request, setRequest] = useState<RequestResponseViewerProps["request"]>();
+  const [response, setResponse] = useState<RequestResponseViewerProps["response"]>();
+  const [error, setError] = useState<RequestResponseViewerProps["error"]>();
   const [history, setHistory] = useState<RequestHistory[]>([]);
-  const [selectedTemplate, setSelectedTemplate] = useState<string>('receipts');
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("receipts");
   const [requestCount, setRequestCount] = useState(0);
-  
+
   // Feature flags based on tier
-  const canSaveHistory = subscriptionTier !== 'unauthenticated';
-  const requestLimit = subscriptionTier === 'unauthenticated' ? 10 : 
-                       subscriptionTier === 'free' ? 50 : 
-                       subscriptionTier === 'pro' ? 500 : -1; // -1 = unlimited
+  const canSaveHistory = subscriptionTier !== "unauthenticated";
+  const requestLimit =
+    subscriptionTier === "unauthenticated"
+      ? 10
+      : subscriptionTier === "free"
+        ? 50
+        : subscriptionTier === "pro"
+          ? 500
+          : -1; // -1 = unlimited
 
   // Load history from localStorage (only if allowed)
   useEffect(() => {
     if (!canSaveHistory) {
       return;
     }
-    
+
     try {
-      const saved = localStorage.getItem('settler-cli-history');
+      const saved = localStorage.getItem("settler-cli-history");
       if (saved) {
-        const parsed = JSON.parse(saved) as Array<Omit<RequestHistory, 'timestamp'> & { timestamp: string }>;
+        const parsed = JSON.parse(saved) as Array<
+          Omit<RequestHistory, "timestamp"> & { timestamp: string }
+        >;
         // Validate and filter invalid entries
         const validHistory = parsed
           .filter((h: any) => h.id && h.method && h.url && h.timestamp)
@@ -101,16 +120,16 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
             timestamp: new Date(h.timestamp),
           }))
           .filter((h) => !isNaN(h.timestamp.getTime())); // Filter invalid dates
-        
+
         if (validHistory.length > 0) {
           setHistory(validHistory);
         }
       }
     } catch (error: unknown) {
-      console.warn('Failed to load history from localStorage:', error);
+      console.warn("Failed to load history from localStorage:", error);
       // Clear corrupted data
       try {
-        localStorage.removeItem('settler-cli-history');
+        localStorage.removeItem("settler-cli-history");
       } catch {
         // Ignore cleanup errors
       }
@@ -122,24 +141,24 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
     try {
       // Limit history size to prevent localStorage bloat
       const limitedHistory = newHistory.slice(0, 50);
-      localStorage.setItem('settler-cli-history', JSON.stringify(limitedHistory));
+      localStorage.setItem("settler-cli-history", JSON.stringify(limitedHistory));
       setHistory(limitedHistory);
     } catch (error: unknown) {
       // Handle quota exceeded or other storage errors
-      if (error instanceof Error && error.name === 'QuotaExceededError') {
-        console.warn('localStorage quota exceeded, clearing old history');
+      if (error instanceof Error && error.name === "QuotaExceededError") {
+        console.warn("localStorage quota exceeded, clearing old history");
         try {
           // Keep only most recent 10 items
           const recentHistory = newHistory.slice(0, 10);
-          localStorage.setItem('settler-cli-history', JSON.stringify(recentHistory));
+          localStorage.setItem("settler-cli-history", JSON.stringify(recentHistory));
           setHistory(recentHistory);
         } catch {
           // If still fails, clear history
-          localStorage.removeItem('settler-cli-history');
+          localStorage.removeItem("settler-cli-history");
           setHistory([]);
         }
       } else {
-        console.warn('Failed to save history:', error);
+        console.warn("Failed to save history:", error);
       }
     }
   }, []);
@@ -160,7 +179,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
     if (requestLimit !== -1 && requestCount >= requestLimit) {
       setError({
         message: `Daily request limit reached (${requestLimit} requests). Upgrade to Growth for unlimited requests.`,
-        code: 'RATE_LIMIT_EXCEEDED'
+        code: "RATE_LIMIT_EXCEEDED",
       });
       setIsRunning(false);
       return;
@@ -169,16 +188,16 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
     // Validate required fields
     if (!url || url.trim().length === 0) {
       setError({
-        message: 'URL is required',
-        code: 'VALIDATION_ERROR'
+        message: "URL is required",
+        code: "VALIDATION_ERROR",
       });
       return;
     }
 
     if (!method) {
       setError({
-        message: 'HTTP method is required',
-        code: 'VALIDATION_ERROR'
+        message: "HTTP method is required",
+        code: "VALIDATION_ERROR",
       });
       return;
     }
@@ -188,26 +207,28 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
     setResponse(undefined);
 
     const startTime = Date.now();
-    
+
     // Validate and parse request body
     let parsedBody: unknown;
     try {
       parsedBody = body && body.trim() ? JSON.parse(body) : undefined;
     } catch {
       setError({
-        message: 'Invalid JSON in request body. Please check your syntax.',
-        code: 'INVALID_JSON'
+        message: "Invalid JSON in request body. Please check your syntax.",
+        code: "INVALID_JSON",
       });
       setIsRunning(false);
       return;
     }
 
     // Get actual API key from user's keys (if available)
-    let apiKey = 'rk_your_api_key';
+    let apiKey = "rk_your_api_key";
     try {
-      const keyRes = await fetch('/api/console/api-keys');
+      const keyRes = await fetch("/api/console/api-keys");
       if (keyRes.ok) {
-        const keyData = await keyRes.json() as { keys?: Array<{ keyPrefix: string; revokedAt?: string | null }> };
+        const keyData = (await keyRes.json()) as {
+          keys?: Array<{ keyPrefix: string; revokedAt?: string | null }>;
+        };
         const activeKey = keyData.keys?.find((k) => !k.revokedAt);
         if (activeKey) {
           // In production, would use full key from secure storage
@@ -219,21 +240,21 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
     }
 
     // Validate URL format
-    if (!url || (!url.startsWith('/') && !url.startsWith('http'))) {
+    if (!url || (!url.startsWith("/") && !url.startsWith("http"))) {
       setError({
-        message: 'Invalid URL format. URLs must start with / or http://',
-        code: 'INVALID_URL'
+        message: "Invalid URL format. URLs must start with / or http://",
+        code: "INVALID_URL",
       });
       setIsRunning(false);
       return;
     }
 
-    const requestData: RequestResponseViewerProps['request'] = {
+    const requestData: RequestResponseViewerProps["request"] = {
       method,
       url,
       headers: {
-        'Content-Type': 'application/json',
-        'X-API-Key': apiKey,
+        "Content-Type": "application/json",
+        "X-API-Key": apiKey,
       },
       body: parsedBody,
     };
@@ -245,12 +266,12 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
 
-      const res = await fetch(url.startsWith('/') ? url : `/api${url}`, {
+      const res = await fetch(url.startsWith("/") ? url : `/api${url}`, {
         method,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: method !== 'GET' && body ? body : undefined,
+        body: method !== "GET" && body ? body : undefined,
         signal: controller.signal,
       });
 
@@ -279,14 +300,14 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
         };
         saveHistory([newHistory, ...history.slice(0, 9)]);
       }
-      
+
       // Increment request count
-      setRequestCount(prev => prev + 1);
+      setRequestCount((prev) => prev + 1);
     } catch (error: unknown) {
       const duration = Date.now() - startTime;
       setError({
-        message: error instanceof Error ? error.message : 'Unknown error occurred',
-        code: 'NETWORK_ERROR',
+        message: error instanceof Error ? error.message : "Unknown error occurred",
+        code: "NETWORK_ERROR",
       });
       setResponse({
         status: 0,
@@ -300,13 +321,16 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
   const loadHistoryItem = useCallback((item: RequestHistory) => {
     setMethod(item.method);
     setUrl(item.url);
-    setBody(item.body || '');
+    setBody(item.body || "");
     setRequestName(item.name);
   }, []);
 
-  const deleteHistoryItem = useCallback((id: string) => {
-    saveHistory(history.filter((h: any) => h.id !== id));
-  }, [history, saveHistory]);
+  const deleteHistoryItem = useCallback(
+    (id: string) => {
+      saveHistory(history.filter((h: any) => h.id !== id));
+    },
+    [history, saveHistory]
+  );
 
   return (
     <div className="space-y-6">
@@ -320,7 +344,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
             Build and test API requests with an interactive code editor and response viewer.
           </p>
         </div>
-        {subscriptionTier !== 'enterprise' && (
+        {subscriptionTier !== "enterprise" && (
           <UsageLimit
             current={requestCount}
             limit={requestLimit}
@@ -391,11 +415,11 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
                 />
               </div>
 
-              {method !== 'GET' && (
+              {method !== "GET" && (
                 <div>
                   <Label>Request Body (JSON)</Label>
                   <CodeEditor
-                    value={body || ''}
+                    value={body || ""}
                     onChange={setBody}
                     language="json"
                     height="300px"
@@ -405,9 +429,11 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
               )}
 
               <div className="space-y-2">
-                <Button 
-                  onClick={() => handleRun(0)} 
-                  disabled={isRunning || !url || (requestLimit !== -1 && requestCount >= requestLimit)}
+                <Button
+                  onClick={() => handleRun(0)}
+                  disabled={
+                    isRunning || !url || (requestLimit !== -1 && requestCount >= requestLimit)
+                  }
                   className="w-full"
                   size="lg"
                   aria-label="Execute API request"
@@ -426,7 +452,10 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
                 </Button>
                 {requestLimit !== -1 && requestCount >= requestLimit && (
                   <p className="text-xs text-center text-amber-600 dark:text-amber-400">
-                    Daily limit reached. <Link href="/console/billing" className="underline">Upgrade for more</Link>
+                    Daily limit reached.{" "}
+                    <Link href="/console/billing" className="underline">
+                      Upgrade for more
+                    </Link>
                   </p>
                 )}
               </div>
@@ -435,11 +464,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
 
           {/* Response Viewer */}
           {(request || response || error) && (
-            <RequestResponseViewer
-              request={request}
-              response={response}
-              error={error}
-            />
+            <RequestResponseViewer request={request} response={response} error={error} />
           )}
         </div>
 
@@ -458,9 +483,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
                   <History className="w-5 h-5" />
                   Request History
                 </CardTitle>
-                <CardDescription>
-                  Recently executed requests
-                </CardDescription>
+                <CardDescription>Recently executed requests</CardDescription>
               </CardHeader>
               <CardContent>
                 {history.length === 0 ? (
@@ -481,9 +504,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
                               <Badge variant="outline" className="text-xs">
                                 {item.method}
                               </Badge>
-                              <span className="text-sm font-medium truncate">
-                                {item.name}
-                              </span>
+                              <span className="text-sm font-medium truncate">{item.name}</span>
                             </div>
                             <code className="text-xs text-muted-foreground dark:text-muted-foreground/40 truncate block leading-[1.5]">
                               {item.url}
@@ -522,9 +543,9 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
                 variant="outline"
                 className="w-full justify-start"
                 onClick={() => {
-                  setMethod('GET');
-                  setUrl('/api/v1/receipts');
-                  setBody('');
+                  setMethod("GET");
+                  setUrl("/api/v1/receipts");
+                  setBody("");
                 }}
               >
                 List Receipts
@@ -533,9 +554,9 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
                 variant="outline"
                 className="w-full justify-start"
                 onClick={() => {
-                  setMethod('GET');
-                  setUrl('/api/v1/recon/jobs');
-                  setBody('');
+                  setMethod("GET");
+                  setUrl("/api/v1/recon/jobs");
+                  setBody("");
                 }}
               >
                 List Jobs
@@ -544,9 +565,9 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
                 variant="outline"
                 className="w-full justify-start"
                 onClick={() => {
-                  setMethod('GET');
-                  setUrl('/api/v1/feature-flags');
-                  setBody('');
+                  setMethod("GET");
+                  setUrl("/api/v1/feature-flags");
+                  setBody("");
                 }}
               >
                 List Flags
@@ -555,7 +576,7 @@ export function CLIPlayground({ subscriptionTier = 'unauthenticated' }: CLIPlayg
           </Card>
 
           {/* Upgrade Prompt for Free/Unauthenticated */}
-          {subscriptionTier !== 'pro' && subscriptionTier !== 'enterprise' && (
+          {subscriptionTier !== "pro" && subscriptionTier !== "enterprise" && (
             <Card className="border-purple-200 dark:border-purple-800 bg-gradient-to-br from-purple-50/50 to-pink-50/50 dark:from-purple-900/10 dark:to-pink-900/10">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">

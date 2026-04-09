@@ -9,6 +9,7 @@
 ### Scenario: Customer wants to understand overage charges
 
 **Customer Email:**
+
 > Hi, I'm on the Starter plan ($29/month) and got charged $45 this month. Can you explain the overage charges?
 
 **Support Response:**
@@ -26,6 +27,7 @@ Thanks for reaching out! I'm happy to explain your billing.
 **What happened:** You exceeded your plan limit by 2,000 reconciliations. We automatically bill overages at $0.01 per reconciliation to avoid service interruption.
 
 **Options:**
+
 1. **Upgrade to Growth** ($99/month) — Includes 100,000 reconciliations (no overages at your current volume)
 2. **Optimize usage** — Review your jobs to see if you can reduce reconciliation frequency
 3. **Stay on Starter** — Continue with overage billing (works if occasional spikes)
@@ -44,6 +46,7 @@ Settler Support
 ### Scenario: Customer wants a refund
 
 **Customer Email:**
+
 > I signed up yesterday and realized Settler isn't right for my use case. Can I get a refund?
 
 **Support Response:**
@@ -53,6 +56,7 @@ Hi {{customer_name}},
 I'm sorry to hear Settler isn't a good fit. We offer a **30-day money-back guarantee** for all paid plans, so you're eligible for a full refund.
 
 **Refund Process:**
+
 1. I'll process your refund now (takes 5-7 business days to appear)
 2. Your account will remain active until the end of your billing period
 3. You'll receive a confirmation email once the refund is processed
@@ -72,6 +76,7 @@ Settler Support
 ### Scenario: Customer wants to downgrade
 
 **Customer Email:**
+
 > My usage has decreased. Can I downgrade from Growth to Starter?
 
 **Support Response:**
@@ -105,6 +110,7 @@ Settler Support
 ### Scenario: Customer can't connect Shopify adapter
 
 **Customer Email:**
+
 > I'm getting an error when trying to connect Shopify. Error: "Invalid API credentials"
 
 **Support Response:**
@@ -114,6 +120,7 @@ Hi {{customer_name}},
 Let's get Shopify connected! This error usually means the API credentials aren't quite right. Here's how to fix it:
 
 **Step 1: Get Your Shopify API Credentials**
+
 1. Go to your Shopify admin → Settings → Apps and sales channels
 2. Click "Develop apps" → "Create an app"
 3. Name it "Settler Reconciliation"
@@ -127,6 +134,7 @@ Let's get Shopify connected! This error usually means the API credentials aren't
    - **Shop Domain** (e.g., `your-shop.myshopify.com`)
 
 **Step 2: Use the Correct Format**
+
 ```typescript
 {
   adapter: "shopify",
@@ -138,6 +146,7 @@ Let's get Shopify connected! This error usually means the API credentials aren't
 ```
 
 **Common Mistakes:**
+
 - ❌ Using admin API key instead of app API key
 - ❌ Missing `.myshopify.com` in shop domain
 - ❌ Wrong API scopes (need `read_orders`)
@@ -155,6 +164,7 @@ Settler Support
 ### Scenario: Customer's reconciliation accuracy is low
 
 **Customer Email:**
+
 > My reconciliation is only matching 70% of transactions. How can I improve accuracy?
 
 **Support Response:**
@@ -167,6 +177,7 @@ Hi {{customer_name}},
 [View unmatched transactions →](https://settler.io/dashboard/jobs/{{job_id}}/unmatched)
 
 Look for patterns:
+
 - Are amounts slightly different? (e.g., $100.00 vs $100.01)
 - Are dates off? (e.g., order date vs payment date)
 - Are IDs formatted differently? (e.g., "ORD-123" vs "123")
@@ -174,6 +185,7 @@ Look for patterns:
 **2. Adjust Matching Rules**
 
 **If amounts are slightly off:**
+
 ```typescript
 {
   field: "amount",
@@ -183,6 +195,7 @@ Look for patterns:
 ```
 
 **If dates are off:**
+
 ```typescript
 {
   field: "date",
@@ -192,6 +205,7 @@ Look for patterns:
 ```
 
 **If IDs are formatted differently:**
+
 ```typescript
 {
   field: "order_id",
@@ -201,6 +215,7 @@ Look for patterns:
 ```
 
 **3. Check Data Quality**
+
 - Are both platforms receiving all transactions?
 - Are there webhook failures?
 - Are transactions being created in both systems?
@@ -218,6 +233,7 @@ Settler Support
 ### Scenario: Customer's webhooks aren't working
 
 **Customer Email:**
+
 > I set up webhooks but I'm not receiving reconciliation events. What's wrong?
 
 **Support Response:**
@@ -227,6 +243,7 @@ Hi {{customer_name}},
 Let's troubleshoot your webhooks! Here's a step-by-step checklist:
 
 **1. Verify Webhook Endpoint**
+
 - Is your endpoint publicly accessible? (no localhost)
 - Does it return `200 OK`?
 - Is it using HTTPS? (required for security)
@@ -235,11 +252,13 @@ Let's troubleshoot your webhooks! Here's a step-by-step checklist:
 [View your webhooks →](https://settler.io/dashboard/webhooks)
 
 Make sure:
+
 - ✅ URL is correct (no typos)
 - ✅ Events are selected (`reconciliation.completed`, `reconciliation.mismatch`)
 - ✅ Secret is set (for signature verification)
 
 **3. Test Your Endpoint**
+
 ```bash
 curl -X POST https://your-endpoint.com/webhooks/settler \
   -H "Content-Type: application/json" \
@@ -251,31 +270,30 @@ curl -X POST https://your-endpoint.com/webhooks/settler \
 [View webhook delivery logs →](https://settler.io/dashboard/webhooks/{{webhook_id}}/logs)
 
 Look for:
+
 - ❌ Failed deliveries (4xx/5xx responses)
 - ❌ Timeout errors
 - ❌ Invalid signature errors
 
 **5. Verify Signature Verification**
+
 ```typescript
 import Settler from "@settler/sdk";
 
 app.post("/webhooks/settler", async (req, res) => {
   const signature = req.headers["settler-signature"];
-  const isValid = settler.webhooks.verify(
-    req.body,
-    signature,
-    process.env.WEBHOOK_SECRET
-  );
-  
+  const isValid = settler.webhooks.verify(req.body, signature, process.env.WEBHOOK_SECRET);
+
   if (!isValid) {
     return res.status(401).json({ error: "Invalid signature" });
   }
-  
+
   // Process webhook...
 });
 ```
 
 **Common Issues:**
+
 - ❌ Endpoint not publicly accessible
 - ❌ Endpoint returning non-200 status
 - ❌ Signature verification failing
@@ -296,6 +314,7 @@ Settler Support
 ### Scenario: Customer needs SOC 2 documentation
 
 **Customer Email:**
+
 > We're going through a SOC 2 audit. Can you provide SOC 2 documentation?
 
 **Support Response:**
@@ -305,21 +324,25 @@ Hi {{customer_name}},
 Great question! Here's our compliance status:
 
 **Current Status:**
+
 - ✅ **SOC 2 Type II audit in progress** — Certification expected Q2 2026
 - ✅ **SOC 2 controls implemented** — We follow SOC 2 controls today
 - ✅ **Security documentation** — Available upon request
 
 **Available Now:**
+
 1. **Security Overview** — [settler.io/security](https://settler.io/security)
 2. **Data Processing Agreement (DPA)** — [Request DPA →](https://settler.io/legal/dpa)
 3. **Security Questionnaire** — [Request questionnaire →](mailto:security@settler.io)
 
 **For Enterprise Customers:**
+
 - ✅ **SOC 2 Type II report** — Available Q2 2026 (included in Enterprise)
 - ✅ **Custom security reviews** — Available on request
 - ✅ **Dedicated security contact** — security@settler.io
 
 **What We Can Provide:**
+
 - Security architecture overview
 - Data encryption details (AES-256 at rest, TLS 1.3 in transit)
 - Access control policies (RBAC, API keys)
@@ -327,6 +350,7 @@ Great question! Here's our compliance status:
 - Incident response procedures
 
 **Next Steps:**
+
 1. **Request DPA** — [settler.io/legal/dpa](https://settler.io/legal/dpa)
 2. **Request Security Questionnaire** — Email security@settler.io
 3. **Schedule Security Call** — [settler.io/contact/security](https://settler.io/contact/security)
@@ -344,6 +368,7 @@ Settler Support
 ### Scenario: Customer needs GDPR data export
 
 **Customer Email:**
+
 > We need to export all our data for GDPR compliance. How do we do this?
 
 **Support Response:**
@@ -353,6 +378,7 @@ Hi {{customer_name}},
 We make GDPR data export easy! Here are your options:
 
 **Option 1: Self-Service API Export**
+
 ```typescript
 import Settler from "@settler/sdk";
 
@@ -371,11 +397,13 @@ console.log(exportData.data); // JSON object with all your data
 ```
 
 **Option 2: Dashboard Export**
+
 1. Go to [Settings → Data Export](https://settler.io/dashboard/settings/data-export)
 2. Click "Request Data Export"
 3. You'll receive an email with download link (processed within 24 hours)
 
 **What's Included:**
+
 - ✅ All reconciliation jobs and configurations
 - ✅ All reconciliation reports and results
 - ✅ All webhook configurations
@@ -384,15 +412,18 @@ console.log(exportData.data); // JSON object with all your data
 - ✅ All user account data
 
 **Export Formats:**
+
 - JSON (machine-readable)
 - CSV (for Excel/spreadsheets)
 - PDF (human-readable report)
 
 **Data Retention:**
+
 - We retain your data according to your plan's retention period
 - You can request deletion at any time via API or dashboard
 
 **Request Deletion:**
+
 ```typescript
 // Delete all your data
 await settler.users.deleteData({
@@ -415,6 +446,7 @@ Settler Support
 ### Scenario: Customer wants to know about PCI-DSS compliance
 
 **Customer Email:**
+
 > Do you store credit card data? Are you PCI-DSS compliant?
 
 **Support Response:**
@@ -426,6 +458,7 @@ Great security question! Here's our PCI-DSS stance:
 **Short Answer:** We **never store credit card data**, so PCI-DSS scope is minimal.
 
 **What We Store:**
+
 - ✅ Transaction IDs, amounts, dates, metadata
 - ✅ Platform API keys (encrypted)
 - ❌ **Never** credit card numbers
@@ -433,23 +466,27 @@ Great security question! Here's our PCI-DSS stance:
 - ❌ **Never** CVV codes
 
 **How It Works:**
+
 1. Your platforms (Stripe, Shopify, etc.) process payments
 2. They send transaction data to Settler (no card data)
 3. We reconcile transactions (matching IDs, amounts, dates)
 4. We never see or store card data
 
 **PCI-DSS Status:**
+
 - ✅ **PCI-DSS Level 1** — Available for Enterprise customers (Q3 2026)
 - ✅ **PCI-DSS scope reduction** — We never store card data
 - ✅ **Secure infrastructure** — TLS 1.3, encrypted storage
 
 **If You Send Card Data:**
 If you accidentally send card data via webhooks, we:
+
 - ✅ Pass it through without storage
 - ✅ Log the event (for security monitoring)
 - ✅ Alert you to remove card data from webhooks
 
 **For Enterprise Customers:**
+
 - ✅ **PCI-DSS Level 1 certification** — Available Q3 2026
 - ✅ **Custom PCI-DSS review** — Available on request
 - ✅ **Dedicated security contact** — security@settler.io
@@ -468,6 +505,7 @@ Settler Support
 ## General Support Best Practices
 
 ### Response Time SLAs
+
 - **Free Tier:** Community support (Discord, GitHub)
 - **Starter:** Email support (24-hour response)
 - **Growth:** Priority email support (4-hour response)
@@ -475,12 +513,14 @@ Settler Support
 - **Enterprise:** Dedicated account manager (1-hour SLA)
 
 ### Tone Guidelines
+
 - ✅ **Friendly and helpful** — We're here to solve problems
 - ✅ **Technical but accessible** — Explain clearly, provide code examples
 - ✅ **Proactive** — Suggest optimizations and best practices
 - ✅ **Empathetic** — Acknowledge frustrations, celebrate wins
 
 ### Escalation Triggers
+
 - Billing disputes → Escalate to billing team
 - Security concerns → Escalate to security team
 - Enterprise inquiries → Escalate to sales team

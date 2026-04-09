@@ -1,15 +1,15 @@
 /**
  * Error Monitoring & Alerting
- * 
+ *
  * Proactive error detection and notification system.
  */
 
-import { prisma } from '@/shared/db/prismaClient';
+import { prisma } from "@/shared/db/prismaClient";
 
 export interface ErrorAlert {
   id: string;
-  type: 'error_rate' | 'error_spike' | 'service_down' | 'limit_exceeded';
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  type: "error_rate" | "error_spike" | "service_down" | "limit_exceeded";
+  severity: "low" | "medium" | "high" | "critical";
   message: string;
   details: Record<string, unknown>;
   timestamp: Date;
@@ -59,7 +59,7 @@ export async function checkErrorRate(
     for (const event of events) {
       const quantity = Number(event.quantity) || 1;
       totalCalls += quantity;
-      if (event.metadata && typeof event.metadata === 'object' && 'error' in event.metadata) {
+      if (event.metadata && typeof event.metadata === "object" && "error" in event.metadata) {
         errorCount += quantity;
       }
     }
@@ -69,8 +69,8 @@ export async function checkErrorRate(
     if (errorRate > config.errorRateThreshold) {
       return {
         id: `error-rate-${billingAccountId}-${Date.now()}`,
-        type: 'error_rate',
-        severity: errorRate > 0.2 ? 'critical' : errorRate > 0.1 ? 'high' : 'medium',
+        type: "error_rate",
+        severity: errorRate > 0.2 ? "critical" : errorRate > 0.1 ? "high" : "medium",
         message: `Error rate is ${(errorRate * 100).toFixed(2)}%, exceeding threshold of ${(config.errorRateThreshold * 100).toFixed(2)}%`,
         details: {
           errorRate,
@@ -86,7 +86,7 @@ export async function checkErrorRate(
 
     return null;
   } catch (error) {
-    console.error('[Error Alerts] Error checking error rate:', error);
+    console.error("[Error Alerts] Error checking error rate:", error);
     return null;
   }
 }
@@ -103,7 +103,9 @@ export async function checkErrorSpike(
   try {
     const now = new Date();
     const currentWindowStart = new Date(now.getTime() - config.checkIntervalMinutes * 60 * 1000);
-    const previousWindowStart = new Date(currentWindowStart.getTime() - config.checkIntervalMinutes * 60 * 1000);
+    const previousWindowStart = new Date(
+      currentWindowStart.getTime() - config.checkIntervalMinutes * 60 * 1000
+    );
     const previousWindowEnd = currentWindowStart;
 
     // Current window errors
@@ -126,13 +128,13 @@ export async function checkErrorSpike(
     let previousErrors = 0;
 
     for (const event of currentEvents) {
-      if (event.metadata && typeof event.metadata === 'object' && 'error' in event.metadata) {
+      if (event.metadata && typeof event.metadata === "object" && "error" in event.metadata) {
         currentErrors += Number(event.quantity) || 1;
       }
     }
 
     for (const event of previousEvents) {
-      if (event.metadata && typeof event.metadata === 'object' && 'error' in event.metadata) {
+      if (event.metadata && typeof event.metadata === "object" && "error" in event.metadata) {
         previousErrors += Number(event.quantity) || 1;
       }
     }
@@ -140,8 +142,8 @@ export async function checkErrorSpike(
     if (previousErrors > 0 && currentErrors > previousErrors * config.errorSpikeMultiplier) {
       return {
         id: `error-spike-${billingAccountId}-${Date.now()}`,
-        type: 'error_spike',
-        severity: currentErrors > previousErrors * 5 ? 'critical' : 'high',
+        type: "error_spike",
+        severity: currentErrors > previousErrors * 5 ? "critical" : "high",
         message: `Error spike detected: ${currentErrors} errors in last ${config.checkIntervalMinutes} minutes (${previousErrors} in previous period)`,
         details: {
           currentErrors,
@@ -156,7 +158,7 @@ export async function checkErrorSpike(
 
     return null;
   } catch (error) {
-    console.error('[Error Alerts] Error checking error spike:', error);
+    console.error("[Error Alerts] Error checking error spike:", error);
     return null;
   }
 }
@@ -193,7 +195,7 @@ export async function getActiveAlerts(userId: string): Promise<ErrorAlert[]> {
 
     return await checkAllAlerts(billingAccount.id);
   } catch (error) {
-    console.error('[Error Alerts] Error getting active alerts:', error);
+    console.error("[Error Alerts] Error getting active alerts:", error);
     return [];
   }
 }

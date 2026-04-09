@@ -1,9 +1,9 @@
 /**
  * Autonomous CFO Lite Agent (Finance Replacement)
- * 
+ *
  * Replaces: Finance / Ops role
  * Runs: Daily
- * 
+ *
  * What it does:
  * - Reads Stripe usage
  * - Tracks Supabase + Vercel costs
@@ -30,13 +30,17 @@ async function generateInsights(
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
         messages: [
-          { role: "system", content: "You are an expert financial analyst providing strategic insights. Be concise, specific, and actionable." },
+          {
+            role: "system",
+            content:
+              "You are an expert financial analyst providing strategic insights. Be concise, specific, and actionable.",
+          },
           { role: "user", content: prompt },
         ],
         temperature: 0.7,
@@ -124,9 +128,10 @@ serve(async (req) => {
       enterprise: 299,
     };
 
-    const mrr = subscriptions?.reduce((sum, s) => {
-      return sum + (planMultiplier[s.plan_id as string] || 0);
-    }, 0) || 0;
+    const mrr =
+      subscriptions?.reduce((sum, s) => {
+        return sum + (planMultiplier[s.plan_id as string] || 0);
+      }, 0) || 0;
 
     // Get historical MRR for growth calculation
     const { data: oldSubscriptions } = await supabase
@@ -135,9 +140,10 @@ serve(async (req) => {
       .gte("created_at", threeMonthsAgo.toISOString())
       .lt("created_at", monthAgo.toISOString());
 
-    const oldMrr = oldSubscriptions?.reduce((sum, s) => {
-      return sum + (planMultiplier[s.plan_id as string] || 0);
-    }, 0) || 0;
+    const oldMrr =
+      oldSubscriptions?.reduce((sum, s) => {
+        return sum + (planMultiplier[s.plan_id as string] || 0);
+      }, 0) || 0;
 
     // Calculate growth rate
     const growthRate = oldMrr > 0 ? (mrr - oldMrr) / oldMrr : 0;

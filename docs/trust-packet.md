@@ -12,14 +12,14 @@ Settler is a deterministic reconciliation platform. It matches financial transac
 
 ## Architecture overview
 
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| Control Plane API | Node.js / Express / TypeScript | Orchestration, routing, tenant management |
-| Console | Next.js | Operator dashboard |
-| Primary Database | PostgreSQL (Supabase) | Projections, metadata, audit logs, tenant config |
-| Ledger | TigerBeetle | Immutable financial-grade transaction ledger |
-| Cache / Queue | Redis | Job queue, caching (optional for basic operation) |
-| CLI | TypeScript | Operator tooling, verification, test data generation |
+| Component         | Technology                     | Purpose                                              |
+| ----------------- | ------------------------------ | ---------------------------------------------------- |
+| Control Plane API | Node.js / Express / TypeScript | Orchestration, routing, tenant management            |
+| Console           | Next.js                        | Operator dashboard                                   |
+| Primary Database  | PostgreSQL (Supabase)          | Projections, metadata, audit logs, tenant config     |
+| Ledger            | TigerBeetle                    | Immutable financial-grade transaction ledger         |
+| Cache / Queue     | Redis                          | Job queue, caching (optional for basic operation)    |
+| CLI               | TypeScript                     | Operator tooling, verification, test data generation |
 
 See: [`docs/architecture/platform-architecture.md`](architecture/platform-architecture.md)
 
@@ -32,6 +32,7 @@ Settler is multi-tenant by design. Tenant isolation is enforced at multiple laye
 3. **Ledger isolation:** TigerBeetle accounts are partitioned by tenant.
 
 **Verification evidence:**
+
 - RLS policies: [`supabase/migrations/`](../supabase/migrations/) (search for `CREATE POLICY`)
 - Tenant middleware: [`packages/api/src/middleware/`](../packages/api/src/middleware/)
 - Security invariants: [`SECURITY_INVARIANTS.md`](../SECURITY_INVARIANTS.md)
@@ -39,11 +40,11 @@ Settler is multi-tenant by design. Tenant isolation is enforced at multiple laye
 
 ## Authentication and authorization
 
-| Method | Use case | Implementation |
-|--------|----------|----------------|
-| API Key (`X-API-Key` header) | Server-to-server, SDK, CI/CD | Scoped to tenant, revocable |
-| JWT Bearer token | Console sessions, user auth | Supabase Auth, short-lived tokens |
-| Webhook signatures | Event verification | HMAC-SHA256, timestamp validation |
+| Method                       | Use case                     | Implementation                    |
+| ---------------------------- | ---------------------------- | --------------------------------- |
+| API Key (`X-API-Key` header) | Server-to-server, SDK, CI/CD | Scoped to tenant, revocable       |
+| JWT Bearer token             | Console sessions, user auth  | Supabase Auth, short-lived tokens |
+| Webhook signatures           | Event verification           | HMAC-SHA256, timestamp validation |
 
 OIDC SSO is **configuration-gated** (Okta, Entra ID, Google Workspace env contracts). It is not operational until configured and validated per deployment. SAML is not asserted as GA in this repository path. SCIM directory sync is **not implemented** in application code (`pnpm run verify:scim-posture`).
 
@@ -60,6 +61,7 @@ Every significant operation produces an audit log entry:
 Audit logs include: timestamp, actor ID, tenant ID, action, resource, and metadata.
 
 **Verification evidence:**
+
 - Audit log schema: [`prisma/schema.prisma`](../prisma/schema.prisma) (search for `AuditLog`)
 - Audit log service: [`packages/api/src/services/`](../packages/api/src/services/)
 
@@ -86,6 +88,7 @@ Audit logs include: timestamp, actor ID, tenant ID, action, resource, and metada
 ### Data portability
 
 Full data export is available at any time:
+
 - Via API: `POST /api/v1/exports`
 - Via CLI: `settler export --tenant <id>`
 - Formats: CSV, JSON
@@ -143,12 +146,12 @@ Full dependency tree available via `pnpm ls --depth=0` or the SBOM generation wo
 
 ## Compliance readiness
 
-| Framework | Status | Evidence |
-|-----------|--------|----------|
-| SOC 2 Type II | In preparation | [`docs/compliance/SOC2_PREPARATION.md`](compliance/SOC2_PREPARATION.md) |
-| GDPR | Operational controls in place | [`PRIVACY.md`](../PRIVACY.md), DPA template |
-| Audit trail | Implemented | Audit log system, evidence generation |
-| Data portability | Implemented | Export API, CLI, [`DATA_PORTABILITY.md`](../DATA_PORTABILITY.md) |
+| Framework        | Status                        | Evidence                                                                |
+| ---------------- | ----------------------------- | ----------------------------------------------------------------------- |
+| SOC 2 Type II    | In preparation                | [`docs/compliance/SOC2_PREPARATION.md`](compliance/SOC2_PREPARATION.md) |
+| GDPR             | Operational controls in place | [`PRIVACY.md`](../PRIVACY.md), DPA template                             |
+| Audit trail      | Implemented                   | Audit log system, evidence generation                                   |
+| Data portability | Implemented                   | Export API, CLI, [`DATA_PORTABILITY.md`](../DATA_PORTABILITY.md)        |
 
 ## Procurement FAQ
 

@@ -1,11 +1,11 @@
 /**
  * Enhanced Adapter Interface
- * 
+ *
  * Supports webhook ingestion, API polling, and comprehensive normalization
  * as specified in the Product & Technical Specification.
  */
 
-import { Transaction, Settlement, Fee, RefundDispute, FXConversion } from '@settler/types';
+import { Transaction, Settlement, Fee, RefundDispute, FXConversion } from "@settler/types";
 
 export interface AdapterConfig {
   apiKey?: string;
@@ -22,7 +22,15 @@ export interface DateRange {
 }
 
 export interface NormalizedEvent {
-  type: 'authorization' | 'capture' | 'refund' | 'chargeback' | 'dispute' | 'payout' | 'adjustment' | 'fx_conversion';
+  type:
+    | "authorization"
+    | "capture"
+    | "refund"
+    | "chargeback"
+    | "dispute"
+    | "payout"
+    | "adjustment"
+    | "fx_conversion";
   transaction?: Transaction;
   settlement?: Settlement;
   refundDispute?: RefundDispute;

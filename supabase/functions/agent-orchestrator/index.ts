@@ -1,6 +1,6 @@
 /**
  * Agent Orchestrator
- * 
+ *
  * Schedules and coordinates all autonomous agents
  * Runs: Via cron (Supabase pg_cron) or manual trigger
  */
@@ -161,24 +161,18 @@ serve(async (req) => {
 
     if (action === "disable" || action === "enable") {
       if (!agentType) {
-        return new Response(
-          JSON.stringify({ error: "agent_type required" }),
-          {
-            status: 400,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
-        );
+        return new Response(JSON.stringify({ error: "agent_type required" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
 
       const config = AGENT_CONFIGS.find((c) => c.agent_type === agentType);
       if (!config) {
-        return new Response(
-          JSON.stringify({ error: `Unknown agent: ${agentType}` }),
-          {
-            status: 400,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
-        );
+        return new Response(JSON.stringify({ error: `Unknown agent: ${agentType}` }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
 
       // In a real implementation, this would update a database table

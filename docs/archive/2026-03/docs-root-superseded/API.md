@@ -50,15 +50,16 @@ The API uses URL versioning:
 
 Rate limits are tier-based:
 
-| Tier | RPM | Concurrent Jobs | Monthly Recons |
-|------|-----|----------------|----------------|
-| Free | 100 | 1 | 100 |
-| Starter | 1,000 | 5 | 10,000 |
-| Pro | 10,000 | 20 | 100,000 |
-| Business | 50,000 | 100 | 1,000,000 |
-| Enterprise | 1,000,000 | 1,000 | Unlimited |
+| Tier       | RPM       | Concurrent Jobs | Monthly Recons |
+| ---------- | --------- | --------------- | -------------- |
+| Free       | 100       | 1               | 100            |
+| Starter    | 1,000     | 5               | 10,000         |
+| Pro        | 10,000    | 20              | 100,000        |
+| Business   | 50,000    | 100             | 1,000,000      |
+| Enterprise | 1,000,000 | 1,000           | Unlimited      |
 
 Rate limit headers:
+
 - `X-RateLimit-Limit` - Request limit per minute
 - `X-RateLimit-Remaining` - Remaining requests
 - `X-RateLimit-Reset` - Reset time (Unix timestamp)
@@ -315,18 +316,12 @@ X-API-Key: sk_your_api_key
 Webhooks are signed with HMAC-SHA256. Verify the signature:
 
 ```javascript
-const crypto = require('crypto');
+const crypto = require("crypto");
 
 function verifyWebhook(payload, signature, secret) {
-  const expectedSignature = crypto
-    .createHmac('sha256', secret)
-    .update(payload)
-    .digest('hex');
-  
-  return crypto.timingSafeEqual(
-    Buffer.from(signature),
-    Buffer.from(expectedSignature)
-  );
+  const expectedSignature = crypto.createHmac("sha256", secret).update(payload).digest("hex");
+
+  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature));
 }
 ```
 

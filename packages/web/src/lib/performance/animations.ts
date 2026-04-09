@@ -1,10 +1,10 @@
 /**
  * Animation Utilities
- * 
+ *
  * Reusable animation variants for consistent UX.
  */
 
-import { Variants } from 'framer-motion';
+import { Variants } from "framer-motion";
 
 export const fadeInUp: Variants = {
   hidden: { opacity: 0, y: 20 },
@@ -13,7 +13,7 @@ export const fadeInUp: Variants = {
     y: 0,
     transition: {
       duration: 0.5,
-      ease: 'easeOut',
+      ease: "easeOut",
     },
   },
 };
@@ -35,7 +35,7 @@ export const scaleIn: Variants = {
     scale: 1,
     transition: {
       duration: 0.3,
-      ease: 'easeOut',
+      ease: "easeOut",
     },
   },
 };
@@ -57,7 +57,7 @@ export const slideInRight: Variants = {
     x: 0,
     transition: {
       duration: 0.4,
-      ease: 'easeOut',
+      ease: "easeOut",
     },
   },
 };
@@ -69,7 +69,7 @@ export const slideInLeft: Variants = {
     x: 0,
     transition: {
       duration: 0.4,
-      ease: 'easeOut',
+      ease: "easeOut",
     },
   },
 };

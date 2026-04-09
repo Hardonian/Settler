@@ -133,11 +133,12 @@ serve(async (req) => {
         });
       } else {
         // Check for subscriptions not updated in last 24 hours (potential sync issue)
-        const staleSubs = subscriptions?.filter((s) => {
-          const updated = new Date(s.updated_at);
-          const hoursSinceUpdate = (Date.now() - updated.getTime()) / (1000 * 60 * 60);
-          return hoursSinceUpdate > 24;
-        }) || [];
+        const staleSubs =
+          subscriptions?.filter((s) => {
+            const updated = new Date(s.updated_at);
+            const hoursSinceUpdate = (Date.now() - updated.getTime()) / (1000 * 60 * 60);
+            return hoursSinceUpdate > 24;
+          }) || [];
 
         results.push({
           check: "billing_reconciliation",
@@ -250,14 +251,22 @@ serve(async (req) => {
     const unhealthyChecks = results.filter((r) => r.status === "unhealthy");
     const degradedChecks = results.filter((r) => r.status === "degraded");
 
-    await supabaseClient.from("health_checks").insert({
-      check_type: "automated",
-      results: results,
-      overall_status: unhealthyChecks.length > 0 ? "unhealthy" : degradedChecks.length > 0 ? "degraded" : "healthy",
-      timestamp: now,
-    }).catch(() => {
-      // Table might not exist, that's okay
-    });
+    await supabaseClient
+      .from("health_checks")
+      .insert({
+        check_type: "automated",
+        results: results,
+        overall_status:
+          unhealthyChecks.length > 0
+            ? "unhealthy"
+            : degradedChecks.length > 0
+              ? "degraded"
+              : "healthy",
+        timestamp: now,
+      })
+      .catch(() => {
+        // Table might not exist, that's okay
+      });
 
     // Alert if unhealthy
     if (unhealthyChecks.length > 0 || degradedChecks.length > 0) {
@@ -282,7 +291,7 @@ serve(async (req) => {
       fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/automated-alerting`, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}`,
+          Authorization: `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ alerts }),
@@ -294,7 +303,12 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: true,
-        overall_status: unhealthyChecks.length > 0 ? "unhealthy" : degradedChecks.length > 0 ? "degraded" : "healthy",
+        overall_status:
+          unhealthyChecks.length > 0
+            ? "unhealthy"
+            : degradedChecks.length > 0
+              ? "degraded"
+              : "healthy",
         checks: results,
         unhealthy_count: unhealthyChecks.length,
         degraded_count: degradedChecks.length,

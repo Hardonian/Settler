@@ -1,15 +1,14 @@
 /**
  * Drift Detection Service
- * 
+ *
  * Detects schema and field drift, auto-repairs when possible
  * Part of Phase III: Self-Healing AI Mesh
  */
 
- 
-import { PrismaClient, Prisma } from '@prisma/client';
-import { logInfo, logError } from '../../utils/logger';
-import { MultiAgentFallback } from '../ai-mesh/multi-agent-fallback';
-import { AIRouter } from '../ai-mesh/ai-router';
+import { PrismaClient, Prisma } from "@prisma/client";
+import { logInfo, logError } from "../../utils/logger";
+import { MultiAgentFallback } from "../ai-mesh/multi-agent-fallback";
+import { AIRouter } from "../ai-mesh/ai-router";
 
 export interface DriftDetection {
   fieldPath: string;
@@ -17,7 +16,7 @@ export interface DriftDetection {
   actualType: string;
   expectedValue?: unknown;
   actualValue?: unknown;
-  severity: 'warning' | 'error';
+  severity: "warning" | "error";
   confidence: number;
 }
 
@@ -50,7 +49,8 @@ export class DriftDetector {
       const contract = await this.prisma.contractVersion.findUnique({
         where: { id: contractVersionId },
       });
-      contractSchema = (contract?.schemaDefinition as Record<string, unknown> | null | undefined) ?? null;
+      contractSchema =
+        (contract?.schemaDefinition as Record<string, unknown> | null | undefined) ?? null;
     }
 
     // Analyze source data
@@ -76,11 +76,7 @@ export class DriftDetector {
   /**
    * Auto-repair drift
    */
-  async autoRepair(
-    tenantId: string,
-    reconJobId: string,
-    drift: DriftDetection
-  ): Promise<boolean> {
+  async autoRepair(tenantId: string, reconJobId: string, drift: DriftDetection): Promise<boolean> {
     try {
       // Use AI agent to suggest repair
       const repair = await this.agentFallback.handleSchemaDeviation(
@@ -91,7 +87,7 @@ export class DriftDetector {
       if (repair.success && repair.result) {
         // Update mapping template or transformation recipe
         await this.applyRepair(tenantId, reconJobId, drift, repair.result);
-        
+
         // Log repair
         await this.prisma.driftEvent.updateMany({
           where: {
@@ -106,11 +102,11 @@ export class DriftDetector {
           },
         });
 
-        logInfo('Drift auto-repaired', { tenantId, reconJobId, fieldPath: drift.fieldPath });
+        logInfo("Drift auto-repaired", { tenantId, reconJobId, fieldPath: drift.fieldPath });
         return true;
       }
     } catch (error) {
-      logError('Failed to auto-repair drift', { error, tenantId, reconJobId, drift });
+      logError("Failed to auto-repair drift", { error, tenantId, reconJobId, drift });
     }
 
     return false;
@@ -125,7 +121,7 @@ export class DriftDetector {
     const schema: Record<string, string> = {};
     const sample = data[0];
 
-    if (sample && typeof sample === 'object') {
+    if (sample && typeof sample === "object") {
       for (const key in sample) {
         if (Object.prototype.hasOwnProperty.call(sample, key)) {
           const value = sample[key];
@@ -141,9 +137,9 @@ export class DriftDetector {
    * Get type of value
    */
   private getType(value: unknown): string {
-    if (value === null || value === undefined) return 'null';
-    if (Array.isArray(value)) return 'array';
-    if (typeof value === 'object') return 'object';
+    if (value === null || value === undefined) return "null";
+    if (Array.isArray(value)) return "array";
+    if (typeof value === "object") return "object";
     return typeof value;
   }
 
@@ -161,7 +157,10 @@ export class DriftDetector {
     for (const field of allFields) {
       const sourceType = source[field];
       const targetType = target[field];
-      const contractProps = contract && typeof contract === 'object' && 'properties' in contract ? contract.properties as Record<string, { type?: string }> : undefined;
+      const contractProps =
+        contract && typeof contract === "object" && "properties" in contract
+          ? (contract.properties as Record<string, { type?: string }>)
+          : undefined;
       const contractType = contractProps?.[field]?.type;
 
       if (sourceType && targetType && sourceType !== targetType) {
@@ -169,7 +168,7 @@ export class DriftDetector {
           fieldPath: field,
           expectedType: contractType || sourceType,
           actualType: targetType,
-          severity: 'error',
+          severity: "error",
           confidence: 1.0,
         });
       } else if (contractType && sourceType && contractType !== sourceType) {
@@ -177,7 +176,7 @@ export class DriftDetector {
           fieldPath: field,
           expectedType: contractType,
           actualType: sourceType,
-          severity: 'warning',
+          severity: "warning",
           confidence: 0.8,
         });
       }
@@ -212,7 +211,7 @@ export class DriftDetector {
         tenantId,
         reconJobId,
         contractVersionId,
-        driftType: 'schema_drift',
+        driftType: "schema_drift",
         severity: drift.severity,
         fieldPath: drift.fieldPath,
         expectedValue: drift.expectedValue as Prisma.InputJsonValue,
@@ -237,6 +236,6 @@ export class DriftDetector {
   ): Promise<void> {
     // Update mapping template or transformation recipe
     // This would modify the appropriate template/recipe to handle the drift
-    logInfo('Applying drift repair', { tenantId, reconJobId, drift, repairAction });
+    logInfo("Applying drift repair", { tenantId, reconJobId, drift, repairAction });
   }
 }

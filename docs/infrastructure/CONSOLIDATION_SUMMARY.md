@@ -28,6 +28,7 @@ The migrations are consolidated into domain-specific files:
 ⚠️ **Consolidated files are not yet created** - This is a placeholder structure.
 
 To create consolidated files:
+
 1. Follow the guide in `docs/internal/migration-consolidation-guide.md`
 2. Use the Supabase AI prompt in `SUPABASE_AI_SCHEMA_PROMPT.md` if starting fresh
 3. Test thoroughly before deploying
@@ -35,6 +36,7 @@ To create consolidated files:
 ## Verification
 
 After creating consolidated files, verify:
+
 - [ ] All 37 Prisma models have tables
 - [ ] All foreign keys are correct
 - [ ] All indexes are present
@@ -45,10 +47,13 @@ After creating consolidated files, verify:
 ## Usage
 
 ### For New Deployments
+
 Run consolidated files in order (01 through 07).
 
 ### For Existing Databases
+
 Keep original migrations. Use consolidated files only for:
+
 - New environments
 - Documentation purposes
 - Schema reference

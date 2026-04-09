@@ -73,8 +73,8 @@ export function BillingDisputeFlow() {
       <CardContent>
         <Alert className="mb-6">
           <AlertDescription>
-            Please review your invoice carefully before submitting a dispute. We&apos;ll respond within 5
-            business days.
+            Please review your invoice carefully before submitting a dispute. We&apos;ll respond
+            within 5 business days.
           </AlertDescription>
         </Alert>
 

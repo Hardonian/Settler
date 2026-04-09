@@ -104,11 +104,7 @@ function evaluateRule(rule: PolicyRule, run: RunSummary): boolean {
 function isPolicyDefinition(value: unknown): value is PolicyDefinition {
   if (!value || typeof value !== "object") return false;
   const p = value as Record<string, unknown>;
-  return (
-    typeof p.id === "string" &&
-    typeof p.name === "string" &&
-    Array.isArray(p.rules)
-  );
+  return typeof p.id === "string" && typeof p.name === "string" && Array.isArray(p.rules);
 }
 
 function isRunSummary(value: unknown): value is RunSummary {
@@ -176,10 +172,14 @@ function simulate(policy: PolicyDefinition, runs: RunSummary[]): SimulationResul
     impactRate === 0
       ? "Safe to deploy — no historical runs would be rejected."
       : highRisk
-      ? `High risk: ${(impactRate * 100).toFixed(1)}% of runs would be rejected. Review policy before deploying.`
-      : `Low risk: ${(impactRate * 100).toFixed(1)}% of runs would be rejected. Consider canary rollout.`;
+        ? `High risk: ${(impactRate * 100).toFixed(1)}% of runs would be rejected. Review policy before deploying.`
+        : `Low risk: ${(impactRate * 100).toFixed(1)}% of runs would be rejected. Consider canary rollout.`;
 
-  const simulationHash = stableHash({ policyId: policy.id, rules: policy.rules, runCount: runs.length });
+  const simulationHash = stableHash({
+    policyId: policy.id,
+    rules: policy.rules,
+    runCount: runs.length,
+  });
 
   return {
     policyId: policy.id,
@@ -303,7 +303,16 @@ policyCommand
     }
 
     const policy = policyRaw;
-    const validOperators: Operator[] = ["eq", "neq", "gt", "gte", "lt", "lte", "contains", "not_contains"];
+    const validOperators: Operator[] = [
+      "eq",
+      "neq",
+      "gt",
+      "gte",
+      "lt",
+      "lte",
+      "contains",
+      "not_contains",
+    ];
     const invalidRules = policy.rules.filter(
       (r) => !r.field || !validOperators.includes(r.operator as Operator)
     );

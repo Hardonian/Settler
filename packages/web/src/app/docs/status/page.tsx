@@ -1,19 +1,19 @@
-import { Metadata } from 'next';
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Status & Limits - Docs',
-  description: 'API status, rate limits, and quotas',
+  title: "Status & Limits - Docs",
+  description: "API status, rate limits, and quotas",
 };
 
 export default function StatusPage() {
   return (
     <div className="prose prose-slate dark:prose-invert max-w-none">
       <h1>Status & Limits</h1>
-      
+
       <section>
         <h2>API Status</h2>
         <p>
-          Check current API status at{' '}
+          Check current API status at{" "}
           <a href="/status" target="_blank" rel="noopener noreferrer">
             settler.dev/status
           </a>
@@ -53,9 +53,17 @@ export default function StatusPage() {
       <section>
         <h2>Quotas</h2>
         <ul>
-          <li><strong>Reconciliations:</strong> See <a href="/pricing">pricing page</a> for plan limits</li>
-          <li><strong>Receipt Parsing:</strong> See <a href="/pricing">pricing page</a> for plan limits</li>
-          <li><strong>Feature Flags:</strong> See <a href="/pricing">pricing page</a> for plan limits</li>
+          <li>
+            <strong>Reconciliations:</strong> See <a href="/pricing">pricing page</a> for plan
+            limits
+          </li>
+          <li>
+            <strong>Receipt Parsing:</strong> See <a href="/pricing">pricing page</a> for plan
+            limits
+          </li>
+          <li>
+            <strong>Feature Flags:</strong> See <a href="/pricing">pricing page</a> for plan limits
+          </li>
         </ul>
       </section>
 

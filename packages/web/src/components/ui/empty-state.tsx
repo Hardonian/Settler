@@ -93,14 +93,9 @@ export interface RetryButtonProps {
   label?: string;
 }
 
-export function RetryButton({ onRetry, isLoading = false, label = 'Try again' }: RetryButtonProps) {
+export function RetryButton({ onRetry, isLoading = false, label = "Try again" }: RetryButtonProps) {
   return (
-    <Button
-      onClick={onRetry}
-      disabled={isLoading}
-      variant="outline"
-      className="min-w-[120px]"
-    >
+    <Button onClick={onRetry} disabled={isLoading} variant="outline" className="min-w-[120px]">
       {isLoading ? (
         <>
           <RefreshCw className="mr-2 h-4 w-4 animate-spin" />

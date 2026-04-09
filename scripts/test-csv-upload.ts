@@ -64,14 +64,11 @@ async function testCSVUpload() {
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     // Check ingestion status
-    const statusResponse = await fetch(
-      `${API_URL}/api/v1/ingestion/${result.ingestionId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        },
-      }
-    );
+    const statusResponse = await fetch(`${API_URL}/api/v1/ingestion/${result.ingestionId}`, {
+      headers: {
+        Authorization: `Bearer ${API_KEY}`,
+      },
+    });
 
     if (statusResponse.ok) {
       const status = await statusResponse.json();

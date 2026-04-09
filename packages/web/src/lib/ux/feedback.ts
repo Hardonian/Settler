@@ -1,12 +1,12 @@
 /**
  * User Feedback System
- * 
+ *
  * Provides comprehensive feedback mechanisms for better UX
  */
 
-import { getErrorMessage, isRetryableError } from './error-messages';
-import { toast } from './toast';
-import { globalLoadingState } from './loading-states';
+import { getErrorMessage, isRetryableError } from "./error-messages";
+import { toast } from "./toast";
+import { globalLoadingState } from "./loading-states";
 
 /**
  * Show feedback for operation result
@@ -20,7 +20,7 @@ export function showFeedback(
   }
 ): void {
   const { showToast = true, showLoading = false, context } = options || {};
-  
+
   if (result.success) {
     if (showLoading) {
       globalLoadingState.setLoading(false);
@@ -59,21 +59,21 @@ export async function withFeedback<T>(
     showLoading = true,
     context,
   } = options || {};
-  
+
   try {
     if (showLoading && loadingMessage) {
       globalLoadingState.setLoading(true, loadingMessage);
     }
-    
+
     const result = await operation();
-    
+
     if (showLoading) {
       globalLoadingState.setLoading(false);
     }
     if (showToast && successMessage) {
       toast.success(successMessage);
     }
-    
+
     return result;
   } catch (error) {
     if (showLoading) {
@@ -91,20 +91,17 @@ export async function withFeedback<T>(
 /**
  * Show retry prompt for retryable errors
  */
-export function showRetryPrompt(
-  error: unknown,
-  onRetry: () => void | Promise<void>
-): void {
+export function showRetryPrompt(error: unknown, onRetry: () => void | Promise<void>): void {
   const errorMessage = getErrorMessage(error);
   const retryable = isRetryableError(error);
-  
+
   if (retryable) {
     toast.show({
-      type: 'error',
+      type: "error",
       message: errorMessage,
       duration: 0, // Don't auto-dismiss
       action: {
-        label: 'Retry',
+        label: "Retry",
         onClick: () => {
           void onRetry();
         },

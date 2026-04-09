@@ -12,16 +12,16 @@ A typical Settler pilot runs 2–4 weeks with a single reconciliation use case (
 
 ## Pre-pilot checklist
 
-| Step | Owner | Status |
-|------|-------|--------|
-| Settler account or local instance provisioned | Engineering | [ ] |
-| API key generated and stored in secret manager | Engineering | [ ] |
-| Source adapter configured (e.g., Stripe) | Engineering | [ ] |
-| Target adapter configured (e.g., bank/ledger) | Engineering | [ ] |
-| First reconciliation job created and tested | Engineering | [ ] |
-| Webhook endpoint registered (if using events) | Engineering | [ ] |
-| Pilot success criteria agreed with stakeholders | Eng Lead / Finance | [ ] |
-| Pilot timeline communicated to team | Eng Lead | [ ] |
+| Step                                            | Owner              | Status |
+| ----------------------------------------------- | ------------------ | ------ |
+| Settler account or local instance provisioned   | Engineering        | [ ]    |
+| API key generated and stored in secret manager  | Engineering        | [ ]    |
+| Source adapter configured (e.g., Stripe)        | Engineering        | [ ]    |
+| Target adapter configured (e.g., bank/ledger)   | Engineering        | [ ]    |
+| First reconciliation job created and tested     | Engineering        | [ ]    |
+| Webhook endpoint registered (if using events)   | Engineering        | [ ]    |
+| Pilot success criteria agreed with stakeholders | Eng Lead / Finance | [ ]    |
+| Pilot timeline communicated to team             | Eng Lead           | [ ]    |
 
 ## Week-by-week guide
 
@@ -51,6 +51,7 @@ npm start
 ```
 
 **Week 1 checkpoint:**
+
 - [ ] First reconciliation run completed
 - [ ] Match/unmatch results reviewed
 - [ ] At least one exception reviewed in the console
@@ -66,6 +67,7 @@ npm start
 - Configure webhook notifications for your team's Slack/PagerDuty
 
 **Week 2 checkpoint:**
+
 - [ ] Real data sources connected
 - [ ] Reconciliation accuracy measured on real data
 - [ ] Exception volume is manageable (< 5% of transactions ideally)
@@ -81,6 +83,7 @@ npm start
 - Test the export pipeline (CSV/JSON)
 
 **Week 3 checkpoint:**
+
 - [ ] Exception workflow tested by a non-engineer
 - [ ] Proofpack generated and reviewed
 - [ ] Audit log export completed
@@ -96,37 +99,38 @@ Score each criterion. **Go = all critical met + majority of important met.**
 
 ### Critical (must pass)
 
-| Criterion | Target | Actual | Pass? |
-|-----------|--------|--------|-------|
-| Reconciliation accuracy | ≥ 95% | | [ ] |
-| No data leakage across tenants | 0 incidents | | [ ] |
-| API available during pilot | ≥ 99% | | [ ] |
-| First reconciliation in < 1 day | Yes/No | | [ ] |
-| Data export works | Yes/No | | [ ] |
+| Criterion                       | Target      | Actual | Pass? |
+| ------------------------------- | ----------- | ------ | ----- |
+| Reconciliation accuracy         | ≥ 95%       |        | [ ]   |
+| No data leakage across tenants  | 0 incidents |        | [ ]   |
+| API available during pilot      | ≥ 99%       |        | [ ]   |
+| First reconciliation in < 1 day | Yes/No      |        | [ ]   |
+| Data export works               | Yes/No      |        | [ ]   |
 
 ### Important (should pass)
 
-| Criterion | Target | Actual | Pass? |
-|-----------|--------|--------|-------|
-| Exception resolution time | < 4 hours avg | | [ ] |
-| Team can use console without training | Yes/No | | [ ] |
-| Audit log meets compliance needs | Yes/No | | [ ] |
-| Webhook delivery reliable | ≥ 99% | | [ ] |
-| Time saved vs. manual process | ≥ 50% | | [ ] |
+| Criterion                             | Target        | Actual | Pass? |
+| ------------------------------------- | ------------- | ------ | ----- |
+| Exception resolution time             | < 4 hours avg |        | [ ]   |
+| Team can use console without training | Yes/No        |        | [ ]   |
+| Audit log meets compliance needs      | Yes/No        |        | [ ]   |
+| Webhook delivery reliable             | ≥ 99%         |        | [ ]   |
+| Time saved vs. manual process         | ≥ 50%         |        | [ ]   |
 
 ### Nice to have
 
-| Criterion | Target | Actual | Pass? |
-|-----------|--------|--------|-------|
-| Scheduled runs working | Yes/No | | [ ] |
-| Multi-currency support | If needed | | [ ] |
-| Custom adapter built | If needed | | [ ] |
+| Criterion              | Target    | Actual | Pass? |
+| ---------------------- | --------- | ------ | ----- |
+| Scheduled runs working | Yes/No    |        | [ ]   |
+| Multi-currency support | If needed |        | [ ]   |
+| Custom adapter built   | If needed |        | [ ]   |
 
 ## Go/No-Go decision
 
 ### Go
 
 All critical criteria met. Proceed to:
+
 1. Production deployment plan
 2. Contract/pricing discussion
 3. SSO/identity integration (if enterprise)
@@ -135,6 +139,7 @@ All critical criteria met. Proceed to:
 ### Conditional Go
 
 Critical criteria met, but important gaps remain. Proceed with:
+
 1. Documented workarounds for gaps
 2. Timeline for gap resolution
 3. Limited rollout scope
@@ -142,6 +147,7 @@ Critical criteria met, but important gaps remain. Proceed with:
 ### No-Go
 
 Critical criteria not met. Actions:
+
 1. Document specific failures and root causes
 2. Determine if failures are addressable (config issues vs. fundamental limitations)
 3. Schedule follow-up evaluation in 4–8 weeks if addressable
@@ -175,6 +181,7 @@ Follow the [Teardown Guide](getting-started/teardown.md):
 ### 4. Document lessons learned
 
 Even for a no-go, document:
+
 - What worked well
 - What didn't work
 - Specific blockers and whether they're addressable

@@ -7,14 +7,7 @@
  */
 
 import crypto from "node:crypto";
-import type {
-  TrustNode,
-  TrustEdge,
-  TrustEdgeType,
-  Execution,
-  Artifact,
-  Proof,
-} from "./primitives";
+import type { TrustNode, TrustEdge, TrustEdgeType, Execution, Artifact, Proof } from "./primitives";
 
 export interface TrustGraphSnapshot {
   nodes: TrustNode[];
@@ -51,7 +44,11 @@ export class TrustGraph {
 
   addNode(node: Omit<TrustNode, "nodeId">): TrustNode {
     const nodeId = stableHash(
-      sortedJson({ tenantId: node.tenantId, nodeType: node.nodeType, referenceId: node.referenceId })
+      sortedJson({
+        tenantId: node.tenantId,
+        nodeType: node.nodeType,
+        referenceId: node.referenceId,
+      })
     );
     const full: TrustNode = { ...node, nodeId };
     this.nodes.set(nodeId, full);
@@ -78,9 +75,7 @@ export class TrustGraph {
       throw new Error("Trust graph: cross-tenant edges are forbidden");
     }
 
-    const edgeId = stableHash(
-      sortedJson({ sourceNodeId, targetNodeId, edgeType, tenantId })
-    );
+    const edgeId = stableHash(sortedJson({ sourceNodeId, targetNodeId, edgeType, tenantId }));
     const edge: TrustEdge = {
       edgeId,
       tenantId,
@@ -107,12 +102,14 @@ export class TrustGraph {
       nodeType: "execution",
       referenceId: execution.executionId,
       label: `run:${execution.runId}`,
-      contentHash: stableHash(sortedJson({
-        inputHash: execution.inputHash,
-        configHash: execution.configHash,
-        outputHash: execution.outputHash,
-        runFingerprint: execution.runFingerprint,
-      })),
+      contentHash: stableHash(
+        sortedJson({
+          inputHash: execution.inputHash,
+          configHash: execution.configHash,
+          outputHash: execution.outputHash,
+          runFingerprint: execution.runFingerprint,
+        })
+      ),
       createdAt: execution.startedAt,
       metadata: {
         policyId: execution.policyId,
@@ -142,10 +139,12 @@ export class TrustGraph {
       nodeType: "proof",
       referenceId: proof.proofId,
       label: `proof:${proof.runFingerprint.slice(0, 12)}`,
-      contentHash: stableHash(sortedJson({
-        runFingerprint: proof.runFingerprint,
-        hashChain: proof.hashChain,
-      })),
+      contentHash: stableHash(
+        sortedJson({
+          runFingerprint: proof.runFingerprint,
+          hashChain: proof.hashChain,
+        })
+      ),
       createdAt: proof.createdAt,
       metadata: { verified: proof.verified },
     });
@@ -153,7 +152,12 @@ export class TrustGraph {
     return node;
   }
 
-  recordPolicyGovernance(executionNodeId: string, policyId: string, policyHash: string, tenantId: string): TrustNode {
+  recordPolicyGovernance(
+    executionNodeId: string,
+    policyId: string,
+    policyHash: string,
+    tenantId: string
+  ): TrustNode {
     const node = this.addNode({
       tenantId,
       nodeType: "policy",
@@ -181,7 +185,11 @@ export class TrustGraph {
     return node;
   }
 
-  recordReplay(replayExecutionNodeId: string, originalExecutionNodeId: string, tenantId: string): void {
+  recordReplay(
+    replayExecutionNodeId: string,
+    originalExecutionNodeId: string,
+    tenantId: string
+  ): void {
     this.addEdge(replayExecutionNodeId, originalExecutionNodeId, "replayed_from", tenantId);
   }
 

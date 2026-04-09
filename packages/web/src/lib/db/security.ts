@@ -1,6 +1,6 @@
 /**
  * Database Security Utilities
- * 
+ *
  * Provides security-focused database utilities:
  * - SQL injection prevention
  * - Input sanitization
@@ -8,7 +8,7 @@
  * - Rate limiting per query type
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * Validate UUID format
@@ -23,7 +23,7 @@ export function isValidUUID(value: string): boolean {
 export function sanitizeInput(input: string): string {
   // Remove potentially dangerous characters
   return input
-    .replace(/[;\x00\n\r\\'"\x1a]/g, '') // Remove SQL injection chars
+    .replace(/[;\x00\n\r\\'"\x1a]/g, "") // Remove SQL injection chars
     .trim()
     .slice(0, 1000); // Limit length
 }
@@ -46,8 +46,8 @@ export function validatePagination(params: {
   offset?: number | string;
 }): PaginationParams {
   const parsed = PaginationSchema.parse({
-    limit: typeof params.limit === 'string' ? parseInt(params.limit, 10) : params.limit,
-    offset: typeof params.offset === 'string' ? parseInt(params.offset, 10) : params.offset,
+    limit: typeof params.limit === "string" ? parseInt(params.limit, 10) : params.limit,
+    offset: typeof params.offset === "string" ? parseInt(params.offset, 10) : params.offset,
   });
   return parsed;
 }
@@ -70,5 +70,5 @@ export function validateUserId(id: string): boolean {
  * Escape special characters for LIKE queries
  */
 export function escapeLikePattern(pattern: string): string {
-  return pattern.replace(/[%_\\]/g, '\\$&');
+  return pattern.replace(/[%_\\]/g, "\\$&");
 }

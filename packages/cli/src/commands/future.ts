@@ -2,7 +2,13 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { Command } from "commander";
 import chalk from "chalk";
-import { buildAuditChain, redactTenant, stableHash, stableStringify, type SettlerEvent } from "../lib/event-model";
+import {
+  buildAuditChain,
+  redactTenant,
+  stableHash,
+  stableStringify,
+  type SettlerEvent,
+} from "../lib/event-model";
 import {
   MAX_JSON_BYTES,
   MAX_REGISTRY_BYTES,
@@ -107,7 +113,9 @@ function verifyCapsule(capsule: Capsule): { ok: boolean; message: string } {
   return { ok: true, message: "ok" };
 }
 
-export const capsuleCommand = new Command("capsule").description("Manage deterministic reconciliation capsules");
+export const capsuleCommand = new Command("capsule").description(
+  "Manage deterministic reconciliation capsules"
+);
 
 capsuleCommand
   .command("create")
@@ -175,9 +183,7 @@ function buildExecutionReceipt(run: RunArtifact): ExecutionReceipt {
     .filter((e) => e.stage === "ingest" || e.stage === "export")
     .map((e) => e.type);
 
-  const policyDecisions = run.events
-    .filter((e) => e.stage === "policy")
-    .map((e) => e.type);
+  const policyDecisions = run.events.filter((e) => e.stage === "policy").map((e) => e.type);
 
   const timestamps = run.events.reduce<{ runStart: string | null; runEnd: string | null }>(
     (acc, e) => {
@@ -211,7 +217,9 @@ function buildExecutionReceipt(run: RunArtifact): ExecutionReceipt {
   };
 }
 
-export const proofCommand = new Command("proof").description("Produce and verify proof mode artifacts");
+export const proofCommand = new Command("proof").description(
+  "Produce and verify proof mode artifacts"
+);
 
 proofCommand
   .command("show")
@@ -242,22 +250,49 @@ proofCommand
         process.exit(1);
       }
       console.log(chalk.green("Proof verified"));
-      console.log(JSON.stringify({ auditRoot: capsule.auditChain.at(-1)?.hash ?? null, integrityRoot: capsule.integrityRoot }, null, 2));
+      console.log(
+        JSON.stringify(
+          {
+            auditRoot: capsule.auditChain.at(-1)?.hash ?? null,
+            integrityRoot: capsule.integrityRoot,
+          },
+          null,
+          2
+        )
+      );
       return;
     }
 
     const run = await loadRun(runIdOrCapsule);
     const capsule = createCapsule(run);
     console.log(chalk.green("Proof generated from run"));
-    console.log(JSON.stringify({ auditRoot: capsule.auditChain.at(-1)?.hash ?? null, integrityRoot: capsule.integrityRoot }, null, 2));
+    console.log(
+      JSON.stringify(
+        {
+          auditRoot: capsule.auditChain.at(-1)?.hash ?? null,
+          integrityRoot: capsule.integrityRoot,
+        },
+        null,
+        2
+      )
+    );
   });
 
 function flowSvg(run: RunArtifact): string {
   const labels = ["ingest", "normalize", "match", "settle", "export"];
   const circles = labels
-    .map((label, idx) => `<circle cx="${120 + idx * 140}" cy="60" r="28" fill="#0f172a" stroke="#38bdf8"/><text x="${120 + idx * 140}" y="66" fill="#e2e8f0" font-size="12" text-anchor="middle">${label}</text>`)
+    .map(
+      (label, idx) =>
+        `<circle cx="${120 + idx * 140}" cy="60" r="28" fill="#0f172a" stroke="#38bdf8"/><text x="${120 + idx * 140}" y="66" fill="#e2e8f0" font-size="12" text-anchor="middle">${label}</text>`
+    )
     .join("");
-  const lines = labels.slice(1).map((_, idx) => `<line x1="${148 + idx * 140}" y1="60" x2="${232 + idx * 140}" y2="60" stroke="#94a3b8"/>`).join("");
+  const lines = labels
+    .slice(1)
+    .map(
+      (_, idx) =>
+        `<line x1="${148 + idx * 140}" y1="60" x2="${232 + idx * 140}" y2="60" stroke="#94a3b8"/>`
+    )
+    .join("");
   return `<svg xmlns="http://www.w3.org/2000/svg" width="840" height="120"><rect width="100%" height="100%" fill="#020617"/>${lines}${circles}<text x="20" y="108" fill="#cbd5e1" font-size="12">runId=${run.runId} events=${run.events.length}</text></svg>`;
 }
 
@@ -303,24 +338,41 @@ lineageCommand
   .option("-o, --output <file>", "Output file")
   .action(async (options) => {
     const runsDir = resolveWithinCwd(options.runsDir);
-  const entries = await fs.readdir(runsDir);
+    const entries = await fs.readdir(runsDir);
     const runFiles = entries.filter((entry) => entry.endsWith(".json")).slice(0, MAX_RUN_FILES);
     const runs = await Promise.all(
       runFiles.map(async (entry) => readJsonFile<RunArtifact>(path.join(runsDir, entry)))
     );
     const tenantRuns = runs.filter((run) => run.tenantId === options.tenant);
-    const nodes = tenantRuns.map((run) => ({ runId: run.runId, sources: run.events.filter((event) => event.stage === "ingest").length, outputs: run.events.filter((event) => event.stage === "export").length }));
+    const nodes = tenantRuns.map((run) => ({
+      runId: run.runId,
+      sources: run.events.filter((event) => event.stage === "ingest").length,
+      outputs: run.events.filter((event) => event.stage === "export").length,
+    }));
 
     if (options.format === "json") {
       const output = options.output ?? `${options.tenant}.lineage.json`;
-      await fs.writeFile(output, `${JSON.stringify({ tenant: options.tenant, nodes }, null, 2)}\n`, "utf8");
+      await fs.writeFile(
+        output,
+        `${JSON.stringify({ tenant: options.tenant, nodes }, null, 2)}\n`,
+        "utf8"
+      );
       console.log(chalk.green(`Lineage JSON written to ${output}`));
       return;
     }
 
     const output = options.output ?? `${options.tenant}.lineage.svg`;
-    const rows = nodes.map((node, index) => `<text x="16" y="${30 + index * 18}" fill="#e2e8f0" font-size="12">${node.runId}: sources=${node.sources} outputs=${node.outputs}</text>`).join("");
-    await fs.writeFile(output, `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="${Math.max(80, nodes.length * 20 + 20)}"><rect width="100%" height="100%" fill="#020617"/>${rows}</svg>`, "utf8");
+    const rows = nodes
+      .map(
+        (node, index) =>
+          `<text x="16" y="${30 + index * 18}" fill="#e2e8f0" font-size="12">${node.runId}: sources=${node.sources} outputs=${node.outputs}</text>`
+      )
+      .join("");
+    await fs.writeFile(
+      output,
+      `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="${Math.max(80, nodes.length * 20 + 20)}"><rect width="100%" height="100%" fill="#020617"/>${rows}</svg>`,
+      "utf8"
+    );
     console.log(chalk.green(`Lineage SVG written to ${output}`));
   });
 
@@ -338,21 +390,31 @@ explainCommand.argument("<runIdOrPath>", "Run id or file").action(async (runIdOr
   console.log("- Safe next step: verify capsule and export before sharing artifacts");
 });
 
-export const operatorCommand = new Command("operator").description("Local-first operator mode summary");
-operatorCommand.option("--runs-dir <dir>", "Run artifact directory", "recon_output").action(async (options) => {
-  const runsDir = resolveWithinCwd(options.runsDir);
-  const entries = await fs.readdir(runsDir);
-  const runFiles = entries.filter((entry) => entry.endsWith(".json"));
-  const runs = await Promise.all(runFiles.map(async (entry) => readJsonFile<RunArtifact>(path.join(runsDir, entry))));
-  const tenants = Array.from(new Set(runs.map((run) => run.tenantId)));
-  const warnings = runs.filter((run) => buildAuditChain(run.events).length !== run.events.length).length;
-  console.log(chalk.bold("Operator Mode"));
-  console.log(`tenants=${tenants.length}`);
-  console.log(`runs=${runs.length}`);
-  console.log(`auditWarnings=${warnings}`);
-});
+export const operatorCommand = new Command("operator").description(
+  "Local-first operator mode summary"
+);
+operatorCommand
+  .option("--runs-dir <dir>", "Run artifact directory", "recon_output")
+  .action(async (options) => {
+    const runsDir = resolveWithinCwd(options.runsDir);
+    const entries = await fs.readdir(runsDir);
+    const runFiles = entries.filter((entry) => entry.endsWith(".json"));
+    const runs = await Promise.all(
+      runFiles.map(async (entry) => readJsonFile<RunArtifact>(path.join(runsDir, entry)))
+    );
+    const tenants = Array.from(new Set(runs.map((run) => run.tenantId)));
+    const warnings = runs.filter(
+      (run) => buildAuditChain(run.events).length !== run.events.length
+    ).length;
+    console.log(chalk.bold("Operator Mode"));
+    console.log(`tenants=${tenants.length}`);
+    console.log(`runs=${runs.length}`);
+    console.log(`auditWarnings=${warnings}`);
+  });
 
-export const arenaCommand = new Command("arena").description("Compare deterministic reconciliation strategies");
+export const arenaCommand = new Command("arena").description(
+  "Compare deterministic reconciliation strategies"
+);
 arenaCommand
   .command("run")
   .argument("<scenarioFile>", "Scenario JSON file")
@@ -366,14 +428,21 @@ arenaCommand
       .filter(Boolean);
     const scoreboard = strategies.map((strategy) => ({
       strategy,
-      correctness: Math.max(0, 100 - Math.abs(scenario.expectedMatches - Math.floor(scenario.records * 0.5))),
+      correctness: Math.max(
+        0,
+        100 - Math.abs(scenario.expectedMatches - Math.floor(scenario.records * 0.5))
+      ),
       determinism: 100,
       auditCompleteness: 100,
       latencyMs: strategy === "strict" ? 12 : 8,
       total: 100,
     }));
 
-    await fs.writeFile(options.output, `${JSON.stringify({ scenario: scenarioFile, scoreboard }, null, 2)}\n`, "utf8");
+    await fs.writeFile(
+      options.output,
+      `${JSON.stringify({ scenario: scenarioFile, scoreboard }, null, 2)}\n`,
+      "utf8"
+    );
     console.table(scoreboard);
     console.log(chalk.green(`Scoreboard written to ${options.output}`));
   });
@@ -384,37 +453,67 @@ supportCommand
   .argument("<question>", "Question")
   .option("--kb <file>", "KB index path", "support/kb_index.json")
   .action(async (question, options) => {
-    const kb = await readJsonFile<Array<{ id: string; question: string; answer: string; keywords: string[] }>>(options.kb);
+    const kb = await readJsonFile<
+      Array<{ id: string; question: string; answer: string; keywords: string[] }>
+    >(options.kb);
     const normalized = String(question).toLowerCase();
     const ranked = kb
-      .map((entry) => ({ entry, score: entry.keywords.reduce((acc, keyword) => acc + (normalized.includes(keyword) ? 1 : 0), 0) }))
+      .map((entry) => ({
+        entry,
+        score: entry.keywords.reduce(
+          (acc, keyword) => acc + (normalized.includes(keyword) ? 1 : 0),
+          0
+        ),
+      }))
       .sort((a, b) => b.score - a.score);
     const top = ranked[0];
     const best = top?.entry;
     if (!best || (top?.score ?? 0) === 0) {
-      console.log("I could not find an exact KB match. Safe fallback: run `settler explain <runId>` and `settler proof verify <capsule>`.");
+      console.log(
+        "I could not find an exact KB match. Safe fallback: run `settler explain <runId>` and `settler proof verify <capsule>`."
+      );
       return;
     }
     console.log(best.answer.replace(/[A-Za-z0-9_\-]{20,}/g, "[REDACTED]"));
   });
 
-export const profileCommand = new Command("profile").description("Gamification profile (cosmetic only)");
-profileCommand.option("--runs-dir <dir>", "Run artifact directory", "recon_output").action(async (options) => {
-  const runsDir = resolveWithinCwd(options.runsDir);
-  const entries = await fs.readdir(runsDir);
-  const runFiles = entries.filter((entry) => entry.endsWith(".json"));
-  const runs = await Promise.all(runFiles.map(async (entry) => readJsonFile<RunArtifact>(path.join(runsDir, entry))));
-  const verifiedExports = runs.filter((run) => Boolean(run.exportSchemaVersion)).length;
-  const xp = verifiedExports * 25 + runs.length * 5;
-  const badges = [
-    verifiedExports >= 1 ? "Audit Acolyte" : null,
-    runs.length >= 3 ? "Determinist" : null,
-    runs.every((run) => run.tenantId) ? "Isolation Sentinel" : null,
-    verifiedExports >= 3 ? "Exporter" : null,
-    runs.some((run) => run.events.some((event) => event.type.includes("match.miss"))) ? "Debugger" : null,
-  ].filter(Boolean);
-  console.log(JSON.stringify({ xp, level: Math.floor(xp / 100) + 1, streakDays: runs.length, badges, unlocks: ["profile-theme", "avatar-frame"] }, null, 2));
-});
+export const profileCommand = new Command("profile").description(
+  "Gamification profile (cosmetic only)"
+);
+profileCommand
+  .option("--runs-dir <dir>", "Run artifact directory", "recon_output")
+  .action(async (options) => {
+    const runsDir = resolveWithinCwd(options.runsDir);
+    const entries = await fs.readdir(runsDir);
+    const runFiles = entries.filter((entry) => entry.endsWith(".json"));
+    const runs = await Promise.all(
+      runFiles.map(async (entry) => readJsonFile<RunArtifact>(path.join(runsDir, entry)))
+    );
+    const verifiedExports = runs.filter((run) => Boolean(run.exportSchemaVersion)).length;
+    const xp = verifiedExports * 25 + runs.length * 5;
+    const badges = [
+      verifiedExports >= 1 ? "Audit Acolyte" : null,
+      runs.length >= 3 ? "Determinist" : null,
+      runs.every((run) => run.tenantId) ? "Isolation Sentinel" : null,
+      verifiedExports >= 3 ? "Exporter" : null,
+      runs.some((run) => run.events.some((event) => event.type.includes("match.miss")))
+        ? "Debugger"
+        : null,
+    ].filter(Boolean);
+    console.log(
+      JSON.stringify(
+        {
+          xp,
+          level: Math.floor(xp / 100) + 1,
+          streakDays: runs.length,
+          badges,
+          unlocks: ["profile-theme", "avatar-frame"],
+        },
+        null,
+        2
+      )
+    );
+  });
 
 function attachRegistryCommands(base: Command, kind: "adapters" | "rules"): void {
   base
@@ -438,7 +537,9 @@ function attachRegistryCommands(base: Command, kind: "adapters" | "rules"): void
       try {
         requireUnsafeAcknowledgement(options.allowUnsafe);
       } catch {
-        console.error(chalk.red("Refusing install without --allow-unsafe acknowledgement. See SECURITY.md."));
+        console.error(
+          chalk.red("Refusing install without --allow-unsafe acknowledgement. See SECURITY.md.")
+        );
         process.exit(1);
       }
 
@@ -452,7 +553,11 @@ function attachRegistryCommands(base: Command, kind: "adapters" | "rules"): void
       }
       const installPath = path.join("marketplace", "installed", kind);
       await fs.mkdir(installPath, { recursive: true });
-      await fs.writeFile(path.join(installPath, `${entry.name}.json`), `${JSON.stringify(entry, null, 2)}\n`, "utf8");
+      await fs.writeFile(
+        path.join(installPath, `${entry.name}.json`),
+        `${JSON.stringify(entry, null, 2)}\n`,
+        "utf8"
+      );
       console.log(chalk.green(`${kind} installed: ${entry.name}@${entry.version}`));
     });
 
@@ -462,20 +567,26 @@ function attachRegistryCommands(base: Command, kind: "adapters" | "rules"): void
     .option("--installed-dir <dir>", "Installed package directory", `marketplace/installed/${kind}`)
     .action(async (options) => {
       assertSafePackageName(options.name);
-      const installed = await readJsonFile<{ name: string; license: string; compatibility: string; provenance?: string }>(
-        path.join(options.installedDir, `${options.name}.json`),
-        MAX_REGISTRY_BYTES
-      );
+      const installed = await readJsonFile<{
+        name: string;
+        license: string;
+        compatibility: string;
+        provenance?: string;
+      }>(path.join(options.installedDir, `${options.name}.json`), MAX_REGISTRY_BYTES);
       if (!installed.license || !installed.compatibility) {
         console.error(chalk.red("license or compatibility metadata missing"));
         process.exit(1);
       }
       console.log(chalk.green(`${kind} package verified: ${installed.name}`));
-      console.log(`license=${installed.license} compatibility=${installed.compatibility} provenance=${installed.provenance ?? "none"}`);
+      console.log(
+        `license=${installed.license} compatibility=${installed.compatibility} provenance=${installed.provenance ?? "none"}`
+      );
     });
 }
 
-export const rulesCommand = new Command("rules").description("Manage deterministic reconciliation rules marketplace");
+export const rulesCommand = new Command("rules").description(
+  "Manage deterministic reconciliation rules marketplace"
+);
 attachRegistryCommands(rulesCommand, "rules");
 
 export const initCommand = new Command("init").description("Governance-as-code scaffolding");
@@ -486,8 +597,16 @@ initCommand
   .action(async (options) => {
     const target = path.join("templates", "generated", `adapter-${options.name}`);
     await fs.mkdir(target, { recursive: true });
-    await fs.writeFile(path.join(target, "README.md"), `# ${options.name} adapter\n\nGoverned scaffold with deterministic tests.\n`, "utf8");
-    await fs.writeFile(path.join(target, "conformance.test.json"), `${JSON.stringify({ schemaVersion: 1, deterministicReplay: true }, null, 2)}\n`, "utf8");
+    await fs.writeFile(
+      path.join(target, "README.md"),
+      `# ${options.name} adapter\n\nGoverned scaffold with deterministic tests.\n`,
+      "utf8"
+    );
+    await fs.writeFile(
+      path.join(target, "conformance.test.json"),
+      `${JSON.stringify({ schemaVersion: 1, deterministicReplay: true }, null, 2)}\n`,
+      "utf8"
+    );
     console.log(chalk.green(`Governed adapter template generated: ${target}`));
   });
 
@@ -498,7 +617,15 @@ initCommand
   .action(async (options) => {
     const target = path.join("templates", "generated", `rule-${options.name}`);
     await fs.mkdir(target, { recursive: true });
-    await fs.writeFile(path.join(target, "README.md"), `# ${options.name} rule\n\nGoverned scaffold with deterministic replay tests.\n`, "utf8");
-    await fs.writeFile(path.join(target, "replay.test.json"), `${JSON.stringify({ schemaVersion: 1, deterministicReplay: true }, null, 2)}\n`, "utf8");
+    await fs.writeFile(
+      path.join(target, "README.md"),
+      `# ${options.name} rule\n\nGoverned scaffold with deterministic replay tests.\n`,
+      "utf8"
+    );
+    await fs.writeFile(
+      path.join(target, "replay.test.json"),
+      `${JSON.stringify({ schemaVersion: 1, deterministicReplay: true }, null, 2)}\n`,
+      "utf8"
+    );
     console.log(chalk.green(`Governed rule template generated: ${target}`));
   });

@@ -114,7 +114,10 @@ const ControlPlaneOverview: React.FC<ControlPlaneOverviewProps> = ({ health }) =
         {health.status === "unhealthy" && (
           <div className="error-well mb-4">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="h-5 w-5 text-destructive mt-0.5 shrink-0" aria-hidden="true" />
+              <AlertTriangle
+                className="h-5 w-5 text-destructive mt-0.5 shrink-0"
+                aria-hidden="true"
+              />
               <div>
                 <h3 className="text-sm font-bold text-foreground">System Degradation Detected</h3>
                 <p className="mt-1 text-xs text-muted-foreground">

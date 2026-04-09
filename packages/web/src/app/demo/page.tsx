@@ -34,11 +34,11 @@ export default function DemoPage() {
             variants={staggerItem}
             className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto"
           >
-            See one concrete path: run reconciliation, inspect a mismatch, review evidence, and replay the run.
-            All demo data is deterministic and reproducible—no authentication required.
+            See one concrete path: run reconciliation, inspect a mismatch, review evidence, and
+            replay the run. All demo data is deterministic and reproducible—no authentication
+            required.
           </motion.p>
         </motion.div>
-
 
         <motion.div
           initial="hidden"
@@ -48,7 +48,9 @@ export default function DemoPage() {
         >
           <h2 className="text-xl font-semibold text-foreground">How this demo works</h2>
           <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-muted-foreground">
-            <li>Open the reconciliation demo and run deterministic matching across sample systems.</li>
+            <li>
+              Open the reconciliation demo and run deterministic matching across sample systems.
+            </li>
             <li>Inspect mismatches and policy outcomes in the results view.</li>
             <li>Review attached evidence and trace context.</li>
             <li>Replay with the same inputs to verify reproducible output.</li>
@@ -71,9 +73,9 @@ export default function DemoPage() {
                 Interactive Showcase Console
               </h2>
               <p className="text-muted-foreground text-sm">
-                Explore a fully populated console with 5 realistic tenant scenarios — see dashboards, runs,
-                exceptions, integrations, alerts, and audit trails with commercially realistic data.
-                No account required.
+                Explore a fully populated console with 5 realistic tenant scenarios — see
+                dashboards, runs, exceptions, integrations, alerts, and audit trails with
+                commercially realistic data. No account required.
               </p>
             </div>
             <Button asChild size="lg" className="flex-shrink-0">
@@ -149,8 +151,8 @@ export default function DemoPage() {
                 </div>
                 <CardTitle>API + Policy Playground</CardTitle>
                 <CardDescription>
-                  Explore the API with feature flags and plan tiers. See how responses change
-                  based on configuration.
+                  Explore the API with feature flags and plan tiers. See how responses change based
+                  on configuration.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -181,9 +183,8 @@ export default function DemoPage() {
                 Deterministic & Reproducible
               </h3>
               <p className="text-muted-foreground mb-4">
-                All demo data is static and deterministic. Same inputs always produce same
-                outputs. Every transformation includes audit trail IDs and SHA-256 hashes for
-                verification.
+                All demo data is static and deterministic. Same inputs always produce same outputs.
+                Every transformation includes audit trail IDs and SHA-256 hashes for verification.
               </p>
               <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
                 <li>No randomness—all results are reproducible</li>

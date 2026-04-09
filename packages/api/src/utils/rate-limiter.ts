@@ -6,7 +6,11 @@ import { consumeRateLimitShared, logRateLimitTriggered } from "../services/distr
 
 function shouldBypass(req: AuthRequest): boolean {
   const path = req.path.toLowerCase();
-  return path.includes("/operator/") || path.startsWith("/admin/") || req.headers["x-admin-bypass"] === "true";
+  return (
+    path.includes("/operator/") ||
+    path.startsWith("/admin/") ||
+    req.headers["x-admin-bypass"] === "true"
+  );
 }
 
 async function resolveTenantLimit(req: AuthRequest): Promise<number> {
@@ -35,7 +39,12 @@ export async function checkRateLimit(req: AuthRequest): Promise<{
   const windowMs = config.rateLimiting.windowMs;
 
   if (shouldBypass(req)) {
-    return { allowed: true, remaining: Number.MAX_SAFE_INTEGER, resetAt: Date.now() + windowMs, scope: "bypass" };
+    return {
+      allowed: true,
+      remaining: Number.MAX_SAFE_INTEGER,
+      resetAt: Date.now() + windowMs,
+      scope: "bypass",
+    };
   }
 
   const tenantKey = req.tenantId || req.apiKeyId || req.userId || req.ip || "anonymous";

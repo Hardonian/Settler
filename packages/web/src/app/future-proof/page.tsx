@@ -20,13 +20,15 @@ const panels = [
   },
   {
     title: "Rules & Adapters Marketplace",
-    description: "OSS-first Git-style registry for adapters/rules with provenance and license metadata.",
+    description:
+      "OSS-first Git-style registry for adapters/rules with provenance and license metadata.",
     image: "/assets/future-proof/marketplace.svg",
     action: "settler adapters|rules search|install|verify",
   },
   {
     title: "Deterministic Time Capsule",
-    description: "Portable verification capsule with hash-linked audit chain and stable integrity roots.",
+    description:
+      "Portable verification capsule with hash-linked audit chain and stable integrity roots.",
     image: "/assets/future-proof/time-capsule.svg",
     action: "settler capsule create|verify|replay",
   },
@@ -44,7 +46,8 @@ const panels = [
   },
   {
     title: "Settler Explain",
-    description: "Human-readable explanation of what matched, what missed, and what proof verifies.",
+    description:
+      "Human-readable explanation of what matched, what missed, and what proof verifies.",
     image: "/assets/future-proof/settler-explain.svg",
     action: "settler explain <runId>",
   },
@@ -70,7 +73,7 @@ const panels = [
     title: "Support Bot",
     description: "Offline-first deterministic KB retrieval with redaction-safe responses.",
     image: "/assets/future-proof/support-bot.svg",
-    action: "settler support ask \"<question>\"",
+    action: 'settler support ask "<question>"',
   },
   {
     title: "Gamification",
@@ -126,7 +129,15 @@ export default function FutureProofPage() {
           </div>
 
           <div className="mt-10 text-sm text-muted-foreground">
-            Need implementation details? Visit <Link className="underline" href="/docs/cli">CLI docs</Link> and <Link className="underline" href="/support">Support</Link>.
+            Need implementation details? Visit{" "}
+            <Link className="underline" href="/docs/cli">
+              CLI docs
+            </Link>{" "}
+            and{" "}
+            <Link className="underline" href="/support">
+              Support
+            </Link>
+            .
           </div>
         </div>
       </main>

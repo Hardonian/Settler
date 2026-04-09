@@ -117,15 +117,14 @@ export function withAPISecurity(
   } = {}
 ): (req: NextRequest) => Promise<NextResponse> {
   let wrappedHandler = handler;
-  
+
   // Rate limiting
   if (options.rateLimit) {
     const config = RATE_LIMIT_CONFIGS[options.rateLimit] || RATE_LIMIT_CONFIGS.api;
     wrappedHandler = withRateLimit(config, wrappedHandler);
   }
-  
-  return async (req: NextRequest): Promise<NextResponse> => {
 
+  return async (req: NextRequest): Promise<NextResponse> => {
     // Request size validation
     if (options.maxRequestSize) {
       if (!validateRequestSize(req, options.maxRequestSize)) {

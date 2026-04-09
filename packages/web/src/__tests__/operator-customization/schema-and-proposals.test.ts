@@ -1,5 +1,11 @@
-import { applyCustomizationPatch, normalizeOperatorCustomization } from "@/lib/operator-customization/normalize";
-import { defaultAdminDashboardCustomization, validatePlacementsAgainstRegistry } from "@/lib/operator-customization/registry";
+import {
+  applyCustomizationPatch,
+  normalizeOperatorCustomization,
+} from "@/lib/operator-customization/normalize";
+import {
+  defaultAdminDashboardCustomization,
+  validatePlacementsAgainstRegistry,
+} from "@/lib/operator-customization/registry";
 import { buildProposalFromNaturalLanguage } from "@/lib/operator-customization/proposal-rules";
 import { getPresetById } from "@/lib/operator-customization/presets";
 
@@ -44,7 +50,10 @@ describe("operator customization", () => {
     expect(p.ok).toBe(true);
     if (p.ok) {
       expect(p.patch.lastAppliedPresetId).toBe("solo_operator");
-      expect(p.explanationEvidence).toMatchObject({ engine: "rules", ruleId: "intent_solo_operator" });
+      expect(p.explanationEvidence).toMatchObject({
+        engine: "rules",
+        ruleId: "intent_solo_operator",
+      });
       const preset = getPresetById("solo_operator");
       expect(preset).toBeDefined();
     }

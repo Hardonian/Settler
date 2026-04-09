@@ -18,11 +18,11 @@ Last updated: 2026-04-05
 
 ## Status endpoint semantics (avoid drift)
 
-| Surface | Proves | Does not prove |
-| --- | --- | --- |
-| `GET /api/status/health` | DB + Supabase + env probe at request time | 30-day uptime, incidents, regions, RPO/RTO |
-| `GET /api/status` | Same probes + coarse subsystem labels | End-to-end reconciliation correctness per tenant |
-| `GET /api/public/reality` | Optional `reality_*` tables when configured | SOC2, PCI, durability “11 nines” |
+| Surface                   | Proves                                      | Does not prove                                   |
+| ------------------------- | ------------------------------------------- | ------------------------------------------------ |
+| `GET /api/status/health`  | DB + Supabase + env probe at request time   | 30-day uptime, incidents, regions, RPO/RTO       |
+| `GET /api/status`         | Same probes + coarse subsystem labels       | End-to-end reconciliation correctness per tenant |
+| `GET /api/public/reality` | Optional `reality_*` tables when configured | SOC2, PCI, durability “11 nines”                 |
 
 ## Pilot / procurement
 

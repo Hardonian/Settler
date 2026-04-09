@@ -14,6 +14,7 @@ curl -H "Authorization: Bearer $API_KEY" \
 ## Set Up Alerts
 
 1. **Create alert rule**:
+
 ```bash
 curl -X POST -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
@@ -30,11 +31,13 @@ curl -X POST -H "Authorization: Bearer $API_KEY" \
 ```
 
 2. **Configure Slack** (optional):
+
 ```bash
 export SLACK_WEBHOOK_URL="https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
 ```
 
 3. **Check alerts manually**:
+
 ```bash
 curl -X POST -H "Authorization: Bearer $API_KEY" \
   https://api.settler.dev/api/v1/operator/alerts/check
@@ -59,6 +62,7 @@ curl -X POST -H "Authorization: Bearer $API_KEY" \
 ## Use Kill Switches
 
 **Disable a connector** (e.g., during incident):
+
 ```bash
 curl -X POST -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
@@ -67,6 +71,7 @@ curl -X POST -H "Authorization: Bearer $API_KEY" \
 ```
 
 **Pause background jobs**:
+
 ```bash
 curl -X POST -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
@@ -75,6 +80,7 @@ curl -X POST -H "Authorization: Bearer $API_KEY" \
 ```
 
 **Re-enable**:
+
 ```bash
 curl -X POST -H "Authorization: Bearer $API_KEY" \
   https://api.settler.dev/api/v1/operator/kill-switches/connectors/stripe/enable
@@ -93,12 +99,15 @@ curl -X POST -H "Authorization: Bearer $API_KEY" \
 
 1. Create a failed ingestion (or let one fail naturally)
 2. Check failed ingestions:
+
 ```bash
 curl -H "Authorization: Bearer $API_KEY" \
   https://api.settler.dev/api/v1/operator/failed-ingestions
 ```
+
 3. Each failed ingestion includes a `traceId` for debugging
 4. Check alerts:
+
 ```bash
 curl -X POST -H "Authorization: Bearer $API_KEY" \
   https://api.settler.dev/api/v1/operator/alerts/check
@@ -107,6 +116,7 @@ curl -X POST -H "Authorization: Bearer $API_KEY" \
 ### Test 2: Kill Switch Without Redeploy
 
 1. Disable Stripe connector:
+
 ```bash
 curl -X POST -H "Authorization: Bearer $API_KEY" \
   -d '{"reason": "Test"}' \
@@ -114,6 +124,7 @@ curl -X POST -H "Authorization: Bearer $API_KEY" \
 ```
 
 2. Attempt to create Stripe source:
+
 ```bash
 curl -X POST -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
@@ -128,6 +139,7 @@ curl -X POST -H "Authorization: Bearer $API_KEY" \
 3. Should return `503 Service Unavailable` with message: "Connector stripe is currently disabled"
 
 4. Re-enable:
+
 ```bash
 curl -X POST -H "Authorization: Bearer $API_KEY" \
   https://api.settler.dev/api/v1/operator/kill-switches/connectors/stripe/enable
@@ -148,24 +160,28 @@ Or use a job scheduler (e.g., GitHub Actions, AWS EventBridge).
 ## Common Tasks
 
 **View all kill switches**:
+
 ```bash
 curl -H "Authorization: Bearer $API_KEY" \
   https://api.settler.dev/api/v1/operator/kill-switches
 ```
 
 **View usage ceilings**:
+
 ```bash
 curl -H "Authorization: Bearer $API_KEY" \
   https://api.settler.dev/api/v1/operator/cost-controls/usage-ceilings
 ```
 
 **View recent backups**:
+
 ```bash
 curl -H "Authorization: Bearer $API_KEY" \
   https://api.settler.dev/api/v1/operator/backups?limit=10
 ```
 
 **View slow endpoints**:
+
 ```bash
 curl -H "Authorization: Bearer $API_KEY" \
   https://api.settler.dev/api/v1/operator/slow-endpoints
@@ -174,16 +190,19 @@ curl -H "Authorization: Bearer $API_KEY" \
 ## Troubleshooting
 
 **Alerts not triggering?**
+
 - Check alert rules are enabled: `GET /api/v1/operator/alerts/thresholds`
 - Verify thresholds are appropriate
 - Check Slack webhook URL is set
 
 **Kill switch not working?**
+
 - Verify kill switch is enabled: `GET /api/v1/operator/kill-switches`
 - Check type and target match exactly
 - Ensure code checks kill switches before operations
 
 **Backups failing?**
+
 - Check `BACKUP_DIR` exists and is writable
 - Verify `pg_dump` is installed
 - Check database credentials

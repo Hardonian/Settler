@@ -9,6 +9,7 @@ Some environment variables (like `DB_PASSWORD`, `ENCRYPTION_KEY`, `JWT_SECRET`) 
 ## Solution
 
 The environment variable build helper:
+
 - **During build**: Only validates build-time required variables (e.g., `SUPABASE_URL`, `SUPABASE_ANON_KEY`)
 - **At runtime**: Validates all required variables
 - **Runtime-only variables**: Are optional during build but will be validated when the app runs
@@ -18,17 +19,17 @@ The environment variable build helper:
 ### In Code
 
 ```typescript
-import { getEnv, getEnvSafe } from '@/lib/env-build-helper';
+import { getEnv, getEnvSafe } from "@/lib/env-build-helper";
 
 // Safe access during build (returns empty string if runtime-only var is missing)
-const dbPassword = getEnvSafe('DB_PASSWORD', {
+const dbPassword = getEnvSafe("DB_PASSWORD", {
   required: true,
-  defaultValue: '',
+  defaultValue: "",
   buildTimeRequired: false, // This is runtime-only
 });
 
 // Or use the standard getEnv (automatically handles build vs runtime)
-const jwtSecret = getEnv('JWT_SECRET', true);
+const jwtSecret = getEnv("JWT_SECRET", true);
 ```
 
 ### Validation Scripts
@@ -44,12 +45,16 @@ npm run validate:env:runtime
 ## Environment Variable Categories
 
 ### Build-Time Required
+
 These variables are needed during the build process:
+
 - `SUPABASE_URL`
 - `SUPABASE_ANON_KEY`
 
 ### Runtime-Only
+
 These variables are NOT required during build but will be needed at runtime:
+
 - `DB_PASSWORD`
 - `ENCRYPTION_KEY`
 - `JWT_SECRET`
@@ -64,7 +69,7 @@ These variables are NOT required during build but will be needed at runtime:
    - `CI === 'true'`
    - `SKIP_ENV_VALIDATION === 'true'`
 
-2. **Conditional Validation**: 
+2. **Conditional Validation**:
    - During build: Only validates build-time required variables
    - At runtime: Validates all required variables
 
@@ -73,6 +78,7 @@ These variables are NOT required during build but will be needed at runtime:
 ## Vercel/GitHub Secrets
 
 Runtime-only environment variables should be set in:
+
 - **Vercel**: Project Settings → Environment Variables
 - **GitHub Actions**: Repository Settings → Secrets
 
@@ -88,13 +94,13 @@ These will be available at runtime but won't cause build failures if missing dur
 
 ```typescript
 // ✅ Safe during build
-const encryptionKey = getEnvSafe('ENCRYPTION_KEY', {
+const encryptionKey = getEnvSafe("ENCRYPTION_KEY", {
   required: true,
   buildTimeRequired: false,
 });
 
 // ✅ Will fail if missing during build (build-time required)
-const supabaseUrl = getEnvSafe('SUPABASE_URL', {
+const supabaseUrl = getEnvSafe("SUPABASE_URL", {
   required: true,
   buildTimeRequired: true,
 });

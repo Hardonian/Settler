@@ -1,6 +1,6 @@
 /**
  * Role-Based Access Control (RBAC)
- * 
+ *
  * Defines user roles and permissions for the multi-tenant site builder.
  * Type-safe role checking and permission validation.
  */
@@ -9,10 +9,10 @@
  * User roles in the system
  */
 export enum UserRole {
-  SUPER_ADMIN = 'SUPER_ADMIN',
-  TENANT_ADMIN = 'TENANT_ADMIN',
-  TENANT_EDITOR = 'TENANT_EDITOR',
-  USER = 'USER', // Default role
+  SUPER_ADMIN = "SUPER_ADMIN",
+  TENANT_ADMIN = "TENANT_ADMIN",
+  TENANT_EDITOR = "TENANT_EDITOR",
+  USER = "USER", // Default role
 }
 
 /**
@@ -20,41 +20,41 @@ export enum UserRole {
  */
 export enum SiteBuilderPermission {
   // Tenant management
-  VIEW_ALL_TENANTS = 'VIEW_ALL_TENANTS',
-  CREATE_TENANT = 'CREATE_TENANT',
-  UPDATE_ANY_TENANT = 'UPDATE_ANY_TENANT',
-  DELETE_TENANT = 'DELETE_TENANT',
-  
+  VIEW_ALL_TENANTS = "VIEW_ALL_TENANTS",
+  CREATE_TENANT = "CREATE_TENANT",
+  UPDATE_ANY_TENANT = "UPDATE_ANY_TENANT",
+  DELETE_TENANT = "DELETE_TENANT",
+
   // Tenant-specific operations
-  VIEW_TENANT_CONFIG = 'VIEW_TENANT_CONFIG',
-  UPDATE_TENANT_BRANDING = 'UPDATE_TENANT_BRANDING',
-  UPDATE_TENANT_NAVIGATION = 'UPDATE_TENANT_NAVIGATION',
-  UPDATE_TENANT_UI_CONFIG = 'UPDATE_TENANT_UI_CONFIG',
-  
+  VIEW_TENANT_CONFIG = "VIEW_TENANT_CONFIG",
+  UPDATE_TENANT_BRANDING = "UPDATE_TENANT_BRANDING",
+  UPDATE_TENANT_NAVIGATION = "UPDATE_TENANT_NAVIGATION",
+  UPDATE_TENANT_UI_CONFIG = "UPDATE_TENANT_UI_CONFIG",
+
   // Page management
-  CREATE_PAGE = 'CREATE_PAGE',
-  UPDATE_PAGE = 'UPDATE_PAGE',
-  DELETE_PAGE = 'DELETE_PAGE',
-  PUBLISH_PAGE = 'PUBLISH_PAGE',
-  VIEW_PAGE_REVISIONS = 'VIEW_PAGE_REVISIONS',
-  REVERT_PAGE = 'REVERT_PAGE',
-  
+  CREATE_PAGE = "CREATE_PAGE",
+  UPDATE_PAGE = "UPDATE_PAGE",
+  DELETE_PAGE = "DELETE_PAGE",
+  PUBLISH_PAGE = "PUBLISH_PAGE",
+  VIEW_PAGE_REVISIONS = "VIEW_PAGE_REVISIONS",
+  REVERT_PAGE = "REVERT_PAGE",
+
   // Experiments
-  CREATE_EXPERIMENT = 'CREATE_EXPERIMENT',
-  UPDATE_EXPERIMENT = 'UPDATE_EXPERIMENT',
-  DELETE_EXPERIMENT = 'DELETE_EXPERIMENT',
-  START_EXPERIMENT = 'START_EXPERIMENT',
-  PAUSE_EXPERIMENT = 'PAUSE_EXPERIMENT',
-  VIEW_EXPERIMENT_RESULTS = 'VIEW_EXPERIMENT_RESULTS',
-  
+  CREATE_EXPERIMENT = "CREATE_EXPERIMENT",
+  UPDATE_EXPERIMENT = "UPDATE_EXPERIMENT",
+  DELETE_EXPERIMENT = "DELETE_EXPERIMENT",
+  START_EXPERIMENT = "START_EXPERIMENT",
+  PAUSE_EXPERIMENT = "PAUSE_EXPERIMENT",
+  VIEW_EXPERIMENT_RESULTS = "VIEW_EXPERIMENT_RESULTS",
+
   // Raw config access (super admin only)
-  VIEW_RAW_CONFIG = 'VIEW_RAW_CONFIG',
-  EDIT_RAW_CONFIG = 'EDIT_RAW_CONFIG',
-  VALIDATE_CONFIG = 'VALIDATE_CONFIG',
+  VIEW_RAW_CONFIG = "VIEW_RAW_CONFIG",
+  EDIT_RAW_CONFIG = "EDIT_RAW_CONFIG",
+  VALIDATE_CONFIG = "VALIDATE_CONFIG",
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
+  typeof value === "object" && value !== null && !Array.isArray(value);
 
 /**
  * Role to permissions mapping
@@ -86,7 +86,7 @@ const ROLE_PERMISSIONS: Record<UserRole, Set<SiteBuilderPermission>> = {
     SiteBuilderPermission.EDIT_RAW_CONFIG,
     SiteBuilderPermission.VALIDATE_CONFIG,
   ]),
-  
+
   [UserRole.TENANT_ADMIN]: new Set([
     SiteBuilderPermission.VIEW_TENANT_CONFIG,
     SiteBuilderPermission.UPDATE_TENANT_BRANDING,
@@ -105,7 +105,7 @@ const ROLE_PERMISSIONS: Record<UserRole, Set<SiteBuilderPermission>> = {
     SiteBuilderPermission.PAUSE_EXPERIMENT,
     SiteBuilderPermission.VIEW_EXPERIMENT_RESULTS,
   ]),
-  
+
   [UserRole.TENANT_EDITOR]: new Set([
     SiteBuilderPermission.VIEW_TENANT_CONFIG,
     SiteBuilderPermission.CREATE_PAGE,
@@ -113,34 +113,31 @@ const ROLE_PERMISSIONS: Record<UserRole, Set<SiteBuilderPermission>> = {
     SiteBuilderPermission.VIEW_PAGE_REVISIONS,
     SiteBuilderPermission.VIEW_EXPERIMENT_RESULTS,
   ]),
-  
+
   [UserRole.USER]: new Set([]), // No site builder permissions
 };
 
 /**
  * Get user role for a tenant
- * 
+ *
  * @param userId - User ID
  * @param tenantId - Tenant ID (optional, for tenant-specific roles)
  * @returns User role
  */
-export async function getUserRole(
-  userId: string,
-  tenantId?: string
-): Promise<UserRole> {
-  const { prisma } = await import('@/shared/db/prismaClient');
-  
+export async function getUserRole(userId: string, tenantId?: string): Promise<UserRole> {
+  const { prisma } = await import("@/shared/db/prismaClient");
+
   // Check if user is super admin (stored in metadata or separate table)
   // For now, check if user has a special flag in billing account metadata
   const billingAccount = await prisma.billingAccount.findFirst({
     where: { userId },
   });
-  
+
   const metadata = isRecord(billingAccount?.metadata) ? billingAccount?.metadata : undefined;
   if (metadata?.role === UserRole.SUPER_ADMIN) {
     return UserRole.SUPER_ADMIN;
   }
-  
+
   // If tenantId provided, check tenant-specific role
   if (tenantId) {
     const tenant = await prisma.tenant.findUnique({
@@ -151,23 +148,23 @@ export async function getUserRole(
         },
       },
     });
-    
+
     if (tenant?.billingAccount) {
       // Check if user is tenant admin (owner of billing account)
       if (tenant.billingAccount.userId === userId) {
         return UserRole.TENANT_ADMIN;
       }
-      
+
       // Check tenant-specific role in metadata
       const tenantMetadata = isRecord(tenant.metadata) ? tenant.metadata : undefined;
       const userRoles = isRecord(tenantMetadata?.userRoles) ? tenantMetadata?.userRoles : undefined;
-      const userRole = typeof userRoles?.[userId] === 'string' ? userRoles[userId] : undefined;
+      const userRole = typeof userRoles?.[userId] === "string" ? userRoles[userId] : undefined;
       if (userRole === UserRole.TENANT_EDITOR) {
         return UserRole.TENANT_EDITOR;
       }
     }
   }
-  
+
   return UserRole.USER;
 }
 
@@ -187,22 +184,19 @@ export async function hasPermission(
 /**
  * Check if user can access a tenant
  */
-export async function canAccessTenant(
-  userId: string,
-  tenantId: string
-): Promise<boolean> {
+export async function canAccessTenant(userId: string, tenantId: string): Promise<boolean> {
   const role = await getUserRole(userId, tenantId);
-  
+
   // Super admin can access any tenant
   if (role === UserRole.SUPER_ADMIN) {
     return true;
   }
-  
+
   // Tenant admin/editor can access their tenant
   if (role === UserRole.TENANT_ADMIN || role === UserRole.TENANT_EDITOR) {
     return true;
   }
-  
+
   return false;
 }
 

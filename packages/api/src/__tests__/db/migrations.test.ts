@@ -3,23 +3,23 @@
  * Tests for database migrations
  */
 
-import { initDatabase } from '../../db';
-import { Pool } from 'pg';
+import { initDatabase } from "../../db";
+import { Pool } from "pg";
 
-const shouldRunDbTests = process.env.RUN_DB_TESTS === 'true';
+const shouldRunDbTests = process.env.RUN_DB_TESTS === "true";
 const describeDatabase = shouldRunDbTests ? describe : describe.skip;
 
-describeDatabase('Database Migrations', () => {
+describeDatabase("Database Migrations", () => {
   let testPool: Pool;
 
   beforeAll(async () => {
     // Use test database
     testPool = new Pool({
-      host: process.env.DB_HOST || 'localhost',
-      port: parseInt(process.env.DB_PORT || '5432', 10),
-      database: process.env.DB_NAME || 'settler_test',
-      user: process.env.DB_USER || 'postgres',
-      password: process.env.DB_PASSWORD || 'postgres',
+      host: process.env.DB_HOST || "localhost",
+      port: parseInt(process.env.DB_PORT || "5432", 10),
+      database: process.env.DB_NAME || "settler_test",
+      user: process.env.DB_USER || "postgres",
+      password: process.env.DB_PASSWORD || "postgres",
     });
   });
 
@@ -29,11 +29,11 @@ describeDatabase('Database Migrations', () => {
 
   beforeEach(async () => {
     // Clean up test data
-    await testPool.query('TRUNCATE TABLE jobs, executions, matches, unmatched, reports CASCADE');
+    await testPool.query("TRUNCATE TABLE jobs, executions, matches, unmatched, reports CASCADE");
   });
 
-  describe('Initial Schema Migration', () => {
-    it('should create all required tables', async () => {
+  describe("Initial Schema Migration", () => {
+    it("should create all required tables", async () => {
       await initDatabase();
 
       const tables = await testPool.query(`
@@ -47,18 +47,18 @@ describeDatabase('Database Migrations', () => {
       const tableNames = tables.rows.map((r) => r.table_name);
 
       // Check core tables exist
-      expect(tableNames).toContain('tenants');
-      expect(tableNames).toContain('users');
-      expect(tableNames).toContain('jobs');
-      expect(tableNames).toContain('executions');
-      expect(tableNames).toContain('matches');
-      expect(tableNames).toContain('unmatched');
-      expect(tableNames).toContain('reports');
-      expect(tableNames).toContain('webhooks');
-      expect(tableNames).toContain('api_keys');
+      expect(tableNames).toContain("tenants");
+      expect(tableNames).toContain("users");
+      expect(tableNames).toContain("jobs");
+      expect(tableNames).toContain("executions");
+      expect(tableNames).toContain("matches");
+      expect(tableNames).toContain("unmatched");
+      expect(tableNames).toContain("reports");
+      expect(tableNames).toContain("webhooks");
+      expect(tableNames).toContain("api_keys");
     });
 
-    it('should create all required indexes', async () => {
+    it("should create all required indexes", async () => {
       await initDatabase();
 
       const indexes = await testPool.query(`
@@ -71,13 +71,13 @@ describeDatabase('Database Migrations', () => {
       const indexNames = indexes.rows.map((r) => r.indexname);
 
       // Check key indexes exist
-      expect(indexNames.some((name) => name.includes('idx_jobs_user_id'))).toBe(true);
-      expect(indexNames.some((name) => name.includes('idx_jobs_tenant_id'))).toBe(true);
-      expect(indexNames.some((name) => name.includes('idx_executions_job_id'))).toBe(true);
-      expect(indexNames.some((name) => name.includes('idx_users_email'))).toBe(true);
+      expect(indexNames.some((name) => name.includes("idx_jobs_user_id"))).toBe(true);
+      expect(indexNames.some((name) => name.includes("idx_jobs_tenant_id"))).toBe(true);
+      expect(indexNames.some((name) => name.includes("idx_executions_job_id"))).toBe(true);
+      expect(indexNames.some((name) => name.includes("idx_users_email"))).toBe(true);
     });
 
-    it('should create all required functions', async () => {
+    it("should create all required functions", async () => {
       await initDatabase();
 
       const functions = await testPool.query(`
@@ -91,13 +91,13 @@ describeDatabase('Database Migrations', () => {
       const functionNames = functions.rows.map((r) => r.routine_name);
 
       // Check key functions exist
-      expect(functionNames).toContain('current_tenant_id');
-      expect(functionNames).toContain('check_tenant_quota');
-      expect(functionNames).toContain('increment_tenant_quota_usage');
-      expect(functionNames).toContain('is_ip_blocked');
+      expect(functionNames).toContain("current_tenant_id");
+      expect(functionNames).toContain("check_tenant_quota");
+      expect(functionNames).toContain("increment_tenant_quota_usage");
+      expect(functionNames).toContain("is_ip_blocked");
     });
 
-    it('should enable RLS on tenant-scoped tables', async () => {
+    it("should enable RLS on tenant-scoped tables", async () => {
       await initDatabase();
 
       const rlsTables = await testPool.query(`
@@ -111,13 +111,13 @@ describeDatabase('Database Migrations', () => {
       const tableNames = rlsTables.rows.map((r) => r.tablename);
 
       // Check RLS is enabled on key tables
-      expect(tableNames).toContain('jobs');
-      expect(tableNames).toContain('users');
-      expect(tableNames).toContain('executions');
-      expect(tableNames).toContain('matches');
+      expect(tableNames).toContain("jobs");
+      expect(tableNames).toContain("users");
+      expect(tableNames).toContain("executions");
+      expect(tableNames).toContain("matches");
     });
 
-    it('should create RLS policies', async () => {
+    it("should create RLS policies", async () => {
       await initDatabase();
 
       const policies = await testPool.query(`
@@ -136,12 +136,12 @@ describeDatabase('Database Migrations', () => {
       });
 
       // Check RLS policies exist
-      expect(policyMap.get('jobs')).toContain('tenant_isolation_jobs');
-      expect(policyMap.get('users')).toContain('tenant_isolation_users');
-      expect(policyMap.get('executions')).toContain('tenant_isolation_executions');
+      expect(policyMap.get("jobs")).toContain("tenant_isolation_jobs");
+      expect(policyMap.get("users")).toContain("tenant_isolation_users");
+      expect(policyMap.get("executions")).toContain("tenant_isolation_executions");
     });
 
-    it('should be idempotent (safe to run multiple times)', async () => {
+    it("should be idempotent (safe to run multiple times)", async () => {
       // Run migration twice
       await initDatabase();
       await initDatabase();
@@ -158,8 +158,8 @@ describeDatabase('Database Migrations', () => {
     });
   });
 
-  describe('Tenant ID Propagation', () => {
-    it('should propagate tenant_id from user to job', async () => {
+  describe("Tenant ID Propagation", () => {
+    it("should propagate tenant_id from user to job", async () => {
       await initDatabase();
 
       // Create tenant
@@ -171,26 +171,32 @@ describeDatabase('Database Migrations', () => {
       const tenantId = tenantResult.rows[0].id;
 
       // Create user
-      const userResult = await testPool.query(`
+      const userResult = await testPool.query(
+        `
         INSERT INTO users (tenant_id, email, password_hash)
         VALUES ($1, 'test@example.com', 'hashed-password')
         RETURNING id
-      `, [tenantId]);
+      `,
+        [tenantId]
+      );
       const userId = userResult.rows[0].id;
 
       // Create job (should auto-populate tenant_id)
-      const jobResult = await testPool.query(`
+      const jobResult = await testPool.query(
+        `
         INSERT INTO jobs (user_id, name, source_adapter, source_config_encrypted, target_adapter, target_config_encrypted, rules)
         VALUES ($1, 'Test Job', 'shopify', 'encrypted', 'stripe', 'encrypted', '{}')
         RETURNING id, tenant_id
-      `, [userId]);
+      `,
+        [userId]
+      );
 
       expect(jobResult.rows[0].tenant_id).toBe(tenantId);
     });
   });
 
-  describe('Quota Functions', () => {
-    it('should check tenant quota correctly', async () => {
+  describe("Quota Functions", () => {
+    it("should check tenant quota correctly", async () => {
       await initDatabase();
 
       // Create tenant with quotas
@@ -202,9 +208,12 @@ describeDatabase('Database Migrations', () => {
       const tenantId = tenantResult.rows[0].id;
 
       // Check quota
-      const result = await testPool.query(`
+      const result = await testPool.query(
+        `
         SELECT check_tenant_quota($1, 'monthlyReconciliations', 1) as allowed
-      `, [tenantId]);
+      `,
+        [tenantId]
+      );
 
       expect(result.rows[0].allowed).toBe(true);
     });

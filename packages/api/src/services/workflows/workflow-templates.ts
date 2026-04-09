@@ -1,9 +1,9 @@
 /**
  * Workflow Templates
- * 
+ *
  * Pre-built templates for common reconciliation workflows.
  * These create workflow lock-in by embedding Settler into operational processes.
- * 
+ *
  * PHASE: Workflow Lock-In Reinforcement
  */
 
@@ -192,9 +192,7 @@ export class WorkflowTemplateService {
   /**
    * Get all available templates
    */
-  async getTemplates(
-    category?: WorkflowTemplate["category"]
-  ): Promise<WorkflowTemplate[]> {
+  async getTemplates(category?: WorkflowTemplate["category"]): Promise<WorkflowTemplate[]> {
     let templates = BUILT_IN_TEMPLATES;
 
     if (category) {
@@ -329,9 +327,7 @@ export class WorkflowTemplateService {
   /**
    * Get template from database
    */
-  private async getTemplateFromDB(
-    templateId: string
-  ): Promise<WorkflowTemplate | null> {
+  private async getTemplateFromDB(templateId: string): Promise<WorkflowTemplate | null> {
     try {
       const result = await query(
         `SELECT 

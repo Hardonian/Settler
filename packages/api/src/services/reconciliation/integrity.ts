@@ -1,6 +1,9 @@
 import { createHash } from "node:crypto";
 import { query } from "../../db";
-import { assertTenantOwnership, validateTenantId } from "../../infrastructure/tenancy/TenantEnforcement";
+import {
+  assertTenantOwnership,
+  validateTenantId,
+} from "../../infrastructure/tenancy/TenantEnforcement";
 import { logError, logInfo } from "../../utils/logger";
 
 export interface ReconciliationRunForIntegrity {
@@ -101,7 +104,10 @@ export function verifyIntegrityChain(
   return { valid: true, brokenAt: null };
 }
 
-async function loadRun(runId: string, tenantId: string): Promise<ReconciliationRunForIntegrity | null> {
+async function loadRun(
+  runId: string,
+  tenantId: string
+): Promise<ReconciliationRunForIntegrity | null> {
   validateTenantId(tenantId, "loadRun");
   const rows = await query<Record<string, unknown>>(
     `SELECT id, tenant_id, ingestion_id, status, source_count, target_count,
@@ -140,7 +146,10 @@ async function loadRun(runId: string, tenantId: string): Promise<ReconciliationR
   };
 }
 
-async function loadMatches(runId: string, tenantId: string): Promise<ReconciliationMatchForIntegrity[]> {
+async function loadMatches(
+  runId: string,
+  tenantId: string
+): Promise<ReconciliationMatchForIntegrity[]> {
   validateTenantId(tenantId, "loadMatches");
   const rows = await query<Record<string, unknown>>(
     `SELECT id, tenant_id, source_transaction_id, target_transaction_id,
@@ -150,7 +159,11 @@ async function loadMatches(runId: string, tenantId: string): Promise<Reconciliat
     [runId, tenantId]
   );
 
-  assertTenantOwnership(rows as Array<{ tenant_id?: string | null }>, tenantId, "reconciliation_matches");
+  assertTenantOwnership(
+    rows as Array<{ tenant_id?: string | null }>,
+    tenantId,
+    "reconciliation_matches"
+  );
 
   return rows.map((row) => ({
     id: String(row.id),
@@ -189,7 +202,9 @@ export async function appendRunIntegrityEntry(
   let previousHash: string | null = null;
   for (const row of previousRows) {
     const metadata = typeof row.metadata === "string" ? JSON.parse(row.metadata) : row.metadata;
-    const integrity = (metadata as Record<string, unknown>)?.integrity as Record<string, unknown> | undefined;
+    const integrity = (metadata as Record<string, unknown>)?.integrity as
+      | Record<string, unknown>
+      | undefined;
     previousHash = typeof integrity?.chainHash === "string" ? integrity.chainHash : previousHash;
   }
 
@@ -233,17 +248,25 @@ export async function verifyTenantIntegrityChain(tenantId: string): Promise<{
     [tenantId]
   );
 
-  const entries: Array<{ runId: string; previousHash: string | null; reconciliationHash: string; chainHash: string }> = [];
+  const entries: Array<{
+    runId: string;
+    previousHash: string | null;
+    reconciliationHash: string;
+    chainHash: string;
+  }> = [];
 
   for (const row of rows) {
     const metadata = typeof row.metadata === "string" ? JSON.parse(row.metadata) : row.metadata;
-    const integrity = (metadata as Record<string, unknown>)?.integrity as Record<string, unknown> | undefined;
+    const integrity = (metadata as Record<string, unknown>)?.integrity as
+      | Record<string, unknown>
+      | undefined;
 
     if (!integrity) {
       continue;
     }
 
-    const reconciliationHash = typeof integrity.reconciliationHash === "string" ? integrity.reconciliationHash : "";
+    const reconciliationHash =
+      typeof integrity.reconciliationHash === "string" ? integrity.reconciliationHash : "";
     const chainHash = typeof integrity.chainHash === "string" ? integrity.chainHash : "";
     const previousHash = typeof integrity.previousHash === "string" ? integrity.previousHash : null;
 
@@ -257,7 +280,7 @@ export async function verifyTenantIntegrityChain(tenantId: string): Promise<{
 
   const result = verifyIntegrityChain(entries);
   if (!result.valid) {
-    const brokenRunId = result.brokenAt === null ? null : entries[result.brokenAt]?.runId ?? null;
+    const brokenRunId = result.brokenAt === null ? null : (entries[result.brokenAt]?.runId ?? null);
     logError("Integrity chain verification failed", new Error("Hash chain broken"), {
       tenantId,
       brokenRunId,

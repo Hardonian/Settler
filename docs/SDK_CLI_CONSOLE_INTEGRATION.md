@@ -3,6 +3,7 @@
 ## Overview
 
 SDK, CLI, and Console are now fully integrated and share:
+
 - ✅ Unified authentication (session + API key)
 - ✅ Shared types and interfaces
 - ✅ Same backend APIs
@@ -35,16 +36,19 @@ SDK, CLI, and Console are now fully integrated and share:
 ## Authentication
 
 ### Console UI (Session Auth)
+
 - Uses Supabase session cookies
 - Authenticated via `createClient()` from `@/lib/supabase/server`
 - User must be logged in
 
 ### SDK & CLI (API Key Auth)
+
 - Uses API key in `X-API-Key` header or `Authorization: Bearer <key>`
 - API key format: `rk_<base64>`
 - Validated via `authenticateApiKey()`
 
 ### Unified Auth Middleware
+
 - `requireAuth()` supports both session and API key
 - Automatically detects auth type
 - Returns unified auth context
@@ -52,6 +56,7 @@ SDK, CLI, and Console are now fully integrated and share:
 ## Shared Types
 
 All types are defined in:
+
 - `packages/web/src/shared/types/console.ts` (source of truth)
 - `packages/sdk/src/clients/console.ts` (SDK exports)
 - Used by CLI, SDK, and Console UI
@@ -61,39 +66,45 @@ All types are defined in:
 All Console endpoints support both auth methods:
 
 ### API Keys
+
 - `GET /api/console/api-keys` - List keys
 - `POST /api/console/api-keys` - Create key
 - `DELETE /api/console/api-keys/[id]` - Revoke key
 
 ### Usage
+
 - `GET /api/console/usage` - Get usage stats
 
 ### Receipts
+
 - `GET /api/console/receipts` - List receipts
 - `GET /api/console/receipts/[id]` - Get receipt
 
 ### Feature Flags
+
 - `GET /api/console/feature-flags` - List flags
 
 ### Activities
+
 - `GET /api/console/activities` - Get recent activities
 
 ### Health
+
 - `GET /api/health/console` - Health check
 
 ## SDK Usage
 
 ```typescript
-import Settler from '@settler/sdk';
+import Settler from "@settler/sdk";
 
 const client = new Settler({
-  apiKey: 'rk_your_api_key',
-  baseUrl: 'https://api.settler.io',
+  apiKey: "rk_your_api_key",
+  baseUrl: "https://api.settler.io",
 });
 
 // API Keys
 const keys = await client.console.listApiKeys();
-const newKey = await client.console.createApiKey({ name: 'My Key' });
+const newKey = await client.console.createApiKey({ name: "My Key" });
 await client.console.revokeApiKey(keyId);
 
 // Usage
@@ -135,6 +146,7 @@ settler console health
 ## Console UI Usage
 
 Console UI uses session auth automatically:
+
 - User logs in via Supabase auth
 - Session cookie authenticates requests
 - No API key needed
@@ -142,6 +154,7 @@ Console UI uses session auth automatically:
 ## Error Handling
 
 All three interfaces handle errors consistently:
+
 - **401**: Unauthorized (no/invalid auth)
 - **403**: Forbidden (permission denied)
 - **404**: Not found
@@ -152,6 +165,7 @@ Never returns 500 - all errors handled gracefully.
 ## Logging
 
 All operations logged to `console_activities` table:
+
 - SDK operations logged with `api_key` type
 - CLI operations logged with `api_key` type
 - Console UI operations logged with `session` type
@@ -159,6 +173,7 @@ All operations logged to `console_activities` table:
 ## Type Safety
 
 Types are shared across:
+
 - SDK TypeScript definitions
 - CLI TypeScript definitions
 - Console UI TypeScript definitions
@@ -169,28 +184,32 @@ Changes to types automatically propagate to all interfaces.
 ## Testing
 
 ### Test SDK
-```typescript
-import Settler from '@settler/sdk';
 
-const client = new Settler({ apiKey: 'test_key' });
+```typescript
+import Settler from "@settler/sdk";
+
+const client = new Settler({ apiKey: "test_key" });
 const keys = await client.console.listApiKeys();
 ```
 
 ### Test CLI
+
 ```bash
 SETTLER_API_KEY=test_key settler console api-keys list
 ```
 
 ### Test Console UI
+
 Navigate to `/console` and use the UI.
 
 ## Migration Path
 
 ### From Direct API Calls to SDK
+
 ```typescript
 // Before
-const response = await fetch('/api/console/api-keys', {
-  headers: { 'X-API-Key': apiKey },
+const response = await fetch("/api/console/api-keys", {
+  headers: { "X-API-Key": apiKey },
 });
 const data = await response.json();
 
@@ -200,6 +219,7 @@ const data = await client.console.listApiKeys();
 ```
 
 ### From CLI Direct Calls to SDK
+
 CLI now uses SDK internally - no changes needed.
 
 ## Benefits

@@ -15,7 +15,12 @@ export type ProposalBuildResult =
       /** Bounded, machine-auditable metadata (no free-form claims). */
       explanationEvidence: Record<string, unknown>;
     }
-  | { ok: false; reason: string; inferenceMode: InferenceMode; explanationEvidence: Record<string, unknown> };
+  | {
+      ok: false;
+      reason: string;
+      inferenceMode: InferenceMode;
+      explanationEvidence: Record<string, unknown>;
+    };
 
 function applyPreset(presetId: string, rationale: string, ruleId: string): ProposalBuildResult {
   const preset = getPresetById(presetId);
@@ -65,7 +70,11 @@ export function buildProposalFromNaturalLanguage(request: string): ProposalBuild
     );
   }
   if (/buyer|demo|enterprise\s*pitch|sales/i.test(trimmed)) {
-    return applyPreset("buyer_demo", "Matched buyer-demo intent: Buyer demo preset.", "intent_buyer_demo");
+    return applyPreset(
+      "buyer_demo",
+      "Matched buyer-demo intent: Buyer demo preset.",
+      "intent_buyer_demo"
+    );
   }
   if (/exception|queue|heatmap|ops\s*first/i.test(trimmed)) {
     return applyPreset(
@@ -75,7 +84,11 @@ export function buildProposalFromNaturalLanguage(request: string): ProposalBuild
     );
   }
   if (/default|reset|baseline/i.test(trimmed)) {
-    return applyPreset("default", "Reset to default layout and standard operating mode.", "intent_reset_default");
+    return applyPreset(
+      "default",
+      "Reset to default layout and standard operating mode.",
+      "intent_reset_default"
+    );
   }
 
   if (/hide\s*activity|no\s*activity\s*feed|disable\s*activity/i.test(trimmed)) {

@@ -1,18 +1,18 @@
 /**
  * Usage Insights Feedback Loop
- * 
+ *
  * Analyzes usage patterns and automatically surfaces insights to improve:
  * - Messaging (highlight popular features)
  * - UI (emphasize frequently used actions)
  * - Docs (prioritize commonly accessed content)
- * 
+ *
  * This runs automatically without manual intervention.
  */
 
-import { prisma } from '@/shared/db/prismaClient';
+import { prisma } from "@/shared/db/prismaClient";
 
 export interface UsageInsight {
-  type: 'feature_popularity' | 'common_error' | 'dropoff_point' | 'success_pattern';
+  type: "feature_popularity" | "common_error" | "dropoff_point" | "success_pattern";
   insight: string;
   recommendation: string;
   confidence: number;
@@ -29,10 +29,12 @@ export async function generateUsageInsights(): Promise<UsageInsight[]> {
 
   try {
     // Analyze API usage by service
-    const serviceUsage = await prisma.$queryRaw<Array<{
-      service: string;
-      count: bigint;
-    }>>`
+    const serviceUsage = await prisma.$queryRaw<
+      Array<{
+        service: string;
+        count: bigint;
+      }>
+    >`
       SELECT 
         service,
         COUNT(*) as count
@@ -48,7 +50,7 @@ export async function generateUsageInsights(): Promise<UsageInsight[]> {
       const topService = serviceUsage[0];
       if (topService) {
         insights.push({
-          type: 'feature_popularity',
+          type: "feature_popularity",
           insight: `${topService.service} is the most used service (${Number(topService.count)} calls in last 7 days)`,
           recommendation: `Highlight ${topService.service} in homepage messaging and quick-start guides`,
           confidence: 0.9,
@@ -58,11 +60,13 @@ export async function generateUsageInsights(): Promise<UsageInsight[]> {
     }
 
     // Analyze error patterns
-    const errorPatterns = await prisma.$queryRaw<Array<{
-      error_type: string;
-      count: bigint;
-      path: string;
-    }>>`
+    const errorPatterns = await prisma.$queryRaw<
+      Array<{
+        error_type: string;
+        count: bigint;
+        path: string;
+      }>
+    >`
       SELECT 
         error_type,
         COUNT(*) as count,
@@ -78,7 +82,7 @@ export async function generateUsageInsights(): Promise<UsageInsight[]> {
     errorPatterns.forEach((pattern) => {
       if (Number(pattern.count) > 10) {
         insights.push({
-          type: 'common_error',
+          type: "common_error",
           insight: `Error "${pattern.error_type}" occurs frequently on ${pattern.path} (${Number(pattern.count)} times)`,
           recommendation: `Add troubleshooting guidance for ${pattern.error_type} in docs and improve error messaging on ${pattern.path}`,
           confidence: 0.85,
@@ -88,10 +92,12 @@ export async function generateUsageInsights(): Promise<UsageInsight[]> {
     });
 
     // Analyze conversion funnel dropoffs
-    const conversionEvents = await prisma.$queryRaw<Array<{
-      event: string;
-      count: bigint;
-    }>>`
+    const conversionEvents = await prisma.$queryRaw<
+      Array<{
+        event: string;
+        count: bigint;
+      }>
+    >`
       SELECT 
         action as event,
         COUNT(*) as count
@@ -112,17 +118,18 @@ export async function generateUsageInsights(): Promise<UsageInsight[]> {
     `;
 
     // Find dropoff points
-    const eventCounts = new Map(conversionEvents.map(e => [e.event, Number(e.count)]));
-    const pageViews = eventCounts.get('page_view') || 0;
-    const playgroundVisits = eventCounts.get('playground_visit') || 0;
-    const signups = eventCounts.get('signup_complete') || 0;
-    const apiKeys = eventCounts.get('api_key_created') || 0;
+    const eventCounts = new Map(conversionEvents.map((e) => [e.event, Number(e.count)]));
+    const pageViews = eventCounts.get("page_view") || 0;
+    const playgroundVisits = eventCounts.get("playground_visit") || 0;
+    const signups = eventCounts.get("signup_complete") || 0;
+    const apiKeys = eventCounts.get("api_key_created") || 0;
 
     if (pageViews > 0 && playgroundVisits / pageViews < 0.1) {
       insights.push({
-        type: 'dropoff_point',
+        type: "dropoff_point",
         insight: `Low playground visit rate (${((playgroundVisits / pageViews) * 100).toFixed(1)}% of page views)`,
-        recommendation: 'Make playground CTA more prominent on homepage and improve playground onboarding',
+        recommendation:
+          "Make playground CTA more prominent on homepage and improve playground onboarding",
         confidence: 0.8,
         lastUpdated: new Date(),
       });
@@ -130,9 +137,10 @@ export async function generateUsageInsights(): Promise<UsageInsight[]> {
 
     if (signups > 0 && apiKeys / signups < 0.3) {
       insights.push({
-        type: 'dropoff_point',
+        type: "dropoff_point",
         insight: `Low API key creation rate after signup (${((apiKeys / signups) * 100).toFixed(1)}% of signups)`,
-        recommendation: 'Improve post-signup onboarding to guide users to create their first API key',
+        recommendation:
+          "Improve post-signup onboarding to guide users to create their first API key",
         confidence: 0.85,
         lastUpdated: new Date(),
       });
@@ -143,7 +151,7 @@ export async function generateUsageInsights(): Promise<UsageInsight[]> {
 
     return insights;
   } catch (error) {
-    console.error('[Usage Insights] Error generating insights:', error);
+    console.error("[Usage Insights] Error generating insights:", error);
     return [];
   }
 }
@@ -173,7 +181,7 @@ async function storeInsights(insights: UsageInsight[]): Promise<void> {
       `;
     }
   } catch (error) {
-    console.error('[Usage Insights] Error storing insights:', error);
+    console.error("[Usage Insights] Error storing insights:", error);
   }
 }
 
@@ -182,10 +190,12 @@ async function storeInsights(insights: UsageInsight[]): Promise<void> {
  */
 export async function getLatestInsights(limit: number = 5): Promise<UsageInsight[]> {
   try {
-    const results = await prisma.$queryRaw<Array<{
-      metadata: unknown;
-      created_at: Date;
-    }>>`
+    const results = await prisma.$queryRaw<
+      Array<{
+        metadata: unknown;
+        created_at: Date;
+      }>
+    >`
       SELECT 
         metadata,
         created_at
@@ -197,11 +207,18 @@ export async function getLatestInsights(limit: number = 5): Promise<UsageInsight
     `;
 
     return results
-      .map(r => {
+      .map((r) => {
         try {
           const insight = r.metadata as UsageInsight;
           // Ensure all required fields are present
-          if (insight && typeof insight === 'object' && 'type' in insight && 'insight' in insight && 'recommendation' in insight && 'confidence' in insight) {
+          if (
+            insight &&
+            typeof insight === "object" &&
+            "type" in insight &&
+            "insight" in insight &&
+            "recommendation" in insight &&
+            "confidence" in insight
+          ) {
             return insight;
           }
           return null;
@@ -211,7 +228,7 @@ export async function getLatestInsights(limit: number = 5): Promise<UsageInsight
       })
       .filter((insight): insight is UsageInsight => insight !== null);
   } catch (error) {
-    console.error('[Usage Insights] Error fetching insights:', error);
+    console.error("[Usage Insights] Error fetching insights:", error);
     return [];
   }
 }

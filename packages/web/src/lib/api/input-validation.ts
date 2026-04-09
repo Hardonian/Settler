@@ -1,12 +1,12 @@
 /**
  * API Input Validation Utilities
- * 
+ *
  * Validates and sanitizes inputs for all API routes.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { sanitizeString, sanitizeSearchQuery } from '@/lib/admin/security/input-validation';
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { sanitizeString, sanitizeSearchQuery } from "@/lib/admin/security/input-validation";
 
 /**
  * Validate request body with Zod schema
@@ -25,10 +25,10 @@ export async function validateBody<T>(
         success: false,
         response: NextResponse.json(
           {
-            error: 'Validation Error',
-            message: 'Invalid request body',
+            error: "Validation Error",
+            message: "Invalid request body",
             details: error.issues.map((e) => ({
-              path: e.path.map(String).join('.'),
+              path: e.path.map(String).join("."),
               message: e.message,
             })),
           },
@@ -39,7 +39,7 @@ export async function validateBody<T>(
     return {
       success: false,
       response: NextResponse.json(
-        { error: 'Invalid Request', message: 'Malformed request body' },
+        { error: "Invalid Request", message: "Malformed request body" },
         { status: 400 }
       ),
     };
@@ -67,10 +67,10 @@ export function validateQuery<T>(
         success: false,
         response: NextResponse.json(
           {
-            error: 'Validation Error',
-            message: 'Invalid query parameters',
+            error: "Validation Error",
+            message: "Invalid query parameters",
             details: error.issues.map((e) => ({
-              path: e.path.map(String).join('.'),
+              path: e.path.map(String).join("."),
               message: e.message,
             })),
           },
@@ -81,7 +81,7 @@ export function validateQuery<T>(
     return {
       success: false,
       response: NextResponse.json(
-        { error: 'Invalid Request', message: 'Invalid query parameters' },
+        { error: "Invalid Request", message: "Invalid query parameters" },
         { status: 400 }
       ),
     };
@@ -93,6 +93,6 @@ export function validateQuery<T>(
  */
 export function getSearchQuery(request: NextRequest): string {
   const { searchParams } = new URL(request.url);
-  const query = searchParams.get('q') || searchParams.get('search') || '';
+  const query = searchParams.get("q") || searchParams.get("search") || "";
   return sanitizeSearchQuery(query);
 }

@@ -21,6 +21,7 @@ Next.js reads environment variables in this order (highest priority first):
 ## Required Supabase Keys
 
 ### 1. Supabase Project URL
+
 - **Location**: Supabase Dashboard → Settings → API → Project URL
 - **Format**: `https://[your-project-ref].supabase.co`
 - **Variables**:
@@ -28,6 +29,7 @@ Next.js reads environment variables in this order (highest priority first):
   - `NEXT_PUBLIC_SUPABASE_URL` (for client-side)
 
 ### 2. Supabase Anon Key (Public)
+
 - **Location**: Supabase Dashboard → Settings → API → Project API keys → `anon` `public`
 - **Safe for**: Client-side code (exposed to browser)
 - **Variables**:
@@ -35,11 +37,13 @@ Next.js reads environment variables in this order (highest priority first):
   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` (for client-side)
 
 ### 3. Supabase Service Role Key (SECRET)
+
 - **Location**: Supabase Dashboard → Settings → API → Project API keys → `service_role` `secret`
 - **⚠️ SECRET**: Never expose to client-side code
 - **Variable**: `SUPABASE_SERVICE_ROLE_KEY`
 
 ### 4. Database Connection String (Required for Prisma)
+
 - **Location**: Supabase Dashboard → Settings → Database → Connection string → **Direct connection**
 - **Format**: `postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres`
 - **Variables** (use at least one):
@@ -48,6 +52,7 @@ Next.js reads environment variables in this order (highest priority first):
   - `DIRECT_URL` (used by Supabase CLI)
 
 ### 5. Supabase CLI & Migration Keys (Optional)
+
 - **SUPABASE_ACCESS_TOKEN**: Supabase Dashboard → Account → Access Tokens
 - **SUPABASE_PROJECT_REF**: Found in your project URL (the part before `.supabase.co`)
 - **SUPABASE_DB_PASSWORD**: Your database password (set during project creation)
@@ -55,6 +60,7 @@ Next.js reads environment variables in this order (highest priority first):
 ## Quick Setup Steps
 
 1. **Get Supabase Keys**:
+
    ```bash
    # Go to: https://supabase.com/dashboard
    # Select your project
@@ -65,6 +71,7 @@ Next.js reads environment variables in this order (highest priority first):
    ```
 
 2. **Get Database Connection String**:
+
    ```bash
    # Supabase Dashboard → Settings → Database
    # Connection string → Direct connection → Copy
@@ -72,6 +79,7 @@ Next.js reads environment variables in this order (highest priority first):
    ```
 
 3. **Update `.env` files**:
+
    ```bash
    # Edit packages/web/.env.local (recommended) or packages/web/.env
    # Replace all "your-*" placeholders with actual values
@@ -94,9 +102,10 @@ node -e "require('dotenv').config(); console.log('DATABASE_URL:', process.env.DA
 ```
 
 Or check in your Next.js app:
+
 ```typescript
 // In a server component or API route
-console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'SET' : 'NOT SET');
+console.log("DATABASE_URL:", process.env.DATABASE_URL ? "SET" : "NOT SET");
 ```
 
 ## Troubleshooting
@@ -118,6 +127,7 @@ console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'SET' : 'NOT SET');
 ### Prisma Client Engine Type Error
 
 If you see "requires either adapter or accelerateUrl":
+
 - Ensure `DATABASE_URL` is set in `.env`
 - Check that the connection string is valid PostgreSQL format
 - Restart the dev server

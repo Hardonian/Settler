@@ -19,7 +19,7 @@ Industry-specific templates and workflows for e-commerce platforms.
 ## Usage
 
 ```javascript
-const { SettlerClient } = require('@settler/sdk');
+const { SettlerClient } = require("@settler/sdk");
 
 const client = new SettlerClient({
   apiKey: process.env.SETTLER_API_KEY,
@@ -27,10 +27,10 @@ const client = new SettlerClient({
 
 // Validate product feed
 const result = await client.recon.jobs.create({
-  name: 'Product Feed Validation',
-  sourceAdapter: 'shopify',
-  targetAdapter: 'amazon',
-  reconStrategy: 'deterministic',
+  name: "Product Feed Validation",
+  sourceAdapter: "shopify",
+  targetAdapter: "amazon",
+  reconStrategy: "deterministic",
 });
 ```
 

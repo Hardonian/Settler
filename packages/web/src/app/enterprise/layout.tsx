@@ -17,10 +17,6 @@ export const metadata: Metadata = generateMetadata({
   canonical: "https://settler.dev/enterprise",
 });
 
-export default function EnterpriseLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function EnterpriseLayout({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }

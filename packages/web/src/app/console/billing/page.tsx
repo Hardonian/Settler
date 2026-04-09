@@ -181,13 +181,15 @@ export default function BillingPage() {
       <ConsolePageHeader
         title="Billing & Plan"
         description="Review plan status, usage thresholds, and billing controls."
-        breadcrumbs={[
-          { label: "Console", href: "/console" },
-          { label: "Billing" },
-        ]}
+        breadcrumbs={[{ label: "Console", href: "/console" }, { label: "Billing" }]}
         actions={
           data.subscription && data.stripeConfigured ? (
-            <Button onClick={handleManageBilling} disabled={isCreatingPortal} variant="outline" size="sm">
+            <Button
+              onClick={handleManageBilling}
+              disabled={isCreatingPortal}
+              variant="outline"
+              size="sm"
+            >
               {isCreatingPortal ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -374,9 +376,7 @@ export default function BillingPage() {
 
               {/* Growth Plan */}
               <div
-                className={`p-4 border rounded-lg ${
-                  isGrowth ? "border-primary bg-primary/5" : ""
-                }`}
+                className={`p-4 border rounded-lg ${isGrowth ? "border-primary bg-primary/5" : ""}`}
               >
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-semibold">Growth</h3>
@@ -421,9 +421,7 @@ export default function BillingPage() {
 
               {/* Scale Plan */}
               <div
-                className={`p-4 border rounded-lg ${
-                  isScale ? "border-primary bg-primary/5" : ""
-                }`}
+                className={`p-4 border rounded-lg ${isScale ? "border-primary bg-primary/5" : ""}`}
               >
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-semibold">Scale</h3>

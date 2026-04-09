@@ -5,9 +5,11 @@ This directory contains GitHub Actions workflows for CI/CD automation.
 ## Workflows
 
 ### `ci.yml` - Continuous Integration
+
 **Triggers:** Push to main/develop, Pull requests
 
 **Jobs:**
+
 - Environment validation
 - Lint and type check
 - Tests (unit + integration)
@@ -17,15 +19,18 @@ This directory contains GitHub Actions workflows for CI/CD automation.
 - Load tests
 
 ### `post-merge-validation.yml` - Post-Merge Validation & Setup
+
 **Triggers:** Push to main
 
 **Jobs:**
+
 - Comprehensive validation (type check, lint, format, build)
 - Run migrations on staging
 - Run migrations on production (requires approval)
 - Post-deployment verification
 
 **Features:**
+
 - Automatically runs database migrations when PR is merged to main
 - Validates environment configuration
 - Verifies build artifacts
@@ -33,17 +38,21 @@ This directory contains GitHub Actions workflows for CI/CD automation.
 - Runs health checks after deployment
 
 ### `auto-migrate-on-merge.yml` - Auto-Migrate on Merge
+
 **Triggers:** PR closed (merged to main)
 
 **Features:**
+
 - Detects new migration files in PR
 - Automatically runs migrations if migrations are present
 - Creates summary of applied migrations
 
 ### `deploy-production.yml` - Production Deployment
+
 **Triggers:** Push to main, Manual dispatch
 
 **Jobs:**
+
 - Run tests
 - Build application
 - Run database migrations
@@ -52,9 +61,11 @@ This directory contains GitHub Actions workflows for CI/CD automation.
 - Post-deployment health check
 
 ### `deploy-preview.yml` - Preview Deployment
+
 **Triggers:** Pull requests
 
 **Jobs:**
+
 - Build and deploy preview environment
 - Run tests
 - No migrations (preview uses test database)
@@ -62,6 +73,7 @@ This directory contains GitHub Actions workflows for CI/CD automation.
 ## Environment Secrets Required
 
 ### Production Environment
+
 - `DATABASE_URL` - Production database connection string
 - `JWT_SECRET` - Production JWT secret
 - `ENCRYPTION_KEY` - Production encryption key
@@ -71,6 +83,7 @@ This directory contains GitHub Actions workflows for CI/CD automation.
 - `VERCEL_PROJECT_ID` - Vercel project ID (optional)
 
 ### Staging Environment
+
 - `STAGING_DATABASE_URL` - Staging database connection string
 - `STAGING_JWT_SECRET` - Staging JWT secret
 - `STAGING_ENCRYPTION_KEY` - Staging encryption key
@@ -102,11 +115,13 @@ When a PR with migration files is merged to main:
 ## Manual Triggers
 
 All workflows support `workflow_dispatch` for manual triggering:
+
 - Go to Actions → Select workflow → Run workflow
 
 ## Migration Detection
 
 Migrations are automatically detected if:
+
 - Files in `packages/api/src/db/migrations/` are added/modified
 - PR commit message contains `[migrate]` or `[migration]`
 - Workflow is manually triggered
@@ -122,17 +137,20 @@ Migrations are automatically detected if:
 ## Troubleshooting
 
 ### Migrations Not Running
+
 - Check if migration files are in the PR
 - Verify environment secrets are set
 - Check workflow logs for errors
 
 ### Migration Failures
+
 - Check database connection string
 - Verify migration file syntax
 - Check for conflicting migrations
 - Review migration logs
 
 ### Health Check Failures
+
 - Verify deployment URL is correct
 - Check if service is running
 - Review application logs

@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Backend Contract Verification Script
- * 
+ *
  * Queries live Supabase database to verify:
  * - Tables, columns, types, defaults
  * - Indexes, constraints, triggers
@@ -10,20 +10,20 @@
  * - Extensions
  * - Storage buckets and policies
  * - Realtime publications
- * 
+ *
  * Compares against expected contract from migrations and app code.
- * 
+ *
  * Usage: tsx scripts/verify-backend-contract.ts [--reconcile]
  */
 
-import { createClient } from '@supabase/supabase-js';
-import { Pool } from 'pg';
-import * as fs from 'fs';
-import * as path from 'path';
+import { createClient } from "@supabase/supabase-js";
+import { Pool } from "pg";
+import * as fs from "fs";
+import * as path from "path";
 
 interface VerificationResult {
   component: string;
-  status: 'pass' | 'fail' | 'warning';
+  status: "pass" | "fail" | "warning";
   message: string;
   details?: any;
 }
@@ -69,7 +69,7 @@ interface FunctionInfo {
   name: string;
   return_type: string;
   arguments: string;
-  security: 'DEFINER' | 'INVOKER';
+  security: "DEFINER" | "INVOKER";
 }
 
 class BackendContractVerifier {
@@ -86,11 +86,11 @@ class BackendContractVerifier {
     const databaseUrl = process.env.DATABASE_URL || process.env.DIRECT_URL;
 
     if (!supabaseUrl || !supabaseServiceKey) {
-      throw new Error('Missing SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY');
+      throw new Error("Missing SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY");
     }
 
     if (!databaseUrl) {
-      throw new Error('Missing DATABASE_URL or DIRECT_URL for direct DB connection');
+      throw new Error("Missing DATABASE_URL or DIRECT_URL for direct DB connection");
     }
 
     this.supabase = createClient(supabaseUrl, supabaseServiceKey);
@@ -102,29 +102,36 @@ class BackendContractVerifier {
 
   private loadExpectedContract() {
     // Load from golden schema migration
-    const goldenSchemaPath = path.join(__dirname, '../supabase/migrations/00000000_settler_golden_schema.sql');
+    const goldenSchemaPath = path.join(
+      __dirname,
+      "../supabase/migrations/00000000_settler_golden_schema.sql"
+    );
     if (fs.existsSync(goldenSchemaPath)) {
-      const content = fs.readFileSync(goldenSchemaPath, 'utf-8');
-      
+      const content = fs.readFileSync(goldenSchemaPath, "utf-8");
+
       // Extract table names
-      const tableMatches = content.matchAll(/CREATE TABLE (?:IF NOT EXISTS )?([a-z_]+\.)?([a-z_]+)/gi);
+      const tableMatches = content.matchAll(
+        /CREATE TABLE (?:IF NOT EXISTS )?([a-z_]+\.)?([a-z_]+)/gi
+      );
       for (const match of tableMatches) {
-        const schema = match[1]?.replace('.', '') || 'public';
+        const schema = match[1]?.replace(".", "") || "public";
         const table = match[2];
         this.expectedTables.add(`${schema}.${table}`);
       }
 
       // Extract function names
-      const functionMatches = content.matchAll(/CREATE (?:OR REPLACE )?FUNCTION ([a-z_]+\.)?([a-z_]+)\(/gi);
+      const functionMatches = content.matchAll(
+        /CREATE (?:OR REPLACE )?FUNCTION ([a-z_]+\.)?([a-z_]+)\(/gi
+      );
       for (const match of functionMatches) {
-        const schema = match[1]?.replace('.', '') || 'public';
+        const schema = match[1]?.replace(".", "") || "public";
         const func = match[2];
         this.expectedFunctions.add(`${schema}.${func}`);
       }
     }
 
     // Load from app code usage (RPC calls)
-    const appCodeDir = path.join(__dirname, '../packages');
+    const appCodeDir = path.join(__dirname, "../packages");
     this.scanAppCodeForUsage(appCodeDir);
   }
 
@@ -132,11 +139,11 @@ class BackendContractVerifier {
     try {
       const files = fs.readdirSync(dir, { recursive: true, withFileTypes: true });
       for (const file of files) {
-        if (file.isFile() && (file.name.endsWith('.ts') || file.name.endsWith('.tsx'))) {
+        if (file.isFile() && (file.name.endsWith(".ts") || file.name.endsWith(".tsx"))) {
           const filePath = path.join(file.path, file.name);
           try {
-            const content = fs.readFileSync(filePath, 'utf-8');
-            
+            const content = fs.readFileSync(filePath, "utf-8");
+
             // Find RPC calls
             const rpcMatches = content.matchAll(/\.rpc\(['"]([a-z_]+)['"]/gi);
             for (const match of rpcMatches) {
@@ -159,7 +166,7 @@ class BackendContractVerifier {
   }
 
   async verify(): Promise<VerificationResult[]> {
-    console.log('🔍 Starting backend contract verification...\n');
+    console.log("🔍 Starting backend contract verification...\n");
 
     await this.verifyExtensions();
     await this.verifySchemas();
@@ -176,7 +183,7 @@ class BackendContractVerifier {
   }
 
   private async verifyExtensions() {
-    console.log('📦 Verifying extensions...');
+    console.log("📦 Verifying extensions...");
     const result = await this.pool.query(`
       SELECT extname, extversion 
       FROM pg_extension 
@@ -184,20 +191,20 @@ class BackendContractVerifier {
       ORDER BY extname
     `);
 
-    const required = ['uuid-ossp', 'pgcrypto'];
+    const required = ["uuid-ossp", "pgcrypto"];
     const found = new Set(result.rows.map((r: any) => r.extname));
 
     for (const ext of required) {
       if (found.has(ext)) {
         this.results.push({
           component: `extension.${ext}`,
-          status: 'pass',
+          status: "pass",
           message: `Extension ${ext} is installed`,
         });
       } else {
         this.results.push({
           component: `extension.${ext}`,
-          status: 'fail',
+          status: "fail",
           message: `Required extension ${ext} is missing`,
         });
       }
@@ -205,7 +212,7 @@ class BackendContractVerifier {
   }
 
   private async verifySchemas() {
-    console.log('📚 Verifying schemas...');
+    console.log("📚 Verifying schemas...");
     const result = await this.pool.query(`
       SELECT schema_name 
       FROM information_schema.schemata 
@@ -213,20 +220,20 @@ class BackendContractVerifier {
       ORDER BY schema_name
     `);
 
-    const required = ['public', 'app_private'];
+    const required = ["public", "app_private"];
     const found = new Set(result.rows.map((r: any) => r.schema_name));
 
     for (const schema of required) {
       if (found.has(schema)) {
         this.results.push({
           component: `schema.${schema}`,
-          status: 'pass',
+          status: "pass",
           message: `Schema ${schema} exists`,
         });
       } else {
         this.results.push({
           component: `schema.${schema}`,
-          status: 'fail',
+          status: "fail",
           message: `Required schema ${schema} is missing`,
         });
       }
@@ -234,8 +241,8 @@ class BackendContractVerifier {
   }
 
   private async verifyTables() {
-    console.log('📊 Verifying tables...');
-    
+    console.log("📊 Verifying tables...");
+
     // Get all tables from live database
     const result = await this.pool.query(`
       SELECT 
@@ -262,7 +269,8 @@ class BackendContractVerifier {
       }
 
       // Get columns for this table
-      const columnsResult = await this.pool.query(`
+      const columnsResult = await this.pool.query(
+        `
         SELECT 
           column_name,
           data_type,
@@ -271,7 +279,9 @@ class BackendContractVerifier {
         FROM information_schema.columns
         WHERE table_schema = $1 AND table_name = $2
         ORDER BY ordinal_position
-      `, [row.table_schema, row.table_name]);
+      `,
+        [row.table_schema, row.table_name]
+      );
 
       tablesBySchema[row.table_schema].push({
         schema: row.table_schema,
@@ -279,7 +289,7 @@ class BackendContractVerifier {
         columns: columnsResult.rows.map((r: any) => ({
           name: r.column_name,
           type: r.data_type,
-          nullable: r.is_nullable === 'YES',
+          nullable: r.is_nullable === "YES",
           default: r.column_default,
         })),
         indexes: [],
@@ -294,13 +304,13 @@ class BackendContractVerifier {
       if (liveTables.has(expectedTable)) {
         this.results.push({
           component: `table.${expectedTable}`,
-          status: 'pass',
+          status: "pass",
           message: `Table ${expectedTable} exists`,
         });
       } else {
         this.results.push({
           component: `table.${expectedTable}`,
-          status: 'fail',
+          status: "fail",
           message: `Expected table ${expectedTable} is missing`,
         });
       }
@@ -308,10 +318,14 @@ class BackendContractVerifier {
 
     // Check for unexpected tables (warnings)
     for (const liveTable of liveTables) {
-      if (!this.expectedTables.has(liveTable) && !liveTable.startsWith('pg_') && !liveTable.startsWith('auth.')) {
+      if (
+        !this.expectedTables.has(liveTable) &&
+        !liveTable.startsWith("pg_") &&
+        !liveTable.startsWith("auth.")
+      ) {
         this.results.push({
           component: `table.${liveTable}`,
-          status: 'warning',
+          status: "warning",
           message: `Unexpected table ${liveTable} found (not in expected contract)`,
         });
       }
@@ -319,8 +333,8 @@ class BackendContractVerifier {
   }
 
   private async verifyIndexes() {
-    console.log('🔍 Verifying indexes...');
-    
+    console.log("🔍 Verifying indexes...");
+
     const result = await this.pool.query(`
       SELECT 
         schemaname,
@@ -336,38 +350,38 @@ class BackendContractVerifier {
 
     // Critical indexes that must exist
     const criticalIndexes = [
-      { table: 'tenants', columns: ['slug'] },
-      { table: 'billing_accounts', columns: ['user_id'] },
-      { table: 'billing_accounts', columns: ['stripe_customer_id'] },
-      { table: 'subscriptions', columns: ['billing_account_id'] },
-      { table: 'usage_events', columns: ['billing_account_id', 'timestamp'] },
+      { table: "tenants", columns: ["slug"] },
+      { table: "billing_accounts", columns: ["user_id"] },
+      { table: "billing_accounts", columns: ["stripe_customer_id"] },
+      { table: "subscriptions", columns: ["billing_account_id"] },
+      { table: "usage_events", columns: ["billing_account_id", "timestamp"] },
     ];
 
     for (const critical of criticalIndexes) {
-      const found = result.rows.some((r: any) => 
-        r.tablename === critical.table && 
-        r.indexdef.includes(`(${critical.columns.join(',')})`)
+      const found = result.rows.some(
+        (r: any) =>
+          r.tablename === critical.table && r.indexdef.includes(`(${critical.columns.join(",")})`)
       );
 
       if (found) {
         this.results.push({
-          component: `index.${critical.table}.${critical.columns.join('_')}`,
-          status: 'pass',
-          message: `Critical index on ${critical.table}(${critical.columns.join(',')}) exists`,
+          component: `index.${critical.table}.${critical.columns.join("_")}`,
+          status: "pass",
+          message: `Critical index on ${critical.table}(${critical.columns.join(",")}) exists`,
         });
       } else {
         this.results.push({
-          component: `index.${critical.table}.${critical.columns.join('_')}`,
-          status: 'fail',
-          message: `Critical index on ${critical.table}(${critical.columns.join(',')}) is missing`,
+          component: `index.${critical.table}.${critical.columns.join("_")}`,
+          status: "fail",
+          message: `Critical index on ${critical.table}(${critical.columns.join(",")}) is missing`,
         });
       }
     }
   }
 
   private async verifyConstraints() {
-    console.log('🔒 Verifying constraints...');
-    
+    console.log("🔒 Verifying constraints...");
+
     const result = await this.pool.query(`
       SELECT 
         tc.table_schema,
@@ -388,22 +402,22 @@ class BackendContractVerifier {
     `);
 
     // Check for primary keys on critical tables
-    const criticalTables = ['tenants', 'billing_accounts', 'subscriptions', 'usage_events'];
+    const criticalTables = ["tenants", "billing_accounts", "subscriptions", "usage_events"];
     for (const table of criticalTables) {
-      const hasPK = result.rows.some((r: any) => 
-        r.table_name === table && r.constraint_type === 'PRIMARY KEY'
+      const hasPK = result.rows.some(
+        (r: any) => r.table_name === table && r.constraint_type === "PRIMARY KEY"
       );
 
       if (hasPK) {
         this.results.push({
           component: `constraint.${table}.primary_key`,
-          status: 'pass',
+          status: "pass",
           message: `Primary key constraint exists on ${table}`,
         });
       } else {
         this.results.push({
           component: `constraint.${table}.primary_key`,
-          status: 'fail',
+          status: "fail",
           message: `Primary key constraint missing on ${table}`,
         });
       }
@@ -411,8 +425,8 @@ class BackendContractVerifier {
   }
 
   private async verifyRLS() {
-    console.log('🛡️  Verifying RLS policies...');
-    
+    console.log("🛡️  Verifying RLS policies...");
+
     // Check RLS is enabled on critical tables
     const result = await this.pool.query(`
       SELECT 
@@ -430,7 +444,8 @@ class BackendContractVerifier {
     for (const row of result.rows) {
       if (row.rls_enabled) {
         // Check policies exist
-        const policiesResult = await this.pool.query(`
+        const policiesResult = await this.pool.query(
+          `
           SELECT 
             policyname,
             cmd,
@@ -438,26 +453,28 @@ class BackendContractVerifier {
             with_check
           FROM pg_policies
           WHERE schemaname = $1 AND tablename = $2
-        `, [row.schemaname, row.tablename]);
+        `,
+          [row.schemaname, row.tablename]
+        );
 
         if (policiesResult.rows.length > 0) {
           this.results.push({
             component: `rls.${row.schemaname}.${row.tablename}`,
-            status: 'pass',
+            status: "pass",
             message: `RLS enabled with ${policiesResult.rows.length} policies on ${row.schemaname}.${row.tablename}`,
             details: { policyCount: policiesResult.rows.length },
           });
         } else {
           this.results.push({
             component: `rls.${row.schemaname}.${row.tablename}`,
-            status: 'fail',
+            status: "fail",
             message: `RLS enabled but no policies found on ${row.schemaname}.${row.tablename}`,
           });
         }
       } else {
         this.results.push({
           component: `rls.${row.schemaname}.${row.tablename}`,
-          status: 'fail',
+          status: "fail",
           message: `RLS not enabled on critical table ${row.schemaname}.${row.tablename}`,
         });
       }
@@ -465,8 +482,8 @@ class BackendContractVerifier {
   }
 
   private async verifyFunctions() {
-    console.log('⚙️  Verifying RPC functions...');
-    
+    console.log("⚙️  Verifying RPC functions...");
+
     const result = await this.pool.query(`
       SELECT 
         n.nspname as schema_name,
@@ -489,11 +506,11 @@ class BackendContractVerifier {
 
     // Check expected functions exist
     const criticalFunctions = [
-      'log_usage_event',
-      'check_rls_policies',
-      'get_slow_queries',
-      'upsert_reality_metric',
-      'record_reality_event',
+      "log_usage_event",
+      "check_rls_policies",
+      "get_slow_queries",
+      "upsert_reality_metric",
+      "record_reality_event",
     ];
 
     for (const func of criticalFunctions) {
@@ -501,13 +518,13 @@ class BackendContractVerifier {
       if (liveFunctions.has(fullName)) {
         this.results.push({
           component: `function.${func}`,
-          status: 'pass',
+          status: "pass",
           message: `Function ${func} exists`,
         });
       } else {
         this.results.push({
           component: `function.${func}`,
-          status: 'fail',
+          status: "fail",
           message: `Expected function ${func} is missing`,
         });
       }
@@ -515,8 +532,8 @@ class BackendContractVerifier {
   }
 
   private async verifyTriggers() {
-    console.log('⚡ Verifying triggers...');
-    
+    console.log("⚡ Verifying triggers...");
+
     const result = await this.pool.query(`
       SELECT 
         trigger_schema,
@@ -530,23 +547,22 @@ class BackendContractVerifier {
     `);
 
     // Check for critical triggers (e.g., updated_at)
-    const criticalTables = ['tenants', 'billing_accounts'];
+    const criticalTables = ["tenants", "billing_accounts"];
     for (const table of criticalTables) {
-      const hasUpdatedAtTrigger = result.rows.some((r: any) =>
-        r.event_object_table === table &&
-        r.trigger_name.includes('updated_at')
+      const hasUpdatedAtTrigger = result.rows.some(
+        (r: any) => r.event_object_table === table && r.trigger_name.includes("updated_at")
       );
 
       if (hasUpdatedAtTrigger) {
         this.results.push({
           component: `trigger.${table}.updated_at`,
-          status: 'pass',
+          status: "pass",
           message: `updated_at trigger exists on ${table}`,
         });
       } else {
         this.results.push({
           component: `trigger.${table}.updated_at`,
-          status: 'warning',
+          status: "warning",
           message: `updated_at trigger missing on ${table} (may use default)`,
         });
       }
@@ -554,51 +570,51 @@ class BackendContractVerifier {
   }
 
   private async verifyStorage() {
-    console.log('💾 Verifying storage buckets...');
-    
+    console.log("💾 Verifying storage buckets...");
+
     try {
       const { data: buckets, error } = await this.supabase.storage.listBuckets();
-      
+
       if (error) {
         this.results.push({
-          component: 'storage.buckets',
-          status: 'warning',
+          component: "storage.buckets",
+          status: "warning",
           message: `Could not list storage buckets: ${error.message}`,
         });
         return;
       }
 
-      const bucketNames = buckets?.map(b => b.name) || [];
-      
+      const bucketNames = buckets?.map((b) => b.name) || [];
+
       // Check for expected buckets
-      const expectedBuckets = ['receipts', 'exports'];
+      const expectedBuckets = ["receipts", "exports"];
       for (const bucket of expectedBuckets) {
         if (bucketNames.includes(bucket)) {
           this.results.push({
             component: `storage.bucket.${bucket}`,
-            status: 'pass',
+            status: "pass",
             message: `Storage bucket ${bucket} exists`,
           });
         } else {
           this.results.push({
             component: `storage.bucket.${bucket}`,
-            status: 'warning',
+            status: "warning",
             message: `Storage bucket ${bucket} not found (may be created on-demand)`,
           });
         }
       }
     } catch (error) {
       this.results.push({
-        component: 'storage.buckets',
-        status: 'warning',
-        message: `Storage verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        component: "storage.buckets",
+        status: "warning",
+        message: `Storage verification failed: ${error instanceof Error ? error.message : "Unknown error"}`,
       });
     }
   }
 
   private async verifyRealtime() {
-    console.log('📡 Verifying Realtime publications...');
-    
+    console.log("📡 Verifying Realtime publications...");
+
     try {
       const result = await this.pool.query(`
         SELECT 
@@ -613,23 +629,23 @@ class BackendContractVerifier {
 
       if (result.rows.length > 0) {
         this.results.push({
-          component: 'realtime.publications',
-          status: 'pass',
+          component: "realtime.publications",
+          status: "pass",
           message: `Found ${result.rows.length} Realtime publication(s)`,
           details: { publications: result.rows.map((r: any) => r.pubname) },
         });
       } else {
         this.results.push({
-          component: 'realtime.publications',
-          status: 'warning',
-          message: 'No Realtime publications found (may not be using Realtime)',
+          component: "realtime.publications",
+          status: "warning",
+          message: "No Realtime publications found (may not be using Realtime)",
         });
       }
     } catch (error) {
       this.results.push({
-        component: 'realtime.publications',
-        status: 'warning',
-        message: `Realtime verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        component: "realtime.publications",
+        status: "warning",
+        message: `Realtime verification failed: ${error instanceof Error ? error.message : "Unknown error"}`,
       });
     }
   }
@@ -640,7 +656,7 @@ class BackendContractVerifier {
 }
 
 async function main() {
-  const reconcile = process.argv.includes('--reconcile');
+  const reconcile = process.argv.includes("--reconcile");
 
   try {
     const verifier = new BackendContractVerifier();
@@ -648,55 +664,62 @@ async function main() {
     await verifier.close();
 
     // Print results
-    console.log('\n📋 Verification Results:\n');
-    
-    const passes = results.filter(r => r.status === 'pass');
-    const failures = results.filter(r => r.status === 'fail');
-    const warnings = results.filter(r => r.status === 'warning');
+    console.log("\n📋 Verification Results:\n");
+
+    const passes = results.filter((r) => r.status === "pass");
+    const failures = results.filter((r) => r.status === "fail");
+    const warnings = results.filter((r) => r.status === "warning");
 
     console.log(`✅ Passed: ${passes.length}`);
     console.log(`❌ Failed: ${failures.length}`);
     console.log(`⚠️  Warnings: ${warnings.length}\n`);
 
     if (failures.length > 0) {
-      console.log('❌ Failures:');
-      failures.forEach(r => {
+      console.log("❌ Failures:");
+      failures.forEach((r) => {
         console.log(`  [${r.component}] ${r.message}`);
       });
-      console.log('');
+      console.log("");
     }
 
     if (warnings.length > 0) {
-      console.log('⚠️  Warnings:');
-      warnings.forEach(r => {
+      console.log("⚠️  Warnings:");
+      warnings.forEach((r) => {
         console.log(`  [${r.component}] ${r.message}`);
       });
-      console.log('');
+      console.log("");
     }
 
     // Save results to file
-    const outputPath = path.join(__dirname, '../supabase/backend-verification-results.json');
-    fs.writeFileSync(outputPath, JSON.stringify({
-      timestamp: new Date().toISOString(),
-      summary: {
-        total: results.length,
-        passed: passes.length,
-        failed: failures.length,
-        warnings: warnings.length,
-      },
-      results,
-    }, null, 2));
+    const outputPath = path.join(__dirname, "../supabase/backend-verification-results.json");
+    fs.writeFileSync(
+      outputPath,
+      JSON.stringify(
+        {
+          timestamp: new Date().toISOString(),
+          summary: {
+            total: results.length,
+            passed: passes.length,
+            failed: failures.length,
+            warnings: warnings.length,
+          },
+          results,
+        },
+        null,
+        2
+      )
+    );
 
     console.log(`📄 Results saved to: ${outputPath}`);
 
     if (reconcile && failures.length > 0) {
-      console.log('\n🔄 Reconciliation mode: generating migration...');
+      console.log("\n🔄 Reconciliation mode: generating migration...");
       // TODO: Generate reconciliation migration
     }
 
     process.exit(failures.length > 0 ? 1 : 0);
   } catch (error) {
-    console.error('Fatal error:', error);
+    console.error("Fatal error:", error);
     process.exit(1);
   }
 }

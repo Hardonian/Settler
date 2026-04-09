@@ -17,11 +17,11 @@ This guide helps you migrate from using raw `fetch` calls to the `@settler/sdk` 
 ```typescript
 // Basic request
 async function createJob(jobData: any) {
-  const response = await fetch('https://api.settler.io/api/v1/jobs', {
-    method: 'POST',
+  const response = await fetch("https://api.settler.io/api/v1/jobs", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'X-API-Key': process.env.SETTLER_API_KEY!,
+      "Content-Type": "application/json",
+      "X-API-Key": process.env.SETTLER_API_KEY!,
     },
     body: JSON.stringify(jobData),
   });
@@ -37,19 +37,19 @@ async function createJob(jobData: any) {
 async function createJobWithRetry(jobData: any, maxRetries = 3) {
   for (let i = 0; i < maxRetries; i++) {
     try {
-      const response = await fetch('https://api.settler.io/api/v1/jobs', {
-        method: 'POST',
+      const response = await fetch("https://api.settler.io/api/v1/jobs", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'X-API-Key': process.env.SETTLER_API_KEY!,
+          "Content-Type": "application/json",
+          "X-API-Key": process.env.SETTLER_API_KEY!,
         },
         body: JSON.stringify(jobData),
       });
 
       if (!response.ok) {
         if (response.status === 429 && i < maxRetries - 1) {
-          const retryAfter = response.headers.get('Retry-After');
-          await new Promise(resolve => setTimeout(resolve, parseInt(retryAfter || '1') * 1000));
+          const retryAfter = response.headers.get("Retry-After");
+          await new Promise((resolve) => setTimeout(resolve, parseInt(retryAfter || "1") * 1000));
           continue;
         }
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -58,7 +58,7 @@ async function createJobWithRetry(jobData: any, maxRetries = 3) {
       return response.json();
     } catch (error) {
       if (i === maxRetries - 1) throw error;
-      await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, i)));
+      await new Promise((resolve) => setTimeout(resolve, 1000 * Math.pow(2, i)));
     }
   }
 }
@@ -69,12 +69,12 @@ async function listAllJobs() {
   let cursor: string | undefined;
 
   do {
-    const url = new URL('https://api.settler.io/api/v1/jobs');
-    if (cursor) url.searchParams.set('cursor', cursor);
+    const url = new URL("https://api.settler.io/api/v1/jobs");
+    if (cursor) url.searchParams.set("cursor", cursor);
 
     const response = await fetch(url.toString(), {
       headers: {
-        'X-API-Key': process.env.SETTLER_API_KEY!,
+        "X-API-Key": process.env.SETTLER_API_KEY!,
       },
     });
 
@@ -92,12 +92,12 @@ async function listAllJobs() {
 
 // Webhook verification
 function verifyWebhook(payload: string, signature: string, secret: string): boolean {
-  const crypto = require('crypto');
-  const hmac = crypto.createHmac('sha256', secret);
+  const crypto = require("crypto");
+  const hmac = crypto.createHmac("sha256", secret);
   hmac.update(payload);
-  const expectedSignature = hmac.digest('hex');
-  const parts = signature.split(',');
-  const signaturePart = parts.find(p => p.startsWith('v1='));
+  const expectedSignature = hmac.digest("hex");
+  const parts = signature.split(",");
+  const signaturePart = parts.find((p) => p.startsWith("v1="));
   if (!signaturePart) return false;
   return signaturePart.substring(3) === expectedSignature;
 }
@@ -106,7 +106,7 @@ function verifyWebhook(payload: string, signature: string, secret: string): bool
 ## After: Using @settler/sdk
 
 ```typescript
-import { SettlerClient } from '@settler/sdk';
+import { SettlerClient } from "@settler/sdk";
 
 // Initialize client once
 const client = new SettlerClient({
@@ -134,7 +134,7 @@ async function listAllJobs() {
 }
 
 // Webhook verification
-import { verifyWebhookSignature } from '@settler/sdk';
+import { verifyWebhookSignature } from "@settler/sdk";
 
 function verifyWebhook(payload: string, signature: string, secret: string): boolean {
   return verifyWebhookSignature(payload, signature, secret);
@@ -155,20 +155,22 @@ npm install @settler/sdk
 ### Step 2: Replace Fetch Calls
 
 #### Before:
+
 ```typescript
-const response = await fetch('https://api.settler.io/api/v1/jobs', {
-  method: 'POST',
+const response = await fetch("https://api.settler.io/api/v1/jobs", {
+  method: "POST",
   headers: {
-    'Content-Type': 'application/json',
-    'X-API-Key': apiKey,
+    "Content-Type": "application/json",
+    "X-API-Key": apiKey,
   },
   body: JSON.stringify(jobData),
 });
 ```
 
 #### After:
+
 ```typescript
-import { SettlerClient } from '@settler/sdk';
+import { SettlerClient } from "@settler/sdk";
 
 const client = new SettlerClient({ apiKey });
 const response = await client.jobs.create(jobData);
@@ -177,6 +179,7 @@ const response = await client.jobs.create(jobData);
 ### Step 3: Update Error Handling
 
 #### Before:
+
 ```typescript
 try {
   const response = await fetch(url, options);
@@ -189,13 +192,9 @@ try {
 ```
 
 #### After:
+
 ```typescript
-import {
-  NetworkError,
-  AuthError,
-  ValidationError,
-  RateLimitError,
-} from '@settler/sdk';
+import { NetworkError, AuthError, ValidationError, RateLimitError } from "@settler/sdk";
 
 try {
   const job = await client.jobs.create(jobData);
@@ -215,6 +214,7 @@ try {
 ### Step 4: Replace Pagination Logic
 
 #### Before:
+
 ```typescript
 async function getAllItems() {
   const items = [];
@@ -230,8 +230,9 @@ async function getAllItems() {
 ```
 
 #### After:
+
 ```typescript
-import { collectPaginated } from '@settler/sdk';
+import { collectPaginated } from "@settler/sdk";
 
 async function getAllItems() {
   return collectPaginated(client.jobs.listPaginated());
@@ -245,21 +246,23 @@ async function getAllItems() {
 ### Step 5: Update Webhook Handlers
 
 #### Before:
+
 ```typescript
-app.post('/webhooks', express.raw({ type: 'application/json' }), (req, res) => {
-  const signature = req.headers['x-settler-signature'];
+app.post("/webhooks", express.raw({ type: "application/json" }), (req, res) => {
+  const signature = req.headers["x-settler-signature"];
   // Manual verification logic...
 });
 ```
 
 #### After:
-```typescript
-import { verifyWebhookSignature } from '@settler/sdk';
 
-app.post('/webhooks', express.raw({ type: 'application/json' }), (req, res) => {
-  const signature = req.headers['x-settler-signature'] as string;
+```typescript
+import { verifyWebhookSignature } from "@settler/sdk";
+
+app.post("/webhooks", express.raw({ type: "application/json" }), (req, res) => {
+  const signature = req.headers["x-settler-signature"] as string;
   if (!verifyWebhookSignature(req.body, signature, process.env.WEBHOOK_SECRET!)) {
-    return res.status(401).send('Invalid signature');
+    return res.status(401).send("Invalid signature");
   }
   // Process webhook...
 });
@@ -270,19 +273,21 @@ app.post('/webhooks', express.raw({ type: 'application/json' }), (req, res) => {
 ### Custom Headers
 
 #### Before:
+
 ```typescript
 const response = await fetch(url, {
   headers: {
-    'X-API-Key': apiKey,
-    'X-Custom-Header': 'value',
+    "X-API-Key": apiKey,
+    "X-Custom-Header": "value",
   },
 });
 ```
 
 #### After:
+
 ```typescript
 client.use(async (context, next) => {
-  context.headers['X-Custom-Header'] = 'value';
+  context.headers["X-Custom-Header"] = "value";
   return next();
 });
 ```
@@ -290,6 +295,7 @@ client.use(async (context, next) => {
 ### Request Timeout
 
 #### Before:
+
 ```typescript
 const controller = new AbortController();
 setTimeout(() => controller.abort(), 30000);
@@ -299,6 +305,7 @@ const response = await fetch(url, {
 ```
 
 #### After:
+
 ```typescript
 const client = new SettlerClient({
   apiKey,
@@ -309,6 +316,7 @@ const client = new SettlerClient({
 ### Retry Logic
 
 #### Before:
+
 ```typescript
 async function fetchWithRetry(url: string, options: RequestInit, maxRetries = 3) {
   for (let i = 0; i < maxRetries; i++) {
@@ -329,6 +337,7 @@ async function fetchWithRetry(url: string, options: RequestInit, maxRetries = 3)
 ```
 
 #### After:
+
 ```typescript
 const client = new SettlerClient({
   apiKey,
@@ -343,16 +352,16 @@ const client = new SettlerClient({
 
 ## Benefits Summary
 
-| Feature | Raw Fetch | @settler/sdk |
-|---------|-----------|--------------|
-| Type Safety | ❌ Manual types | ✅ Full inference |
-| Retries | ❌ Manual implementation | ✅ Built-in |
-| Error Handling | ❌ Generic errors | ✅ Typed errors |
-| Pagination | ❌ Manual loops | ✅ Async iterators |
-| Webhook Verification | ❌ Manual crypto | ✅ Built-in helper |
-| Request Deduplication | ❌ Not possible | ✅ Automatic |
-| Token Refresh | ❌ Manual logic | ✅ Built-in |
-| Bundle Size | N/A | ✅ <50KB |
+| Feature               | Raw Fetch                | @settler/sdk       |
+| --------------------- | ------------------------ | ------------------ |
+| Type Safety           | ❌ Manual types          | ✅ Full inference  |
+| Retries               | ❌ Manual implementation | ✅ Built-in        |
+| Error Handling        | ❌ Generic errors        | ✅ Typed errors    |
+| Pagination            | ❌ Manual loops          | ✅ Async iterators |
+| Webhook Verification  | ❌ Manual crypto         | ✅ Built-in helper |
+| Request Deduplication | ❌ Not possible          | ✅ Automatic       |
+| Token Refresh         | ❌ Manual logic          | ✅ Built-in        |
+| Bundle Size           | N/A                      | ✅ <50KB           |
 
 ## Need Help?
 

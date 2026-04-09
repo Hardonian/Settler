@@ -1,18 +1,18 @@
 /**
  * Request/Response Viewer Component
- * 
+ *
  * Displays formatted request and response data with syntax highlighting.
  */
 
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { CopyButton } from '@/components/ui/CopyButton';
-import { CheckCircle2, XCircle, Clock, Code, FileText } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { CopyButton } from "@/components/ui/CopyButton";
+import { CheckCircle2, XCircle, Clock, Code, FileText } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface RequestResponseViewerProps {
   request?: {
@@ -44,11 +44,11 @@ const formatJSON = (obj: unknown): string => {
 };
 
 const getStatusColor = (status?: number) => {
-  if (!status) return 'bg-muted/100';
-  if (status >= 200 && status < 300) return 'bg-green-500';
-  if (status >= 300 && status < 400) return 'bg-blue-500';
-  if (status >= 400 && status < 500) return 'bg-yellow-500';
-  return 'bg-red-500';
+  if (!status) return "bg-muted/100";
+  if (status >= 200 && status < 300) return "bg-green-500";
+  if (status >= 300 && status < 400) return "bg-blue-500";
+  if (status >= 400 && status < 500) return "bg-yellow-500";
+  return "bg-red-500";
 };
 
 export type { RequestResponseViewerProps };
@@ -59,8 +59,8 @@ export function RequestResponseViewer({
   error,
   className,
 }: RequestResponseViewerProps) {
-  const [selectedTab, setSelectedTab] = useState<'request' | 'response' | 'error'>(
-    error ? 'error' : response ? 'response' : 'request'
+  const [selectedTab, setSelectedTab] = useState<"request" | "response" | "error">(
+    error ? "error" : response ? "response" : "request"
   );
 
   return (
@@ -72,7 +72,7 @@ export function RequestResponseViewer({
             Request & Response
           </CardTitle>
           {response && (
-            <Badge className={cn('text-white', getStatusColor(response.status))}>
+            <Badge className={cn("text-white", getStatusColor(response.status))}>
               {response.status} {response.statusText}
             </Badge>
           )}
@@ -133,7 +133,7 @@ export function RequestResponseViewer({
                   <div>
                     <p className="text-sm font-medium mb-2">Body:</p>
                     <div className="relative">
-                      <pre 
+                      <pre
                         className="p-3 bg-card dark:bg-card text-foreground dark:text-muted-foreground/30 rounded text-xs overflow-x-auto max-h-96 overflow-y-auto leading-[1.5]"
                         role="log"
                         aria-label="Request body"
@@ -149,7 +149,8 @@ export function RequestResponseViewer({
                     </div>
                     {formatJSON(request.body).length > 10000 && (
                       <p className="text-xs text-muted-foreground mt-2 leading-[1.5]">
-                        Large request ({formatJSON(request.body).length.toLocaleString()} characters)
+                        Large request ({formatJSON(request.body).length.toLocaleString()}{" "}
+                        characters)
                       </p>
                     )}
                   </div>
@@ -168,7 +169,7 @@ export function RequestResponseViewer({
                 <div className="flex items-center gap-4 text-sm">
                   {response.status && (
                     <div className="flex items-center gap-2">
-                      <Badge className={cn('text-white', getStatusColor(response.status))}>
+                      <Badge className={cn("text-white", getStatusColor(response.status))}>
                         {response.status}
                       </Badge>
                       <span className="text-muted-foreground leading-[1.5]">
@@ -202,7 +203,7 @@ export function RequestResponseViewer({
                   <div>
                     <p className="text-sm font-medium mb-2">Body:</p>
                     <div className="relative">
-                      <pre 
+                      <pre
                         className="p-3 bg-card dark:bg-card text-foreground dark:text-muted-foreground/30 rounded text-xs overflow-x-auto max-h-96 overflow-y-auto leading-[1.5]"
                         role="log"
                         aria-label="Response body"
@@ -218,7 +219,8 @@ export function RequestResponseViewer({
                     </div>
                     {formatJSON(response.body).length > 10000 && (
                       <p className="text-xs text-muted-foreground mt-2 leading-[1.5]">
-                        Large response ({formatJSON(response.body).length.toLocaleString()} characters)
+                        Large response ({formatJSON(response.body).length.toLocaleString()}{" "}
+                        characters)
                       </p>
                     )}
                   </div>

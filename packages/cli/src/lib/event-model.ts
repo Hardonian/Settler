@@ -59,7 +59,9 @@ export function redactTenant(tenantId: string): string {
   return stableHash({ tenantId }).slice(0, 16);
 }
 
-export function buildAuditChain(events: SettlerEvent[]): Array<{ index: number; hash: string; previousHash: string | null }> {
+export function buildAuditChain(
+  events: SettlerEvent[]
+): Array<{ index: number; hash: string; previousHash: string | null }> {
   const ordered = sortEvents(events);
   let previousHash: string | null = null;
   return ordered.map((event, index) => {

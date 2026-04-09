@@ -1,14 +1,17 @@
 /**
  * Timeout Utility
- * 
+ *
  * Provides timeout functionality for async operations
  * to prevent hanging requests.
  */
 
 export class TimeoutError extends Error {
-  constructor(message: string, public readonly timeout: number) {
+  constructor(
+    message: string,
+    public readonly timeout: number
+  ) {
     super(message);
-    this.name = 'TimeoutError';
+    this.name = "TimeoutError";
   }
 }
 
@@ -24,10 +27,9 @@ export async function withTimeout<T>(
     fn(),
     new Promise<T>((_, reject) => {
       setTimeout(() => {
-        reject(new TimeoutError(
-          timeoutMessage || `Operation timed out after ${timeoutMs}ms`,
-          timeoutMs
-        ));
+        reject(
+          new TimeoutError(timeoutMessage || `Operation timed out after ${timeoutMs}ms`, timeoutMs)
+        );
       }, timeoutMs);
     }),
   ]);
@@ -39,10 +41,7 @@ export async function withTimeout<T>(
 export function createTimeout(timeoutMs: number, message?: string): Promise<never> {
   return new Promise((_, reject) => {
     setTimeout(() => {
-      reject(new TimeoutError(
-        message || `Timeout after ${timeoutMs}ms`,
-        timeoutMs
-      ));
+      reject(new TimeoutError(message || `Timeout after ${timeoutMs}ms`, timeoutMs));
     }, timeoutMs);
   });
 }
@@ -56,11 +55,7 @@ export function timeout<T extends (...args: unknown[]) => Promise<unknown>>(
 ): (fn: T) => T {
   return (fn: T) => {
     return (async (...args: Parameters<T>) => {
-      return withTimeout(
-        () => fn(...args) as Promise<ReturnType<T>>,
-        timeoutMs,
-        timeoutMessage
-      );
+      return withTimeout(() => fn(...args) as Promise<ReturnType<T>>, timeoutMs, timeoutMessage);
     }) as T;
   };
 }

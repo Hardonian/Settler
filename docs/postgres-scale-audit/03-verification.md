@@ -111,56 +111,58 @@ SELECT * FROM vw_table_bloat LIMIT 5;
 
 ```typescript
 // In a Node.js console or test file
-import { executePrismaQuery } from '@/lib/db/query-gateway';
+import { executePrismaQuery } from "@/lib/db/query-gateway";
 
 // This should timeout after 1 second
 try {
-  await executePrismaQuery(
-    () => new Promise((resolve) => setTimeout(resolve, 2000)),
-    { timeout: 1000, queryName: 'test_timeout' }
-  );
-  console.error('❌ Timeout did not work');
+  await executePrismaQuery(() => new Promise((resolve) => setTimeout(resolve, 2000)), {
+    timeout: 1000,
+    queryName: "test_timeout",
+  });
+  console.error("❌ Timeout did not work");
 } catch (error) {
-  console.log('✅ Timeout working:', error.message);
+  console.log("✅ Timeout working:", error.message);
 }
 ```
 
 #### B. Test Row Limit Enforcement
 
 ```typescript
-import { findMany } from '@/lib/db/query-gateway';
+import { findMany } from "@/lib/db/query-gateway";
 
 // This should truncate to 10 rows
-const { data, meta } = await findMany(
-  () => prisma.usageEvent.findMany({ take: 1000 }),
-  { limit: 10, queryName: 'test_limit' }
-);
+const { data, meta } = await findMany(() => prisma.usageEvent.findMany({ take: 1000 }), {
+  limit: 10,
+  queryName: "test_limit",
+});
 
-console.log('Returned rows:', data.length);
-console.log('Meta:', meta);
+console.log("Returned rows:", data.length);
+console.log("Meta:", meta);
 // Expected: data.length === 10, meta.rowCount === 10
 ```
 
 #### C. Test Caching (Requires Redis)
 
 ```typescript
-import { executePrismaQuery } from '@/lib/db/query-gateway';
+import { executePrismaQuery } from "@/lib/db/query-gateway";
 
 // First query (cache miss)
-const { meta: meta1 } = await executePrismaQuery(
-  () => prisma.tenant.findFirst(),
-  { cacheTTL: 60, cacheKey: 'test_cache', queryName: 'test_cache' }
-);
+const { meta: meta1 } = await executePrismaQuery(() => prisma.tenant.findFirst(), {
+  cacheTTL: 60,
+  cacheKey: "test_cache",
+  queryName: "test_cache",
+});
 
-console.log('First query cache hit:', meta1.cacheHit); // Expected: false
+console.log("First query cache hit:", meta1.cacheHit); // Expected: false
 
 // Second query (cache hit)
-const { meta: meta2 } = await executePrismaQuery(
-  () => prisma.tenant.findFirst(),
-  { cacheTTL: 60, cacheKey: 'test_cache', queryName: 'test_cache' }
-);
+const { meta: meta2 } = await executePrismaQuery(() => prisma.tenant.findFirst(), {
+  cacheTTL: 60,
+  cacheKey: "test_cache",
+  queryName: "test_cache",
+});
 
-console.log('Second query cache hit:', meta2.cacheHit); // Expected: true
+console.log("Second query cache hit:", meta2.cacheHit); // Expected: true
 ```
 
 ---
@@ -170,56 +172,56 @@ console.log('Second query cache hit:', meta2.cacheHit); // Expected: true
 #### A. Test Buffered Write
 
 ```typescript
-import { bufferUsageEvent, flushUsageEvents } from '@/lib/db/write-buffer';
+import { bufferUsageEvent, flushUsageEvents } from "@/lib/db/write-buffer";
 
 // Buffer an event
 await bufferUsageEvent({
-  billingAccountId: 'test-account-id',
-  eventType: 'test_event',
+  billingAccountId: "test-account-id",
+  eventType: "test_event",
   quantity: 1,
   timestamp: new Date(),
 });
 
-console.log('✅ Event buffered (non-blocking)');
+console.log("✅ Event buffered (non-blocking)");
 
 // Manually flush
 await flushUsageEvents();
 
-console.log('✅ Buffer flushed');
+console.log("✅ Buffer flushed");
 
 // Verify event was written
 const events = await prisma.usageEvent.findMany({
-  where: { eventType: 'test_event' },
-  orderBy: { timestamp: 'desc' },
+  where: { eventType: "test_event" },
+  orderBy: { timestamp: "desc" },
   take: 1,
 });
 
-console.log('Event in DB:', events.length > 0 ? '✅' : '❌');
+console.log("Event in DB:", events.length > 0 ? "✅" : "❌");
 ```
 
 #### B. Test Graceful Degradation (No Redis)
 
 ```typescript
 // Temporarily disable Redis by setting REDIS_URL to invalid
-process.env.REDIS_URL = 'invalid';
+process.env.REDIS_URL = "invalid";
 
 // This should fall back to sync write
 await bufferUsageEvent({
-  billingAccountId: 'test-account-id',
-  eventType: 'test_fallback',
+  billingAccountId: "test-account-id",
+  eventType: "test_fallback",
   quantity: 1,
   timestamp: new Date(),
 });
 
 // Verify immediate write
 const events = await prisma.usageEvent.findMany({
-  where: { eventType: 'test_fallback' },
+  where: { eventType: "test_fallback" },
 });
 
-console.log('Fallback write:', events.length > 0 ? '✅' : '❌');
+console.log("Fallback write:", events.length > 0 ? "✅" : "❌");
 
 // Restore Redis URL
-process.env.REDIS_URL = 'your-redis-url';
+process.env.REDIS_URL = "your-redis-url";
 ```
 
 ---
@@ -229,12 +231,12 @@ process.env.REDIS_URL = 'your-redis-url';
 #### A. Test Query Metrics Collection
 
 ```typescript
-import { getQueryMetricsSummary, recordQueryMetric } from '@/lib/db/observability';
+import { getQueryMetricsSummary, recordQueryMetric } from "@/lib/db/observability";
 
 // Record some test metrics
 for (let i = 0; i < 10; i++) {
   recordQueryMetric({
-    queryName: 'test_query',
+    queryName: "test_query",
     duration: Math.random() * 1000,
     rowCount: 100,
     cacheHit: i % 2 === 0,
@@ -246,7 +248,7 @@ for (let i = 0; i < 10; i++) {
 // Get summary
 const summary = getQueryMetricsSummary(10);
 
-console.log('Query metrics:', {
+console.log("Query metrics:", {
   total: summary.total,
   avgDuration: summary.avgDuration,
   p95Duration: summary.p95Duration,
@@ -259,11 +261,11 @@ console.log('Query metrics:', {
 #### B. Test Slow Query Detection
 
 ```typescript
-import { recordQueryMetric, getSlowQueryAlerts } from '@/lib/db/observability';
+import { recordQueryMetric, getSlowQueryAlerts } from "@/lib/db/observability";
 
 // Record a slow query
 recordQueryMetric({
-  queryName: 'slow_test_query',
+  queryName: "slow_test_query",
   duration: 2000, // 2 seconds (exceeds 1s threshold)
   rowCount: 1000,
   cacheHit: false,
@@ -274,18 +276,18 @@ recordQueryMetric({
 // Get alerts
 const alerts = getSlowQueryAlerts(5);
 
-console.log('Slow query alerts:', alerts);
+console.log("Slow query alerts:", alerts);
 // Expected: alerts.length > 0, alerts[0].query === 'slow_test_query'
 ```
 
 #### C. Test Connection Pool Health
 
 ```typescript
-import { getConnectionPoolMetrics } from '@/lib/db/observability';
+import { getConnectionPoolMetrics } from "@/lib/db/observability";
 
 const metrics = await getConnectionPoolMetrics();
 
-console.log('Connection pool health:', {
+console.log("Connection pool health:", {
   healthy: metrics.healthy,
   timestamp: metrics.timestamp,
 });
@@ -391,6 +393,7 @@ curl http://localhost:3000/api/admin/health | jq
 ```
 
 **Expected Response**:
+
 ```json
 {
   "status": "healthy",
@@ -484,14 +487,14 @@ done
 
 ### Metrics to Track
 
-| Metric | Before | After (Target) | Status |
-|--------|--------|----------------|--------|
-| P95 Query Latency | 500ms | <100ms | ⏳ |
-| Slow Queries/Day | 10-50 | <5 | ⏳ |
-| Cache Hit Rate | 0% | >60% | ⏳ |
-| API Response Time | 200-500ms | <100ms | ⏳ |
-| Error Rate | <0.1% | <0.1% | ⏳ |
-| Connection Pool Saturation | 60-80% | <50% | ⏳ |
+| Metric                     | Before    | After (Target) | Status |
+| -------------------------- | --------- | -------------- | ------ |
+| P95 Query Latency          | 500ms     | <100ms         | ⏳     |
+| Slow Queries/Day           | 10-50     | <5             | ⏳     |
+| Cache Hit Rate             | 0%        | >60%           | ⏳     |
+| API Response Time          | 200-500ms | <100ms         | ⏳     |
+| Error Rate                 | <0.1%     | <0.1%          | ⏳     |
+| Connection Pool Saturation | 60-80%    | <50%           | ⏳     |
 
 **Deployment Success**: All metrics meet or exceed targets after 48 hours
 
@@ -502,6 +505,7 @@ done
 ### Common Issues
 
 #### Issue: Index creation fails
+
 ```sql
 -- Check for locks
 SELECT * FROM pg_stat_activity WHERE state = 'active';
@@ -514,6 +518,7 @@ CREATE INDEX CONCURRENTLY ...;
 ```
 
 #### Issue: Redis connection fails
+
 ```typescript
 // Write buffer will automatically fall back to sync writes
 // Check logs for: "[Write Buffer] Redis initialization failed"
@@ -522,12 +527,13 @@ CREATE INDEX CONCURRENTLY ...;
 console.log(process.env.REDIS_URL);
 
 // Test Redis connection manually
-import { Redis } from '@upstash/redis';
+import { Redis } from "@upstash/redis";
 const redis = new Redis({ url: process.env.REDIS_URL });
 await redis.ping(); // Should return 'PONG'
 ```
 
 #### Issue: Query gateway causes timeouts
+
 ```typescript
 // Increase timeout temporarily
 const { data } = await executePrismaQuery(
@@ -536,10 +542,9 @@ const { data } = await executePrismaQuery(
 );
 
 // Or disable timeout for specific query
-const { data } = await executePrismaQuery(
-  () => expensiveQuery(),
-  { timeout: Number.MAX_SAFE_INTEGER }
-);
+const { data } = await executePrismaQuery(() => expensiveQuery(), {
+  timeout: Number.MAX_SAFE_INTEGER,
+});
 ```
 
 ---
@@ -558,6 +563,6 @@ Before merging to production:
 - [ ] Team trained on new monitoring views
 - [ ] On-call runbook updated (see `04-runbook.md`)
 
-**Approved by**: ___________ **Date**: ___________
+**Approved by**: ****\_\_\_**** **Date**: ****\_\_\_****
 
 **Continue to**: [04-runbook.md](./04-runbook.md)

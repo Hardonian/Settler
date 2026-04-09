@@ -1,16 +1,16 @@
 /**
  * AI Agent Orchestrator
- * 
+ *
  * Manages the lifecycle and coordination of all AI agents in Settler.
  */
 
-import { EventEmitter } from 'events';
-import { logError } from '../../utils/logger';
+import { EventEmitter } from "events";
+import { logError } from "../../utils/logger";
 
 export interface AgentConfig {
   id: string;
   name: string;
-  type: 'infrastructure' | 'anomaly' | 'synthetic' | 'support' | 'qa';
+  type: "infrastructure" | "anomaly" | "synthetic" | "support" | "qa";
   enabled: boolean;
   config: Record<string, unknown>;
 }
@@ -34,12 +34,12 @@ export interface AgentResponse {
 export abstract class BaseAgent extends EventEmitter {
   abstract id: string;
   abstract name: string;
-  abstract type: AgentConfig['type'];
-  
-  protected config: AgentConfig['config'] = {};
+  abstract type: AgentConfig["type"];
+
+  protected config: AgentConfig["config"] = {};
   protected enabled: boolean = false;
 
-  constructor(config: AgentConfig['config'] = {}) {
+  constructor(config: AgentConfig["config"] = {}) {
     super();
     this.config = config;
   }
@@ -68,7 +68,7 @@ export abstract class BaseAgent extends EventEmitter {
    */
   enable(): void {
     this.enabled = true;
-    this.emit('enabled');
+    this.emit("enabled");
   }
 
   /**
@@ -76,15 +76,15 @@ export abstract class BaseAgent extends EventEmitter {
    */
   disable(): void {
     this.enabled = false;
-    this.emit('disabled');
+    this.emit("disabled");
   }
 
   /**
    * Update configuration
    */
-  updateConfig(config: Partial<AgentConfig['config']>): void {
+  updateConfig(config: Partial<AgentConfig["config"]>): void {
     this.config = { ...this.config, ...config };
-    this.emit('config_updated', this.config);
+    this.emit("config_updated", this.config);
   }
 }
 
@@ -98,9 +98,9 @@ export class AgentOrchestrator extends EventEmitter {
    */
   registerAgent(agent: BaseAgent): void {
     this.agents.set(agent.id, agent);
-    agent.on('enabled', () => this.emit('agent_enabled', agent.id));
-    agent.on('disabled', () => this.emit('agent_disabled', agent.id));
-    this.emit('agent_registered', agent.id);
+    agent.on("enabled", () => this.emit("agent_enabled", agent.id));
+    agent.on("disabled", () => this.emit("agent_disabled", agent.id));
+    this.emit("agent_registered", agent.id);
   }
 
   /**
@@ -114,12 +114,12 @@ export class AgentOrchestrator extends EventEmitter {
    * List all agents
    */
   listAgents(): AgentConfig[] {
-    return Array.from(this.agents.values()).map(agent => ({
+    return Array.from(this.agents.values()).map((agent) => ({
       id: agent.id,
       name: agent.name,
       type: agent.type,
       enabled: (agent as BaseAgent & { enabled: boolean }).enabled,
-      config: agent['config'],
+      config: agent["config"],
     }));
   }
 
@@ -128,7 +128,7 @@ export class AgentOrchestrator extends EventEmitter {
    */
   async execute(request: AgentRequest): Promise<AgentResponse> {
     const agent = this.agents.get(request.agentId);
-    
+
     if (!agent) {
       throw new Error(`Agent ${request.agentId} not found`);
     }
@@ -187,9 +187,9 @@ export class AgentOrchestrator extends EventEmitter {
       if (request) {
         try {
           const response = await this.execute(request);
-          this.emit('request_completed', response);
+          this.emit("request_completed", response);
         } catch (error) {
-          this.emit('request_failed', { request, error });
+          this.emit("request_failed", { request, error });
         }
       }
     }
@@ -201,14 +201,14 @@ export class AgentOrchestrator extends EventEmitter {
    * Initialize all agents
    */
   async initializeAll(): Promise<void> {
-    const initPromises = Array.from(this.agents.values()).map(agent => 
-      agent.initialize().catch(error => {
+    const initPromises = Array.from(this.agents.values()).map((agent) =>
+      agent.initialize().catch((error) => {
         logError(`Failed to initialize agent ${agent.id}`, error);
       })
     );
 
     await Promise.all(initPromises);
-    this.emit('all_agents_initialized');
+    this.emit("all_agents_initialized");
   }
 
   /**
@@ -222,7 +222,9 @@ export class AgentOrchestrator extends EventEmitter {
   } {
     return {
       totalAgents: this.agents.size,
-      enabledAgents: Array.from(this.agents.values()).filter(a => (a as BaseAgent & { enabled: boolean }).enabled).length,
+      enabledAgents: Array.from(this.agents.values()).filter(
+        (a) => (a as BaseAgent & { enabled: boolean }).enabled
+      ).length,
       queueLength: this.requestQueue.length,
       isProcessing: this.isProcessing,
     };

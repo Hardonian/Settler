@@ -1,35 +1,43 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { safeFetch } from '@/lib/safe-fetch';
-import { ArrowLeft, Save, Play } from 'lucide-react';
-import Link from 'next/link';
+import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { safeFetch } from "@/lib/safe-fetch";
+import { ArrowLeft, Save, Play } from "lucide-react";
+import Link from "next/link";
 
 export default function NewWorkflowPage() {
   const searchParams = useSearchParams();
-  searchParams?.get('template'); // Template selection will be implemented later
-  
-  const [name, setName] = useState('');
-  const [triggerType, setTriggerType] = useState<'reconciliation.completed' | 'anomaly.detected' | 'receipt.parsed'>('reconciliation.completed');
-  const [actionType, setActionType] = useState<'http_webhook' | 'email' | 'slack'>('http_webhook');
+  searchParams?.get("template"); // Template selection will be implemented later
+
+  const [name, setName] = useState("");
+  const [triggerType, setTriggerType] = useState<
+    "reconciliation.completed" | "anomaly.detected" | "receipt.parsed"
+  >("reconciliation.completed");
+  const [actionType, setActionType] = useState<"http_webhook" | "email" | "slack">("http_webhook");
   const [actionConfig, setActionConfig] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
 
   const handleSave = async () => {
     if (!name.trim()) {
-      alert('Please enter a workflow name');
+      alert("Please enter a workflow name");
       return;
     }
 
     setSaving(true);
-    const result = await safeFetch('/api/workflows', {
-      method: 'POST',
+    const result = await safeFetch("/api/workflows", {
+      method: "POST",
       body: JSON.stringify({
         name,
         trigger: { type: triggerType, config: {} },
@@ -38,15 +46,15 @@ export default function NewWorkflowPage() {
     });
 
     if (result.success) {
-      window.location.href = '/console/workflows';
+      window.location.href = "/console/workflows";
     } else {
-      alert(result.error?.message || 'Failed to create workflow');
+      alert(result.error?.message || "Failed to create workflow");
     }
     setSaving(false);
   };
 
   const handleTest = async () => {
-    alert('Dry run test would execute here');
+    alert("Dry run test would execute here");
   };
 
   return (
@@ -111,12 +119,12 @@ export default function NewWorkflowPage() {
               </Select>
             </div>
 
-            {actionType === 'http_webhook' && (
+            {actionType === "http_webhook" && (
               <div>
                 <Label htmlFor="webhook-url">Webhook URL</Label>
                 <Input
                   id="webhook-url"
-                  value={actionConfig.url || ''}
+                  value={actionConfig.url || ""}
                   onChange={(e) => setActionConfig({ ...actionConfig, url: e.target.value })}
                   placeholder="https://example.com/webhook"
                   className="mt-1"
@@ -124,13 +132,13 @@ export default function NewWorkflowPage() {
               </div>
             )}
 
-            {actionType === 'email' && (
+            {actionType === "email" && (
               <div>
                 <Label htmlFor="email-to">Email To</Label>
                 <Input
                   id="email-to"
                   type="email"
-                  value={actionConfig.to || ''}
+                  value={actionConfig.to || ""}
                   onChange={(e) => setActionConfig({ ...actionConfig, to: e.target.value })}
                   placeholder="team@example.com"
                   className="mt-1"
@@ -138,12 +146,12 @@ export default function NewWorkflowPage() {
               </div>
             )}
 
-            {actionType === 'slack' && (
+            {actionType === "slack" && (
               <div>
                 <Label htmlFor="slack-webhook">Slack Webhook URL</Label>
                 <Input
                   id="slack-webhook"
-                  value={actionConfig.url || ''}
+                  value={actionConfig.url || ""}
                   onChange={(e) => setActionConfig({ ...actionConfig, url: e.target.value })}
                   placeholder="https://hooks.slack.com/services/..."
                   className="mt-1"
@@ -154,7 +162,7 @@ export default function NewWorkflowPage() {
             <div className="flex gap-2">
               <Button onClick={handleSave} disabled={saving} className="flex-1">
                 <Save className="w-4 h-4 mr-2" />
-                {saving ? 'Saving...' : 'Save Workflow'}
+                {saving ? "Saving..." : "Save Workflow"}
               </Button>
               <Button variant="outline" onClick={handleTest}>
                 <Play className="w-4 h-4 mr-2" />
@@ -177,9 +185,9 @@ export default function NewWorkflowPage() {
                   When
                 </div>
                 <div className="text-blue-800 dark:text-blue-300">
-                  {triggerType === 'reconciliation.completed' && 'A reconciliation job completes'}
-                  {triggerType === 'anomaly.detected' && 'An anomaly is detected'}
-                  {triggerType === 'receipt.parsed' && 'A receipt is parsed'}
+                  {triggerType === "reconciliation.completed" && "A reconciliation job completes"}
+                  {triggerType === "anomaly.detected" && "An anomaly is detected"}
+                  {triggerType === "receipt.parsed" && "A receipt is parsed"}
                 </div>
               </div>
 
@@ -190,9 +198,11 @@ export default function NewWorkflowPage() {
                   Then
                 </div>
                 <div className="text-green-800 dark:text-green-300">
-                  {actionType === 'http_webhook' && `Send HTTP webhook to ${actionConfig.url || '[URL]'}`}
-                  {actionType === 'email' && `Send email to ${actionConfig.to || '[email]'}`}
-                  {actionType === 'slack' && `Send Slack message to ${actionConfig.url ? 'webhook' : '[webhook]'}`}
+                  {actionType === "http_webhook" &&
+                    `Send HTTP webhook to ${actionConfig.url || "[URL]"}`}
+                  {actionType === "email" && `Send email to ${actionConfig.to || "[email]"}`}
+                  {actionType === "slack" &&
+                    `Send Slack message to ${actionConfig.url ? "webhook" : "[webhook]"}`}
                 </div>
               </div>
             </div>

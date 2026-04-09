@@ -18,10 +18,7 @@ export interface SafeParseResult<T> {
  * Safely parse JSON string, returns null on failure
  * Logs errors for debugging
  */
-export function safeJsonParse<T = unknown>(
-  text: string,
-  context?: string
-): T | null {
+export function safeJsonParse<T = unknown>(text: string, context?: string): T | null {
   try {
     return JSON.parse(text) as T;
   } catch (error) {
@@ -38,11 +35,7 @@ export function safeJsonParse<T = unknown>(
 /**
  * Safely parse JSON string with a default fallback value
  */
-export function safeJsonParseWithDefault<T>(
-  text: string,
-  defaultValue: T,
-  context?: string
-): T {
+export function safeJsonParseWithDefault<T>(text: string, defaultValue: T, context?: string): T {
   const result = safeJsonParse<T>(text, context);
   return result ?? defaultValue;
 }
@@ -76,10 +69,7 @@ export function safeJsonParseResult<T = unknown>(
  * Parse JSON and throw descriptive error on failure
  * Use when you need to fail fast with clear error messages
  */
-export function safeJsonParseOrThrow<T = unknown>(
-  text: string,
-  context: string
-): T {
+export function safeJsonParseOrThrow<T = unknown>(text: string, context: string): T {
   try {
     return JSON.parse(text) as T;
   } catch (error) {
@@ -89,9 +79,7 @@ export function safeJsonParseOrThrow<T = unknown>(
       parseError.message,
       `Text preview: ${text.substring(0, 100)}`
     );
-    throw new Error(
-      `Failed to parse JSON in ${context}: ${parseError.message}`
-    );
+    throw new Error(`Failed to parse JSON in ${context}: ${parseError.message}`);
   }
 }
 
@@ -106,8 +94,7 @@ export function safeJsonStringify<T = unknown>(
   try {
     return JSON.stringify(value);
   } catch (error) {
-    const stringifyError =
-      error instanceof Error ? error : new Error(String(error));
+    const stringifyError = error instanceof Error ? error : new Error(String(error));
     console.warn(
       `[SafeParse] JSON stringify failed in ${context || "unknown"}:`,
       stringifyError.message

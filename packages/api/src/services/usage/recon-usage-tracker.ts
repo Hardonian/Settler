@@ -1,13 +1,12 @@
 /**
  * Recon Usage Tracker
- * 
+ *
  * Tracks metered usage for reconciliation operations
  * Part of Phase II: Billing Expansion
  */
 
- 
-import { PrismaClient, Prisma } from '@prisma/client';
-import { logError } from '../../utils/logger';
+import { PrismaClient, Prisma } from "@prisma/client";
+import { logError } from "../../utils/logger";
 
 export interface UsageEvent {
   tenantId: string;
@@ -37,9 +36,9 @@ export class ReconUsageTracker {
     await this.trackUsage({
       tenantId,
       billingAccountId,
-      eventType: 'recon_comparison',
+      eventType: "recon_comparison",
       quantity: comparisonCount,
-      unit: 'comparison',
+      unit: "comparison",
       ...(metadata !== undefined && { metadata }),
     });
   }
@@ -56,9 +55,9 @@ export class ReconUsageTracker {
     await this.trackUsage({
       tenantId,
       billingAccountId,
-      eventType: 'validation',
+      eventType: "validation",
       quantity: validationCount,
-      unit: 'validation',
+      unit: "validation",
       ...(metadata !== undefined && { metadata }),
     });
   }
@@ -75,9 +74,9 @@ export class ReconUsageTracker {
     await this.trackUsage({
       tenantId,
       billingAccountId,
-      eventType: 'transformation',
+      eventType: "transformation",
       quantity: transformationCount,
-      unit: 'transformation',
+      unit: "transformation",
       ...(metadata !== undefined && { metadata }),
     });
   }
@@ -94,9 +93,9 @@ export class ReconUsageTracker {
     await this.trackUsage({
       tenantId,
       billingAccountId,
-      eventType: 'mapping',
+      eventType: "mapping",
       quantity: mappingCount,
-      unit: 'mapping',
+      unit: "mapping",
       ...(metadata !== undefined && { metadata }),
     });
   }
@@ -113,9 +112,9 @@ export class ReconUsageTracker {
     await this.trackUsage({
       tenantId,
       billingAccountId,
-      eventType: 'workflow_step',
+      eventType: "workflow_step",
       quantity: stepCount,
-      unit: 'step',
+      unit: "step",
       ...(metadata !== undefined && { metadata }),
     });
   }
@@ -133,9 +132,9 @@ export class ReconUsageTracker {
     await this.trackUsage({
       tenantId,
       billingAccountId,
-      eventType: 'ai_tokens',
+      eventType: "ai_tokens",
       quantity: tokenCount,
-      unit: 'token',
+      unit: "token",
       metadata: {
         ...(metadata !== undefined ? metadata : {}),
         ...(model !== undefined && { model }),
@@ -155,9 +154,9 @@ export class ReconUsageTracker {
     await this.trackUsage({
       tenantId,
       billingAccountId,
-      eventType: 'audit_report',
+      eventType: "audit_report",
       quantity: reportCount,
-      unit: 'report',
+      unit: "report",
       ...(metadata !== undefined && { metadata }),
     });
   }
@@ -174,9 +173,9 @@ export class ReconUsageTracker {
     await this.trackUsage({
       tenantId,
       billingAccountId,
-      eventType: 'storage',
+      eventType: "storage",
       quantity: bytes,
-      unit: 'byte',
+      unit: "byte",
       ...(metadata !== undefined && { metadata }),
     });
   }
@@ -193,9 +192,9 @@ export class ReconUsageTracker {
     await this.trackUsage({
       tenantId,
       billingAccountId,
-      eventType: 'webhook_trigger',
+      eventType: "webhook_trigger",
       quantity: webhookCount,
-      unit: 'webhook',
+      unit: "webhook",
       ...(metadata !== undefined && { metadata }),
     });
   }
@@ -217,7 +216,7 @@ export class ReconUsageTracker {
         },
       });
     } catch (error) {
-      logError('Failed to track usage', { error, event });
+      logError("Failed to track usage", { error, event });
       // Don't throw - usage tracking failures shouldn't break the main flow
     }
   }
@@ -225,11 +224,7 @@ export class ReconUsageTracker {
   /**
    * Get usage summary for a billing account
    */
-  async getUsageSummary(
-    billingAccountId: string,
-    startDate: Date,
-    endDate: Date
-  ) {
+  async getUsageSummary(billingAccountId: string, startDate: Date, endDate: Date) {
     const events = await this.prisma.usageEvent.findMany({
       where: {
         billingAccountId,
@@ -248,7 +243,7 @@ export class ReconUsageTracker {
       if (!summary[eventType]) {
         summary[eventType] = {
           quantity: 0,
-          unit: event.unit || 'unit',
+          unit: event.unit || "unit",
         };
       }
       // TypeScript now knows summary[eventType] is defined after the check

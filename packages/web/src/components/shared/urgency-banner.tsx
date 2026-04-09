@@ -1,23 +1,17 @@
 /**
  * Urgency Banner Component
- * 
+ *
  * Reusable urgency indicators for pricing, billing, and upgrade flows.
  */
 
-'use client';
+"use client";
 
-import { Clock, TrendingUp, Zap } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { Clock, TrendingUp, Zap } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
-export function LimitedTimeBanner({ 
-  expiresAt,
-  message 
-}: { 
-  expiresAt: Date;
-  message?: string;
-}) {
+export function LimitedTimeBanner({ expiresAt, message }: { expiresAt: Date; message?: string }) {
   const now = new Date();
   const diffMs = expiresAt.getTime() - now.getTime();
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
@@ -25,11 +19,12 @@ export function LimitedTimeBanner({
 
   if (diffMs <= 0) return null;
 
-  const timeText = diffDays > 0 
-    ? `${diffDays} day${diffDays > 1 ? 's' : ''} left`
-    : diffHours > 0
-    ? `${diffHours} hour${diffHours > 1 ? 's' : ''} left`
-    : 'Expiring soon';
+  const timeText =
+    diffDays > 0
+      ? `${diffDays} day${diffDays > 1 ? "s" : ""} left`
+      : diffHours > 0
+        ? `${diffHours} hour${diffHours > 1 ? "s" : ""} left`
+        : "Expiring soon";
 
   return (
     <Card className="border-2 border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20">
@@ -56,11 +51,11 @@ export function LimitedTimeBanner({
   );
 }
 
-export function UpgradePromptBanner({ 
+export function UpgradePromptBanner({
   feature,
   currentTier,
-  recommendedTier 
-}: { 
+  recommendedTier,
+}: {
   feature: string;
   currentTier: string;
   recommendedTier: string;
@@ -71,11 +66,10 @@ export function UpgradePromptBanner({
         <div className="flex items-start gap-3">
           <Zap className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
           <div className="flex-1">
-            <div className="font-medium text-foreground dark:text-white mb-1">
-              Unlock {feature}
-            </div>
+            <div className="font-medium text-foreground dark:text-white mb-1">Unlock {feature}</div>
             <div className="text-sm text-muted-foreground dark:text-muted-foreground mb-3">
-              Upgrade from <strong>{currentTier}</strong> to <strong>{recommendedTier}</strong> to access this feature.
+              Upgrade from <strong>{currentTier}</strong> to <strong>{recommendedTier}</strong> to
+              access this feature.
             </div>
             <Link href="/console/billing">
               <Button size="sm" variant="default">

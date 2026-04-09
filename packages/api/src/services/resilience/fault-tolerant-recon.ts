@@ -1,13 +1,12 @@
 /**
  * Fault-Tolerant Recon Architecture
- * 
+ *
  * Replayable jobs, idempotent transforms, safe rollback, fix-forward logic
  * Part 11: Resilience & Zero-Fault Hardening
  */
 
- 
-import { PrismaClient } from '@prisma/client';
-import { logInfo, logError } from '../../utils/logger';
+import { PrismaClient } from "@prisma/client";
+import { logInfo, logError } from "../../utils/logger";
 
 export interface CheckpointState {
   state: Record<string, unknown>;
@@ -18,13 +17,13 @@ export interface ReplayableJob {
   jobId: string;
   checkpoint: CheckpointState;
   canReplay: boolean;
-  replayStrategy: 'full' | 'incremental' | 'from_checkpoint';
+  replayStrategy: "full" | "incremental" | "from_checkpoint";
 }
 
 export interface RollbackPlan {
   jobId: string;
   steps: Array<{
-    type: 'revert_transform' | 'restore_state' | 'undo_mapping';
+    type: "revert_transform" | "restore_state" | "undo_mapping";
     description: string;
     safe: boolean;
   }>;
@@ -49,7 +48,7 @@ export class FaultTolerantRecon {
       state,
       timestamp: new Date(),
     });
-    logInfo('Checkpoint created', { jobId });
+    logInfo("Checkpoint created", { jobId });
   }
 
   /**
@@ -63,7 +62,7 @@ export class FaultTolerantRecon {
     // Note: ReconResult doesn't have transformRecipeId or output fields
     // This functionality would need to be implemented differently, perhaps using a cache table
     // For now, we'll skip caching and always execute
-    logInfo('Transform execution (caching not implemented)', { transformId });
+    logInfo("Transform execution (caching not implemented)", { transformId });
 
     // Execute transform
     // TODO: Implement actual transform execution
@@ -88,13 +87,13 @@ export class FaultTolerantRecon {
       jobId,
       steps: [
         {
-          type: 'restore_state',
-          description: 'Restore state from checkpoint',
+          type: "restore_state",
+          description: "Restore state from checkpoint",
           safe: true,
         },
         {
-          type: 'revert_transform',
-          description: 'Revert any transforms applied after checkpoint',
+          type: "revert_transform",
+          description: "Revert any transforms applied after checkpoint",
           safe: true,
         },
       ],
@@ -106,7 +105,10 @@ export class FaultTolerantRecon {
   /**
    * Fix-forward logic
    */
-  async fixForward(jobId: string, error: Error): Promise<{
+  async fixForward(
+    jobId: string,
+    error: Error
+  ): Promise<{
     fixed: boolean;
     newState: Record<string, unknown> | null;
   }> {
@@ -124,35 +126,40 @@ export class FaultTolerantRecon {
       const errorMessage = error.message || String(error);
 
       // Fix-forward strategies based on error type
-      if (errorMessage.includes('timeout') || errorMessage.includes('ETIMEDOUT')) {
+      if (errorMessage.includes("timeout") || errorMessage.includes("ETIMEDOUT")) {
         // Retry with exponential backoff
-        logInfo('Applying timeout fix-forward strategy', { jobId });
+        logInfo("Applying timeout fix-forward strategy", { jobId });
         fixed = true;
-        const currentRetryCount = typeof checkpoint.state.retryCount === 'number' ? checkpoint.state.retryCount : 0;
+        const currentRetryCount =
+          typeof checkpoint.state.retryCount === "number" ? checkpoint.state.retryCount : 0;
         newState = {
           ...checkpoint.state,
           retryCount: currentRetryCount + 1,
           lastRetryAt: new Date().toISOString(),
         };
-      } else if (errorMessage.includes('rate limit') || errorMessage.includes('429')) {
+      } else if (errorMessage.includes("rate limit") || errorMessage.includes("429")) {
         // Wait and retry
-        logInfo('Applying rate limit fix-forward strategy', { jobId });
+        logInfo("Applying rate limit fix-forward strategy", { jobId });
         fixed = true;
         newState = {
           ...checkpoint.state,
           rateLimitBackoff: true,
           retryAfter: Date.now() + 60000, // Wait 1 minute
         };
-      } else if (errorMessage.includes('authentication') || errorMessage.includes('401') || errorMessage.includes('403')) {
+      } else if (
+        errorMessage.includes("authentication") ||
+        errorMessage.includes("401") ||
+        errorMessage.includes("403")
+      ) {
         // Cannot auto-fix auth errors
-        logInfo('Authentication error cannot be auto-fixed', { jobId });
+        logInfo("Authentication error cannot be auto-fixed", { jobId });
         fixed = false;
-      } else if (errorMessage.includes('validation') || errorMessage.includes('400')) {
+      } else if (errorMessage.includes("validation") || errorMessage.includes("400")) {
         // Try to sanitize and retry
-        logInfo('Applying validation error fix-forward strategy', { jobId });
+        logInfo("Applying validation error fix-forward strategy", { jobId });
         fixed = true;
-        const existingErrors = Array.isArray(checkpoint.state.validationErrors) 
-          ? checkpoint.state.validationErrors 
+        const existingErrors = Array.isArray(checkpoint.state.validationErrors)
+          ? checkpoint.state.validationErrors
           : [];
         newState = {
           ...checkpoint.state,
@@ -161,8 +168,9 @@ export class FaultTolerantRecon {
         };
       } else {
         // Generic retry strategy
-        logInfo('Applying generic fix-forward strategy', { jobId });
-        const currentRetryCount = typeof checkpoint.state.retryCount === 'number' ? checkpoint.state.retryCount : 0;
+        logInfo("Applying generic fix-forward strategy", { jobId });
+        const currentRetryCount =
+          typeof checkpoint.state.retryCount === "number" ? checkpoint.state.retryCount : 0;
         const retryCount = currentRetryCount + 1;
         if (retryCount < 3) {
           fixed = true;
@@ -175,12 +183,12 @@ export class FaultTolerantRecon {
       }
 
       if (fixed) {
-        logInfo('Error fixed, continuing execution', { jobId, strategy: newState });
+        logInfo("Error fixed, continuing execution", { jobId, strategy: newState });
       } else {
-        logInfo('Error could not be auto-fixed', { jobId, error: errorMessage });
+        logInfo("Error could not be auto-fixed", { jobId, error: errorMessage });
       }
     } catch (fixError) {
-      logError('Fix-forward logic failed', fixError, { jobId });
+      logError("Fix-forward logic failed", fixError, { jobId });
       fixed = false;
     }
 
@@ -190,7 +198,10 @@ export class FaultTolerantRecon {
   /**
    * Replay job
    */
-  async replayJob(jobId: string, strategy: 'full' | 'incremental' | 'from_checkpoint'): Promise<ReplayableJob> {
+  async replayJob(
+    jobId: string,
+    strategy: "full" | "incremental" | "from_checkpoint"
+  ): Promise<ReplayableJob> {
     const checkpoint = this.checkpoints.get(jobId);
     const canReplay = checkpoint !== undefined;
 
@@ -199,7 +210,7 @@ export class FaultTolerantRecon {
     }
 
     // TODO: Implement actual replay logic
-    logInfo('Replaying job', { jobId, strategy });
+    logInfo("Replaying job", { jobId, strategy });
 
     return {
       jobId,
@@ -220,7 +231,7 @@ export class FaultTolerantRecon {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32-bit integer
     }
     return hash.toString();

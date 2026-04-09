@@ -42,10 +42,10 @@ Settler exposes Prometheus-compatible metrics at `/metrics`:
 
 ```yaml
 scrape_configs:
-  - job_name: 'settler-api'
-    metrics_path: '/metrics'
+  - job_name: "settler-api"
+    metrics_path: "/metrics"
     static_configs:
-      - targets: ['api.settler.io:3000']
+      - targets: ["api.settler.io:3000"]
 ```
 
 ### Logging
@@ -103,18 +103,18 @@ spec:
   minReplicas: 2
   maxReplicas: 10
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 80
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
 ```
 
 ## Database Management

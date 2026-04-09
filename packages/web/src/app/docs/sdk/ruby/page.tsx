@@ -2,24 +2,24 @@
  * Ruby SDK Documentation Page
  */
 
-'use client';
+"use client";
 
-import { Navigation } from '@/components/Navigation';
-import { Footer } from '@/components/Footer';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { CodeBlock } from '@/components/ui/code-block';
-import Link from 'next/link';
-import { Package, Code2, Zap, Shield } from 'lucide-react';
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { CodeBlock } from "@/components/ui/code-block";
+import Link from "next/link";
+import { Package, Code2, Zap, Shield } from "lucide-react";
 
 export default function RubySDKPage() {
   const features = [
-    { icon: Code2, title: 'Ruby Idioms', description: 'Follows Ruby best practices' },
-    { icon: Zap, title: 'Gem Support', description: 'Available as Ruby gem' },
-    { icon: Shield, title: 'Error Handling', description: 'Comprehensive error classes' },
-    { icon: Package, title: 'Full Coverage', description: 'Complete API coverage' },
+    { icon: Code2, title: "Ruby Idioms", description: "Follows Ruby best practices" },
+    { icon: Zap, title: "Gem Support", description: "Available as Ruby gem" },
+    { icon: Shield, title: "Error Handling", description: "Comprehensive error classes" },
+    { icon: Package, title: "Full Coverage", description: "Complete API coverage" },
   ];
 
   const installationCode = `gem install settler-sdk
@@ -85,11 +85,13 @@ end`;
       <Navigation />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
-        <Breadcrumbs items={[
-          { label: 'Docs', href: '/docs' },
-          { label: 'SDK', href: '/docs/sdk' },
-          { label: 'Ruby' },
-        ]} />
+        <Breadcrumbs
+          items={[
+            { label: "Docs", href: "/docs" },
+            { label: "SDK", href: "/docs/sdk" },
+            { label: "Ruby" },
+          ]}
+        />
 
         <div className="mt-8">
           <div className="flex items-center gap-3 mb-4">
@@ -97,9 +99,7 @@ end`;
             <Badge variant="outline">Ruby 3.0+</Badge>
             <Badge variant="secondary">Beta</Badge>
           </div>
-          <h1 className="text-4xl font-bold text-foreground mb-4">
-            Ruby SDK
-          </h1>
+          <h1 className="text-4xl font-bold text-foreground mb-4">Ruby SDK</h1>
           <p className="text-xl text-muted-foreground mb-8">
             Ruby SDK with idiomatic Ruby patterns and full API coverage.
           </p>
@@ -157,14 +157,10 @@ end`;
         {/* Next Steps */}
         <div className="flex gap-4">
           <Button asChild>
-            <Link href="/console/playground">
-              Try in Playground
-            </Link>
+            <Link href="/console/playground">Try in Playground</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/docs/sdk/nodejs">
-              Node.js SDK →
-            </Link>
+            <Link href="/docs/sdk/nodejs">Node.js SDK →</Link>
           </Button>
         </div>
       </div>

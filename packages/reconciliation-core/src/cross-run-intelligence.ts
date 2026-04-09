@@ -307,16 +307,24 @@ function buildFamilySuggestedActions(
 ): string[] {
   const actions: string[] = [];
   if (stats.unresolvedCount > 0) {
-    actions.push("Review open exceptions in this family and record an adjudication so memory compounds.");
+    actions.push(
+      "Review open exceptions in this family and record an adjudication so memory compounds."
+    );
   }
   if (stats.totalOccurrences >= 3 && stats.unresolvedCount > stats.resolvedCount) {
-    actions.push("Consider policy or mapping review: unresolved volume exceeds resolved in this sample.");
+    actions.push(
+      "Consider policy or mapping review: unresolved volume exceeds resolved in this sample."
+    );
   }
   if (archetypeCategory) {
-    actions.push(`Validate exception archetype category “${archetypeCategory}” still matches operational reality.`);
+    actions.push(
+      `Validate exception archetype category “${archetypeCategory}” still matches operational reality.`
+    );
   }
   if (topOutcome === "dismissed" || topOutcome === "ignored") {
-    actions.push("Top outcome is dismiss/ignore — confirm this is intentional for recurring money movement.");
+    actions.push(
+      "Top outcome is dismiss/ignore — confirm this is intentional for recurring money movement."
+    );
   }
   if (actions.length === 0) {
     actions.push("No extra action beyond normal queue hygiene; posture is stable in this sample.");

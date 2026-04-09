@@ -1,36 +1,36 @@
 /**
  * Analysis Panel Component
- * 
+ *
  * Advanced analysis with token management for Growth and Enterprise tiers.
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Sparkles, Zap, TrendingUp, AlertTriangle, Plus, RefreshCw } from 'lucide-react';
-import { motion } from 'framer-motion';
+} from "@/components/ui/dialog";
+import { Sparkles, Zap, TrendingUp, AlertTriangle, Plus, RefreshCw } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface TokenUsage {
   used: number;
   limit: number;
-  period: 'day' | 'week' | 'month';
+  period: "day" | "week" | "month";
   resetDate: Date;
 }
 
 interface AIAnalysis {
   id: string;
-  type: 'reconciliation' | 'change_detection' | 'anomaly' | 'prediction';
+  type: "reconciliation" | "change_detection" | "anomaly" | "prediction";
   input: string;
   result: {
     summary: string;
@@ -57,13 +57,13 @@ export function AnalysisPanel() {
 
   const fetchTokenUsage = async () => {
     try {
-      const res = await fetch('/api/console/ai-tokens/usage');
+      const res = await fetch("/api/console/ai-tokens/usage");
       if (res.ok) {
         const data = await res.json();
         setTokenUsage(data.usage);
       }
     } catch (error: unknown) {
-      console.error('Failed to fetch token usage:', error);
+      console.error("Failed to fetch token usage:", error);
     } finally {
       setLoading(false);
     }
@@ -71,17 +71,17 @@ export function AnalysisPanel() {
 
   const fetchAnalyses = async () => {
     try {
-      const res = await fetch('/api/console/ai-analysis');
+      const res = await fetch("/api/console/ai-analysis");
       if (res.ok) {
         const data = await res.json();
         setAnalyses(data.analyses || []);
       }
     } catch (error: unknown) {
-      console.error('Failed to fetch analyses:', error);
+      console.error("Failed to fetch analyses:", error);
     }
   };
 
-  const runAnalysis = async (type: AIAnalysis['type']) => {
+  const runAnalysis = async (type: AIAnalysis["type"]) => {
     if (!tokenUsage || tokenUsage.used >= tokenUsage.limit) {
       setShowPurchaseDialog(true);
       return;
@@ -89,9 +89,9 @@ export function AnalysisPanel() {
 
     try {
       setRunning(true);
-      const res = await fetch('/api/console/ai-analysis', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/console/ai-analysis", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type }),
       });
 
@@ -104,7 +104,7 @@ export function AnalysisPanel() {
         setShowPurchaseDialog(true);
       }
     } catch (error: unknown) {
-      console.error('Failed to run analysis:', error);
+      console.error("Failed to run analysis:", error);
     } finally {
       setRunning(false);
     }
@@ -120,9 +120,7 @@ export function AnalysisPanel() {
     );
   }
 
-  const usagePercent = tokenUsage
-    ? Math.min((tokenUsage.used / tokenUsage.limit) * 100, 100)
-    : 0;
+  const usagePercent = tokenUsage ? Math.min((tokenUsage.used / tokenUsage.limit) * 100, 100) : 0;
   const remaining = tokenUsage ? tokenUsage.limit - tokenUsage.used : 0;
   const isExhausted = remaining === 0;
 
@@ -137,16 +135,20 @@ export function AnalysisPanel() {
               <CardTitle>AI Analysis Tokens</CardTitle>
             </div>
             <Badge
-              variant={isExhausted ? 'destructive' : 'default'}
-              className={isExhausted ? '' : 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400'}
+              variant={isExhausted ? "destructive" : "default"}
+              className={
+                isExhausted
+                  ? ""
+                  : "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400"
+              }
             >
-              {isExhausted ? 'Exhausted' : `${remaining} remaining`}
+              {isExhausted ? "Exhausted" : `${remaining} remaining`}
             </Badge>
           </div>
           <CardDescription>
             {tokenUsage?.limit === -1
-              ? 'Unlimited analyses available'
-              : `${tokenUsage?.used || 0} of ${tokenUsage?.limit || 0} used this ${tokenUsage?.period || 'month'}`}
+              ? "Unlimited analyses available"
+              : `${tokenUsage?.used || 0} of ${tokenUsage?.limit || 0} used this ${tokenUsage?.period || "month"}`}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -194,35 +196,33 @@ export function AnalysisPanel() {
       <Card>
         <CardHeader>
           <CardTitle>Run AI Analysis</CardTitle>
-          <CardDescription>
-            Get deeper insights with AI-powered analysis
-          </CardDescription>
+          <CardDescription>Get deeper insights with AI-powered analysis</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
               {
-                type: 'reconciliation' as const,
-                title: 'Reconciliation Analysis',
-                description: 'Deep dive into reconciliation patterns and anomalies',
+                type: "reconciliation" as const,
+                title: "Reconciliation Analysis",
+                description: "Deep dive into reconciliation patterns and anomalies",
                 icon: <RefreshCw className="w-6 h-6" />,
               },
               {
-                type: 'change_detection' as const,
-                title: 'Change Detection',
-                description: 'Identify meaningful patterns in changes',
+                type: "change_detection" as const,
+                title: "Change Detection",
+                description: "Identify meaningful patterns in changes",
                 icon: <TrendingUp className="w-6 h-6" />,
               },
               {
-                type: 'anomaly' as const,
-                title: 'Anomaly Detection',
-                description: 'Detect unusual patterns and outliers',
+                type: "anomaly" as const,
+                title: "Anomaly Detection",
+                description: "Detect unusual patterns and outliers",
                 icon: <AlertTriangle className="w-6 h-6" />,
               },
               {
-                type: 'prediction' as const,
-                title: 'Predictive Analysis',
-                description: 'Forecast future trends and issues',
+                type: "prediction" as const,
+                title: "Predictive Analysis",
+                description: "Forecast future trends and issues",
                 icon: <Zap className="w-6 h-6" />,
               },
             ].map((analysisType) => (
@@ -297,7 +297,7 @@ export function AnalysisPanel() {
                       </div>
                       <p className="font-medium mb-1">{analysis.result.summary}</p>
                       <p className="text-sm text-muted-foreground">
-                        {analysis.result.insights.length} insights •{' '}
+                        {analysis.result.insights.length} insights •{" "}
                         {analysis.result.recommendations.length} recommendations
                       </p>
                     </div>
@@ -305,10 +305,10 @@ export function AnalysisPanel() {
                       variant="outline"
                       className={
                         analysis.result.confidence > 0.8
-                          ? 'border-green-500 text-green-700'
+                          ? "border-green-500 text-green-700"
                           : analysis.result.confidence > 0.6
-                          ? 'border-yellow-500 text-yellow-700'
-                          : 'border-red-500 text-red-700'
+                            ? "border-yellow-500 text-yellow-700"
+                            : "border-red-500 text-red-700"
                       }
                     >
                       {Math.round(analysis.result.confidence * 100)}% confidence
@@ -326,9 +326,7 @@ export function AnalysisPanel() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Purchase AI Analysis Tokens</DialogTitle>
-            <DialogDescription>
-              Add more AI analysis tokens to your plan
-            </DialogDescription>
+            <DialogDescription>Add more AI analysis tokens to your plan</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="grid grid-cols-3 gap-4">
@@ -340,9 +338,7 @@ export function AnalysisPanel() {
                 <Card key={package_.tokens} className="cursor-pointer hover:border-blue-500">
                   <CardContent className="p-4 text-center">
                     <div className="text-2xl font-bold mb-1">{package_.tokens}</div>
-                    <div className="text-sm text-muted-foreground mb-2">
-                      tokens
-                    </div>
+                    <div className="text-sm text-muted-foreground mb-2">tokens</div>
                     <div className="text-lg font-semibold">${package_.price}</div>
                   </CardContent>
                 </Card>
@@ -358,7 +354,7 @@ export function AnalysisPanel() {
         <Dialog open={!!selectedAnalysis} onOpenChange={() => setSelectedAnalysis(null)}>
           <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{selectedAnalysis.type.replace('_', ' ')} Analysis</DialogTitle>
+              <DialogTitle>{selectedAnalysis.type.replace("_", " ")} Analysis</DialogTitle>
               <DialogDescription>
                 {new Date(selectedAnalysis.createdAt).toLocaleString()}
               </DialogDescription>
@@ -366,9 +362,7 @@ export function AnalysisPanel() {
             <div className="space-y-4">
               <div>
                 <h3 className="font-semibold mb-2">Summary</h3>
-                <p className="text-sm text-muted-foreground">
-                  {selectedAnalysis.result.summary}
-                </p>
+                <p className="text-sm text-muted-foreground">{selectedAnalysis.result.summary}</p>
               </div>
               <div>
                 <h3 className="font-semibold mb-2">Key Insights</h3>

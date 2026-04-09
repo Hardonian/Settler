@@ -20,7 +20,8 @@ function SignedOutScreen() {
         </div>
         <h2 className="text-xl font-semibold text-foreground">Session required</h2>
         <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-          The Settler operator console requires an authenticated session. Sign in to access your workspace.
+          The Settler operator console requires an authenticated session. Sign in to access your
+          workspace.
         </p>
         <div className="mt-6 flex gap-3">
           <Link
@@ -52,7 +53,8 @@ function NoTenantScreen() {
         </div>
         <h2 className="text-xl font-semibold text-foreground">No workspace assigned</h2>
         <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-          Your account has not been assigned to a Settler workspace. Complete setup to access the operational control plane.
+          Your account has not been assigned to a Settler workspace. Complete setup to access the
+          operational control plane.
         </p>
 
         {isLocalDev && (
@@ -103,9 +105,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   if (!tenantId) return <NoTenantScreen />;
 
   // Abbreviate long tenant IDs for display
-  const tenantDisplay = tenantId.length > 16
-    ? `${tenantId.slice(0, 8)}…${tenantId.slice(-4)}`
-    : tenantId;
+  const tenantDisplay =
+    tenantId.length > 16 ? `${tenantId.slice(0, 8)}…${tenantId.slice(-4)}` : tenantId;
 
   return (
     <div className="flex h-screen bg-background">
@@ -120,7 +121,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               className="hidden sm:flex items-center gap-2 rounded-full border border-border/60 bg-background/40 px-3 py-1 text-xs"
               title={`Workspace: ${tenantId}`}
             >
-              <span className="h-1.5 w-1.5 rounded-full bg-success flex-shrink-0" aria-hidden="true" />
+              <span
+                className="h-1.5 w-1.5 rounded-full bg-success flex-shrink-0"
+                aria-hidden="true"
+              />
               <span className="font-mono text-muted-foreground truncate max-w-[180px]">
                 {tenantDisplay}
               </span>
@@ -133,14 +137,42 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               className="flex items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-accent/50 hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               aria-label="View live alerts"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+              </svg>
             </Link>
             <Link
               href="/app/settings"
               className="flex items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-accent/50 hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               aria-label="Settings"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
             </Link>
           </div>
         </header>

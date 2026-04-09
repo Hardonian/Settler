@@ -1,9 +1,9 @@
 /**
  * Cost Baseline Configuration
- * 
+ *
  * Defines cost estimation baselines for various infrastructure components.
  * These are used by the Cost Signal Engine to derive cost estimates from telemetry.
- * 
+ *
  * All costs are in USD per unit.
  */
 
@@ -46,82 +46,82 @@ export interface CostBaselines {
 export const COST_BASELINES: CostBaselines = {
   vercel: {
     edgeRequest: {
-      unit: 'request',
+      unit: "request",
       costPerUnit: 0.0000001, // $0.10 per million requests
-      description: 'Vercel Edge Function request',
+      description: "Vercel Edge Function request",
       confidence: 0.7,
-      source: 'estimated_from_vercel_pricing',
+      source: "estimated_from_vercel_pricing",
     },
     serverlessRequest: {
-      unit: 'request',
+      unit: "request",
       costPerUnit: 0.0000002, // $0.20 per million requests
-      description: 'Vercel Serverless Function request',
+      description: "Vercel Serverless Function request",
       confidence: 0.7,
-      source: 'estimated_from_vercel_pricing',
+      source: "estimated_from_vercel_pricing",
     },
     functionExecutionMs: {
-      unit: 'ms',
+      unit: "ms",
       costPerUnit: 0.0000000001, // $0.0000001 per ms (very small)
-      description: 'Vercel function execution time',
+      description: "Vercel function execution time",
       confidence: 0.5,
-      source: 'estimated_from_vercel_pricing',
+      source: "estimated_from_vercel_pricing",
     },
   },
   supabase: {
     query: {
-      unit: 'query',
+      unit: "query",
       costPerUnit: 0.000001, // $0.001 per 1000 queries (estimated)
-      description: 'Supabase database query',
+      description: "Supabase database query",
       confidence: 0.6,
-      source: 'estimated_from_supabase_pricing',
+      source: "estimated_from_supabase_pricing",
     },
     storageGb: {
-      unit: 'GB',
+      unit: "GB",
       costPerUnit: 0.021, // $0.021 per GB/month
-      description: 'Supabase storage per GB',
+      description: "Supabase storage per GB",
       confidence: 0.8,
-      source: 'estimated_from_supabase_pricing',
+      source: "estimated_from_supabase_pricing",
     },
     bandwidthGb: {
-      unit: 'GB',
+      unit: "GB",
       costPerUnit: 0.09, // $0.09 per GB
-      description: 'Supabase bandwidth per GB',
+      description: "Supabase bandwidth per GB",
       confidence: 0.7,
-      source: 'estimated_from_supabase_pricing',
+      source: "estimated_from_supabase_pricing",
     },
   },
   email: {
     send: {
-      unit: 'email',
+      unit: "email",
       costPerUnit: 0.0001, // $0.0001 per email (e.g., SendGrid, Resend)
-      description: 'Email send cost',
+      description: "Email send cost",
       confidence: 0.8,
-      source: 'estimated_from_email_provider_pricing',
+      source: "estimated_from_email_provider_pricing",
     },
   },
   webhook: {
     delivery: {
-      unit: 'delivery',
+      unit: "delivery",
       costPerUnit: 0.00001, // $0.00001 per webhook delivery (mostly compute)
-      description: 'Webhook delivery cost',
+      description: "Webhook delivery cost",
       confidence: 0.6,
-      source: 'estimated_from_compute_cost',
+      source: "estimated_from_compute_cost",
     },
   },
   storage: {
     artifactGb: {
-      unit: 'GB',
+      unit: "GB",
       costPerUnit: 0.023, // $0.023 per GB/month (S3-like)
-      description: 'Artifact storage per GB',
+      description: "Artifact storage per GB",
       confidence: 0.7,
-      source: 'estimated_from_object_storage_pricing',
+      source: "estimated_from_object_storage_pricing",
     },
     logGb: {
-      unit: 'GB',
+      unit: "GB",
       costPerUnit: 0.05, // $0.05 per GB/month (log storage typically more expensive)
-      description: 'Log storage per GB',
+      description: "Log storage per GB",
       confidence: 0.6,
-      source: 'estimated_from_log_storage_pricing',
+      source: "estimated_from_log_storage_pricing",
     },
   },
 };
@@ -129,10 +129,7 @@ export const COST_BASELINES: CostBaselines = {
 /**
  * Get cost baseline for a specific source and type
  */
-export function getCostBaseline(
-  source: keyof CostBaselines,
-  type: string
-): CostBaseline | null {
+export function getCostBaseline(source: keyof CostBaselines, type: string): CostBaseline | null {
   const sourceBaselines = COST_BASELINES[source];
   if (!sourceBaselines) {
     return null;

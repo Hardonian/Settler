@@ -79,6 +79,7 @@ Also known as Ports & Adapters. An architectural pattern that separates business
 ### Job
 
 A reconciliation job defines:
+
 - Source adapter (where to fetch data from)
 - Target adapter (where to match against)
 - Matching rules (how to match transactions)
@@ -91,6 +92,7 @@ A reconciliation job defines:
 ### Matching Rule
 
 A rule defining how transactions should be matched. Examples:
+
 - Exact match on order ID
 - Fuzzy match on amount with tolerance
 - Date window matching
@@ -154,6 +156,7 @@ A unique identifier attached to each request for correlation across services. Us
 ### Usage
 
 API usage metrics tracked per tenant:
+
 - Reconciliation operations
 - Receipt parses
 - Feature flag evaluations

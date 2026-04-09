@@ -90,7 +90,6 @@ describe("reconciliation synthetic foundry", () => {
     expect(resultA.hash).toBe(resultB.hash);
   });
 
-
   test("stable export hash handles deep nested key reordering", () => {
     const suite = generateReconciliationSuite({ seed: 33, profile: "smoke" });
     suite.golden.runtime_matches[0]!.manual_review_rationale_codes = ["AMBIGUOUS_REFERENCE"];

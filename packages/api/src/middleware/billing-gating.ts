@@ -340,7 +340,7 @@ async function getCurrentUsage(
  * not a sub-starter tier (0).
  */
 const PLAN_HIERARCHY: Record<string, number> = {
-  free: 1,       // canonical: free → starter
+  free: 1, // canonical: free → starter
   starter: 1,
   growth: 2,
   scale: 3,
@@ -348,7 +348,7 @@ const PLAN_HIERARCHY: Record<string, number> = {
   // Legacy Stripe plan IDs (canonical: base → starter, pro → growth)
   base: 1,
   pro: 2,
-  trial: 2,      // canonical: trial → growth
+  trial: 2, // canonical: trial → growth
   commercial: 2, // canonical: commercial → growth
 };
 

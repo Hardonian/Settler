@@ -51,7 +51,9 @@ adaptersCommand
         console.log();
       });
     } catch (error) {
-      console.error(chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`));
+      console.error(
+        chalk.red(`Error: ${error instanceof Error ? error.message : "Unknown error"}`)
+      );
       process.exit(1);
     }
   });
@@ -64,7 +66,9 @@ adaptersCommand
   .action(async (query, options) => {
     const registry = await readRegistry(options.registry);
     const needle = String(query ?? "").toLowerCase();
-    const filtered = registry.filter((entry) => !needle || entry.name.toLowerCase().includes(needle));
+    const filtered = registry.filter(
+      (entry) => !needle || entry.name.toLowerCase().includes(needle)
+    );
     console.log(JSON.stringify(filtered, null, 2));
   });
 
@@ -78,7 +82,11 @@ adaptersCommand
     try {
       requireUnsafeAcknowledgement(options.allowUnsafe);
     } catch {
-      console.error(chalk.red("Refusing to install package metadata without explicit acknowledgement. Re-run with --allow-unsafe. See SECURITY.md."));
+      console.error(
+        chalk.red(
+          "Refusing to install package metadata without explicit acknowledgement. Re-run with --allow-unsafe. See SECURITY.md."
+        )
+      );
       process.exit(1);
     }
 
@@ -93,7 +101,11 @@ adaptersCommand
 
     const installPath = path.join("marketplace", "installed", "adapters");
     await fs.mkdir(installPath, { recursive: true });
-    await fs.writeFile(path.join(installPath, `${entry.name}.json`), `${JSON.stringify(entry, null, 2)}\n`, "utf8");
+    await fs.writeFile(
+      path.join(installPath, `${entry.name}.json`),
+      `${JSON.stringify(entry, null, 2)}\n`,
+      "utf8"
+    );
     console.log(chalk.green(`Adapter installed: ${entry.name}@${entry.version}`));
   });
 
@@ -107,7 +119,12 @@ adaptersCommand
 
     const installedFile = resolveWithinCwd(path.join(options.installedDir, `${options.name}.json`));
     const raw = await readLimitedUtf8(installedFile, MAX_REGISTRY_BYTES);
-    const installed = JSON.parse(raw) as { name: string; license?: string; compatibility?: string; provenance?: string };
+    const installed = JSON.parse(raw) as {
+      name: string;
+      license?: string;
+      compatibility?: string;
+      provenance?: string;
+    };
 
     if (!installed.license || !installed.compatibility) {
       console.error(chalk.red("license or compatibility metadata missing"));

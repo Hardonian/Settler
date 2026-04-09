@@ -123,35 +123,29 @@ Each webhook includes these headers:
 **Node.js:**
 
 ```javascript
-const crypto = require('crypto');
+const crypto = require("crypto");
 
 function verifyWebhookSignature(payload, signature, timestamp, secret) {
   const signedPayload = `${timestamp}.${payload}`;
-  const expectedSignature = crypto
-    .createHmac('sha256', secret)
-    .update(signedPayload)
-    .digest('hex');
-  
-  return crypto.timingSafeEqual(
-    Buffer.from(signature),
-    Buffer.from(expectedSignature)
-  );
+  const expectedSignature = crypto.createHmac("sha256", secret).update(signedPayload).digest("hex");
+
+  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature));
 }
 
 // In your webhook handler
-app.post('/webhooks/settler', express.raw({ type: 'application/json' }), (req, res) => {
-  const signature = req.headers['x-settler-signature'];
-  const timestamp = req.headers['x-settler-timestamp'];
+app.post("/webhooks/settler", express.raw({ type: "application/json" }), (req, res) => {
+  const signature = req.headers["x-settler-signature"];
+  const timestamp = req.headers["x-settler-timestamp"];
   const secret = process.env.SETTLER_WEBHOOK_SECRET;
-  
+
   if (!verifyWebhookSignature(req.body.toString(), signature, timestamp, secret)) {
-    return res.status(401).send('Invalid signature');
+    return res.status(401).send("Invalid signature");
   }
-  
+
   const event = JSON.parse(req.body);
   // Process event...
-  
-  res.status(200).send('OK');
+
+  res.status(200).send("OK");
 });
 ```
 
@@ -169,7 +163,7 @@ def verify_webhook_signature(payload, signature, timestamp, secret):
         signed_payload.encode('utf-8'),
         hashlib.sha256
     ).hexdigest()
-    
+
     return hmac.compare_digest(signature, expected_signature)
 
 # In your webhook handler
@@ -178,7 +172,7 @@ def handle_webhook():
     signature = request.headers.get('X-Settler-Signature')
     timestamp = request.headers.get('X-Settler-Timestamp')
     secret = os.environ['SETTLER_WEBHOOK_SECRET']
-    
+
     if not verify_webhook_signature(
         request.data.decode('utf-8'),
         signature,
@@ -186,10 +180,10 @@ def handle_webhook():
         secret
     ):
         return 'Invalid signature', 401
-    
+
     event = request.json
     # Process event...
-    
+
     return 'OK', 200
 ```
 
@@ -198,12 +192,13 @@ def handle_webhook():
 Prevent replay attacks by validating timestamps:
 
 ```javascript
-const timestamp = parseInt(req.headers['x-settler-timestamp']);
+const timestamp = parseInt(req.headers["x-settler-timestamp"]);
 const currentTime = Math.floor(Date.now() / 1000);
 const timeDiff = Math.abs(currentTime - timestamp);
 
-if (timeDiff > 300) { // 5 minutes
-  return res.status(401).send('Request timestamp too old');
+if (timeDiff > 300) {
+  // 5 minutes
+  return res.status(401).send("Request timestamp too old");
 }
 ```
 
@@ -232,18 +227,18 @@ Webhooks may be delivered multiple times. Make your handler idempotent:
 // Use event ID to prevent duplicate processing
 const processedEvents = new Set();
 
-app.post('/webhooks/settler', async (req, res) => {
+app.post("/webhooks/settler", async (req, res) => {
   const event = req.body;
-  
+
   if (processedEvents.has(event.id)) {
-    return res.status(200).send('Already processed');
+    return res.status(200).send("Already processed");
   }
-  
+
   // Process event...
   await processEvent(event);
   processedEvents.add(event.id);
-  
-  res.status(200).send('OK');
+
+  res.status(200).send("OK");
 });
 ```
 

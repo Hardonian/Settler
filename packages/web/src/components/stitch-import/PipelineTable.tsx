@@ -56,7 +56,9 @@ const PipelineTable: React.FC = () => {
                   <span className="inline-flex items-center rounded-md bg-green-500/10 px-2 py-0.5 text-xs font-medium text-green-500 ring-1 ring-inset ring-green-500/20">
                     Healthy
                   </span>
-                  <span className="text-xs text-muted-foreground dark:text-muted-foreground">• 2m ago</span>
+                  <span className="text-xs text-muted-foreground dark:text-muted-foreground">
+                    • 2m ago
+                  </span>
                 </div>
               </div>
             </div>
@@ -133,7 +135,9 @@ const PipelineTable: React.FC = () => {
                   <span className="inline-flex items-center rounded-md bg-red-500/10 px-2 py-0.5 text-xs font-medium text-red-500 ring-1 ring-inset ring-red-500/20">
                     Critical
                   </span>
-                  <span className="text-xs text-muted-foreground dark:text-muted-foreground">• 15m ago</span>
+                  <span className="text-xs text-muted-foreground dark:text-muted-foreground">
+                    • 15m ago
+                  </span>
                 </div>
               </div>
             </div>
@@ -205,7 +209,9 @@ const PipelineTable: React.FC = () => {
                   <span className="inline-flex items-center rounded-md bg-muted/40 dark:bg-card px-2 py-0.5 text-xs font-medium text-muted-foreground dark:text-muted-foreground ring-1 ring-inset ring-slate-500/10">
                     Paused
                   </span>
-                  <span className="text-xs text-muted-foreground dark:text-muted-foreground">• 4h ago</span>
+                  <span className="text-xs text-muted-foreground dark:text-muted-foreground">
+                    • 4h ago
+                  </span>
                 </div>
               </div>
             </div>
@@ -214,7 +220,9 @@ const PipelineTable: React.FC = () => {
             </button>
           </div>
           <div className="flex items-center justify-between border-t border-border/30 dark:border-border pt-3 mt-3">
-            <span className="text-xs text-muted-foreground italic">Configuration frozen at v1.2.0</span>
+            <span className="text-xs text-muted-foreground italic">
+              Configuration frozen at v1.2.0
+            </span>
             <button className="text-primary hover:text-primary/80 text-xs font-medium flex items-center gap-1">
               <Play className="h-3.5 w-3.5" /> Resume
             </button>
@@ -235,7 +243,9 @@ const PipelineTable: React.FC = () => {
                   <span className="inline-flex items-center rounded-md bg-yellow-500/10 px-2 py-0.5 text-xs font-medium text-yellow-500 ring-1 ring-inset ring-yellow-500/20">
                     Degraded
                   </span>
-                  <span className="text-xs text-muted-foreground dark:text-muted-foreground">• 5m ago</span>
+                  <span className="text-xs text-muted-foreground dark:text-muted-foreground">
+                    • 5m ago
+                  </span>
                 </div>
               </div>
             </div>

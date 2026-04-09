@@ -1,52 +1,52 @@
 /**
  * Configure Super Admin
- * 
+ *
  * Sets up super admin access for a user.
  * Usage: DATABASE_URL="..." USER_EMAIL="user@example.com" pnpm tsx scripts/configure-super-admin.ts
  */
 
-import { Client } from 'pg';
+import { Client } from "pg";
 
 const DATABASE_URL = process.env.DATABASE_URL || process.env.SUPABASE_DB_URL;
 const USER_EMAIL = process.env.USER_EMAIL || process.env.SUPABASE_USER_EMAIL;
 const USER_ID = process.env.USER_ID;
 
 if (!DATABASE_URL) {
-  console.error('❌ DATABASE_URL or SUPABASE_DB_URL environment variable is required');
+  console.error("❌ DATABASE_URL or SUPABASE_DB_URL environment variable is required");
   process.exit(1);
 }
 
 if (!USER_EMAIL && !USER_ID) {
-  console.error('❌ USER_EMAIL or USER_ID environment variable is required');
+  console.error("❌ USER_EMAIL or USER_ID environment variable is required");
   console.error('   Example: USER_EMAIL="admin@settler.dev"');
   process.exit(1);
 }
 
 async function configureSuperAdmin() {
   // Configure SSL for Supabase pooler connections
-  const sslConfig = DATABASE_URL.includes('pooler') || DATABASE_URL.includes('supabase') 
-    ? { rejectUnauthorized: false } 
-    : undefined;
-  
+  const sslConfig =
+    DATABASE_URL.includes("pooler") || DATABASE_URL.includes("supabase")
+      ? { rejectUnauthorized: false }
+      : undefined;
+
   const client = new Client({
     connectionString: DATABASE_URL,
     ssl: sslConfig,
   });
 
   try {
-    console.log('🔌 Connecting to database...');
+    console.log("🔌 Connecting to database...");
     await client.connect();
-    console.log('✅ Connected successfully\n');
+    console.log("✅ Connected successfully\n");
 
     let userId: string | null = null;
 
     // Get user ID from email if provided
     if (USER_EMAIL) {
       console.log(`🔍 Looking up user by email: ${USER_EMAIL}`);
-      const { rows } = await client.query(
-        `SELECT id FROM auth.users WHERE email = $1`,
-        [USER_EMAIL]
-      );
+      const { rows } = await client.query(`SELECT id FROM auth.users WHERE email = $1`, [
+        USER_EMAIL,
+      ]);
 
       if (rows.length === 0) {
         console.error(`❌ User with email ${USER_EMAIL} not found`);
@@ -61,7 +61,7 @@ async function configureSuperAdmin() {
     }
 
     // Method 1: Set in user metadata (billing_accounts may not have metadata column)
-    console.log('📝 Setting super admin role in user metadata...');
+    console.log("📝 Setting super admin role in user metadata...");
 
     // Set in user metadata (primary method)
     const { rowCount: userCount } = await client.query(
@@ -76,7 +76,7 @@ async function configureSuperAdmin() {
     );
 
     console.log(`✅ Updated ${userCount} user(s)\n`);
-    
+
     // Also try to add metadata column to billing_accounts if it doesn't exist
     try {
       await client.query(`
@@ -90,7 +90,7 @@ async function configureSuperAdmin() {
           END IF;
         END $$;
       `);
-      
+
       // Now set in billing_account metadata too
       const { rowCount: billingCount } = await client.query(
         `UPDATE billing_accounts
@@ -102,16 +102,16 @@ async function configureSuperAdmin() {
          WHERE user_id = $1`,
         [userId]
       );
-      
+
       if (billingCount > 0) {
         console.log(`✅ Also updated ${billingCount} billing_account(s) metadata\n`);
       }
     } catch (error) {
-      console.log('⚠️  Could not update billing_account metadata (column may not exist)\n');
+      console.log("⚠️  Could not update billing_account metadata (column may not exist)\n");
     }
 
     // Verify configuration
-    console.log('🔍 Verifying super admin configuration...');
+    console.log("🔍 Verifying super admin configuration...");
     const { rows: verifyRows } = await client.query(
       `SELECT 
          ba.metadata->>'role' as billing_role,
@@ -127,23 +127,23 @@ async function configureSuperAdmin() {
       const verification = verifyRows[0];
       console.log(`\n📊 Verification Results:`);
       console.log(`   Email: ${verification.email}`);
-      console.log(`   Billing Account Role: ${verification.billing_role || 'not set'}`);
-      console.log(`   User Metadata Role: ${verification.user_role || 'not set'}`);
-      
-      if (verification.billing_role === 'SUPER_ADMIN' || verification.user_role === 'SUPER_ADMIN') {
+      console.log(`   Billing Account Role: ${verification.billing_role || "not set"}`);
+      console.log(`   User Metadata Role: ${verification.user_role || "not set"}`);
+
+      if (verification.billing_role === "SUPER_ADMIN" || verification.user_role === "SUPER_ADMIN") {
         console.log(`\n✅ Super admin successfully configured!`);
       } else {
         console.log(`\n⚠️  Super admin role not found in verification. Please check manually.`);
       }
     }
 
-    console.log('\n🎉 Configuration complete!');
+    console.log("\n🎉 Configuration complete!");
   } catch (error) {
-    console.error('❌ Configuration failed:', error);
+    console.error("❌ Configuration failed:", error);
     process.exit(1);
   } finally {
     await client.end();
-    console.log('\n🔌 Database connection closed');
+    console.log("\n🔌 Database connection closed");
   }
 }
 

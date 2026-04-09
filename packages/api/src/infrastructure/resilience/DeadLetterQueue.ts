@@ -3,8 +3,8 @@
  * Handles irrecoverable jobs and events
  */
 
-import { Pool } from 'pg';
-import { pool } from '../../db';
+import { Pool } from "pg";
+import { pool } from "../../db";
 
 export interface DeadLetterEntry {
   id: string;
@@ -29,7 +29,7 @@ export class DeadLetterQueue {
   /**
    * Add an entry to the dead letter queue
    */
-  async addEntry(entry: Omit<DeadLetterEntry, 'id' | 'created_at'>): Promise<string> {
+  async addEntry(entry: Omit<DeadLetterEntry, "id" | "created_at">): Promise<string> {
     const id = crypto.randomUUID();
     const query = `
       INSERT INTO dead_letter_queue (
@@ -129,10 +129,7 @@ export class DeadLetterQueue {
   /**
    * Resolve an entry
    */
-  async resolveEntry(
-    id: string,
-    resolutionNotes?: string
-  ): Promise<void> {
+  async resolveEntry(id: string, resolutionNotes?: string): Promise<void> {
     const query = `
       UPDATE dead_letter_queue
       SET 
@@ -147,10 +144,7 @@ export class DeadLetterQueue {
   /**
    * Get entries by tenant
    */
-  async getEntriesByTenant(
-    tenantId: string,
-    limit: number = 100
-  ): Promise<DeadLetterEntry[]> {
+  async getEntriesByTenant(tenantId: string, limit: number = 100): Promise<DeadLetterEntry[]> {
     const query = `
       SELECT 
         id,

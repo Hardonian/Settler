@@ -63,7 +63,7 @@ export interface AuditLoggingPolicy {
   /** Enable audit logging */
   enabled: boolean;
   /** Log level */
-  level: 'none' | 'minimal' | 'standard' | 'verbose';
+  level: "none" | "minimal" | "standard" | "verbose";
   /** Events to log */
   events?: AuditEvent[];
   /** PII masking */
@@ -71,15 +71,15 @@ export interface AuditLoggingPolicy {
 }
 
 export type AuditEvent =
-  | 'transaction.created'
-  | 'transaction.updated'
-  | 'settlement.created'
-  | 'exception.created'
-  | 'exception.resolved'
-  | 'rule.executed'
-  | 'config.compiled'
-  | 'export.generated'
-  | 'data.accessed';
+  | "transaction.created"
+  | "transaction.updated"
+  | "settlement.created"
+  | "exception.created"
+  | "exception.resolved"
+  | "rule.executed"
+  | "config.compiled"
+  | "export.generated"
+  | "data.accessed";
 
 export interface RateLimitingPolicy {
   /** Requests per minute */
@@ -104,7 +104,7 @@ export interface AuditLogEntry {
   userAgent?: string;
   resource?: string;
   action: string;
-  result: 'success' | 'failure' | 'warning';
+  result: "success" | "failure" | "warning";
   metadata?: Record<string, unknown>;
   piiMasked?: boolean;
 }

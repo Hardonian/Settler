@@ -9,6 +9,7 @@ Complete marketing and developer resources for Settler Reconciliation-as-a-Servi
 ### Developer Resources
 
 #### Core Documentation
+
 - **[API Reference (Comprehensive)](./api-reference-comprehensive.md)** — Complete API reference with every endpoint, parameter, and response type
 - **[Developer Toolkit](./developer-toolkit.md)** — SDKs, CLI, Playground, and development tools
 - **[Onboarding Experience](./onboarding-experience.md)** — Step-by-step guide from signup to production
@@ -16,16 +17,19 @@ Complete marketing and developer resources for Settler Reconciliation-as-a-Servi
 - **[Examples & Recipes](./examples-recipes.md)** — Real-world examples and code recipes for common scenarios
 
 #### Customer-Facing Content
+
 - **[npm README + Quickstart](./npm-readme-quickstart.md)** — Enhanced npm package README with quick start guide
 - **[Website Getting Started](./website-getting-started.md)** — Content for website "Getting Started" page
 - **[Website FAQ](./website-faq.md)** — Comprehensive FAQ covering all aspects of Settler
 
 #### Onboarding & Communication
+
 - **[Onboarding Email (Developer)](./onboarding-email-developer.md)** — Welcome email template for developers
 - **[Onboarding Email (CTO)](./onboarding-email-cto.md)** — Strategic welcome email for CTOs
 - **[Customer Journey Map](./customer-journey-map.md)** — Detailed customer journey from awareness to enterprise
 
 #### Support & Community
+
 - **[Support Interactions](./support-interactions.md)** — Sample support templates for billing, integration, and compliance
 - **[Social Launch Post](./social-launch-post.md)** — Launch posts for Product Hunt, Twitter, LinkedIn, Reddit, Hacker News, Indie Hackers, Dev.to
 - **[Community & OSS Contributor Guidelines](./community-oss-contributor-guidelines.md)** — Comprehensive guide for open source contributors
@@ -35,6 +39,7 @@ Complete marketing and developer resources for Settler Reconciliation-as-a-Servi
 ## 🎯 Quick Links
 
 ### For Developers
+
 - **Get Started:** [Onboarding Experience](./onboarding-experience.md)
 - **API Reference:** [API Reference](./api-reference-comprehensive.md)
 - **SDK Documentation:** [Developer Toolkit](./developer-toolkit.md)
@@ -42,16 +47,19 @@ Complete marketing and developer resources for Settler Reconciliation-as-a-Servi
 - **Best Practices:** [API Best Practices](./api-best-practices.md)
 
 ### For Marketers
+
 - **Website Content:** [Getting Started](./website-getting-started.md) | [FAQ](./website-faq.md)
 - **Email Templates:** [Developer Email](./onboarding-email-developer.md) | [CTO Email](./onboarding-email-cto.md)
 - **Social Media:** [Launch Posts](./social-launch-post.md)
 - **Customer Journey:** [Journey Map](./customer-journey-map.md)
 
 ### For Support Teams
+
 - **Support Templates:** [Support Interactions](./support-interactions.md)
 - **FAQ:** [Website FAQ](./website-faq.md)
 
 ### For Community Managers
+
 - **Contributor Guide:** [OSS Guidelines](./community-oss-contributor-guidelines.md)
 - **Social Posts:** [Launch Posts](./social-launch-post.md)
 
@@ -85,6 +93,7 @@ Complete marketing and developer resources for Settler Reconciliation-as-a-Servi
 ### Developer-Focused (Resend-Style DX)
 
 All developer documentation follows Resend's philosophy:
+
 - **Dead-simple onboarding** — 5-minute quick start
 - **Comprehensive API reference** — Every endpoint documented
 - **TypeScript-first** — Full type safety and IntelliSense
@@ -93,6 +102,7 @@ All developer documentation follows Resend's philosophy:
 - **Best practices** — Security, performance, error handling
 
 **Key Files:**
+
 - `api-reference-comprehensive.md` — Complete API reference
 - `developer-toolkit.md` — SDK, CLI, Playground
 - `onboarding-experience.md` — Step-by-step onboarding
@@ -102,6 +112,7 @@ All developer documentation follows Resend's philosophy:
 ### Marketing & Customer Acquisition
 
 **Key Files:**
+
 - `npm-readme-quickstart.md` — npm package README
 - `website-getting-started.md` — Website content
 - `website-faq.md` — Comprehensive FAQ
@@ -113,6 +124,7 @@ All developer documentation follows Resend's philosophy:
 ### Support & Community
 
 **Key Files:**
+
 - `support-interactions.md` — Support templates
 - `community-oss-contributor-guidelines.md` — Contributor guide
 
@@ -185,6 +197,7 @@ All content follows these guidelines:
 ## 📞 Support
 
 **Questions about this kit?**
+
 - **Email:** marketing@settler.io
 - **Discord:** [discord.gg/settler](https://discord.gg/settler)
 - **GitHub:** [github.com/settler/settler](https://github.com/settler/settler)

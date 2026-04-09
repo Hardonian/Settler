@@ -24,6 +24,7 @@ This document defines the **quarterly narrative alignment process** to ensure al
 **Timeline:** Every 3 months (Q1, Q2, Q3, Q4)
 
 **Activities:**
+
 1. **Review Canonical Narrative:** Ensure narrative is still accurate
 2. **Audit All Materials:** Check alignment across all materials
 3. **Identify Misalignments:** Find language that doesn't align
@@ -37,6 +38,7 @@ This document defines the **quarterly narrative alignment process** to ensure al
 ### 1. Canonical Narrative Review
 
 **Questions:**
+
 - [ ] Is the canonical narrative still accurate?
 - [ ] Have product changes affected the narrative?
 - [ ] Are trust gaps still relevant?
@@ -44,6 +46,7 @@ This document defines the **quarterly narrative alignment process** to ensure al
 - [ ] Are boundaries still correct?
 
 **Actions:**
+
 - Review `/docs/CANONICAL_PRODUCT_NARRATIVE.md`
 - Update narrative if product changed
 - Update trust gaps if status changed
@@ -52,6 +55,7 @@ This document defines the **quarterly narrative alignment process** to ensure al
 ### 2. Marketing Materials Audit
 
 **Materials to Review:**
+
 - [ ] `/docs/ELEVATOR_PITCHES.md`
 - [ ] `/docs/VALUE_PROPOSITIONS.md`
 - [ ] `/docs/external/product-overview.md`
@@ -59,6 +63,7 @@ This document defines the **quarterly narrative alignment process** to ensure al
 - [ ] Website copy (landing page, pricing page, etc.)
 
 **Check for:**
+
 - [ ] "Eliminates" → should be "reduces"
 - [ ] "100%" → should be "high" or "complete" (without percentage)
 - [ ] "Never" → should be "rarely" or "designed to minimize"
@@ -67,6 +72,7 @@ This document defines the **quarterly narrative alignment process** to ensure al
 - [ ] Claims that can't be demonstrated
 
 **Actions:**
+
 - Update language to align with canonical narrative
 - Remove over-promising claims
 - Add constraints where needed
@@ -75,6 +81,7 @@ This document defines the **quarterly narrative alignment process** to ensure al
 ### 3. Documentation Audit
 
 **Materials to Review:**
+
 - [ ] `/docs/FAQ.md`
 - [ ] `/docs/USE_CASES.md`
 - [ ] `/docs/ICP_DEFINITIONS.md`
@@ -82,12 +89,14 @@ This document defines the **quarterly narrative alignment process** to ensure al
 - [ ] All `/docs/` directory files
 
 **Check for:**
+
 - [ ] Language alignment with canonical narrative
 - [ ] Trust gap status updates
 - [ ] Limitation accuracy
 - [ ] Boundary clarity
 
 **Actions:**
+
 - Update language to align with canonical narrative
 - Update trust gap status
 - Update limitations if changed
@@ -96,6 +105,7 @@ This document defines the **quarterly narrative alignment process** to ensure al
 ### 4. UI Copy Audit
 
 **Materials to Review:**
+
 - [ ] Landing page (`/packages/web/src/app/page.tsx`)
 - [ ] Pricing page (`/packages/web/src/app/pricing/page.tsx`)
 - [ ] Console UI (`/packages/web/src/app/console/`)
@@ -103,12 +113,14 @@ This document defines the **quarterly narrative alignment process** to ensure al
 - [ ] Tooltips and help text
 
 **Check for:**
+
 - [ ] Over-promising language
 - [ ] Claims that can't be demonstrated
 - [ ] Trust signal accuracy
 - [ ] Constraint clarity
 
 **Actions:**
+
 - Update UI copy to align with canonical narrative
 - Remove over-promising claims
 - Add constraints where needed
@@ -117,18 +129,21 @@ This document defines the **quarterly narrative alignment process** to ensure al
 ### 5. Sales Materials Audit
 
 **Materials to Review:**
+
 - [ ] Sales decks
 - [ ] Sales scripts
 - [ ] Email templates
 - [ ] Proposal templates
 
 **Check for:**
+
 - [ ] Language alignment with canonical narrative
 - [ ] Over-promising claims
 - [ ] Trust gap status
 - [ ] Constraint communication
 
 **Actions:**
+
 - Update sales materials to align with canonical narrative
 - Remove over-promising claims
 - Update trust gap status
@@ -141,12 +156,14 @@ This document defines the **quarterly narrative alignment process** to ensure al
 ### Language Standards
 
 **Must Align With:**
+
 - ✅ Canonical narrative (`/docs/CANONICAL_PRODUCT_NARRATIVE.md`)
 - ✅ Trust gaps (`/docs/TRUST_GAPS_RANKED.md`)
 - ✅ Known limitations (`/docs/KNOWN_LIMITATIONS.md`)
 - ✅ System guarantees (`/docs/SYSTEM_GUARANTEES.md`)
 
 **Must Avoid:**
+
 - ❌ "Eliminates" (use "reduces")
 - ❌ "100%" (use "high" or "complete" without percentage)
 - ❌ "Never" (use "rarely" or "designed to minimize")
@@ -157,12 +174,14 @@ This document defines the **quarterly narrative alignment process** to ensure al
 ### Trust Signal Standards
 
 **Must Be Accurate:**
+
 - ✅ SOC 2 status (planned vs. certified)
 - ✅ Customer references (available vs. not available)
 - ✅ Uptime SLA (best-effort vs. SLA-backed)
 - ✅ Support model (best-effort vs. SLA-backed)
 
 **Must Be Updated:**
+
 - ✅ Trust gap status (P0, P1, P2, P3)
 - ✅ Trust gap mitigation progress
 - ✅ Trust signal achievements
@@ -174,12 +193,14 @@ This document defines the **quarterly narrative alignment process** to ensure al
 ### Step 1: Preparation (Week 1)
 
 **Activities:**
+
 1. **Schedule Review Meeting:** Schedule quarterly review meeting
 2. **Gather Materials:** Collect all materials to review
 3. **Review Canonical Narrative:** Read canonical narrative
 4. **Create Review Checklist:** Use checklist above
 
 **Deliverables:**
+
 - Review meeting scheduled
 - Materials gathered
 - Review checklist created
@@ -187,12 +208,14 @@ This document defines the **quarterly narrative alignment process** to ensure al
 ### Step 2: Review Meeting (Week 1)
 
 **Activities:**
+
 1. **Review Canonical Narrative:** Discuss if narrative is still accurate
 2. **Audit Materials:** Go through checklist
 3. **Identify Misalignments:** List all misalignments
 4. **Prioritize Updates:** Prioritize updates by impact
 
 **Deliverables:**
+
 - Misalignment list
 - Prioritized update list
 - Action items assigned
@@ -200,12 +223,14 @@ This document defines the **quarterly narrative alignment process** to ensure al
 ### Step 3: Update Materials (Week 2-3)
 
 **Activities:**
+
 1. **Update Materials:** Fix misalignments
 2. **Review Updates:** Review updates for accuracy
 3. **Get Approval:** Get approval from stakeholders
 4. **Publish Updates:** Publish updated materials
 
 **Deliverables:**
+
 - Updated materials
 - Review notes
 - Approval documentation
@@ -213,12 +238,14 @@ This document defines the **quarterly narrative alignment process** to ensure al
 ### Step 4: Documentation (Week 4)
 
 **Activities:**
+
 1. **Document Changes:** Record what changed and why
 2. **Update Process:** Update process if needed
 3. **Schedule Next Review:** Schedule next quarterly review
 4. **Share Results:** Share results with team
 
 **Deliverables:**
+
 - Change log
 - Process updates
 - Next review scheduled
@@ -234,15 +261,18 @@ This document defines the **quarterly narrative alignment process** to ensure al
 **Status:** [Complete/In Progress]
 
 **Changes Made:**
+
 - [Change 1]: [Description]
 - [Change 2]: [Description]
 - [Change 3]: [Description]
 
 **Trust Gap Updates:**
+
 - [Gap 1]: [Status update]
 - [Gap 2]: [Status update]
 
 **Process Improvements:**
+
 - [Improvement 1]: [Description]
 - [Improvement 2]: [Description]
 

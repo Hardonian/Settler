@@ -1,6 +1,6 @@
 /**
  * Enterprise Dashboard Page
- * 
+ *
  * Centralized management for enterprise features:
  * - RBAC management
  * - IP allowlist
@@ -9,20 +9,20 @@
  * - API quota management
  */
 
-'use client';
+"use client";
 
-import { Suspense } from 'react';
-import { Navigation } from '@/components/Navigation';
-import { Footer } from '@/components/Footer';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { RBACManager } from '@/components/enterprise/RBACManager';
-import { IPAllowlistManager } from '@/components/enterprise/IPAllowlistManager';
-import { MultiProjectManager } from '@/components/enterprise/MultiProjectManager';
-import { UsageCalculator } from '@/components/enterprise/UsageCalculator';
-import { APIQuotaManager } from '@/components/enterprise/APIQuotaManager';
-import { Shield, Network, FolderTree, Calculator, Gauge } from 'lucide-react';
+import { Suspense } from "react";
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RBACManager } from "@/components/enterprise/RBACManager";
+import { IPAllowlistManager } from "@/components/enterprise/IPAllowlistManager";
+import { MultiProjectManager } from "@/components/enterprise/MultiProjectManager";
+import { UsageCalculator } from "@/components/enterprise/UsageCalculator";
+import { APIQuotaManager } from "@/components/enterprise/APIQuotaManager";
+import { Shield, Network, FolderTree, Calculator, Gauge } from "lucide-react";
 
 export default function EnterpriseDashboardPage() {
   return (
@@ -30,10 +30,9 @@ export default function EnterpriseDashboardPage() {
       <Navigation />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
-        <Breadcrumbs items={[
-          { label: 'Enterprise', href: '/enterprise' },
-          { label: 'Dashboard' },
-        ]} />
+        <Breadcrumbs
+          items={[{ label: "Enterprise", href: "/enterprise" }, { label: "Dashboard" }]}
+        />
 
         <div className="mt-8 mb-8">
           <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">

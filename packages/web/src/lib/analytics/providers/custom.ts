@@ -1,10 +1,10 @@
 /**
  * Custom Analytics Provider
- * 
+ *
  * Allows sending events to a custom endpoint
  */
 
-import type { AnalyticsProvider } from '../types';
+import type { AnalyticsProvider } from "../types";
 
 interface CustomProviderConfig {
   endpoint: string;
@@ -25,7 +25,7 @@ class CustomProvider implements AnalyticsProvider {
       ...config,
     };
 
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       this.startFlushTimer();
     }
   }
@@ -52,9 +52,9 @@ class CustomProvider implements AnalyticsProvider {
   private async sendEvent(type: string, data: Record<string, unknown>) {
     try {
       const response = await fetch(this.config.endpoint, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           ...this.config.headers,
         },
         body: JSON.stringify({
@@ -68,13 +68,13 @@ class CustomProvider implements AnalyticsProvider {
         console.warn(`Analytics event failed: ${response.statusText}`);
       }
     } catch (error) {
-      console.warn('Failed to send analytics event:', error);
+      console.warn("Failed to send analytics event:", error);
     }
   }
 
   trackPageView(route: string, properties?: Record<string, any>) {
     this.eventQueue.push({
-      type: 'page_view',
+      type: "page_view",
       data: { route, ...properties },
     });
 
@@ -85,7 +85,7 @@ class CustomProvider implements AnalyticsProvider {
 
   trackEvent(name: string, payload?: Record<string, any>) {
     this.eventQueue.push({
-      type: 'event',
+      type: "event",
       data: { name, ...payload },
     });
 
@@ -95,11 +95,11 @@ class CustomProvider implements AnalyticsProvider {
   }
 
   trackError(error: Error | string, metadata?: Record<string, any>) {
-    const errorMessage = typeof error === 'string' ? error : error.message;
-    const errorStack = typeof error === 'string' ? undefined : error.stack;
+    const errorMessage = typeof error === "string" ? error : error.message;
+    const errorStack = typeof error === "string" ? undefined : error.stack;
 
     this.eventQueue.push({
-      type: 'error',
+      type: "error",
       data: {
         message: errorMessage,
         stack: errorStack,
@@ -113,14 +113,14 @@ class CustomProvider implements AnalyticsProvider {
 
   identify(userId: string, traits?: Record<string, any>) {
     this.eventQueue.push({
-      type: 'identify',
+      type: "identify",
       data: { userId, traits },
     });
   }
 
   setUserProperties(properties: Record<string, any>) {
     this.eventQueue.push({
-      type: 'user_properties',
+      type: "user_properties",
       data: properties,
     });
   }
@@ -132,9 +132,7 @@ class CustomProvider implements AnalyticsProvider {
     this.eventQueue = [];
 
     // Send events in batch
-    await Promise.all(
-      events.map((event) => this.sendEvent(event.type, event.data))
-    );
+    await Promise.all(events.map((event) => this.sendEvent(event.type, event.data)));
   }
 
   init() {

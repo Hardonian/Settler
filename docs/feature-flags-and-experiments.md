@@ -41,6 +41,7 @@ The Settler platform includes a comprehensive feature flag and experiment system
 ### Types of Feature Flags
 
 #### 1. Static Flags
+
 Simple on/off flags controlled by environment or config.
 
 ```typescript
@@ -53,6 +54,7 @@ new_dashboard: {
 ```
 
 #### 2. Percentage Rollouts
+
 Gradually roll out to a percentage of users.
 
 ```typescript
@@ -66,6 +68,7 @@ advanced_matching: {
 ```
 
 #### 3. Segment-Based Flags
+
 Enable for specific user segments.
 
 ```typescript
@@ -83,11 +86,11 @@ ml_features: {
 #### Basic Usage
 
 ```tsx
-import { useFeatureFlag } from '@/lib/flags';
+import { useFeatureFlag } from "@/lib/flags";
 
 function Dashboard() {
-  const isNewDashboard = useFeatureFlag('new_dashboard');
-  
+  const isNewDashboard = useFeatureFlag("new_dashboard");
+
   ifNewDashboard ? <NewDashboard /> : <LegacyDashboard />;
 }
 ```
@@ -95,11 +98,11 @@ function Dashboard() {
 #### Multiple Flags
 
 ```tsx
-import { useFeatureFlags } from '@/lib/flags';
+import { useFeatureFlags } from "@/lib/flags";
 
 function App() {
-  const flags = useFeatureFlags(['new_dashboard', 'beta_sidebar']);
-  
+  const flags = useFeatureFlags(["new_dashboard", "beta_sidebar"]);
+
   return (
     <>
       {flags.new_dashboard && <NewDashboard />}
@@ -112,12 +115,12 @@ function App() {
 #### Server-Side Usage
 
 ```typescript
-import { resolveFlag } from '@/lib/flags/resolver';
+import { resolveFlag } from "@/lib/flags/resolver";
 
 // In server component or API route
-const result = await resolveFlag('new_dashboard', {
-  userId: 'user_123',
-  segments: ['beta_testers'],
+const result = await resolveFlag("new_dashboard", {
+  userId: "user_123",
+  segments: ["beta_testers"],
 });
 
 if (result.value === true) {
@@ -145,18 +148,16 @@ NEXT_PUBLIC_FLAG_EXPERIMENT_ONBOARDING_V2=variant_a
 1. **Add to registry** (`packages/web/src/lib/flags/flags.ts`):
 
 ```typescript
-export type FlagKey =
-  | 'new_dashboard'
-  | 'your_new_flag'; // Add here
+export type FlagKey = "new_dashboard" | "your_new_flag"; // Add here
 
 export const FLAG_REGISTRY: Record<FlagKey, FlagMetadata> = {
   // ... existing flags
-  
+
   your_new_flag: {
-    key: 'your_new_flag',
-    description: 'Description of your flag',
+    key: "your_new_flag",
+    description: "Description of your flag",
     defaultValue: false,
-    rolloutType: 'static', // or 'percentage', 'segment'
+    rolloutType: "static", // or 'percentage', 'segment'
     environments: {
       development: true,
       staging: false,
@@ -169,7 +170,7 @@ export const FLAG_REGISTRY: Record<FlagKey, FlagMetadata> = {
 2. **Use in components**:
 
 ```tsx
-const enabled = useFeatureFlag('your_new_flag');
+const enabled = useFeatureFlag("your_new_flag");
 ```
 
 ---
@@ -208,13 +209,13 @@ experiment_onboarding_v2: {
 #### Basic Usage
 
 ```tsx
-import { useExperimentVariant } from '@/lib/flags';
+import { useExperimentVariant } from "@/lib/flags";
 
 function OnboardingFlow() {
-  const variant = useExperimentVariant('experiment_onboarding_v2');
-  
-  if (variant === 'variant_a') return <OnboardingV2A />;
-  if (variant === 'variant_b') return <OnboardingV2B />;
+  const variant = useExperimentVariant("experiment_onboarding_v2");
+
+  if (variant === "variant_a") return <OnboardingV2A />;
+  if (variant === "variant_b") return <OnboardingV2B />;
   return <OnboardingControl />;
 }
 ```
@@ -222,36 +223,36 @@ function OnboardingFlow() {
 #### With Exposure Tracking
 
 ```tsx
-import { useExperiment } from '@/lib/flags';
+import { useExperiment } from "@/lib/flags";
 
 function OnboardingPage() {
-  const { variant, trackExposure } = useExperiment('experiment_onboarding_v2');
-  
+  const { variant, trackExposure } = useExperiment("experiment_onboarding_v2");
+
   useEffect(() => {
     // Track when user sees experiment
-    trackExposure('page_view');
+    trackExposure("page_view");
   }, [trackExposure]);
-  
+
   // Render based on variant
-  return variant === 'variant_a' ? <VariantA /> : <Control />;
+  return variant === "variant_a" ? <VariantA /> : <Control />;
 }
 ```
 
 #### Tracking Conversions
 
 ```tsx
-import { useExperimentConversion } from '@/lib/flags';
+import { useExperimentConversion } from "@/lib/flags";
 
 function CheckoutFlow() {
-  const { trackConversion, variant } = useExperimentConversion('experiment_checkout_v2');
-  
+  const { trackConversion, variant } = useExperimentConversion("experiment_checkout_v2");
+
   const handleComplete = () => {
     // Track conversion with experiment context
-    trackConversion('checkout_completed', {
+    trackConversion("checkout_completed", {
       value: 99.99,
     });
   };
-  
+
   return <CheckoutForm onComplete={handleComplete} />;
 }
 ```
@@ -277,7 +278,7 @@ experiment_your_test: {
 2. **Use in component**:
 
 ```tsx
-const variant = useExperimentVariant('experiment_your_test');
+const variant = useExperimentVariant("experiment_your_test");
 ```
 
 3. **Track events** (automatically tracked via hooks):
@@ -299,7 +300,7 @@ function Dashboard() {
 
 // After
 function Dashboard() {
-  const isNewDashboard = useFeatureFlag('new_dashboard');
+  const isNewDashboard = useFeatureFlag("new_dashboard");
   return isNewDashboard ? <NewDashboard /> : <LegacyDashboard />;
 }
 ```
@@ -355,11 +356,11 @@ Once feature is stable and rolled out to 100%:
 
 ```tsx
 // ✅ Good
-const isEnabled = useFeatureFlag('new_feature');
+const isEnabled = useFeatureFlag("new_feature");
 return isEnabled ? <NewFeature /> : <LegacyFeature />;
 
 // ❌ Bad - No fallback
-const isEnabled = useFeatureFlag('new_feature');
+const isEnabled = useFeatureFlag("new_feature");
 if (!isEnabled) return null; // User sees nothing!
 ```
 
@@ -369,10 +370,10 @@ Experiments automatically use stable assignment. Don't override:
 
 ```tsx
 // ✅ Good - Uses stable assignment
-const variant = useExperimentVariant('experiment_test');
+const variant = useExperimentVariant("experiment_test");
 
 // ❌ Bad - Random assignment breaks analysis
-const variant = Math.random() > 0.5 ? 'variant_a' : 'control';
+const variant = Math.random() > 0.5 ? "variant_a" : "control";
 ```
 
 ### 3. Track Experiment Exposure
@@ -380,10 +381,10 @@ const variant = Math.random() > 0.5 ? 'variant_a' : 'control';
 Always track when users see experiments:
 
 ```tsx
-const { trackExposure } = useExperiment('experiment_test');
+const { trackExposure } = useExperiment("experiment_test");
 
 useEffect(() => {
-  trackExposure('page_view');
+  trackExposure("page_view");
 }, []);
 ```
 
@@ -393,11 +394,11 @@ Conversion events automatically include experiment context when using hooks:
 
 ```tsx
 // ✅ Good - Includes experiment context
-const { trackConversion } = useExperimentConversion('experiment_checkout');
-trackConversion('checkout_completed', { value: 99.99 });
+const { trackConversion } = useExperimentConversion("experiment_checkout");
+trackConversion("checkout_completed", { value: 99.99 });
 
 // ❌ Bad - Missing experiment context
-trackEvent('checkout_completed', { value: 99.99 });
+trackEvent("checkout_completed", { value: 99.99 });
 ```
 
 ### 5. Test Flags Locally
@@ -433,11 +434,13 @@ Remove flags after features are fully rolled out:
 ### Flag Always Returns False
 
 **Possible Causes:**
+
 1. Flag not defined in registry
 2. Environment override set to false
 3. User not in rollout percentage/segment
 
 **Solutions:**
+
 - Check flag definition in `flags.ts`
 - Check environment variables
 - Verify user context (userId, segments)
@@ -446,7 +449,8 @@ Remove flags after features are fully rolled out:
 
 **Cause:** User ID changed or hash algorithm issue
 
-**Solution:** 
+**Solution:**
+
 - Ensure user ID is stable
 - Check that same userId is used consistently
 - Verify hash function hasn't changed
@@ -454,11 +458,13 @@ Remove flags after features are fully rolled out:
 ### Flag Not Updating
 
 **Possible Causes:**
+
 1. Cached value
 2. Environment variable not reloaded
 3. Remote config not fetched
 
 **Solutions:**
+
 - Clear browser cache
 - Restart dev server
 - Check remote config connection
@@ -468,6 +474,7 @@ Remove flags after features are fully rolled out:
 **Cause:** Too many flag checks
 
 **Solution:**
+
 - Batch flag checks with `useFeatureFlags()`
 - Cache flag values when possible
 - Use server-side resolution for initial render
@@ -490,11 +497,11 @@ Add custom segment logic:
 
 ```typescript
 const userContext: UserContext = {
-  userId: 'user_123',
-  segments: ['beta_testers', 'enterprise'],
+  userId: "user_123",
+  segments: ["beta_testers", "enterprise"],
   attributes: {
-    plan: 'pro',
-    signupDate: '2024-01-01',
+    plan: "pro",
+    signupDate: "2024-01-01",
   },
 };
 ```
@@ -505,10 +512,10 @@ Emergency disable all flags:
 
 ```typescript
 // In resolver.ts
-const KILL_SWITCH_ENABLED = process.env.FLAG_KILL_SWITCH === 'true';
+const KILL_SWITCH_ENABLED = process.env.FLAG_KILL_SWITCH === "true";
 
 if (KILL_SWITCH_ENABLED) {
-  return { value: false, source: 'kill_switch' };
+  return { value: false, source: "kill_switch" };
 }
 ```
 
@@ -520,17 +527,9 @@ if (KILL_SWITCH_ENABLED) {
 
 ```tsx
 function Dashboard() {
-  const isNewDashboard = useFeatureFlag('new_dashboard');
-  
-  return (
-    <div>
-      {isNewDashboard ? (
-        <NewDashboard />
-      ) : (
-        <LegacyDashboard />
-      )}
-    </div>
-  );
+  const isNewDashboard = useFeatureFlag("new_dashboard");
+
+  return <div>{isNewDashboard ? <NewDashboard /> : <LegacyDashboard />}</div>;
 }
 ```
 
@@ -538,17 +537,17 @@ function Dashboard() {
 
 ```tsx
 function OnboardingPage() {
-  const { variant, trackExposure } = useExperiment('experiment_onboarding_v2');
-  
+  const { variant, trackExposure } = useExperiment("experiment_onboarding_v2");
+
   useEffect(() => {
-    trackExposure('page_view');
+    trackExposure("page_view");
   }, [trackExposure]);
-  
+
   return (
     <>
-      {variant === 'variant_a' && <OnboardingV2A />}
-      {variant === 'variant_b' && <OnboardingV2B />}
-      {variant === 'control' && <OnboardingControl />}
+      {variant === "variant_a" && <OnboardingV2A />}
+      {variant === "variant_b" && <OnboardingV2B />}
+      {variant === "control" && <OnboardingControl />}
     </>
   );
 }
@@ -558,16 +557,16 @@ function OnboardingPage() {
 
 ```tsx
 function Feature() {
-  const isEnabled = useFeatureFlag('new_feature');
-  
+  const isEnabled = useFeatureFlag("new_feature");
+
   // Flag starts at 0% rollout (disabled)
   // Gradually increase to 10%, 50%, 100%
   // Monitor metrics at each stage
-  
+
   if (!isEnabled) {
     return <LegacyFeature />;
   }
-  
+
   return <NewFeature />;
 }
 ```

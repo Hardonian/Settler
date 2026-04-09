@@ -16,10 +16,6 @@ export const metadata: Metadata = generateMetadata({
   canonical: "https://settler.dev/support",
 });
 
-export default function SupportLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function SupportLayout({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }

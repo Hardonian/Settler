@@ -14,6 +14,7 @@ Hi [Name],
 Sharing the demo account details below — takes about 5 minutes to get a feel for it.
 
 **Demo access:**
+
 - URL: [your app URL]/app
 - Email: viewer@settler.dev
 - Password: [current password]
@@ -51,12 +52,14 @@ Hi [Name],
 Thanks for the time today. Quick recap and next steps:
 
 **What you saw:**
+
 - [Customize: "Monthly Stripe-to-bank reconciliation automated end-to-end"]
 - [Customize: "Exception surfacing for fuzzy matches and unmatched bank charges"]
 - [Customize: "Connector health monitoring — the degraded Shopify example"]
 - [Customize: "Full audit trail suitable for compliance review"]
 
 **Your main questions / what we discussed:**
+
 - [Insert key topics from the call]
 
 **Suggested next step:**
@@ -67,6 +70,7 @@ Thanks for the time today. Quick recap and next steps:
 - C: I'll send over the API docs and SDK reference for your engineering team to review
 
 **Reference materials:**
+
 - One-page product summary: [link or attach docs/demo/PRODUCT_SNAPSHOT.md]
 - Value summary: [link or attach docs/demo/VALUE_SUMMARY.md]
 - FAQ: [link or attach docs/demo/FAQ.md]
@@ -89,5 +93,5 @@ Happy to answer questions or jump on a quick call if useful.
 
 ---
 
-*Internal: After sending, log the lead in your CRM with demo access date.
-Rotate viewer@settler.dev password and run `pnpm demo:reset` if needed.*
+_Internal: After sending, log the lead in your CRM with demo access date.
+Rotate viewer@settler.dev password and run `pnpm demo:reset` if needed._

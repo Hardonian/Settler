@@ -1,11 +1,11 @@
 /**
  * Receipt Data Validation
- * 
+ *
  * Validates receipt data before saving to database.
  * Prevents malformed data and ensures data integrity.
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * Receipt item validation schema
@@ -44,7 +44,7 @@ export function validateReceipt(data: unknown): {
 } {
   try {
     const result = receiptSchema.safeParse(data);
-    
+
     if (result.success) {
       return {
         valid: true,
@@ -71,14 +71,14 @@ export function sanitizeReceiptData(data: Record<string, unknown>): Record<strin
   const sanitized: Record<string, unknown> = {};
 
   // Vendor
-  if (typeof data.vendor === 'string' && data.vendor.length > 0 && data.vendor.length <= 255) {
+  if (typeof data.vendor === "string" && data.vendor.length > 0 && data.vendor.length <= 255) {
     sanitized.vendor = data.vendor.trim();
   }
 
   // Date
   if (data.date instanceof Date) {
     sanitized.date = data.date;
-  } else if (typeof data.date === 'string') {
+  } else if (typeof data.date === "string") {
     const parsed = new Date(data.date);
     if (!isNaN(parsed.getTime())) {
       sanitized.date = parsed;
@@ -86,17 +86,17 @@ export function sanitizeReceiptData(data: Record<string, unknown>): Record<strin
   }
 
   // Currency (ISO 4217, 3 characters)
-  if (typeof data.currency === 'string' && /^[A-Z]{3}$/.test(data.currency)) {
+  if (typeof data.currency === "string" && /^[A-Z]{3}$/.test(data.currency)) {
     sanitized.currency = data.currency.toUpperCase();
   }
 
   // Numeric fields
-  const numericFields = ['subtotal', 'tax', 'total', 'confidenceScore'];
+  const numericFields = ["subtotal", "tax", "total", "confidenceScore"];
   for (const field of numericFields) {
     if (data[field] !== undefined && data[field] !== null) {
-      const num = typeof data[field] === 'string' ? parseFloat(data[field]) : Number(data[field]);
+      const num = typeof data[field] === "string" ? parseFloat(data[field]) : Number(data[field]);
       if (!isNaN(num) && num >= 0) {
-        if (field === 'confidenceScore') {
+        if (field === "confidenceScore") {
           sanitized[field] = Math.min(1, Math.max(0, num));
         } else {
           sanitized[field] = num;
@@ -106,39 +106,44 @@ export function sanitizeReceiptData(data: Record<string, unknown>): Record<strin
   }
 
   // Payment method
-  if (typeof data.paymentMethod === 'string' && data.paymentMethod.length > 0 && data.paymentMethod.length <= 100) {
+  if (
+    typeof data.paymentMethod === "string" &&
+    data.paymentMethod.length > 0 &&
+    data.paymentMethod.length <= 100
+  ) {
     sanitized.paymentMethod = data.paymentMethod.trim();
   }
 
   // Raw text
-  if (typeof data.rawText === 'string') {
+  if (typeof data.rawText === "string") {
     sanitized.rawText = data.rawText.substring(0, 10000); // Limit to 10KB
   }
 
   // Items
   if (Array.isArray(data.items)) {
     sanitized.items = data.items
-      .filter((item): item is Record<string, unknown> => typeof item === 'object' && item !== null)
+      .filter((item): item is Record<string, unknown> => typeof item === "object" && item !== null)
       .map((item) => {
         const sanitizedItem: Record<string, unknown> = {};
-        
-        if (typeof item.name === 'string' && item.name.length > 0 && item.name.length <= 255) {
+
+        if (typeof item.name === "string" && item.name.length > 0 && item.name.length <= 255) {
           sanitizedItem.name = item.name.trim();
         } else {
           return null; // Invalid item
         }
 
-        const numericItemFields = ['quantity', 'unitPrice', 'lineTotal'];
+        const numericItemFields = ["quantity", "unitPrice", "lineTotal"];
         for (const field of numericItemFields) {
           if (item[field] !== undefined && item[field] !== null) {
-            const num = typeof item[field] === 'string' ? parseFloat(item[field]) : Number(item[field]);
+            const num =
+              typeof item[field] === "string" ? parseFloat(item[field]) : Number(item[field]);
             if (!isNaN(num) && num >= 0) {
               sanitizedItem[field] = num;
             }
           }
         }
 
-        if (typeof item.category === 'string' && item.category.length <= 100) {
+        if (typeof item.category === "string" && item.category.length <= 100) {
           sanitizedItem.category = item.category.trim();
         }
 
@@ -162,7 +167,12 @@ export function validateReceiptTotals(receipt: {
   const errors: string[] = [];
 
   // If we have items, sum of line totals should approximately equal subtotal
-  if (receipt.items && receipt.items.length > 0 && receipt.subtotal !== null && receipt.subtotal !== undefined) {
+  if (
+    receipt.items &&
+    receipt.items.length > 0 &&
+    receipt.subtotal !== null &&
+    receipt.subtotal !== undefined
+  ) {
     const itemsTotal = receipt.items.reduce((sum: number, item: any) => {
       return sum + (item.lineTotal || 0);
     }, 0);
@@ -177,9 +187,12 @@ export function validateReceiptTotals(receipt: {
 
   // If we have subtotal and tax, they should sum to total
   if (
-    receipt.subtotal !== null && receipt.subtotal !== undefined &&
-    receipt.tax !== null && receipt.tax !== undefined &&
-    receipt.total !== null && receipt.total !== undefined
+    receipt.subtotal !== null &&
+    receipt.subtotal !== undefined &&
+    receipt.tax !== null &&
+    receipt.tax !== undefined &&
+    receipt.total !== null &&
+    receipt.total !== undefined
   ) {
     const calculatedTotal = receipt.subtotal + receipt.tax;
     const difference = Math.abs(calculatedTotal - receipt.total);

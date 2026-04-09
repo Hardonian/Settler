@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { X, Download } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { AnimatePresence, motion } from 'framer-motion';
+import { useState, useEffect } from "react";
+import { X, Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { AnimatePresence, motion } from "framer-motion";
 
 export function PwaInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -18,10 +18,10 @@ export function PwaInstallPrompt() {
       setIsVisible(true);
     };
 
-    window.addEventListener('beforeinstallprompt', handler);
+    window.addEventListener("beforeinstallprompt", handler);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handler);
+      window.removeEventListener("beforeinstallprompt", handler);
     };
   }, []);
 
@@ -30,8 +30,8 @@ export function PwaInstallPrompt() {
 
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    
-    if (outcome === 'accepted') {
+
+    if (outcome === "accepted") {
       setIsVisible(false);
     }
     setDeferredPrompt(null);
@@ -54,20 +54,22 @@ export function PwaInstallPrompt() {
         aria-labelledby="install-title"
       >
         <div className="flex-1 mr-4">
-          <h3 id="install-title" className="font-semibold text-sm mb-1">Install Settler</h3>
+          <h3 id="install-title" className="font-semibold text-sm mb-1">
+            Install Settler
+          </h3>
           <p className="text-xs text-slate-300">Add to your home screen for the best experience.</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button 
-            size="sm" 
-            variant="secondary" 
+          <Button
+            size="sm"
+            variant="secondary"
             onClick={handleInstallClick}
             className="h-8 text-xs bg-blue-600 text-white hover:bg-blue-700 border-none"
           >
             <Download className="w-3 h-3 mr-1.5" />
             Install
           </Button>
-          <button 
+          <button
             onClick={handleDismiss}
             className="p-1 hover:bg-slate-800 rounded-full transition-colors"
             aria-label="Dismiss install prompt"

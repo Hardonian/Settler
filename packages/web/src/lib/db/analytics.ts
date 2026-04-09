@@ -17,7 +17,7 @@ export interface AnalyticsEvent {
 }
 
 export interface SDKDownloadEvent extends AnalyticsEvent {
-  type: 'sdk_download';
+  type: "sdk_download";
   data: {
     packageName: string;
     version: string;
@@ -26,7 +26,7 @@ export interface SDKDownloadEvent extends AnalyticsEvent {
 }
 
 export interface PlaygroundUsageEvent extends AnalyticsEvent {
-  type: 'playground_usage';
+  type: "playground_usage";
   data: {
     feature: string;
     action: string;
@@ -36,7 +36,7 @@ export interface PlaygroundUsageEvent extends AnalyticsEvent {
 }
 
 export interface ChatbotEvent extends AnalyticsEvent {
-  type: 'chatbot_interaction';
+  type: "chatbot_interaction";
   data: {
     interactionType: string;
     messageLength?: number;
@@ -48,7 +48,7 @@ export interface ChatbotEvent extends AnalyticsEvent {
  * Save analytics event to database
  */
 export async function saveAnalyticsEvent(event: AnalyticsEvent): Promise<void> {
-  const { saveAnalyticsEvent: saveEvent } = await import('./prisma-analytics');
+  const { saveAnalyticsEvent: saveEvent } = await import("./prisma-analytics");
   await saveEvent({
     type: event.type,
     data: event.data,
@@ -70,7 +70,7 @@ export async function getSDKDownloadStats(
   monthly: number;
   byPackage: Record<string, number>;
 }> {
-  const { getSDKDownloadStats: getStats } = await import('./prisma-analytics');
+  const { getSDKDownloadStats: getStats } = await import("./prisma-analytics");
   return await getStats(startDate, endDate);
 }
 
@@ -82,7 +82,7 @@ export async function getPlaygroundStats(): Promise<{
   activeUsers: number;
   usageByFeature: Record<string, number>;
 }> {
-  const { getPlaygroundStats: getStats } = await import('./prisma-analytics');
+  const { getPlaygroundStats: getStats } = await import("./prisma-analytics");
   return await getStats();
 }
 
@@ -95,6 +95,6 @@ export async function getChatbotAnalytics(): Promise<{
   satisfactionScore: number;
   popularQuestions: Array<{ question: string; count: number }>;
 }> {
-  const { getChatbotAnalytics: getAnalytics } = await import('./prisma-analytics');
+  const { getChatbotAnalytics: getAnalytics } = await import("./prisma-analytics");
   return await getAnalytics();
 }

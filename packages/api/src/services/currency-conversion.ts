@@ -28,7 +28,7 @@ export async function getExchangeRate(
     }
 
     const dateStr = date.toISOString().split("T")[0] as string;
-    
+
     // Try exact date first
     let result = await query<{ rate: number }>(
       `SELECT rate FROM currency_rates
@@ -88,16 +88,16 @@ export async function addExchangeRate(
        ON CONFLICT (from_currency, to_currency, date, source) DO UPDATE
        SET rate = EXCLUDED.rate
        RETURNING id`,
-      [
-        fromCurrency,
-        toCurrency,
-        rate,
-        date.toISOString().split("T")[0] as string,
-        source,
-      ] as (string | number | boolean | null | Date)[]
+      [fromCurrency, toCurrency, rate, date.toISOString().split("T")[0] as string, source] as (
+        | string
+        | number
+        | boolean
+        | null
+        | Date
+      )[]
     );
 
-    const rateId = result[0]?.id || '';
+    const rateId = result[0]?.id || "";
     logInfo("Exchange rate added", { rateId, fromCurrency, toCurrency, rate, date });
     return rateId;
   } catch (error) {
@@ -189,7 +189,7 @@ export async function fetchExchangeRatesFromAPI(
     // Use exchangerate-api.com (free tier: 1,500 requests/month)
     // Alternative: fixer.io, currencylayer.com, openexchangerates.org
     const apiKey = process.env.EXCHANGE_RATE_API_KEY;
-    const apiProvider = process.env.EXCHANGE_RATE_PROVIDER || 'exchangerate-api';
+    const apiProvider = process.env.EXCHANGE_RATE_PROVIDER || "exchangerate-api";
 
     if (!apiKey) {
       logInfo("Exchange rate API key not configured", { fromCurrency, toCurrency });
@@ -197,17 +197,17 @@ export async function fetchExchangeRatesFromAPI(
     }
 
     // Format date as YYYY-MM-DD
-    const dateStr = date.toISOString().split('T')[0];
+    const dateStr = date.toISOString().split("T")[0];
 
     let rate: number | null = null;
 
-    if (apiProvider === 'exchangerate-api' || apiProvider === 'exchangerate-api.com') {
+    if (apiProvider === "exchangerate-api" || apiProvider === "exchangerate-api.com") {
       // exchangerate-api.com (free tier)
       const url = `https://api.exchangerate-api.com/v4/historical/${fromCurrency.toUpperCase()}/${dateStr}`;
-      
+
       const response = await fetch(url, {
         headers: {
-          'Accept': 'application/json',
+          Accept: "application/json",
         },
       });
 
@@ -215,31 +215,31 @@ export async function fetchExchangeRatesFromAPI(
         throw new Error(`Exchange rate API returned ${response.status}`);
       }
 
-      const data = await response.json() as { rates?: Record<string, number> };
+      const data = (await response.json()) as { rates?: Record<string, number> };
       rate = data.rates?.[toCurrency.toUpperCase()] || null;
-    } else if (apiProvider === 'fixer.io') {
+    } else if (apiProvider === "fixer.io") {
       // Fixer.io (requires API key)
       const url = `http://data.fixer.io/${dateStr}?access_key=${apiKey}&base=${fromCurrency.toUpperCase()}&symbols=${toCurrency.toUpperCase()}`;
-      
+
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`Fixer.io API returned ${response.status}`);
       }
 
-      const data = await response.json() as { success?: boolean; rates?: Record<string, number> };
+      const data = (await response.json()) as { success?: boolean; rates?: Record<string, number> };
       if (data.success && data.rates) {
         rate = data.rates[toCurrency.toUpperCase()] || null;
       }
-    } else if (apiProvider === 'openexchangerates') {
+    } else if (apiProvider === "openexchangerates") {
       // Open Exchange Rates (requires API key)
       const url = `https://openexchangerates.org/api/historical/${dateStr}.json?app_id=${apiKey}&base=${fromCurrency.toUpperCase()}&symbols=${toCurrency.toUpperCase()}`;
-      
+
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`Open Exchange Rates API returned ${response.status}`);
       }
 
-      const data = await response.json() as { rates?: Record<string, number> };
+      const data = (await response.json()) as { rates?: Record<string, number> };
       rate = data.rates?.[toCurrency.toUpperCase()] || null;
     }
 

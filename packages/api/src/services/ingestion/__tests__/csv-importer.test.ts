@@ -195,8 +195,6 @@ describe("CSV Importer", () => {
       ).toBe(true);
     });
 
-
-
     it("should include remediation hints and contract metadata for blocking diagnostics", () => {
       const csv = `Memo,Total
 Subscription payment,100`;
@@ -213,7 +211,9 @@ Subscription payment,100`;
         (d) => d.code === "required_mapping_missing" && d.field === "date"
       );
       expect(missingDateDiagnostic?.remediation).toBeDefined();
-      expect(preview.contract.schemaUri).toContain("contracts/ingestion/import-workbench.schema.json");
+      expect(preview.contract.schemaUri).toContain(
+        "contracts/ingestion/import-workbench.schema.json"
+      );
       expect(preview.contract.version).toBe("1.0.0");
     });
 

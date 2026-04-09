@@ -1,11 +1,11 @@
 /**
  * Workflow Reference Promotion Service
- * 
+ *
  * Actively tracks and promotes external references to Settler entities.
  * This creates workflow lock-in by embedding Settler into operational processes.
- * 
+ *
  * PHASE: Workflow Lock-In Reinforcement
- * 
+ *
  * Based on narrative compression requirements:
  * - Actively encourage customers to reference Settler IDs in external systems
  * - Track external references to measure switching friction
@@ -13,9 +13,9 @@
  * - Generate stable identifiers for external use
  */
 
-import { logError, logInfo } from '../../utils/logger';
-import { workflowEntanglementService } from '../workflow-entanglement';
-import { query } from '../../db';
+import { logError, logInfo } from "../../utils/logger";
+import { workflowEntanglementService } from "../workflow-entanglement";
+import { query } from "../../db";
 
 export interface WorkflowReferencePromotion {
   tenantId: string;
@@ -23,9 +23,9 @@ export interface WorkflowReferencePromotion {
   entityId: string;
   externalSystem: string;
   externalReference: string;
-  referenceType: 'report' | 'audit' | 'compliance' | 'finance' | 'api';
+  referenceType: "report" | "audit" | "compliance" | "finance" | "api";
   promoted: boolean;
-  promotionMethod: 'template' | 'suggestion' | 'automatic' | 'manual';
+  promotionMethod: "template" | "suggestion" | "automatic" | "manual";
 }
 
 export interface PromotionMetrics {
@@ -38,13 +38,13 @@ export interface PromotionMetrics {
 
 /**
  * Workflow Reference Promotion Service
- * 
+ *
  * Actively promotes and tracks external references to create workflow lock-in
  */
 export class WorkflowReferencePromotionService {
   /**
    * Promote external reference registration
-   * 
+   *
    * Actively encourages customers to reference Settler IDs in external systems
    */
   async promoteExternalReference(
@@ -53,8 +53,8 @@ export class WorkflowReferencePromotionService {
     entityId: string,
     externalSystem: string,
     externalReference: string,
-    referenceType: WorkflowReferencePromotion['referenceType'],
-    promotionMethod: WorkflowReferencePromotion['promotionMethod'] = 'manual'
+    referenceType: WorkflowReferencePromotion["referenceType"],
+    promotionMethod: WorkflowReferencePromotion["promotionMethod"] = "manual"
   ): Promise<WorkflowReferencePromotion> {
     try {
       // Generate stable identifier for external use
@@ -79,12 +79,11 @@ export class WorkflowReferencePromotionService {
         `SELECT id FROM billing_accounts WHERE tenant_id = $1 LIMIT 1`,
         [tenantId]
       );
-      const billingAccountId = billingAccountResult.length > 0 
-        ? (billingAccountResult[0] as { id: string }).id 
-        : null;
+      const billingAccountId =
+        billingAccountResult.length > 0 ? (billingAccountResult[0] as { id: string }).id : null;
 
       if (!billingAccountId) {
-        throw new Error('Billing account not found for tenant');
+        throw new Error("Billing account not found for tenant");
       }
 
       await query(
@@ -109,7 +108,7 @@ export class WorkflowReferencePromotionService {
         ]
       );
 
-      logInfo('Promoted external reference', {
+      logInfo("Promoted external reference", {
         tenantId,
         entityType,
         entityId,
@@ -129,7 +128,7 @@ export class WorkflowReferencePromotionService {
         promotionMethod,
       };
     } catch (error) {
-      logError('Failed to promote external reference', error, {
+      logError("Failed to promote external reference", error, {
         tenantId,
         entityType,
         entityId,
@@ -140,19 +139,21 @@ export class WorkflowReferencePromotionService {
 
   /**
    * Suggest external reference opportunities
-   * 
+   *
    * Analyzes reconciliation runs and suggests where external references could be created
    */
   async suggestExternalReferences(
     tenantId: string,
     reconciliationRunId: string
-  ): Promise<Array<{
-    entityType: string;
-    entityId: string;
-    suggestedSystem: string;
-    suggestedReferenceType: WorkflowReferencePromotion['referenceType'];
-    reason: string;
-  }>> {
+  ): Promise<
+    Array<{
+      entityType: string;
+      entityId: string;
+      suggestedSystem: string;
+      suggestedReferenceType: WorkflowReferencePromotion["referenceType"];
+      reason: string;
+    }>
+  > {
     try {
       // Get reconciliation run
       const runResult = await query(
@@ -175,51 +176,51 @@ export class WorkflowReferencePromotionService {
       };
 
       // Extract adapter info from metadata if available
-      const metadata = typeof run.metadata === 'string' ? JSON.parse(run.metadata) : run.metadata;
-      const targetAdapter = (metadata as { target_adapter?: string })?.target_adapter || 'unknown';
+      const metadata = typeof run.metadata === "string" ? JSON.parse(run.metadata) : run.metadata;
+      const targetAdapter = (metadata as { target_adapter?: string })?.target_adapter || "unknown";
 
       const suggestions: Array<{
         entityType: string;
         entityId: string;
         suggestedSystem: string;
-        suggestedReferenceType: WorkflowReferencePromotion['referenceType'];
+        suggestedReferenceType: WorkflowReferencePromotion["referenceType"];
         reason: string;
       }> = [];
 
       // Suggest accounting system reference if QuickBooks/Xero is target
-      if (targetAdapter === 'quickbooks' || targetAdapter === 'xero') {
+      if (targetAdapter === "quickbooks" || targetAdapter === "xero") {
         suggestions.push({
-          entityType: 'reconciliation_run',
+          entityType: "reconciliation_run",
           entityId: run.id,
-          suggestedSystem: 'accounting',
-          suggestedReferenceType: 'finance',
+          suggestedSystem: "accounting",
+          suggestedReferenceType: "finance",
           reason: `Reference this reconciliation in ${targetAdapter} for audit trail`,
         });
       }
 
       // Suggest ERP reference if NetSuite/SAP is target
-      if (targetAdapter === 'netsuite' || targetAdapter === 'sap') {
+      if (targetAdapter === "netsuite" || targetAdapter === "sap") {
         suggestions.push({
-          entityType: 'reconciliation_run',
+          entityType: "reconciliation_run",
           entityId: run.id,
-          suggestedSystem: 'erp',
-          suggestedReferenceType: 'finance',
+          suggestedSystem: "erp",
+          suggestedReferenceType: "finance",
           reason: `Reference this reconciliation in ${targetAdapter} for financial reporting`,
         });
       }
 
       // Suggest compliance reference for completed reconciliations
-      if (run.status === 'completed') {
+      if (run.status === "completed") {
         suggestions.push({
-          entityType: 'reconciliation_run',
+          entityType: "reconciliation_run",
           entityId: run.id,
-          suggestedSystem: 'compliance',
-          suggestedReferenceType: 'compliance',
-          reason: 'Reference this reconciliation for compliance audits',
+          suggestedSystem: "compliance",
+          suggestedReferenceType: "compliance",
+          reason: "Reference this reconciliation for compliance audits",
         });
       }
 
-      logInfo('Generated external reference suggestions', {
+      logInfo("Generated external reference suggestions", {
         tenantId,
         reconciliationRunId,
         suggestionCount: suggestions.length,
@@ -227,7 +228,7 @@ export class WorkflowReferencePromotionService {
 
       return suggestions;
     } catch (error) {
-      logError('Failed to suggest external references', error, {
+      logError("Failed to suggest external references", error, {
         tenantId,
         reconciliationRunId,
       });
@@ -237,15 +238,14 @@ export class WorkflowReferencePromotionService {
 
   /**
    * Get promotion metrics for tenant
-   * 
+   *
    * Measures how embedded Settler is in tenant's workflows
    */
   async getPromotionMetrics(tenantId: string): Promise<PromotionMetrics> {
     try {
       // Get workflow entanglement metrics
-      const entanglementMetrics = await workflowEntanglementService.getEntanglementMetrics(
-        tenantId
-      );
+      const entanglementMetrics =
+        await workflowEntanglementService.getEntanglementMetrics(tenantId);
 
       // Get promotion events
       const promotionResult = await query(
@@ -276,7 +276,7 @@ export class WorkflowReferencePromotionService {
         promotionScore,
       };
     } catch (error) {
-      logError('Failed to get promotion metrics', error, { tenantId });
+      logError("Failed to get promotion metrics", error, { tenantId });
       return {
         tenantId,
         totalReferences: 0,
@@ -289,7 +289,7 @@ export class WorkflowReferencePromotionService {
 
   /**
    * Auto-promote external references from workflow templates
-   * 
+   *
    * Automatically creates external references when using workflow templates
    */
   async autoPromoteFromTemplate(
@@ -313,7 +313,7 @@ export class WorkflowReferencePromotionService {
       const template = templateResult[0] as {
         external_references: Array<{
           system: string;
-          referenceType: WorkflowReferencePromotion['referenceType'];
+          referenceType: WorkflowReferencePromotion["referenceType"];
         }>;
       };
 
@@ -321,23 +321,23 @@ export class WorkflowReferencePromotionService {
       for (const ref of template.external_references || []) {
         await this.promoteExternalReference(
           tenantId,
-          'recon_job',
+          "recon_job",
           reconciliationJobId,
           ref.system,
           `template-${templateId}`,
           ref.referenceType,
-          'template'
+          "template"
         );
       }
 
-      logInfo('Auto-promoted external references from template', {
+      logInfo("Auto-promoted external references from template", {
         tenantId,
         templateId,
         reconciliationJobId,
         referenceCount: template.external_references?.length || 0,
       });
     } catch (error) {
-      logError('Failed to auto-promote from template', error, {
+      logError("Failed to auto-promote from template", error, {
         tenantId,
         templateId,
         reconciliationJobId,

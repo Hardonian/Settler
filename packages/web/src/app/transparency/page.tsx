@@ -127,7 +127,9 @@ const TransparencyDashboard: React.FC = () => {
                       <span className="text-[10px] font-bold uppercase text-orange-600 bg-orange-100 px-1.5 py-0.5 rounded">
                         Exception
                       </span>
-                      <span className="text-[10px] text-muted-foreground font-mono">ID: #8821X</span>
+                      <span className="text-[10px] text-muted-foreground font-mono">
+                        ID: #8821X
+                      </span>
                     </div>
                     <div className="flex gap-2 items-center mb-3">
                       <div className="h-1.5 flex-1 bg-slate-200 rounded-full overflow-hidden">

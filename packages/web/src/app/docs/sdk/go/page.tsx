@@ -2,24 +2,32 @@
  * Go SDK Documentation Page
  */
 
-'use client';
+"use client";
 
-import { Navigation } from '@/components/Navigation';
-import { Footer } from '@/components/Footer';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { CodeBlock } from '@/components/ui/code-block';
-import Link from 'next/link';
-import { Package, Code2, Zap, Shield } from 'lucide-react';
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { CodeBlock } from "@/components/ui/code-block";
+import Link from "next/link";
+import { Package, Code2, Zap, Shield } from "lucide-react";
 
 export default function GoSDKPage() {
   const features = [
-    { icon: Code2, title: 'Go Idiomatic', description: 'Follows Go best practices and conventions' },
-    { icon: Zap, title: 'Concurrent Safe', description: 'Safe for concurrent use with goroutines' },
-    { icon: Shield, title: 'Strong Typing', description: 'Full type safety with Go interfaces' },
-    { icon: Package, title: 'Minimal Dependencies', description: 'Lightweight with minimal external deps' },
+    {
+      icon: Code2,
+      title: "Go Idiomatic",
+      description: "Follows Go best practices and conventions",
+    },
+    { icon: Zap, title: "Concurrent Safe", description: "Safe for concurrent use with goroutines" },
+    { icon: Shield, title: "Strong Typing", description: "Full type safety with Go interfaces" },
+    {
+      icon: Package,
+      title: "Minimal Dependencies",
+      description: "Lightweight with minimal external deps",
+    },
   ];
 
   const installationCode = `go get github.com/settler/settler-go`;
@@ -125,11 +133,13 @@ if err != nil {
       <Navigation />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
-        <Breadcrumbs items={[
-          { label: 'Docs', href: '/docs' },
-          { label: 'SDK', href: '/docs/sdk' },
-          { label: 'Go' },
-        ]} />
+        <Breadcrumbs
+          items={[
+            { label: "Docs", href: "/docs" },
+            { label: "SDK", href: "/docs/sdk" },
+            { label: "Go" },
+          ]}
+        />
 
         <div className="mt-8">
           <div className="flex items-center gap-3 mb-4">
@@ -137,9 +147,7 @@ if err != nil {
             <Badge variant="outline">Go 1.21+</Badge>
             <Badge variant="outline">Context Support</Badge>
           </div>
-          <h1 className="text-4xl font-bold text-foreground mb-4">
-            Go SDK
-          </h1>
+          <h1 className="text-4xl font-bold text-foreground mb-4">Go SDK</h1>
           <p className="text-xl text-muted-foreground mb-8">
             Production-grade Go SDK with context support and concurrent safety.
           </p>
@@ -204,14 +212,10 @@ if err != nil {
         {/* Next Steps */}
         <div className="flex gap-4">
           <Button asChild>
-            <Link href="/console/playground">
-              Try in Playground
-            </Link>
+            <Link href="/console/playground">Try in Playground</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/docs/sdk/nodejs">
-              Node.js SDK →
-            </Link>
+            <Link href="/docs/sdk/nodejs">Node.js SDK →</Link>
           </Button>
         </div>
       </div>

@@ -33,18 +33,13 @@
       "failedChecks": 0,
       "probeableRoutes": 133,
       "degraded": true,
-      "degradedReasons": [
-        "missing_build"
-      ]
+      "degradedReasons": ["missing_build"]
     },
     "dependencyAudit": {
       "status": "degraded",
       "outcome": "warn-backend-unavailable",
       "degraded": true,
-      "degradedReasons": [
-        "pnpm-audit-backend-unavailable",
-        "osv-scanner-missing"
-      ],
+      "degradedReasons": ["pnpm-audit-backend-unavailable", "osv-scanner-missing"],
       "findings": {
         "info": 0,
         "low": 0,

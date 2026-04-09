@@ -1,12 +1,12 @@
 /**
  * Value Events Integration for Reconciliation
- * 
+ *
  * Records value events when reconciliation completes.
  * Should be called from reconciliation completion handlers.
  */
 
-import { recordReconciliationCompleted } from '@/lib/value-ledger';
-import { prisma } from '@/shared/db/prismaClient';
+import { recordReconciliationCompleted } from "@/lib/value-ledger";
+import { prisma } from "@/shared/db/prismaClient";
 
 /**
  * Record value events when reconciliation completes
@@ -27,7 +27,7 @@ export async function recordReconciliationValueEvents(
     const billingAccount = await prisma.billingAccount.findFirst({
       where: {
         tenantId: options.tenantId,
-        status: 'active',
+        status: "active",
         deletedAt: null,
       },
       select: { id: true },
@@ -50,16 +50,16 @@ export async function recordReconciliationValueEvents(
 
     // Record anomalies detected (unmatched transactions)
     if (options.unmatchedCount > 0) {
-      const { recordValueEvent } = await import('@/lib/value-ledger');
+      const { recordValueEvent } = await import("@/lib/value-ledger");
       await recordValueEvent({
         billingAccountId: billingAccount.id,
         tenantId: options.tenantId,
         userId: options.userId,
-        eventType: 'errors_prevented',
+        eventType: "errors_prevented",
         quantity: options.unmatchedCount,
-        unit: 'anomaly',
+        unit: "anomaly",
         metadata: {
-          source: 'reconciliation_completed',
+          source: "reconciliation_completed",
           runId: reconciliationRunId,
           matchedCount: options.matchedCount,
         },
@@ -67,6 +67,6 @@ export async function recordReconciliationValueEvents(
     }
   } catch (error) {
     // Log but don't throw - value tracking should never break reconciliation
-    console.error('[recordReconciliationValueEvents] Failed to record value events:', error);
+    console.error("[recordReconciliationValueEvents] Failed to record value events:", error);
   }
 }

@@ -1,17 +1,17 @@
 /**
  * Admin Error Boundary
- * 
+ *
  * Catches errors in admin dashboard and displays user-friendly error UI.
  */
 
-'use client';
+"use client";
 
-import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { AlertCircle, RefreshCw, Home } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { adminLogger } from '@/lib/admin/utils/logger';
+import React, { Component, ErrorInfo, ReactNode } from "react";
+import { AlertCircle, RefreshCw, Home } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { adminLogger } from "@/lib/admin/utils/logger";
 
 interface Props {
   children: ReactNode;
@@ -42,7 +42,7 @@ export class AdminErrorBoundary extends Component<Props, State> {
   }
 
   override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    adminLogger.error('Error boundary caught error', error, {
+    adminLogger.error("Error boundary caught error", error, {
       componentStack: errorInfo.componentStack,
     });
 
@@ -78,8 +78,8 @@ export class AdminErrorBoundary extends Component<Props, State> {
               <p className="text-sm text-muted-foreground dark:text-muted-foreground">
                 An unexpected error occurred in the admin dashboard. Our team has been notified.
               </p>
-              
-              {process.env.NODE_ENV === 'development' && this.state.error && (
+
+              {process.env.NODE_ENV === "development" && this.state.error && (
                 <details className="text-xs">
                   <summary className="cursor-pointer text-muted-foreground dark:text-muted-foreground mb-2">
                     Error Details (Development Only)

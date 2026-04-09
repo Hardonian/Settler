@@ -7,12 +7,14 @@ This document tracks the implementation progress of the multi-tenant, white-labe
 ## ✅ Completed Components
 
 ### Step 1: Architecture Discovery ✅
+
 - **File**: `docs/frontend-architecture.md`
 - **Status**: Complete
 - **Details**: Documented current Next.js 14 app router structure, navigation system, auth setup, and identified integration points.
 
 ### Step 2: Multi-Tenant Data Model ✅
-- **Files**: 
+
+- **Files**:
   - `prisma/schema.prisma` (updated with tenant models)
   - `prisma/migrations/20251209061041_add_multi_tenant_site_builder/migration.sql`
 - **Status**: Complete
@@ -27,6 +29,7 @@ This document tracks the implementation progress of the multi-tenant, white-labe
   - `ExperimentMetricEvent` - Metrics tracking
 
 ### Step 3: Tenant Resolution & Theme Application ✅
+
 - **Files**:
   - `packages/web/src/shared/tenant/tenantResolver.ts` - Tenant resolution logic
   - `packages/web/src/shared/tenant/types.ts` - Type definitions
@@ -43,6 +46,7 @@ This document tracks the implementation progress of the multi-tenant, white-labe
   - Dynamic navigation from tenant config
 
 ### Step 4: Block-Based Page Schema & Rendering ✅
+
 - **Files**:
   - `packages/web/src/domain/siteBuilder/pageSchema.ts` - Block type definitions
   - `packages/web/src/domain/siteBuilder/pageRenderer.tsx` - Main renderer component
@@ -68,8 +72,10 @@ This document tracks the implementation progress of the multi-tenant, white-labe
 ## 🚧 Remaining Work
 
 ### Step 5: No-Code Site Designer UI (In Progress)
+
 **Status**: Not Started
 **Required Components**:
+
 - [ ] `/console/site` route and page
 - [ ] Page list view with CRUD operations
 - [ ] Page editor with:
@@ -83,6 +89,7 @@ This document tracks the implementation progress of the multi-tenant, white-labe
 - [ ] Revision history viewer
 
 **API Routes Needed**:
+
 - [ ] `POST /api/console/site/pages` - Create page
 - [ ] `GET /api/console/site/pages` - List pages
 - [ ] `GET /api/console/site/pages/[id]` - Get page
@@ -95,8 +102,10 @@ This document tracks the implementation progress of the multi-tenant, white-labe
 - [ ] `POST /api/console/site/pages/[id]/revert` - Revert to revision
 
 ### Step 6: Role-Based Access & Super Admin
+
 **Status**: Not Started
 **Required**:
+
 - [ ] User role model/extension (SUPER_ADMIN, TENANT_ADMIN, TENANT_EDITOR)
 - [ ] Permission middleware for console routes
 - [ ] Super admin views:
@@ -108,8 +117,10 @@ This document tracks the implementation progress of the multi-tenant, white-labe
 - [ ] Tenant editor views (content editing only)
 
 ### Step 7: A/B Testing & Experiments
+
 **Status**: Not Started
 **Required**:
+
 - [ ] Experiment list view in console
 - [ ] Experiment creation flow:
   - [ ] Target page selection
@@ -129,6 +140,7 @@ This document tracks the implementation progress of the multi-tenant, white-labe
   - [ ] Statistical comparison
 
 **API Routes Needed**:
+
 - [ ] `POST /api/console/site/experiments` - Create experiment
 - [ ] `GET /api/console/site/experiments` - List experiments
 - [ ] `PUT /api/console/site/experiments/[id]` - Update experiment
@@ -139,8 +151,10 @@ This document tracks the implementation progress of the multi-tenant, white-labe
 - [ ] `POST /api/experiments/event` - Track metric event
 
 ### Step 8: Integration with Services
+
 **Status**: Not Started
 **Required**:
+
 - [ ] Migrate existing marketing pages to block-based system
 - [ ] Create default tenant with current page configs
 - [ ] Update root layout to use TenantThemeProvider
@@ -149,8 +163,10 @@ This document tracks the implementation progress of the multi-tenant, white-labe
 - [ ] Docs pages integration (optional block-based rendering)
 
 ### Step 9: Tests & Type Safety
+
 **Status**: Not Started
 **Required**:
+
 - [ ] Unit tests for tenant resolution
 - [ ] Unit tests for block validation
 - [ ] Unit tests for page renderer
@@ -160,12 +176,15 @@ This document tracks the implementation progress of the multi-tenant, white-labe
 - [ ] Type safety audit (no `any` types)
 
 ### Step 10: Documentation
+
 **Status**: Partial
 **Completed**:
+
 - ✅ `docs/frontend-architecture.md`
 - ✅ `docs/site-builder-implementation-status.md` (this file)
 
 **Still Needed**:
+
 - [ ] `docs/site-builder.md` - User guide for site designer
 - [ ] `docs/experiments.md` - A/B testing guide
 - [ ] `docs/multi-tenant-setup.md` - How to onboard a new tenant
@@ -174,7 +193,9 @@ This document tracks the implementation progress of the multi-tenant, white-labe
 ## Implementation Notes
 
 ### Database Migration
+
 The migration SQL has been created but not yet applied. To apply:
+
 ```bash
 # Option 1: Using Prisma
 npm run prisma:migrate
@@ -184,7 +205,9 @@ supabase db push
 ```
 
 ### Default Tenant Setup
+
 After migration, create a default tenant:
+
 ```sql
 INSERT INTO tenants (id, slug, name, primary_domain, is_active)
 VALUES (gen_random_uuid(), 'default', 'Settler', 'settler.dev', true);
@@ -196,6 +219,7 @@ FROM tenants WHERE slug = 'default';
 ```
 
 ### Next Steps Priority
+
 1. **High Priority**: Complete Step 5 (Site Designer UI) - This is the core user-facing feature
 2. **High Priority**: Complete Step 6 (Role-Based Access) - Required for security
 3. **Medium Priority**: Complete Step 7 (A/B Testing) - Core differentiator feature
@@ -206,17 +230,20 @@ FROM tenants WHERE slug = 'default';
 ## Architecture Decisions
 
 ### Why Manual Validation Instead of Zod?
+
 - Zod is not currently in dependencies
 - Manual validation is sufficient for MVP
 - Can migrate to zod or @settler/protocol validation later
 
 ### Why JSONB for Blocks?
+
 - Flexible schema evolution
 - Easy to store complex nested structures
 - PostgreSQL JSONB is performant with proper indexes
 - Can add JSON schema validation later if needed
 
 ### Tenant Resolution Strategy
+
 - Primary: Domain-based (most reliable)
 - Secondary: Subdomain-based (easy for testing)
 - Tertiary: Path-based preview (for authenticated users)

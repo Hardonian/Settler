@@ -85,4 +85,3 @@ export function resolvePublicRuntimeUiConfig(input: {
 
   return safeParsePublicRuntimeUiConfig(config);
 }
-

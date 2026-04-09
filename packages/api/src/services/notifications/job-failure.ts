@@ -9,7 +9,6 @@
  * - Multiple notification channels (email, webhook)
  */
 
- 
 import { PrismaClient } from "@prisma/client";
 import { sendEmail, EmailTemplate } from "../../lib/email";
 import { getJobFailureTemplate, getJobCompletionTemplate } from "../email/job-templates";
@@ -110,7 +109,7 @@ export async function notifyJobFailure(
     // Note: Audit logger may not exist in API package - this is optional
     try {
       // Use dynamic import with error suppression for optional module
-       
+
       let auditModule: { logAuditEvent?: (params: unknown) => Promise<void> } | null = null;
       try {
         // @ts-expect-error - Module may not exist in API package

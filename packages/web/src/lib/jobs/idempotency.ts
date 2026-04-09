@@ -1,11 +1,11 @@
 /**
  * Job Idempotency Utilities
- * 
+ *
  * Ensures jobs are idempotent and retry-safe.
  */
 
-import { Job } from './worker';
-import { generateIdempotencyKey } from '@/lib/idempotency/key';
+import { Job } from "./worker";
+import { generateIdempotencyKey } from "@/lib/idempotency/key";
 
 /**
  * Check if a job with the same idempotency key already exists
@@ -20,7 +20,7 @@ export async function checkJobIdempotency(
     // This is a placeholder - actual implementation depends on your jobs table schema
     return { exists: false };
   } catch (error) {
-    console.error('[Job Idempotency] Error checking key:', error);
+    console.error("[Job Idempotency] Error checking key:", error);
     // Fail open - allow job creation
     return { exists: false };
   }
@@ -28,7 +28,7 @@ export async function checkJobIdempotency(
 
 /**
  * Ensure job execution is idempotent
- * 
+ *
  * This should be called at the start of job handlers to prevent duplicate execution.
  */
 export async function ensureJobIdempotency(
@@ -38,9 +38,9 @@ export async function ensureJobIdempotency(
   // If job has idempotency key, check if already processed
   if (job.idempotency_key) {
     // Check idempotency key store
-    const { checkIdempotencyKey } = await import('@/lib/idempotency/store');
+    const { checkIdempotencyKey } = await import("@/lib/idempotency/store");
     const check = await checkIdempotencyKey(job.idempotency_key);
-    
+
     if (check.isDuplicate && check.existingResponse) {
       // Job already completed - skip
       return;

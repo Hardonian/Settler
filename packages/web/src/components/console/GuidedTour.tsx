@@ -221,9 +221,7 @@ export function GuidedTour({ onComplete, onSkip }: GuidedTourProps) {
           <Progress value={progress} className="h-2" />
         </CardHeader>
         <CardContent className="space-y-6">
-          <p className="text-muted-foreground leading-relaxed">
-            {step?.description || ""}
-          </p>
+          <p className="text-muted-foreground leading-relaxed">{step?.description || ""}</p>
 
           <div className="flex items-center justify-between gap-4">
             <Button

@@ -1,9 +1,9 @@
 /**
  * API Contract Versioning
- * 
+ *
  * Ensures stable API contracts that create breaking change risk for competitors.
  * Versioned APIs create switching friction when competitors try to clone Settler.
- * 
+ *
  * PHASE: Workflow Lock-In Reinforcement
  */
 
@@ -33,7 +33,7 @@ const API_VERSIONS: Record<string, APIVersion> = {
 
 /**
  * API Contract Versioning Middleware
- * 
+ *
  * Enforces API versioning and tracks usage for breaking change analysis
  */
 export function apiContractVersioningMiddleware(
@@ -63,10 +63,7 @@ export function apiContractVersioningMiddleware(
     if (version.deprecated) {
       res.setHeader("X-API-Deprecated", "true");
       if (version.deprecatedAt) {
-        res.setHeader(
-          "X-API-Deprecated-At",
-          version.deprecatedAt.toISOString()
-        );
+        res.setHeader("X-API-Deprecated-At", version.deprecatedAt.toISOString());
       }
       if (version.sunsetAt) {
         res.setHeader("X-API-Sunset-At", version.sunsetAt.toISOString());
@@ -122,10 +119,7 @@ export function getAPIVersion(version: string): APIVersion | null {
 /**
  * Mark API version as deprecated
  */
-export function deprecateAPIVersion(
-  version: string,
-  sunsetAt?: Date
-): void {
+export function deprecateAPIVersion(version: string, sunsetAt?: Date): void {
   const apiVersion = API_VERSIONS[version];
   if (apiVersion) {
     apiVersion.deprecated = true;

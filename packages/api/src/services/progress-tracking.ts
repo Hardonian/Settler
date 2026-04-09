@@ -215,7 +215,7 @@ export async function getReconciliationResultProgress(
       [resultId, tenantId]
     );
 
-    const totalTransactions = totalResult.length > 0 ? (totalResult[0]?.total || 0) : 0;
+    const totalTransactions = totalResult.length > 0 ? totalResult[0]?.total || 0 : 0;
 
     return {
       progressPercentage: row.progress_percentage || 0,
@@ -256,10 +256,16 @@ export async function createCheckpoint(
         tenant_id, job_id, checkpoint_data, transactions_processed, expires_at
       ) VALUES ($1, $2, $3, $4, $5)
       RETURNING id`,
-      [tenantId, jobId, JSON.stringify(checkpointData), transactionsProcessed, expiresAt] as (string | number | boolean | null | Date)[]
+      [tenantId, jobId, JSON.stringify(checkpointData), transactionsProcessed, expiresAt] as (
+        | string
+        | number
+        | boolean
+        | null
+        | Date
+      )[]
     );
 
-    const checkpointId = result[0]?.id || '';
+    const checkpointId = result[0]?.id || "";
     logInfo("Checkpoint created", { checkpointId, jobId, tenantId });
     return checkpointId;
   } catch (error) {
@@ -316,10 +322,7 @@ export async function getLatestCheckpoint(
 /**
  * Resume from checkpoint
  */
-export async function resumeFromCheckpoint(
-  tenantId: string,
-  checkpointId: string
-): Promise<void> {
+export async function resumeFromCheckpoint(tenantId: string, checkpointId: string): Promise<void> {
   try {
     await query(
       `UPDATE checkpoints

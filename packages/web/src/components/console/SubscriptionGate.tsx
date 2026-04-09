@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { CreditCard, Lock } from 'lucide-react';
-import { SubscriptionStatus } from '@/lib/subscription-access';
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { CreditCard, Lock } from "lucide-react";
+import { SubscriptionStatus } from "@/lib/subscription-access";
 
 interface SubscriptionGateProps {
-  requiredTier: 'unsubscribed' | 'subscribed_unpaid' | 'subscribed_paid' | 'enterprise';
+  requiredTier: "unsubscribed" | "subscribed_unpaid" | "subscribed_paid" | "enterprise";
   feature: string;
   children: React.ReactNode;
 }
 
 /**
  * Subscription Gate Component
- * 
+ *
  * Restricts access to features based on subscription tier
  */
 export function SubscriptionGate({ requiredTier, feature, children }: SubscriptionGateProps) {
@@ -26,11 +26,11 @@ export function SubscriptionGate({ requiredTier, feature, children }: Subscripti
 
   async function loadSubscription() {
     try {
-      const response = await fetch('/api/console/subscription-status');
+      const response = await fetch("/api/console/subscription-status");
       const data = await response.json();
       setSubscription(data);
     } catch (error: unknown) {
-      console.error('Failed to load subscription:', error);
+      console.error("Failed to load subscription:", error);
     } finally {
       setLoading(false);
     }
@@ -59,34 +59,36 @@ export function SubscriptionGate({ requiredTier, feature, children }: Subscripti
   const requiredTierLevel = tierOrder[requiredTier] || 0;
 
   if (userTier < requiredTierLevel) {
-    return <AccessDenied feature={feature} currentTier={subscription.tier} requiredTier={requiredTier} />;
+    return (
+      <AccessDenied feature={feature} currentTier={subscription.tier} requiredTier={requiredTier} />
+    );
   }
 
   return <>{children}</>;
 }
 
-function AccessDenied({ 
-  feature, 
-  currentTier, 
-  requiredTier 
-}: { 
-  feature: string; 
-  currentTier?: string; 
+function AccessDenied({
+  feature,
+  currentTier,
+  requiredTier,
+}: {
+  feature: string;
+  currentTier?: string;
   requiredTier?: string;
 }) {
   const tierLabels: Record<string, string> = {
-    unsubscribed: 'Free',
-    subscribed_unpaid: 'Unpaid Subscription',
-    subscribed_paid: 'Paid Subscription',
-    enterprise: 'Enterprise',
+    unsubscribed: "Free",
+    subscribed_unpaid: "Unpaid Subscription",
+    subscribed_paid: "Paid Subscription",
+    enterprise: "Enterprise",
   };
 
-  const isUnsubscribed = currentTier === 'unsubscribed' || !currentTier;
-  const isUnpaid = currentTier === 'subscribed_unpaid';
-  const ctaHref = isUnsubscribed ? '/pricing' : '/console/billing';
-  const ctaLabel = isUnsubscribed ? 'View Pricing' : 'Update Billing';
-  const secondaryHref = isUnsubscribed ? '/signup' : '/console';
-  const secondaryLabel = isUnsubscribed ? 'Sign In' : 'Back to Console';
+  const isUnsubscribed = currentTier === "unsubscribed" || !currentTier;
+  const isUnpaid = currentTier === "subscribed_unpaid";
+  const ctaHref = isUnsubscribed ? "/pricing" : "/console/billing";
+  const ctaLabel = isUnsubscribed ? "View Pricing" : "Update Billing";
+  const secondaryHref = isUnsubscribed ? "/signup" : "/console";
+  const secondaryLabel = isUnsubscribed ? "Sign In" : "Back to Console";
 
   return (
     <div className="border border-yellow-200 bg-yellow-50 rounded-lg p-6">
@@ -95,7 +97,7 @@ function AccessDenied({
         <div className="flex-1">
           <h3 className="font-semibold text-yellow-900 mb-2">Subscription Required</h3>
           <p className="text-yellow-800 mb-4">
-            {feature} requires a {requiredTier ? tierLabels[requiredTier] : 'subscription'}.
+            {feature} requires a {requiredTier ? tierLabels[requiredTier] : "subscription"}.
             {isUnsubscribed && (
               <span className="block mt-1">
                 Start on a paid plan to unlock this feature and higher monthly limits.

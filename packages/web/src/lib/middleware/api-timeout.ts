@@ -1,11 +1,11 @@
 /**
  * API Timeout Middleware
- * 
+ *
  * Ensures API routes have appropriate timeout configuration.
  * Prevents long-running requests from blocking the server.
  */
 
-import { NextRequest } from 'next/server';
+import { NextRequest } from "next/server";
 
 const DEFAULT_TIMEOUT = 30000; // 30 seconds
 const MAX_TIMEOUT = 300000; // 5 minutes (Vercel limit)
@@ -37,25 +37,22 @@ export function withTimeout<T>(
   const timeoutMessage = config.timeoutMessage || `Request timed out after ${timeout}ms`;
 
   return async (request: NextRequest) => {
-    return Promise.race([
-      handler(request),
-      createTimeout(timeout, timeoutMessage),
-    ]);
+    return Promise.race([handler(request), createTimeout(timeout, timeoutMessage)]);
   };
 }
 
 /**
  * Get timeout configuration for route type
  */
-export function getTimeoutForRoute(routeType: 'api' | 'webhook' | 'cron' | 'health'): number {
+export function getTimeoutForRoute(routeType: "api" | "webhook" | "cron" | "health"): number {
   switch (routeType) {
-    case 'webhook':
+    case "webhook":
       return 30000; // 30 seconds
-    case 'cron':
+    case "cron":
       return 300000; // 5 minutes
-    case 'health':
+    case "health":
       return 10000; // 10 seconds
-    case 'api':
+    case "api":
     default:
       return 30000; // 30 seconds
   }

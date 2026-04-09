@@ -11,12 +11,7 @@
  * before any suggestion can be applied.
  */
 
-import type {
-  AISuggestion,
-  AISuggestionCategory,
-  AIAuditEntry,
-  Policy,
-} from "./primitives";
+import type { AISuggestion, AISuggestionCategory, AIAuditEntry, Policy } from "./primitives";
 import { DeterministicExecutionFence } from "./determinism";
 
 export interface AICopilotConfig {
@@ -119,11 +114,7 @@ export class AICopilot {
    * Returns the suggestion — the caller is responsible for applying it
    * through normal policy-validated execution paths.
    */
-  accept(
-    suggestionId: string,
-    reviewedBy: string,
-    policy?: Policy
-  ): AISuggestion {
+  accept(suggestionId: string, reviewedBy: string, policy?: Policy): AISuggestion {
     const suggestion = this.suggestions.get(suggestionId);
     if (!suggestion) throw new Error(`Suggestion not found: ${suggestionId}`);
     if (suggestion.status !== "pending") {

@@ -17,6 +17,7 @@ This document defines the **invariants** that must hold for any code to be deplo
 **Enforced By:** `npm run repo-integrity`
 
 **Checks:**
+
 - ✅ All workspace folders have `package.json` (except non-JS packages)
 - ✅ No workspace is referenced but missing
 - ✅ No internal dependencies (`@settler/*`) are imported but not defined
@@ -33,6 +34,7 @@ This document defines the **invariants** that must hold for any code to be deplo
 **Enforced By:** `npm run vercel:parity`
 
 **Checks:**
+
 - ✅ Vercel configuration is valid and parseable
 - ✅ Build command exists and is executable
 - ✅ Install command matches Vercel settings
@@ -48,6 +50,7 @@ This document defines the **invariants** that must hold for any code to be deplo
 **Enforced By:** CI workflow `lint-and-typecheck` job
 
 **Checks:**
+
 - ✅ ESLint passes for all packages
 - ✅ TypeScript type checking passes for all packages
 - ✅ Prettier formatting is consistent
@@ -61,6 +64,7 @@ This document defines the **invariants** that must hold for any code to be deplo
 **Enforced By:** CI workflow `test` job
 
 **Checks:**
+
 - ✅ Unit tests pass
 - ✅ Integration tests pass
 - ✅ Test coverage meets threshold (70%)
@@ -74,6 +78,7 @@ This document defines the **invariants** that must hold for any code to be deplo
 **Enforced By:** `npm run check:production`
 
 **Execution Order (MUST RUN IN ORDER):**
+
 1. Repository integrity (`repo-integrity`)
 2. Lint all packages (`lint`)
 3. Type check all packages (`typecheck`)
@@ -164,6 +169,7 @@ This document defines the **invariants** that must hold for any code to be deplo
 ### Build Command
 
 **Root `vercel.json` takes precedence:**
+
 ```json
 {
   "buildCommand": "cd packages/web && npm run build:vercel",
@@ -173,6 +179,7 @@ This document defines the **invariants** that must hold for any code to be deplo
 ```
 
 **CI Must Validate:**
+
 - Build command matches Vercel configuration
 - Install command matches Vercel configuration
 - Output directory structure matches expectations
@@ -215,6 +222,7 @@ Every workspace package (`packages/*`) must:
 ### Non-Workspace Packages
 
 Packages that are NOT part of npm workspace:
+
 - `packages/sdk-go` (Go SDK)
 - `packages/sdk-python` (Python SDK)
 - `packages/sdk-ruby` (Ruby SDK)
@@ -244,6 +252,7 @@ See `config/env.schema.ts` for complete list.
 **Status:** Manual configuration required in GitHub
 
 **Requirements:**
+
 - All required CI checks must pass
 - At least 1 approval (if required)
 - No merge conflicts
@@ -315,6 +324,7 @@ The following require manual configuration in GitHub/Vercel:
 ## Updates to This Contract
 
 **Process:**
+
 1. Update this document
 2. Update CI workflow if needed
 3. Update integrity scripts if needed
@@ -322,6 +332,7 @@ The following require manual configuration in GitHub/Vercel:
 5. Merge after CI passes
 
 **Version History:**
+
 - `2025-01-27` - Initial contract definition
 
 ---

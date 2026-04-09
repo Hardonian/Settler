@@ -201,9 +201,7 @@
     }
   },
   "projectFileDependencyGroups": {
-    "net6.0": [
-      "System.Text.Json >= 8.0.5"
-    ]
+    "net6.0": ["System.Text.Json >= 8.0.5"]
   },
   "packageFolders": {
     "C:\\Users\\scott\\.nuget\\packages\\": {}
@@ -217,12 +215,8 @@
       "packagesPath": "C:\\Users\\scott\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\scott\\Documents\\GitHub\\Settler\\packages\\sdk-csharp\\obj\\",
       "projectStyle": "PackageReference",
-      "configFilePaths": [
-        "C:\\Users\\scott\\AppData\\Roaming\\NuGet\\NuGet.Config"
-      ],
-      "originalTargetFrameworks": [
-        "net6.0"
-      ],
+      "configFilePaths": ["C:\\Users\\scott\\AppData\\Roaming\\NuGet\\NuGet.Config"],
+      "originalTargetFrameworks": ["net6.0"],
       "sources": {
         "https://api.nuget.org/v3/index.json": {}
       },
@@ -233,9 +227,7 @@
         }
       },
       "warningProperties": {
-        "warnAsError": [
-          "NU1605"
-        ]
+        "warnAsError": ["NU1605"]
       },
       "restoreAuditProperties": {
         "enableAudit": "true",
@@ -253,15 +245,7 @@
             "version": "[8.0.5, )"
           }
         },
-        "imports": [
-          "net461",
-          "net462",
-          "net47",
-          "net471",
-          "net472",
-          "net48",
-          "net481"
-        ],
+        "imports": ["net461", "net462", "net47", "net471", "net472", "net48", "net481"],
         "assetTargetFallback": true,
         "warn": true,
         "downloadDependencies": [

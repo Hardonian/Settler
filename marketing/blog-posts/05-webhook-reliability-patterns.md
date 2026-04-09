@@ -15,6 +15,7 @@ Webhooks are essential for real-time reconciliation, but they're unreliable by n
 ## The Challenge
 
 **Webhook Problems:**
+
 - Delivery failures (network issues, timeouts)
 - Duplicate deliveries
 - Out-of-order delivery
@@ -62,7 +63,7 @@ async function processWebhookWithRetry(webhook: Webhook, maxRetries = 3) {
     } catch (error) {
       if (i === maxRetries - 1) throw error;
       const delay = Math.pow(2, i) * 1000; // Exponential backoff
-      await new Promise(resolve => setTimeout(resolve, delay));
+      await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }
 }
@@ -98,16 +99,13 @@ import crypto from "crypto";
 function verifyWebhook(payload: string, signature: string, secret: string): boolean {
   const [timestamp, hash] = signature.split(",");
   const [t, v1] = hash.split("=");
-  
+
   const expectedSignature = crypto
     .createHmac("sha256", secret)
     .update(`${timestamp}.${payload}`)
     .digest("hex");
-  
-  return crypto.timingSafeEqual(
-    Buffer.from(v1),
-    Buffer.from(expectedSignature)
-  );
+
+  return crypto.timingSafeEqual(Buffer.from(v1), Buffer.from(expectedSignature));
 }
 ```
 
@@ -135,6 +133,7 @@ setInterval(async () => {
 ### Automatic Retries
 
 Settler automatically retries failed webhook deliveries:
+
 - 3 retries with exponential backoff
 - Dead letter queue for permanent failures
 - Webhook delivery status tracking
@@ -142,6 +141,7 @@ Settler automatically retries failed webhook deliveries:
 ### Idempotency
 
 All webhook processing is idempotent:
+
 - Duplicate webhooks ignored
 - Idempotency keys tracked
 - No duplicate reconciliation
@@ -149,6 +149,7 @@ All webhook processing is idempotent:
 ### Signature Verification
 
 All webhooks verified:
+
 - HMAC-SHA256 signatures
 - Timestamp validation (prevent replay attacks)
 - Secret rotation support
@@ -179,7 +180,7 @@ app.post("/webhooks/settler", async (req, res) => {
   // 1. Verify signature
   const signature = req.headers["x-settler-signature"] as string;
   const secret = process.env.SETTLER_WEBHOOK_SECRET!;
-  
+
   if (!verifyWebhook(req.body.toString(), signature, secret)) {
     return res.status(401).json({ error: "Invalid signature" });
   }

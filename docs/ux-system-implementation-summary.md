@@ -18,6 +18,7 @@ A production-grade interactive UX system has been implemented using Framer Motio
 ### Phase 1: Foundation ✅
 
 #### Motion System
+
 - **Location**: `packages/web/src/lib/motion/`
 - **Files**:
   - `tokens.ts` - Duration, easing, spring, and distance tokens
@@ -28,6 +29,7 @@ A production-grade interactive UX system has been implemented using Framer Motio
   - GPU-accelerated animations
 
 #### Motion Primitives
+
 - **Location**: `packages/web/src/components/motion/`
 - **Components**:
   - `AnimatedButton` - Button with state-aware animations
@@ -36,6 +38,7 @@ A production-grade interactive UX system has been implemented using Framer Motio
   - `PageTransition` - Route transition wrapper
 
 #### XState System
+
 - **Location**: `packages/web/src/lib/xstate/`
 - **Files**:
   - `types.ts` - Common types and utilities
@@ -44,12 +47,14 @@ A production-grade interactive UX system has been implemented using Framer Motio
   - `demo-machine.ts` - Reference implementation
 
 #### Playground
+
 - **Route**: `/ux-playground`
 - **Purpose**: Internal verification of motion and state machine patterns
 
 ### Phase 2: Interaction Inventory ✅
 
 #### UX Interaction Spec
+
 - **Location**: `docs/ux-interaction-spec.md`
 - **Contents**:
   - Motion rules (when allowed/forbidden)
@@ -62,6 +67,7 @@ A production-grade interactive UX system has been implemented using Framer Motio
 ### Phase 3: Core Flows ✅
 
 #### Onboarding State Machine
+
 - **Location**: `packages/web/src/lib/xstate/onboarding-machine.ts`
 - **Features**:
   - Multi-step flow management
@@ -71,6 +77,7 @@ A production-grade interactive UX system has been implemented using Framer Motio
   - Error recovery
 
 #### Refactored Onboarding Page
+
 - **Location**: `packages/web/src/app/console/onboarding/page.tsx`
 - **Improvements**:
   - State-driven (no scattered useState)
@@ -81,6 +88,7 @@ A production-grade interactive UX system has been implemented using Framer Motio
 ### Phase 4: Feedback Components ✅
 
 #### Feedback System
+
 - **Location**: `packages/web/src/components/feedback/`
 - **Components**:
   - `ProgressIndicator` - Step progress with percentage
@@ -93,6 +101,7 @@ A production-grade interactive UX system has been implemented using Framer Motio
 **Status**: Ongoing - Apply system across app as needed
 
 This phase involves:
+
 - Replacing ad-hoc animations with primitives
 - Improving loading/empty states
 - Ensuring keyboard/screen reader flows
@@ -101,12 +110,14 @@ This phase involves:
 ### Phase 6: Hardening ✅
 
 #### Error Handling
+
 - **Timeout handling**: All async operations have timeouts (10-15s)
 - **Retry logic**: Explicit retry states in state machines
 - **Error recovery**: Users can always recover from errors
 - **User-friendly messages**: No technical jargon
 
 #### Implementation
+
 - Enhanced onboarding machine with timeout handling
 - Better error messages
 - Retry states for all async operations
@@ -114,6 +125,7 @@ This phase involves:
 ### Phase 7: Measurement ✅
 
 #### UX Event Tracking
+
 - **Location**: `packages/web/src/lib/ux-events/`
 - **Features**:
   - Typed event system
@@ -122,6 +134,7 @@ This phase involves:
   - Event statistics
 
 #### Dev View
+
 - **Route**: `/ux-playground/events`
 - **Purpose**: Inspect recent UX events
 - **Features**:
@@ -133,6 +146,7 @@ This phase involves:
 ## Key Files
 
 ### Motion System
+
 ```
 packages/web/src/lib/motion/
 ├── tokens.ts          # Motion tokens (durations, easing, springs)
@@ -148,6 +162,7 @@ packages/web/src/components/motion/
 ```
 
 ### State Machine System
+
 ```
 packages/web/src/lib/xstate/
 ├── types.ts              # Common types
@@ -159,6 +174,7 @@ packages/web/src/lib/xstate/
 ```
 
 ### Feedback Components
+
 ```
 packages/web/src/components/feedback/
 ├── ProgressIndicator.tsx
@@ -169,6 +185,7 @@ packages/web/src/components/feedback/
 ```
 
 ### Event Tracking
+
 ```
 packages/web/src/lib/ux-events/
 ├── types.ts    # Event type definitions
@@ -202,20 +219,20 @@ import { AnimatedButton, AnimatedCard, Reveal } from '@/components/motion';
 ### Using State Machines
 
 ```tsx
-import { useMachineState } from '@/lib/xstate/hooks';
-import { demoFormMachine } from '@/lib/xstate/demo-machine';
+import { useMachineState } from "@/lib/xstate/hooks";
+import { demoFormMachine } from "@/lib/xstate/demo-machine";
 
 function MyForm() {
   const { state, send, isPending, isError } = useMachineState(demoFormMachine);
-  
+
   return (
     <form>
       <input
         value={state.context.formData.name}
-        onChange={(e) => send({ type: 'UPDATE_NAME', name: e.target.value })}
+        onChange={(e) => send({ type: "UPDATE_NAME", name: e.target.value })}
       />
-      <button onClick={() => send({ type: 'SUBMIT' })} disabled={isPending}>
-        {isPending ? 'Submitting...' : 'Submit'}
+      <button onClick={() => send({ type: "SUBMIT" })} disabled={isPending}>
+        {isPending ? "Submitting..." : "Submit"}
       </button>
       {isError && <ErrorFeedback error={state.context.error} />}
     </form>
@@ -261,21 +278,16 @@ import {
 ### Logging UX Events
 
 ```tsx
-import {
-  logStepViewed,
-  logStepCompleted,
-  logFlowStarted,
-  logError,
-} from '@/lib/ux-events/logger';
+import { logStepViewed, logStepCompleted, logFlowStarted, logError } from "@/lib/ux-events/logger";
 
 // Log step viewed
-logStepViewed('onboarding', 'create_workspace', 'Create Workspace');
+logStepViewed("onboarding", "create_workspace", "Create Workspace");
 
 // Log step completed
-logStepCompleted('onboarding', 'create_workspace', 'Create Workspace', 1500);
+logStepCompleted("onboarding", "create_workspace", "Create Workspace", 1500);
 
 // Log error
-logError('Failed to submit form', 'validation_error', 'onboarding', 'create_workspace');
+logError("Failed to submit form", "validation_error", "onboarding", "create_workspace");
 ```
 
 ## Verification
@@ -283,6 +295,7 @@ logError('Failed to submit form', 'validation_error', 'onboarding', 'create_work
 See `docs/ux-system-verification.md` for detailed verification steps.
 
 Quick verification:
+
 1. Navigate to `/ux-playground` - verify motion primitives work
 2. Navigate to `/console/onboarding` - verify state machine flow
 3. Navigate to `/ux-playground/events` - verify event tracking (dev only)
@@ -290,12 +303,14 @@ Quick verification:
 ## Next Steps
 
 ### Recommended
+
 1. **Apply to other flows**: Refactor signup, checkout, or other multi-step flows
 2. **Add more feedback**: Integrate feedback components into existing pages
 3. **Expand event tracking**: Add events to other critical flows
 4. **Performance monitoring**: Add performance metrics to events
 
 ### Optional
+
 1. **Visual regression tests**: Test animations don't break
 2. **E2E tests**: Test state machine flows end-to-end
 3. **Analytics integration**: Send events to production analytics
@@ -310,7 +325,7 @@ Quick verification:
 ✅ Build passes  
 ✅ Accessibility preserved/improved  
 ✅ Motion never lies about state  
-✅ State machines are source of truth  
+✅ State machines are source of truth
 
 ## Documentation
 
@@ -321,6 +336,7 @@ Quick verification:
 ## Support
 
 For questions or issues:
+
 1. Check the UX Interaction Spec
 2. Review the verification guide
 3. Inspect the playground examples

@@ -31,7 +31,9 @@ export const historyCommand = new Command("history")
         log.detail(line1);
         log.detail(line2);
       } else {
-        log.rawLine(`${chalk.yellow(entry.execution_hash.slice(0, 12))} ${entry.status} ${entry.execution_id} (${entry.tenant_id}) ${entry.timestamp}`);
+        log.rawLine(
+          `${chalk.yellow(entry.execution_hash.slice(0, 12))} ${entry.status} ${entry.execution_id} (${entry.tenant_id}) ${entry.timestamp}`
+        );
         log.rawLine(line2);
       }
     }

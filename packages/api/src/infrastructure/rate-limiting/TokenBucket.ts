@@ -3,9 +3,9 @@
  * Adaptive token bucket implementation for tenant rate limiting
  */
 
-import Redis from 'ioredis';
-import { config } from '../../config';
-import { logWarn, logInfo } from '../../utils/logger';
+import Redis from "ioredis";
+import { config } from "../../config";
+import { logWarn, logInfo } from "../../utils/logger";
 
 export interface TokenBucketConfig {
   capacity: number; // Maximum tokens
@@ -18,11 +18,11 @@ interface InMemoryBucket {
   lastRefill: number;
 }
 
-export type RateLimitMode = 'distributed' | 'local-fallback';
+export type RateLimitMode = "distributed" | "local-fallback";
 
 export class TokenBucket {
   private redis: Redis;
-  private _mode: RateLimitMode = 'distributed';
+  private _mode: RateLimitMode = "distributed";
   private _fallbackWarningEmitted = false;
   private inMemoryBuckets = new Map<string, InMemoryBucket>();
 
@@ -49,18 +49,18 @@ export class TokenBucket {
     }
     this.redis = new Redis(redisOptions);
 
-    this.redis.on('error', () => {
+    this.redis.on("error", () => {
       this.enterFallbackMode();
     });
 
-    this.redis.on('ready', () => {
-      if (this._mode === 'local-fallback') {
-        logInfo('token_bucket_redis_recovered', {
-          component: 'TokenBucket',
-          previousMode: 'local-fallback',
-          newMode: 'distributed',
+    this.redis.on("ready", () => {
+      if (this._mode === "local-fallback") {
+        logInfo("token_bucket_redis_recovered", {
+          component: "TokenBucket",
+          previousMode: "local-fallback",
+          newMode: "distributed",
         });
-        this._mode = 'distributed';
+        this._mode = "distributed";
         this._fallbackWarningEmitted = false;
         this.inMemoryBuckets.clear();
       }
@@ -68,14 +68,15 @@ export class TokenBucket {
   }
 
   private enterFallbackMode(): void {
-    this._mode = 'local-fallback';
+    this._mode = "local-fallback";
     if (!this._fallbackWarningEmitted) {
       this._fallbackWarningEmitted = true;
-      logWarn('token_bucket_redis_fallback', {
-        severity: 'warning',
-        component: 'TokenBucket',
-        mode: 'local-fallback',
-        message: 'Redis unavailable for token bucket rate limiting; using in-memory fallback. Rate limits are per-instance and reset on restart.',
+      logWarn("token_bucket_redis_fallback", {
+        severity: "warning",
+        component: "TokenBucket",
+        mode: "local-fallback",
+        message:
+          "Redis unavailable for token bucket rate limiting; using in-memory fallback. Rate limits are per-instance and reset on restart.",
       });
     }
   }
@@ -105,7 +106,11 @@ export class TokenBucket {
       return { allowed: true, remaining: bucket.tokens, resetAt: new Date(now + windowMs) };
     }
 
-    return { allowed: false, remaining: bucket.tokens, resetAt: new Date(bucket.lastRefill + windowMs) };
+    return {
+      allowed: false,
+      remaining: bucket.tokens,
+      resetAt: new Date(bucket.lastRefill + windowMs),
+    };
   }
 
   /**
@@ -154,7 +159,7 @@ export class TokenBucket {
     `;
 
     try {
-      const result = await this.redis.eval(
+      const result = (await this.redis.eval(
         luaScript,
         1,
         redisKey,
@@ -163,20 +168,20 @@ export class TokenBucket {
         config.refillRate.toString(),
         now.toString(),
         windowMs.toString()
-      ) as [number, number, number];
+      )) as [number, number, number];
 
       const allowed = result[0] === 1;
       const remaining = result[1];
       const resetAt = new Date(result[2]);
 
-      if (this._mode === 'local-fallback') {
-        this._mode = 'distributed';
+      if (this._mode === "local-fallback") {
+        this._mode = "distributed";
         this._fallbackWarningEmitted = false;
         this.inMemoryBuckets.clear();
-        logInfo('token_bucket_redis_recovered', {
-          component: 'TokenBucket',
-          previousMode: 'local-fallback',
-          newMode: 'distributed',
+        logInfo("token_bucket_redis_recovered", {
+          component: "TokenBucket",
+          previousMode: "local-fallback",
+          newMode: "distributed",
         });
       }
 
@@ -196,7 +201,7 @@ export class TokenBucket {
     const redisKey = `rate_limit:${key}`;
 
     try {
-      const bucket = await this.redis.hmget(redisKey, 'tokens', 'lastRefill');
+      const bucket = await this.redis.hmget(redisKey, "tokens", "lastRefill");
       const currentTokens = bucket[0] ? parseFloat(bucket[0]) : config.capacity;
       const lastRefill = bucket[1] ? parseFloat(bucket[1]) : now;
 

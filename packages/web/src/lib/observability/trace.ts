@@ -1,24 +1,24 @@
 /**
  * Trace ID / Correlation ID Utilities
- * 
+ *
  * Provides trace_id propagation across web → API → logs
  * Generates trace_id on edge (web) if absent
  * Forwards to API via headers
  * Includes in all logs and error responses
  */
 
-import { NextRequest } from 'next/server';
+import { NextRequest } from "next/server";
 
-const TRACE_ID_HEADER = 'x-trace-id';
-const TRACE_ID_COOKIE = 'trace-id';
+const TRACE_ID_HEADER = "x-trace-id";
+const TRACE_ID_COOKIE = "trace-id";
 
 /**
  * Generate a new trace ID
  */
-const toHex = (value: number): string => value.toString(16).padStart(2, '0');
+const toHex = (value: number): string => value.toString(16).padStart(2, "0");
 
 const getRandomBytes = (size: number): Uint8Array => {
-  if (typeof crypto !== 'undefined' && 'getRandomValues' in crypto) {
+  if (typeof crypto !== "undefined" && "getRandomValues" in crypto) {
     const bytes = new Uint8Array(size);
     crypto.getRandomValues(bytes);
     return bytes;
@@ -33,7 +33,7 @@ const getRandomBytes = (size: number): Uint8Array => {
 
 export function generateTraceId(): string {
   const bytes = getRandomBytes(16);
-  return Array.from(bytes, (byte) => toHex(byte)).join('');
+  return Array.from(bytes, (byte) => toHex(byte)).join("");
 }
 
 /**
@@ -61,8 +61,8 @@ export async function getTraceId(request?: NextRequest | Request): Promise<strin
   // This prevents build errors when trace.ts is imported by client components
   try {
     // Only attempt to use headers() in server context (not in browser)
-    if (typeof window === 'undefined' && typeof process !== 'undefined') {
-      const { headers: getHeaders } = await import('next/headers');
+    if (typeof window === "undefined" && typeof process !== "undefined") {
+      const { headers: getHeaders } = await import("next/headers");
       const headersList = await getHeaders();
       const headerTraceId = headersList.get(TRACE_ID_HEADER);
       if (headerTraceId) {
@@ -88,10 +88,7 @@ export function addTraceIdToResponse(response: Response, traceId: string): Respo
 /**
  * Add trace ID to NextResponse headers
  */
-export function addTraceIdToNextResponse(
-  response: Response,
-  traceId: string
-): Response {
+export function addTraceIdToNextResponse(response: Response, traceId: string): Response {
   response.headers.set(TRACE_ID_HEADER, traceId);
   return response;
 }
@@ -100,7 +97,7 @@ export function addTraceIdToNextResponse(
  * Get trace ID from client-side (browser)
  */
 export function getTraceIdFromClient(): string {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return generateTraceId();
   }
 

@@ -5,6 +5,7 @@
 ### Total Addressable Market (TAM)
 
 **Data Operations Market:** $50B+ by 2027
+
 - ETL/ELT: $15B
 - Data Quality: $8B
 - Data Integration: $12B
@@ -14,6 +15,7 @@
 ### Serviceable Addressable Market (SAM)
 
 **Reconciliation & Data Correctness:** $5B+ by 2027
+
 - Financial reconciliation: $2B
 - E-commerce order reconciliation: $1B
 - API data reconciliation: $1.5B
@@ -22,6 +24,7 @@
 ### Serviceable Obtainable Market (SOM)
 
 **Year 1-3 Target:** $50M ARR
+
 - 1,000 customers @ $50K ARR average
 - Mix of SMB, Mid-market, Enterprise
 

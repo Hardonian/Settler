@@ -32,6 +32,7 @@ Settler API is designed to run on serverless platforms (Vercel, AWS Lambda, Clou
 ```
 
 **Configuration:**
+
 - Set provisioned concurrency to 2-5 instances for critical endpoints
 - Use on-demand for less critical endpoints
 
@@ -42,12 +43,12 @@ For low-latency endpoints, use Vercel Edge Functions:
 ```typescript
 // api/v1/health/edge.ts
 export const config = {
-  runtime: 'edge',
+  runtime: "edge",
 };
 
 export default async function handler(req: Request) {
-  return new Response(JSON.stringify({ status: 'ok' }), {
-    headers: { 'Content-Type': 'application/json' },
+  return new Response(JSON.stringify({ status: "ok" }), {
+    headers: { "Content-Type": "application/json" },
   });
 }
 ```
@@ -59,7 +60,7 @@ Schedule periodic pings to keep functions warm:
 ```typescript
 // CloudWatch Events: Schedule expression: rate(5 minutes)
 export const warmup = async () => {
-  await fetch('https://api.settler.io/health');
+  await fetch("https://api.settler.io/health");
 };
 ```
 
@@ -67,10 +68,10 @@ export const warmup = async () => {
 
 ```typescript
 // ❌ Bad: Import entire library
-import * as lodash from 'lodash';
+import * as lodash from "lodash";
 
 // ✅ Good: Import only what you need
-import { debounce } from 'lodash/debounce';
+import { debounce } from "lodash/debounce";
 ```
 
 ### 5. Database Connection Optimization
@@ -95,7 +96,7 @@ const startTime = Date.now();
 // ... request processing ...
 const duration = Date.now() - startTime;
 if (duration > 1000) {
-  logger.warn('Slow request', { duration, path: req.path });
+  logger.warn("Slow request", { duration, path: req.path });
 }
 ```
 

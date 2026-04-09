@@ -5,28 +5,34 @@ This directory contains documentation for each connector integration.
 ## Available Connectors
 
 ### Bank Feeds
+
 - [Plaid](./plaid.md) - North America bank aggregation
 - [TrueLayer](./truelayer.md) - EU/UK bank aggregation
 
 ### Accounting
+
 - FreshBooks - Small business accounting
 - Wave - Free accounting software
 
 ### Subscription Billing
+
 - Chargebee - Subscription management
 - Recurly - Recurring billing
 
 ### Marketplaces
+
 - Stripe Connect - Connected accounts
 - Amazon Seller - Seller Central
 - Etsy - Etsy marketplace
 - eBay - eBay marketplace
 
 ### Enterprise/ERP
+
 - NetSuite - ERP system
 - SAP - SAP ERP
 
 ### Tax
+
 - Avalara - Tax calculation
 - TaxJar - Tax calculation
 
@@ -58,16 +64,19 @@ This directory contains documentation for each connector integration.
 ## Troubleshooting
 
 ### Connection Issues
+
 - Verify credentials are correct
 - Check environment variables
 - Test connection via API
 
 ### Sync Issues
+
 - Check sync logs for errors
 - Verify rate limits not exceeded
 - Ensure connector is not disabled
 
 ### Data Issues
+
 - Check normalization mapping
 - Verify idempotency keys
 - Review raw payloads in database

@@ -44,6 +44,7 @@ Every engineering team faces the same problems:
 **Insight #1:** Reconciliation is not a feature — it's the **core primitive** for all data operations.
 
 Every data operation is fundamentally about reconciliation:
+
 - **Validation** = Recon data against rules
 - **Transformation** = Recon input schema to output schema
 - **Mapping** = Recon source fields to target fields
@@ -61,36 +62,42 @@ Every data operation is fundamentally about reconciliation:
 ### Settler.dev: Open Source Reconciliation Engine
 
 **Core Engine:** reconciliation engine
+
 - Deterministic reconciliation engine
 - Multi-agent AI fallback
 - Drift detection and auto-repair
 - Comprehensive audit trail
 
 **Workflow Orchestration:**
+
 - Ingestion → Transform → Validate → Recon → Map → Audit → Report
 - All steps emit events
 - Self-healing through AI agents
 - Self-optimizing through usage analysis
 
 **Vertical Modules:**
+
 - LegalTech: Contract diff, obligation mapping
 - FinTech: Ledger reconciliation, accounting drift
 - EdTech: QTI validation, LMS compatibility
 - Compliance: Policy comparison, privacy drift
 
 **Developer Experience:**
+
 - RESTful API
 - SDKs (JS, Python, Go, Ruby)
 - Interactive playground
 - Starter kits and examples
 
 **Platform Intelligence:**
+
 - Usage optimization AI
 - Health optimization AI
 - Product evolution AI
 - Predictive routing
 
 **Extensibility:**
+
 - Plugin architecture
 - Marketplace for templates
 - Custom workflows

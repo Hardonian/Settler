@@ -185,7 +185,9 @@ export default function ControlPlanePage() {
                       className="flex items-center justify-between p-4 bg-muted/20 dark:bg-card rounded-lg"
                     >
                       <div>
-                        <div className="font-medium text-foreground dark:text-white">{key.name}</div>
+                        <div className="font-medium text-foreground dark:text-white">
+                          {key.name}
+                        </div>
                         <code className="text-sm text-muted-foreground dark:text-muted-foreground">
                           {maskToken(key.keyPrefix + "****")}
                         </code>
@@ -319,7 +321,9 @@ export default function ControlPlanePage() {
                 </Button>
               </div>
               {triggerStatus && (
-                <p className="text-xs text-muted-foreground dark:text-muted-foreground">{triggerStatus}</p>
+                <p className="text-xs text-muted-foreground dark:text-muted-foreground">
+                  {triggerStatus}
+                </p>
               )}
 
               {loading ? (

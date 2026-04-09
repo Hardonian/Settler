@@ -1,9 +1,9 @@
 /**
  * Organic Growth Engine Agent (Marketing Replacement)
- * 
+ *
  * Replaces: Growth Marketer role
  * Runs: Weekly
- * 
+ *
  * What it does:
  * - Turns anonymized receipt insights into public pages
  * - Auto-creates changelogs, case studies, benchmarks
@@ -27,13 +27,16 @@ async function generateContent(
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
         messages: [
-          { role: "system", content: `You are an expert content creator specializing in ${contentType}. Create engaging, accurate content.` },
+          {
+            role: "system",
+            content: `You are an expert content creator specializing in ${contentType}. Create engaging, accurate content.`,
+          },
           { role: "user", content: prompt },
         ],
         temperature: 0.7,
@@ -200,9 +203,11 @@ Based on anonymized usage data from the past 30 days.
 ## Average Usage by Feature
 
 ${avgUsage
-  .map((u) => `### ${u.type}
+  .map(
+    (u) => `### ${u.type}
 - **Average per user**: ${u.average.toFixed(2)}
-- **Total usage**: ${u.total.toLocaleString()}`)
+- **Total usage**: ${u.total.toLocaleString()}`
+  )
   .join("\n\n")}
 
 ## Insights
@@ -223,7 +228,8 @@ These benchmarks help you understand typical usage patterns and plan your integr
           benchmarks: avgUsage,
         },
         seo_title: "Settler API Usage Benchmarks and Statistics",
-        seo_description: "Real usage benchmarks from Settler users. See average API usage patterns.",
+        seo_description:
+          "Real usage benchmarks from Settler users. See average API usage patterns.",
         keywords: ["benchmarks", "usage statistics", "api metrics", "settler"],
       });
     }

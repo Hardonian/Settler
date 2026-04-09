@@ -1,11 +1,11 @@
 /**
  * Deterministic Guarantee Enforcement Service
- * 
+ *
  * Explicitly enforces and tracks deterministic behavior guarantees.
  * This creates trust and defensibility by guaranteeing same inputs produce same outputs.
- * 
+ *
  * PHASE: Enforcement & Trust Moat Reinforcement
- * 
+ *
  * Based on narrative compression requirements:
  * - Guarantee: Same inputs produce same outputs, always
  * - Track deterministic behavior violations
@@ -13,8 +13,8 @@
  * - Demonstrate deterministic behavior to customers
  */
 
-import { logError, logInfo } from '../../utils/logger';
-import { query } from '../../db';
+import { logError, logInfo } from "../../utils/logger";
+import { query } from "../../db";
 
 export interface DeterministicRun {
   reconciliationRunId: string;
@@ -34,35 +34,35 @@ export interface DeterministicGuarantee {
 
 const DETERMINISTIC_GUARANTEES: Record<string, DeterministicGuarantee> = {
   free: {
-    tier: 'free',
+    tier: "free",
     guaranteed: false, // Best-effort for free tier
   },
   starter: {
-    tier: 'starter',
+    tier: "starter",
     guaranteed: true,
     slaPercentage: 99.0, // 99% deterministic guarantee
   },
   growth: {
-    tier: 'growth',
+    tier: "growth",
     guaranteed: true,
     slaPercentage: 99.5, // 99.5% deterministic guarantee
   },
   scale: {
-    tier: 'scale',
+    tier: "scale",
     guaranteed: true,
     slaPercentage: 99.9, // 99.9% deterministic guarantee
   },
   enterprise: {
-    tier: 'enterprise',
+    tier: "enterprise",
     guaranteed: true,
     slaPercentage: 99.99, // 99.99% deterministic guarantee
-    violationPenalty: 'Service credit',
+    violationPenalty: "Service credit",
   },
 };
 
 /**
  * Deterministic Guarantee Enforcement Service
- * 
+ *
  * Enforces and tracks deterministic behavior guarantees
  */
 export class DeterministicGuaranteeEnforcementService {
@@ -71,18 +71,18 @@ export class DeterministicGuaranteeEnforcementService {
    */
   getDeterministicGuarantee(tierId: string): DeterministicGuarantee {
     const tierMap: Record<string, string> = {
-      base: 'starter',
-      pro: 'growth',
+      base: "starter",
+      pro: "growth",
     };
 
     const mappedTier = tierMap[tierId] || tierId;
     const guarantee = DETERMINISTIC_GUARANTEES[mappedTier];
-    return guarantee ?? DETERMINISTIC_GUARANTEES['free']!;
+    return guarantee ?? DETERMINISTIC_GUARANTEES["free"]!;
   }
 
   /**
    * Verify deterministic behavior
-   * 
+   *
    * Runs same reconciliation twice and verifies outputs match
    */
   async verifyDeterministicBehavior(
@@ -100,7 +100,7 @@ export class DeterministicGuaranteeEnforcementService {
       );
 
       if (runResult.length === 0) {
-        throw new Error('Reconciliation run not found');
+        throw new Error("Reconciliation run not found");
       }
 
       const run = runResult[0] as {
@@ -111,11 +111,14 @@ export class DeterministicGuaranteeEnforcementService {
       };
 
       // Extract inputs from metadata
-      const metadata = typeof run.metadata === 'string' ? JSON.parse(run.metadata) : run.metadata;
-      const sourceAdapter = (metadata as { source_adapter?: string })?.source_adapter || 'unknown';
-      const targetAdapter = (metadata as { target_adapter?: string })?.target_adapter || 'unknown';
-      const validationRules = JSON.stringify((metadata as { validation_rules?: unknown })?.validation_rules || {});
-      const reconStrategy = (metadata as { recon_strategy?: string })?.recon_strategy || 'deterministic';
+      const metadata = typeof run.metadata === "string" ? JSON.parse(run.metadata) : run.metadata;
+      const sourceAdapter = (metadata as { source_adapter?: string })?.source_adapter || "unknown";
+      const targetAdapter = (metadata as { target_adapter?: string })?.target_adapter || "unknown";
+      const validationRules = JSON.stringify(
+        (metadata as { validation_rules?: unknown })?.validation_rules || {}
+      );
+      const reconStrategy =
+        (metadata as { recon_strategy?: string })?.recon_strategy || "deterministic";
 
       // Hash inputs
       const inputsHash = this.hashInputs({
@@ -156,12 +159,11 @@ export class DeterministicGuaranteeEnforcementService {
         `SELECT id FROM billing_accounts WHERE tenant_id = $1 LIMIT 1`,
         [tenantId]
       );
-      const billingAccountId = billingAccountResult.length > 0 
-        ? (billingAccountResult[0] as { id: string }).id 
-        : null;
+      const billingAccountId =
+        billingAccountResult.length > 0 ? (billingAccountResult[0] as { id: string }).id : null;
 
       if (!billingAccountId) {
-        throw new Error('Billing account not found for tenant');
+        throw new Error("Billing account not found for tenant");
       }
 
       await query(
@@ -183,7 +185,7 @@ export class DeterministicGuaranteeEnforcementService {
         ]
       );
 
-      logInfo('Verified deterministic behavior', {
+      logInfo("Verified deterministic behavior", {
         reconciliationRunId,
         tenantId,
         inputsHash,
@@ -196,7 +198,7 @@ export class DeterministicGuaranteeEnforcementService {
         outputsHash,
       };
     } catch (error) {
-      logError('Failed to verify deterministic behavior', error, {
+      logError("Failed to verify deterministic behavior", error, {
         reconciliationRunId,
         tenantId,
       });
@@ -206,7 +208,7 @@ export class DeterministicGuaranteeEnforcementService {
 
   /**
    * Check deterministic guarantee compliance
-   * 
+   *
    * Verifies that deterministic guarantees are being met for a tenant
    */
   async checkDeterministicCompliance(
@@ -233,7 +235,8 @@ export class DeterministicGuaranteeEnforcementService {
         [tenantId]
       );
 
-      const tierId = tierResult.length > 0 ? (tierResult[0] as { plan_id: string }).plan_id : 'free';
+      const tierId =
+        tierResult.length > 0 ? (tierResult[0] as { plan_id: string }).plan_id : "free";
       const guarantee = this.getDeterministicGuarantee(tierId);
 
       if (!guarantee.guaranteed) {
@@ -281,7 +284,7 @@ export class DeterministicGuaranteeEnforcementService {
         guaranteeMet,
       };
     } catch (error) {
-      logError('Failed to check deterministic compliance', error, { tenantId });
+      logError("Failed to check deterministic compliance", error, { tenantId });
       return {
         totalRuns: 0,
         deterministicRuns: 0,
@@ -315,7 +318,7 @@ export class DeterministicGuaranteeEnforcementService {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash;
     }
     return Math.abs(hash).toString(36);

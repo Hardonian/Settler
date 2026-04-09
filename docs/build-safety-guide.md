@@ -7,9 +7,11 @@ This document outlines the proactive safeguards implemented to prevent build fai
 ## Issues Fixed
 
 ### 1. ESLint Config Dependencies
+
 **Problem**: Packages extending the root ESLint config (which includes `prettier`) were missing `eslint-config-prettier` dependency.
 
 **Fixed Packages**:
+
 - `@settler/web` ✅
 - `@settler/sdk` ✅
 - `@settler/adapters` ✅
@@ -19,13 +21,16 @@ This document outlines the proactive safeguards implemented to prevent build fai
 **Solution**: Added `eslint-config-prettier: ^10.1.8` to devDependencies of all affected packages.
 
 ### 2. Script References in Build Scripts
+
 **Problem**: Build scripts referenced files in `scripts/` directory which is excluded by `.vercelignore`.
 
 **Fixed**:
+
 - `packages/web/build:vercel` - Made script optional with existence check
 - Root `package.json` scripts - Made optional where appropriate
 
 **Pattern Used**:
+
 ```bash
 test -f scripts/script.js && node scripts/script.js || echo '⚠️  Script not available'
 ```
@@ -33,9 +38,11 @@ test -f scripts/script.js && node scripts/script.js || echo '⚠️  Script not 
 ## Validation Tools
 
 ### Build Safety Validator
+
 **Location**: `scripts/validate-build-safety.ts`
 
 **Checks**:
+
 - Scripts referenced but not available (especially in Vercel)
 - Missing ESLint config dependencies
 - Packages extending root ESLint config without required dependencies
@@ -43,24 +50,29 @@ test -f scripts/script.js && node scripts/script.js || echo '⚠️  Script not 
 - Build scripts with hard dependencies on ignored files
 
 **Usage**:
+
 ```bash
 npm run validate:build-safety
 ```
 
 **Integration**:
+
 - ✅ Pre-commit hook (`.husky/pre-commit`)
 - ✅ CI pipeline (`.github/workflows/ci.yml`)
 - ✅ Build Guardian (`scripts/build-guardian.ts`)
 
 ### ESLint Config Validator
+
 **Location**: `scripts/validate-eslint-config.ts`
 
 **Checks**:
+
 - All ESLint configs in monorepo
 - Validates that all `extends` configs have corresponding dependencies
 - Reports missing dependencies with installation commands
 
 **Usage**:
+
 ```bash
 npm run validate:eslint-config
 ```
@@ -68,25 +80,33 @@ npm run validate:eslint-config
 ## Prevention Layers
 
 ### 1. Pre-Commit Hook
+
 Runs before every commit:
+
 - ESLint config validation
 - Build safety validation
 - TypeScript typecheck
 
 ### 2. CI Pipeline
+
 Runs on every PR/push:
+
 - ESLint config validation
 - Build safety validation
 - Full lint and typecheck
 
 ### 3. Pre-Build Validation
+
 Runs before every build:
+
 - TypeScript typecheck
 - ESLint linting
 - (ESLint config validation skipped in Vercel - scripts not available)
 
 ### 4. Build Guardian
+
 Comprehensive health checks:
+
 - Prisma client generation
 - TypeScript configs
 - Package.json validation
@@ -105,6 +125,7 @@ Comprehensive health checks:
    - Inline the logic in the build script
 
 2. **If script is optional**:
+
    ```bash
    test -f scripts/script.js && node scripts/script.js || echo 'Skipping...'
    ```
@@ -128,6 +149,7 @@ Comprehensive health checks:
 ## Common Issues to Watch For
 
 ### ❌ Bad Pattern
+
 ```json
 {
   "scripts": {
@@ -135,9 +157,11 @@ Comprehensive health checks:
   }
 }
 ```
+
 **Problem**: Script won't be available in Vercel builds
 
 ### ✅ Good Pattern
+
 ```json
 {
   "scripts": {
@@ -145,9 +169,11 @@ Comprehensive health checks:
   }
 }
 ```
+
 **Solution**: Script is optional, build continues if missing
 
 ### ❌ Bad Pattern
+
 ```json
 {
   "devDependencies": {
@@ -155,9 +181,11 @@ Comprehensive health checks:
   }
 }
 ```
+
 **Problem**: Package extends root ESLint config with prettier but missing dependency
 
 ### ✅ Good Pattern
+
 ```json
 {
   "devDependencies": {
@@ -166,11 +194,13 @@ Comprehensive health checks:
   }
 }
 ```
+
 **Solution**: Required dependency is present
 
 ## Monitoring
 
 Run these commands regularly:
+
 ```bash
 # Check for build safety issues
 npm run validate:build-safety

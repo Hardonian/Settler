@@ -23,11 +23,13 @@ This document defines **enforceable guarantees** that Settler provides today. An
 - ✅ **Failure Mode:** If RLS is disabled or bypassed, isolation fails (this is a critical failure)
 
 **What This Means:**
+
 - One tenant cannot access another tenant's data through the API
 - Database-level enforcement means application bugs cannot bypass isolation
 - Service-role keys bypass RLS (documented risk, requires operational controls)
 
 **What This Does NOT Mean:**
+
 - Data is encrypted at rest (encryption is best-effort, not guaranteed)
 - Data cannot be accessed by database administrators (they can bypass RLS)
 - Cross-tenant analytics are impossible (they require service-role access)
@@ -43,11 +45,13 @@ This document defines **enforceable guarantees** that Settler provides today. An
 - ✅ **Failure Mode:** Misconfigured routes may expose endpoints (audited in CI)
 
 **What This Means:**
+
 - Unauthenticated requests return `401 Unauthorized`
 - API keys are validated before any business logic executes
 - JWT tokens are verified for signature and expiration
 
 **What This Does NOT Mean:**
+
 - Rate limiting is guaranteed (falls back to in-memory if Redis unavailable)
 - API keys cannot be brute-forced (rate limiting is best-effort)
 - Token revocation is immediate (may take up to 15 minutes for JWT expiration)
@@ -63,11 +67,13 @@ This document defines **enforceable guarantees** that Settler provides today. An
 - ✅ **Failure Mode:** If database is unavailable, usage tracking fails (non-blocking)
 
 **What This Means:**
+
 - Reconciliation runs, receipt parses, and feature flag evaluations are counted
 - Usage events are written to `usage_events` table
 - Daily aggregation runs to create billing records
 
 **What This Does NOT Mean:**
+
 - Usage tracking is real-time (may lag by minutes)
 - Usage tracking is 100% accurate (failures are non-blocking, may be lost)
 - Usage limits are enforced synchronously (quota checks may race)
@@ -83,11 +89,13 @@ This document defines **enforceable guarantees** that Settler provides today. An
 - ✅ **Failure Mode:** If idempotency storage fails, requests may be duplicated
 
 **What This Means:**
+
 - Clients can retry failed requests with the same idempotency key
 - Duplicate requests return the same response (cached)
 - Idempotency keys expire after 24 hours
 
 **What This Does NOT Mean:**
+
 - All operations are idempotent (only those using idempotency keys)
 - Idempotency works across API versions (keys are version-specific)
 - Idempotency survives database migrations (keys may be lost)
@@ -103,11 +111,13 @@ This document defines **enforceable guarantees** that Settler provides today. An
 - ✅ **Failure Mode:** If webhook service fails, deliveries may be lost
 
 **What This Means:**
+
 - Webhooks are retried up to 5 times with exponential backoff
 - Webhook payloads are signed with HMAC-SHA256
 - Failed webhooks are logged for manual retry
 
 **What This Does NOT Mean:**
+
 - Webhooks are delivered in real-time (may be delayed by minutes)
 - Webhooks are guaranteed to be delivered (eventual delivery, not guaranteed)
 - Webhook order is preserved (deliveries may be out of order)
@@ -125,11 +135,13 @@ This document defines **enforceable guarantees** that Settler provides today. An
 - ✅ **Failure Mode:** If OCR fails, receipt parsing returns partial data
 
 **What This Means:**
+
 - Receipts are parsed into structured JSON (vendor, date, total, items)
 - Confidence scores indicate extraction quality
 - Receipts are stored in `receipts` table with `receipt_items`
 
 **What This Does NOT Mean:**
+
 - Receipt parsing is 100% accurate (confidence scores indicate uncertainty)
 - All receipt formats are supported (only common formats are reliable)
 - Receipt parsing is real-time (may take seconds for complex receipts)
@@ -145,11 +157,13 @@ This document defines **enforceable guarantees** that Settler provides today. An
 - ✅ **Failure Mode:** If cache fails, flags may be inconsistent temporarily
 
 **What This Means:**
+
 - Feature flags return boolean/string/number values
 - Flags are scoped to environments (production, staging, development)
 - Flag overrides allow per-user/tenant customization
 
 **What This Does NOT Mean:**
+
 - Feature flags are updated instantly (may take up to 60 seconds to propagate)
 - Feature flags work offline (requires database connection)
 - Feature flag evaluations are free (counted toward usage limits)
@@ -165,11 +179,13 @@ This document defines **enforceable guarantees** that Settler provides today. An
 - ✅ **Failure Mode:** If matching logic fails, runs may return partial results
 
 **What This Means:**
+
 - Reconciliation runs process transactions from ingestion sources
 - Matches are created with confidence scores (0.0-1.0)
 - Unmatched transactions are flagged for manual review
 
 **What This Does NOT Mean:**
+
 - Reconciliation is 100% accurate (confidence scores indicate uncertainty)
 - Reconciliation is real-time (may take minutes for large datasets)
 - All transaction types are supported (only normalized transactions are matched)
@@ -210,6 +226,7 @@ When a guarantee fails:
 ### Guarantee Evolution
 
 Guarantees may be:
+
 - **Added:** When new capabilities are proven reliable
 - **Removed:** When guarantees cannot be maintained
 - **Modified:** When requirements change
@@ -232,6 +249,7 @@ Users must:
 ## Summary
 
 Settler guarantees:
+
 - ✅ **Data isolation** (RLS-enforced)
 - ✅ **API authentication** (required for all endpoints)
 - ✅ **Usage tracking** (for billing)

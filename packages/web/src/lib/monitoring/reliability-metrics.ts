@@ -1,6 +1,6 @@
 /**
  * Reliability Metrics Storage
- * 
+ *
  * Tracks key reliability metrics for operations:
  * - success rate per operation
  * - retries count
@@ -10,7 +10,7 @@
  * - adapter error rates
  */
 
-import { prisma } from '@/shared/db/prismaClient';
+import { prisma } from "@/shared/db/prismaClient";
 
 export interface ReliabilityMetric {
   operation: string;
@@ -48,10 +48,10 @@ export async function recordReliabilityMetric(metric: ReliabilityMetric): Promis
   try {
     // Store in database (using a telemetry/ops_events table if it exists)
     // For now, we'll use a simple approach - store in audit log or create a metrics table
-    
+
     // Check if ops_events table exists (from schema inspection)
     // If not, we'll use console logging as fallback
-    
+
     await prisma.$executeRaw`
       INSERT INTO ops_events (
         tenant_id,
@@ -83,11 +83,11 @@ export async function recordReliabilityMetric(metric: ReliabilityMetric): Promis
     `.catch(() => {
       // Table might not exist - log to console as fallback
       // eslint-disable-next-line no-console
-      console.log('[Reliability Metric]', JSON.stringify(metric));
+      console.log("[Reliability Metric]", JSON.stringify(metric));
     });
   } catch (error) {
     // Don't throw - metrics are best-effort
-    console.error('[Reliability Metrics] Error recording metric:', error);
+    console.error("[Reliability Metrics] Error recording metric:", error);
   }
 }
 
@@ -102,15 +102,17 @@ export async function getOperationStats(
   try {
     // Query ops_events table
     const query = tenantId
-      ? prisma.$queryRaw<Array<{
-          total: bigint;
-          success_count: bigint;
-          failure_count: bigint;
-          avg_duration: number;
-          p95_duration: number;
-          retry_count: bigint;
-          dead_letter_count: bigint;
-        }>>`
+      ? prisma.$queryRaw<
+          Array<{
+            total: bigint;
+            success_count: bigint;
+            failure_count: bigint;
+            avg_duration: number;
+            p95_duration: number;
+            retry_count: bigint;
+            dead_letter_count: bigint;
+          }>
+        >`
         SELECT
           COUNT(*) as total,
           COUNT(*) FILTER (WHERE success = true) as success_count,
@@ -124,15 +126,17 @@ export async function getOperationStats(
           AND tenant_id = ${tenantId}
           AND created_at >= ${since}
       `
-      : prisma.$queryRaw<Array<{
-          total: bigint;
-          success_count: bigint;
-          failure_count: bigint;
-          avg_duration: number;
-          p95_duration: number;
-          retry_count: bigint;
-          dead_letter_count: bigint;
-        }>>`
+      : prisma.$queryRaw<
+          Array<{
+            total: bigint;
+            success_count: bigint;
+            failure_count: bigint;
+            avg_duration: number;
+            p95_duration: number;
+            retry_count: bigint;
+            dead_letter_count: bigint;
+          }>
+        >`
         SELECT
           COUNT(*) as total,
           COUNT(*) FILTER (WHERE success = true) as success_count,
@@ -155,7 +159,7 @@ export async function getOperationStats(
     if (!row) {
       return null;
     }
-    
+
     const total = Number(row.total ?? 0n);
     const successCount = Number(row.success_count ?? 0n);
     const failureCount = Number(row.failure_count ?? 0n);
@@ -172,7 +176,7 @@ export async function getOperationStats(
       deadLetterCount: Number(row.dead_letter_count ?? 0n),
     };
   } catch (error) {
-    console.error('[Reliability Metrics] Error getting stats:', error);
+    console.error("[Reliability Metrics] Error getting stats:", error);
     return null;
   }
 }
@@ -186,11 +190,13 @@ export async function getAdapterErrorRates(
 ): Promise<Array<{ adapterType: string; errorRate: number; totalRequests: number }>> {
   try {
     const query = tenantId
-      ? prisma.$queryRaw<Array<{
-          adapter_type: string;
-          total: bigint;
-          error_count: bigint;
-        }>>`
+      ? prisma.$queryRaw<
+          Array<{
+            adapter_type: string;
+            total: bigint;
+            error_count: bigint;
+          }>
+        >`
         SELECT
           adapter_type,
           COUNT(*) as total,
@@ -201,11 +207,13 @@ export async function getAdapterErrorRates(
           AND created_at >= ${since}
         GROUP BY adapter_type
       `
-      : prisma.$queryRaw<Array<{
-          adapter_type: string;
-          total: bigint;
-          error_count: bigint;
-        }>>`
+      : prisma.$queryRaw<
+          Array<{
+            adapter_type: string;
+            total: bigint;
+            error_count: bigint;
+          }>
+        >`
         SELECT
           adapter_type,
           COUNT(*) as total,
@@ -221,13 +229,13 @@ export async function getAdapterErrorRates(
       const total = Number(row.total ?? 0n);
       const errorCount = Number(row.error_count ?? 0n);
       return {
-        adapterType: row.adapter_type || 'unknown',
+        adapterType: row.adapter_type || "unknown",
         errorRate: total > 0 ? errorCount / total : 0,
         totalRequests: total,
       };
     });
   } catch (error) {
-    console.error('[Reliability Metrics] Error getting adapter error rates:', error);
+    console.error("[Reliability Metrics] Error getting adapter error rates:", error);
     return [];
   }
 }

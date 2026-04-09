@@ -1,12 +1,11 @@
 /**
  * LegalTech Module - Contract Diff Service
- * 
+ *
  * Part of Phase IV: Vertical Modules
  */
 
- 
-import { PrismaClient } from '@prisma/client';
-import { logInfo } from '../../../utils/logger';
+import { PrismaClient } from "@prisma/client";
+import { logInfo } from "../../../utils/logger";
 
 export interface ContractDiff {
   added: string[];
@@ -51,7 +50,7 @@ export class ContractDiffService {
     // - Modified clauses
     // - Risk scoring
 
-    logInfo('Contract diff generated', { tenantId });
+    logInfo("Contract diff generated", { tenantId });
 
     return {
       added: [],
@@ -64,12 +63,14 @@ export class ContractDiffService {
   /**
    * Extract obligations from contract
    */
-  async extractObligations(_contract: string): Promise<Array<{
-    party: string;
-    obligation: string;
-    deadline?: string;
-    penalty?: string;
-  }>> {
+  async extractObligations(_contract: string): Promise<
+    Array<{
+      party: string;
+      obligation: string;
+      deadline?: string;
+      penalty?: string;
+    }>
+  > {
     // TODO: Implement obligation extraction
     return [];
   }
@@ -80,11 +81,13 @@ export class ContractDiffService {
   async mapObligations(
     _sourceObligations: unknown[],
     _targetObligations: unknown[]
-  ): Promise<Array<{
-    source: Obligation;
-    target: Obligation;
-    confidence: number;
-  }>> {
+  ): Promise<
+    Array<{
+      source: Obligation;
+      target: Obligation;
+      confidence: number;
+    }>
+  > {
     // Use reconciliation engine to map obligations
     return [];
   }

@@ -1,34 +1,36 @@
 /**
  * Reality Dashboard Page
- * 
+ *
  * Internal ops view showing all reality metrics with PROVEN/ASSUMED/BROKEN status.
  * Admin-only access.
  */
 
-import { Suspense } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { createClient } from '@/lib/supabase/server';
-import { 
-  DollarSign, 
-  Users, 
-  Shield, 
-  AlertTriangle, 
-  Rocket, 
-  TrendingUp, 
+import { Suspense } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { createClient } from "@/lib/supabase/server";
+import {
+  DollarSign,
+  Users,
+  Shield,
+  AlertTriangle,
+  Rocket,
+  TrendingUp,
   Settings,
   CheckCircle,
   XCircle,
   Clock,
-  Loader2
-} from 'lucide-react';
+  Loader2,
+} from "lucide-react";
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 async function RealityDashboardContent() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     return (
@@ -44,8 +46,11 @@ async function RealityDashboardContent() {
   }
 
   // Check admin access via role metadata only — email domain bypass removed (security)
-  const isAdmin = user.user_metadata?.role === 'admin' || user.user_metadata?.role === 'SUPER_ADMIN' || user.user_metadata?.role === 'super_admin';
-  
+  const isAdmin =
+    user.user_metadata?.role === "admin" ||
+    user.user_metadata?.role === "SUPER_ADMIN" ||
+    user.user_metadata?.role === "super_admin";
+
   if (!isAdmin) {
     return (
       <div className="p-8">
@@ -60,9 +65,12 @@ async function RealityDashboardContent() {
   }
 
   // Fetch reality data
-  const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/console/reality`, {
-    cache: 'no-store',
-  });
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/console/reality`,
+    {
+      cache: "no-store",
+    }
+  );
 
   if (!response.ok) {
     return (
@@ -70,7 +78,9 @@ async function RealityDashboardContent() {
         <Card>
           <CardHeader>
             <CardTitle>Error</CardTitle>
-            <CardDescription>Failed to load reality metrics. Please try again later.</CardDescription>
+            <CardDescription>
+              Failed to load reality metrics. Please try again later.
+            </CardDescription>
           </CardHeader>
         </Card>
       </div>
@@ -83,26 +93,41 @@ async function RealityDashboardContent() {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'proven':
-        return <Badge className="bg-green-500"><CheckCircle className="w-3 h-3 mr-1" />PROVEN</Badge>;
-      case 'assumed':
-        return <Badge className="bg-yellow-500"><Clock className="w-3 h-3 mr-1" />ASSUMED</Badge>;
-      case 'broken':
-        return <Badge className="bg-red-500"><XCircle className="w-3 h-3 mr-1" />BROKEN</Badge>;
+      case "proven":
+        return (
+          <Badge className="bg-green-500">
+            <CheckCircle className="w-3 h-3 mr-1" />
+            PROVEN
+          </Badge>
+        );
+      case "assumed":
+        return (
+          <Badge className="bg-yellow-500">
+            <Clock className="w-3 h-3 mr-1" />
+            ASSUMED
+          </Badge>
+        );
+      case "broken":
+        return (
+          <Badge className="bg-red-500">
+            <XCircle className="w-3 h-3 mr-1" />
+            BROKEN
+          </Badge>
+        );
       default:
         return <Badge>{status}</Badge>;
     }
   };
 
   const formatValue = (value: any): string => {
-    if (typeof value === 'number') {
+    if (typeof value === "number") {
       return value.toLocaleString();
     }
-    if (typeof value === 'boolean') {
-      return value ? 'Yes' : 'No';
+    if (typeof value === "boolean") {
+      return value ? "Yes" : "No";
     }
     if (value === null || value === undefined) {
-      return 'N/A';
+      return "N/A";
     }
     return String(value);
   };
@@ -117,9 +142,7 @@ async function RealityDashboardContent() {
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold mb-2">{formatValue(metric.value)}</div>
-        <div className="text-xs text-muted-foreground">
-          Source: {metric.source}
-        </div>
+        <div className="text-xs text-muted-foreground">Source: {metric.source}</div>
         <div className="text-xs text-muted-foreground mt-1">
           Updated: {new Date(metric.last_updated).toLocaleString()}
         </div>
@@ -132,7 +155,8 @@ async function RealityDashboardContent() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Reality Dashboard</h1>
         <p className="text-muted-foreground">
-          Single source of truth for all reality metrics. Status: PROVEN = backed by real data, ASSUMED = estimated, BROKEN = data source failed.
+          Single source of truth for all reality metrics. Status: PROVEN = backed by real data,
+          ASSUMED = estimated, BROKEN = data source failed.
         </p>
       </div>
 
@@ -258,13 +282,16 @@ async function RealityDashboardContent() {
             <CardContent className="pt-6">
               <div className="space-y-2">
                 {recent_events.slice(0, 10).map((event: any) => (
-                  <div key={event.id} className="flex items-center justify-between py-2 border-b last:border-0">
+                  <div
+                    key={event.id}
+                    className="flex items-center justify-between py-2 border-b last:border-0"
+                  >
                     <div>
                       <div className="font-medium">{event.event_name}</div>
                       <div className="text-sm text-muted-foreground">{event.category}</div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge variant={event.severity === 'critical' ? 'destructive' : 'secondary'}>
+                      <Badge variant={event.severity === "critical" ? "destructive" : "secondary"}>
                         {event.severity}
                       </Badge>
                       <span className="text-xs text-muted-foreground">
@@ -298,15 +325,21 @@ async function RealityDashboardContent() {
                 </div>
                 <div>
                   <div className="text-sm text-muted-foreground">Required Actions</div>
-                  <div className="text-xl font-bold">{latest_snapshot.required_actions?.length || 0}</div>
+                  <div className="text-xl font-bold">
+                    {latest_snapshot.required_actions?.length || 0}
+                  </div>
                 </div>
                 <div>
                   <div className="text-sm text-muted-foreground">Events</div>
-                  <div className="text-xl font-bold">{latest_snapshot.events_summary?.total || 0}</div>
+                  <div className="text-xl font-bold">
+                    {latest_snapshot.events_summary?.total || 0}
+                  </div>
                 </div>
                 <div>
                   <div className="text-sm text-muted-foreground">Metrics</div>
-                  <div className="text-xl font-bold">{latest_snapshot.summary?.metrics_count || 0}</div>
+                  <div className="text-xl font-bold">
+                    {latest_snapshot.summary?.metrics_count || 0}
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -319,11 +352,13 @@ async function RealityDashboardContent() {
 
 export default function RealityDashboardPage() {
   return (
-    <Suspense fallback={
-      <div className="container mx-auto p-8 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin" />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="container mx-auto p-8 flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin" />
+        </div>
+      }
+    >
       <RealityDashboardContent />
     </Suspense>
   );

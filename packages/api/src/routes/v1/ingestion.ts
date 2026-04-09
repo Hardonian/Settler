@@ -175,116 +175,125 @@ async function loadSchemaDriftBaseline(
  * POST /api/v1/ingestion/sources
  * Create a new ingestion source (connector or CSV)
  */
-router.post("/sources", enforceFreezeState(), requirePermission(Permission.OPERATOR_WRITE), async (req: AuthRequest, res: Response) => {
-  try {
-    const { name, type, connectorType, config, configMetadata } = req.body;
-    const tenantId = req.tenantId!;
-    const userId = req.userId!;
+router.post(
+  "/sources",
+  enforceFreezeState(),
+  requirePermission(Permission.OPERATOR_WRITE),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const { name, type, connectorType, config, configMetadata } = req.body;
+      const tenantId = req.tenantId!;
+      const userId = req.userId!;
 
-    if (!name || !type) {
-      return res.status(400).json({
-        error: "Bad Request",
-        message: "name and type are required",
-        traceId: req.traceId,
-      });
-    }
+      if (!name || !type) {
+        return res.status(400).json({
+          error: "Bad Request",
+          message: "name and type are required",
+          traceId: req.traceId,
+        });
+      }
 
-    // Check kill switch for connector
-    if (connectorType && (await isConnectorDisabled(connectorType))) {
-      return res.status(503).json({
-        error: "Service Unavailable",
-        message: `Connector ${connectorType} is currently disabled`,
-        traceId: req.traceId,
-      });
-    }
+      // Check kill switch for connector
+      if (connectorType && (await isConnectorDisabled(connectorType))) {
+        return res.status(503).json({
+          error: "Service Unavailable",
+          message: `Connector ${connectorType} is currently disabled`,
+          traceId: req.traceId,
+        });
+      }
 
-    const sourceId = uuidv4();
-    // Connector configs contain OAuth tokens and API keys — encrypt at rest with AES-256-GCM.
-    const encryptedConfig = config ? encrypt(JSON.stringify(config)) : null;
+      const sourceId = uuidv4();
+      // Connector configs contain OAuth tokens and API keys — encrypt at rest with AES-256-GCM.
+      const encryptedConfig = config ? encrypt(JSON.stringify(config)) : null;
 
-    await query(
-      `INSERT INTO ingestion_sources (
+      await query(
+        `INSERT INTO ingestion_sources (
         id, tenant_id, user_id, name, type, connector_type,
         config_encrypted, config_metadata, status, created_at, updated_at
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
       RETURNING id`,
-      [
-        sourceId,
-        tenantId,
-        userId,
+        [
+          sourceId,
+          tenantId,
+          userId,
+          name,
+          type,
+          connectorType || null,
+          encryptedConfig,
+          JSON.stringify(configMetadata || {}),
+          "active",
+        ]
+      );
+
+      logInfo("Created ingestion source", { sourceId, type, tenantId });
+
+      return res.status(201).json({
+        id: sourceId,
         name,
         type,
-        connectorType || null,
-        encryptedConfig,
-        JSON.stringify(configMetadata || {}),
-        "active",
-      ]
-    );
-
-    logInfo("Created ingestion source", { sourceId, type, tenantId });
-
-    return res.status(201).json({
-      id: sourceId,
-      name,
-      type,
-      connectorType,
-      status: "active",
-      createdAt: new Date().toISOString(),
-    });
-  } catch (error) {
-    logError("Failed to create ingestion source", error, {
-      traceId: req.traceId,
-    });
-    return res.status(500).json({
-      error: "Internal Server Error",
-      message: "Failed to create ingestion source",
-      traceId: req.traceId,
-    });
+        connectorType,
+        status: "active",
+        createdAt: new Date().toISOString(),
+      });
+    } catch (error) {
+      logError("Failed to create ingestion source", error, {
+        traceId: req.traceId,
+      });
+      return res.status(500).json({
+        error: "Internal Server Error",
+        message: "Failed to create ingestion source",
+        traceId: req.traceId,
+      });
+    }
   }
-});
+);
 
 /**
  * GET /api/v1/ingestion/sources
  * List ingestion sources
  */
-router.get("/sources", requirePermission(Permission.OPERATOR_READ), async (req: AuthRequest, res: Response) => {
-  try {
-    const tenantId = req.tenantId!;
+router.get(
+  "/sources",
+  requirePermission(Permission.OPERATOR_READ),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = req.tenantId!;
 
-    const sources = await query(
-      `SELECT
+      const sources = await query(
+        `SELECT
         id, name, type, connector_type, status, last_sync_at,
         last_sync_status, created_at, updated_at
       FROM ingestion_sources
       WHERE tenant_id = $1 AND deleted_at IS NULL
       ORDER BY created_at DESC`,
-      [tenantId]
-    );
+        [tenantId]
+      );
 
-    return res.json({
-      sources: sources.map((s: Record<string, unknown>) => ({
-        id: s.id as string,
-        name: s.name as string,
-        type: s.type as string,
-        connectorType: s.connector_type as string | null,
-        status: s.status as string,
-        lastSyncAt: s.last_sync_at as Date | null,
-        lastSyncStatus: s.last_sync_status as string | null,
-        createdAt: s.created_at as Date,
-        updatedAt: s.updated_at as Date,
-      })),
-    });
-  } catch (error) {
-    logError("Failed to list ingestion sources", error, {
-      traceId: req.traceId,
-    });
-    return res.status(500).json({
-      error: "Internal Server Error",
-      message: "Failed to list ingestion sources",
-      traceId: req.traceId,
-    });
+      return res.json({
+        sources: sources.map((s: Record<string, unknown>) => ({
+          id: s.id as string,
+          name: s.name as string,
+          type: s.type as string,
+          connectorType: s.connector_type as string | null,
+          status: s.status as string,
+          lastSyncAt: s.last_sync_at as Date | null,
+          lastSyncStatus: s.last_sync_status as string | null,
+          createdAt: s.created_at as Date,
+          updatedAt: s.updated_at as Date,
+        })),
+      });
+    } catch (error) {
+      logError("Failed to list ingestion sources", error, {
+        traceId: req.traceId,
+      });
+      return res.status(500).json({
+        error: "Internal Server Error",
+        message: "Failed to list ingestion sources",
+        traceId: req.traceId,
+      });
+    }
   }
-});
+);
 
 /**
  * POST /api/v1/ingestion/preview
@@ -530,29 +539,33 @@ router.post(
         | { kind: "empty" };
 
       const rowSlots: RowSlot[] = new Array(rows.length);
-      await processCsvRowsWithBoundedConcurrency(rows.length, CSV_ROW_INGEST_CONCURRENCY, async (i) => {
-        const row = rows[i];
-        if (!row) {
-          rowSlots[i] = { kind: "empty" };
-          return;
-        }
-        try {
-          const normalized = normalizeCSVRow(row, columnMapping);
+      await processCsvRowsWithBoundedConcurrency(
+        rows.length,
+        CSV_ROW_INGEST_CONCURRENCY,
+        async (i) => {
+          const row = rows[i];
+          if (!row) {
+            rowSlots[i] = { kind: "empty" };
+            return;
+          }
+          try {
+            const normalized = normalizeCSVRow(row, columnMapping);
 
-          const rawRecordId = await createRawRecord(ingestionId, finalSourceId, tenantId, row, {
-            rowNumber: i + 1,
-            externalId: normalized.externalId,
-          });
+            const rawRecordId = await createRawRecord(ingestionId, finalSourceId, tenantId, row, {
+              rowNumber: i + 1,
+              externalId: normalized.externalId,
+            });
 
-          rowSlots[i] = { kind: "ok", transaction: normalized, rawRecordId };
-        } catch (error) {
-          rowSlots[i] = { kind: "fail" };
-          logError("Failed to normalize CSV row", error, {
-            rowNumber: i + 1,
-            traceId,
-          });
+            rowSlots[i] = { kind: "ok", transaction: normalized, rawRecordId };
+          } catch (error) {
+            rowSlots[i] = { kind: "fail" };
+            logError("Failed to normalize CSV row", error, {
+              rowNumber: i + 1,
+              traceId,
+            });
+          }
         }
-      });
+      );
 
       const normalizedTransactions: Array<{
         transaction: any;
@@ -681,181 +694,193 @@ router.post(
  * GET /api/v1/ingestion/:ingestionId
  * Get ingestion details
  */
-router.get("/:ingestionId", requirePermission(Permission.OPERATOR_READ), async (req: AuthRequest, res: Response) => {
-  try {
-    const { ingestionId } = req.params;
-    const tenantId = req.tenantId!;
+router.get(
+  "/:ingestionId",
+  requirePermission(Permission.OPERATOR_READ),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const { ingestionId } = req.params;
+      const tenantId = req.tenantId!;
 
-    const results = await query(
-      `SELECT
+      const results = await query(
+        `SELECT
         id, source_id, status, raw_record_count, normalized_count,
         failed_count, retry_count, trace_id, started_at, completed_at,
         error_message, metadata
       FROM ingestions
       WHERE id = $1 AND tenant_id = $2`,
-      [ingestionId || "", tenantId]
-    );
+        [ingestionId || "", tenantId]
+      );
 
-    if (results.length === 0) {
-      return res.status(404).json({
-        error: "Not Found",
-        message: "Ingestion not found",
+      if (results.length === 0) {
+        return res.status(404).json({
+          error: "Not Found",
+          message: "Ingestion not found",
+          traceId: req.traceId,
+        });
+      }
+
+      const ingestion = results[0] as Record<string, unknown>;
+
+      return res.json({
+        id: ingestion.id as string,
+        sourceId: ingestion.source_id as string,
+        status: ingestion.status as string,
+        rawRecordCount: ingestion.raw_record_count as number,
+        normalizedCount: ingestion.normalized_count as number,
+        failedCount: ingestion.failed_count as number,
+        retryCount: ingestion.retry_count as number,
+        traceId: ingestion.trace_id as string | null,
+        startedAt: ingestion.started_at as Date,
+        completedAt: ingestion.completed_at as Date | null,
+        errorMessage: ingestion.error_message as string | null,
+        metadata:
+          typeof ingestion.metadata === "string"
+            ? JSON.parse(ingestion.metadata)
+            : ingestion.metadata,
+      });
+    } catch (error) {
+      logError("Failed to get ingestion", error, { traceId: req.traceId });
+      return res.status(500).json({
+        error: "Internal Server Error",
+        message: "Failed to get ingestion",
         traceId: req.traceId,
       });
     }
-
-    const ingestion = results[0] as Record<string, unknown>;
-
-    return res.json({
-      id: ingestion.id as string,
-      sourceId: ingestion.source_id as string,
-      status: ingestion.status as string,
-      rawRecordCount: ingestion.raw_record_count as number,
-      normalizedCount: ingestion.normalized_count as number,
-      failedCount: ingestion.failed_count as number,
-      retryCount: ingestion.retry_count as number,
-      traceId: ingestion.trace_id as string | null,
-      startedAt: ingestion.started_at as Date,
-      completedAt: ingestion.completed_at as Date | null,
-      errorMessage: ingestion.error_message as string | null,
-      metadata:
-        typeof ingestion.metadata === "string"
-          ? JSON.parse(ingestion.metadata)
-          : ingestion.metadata,
-    });
-  } catch (error) {
-    logError("Failed to get ingestion", error, { traceId: req.traceId });
-    return res.status(500).json({
-      error: "Internal Server Error",
-      message: "Failed to get ingestion",
-      traceId: req.traceId,
-    });
   }
-});
+);
 
 /**
  * GET /api/v1/ingestion/:ingestionId/transactions
  * Get normalized transactions for an ingestion
  */
-router.get("/:ingestionId/transactions", requirePermission(Permission.OPERATOR_READ), async (req: AuthRequest, res: Response) => {
-  try {
-    const { ingestionId } = req.params;
-    const tenantId = req.tenantId!;
-    const limit = parseInt(req.query.limit as string) || 100;
-    const offset = parseInt(req.query.offset as string) || 0;
+router.get(
+  "/:ingestionId/transactions",
+  requirePermission(Permission.OPERATOR_READ),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const { ingestionId } = req.params;
+      const tenantId = req.tenantId!;
+      const limit = parseInt(req.query.limit as string) || 100;
+      const offset = parseInt(req.query.offset as string) || 0;
 
-    const transactions = await query(
-      `SELECT
+      const transactions = await query(
+        `SELECT
           id, external_id, amount, currency, date, description,
           category, payment_method, reference, metadata, created_at
         FROM normalized_transactions
         WHERE ingestion_id = $1 AND tenant_id = $2
         ORDER BY date DESC
         LIMIT $3 OFFSET $4`,
-      [ingestionId || "", tenantId, limit.toString(), offset.toString()]
-    );
+        [ingestionId || "", tenantId, limit.toString(), offset.toString()]
+      );
 
-    const totalResults = await query(
-      `SELECT COUNT(*) as count
+      const totalResults = await query(
+        `SELECT COUNT(*) as count
         FROM normalized_transactions
         WHERE ingestion_id = $1 AND tenant_id = $2`,
-      [ingestionId || "", tenantId]
-    );
+        [ingestionId || "", tenantId]
+      );
 
-    const firstTotalResult = totalResults[0];
-    if (!firstTotalResult) {
-      throw new Error("Failed to get transaction count");
+      const firstTotalResult = totalResults[0];
+      if (!firstTotalResult) {
+        throw new Error("Failed to get transaction count");
+      }
+      const total = (firstTotalResult as { count: string }).count;
+
+      return res.json({
+        transactions: transactions.map((t: Record<string, unknown>) => ({
+          id: t.id as string,
+          externalId: t.external_id as string | null,
+          amount: t.amount as number,
+          currency: t.currency as string,
+          date: t.date as Date,
+          description: t.description as string | null,
+          category: t.category as string | null,
+          paymentMethod: t.payment_method as string | null,
+          reference: t.reference as string | null,
+          metadata: typeof t.metadata === "string" ? JSON.parse(t.metadata) : t.metadata,
+          createdAt: t.created_at as Date,
+        })),
+        pagination: {
+          limit,
+          offset,
+          total: parseInt(total),
+        },
+      });
+    } catch (error) {
+      logError("Failed to get transactions", error, { traceId: req.traceId });
+      return res.status(500).json({
+        error: "Internal Server Error",
+        message: "Failed to get transactions",
+        traceId: req.traceId,
+      });
     }
-    const total = (firstTotalResult as { count: string }).count;
-
-    return res.json({
-      transactions: transactions.map((t: Record<string, unknown>) => ({
-        id: t.id as string,
-        externalId: t.external_id as string | null,
-        amount: t.amount as number,
-        currency: t.currency as string,
-        date: t.date as Date,
-        description: t.description as string | null,
-        category: t.category as string | null,
-        paymentMethod: t.payment_method as string | null,
-        reference: t.reference as string | null,
-        metadata: typeof t.metadata === "string" ? JSON.parse(t.metadata) : t.metadata,
-        createdAt: t.created_at as Date,
-      })),
-      pagination: {
-        limit,
-        offset,
-        total: parseInt(total),
-      },
-    });
-  } catch (error) {
-    logError("Failed to get transactions", error, { traceId: req.traceId });
-    return res.status(500).json({
-      error: "Internal Server Error",
-      message: "Failed to get transactions",
-      traceId: req.traceId,
-    });
   }
-});
+);
 
 /**
  * GET /api/v1/ingestion/workbench/recent
  * Get recent ingestion workbench summaries for control-plane linking
  */
-router.get("/workbench/recent", requirePermission(Permission.OPERATOR_READ), async (req: AuthRequest, res: Response) => {
-  try {
-    const tenantId = req.tenantId;
-    if (!tenantId) {
-      return res.status(400).json({
-        error: "Bad Request",
-        code: "TENANT_CONTEXT_REQUIRED",
-        message: "Tenant context is required",
-        traceId: req.traceId,
-      });
-    }
+router.get(
+  "/workbench/recent",
+  requirePermission(Permission.OPERATOR_READ),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = req.tenantId;
+      if (!tenantId) {
+        return res.status(400).json({
+          error: "Bad Request",
+          code: "TENANT_CONTEXT_REQUIRED",
+          message: "Tenant context is required",
+          traceId: req.traceId,
+        });
+      }
 
-    const limit = Math.min(Math.max(parseInt(req.query.limit as string, 10) || 20, 1), 100);
-    const ingestions = await query(
-      `SELECT id, source_id, status, completed_at, metadata
+      const limit = Math.min(Math.max(parseInt(req.query.limit as string, 10) || 20, 1), 100);
+      const ingestions = await query(
+        `SELECT id, source_id, status, completed_at, metadata
          FROM ingestions
         WHERE tenant_id = $1
         ORDER BY created_at DESC
         LIMIT $2`,
-      [tenantId, limit.toString()]
-    );
+        [tenantId, limit.toString()]
+      );
 
-    return res.json({
-      items: ingestions.map((row: Record<string, unknown>) => {
-        const metadata =
-          typeof row.metadata === "string"
-            ? (JSON.parse(row.metadata) as Record<string, unknown>)
-            : (row.metadata as Record<string, unknown> | undefined) || {};
-        const workbench = (metadata.importWorkbench || {}) as Record<string, unknown>;
-        return {
-          ingestionId: row.id as string,
-          sourceId: row.source_id as string,
-          status: row.status as string,
-          completedAt: row.completed_at as Date | null,
-          workbench,
-          links: {
-            ingestionDetail: `/api/v1/ingestion/${row.id as string}`,
-            retry: `/api/v1/ingestion/${row.id as string}/retry`,
-          },
-        };
-      }),
-    });
-  } catch (error) {
-    logError("Failed to get recent ingestion workbench summaries", error, {
-      traceId: req.traceId,
-    });
-    return res.status(500).json({
-      error: "Internal Server Error",
-      code: "INGESTION_WORKBENCH_RECENT_FAILED",
-      message: "Failed to load recent ingestion workbench summaries",
-      traceId: req.traceId,
-    });
+      return res.json({
+        items: ingestions.map((row: Record<string, unknown>) => {
+          const metadata =
+            typeof row.metadata === "string"
+              ? (JSON.parse(row.metadata) as Record<string, unknown>)
+              : (row.metadata as Record<string, unknown> | undefined) || {};
+          const workbench = (metadata.importWorkbench || {}) as Record<string, unknown>;
+          return {
+            ingestionId: row.id as string,
+            sourceId: row.source_id as string,
+            status: row.status as string,
+            completedAt: row.completed_at as Date | null,
+            workbench,
+            links: {
+              ingestionDetail: `/api/v1/ingestion/${row.id as string}`,
+              retry: `/api/v1/ingestion/${row.id as string}/retry`,
+            },
+          };
+        }),
+      });
+    } catch (error) {
+      logError("Failed to get recent ingestion workbench summaries", error, {
+        traceId: req.traceId,
+      });
+      return res.status(500).json({
+        error: "Internal Server Error",
+        code: "INGESTION_WORKBENCH_RECENT_FAILED",
+        message: "Failed to load recent ingestion workbench summaries",
+        traceId: req.traceId,
+      });
+    }
   }
-});
+);
 
 /**
  * POST /api/v1/ingestion/:ingestionId/retry
@@ -975,29 +1000,33 @@ router.post(
         | { kind: "empty" };
 
       const retrySlots: RetrySlot[] = new Array(rows.length);
-      await processCsvRowsWithBoundedConcurrency(rows.length, CSV_ROW_INGEST_CONCURRENCY, async (index) => {
-        const row = rows[index];
-        if (!row) {
-          retrySlots[index] = { kind: "empty" };
-          return;
-        }
+      await processCsvRowsWithBoundedConcurrency(
+        rows.length,
+        CSV_ROW_INGEST_CONCURRENCY,
+        async (index) => {
+          const row = rows[index];
+          if (!row) {
+            retrySlots[index] = { kind: "empty" };
+            return;
+          }
 
-        const rowNumber = index + 1;
-        const rawRecordId = await createRawRecord(retryIngestionId, sourceId, tenantId, row, {
-          rowNumber,
-        });
+          const rowNumber = index + 1;
+          const rawRecordId = await createRawRecord(retryIngestionId, sourceId, tenantId, row, {
+            rowNumber,
+          });
 
-        try {
-          const normalized = normalizeCSVRow(row, columnMapping);
-          retrySlots[index] = { kind: "ok", transaction: normalized, rawRecordId };
-        } catch {
-          retrySlots[index] = { kind: "fail", rawRecordId };
-          await query(
-            `UPDATE raw_records SET status = 'failed', updated_at = NOW() WHERE id = $1 AND tenant_id = $2`,
-            [rawRecordId, tenantId]
-          );
+          try {
+            const normalized = normalizeCSVRow(row, columnMapping);
+            retrySlots[index] = { kind: "ok", transaction: normalized, rawRecordId };
+          } catch {
+            retrySlots[index] = { kind: "fail", rawRecordId };
+            await query(
+              `UPDATE raw_records SET status = 'failed', updated_at = NOW() WHERE id = $1 AND tenant_id = $2`,
+              [rawRecordId, tenantId]
+            );
+          }
         }
-      });
+      );
 
       const normalizedTransactions: Array<{
         transaction: ReturnType<typeof normalizeCSVRow>;
@@ -1009,7 +1038,10 @@ router.post(
           continue;
         }
         if (slot.kind === "ok") {
-          normalizedTransactions.push({ transaction: slot.transaction, rawRecordId: slot.rawRecordId });
+          normalizedTransactions.push({
+            transaction: slot.transaction,
+            rawRecordId: slot.rawRecordId,
+          });
         } else if (slot.kind === "fail" || slot.kind === "empty") {
           failedCount += 1;
         }

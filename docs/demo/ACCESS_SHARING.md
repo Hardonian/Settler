@@ -9,6 +9,7 @@ How to share the demo with a lead safely, and how to clean up afterward.
 Use a single `viewer@settler.dev` account with a read-only (Viewer) role.
 
 **Why this approach:**
+
 - Fastest to share — one credential, no invite flow required
 - Viewer role cannot trigger runs, export data, or modify connectors
 - Easy to rotate after each session (change password in Supabase dashboard)
@@ -103,6 +104,7 @@ If you want a more polished per-lead experience:
 4. They receive a magic-link invite and set their own password
 
 **Cleanup after:**
+
 - Remove their membership from the Members panel
 - Or leave it — Viewer role has no write access
 
@@ -110,11 +112,11 @@ If you want a more polished per-lead experience:
 
 ## Access matrix
 
-| Account | Email | Role | Can trigger runs | Can export | Can modify connectors |
-|---------|-------|------|-----------------|------------|-----------------------|
-| Demo admin | `demo@settler.dev` | Admin | Yes | Yes | Yes |
-| Shared viewer | `viewer@settler.dev` | Viewer | No | No | No |
-| Per-lead invite | lead's email | Viewer | No | No | No |
+| Account         | Email                | Role   | Can trigger runs | Can export | Can modify connectors |
+| --------------- | -------------------- | ------ | ---------------- | ---------- | --------------------- |
+| Demo admin      | `demo@settler.dev`   | Admin  | Yes              | Yes        | Yes                   |
+| Shared viewer   | `viewer@settler.dev` | Viewer | No               | No         | No                    |
+| Per-lead invite | lead's email         | Viewer | No               | No         | No                    |
 
 ---
 

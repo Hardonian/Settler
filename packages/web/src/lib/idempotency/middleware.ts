@@ -1,17 +1,17 @@
 /**
  * Idempotency Middleware
- * 
+ *
  * Express-style middleware for Next.js API routes to handle idempotency.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { generateIdempotencyKey, IdempotencyKeyOptions } from './key';
+import { NextRequest, NextResponse } from "next/server";
+import { generateIdempotencyKey, IdempotencyKeyOptions } from "./key";
 import {
   checkIdempotencyKey,
   createIdempotencyKey,
   completeIdempotencyKey,
   failIdempotencyKey,
-} from './store';
+} from "./store";
 
 export interface IdempotencyMiddlewareOptions {
   operation: string;
@@ -41,14 +41,10 @@ export function withIdempotency<T extends unknown[]>(
       }
 
       // Get user ID (optional)
-      const userId = options.getUserId
-        ? await options.getUserId(request)
-        : null;
+      const userId = options.getUserId ? await options.getUserId(request) : null;
 
       // Get payload for key generation
-      const payload = options.getPayload
-        ? await options.getPayload(request)
-        : {};
+      const payload = options.getPayload ? await options.getPayload(request) : {};
 
       // Generate idempotency key
       const keyOptions: IdempotencyKeyOptions = {
@@ -70,8 +66,8 @@ export function withIdempotency<T extends unknown[]>(
         // Request in progress - return 409 Conflict
         return NextResponse.json(
           {
-            error: 'IDEMPOTENCY_CONFLICT',
-            message: 'A request with the same parameters is already in progress',
+            error: "IDEMPOTENCY_CONFLICT",
+            message: "A request with the same parameters is already in progress",
             retryAfter: 5, // seconds
           },
           { status: 409 }
@@ -89,7 +85,10 @@ export function withIdempotency<T extends unknown[]>(
       // If successful, cache response
       if (response.status >= 200 && response.status < 300) {
         try {
-          const responseBody = await response.clone().json().catch(() => null);
+          const responseBody = await response
+            .clone()
+            .json()
+            .catch(() => null);
           if (responseBody) {
             await completeIdempotencyKey(idempotencyKey, responseBody);
           }

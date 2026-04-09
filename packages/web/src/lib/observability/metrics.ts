@@ -1,11 +1,11 @@
 /**
  * Performance Telemetry
- * 
+ *
  * Lightweight timing metrics for API handlers
  * Outputs metrics to logs or /api/metrics endpoint
  */
 
-import { logger } from './logger';
+import { logger } from "./logger";
 
 export interface MetricEntry {
   route: string;
@@ -22,7 +22,7 @@ class MetricsCollector {
 
   recordMetric(entry: MetricEntry): void {
     this.metrics.push(entry);
-    
+
     // Trim if too many
     if (this.metrics.length > this.maxMetrics) {
       this.metrics = this.metrics.slice(-this.maxMetrics);
@@ -30,7 +30,7 @@ class MetricsCollector {
 
     // Log slow requests
     if (entry.duration_ms > 1000) {
-      logger.warn('Slow request', {
+      logger.warn("Slow request", {
         trace_id: entry.trace_id,
         route: entry.route,
         duration_ms: entry.duration_ms,

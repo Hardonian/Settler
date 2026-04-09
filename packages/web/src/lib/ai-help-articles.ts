@@ -12,7 +12,7 @@ export interface HelpArticle {
   relatedArticles: string[];
 }
 
-type ArticleParams = 
+type ArticleParams =
   | { integration: string }
   | { error: string }
   | { feature: string }
@@ -20,14 +20,14 @@ type ArticleParams =
 
 const ARTICLE_TEMPLATES: Record<string, (params: ArticleParams) => HelpArticle> = {
   "integration-setup": (params) => {
-    if (!('integration' in params) || typeof params.integration !== 'string') {
-      throw new Error('integration-setup template requires integration parameter');
+    if (!("integration" in params) || typeof params.integration !== "string") {
+      throw new Error("integration-setup template requires integration parameter");
     }
     return {
-    id: `setup-${params.integration}`,
-    title: `How to Set Up ${params.integration} Integration`,
-    category: "Integrations",
-    content: `# Setting Up ${params.integration} Integration
+      id: `setup-${params.integration}`,
+      title: `How to Set Up ${params.integration} Integration`,
+      category: "Integrations",
+      content: `# Setting Up ${params.integration} Integration
 
 ## Overview
 This guide will walk you through connecting your ${params.integration} account to Settler.
@@ -62,8 +62,8 @@ This guide will walk you through connecting your ${params.integration} account t
 
 ## Need Help?
 Contact support if you encounter any issues.`,
-    keywords: [`${params.integration}`, "setup", "integration", "API key"],
-    relatedArticles: ["general-integration-guide", "troubleshooting-integrations"],
+      keywords: [`${params.integration}`, "setup", "integration", "API key"],
+      relatedArticles: ["general-integration-guide", "troubleshooting-integrations"],
     };
   },
 

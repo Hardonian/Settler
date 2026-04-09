@@ -22,6 +22,7 @@ Financial reconciliation is a manual, error-prone process that consumes 10+ hour
 Settler is a **Open Source Reconciliation Engine** platform that automates financial data matching across payment processors, e-commerce platforms, and accounting systems.
 
 **Key Capabilities:**
+
 - Event-sourced matching engine for high-volume processing
 - Deterministic math (no floating-point errors)
 - Complete audit trails for compliance
@@ -35,6 +36,7 @@ Settler is a **Open Source Reconciliation Engine** platform that automates finan
 **Primary:** Mid-market SaaS companies ($1M-$50M ARR) processing $100K+ monthly transactions across multiple platforms.
 
 **Characteristics:**
+
 - Multiple payment processors (Stripe, PayPal, Square)
 - E-commerce platforms (Shopify, WooCommerce)
 - Accounting systems (QuickBooks, Xero)
@@ -42,6 +44,7 @@ Settler is a **Open Source Reconciliation Engine** platform that automates finan
 - Need for audit trails and compliance reporting
 
 **Customer Segments:**
+
 1. SaaS Companies — Recurring revenue reconciliation
 2. E-commerce Businesses — Order-to-payment reconciliation
 3. Marketplaces — Multi-party transaction reconciliation
@@ -52,12 +55,14 @@ Settler is a **Open Source Reconciliation Engine** platform that automates finan
 ## Why Now?
 
 **Market Trends:**
+
 - **API-first infrastructure** - Payment processors and e-commerce platforms have robust APIs
 - **Compliance requirements** - Increasing need for audit trails and deterministic reporting
 - **Developer adoption** - Developers prefer API-first solutions over manual processes
 - **Cost pressure** - Companies seeking to automate manual processes
 
 **Technology Enablers:**
+
 - Serverless infrastructure (Vercel) enables scalable SaaS
 - Modern databases (PostgreSQL/Supabase) support event sourcing
 - Edge computing enables low-latency feature flags
@@ -96,16 +101,19 @@ Settler is a **Open Source Reconciliation Engine** platform that automates finan
 ### Pricing Tiers
 
 **Starter:** $99/month
+
 - 100,000 reconciliations/month
 - 10,000 receipt parses/month
 - 1M feature flag evaluations/month
 
 **Professional:** $499/month
+
 - 1M reconciliations/month
 - 100,000 receipt parses/month
 - 10M feature flag evaluations/month
 
 **Enterprise:** Custom pricing
+
 - Unlimited usage
 - SLA guarantees
 - Dedicated support
@@ -224,6 +232,7 @@ Settler is a **Open Source Reconciliation Engine** platform that automates finan
 **Planned:** Team expansion (Q2-Q3 2026)
 
 **Key Roles Needed:**
+
 - Engineering (backend, frontend)
 - Sales (SMB, Enterprise)
 - Marketing (developer marketing, content)
@@ -234,6 +243,7 @@ Settler is a **Open Source Reconciliation Engine** platform that automates finan
 
 **Funding:** [To be determined]  
 **Use of Funds:**
+
 - Engineering team expansion
 - Sales and marketing
 - Infrastructure scaling

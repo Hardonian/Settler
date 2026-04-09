@@ -88,7 +88,10 @@ function statusIcon(status: CheckStatus | boolean | undefined) {
 function statusBadge(status: CheckStatus | boolean | undefined) {
   if (status === true || status === "ok") {
     return (
-      <Badge variant="outline" className="text-green-700 border-green-300 bg-green-50 dark:bg-green-950/30 dark:text-green-400 dark:border-green-800">
+      <Badge
+        variant="outline"
+        className="text-green-700 border-green-300 bg-green-50 dark:bg-green-950/30 dark:text-green-400 dark:border-green-800"
+      >
         OK
       </Badge>
     );
@@ -115,7 +118,9 @@ function CheckRow({ label, description, status, message }: CheckRowProps) {
           <div className="text-sm font-medium">{label}</div>
           <div className="text-xs text-muted-foreground mt-0.5">{description}</div>
           {message && (
-            <div className="text-xs text-muted-foreground/70 mt-1 font-mono break-all">{message}</div>
+            <div className="text-xs text-muted-foreground/70 mt-1 font-mono break-all">
+              {message}
+            </div>
           )}
         </div>
       </div>
@@ -154,8 +159,8 @@ export default async function DiagnosticsPage() {
               <p className="text-xs text-muted-foreground mt-1">
                 The diagnostics page could not fetch{" "}
                 <code className="text-[11px]">/api/health</code>. The app itself is running if you
-                see this page, but the health check circuit failed. Check your environment
-                variables and Supabase configuration.
+                see this page, but the health check circuit failed. Check your environment variables
+                and Supabase configuration.
               </p>
             </div>
           </CardContent>
@@ -261,38 +266,20 @@ export default async function DiagnosticsPage() {
                   <CheckRow
                     label="Database (Prisma/PostgreSQL)"
                     description="Prisma can reach the configured database endpoint."
-                    status={
-                      connChecks.database
-                        ? connChecks.database.ok
-                        : checks.database?.status
-                    }
-                    message={
-                      connChecks.database?.reason ||
-                      checks.database?.message
-                    }
+                    status={connChecks.database ? connChecks.database.ok : checks.database?.status}
+                    message={connChecks.database?.reason || checks.database?.message}
                   />
                   <CheckRow
                     label="Supabase connectivity"
                     description="Supabase client can reach the configured project."
-                    status={
-                      connChecks.supabase
-                        ? connChecks.supabase.ok
-                        : checks.supabase?.status
-                    }
-                    message={
-                      connChecks.supabase?.reason ||
-                      checks.supabase?.message
-                    }
+                    status={connChecks.supabase ? connChecks.supabase.ok : checks.supabase?.status}
+                    message={connChecks.supabase?.reason || checks.supabase?.message}
                   />
                   <CheckRow
                     label="Runtime environment"
                     description="App runtime can read its required configuration."
                     status={
-                      connChecks.runtime_env
-                        ? connChecks.runtime_env.ok
-                        : envOk
-                          ? "ok"
-                          : "error"
+                      connChecks.runtime_env ? connChecks.runtime_env.ok : envOk ? "ok" : "error"
                     }
                     message={connChecks.runtime_env?.reason}
                   />
@@ -308,9 +295,9 @@ export default async function DiagnosticsPage() {
               <div className="text-xs text-muted-foreground leading-relaxed space-y-2">
                 <p>
                   <strong className="font-medium text-foreground">Scope of these checks:</strong>{" "}
-                  connectivity checks validate that the app can reach its core dependencies.
-                  They do not surface application-layer metrics (CPU, memory, queue depth) — those
-                  are available in your infrastructure provider console.
+                  connectivity checks validate that the app can reach its core dependencies. They do
+                  not surface application-layer metrics (CPU, memory, queue depth) — those are
+                  available in your infrastructure provider console.
                 </p>
                 <p>
                   Worker-level metrics, cache state, and fleet telemetry are not exposed here

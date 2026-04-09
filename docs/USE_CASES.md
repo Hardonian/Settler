@@ -7,6 +7,7 @@
 ## Overview
 
 Each use case defines:
+
 - **Before state:** What they're doing now (the pain)
 - **After state:** What they'll do with Settler (the solution)
 - **Concrete outcome:** Measurable result (time saved, errors reduced, etc.)
@@ -20,9 +21,11 @@ Each use case defines:
 ## Use Case #1: E-commerce Payment Reconciliation
 
 ### ICP
+
 **E-commerce Finance Manager** (see `/docs/ICP_DEFINITIONS.md`)
 
 ### Before State
+
 - **Manual Process:** Finance team spends 2-3 days every month reconciling Stripe payments with Shopify orders and QuickBooks records
 - **Tools:** Excel spreadsheets, manual matching, VLOOKUP formulas
 - **Pain Points:**
@@ -40,6 +43,7 @@ Each use case defines:
   7. Create reconciliation report
 
 ### After State
+
 - **Automated Process:** API-based reconciliation runs automatically, completes in <1 hour
 - **Tools:** Settler API, Developer Console, automated webhooks
 - **Benefits:**
@@ -57,17 +61,20 @@ Each use case defines:
   7. Export reconciliation report (PDF/CSV)
 
 ### Concrete Outcome
+
 - **Time Saved:** 20-30 hours/month → <1 hour/month (95%+ reduction)
 - **Accuracy:** 5-10% mismatch rate → <1% mismatch rate (90%+ improvement)
 - **Cost Savings:** $2K-$5K/month in labor costs (assuming $50-100/hour)
 - **Scalability:** Handles 10K-1M+ transactions/month without additional effort
 
 ### Time-to-Value
+
 - **First Reconciliation:** <30 minutes (after API setup)
 - **First Value:** Immediate (see matched/unmatched transactions)
 - **Full Value:** Within 7 days (complete monthly reconciliation cycle)
 
 ### Proof Mechanism
+
 - **In-Product Proof:**
   - Reconciliation report showing:
     - Total transactions processed
@@ -85,6 +92,7 @@ Each use case defines:
   - Matching details (transaction IDs, confidence scores)
 
 ### Demo Script
+
 1. **Show Console:** "This is your reconciliation dashboard. You can see all your reconciliation jobs here."
 2. **Show Results:** "This reconciliation processed 10K transactions in 5 minutes. 99.5% matched automatically."
 3. **Show Audit Trail:** "Here's the audit trail showing exactly how each transaction was matched."
@@ -95,9 +103,11 @@ Each use case defines:
 ## Use Case #2: Multi-Currency Reconciliation
 
 ### ICP
+
 **SaaS Operations Lead** (see `/docs/ICP_DEFINITIONS.md`)
 
 ### Before State
+
 - **Manual Process:** Finance team manually reconciles multi-currency transactions between Stripe, PayPal, and QuickBooks
 - **Tools:** Excel spreadsheets, manual currency conversion, exchange rate lookups
 - **Pain Points:**
@@ -115,6 +125,7 @@ Each use case defines:
   7. Create reconciliation report
 
 ### After State
+
 - **Automated Process:** API-based multi-currency reconciliation with deterministic currency conversion
 - **Tools:** Settler API, deterministic currency conversion, automated matching
 - **Benefits:**
@@ -132,17 +143,20 @@ Each use case defines:
   7. Export reconciliation report (with conversion audit trail)
 
 ### Concrete Outcome
+
 - **Time Saved:** 15-20 hours/month → <30 minutes/month (95%+ reduction)
 - **Accuracy:** 5-10% error rate → <1% error rate (90%+ improvement)
 - **Currency Errors Reduced:** Deterministic conversion prevents floating-point errors
 - **Cost Savings:** $1.5K-$3K/month in labor costs
 
 ### Time-to-Value
+
 - **First Reconciliation:** <1 hour (after API setup)
 - **First Value:** Immediate (see matched transactions with currency conversion)
 - **Full Value:** Within 7 days (complete monthly reconciliation cycle)
 
 ### Proof Mechanism
+
 - **In-Product Proof:**
   - Reconciliation report showing:
     - Multi-currency transactions processed
@@ -160,6 +174,7 @@ Each use case defines:
   - Exchange rate details (source, timestamp, rate)
 
 ### Demo Script
+
 1. **Show Multi-Currency:** "This reconciliation processed transactions in USD, EUR, GBP, and JPY."
 2. **Show Conversion:** "Here's how each currency was converted using deterministic math (no floating-point errors)."
 3. **Show Accuracy:** "99.8% match rate across all currencies."
@@ -170,9 +185,11 @@ Each use case defines:
 ## Use Case #3: Receipt Processing & Expense Reconciliation
 
 ### ICP
+
 **E-commerce Finance Manager** or **SaaS Operations Lead**
 
 ### Before State
+
 - **Manual Process:** Finance team manually processes receipts and matches them to expenses
 - **Tools:** Manual data entry, receipt scanning, Excel spreadsheets
 - **Pain Points:**
@@ -188,6 +205,7 @@ Each use case defines:
   5. Submit for approval
 
 ### After State
+
 - **Automated Process:** AI-powered receipt parsing with automated expense matching
 - **Tools:** Settler Receipts API, OCR, automated matching
 - **Benefits:**
@@ -203,17 +221,20 @@ Each use case defines:
   5. Export expense report (PDF/CSV)
 
 ### Concrete Outcome
+
 - **Time Saved:** 10-15 hours/month → <1 hour/month (90%+ reduction)
 - **Accuracy:** 95%+ extraction accuracy (vs 80-90% manual entry)
 - **Automation:** 90%+ of receipts processed automatically
 - **Cost Savings:** $1K-$2K/month in labor costs
 
 ### Time-to-Value
+
 - **First Receipt:** <1 minute (upload → parsed)
 - **First Value:** Immediate (see parsed receipt data)
 - **Full Value:** Within 7 days (process monthly receipt batch)
 
 ### Proof Mechanism
+
 - **In-Product Proof:**
   - Receipt browser showing:
     - Parsed receipts (original image + structured data)
@@ -229,6 +250,7 @@ Each use case defines:
   - Receipt images (with extraction overlay)
 
 ### Demo Script
+
 1. **Show Receipt Upload:** "Upload a receipt image or PDF. Settler will parse it automatically."
 2. **Show Parsed Data:** "Here's the structured data extracted: amount, vendor, date, category."
 3. **Show Matching:** "This receipt was automatically matched to an expense."
@@ -239,9 +261,11 @@ Each use case defines:
 ## Use Case #4: Client Reconciliation for Accounting Firms
 
 ### ICP
+
 **Accounting Firm Partner** (see `/docs/ICP_DEFINITIONS.md`)
 
 ### Before State
+
 - **Manual Process:** Accounting firm manually reconciles transactions for multiple clients
 - **Tools:** Excel spreadsheets, manual matching, client-specific processes
 - **Pain Points:**
@@ -257,6 +281,7 @@ Each use case defines:
   5. Bill client (low margin)
 
 ### After State
+
 - **Automated Process:** Standardized reconciliation process across all clients
 - **Tools:** Settler API, multi-tenant support, client-specific configurations
 - **Benefits:**
@@ -274,17 +299,20 @@ Each use case defines:
   7. Bill client (higher margin)
 
 ### Concrete Outcome
+
 - **Time Saved:** 2-4 hours/client/month → <30 minutes/client/month (85%+ reduction)
 - **Efficiency:** 4x+ efficiency improvement
 - **Margins:** 20%+ margin improvement (automated vs manual)
 - **Scalability:** Can serve 2-4x more clients with same team
 
 ### Time-to-Value
+
 - **First Client:** <1 hour (setup + first reconciliation)
 - **First Value:** Immediate (see time savings per client)
 - **Full Value:** Within 30 days (process monthly client batch)
 
 ### Proof Mechanism
+
 - **In-Product Proof:**
   - Client dashboard showing:
     - Clients processed (count, time per client)
@@ -300,6 +328,7 @@ Each use case defines:
   - Margin analysis (automated vs manual)
 
 ### Demo Script
+
 1. **Show Client Setup:** "Set up a new client in 5 minutes. Connect their systems via API."
 2. **Show Reconciliation:** "Run reconciliation for this client in <10 minutes. 99%+ accuracy."
 3. **Show Time Saved:** "This would have taken 3 hours manually. With Settler, it took 10 minutes."
@@ -310,9 +339,11 @@ Each use case defines:
 ## Use Case #5: Compliance & Audit Trail
 
 ### ICP
+
 **Fintech Operations Manager** (see `/docs/ICP_DEFINITIONS.md`)
 
 ### Before State
+
 - **Manual Process:** Finance team manually creates audit trails for compliance
 - **Tools:** Excel spreadsheets, manual documentation, ad-hoc processes
 - **Pain Points:**
@@ -327,6 +358,7 @@ Each use case defines:
   4. Regulatory audit preparation
 
 ### After State
+
 - **Automated Process:** Complete audit trail generated automatically with deterministic matching
 - **Tools:** Settler API, audit trail generation, compliance-ready reports
 - **Benefits:**
@@ -342,17 +374,20 @@ Each use case defines:
   5. Submit for regulatory audit (compliance-ready)
 
 ### Concrete Outcome
+
 - **Audit Trail Completeness:** Complete (every transaction documented)
 - **Deterministic Matching:** Deterministic (reproducible, auditable)
 - **Compliance Readiness:** Meets regulatory requirements
 - **Time Saved:** 10-15 hours/month → <1 hour/month (90%+ reduction)
 
 ### Time-to-Value
+
 - **First Audit Trail:** <1 hour (after reconciliation)
 - **First Value:** Immediate (see complete audit trail)
 - **Full Value:** Within 30 days (regulatory audit preparation)
 
 ### Proof Mechanism
+
 - **In-Product Proof:**
   - Audit trail report showing:
     - Every transaction (source, destination, matching logic)
@@ -369,6 +404,7 @@ Each use case defines:
   - Regulatory submission package (PDF/CSV/JSON)
 
 ### Demo Script
+
 1. **Show Audit Trail:** "Here's the complete audit trail for this reconciliation. Every transaction is documented."
 2. **Show Deterministic Matching:** "This matching is deterministic and reproducible. You can audit it anytime."
 3. **Show Compliance:** "This meets regulatory requirements for audit trails."
@@ -379,6 +415,7 @@ Each use case defines:
 ## Summary
 
 ### Common Outcomes Across Use Cases
+
 - **Time Saved:** 85-95% reduction (20-30 hours/month → <1 hour/month)
 - **Accuracy:** 90%+ improvement (5-10% error rate → <1% error rate)
 - **Cost Savings:** $1K-$5K/month in labor costs
@@ -386,6 +423,7 @@ Each use case defines:
 - **Time-to-Value:** <7 days (first reconciliation → full value)
 
 ### Proof Mechanisms
+
 - **In-Product:** Console dashboard, reconciliation reports, audit trails
 - **Exportable:** PDF/CSV/JSON reports, audit trails, compliance documentation
 - **Demonstrable:** Every claim is visible in-product, no hypotheticals

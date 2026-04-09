@@ -69,6 +69,7 @@ The Admin Analytics Studio provides Tableau-style pivot dashboards with self-fue
 ### Updating Baselines
 
 Edit `ops/cost_baselines.ts` to update cost estimates. Baselines are version-controlled and should be updated when:
+
 - Actual billing data becomes available
 - Pricing changes are announced
 - More accurate measurement methods are implemented
@@ -146,6 +147,7 @@ The triage engine applies deterministic rules:
 ### Correlation
 
 Tickets are automatically correlated with:
+
 - Recent errors (`ops_errors`)
 - Failed jobs (`ops_jobs`)
 - Failed webhooks (`ops_webhooks`)
@@ -162,11 +164,13 @@ Admins can manually triage tickets via `/console/support`.
 **Symptom**: Cost rollups show $0 or missing data
 
 **Causes**:
+
 - No `ops_events` data for the date
 - Rollup job hasn't run
 - Cost derivation failed
 
 **Solutions**:
+
 1. Check `ops_events` table for data
 2. Manually trigger rollup: `/api/cron/daily-cost-rollup`
 3. Check logs for derivation errors
@@ -176,10 +180,12 @@ Admins can manually triage tickets via `/console/support`.
 **Symptom**: Cost estimates show low confidence (<0.5)
 
 **Causes**:
+
 - Using estimated heuristics (e.g., queries per request)
 - Missing source data
 
 **Solutions**:
+
 1. Improve telemetry coverage
 2. Update baselines with actual billing data
 3. Implement direct measurement where possible
@@ -189,10 +195,12 @@ Admins can manually triage tickets via `/console/support`.
 **Symptom**: "Invalid dimension" or "Invalid measure" errors
 
 **Causes**:
+
 - Dimension/measure not in dataset schema
 - Too many dimensions (>2 rows or >2 columns)
 
 **Solutions**:
+
 1. Check dataset schema: `/api/console/analytics/datasets`
 2. Reduce number of dimensions
 3. Verify dimension/measure names match schema
@@ -202,6 +210,7 @@ Admins can manually triage tickets via `/console/support`.
 ### RLS Policies
 
 All analytics tables enforce Row Level Security:
+
 - Admin-only access for cost/usage data
 - Users can view their own tickets
 - Saved views scoped by creator or public flag
@@ -224,6 +233,7 @@ All analytics tables enforce Row Level Security:
 ### Alerts
 
 Set up alerts for:
+
 - Rollup job failures
 - Cost derivation errors
 - High error rates in triage

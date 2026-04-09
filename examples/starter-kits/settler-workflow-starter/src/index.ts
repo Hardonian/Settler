@@ -33,11 +33,7 @@ async function main() {
   console.log("\n▸ Registering webhook…");
   const webhook = await settler.webhooks.create({
     url: `http://localhost:${process.env.WEBHOOK_PORT || 8080}/settler/webhook`,
-    events: [
-      "reconciliation.completed",
-      "reconciliation.failed",
-      "exception.created",
-    ],
+    events: ["reconciliation.completed", "reconciliation.failed", "exception.created"],
   });
   console.log(`  Webhook registered: ${webhook.data.id}`);
   console.log(`  Secret: ${webhook.data.secret}`);

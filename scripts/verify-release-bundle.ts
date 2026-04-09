@@ -77,9 +77,7 @@ console.log("");
 console.log("=== Step 1: Bundle directory ===");
 if (!existsSync(bundleDir)) {
   fail(`Bundle directory does not exist: ${bundleRel}/`);
-  console.error(
-    "[verify-release-bundle] Run 'pnpm run generate-release-bundle' first."
-  );
+  console.error("[verify-release-bundle] Run 'pnpm run generate-release-bundle' first.");
   process.exit(1);
 } else {
   pass("Bundle directory exists");
@@ -255,12 +253,14 @@ if (!manifestChecksums || typeof manifestChecksums !== "object") {
 
 console.log("\n=== Step 6: Required artifact presence ===");
 
-const artifacts = manifest.artifacts as Array<{
-  bundleFile: string;
-  required: boolean;
-  present: boolean;
-  sha256: string | null;
-}> | undefined;
+const artifacts = manifest.artifacts as
+  | Array<{
+      bundleFile: string;
+      required: boolean;
+      present: boolean;
+      sha256: string | null;
+    }>
+  | undefined;
 
 if (!Array.isArray(artifacts)) {
   fail("manifest.json artifacts field is missing or not an array");
@@ -329,20 +329,12 @@ console.log(`  Failures: ${failures}`);
 console.log(`  Warnings: ${warnings}`);
 
 if (failures > 0) {
-  console.error(
-    `\n[verify-release-bundle] FAILED: ${failures} failure(s) detected.`
-  );
-  console.error(
-    "[verify-release-bundle] The release evidence bundle has integrity issues."
-  );
+  console.error(`\n[verify-release-bundle] FAILED: ${failures} failure(s) detected.`);
+  console.error("[verify-release-bundle] The release evidence bundle has integrity issues.");
   process.exit(1);
 } else if (warnings > 0) {
-  console.warn(
-    `\n[verify-release-bundle] PASSED with ${warnings} warning(s).`
-  );
-  console.warn(
-    "[verify-release-bundle] Bundle integrity is verified. Review warnings above."
-  );
+  console.warn(`\n[verify-release-bundle] PASSED with ${warnings} warning(s).`);
+  console.warn("[verify-release-bundle] Bundle integrity is verified. Review warnings above.");
 } else {
   console.log(
     "\n[verify-release-bundle] PASSED: Bundle integrity verified. No failures, no warnings."

@@ -43,10 +43,7 @@ async function resolveRequestPermissions(
 
   const userRows = await query<{ role: string }>(
     `SELECT role FROM users WHERE id = $1 AND tenant_id = $2`,
-    [
-    req.userId,
-      tenantId,
-    ]
+    [req.userId, tenantId]
   );
   const roleValue = userRows[0]?.role;
   const role = Object.values(UserRole).includes(roleValue as UserRole)
@@ -61,22 +58,26 @@ function isCapabilityVisible(status: CapabilityStatus, role: UserRole, scopes: s
   return PermissionChecker.hasAnyPermission(role, scopes, requiredPermissions);
 }
 
-router.get("/capabilities", requirePermission(Permission.ADMIN_READ), async (req: AuthRequest, res) => {
-  const tenantId = requireTenantContext(req, res);
-  if (!tenantId) return;
+router.get(
+  "/capabilities",
+  requirePermission(Permission.ADMIN_READ),
+  async (req: AuthRequest, res) => {
+    const tenantId = requireTenantContext(req, res);
+    if (!tenantId) return;
 
-  try {
-    const registry = await getCapabilityRegistry();
-    const data = registry.list();
-    data.forEach((status) => observeCapabilityStatus(status, "/api/v1/capabilities"));
-    res.json({
-      data,
-      metadata: { tenantId },
-    });
-  } catch (error) {
-    return handleRouteError(res, error, "Failed to load capability registry", 500);
+    try {
+      const registry = await getCapabilityRegistry();
+      const data = registry.list();
+      data.forEach((status) => observeCapabilityStatus(status, "/api/v1/capabilities"));
+      res.json({
+        data,
+        metadata: { tenantId },
+      });
+    } catch (error) {
+      return handleRouteError(res, error, "Failed to load capability registry", 500);
+    }
   }
-});
+);
 
 router.get(
   "/capabilities/projected",
@@ -85,32 +86,33 @@ router.get(
     const tenantId = requireTenantContext(req, res);
     if (!tenantId) return;
 
-  try {
-    const registry = await getCapabilityRegistry();
-    const { role, scopes } = await resolveRequestPermissions(req);
-    const projected = registry
-      .list()
-      .filter((status) => isCapabilityVisible(status, role, scopes))
-      .map((status) => ({ ...status, visible: true }));
+    try {
+      const registry = await getCapabilityRegistry();
+      const { role, scopes } = await resolveRequestPermissions(req);
+      const projected = registry
+        .list()
+        .filter((status) => isCapabilityVisible(status, role, scopes))
+        .map((status) => ({ ...status, visible: true }));
 
-    projected.forEach((status) =>
-      observeCapabilityStatus(status, "/api/v1/capabilities/projected")
-    );
+      projected.forEach((status) =>
+        observeCapabilityStatus(status, "/api/v1/capabilities/projected")
+      );
 
-    res.json({
-      data: projected,
-      metadata: {
-        role,
-        scopeCount: scopes.length,
-        tenantId,
-      },
-    });
-  } catch (error) {
-    return handleRouteError(res, error, "Failed to load projected capabilities", 500, {
-      userId: req.userId,
-      apiKeyId: req.apiKeyId,
-    });
+      res.json({
+        data: projected,
+        metadata: {
+          role,
+          scopeCount: scopes.length,
+          tenantId,
+        },
+      });
+    } catch (error) {
+      return handleRouteError(res, error, "Failed to load projected capabilities", 500, {
+        userId: req.userId,
+        apiKeyId: req.apiKeyId,
+      });
+    }
   }
-});
+);
 
 export default router;

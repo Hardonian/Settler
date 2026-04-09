@@ -14,6 +14,7 @@ Settler's reconciliation system is built on a robust event-driven, event-sourced
 - **Core Events**: Reconciliation lifecycle events
 
 **Key Files**:
+
 - `EventEnvelope.ts`: Event envelope structure
 - `ReconciliationEvents.ts`: Core reconciliation events
 - `EventStore.ts`: Postgres event store implementation
@@ -22,14 +23,17 @@ Settler's reconciliation system is built on a robust event-driven, event-sourced
 ### 2. CQRS (`/src/application/cqrs/`)
 
 **Write Model**:
+
 - Commands: `StartReconciliation`, `RetryReconciliation`, `CancelReconciliation`
 - Command Handlers: Validate and emit events
 
 **Read Model**:
+
 - Projections: `ReconciliationSummary`, `TenantUsageView`, `ErrorHotspotsView`
 - Projection Handlers: Update read models from events
 
 **Key Files**:
+
 - `commands/ReconciliationCommands.ts`: Command definitions
 - `commands/ReconciliationCommandHandlers.ts`: Command handlers
 - `projections/ReconciliationProjections.ts`: Projection handlers
@@ -42,6 +46,7 @@ Settler's reconciliation system is built on a robust event-driven, event-sourced
 - **Retry Logic**: Exponential backoff
 
 **Key Files**:
+
 - `SagaOrchestrator.ts`: Core saga engine
 - `ShopifyStripeReconciliationSaga.ts`: Concrete saga
 
@@ -52,6 +57,7 @@ Settler's reconciliation system is built on a robust event-driven, event-sourced
 - **Retry Logic**: Built into saga orchestrator
 
 **Key Files**:
+
 - `circuit-breaker.ts`: Circuit breaker implementation
 - `DeadLetterQueue.ts`: DLQ management
 
@@ -62,6 +68,7 @@ Settler's reconciliation system is built on a robust event-driven, event-sourced
 - **CLI Commands**: Command-line interface
 
 **Key Files**:
+
 - `AdminService.ts`: Admin service implementation
 - `routes/admin.ts`: Admin REST endpoints
 - `cli/src/commands/admin.ts`: CLI commands
@@ -82,6 +89,7 @@ Settler's reconciliation system is built on a robust event-driven, event-sourced
 - `error_hotspots_view`: Error patterns
 
 **Migrations**:
+
 - `db/migrations/event-sourcing.sql`: Event store schema
 - `db/migrations/cqrs-projections.sql`: Read model schema
 
@@ -111,16 +119,22 @@ await reconciliationService.startReconciliation({
 
 ```typescript
 // Get reconciliation summary
-const summary = await db.query(`
+const summary = await db.query(
+  `
   SELECT * FROM reconciliation_summary
   WHERE reconciliation_id = $1
-`, [reconciliationId]);
+`,
+  [reconciliationId]
+);
 
 // Get tenant usage
-const usage = await db.query(`
+const usage = await db.query(
+  `
   SELECT * FROM tenant_usage_view
   WHERE tenant_id = $1 AND date >= $2
-`, [tenantId, startDate]);
+`,
+  [tenantId, startDate]
+);
 ```
 
 ### Admin Operations
@@ -184,7 +198,7 @@ See `docs/SAGAS_AND_RECOVERY.md` for detailed testing examples.
 ✅ **Dead Letter Queue**: Manual review of failures  
 ✅ **Idempotency**: Safe retries and duplicate handling  
 ✅ **Snapshots**: Efficient aggregate reconstruction  
-✅ **Projections**: Optimized read models  
+✅ **Projections**: Optimized read models
 
 ## Next Steps
 

@@ -5,6 +5,7 @@ This document describes how Settler.dev maintains **production parity** - ensuri
 ## The Problem We Solve
 
 Historically, SaaS applications suffer from:
+
 - **Schema drift**: Production database differs from migrations
 - **Ghost routes**: Frontend routes that reference non-existent backend resources
 - **Theoretical features**: Features documented but not implemented
@@ -28,6 +29,7 @@ Historically, SaaS applications suffer from:
 **Script**: `scripts/introspect-production-schema.ts`
 
 Connects to live Supabase production and enumerates:
+
 - All schemas, tables, columns, types, enums
 - Constraints (PK, FK, UNIQUE, CHECK)
 - Indexes
@@ -42,6 +44,7 @@ Connects to live Supabase production and enumerates:
 **CI Workflow**: `.github/workflows/schema-parity-check.yml`
 
 On every PR and main commit:
+
 1. Connects to Supabase production
 2. Runs the golden migration (dry-run)
 3. Verifies idempotency (re-run causes zero changes)
@@ -50,6 +53,7 @@ On every PR and main commit:
 6. Generates schema manifest
 
 **CI fails loudly if**:
+
 - Prod schema diverges from migrations
 - Someone adds a table manually
 - A migration breaks idempotency
@@ -59,6 +63,7 @@ On every PR and main commit:
 **Script**: `scripts/map-frontend-backend-contracts.ts`
 
 Maps all frontend routes to:
+
 - Required tables
 - Required functions
 - Required RLS permissions
@@ -66,6 +71,7 @@ Maps all frontend routes to:
 **Output**: `supabase/frontend-backend-contracts.json`
 
 **Detects**:
+
 - Routes referencing non-existent tables
 - Routes referencing non-existent functions
 - Routes without backend dependencies (marketing-only)
@@ -75,6 +81,7 @@ Maps all frontend routes to:
 **Script**: `scripts/verify-edge-functions.ts`
 
 Verifies that all edge functions:
+
 - Deploy successfully
 - Have required tables in the database
 - Have required functions in the database
@@ -87,6 +94,7 @@ Verifies that all edge functions:
 **Script**: `scripts/find-pipe-dream-signals.ts`
 
 Finds features that exist only in documentation but not in code:
+
 - Features mentioned in README but not implemented
 - UI elements with no backend
 - Tables with no consumers
@@ -130,10 +138,12 @@ npm run migrations:consolidate
 ## CI/CD Integration
 
 The `schema-parity-check.yml` workflow runs automatically on:
+
 - Every push to `main`
 - Every PR that touches migration files or Prisma schema
 
 **Required Secrets**:
+
 - `DATABASE_URL`: Production database connection string
 - `SUPABASE_URL`: Supabase project URL
 - `SUPABASE_SERVICE_ROLE_KEY`: Service role key for introspection
@@ -161,12 +171,13 @@ After introspection, a schema manifest is generated at `supabase/SCHEMA_MANIFEST
 
 - `public.users` (RLS: true, Policies: 3)
 - `public.billing_accounts` (RLS: true, Policies: 5)
-...
+  ...
 ```
 
 ## Verification Artifacts
 
 All verification scripts generate JSON artifacts:
+
 - `supabase/production-schema.json`: Complete production schema
 - `supabase/frontend-backend-contracts.json`: Route-to-backend mapping
 - `supabase/edge-functions-verification.json`: Edge function status
@@ -196,6 +207,7 @@ Requires `DATABASE_URL` environment variable pointing to production.
 ### "Golden migration not idempotent"
 
 Check for:
+
 - Missing `IF NOT EXISTS` clauses
 - Non-idempotent `ALTER TABLE` statements
 - Policies created without `DROP POLICY IF EXISTS`
@@ -203,12 +215,14 @@ Check for:
 ### "Orphaned table references"
 
 Either:
+
 1. Remove the reference from frontend code, or
 2. Add the table to the golden migration
 
 ### "Edge function references non-existent table"
 
 Either:
+
 1. Remove the reference from edge function, or
 2. Add the table to the golden migration
 

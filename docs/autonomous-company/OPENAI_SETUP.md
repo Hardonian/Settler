@@ -5,6 +5,7 @@ Quick guide to set up OpenAI API key for enhanced agent capabilities.
 ## Why OpenAI?
 
 Agents use OpenAI for:
+
 - **Better strategic insights** (Strategic Governor)
 - **Smarter user behavior analysis** (User Intent Synthesizer)
 - **Personalized support explanations** (Preemptive Support)
@@ -29,6 +30,7 @@ supabase secrets set OPENAI_API_KEY=sk-your-key-here
 ```
 
 Verify it's set:
+
 ```bash
 supabase secrets list
 ```
@@ -49,6 +51,7 @@ export OPENAI_API_KEY=sk-your-key-here
 ```
 
 Or add to your `.env` file:
+
 ```
 OPENAI_API_KEY=sk-your-key-here
 ```
@@ -68,6 +71,7 @@ npx tsx scripts/run-agent.ts strategic_governor
 ## Cost Estimate
 
 Using `gpt-4o-mini`:
+
 - **Monthly cost**: ~$5-15
 - **Per agent run**: ~$0.01-0.05
 - **Total calls/day**: ~20-30

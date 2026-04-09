@@ -1,6 +1,6 @@
 /**
  * Database Retry Logic
- * 
+ *
  * Implements exponential backoff retry for database operations.
  * Critical for 24/7 operations to handle transient failures.
  */
@@ -19,26 +19,26 @@ const DEFAULT_OPTIONS: Required<RetryOptions> = {
   maxDelay: 5000, // ms
   backoffMultiplier: 2,
   retryableErrors: [
-    'P1001', // Connection error
-    'P1008', // Operation timed out
-    'P1017', // Server closed connection
-    'P2024', // Timed out fetching new connection
-    'P2034', // Transaction failed due to a write conflict
+    "P1001", // Connection error
+    "P1008", // Operation timed out
+    "P1017", // Server closed connection
+    "P2024", // Timed out fetching new connection
+    "P2034", // Transaction failed due to a write conflict
   ],
 };
 
 function isRetryableError(error: unknown): boolean {
   if (!(error instanceof Error)) return false;
-  
+
   const errorMessage = error.message;
-  const errorCode = (error as any).code || '';
-  
+  const errorCode = (error as any).code || "";
+
   return (
     DEFAULT_OPTIONS.retryableErrors.some((code) => errorCode.includes(code)) ||
-    errorMessage.includes('connection') ||
-    errorMessage.includes('timeout') ||
-    errorMessage.includes('ECONNREFUSED') ||
-    errorMessage.includes('ETIMEDOUT')
+    errorMessage.includes("connection") ||
+    errorMessage.includes("timeout") ||
+    errorMessage.includes("ECONNREFUSED") ||
+    errorMessage.includes("ETIMEDOUT")
   );
 }
 
@@ -75,15 +75,15 @@ export async function retryDbOperation<T>(
 
       // Wait before retrying
       await delay(currentDelay);
-      currentDelay = Math.min(
-        currentDelay * config.backoffMultiplier,
-        config.maxDelay
-      );
+      currentDelay = Math.min(currentDelay * config.backoffMultiplier, config.maxDelay);
 
-      console.warn(`Database operation failed, retrying (attempt ${attempt + 1}/${config.maxRetries}):`, {
-        error: lastError.message,
-        delay: currentDelay,
-      });
+      console.warn(
+        `Database operation failed, retrying (attempt ${attempt + 1}/${config.maxRetries}):`,
+        {
+          error: lastError.message,
+          delay: currentDelay,
+        }
+      );
     }
   }
 
@@ -96,9 +96,6 @@ export async function retryDbOperation<T>(
 /**
  * Wrapper for Prisma operations with automatic retry
  */
-export function withRetry<T>(
-  operation: () => Promise<T>,
-  options?: RetryOptions
-): Promise<T> {
+export function withRetry<T>(operation: () => Promise<T>, options?: RetryOptions): Promise<T> {
   return retryDbOperation(operation, options);
 }

@@ -1,6 +1,7 @@
 # SRE Runbook: Settler Multi-Tenant Platform
 
 ## Table of Contents
+
 1. [Overview](#overview)
 2. [Monitoring & Alerts](#monitoring--alerts)
 3. [Common Issues & Resolutions](#common-issues--resolutions)
@@ -11,6 +12,7 @@
 ## Overview
 
 Settler is a multi-tenant reconciliation platform with:
+
 - **Data Isolation**: Postgres RLS, schema-per-tenant
 - **Resource Quotas**: Rate limits, storage, concurrent jobs
 - **Observability**: OpenTelemetry tracing, Prometheus metrics
@@ -28,26 +30,31 @@ Settler is a multi-tenant reconciliation platform with:
 ### Critical Alerts
 
 #### 1. High Error Rate
+
 - **Metric**: `rate(http_request_errors_total[5m])`
 - **Threshold**: > 10 errors/sec
 - **Action**: Check logs, investigate failing endpoints
 
 #### 2. High Latency (p95)
+
 - **Metric**: `histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))`
 - **Threshold**: > 2 seconds
 - **Action**: Check database queries, cache hit rates, queue depth
 
 #### 3. Database Connection Exhaustion
+
 - **Metric**: `active_connections`
 - **Threshold**: > 80% of max pool size
 - **Action**: Increase pool size or investigate connection leaks
 
 #### 4. Quota Exhaustion
+
 - **Metric**: `tenant_quota_usage / tenant_quota_limit`
 - **Threshold**: > 90%
 - **Action**: Contact tenant, offer upgrade, or increase quota temporarily
 
 #### 5. Noisy Neighbor Detection
+
 - **Metric**: `tenant_resource_usage_seconds`
 - **Threshold**: 3x average usage
 - **Action**: Investigate tenant, consider throttling or isolation
@@ -66,6 +73,7 @@ Settler is a multi-tenant reconciliation platform with:
 **Symptoms**: Tenant reports "TenantNotFound" or empty results
 
 **Diagnosis**:
+
 ```sql
 -- Check tenant status
 SELECT id, name, slug, status, tier FROM tenants WHERE slug = 'tenant-slug';
@@ -78,6 +86,7 @@ SELECT current_setting('app.current_tenant_id', true);
 ```
 
 **Resolution**:
+
 1. Verify tenant exists and is active
 2. Check tenant context middleware is setting tenant ID
 3. Verify RLS policies are enabled
@@ -88,9 +97,10 @@ SELECT current_setting('app.current_tenant_id', true);
 **Symptoms**: 429 responses, "QuotaExceeded" errors
 
 **Diagnosis**:
+
 ```sql
 -- Check quota usage
-SELECT 
+SELECT
   t.id,
   t.tier,
   tq.current_storage_bytes,
@@ -101,6 +111,7 @@ WHERE t.id = 'tenant-id';
 ```
 
 **Resolution**:
+
 1. Verify quota limits are correct for tier
 2. Check if usage tracking is accurate
 3. Consider temporary quota increase
@@ -111,19 +122,21 @@ WHERE t.id = 'tenant-id';
 **Symptoms**: Slow queries, connection pool exhaustion
 
 **Diagnosis**:
+
 ```sql
 -- Check active queries
-SELECT pid, state, query_start, query 
-FROM pg_stat_activity 
+SELECT pid, state, query_start, query
+FROM pg_stat_activity
 WHERE state = 'active';
 
 -- Check slow queries
-SELECT * FROM pg_stat_statements 
-ORDER BY mean_exec_time DESC 
+SELECT * FROM pg_stat_statements
+ORDER BY mean_exec_time DESC
 LIMIT 10;
 ```
 
 **Resolution**:
+
 1. Identify slow queries and optimize
 2. Add indexes if missing
 3. Consider read replicas for read-heavy workloads
@@ -134,12 +147,14 @@ LIMIT 10;
 **Symptoms**: Legitimate requests being rate limited
 
 **Diagnosis**:
+
 ```bash
 # Check rate limit metrics
 curl http://localhost:3000/metrics | grep tenant_rate_limit_hits_total
 ```
 
 **Resolution**:
+
 1. Review tenant tier and rate limits
 2. Adjust token bucket configuration
 3. Consider adaptive rate limiting
@@ -150,20 +165,22 @@ curl http://localhost:3000/metrics | grep tenant_rate_limit_hits_total
 **Symptoms**: Feature flag returns wrong value
 
 **Diagnosis**:
+
 ```sql
 -- Check feature flag configuration
-SELECT * FROM feature_flags 
-WHERE name = 'flag-name' 
+SELECT * FROM feature_flags
+WHERE name = 'flag-name'
 AND (tenant_id = 'tenant-id' OR tenant_id IS NULL)
 ORDER BY user_id DESC NULLS LAST, tenant_id DESC NULLS LAST;
 
 -- Check feature flag changes
-SELECT * FROM feature_flag_changes 
+SELECT * FROM feature_flag_changes
 WHERE feature_flag_id = 'flag-id'
 ORDER BY created_at DESC;
 ```
 
 **Resolution**:
+
 1. Verify flag hierarchy (user > tenant > global)
 2. Check rollout percentage for A/B testing
 3. Verify flag is not disabled by kill switch
@@ -174,18 +191,22 @@ ORDER BY created_at DESC;
 ### Severity Levels
 
 **P0 - Critical**: Service down, data loss, security breach
+
 - **Response Time**: Immediate (< 5 min)
 - **Escalation**: On-call engineer → Engineering lead → CTO
 
 **P1 - High**: Major feature broken, significant performance degradation
+
 - **Response Time**: < 15 min
 - **Escalation**: On-call engineer → Engineering lead
 
 **P2 - Medium**: Minor feature broken, moderate performance issues
+
 - **Response Time**: < 1 hour
 - **Escalation**: On-call engineer
 
 **P3 - Low**: Cosmetic issues, minor bugs
+
 - **Response Time**: < 24 hours
 - **Escalation**: Regular support
 
@@ -247,10 +268,10 @@ psql -d settler -c "SELECT * FROM schema_migrations;"
 
 ```sql
 -- Increase quota temporarily
-UPDATE tenants 
+UPDATE tenants
 SET quotas = jsonb_set(
-  quotas, 
-  '{storageBytes}', 
+  quotas,
+  '{storageBytes}',
   '2147483648'::jsonb
 )
 WHERE id = 'tenant-id';
@@ -282,9 +303,9 @@ WHERE tenant_id = 'tenant-id';
 ```typescript
 // Adjust token bucket config
 const config = {
-  capacity: 1000,      // Max tokens
-  refillRate: 100,     // Tokens per second
-  adaptive: true,       // Enable adaptive limiting
+  capacity: 1000, // Max tokens
+  refillRate: 100, // Tokens per second
+  adaptive: true, // Enable adaptive limiting
 };
 ```
 
@@ -298,8 +319,9 @@ const config = {
 ## Useful Commands
 
 ### Check Tenant Status
+
 ```sql
-SELECT id, name, slug, tier, status, 
+SELECT id, name, slug, tier, status,
        quotas->>'storageBytes' as storage_limit,
        (SELECT current_storage_bytes FROM tenant_quota_usage WHERE tenant_id = tenants.id) as storage_used
 FROM tenants
@@ -307,6 +329,7 @@ WHERE slug = 'tenant-slug';
 ```
 
 ### View Recent Errors
+
 ```sql
 SELECT * FROM audit_logs
 WHERE status_code >= 500
@@ -315,6 +338,7 @@ LIMIT 100;
 ```
 
 ### Check Feature Flags
+
 ```sql
 SELECT name, enabled, rollout_percentage, tenant_id, user_id
 FROM feature_flags
@@ -323,6 +347,7 @@ ORDER BY name, tenant_id NULLS LAST;
 ```
 
 ### Monitor Queue Depth
+
 ```bash
 # Via Redis CLI
 redis-cli LLEN bull:reconciliation:wait

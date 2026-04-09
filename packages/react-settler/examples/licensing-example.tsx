@@ -3,7 +3,7 @@
  * Demonstrates OSS vs Commercial feature usage
  */
 
-import React from 'react';
+import React from "react";
 import {
   ReconciliationDashboard,
   TransactionTable,
@@ -12,8 +12,8 @@ import {
   setLicense,
   useFeatureGate,
   FEATURE_FLAGS,
-  UpgradePrompt
-} from '@settler/react-settler';
+  UpgradePrompt,
+} from "@settler/react-settler";
 
 /**
  * Example 1: OSS Usage (Free)
@@ -22,14 +22,14 @@ import {
 export function OSSExample() {
   const transactions = [
     {
-      id: 'tx-1',
-      provider: 'stripe',
-      providerTransactionId: 'ch_123',
-      amount: { value: 100.0, currency: 'USD' },
-      currency: 'USD',
-      date: '2024-01-01T00:00:00Z',
-      status: 'succeeded' as const
-    }
+      id: "tx-1",
+      provider: "stripe",
+      providerTransactionId: "ch_123",
+      amount: { value: 100.0, currency: "USD" },
+      currency: "USD",
+      date: "2024-01-01T00:00:00Z",
+      status: "succeeded" as const,
+    },
   ];
 
   // OSS features work without license
@@ -47,12 +47,12 @@ export function OSSExample() {
 export function CommercialFeatureExample() {
   const transactions = Array.from({ length: 1000 }, (_, i) => ({
     id: `tx-${i}`,
-    provider: 'stripe',
+    provider: "stripe",
     providerTransactionId: `ch_${i}`,
-    amount: { value: 100.0, currency: 'USD' },
-    currency: 'USD',
-    date: '2024-01-01T00:00:00Z',
-    status: 'succeeded' as const
+    amount: { value: 100.0, currency: "USD" },
+    currency: "USD",
+    date: "2024-01-01T00:00:00Z",
+    status: "succeeded" as const,
   }));
 
   // VirtualizedTable is a commercial feature
@@ -72,7 +72,7 @@ export function CommercialLicenseExample() {
   // Set commercial license (typically done at app startup)
   React.useEffect(() => {
     setLicense({
-      tier: 'commercial',
+      tier: "commercial",
       features: new Set([
         FEATURE_FLAGS.CORE_PROTOCOL,
         FEATURE_FLAGS.BASIC_COMPONENTS,
@@ -82,8 +82,8 @@ export function CommercialLicenseExample() {
         FEATURE_FLAGS.WEBHOOK_MANAGER,
         FEATURE_FLAGS.VIRTUALIZATION,
         FEATURE_FLAGS.TELEMETRY,
-        FEATURE_FLAGS.AUDIT_LOGGING
-      ])
+        FEATURE_FLAGS.AUDIT_LOGGING,
+      ]),
     });
   }, []);
 
@@ -100,9 +100,7 @@ export function CommercialLicenseExample() {
  * Example 4: Feature Gating with Custom UI
  */
 export function FeatureGateExample() {
-  const { hasAccess, UpgradePrompt } = useFeatureGate(
-    FEATURE_FLAGS.SHOPIFY_INTEGRATION
-  );
+  const { hasAccess, UpgradePrompt } = useFeatureGate(FEATURE_FLAGS.SHOPIFY_INTEGRATION);
 
   if (!hasAccess) {
     return (
@@ -116,13 +114,7 @@ export function FeatureGateExample() {
     );
   }
 
-  return (
-    <ShopifyApp
-      shop="myshop.myshopify.com"
-      apiKey="your-api-key"
-      transactions={[]}
-    />
-  );
+  return <ShopifyApp shop="myshop.myshopify.com" apiKey="your-api-key" transactions={[]} />;
 }
 
 /**
@@ -139,10 +131,7 @@ export function ConditionalFeatureExample() {
       ) : (
         <div>
           <TransactionTable transactions={transactions} />
-          <UpgradePrompt
-            feature={FEATURE_FLAGS.VIRTUALIZATION}
-            compact
-          />
+          <UpgradePrompt feature={FEATURE_FLAGS.VIRTUALIZATION} compact />
         </div>
       )}
     </ReconciliationDashboard>

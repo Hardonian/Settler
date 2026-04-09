@@ -3,14 +3,14 @@
  * Provides actual image optimization functionality
  */
 
-import sharp from 'sharp';
+import sharp from "sharp";
 
 export interface ImageOptimizeOptions {
   width?: number;
   height?: number;
   quality?: number;
-  format?: 'webp' | 'avif' | 'jpeg' | 'png';
-  fit?: 'cover' | 'contain' | 'fill' | 'inside' | 'outside';
+  format?: "webp" | "avif" | "jpeg" | "png";
+  fit?: "cover" | "contain" | "fill" | "inside" | "outside";
 }
 
 /**
@@ -20,13 +20,7 @@ export async function optimizeImage(
   buffer: Buffer,
   options: ImageOptimizeOptions = {}
 ): Promise<Buffer> {
-  const {
-    width,
-    height,
-    quality = 85,
-    format = 'webp',
-    fit = 'cover',
-  } = options;
+  const { width, height, quality = 85, format = "webp", fit = "cover" } = options;
 
   let pipeline = sharp(buffer);
 
@@ -40,16 +34,16 @@ export async function optimizeImage(
 
   // Convert format and optimize
   switch (format) {
-    case 'webp':
+    case "webp":
       pipeline = pipeline.webp({ quality });
       break;
-    case 'avif':
+    case "avif":
       pipeline = pipeline.avif({ quality });
       break;
-    case 'jpeg':
+    case "jpeg":
       pipeline = pipeline.jpeg({ quality });
       break;
-    case 'png':
+    case "png":
       pipeline = pipeline.png({ quality: Math.floor(quality / 10) }); // PNG quality is 0-9
       break;
   }
@@ -67,11 +61,11 @@ export async function getImageMetadata(buffer: Buffer): Promise<{
   size: number;
 }> {
   const metadata = await sharp(buffer).metadata();
-  
+
   return {
     width: metadata.width || 0,
     height: metadata.height || 0,
-    format: metadata.format || 'unknown',
+    format: metadata.format || "unknown",
     size: buffer.length,
   };
 }
@@ -87,10 +81,10 @@ export async function generateResponsiveImages(
     sizes.map(async (width) => {
       const optimized = await optimizeImage(buffer, {
         width,
-        format: 'webp',
+        format: "webp",
         quality: 85,
       });
-      
+
       return {
         width,
         buffer: optimized,

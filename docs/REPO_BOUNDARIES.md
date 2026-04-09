@@ -13,11 +13,13 @@ These packages and directories are part of the public API and can be used by ext
 ### Public Packages
 
 #### `@settler/sdk`
+
 **Location:** `packages/sdk/`
 
 TypeScript/JavaScript SDK for the Settler API. Fully public, tree-shakable, typed.
 
 **Public API:**
+
 - `SettlerClient` - Main client class
 - `JobsClient` - Job management
 - `ReportsClient` - Report access
@@ -26,28 +28,32 @@ TypeScript/JavaScript SDK for the Settler API. Fully public, tree-shakable, type
 - Utility functions (retry, pagination, webhook signature verification)
 
 **Usage:**
+
 ```typescript
-import { SettlerClient } from '@settler/sdk';
+import { SettlerClient } from "@settler/sdk";
 
 const client = new SettlerClient({
-  apiKey: 'rk_your_api_key',
+  apiKey: "rk_your_api_key",
 });
 ```
 
 #### `@settler/adapters`
+
 **Location:** `packages/adapters/`
 
 Connector interface and base adapters. Public contract for building third-party connectors.
 
 **Public API:**
+
 - `Connector` interface - Contract for connectors
 - `NormalizedData` type - Data model
 - `validateConnector()` - Validation utility
 - Base adapter implementations (reference)
 
 **Usage:**
+
 ```typescript
-import { Connector, validateConnector } from '@settler/adapters';
+import { Connector, validateConnector } from "@settler/adapters";
 
 class MyConnector implements Connector {
   // Implementation
@@ -55,11 +61,13 @@ class MyConnector implements Connector {
 ```
 
 #### `@settler/protocol`
+
 **Location:** `packages/protocol/`
 
 Shared protocol definitions, types, and utilities. Public for SDK and adapters.
 
 **Public API:**
+
 - Error types
 - Validation utilities
 - Security utilities
@@ -68,6 +76,7 @@ Shared protocol definitions, types, and utilities. Public for SDK and adapters.
 ### Public Routes
 
 #### `/api/v1/*`
+
 **Location:** `packages/api/src/routes/v1/`
 
 All routes under `/api/v1/` are part of the public API:
@@ -104,13 +113,16 @@ These packages and directories are internal and should not be relied upon by ext
 ### Private Packages
 
 #### `packages/api/`
+
 **Status:** Mixed (public routes are public, internal services are private)
 
 **Public:**
+
 - Routes under `/api/v1/` and `/api/v2/`
 - Public middleware (auth, rate limiting)
 
 **Private:**
+
 - Internal services (`services/`)
 - Database migrations (`db/migrations/`)
 - Infrastructure code (`infrastructure/`)
@@ -118,16 +130,19 @@ These packages and directories are internal and should not be relied upon by ext
 - Application services (`application/`)
 
 #### `packages/web/`
+
 **Status:** Private
 
 Next.js web application for the SaaS console. Not part of the public API.
 
 **Private:**
+
 - All React components
 - Internal API routes (`app/api/`)
 - UI-specific code
 
 #### `packages/cli/`
+
 **Status:** Public (OSS)
 
 CLI tool for managing Settler from the command line.
@@ -135,11 +150,13 @@ CLI tool for managing Settler from the command line.
 ### Private Routes
 
 #### `/api/v1/console/*`
+
 **Status:** Private
 
 Console-specific routes for the web UI.
 
 #### `/api/v1/admin/*`
+
 **Status:** Private
 
 Admin-only routes for internal operations.
@@ -255,9 +272,9 @@ Public packages use semantic versioning:
 
 ```typescript
 // External developer
-import { SettlerClient } from '@settler/sdk';
+import { SettlerClient } from "@settler/sdk";
 
-const client = new SettlerClient({ apiKey: 'rk_...' });
+const client = new SettlerClient({ apiKey: "rk_..." });
 const jobs = await client.jobs.list();
 ```
 
@@ -265,7 +282,7 @@ const jobs = await client.jobs.list();
 
 ```typescript
 // External developer (DON'T DO THIS)
-import { IngestionService } from '@settler/api/services/ingestion'; // Private!
+import { IngestionService } from "@settler/api/services/ingestion"; // Private!
 
 const service = new IngestionService(); // Will break!
 ```
@@ -274,7 +291,7 @@ const service = new IngestionService(); // Will break!
 
 ```typescript
 // External developer
-import { Connector, validateConnector } from '@settler/adapters';
+import { Connector, validateConnector } from "@settler/adapters";
 
 class MyConnector implements Connector {
   // Implementation
@@ -285,9 +302,10 @@ class MyConnector implements Connector {
 
 ```typescript
 // External developer (DON'T DO THIS)
-import { BaseAdapter } from '@settler/api/adapters/base'; // Private!
+import { BaseAdapter } from "@settler/api/adapters/base"; // Private!
 
-class MyAdapter extends BaseAdapter { // Will break!
+class MyAdapter extends BaseAdapter {
+  // Will break!
 }
 ```
 

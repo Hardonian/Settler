@@ -9,23 +9,23 @@ React.Settler includes an MCP server adapter for AI assistants and development t
 ### Setup
 
 ```tsx
-import { createMCPServer } from '@settler/react-settler';
+import { createMCPServer } from "@settler/react-settler";
 
 const mcpServer = createMCPServer({
-  name: 'react-settler',
-  version: '0.1.0',
-  description: 'Reconciliation workflow server'
+  name: "react-settler",
+  version: "0.1.0",
+  description: "Reconciliation workflow server",
 });
 
 // Register workflows
-mcpServer.registerWorkflow('workflow-1', config);
+mcpServer.registerWorkflow("workflow-1", config);
 
 // List resources
 const resources = mcpServer.listResources();
 
 // Call tools
-const result = await mcpServer.callTool('validate_transaction', {
-  transaction: transactionData
+const result = await mcpServer.callTool("validate_transaction", {
+  transaction: transactionData,
 });
 ```
 
@@ -42,7 +42,7 @@ Embed React.Settler in Shopify apps.
 ### Basic Usage
 
 ```tsx
-import { ShopifyApp } from '@settler/react-settler';
+import { ShopifyApp } from "@settler/react-settler";
 
 function MyShopifyApp() {
   return (
@@ -63,18 +63,12 @@ function MyShopifyApp() {
 ### Shopify App Bridge
 
 ```tsx
-import { ShopifyApp, useShopifyAppBridge } from '@settler/react-settler';
+import { ShopifyApp, useShopifyAppBridge } from "@settler/react-settler";
 
 function App() {
   const { shop, apiKey, setApiKey } = useShopifyAppBridge();
-  
-  return (
-    <ShopifyApp
-      shop={shop}
-      apiKey={apiKey}
-      transactions={transactions}
-    />
-  );
+
+  return <ShopifyApp shop={shop} apiKey={apiKey} transactions={transactions} />;
 }
 ```
 
@@ -83,7 +77,7 @@ function App() {
 Integrate with Stripe Connect apps.
 
 ```tsx
-import { StripeApp } from '@settler/react-settler';
+import { StripeApp } from "@settler/react-settler";
 
 function MyStripeApp() {
   return (
@@ -106,35 +100,35 @@ React.Settler includes webhook utilities for real-time updates.
 ### Basic Webhook Manager
 
 ```tsx
-import { createWebhookManager } from '@settler/react-settler';
+import { createWebhookManager } from "@settler/react-settler";
 
-const webhookManager = createWebhookManager('your-secret');
+const webhookManager = createWebhookManager("your-secret");
 
 // Subscribe to events
-webhookManager.on('transaction.created', async (payload) => {
-  console.log('New transaction:', payload.data);
+webhookManager.on("transaction.created", async (payload) => {
+  console.log("New transaction:", payload.data);
 });
 
 // Emit events
-await webhookManager.emit('transaction.created', transactionData);
+await webhookManager.emit("transaction.created", transactionData);
 ```
 
 ### Shopify Webhooks
 
 ```tsx
-import { createShopifyWebhookAdapter } from '@settler/react-settler';
+import { createShopifyWebhookAdapter } from "@settler/react-settler";
 
-const adapter = createShopifyWebhookAdapter('shopify-secret');
+const adapter = createShopifyWebhookAdapter("shopify-secret");
 
 // Handle Shopify webhook
 await adapter.handleShopifyWebhook({
-  id: 'webhook-id',
-  event: 'orders/create',
-  data: orderData
+  id: "webhook-id",
+  event: "orders/create",
+  data: orderData,
 });
 
 // Subscribe to reconciliation events
-adapter.manager.on('transaction.created', async (payload) => {
+adapter.manager.on("transaction.created", async (payload) => {
   // Handle event
 });
 ```
@@ -142,15 +136,15 @@ adapter.manager.on('transaction.created', async (payload) => {
 ### Stripe Webhooks
 
 ```tsx
-import { createStripeWebhookAdapter } from '@settler/react-settler';
+import { createStripeWebhookAdapter } from "@settler/react-settler";
 
-const adapter = createStripeWebhookAdapter('stripe-secret');
+const adapter = createStripeWebhookAdapter("stripe-secret");
 
 // Handle Stripe webhook
 await adapter.handleStripeWebhook({
-  id: 'evt_123',
-  type: 'charge.succeeded',
-  data: { object: chargeData }
+  id: "evt_123",
+  type: "charge.succeeded",
+  data: { object: chargeData },
 });
 ```
 
@@ -161,7 +155,7 @@ React.Settler includes mobile-optimized components.
 ### Mobile Dashboard
 
 ```tsx
-import { MobileDashboard } from '@settler/react-settler';
+import { MobileDashboard } from "@settler/react-settler";
 
 function App() {
   return (
@@ -182,12 +176,7 @@ function App() {
 ### Responsive Utilities
 
 ```tsx
-import {
-  useBreakpoint,
-  useIsMobile,
-  useIsTablet,
-  useIsDesktop
-} from '@settler/react-settler';
+import { useBreakpoint, useIsMobile, useIsTablet, useIsDesktop } from "@settler/react-settler";
 
 function ResponsiveComponent() {
   const breakpoint = useBreakpoint();
@@ -208,7 +197,7 @@ function ResponsiveComponent() {
 ### Custom Backend Integration
 
 ```tsx
-import { ReconciliationDashboard, compileToJSON } from '@settler/react-settler';
+import { ReconciliationDashboard, compileToJSON } from "@settler/react-settler";
 
 // Compile workflow
 const workflow = (
@@ -222,10 +211,10 @@ const workflow = (
 const jsonConfig = compileToJSON(workflow);
 
 // Send to your backend
-await fetch('https://your-api.com/reconciliation/configs', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: jsonConfig
+await fetch("https://your-api.com/reconciliation/configs", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: jsonConfig,
 });
 ```
 

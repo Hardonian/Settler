@@ -3,20 +3,20 @@
  * Usage ceilings per tenant and background job limits
  */
 
-import { query } from '../../db';
-import { logInfo, logError } from '../../utils/logger';
+import { query } from "../../db";
+import { logInfo, logError } from "../../utils/logger";
 
 export interface TenantUsageCeiling {
   tenantId: string;
   billingAccountId: string;
-  usageType: 'ingestions' | 'reconciliations' | 'api_requests' | 'storage';
+  usageType: "ingestions" | "reconciliations" | "api_requests" | "storage";
   monthlyLimit: number;
   currentUsage: number;
   resetDate: Date;
 }
 
 export interface BackgroundJobLimit {
-  jobType: 'ingestion' | 'reconciliation' | 'webhook' | 'export';
+  jobType: "ingestion" | "reconciliation" | "webhook" | "export";
   maxConcurrent: number;
   currentRunning: number;
   maxPerTenant: number;
@@ -28,20 +28,20 @@ export interface BackgroundJobLimit {
 export async function setTenantUsageCeiling(
   tenantId: string,
   billingAccountId: string,
-  usageType: TenantUsageCeiling['usageType'],
+  usageType: TenantUsageCeiling["usageType"],
   monthlyLimit: number
 ): Promise<void> {
-  if (!tenantId || typeof tenantId !== 'string') {
-    throw new Error('Invalid tenantId');
+  if (!tenantId || typeof tenantId !== "string") {
+    throw new Error("Invalid tenantId");
   }
-  if (!billingAccountId || typeof billingAccountId !== 'string') {
-    throw new Error('Invalid billingAccountId');
+  if (!billingAccountId || typeof billingAccountId !== "string") {
+    throw new Error("Invalid billingAccountId");
   }
-  if (!usageType || typeof usageType !== 'string') {
-    throw new Error('Invalid usageType');
+  if (!usageType || typeof usageType !== "string") {
+    throw new Error("Invalid usageType");
   }
-  if (typeof monthlyLimit !== 'number' || monthlyLimit < 0 || isNaN(monthlyLimit)) {
-    throw new Error('Invalid monthlyLimit: must be a non-negative number');
+  if (typeof monthlyLimit !== "number" || monthlyLimit < 0 || isNaN(monthlyLimit)) {
+    throw new Error("Invalid monthlyLimit: must be a non-negative number");
   }
 
   try {
@@ -54,18 +54,12 @@ export async function setTenantUsageCeiling(
       DO UPDATE SET 
         monthly_limit = EXCLUDED.monthly_limit,
         updated_at = NOW()`,
-      [
-        tenantId,
-        billingAccountId,
-        usageType,
-        monthlyLimit,
-        resetDate,
-      ]
+      [tenantId, billingAccountId, usageType, monthlyLimit, resetDate]
     );
 
-    logInfo('Usage ceiling set', { tenantId, usageType, monthlyLimit });
+    logInfo("Usage ceiling set", { tenantId, usageType, monthlyLimit });
   } catch (error) {
-    logError('Failed to set usage ceiling', error, { tenantId, usageType });
+    logError("Failed to set usage ceiling", error, { tenantId, usageType });
     throw error;
   }
 }
@@ -75,7 +69,7 @@ export async function setTenantUsageCeiling(
  */
 export async function checkUsageCeiling(
   tenantId: string,
-  usageType: TenantUsageCeiling['usageType']
+  usageType: TenantUsageCeiling["usageType"]
 ): Promise<{ exceeded: boolean; currentUsage: number; limit: number }> {
   try {
     const ceiling = await query<{
@@ -106,7 +100,7 @@ export async function checkUsageCeiling(
       limit,
     };
   } catch (error) {
-    logError('Failed to check usage ceiling', error, { tenantId, usageType });
+    logError("Failed to check usage ceiling", error, { tenantId, usageType });
     // Fail open - allow usage if check fails
     return { exceeded: false, currentUsage: 0, limit: Infinity };
   }
@@ -117,15 +111,16 @@ export async function checkUsageCeiling(
  */
 async function getCurrentUsage(
   tenantId: string,
-  usageType: TenantUsageCeiling['usageType'],
+  usageType: TenantUsageCeiling["usageType"],
   resetDate: Date
 ): Promise<number> {
-  const startDate = resetDate < new Date() 
-    ? new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-    : resetDate;
+  const startDate =
+    resetDate < new Date()
+      ? new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+      : resetDate;
 
   switch (usageType) {
-    case 'ingestions': {
+    case "ingestions": {
       const ingestionCount = await query<{ count: number }>(
         `SELECT COUNT(*) as count
          FROM ingestions
@@ -137,7 +132,7 @@ async function getCurrentUsage(
       return Number(ingestionCount[0]?.count || 0);
     }
 
-    case 'reconciliations': {
+    case "reconciliations": {
       const reconCount = await query<{ count: number }>(
         `SELECT COUNT(*) as count
          FROM reconciliation_runs
@@ -148,7 +143,7 @@ async function getCurrentUsage(
       return Number(reconCount[0]?.count || 0);
     }
 
-    case 'api_requests': {
+    case "api_requests": {
       const requestCount = await query<{ count: number }>(
         `SELECT COUNT(*) as count
          FROM audit_logs
@@ -159,7 +154,7 @@ async function getCurrentUsage(
       return Number(requestCount[0]?.count || 0);
     }
 
-    case 'storage':
+    case "storage":
       // Estimate storage usage (would need actual storage tracking)
       return 0;
 
@@ -172,7 +167,7 @@ async function getCurrentUsage(
  * Set background job limit
  */
 export async function setBackgroundJobLimit(
-  jobType: BackgroundJobLimit['jobType'],
+  jobType: BackgroundJobLimit["jobType"],
   maxConcurrent: number,
   maxPerTenant: number
 ): Promise<void> {
@@ -189,9 +184,9 @@ export async function setBackgroundJobLimit(
       [jobType, maxConcurrent, maxPerTenant]
     );
 
-    logInfo('Background job limit set', { jobType, maxConcurrent, maxPerTenant });
+    logInfo("Background job limit set", { jobType, maxConcurrent, maxPerTenant });
   } catch (error) {
-    logError('Failed to set background job limit', error, { jobType });
+    logError("Failed to set background job limit", error, { jobType });
     throw error;
   }
 }
@@ -200,7 +195,7 @@ export async function setBackgroundJobLimit(
  * Check if background job can run
  */
 export async function canRunBackgroundJob(
-  jobType: BackgroundJobLimit['jobType'],
+  jobType: BackgroundJobLimit["jobType"],
   tenantId?: string
 ): Promise<{ allowed: boolean; reason?: string; currentRunning: number; limit: number }> {
   try {
@@ -252,7 +247,7 @@ export async function canRunBackgroundJob(
       limit: tenantId ? maxPerTenant : maxConcurrent,
     };
   } catch (error) {
-    logError('Failed to check background job limit', error, { jobType, tenantId });
+    logError("Failed to check background job limit", error, { jobType, tenantId });
     // Fail open - allow job if check fails
     return { allowed: true, currentRunning: 0, limit: Infinity };
   }
@@ -262,38 +257,38 @@ export async function canRunBackgroundJob(
  * Get current running jobs count
  */
 async function getCurrentRunningJobs(
-  jobType: BackgroundJobLimit['jobType'],
+  jobType: BackgroundJobLimit["jobType"],
   tenantId?: string
 ): Promise<{ global: number; perTenant: number }> {
-  let globalQuery = '';
-  let tenantQuery = '';
+  let globalQuery = "";
+  let tenantQuery = "";
 
   switch (jobType) {
-    case 'ingestion':
+    case "ingestion":
       globalQuery = `SELECT COUNT(*) as count FROM ingestions WHERE status = 'processing'`;
       tenantQuery = tenantId
         ? `SELECT COUNT(*) as count FROM ingestions WHERE status = 'processing' AND tenant_id = $1`
-        : '';
+        : "";
       break;
-    case 'reconciliation':
+    case "reconciliation":
       globalQuery = `SELECT COUNT(*) as count FROM reconciliation_runs WHERE status = 'running'`;
       tenantQuery = tenantId
         ? `SELECT COUNT(*) as count FROM reconciliation_runs WHERE status = 'running' AND tenant_id = $1`
-        : '';
+        : "";
       break;
-    case 'webhook':
+    case "webhook":
       globalQuery = `SELECT COUNT(*) as count FROM webhook_deliveries WHERE status = 'pending'`;
       tenantQuery = tenantId
         ? `SELECT COUNT(*) as count FROM webhook_deliveries wd 
            JOIN webhooks w ON wd.webhook_id = w.id 
            WHERE wd.status = 'pending' AND w.tenant_id = $1`
-        : '';
+        : "";
       break;
-    case 'export':
+    case "export":
       globalQuery = `SELECT COUNT(*) as count FROM exports WHERE status = 'processing'`;
       tenantQuery = tenantId
         ? `SELECT COUNT(*) as count FROM exports WHERE status = 'processing' AND tenant_id = $1`
-        : '';
+        : "";
       break;
   }
 
@@ -330,14 +325,14 @@ export async function getAllUsageCeilings(): Promise<TenantUsageCeiling[]> {
   for (const ceiling of ceilings) {
     const currentUsage = await getCurrentUsage(
       ceiling.tenant_id,
-      ceiling.usage_type as TenantUsageCeiling['usageType'],
+      ceiling.usage_type as TenantUsageCeiling["usageType"],
       ceiling.reset_date
     );
 
     result.push({
       tenantId: ceiling.tenant_id,
       billingAccountId: ceiling.billing_account_id,
-      usageType: ceiling.usage_type as TenantUsageCeiling['usageType'],
+      usageType: ceiling.usage_type as TenantUsageCeiling["usageType"],
       monthlyLimit: Number(ceiling.monthly_limit),
       currentUsage,
       resetDate: ceiling.reset_date,

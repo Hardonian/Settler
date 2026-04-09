@@ -42,13 +42,11 @@ async function main() {
   }
 
   // Bulk resolve low-severity exceptions
-  const lowSeverityExceptions = exceptions.data.filter(
-    e => e.severity === "low"
-  );
+  const lowSeverityExceptions = exceptions.data.filter((e) => e.severity === "low");
 
   if (lowSeverityExceptions.length > 0) {
     await settler.exceptions.bulkResolve({
-      exceptionIds: lowSeverityExceptions.map(e => e.id),
+      exceptionIds: lowSeverityExceptions.map((e) => e.id),
       resolution: "ignored",
       notes: "Bulk resolved: Low-severity exceptions",
     });

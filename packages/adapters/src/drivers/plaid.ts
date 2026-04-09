@@ -129,7 +129,6 @@ export class PlaidDriver implements ConnectorDriver {
     };
   }
 
-   
   async refreshToken(
     _refreshToken: string,
     _config?: Record<string, unknown>

@@ -422,7 +422,9 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                 <div className="w-3 h-3 rounded-full bg-red-500" aria-hidden="true" />
                 <div className="w-3 h-3 rounded-full bg-yellow-500" aria-hidden="true" />
                 <div className="w-3 h-3 rounded-full bg-green-500" aria-hidden="true" />
-                <span className="ml-4 text-sm text-muted-foreground font-mono">reconciliation.ts</span>
+                <span className="ml-4 text-sm text-muted-foreground font-mono">
+                  reconciliation.ts
+                </span>
               </div>
               <div className="p-4 sm:p-6 overflow-x-auto">
                 <AnimatedCodeBlock
@@ -654,7 +656,10 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch sm:items-center">
               <Button size="lg" asChild className="shadow-md">
-                <Link href="/docs/quickstart" className="inline-flex items-center justify-center gap-2">
+                <Link
+                  href="/docs/quickstart"
+                  className="inline-flex items-center justify-center gap-2"
+                >
                   <BookOpen className="w-4 h-4" aria-hidden="true" />
                   Read the Quickstart
                 </Link>

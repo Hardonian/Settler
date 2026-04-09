@@ -1,11 +1,11 @@
 /**
  * Performance Guardrails
- * 
+ *
  * Implements timeouts, retries, circuit breakers, and rate limiting
  * to ensure system reliability and prevent cascading failures.
  */
 
-import { logger } from '@/lib/observability/logger';
+import { logger } from "@/lib/observability/logger";
 
 export interface RetryOptions {
   maxRetries?: number;
@@ -30,16 +30,13 @@ export interface CircuitBreakerOptions {
 /**
  * Retry with exponential backoff
  */
-export async function withRetry<T>(
-  fn: () => Promise<T>,
-  options: RetryOptions = {}
-): Promise<T> {
+export async function withRetry<T>(fn: () => Promise<T>, options: RetryOptions = {}): Promise<T> {
   const {
     maxRetries = 3,
     initialDelay = 1000,
     maxDelay = 30000,
     backoffMultiplier = 2,
-    retryableErrors = ['ECONNRESET', 'ETIMEDOUT', 'ENOTFOUND'],
+    retryableErrors = ["ECONNRESET", "ETIMEDOUT", "ENOTFOUND"],
   } = options;
 
   let lastError: Error | null = null;
@@ -66,12 +63,9 @@ export async function withRetry<T>(
       }
 
       // Calculate delay with exponential backoff
-      const delay = Math.min(
-        initialDelay * Math.pow(backoffMultiplier, attempt),
-        maxDelay
-      );
+      const delay = Math.min(initialDelay * Math.pow(backoffMultiplier, attempt), maxDelay);
 
-      await logger.warn('Retrying after error', {
+      await logger.warn("Retrying after error", {
         attempt: attempt + 1,
         maxRetries,
         delay,
@@ -82,7 +76,7 @@ export async function withRetry<T>(
     }
   }
 
-  throw lastError || new Error('Retry failed');
+  throw lastError || new Error("Retry failed");
 }
 
 /**
@@ -102,9 +96,9 @@ export async function withTimeout<T>(
       }, timeoutMs);
 
       if (signal) {
-        signal.addEventListener('abort', () => {
+        signal.addEventListener("abort", () => {
           clearTimeout(timeout);
-          reject(new Error('Operation aborted'));
+          reject(new Error("Operation aborted"));
         });
       }
     }),
@@ -117,18 +111,14 @@ export async function withTimeout<T>(
 export class CircuitBreaker {
   private failures = 0;
   private successes = 0;
-  private state: 'closed' | 'open' | 'half-open' = 'closed';
+  private state: "closed" | "open" | "half-open" = "closed";
   private lastFailureTime: number | null = null;
 
   constructor(
     private options: CircuitBreakerOptions = {},
-    private name: string = 'circuit-breaker'
+    private name: string = "circuit-breaker"
   ) {
-    const {
-      failureThreshold = 5,
-      successThreshold = 2,
-      resetTimeout = 60000,
-    } = options;
+    const { failureThreshold = 5, successThreshold = 2, resetTimeout = 60000 } = options;
 
     this.options = {
       failureThreshold,
@@ -139,12 +129,12 @@ export class CircuitBreaker {
 
   async execute<T>(fn: () => Promise<T>): Promise<T> {
     // Check if circuit should be reset
-    if (this.state === 'open' && this.lastFailureTime) {
+    if (this.state === "open" && this.lastFailureTime) {
       const timeSinceFailure = Date.now() - this.lastFailureTime;
       if (timeSinceFailure >= (this.options.resetTimeout || 60000)) {
-        this.state = 'half-open';
+        this.state = "half-open";
         this.successes = 0;
-        await logger.info('Circuit breaker entering half-open state', {
+        await logger.info("Circuit breaker entering half-open state", {
           name: this.name,
         });
       } else {
@@ -169,12 +159,12 @@ export class CircuitBreaker {
   private onSuccess(): void {
     this.failures = 0;
 
-    if (this.state === 'half-open') {
+    if (this.state === "half-open") {
       this.successes++;
       if (this.successes >= (this.options.successThreshold || 2)) {
-        this.state = 'closed';
+        this.state = "closed";
         this.successes = 0;
-        logger.info('Circuit breaker closed (recovered)', {
+        logger.info("Circuit breaker closed (recovered)", {
           name: this.name,
         });
       }
@@ -186,20 +176,20 @@ export class CircuitBreaker {
     this.lastFailureTime = Date.now();
 
     if (this.failures >= (this.options.failureThreshold || 5)) {
-      this.state = 'open';
-      logger.error('Circuit breaker opened', {
+      this.state = "open";
+      logger.error("Circuit breaker opened", {
         name: this.name,
         failures: this.failures,
       });
     }
   }
 
-  getState(): 'closed' | 'open' | 'half-open' {
+  getState(): "closed" | "open" | "half-open" {
     return this.state;
   }
 
   reset(): void {
-    this.state = 'closed';
+    this.state = "closed";
     this.failures = 0;
     this.successes = 0;
     this.lastFailureTime = null;
@@ -215,7 +205,7 @@ export class RateLimiter {
   constructor(
     private maxRequests: number,
     private windowMs: number,
-    private name: string = 'rate-limiter'
+    private name: string = "rate-limiter"
   ) {}
 
   async checkLimit(): Promise<void> {
@@ -228,20 +218,18 @@ export class RateLimiter {
     if (this.requests.length >= this.maxRequests) {
       const oldestRequest = this.requests[0];
       if (!oldestRequest) {
-        throw new Error('Rate limit exceeded');
+        throw new Error("Rate limit exceeded");
       }
       const waitTime = oldestRequest + this.windowMs - now;
 
-      await logger.warn('Rate limit exceeded', {
+      await logger.warn("Rate limit exceeded", {
         name: this.name,
         maxRequests: this.maxRequests,
         windowMs: this.windowMs,
         waitTime,
       });
 
-      throw new Error(
-        `Rate limit exceeded. Retry after ${Math.ceil(waitTime / 1000)} seconds`
-      );
+      throw new Error(`Rate limit exceeded. Retry after ${Math.ceil(waitTime / 1000)} seconds`);
     }
 
     this.requests.push(now);

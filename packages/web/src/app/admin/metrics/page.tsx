@@ -63,9 +63,7 @@ async function AdminMetricsContent() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-foreground mb-2">
-          Executive Dashboard
-        </h1>
+        <h1 className="text-3xl font-bold text-foreground mb-2">Executive Dashboard</h1>
         <p className="text-muted-foreground">Key business metrics and KPIs</p>
       </div>
 

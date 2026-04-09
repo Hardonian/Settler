@@ -21,7 +21,14 @@ interface IntegrationCardProps {
   isConnected?: boolean;
   isStandard?: boolean;
   isPurchased?: boolean;
-  status?: "active" | "inactive" | "error" | "pending" | "needs_attention" | "connected" | "not_connected";
+  status?:
+    | "active"
+    | "inactive"
+    | "error"
+    | "pending"
+    | "needs_attention"
+    | "connected"
+    | "not_connected";
   lastSync?: Date;
   onConnect?: (id: string) => Promise<void>;
   onDisconnect?: (id: string) => Promise<void>;
@@ -64,9 +71,17 @@ export function IntegrationCard({
       case "pending":
         return <Badge variant="outline">Pending</Badge>;
       case "needs_attention":
-        return <Badge variant="outline" className="bg-yellow-100 text-yellow-800">Needs Attention</Badge>;
+        return (
+          <Badge variant="outline" className="bg-yellow-100 text-yellow-800">
+            Needs Attention
+          </Badge>
+        );
       case "connected":
-        return <Badge variant="default" className="bg-green-500">Connected</Badge>;
+        return (
+          <Badge variant="default" className="bg-green-500">
+            Connected
+          </Badge>
+        );
       case "not_connected":
         return <Badge variant="secondary">Not Connected</Badge>;
       default:

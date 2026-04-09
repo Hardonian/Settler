@@ -1,16 +1,16 @@
 /**
  * XState Type Definitions
- * 
+ *
  * Common types and utilities for state machines
  */
 
-import { StateValue } from 'xstate';
+import { StateValue } from "xstate";
 
 /**
  * Standard async state values
  * Use these for consistent async operation states
  */
-export type AsyncState = 'idle' | 'pending' | 'success' | 'error';
+export type AsyncState = "idle" | "pending" | "success" | "error";
 
 /**
  * Standard context shape for async operations
@@ -52,33 +52,33 @@ export interface MachineMetadata {
  * Helper to check if state is async
  */
 export function isAsyncState(state: StateValue): state is AsyncState {
-  return typeof state === 'string' && ['idle', 'pending', 'success', 'error'].includes(state);
+  return typeof state === "string" && ["idle", "pending", "success", "error"].includes(state);
 }
 
 /**
  * Helper to check if state is pending
  */
 export function isPendingState(state: StateValue): boolean {
-  return state === 'pending';
+  return state === "pending";
 }
 
 /**
  * Helper to check if state is success
  */
 export function isSuccessState(state: StateValue): boolean {
-  return state === 'success';
+  return state === "success";
 }
 
 /**
  * Helper to check if state is error
  */
 export function isErrorState(state: StateValue): boolean {
-  return state === 'error';
+  return state === "error";
 }
 
 /**
  * Helper to check if state is idle
  */
 export function isIdleState(state: StateValue): boolean {
-  return state === 'idle';
+  return state === "idle";
 }

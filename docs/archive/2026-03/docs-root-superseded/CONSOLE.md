@@ -33,6 +33,7 @@ Console functionality is organized in `src/domain/console/`:
 ### Data Access
 
 All console pages use:
+
 - Server-side data fetching via API routes (`/api/console/*`)
 - Supabase auth for user identification
 - Prisma for database queries
@@ -43,6 +44,7 @@ All console pages use:
 To add a new service to the console:
 
 1. **Create domain module** (`src/domain/console/newService.ts`):
+
    ```typescript
    export async function listNewServiceItems(billingAccountId: string) {
      // Query logic
@@ -50,6 +52,7 @@ To add a new service to the console:
    ```
 
 2. **Create API route** (`src/app/api/console/new-service/route.ts`):
+
    ```typescript
    export async function GET() {
      // Auth check

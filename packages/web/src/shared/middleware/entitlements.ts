@@ -1,13 +1,13 @@
 /**
  * Entitlement Middleware
- * 
+ *
  * Middleware to check service entitlements before processing API requests.
  * Includes proper error handling and security measures.
  */
 
-import { NextResponse } from 'next/server';
-import { ApiKeyAuthContext } from '@/shared/auth/apiKey';
-import { checkEntitlement, ServiceCode } from '@/domain/billing/entitlements';
+import { NextResponse } from "next/server";
+import { ApiKeyAuthContext } from "@/shared/auth/apiKey";
+import { checkEntitlement, ServiceCode } from "@/domain/billing/entitlements";
 
 export interface EntitlementError {
   error: string;
@@ -26,11 +26,11 @@ export interface EntitlementError {
  * Map service from eventType to ServiceCode
  */
 export function getServiceFromEventType(eventType: string): ServiceCode | null {
-  if (eventType.startsWith('settler-reconcile')) {
-    return 'reconcile';
+  if (eventType.startsWith("settler-reconcile")) {
+    return "reconcile";
   }
-  if (eventType.startsWith('settler-exception:review')) {
-    return 'exceptions';
+  if (eventType.startsWith("settler-exception:review")) {
+    return "exceptions";
   }
   return null;
 }
@@ -47,20 +47,20 @@ export async function checkRequestEntitlement(
     return {
       allowed: false,
       error: {
-        error: 'Unauthorized',
-        code: 'no_billing_account',
-        message: 'No billing account found. Please contact support.',
+        error: "Unauthorized",
+        code: "no_billing_account",
+        message: "No billing account found. Please contact support.",
         status: 401,
       },
     };
   }
 
-  if (!['reconcile', 'exceptions'].includes(service)) {
+  if (!["reconcile", "exceptions"].includes(service)) {
     return {
       allowed: false,
       error: {
-        error: 'Invalid Service',
-        code: 'invalid_service',
+        error: "Invalid Service",
+        code: "invalid_service",
         message: `Invalid service code: ${service}. Only 'reconcile' and 'exceptions' are supported.`,
         status: 400,
       },
@@ -74,15 +74,15 @@ export async function checkRequestEntitlement(
       return {
         allowed: false,
         error: {
-          error: 'Plan Limit Exceeded',
-          code: 'plan_limit_exceeded',
+          error: "Plan Limit Exceeded",
+          code: "plan_limit_exceeded",
           message: `You have exceeded your monthly quota for ${service}. Current usage: ${entitlement.currentUsage}/${entitlement.limit}.`,
           status: 403,
           details: {
             currentPlan: entitlement.planCode,
             currentUsage: entitlement.currentUsage,
             limit: entitlement.limit,
-            upgradeUrl: '/console/billing',
+            upgradeUrl: "/console/billing",
           },
         },
       };
@@ -92,17 +92,17 @@ export async function checkRequestEntitlement(
   } catch (error) {
     // Fail closed on errors - deny request if entitlement check fails
     // This prevents users from bypassing plan enforcement
-    console.error('[Entitlement Middleware] Error checking entitlement:', {
+    console.error("[Entitlement Middleware] Error checking entitlement:", {
       billingAccountId: auth.billingAccountId,
       service,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : "Unknown error",
     });
     return {
       allowed: false,
       error: {
-        error: 'Entitlement Check Failed',
-        code: 'entitlement_check_failed',
-        message: 'Unable to verify your plan limits right now. Please retry in a moment.',
+        error: "Entitlement Check Failed",
+        code: "entitlement_check_failed",
+        message: "Unable to verify your plan limits right now. Please retry in a moment.",
         status: 503,
       },
     };

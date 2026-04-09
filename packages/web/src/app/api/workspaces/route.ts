@@ -64,7 +64,6 @@ export const POST = withSecurity(
         // Create workspace using Prisma (fallback to direct insert if function doesn't exist)
         let tenantId: string;
         try {
-           
           const { data: result, error } = await (supabase.rpc as any)(
             "create_workspace_with_owner",
             {
@@ -86,7 +85,7 @@ export const POST = withSecurity(
             tenantId = tenant.id;
 
             // Add user as owner
-             
+
             await (supabase.from("tenant_users") as any).insert({
               tenant_id: tenantId,
               user_id: user.id,
@@ -95,7 +94,7 @@ export const POST = withSecurity(
             });
 
             // Initialize onboarding progress
-             
+
             await (supabase.from("tenant_onboarding_progress") as any).insert({
               tenant_id: tenantId,
               user_id: user.id,
@@ -123,7 +122,6 @@ export const POST = withSecurity(
 
         // Track onboarding event (with fallback)
         try {
-           
           await (supabase.rpc as any)("track_onboarding_event", {
             p_tenant_id: tenantId,
             p_user_id: user.id,
@@ -137,7 +135,7 @@ export const POST = withSecurity(
           });
         } catch {
           // Fallback: insert directly
-           
+
           await (supabase.from("onboarding_events") as any).insert({
             tenant_id: tenantId,
             user_id: user.id,
@@ -150,7 +148,6 @@ export const POST = withSecurity(
 
         // Complete the create_workspace step (with fallback)
         try {
-           
           await (supabase.rpc as any)("complete_onboarding_step", {
             p_tenant_id: tenantId,
             p_user_id: user.id,
@@ -159,7 +156,7 @@ export const POST = withSecurity(
           });
         } catch {
           // Fallback: update directly
-           
+
           await (supabase.from("tenant_onboarding_progress") as any).upsert(
             {
               tenant_id: tenantId,
@@ -251,7 +248,7 @@ export const GET = withSecurity(
         }
 
         // Get user's tenant memberships
-         
+
         const { data: memberships, error } = await (supabase.from("tenant_users") as any)
           .select("tenant_id, role")
           .eq("user_id", user.id);

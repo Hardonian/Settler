@@ -332,7 +332,11 @@ function buildOperatorExplainerCodes(input: {
     codes.push("ingestion_run_not_comparable");
   }
 
-  codes.push(hasRecurringFamilyHighlights ? "recurring_family_signal_present" : "recurring_family_signal_absent");
+  codes.push(
+    hasRecurringFamilyHighlights
+      ? "recurring_family_signal_present"
+      : "recurring_family_signal_absent"
+  );
   return Array.from(new Set(codes));
 }
 
@@ -346,7 +350,8 @@ export function toRunCompactProofSummary(index: RunProofpackIndex): RunCompactPr
           ? index.comparison.history.pattern === "thin_history"
             ? "weak"
             : "unavailable"
-          : index.comparison.history.pattern === "thin_history" || index.comparison.certainty === "low"
+          : index.comparison.history.pattern === "thin_history" ||
+              index.comparison.certainty === "low"
             ? "weak"
             : "strong";
 
@@ -429,7 +434,9 @@ export function toRunCompactProofSummary(index: RunProofpackIndex): RunCompactPr
 export function canonicalMissingProofpackReasonForRunKind(
   runKind: RunKindForSummary
 ): RunOperatorReasonCode {
-  return runKind === "ingestion_run" ? "ingestion_run_history_not_comparable" : "run_proofpack_missing";
+  return runKind === "ingestion_run"
+    ? "ingestion_run_history_not_comparable"
+    : "run_proofpack_missing";
 }
 
 export function resolveRunCompactProofSummary(input: {

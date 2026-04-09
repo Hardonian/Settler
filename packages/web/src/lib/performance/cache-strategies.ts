@@ -27,7 +27,7 @@ export function generateCacheControl(options: CacheOptions = {}): string {
     `stale-while-revalidate=${staleWhileRevalidate}`,
   ];
 
-  return directives.join(', ');
+  return directives.join(", ");
 }
 
 /**
@@ -40,28 +40,28 @@ export const CACHE_STRATEGIES = {
     sMaxAge: 31536000,
     staleWhileRevalidate: 86400,
   },
-  
+
   // Dynamic content - short cache
   DYNAMIC: {
     maxAge: 60, // 1 minute
     sMaxAge: 300, // 5 minutes
     staleWhileRevalidate: 3600,
   },
-  
+
   // API responses - medium cache
   API: {
     maxAge: 300, // 5 minutes
     sMaxAge: 3600, // 1 hour
     staleWhileRevalidate: 86400,
   },
-  
+
   // User-specific content - no cache
   USER_SPECIFIC: {
     maxAge: 0,
     sMaxAge: 0,
     staleWhileRevalidate: 0,
   },
-  
+
   // SEO content - long cache
   SEO: {
     maxAge: 3600, // 1 hour
@@ -75,10 +75,10 @@ export const CACHE_STRATEGIES = {
  */
 export function getCacheHeaders(strategy: keyof typeof CACHE_STRATEGIES): HeadersInit {
   const cacheControl = generateCacheControl(CACHE_STRATEGIES[strategy]);
-  
+
   return {
-    'Cache-Control': cacheControl,
-    'Vary': 'Accept-Encoding',
+    "Cache-Control": cacheControl,
+    Vary: "Accept-Encoding",
   };
 }
 
@@ -87,30 +87,30 @@ export function getCacheHeaders(strategy: keyof typeof CACHE_STRATEGIES): Header
  */
 class SimpleCache {
   private cache = new Map<string, { data: any; expires: number }>();
-  
+
   get<T>(key: string): T | null {
     const item = this.cache.get(key);
     if (!item) return null;
-    
+
     if (Date.now() > item.expires) {
       this.cache.delete(key);
       return null;
     }
-    
+
     return item.data as T;
   }
-  
+
   set<T>(key: string, data: T, ttl: number = 3600): void {
     this.cache.set(key, {
       data,
       expires: Date.now() + ttl * 1000,
     });
   }
-  
+
   delete(key: string): void {
     this.cache.delete(key);
   }
-  
+
   clear(): void {
     this.cache.clear();
   }

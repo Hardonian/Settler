@@ -5,13 +5,13 @@ React.Settler includes testing utilities to make testing reconciliation componen
 ## Setup
 
 ```tsx
-import { render } from '@testing-library/react';
+import { render } from "@testing-library/react";
 import {
   TestWrapper,
   createMockTransaction,
   createMockTransactions,
-  createMockTelemetryProvider
-} from '@settler/react-settler';
+  createMockTelemetryProvider,
+} from "@settler/react-settler";
 ```
 
 ## Mock Data
@@ -19,12 +19,12 @@ import {
 Create mock transactions:
 
 ```tsx
-import { createMockTransaction, createMockTransactions } from '@settler/react-settler';
+import { createMockTransaction, createMockTransactions } from "@settler/react-settler";
 
 // Single transaction
 const transaction = createMockTransaction({
-  amount: { value: 100, currency: 'USD' },
-  provider: 'stripe'
+  amount: { value: 100, currency: "USD" },
+  provider: "stripe",
 });
 
 // Multiple transactions
@@ -36,18 +36,18 @@ const transactions = createMockTransactions(10);
 Test components with TestWrapper:
 
 ```tsx
-import { render } from '@testing-library/react';
-import { TransactionTable, TestWrapper, createMockTransactions } from '@settler/react-settler';
+import { render } from "@testing-library/react";
+import { TransactionTable, TestWrapper, createMockTransactions } from "@settler/react-settler";
 
-test('renders transactions', () => {
+test("renders transactions", () => {
   const transactions = createMockTransactions(5);
-  
+
   const { getByText } = render(
     <TestWrapper>
       <TransactionTable transactions={transactions} />
     </TestWrapper>
   );
-  
+
   expect(getByText(transactions[0].id)).toBeInTheDocument();
 });
 ```
@@ -57,19 +57,19 @@ test('renders transactions', () => {
 Mock telemetry provider:
 
 ```tsx
-import { createMockTelemetryProvider, setTelemetryProvider } from '@settler/react-settler';
+import { createMockTelemetryProvider, setTelemetryProvider } from "@settler/react-settler";
 
-test('tracks events', () => {
+test("tracks events", () => {
   const mockTelemetry = createMockTelemetryProvider();
   setTelemetryProvider(mockTelemetry);
-  
+
   // Render component and interact
   // ...
-  
+
   const events = mockTelemetry.getEvents();
   expect(events).toHaveLength(1);
-  expect(events[0].name).toBe('transaction.selected');
-  
+  expect(events[0].name).toBe("transaction.selected");
+
   mockTelemetry.clear();
 });
 ```
@@ -79,12 +79,12 @@ test('tracks events', () => {
 Test config compilation:
 
 ```tsx
-import { render } from '@testing-library/react';
-import { ReconciliationDashboard, RuleSet, MatchRule, TestWrapper } from '@settler/react-settler';
+import { render } from "@testing-library/react";
+import { ReconciliationDashboard, RuleSet, MatchRule, TestWrapper } from "@settler/react-settler";
 
-test('compiles config', () => {
+test("compiles config", () => {
   const config = {};
-  
+
   render(
     <TestWrapper mode="config" config={config}>
       <RuleSet id="rules-1" name="Test Rules">
@@ -92,7 +92,7 @@ test('compiles config', () => {
       </RuleSet>
     </TestWrapper>
   );
-  
+
   expect(config.rulesets).toHaveLength(1);
   expect(config.rulesets[0].rules).toHaveLength(1);
 });
@@ -103,19 +103,19 @@ test('compiles config', () => {
 Test full workflows:
 
 ```tsx
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from "@testing-library/react";
 import {
   ReconciliationDashboard,
   TransactionTable,
   FilterBar,
   TestWrapper,
-  createMockTransactions
-} from '@settler/react-settler';
+  createMockTransactions,
+} from "@settler/react-settler";
 
-test('filters transactions', async () => {
+test("filters transactions", async () => {
   const transactions = createMockTransactions(10);
   const handleFilterChange = jest.fn();
-  
+
   render(
     <TestWrapper>
       <ReconciliationDashboard>
@@ -124,12 +124,12 @@ test('filters transactions', async () => {
       </ReconciliationDashboard>
     </TestWrapper>
   );
-  
+
   const providerSelect = screen.getByLabelText(/provider/i);
-  fireEvent.change(providerSelect, { target: { value: 'stripe' } });
-  
+  fireEvent.change(providerSelect, { target: { value: "stripe" } });
+
   expect(handleFilterChange).toHaveBeenCalledWith(
-    expect.objectContaining({ provider: ['stripe'] })
+    expect.objectContaining({ provider: ["stripe"] })
   );
 });
 ```

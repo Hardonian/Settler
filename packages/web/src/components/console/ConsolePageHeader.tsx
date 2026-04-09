@@ -33,7 +33,10 @@ export function ConsolePageHeader({
   return (
     <header className={cn("space-y-3", className)}>
       {breadcrumbs && breadcrumbs.length > 0 && (
-        <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-xs text-muted-foreground">
+        <nav
+          aria-label="Breadcrumb"
+          className="flex items-center gap-1 text-xs text-muted-foreground"
+        >
           {breadcrumbs.map((crumb, i) => (
             <span key={crumb.label} className="flex items-center gap-1">
               {i > 0 && <ChevronRight className="w-3 h-3 flex-shrink-0" aria-hidden="true" />}
@@ -54,7 +57,9 @@ export function ConsolePageHeader({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-1.5 min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">{title}</h1>
+            <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
+              {title}
+            </h1>
             {scopeLabel && (
               <Badge variant="outline" className="text-xs font-medium">
                 {scopeLabel}

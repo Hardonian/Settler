@@ -12,6 +12,7 @@
 [Brand] is a fast-growing e-commerce platform processing thousands of orders daily across multiple payment providers. Before Settler, their finance team spent 40+ hours per week manually reconciling transactions between Shopify, Stripe, PayPal, and QuickBooks. After implementing Settler, they automated the vast majority of reconciliation, reduced errors significantly, and saved $X per month in operational costs.
 
 **Key Results:**
+
 - ⏱️ **Time Saved:** 40 hours/week (2,080 hours/year)
 - 💰 **Cost Savings:** $X/month ($XX,XXX/year)
 - ✅ **Accuracy:** 99.8% (up from 92%)
@@ -27,6 +28,7 @@
 [Brand] is a direct-to-consumer e-commerce brand selling [product category] online. Founded in [year], they've grown from a small Shopify store to a multi-channel operation processing [X,XXX] orders per month.
 
 **Platforms Used:**
+
 - **Shopify:** Order management and e-commerce platform
 - **Stripe:** Primary payment processor
 - **PayPal:** Secondary payment processor
@@ -36,6 +38,7 @@
 ### The Problem
 
 **Manual Reconciliation Process:**
+
 1. Finance team exports orders from Shopify (daily)
 2. Finance team exports payments from Stripe (daily)
 3. Finance team exports payments from PayPal (daily)
@@ -45,6 +48,7 @@
 7. Finance team generates reports for management (monthly)
 
 **Pain Points:**
+
 - ⏰ **Time-Consuming:** 40+ hours per week spent on reconciliation
 - ❌ **Error-Prone:** Manual matching led to 8% error rate
 - 📊 **No Real-Time Visibility:** Discrepancies discovered days/weeks later
@@ -53,6 +57,7 @@
 - 😰 **Stressful:** Finance team overwhelmed, working weekends
 
 **Specific Issues:**
+
 - **Missing Payments:** Orders without matching payments (5% of transactions)
 - **Duplicate Charges:** Customers charged twice (1% of transactions)
 - **Refund Mismatches:** Refunds not properly recorded (2% of transactions)
@@ -62,6 +67,7 @@
 ### The Cost
 
 **Annual Costs (Before Settler):**
+
 - Finance team time: 2,080 hours/year × $50/hour = **$104,000/year**
 - Error investigation: 200 hours/year × $50/hour = **$10,000/year**
 - Revenue leakage (unmatched transactions): **$X,XXX/year**
@@ -77,24 +83,28 @@
 [Brand] evaluated several options:
 
 **Option 1: Custom Development**
+
 - **Timeline:** 6 months
 - **Cost:** $150,000+ (development + maintenance)
 - **Risk:** High (custom code, ongoing maintenance)
 - **Verdict:** Too slow, too expensive
 
 **Option 2: Legacy Solution (BlackLine)**
+
 - **Timeline:** 3-6 months
 - **Cost:** $100,000+/year
 - **Risk:** Medium (complex setup, vendor lock-in)
 - **Verdict:** Too expensive, too complex
 
 **Option 3: Settler**
+
 - **Timeline:** 3 days
 - **Cost:** $99/month (Growth plan)
 - **Risk:** Low (managed service, API-first)
 - **Verdict:** ✅ **Chosen**
 
 **Decision Factors:**
+
 - ⚡ Fast implementation (3 days vs. 6 months)
 - 💰 Affordable pricing ($99/month vs. $100K+/year)
 - 🚀 API-first (easy integration with existing systems)
@@ -104,6 +114,7 @@
 ### Implementation
 
 **Day 1: Setup (2 hours)**
+
 - Created Settler account
 - Configured Stripe adapter (15 minutes)
 - Configured Shopify adapter (15 minutes)
@@ -113,6 +124,7 @@
 - Tested with sample data (30 minutes)
 
 **Day 2: Integration (4 hours)**
+
 - Integrated Settler API into existing systems
 - Set up webhooks for real-time reconciliation
 - Configured matching rules (order ID, amount, date)
@@ -120,6 +132,7 @@
 - Validated results with finance team
 
 **Day 3: Go-Live (2 hours)**
+
 - Enabled production reconciliation jobs
 - Set up monitoring and alerting
 - Trained finance team on dashboard
@@ -133,6 +146,7 @@
 **Reconciliation Jobs Created:**
 
 **Job 1: Shopify ↔ Stripe**
+
 ```typescript
 {
   name: "Shopify-Stripe Reconciliation",
@@ -151,19 +165,23 @@
 ```
 
 **Job 2: Shopify ↔ PayPal**
+
 - Similar configuration for PayPal payments
 
 **Job 3: Multi-Platform → QuickBooks**
+
 - Consolidated reconciliation across all payment providers
 - Automated QuickBooks journal entries
 
 **Matching Rules:**
+
 - **Order ID:** Exact match (primary)
 - **Amount:** Exact match with $0.01 tolerance (handles rounding)
 - **Date:** Range match (±1 day, handles timezone differences)
 - **Currency:** Currency-aware matching (USD, EUR, GBP)
 
 **Alert Configuration:**
+
 - Email alerts for unmatched transactions
 - Slack notifications for reconciliation errors
 - Daily summary reports to finance team
@@ -175,12 +193,14 @@
 ### Time Savings
 
 **Before Settler:**
+
 - Daily reconciliation: 8 hours/day × 5 days = **40 hours/week**
 - Weekly QuickBooks reconciliation: 4 hours/week
 - Monthly reporting: 8 hours/month
 - **Total: 2,080 hours/year**
 
 **After Settler:**
+
 - Daily reconciliation: **0 hours** (automated)
 - Weekly QuickBooks reconciliation: **0 hours** (automated)
 - Monthly reporting: **1 hour/month** (review automated reports)
@@ -193,16 +213,19 @@
 ### Cost Savings
 
 **Direct Cost Savings:**
+
 - Finance team time: **$103,400/year**
 - Error investigation: **$10,000/year** (reduced by 95%)
 - **Total Direct Savings: $113,400/year**
 
 **Indirect Cost Savings:**
+
 - Revenue leakage recovery: **$X,XXX/year** (unmatched transactions now caught)
 - Reduced audit costs: **$X,XXX/year** (cleaner books)
 - **Total Indirect Savings: $XX,XXX/year**
 
 **Settler Cost:**
+
 - Growth plan: $99/month = **$1,188/year**
 
 **Net Savings:** **$XXX,XXX/year**
@@ -212,6 +235,7 @@
 ### Accuracy Improvements
 
 **Before Settler:**
+
 - Manual matching accuracy: **92%**
 - Error rate: **8%**
 - Unmatched transactions: **5%**
@@ -219,6 +243,7 @@
 - Refund mismatches: **2%**
 
 **After Settler:**
+
 - Automated matching accuracy: **99.8%**
 - Error rate: **0.2%**
 - Unmatched transactions: **0.1%** (flagged for review)
@@ -230,16 +255,19 @@
 ### Scalability
 
 **Before Settler:**
+
 - Process broke down during peak seasons
 - Required hiring additional finance staff
 - Manual process didn't scale with growth
 
 **After Settler:**
+
 - Handles 10x transaction volume without additional resources
 - No additional staff needed
 - Process scales automatically with business growth
 
 **Growth Handled:**
+
 - Month 1: [X,XXX] transactions/month
 - Month 6: [XX,XXX] transactions/month (10x growth)
 - Month 12: [XXX,XXX] transactions/month (100x growth)
@@ -248,18 +276,21 @@
 ### Operational Improvements
 
 **Real-Time Visibility:**
+
 - ✅ Discrepancies detected within minutes (vs. days/weeks)
 - ✅ Daily automated reports (vs. manual monthly reports)
 - ✅ Real-time dashboards (vs. static Excel files)
 - ✅ Webhook alerts for critical issues (vs. manual checking)
 
 **Error Reduction:**
+
 - ✅ 95% reduction in reconciliation errors
 - ✅ High percentage of transactions automatically matched
 - ✅ Unmatched transactions flagged for review (not lost)
 - ✅ Duplicate charges automatically detected
 
 **Team Productivity:**
+
 - ✅ Finance team freed from manual reconciliation
 - ✅ Finance team can focus on analysis and strategy
 - ✅ No more weekend work for reconciliation
@@ -288,6 +319,7 @@
 ### Architecture
 
 **Integration Points:**
+
 - **Shopify:** REST API + Webhooks
 - **Stripe:** REST API + Webhooks
 - **PayPal:** REST API + Webhooks
@@ -295,6 +327,7 @@
 - **Settler:** REST API + Webhooks
 
 **Data Flow:**
+
 ```
 Shopify Orders → Settler → Stripe Payments
                     ↓
@@ -302,6 +335,7 @@ Shopify Orders → Settler → Stripe Payments
 ```
 
 **Reconciliation Process:**
+
 1. Orders flow from Shopify via webhooks
 2. Payments flow from Stripe/PayPal via webhooks
 3. Settler matches transactions in real-time
@@ -312,12 +346,14 @@ Shopify Orders → Settler → Stripe Payments
 ### Performance Metrics
 
 **Reconciliation Performance:**
+
 - **Latency:** <100ms per transaction (p95)
 - **Throughput:** 10,000+ transactions/hour
 - **Accuracy:** 99.8%
 - **Uptime:** 99.95%
 
 **API Performance:**
+
 - **Response Time:** <50ms (p95)
 - **Rate Limit:** 2,000 requests/15 min
 - **Webhook Delivery:** <1 second
@@ -325,12 +361,14 @@ Shopify Orders → Settler → Stripe Payments
 ### Monitoring & Alerting
 
 **Monitoring:**
+
 - Real-time dashboard (job status, accuracy, errors)
 - Daily email reports (summary, unmatched transactions)
 - Slack notifications (critical errors, mismatches)
 - Weekly management reports (automated)
 
 **Alerting:**
+
 - Unmatched transactions (email + Slack)
 - Reconciliation errors (email + Slack)
 - Job failures (email + Slack)
@@ -358,6 +396,7 @@ Shopify Orders → Settler → Stripe Payments
 ### Recommendations
 
 **For Similar Companies:**
+
 1. Start with one reconciliation job (prove value)
 2. Gradually add more platforms (incremental approach)
 3. Configure matching rules based on real data (not assumptions)
@@ -369,12 +408,14 @@ Shopify Orders → Settler → Stripe Payments
 ## Next Steps
 
 **Future Enhancements:**
+
 - [ ] Add Square adapter (in-person sales)
 - [ ] Implement multi-currency reconciliation (EUR, GBP)
 - [ ] Add custom reporting (white-label reports)
 - [ ] Integrate with BI tools (Tableau, Looker)
 
 **Expansion Plans:**
+
 - [ ] Add more payment providers (Apple Pay, Google Pay)
 - [ ] Implement revenue recognition automation
 - [ ] Add tax calculation and reporting
@@ -387,6 +428,7 @@ Shopify Orders → Settler → Stripe Payments
 Settler enabled [Brand] to automate the vast majority of their reconciliation process, saving 40 hours per week and $XXX,XXX per year. The 3-day implementation, high accuracy, and real-time visibility transformed their finance operations, allowing the team to focus on strategic work instead of manual data matching.
 
 **Key Takeaways:**
+
 - ⚡ **Fast Implementation:** 3 days vs. 6 months
 - 💰 **Significant Savings:** $XXX,XXX/year
 - ✅ **High Accuracy:** 99.8% (up from 92%)
@@ -411,39 +453,39 @@ Settler enabled [Brand] to automate the vast majority of their reconciliation pr
 
 ### Before Settler
 
-| Metric | Value |
-|--------|-------|
-| **Time Spent** | 40 hours/week |
-| **Accuracy** | 92% |
-| **Error Rate** | 8% |
-| **Unmatched Transactions** | 5% |
-| **Process** | Manual (Excel) |
-| **Visibility** | Weekly reports |
-| **Scalability** | Limited (hiring required) |
-| **Cost** | $XXX,XXX/year |
+| Metric                     | Value                     |
+| -------------------------- | ------------------------- |
+| **Time Spent**             | 40 hours/week             |
+| **Accuracy**               | 92%                       |
+| **Error Rate**             | 8%                        |
+| **Unmatched Transactions** | 5%                        |
+| **Process**                | Manual (Excel)            |
+| **Visibility**             | Weekly reports            |
+| **Scalability**            | Limited (hiring required) |
+| **Cost**                   | $XXX,XXX/year             |
 
 ### After Settler
 
-| Metric | Value |
-|--------|-------|
-| **Time Spent** | 1 hour/month (review) |
-| **Accuracy** | 99.8% |
-| **Error Rate** | 0.2% |
-| **Unmatched Transactions** | 0.1% (flagged) |
-| **Process** | Automated (API) |
-| **Visibility** | Real-time dashboards |
-| **Scalability** | Unlimited (automatic) |
-| **Cost** | $1,188/year |
+| Metric                     | Value                 |
+| -------------------------- | --------------------- |
+| **Time Spent**             | 1 hour/month (review) |
+| **Accuracy**               | 99.8%                 |
+| **Error Rate**             | 0.2%                  |
+| **Unmatched Transactions** | 0.1% (flagged)        |
+| **Process**                | Automated (API)       |
+| **Visibility**             | Real-time dashboards  |
+| **Scalability**            | Unlimited (automatic) |
+| **Cost**                   | $1,188/year           |
 
 ### Improvement Summary
 
-| Metric | Improvement |
-|--------|-------------|
-| **Time Saved** | 2,068 hours/year (99.4% reduction) |
-| **Accuracy** | +7.8 percentage points |
-| **Error Rate** | -97.5% reduction |
-| **Cost Savings** | $XXX,XXX/year |
-| **ROI** | XX,XXX% |
+| Metric           | Improvement                        |
+| ---------------- | ---------------------------------- |
+| **Time Saved**   | 2,068 hours/year (99.4% reduction) |
+| **Accuracy**     | +7.8 percentage points             |
+| **Error Rate**   | -97.5% reduction                   |
+| **Cost Savings** | $XXX,XXX/year                      |
+| **ROI**          | XX,XXX%                            |
 
 ---
 

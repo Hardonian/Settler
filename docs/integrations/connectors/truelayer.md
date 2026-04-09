@@ -55,10 +55,12 @@ TRUELAYER_ENVIRONMENT=sandbox|production
 ## Common Errors
 
 ### "Invalid credentials"
+
 - Verify TRUELAYER_CLIENT_ID and TRUELAYER_CLIENT_SECRET are correct
 - Check environment matches (sandbox vs production)
 
 ### "Token expired"
+
 - Tokens refresh automatically
 - Reconnect if refresh fails
 

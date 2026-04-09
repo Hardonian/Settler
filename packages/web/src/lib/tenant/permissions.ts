@@ -1,11 +1,16 @@
 /**
  * Tenant Permission Utilities
- * 
+ *
  * Server-side permission checking for tenant operations.
  */
 
-import { hasPermission, canAccessTenant, requirePermission, SiteBuilderPermission } from '@/shared/auth/roles';
-import { createClient } from '@/lib/supabase/server';
+import {
+  hasPermission,
+  canAccessTenant,
+  requirePermission,
+  SiteBuilderPermission,
+} from "@/shared/auth/roles";
+import { createClient } from "@/lib/supabase/server";
 
 // Re-export SiteBuilderPermission for convenience
 export { SiteBuilderPermission };
@@ -16,7 +21,9 @@ export { SiteBuilderPermission };
 export async function getCurrentUserId(): Promise<string | null> {
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     return user?.id || null;
   } catch {
     return null;
@@ -29,7 +36,7 @@ export async function getCurrentUserId(): Promise<string | null> {
 export async function requireAuth(): Promise<string> {
   const userId = await getCurrentUserId();
   if (!userId) {
-    throw new Error('Unauthorized');
+    throw new Error("Unauthorized");
   }
   return userId;
 }

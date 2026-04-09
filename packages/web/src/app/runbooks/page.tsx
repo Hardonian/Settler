@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,128 +10,121 @@ import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
 import { AnimatedHero } from "@/components/AnimatedHero";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import Link from "next/link";
-import { 
-  AlertTriangle, 
-  CheckCircle, 
-  Database,
-  Server,
-  Activity,
-  Shield
-} from "lucide-react";
+import { AlertTriangle, CheckCircle, Database, Server, Activity, Shield } from "lucide-react";
 
 export default function Runbooks() {
   const [selectedRunbook, setSelectedRunbook] = useState<string | null>(null);
 
   const runbooks = [
     {
-      id: 'debug-500',
-      title: 'Debugging 500 Errors',
-      description: 'Systematic approach to diagnosing and resolving server errors.',
-      severity: 'critical',
+      id: "debug-500",
+      title: "Debugging 500 Errors",
+      description: "Systematic approach to diagnosing and resolving server errors.",
+      severity: "critical",
       icon: AlertTriangle,
       steps: [
-        'Check application logs for error stack traces',
-        'Verify environment variables are set correctly',
-        'Check database connection status',
-        'Review recent deployments or configuration changes',
-        'Test API endpoints individually',
-        'Check for rate limiting or quota issues',
+        "Check application logs for error stack traces",
+        "Verify environment variables are set correctly",
+        "Check database connection status",
+        "Review recent deployments or configuration changes",
+        "Test API endpoints individually",
+        "Check for rate limiting or quota issues",
       ],
-      tags: ['errors', 'debugging', 'server'],
+      tags: ["errors", "debugging", "server"],
     },
     {
-      id: 'env-check',
-      title: 'Environment Variable Validation',
-      description: 'Verify all required environment variables are configured.',
-      severity: 'high',
+      id: "env-check",
+      title: "Environment Variable Validation",
+      description: "Verify all required environment variables are configured.",
+      severity: "high",
       icon: CheckCircle,
       steps: [
-        'List all required environment variables',
-        'Check each variable is set and non-empty',
-        'Verify variable formats (URLs, keys, etc.)',
-        'Test environment-specific configurations',
-        'Document any missing variables',
+        "List all required environment variables",
+        "Check each variable is set and non-empty",
+        "Verify variable formats (URLs, keys, etc.)",
+        "Test environment-specific configurations",
+        "Document any missing variables",
       ],
-      tags: ['configuration', 'environment', 'setup'],
+      tags: ["configuration", "environment", "setup"],
     },
     {
-      id: 'database-health',
-      title: 'Database Health Check',
-      description: 'Verify database connectivity and performance.',
-      severity: 'high',
+      id: "database-health",
+      title: "Database Health Check",
+      description: "Verify database connectivity and performance.",
+      severity: "high",
       icon: Database,
       steps: [
-        'Test database connection',
-        'Check connection pool status',
-        'Review slow query logs',
-        'Verify database migrations are applied',
-        'Check disk space and memory usage',
-        'Review replication lag (if applicable)',
+        "Test database connection",
+        "Check connection pool status",
+        "Review slow query logs",
+        "Verify database migrations are applied",
+        "Check disk space and memory usage",
+        "Review replication lag (if applicable)",
       ],
-      tags: ['database', 'health', 'monitoring'],
+      tags: ["database", "health", "monitoring"],
     },
     {
-      id: 'deployment-check',
-      title: 'Deployment Verification',
-      description: 'Verify successful deployment and rollback procedures.',
-      severity: 'medium',
+      id: "deployment-check",
+      title: "Deployment Verification",
+      description: "Verify successful deployment and rollback procedures.",
+      severity: "medium",
       icon: Server,
       steps: [
-        'Verify deployment completed successfully',
-        'Check health endpoints',
-        'Test critical user flows',
-        'Monitor error rates',
-        'Verify feature flags are correct',
-        'Document any issues for rollback',
+        "Verify deployment completed successfully",
+        "Check health endpoints",
+        "Test critical user flows",
+        "Monitor error rates",
+        "Verify feature flags are correct",
+        "Document any issues for rollback",
       ],
-      tags: ['deployment', 'verification', 'ci-cd'],
+      tags: ["deployment", "verification", "ci-cd"],
     },
     {
-      id: 'api-health',
-      title: 'API Health Monitoring',
-      description: 'Monitor API endpoints and detect issues early.',
-      severity: 'medium',
+      id: "api-health",
+      title: "API Health Monitoring",
+      description: "Monitor API endpoints and detect issues early.",
+      severity: "medium",
       icon: Activity,
       steps: [
-        'Check API response times',
-        'Monitor error rates by endpoint',
-        'Review rate limiting status',
-        'Check external service dependencies',
-        'Verify API key authentication',
-        'Review usage quotas',
+        "Check API response times",
+        "Monitor error rates by endpoint",
+        "Review rate limiting status",
+        "Check external service dependencies",
+        "Verify API key authentication",
+        "Review usage quotas",
       ],
-      tags: ['api', 'monitoring', 'health'],
+      tags: ["api", "monitoring", "health"],
     },
     {
-      id: 'security-audit',
-      title: 'Security Audit Checklist',
-      description: 'Regular security checks and best practices.',
-      severity: 'critical',
+      id: "security-audit",
+      title: "Security Audit Checklist",
+      description: "Regular security checks and best practices.",
+      severity: "critical",
       icon: Shield,
       steps: [
-        'Review access logs for suspicious activity',
-        'Verify API keys are rotated regularly',
-        'Check for exposed secrets in code',
-        'Review authentication and authorization',
-        'Verify SSL/TLS certificates',
-        'Check for dependency vulnerabilities',
+        "Review access logs for suspicious activity",
+        "Verify API keys are rotated regularly",
+        "Check for exposed secrets in code",
+        "Review authentication and authorization",
+        "Verify SSL/TLS certificates",
+        "Check for dependency vulnerabilities",
       ],
-      tags: ['security', 'audit', 'compliance'],
+      tags: ["security", "audit", "compliance"],
     },
   ];
 
-  const selectedRunbookData = runbooks.find(rb => rb.id === selectedRunbook);
+  const selectedRunbookData = runbooks.find((rb) => rb.id === selectedRunbook);
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'critical':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-      case 'high':
-        return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
-      case 'medium':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+      case "critical":
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
+      case "high":
+        return "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200";
+      case "medium":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
       default:
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
     }
   };
 
@@ -142,7 +135,7 @@ export default function Runbooks() {
       {/* Breadcrumbs */}
       <section className="px-4 sm:px-6 lg:px-8 pt-24">
         <div className="max-w-7xl mx-auto">
-          <Breadcrumbs items={[{ label: 'Runbooks' }]} />
+          <Breadcrumbs items={[{ label: "Runbooks" }]} />
         </div>
       </section>
 
@@ -174,9 +167,7 @@ export default function Runbooks() {
                         {runbook.severity}
                       </Badge>
                     </div>
-                    <h3 className="text-lg font-semibold mb-2 text-foreground">
-                      {runbook.title}
-                    </h3>
+                    <h3 className="text-lg font-semibold mb-2 text-foreground">{runbook.title}</h3>
                     <p className="text-muted-foreground mb-4 flex-grow text-sm leading-relaxed">
                       {runbook.description}
                     </p>
@@ -245,7 +236,9 @@ export default function Runbooks() {
                 <h4 className="font-semibold text-foreground mb-4">Steps</h4>
                 <ol className="list-decimal list-inside space-y-3 text-muted-foreground">
                   {selectedRunbookData.steps.map((step, idx) => (
-                    <li key={idx} className="text-sm">{step}</li>
+                    <li key={idx} className="text-sm">
+                      {step}
+                    </li>
                   ))}
                 </ol>
               </div>
@@ -256,11 +249,7 @@ export default function Runbooks() {
                 >
                   <Link href="/console">Open Console</Link>
                 </Button>
-                <Button
-                  variant="outline"
-                  className="border-border"
-                  asChild
-                >
+                <Button variant="outline" className="border-border" asChild>
                   <Link href="/docs">View Docs</Link>
                 </Button>
               </div>
@@ -286,12 +275,7 @@ export default function Runbooks() {
             >
               <Link href="/console">Open Console</Link>
             </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-border"
-              asChild
-            >
+            <Button variant="outline" size="lg" className="border-border" asChild>
               <Link href="/support">Get Support</Link>
             </Button>
           </div>

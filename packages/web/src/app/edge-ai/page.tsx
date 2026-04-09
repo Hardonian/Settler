@@ -259,7 +259,9 @@ export default function EdgeAIPage() {
                 <CardTitle className="text-lg">Anomaly Dashboard</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">View real-time anomaly detection insights</p>
+                <p className="text-sm text-muted-foreground">
+                  View real-time anomaly detection insights
+                </p>
               </CardContent>
             </Card>
           </Link>

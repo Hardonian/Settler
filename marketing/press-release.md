@@ -21,10 +21,10 @@ Settler solves the problem of multi-platform reconciliation—matching transacti
 - **Real-Time Reconciliation:** Webhook-based, not batch processing
 - **Multi-Currency Support:** Automatic FX conversion
 
-
 ### Pricing
 
 Settler offers transparent, usage-based pricing:
+
 - **Free:** 1,000 reconciliations/month
 - **Starter:** $29/month for 10,000 reconciliations
 - **Growth:** $99/month for 100,000 reconciliations
@@ -57,4 +57,4 @@ Website: [settler.io](https://settler.io)
 
 ---
 
-### ###
+###

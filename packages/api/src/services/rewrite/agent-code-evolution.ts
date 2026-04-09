@@ -1,16 +1,16 @@
 /**
  * Agent-in-the-Loop Code Evolution
- * 
+ *
  * Agents that can rewrite code modules
  * Part 8: Self-Rewriting OS & Meta-Orchestration
  */
 
-import { logInfo } from '../../utils/logger';
-import { SelfValidator } from './self-validator';
+import { logInfo } from "../../utils/logger";
+import { SelfValidator } from "./self-validator";
 
 export interface CodeEvolution {
   moduleId: string;
-  moduleType: 'helper' | 'transform' | 'metadata' | 'index' | 'migration';
+  moduleType: "helper" | "transform" | "metadata" | "index" | "migration";
   currentCode: string;
   evolvedCode: string;
   changes: string[];
@@ -49,19 +49,19 @@ export class AgentCodeEvolution {
     let changes: string[];
 
     switch (evolutionType) {
-      case 'helper':
+      case "helper":
         ({ code: evolvedCode, changes } = await this.evolveHelperFunction(module));
         break;
-      case 'transform':
+      case "transform":
         ({ code: evolvedCode, changes } = await this.evolveTransformLogic(module));
         break;
-      case 'metadata':
+      case "metadata":
         ({ code: evolvedCode, changes } = await this.evolveMetadata(module));
         break;
-      case 'index':
+      case "index":
         ({ code: evolvedCode, changes } = await this.evolveIndex(module));
         break;
-      case 'migration':
+      case "migration":
         ({ code: evolvedCode, changes } = await this.evolveMigration(module));
         break;
       default:
@@ -71,17 +71,17 @@ export class AgentCodeEvolution {
     // Validate evolved code
     const validation = await this.validator.validateModule(
       { ...module, code: evolvedCode },
-      module.type || 'service'
+      module.type || "service"
     );
 
     const evolution: CodeEvolution = {
       moduleId: module.id,
       moduleType: evolutionType,
-      currentCode: module.code || '',
+      currentCode: module.code || "",
       evolvedCode,
       changes,
       confidence: this.calculateConfidence(changes, validation),
-      validated: validation.overallStatus === 'pass',
+      validated: validation.overallStatus === "pass",
     };
 
     return evolution;
@@ -92,21 +92,21 @@ export class AgentCodeEvolution {
    */
   private determineEvolutionType(
     module: CodeModule
-  ): 'helper' | 'transform' | 'metadata' | 'index' | 'migration' | null {
-    if (module.type === 'helper' || module.name?.includes('helper')) {
-      return 'helper';
+  ): "helper" | "transform" | "metadata" | "index" | "migration" | null {
+    if (module.type === "helper" || module.name?.includes("helper")) {
+      return "helper";
     }
-    if (module.type === 'transform' || module.name?.includes('transform')) {
-      return 'transform';
+    if (module.type === "transform" || module.name?.includes("transform")) {
+      return "transform";
     }
-    if (module.type === 'metadata') {
-      return 'metadata';
+    if (module.type === "metadata") {
+      return "metadata";
     }
-    if (module.type === 'index' || module.name?.includes('index')) {
-      return 'index';
+    if (module.type === "index" || module.name?.includes("index")) {
+      return "index";
     }
-    if (module.type === 'migration' || module.name?.includes('migration')) {
-      return 'migration';
+    if (module.type === "migration" || module.name?.includes("migration")) {
+      return "migration";
     }
     return null;
   }
@@ -114,17 +114,15 @@ export class AgentCodeEvolution {
   /**
    * Evolve helper function
    */
-  private async evolveHelperFunction(module: CodeModule): Promise<{ code: string; changes: string[] }> {
+  private async evolveHelperFunction(
+    module: CodeModule
+  ): Promise<{ code: string; changes: string[] }> {
     // TODO: Implement AI-powered code evolution
     // This would use LLM to improve helper functions
-    const changes = [
-      'Add error handling',
-      'Improve type safety',
-      'Add JSDoc comments',
-    ];
+    const changes = ["Add error handling", "Improve type safety", "Add JSDoc comments"];
 
     return {
-      code: module.code + '\n// Evolved with improved error handling',
+      code: module.code + "\n// Evolved with improved error handling",
       changes,
     };
   }
@@ -132,15 +130,17 @@ export class AgentCodeEvolution {
   /**
    * Evolve transform logic
    */
-  private async evolveTransformLogic(module: CodeModule): Promise<{ code: string; changes: string[] }> {
+  private async evolveTransformLogic(
+    module: CodeModule
+  ): Promise<{ code: string; changes: string[] }> {
     const changes = [
-      'Optimize transformation performance',
-      'Add caching for repeated operations',
-      'Improve error messages',
+      "Optimize transformation performance",
+      "Add caching for repeated operations",
+      "Improve error messages",
     ];
 
     return {
-      code: module.code + '\n// Evolved with performance optimizations',
+      code: module.code + "\n// Evolved with performance optimizations",
       changes,
     };
   }
@@ -150,13 +150,13 @@ export class AgentCodeEvolution {
    */
   private async evolveMetadata(module: CodeModule): Promise<{ code: string; changes: string[] }> {
     const changes = [
-      'Reorganize metadata structure',
-      'Add versioning information',
-      'Improve metadata schema',
+      "Reorganize metadata structure",
+      "Add versioning information",
+      "Improve metadata schema",
     ];
 
     return {
-      code: module.code + '\n// Evolved with improved metadata structure',
+      code: module.code + "\n// Evolved with improved metadata structure",
       changes,
     };
   }
@@ -165,14 +165,10 @@ export class AgentCodeEvolution {
    * Evolve database index
    */
   private async evolveIndex(module: CodeModule): Promise<{ code: string; changes: string[] }> {
-    const changes = [
-      'Optimize index columns',
-      'Add composite indexes',
-      'Remove unused indexes',
-    ];
+    const changes = ["Optimize index columns", "Add composite indexes", "Remove unused indexes"];
 
     return {
-      code: module.code + '\n// Evolved with optimized indexes',
+      code: module.code + "\n// Evolved with optimized indexes",
       changes,
     };
   }
@@ -181,14 +177,10 @@ export class AgentCodeEvolution {
    * Evolve migration
    */
   private async evolveMigration(module: CodeModule): Promise<{ code: string; changes: string[] }> {
-    const changes = [
-      'Add rollback logic',
-      'Improve migration safety',
-      'Add data validation',
-    ];
+    const changes = ["Add rollback logic", "Improve migration safety", "Add data validation"];
 
     return {
-      code: module.code + '\n// Evolved with improved migration safety',
+      code: module.code + "\n// Evolved with improved migration safety",
       changes,
     };
   }
@@ -198,12 +190,12 @@ export class AgentCodeEvolution {
    */
   private calculateConfidence(
     changes: string[],
-    validation: { overallStatus: 'pass' | 'fail' | 'warning'; results: unknown[] }
+    validation: { overallStatus: "pass" | "fail" | "warning"; results: unknown[] }
   ): number {
     let confidence = 0.5; // Base confidence
 
     // Increase confidence if validation passes
-    if (validation.overallStatus === 'pass') {
+    if (validation.overallStatus === "pass") {
       confidence += 0.3;
     }
 
@@ -213,7 +205,7 @@ export class AgentCodeEvolution {
     }
 
     // Decrease confidence if validation fails
-    if (validation.overallStatus === 'fail') {
+    if (validation.overallStatus === "fail") {
       confidence -= 0.3;
     }
 
@@ -225,15 +217,15 @@ export class AgentCodeEvolution {
    */
   async applyEvolution(evolution: CodeEvolution): Promise<void> {
     if (!evolution.validated) {
-      throw new Error('Cannot apply unvalidated evolution');
+      throw new Error("Cannot apply unvalidated evolution");
     }
 
     if (evolution.confidence < 0.7) {
-      throw new Error('Confidence too low to apply evolution');
+      throw new Error("Confidence too low to apply evolution");
     }
 
     // TODO: Actually apply the code changes
-    logInfo('Code evolution applied', {
+    logInfo("Code evolution applied", {
       moduleId: evolution.moduleId,
       changes: evolution.changes,
     });

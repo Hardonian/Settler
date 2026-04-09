@@ -11,11 +11,13 @@
 ### Authentication
 
 **API Key:**
+
 ```http
 X-API-Key: sk_your_api_key
 ```
 
 **JWT Token:**
+
 ```http
 Authorization: Bearer your_jwt_token
 ```
@@ -102,13 +104,13 @@ GET    /api/v1/templates/transform     # List transform recipes
 
 ## Rate Limits
 
-| Tier | RPM | Concurrent Jobs | Monthly Recons |
-|------|-----|----------------|----------------|
-| Free | 100 | 1 | 100 |
-| Starter | 1,000 | 5 | 10,000 |
-| Pro | 10,000 | 20 | 100,000 |
-| Business | 50,000 | 100 | 1,000,000 |
-| Enterprise | 1,000,000 | 1,000 | Unlimited |
+| Tier       | RPM       | Concurrent Jobs | Monthly Recons |
+| ---------- | --------- | --------------- | -------------- |
+| Free       | 100       | 1               | 100            |
+| Starter    | 1,000     | 5               | 10,000         |
+| Pro        | 10,000    | 20              | 100,000        |
+| Business   | 50,000    | 100             | 1,000,000      |
+| Enterprise | 1,000,000 | 1,000           | Unlimited      |
 
 ## SDKs
 

@@ -49,4 +49,3 @@ export const GET = withSecurity(
   },
   { rateLimit: { windowMs: 60_000, maxRequests: 60 }, requireAuth: true }
 );
-

@@ -76,6 +76,7 @@
 ### Multi-Tenancy
 
 All tables protected by Row-Level Security (RLS):
+
 - Tenant isolation at database level
 - Application-level tenant filtering
 - No cross-tenant data access

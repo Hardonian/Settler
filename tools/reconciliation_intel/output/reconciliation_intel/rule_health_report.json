@@ -61,10 +61,7 @@
       "action": "promote",
       "priority": "low",
       "reason": "High performing rule",
-      "suggestions": [
-        "Document as best practice",
-        "Consider as template for new rules"
-      ],
+      "suggestions": ["Document as best practice", "Consider as template for new rules"],
       "expected_impact": "Standardize best practices"
     },
     {
@@ -72,10 +69,7 @@
       "action": "promote",
       "priority": "low",
       "reason": "High performing rule",
-      "suggestions": [
-        "Document as best practice",
-        "Consider as template for new rules"
-      ],
+      "suggestions": ["Document as best practice", "Consider as template for new rules"],
       "expected_impact": "Standardize best practices"
     },
     {
@@ -83,10 +77,7 @@
       "action": "promote",
       "priority": "low",
       "reason": "High performing rule",
-      "suggestions": [
-        "Document as best practice",
-        "Consider as template for new rules"
-      ],
+      "suggestions": ["Document as best practice", "Consider as template for new rules"],
       "expected_impact": "Standardize best practices"
     }
   ]

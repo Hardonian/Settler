@@ -1,11 +1,11 @@
 /**
  * Model Agnosticism
- * 
+ *
  * Core modules that can work with any LLM, multimodal recon, portable embeddings
  * Part 13: Long-Range Futureproofing
  */
 
-import { logInfo } from '../../utils/logger';
+import { logInfo } from "../../utils/logger";
 
 export interface LLMProvider {
   name: string;
@@ -28,24 +28,24 @@ export class ModelAgnosticism {
   constructor() {
     // Register default providers
     this.registerProvider({
-      name: 'openai',
-      models: ['gpt-4', 'gpt-3.5-turbo', 'gpt-5'],
-      capabilities: ['text', 'function_calling'],
-      apiEndpoint: 'https://api.openai.com/v1',
+      name: "openai",
+      models: ["gpt-4", "gpt-3.5-turbo", "gpt-5"],
+      capabilities: ["text", "function_calling"],
+      apiEndpoint: "https://api.openai.com/v1",
     });
 
     this.registerProvider({
-      name: 'anthropic',
-      models: ['claude-3-opus', 'claude-3-sonnet', 'claude-next'],
-      capabilities: ['text', 'function_calling'],
-      apiEndpoint: 'https://api.anthropic.com/v1',
+      name: "anthropic",
+      models: ["claude-3-opus", "claude-3-sonnet", "claude-next"],
+      capabilities: ["text", "function_calling"],
+      apiEndpoint: "https://api.anthropic.com/v1",
     });
 
     this.registerProvider({
-      name: 'google',
-      models: ['gemini-3-pro', 'gemini-pro'],
-      capabilities: ['text', 'multimodal'],
-      apiEndpoint: 'https://generativelanguage.googleapis.com/v1',
+      name: "google",
+      models: ["gemini-3-pro", "gemini-pro"],
+      capabilities: ["text", "multimodal"],
+      apiEndpoint: "https://generativelanguage.googleapis.com/v1",
     });
   }
 
@@ -54,7 +54,7 @@ export class ModelAgnosticism {
    */
   registerProvider(provider: LLMProvider): void {
     this.providers.set(provider.name, provider);
-    logInfo('LLM provider registered', { name: provider.name });
+    logInfo("LLM provider registered", { name: provider.name });
   }
 
   /**
@@ -63,7 +63,7 @@ export class ModelAgnosticism {
   registerAdapter(adapter: ModelAdapter): void {
     const key = `${adapter.provider}:${adapter.model}`;
     this.adapters.set(key, adapter);
-    logInfo('Model adapter registered', { key });
+    logInfo("Model adapter registered", { key });
   }
 
   /**
@@ -108,20 +108,19 @@ export class ModelAgnosticism {
   /**
    * Support multimodal recon
    */
-  async multimodalRecon(
-    _data: {
-      text?: string;
-      image?: ArrayBuffer;
-      audio?: ArrayBuffer;
-      video?: ArrayBuffer;
-    }
-  ): Promise<{ success: boolean; provider: string }> {
+  async multimodalRecon(_data: {
+    text?: string;
+    image?: ArrayBuffer;
+    audio?: ArrayBuffer;
+    video?: ArrayBuffer;
+  }): Promise<{ success: boolean; provider: string }> {
     // Find provider that supports multimodal
-    const multimodalProvider = Array.from(this.providers.values())
-      .find(p => p.capabilities.includes('multimodal'));
+    const multimodalProvider = Array.from(this.providers.values()).find((p) =>
+      p.capabilities.includes("multimodal")
+    );
 
     if (!multimodalProvider) {
-      throw new Error('No multimodal provider available');
+      throw new Error("No multimodal provider available");
     }
 
     // TODO: Implement multimodal reconciliation
@@ -134,10 +133,7 @@ export class ModelAgnosticism {
   /**
    * Portable embeddings architecture
    */
-  async generateEmbedding(
-    _text: string,
-    _provider?: string
-  ): Promise<number[]> {
+  async generateEmbedding(_text: string, _provider?: string): Promise<number[]> {
     // TODO: Implement embedding generation
     // This would work with any embedding provider
     return new Array(1536).fill(0).map(() => Math.random());

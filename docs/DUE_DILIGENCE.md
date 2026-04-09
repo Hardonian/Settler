@@ -19,6 +19,7 @@
   - Migrations: `/workspace/supabase/migrations/`
 
 **Evidence:**
+
 - ✅ Comprehensive RLS policies: `supabase/migrations/20250122000000_rls_enforcement_critical.sql`
 - ✅ Tenant isolation enforced in all API routes
 - ✅ Error boundaries: 7 error.tsx files across key routes
@@ -34,6 +35,7 @@
 - **PII Protection:** Structured logging with PII sanitization
 
 **Evidence:**
+
 - ✅ RLS migration: `supabase/migrations/20250122000000_rls_enforcement_critical.sql`
 - ✅ Webhook handler: `/workspace/packages/web/src/app/api/stripe/webhook/route.ts`
 - ✅ Tenant checks in API routes: All routes validate `tenantId` from auth
@@ -47,6 +49,7 @@
 - **Bundle Size:** Optimized with dynamic imports, Prisma excluded from client
 
 **Evidence:**
+
 - ✅ Next.js optimizations: `packages/web/next.config.js`
 - ✅ Dynamic imports for heavy components
 - ✅ Redis/Upstash configured for caching
@@ -60,6 +63,7 @@
 - **CI/CD:** GitHub Actions workflows
 
 **Evidence:**
+
 - ✅ Vercel config: `vercel.json`
 - ✅ Health endpoints: `/api/health`, `/api/admin/health`
 - ✅ CI workflows: `.github/workflows/`
@@ -91,6 +95,7 @@
    - Tenant observability
 
 **Evidence:**
+
 - ✅ API routes: `/api/v1/recon/jobs`, `/api/v1/receipts`, `/api/v1/feature-flags`
 - ✅ Console UI: `/console` with multiple sub-pages
 - ✅ Playground: `/playground` for interactive testing
@@ -103,6 +108,7 @@
 - **Time-to-Value:** <5 minutes (signup → first reconciliation)
 
 **Evidence:**
+
 - ✅ Routes: `/signup`, `/api/onboarding/progress`, `/console/onboarding`
 - ✅ Error boundaries: 7 error.tsx files
 - ✅ Docs: Comprehensive documentation structure
@@ -129,18 +135,21 @@
   - Churn: <5% monthly
 
 **Evidence:**
+
 - ✅ Pricing config: `config/pricing-simple.ts`
 - ✅ Stripe integration: Complete billing system
 
 ### Competitive Position ✅
 
 **Advantages:**
+
 - Developer-first API (TypeScript SDK)
 - 10x faster than manual reconciliation
 - 100x cheaper than enterprise solutions
 - Event-sourced architecture (deterministic, auditable)
 
 **Competitive Moat:**
+
 - Workflow lock-in
 - Data network effects
 - Compliance evidence (audit trails)
@@ -164,6 +173,7 @@
 - **Audit Trail:** Comprehensive logging and event sourcing
 
 **Evidence:**
+
 - ✅ Legal pages: `/legal/privacy`, `/legal/terms`, `/legal/dpa`
 - ✅ Subprocessors: `/legal/subprocessors`
 - ✅ RLS policies: Comprehensive tenant isolation
@@ -182,17 +192,20 @@
 ### Unit Economics ✅
 
 **Cost Structure:**
+
 - Infrastructure: ~15% of revenue (Supabase, Upstash, Vercel)
 - Engineering: Variable (scales with team)
 - Sales & Marketing: Variable (scales with growth)
 - Operations: Fixed (tools, monitoring)
 
 **Revenue Model:**
+
 - Base subscription + usage-based pricing
 - Enterprise contracts ($10K-$100K+ annually)
 - API usage scales with customer growth
 
 **Projections:**
+
 - Year 1: $1M ARR (1,000 customers @ $83/month avg)
 - Year 3: $10M ARR (10,000 customers)
 - Year 5: $50M ARR (50,000 customers)
@@ -205,6 +218,7 @@
 - **Audit:** Database-backed idempotency, event sourcing
 
 **Evidence:**
+
 - ✅ Stripe integration: Complete billing system
 - ✅ Usage tracking: `usage_events` table with aggregation
 - ✅ Admin dashboards: `/console/costs`, `/console/usage`
@@ -227,6 +241,7 @@
 - **Scaling:** Serverless architecture, auto-scaling
 
 **Evidence:**
+
 - ✅ Health endpoints: `/api/health`, `/api/admin/health`, `/api/ops/system-health`
 - ✅ Monitoring: Sentry integration, structured logging
 - ✅ Runbooks: Operational documentation structure
@@ -292,21 +307,25 @@
 ### Critical Code Paths
 
 **Security:**
+
 - RLS Policies: `supabase/migrations/20250122000000_rls_enforcement_critical.sql`
 - Tenant Isolation: `packages/web/src/app/api/**/route.ts` (all routes check tenantId)
 - Webhook Security: `packages/web/src/app/api/stripe/webhook/route.ts`
 
 **Billing:**
+
 - Stripe Integration: `packages/web/src/domain/billing/stripeService.ts`
 - Subscription Access: `packages/web/src/lib/subscription-access.ts`
 - Pricing Config: `config/pricing-simple.ts`
 
 **Core Features:**
+
 - Reconciliation API: `packages/web/src/app/api/v1/recon/jobs/route.ts`
 - Receipt Parsing: `packages/web/src/app/api/v1/receipts/route.ts`
 - Feature Flags: `packages/web/src/app/api/v1/feature-flags/route.ts`
 
 **Infrastructure:**
+
 - Database: `prisma/schema.prisma`
 - Migrations: `supabase/migrations/`
 - Health Checks: `packages/web/src/app/api/health/route.ts`
@@ -320,12 +339,14 @@
 Settler Enterprise is a technically sound, secure, and scalable platform ready for production deployment. All critical systems are in place, security is comprehensive, and the business model is validated.
 
 **Key Strengths:**
+
 - Comprehensive security (RLS, tenant isolation)
 - Production-ready infrastructure
 - Developer-first approach
 - Solid unit economics
 
 **Areas for Enhancement:**
+
 - Marketing assets (case studies, ROI calculator)
 - Investor documentation (now complete)
 - Performance guardrails verification

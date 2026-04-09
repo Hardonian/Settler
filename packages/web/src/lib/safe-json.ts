@@ -1,7 +1,9 @@
 /**
  * Safe JSON parsing for user-controlled input (no throw → caller handles degraded UX).
  */
-export function tryParseJson(value: string): { ok: true; data: unknown } | { ok: false; error: string } {
+export function tryParseJson(
+  value: string
+): { ok: true; data: unknown } | { ok: false; error: string } {
   const trimmed = value.trim();
   if (!trimmed) {
     return { ok: true, data: undefined };

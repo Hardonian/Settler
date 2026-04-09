@@ -12,12 +12,6 @@
  *   import { createBrowserClient } from '@/lib/supabase';
  */
 
-export {
-  createClient,
-  createAdminClient,
-  clearSupabaseCache,
-} from './server';
+export { createClient, createAdminClient, clearSupabaseCache } from "./server";
 
-export {
-  createClient as createBrowserClient,
-} from './client';
+export { createClient as createBrowserClient } from "./client";

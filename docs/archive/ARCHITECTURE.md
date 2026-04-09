@@ -27,6 +27,7 @@ Settler.dev is a unified, modular, AI-driven, enterprise-ready reconciliation en
 **Schema:** Multi-tenant with strict RLS policies
 
 **Core Tables:**
+
 - `recon_jobs` - Reconciliation job definitions
 - `recon_results` - Execution results
 - `recon_templates` - Reusable templates
@@ -40,29 +41,35 @@ Settler.dev is a unified, modular, AI-driven, enterprise-ready reconciliation en
 ### 2. Service Layer
 
 **Recon Core Engine** (`/services/recon-core/`)
+
 - Unified reconciliation orchestration
 - Pipeline: Ingestion → Transform → Validate → Recon → Map → Audit → Report
 
 **AI Mesh** (`/services/ai-mesh/`)
+
 - Multi-agent fallback system
 - Intelligent model routing
 - Cost optimization
 
 **Drift Detection** (`/services/drift/`)
+
 - Schema drift detection
 - Auto-repair capabilities
 
 **Vertical Modules** (`/services/verticals/`)
+
 - LegalTech: Contract diff, obligation mapping
 - EdTech: QTI validation, LMS compatibility
 - FinTech: Ledger reconciliation, accounting drift
 - Compliance: Policy comparison, privacy drift
 
 **Workflows** (`/services/workflows/`)
+
 - Workflow orchestration engine
 - Support for conditionals, loops, timers
 
 **Contracts** (`/services/contracts/`)
+
 - Data contract versioning
 - Breaking change detection
 - Migration guide generation
@@ -70,11 +77,13 @@ Settler.dev is a unified, modular, AI-driven, enterprise-ready reconciliation en
 ### 3. API Layer
 
 **REST API** (`/routes/v1/`)
+
 - Versioned API surface
 - OpenAPI 3.1 specification
 - Swagger UI
 
 **Webhooks** (`/services/webhooks/`)
+
 - HMAC-signed webhook delivery
 - Retry logic with exponential backoff
 - Event filtering
@@ -82,28 +91,34 @@ Settler.dev is a unified, modular, AI-driven, enterprise-ready reconciliation en
 ### 4. Intelligence Layer
 
 **Usage Optimizer** (`/services/intelligence/usage-optimizer.ts`)
+
 - Cost analysis and optimization
 - Model selection recommendations
 
 **Health Optimizer** (`/services/intelligence/health-optimizer.ts`)
+
 - Failure pattern detection
 - Template and workflow suggestions
 
 **Product Evolution** (`/services/intelligence/product-evolution.ts`)
+
 - Feature proposal generation
 - Usage pattern analysis
 
 ### 5. Infrastructure Layer
 
 **Event Bus** (`/services/events/event-bus.ts`)
+
 - Internal event coordination
 - Event-driven architecture
 
 **Plugin System** (`/services/plugins/plugin-manager.ts`)
+
 - Third-party plugin support
 - Extensible architecture
 
 **AI Config** (`/services/ai-config/ai-config-manager.ts`)
+
 - User-configurable AI settings
 - Model preferences and budgets
 

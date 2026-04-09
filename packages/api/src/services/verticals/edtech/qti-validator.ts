@@ -1,17 +1,17 @@
 /**
  * EdTech Module - QTI Validator
- * 
+ *
  * Part of Phase IV: Vertical Modules
  */
 
-import { logInfo } from '../../../utils/logger';
+import { logInfo } from "../../../utils/logger";
 
 export interface QTIValidationResult {
   valid: boolean;
   errors: Array<{
     line: number;
     message: string;
-    severity: 'error' | 'warning';
+    severity: "error" | "warning";
   }>;
   warnings: string[];
 }
@@ -36,7 +36,7 @@ export class QTIValidator {
     // TODO: Implement QTI validation
     // Check XML structure, required elements, etc.
 
-    logInfo('QTI validation completed');
+    logInfo("QTI validation completed");
 
     return {
       valid: true,
@@ -69,7 +69,7 @@ export class QTIValidator {
    */
   async checkLMSCompatibility(
     _qtiContent: string,
-    _lms: 'canvas' | 'blackboard' | 'moodle' | 'brightspace'
+    _lms: "canvas" | "blackboard" | "moodle" | "brightspace"
   ): Promise<{
     compatible: boolean;
     issues: string[];

@@ -1,31 +1,33 @@
 /**
  * Console Billing API Route
- * 
+ *
  * Returns billing account, subscription, and usage data for the console UI.
  * Includes proper error handling and input validation.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { prisma } from '@/shared/db/prismaClient';
-import { getAccountUsage } from '@/domain/billing/usageService';
-import { getAccountPlanCode } from '@/domain/billing/entitlements';
-import { getPlanConfig } from '@/domain/billing/planConfig';
-import { isStripeConfigured } from '@/domain/billing/stripeService';
-import { withApiWrapper } from '@/middleware/api-wrapper';
-import { redisRateLimiters } from '@/lib/security/rate-limiter-redis';
-import { appLogger } from '@/lib/utils/logger';
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { prisma } from "@/shared/db/prismaClient";
+import { getAccountUsage } from "@/domain/billing/usageService";
+import { getAccountPlanCode } from "@/domain/billing/entitlements";
+import { getPlanConfig } from "@/domain/billing/planConfig";
+import { isStripeConfigured } from "@/domain/billing/stripeService";
+import { withApiWrapper } from "@/middleware/api-wrapper";
+import { redisRateLimiters } from "@/lib/security/rate-limiter-redis";
+import { appLogger } from "@/lib/utils/logger";
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs'; // Ensure Node.js runtime for Prisma binary engine
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs"; // Ensure Node.js runtime for Prisma binary engine
 
 async function getBillingHandler(_request: NextRequest) {
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get billing account with optimized query
@@ -55,7 +57,7 @@ async function getBillingHandler(_request: NextRequest) {
       where: {
         billingAccountId: billingAccount.id,
         status: {
-          in: ['active', 'trialing'],
+          in: ["active", "trialing"],
         },
       },
       select: {
@@ -67,7 +69,7 @@ async function getBillingHandler(_request: NextRequest) {
         currentPeriodEnd: true,
         cancelAtPeriodEnd: true,
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
 
     // Get plan code
@@ -75,10 +77,10 @@ async function getBillingHandler(_request: NextRequest) {
     try {
       planCode = await getAccountPlanCode(billingAccount.id);
     } catch (error) {
-      appLogger.error('[Console Billing] Error getting plan code', error, {
+      appLogger.error("[Console Billing] Error getting plan code", error, {
         billingAccountId: billingAccount.id,
       });
-      planCode = 'starter';
+      planCode = "starter";
     }
 
     const planConfig = getPlanConfig(planCode);
@@ -88,7 +90,7 @@ async function getBillingHandler(_request: NextRequest) {
     try {
       usage = await getAccountUsage(billingAccount.id);
     } catch (error) {
-      appLogger.error('[Console Billing] Error getting account usage', error, {
+      appLogger.error("[Console Billing] Error getting account usage", error, {
         billingAccountId: billingAccount.id,
       });
       // Return zero usage on error
@@ -142,14 +144,14 @@ async function getBillingHandler(_request: NextRequest) {
       stripeConfigured: isStripeConfigured(),
     });
   } catch (error) {
-    appLogger.error('[Console Billing] Error fetching billing data', error, {
-      error: error instanceof Error ? error.message : 'Unknown error',
+    appLogger.error("[Console Billing] Error fetching billing data", error, {
+      error: error instanceof Error ? error.message : "Unknown error",
       stack: error instanceof Error ? error.stack : undefined,
     });
     // Return 200 with error message instead of 500 to prevent UI crash
     return NextResponse.json(
       {
-        error: 'Failed to fetch billing data',
+        error: "Failed to fetch billing data",
         billingAccount: null,
         subscription: null,
         usage: {

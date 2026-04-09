@@ -5,14 +5,14 @@
  * Enforces feature gating, safe error handling, and redaction.
  */
 
-import 'server-only';
+import "server-only";
 
-import { JobForgeClient } from '@jobforge/sdk-ts';
-import type { JobResultRow, JobRow } from '@jobforge/shared';
+import { JobForgeClient } from "@jobforge/sdk-ts";
+import type { JobResultRow, JobRow } from "@jobforge/shared";
 
-import { getEnvBoolean } from '@/lib/env';
-import { appLogger } from '@/lib/utils/logger';
-import { redactPII, removePIIFromObject } from '@/lib/privacy/pii-filter';
+import { getEnvBoolean } from "@/lib/env";
+import { appLogger } from "@/lib/utils/logger";
+import { redactPII, removePIIFromObject } from "@/lib/privacy/pii-filter";
 
 export interface JobForgeTenantContext {
   tenantId: string;
@@ -30,7 +30,7 @@ export interface JobForgeActionResult<T> {
   ok: boolean;
   data?: T;
   error?: string;
-  code?: 'disabled' | 'config' | 'execution-disabled' | 'failed';
+  code?: "disabled" | "config" | "execution-disabled" | "failed";
 }
 
 export interface SubmitEventParams {
@@ -59,12 +59,12 @@ export interface JobForgeReport {
   result: JobResultRow | null;
 }
 
-const SENSITIVE_KEYS = ['key', 'secret', 'token', 'authorization', 'cookie', 'password'];
+const SENSITIVE_KEYS = ["key", "secret", "token", "authorization", "cookie", "password"];
 
 let cachedClient: JobForgeClient | null = null;
 
 function getMissingConfig(): string[] {
-  const required = ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'];
+  const required = ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"];
   return required.filter((name) => !process.env[name]);
 }
 
@@ -73,13 +73,13 @@ function sanitizeValue(value: unknown): unknown {
     return value.map((item) => sanitizeValue(item));
   }
 
-  if (value && typeof value === 'object') {
+  if (value && typeof value === "object") {
     const record = value as Record<string, unknown>;
     const cleaned = removePIIFromObject(record);
     return Object.entries(cleaned).reduce<Record<string, unknown>>((acc, [key, entry]) => {
       const lowerKey = key.toLowerCase();
       if (SENSITIVE_KEYS.some((needle) => lowerKey.includes(needle))) {
-        acc[key] = '***REDACTED***';
+        acc[key] = "***REDACTED***";
         return acc;
       }
       acc[key] = sanitizeValue(entry);
@@ -87,7 +87,7 @@ function sanitizeValue(value: unknown): unknown {
     }, {});
   }
 
-  if (typeof value === 'string') {
+  if (typeof value === "string") {
     return redactPII(value);
   }
 
@@ -99,8 +99,8 @@ function sanitizeLogData(data: Record<string, unknown>): Record<string, unknown>
 }
 
 export function getJobForgeIntegrationStatus(): JobForgeIntegrationStatus {
-  const enabled = getEnvBoolean('JOBFORGE_INTEGRATION_ENABLED', false);
-  const bundleExecutionEnabled = getEnvBoolean('JOBFORGE_BUNDLE_EXECUTION_ENABLED', false);
+  const enabled = getEnvBoolean("JOBFORGE_INTEGRATION_ENABLED", false);
+  const bundleExecutionEnabled = getEnvBoolean("JOBFORGE_BUNDLE_EXECUTION_ENABLED", false);
   const missing = enabled ? getMissingConfig() : [];
   return {
     enabled,
@@ -118,8 +118,8 @@ function getClient(): JobForgeClient | null {
 
   if (!cachedClient) {
     cachedClient = new JobForgeClient({
-      supabaseUrl: process.env.SUPABASE_URL ?? '',
-      supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? '',
+      supabaseUrl: process.env.SUPABASE_URL ?? "",
+      supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
     });
   }
 
@@ -129,16 +129,16 @@ function getClient(): JobForgeClient | null {
 function disabledResult(): JobForgeActionResult<never> {
   return {
     ok: false,
-    code: 'disabled',
-    error: 'JobForge integration is disabled.',
+    code: "disabled",
+    error: "JobForge integration is disabled.",
   };
 }
 
 function configResult(): JobForgeActionResult<never> {
   return {
     ok: false,
-    code: 'config',
-    error: 'JobForge integration is not configured.',
+    code: "config",
+    error: "JobForge integration is not configured.",
   };
 }
 
@@ -162,7 +162,7 @@ export async function submitJobForgeEvent(
   try {
     const job = await client.enqueueJob({
       tenant_id: params.context.tenantId,
-      type: 'settler.admin.event',
+      type: "settler.admin.event",
       payload: {
         tenant_id: params.context.tenantId,
         project_id: params.context.projectId,
@@ -174,14 +174,14 @@ export async function submitJobForgeEvent(
 
     return { ok: true, data: job };
   } catch (error) {
-    appLogger.error('JobForge event submission failed', error, {
+    appLogger.error("JobForge event submission failed", error, {
       context: sanitizeLogData({
         tenantId: params.context.tenantId,
         projectId: params.context.projectId,
         eventName: params.eventName,
       }),
     });
-    return { ok: false, code: 'failed', error: 'Failed to submit JobForge event.' };
+    return { ok: false, code: "failed", error: "Failed to submit JobForge event." };
   }
 }
 
@@ -205,7 +205,7 @@ export async function runJobForgeModuleDryRun(
   try {
     const job = await client.enqueueJob({
       tenant_id: params.context.tenantId,
-      type: 'settler.admin.module.dry_run',
+      type: "settler.admin.module.dry_run",
       payload: {
         tenant_id: params.context.tenantId,
         project_id: params.context.projectId,
@@ -218,14 +218,14 @@ export async function runJobForgeModuleDryRun(
 
     return { ok: true, data: job };
   } catch (error) {
-    appLogger.error('JobForge module dry-run failed', error, {
+    appLogger.error("JobForge module dry-run failed", error, {
       context: sanitizeLogData({
         tenantId: params.context.tenantId,
         projectId: params.context.projectId,
         moduleName: params.moduleName,
       }),
     });
-    return { ok: false, code: 'failed', error: 'Failed to run JobForge module dry-run.' };
+    return { ok: false, code: "failed", error: "Failed to run JobForge module dry-run." };
   }
 }
 
@@ -249,20 +249,18 @@ export async function getJobForgeReport(
 
   try {
     const job = await client.getJob(jobId, context.tenantId);
-    const result = job?.result_id
-      ? await client.getResult(job.result_id, context.tenantId)
-      : null;
+    const result = job?.result_id ? await client.getResult(job.result_id, context.tenantId) : null;
 
     return { ok: true, data: { job, result } };
   } catch (error) {
-    appLogger.error('JobForge report fetch failed', error, {
+    appLogger.error("JobForge report fetch failed", error, {
       context: sanitizeLogData({
         tenantId: context.tenantId,
         projectId: context.projectId,
         jobId,
       }),
     });
-    return { ok: false, code: 'failed', error: 'Failed to fetch JobForge report.' };
+    return { ok: false, code: "failed", error: "Failed to fetch JobForge report." };
   }
 }
 
@@ -281,8 +279,8 @@ export async function requestJobForgeBundleExecution(
   if (!status.bundleExecutionEnabled) {
     return {
       ok: false,
-      code: 'execution-disabled',
-      error: 'Bundle execution requests are disabled.',
+      code: "execution-disabled",
+      error: "Bundle execution requests are disabled.",
     };
   }
 
@@ -294,7 +292,7 @@ export async function requestJobForgeBundleExecution(
   try {
     const job = await client.enqueueJob({
       tenant_id: params.context.tenantId,
-      type: 'settler.admin.bundle.execute',
+      type: "settler.admin.bundle.execute",
       payload: {
         tenant_id: params.context.tenantId,
         project_id: params.context.projectId,
@@ -307,13 +305,13 @@ export async function requestJobForgeBundleExecution(
 
     return { ok: true, data: job };
   } catch (error) {
-    appLogger.error('JobForge bundle execution request failed', error, {
+    appLogger.error("JobForge bundle execution request failed", error, {
       context: sanitizeLogData({
         tenantId: params.context.tenantId,
         projectId: params.context.projectId,
         bundleId: params.bundleId,
       }),
     });
-    return { ok: false, code: 'failed', error: 'Failed to request JobForge bundle execution.' };
+    return { ok: false, code: "failed", error: "Failed to request JobForge bundle execution." };
   }
 }

@@ -1,47 +1,59 @@
 /**
  * Input Manifest Schema
- * 
+ *
  * Defines the structure for reconciliation run input manifests.
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 export const InputManifestSchema = z.object({
   // Source information
   source: z.object({
-    type: z.enum(['csv', 'stripe', 'shopify', 'manual', 'api']),
+    type: z.enum(["csv", "stripe", "shopify", "manual", "api"]),
     id: z.string().optional(),
     name: z.string().optional(),
     recordCount: z.number().int().nonnegative().optional(),
-    files: z.array(z.object({
-      name: z.string(),
-      size: z.number().int().nonnegative(),
-      type: z.string().optional(),
-    })).optional(),
+    files: z
+      .array(
+        z.object({
+          name: z.string(),
+          size: z.number().int().nonnegative(),
+          type: z.string().optional(),
+        })
+      )
+      .optional(),
   }),
 
   // Target information
   target: z.object({
-    type: z.enum(['csv', 'stripe', 'shopify', 'manual', 'api']),
+    type: z.enum(["csv", "stripe", "shopify", "manual", "api"]),
     id: z.string().optional(),
     name: z.string().optional(),
     recordCount: z.number().int().nonnegative().optional(),
-    files: z.array(z.object({
-      name: z.string(),
-      size: z.number().int().nonnegative(),
-      type: z.string().optional(),
-    })).optional(),
+    files: z
+      .array(
+        z.object({
+          name: z.string(),
+          size: z.number().int().nonnegative(),
+          type: z.string().optional(),
+        })
+      )
+      .optional(),
   }),
 
   // Configuration
-  config: z.object({
-    matchRules: z.array(z.string()).optional(),
-    dateRange: z.object({
-      start: z.string().datetime().optional(),
-      end: z.string().datetime().optional(),
-    }).optional(),
-    currency: z.string().length(3).optional(),
-  }).optional(),
+  config: z
+    .object({
+      matchRules: z.array(z.string()).optional(),
+      dateRange: z
+        .object({
+          start: z.string().datetime().optional(),
+          end: z.string().datetime().optional(),
+        })
+        .optional(),
+      currency: z.string().length(3).optional(),
+    })
+    .optional(),
 
   // Metadata
   metadata: z.record(z.string(), z.unknown()).optional(),

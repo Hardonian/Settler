@@ -64,9 +64,7 @@ export const RunProvenance = memo(function RunProvenance({
               Download the full run evidence artifact as JSON — includes input hashes, proof
               posture, exception summary, recurrence state, and provenance chain.
             </p>
-            {downloadError ? (
-              <p className="text-xs text-red-500 mt-1">{downloadError}</p>
-            ) : null}
+            {downloadError ? <p className="text-xs text-red-500 mt-1">{downloadError}</p> : null}
           </div>
           <Button
             size="sm"

@@ -32,25 +32,27 @@ Configure these secrets in **Settings > Secrets and variables > Actions**:
 
 ### Required Secrets
 
-| Secret Name | Description | Where to Find |
-|------------|-------------|---------------|
-| `SUPABASE_ACCESS_TOKEN` | Personal access token for Supabase CLI | [supabase.com/dashboard/account/tokens](https://supabase.com/dashboard/account/tokens) |
-| `SUPABASE_DB_PASSWORD` | Database password | Project Settings > Database |
-| `SUPABASE_PROJECT_ID` | Project ID (UUID) | Project Settings > General |
-| `SUPABASE_PROJECT_REF` | Project reference string | Found in project URL: `https://[ref].supabase.co` |
-| `DATABASE_URL` | Pooled Postgres connection string | Project Settings > Database > Connection string (port 6543) |
-| `DIRECT_URL` | Direct Postgres connection string | Project Settings > Database > Connection string (port 5432) |
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL | `https://[ref].supabase.co` |
-| `SUPABASE_SERVICE_ROLE_KEY` | Service role key (bypasses RLS) | Project Settings > API > Service role key |
+| Secret Name                 | Description                            | Where to Find                                                                          |
+| --------------------------- | -------------------------------------- | -------------------------------------------------------------------------------------- |
+| `SUPABASE_ACCESS_TOKEN`     | Personal access token for Supabase CLI | [supabase.com/dashboard/account/tokens](https://supabase.com/dashboard/account/tokens) |
+| `SUPABASE_DB_PASSWORD`      | Database password                      | Project Settings > Database                                                            |
+| `SUPABASE_PROJECT_ID`       | Project ID (UUID)                      | Project Settings > General                                                             |
+| `SUPABASE_PROJECT_REF`      | Project reference string               | Found in project URL: `https://[ref].supabase.co`                                      |
+| `DATABASE_URL`              | Pooled Postgres connection string      | Project Settings > Database > Connection string (port 6543)                            |
+| `DIRECT_URL`                | Direct Postgres connection string      | Project Settings > Database > Connection string (port 5432)                            |
+| `NEXT_PUBLIC_SUPABASE_URL`  | Supabase project URL                   | `https://[ref].supabase.co`                                                            |
+| `SUPABASE_SERVICE_ROLE_KEY` | Service role key (bypasses RLS)        | Project Settings > API > Service role key                                              |
 
 ### Connection String Formats
 
 **DATABASE_URL** (Pooled, port 6543):
+
 ```
 postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres?pgbouncer=true
 ```
 
 **DIRECT_URL** (Direct, port 5432):
+
 ```
 postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:5432/postgres
 ```
@@ -64,6 +66,7 @@ npm run db:new <migration_name>
 ```
 
 Example:
+
 ```bash
 npm run db:new add_user_preferences_table
 ```
@@ -75,11 +78,12 @@ This creates: `supabase/migrations/20240115143022_add_user_preferences_table.sql
 1. Create file: `supabase/migrations/YYYYMMDDHHMMSS_description.sql`
 2. Use timestamp format: `YYYYMMDDHHMMSS` (year, month, day, hour, minute, second)
 3. Wrap all SQL in transaction:
+
    ```sql
    BEGIN;
-   
+
    -- Your SQL here
-   
+
    COMMIT;
    ```
 
@@ -93,20 +97,20 @@ This creates: `supabase/migrations/20240115143022_add_user_preferences_table.sql
 
 ## Package Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm run db:new <name>` | Create a new migration file |
-| `npm run db:verify` | Verify all migration files |
-| `npm run db:push` | Push migrations to linked project |
-| `npm run db:reset` | Reset local database |
-| `npm run db:diff` | Generate diff migration |
-| `npm run db:dump` | Dump schema to SQL file |
-| `npm run db:types` | Generate TypeScript types |
-| `npm run db:migrate:local` | Run migrations locally |
-| `npm run db:migrate:prod` | Push all migrations to production |
-| `npm run prisma:generate` | Generate Prisma client |
-| `npm run prisma:migrate` | Deploy Prisma migrations |
-| `npm run prisma:push` | Push Prisma schema changes |
+| Script                     | Description                       |
+| -------------------------- | --------------------------------- |
+| `npm run db:new <name>`    | Create a new migration file       |
+| `npm run db:verify`        | Verify all migration files        |
+| `npm run db:push`          | Push migrations to linked project |
+| `npm run db:reset`         | Reset local database              |
+| `npm run db:diff`          | Generate diff migration           |
+| `npm run db:dump`          | Dump schema to SQL file           |
+| `npm run db:types`         | Generate TypeScript types         |
+| `npm run db:migrate:local` | Run migrations locally            |
+| `npm run db:migrate:prod`  | Push all migrations to production |
+| `npm run prisma:generate`  | Generate Prisma client            |
+| `npm run prisma:migrate`   | Deploy Prisma migrations          |
+| `npm run prisma:push`      | Push Prisma schema changes        |
 
 ## Workflow Triggers
 
@@ -203,6 +207,7 @@ COMMIT;
 4. Commit and push — workflow will apply automatically
 
 **Example:**
+
 ```sql
 -- Rollback for: 20240115143022_add_user_preferences_table.sql
 BEGIN;
@@ -254,6 +259,7 @@ act push --secret-file .env.local
 ### Migration Already Applied
 
 Supabase tracks applied migrations. If a migration fails partway:
+
 1. Check `supabase_migrations.schema_migrations` table
 2. Manually mark as applied if needed (advanced)
 3. Or fix migration and re-run
@@ -281,6 +287,7 @@ Before declaring migrations complete, verify:
 ## Support
 
 For issues or questions:
+
 1. Check workflow logs in GitHub Actions
 2. Review migration files for syntax errors
 3. Verify secrets are correctly configured

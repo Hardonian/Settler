@@ -1,14 +1,14 @@
 /**
  * FX Service
- * 
+ *
  * Handles multi-currency operations: FX rate tracking, base-currency conversion,
  * and currency-aware matching as specified in the Product & Technical Specification.
  */
 
-import { FXConversion, Money } from '@settler/types';
-import { query } from '../../db';
-import { fxRateProviderManager } from '../../services/currency/fx-rate-provider';
-import { logInfo, logError } from '../../utils/logger';
+import { FXConversion, Money } from "@settler/types";
+import { query } from "../../db";
+import { fxRateProviderManager } from "../../services/currency/fx-rate-provider";
+import { logInfo, logError } from "../../utils/logger";
 
 export interface FXRate {
   fromCurrency: string;
@@ -87,7 +87,7 @@ export class FXService {
     }
 
     const targetDate = date || new Date();
-    
+
     const result = await query<{ fx_rate: number }>(
       `SELECT fx_rate FROM fx_conversions
        WHERE tenant_id = $1 
@@ -120,7 +120,7 @@ export class FXService {
     }
 
     const fxRate = await this.getFXRate(tenantId, amount.currency, baseCurrency, conversionDate);
-    
+
     if (fxRate === null) {
       return null; // Cannot convert
     }
@@ -143,12 +143,12 @@ export class FXService {
 
     if (result.length > 0 && result[0]?.config?.baseCurrency) {
       const baseCurrency = result[0].config.baseCurrency;
-      if (typeof baseCurrency === 'string') {
+      if (typeof baseCurrency === "string") {
         return baseCurrency;
       }
     }
 
-    return 'USD'; // Default
+    return "USD"; // Default
   }
 
   /**
@@ -156,7 +156,7 @@ export class FXService {
    */
   async getFXRates(tenantId: string, date?: Date): Promise<FXRate[]> {
     const targetDate = date || new Date();
-    
+
     const result = await query<{
       from_currency: string;
       to_currency: string;
@@ -172,12 +172,12 @@ export class FXService {
       [tenantId, targetDate]
     );
 
-    return result.map(row => ({
+    return result.map((row) => ({
       fromCurrency: row.from_currency,
       toCurrency: row.to_currency,
       rate: row.fx_rate,
       rateDate: row.rate_date,
-      provider: row.provider ?? 'unknown',
+      provider: row.provider ?? "unknown",
     }));
   }
 
@@ -188,22 +188,35 @@ export class FXService {
    */
   async syncFXRates(tenantId: string, baseCurrency: string): Promise<number> {
     const TARGET_CURRENCIES = [
-      'USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY', 'INR', 'BRL',
+      "USD",
+      "EUR",
+      "GBP",
+      "JPY",
+      "CAD",
+      "AUD",
+      "CHF",
+      "CNY",
+      "INR",
+      "BRL",
     ];
 
     // Filter out the base currency itself
-    const targets = TARGET_CURRENCIES.filter(c => c !== baseCurrency);
+    const targets = TARGET_CURRENCIES.filter((c) => c !== baseCurrency);
 
     let syncedCount = 0;
     const rateDate = new Date();
-    const syncTransactionId = `fx_sync_${tenantId}_${rateDate.toISOString().split('T')[0]}`;
+    const syncTransactionId = `fx_sync_${tenantId}_${rateDate.toISOString().split("T")[0]}`;
 
     for (const targetCurrency of targets) {
       try {
-        const result = await fxRateProviderManager.fetchRate(baseCurrency, targetCurrency, rateDate);
+        const result = await fxRateProviderManager.fetchRate(
+          baseCurrency,
+          targetCurrency,
+          rateDate
+        );
 
         if (!result) {
-          logError('FX rate not available from any provider', null, {
+          logError("FX rate not available from any provider", null, {
             tenantId,
             baseCurrency,
             targetCurrency,
@@ -218,8 +231,8 @@ export class FXService {
           `${syncTransactionId}_${targetCurrency}`,
           baseCurrency,
           targetCurrency,
-          1,            // from: 1 unit of base currency
-          result.rate,  // to: equivalent in target currency
+          1, // from: 1 unit of base currency
+          result.rate, // to: equivalent in target currency
           result.rate,
           result.provider,
           rateDate
@@ -227,7 +240,7 @@ export class FXService {
 
         syncedCount++;
       } catch (error) {
-        logError('Failed to sync FX rate for currency pair', error, {
+        logError("Failed to sync FX rate for currency pair", error, {
           tenantId,
           baseCurrency,
           targetCurrency,
@@ -237,7 +250,7 @@ export class FXService {
     }
 
     if (syncedCount > 0) {
-      logInfo('FX rates synced', {
+      logInfo("FX rates synced", {
         tenantId,
         baseCurrency,
         syncedCount,

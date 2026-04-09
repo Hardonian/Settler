@@ -1,26 +1,26 @@
 /**
  * Ops Runbooks Tab
- * 
+ *
  * Operational runbooks and procedures
  */
 
-'use client';
+"use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function OpsRunbooks() {
   const runbooks = [
     {
-      title: 'Database Migration',
-      content: 'Steps for running database migrations safely...',
+      title: "Database Migration",
+      content: "Steps for running database migrations safely...",
     },
     {
-      title: 'Deployment Rollback',
-      content: 'How to rollback a deployment if issues occur...',
+      title: "Deployment Rollback",
+      content: "How to rollback a deployment if issues occur...",
     },
     {
-      title: 'Error Investigation',
-      content: 'Process for investigating and resolving errors...',
+      title: "Error Investigation",
+      content: "Process for investigating and resolving errors...",
     },
   ];
 

@@ -40,7 +40,7 @@ export async function detectBillingAnomalies(userId: string): Promise<Anomaly[]>
   if (!subscriptions || !usage) return anomalies;
 
   type UsageRow = { amount?: number };
-  
+
   // Check for unusual spending spikes
   const recentUsage = usage.slice(0, 7) as UsageRow[];
   const avgUsage =
@@ -73,7 +73,7 @@ export async function detectBillingAnomalies(userId: string): Promise<Anomaly[]>
       type: "billing",
       severity: "critical",
       title: "Payment Issue Detected",
-      description: `Payment failure detected: ${(paymentRecovery as { failure_type?: string }).failure_type || 'unknown'}. Action required.`,
+      description: `Payment failure detected: ${(paymentRecovery as { failure_type?: string }).failure_type || "unknown"}. Action required.`,
       detectedAt: new Date(),
       metadata: { paymentRecovery },
     });
@@ -101,7 +101,7 @@ export async function detectUsageAnomalies(userId: string): Promise<Anomaly[]> {
 
   type UsageRow = { amount?: number };
   const typedUsage = usage as UsageRow[];
-  
+
   // Detect sudden drops (potential churn indicator)
   const recentAvg =
     typedUsage.slice(0, 7).reduce((sum: number, u: any) => sum + (u.amount || 0), 0) / 7;
@@ -145,9 +145,9 @@ export async function detectIntegrationAnomalies(userId: string): Promise<Anomal
     integration_id?: string;
     status?: string;
   };
-  
+
   const typedIntegrations = integrations as IntegrationRow[];
-  
+
   for (const integration of typedIntegrations) {
     // Check for stale syncs
     if (integration.last_sync_at) {
@@ -159,7 +159,7 @@ export async function detectIntegrationAnomalies(userId: string): Promise<Anomal
           id: `integration-stale-${integration.id}`,
           type: "integration",
           severity: "high",
-          title: `${integration.integration_id || 'Integration'} Not Syncing`,
+          title: `${integration.integration_id || "Integration"} Not Syncing`,
           description: `Last sync was ${Math.floor(hoursSinceSync)} hours ago. The integration may be disconnected.`,
           detectedAt: new Date(),
           metadata: { integrationId: integration.integration_id, hoursSinceSync },
@@ -174,7 +174,7 @@ export async function detectIntegrationAnomalies(userId: string): Promise<Anomal
         id: `integration-error-${integration.id}`,
         type: "integration",
         severity: "critical",
-        title: `${integration.integration_id || 'Integration'} Has Errors`,
+        title: `${integration.integration_id || "Integration"} Has Errors`,
         description: "The integration is experiencing errors. Please check the connection.",
         detectedAt: new Date(),
         metadata: { integrationId: integration.integration_id },
@@ -208,9 +208,9 @@ export async function detectPerformanceAnomalies(userId: string): Promise<Anomal
     name?: string;
     reconciliation_reports?: ReportRow[];
   };
-  
+
   const typedJobs = jobs as JobRow[];
-  
+
   // Check for slow jobs
   const recentJobs = typedJobs.filter((j) => {
     const report = j.reconciliation_reports?.[0];
@@ -236,7 +236,7 @@ export async function detectPerformanceAnomalies(userId: string): Promise<Anomal
         type: "performance",
         severity: "low",
         title: "Slow Reconciliation Detected",
-        description: `Job "${job.name || 'Unnamed'}" took ${(report.duration_ms / 1000).toFixed(1)}s, which is slower than average.`,
+        description: `Job "${job.name || "Unnamed"}" took ${(report.duration_ms / 1000).toFixed(1)}s, which is slower than average.`,
         detectedAt: new Date(),
         metadata: { jobId: job.id, duration: report.duration_ms, avgDuration },
       });

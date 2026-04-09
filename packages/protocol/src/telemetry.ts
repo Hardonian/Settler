@@ -19,13 +19,13 @@ export interface TelemetryEvent {
 }
 
 export type TelemetryEventType =
-  | 'pageview'
-  | 'component.render'
-  | 'component.interaction'
-  | 'api.call'
-  | 'error'
-  | 'performance'
-  | 'custom';
+  | "pageview"
+  | "component.render"
+  | "component.interaction"
+  | "api.call"
+  | "error"
+  | "performance"
+  | "custom";
 
 export interface TelemetryContext {
   page?: string;

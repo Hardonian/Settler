@@ -1,8 +1,8 @@
 /**
  * Demo Data & Seed Utilities
- * 
+ *
  * PHASE 6: GTM READINESS CHECK
- * 
+ *
  * Provides seedable demo data for safe, repeatable demos.
  * No secrets, no chaos - every demo works the same way.
  */
@@ -22,16 +22,16 @@ export interface DemoTenant {
  */
 export async function createDemoTenant(
   userId: string,
-  tenantName: string = 'Demo Company'
+  tenantName: string = "Demo Company"
 ): Promise<DemoTenant> {
-  const { prisma } = await import('@/shared/db/prismaClient');
-  
+  const { prisma } = await import("@/shared/db/prismaClient");
+
   // Create billing account
   const billingAccount = await prisma.billingAccount.create({
     data: {
       userId,
       email: `demo-${Date.now()}@settler.dev`,
-      status: 'active',
+      status: "active",
     },
   });
 
@@ -65,7 +65,7 @@ async function seedDemoData(
   tenantId: string,
   userId: string
 ): Promise<void> {
-  const { prisma } = await import('@/shared/db/prismaClient');
+  const { prisma } = await import("@/shared/db/prismaClient");
   const now = new Date();
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
@@ -73,9 +73,9 @@ async function seedDemoData(
   await prisma.reconResult.createMany({
     data: [
       {
-        reconJobId: 'demo-job-1',
+        reconJobId: "demo-job-1",
         tenantId,
-        status: 'completed',
+        status: "completed",
         startedAt: new Date(thirtyDaysAgo.getTime() + 1 * 24 * 60 * 60 * 1000),
         completedAt: new Date(thirtyDaysAgo.getTime() + 1 * 24 * 60 * 60 * 1000 + 5000),
         sourceCount: 1000,
@@ -87,14 +87,14 @@ async function seedDemoData(
         totalAmountSource: 50000,
         totalAmountTarget: 50000,
         totalAmountMatched: 47500,
-        currency: 'USD',
+        currency: "USD",
         confidenceAvg: 0.98,
         durationMs: BigInt(5000),
       },
       {
-        reconJobId: 'demo-job-2',
+        reconJobId: "demo-job-2",
         tenantId,
-        status: 'completed',
+        status: "completed",
         startedAt: new Date(thirtyDaysAgo.getTime() + 7 * 24 * 60 * 60 * 1000),
         completedAt: new Date(thirtyDaysAgo.getTime() + 7 * 24 * 60 * 60 * 1000 + 8000),
         sourceCount: 2500,
@@ -106,14 +106,14 @@ async function seedDemoData(
         totalAmountSource: 125000,
         totalAmountTarget: 125000,
         totalAmountMatched: 120000,
-        currency: 'USD',
+        currency: "USD",
         confidenceAvg: 0.97,
         durationMs: BigInt(8000),
       },
       {
-        reconJobId: 'demo-job-3',
+        reconJobId: "demo-job-3",
         tenantId,
-        status: 'completed',
+        status: "completed",
         startedAt: new Date(thirtyDaysAgo.getTime() + 14 * 24 * 60 * 60 * 1000),
         completedAt: new Date(thirtyDaysAgo.getTime() + 14 * 24 * 60 * 60 * 1000 + 12000),
         sourceCount: 5000,
@@ -125,7 +125,7 @@ async function seedDemoData(
         totalAmountSource: 250000,
         totalAmountTarget: 250000,
         totalAmountMatched: 242500,
-        currency: 'USD',
+        currency: "USD",
         confidenceAvg: 0.96,
         durationMs: BigInt(12000),
       },
@@ -139,7 +139,7 @@ async function seedDemoData(
         billingAccountId,
         userId,
         tenantId,
-        eventType: 'value:reconciliation_completed',
+        eventType: "value:reconciliation_completed",
         quantity: 3,
         timestamp: now,
         metadata: {
@@ -150,7 +150,7 @@ async function seedDemoData(
         billingAccountId,
         userId,
         tenantId,
-        eventType: 'value:reconciliation_matched',
+        eventType: "value:reconciliation_matched",
         quantity: 8200,
         timestamp: now,
         metadata: {
@@ -161,7 +161,7 @@ async function seedDemoData(
         billingAccountId,
         userId,
         tenantId,
-        eventType: 'value:records_processed',
+        eventType: "value:records_processed",
         quantity: 8500,
         timestamp: now,
         metadata: {
@@ -172,7 +172,7 @@ async function seedDemoData(
         billingAccountId,
         userId,
         tenantId,
-        eventType: 'value:reconciliation_time_saved',
+        eventType: "value:reconciliation_time_saved",
         quantity: 1,
         timestamp: now,
         metadata: {
@@ -184,12 +184,12 @@ async function seedDemoData(
         billingAccountId,
         userId,
         tenantId,
-        eventType: 'value:integration_connected',
+        eventType: "value:integration_connected",
         quantity: 2,
         timestamp: now,
         metadata: {
           demo: true,
-          integrations: ['stripe', 'shopify'],
+          integrations: ["stripe", "shopify"],
         },
       },
     ],
@@ -200,14 +200,14 @@ async function seedDemoData(
  * Reset demo tenant data
  */
 export async function resetDemoTenant(tenantId: string): Promise<void> {
-  const { prisma } = await import('@/shared/db/prismaClient');
-  
+  const { prisma } = await import("@/shared/db/prismaClient");
+
   // Delete all demo data
   await prisma.usageEvent.deleteMany({
     where: {
       tenantId,
       metadata: {
-        path: ['demo'],
+        path: ["demo"],
         equals: true,
       },
     },
@@ -228,11 +228,7 @@ export async function resetDemoTenant(tenantId: string): Promise<void> {
   });
 
   if (tenant && tenant.billingAccount) {
-    await seedDemoData(
-      tenant.billingAccount.id,
-      tenant.id,
-      tenant.billingAccount.userId
-    );
+    await seedDemoData(tenant.billingAccount.id, tenant.id, tenant.billingAccount.userId);
   }
 }
 
@@ -240,11 +236,11 @@ export async function resetDemoTenant(tenantId: string): Promise<void> {
  * Check if tenant is a demo tenant
  */
 export async function isDemoTenant(tenantId: string): Promise<boolean> {
-  const { prisma } = await import('@/shared/db/prismaClient');
-  
+  const { prisma } = await import("@/shared/db/prismaClient");
+
   const tenant = await prisma.tenant.findUnique({
     where: { id: tenantId },
   });
 
-  return tenant?.slug.startsWith('demo-') || false;
+  return tenant?.slug.startsWith("demo-") || false;
 }

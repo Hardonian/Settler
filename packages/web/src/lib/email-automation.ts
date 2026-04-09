@@ -46,9 +46,9 @@ export async function triggerEmailSequence(
     churn_save_emails?: boolean;
     marketing_emails?: boolean;
   };
-  
+
   const sequenceData = sequence as SequenceRow;
-  
+
   // Get user email
   const { data: user } = await supabase.from("users").select("email").eq("id", userId).single();
   const userData = user as UserRow | null;
@@ -98,7 +98,7 @@ export async function triggerEmailSequence(
       sequence_id: sequenceData.id,
       template_id: template.id,
       email_address: userData.email,
-      subject: template.subject || '',
+      subject: template.subject || "",
       status: "pending",
       metadata: metadata || {},
     } as any);

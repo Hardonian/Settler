@@ -1,16 +1,16 @@
 /**
  * Investor & Partner Proof Page
- * 
+ *
  * PHASE 7: INVESTOR & PARTNER PROOF MODE
- * 
+ *
  * Read-only metrics views for external scrutiny.
  * Clear articulation of defensibility and scalability.
  */
 
-import { Suspense } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Shield, TrendingUp, Zap, Lock } from 'lucide-react';
+import { Suspense } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Shield, TrendingUp, Zap, Lock } from "lucide-react";
 
 export const revalidate = 3600;
 
@@ -32,53 +32,49 @@ const FALLBACK_METRICS: InvestorMetrics = {
 
 async function loadInvestorMetrics(): Promise<InvestorMetrics> {
   try {
-    const { prisma } = await import('@/shared/db/prismaClient');
+    const { prisma } = await import("@/shared/db/prismaClient");
 
-    const [
-      totalTenants,
-      totalReconciliations,
-      totalRecordsProcessed,
-      activeSubscriptions,
-    ] = await Promise.all([
-      prisma.tenant.count({
-        where: { isActive: true },
-      }),
-      prisma.reconResult.count({
-        where: {
-          status: 'completed',
-          createdAt: {
-            gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+    const [totalTenants, totalReconciliations, totalRecordsProcessed, activeSubscriptions] =
+      await Promise.all([
+        prisma.tenant.count({
+          where: { isActive: true },
+        }),
+        prisma.reconResult.count({
+          where: {
+            status: "completed",
+            createdAt: {
+              gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+            },
           },
-        },
-      }),
-      prisma.usageEvent.aggregate({
-        where: {
-          eventType: {
-            startsWith: 'value:records_processed',
+        }),
+        prisma.usageEvent.aggregate({
+          where: {
+            eventType: {
+              startsWith: "value:records_processed",
+            },
+            timestamp: {
+              gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+            },
           },
-          timestamp: {
-            gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+          _sum: {
+            quantity: true,
           },
-        },
-        _sum: {
-          quantity: true,
-        },
-      }),
-      prisma.subscription.count({
-        where: {
-          status: {
-            in: ['active', 'trialing'],
+        }),
+        prisma.subscription.count({
+          where: {
+            status: {
+              in: ["active", "trialing"],
+            },
           },
-        },
-      }),
-    ]);
+        }),
+      ]);
 
     return {
       totalTenants,
       totalReconciliations,
       totalRecords: Number(totalRecordsProcessed._sum.quantity) || 0,
       activeSubscriptions,
-      source: 'live',
+      source: "live",
     };
   } catch {
     return FALLBACK_METRICS;
@@ -91,9 +87,7 @@ async function InvestorProofContent() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-foreground mb-2">
-          Settler: Product Proof
-        </h1>
+        <h1 className="text-3xl font-bold text-foreground mb-2">Settler: Product Proof</h1>
         <p className="text-muted-foreground">
           Measurable value, defensible technology, scalable operations
         </p>
@@ -104,14 +98,10 @@ async function InvestorProofContent() {
         <Card>
           <CardHeader className="pb-3">
             <CardDescription>Active Tenants</CardDescription>
-            <CardTitle className="text-3xl">
-              {metrics.totalTenants.toLocaleString()}
-            </CardTitle>
+            <CardTitle className="text-3xl">{metrics.totalTenants.toLocaleString()}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm text-muted-foreground">
-              Last 30 days
-            </div>
+            <div className="text-sm text-muted-foreground">Last 30 days</div>
           </CardContent>
         </Card>
 
@@ -123,23 +113,17 @@ async function InvestorProofContent() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm text-muted-foreground">
-              Last 30 days
-            </div>
+            <div className="text-sm text-muted-foreground">Last 30 days</div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-3">
             <CardDescription>Records Processed</CardDescription>
-            <CardTitle className="text-3xl">
-              {metrics.totalRecords.toLocaleString()}
-            </CardTitle>
+            <CardTitle className="text-3xl">{metrics.totalRecords.toLocaleString()}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm text-muted-foreground">
-              Last 30 days
-            </div>
+            <div className="text-sm text-muted-foreground">Last 30 days</div>
           </CardContent>
         </Card>
 
@@ -151,21 +135,18 @@ async function InvestorProofContent() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm text-muted-foreground">
-              Current
-            </div>
+            <div className="text-sm text-muted-foreground">Current</div>
           </CardContent>
         </Card>
       </div>
-
-
 
       {metrics.source === "fallback" && (
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Live metrics unavailable</CardTitle>
             <CardDescription>
-              Rendering fallback values because optional data services are not configured in this environment.
+              Rendering fallback values because optional data services are not configured in this
+              environment.
             </CardDescription>
           </CardHeader>
         </Card>
@@ -178,16 +159,15 @@ async function InvestorProofContent() {
             <Shield className="w-5 h-5 text-blue-600" />
             <CardTitle>Defensibility</CardTitle>
           </div>
-          <CardDescription>
-            Why this is hard to replicate
-          </CardDescription>
+          <CardDescription>Why this is hard to replicate</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
             <h3 className="font-semibold mb-2">1. Data Normalization Engine</h3>
             <p className="text-sm text-muted-foreground">
-              Universal adapter system that normalizes data from 50+ sources into a consistent schema.
-              This requires deep domain knowledge of each integration's quirks and edge cases.
+              Universal adapter system that normalizes data from 50+ sources into a consistent
+              schema. This requires deep domain knowledge of each integration's quirks and edge
+              cases.
             </p>
           </div>
           <div>
@@ -221,30 +201,28 @@ async function InvestorProofContent() {
             <TrendingUp className="w-5 h-5 text-green-600" />
             <CardTitle>Scalability</CardTitle>
           </div>
-          <CardDescription>
-            What scales automatically
-          </CardDescription>
+          <CardDescription>What scales automatically</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
             <h3 className="font-semibold mb-2">Horizontal Scaling</h3>
             <p className="text-sm text-muted-foreground">
-              Stateless reconciliation jobs can run in parallel across multiple workers.
-              Database connection pooling and query optimization handle increased load.
+              Stateless reconciliation jobs can run in parallel across multiple workers. Database
+              connection pooling and query optimization handle increased load.
             </p>
           </div>
           <div>
             <h3 className="font-semibold mb-2">Cost Efficiency</h3>
             <p className="text-sm text-muted-foreground">
-              Serverless architecture means costs scale linearly with usage.
-              No fixed infrastructure costs for idle capacity.
+              Serverless architecture means costs scale linearly with usage. No fixed infrastructure
+              costs for idle capacity.
             </p>
           </div>
           <div>
             <h3 className="font-semibold mb-2">Multi-tenancy</h3>
             <p className="text-sm text-muted-foreground">
-              Tenant isolation at the database level ensures security and performance.
-              Each tenant's data is logically separated but physically co-located for efficiency.
+              Tenant isolation at the database level ensures security and performance. Each tenant's
+              data is logically separated but physically co-located for efficiency.
             </p>
           </div>
         </CardContent>
@@ -257,9 +235,7 @@ async function InvestorProofContent() {
             <Zap className="w-5 h-5 text-purple-600" />
             <CardTitle>Unit Economics</CardTitle>
           </div>
-          <CardDescription>
-            Revenue and cost structure
-          </CardDescription>
+          <CardDescription>Revenue and cost structure</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
@@ -267,39 +243,27 @@ async function InvestorProofContent() {
               <div className="text-sm text-muted-foreground mb-1">
                 Average Revenue Per User (ARPU)
               </div>
-              <div className="text-2xl font-bold text-foreground">
-                $299/mo
-              </div>
+              <div className="text-2xl font-bold text-foreground">$299/mo</div>
             </div>
             <div>
               <div className="text-sm text-muted-foreground mb-1">
                 Customer Acquisition Cost (CAC)
               </div>
-              <div className="text-2xl font-bold text-foreground">
-                $150
-              </div>
+              <div className="text-2xl font-bold text-foreground">$150</div>
             </div>
             <div>
-              <div className="text-sm text-muted-foreground mb-1">
-                Lifetime Value (LTV)
-              </div>
-              <div className="text-2xl font-bold text-foreground">
-                $3,588
-              </div>
+              <div className="text-sm text-muted-foreground mb-1">Lifetime Value (LTV)</div>
+              <div className="text-2xl font-bold text-foreground">$3,588</div>
             </div>
             <div>
-              <div className="text-sm text-muted-foreground mb-1">
-                LTV:CAC Ratio
-              </div>
-              <div className="text-2xl font-bold text-green-600">
-                24:1
-              </div>
+              <div className="text-sm text-muted-foreground mb-1">LTV:CAC Ratio</div>
+              <div className="text-2xl font-bold text-green-600">24:1</div>
             </div>
           </div>
           <div className="pt-4 border-t">
             <p className="text-sm text-muted-foreground">
-              <strong>Note:</strong> These are calculated from actual subscription data and pricing tiers.
-              Gross margins are approximately 75% due to serverless infrastructure.
+              <strong>Note:</strong> These are calculated from actual subscription data and pricing
+              tiers. Gross margins are approximately 75% due to serverless infrastructure.
             </p>
           </div>
         </CardContent>
@@ -323,8 +287,8 @@ async function InvestorProofContent() {
             <Badge>Audit Logging</Badge>
           </div>
           <p className="text-sm text-muted-foreground">
-            All customer data is encrypted, access is logged, and compliance certifications are maintained.
-            Regular security audits and penetration testing ensure ongoing protection.
+            All customer data is encrypted, access is logged, and compliance certifications are
+            maintained. Regular security audits and penetration testing ensure ongoing protection.
           </p>
         </CardContent>
       </Card>

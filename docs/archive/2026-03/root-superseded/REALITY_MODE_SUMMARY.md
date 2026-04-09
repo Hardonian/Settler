@@ -9,9 +9,11 @@
 ## ✅ COMPLETED PHASES
 
 ### PHASE 0: REPO DISCOVERY ✅
+
 **Deliverable:** Reality Map v1 (`REALITY_MAP.md`)
 
 **Findings:**
+
 - Next.js App Router with Supabase + Stripe
 - Monorepo structure with packages/web, packages/api
 - Comprehensive Prisma schema with billing, reconciliation, ingestion models
@@ -21,6 +23,7 @@
 - Error boundaries exist ✓
 
 **Key Files Identified:**
+
 - `packages/web/middleware.ts` - Auth cookie refresh, trace IDs
 - `packages/web/src/app/api/stripe/webhook/route.ts` - Webhook handler (Node runtime)
 - `packages/web/src/lib/security/billing-enforcement.ts` - Subscription checks
@@ -31,9 +34,11 @@
 ---
 
 ### PHASE 1: STOP THE BLEEDING ✅
+
 **Goal:** Zero hard-500s on user routes
 
 **Changes Made:**
+
 1. **Fixed billing enforcement 500 errors**
    - `requireActiveSubscription()` now returns 403 instead of 500
    - `requireAddOn()` now returns 403 instead of 500
@@ -64,6 +69,7 @@
    - Provides `normalizeError()` and `safeRouteHandler()` helpers
 
 **Verification:**
+
 - All error handlers now return 200/401/403, never 500 (except Stripe webhook which intentionally returns 500 for retries)
 - Error boundaries exist at app level (`error.tsx`, `global-error.tsx`)
 - Not-found pages exist (`not-found.tsx`)
@@ -71,9 +77,11 @@
 ---
 
 ### PHASE 2: AUTH + TENANT ISOLATION ✅
+
 **Goal:** Prove RLS + server checks work
 
 **Changes Made:**
+
 1. **Created tenant isolation verification script**
    - File: `scripts/validate-tenant-isolation.ts`
    - Creates two test users with different tenants
@@ -92,6 +100,7 @@
    - Coverage: billing_accounts, subscriptions, normalized_transactions, reconciliation_runs, ingestion_sources
 
 **Verification:**
+
 - RLS policies comprehensive and correct
 - Server-side helpers ready to use
 - Test script ready to run (requires Supabase credentials)
@@ -99,9 +108,11 @@
 ---
 
 ### PHASE 3: BILLING REALITY 🔄 IN PROGRESS
+
 **Goal:** Paid tiers actually gate features
 
 **Changes Made:**
+
 1. **Fixed entitlements fail-open behavior**
    - `checkEntitlement()` now fails closed for paid plans on usage calculation errors
    - `canUseService()` now fails closed instead of open
@@ -114,6 +125,7 @@
    - `syncSubscriptionFromWebhook()` exists and updates DB ✓
 
 **Remaining:**
+
 - [ ] Run webhook verification test (Stripe CLI)
 - [ ] Verify `withUniversalBillingGate()` is used on all paid routes
 - [ ] Test free user cannot access paid endpoint with spoofed state
@@ -123,9 +135,11 @@
 ## 🔄 PENDING PHASES
 
 ### PHASE 4: AUTO-RECONCILIATION 10% PIPELINE
+
 **Status:** Service exists but matching logic not implemented
 
 **Required:**
+
 - [ ] Implement deterministic matching (amount ±$0.01, date ±3 days, exact merchant)
 - [ ] Create fixture dataset (`/fixtures/reconciliation-test-data.csv`)
 - [ ] Create one-command seed script
@@ -135,9 +149,11 @@
 ---
 
 ### PHASE 5: INTEGRATIONS
+
 **Status:** Needs audit
 
 **Required:**
+
 - [ ] Find all "Connect X" buttons/routes
 - [ ] Mark fake integrations as "Coming Soon" or remove
 - [ ] Ensure real integrations have OAuth callbacks
@@ -146,9 +162,11 @@
 ---
 
 ### PHASE 6: MIDDLEWARE/RUNTIME CORRECTNESS
+
 **Status:** Stripe webhook correct, need to verify others
 
 **Required:**
+
 - [ ] Audit all API routes for correct runtime
 - [ ] Run `npm run lint` and fix unused imports
 - [ ] Run `npm run typecheck` and fix type errors
@@ -157,18 +175,22 @@
 ---
 
 ### PHASE 7: OBSERVABILITY
+
 **Status:** Trace IDs exist, need diagnostics page
 
 **Required:**
+
 - [ ] Create `/console/diagnostics` page (gated)
 - [ ] Show: env sanity, last webhook, last reconcile run, queue health
 
 ---
 
 ### PHASE 8: QA TEST SUITE
+
 **Status:** No tests yet
 
 **Required:**
+
 - [ ] Unit test for deterministic matcher
 - [ ] Integration test for entitlement gating
 - [ ] Smoke test for auth flow
@@ -179,6 +201,7 @@
 ## FILES CREATED/MODIFIED
 
 ### Created:
+
 - `REALITY_MAP.md` - End-to-end flow diagram
 - `BLOCKERS_LIST.md` - Detailed blocker tracking
 - `VERIFICATION_PACK.md` - Verification commands
@@ -188,6 +211,7 @@
 - `scripts/validate-tenant-isolation.ts` - Tenant isolation test
 
 ### Modified:
+
 - `packages/web/src/lib/security/billing-enforcement.ts` - Fixed 500 errors
 - `packages/web/src/lib/security/entitlement-checks.ts` - Fixed 500 errors
 - `packages/web/src/lib/api/subscription-gate.ts` - Fixed 500 errors
@@ -233,7 +257,7 @@
 ✅ **Tenant Isolation:** RLS policies + server-side checks ready  
 ✅ **Billing Gates:** Entitlements fail closed, webhook handler verified  
 ✅ **Error Handling:** Comprehensive error normalization utility created  
-✅ **Documentation:** Reality Map, Blockers List, Verification Pack created  
+✅ **Documentation:** Reality Map, Blockers List, Verification Pack created
 
 ---
 
@@ -255,6 +279,7 @@
 **Phases 1-3 are complete** with comprehensive error handling, tenant isolation infrastructure, and billing gate improvements. **Phases 4-8 remain** but have clear requirements and verification steps defined.
 
 The codebase is now significantly more hardened against:
+
 - Hard 500 errors
 - Cross-tenant data leaks
 - Billing bypass attempts

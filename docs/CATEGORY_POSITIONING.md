@@ -51,11 +51,13 @@ This document defines **what Settler is** and **where it fits** in the market. I
 ### Secondary Use Cases
 
 **Receipt Processing:**
+
 - Extract structured data from receipts
 - Integrate with expense management systems
 - Automate expense reporting
 
 **Feature Flags:**
+
 - Manage feature rollouts
 - A/B testing
 - Gradual feature deployment
@@ -69,11 +71,13 @@ This document defines **what Settler is** and **where it fits** in the market. I
 **1. Specialized Domain Expertise**
 
 **Settler's Advantage:**
+
 - Deep understanding of reconciliation algorithms
 - Domain-specific matching logic
 - Financial compliance expertise
 
 **Why Hard to Copy:**
+
 - Requires years of domain expertise
 - Complex matching algorithms
 - Compliance requirements
@@ -83,11 +87,13 @@ This document defines **what Settler is** and **where it fits** in the market. I
 **2. Event-Sourced Architecture**
 
 **Settler's Advantage:**
+
 - Event-sourced matching engine
 - Deterministic reconciliation
 - Audit trail built-in
 
 **Why Hard to Copy:**
+
 - Requires architectural expertise
 - Complex event processing
 - Deterministic algorithms
@@ -97,11 +103,13 @@ This document defines **what Settler is** and **where it fits** in the market. I
 **3. Multi-Tenant Isolation**
 
 **Settler's Advantage:**
+
 - Row-Level Security (RLS) at database level
 - Complete tenant isolation
 - Secure multi-tenancy
 
 **Why Hard to Copy:**
+
 - Requires security expertise
 - Complex RLS policies
 - Compliance requirements
@@ -111,11 +119,13 @@ This document defines **what Settler is** and **where it fits** in the market. I
 **4. API-First Design**
 
 **Settler's Advantage:**
+
 - RESTful API design
 - Developer-friendly
 - Integration-focused
 
 **Why Hard to Copy:**
+
 - Requires API design expertise
 - Developer experience matters
 - Integration complexity
@@ -127,11 +137,13 @@ This document defines **what Settler is** and **where it fits** in the market. I
 ### What Settler Competes With
 
 **Direct Competitors:**
+
 - Manual reconciliation processes
 - Custom reconciliation scripts
 - Spreadsheet-based reconciliation
 
 **Indirect Competitors:**
+
 - Accounting software with reconciliation features
 - ETL tools with matching capabilities
 - Custom-built reconciliation systems
@@ -141,6 +153,7 @@ This document defines **what Settler is** and **where it fits** in the market. I
 ### What Settler Does NOT Compete With
 
 **Does NOT Compete With:**
+
 - General-purpose automation platforms
 - Accounting software
 - Payment processors
@@ -169,21 +182,25 @@ This document defines **what Settler is** and **where it fits** in the market. I
 ### What Makes Settler "Open Source Reconciliation Engine"
 
 **1. API-First**
+
 - RESTful API design
 - Developer-friendly
 - Integration-focused
 
 **2. Specialized**
+
 - Reconciliation-specific algorithms
 - Domain expertise
 - Compliance built-in
 
 **3. Managed Service**
+
 - Hosted platform
 - Automatic scaling
 - Managed infrastructure
 
 **4. Accuracy-Focused**
+
 - High-accuracy matching
 - Confidence scores
 - Manual review workflows
@@ -197,6 +214,7 @@ This document defines **what Settler is** and **where it fits** in the market. I
 **Market:** Early-stage, specialized niche
 
 **Characteristics:**
+
 - Limited awareness
 - Manual processes dominant
 - Custom solutions common
@@ -210,6 +228,7 @@ This document defines **what Settler is** and **where it fits** in the market. I
 **Market:** Mature, established category
 
 **Characteristics:**
+
 - Widespread adoption
 - Standardized processes
 - Platform-based solutions
@@ -221,6 +240,7 @@ This document defines **what Settler is** and **where it fits** in the market. I
 ## Summary
 
 Settler's category positioning:
+
 - ✅ **Category:** Open Source Reconciliation Engine
 - ✅ **Position:** Specialized API platform for financial reconciliation
 - ✅ **Differentiation:** Domain expertise, event-sourced architecture, multi-tenant isolation
@@ -228,6 +248,7 @@ Settler's category positioning:
 - ✅ **Market:** Early-stage, specialized niche with growth potential
 
 **Key Principles:**
+
 - Constraints are differentiation
 - Clarity beats buzzwords
 - Specialization enables accuracy

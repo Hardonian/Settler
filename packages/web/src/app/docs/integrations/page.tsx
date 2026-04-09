@@ -26,9 +26,7 @@ export default function IntegrationsPage() {
 
         {/* Integration Guides */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-6 text-foreground">
-            Integration Guides
-          </h2>
+          <h2 className="text-2xl font-bold mb-6 text-foreground">Integration Guides</h2>
           <div className="grid md:grid-cols-2 gap-4">
             {integrations.map((integration) => (
               <Link
@@ -37,16 +35,10 @@ export default function IntegrationsPage() {
                 className="block p-6 bg-white dark:bg-card/80 rounded-lg border border-border/40 dark:border-border hover:border-blue-500 dark:hover:border-blue-500 transition-colors"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-xl font-semibold text-foreground">
-                    {integration.name}
-                  </h3>
-                  <span className="text-xs text-muted-foreground">
-                    {integration.category}
-                  </span>
+                  <h3 className="text-xl font-semibold text-foreground">{integration.name}</h3>
+                  <span className="text-xs text-muted-foreground">{integration.category}</span>
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  View integration guide →
-                </p>
+                <p className="text-sm text-muted-foreground">View integration guide →</p>
               </Link>
             ))}
           </div>

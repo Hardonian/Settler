@@ -40,10 +40,7 @@ export const GET = withSecurity(
         return NextResponse.json({ customers });
       } catch (error) {
         appLogger.error("Failed to fetch customers", error);
-        return NextResponse.json(
-          { error: "Failed to fetch customers" },
-          { status: 500 }
-        );
+        return NextResponse.json({ error: "Failed to fetch customers" }, { status: 500 });
       }
     },
     { feature: "GET API" }

@@ -24,6 +24,7 @@ Daily intelligence reports aggregate key operational metrics:
 **API Endpoint**: `GET /api/v1/operator/daily-intelligence?date=2026-01-31`
 
 **Example Response**:
+
 ```json
 {
   "data": {
@@ -80,6 +81,7 @@ Daily intelligence reports aggregate key operational metrics:
 Threshold-based alerting system with configurable rules and multiple notification channels.
 
 **Create Alert Rule**:
+
 ```bash
 POST /api/v1/operator/alerts/thresholds
 {
@@ -94,11 +96,13 @@ POST /api/v1/operator/alerts/thresholds
 ```
 
 **Check Thresholds**:
+
 ```bash
 POST /api/v1/operator/alerts/check
 ```
 
 **Supported Metrics**:
+
 - `error_rate`: Overall error rate (0.0 - 1.0)
 - `slow_endpoint`: P95 latency in milliseconds
 - `failed_ingestion`: Count of failed ingestions
@@ -110,6 +114,7 @@ POST /api/v1/operator/alerts/check
 **Channels**: `email`, `slack`, `webhook`
 
 **Configuration**:
+
 - Set `SLACK_WEBHOOK_URL` environment variable for Slack alerts
 - Set `ALERT_WEBHOOK_URL` for custom webhook alerts
 - Email alerts sent to `operator@settler.dev` by default (configure via alert rules)
@@ -131,12 +136,14 @@ POST /api/v1/operator/cost-controls/usage-ceilings
 ```
 
 **Usage Types**:
+
 - `ingestions`: Number of ingestion jobs
 - `reconciliations`: Number of reconciliation runs
 - `api_requests`: Number of API requests
 - `storage`: Storage usage (bytes)
 
 **Check Usage**:
+
 ```bash
 GET /api/v1/operator/cost-controls/usage-ceilings/:tenantId/:usageType
 ```
@@ -161,6 +168,7 @@ POST /api/v1/operator/cost-controls/job-limits
 Disable connectors or pause background jobs without redeploying:
 
 **Disable Connector**:
+
 ```bash
 POST /api/v1/operator/kill-switches/connectors/stripe/disable
 {
@@ -169,11 +177,13 @@ POST /api/v1/operator/kill-switches/connectors/stripe/disable
 ```
 
 **Enable Connector**:
+
 ```bash
 POST /api/v1/operator/kill-switches/connectors/stripe/enable
 ```
 
 **Pause Background Job**:
+
 ```bash
 POST /api/v1/operator/kill-switches/jobs/ingestion/pause
 {
@@ -182,16 +192,19 @@ POST /api/v1/operator/kill-switches/jobs/ingestion/pause
 ```
 
 **Resume Background Job**:
+
 ```bash
 POST /api/v1/operator/kill-switches/jobs/ingestion/resume
 ```
 
 **List All Kill Switches**:
+
 ```bash
 GET /api/v1/operator/kill-switches
 ```
 
 Kill switches are checked automatically:
+
 - Before creating ingestion sources (connector kill switches)
 - Before running ingestion jobs (background job kill switches)
 - Before running reconciliation jobs
@@ -202,16 +215,19 @@ Kill switches are checked automatically:
 Automated database backups with restore verification:
 
 **Create Backup**:
+
 ```bash
 POST /api/v1/operator/backups/create
 ```
 
 **Verify Backup**:
+
 ```bash
 POST /api/v1/operator/backups/:backupId/verify
 ```
 
 **List Backups**:
+
 ```bash
 GET /api/v1/operator/backups?limit=10
 ```
@@ -225,12 +241,14 @@ The `runOperatorModeDaily` job automatically creates and verifies backups daily.
 ```
 
 **Backup Storage**:
+
 - Backups stored in `BACKUP_DIR` environment variable (default: `/tmp/backups`)
 - Old backups automatically cleaned up after 30 days
 - Backup files named: `settler-backup-YYYY-MM-DDTHH-MM-SS.sql`
 
 **Restore Verification**:
 Backups are verified by:
+
 1. Creating a test database
 2. Restoring the backup to the test database
 3. Verifying tables exist
@@ -245,8 +263,9 @@ The operator mode daily job runs automatically and performs:
 3. **Schedule Daily Backup**: Creates and verifies database backup
 
 **Run Manually**:
+
 ```typescript
-import { runOperatorModeDaily } from './jobs/operator-mode-daily';
+import { runOperatorModeDaily } from "./jobs/operator-mode-daily";
 
 await runOperatorModeDaily();
 ```
@@ -256,12 +275,14 @@ await runOperatorModeDaily();
 ### Simulated Failure Test
 
 1. **Trigger a failure** (e.g., invalid ingestion):
+
    ```bash
    POST /api/v1/ingestion/upload
    # With invalid CSV data
    ```
 
 2. **Check alert**:
+
    ```bash
    POST /api/v1/operator/alerts/check
    ```
@@ -273,11 +294,13 @@ await runOperatorModeDaily();
 ### Kill Switch Test
 
 1. **Disable connector**:
+
    ```bash
    POST /api/v1/operator/kill-switches/connectors/stripe/disable
    ```
 
 2. **Attempt to use connector**:
+
    ```bash
    POST /api/v1/ingestion/sources
    {
@@ -292,6 +315,7 @@ await runOperatorModeDaily();
    - Message: "Connector stripe is currently disabled"
 
 4. **Enable connector**:
+
    ```bash
    POST /api/v1/operator/kill-switches/connectors/stripe/enable
    ```

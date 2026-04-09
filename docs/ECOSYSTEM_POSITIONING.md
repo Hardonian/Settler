@@ -15,16 +15,21 @@ This captures the essence: we solve the problem of manual, time-consuming financ
 ### Interdependence Manifesto (Vercel ↔ Supabase)
 
 #### 1. **Data is Lifeblood**
-Supabase *must* power all public/private content. Every piece of information displayed on the frontend originates from Supabase tables. No static data post-initial setup. All content is dynamic, queryable, and real-time.
+
+Supabase _must_ power all public/private content. Every piece of information displayed on the frontend originates from Supabase tables. No static data post-initial setup. All content is dynamic, queryable, and real-time.
 
 #### 2. **Vercel is the Skin**
+
 The Next.js frontend optimizes for Lighthouse 95+ and acts as the user's sensory input layer. It provides:
+
 - Server Components for efficient data fetching
 - Server Actions as the exclusive write channel
 - Client Components only for stateful interactivity (toasts, modals, real-time subscriptions)
 
 #### 3. **Functions are Nerves**
-Next.js Server Actions/Route Handlers are the *only* channels for client-side writes, ensuring:
+
+Next.js Server Actions/Route Handlers are the _only_ channels for client-side writes, ensuring:
+
 - All writes go through RLS checks
 - Data integrity is maintained
 - Audit trails are automatically created
@@ -56,7 +61,7 @@ The public dashboard (`/dashboard`) displays real-time aggregated social proof m
 
 - **New Users This Week**: Count from `profiles` table
 - **Actions Completed in Last Hour**: Count from `activity_log` table
-- **Most Engaged Post**: Calculated from `posts` table (views + upvotes * 2)
+- **Most Engaged Post**: Calculated from `posts` table (views + upvotes \* 2)
 
 These metrics act as "smoke signals" of a live, active ecosystem.
 
@@ -86,21 +91,25 @@ Returns `"Status: Loud and High ✓"` only if all 3 KPIs are met.
 ## 🛠️ Technical Implementation
 
 ### Server Components (Read Operations)
+
 - All data fetching happens in Server Components
 - Direct Supabase queries with RLS enforcement
 - No client-side data fetching for initial loads
 
 ### Server Actions (Write Operations)
+
 - `signUpUser`: Creates auth user + profile + activity log
 - `submitPositioningFeedback`: Inserts feedback, triggers impact score calculation
 - `logActivity`: Tracks user engagement anonymously or with user_id
 
 ### Real-time Subscriptions
+
 - Client Components subscribe to Supabase Realtime
 - Posts and notifications update live
 - All subscriptions are properly cleaned up on unmount
 
 ### External API Integration
+
 - GitHub API for repository stats (with fallback to demo data)
 - NPM API for package download stats (with fallback to demo data)
 - All external data is clearly marked when using demo/fallback data

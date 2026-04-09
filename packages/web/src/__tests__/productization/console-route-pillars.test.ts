@@ -1,9 +1,6 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import {
-  CONSOLE_ROUTE_REGISTRY,
-  type ConsoleNavSection,
-} from "@/lib/console/route-maturity";
+import { CONSOLE_ROUTE_REGISTRY, type ConsoleNavSection } from "@/lib/console/route-maturity";
 import { COMMERCIAL_OFFERS } from "@/domain/billing/commercialModel";
 import { planConfigs, type PlanCode } from "@/domain/billing/planConfig";
 import { PREMIUM_PACKS } from "@/domain/billing/premiumPacks";

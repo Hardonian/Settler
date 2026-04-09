@@ -3,10 +3,10 @@
  * Manages tenant context for request isolation and RLS
  */
 
-import { PoolClient } from 'pg';
+import { PoolClient } from "pg";
 
 export class TenantContext {
-  private static readonly TENANT_ID_KEY = 'app.current_tenant_id';
+  private static readonly TENANT_ID_KEY = "app.current_tenant_id";
 
   /**
    * Set tenant context for a database connection

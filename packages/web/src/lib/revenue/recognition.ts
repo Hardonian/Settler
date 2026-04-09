@@ -1,10 +1,10 @@
 /**
  * Revenue Recognition Automation
- * 
+ *
  * Automates revenue recognition for usage-based billing.
  */
 
-import { prisma } from '@/shared/db/prismaClient';
+import { prisma } from "@/shared/db/prismaClient";
 
 export interface RevenueRecognition {
   billingAccountId: string;
@@ -32,7 +32,7 @@ export async function calculateRevenue(
       include: {
         subscriptions: {
           where: {
-            status: 'active',
+            status: "active",
           },
           take: 1,
         },
@@ -52,8 +52,8 @@ export async function calculateRevenue(
       const daysInPeriod = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
       const daysInMonth = 30; // Simplified
       // Simplified pricing: pro = $49, enterprise = $299
-      const planId = subscription.planId?.toLowerCase() || '';
-      const monthlyPrice = planId.includes('enterprise') ? 299 : planId.includes('pro') ? 49 : 0;
+      const planId = subscription.planId?.toLowerCase() || "";
+      const monthlyPrice = planId.includes("enterprise") ? 299 : planId.includes("pro") ? 49 : 0;
       subscriptionRevenue = (monthlyPrice / daysInMonth) * daysInPeriod;
     }
 
@@ -75,7 +75,7 @@ export async function calculateRevenue(
       recognizedAt: new Date(),
     };
   } catch (error) {
-    console.error('[Revenue Recognition] Error calculating revenue:', error);
+    console.error("[Revenue Recognition] Error calculating revenue:", error);
     return null;
   }
 }
@@ -92,7 +92,7 @@ export async function recognizeRevenueForPeriod(
       where: {
         subscriptions: {
           some: {
-            status: { in: ['active', 'trialing'] },
+            status: { in: ["active", "trialing"] },
           },
         },
       },
@@ -109,7 +109,7 @@ export async function recognizeRevenueForPeriod(
 
     return recognitions;
   } catch (error) {
-    console.error('[Revenue Recognition] Error recognizing revenue:', error);
+    console.error("[Revenue Recognition] Error recognizing revenue:", error);
     return [];
   }
 }
@@ -117,7 +117,9 @@ export async function recognizeRevenueForPeriod(
 /**
  * Get revenue recognition for current period
  */
-export async function getCurrentPeriodRevenue(billingAccountId: string): Promise<RevenueRecognition | null> {
+export async function getCurrentPeriodRevenue(
+  billingAccountId: string
+): Promise<RevenueRecognition | null> {
   const now = new Date();
   const periodStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const periodEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);

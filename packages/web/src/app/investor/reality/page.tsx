@@ -257,7 +257,8 @@ export async function InvestorDashboardContent() {
             Reliability
           </CardTitle>
           <CardDescription>
-            Failure signals from operational metrics — not a substitute for external uptime/SLA monitoring.
+            Failure signals from operational metrics — not a substitute for external uptime/SLA
+            monitoring.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -270,7 +271,8 @@ export async function InvestorDashboardContent() {
                   : "Not published"}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                Historical availability requires monitoring evidence; we do not derive it from a single counter.
+                Historical availability requires monitoring evidence; we do not derive it from a
+                single counter.
               </p>
             </div>
             <div>

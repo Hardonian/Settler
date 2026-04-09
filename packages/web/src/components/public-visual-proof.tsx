@@ -206,7 +206,9 @@ export function PlatformOverviewDiagram() {
                       </span>
                     ) : null}
                   </div>
-                  <p className="mt-2 text-sm text-muted-foreground dark:text-muted-foreground">{node.detail}</p>
+                  <p className="mt-2 text-sm text-muted-foreground dark:text-muted-foreground">
+                    {node.detail}
+                  </p>
                 </article>
               ))}
             </div>
@@ -231,10 +233,7 @@ export function WorkflowJourneyDiagram() {
       </div>
       <div className="space-y-4">
         {journey.map((row) => (
-          <div
-            key={row.lane}
-            className="rounded-xl border border-border p-4 dark:border-border"
-          >
+          <div key={row.lane} className="rounded-xl border border-border p-4 dark:border-border">
             <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               {row.lane}
             </p>
@@ -313,7 +312,9 @@ export function IntegrationAndPackagingMap() {
                   <Icon className="h-4 w-4 text-blue-600" />
                   <p className="font-semibold text-foreground dark:text-slate-100">{item.label}</p>
                 </div>
-                <p className="mt-2 text-sm text-muted-foreground dark:text-muted-foreground">{item.detail}</p>
+                <p className="mt-2 text-sm text-muted-foreground dark:text-muted-foreground">
+                  {item.detail}
+                </p>
               </div>
             );
           })}
@@ -342,7 +343,9 @@ export function IntegrationAndPackagingMap() {
                   <Icon className="h-4 w-4 text-foreground dark:text-muted-foreground" />
                   <p className="font-semibold text-foreground dark:text-slate-100">{item.title}</p>
                 </div>
-                <p className="mt-2 text-sm text-muted-foreground dark:text-muted-foreground">{item.detail}</p>
+                <p className="mt-2 text-sm text-muted-foreground dark:text-muted-foreground">
+                  {item.detail}
+                </p>
                 <p className="mt-2 text-xs text-muted-foreground dark:text-muted-foreground">
                   {item.routes.join(" · ")}
                 </p>

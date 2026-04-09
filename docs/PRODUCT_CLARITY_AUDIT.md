@@ -24,6 +24,7 @@ Verdict: The landing page speaks exclusively in engineering abstractions. An ops
 > **Settler is the open-source engine that reconciles financial data across systems, surfaces mismatches instantly, and produces verifiable evidence for every run.**
 
 Why this works:
+
 - "engine" — concrete, understood by engineers and non-engineers
 - "reconciles financial data across systems" — the actual job
 - "surfaces mismatches instantly" — the operational outcome
@@ -65,6 +66,7 @@ Why this works:
 ```
 
 This loop must appear consistently in:
+
 - README intro (section "How it works") ✓ Currently present, needs simplification
 - Docs homepage ✓ Referenced but buried
 - Landing page hero section — Missing. The hero talks about "determinism" abstractly.
@@ -134,22 +136,22 @@ This loop must appear consistently in:
 
 ### Terminology Audit
 
-| Current Term | Problem | Recommended Replacement |
-|---|---|---|
-| "control plane" | Infrastructure jargon; obscures what the product does | "reconciliation engine" |
-| "provable financial truth" | Sounds like marketing; unclear operational meaning | "verifiable reconciliation results" |
-| "deterministic pipeline" | Engineering abstraction | "replayable workflow" |
-| "execution artifact" | Internal infrastructure term | "evidence" or "run evidence" |
-| "evaluation graph" | Internal term with no user meaning | "run history" |
-| "policy evaluator" | Vague; sounds like compliance software | "rule checks" |
-| "artifact chain" | Internal data structure term | "evidence chain" |
-| "governance boundaries" | Abstract; sounds enterprise-sales | "access controls and audit trails" |
-| "failure surface reduction" | Risk-theory language; too abstract | "fewer reconciliation errors" |
-| "operational confidence through determinism" | Correct but dense | "reliable, repeatable reconciliation" |
-| "variance sets" | Technical term | "mismatches" or "differences" |
-| "operator leverage" | Internal framing | "faster exception handling" |
-| "control-plane integration" | Jargon | "API and SDK integration" |
-| "reconciliation control plane primitives" | Triple jargon | "reconciliation building blocks" |
+| Current Term                                 | Problem                                               | Recommended Replacement               |
+| -------------------------------------------- | ----------------------------------------------------- | ------------------------------------- |
+| "control plane"                              | Infrastructure jargon; obscures what the product does | "reconciliation engine"               |
+| "provable financial truth"                   | Sounds like marketing; unclear operational meaning    | "verifiable reconciliation results"   |
+| "deterministic pipeline"                     | Engineering abstraction                               | "replayable workflow"                 |
+| "execution artifact"                         | Internal infrastructure term                          | "evidence" or "run evidence"          |
+| "evaluation graph"                           | Internal term with no user meaning                    | "run history"                         |
+| "policy evaluator"                           | Vague; sounds like compliance software                | "rule checks"                         |
+| "artifact chain"                             | Internal data structure term                          | "evidence chain"                      |
+| "governance boundaries"                      | Abstract; sounds enterprise-sales                     | "access controls and audit trails"    |
+| "failure surface reduction"                  | Risk-theory language; too abstract                    | "fewer reconciliation errors"         |
+| "operational confidence through determinism" | Correct but dense                                     | "reliable, repeatable reconciliation" |
+| "variance sets"                              | Technical term                                        | "mismatches" or "differences"         |
+| "operator leverage"                          | Internal framing                                      | "faster exception handling"           |
+| "control-plane integration"                  | Jargon                                                | "API and SDK integration"             |
+| "reconciliation control plane primitives"    | Triple jargon                                         | "reconciliation building blocks"      |
 
 ### Principle
 
@@ -162,6 +164,7 @@ Use the language your users use when describing their problem. Finance teams say
 ### Canonical 5-Minute Demo
 
 **Setup (30 seconds)**
+
 ```bash
 git clone https://github.com/Hardonian/Settler.git
 cd Settler && pnpm install
@@ -169,9 +172,11 @@ cp .env.example .env
 ```
 
 **Step 1: Run the demo reconciliation (60 seconds)**
+
 ```bash
 pnpm demo
 ```
+
 Show: Settler ingests sample Stripe transactions and bank records, applies matching rules, and produces results.
 
 **Step 2: See the mismatch (60 seconds)**
@@ -181,15 +186,19 @@ Open `examples/demo-output/results.json`. Point to a mismatch: "This Stripe char
 Open `examples/demo-output/evidence.json`. Show: "Here's exactly what data went in, what rules ran, what matched, and what didn't. This is the evidence pack."
 
 **Step 4: Replay the run (60 seconds)**
+
 ```bash
 pnpm settler:replay examples/demo-output/evidence.json
 ```
+
 Show: "Same inputs, same rules, same results. The run is deterministic. This is what makes it auditable."
 
 **Step 5: Open the web console (60 seconds)**
+
 ```bash
 pnpm --filter @settler/web dev
 ```
+
 Open `http://localhost:3000`. Show: the mismatch in the exception queue, the evidence viewer, the run history.
 
 **Demo takeaway:** "In five minutes, you ran a reconciliation, found a mismatch, inspected the evidence, and proved the run is repeatable. That's what Settler does."
@@ -234,6 +243,7 @@ Open source is not a distribution strategy for Settler. It is a trust requiremen
 ## Phase 9: Developer Attraction Assessment
 
 ### Current Strengths
+
 - README is structured and scannable
 - Quickstart is under 6 commands
 - `pnpm demo` exists and produces inspectable output
@@ -372,18 +382,18 @@ See Phase 9. Key friction points: abstract tagline, database requirement for dem
 
 ### 12. Product clarity score
 
-| Dimension | Score (1-10) | Notes |
-|---|---|---|
-| Tagline clarity | 5/10 | "Control plane for provable financial truth" requires parsing |
-| Problem recognition | 6/10 | Pain narrative exists but is buried below the fold |
-| Solution clarity | 7/10 | "How it works" section is solid |
-| Demo accessibility | 5/10 | Requires database setup; no zero-config path |
-| Technical credibility | 8/10 | Evidence chain, replay, determinism are strong |
-| Visual communication | 3/10 | No screenshots, no GIFs, no visual previews |
-| Developer onboarding | 6/10 | Quickstart exists but has friction |
-| OSS positioning | 7/10 | Apache 2.0, self-host messaging is clear |
-| Enterprise clarity | 7/10 | OSS vs Enterprise boundary is documented |
-| Overall first impression | 6/10 | Serious but requires effort to understand |
+| Dimension                | Score (1-10) | Notes                                                         |
+| ------------------------ | ------------ | ------------------------------------------------------------- |
+| Tagline clarity          | 5/10         | "Control plane for provable financial truth" requires parsing |
+| Problem recognition      | 6/10         | Pain narrative exists but is buried below the fold            |
+| Solution clarity         | 7/10         | "How it works" section is solid                               |
+| Demo accessibility       | 5/10         | Requires database setup; no zero-config path                  |
+| Technical credibility    | 8/10         | Evidence chain, replay, determinism are strong                |
+| Visual communication     | 3/10         | No screenshots, no GIFs, no visual previews                   |
+| Developer onboarding     | 6/10         | Quickstart exists but has friction                            |
+| OSS positioning          | 7/10         | Apache 2.0, self-host messaging is clear                      |
+| Enterprise clarity       | 7/10         | OSS vs Enterprise boundary is documented                      |
+| Overall first impression | 6/10         | Serious but requires effort to understand                     |
 
 **Overall product clarity score: 6/10**
 

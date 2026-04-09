@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
 export interface ErrorDetails {
   [key: string]: unknown;
@@ -33,7 +33,7 @@ export function createErrorResponse(
 export function handleApiError(error: unknown): NextResponse<ApiErrorResponse> {
   console.error("API Error:", error);
   const message = error instanceof Error ? error.message : "Internal Server Error";
-  
+
   if (message.includes("Entity too large")) {
     return createErrorResponse("PAYLOAD_TOO_LARGE", "Request payload exceeds limit", 413);
   }
@@ -42,5 +42,5 @@ export function handleApiError(error: unknown): NextResponse<ApiErrorResponse> {
 }
 
 export function createSuccessResponse<T>(data: T, status = 200): NextResponse<T> {
-    return NextResponse.json(data, { status });
+  return NextResponse.json(data, { status });
 }

@@ -38,11 +38,7 @@ router.get("/rates", async (req: AuthRequest, res: Response) => {
         traceId: req.traceId,
       });
     }
-    const rate = await getExchangeRate(
-      fromCurrency as string,
-      toCurrency as string,
-      rateDate
-    );
+    const rate = await getExchangeRate(fromCurrency as string, toCurrency as string, rateDate);
 
     if (!rate) {
       return res.status(404).json({
@@ -138,8 +134,7 @@ router.post("/rates", async (req: AuthRequest, res: Response) => {
 router.post("/convert", async (req: AuthRequest, res: Response) => {
   try {
     const tenantId = req.tenantId!;
-    const { amount, fromCurrency, toCurrency, date, reconciliationRunId, transactionId } =
-      req.body;
+    const { amount, fromCurrency, toCurrency, date, reconciliationRunId, transactionId } = req.body;
 
     if (amount === undefined || amount === null || !fromCurrency || !toCurrency) {
       return res.status(400).json({

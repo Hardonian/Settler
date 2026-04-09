@@ -1,13 +1,12 @@
 /**
  * Pipeline Auto-Rewrite Engine
- * 
+ *
  * Recognizes outdated pipelines and rewrites them
  * Part 8: Self-Rewriting OS & Meta-Orchestration
  */
 
- 
-import { PrismaClient } from '@prisma/client';
-import { logInfo } from '../../utils/logger';
+import { PrismaClient } from "@prisma/client";
+import { logInfo } from "../../utils/logger";
 
 export interface PipelineRewrite {
   pipelineId: string;
@@ -15,11 +14,11 @@ export interface PipelineRewrite {
   targetVersion: string;
   changes: PipelineChange[];
   backwardCompatible: boolean;
-  risk: 'low' | 'medium' | 'high';
+  risk: "low" | "medium" | "high";
 }
 
 export interface PipelineChange {
-  type: 'node_upgrade' | 'logic_rewrite' | 'patch' | 'optimization';
+  type: "node_upgrade" | "logic_rewrite" | "patch" | "optimization";
   nodeId: string;
   description: string;
   oldLogic: Record<string, unknown>;
@@ -27,7 +26,7 @@ export interface PipelineChange {
 }
 
 interface OutdatedPattern {
-  type: 'outdated_node' | 'incompatible_node' | 'inefficient_logic';
+  type: "outdated_node" | "incompatible_node" | "inefficient_logic";
   nodeId: string;
   oldLogic: Record<string, unknown>;
   newLogic: Record<string, unknown>;
@@ -62,7 +61,7 @@ export class PipelineRewriter {
     // Find workflows with old versions
     const workflows = await this.prisma.workflowRun.findMany({
       take: 1000,
-      orderBy: { startedAt: 'desc' },
+      orderBy: { startedAt: "desc" },
     });
 
     // Group by workflow ID
@@ -95,7 +94,7 @@ export class PipelineRewriter {
   ): Promise<PipelineRewrite | null> {
     // Check for outdated patterns
     const outdatedPatterns = this.detectOutdatedPatterns(runs);
-    
+
     if (outdatedPatterns.length === 0) {
       return null;
     }
@@ -104,17 +103,17 @@ export class PipelineRewriter {
 
     // Upgrade outdated nodes
     for (const pattern of outdatedPatterns) {
-      if (pattern.type === 'outdated_node') {
+      if (pattern.type === "outdated_node") {
         changes.push({
-          type: 'node_upgrade',
+          type: "node_upgrade",
           nodeId: pattern.nodeId,
           description: `Upgrade ${pattern.nodeId} to latest version`,
           oldLogic: pattern.oldLogic,
           newLogic: pattern.newLogic,
         });
-      } else if (pattern.type === 'incompatible_node') {
+      } else if (pattern.type === "incompatible_node") {
         changes.push({
-          type: 'patch',
+          type: "patch",
           nodeId: pattern.nodeId,
           description: `Patch incompatible node ${pattern.nodeId}`,
           oldLogic: pattern.oldLogic,
@@ -125,11 +124,11 @@ export class PipelineRewriter {
 
     return {
       pipelineId: workflowId,
-      currentVersion: '1.0.0', // TODO: Get from workflow
-      targetVersion: '2.0.0',
+      currentVersion: "1.0.0", // TODO: Get from workflow
+      targetVersion: "2.0.0",
       changes,
       backwardCompatible: true,
-      risk: changes.length > 5 ? 'medium' : 'low',
+      risk: changes.length > 5 ? "medium" : "low",
     };
   }
 
@@ -141,12 +140,12 @@ export class PipelineRewriter {
 
     // Analyze step configurations
     for (const run of runs) {
-      const steps = (run.steps || []);
+      const steps = run.steps || [];
       for (const step of steps) {
         // Check for deprecated step types
         if (this.isDeprecatedStepType(step.type)) {
           patterns.push({
-            type: 'outdated_node',
+            type: "outdated_node",
             nodeId: step.id,
             oldLogic: step,
             newLogic: this.upgradeStep(step),
@@ -156,7 +155,7 @@ export class PipelineRewriter {
         // Check for incompatible configurations
         if (this.isIncompatibleConfig(step)) {
           patterns.push({
-            type: 'incompatible_node',
+            type: "incompatible_node",
             nodeId: step.id,
             oldLogic: step,
             newLogic: this.patchStep(step),
@@ -172,7 +171,7 @@ export class PipelineRewriter {
    * Check if step type is deprecated
    */
   private isDeprecatedStepType(type: string): boolean {
-    const deprecatedTypes = ['legacy_transform', 'old_validator'];
+    const deprecatedTypes = ["legacy_transform", "old_validator"];
     return deprecatedTypes.includes(type);
   }
 
@@ -182,14 +181,14 @@ export class PipelineRewriter {
   private upgradeStep(step: WorkflowStep): Record<string, unknown> {
     // Map old step types to new ones
     const typeMapping: Record<string, string> = {
-      'legacy_transform': 'transform',
-      'old_validator': 'validate',
+      legacy_transform: "transform",
+      old_validator: "validate",
     };
 
     return {
       ...step,
       type: typeMapping[step.type] || step.type,
-      version: '2.0.0',
+      version: "2.0.0",
     };
   }
 
@@ -198,7 +197,7 @@ export class PipelineRewriter {
    */
   private isIncompatibleConfig(step: WorkflowStep): boolean {
     // Check for incompatible config patterns
-    if (step.config && typeof step.config === 'object' && 'legacyFormat' in step.config) {
+    if (step.config && typeof step.config === "object" && "legacyFormat" in step.config) {
       return Boolean(step.config.legacyFormat);
     }
     return false;
@@ -224,6 +223,6 @@ export class PipelineRewriter {
   async applyRewrite(rewrite: PipelineRewrite): Promise<void> {
     // TODO: Implement actual rewrite logic
     // This would update the workflow definition in the database
-    logInfo('Pipeline rewrite applied', { pipelineId: rewrite.pipelineId });
+    logInfo("Pipeline rewrite applied", { pipelineId: rewrite.pipelineId });
   }
 }

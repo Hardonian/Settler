@@ -8,6 +8,7 @@
 ## Phase 0: Context Discovery
 
 ### Routing Architecture
+
 - **Framework**: Next.js 14 with App Router (`/packages/web/src/app/`)
 - **Routing Mode**: App Router (file-based routing)
 - **Layout**: Root layout at `src/app/layout.tsx` with tenant-aware theming
@@ -15,7 +16,9 @@
 - **Footer**: Server component at `src/components/Footer.tsx`
 
 ### Key Routes Identified
+
 From Navigation component:
+
 - `/` - Homepage
 - `/docs` - Documentation
 - `/cookbooks` - Cookbooks
@@ -29,11 +32,13 @@ From Navigation component:
 - `/playground` - Playground
 
 From Footer:
+
 - `/legal/terms` - Terms of Service
 - `/legal/privacy` - Privacy Policy
 - `/legal/license` - License
 
 ### Environment Variables Pattern
+
 - `NEXT_PUBLIC_SITE_URL` - Defaults to `https://settler.dev`
 - `NEXT_PUBLIC_APP_URL` - Defaults to `https://settler.dev`
 - `NEXT_PUBLIC_SUPABASE_URL` - Required for Supabase
@@ -48,74 +53,91 @@ From Footer:
 ## Phase 1: Live Site Crawl & UX/Content QA
 
 ### Navigation & Link Integrity
-*[To be filled during browser testing]*
+
+_[To be filled during browser testing]_
 
 ### Page Coverage
-*[To be filled during browser testing]*
+
+_[To be filled during browser testing]_
 
 ### Responsiveness & Layout
-*[To be filled during browser testing]*
+
+_[To be filled during browser testing]_
 
 ### Content Quality & Clarity
-*[To be filled during browser testing]*
+
+_[To be filled during browser testing]_
 
 ### Visual Polish & Professionalism
-*[To be filled during browser testing]*
+
+_[To be filled during browser testing]_
 
 ---
 
 ## Phase 2: Performance, SEO & Accessibility Snapshot
 
 ### Performance
-*[To be filled]*
+
+_[To be filled]_
 
 ### SEO
-*[To be filled]*
+
+_[To be filled]_
 
 ### Accessibility
-*[To be filled]*
+
+_[To be filled]_
 
 ---
 
 ## Phase 3: Repo Route & Component Audit
 
 ### Route Mapping
-*[To be filled]*
+
+_[To be filled]_
 
 ### Dead/Unused Code
-*[To be filled]*
+
+_[To be filled]_
 
 ### Design System & Consistency
-*[To be filled]*
+
+_[To be filled]_
 
 ---
 
 ## Phase 4: Env Vars, Services, and Missing Connections
 
 ### Environment Variables Audit
-*[To be filled]*
+
+_[To be filled]_
 
 ### Third-Party Services
-*[To be filled]*
+
+_[To be filled]_
 
 ---
 
 ## Phase 5: Prioritized Issue List
 
 ### Critical Issues
-*[To be filled]*
+
+_[To be filled]_
 
 ### High Priority Issues
-*[To be filled]*
+
+_[To be filled]_
 
 ### Medium Priority Issues
-*[To be filled]*
+
+_[To be filled]_
 
 ### Low Priority Issues
-*[To be filled]*
+
+_[To be filled]_
 
 ---
 
 ## Phase 6: Quick Fixes Applied
 
-*[To be filled]*
+_[To be filled]_

@@ -44,7 +44,13 @@ const IntegrationList: React.FC = () => {
             <div className="mb-4 flex items-start justify-between">
               <div className="flex items-center gap-3">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-background text-white shadow-sm">
-                  <svg fill="currentColor" height="24" viewBox="0 0 24 24" width="24" aria-hidden="true">
+                  <svg
+                    fill="currentColor"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    aria-hidden="true"
+                  >
                     <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.285 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
                   </svg>
                 </div>
@@ -52,7 +58,10 @@ const IntegrationList: React.FC = () => {
                   <h3 className="text-lg font-bold text-foreground">GitHub</h3>
                   <div className="mt-0.5 flex items-center gap-2">
                     <span className="inline-flex items-center gap-1 rounded-full border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-600">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
+                      <span
+                        className="h-1.5 w-1.5 rounded-full bg-emerald-500"
+                        aria-hidden="true"
+                      />
                       Healthy
                     </span>
                     <span className="text-xs font-medium text-muted-foreground">• Repo:Read</span>
@@ -139,7 +148,13 @@ const IntegrationList: React.FC = () => {
             <div className="mb-4 flex items-start justify-between">
               <div className="flex items-center gap-3">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#4A154B] text-white shadow-sm">
-                  <svg fill="currentColor" height="24" viewBox="0 0 24 24" width="24" aria-hidden="true">
+                  <svg
+                    fill="currentColor"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    aria-hidden="true"
+                  >
                     <path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.52v-6.315zm8.834-5.04a2.528 2.528 0 0 1 2.521-2.521A2.528 2.528 0 0 1 20.211 10.124a2.528 2.528 0 0 1-2.521 2.521h-2.522v-2.52zm-1.263 0a2.528 2.528 0 0 1-2.521 2.521 2.527 2.527 0 0 1-2.52-2.521V5.042a2.528 2.528 0 0 1 2.52-2.52 2.528 2.528 0 0 1 2.521 2.52v6.314zM8.834 3.79a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.52v2.523H8.834zM10.1 5.042a2.528 2.528 0 0 1 2.52-2.52 2.528 2.528 0 0 1 2.522 2.52v6.313A2.528 2.528 0 0 1 12.62 13.894a2.528 2.528 0 0 1-2.52-2.52V5.042z" />
                   </svg>
                 </div>
@@ -249,7 +264,13 @@ const IntegrationList: React.FC = () => {
         <div className="grid grid-cols-2 gap-4">
           <button className="group flex flex-col items-center justify-center rounded-xl border border-border bg-card p-6 text-center shadow-sm transition-all duration-200 hover:border-border hover:shadow-md">
             <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-600 transition-transform group-hover:scale-110">
-              <svg fill="currentColor" height="20" viewBox="0 0 24 24" width="20" aria-hidden="true">
+              <svg
+                fill="currentColor"
+                height="20"
+                viewBox="0 0 24 24"
+                width="20"
+                aria-hidden="true"
+              >
                 <path d="M11.53 2C6.454 1.96 2.073 5.923 2 11h9.53V2zM12.47 2v9h9.53C21.93 5.96 17.546 2.077 12.47 2zM2 13c.073 5.077 4.454 9.04 9.53 9V13H2zm19.47 0H12.47l.06 9C17.576 21.93 21.96 18.01 22 13z" />
               </svg>
             </div>

@@ -48,7 +48,9 @@ export const POST = withSecurity(
         return NextResponse.json({ error: "invalid_stored_patch" }, { status: 500 });
       }
 
-      const entitlements = await getOperatorCustomizationEntitlementsForTenant(resolved.tenant.tenantId);
+      const entitlements = await getOperatorCustomizationEntitlementsForTenant(
+        resolved.tenant.tenantId
+      );
 
       const before = await getCustomizationState(prisma, proposal.tenantId, userId);
       const applied = await applyPatchToDraft(
@@ -71,7 +73,10 @@ export const POST = withSecurity(
           );
         }
         if ("errors" in applied) {
-          return NextResponse.json({ error: "validation_failed", errors: applied.errors }, { status: 400 });
+          return NextResponse.json(
+            { error: "validation_failed", errors: applied.errors },
+            { status: 400 }
+          );
         }
         return NextResponse.json({ error: "apply_failed" }, { status: 500 });
       }
@@ -81,12 +86,19 @@ export const POST = withSecurity(
         data: { status: "applied", appliedAt: new Date() },
       });
 
-      await recordCustomizationAudit(prisma, proposal.tenantId, userId, "proposal_applied_to_draft", "admin_dashboard", {
-        proposalId: id,
-        patch: patchParse.data,
-        draftBefore: before.draft,
-        draftAfter: applied.draft,
-      });
+      await recordCustomizationAudit(
+        prisma,
+        proposal.tenantId,
+        userId,
+        "proposal_applied_to_draft",
+        "admin_dashboard",
+        {
+          proposalId: id,
+          patch: patchParse.data,
+          draftBefore: before.draft,
+          draftAfter: applied.draft,
+        }
+      );
 
       return NextResponse.json({ draft: applied.draft });
     });

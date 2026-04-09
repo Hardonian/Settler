@@ -140,7 +140,9 @@ const ArchitectureOverview: React.FC = () => {
           {/* Security Section */}
           <div className="px-5">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-foreground dark:text-white">Security Posture</h2>
+              <h2 className="text-xl font-bold text-foreground dark:text-white">
+                Security Posture
+              </h2>
               <a
                 className="text-xs font-medium text-primary hover:text-primary/80"
                 href="/security-and-audit"

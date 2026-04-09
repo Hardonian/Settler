@@ -40,16 +40,11 @@ export async function trackEvent(
     await query(
       `INSERT INTO events (user_id, tenant_id, event_name, properties, timestamp)
        VALUES ($1, $2, $3, $4, NOW())`,
-      [
-        userId,
-        finalTenantId || null,
-        eventName,
-        JSON.stringify(properties),
-      ]
+      [userId, finalTenantId || null, eventName, JSON.stringify(properties)]
     );
   } catch (error: unknown) {
     // Don't throw - event tracking should never break the main flow
-    logError('Failed to track event', error, {
+    logError("Failed to track event", error, {
       userId,
       eventName,
       properties,
@@ -105,10 +100,10 @@ export async function trackEvents(
 
     await query(
       `INSERT INTO events (user_id, tenant_id, event_name, properties, timestamp)
-       VALUES ${placeholders.join(', ')}`,
+       VALUES ${placeholders.join(", ")}`,
       values
     );
   } catch (error: unknown) {
-    logError('Failed to track events batch', error, { eventCount: events.length });
+    logError("Failed to track events batch", error, { eventCount: events.length });
   }
 }

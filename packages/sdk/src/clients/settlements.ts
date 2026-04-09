@@ -53,6 +53,9 @@ export class SettlementsClient {
   }
 
   async get(id: string): Promise<SettlementResponse> {
-    return this.client.request<SettlementResponse>("GET", `/api/v1/settlements/${encodeURIComponent(id)}`);
+    return this.client.request<SettlementResponse>(
+      "GET",
+      `/api/v1/settlements/${encodeURIComponent(id)}`
+    );
   }
 }

@@ -777,7 +777,8 @@ export default function RunsPage() {
                             variant={
                               run.compactProofSummary.operatorSummary.proofPosture === "weaker"
                                 ? "destructive"
-                                : run.compactProofSummary.operatorSummary.proofPosture === "stronger"
+                                : run.compactProofSummary.operatorSummary.proofPosture ===
+                                    "stronger"
                                   ? "success"
                                   : "outline"
                             }

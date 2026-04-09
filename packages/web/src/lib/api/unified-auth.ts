@@ -1,6 +1,6 @@
 /**
  * Unified Authentication Middleware - Optimized
- * 
+ *
  * Supports both session-based auth (Console UI) and API key auth (SDK/CLI)
  * Optimized with:
  * - Billing account caching
@@ -9,14 +9,14 @@
  * - Request deduplication
  */
 
-import { NextRequest } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { authenticateApiKey } from '@/shared/auth/apiKey';
-import { getBillingAccountOptimized } from '@/lib/db/query-optimizer';
-import { executeWithRetry } from '@/lib/db/connection-pool';
+import { NextRequest } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { authenticateApiKey } from "@/shared/auth/apiKey";
+import { getBillingAccountOptimized } from "@/lib/db/query-optimizer";
+import { executeWithRetry } from "@/lib/db/connection-pool";
 
 export interface UnifiedAuthContext {
-  type: 'session' | 'api_key';
+  type: "session" | "api_key";
   userId: string;
   billingAccountId?: string;
   tenantId?: string;
@@ -37,24 +37,25 @@ export async function authenticateRequest(
   request: NextRequest
 ): Promise<UnifiedAuthContext | null> {
   // Try API key first (for SDK/CLI)
-  const apiKeyHeader = request.headers.get('x-api-key');
-  const authHeader = request.headers.get('authorization');
-  const apiKey = apiKeyHeader || (authHeader?.startsWith('Bearer ') ? authHeader.replace('Bearer ', '') : null);
-  
-  if (apiKey && apiKey.startsWith('rk_')) {
+  const apiKeyHeader = request.headers.get("x-api-key");
+  const authHeader = request.headers.get("authorization");
+  const apiKey =
+    apiKeyHeader || (authHeader?.startsWith("Bearer ") ? authHeader.replace("Bearer ", "") : null);
+
+  if (apiKey && apiKey.startsWith("rk_")) {
     try {
       // Create a modified request with X-API-Key header for authenticateApiKey
       const modifiedRequest = new NextRequest(request.url, {
         headers: new Headers(request.headers),
       });
-      if (!modifiedRequest.headers.get('x-api-key')) {
-        modifiedRequest.headers.set('x-api-key', apiKey);
+      if (!modifiedRequest.headers.get("x-api-key")) {
+        modifiedRequest.headers.set("x-api-key", apiKey);
       }
-      
+
       const context = await executeWithRetry(() => authenticateApiKey(modifiedRequest));
       if (context) {
         return {
-          type: 'api_key',
+          type: "api_key",
           userId: context.userId,
           billingAccountId: context.billingAccountId,
           tenantId: context.tenantId,
@@ -72,8 +73,11 @@ export async function authenticateRequest(
   // Try session auth (for Console UI)
   try {
     const supabase = await createClient();
-    const { data: { user }, error } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+
     if (user && !error) {
       // Check cache first
       const cacheKey = `auth:${user.id}`;
@@ -88,7 +92,7 @@ export async function authenticateRequest(
       );
 
       const context: UnifiedAuthContext = {
-        type: 'session',
+        type: "session",
         userId: user.id,
         billingAccountId: billingAccount?.id,
         tenantId: billingAccount?.tenantId || undefined,
@@ -114,7 +118,7 @@ export async function authenticateRequest(
     }
   } catch (error) {
     // Session auth failed
-    console.error('[UnifiedAuth] Session auth error:', error);
+    console.error("[UnifiedAuth] Session auth error:", error);
   }
 
   return null;
@@ -124,13 +128,11 @@ export async function authenticateRequest(
  * Require authentication - throws if not authenticated
  * Optimized with connection pooling and error recovery
  */
-export async function requireAuth(
-  request: NextRequest
-): Promise<UnifiedAuthContext> {
+export async function requireAuth(request: NextRequest): Promise<UnifiedAuthContext> {
   const context = await authenticateRequest(request);
-  
+
   if (!context) {
-    throw new Error('Unauthorized: Authentication required');
+    throw new Error("Unauthorized: Authentication required");
   }
 
   return context;

@@ -17,6 +17,7 @@ Settler is reconciliation-as-a-service—a single API that normalizes, validates
 Modern businesses operate across 10+ platforms: Stripe for payments, Shopify for orders, QuickBooks for accounting, NetSuite for ERP. Each platform has its own data format, timing, and quirks. Finance teams spend 2-3 hours daily manually reconciling transactions.
 
 **The Challenge:** How do you build a reconciliation system that:
+
 - Works with any platform (not just Stripe or Shopify)
 - Handles millions of transactions
 - Provides 99%+ accuracy
@@ -31,12 +32,14 @@ Modern businesses operate across 10+ platforms: Stripe for payments, Shopify for
 **Decision:** Use adapter pattern for platform integrations
 
 **Why:**
+
 - Each platform (Stripe, Shopify, PayPal) has different APIs
 - Adapters normalize data to a canonical format
 - Easy to add new platforms (just add an adapter)
 - Composable (mix and match adapters)
 
 **Implementation:**
+
 ```typescript
 interface Adapter {
   fetchTransactions(config: AdapterConfig): Promise<Transaction[]>;
@@ -56,12 +59,14 @@ class StripeAdapter implements Adapter {
 **Decision:** Use event sourcing for reconciliation state
 
 **Why:**
+
 - Complete audit trail
 - Can replay events for debugging
 - Supports real-time reconciliation
 - Scales horizontally
 
 **Implementation:**
+
 - Events: `TransactionIngested`, `MatchFound`, `ExceptionCreated`
 - Event store: PostgreSQL with JSONB
 - Projections: Materialized views for fast queries
@@ -71,11 +76,13 @@ class StripeAdapter implements Adapter {
 **Decision:** Configurable matching rules with confidence scoring
 
 **Why:**
+
 - Different businesses need different matching logic
 - Confidence scores help prioritize exceptions
 - Rules can be updated without code changes
 
 **Implementation:**
+
 ```typescript
 interface MatchingRule {
   field: string;
@@ -93,12 +100,14 @@ function match(rule: MatchingRule, source: Transaction, target: Transaction): nu
 **Decision:** Build for serverless (Vercel, AWS Lambda)
 
 **Why:**
+
 - Automatic scaling
 - Pay only for what you use
 - No infrastructure management
 - Global edge deployment
 
 **Implementation:**
+
 - Express.js API (runs on Vercel Functions)
 - Stateless design
 - External database (Supabase/PostgreSQL)
@@ -109,6 +118,7 @@ function match(rule: MatchingRule, source: Transaction, target: Transaction): nu
 ## Technical Stack
 
 ### Backend
+
 - **Runtime:** Node.js 20+ (TypeScript)
 - **Framework:** Express.js
 - **Database:** PostgreSQL (Supabase)
@@ -117,11 +127,13 @@ function match(rule: MatchingRule, source: Transaction, target: Transaction): nu
 - **Observability:** OpenTelemetry, Sentry
 
 ### Frontend
+
 - **Framework:** Next.js 14
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS
 
 ### Infrastructure
+
 - **Hosting:** Vercel (API + Web UI)
 - **Database:** Supabase (PostgreSQL)
 - **Cache:** Upstash Redis
@@ -136,6 +148,7 @@ function match(rule: MatchingRule, source: Transaction, target: Transaction): nu
 **Problem:** Transactions in different currencies (EUR vs USD)
 
 **Solution:** FX conversion service with configurable rate sources
+
 - Fetch rates from ECB/OANDA
 - Convert to base currency
 - Track conversion rates for audit
@@ -145,6 +158,7 @@ function match(rule: MatchingRule, source: Transaction, target: Transaction): nu
 **Problem:** Match transactions as they arrive (not batch)
 
 **Solution:** Event-driven matching engine
+
 - Ingest transactions via webhooks
 - Match immediately using graph algorithm
 - Update state atomically
@@ -154,6 +168,7 @@ function match(rule: MatchingRule, source: Transaction, target: Transaction): nu
 **Problem:** Some transactions don't match (need human review)
 
 **Solution:** Exception queue with resolution workflow
+
 - Track unmatched transactions
 - Provide context (why didn't match)
 - Support bulk resolution
@@ -164,6 +179,7 @@ function match(rule: MatchingRule, source: Transaction, target: Transaction): nu
 **Problem:** Handle millions of transactions
 
 **Solution:** Horizontal scaling + optimization
+
 - Partition tables by month
 - Materialized views for reports
 - Indexed queries
@@ -213,8 +229,18 @@ const settler = new Settler({ apiKey: "sk_test_..." });
 
 const job = await settler.jobs.create({
   name: "Shopify-Stripe Reconciliation",
-  source: { adapter: "shopify", config: { /* ... */ } },
-  target: { adapter: "stripe", config: { /* ... */ } },
+  source: {
+    adapter: "shopify",
+    config: {
+      /* ... */
+    },
+  },
+  target: {
+    adapter: "stripe",
+    config: {
+      /* ... */
+    },
+  },
   rules: { matching: [{ field: "order_id", type: "exact" }] },
 });
 ```

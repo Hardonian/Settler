@@ -32,7 +32,9 @@ const ConnectionsTable: React.FC = () => {
             </div>
             <div>
               <h3 className="font-bold text-base text-foreground leading-tight">Stripe Payments</h3>
-              <p className="text-xs font-medium text-muted-foreground mt-0.5">Production Environment</p>
+              <p className="text-xs font-medium text-muted-foreground mt-0.5">
+                Production Environment
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200">

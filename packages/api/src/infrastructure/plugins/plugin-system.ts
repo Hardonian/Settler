@@ -14,8 +14,8 @@ export interface PluginMetadata {
   dependencies?: string[];
 }
 
-import type { Router } from 'express';
-import type { Express } from 'express';
+import type { Router } from "express";
+import type { Express } from "express";
 
 export interface Plugin {
   metadata: PluginMetadata;

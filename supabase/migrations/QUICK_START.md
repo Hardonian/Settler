@@ -36,27 +36,29 @@ psql $DATABASE_URL -f VERIFY.sql
 
 ## 📋 Files
 
-| File | Purpose |
-|------|---------|
+| File                | Purpose                  |
+| ------------------- | ------------------------ |
 | `INTROSPECTION.sql` | Capture current DB state |
-| `GAPS_REPORT.sql` | Identify what's missing |
-| `PATCH.sql` | Fix gaps (idempotent) |
-| `VERIFY.sql` | Prove it worked |
-| `ROLLBACK.sql` | Undo changes (if needed) |
-| `REALITY.md` | Full documentation |
+| `GAPS_REPORT.sql`   | Identify what's missing  |
+| `PATCH.sql`         | Fix gaps (idempotent)    |
+| `VERIFY.sql`        | Prove it worked          |
+| `ROLLBACK.sql`      | Undo changes (if needed) |
+| `REALITY.md`        | Full documentation       |
 
 ## 🔍 Quick Checks
 
 ### Check if RLS is enabled
+
 ```sql
-SELECT relname, relrowsecurity 
+SELECT relname, relrowsecurity
 FROM pg_class c
 JOIN pg_namespace n ON c.relnamespace = n.oid
-WHERE n.nspname = 'public' 
+WHERE n.nspname = 'public'
   AND relname IN ('tenants', 'billing_accounts');
 ```
 
 ### Check if policies exist
+
 ```sql
 SELECT tablename, policyname, cmd
 FROM pg_policies
@@ -65,6 +67,7 @@ WHERE schemaname = 'public'
 ```
 
 ### Check if functions exist
+
 ```sql
 SELECT proname, pg_get_function_identity_arguments(oid)
 FROM pg_proc p

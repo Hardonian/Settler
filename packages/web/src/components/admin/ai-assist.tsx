@@ -129,7 +129,9 @@ export function AIAssistCard({
           <div className="mt-2 space-y-2 ml-4">
             {recommendation.signals.map((signal, idx) => (
               <div key={idx} className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground dark:text-muted-foreground">{signal.name}:</span>
+                <span className="text-muted-foreground dark:text-muted-foreground">
+                  {signal.name}:
+                </span>
                 <div className="flex items-center gap-2">
                   <span className="font-mono text-foreground dark:text-white">{signal.value}</span>
                   <Badge variant="outline" className="text-xs">

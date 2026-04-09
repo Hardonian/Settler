@@ -1,20 +1,20 @@
 /**
  * Export API Routes
- * 
+ *
  * REST API endpoints for exporting reconciled data
  */
 
-import { Router, Response } from 'express';
-import { z } from 'zod';
-import { validateRequest } from '../../middleware/validation';
-import { AuthRequest } from '../../middleware/auth';
-import { requirePermission } from '../../middleware/authorization';
-import { Permission } from '../../infrastructure/security/Permissions';
-import { QuickBooksExporter } from '../../application/export/QuickBooksExporter';
-import { CSVExporter } from '../../application/export/CSVExporter';
-import { JSONExporter } from '../../application/export/JSONExporter';
-import { sendSuccess, sendError } from '../../utils/api-response';
-import { handleRouteError } from '../../utils/error-handler';
+import { Router, Response } from "express";
+import { z } from "zod";
+import { validateRequest } from "../../middleware/validation";
+import { AuthRequest } from "../../middleware/auth";
+import { requirePermission } from "../../middleware/authorization";
+import { Permission } from "../../infrastructure/security/Permissions";
+import { QuickBooksExporter } from "../../application/export/QuickBooksExporter";
+import { CSVExporter } from "../../application/export/CSVExporter";
+import { JSONExporter } from "../../application/export/JSONExporter";
+import { sendSuccess, sendError } from "../../utils/api-response";
+import { handleRouteError } from "../../utils/error-handler";
 
 const router: Router = Router();
 
@@ -22,18 +22,20 @@ const router: Router = Router();
 const exportSchema = z.object({
   body: z.object({
     jobId: z.string().uuid(),
-    format: z.enum(['quickbooks', 'csv', 'json']),
+    format: z.enum(["quickbooks", "csv", "json"]),
     dateRange: z.object({
       start: z.string().datetime(),
       end: z.string().datetime(),
     }),
-    options: z.object({
-      includeFees: z.boolean().optional().default(true),
-      includeUnmatched: z.boolean().optional().default(false),
-      includeRawPayloads: z.boolean().optional().default(false),
-      columns: z.array(z.string()).optional(), // For CSV
-      glAccountMapping: z.record(z.string()).optional(), // For QuickBooks
-    }).optional(),
+    options: z
+      .object({
+        includeFees: z.boolean().optional().default(true),
+        includeUnmatched: z.boolean().optional().default(false),
+        includeRawPayloads: z.boolean().optional().default(false),
+        columns: z.array(z.string()).optional(), // For CSV
+        glAccountMapping: z.record(z.string()).optional(), // For QuickBooks
+      })
+      .optional(),
   }),
 });
 
@@ -42,7 +44,7 @@ const exportSchema = z.object({
  * Create export
  */
 router.post(
-  '/',
+  "/",
   requirePermission(Permission.REPORTS_EXPORT),
   validateRequest(exportSchema),
   async (req: AuthRequest, res: Response) => {
@@ -53,7 +55,7 @@ router.post(
       let exportData: string | object;
 
       switch (format) {
-        case 'quickbooks': {
+        case "quickbooks": {
           const exporter = new QuickBooksExporter();
           exportData = await exporter.exportToCSV(tenantId, jobId, {
             dateRange: {
@@ -64,12 +66,15 @@ router.post(
             includeUnmatched: options.includeUnmatched ?? false,
             glAccountMapping: options.glAccountMapping,
           });
-          res.setHeader('Content-Type', 'text/csv');
-          res.setHeader('Content-Disposition', `attachment; filename="quickbooks-export-${Date.now()}.csv"`);
+          res.setHeader("Content-Type", "text/csv");
+          res.setHeader(
+            "Content-Disposition",
+            `attachment; filename="quickbooks-export-${Date.now()}.csv"`
+          );
           return res.send(exportData);
         }
 
-        case 'csv': {
+        case "csv": {
           const exporter = new CSVExporter();
           exportData = await exporter.exportToCSV(tenantId, jobId, {
             dateRange: {
@@ -80,12 +85,12 @@ router.post(
             includeFees: options.includeFees ?? true,
             includeUnmatched: options.includeUnmatched ?? false,
           });
-          res.setHeader('Content-Type', 'text/csv');
-          res.setHeader('Content-Disposition', `attachment; filename="export-${Date.now()}.csv"`);
+          res.setHeader("Content-Type", "text/csv");
+          res.setHeader("Content-Disposition", `attachment; filename="export-${Date.now()}.csv"`);
           return res.send(exportData);
         }
 
-        case 'json': {
+        case "json": {
           const exporter = new JSONExporter();
           exportData = await exporter.exportToJSON(tenantId, jobId, {
             dateRange: {
@@ -94,15 +99,15 @@ router.post(
             },
             includeRawPayloads: options.includeRawPayloads ?? false,
           } as any);
-          res.setHeader('Content-Type', 'application/json');
+          res.setHeader("Content-Type", "application/json");
           return sendSuccess(res, exportData);
         }
 
         default:
-          return sendError(res, 400, 'BAD_REQUEST', `Unsupported format: ${format}`);
+          return sendError(res, 400, "BAD_REQUEST", `Unsupported format: ${format}`);
       }
     } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to create export', 500);
+      handleRouteError(res, error, "Failed to create export", 500);
     }
   }
 );

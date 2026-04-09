@@ -160,9 +160,7 @@ export default function AdminRunsPage() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="text-center py-8 text-muted-foreground">
-              Loading runs...
-            </div>
+            <div className="text-center py-8 text-muted-foreground">Loading runs...</div>
           ) : filteredRuns.length === 0 ? (
             searchQuery || statusFilter !== "all" ? (
               <NoResultsEmptyState searchQuery={searchQuery} />

@@ -1,11 +1,11 @@
 /**
  * Schema Inspector Component
- * 
+ *
  * Visualizes and inspects data schemas
  * Part of Section 3: UI/UX Design System
  */
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 interface SchemaField {
   name: string;
@@ -43,7 +43,7 @@ export const SchemaInspector: React.FC<SchemaInspectorProps> = ({ schema, onFiel
           {schema.fields.map((field, index) => (
             <div
               key={index}
-              className={`schema-field ${selectedField?.name === field.name ? 'selected' : ''}`}
+              className={`schema-field ${selectedField?.name === field.name ? "selected" : ""}`}
               onClick={() => handleFieldClick(field)}
             >
               <div className="field-name">
@@ -51,9 +51,7 @@ export const SchemaInspector: React.FC<SchemaInspectorProps> = ({ schema, onFiel
                 {field.required && <span className="field-required">*</span>}
               </div>
               <div className="field-type">{field.type}</div>
-              {field.description && (
-                <div className="field-description">{field.description}</div>
-              )}
+              {field.description && <div className="field-description">{field.description}</div>}
             </div>
           ))}
         </div>
@@ -66,7 +64,7 @@ export const SchemaInspector: React.FC<SchemaInspectorProps> = ({ schema, onFiel
             </div>
             <div className="detail-item">
               <span className="detail-label">Required:</span>
-              <span className="detail-value">{selectedField.required ? 'Yes' : 'No'}</span>
+              <span className="detail-value">{selectedField.required ? "Yes" : "No"}</span>
             </div>
             {selectedField.description && (
               <div className="detail-item">

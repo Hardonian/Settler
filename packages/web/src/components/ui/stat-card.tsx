@@ -58,14 +58,13 @@ export function StatCard({
       <CardHeader className="pb-1 pt-5 px-5">
         <div className="flex items-center gap-1.5">
           {Icon && (
-            <Icon
-              className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0"
-              aria-hidden="true"
-            />
+            <Icon className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" aria-hidden="true" />
           )}
           <span className="label-muted">{label}</span>
         </div>
-        <div className={cn("text-3xl font-bold tracking-tight tabular-nums mt-1", toneClasses[tone])}>
+        <div
+          className={cn("text-3xl font-bold tracking-tight tabular-nums mt-1", toneClasses[tone])}
+        >
           {value}
         </div>
       </CardHeader>
@@ -79,7 +78,10 @@ export function StatCard({
             className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors group"
           >
             {linkLabel}
-            <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+            <ArrowRight
+              className="w-3 h-3 transition-transform group-hover:translate-x-0.5"
+              aria-hidden="true"
+            />
           </Link>
         )}
       </CardContent>

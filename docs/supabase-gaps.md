@@ -14,6 +14,7 @@ This document identifies gaps, inconsistencies, and missing pieces in the Supaba
 ## 1. Database & Migrations
 
 ### ✅ Strengths
+
 - **Comprehensive schema:** 20+ tables covering core reconciliation, CRM, financial ledger, ecosystem features
 - **Proper indexes:** Most tables have appropriate indexes for common queries
 - **Foreign keys:** Proper relationships with CASCADE deletes where appropriate
@@ -22,9 +23,11 @@ This document identifies gaps, inconsistencies, and missing pieces in the Supaba
 ### ⚠️ Issues Found
 
 #### 1.1 Missing RLS Policies on Some Tables
+
 **Status:** Most tables have RLS enabled, but policies may be incomplete
 
 **Tables with RLS enabled but policies need review:**
+
 - `webhook_configs` - No RLS policies found (may be intentional if system-level)
 - `revoked_tokens` - RLS enabled but no policies in migration (may use service role only)
 - `blocked_ips` - RLS enabled but no policies in migration (may use service role only)
@@ -33,9 +36,11 @@ This document identifies gaps, inconsistencies, and missing pieces in the Supaba
 **Recommendation:** Review these tables - if they're system-level (not tenant-scoped), document that. If tenant-scoped, add appropriate policies.
 
 #### 1.2 Potential N+1 Query Patterns
+
 **Status:** Need code review to confirm
 
 **Suspect areas:**
+
 - Reconciliation graph queries (nodes + edges)
 - Webhook delivery processing (webhooks + deliveries)
 - Report generation (jobs + executions + matches)
@@ -43,17 +48,19 @@ This document identifies gaps, inconsistencies, and missing pieces in the Supaba
 **Recommendation:** Add database views or use Supabase RPC functions to batch queries.
 
 #### 1.3 Missing Indexes
+
 **Status:** Most tables are well-indexed, but check:
 
 **Potential missing indexes:**
+
 ```sql
 -- Check if these queries are common:
 -- 1. Jobs filtered by status + tenant + created_at
-CREATE INDEX IF NOT EXISTS idx_jobs_tenant_status_created 
+CREATE INDEX IF NOT EXISTS idx_jobs_tenant_status_created
   ON jobs(tenant_id, status, created_at DESC);
 
 -- 2. Executions filtered by status + tenant
-CREATE INDEX IF NOT EXISTS idx_executions_tenant_status 
+CREATE INDEX IF NOT EXISTS idx_executions_tenant_status
   ON executions(tenant_id, status, created_at DESC);
 
 -- 3. Webhook deliveries pending retry (already exists, but verify)
@@ -65,16 +72,19 @@ CREATE INDEX IF NOT EXISTS idx_executions_tenant_status
 #### 1.4 Schema Consistency Issues
 
 **Issue:** `users` table has both:
+
 - `tenant_id` (references `tenants.id`)
 - But also references `auth.users` via Supabase Auth
 
 **Current pattern:** The `users` table appears to be a custom profile table, not the Supabase Auth users table.
 
 **Recommendation:** Document the relationship:
+
 - Supabase `auth.users` → `users` table (via `id` or `email`)
 - `users.tenant_id` → `tenants.id`
 
 **Action:** Ensure sign-up flow creates both:
+
 1. Supabase Auth user (`auth.users`)
 2. Profile record (`users` table with `tenant_id`)
 
@@ -83,6 +93,7 @@ CREATE INDEX IF NOT EXISTS idx_executions_tenant_status
 ## 2. Row-Level Security (RLS)
 
 ### ✅ Strengths
+
 - **RLS enabled** on all tenant-scoped tables
 - **Consistent pattern:** Using `current_tenant_id()` helper function
 - **Proper isolation:** Tenant data is properly isolated
@@ -90,9 +101,11 @@ CREATE INDEX IF NOT EXISTS idx_executions_tenant_status
 ### ⚠️ Issues Found
 
 #### 2.1 `current_tenant_id()` Function Dependency
+
 **Status:** Function exists but relies on JWT claims
 
 **Current implementation:**
+
 ```sql
 CREATE OR REPLACE FUNCTION current_tenant_id() RETURNS UUID AS $$
 DECLARE
@@ -112,6 +125,7 @@ $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
 **Issue:** Supabase Auth JWT may not include `tenant_id` by default.
 
 **Recommendation:**
+
 1. **Verify JWT claims:** Check if `tenant_id` is set in JWT during auth
 2. **Alternative:** Use `auth.uid()` to look up tenant from `users` table:
    ```sql
@@ -129,28 +143,34 @@ $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
    ```
 
 #### 2.2 RLS Policies Using `auth.uid()` vs `current_tenant_id()`
+
 **Status:** Mixed patterns found
 
 **Ecosystem schema** (profiles, posts, etc.) uses `auth.uid()`:
+
 ```sql
 CREATE POLICY profiles_select_own ON profiles
   FOR SELECT USING (auth.uid() = user_id);
 ```
 
 **Core schema** (jobs, executions, etc.) uses `current_tenant_id()`:
+
 ```sql
 CREATE POLICY tenant_isolation_jobs ON jobs
   FOR ALL USING (tenant_id = current_tenant_id());
 ```
 
 **Recommendation:** Standardize on one pattern:
+
 - **Use `current_tenant_id()`** for tenant-scoped tables (jobs, executions, etc.)
 - **Use `auth.uid()`** for user-owned tables (profiles, posts, etc.)
 
 #### 2.3 Missing Policies for Service Role Operations
+
 **Status:** Service role bypasses RLS automatically
 
 **Recommendation:** Document that service role operations should:
+
 1. Set `app.current_tenant_id` session variable when needed
 2. Or use direct queries with explicit tenant filtering
 
@@ -165,67 +185,76 @@ CREATE POLICY tenant_isolation_jobs ON jobs
 ### Recommended Edge Functions
 
 #### 3.1 Webhook Delivery Retry (`webhook-retry`)
+
 **Purpose:** Retry failed webhook deliveries with exponential backoff
 
 **Trigger:** Cron job (every 5 minutes) or webhook failure event
 
 **Implementation:**
+
 ```typescript
 // supabase/functions/webhook-retry/index.ts
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 serve(async (req) => {
   const supabase = createClient(
-    Deno.env.get('SUPABASE_URL') ?? '',
-    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-  )
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+  );
 
   // Query pending retries
   const { data: deliveries } = await supabase
-    .from('webhook_deliveries')
-    .select('*')
-    .eq('status', 'failed')
-    .lte('next_retry_at', new Date().toISOString())
-    .limit(100)
+    .from("webhook_deliveries")
+    .select("*")
+    .eq("status", "failed")
+    .lte("next_retry_at", new Date().toISOString())
+    .limit(100);
 
   // Process retries...
   // (See webhook-queue.ts for logic)
-})
+});
 ```
 
 #### 3.2 Data Retention Cleanup (`data-retention`)
+
 **Purpose:** Delete old data based on retention policies
 
 **Trigger:** Cron job (daily at 2 AM UTC)
 
 **Implementation:**
+
 ```typescript
 // Delete old audit logs, error logs, etc. based on DATA_RETENTION_DAYS
 ```
 
 #### 3.3 Email Sending (`send-email`)
+
 **Purpose:** Send transactional emails via Resend
 
 **Trigger:** Called from API routes or other edge functions
 
 **Implementation:**
+
 ```typescript
 // Use Resend API to send emails
 // Store email logs in Supabase
 ```
 
 #### 3.4 Cache Warming (`cache-warm`)
+
 **Purpose:** Pre-warm frequently accessed data
 
 **Trigger:** Cron job (hourly)
 
 **Implementation:**
+
 ```typescript
 // Query common KPI queries and cache results
 ```
 
 ### Setup Steps
+
 1. Create edge function: `supabase functions new webhook-retry`
 2. Deploy: `supabase functions deploy webhook-retry`
 3. Configure cron: Add to `supabase/config.toml` or Supabase Dashboard
@@ -241,11 +270,13 @@ serve(async (req) => {
 ### Recommended Buckets
 
 #### 4.1 `exports` Bucket
+
 **Purpose:** Store generated report exports (PDFs, CSVs)
 
 **Access:** Private (authenticated users only)
 
 **Policy:**
+
 ```sql
 -- Users can upload/download their own tenant's exports
 CREATE POLICY "Users can access their tenant's exports"
@@ -257,6 +288,7 @@ CREATE POLICY "Users can access their tenant's exports"
 ```
 
 #### 4.2 `uploads` Bucket
+
 **Purpose:** User-uploaded files (CSV imports, etc.)
 
 **Access:** Private
@@ -264,11 +296,13 @@ CREATE POLICY "Users can access their tenant's exports"
 **Policy:** Similar to exports bucket
 
 #### 4.3 `public-assets` Bucket
+
 **Purpose:** Public assets (logos, images)
 
 **Access:** Public read, authenticated write
 
 ### Setup Steps
+
 1. Create buckets in Supabase Dashboard → Storage
 2. Add RLS policies via migration
 3. Update code to use `supabase.storage.from('bucket-name')`
@@ -284,22 +318,27 @@ CREATE POLICY "Users can access their tenant's exports"
 ### Recommended Cron Jobs
 
 #### 5.1 Webhook Retry Processing
+
 **Schedule:** Every 5 minutes
 **Function:** `webhook-retry` edge function
 
 #### 5.2 Data Retention Cleanup
+
 **Schedule:** Daily at 2 AM UTC
 **Function:** `data-retention` edge function
 
 #### 5.3 Cache Warming
+
 **Schedule:** Hourly
 **Function:** `cache-warm` edge function
 
 #### 5.4 Email Digest
+
 **Schedule:** Daily at 9 AM UTC (user's timezone)
 **Function:** `send-email-digest` edge function
 
 ### Setup Steps
+
 1. Use Supabase Dashboard → Database → Cron Jobs
 2. Or configure in `supabase/config.toml`:
    ```toml
@@ -315,6 +354,7 @@ CREATE POLICY "Users can access their tenant's exports"
 ### ✅ Status: Partially Configured
 
 **Current state:**
+
 - `posts` table has realtime enabled
 - `notifications` table has realtime enabled
 - Other tables may need realtime for live updates
@@ -322,11 +362,13 @@ CREATE POLICY "Users can access their tenant's exports"
 ### Recommendations
 
 **Enable realtime for:**
+
 - `jobs` (status updates)
 - `executions` (progress updates)
 - `webhook_deliveries` (delivery status)
 
 **Add to migration:**
+
 ```sql
 ALTER PUBLICATION supabase_realtime ADD TABLE jobs;
 ALTER PUBLICATION supabase_realtime ADD TABLE executions;
@@ -340,6 +382,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE webhook_deliveries;
 ### ✅ Status: Some Functions Exist
 
 **Existing functions:**
+
 - `current_tenant_id()` - Tenant context helper
 - `get_kpi_health_status()` - KPI query function
 - `log_error()` - Error logging helper
@@ -348,6 +391,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE webhook_deliveries;
 ### Recommended Additional Functions
 
 #### 7.1 Batch Reconciliation Query
+
 **Purpose:** Avoid N+1 queries when fetching reconciliation data
 
 ```sql
@@ -361,7 +405,7 @@ RETURNS TABLE (
 ) AS $$
 BEGIN
   RETURN QUERY
-  SELECT 
+  SELECT
     j.id,
     COUNT(DISTINCT e.id) as execution_count,
     COUNT(DISTINCT m.id) as match_count,
@@ -378,6 +422,7 @@ $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
 ```
 
 #### 7.2 Tenant Usage Aggregation
+
 **Purpose:** Efficiently query tenant usage metrics
 
 ```sql
@@ -389,7 +434,7 @@ RETURNS TABLE (
 ) AS $$
 BEGIN
   RETURN QUERY
-  SELECT 
+  SELECT
     COUNT(DISTINCT j.id) as job_count,
     COUNT(DISTINCT e.id) as execution_count,
     COUNT(DISTINCT a.id) as api_call_count
@@ -409,9 +454,11 @@ $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
 ### ⚠️ Issues Found
 
 #### 8.1 Migration Order
+
 **Status:** Migrations are timestamped but order may matter
 
 **Current migrations:**
+
 1. `20251128193735_initial_schema.sql` - Core tables
 2. `20251128193816_functions_and_triggers.sql` - Functions
 3. `20251128193816_reconciliation_graph_tables.sql` - Graph tables
@@ -427,9 +474,11 @@ $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
 **Recommendation:** Ensure migrations can run independently (no dependencies on previous migrations' data).
 
 #### 8.2 Rollback Strategy
+
 **Status:** `rollback_template.sql` exists but no actual rollback migrations
 
 **Recommendation:** For production, consider:
+
 1. Creating rollback migrations for each forward migration
 2. Or document manual rollback steps
 
@@ -438,19 +487,23 @@ $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
 ## 9. Performance Considerations
 
 ### Indexes
+
 **Status:** Most tables are well-indexed
 
 **Recommendation:** Monitor slow queries in production and add indexes as needed.
 
 ### Connection Pooling
+
 **Status:** Supabase connection pooling is enabled in config
 
 **Recommendation:** Monitor connection pool usage and adjust `default_pool_size` if needed.
 
 ### Query Optimization
+
 **Status:** Need production profiling
 
 **Recommendation:**
+
 1. Enable query logging in Supabase Dashboard
 2. Use `EXPLAIN ANALYZE` on slow queries
 3. Consider materialized views for expensive aggregations
@@ -460,17 +513,20 @@ $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
 ## 10. Action Items Summary
 
 ### High Priority
+
 1. ✅ **Verify `current_tenant_id()` function** - Ensure it works with Supabase Auth
 2. ✅ **Add missing RLS policies** - Review `webhook_configs`, `revoked_tokens`, etc.
 3. ✅ **Implement edge functions** - Start with `webhook-retry`
 4. ✅ **Configure storage buckets** - At least `exports` bucket
 
 ### Medium Priority
+
 1. ✅ **Add cron jobs** - Webhook retry, data retention
 2. ✅ **Enable realtime** - For `jobs`, `executions`, `webhook_deliveries`
 3. ✅ **Add RPC functions** - Batch queries to avoid N+1
 
 ### Low Priority
+
 1. ✅ **Performance tuning** - Add indexes based on production queries
 2. ✅ **Migration rollback** - Create rollback migrations
 
@@ -479,16 +535,19 @@ $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
 ## 11. Testing Recommendations
 
 ### RLS Testing
+
 - Test that users can only access their tenant's data
 - Test that service role bypasses RLS correctly
 - Test that `current_tenant_id()` works in all contexts
 
 ### Migration Testing
+
 - Test migrations on a copy of production data
 - Test rollback procedures
 - Test migration order independence
 
 ### Edge Function Testing
+
 - Test edge functions locally with `supabase functions serve`
 - Test cron job triggers
 - Test error handling and retries

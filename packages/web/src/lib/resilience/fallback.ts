@@ -1,6 +1,6 @@
 /**
  * Fallback Utility
- * 
+ *
  * Provides fallback mechanisms for failed operations,
  * allowing graceful degradation.
  */
@@ -13,21 +13,18 @@ export interface FallbackConfig<T> {
 /**
  * Execute function with fallback
  */
-export async function withFallback<T>(
-  fn: () => Promise<T>,
-  config: FallbackConfig<T>
-): Promise<T> {
+export async function withFallback<T>(fn: () => Promise<T>, config: FallbackConfig<T>): Promise<T> {
   try {
     return await fn();
   } catch (error) {
     if (config.onFallback) {
       config.onFallback(error);
     }
-    
-    if (typeof config.fallback === 'function') {
+
+    if (typeof config.fallback === "function") {
       return await (config.fallback as () => T | Promise<T>)();
     }
-    
+
     return config.fallback;
   }
 }
@@ -40,10 +37,7 @@ export function fallback<T extends (...args: unknown[]) => Promise<unknown>>(
 ): (fn: T) => T {
   return (fn: T) => {
     return (async (...args: Parameters<T>) => {
-      return withFallback(
-        () => fn(...args) as Promise<ReturnType<T>>,
-        config
-      );
+      return withFallback(() => fn(...args) as Promise<ReturnType<T>>, config);
     }) as T;
   };
 }
@@ -56,7 +50,7 @@ export async function raceToSuccess<T>(
   onError?: (error: unknown, index: number) => void
 ): Promise<T> {
   const errors: Array<{ error: unknown; index: number }> = [];
-  
+
   for (let i = 0; i < functions.length; i++) {
     const fn = functions[i];
     if (!fn) {
@@ -71,7 +65,7 @@ export async function raceToSuccess<T>(
       }
     }
   }
-  
+
   // All functions failed
   throw new Error(
     `All ${functions.length} functions failed. Last error: ${errors[errors.length - 1]?.error}`

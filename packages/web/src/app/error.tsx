@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { AlertCircle } from 'lucide-react';
-import Link from 'next/link';
+import { useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { AlertCircle } from "lucide-react";
+import Link from "next/link";
 
 /**
  * Global Error Boundary
@@ -20,13 +20,13 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    if (process.env.NODE_ENV === 'production') {
-      console.error('Global error:', {
+    if (process.env.NODE_ENV === "production") {
+      console.error("Global error:", {
         message: error.message,
         digest: error.digest,
       });
     } else {
-      console.error('Global error:', error);
+      console.error("Global error:", error);
     }
   }, [error]);
 

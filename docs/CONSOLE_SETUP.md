@@ -5,6 +5,7 @@ Complete guide for setting up and using the Settler Developer Console.
 ## Overview
 
 The Developer Console provides a web-based interface for managing your Settler resources:
+
 - API Key Management
 - Usage Analytics
 - Receipt Browser
@@ -30,6 +31,7 @@ The Developer Console provides a web-based interface for managing your Settler r
 ## Authentication
 
 Console uses **Supabase session authentication**:
+
 - Users sign up/login via Supabase Auth
 - Session cookies authenticate requests
 - No API key needed for Console UI access
@@ -39,12 +41,14 @@ Console uses **Supabase session authentication**:
 ### API Key Management
 
 **Create API Keys:**
+
 1. Navigate to `/console/api-keys`
 2. Click "Create API Key"
 3. Enter name and scopes
 4. **Save the key immediately** - shown only once!
 
 **Use API Keys:**
+
 - SDK: `new Settler({ apiKey: 'rk_...' })`
 - CLI: `export SETTLER_API_KEY=rk_...`
 - API: `X-API-Key: rk_...` header
@@ -52,6 +56,7 @@ Console uses **Supabase session authentication**:
 ### Usage Analytics
 
 View API usage statistics:
+
 - Total API calls
 - Usage by service
 - Usage by operation
@@ -61,6 +66,7 @@ View API usage statistics:
 ### Receipt Browser
 
 Browse parsed receipts:
+
 - View receipt details
 - See parsed items
 - Check confidence scores
@@ -69,6 +75,7 @@ Browse parsed receipts:
 ### Feature Flags
 
 Manage feature flags:
+
 - List all flags
 - Toggle flags per environment
 - View flag configurations
@@ -77,6 +84,7 @@ Manage feature flags:
 ### Live Activity Feed
 
 Real-time activity monitoring:
+
 - Recent Console operations
 - Activity types (reconcile, receipt, flag, etc.)
 - Status indicators
@@ -87,9 +95,9 @@ Real-time activity monitoring:
 ### Using SDK
 
 ```typescript
-import Settler from '@settler/sdk';
+import Settler from "@settler/sdk";
 
-const client = new Settler({ apiKey: 'rk_...' });
+const client = new Settler({ apiKey: "rk_..." });
 
 // List API keys
 const keys = await client.console.listApiKeys();
@@ -137,18 +145,20 @@ curl -H "X-API-Key: rk_..." "https://api.settler.io/api/console/usage?days=7"
 ### Optional
 
 - `SUPABASE_SERVICE_ROLE_KEY` - For admin operations
-- `SUPABASE_URL` - Alternative to NEXT_PUBLIC_ prefix
-- `SUPABASE_ANON_KEY` - Alternative to NEXT_PUBLIC_ prefix
+- `SUPABASE_URL` - Alternative to NEXT*PUBLIC* prefix
+- `SUPABASE_ANON_KEY` - Alternative to NEXT*PUBLIC* prefix
 
 ## Database Migrations
 
 Console requires these migrations:
+
 - `20260125000000_console_rls_fixes.sql` - RLS policy fixes
 - `20260125000001_console_activity_logging.sql` - Activity logging
 
 **Automatic**: Migrations run on PR push/merge.
 
 **Manual**:
+
 ```bash
 supabase db push
 ```

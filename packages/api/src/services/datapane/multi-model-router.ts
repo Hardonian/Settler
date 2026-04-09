@@ -1,12 +1,12 @@
 /**
  * Multi-Model Router (MMR)
- * 
+ *
  * Routing for multiple LLM models with fallback, budget control, latency optimization
  * Part 10: Next-Gen Data Plane & Processing Layers
  */
 
-import { logWarn } from '../../utils/logger';
-import { AIRouter, AIModel } from '../ai-mesh/ai-router';
+import { logWarn } from "../../utils/logger";
+import { AIRouter, AIModel } from "../ai-mesh/ai-router";
 
 export interface MMRConfig {
   primaryModel: AIModel;
@@ -38,7 +38,7 @@ export class MultiModelRouter {
    */
   async route(
     request: Record<string, unknown>,
-    _complexity: 'low' | 'medium' | 'high'
+    _complexity: "low" | "medium" | "high"
   ): Promise<MMRDecision> {
     // Start with primary model
     let selectedModel = this.config.primaryModel;
@@ -115,7 +115,7 @@ export class MultiModelRouter {
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         lastError = error instanceof Error ? error : new Error(errorMessage);
-        logWarn('Model execution failed, trying fallback', {
+        logWarn("Model execution failed, trying fallback", {
           model,
           error: errorMessage,
           attempt: i + 1,
@@ -123,7 +123,7 @@ export class MultiModelRouter {
       }
     }
 
-    throw new Error(`All models failed. Last error: ${lastError?.message ?? 'Unknown error'}`);
+    throw new Error(`All models failed. Last error: ${lastError?.message ?? "Unknown error"}`);
   }
 
   /**
@@ -171,11 +171,7 @@ export class MultiModelRouter {
   /**
    * Generate reasoning
    */
-  private generateReasoning(
-    model: AIModel,
-    cost: number,
-    latency: number
-  ): string {
+  private generateReasoning(model: AIModel, cost: number, latency: number): string {
     const reasons: string[] = [];
 
     if (this.config.budgetLimit && cost <= this.config.budgetLimit) {
@@ -188,6 +184,6 @@ export class MultiModelRouter {
 
     reasons.push(`Selected ${model} for optimal performance`);
 
-    return reasons.join('. ');
+    return reasons.join(". ");
   }
 }

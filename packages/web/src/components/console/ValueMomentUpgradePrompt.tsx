@@ -82,12 +82,9 @@ export function ValueMomentUpgradePrompt() {
     if (activeMoment) {
       setDismissed(new Set([...dismissed, activeMoment.id]));
       setActiveMoment(null);
-      
+
       // Persist dismissal
-      localStorage.setItem(
-        `dismissed_value_moment_${activeMoment.id}`,
-        Date.now().toString()
-      );
+      localStorage.setItem(`dismissed_value_moment_${activeMoment.id}`, Date.now().toString());
     }
   };
 
@@ -104,9 +101,7 @@ export function ValueMomentUpgradePrompt() {
               <Sparkles className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             </div>
             <div className="flex-1">
-              <CardTitle className="text-lg text-foreground">
-                {activeMoment.title}
-              </CardTitle>
+              <CardTitle className="text-lg text-foreground">{activeMoment.title}</CardTitle>
               <CardDescription className="mt-2 text-muted-foreground">
                 {activeMoment.description}
               </CardDescription>

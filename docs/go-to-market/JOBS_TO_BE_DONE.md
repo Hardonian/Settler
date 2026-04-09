@@ -60,10 +60,13 @@
 ## Supporting Jobs
 
 ### Job 6: Route mismatches to the right reviewer
+
 Mismatches should be prioritized by risk and assigned to the appropriate team member, not dumped in a shared inbox.
 
 ### Job 7: Track exception resolution end-to-end
+
 From detection through resolution, every mismatch should have an auditable history of who reviewed it, what they decided, and why.
 
 ### Job 8: Integrate reconciliation into existing workflows
+
 Reconciliation runs should be triggerable via API/SDK and embeddable in CI/CD pipelines, not require a separate manual process.

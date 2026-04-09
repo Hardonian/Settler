@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { useEffect, useState } from "react";
+import Link from "next/link";
 
 type VarianceItem = {
   id: string;
@@ -17,7 +17,7 @@ export default function ViewVariancesPage() {
   const [variances, setVariances] = useState<VarianceItem[]>([]);
 
   useEffect(() => {
-    const stored = sessionStorage.getItem('settler-engine-variances');
+    const stored = sessionStorage.getItem("settler-engine-variances");
     if (stored) {
       setVariances(JSON.parse(stored));
     }
@@ -28,7 +28,8 @@ export default function ViewVariancesPage() {
       <div className="space-y-3">
         <h1 className="text-3xl font-semibold">View Variances</h1>
         <p className="text-white/70">
-          Variances are loaded from your last import session. If nothing appears, re-import a results bundle.
+          Variances are loaded from your last import session. If nothing appears, re-import a
+          results bundle.
         </p>
         <Link href="/engine/import-results" className="text-sm text-blue-200 underline">
           ← Back to Import Results

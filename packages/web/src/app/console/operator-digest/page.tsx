@@ -26,8 +26,8 @@ export default async function OperatorDigestPage() {
         <h1 className="text-3xl font-semibold tracking-tight">Operator digest</h1>
         <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
           This page only surfaces issues backed by database or Supabase rows we could read. It does
-          not claim fleet health, synthetic uptime, or revenue truth beyond explicit plan limits from
-          the commercial spine.
+          not claim fleet health, synthetic uptime, or revenue truth beyond explicit plan limits
+          from the commercial spine.
         </p>
         <p className="mt-2 text-xs text-muted-foreground/70">
           Generated {new Date(digest.generatedAt).toLocaleString()}
@@ -54,10 +54,15 @@ export default async function OperatorDigestPage() {
               {digest.billing.reconciliationLimit ?? "custom / not applicable"}
             </p>
             <p>
-              <span className="text-muted-foreground">Approx. included exceptions (at full volume):</span>{" "}
+              <span className="text-muted-foreground">
+                Approx. included exceptions (at full volume):
+              </span>{" "}
               {digest.billing.exceptionIncludedApprox ?? "n/a"}
             </p>
-            <Link href="/pricing" className="text-xs text-primary hover:underline inline-block mt-2">
+            <Link
+              href="/pricing"
+              className="text-xs text-primary hover:underline inline-block mt-2"
+            >
               Public pricing
             </Link>
           </CardContent>

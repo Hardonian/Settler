@@ -1,9 +1,9 @@
 /**
  * Proprietary ML Matching Engine
- * 
+ *
  * Trains ML models on historical reconciliation matches to improve accuracy
  * beyond deterministic algorithms. This creates a proprietary data moat.
- * 
+ *
  * PHASE: Data Moat Reinforcement
  */
 
@@ -31,7 +31,7 @@ export interface MLMatchPrediction {
 
 /**
  * ML Matching Engine
- * 
+ *
  * Uses historical match data to train models that improve matching accuracy.
  * Models are trained per tenant and aggregated across tenants (with opt-in).
  */
@@ -110,7 +110,8 @@ export class MLMatchingEngine {
           target.description
         );
         const currencyMatch = source.currency === target.currency;
-        const externalIdMatch = source.external_id === target.external_id && source.external_id !== null;
+        const externalIdMatch =
+          source.external_id === target.external_id && source.external_id !== null;
 
         return {
           target,
@@ -205,7 +206,10 @@ export class MLMatchingEngine {
     }
 
     // Amount match (inverse of difference)
-    const amountScore = Math.max(0, 1 - features.amountDiff / Math.max(features.amountDiff + 0.01, 1));
+    const amountScore = Math.max(
+      0,
+      1 - features.amountDiff / Math.max(features.amountDiff + 0.01, 1)
+    );
     score += weights.amountWeight * amountScore;
 
     // Date match (inverse of difference, normalized to 7 days)
@@ -312,7 +316,9 @@ export class MLMatchingEngine {
           dateDiff: Math.abs(match.date_diff || 0),
           descriptionSimilarity,
           currencyMatch: match.source_currency === match.target_currency,
-          externalIdMatch: match.source_external_id === match.target_external_id && match.source_external_id !== null,
+          externalIdMatch:
+            match.source_external_id === match.target_external_id &&
+            match.source_external_id !== null,
           sourceAdapter: match.source_adapter || "unknown",
           targetAdapter: match.target_adapter || "unknown",
           historicalMatchRate: 0, // Will be populated from cross-customer intelligence
@@ -345,8 +351,9 @@ export class MLMatchingEngine {
     try {
       // Query cross-customer intelligence for historical match rates
       // This aggregates anonymized patterns across all customers
-      const { crossCustomerIntelligence } = await import("../network-effects/cross-customer-intelligence");
-      
+      const { crossCustomerIntelligence } =
+        await import("../network-effects/cross-customer-intelligence");
+
       const pattern = crossCustomerIntelligence.checkPattern({
         type: "performance",
         data: {
@@ -377,7 +384,7 @@ export class MLMatchingEngine {
       );
 
       const totalMatches = (tenantMatches[0] as { total_matches: number })?.total_matches || 0;
-      
+
       // Get total reconciliation attempts
       const totalAttempts = await query(
         `SELECT COUNT(*) as total_attempts
@@ -393,7 +400,7 @@ export class MLMatchingEngine {
       );
 
       const attempts = (totalAttempts[0] as { total_attempts: number })?.total_attempts || 1;
-      
+
       return totalMatches / attempts;
     } catch (error) {
       logError("Failed to get historical match rate", error);
@@ -404,10 +411,7 @@ export class MLMatchingEngine {
   /**
    * Calculate description similarity
    */
-  private calculateDescriptionSimilarity(
-    desc1: string | null,
-    desc2: string | null
-  ): number {
+  private calculateDescriptionSimilarity(desc1: string | null, desc2: string | null): number {
     if (!desc1 || !desc2) {
       return 0.5; // Default similarity if no description
     }
@@ -428,7 +432,6 @@ export class MLMatchingEngine {
     const distance = levenshteinDistance(normalized1, normalized2);
     return 1 - distance / maxLen;
   }
-
 }
 
 export const mlMatchingEngine = new MLMatchingEngine();

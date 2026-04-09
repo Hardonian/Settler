@@ -1,6 +1,6 @@
 /**
  * Ops Intelligence Utilities
- * 
+ *
  * Helper functions for the Ops Intelligence system
  */
 
@@ -12,40 +12,40 @@ import {
   ACTION_TYPES,
   MAX_PAGE_SIZE,
   DEFAULT_PAGE_SIZE,
-} from './constants';
+} from "./constants";
 
 /**
  * Validate insight type
  */
-export function isValidInsightType(type: string): type is typeof INSIGHT_TYPES[number] {
+export function isValidInsightType(type: string): type is (typeof INSIGHT_TYPES)[number] {
   return INSIGHT_TYPES.includes(type as any);
 }
 
 /**
  * Validate insight severity
  */
-export function isValidSeverity(severity: string): severity is typeof INSIGHT_SEVERITIES[number] {
+export function isValidSeverity(severity: string): severity is (typeof INSIGHT_SEVERITIES)[number] {
   return INSIGHT_SEVERITIES.includes(severity as any);
 }
 
 /**
  * Validate insight status
  */
-export function isValidStatus(status: string): status is typeof INSIGHT_STATUSES[number] {
+export function isValidStatus(status: string): status is (typeof INSIGHT_STATUSES)[number] {
   return INSIGHT_STATUSES.includes(status as any);
 }
 
 /**
  * Validate risk level
  */
-export function isValidRiskLevel(riskLevel: string): riskLevel is typeof RISK_LEVELS[number] {
+export function isValidRiskLevel(riskLevel: string): riskLevel is (typeof RISK_LEVELS)[number] {
   return RISK_LEVELS.includes(riskLevel as any);
 }
 
 /**
  * Validate action type
  */
-export function isValidActionType(actionType: string): actionType is typeof ACTION_TYPES[number] {
+export function isValidActionType(actionType: string): actionType is (typeof ACTION_TYPES)[number] {
   return ACTION_TYPES.includes(actionType as any);
 }
 
@@ -53,9 +53,9 @@ export function isValidActionType(actionType: string): actionType is typeof ACTI
  * Sanitize string input (prevent XSS)
  */
 export function sanitizeString(input: string): string {
-  if (typeof input !== 'string') return '';
+  if (typeof input !== "string") return "";
   return input
-    .replace(/[<>]/g, '') // Remove angle brackets
+    .replace(/[<>]/g, "") // Remove angle brackets
     .trim()
     .slice(0, 1000); // Limit length
 }
@@ -90,14 +90,14 @@ export function formatConfidence(confidence: number): string {
  */
 export function getSeverityColorClass(severity: string): string {
   switch (severity) {
-    case 'critical':
-      return 'text-red-500';
-    case 'warn':
-      return 'text-yellow-500';
-    case 'info':
-      return 'text-blue-500';
+    case "critical":
+      return "text-red-500";
+    case "warn":
+      return "text-yellow-500";
+    case "info":
+      return "text-blue-500";
     default:
-      return 'text-gray-500';
+      return "text-gray-500";
   }
 }
 
@@ -106,14 +106,14 @@ export function getSeverityColorClass(severity: string): string {
  */
 export function getRiskLevelColorClass(riskLevel: string): string {
   switch (riskLevel) {
-    case 'high':
-      return 'bg-red-100 text-red-700';
-    case 'med':
-      return 'bg-yellow-100 text-yellow-700';
-    case 'low':
-      return 'bg-green-100 text-green-700';
+    case "high":
+      return "bg-red-100 text-red-700";
+    case "med":
+      return "bg-yellow-100 text-yellow-700";
+    case "low":
+      return "bg-green-100 text-green-700";
     default:
-      return 'bg-gray-100 text-gray-700';
+      return "bg-gray-100 text-gray-700";
   }
 }
 
@@ -155,7 +155,7 @@ export async function retryWithBackoff<T>(
       }
     }
   }
-  throw lastError || new Error('Retry failed');
+  throw lastError || new Error("Retry failed");
 }
 
 /**

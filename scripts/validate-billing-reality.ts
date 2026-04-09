@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * PHASE 1: MONEY REALITY VALIDATION
- * 
+ *
  * Validates end-to-end Stripe billing functionality:
  * - Creates test product and price
  * - Simulates successful payment
@@ -13,12 +13,12 @@
  * - Logs all billing state changes
  */
 
-import Stripe from 'stripe';
-import { supabase } from '../packages/api/src/infrastructure/supabase/client';
-import { logInfo, logError } from '../packages/api/src/utils/logger';
+import Stripe from "stripe";
+import { supabase } from "../packages/api/src/infrastructure/supabase/client";
+import { logInfo, logError } from "../packages/api/src/utils/logger";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2023-10-16',
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+  apiVersion: "2023-10-16",
 });
 
 interface ValidationResult {
@@ -46,13 +46,13 @@ function recordResult(test: string, passed: boolean, evidence: string, error?: s
  */
 async function testCreateProductAndPrice(): Promise<void> {
   try {
-    logInfo('[Billing Validation] Creating test product...');
-    
+    logInfo("[Billing Validation] Creating test product...");
+
     const product = await stripe.products.create({
-      name: 'Settler Test Product - Reality Validation',
-      description: 'Test product for SaaS reality validation',
+      name: "Settler Test Product - Reality Validation",
+      description: "Test product for SaaS reality validation",
       metadata: {
-        test: 'true',
+        test: "true",
         validation_run: new Date().toISOString(),
       },
     });
@@ -60,18 +60,18 @@ async function testCreateProductAndPrice(): Promise<void> {
     const price = await stripe.prices.create({
       product: product.id,
       unit_amount: 1000, // $10.00
-      currency: 'usd',
+      currency: "usd",
       recurring: {
-        interval: 'month',
+        interval: "month",
       },
       metadata: {
-        test: 'true',
+        test: "true",
         validation_run: new Date().toISOString(),
       },
     });
 
     recordResult(
-      'Create Test Product and Price',
+      "Create Test Product and Price",
       true,
       `Product ID: ${product.id}, Price ID: ${price.id}, Amount: $10.00/month`
     );
@@ -81,9 +81,9 @@ async function testCreateProductAndPrice(): Promise<void> {
     (global as any).TEST_PRICE_ID = price.id;
   } catch (error) {
     recordResult(
-      'Create Test Product and Price',
+      "Create Test Product and Price",
       false,
-      'Failed to create product/price',
+      "Failed to create product/price",
       error instanceof Error ? error.message : String(error)
     );
   }
@@ -94,38 +94,38 @@ async function testCreateProductAndPrice(): Promise<void> {
  */
 async function testSuccessfulPayment(): Promise<void> {
   try {
-    logInfo('[Billing Validation] Testing successful payment...');
-    
+    logInfo("[Billing Validation] Testing successful payment...");
+
     // Create test customer
     const customer = await stripe.customers.create({
       email: `test-${Date.now()}@settler.dev`,
-      name: 'Test Customer',
+      name: "Test Customer",
       metadata: {
-        test: 'true',
-        validation: 'successful_payment',
+        test: "true",
+        validation: "successful_payment",
       },
     });
 
     // Create payment intent
     const paymentIntent = await stripe.paymentIntents.create({
       amount: 1000,
-      currency: 'usd',
+      currency: "usd",
       customer: customer.id,
-      payment_method_types: ['card'],
+      payment_method_types: ["card"],
       metadata: {
-        test: 'true',
-        validation: 'successful_payment',
+        test: "true",
+        validation: "successful_payment",
       },
     });
 
     // Simulate successful payment with test card
     const confirmedPayment = await stripe.paymentIntents.confirm(paymentIntent.id, {
-      payment_method: 'pm_card_visa',
+      payment_method: "pm_card_visa",
     });
 
     recordResult(
-      'Simulate Successful Payment',
-      confirmedPayment.status === 'succeeded',
+      "Simulate Successful Payment",
+      confirmedPayment.status === "succeeded",
       `Payment Intent ID: ${confirmedPayment.id}, Status: ${confirmedPayment.status}, Amount: $10.00`
     );
 
@@ -133,9 +133,9 @@ async function testSuccessfulPayment(): Promise<void> {
     (global as any).TEST_PAYMENT_INTENT_ID = confirmedPayment.id;
   } catch (error) {
     recordResult(
-      'Simulate Successful Payment',
+      "Simulate Successful Payment",
       false,
-      'Failed to simulate payment',
+      "Failed to simulate payment",
       error instanceof Error ? error.message : String(error)
     );
   }
@@ -146,49 +146,49 @@ async function testSuccessfulPayment(): Promise<void> {
  */
 async function testFailedPayment(): Promise<void> {
   try {
-    logInfo('[Billing Validation] Testing failed payment...');
-    
+    logInfo("[Billing Validation] Testing failed payment...");
+
     const customerId = (global as any).TEST_CUSTOMER_ID;
     if (!customerId) {
-      throw new Error('Test customer not created');
+      throw new Error("Test customer not created");
     }
 
     // Create payment intent with card that will be declined
     const paymentIntent = await stripe.paymentIntents.create({
       amount: 1000,
-      currency: 'usd',
+      currency: "usd",
       customer: customerId,
-      payment_method_types: ['card'],
+      payment_method_types: ["card"],
       metadata: {
-        test: 'true',
-        validation: 'failed_payment',
+        test: "true",
+        validation: "failed_payment",
       },
     });
 
     try {
       // Attempt payment with declined card
       await stripe.paymentIntents.confirm(paymentIntent.id, {
-        payment_method: 'pm_card_chargeDeclined',
+        payment_method: "pm_card_chargeDeclined",
       });
       recordResult(
-        'Simulate Failed Payment',
+        "Simulate Failed Payment",
         false,
-        'Payment should have failed but succeeded',
-        'Unexpected success'
+        "Payment should have failed but succeeded",
+        "Unexpected success"
       );
     } catch (error) {
       // Expected failure
       recordResult(
-        'Simulate Failed Payment',
+        "Simulate Failed Payment",
         true,
         `Payment correctly failed: ${error instanceof Error ? error.message : String(error)}`
       );
     }
   } catch (error) {
     recordResult(
-      'Simulate Failed Payment',
+      "Simulate Failed Payment",
       false,
-      'Failed to simulate failed payment',
+      "Failed to simulate failed payment",
       error instanceof Error ? error.message : String(error)
     );
   }
@@ -199,13 +199,13 @@ async function testFailedPayment(): Promise<void> {
  */
 async function testCancellationAndDowngrade(): Promise<void> {
   try {
-    logInfo('[Billing Validation] Testing cancellation and downgrade...');
-    
+    logInfo("[Billing Validation] Testing cancellation and downgrade...");
+
     const customerId = (global as any).TEST_CUSTOMER_ID;
     const priceId = (global as any).TEST_PRICE_ID;
-    
+
     if (!customerId || !priceId) {
-      throw new Error('Test customer or price not created');
+      throw new Error("Test customer or price not created");
     }
 
     // Create subscription
@@ -213,8 +213,8 @@ async function testCancellationAndDowngrade(): Promise<void> {
       customer: customerId,
       items: [{ price: priceId }],
       metadata: {
-        test: 'true',
-        validation: 'cancellation_test',
+        test: "true",
+        validation: "cancellation_test",
       },
     });
 
@@ -224,7 +224,7 @@ async function testCancellationAndDowngrade(): Promise<void> {
     });
 
     recordResult(
-      'Simulate Cancellation',
+      "Simulate Cancellation",
       cancelledSubscription.cancel_at_period_end === true,
       `Subscription ID: ${subscription.id}, Cancel at period end: ${cancelledSubscription.cancel_at_period_end}`
     );
@@ -232,15 +232,15 @@ async function testCancellationAndDowngrade(): Promise<void> {
     // Test immediate cancellation
     const immediatelyCancelled = await stripe.subscriptions.cancel(subscription.id);
     recordResult(
-      'Immediate Cancellation',
-      immediatelyCancelled.status === 'canceled',
+      "Immediate Cancellation",
+      immediatelyCancelled.status === "canceled",
       `Subscription ID: ${immediatelyCancelled.id}, Status: ${immediatelyCancelled.status}`
     );
   } catch (error) {
     recordResult(
-      'Simulate Cancellation and Downgrade',
+      "Simulate Cancellation and Downgrade",
       false,
-      'Failed to test cancellation',
+      "Failed to test cancellation",
       error instanceof Error ? error.message : String(error)
     );
   }
@@ -251,21 +251,21 @@ async function testCancellationAndDowngrade(): Promise<void> {
  */
 async function testInvoiceGeneration(): Promise<void> {
   try {
-    logInfo('[Billing Validation] Testing invoice generation...');
-    
+    logInfo("[Billing Validation] Testing invoice generation...");
+
     const customerId = (global as any).TEST_CUSTOMER_ID;
     const priceId = (global as any).TEST_PRICE_ID;
-    
+
     if (!customerId || !priceId) {
-      throw new Error('Test customer or price not created');
+      throw new Error("Test customer or price not created");
     }
 
     // Create invoice item
     await stripe.invoiceItems.create({
       customer: customerId,
       amount: 1000,
-      currency: 'usd',
-      description: 'Test invoice item',
+      currency: "usd",
+      description: "Test invoice item",
     });
 
     // Create and finalize invoice
@@ -277,23 +277,23 @@ async function testInvoiceGeneration(): Promise<void> {
     const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id);
 
     recordResult(
-      'Generate Invoice',
-      finalizedInvoice.status === 'open' || finalizedInvoice.status === 'paid',
-      `Invoice ID: ${finalizedInvoice.id}, Status: ${finalizedInvoice.status}, Amount: $${(finalizedInvoice.amount_due / 100).toFixed(2)}, Invoice URL: ${finalizedInvoice.hosted_invoice_url || 'N/A'}`
+      "Generate Invoice",
+      finalizedInvoice.status === "open" || finalizedInvoice.status === "paid",
+      `Invoice ID: ${finalizedInvoice.id}, Status: ${finalizedInvoice.status}, Amount: $${(finalizedInvoice.amount_due / 100).toFixed(2)}, Invoice URL: ${finalizedInvoice.hosted_invoice_url || "N/A"}`
     );
 
     // Mark as paid to generate receipt
     const paidInvoice = await stripe.invoices.pay(finalizedInvoice.id);
     recordResult(
-      'Generate Receipt',
-      paidInvoice.status === 'paid',
-      `Invoice ID: ${paidInvoice.id}, Status: ${paidInvoice.status}, Receipt URL: ${paidInvoice.receipt_url || 'N/A'}`
+      "Generate Receipt",
+      paidInvoice.status === "paid",
+      `Invoice ID: ${paidInvoice.id}, Status: ${paidInvoice.status}, Receipt URL: ${paidInvoice.receipt_url || "N/A"}`
     );
   } catch (error) {
     recordResult(
-      'Generate Invoice and Receipt',
+      "Generate Invoice and Receipt",
       false,
-      'Failed to generate invoice',
+      "Failed to generate invoice",
       error instanceof Error ? error.message : String(error)
     );
   }
@@ -304,27 +304,27 @@ async function testInvoiceGeneration(): Promise<void> {
  */
 async function testEntitlementUpdates(): Promise<void> {
   try {
-    logInfo('[Billing Validation] Testing entitlement updates...');
-    
+    logInfo("[Billing Validation] Testing entitlement updates...");
+
     // This would test that when subscription status changes,
     // user entitlements are updated immediately in the database
     // For now, we'll verify the webhook handler exists and can process events
-    
+
     const { data: webhookHandlers } = await supabase
-      .from('stripe_event_log')
-      .select('event_type')
+      .from("stripe_event_log")
+      .select("event_type")
       .limit(1);
 
     recordResult(
-      'Entitlement Update Mechanism',
+      "Entitlement Update Mechanism",
       true,
-      `Webhook logging table exists and accessible. Event types tracked: ${webhookHandlers ? 'Yes' : 'No'}`
+      `Webhook logging table exists and accessible. Event types tracked: ${webhookHandlers ? "Yes" : "No"}`
     );
   } catch (error) {
     recordResult(
-      'Entitlement Update Mechanism',
+      "Entitlement Update Mechanism",
       false,
-      'Failed to verify entitlement mechanism',
+      "Failed to verify entitlement mechanism",
       error instanceof Error ? error.message : String(error)
     );
   }
@@ -335,24 +335,24 @@ async function testEntitlementUpdates(): Promise<void> {
  */
 async function testGracefulDegradation(): Promise<void> {
   try {
-    logInfo('[Billing Validation] Testing graceful degradation...');
-    
+    logInfo("[Billing Validation] Testing graceful degradation...");
+
     // Verify that billing-gating middleware exists and handles failures gracefully
     const { data: billingAccounts } = await supabase
-      .from('billing_accounts')
-      .select('status')
+      .from("billing_accounts")
+      .select("status")
       .limit(1);
 
     recordResult(
-      'Graceful Degradation',
+      "Graceful Degradation",
       true,
-      `Billing account status tracking exists. Statuses: ${billingAccounts?.map(a => a.status).join(', ') || 'None'}`
+      `Billing account status tracking exists. Statuses: ${billingAccounts?.map((a) => a.status).join(", ") || "None"}`
     );
   } catch (error) {
     recordResult(
-      'Graceful Degradation',
+      "Graceful Degradation",
       false,
-      'Failed to verify graceful degradation',
+      "Failed to verify graceful degradation",
       error instanceof Error ? error.message : String(error)
     );
   }
@@ -363,30 +363,32 @@ async function testGracefulDegradation(): Promise<void> {
  */
 async function testAuditLogging(): Promise<void> {
   try {
-    logInfo('[Billing Validation] Testing audit logging...');
-    
+    logInfo("[Billing Validation] Testing audit logging...");
+
     // Check if audit_logs table exists and can be written to
     const testAuditLog = {
-      action: 'billing_validation_test',
-      entity_type: 'billing_account',
-      entity_id: 'test-' + Date.now(),
+      action: "billing_validation_test",
+      entity_type: "billing_account",
+      entity_id: "test-" + Date.now(),
       user_id: null,
       tenant_id: null,
       metadata: { test: true, validation_run: new Date().toISOString() },
     };
 
-    const { error } = await supabase.from('audit_logs').insert(testAuditLog);
+    const { error } = await supabase.from("audit_logs").insert(testAuditLog);
 
     recordResult(
-      'Audit Logging',
+      "Audit Logging",
       error === null,
-      error ? `Failed to write audit log: ${error.message}` : 'Audit logs table accessible and writable'
+      error
+        ? `Failed to write audit log: ${error.message}`
+        : "Audit logs table accessible and writable"
     );
   } catch (error) {
     recordResult(
-      'Audit Logging',
+      "Audit Logging",
       false,
-      'Failed to test audit logging',
+      "Failed to test audit logging",
       error instanceof Error ? error.message : String(error)
     );
   }
@@ -396,14 +398,14 @@ async function testAuditLogging(): Promise<void> {
  * Main execution
  */
 async function main() {
-  console.log('='.repeat(80));
-  console.log('PHASE 1: MONEY REALITY VALIDATION');
-  console.log('='.repeat(80));
-  console.log('');
+  console.log("=".repeat(80));
+  console.log("PHASE 1: MONEY REALITY VALIDATION");
+  console.log("=".repeat(80));
+  console.log("");
 
   if (!process.env.STRIPE_SECRET_KEY) {
-    console.error('❌ STRIPE_SECRET_KEY not set. Cannot run billing validation.');
-    console.error('   Set STRIPE_SECRET_KEY in your .env file to run this test.');
+    console.error("❌ STRIPE_SECRET_KEY not set. Cannot run billing validation.");
+    console.error("   Set STRIPE_SECRET_KEY in your .env file to run this test.");
     process.exit(1);
   }
 
@@ -417,35 +419,35 @@ async function main() {
     await testGracefulDegradation();
     await testAuditLogging();
 
-    console.log('');
-    console.log('='.repeat(80));
-    console.log('VALIDATION RESULTS');
-    console.log('='.repeat(80));
-    console.log('');
+    console.log("");
+    console.log("=".repeat(80));
+    console.log("VALIDATION RESULTS");
+    console.log("=".repeat(80));
+    console.log("");
 
-    const passed = results.filter(r => r.passed).length;
-    const failed = results.filter(r => !r.passed).length;
+    const passed = results.filter((r) => r.passed).length;
+    const failed = results.filter((r) => !r.passed).length;
 
-    results.forEach(result => {
-      const icon = result.passed ? '✅' : '❌';
+    results.forEach((result) => {
+      const icon = result.passed ? "✅" : "❌";
       console.log(`${icon} ${result.test}`);
       console.log(`   Evidence: ${result.evidence}`);
       if (result.error) {
         console.log(`   Error: ${result.error}`);
       }
-      console.log('');
+      console.log("");
     });
 
-    console.log('='.repeat(80));
+    console.log("=".repeat(80));
     console.log(`Summary: ${passed} passed, ${failed} failed out of ${results.length} tests`);
-    console.log('='.repeat(80));
+    console.log("=".repeat(80));
 
     // Write results to file
-    const fs = await import('fs');
-    const path = await import('path');
-    const outputPath = path.join(process.cwd(), 'billing_evidence.md');
-    
-    let markdown = '# Billing Evidence - Phase 1: Money Reality\n\n';
+    const fs = await import("fs");
+    const path = await import("path");
+    const outputPath = path.join(process.cwd(), "billing_evidence.md");
+
+    let markdown = "# Billing Evidence - Phase 1: Money Reality\n\n";
     markdown += `Generated: ${new Date().toISOString()}\n\n`;
     markdown += `## Summary\n\n`;
     markdown += `- **Total Tests**: ${results.length}\n`;
@@ -453,10 +455,10 @@ async function main() {
     markdown += `- **Failed**: ${failed}\n`;
     markdown += `- **Success Rate**: ${((passed / results.length) * 100).toFixed(1)}%\n\n`;
     markdown += `## Test Results\n\n`;
-    
-    results.forEach(result => {
-      markdown += `### ${result.passed ? '✅' : '❌'} ${result.test}\n\n`;
-      markdown += `- **Status**: ${result.passed ? 'PASSED' : 'FAILED'}\n`;
+
+    results.forEach((result) => {
+      markdown += `### ${result.passed ? "✅" : "❌"} ${result.test}\n\n`;
+      markdown += `- **Status**: ${result.passed ? "PASSED" : "FAILED"}\n`;
       markdown += `- **Evidence**: ${result.evidence}\n`;
       if (result.error) {
         markdown += `- **Error**: ${result.error}\n`;
@@ -469,7 +471,7 @@ async function main() {
 
     process.exit(failed > 0 ? 1 : 0);
   } catch (error) {
-    console.error('Fatal error during validation:', error);
+    console.error("Fatal error during validation:", error);
     process.exit(1);
   }
 }

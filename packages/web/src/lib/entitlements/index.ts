@@ -1,24 +1,24 @@
 /**
  * Centralized Entitlements System
- * 
+ *
  * Single source of truth for plan → features → enforcement.
  * Replaces scattered subscription checks with one canonical system.
  */
 
-import { createClient } from '@/lib/supabase/server';
-import { prisma } from '@/shared/db/prismaClient';
+import { createClient } from "@/lib/supabase/server";
+import { prisma } from "@/shared/db/prismaClient";
 
-export type EntitlementFeature = 
-  | 'reconciliations'
-  | 'receipts'
-  | 'exports'
-  | 'scheduled_jobs'
-  | 'api_calls'
-  | 'connectors'
-  | 'audit_trail'
-  | 'support'
-  | 'retention'
-  | 'sla';
+export type EntitlementFeature =
+  | "reconciliations"
+  | "receipts"
+  | "exports"
+  | "scheduled_jobs"
+  | "api_calls"
+  | "connectors"
+  | "audit_trail"
+  | "support"
+  | "retention"
+  | "sla";
 
 export interface EntitlementLimits {
   reconciliations_per_month: number; // -1 for unlimited
@@ -48,7 +48,7 @@ export interface EntitlementStatus {
   limits: EntitlementLimits;
   billingAccountId: string;
   subscriptionId: string;
-  status: 'active' | 'trialing' | 'past_due' | 'cancelled';
+  status: "active" | "trialing" | "past_due" | "cancelled";
 }
 
 /**
@@ -113,19 +113,19 @@ const PLAN_ENTITLEMENTS: Record<string, EntitlementLimits> = {
  * Map plan_id from database to canonical plan name
  */
 function normalizePlanId(planId: string | null | undefined): string {
-  if (!planId) return 'free';
-  
+  if (!planId) return "free";
+
   const normalized = planId.toLowerCase();
-  
+
   // Map legacy plan IDs
-  if (normalized === 'base') return 'starter';
-  if (normalized.includes('pro')) return 'growth';
-  if (normalized.includes('enterprise') || normalized.includes('custom')) return 'enterprise';
-  if (normalized.includes('starter') || normalized.includes('starter')) return 'starter';
-  if (normalized.includes('growth')) return 'growth';
-  
+  if (normalized === "base") return "starter";
+  if (normalized.includes("pro")) return "growth";
+  if (normalized.includes("enterprise") || normalized.includes("custom")) return "enterprise";
+  if (normalized.includes("starter") || normalized.includes("starter")) return "starter";
+  if (normalized.includes("growth")) return "growth";
+
   // Default to starter if unknown
-  return 'starter';
+  return "starter";
 }
 
 /**
@@ -135,8 +135,11 @@ function normalizePlanId(planId: string | null | undefined): string {
 export async function getEntitlementStatus(): Promise<EntitlementStatus | null> {
   try {
     const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
     if (authError || !user) {
       return null; // Unauthenticated
     }
@@ -145,15 +148,15 @@ export async function getEntitlementStatus(): Promise<EntitlementStatus | null> 
     const billingAccount = await prisma.billingAccount.findFirst({
       where: {
         userId: user.id,
-        status: 'active',
+        status: "active",
         deletedAt: null,
       },
       include: {
         subscriptions: {
           where: {
-            status: { in: ['active', 'trialing'] },
+            status: { in: ["active", "trialing"] },
           },
-          orderBy: { createdAt: 'desc' },
+          orderBy: { createdAt: "desc" },
           take: 1,
         },
       },
@@ -180,10 +183,10 @@ export async function getEntitlementStatus(): Promise<EntitlementStatus | null> 
       limits,
       billingAccountId: billingAccount.id,
       subscriptionId: subscription.id,
-      status: subscription.status as 'active' | 'trialing' | 'past_due' | 'cancelled',
+      status: subscription.status as "active" | "trialing" | "past_due" | "cancelled",
     };
   } catch (error) {
-    console.error('[getEntitlementStatus] Error:', error);
+    console.error("[getEntitlementStatus] Error:", error);
     return null; // Fail safe - return null (free tier)
   }
 }
@@ -198,13 +201,13 @@ export async function requireEntitlement(
 ): Promise<EntitlementCheckResult> {
   try {
     const status = await getEntitlementStatus();
-    
+
     if (!status) {
       // Unauthenticated or no subscription
       return {
         allowed: false,
-        reason: 'subscription_required',
-        upgradeUrl: '/pricing',
+        reason: "subscription_required",
+        upgradeUrl: "/pricing",
       };
     }
 
@@ -213,14 +216,14 @@ export async function requireEntitlement(
     let currentUsage: number = 0;
 
     switch (feature) {
-      case 'reconciliations':
+      case "reconciliations":
         limit = status.limits.reconciliations_per_month;
         // Get current month usage
         const reconUsage = await prisma.usageCounter.findFirst({
           where: {
             billingAccountId: status.billingAccountId,
-            service: 'reconcile',
-            period: 'monthly',
+            service: "reconcile",
+            period: "monthly",
             periodStart: {
               gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
             },
@@ -229,13 +232,13 @@ export async function requireEntitlement(
         currentUsage = reconUsage?.count || 0;
         break;
 
-      case 'receipts':
+      case "receipts":
         limit = status.limits.receipts_per_month;
         const receiptUsage = await prisma.usageCounter.findFirst({
           where: {
             billingAccountId: status.billingAccountId,
-            service: 'receipts',
-            period: 'monthly',
+            service: "receipts",
+            period: "monthly",
             periodStart: {
               gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
             },
@@ -244,13 +247,13 @@ export async function requireEntitlement(
         currentUsage = receiptUsage?.count || 0;
         break;
 
-      case 'exports':
+      case "exports":
         limit = status.limits.exports_per_month;
         const exportUsage = await prisma.usageCounter.findFirst({
           where: {
             billingAccountId: status.billingAccountId,
-            service: 'exports',
-            period: 'monthly',
+            service: "exports",
+            period: "monthly",
             periodStart: {
               gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
             },
@@ -259,27 +262,27 @@ export async function requireEntitlement(
         currentUsage = exportUsage?.count || 0;
         break;
 
-      case 'scheduled_jobs':
+      case "scheduled_jobs":
         limit = status.limits.scheduled_jobs;
         // Count active scheduled jobs
         const jobCount = await prisma.reconJob.count({
           where: {
             // Need tenant_id - would need to get from billing account
             scheduleCron: { not: null },
-            status: 'active',
+            status: "active",
             deletedAt: null,
           },
         });
         currentUsage = jobCount;
         break;
 
-      case 'api_calls':
+      case "api_calls":
         limit = status.limits.api_calls_per_month;
         const apiUsage = await prisma.usageCounter.findFirst({
           where: {
             billingAccountId: status.billingAccountId,
-            service: 'api',
-            period: 'monthly',
+            service: "api",
+            period: "monthly",
             periodStart: {
               gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
             },
@@ -288,13 +291,13 @@ export async function requireEntitlement(
         currentUsage = apiUsage?.count || 0;
         break;
 
-      case 'connectors':
+      case "connectors":
         limit = status.limits.connectors_enabled;
         // Count active connectors
         const connectorCount = await prisma.ingestionSource.count({
           where: {
             // Would need tenant_id mapping
-            status: 'active',
+            status: "active",
             deletedAt: null,
           },
         });
@@ -321,14 +324,14 @@ export async function requireEntitlement(
     // Check if usage + quantity exceeds limit
     if (currentUsage + quantity > limit) {
       // Determine upgrade path
-      let upgradePlan = 'growth';
-      if (status.planId === 'free') upgradePlan = 'starter';
-      else if (status.planId === 'starter') upgradePlan = 'growth';
-      else if (status.planId === 'growth') upgradePlan = 'enterprise';
+      let upgradePlan = "growth";
+      if (status.planId === "free") upgradePlan = "starter";
+      else if (status.planId === "starter") upgradePlan = "growth";
+      else if (status.planId === "growth") upgradePlan = "enterprise";
 
       return {
         allowed: false,
-        reason: 'limit_exceeded',
+        reason: "limit_exceeded",
         upgradeUrl: `/pricing?plan=${upgradePlan}`,
         remaining: Math.max(0, limit - currentUsage),
         limit,
@@ -343,12 +346,12 @@ export async function requireEntitlement(
       currentUsage,
     };
   } catch (error) {
-    console.error('[requireEntitlement] Error:', error);
+    console.error("[requireEntitlement] Error:", error);
     // CRITICAL: Fail closed - deny access on error (prevents revenue leakage)
     return {
       allowed: false,
-      reason: 'check_failed',
-      upgradeUrl: '/pricing',
+      reason: "check_failed",
+      upgradeUrl: "/pricing",
     };
   }
 }
@@ -358,14 +361,14 @@ export async function requireEntitlement(
  */
 export async function getUpgradeUrl(): Promise<string> {
   const status = await getEntitlementStatus();
-  
+
   if (!status) {
-    return '/pricing';
+    return "/pricing";
   }
 
-  if (status.planId === 'free') return '/pricing?plan=starter';
-  if (status.planId === 'starter') return '/pricing?plan=growth';
-  if (status.planId === 'growth') return '/pricing?plan=enterprise';
-  
-  return '/pricing';
+  if (status.planId === "free") return "/pricing?plan=starter";
+  if (status.planId === "starter") return "/pricing?plan=growth";
+  if (status.planId === "growth") return "/pricing?plan=enterprise";
+
+  return "/pricing";
 }

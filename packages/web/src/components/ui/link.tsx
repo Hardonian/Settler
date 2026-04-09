@@ -20,7 +20,8 @@ interface BaseProps {
   showExternalIcon?: boolean;
 }
 
-type InternalLinkProps = BaseProps & Omit<LinkProps, "href"> & { href: LinkProps["href"]; external?: false };
+type InternalLinkProps = BaseProps &
+  Omit<LinkProps, "href"> & { href: LinkProps["href"]; external?: false };
 
 type ExternalLinkProps = BaseProps &
   Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href" | "children" | "className"> & {
@@ -30,7 +31,12 @@ type ExternalLinkProps = BaseProps &
 
 type UiLinkProps = InternalLinkProps | ExternalLinkProps;
 
-export function UiLink({ variant = "default", className, showExternalIcon, ...props }: UiLinkProps) {
+export function UiLink({
+  variant = "default",
+  className,
+  showExternalIcon,
+  ...props
+}: UiLinkProps) {
   const classes = cn(variantClasses[variant], className);
 
   if ("external" in props && props.external) {

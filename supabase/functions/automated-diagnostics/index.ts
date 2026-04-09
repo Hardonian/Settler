@@ -67,9 +67,10 @@ serve(async (req) => {
           severity: webhooks.length > 10 ? "high" : webhooks.length > 5 ? "medium" : "low",
           description: `${webhooks.length} webhook(s) failed to process`,
           root_cause: errorType === "unknown_error" ? undefined : errorType,
-          recommended_action: webhooks.length > 10
-            ? "Investigate webhook processing immediately. Check database connectivity and Stripe API status."
-            : "Review failed webhooks and retry processing.",
+          recommended_action:
+            webhooks.length > 10
+              ? "Investigate webhook processing immediately. Check database connectivity and Stripe API status."
+              : "Review failed webhooks and retry processing.",
           affected_count: webhooks.length,
           first_seen: webhooks[webhooks.length - 1]?.created_at,
           last_seen: webhooks[0]?.created_at,
@@ -98,7 +99,8 @@ serve(async (req) => {
           severity: staleSubs.length > 10 ? "high" : "medium",
           description: `${staleSubs.length} active subscription(s) not synced in 48+ hours`,
           root_cause: "Possible webhook processing failure or Stripe API issues",
-          recommended_action: "Manually sync subscriptions from Stripe dashboard or trigger webhook replay",
+          recommended_action:
+            "Manually sync subscriptions from Stripe dashboard or trigger webhook replay",
           affected_count: staleSubs.length,
         });
       }
@@ -159,7 +161,8 @@ serve(async (req) => {
         severity: failureRate > 0.1 ? "high" : failureRate > 0.05 ? "medium" : "low",
         description: `${failedEmails.length} email(s) failed to send in last 24 hours`,
         root_cause: "Email service provider issue or configuration error",
-        recommended_action: "Check Resend API key and email service status. Review error messages for patterns.",
+        recommended_action:
+          "Check Resend API key and email service status. Review error messages for patterns.",
         affected_count: failedEmails.length,
       });
     }
@@ -181,13 +184,16 @@ serve(async (req) => {
     }
 
     // Store diagnostics
-    await supabaseClient.from("diagnostics").insert({
-      diagnostic_type: "automated",
-      results: diagnostics,
-      timestamp: now.toISOString(),
-    }).catch(() => {
-      // Table might not exist, that's okay
-    });
+    await supabaseClient
+      .from("diagnostics")
+      .insert({
+        diagnostic_type: "automated",
+        results: diagnostics,
+        timestamp: now.toISOString(),
+      })
+      .catch(() => {
+        // Table might not exist, that's okay
+      });
 
     // Return critical/high severity diagnostics first
     const critical = diagnostics.filter((d) => d.severity === "critical");

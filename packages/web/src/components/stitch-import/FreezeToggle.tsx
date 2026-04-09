@@ -60,9 +60,7 @@ const FreezeToggle: React.FC = () => {
             <div
               className={[
                 "h-6 w-11 rounded-full transition-colors duration-200 peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2",
-                frozen
-                  ? "bg-red-500"
-                  : "bg-border dark:bg-border",
+                frozen ? "bg-red-500" : "bg-border dark:bg-border",
               ].join(" ")}
             />
             <div
@@ -76,18 +74,14 @@ const FreezeToggle: React.FC = () => {
         <div
           className={[
             "mt-3 flex items-center gap-2 rounded-lg border px-3 py-2 transition-colors",
-            frozen
-              ? "border-red-200 bg-red-50"
-              : "border-emerald-200 bg-emerald-50",
+            frozen ? "border-red-200 bg-red-50" : "border-emerald-200 bg-emerald-50",
           ].join(" ")}
         >
           <CheckCircle
             className={`h-4 w-4 ${frozen ? "text-red-500" : "text-emerald-500"}`}
             aria-hidden="true"
           />
-          <span
-            className={`text-xs font-medium ${frozen ? "text-red-700" : "text-emerald-700"}`}
-          >
+          <span className={`text-xs font-medium ${frozen ? "text-red-700" : "text-emerald-700"}`}>
             {frozen ? "System is frozen — writes are blocked" : "System is currently Operational"}
           </span>
         </div>

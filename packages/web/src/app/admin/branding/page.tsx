@@ -1,13 +1,13 @@
-import { Metadata } from 'next';
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Branding - Admin',
-  description: 'Manage tenant branding settings',
+  title: "Branding - Admin",
+  description: "Manage tenant branding settings",
 };
 
-import { redirect } from 'next/navigation';
+import { redirect } from "next/navigation";
 
 export default function AdminBrandingPage() {
   // Redirect to console site branding page if it exists, otherwise to admin dashboard
-  redirect('/console/site/branding');
+  redirect("/console/site/branding");
 }

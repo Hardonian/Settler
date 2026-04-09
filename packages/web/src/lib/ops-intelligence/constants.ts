@@ -1,39 +1,34 @@
 /**
  * Ops Intelligence Constants
- * 
+ *
  * Centralized constants for the Ops Intelligence system
  */
 
-export const INSIGHT_TYPES = ['cost', 'support', 'usage', 'stability'] as const;
-export const INSIGHT_SEVERITIES = ['info', 'warn', 'critical'] as const;
-export const INSIGHT_STATUSES = ['active', 'resolved', 'expired', 'dismissed'] as const;
-export const RISK_LEVELS = ['low', 'med', 'high'] as const;
+export const INSIGHT_TYPES = ["cost", "support", "usage", "stability"] as const;
+export const INSIGHT_SEVERITIES = ["info", "warn", "critical"] as const;
+export const INSIGHT_STATUSES = ["active", "resolved", "expired", "dismissed"] as const;
+export const RISK_LEVELS = ["low", "med", "high"] as const;
 export const ACTION_TYPES = [
-  'investigate',
-  'upgrade',
-  'throttle',
-  'outreach',
-  'document',
-  'fix',
-  'monitor',
-  'verify',
-  'retry',
+  "investigate",
+  "upgrade",
+  "throttle",
+  "outreach",
+  "document",
+  "fix",
+  "monitor",
+  "verify",
+  "retry",
 ] as const;
 
 export const RECOMMENDATION_STATUSES = [
-  'suggested',
-  'accepted',
-  'rejected',
-  'executed',
-  'cancelled',
+  "suggested",
+  "accepted",
+  "rejected",
+  "executed",
+  "cancelled",
 ] as const;
 
-export const VERIFICATION_STATUSES = [
-  'pending',
-  'verified',
-  'failed',
-  'partial',
-] as const;
+export const VERIFICATION_STATUSES = ["pending", "verified", "failed", "partial"] as const;
 
 // Pagination defaults
 export const DEFAULT_PAGE_SIZE = 50;

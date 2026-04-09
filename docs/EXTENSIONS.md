@@ -11,20 +11,20 @@ Settler's extension model allows external developers to build connectors for pay
 All connectors must implement the `Connector` interface:
 
 ```typescript
-import { Connector, NormalizedData, FetchOptions, ValidationResult } from '@settler/adapters';
+import { Connector, NormalizedData, FetchOptions, ValidationResult } from "@settler/adapters";
 
 class MyConnector implements Connector {
-  readonly name = 'my-connector';
-  readonly version = '1.0.0';
-  
+  readonly name = "my-connector";
+  readonly version = "1.0.0";
+
   async fetch(options: FetchOptions): Promise<NormalizedData[]> {
     // Fetch data from external system
   }
-  
+
   normalize(data: unknown): NormalizedData {
     // Normalize to Settler format
   }
-  
+
   validate(data: NormalizedData): ValidationResult {
     // Validate normalized data
   }
@@ -39,13 +39,13 @@ All connectors must normalize data to this format:
 
 ```typescript
 interface NormalizedData {
-  id: string;              // Unique transaction ID
-  amount: number;          // Transaction amount (positive)
-  currency: string;        // ISO 4217 currency code (e.g., 'USD')
-  date: Date;              // Transaction date
-  metadata: Record<string, unknown>;  // Additional data
-  sourceId?: string;       // Source system ID
-  referenceId?: string;    // Reference number (e.g., order ID)
+  id: string; // Unique transaction ID
+  amount: number; // Transaction amount (positive)
+  currency: string; // ISO 4217 currency code (e.g., 'USD')
+  date: Date; // Transaction date
+  metadata: Record<string, unknown>; // Additional data
+  sourceId?: string; // Source system ID
+  referenceId?: string; // Reference number (e.g., order ID)
 }
 ```
 
@@ -67,16 +67,16 @@ interface NormalizedData {
 ### Step 1: Create Connector Class
 
 ```typescript
-import { Connector, NormalizedData, FetchOptions, ValidationResult } from '@settler/adapters';
+import { Connector, NormalizedData, FetchOptions, ValidationResult } from "@settler/adapters";
 
 export class StripeConnector implements Connector {
-  readonly name = 'stripe';
-  readonly version = '1.0.0';
-  
+  readonly name = "stripe";
+  readonly version = "1.0.0";
+
   async fetch(options: FetchOptions): Promise<NormalizedData[]> {
     const { dateRange, config } = options;
     const apiKey = config.apiKey as string;
-    
+
     // Fetch from Stripe API
     const response = await fetch(
       `https://api.stripe.com/v1/charges?created[gte]=${dateRange.start.getTime()}&created[lte]=${dateRange.end.getTime()}`,
@@ -84,11 +84,11 @@ export class StripeConnector implements Connector {
         headers: { Authorization: `Bearer ${apiKey}` },
       }
     );
-    
+
     const data = await response.json();
     return data.data.map((charge: unknown) => this.normalize(charge));
   }
-  
+
   normalize(data: unknown): NormalizedData {
     const charge = data as {
       id: string;
@@ -97,7 +97,7 @@ export class StripeConnector implements Connector {
       created: number;
       metadata?: Record<string, unknown>;
     };
-    
+
     return {
       id: charge.id,
       amount: charge.amount / 100, // Convert cents to dollars
@@ -107,26 +107,26 @@ export class StripeConnector implements Connector {
       sourceId: charge.id,
     };
   }
-  
+
   validate(data: NormalizedData): ValidationResult {
     const errors: string[] = [];
-    
-    if (!data.id || typeof data.id !== 'string') {
-      errors.push('id must be a non-empty string');
+
+    if (!data.id || typeof data.id !== "string") {
+      errors.push("id must be a non-empty string");
     }
-    
-    if (typeof data.amount !== 'number' || data.amount <= 0) {
-      errors.push('amount must be a positive number');
+
+    if (typeof data.amount !== "number" || data.amount <= 0) {
+      errors.push("amount must be a positive number");
     }
-    
-    if (!data.currency || typeof data.currency !== 'string') {
-      errors.push('currency must be a non-empty string');
+
+    if (!data.currency || typeof data.currency !== "string") {
+      errors.push("currency must be a non-empty string");
     }
-    
+
     if (!(data.date instanceof Date) || isNaN(data.date.getTime())) {
-      errors.push('date must be a valid Date');
+      errors.push("date must be a valid Date");
     }
-    
+
     return {
       valid: errors.length === 0,
       errors: errors.length > 0 ? errors : undefined,
@@ -138,34 +138,34 @@ export class StripeConnector implements Connector {
 ### Step 2: Validate Your Connector
 
 ```typescript
-import { validateConnector } from '@settler/adapters';
+import { validateConnector } from "@settler/adapters";
 
 const connector = new StripeConnector();
 const validation = validateConnector(connector);
 
 if (!validation.valid) {
-  console.error('Validation errors:', validation.errors);
+  console.error("Validation errors:", validation.errors);
 }
 ```
 
 ### Step 3: Register Your Connector
 
 ```typescript
-import { registerConnector } from '@settler/adapters';
+import { registerConnector } from "@settler/adapters";
 
 registerConnector({
-  name: 'stripe',
-  version: '1.0.0',
+  name: "stripe",
+  version: "1.0.0",
   connector: new StripeConnector(),
   metadata: {
-    name: 'stripe',
-    version: '1.0.0',
-    displayName: 'Stripe',
-    description: 'Stripe payment processor connector',
-    category: 'payment',
+    name: "stripe",
+    version: "1.0.0",
+    displayName: "Stripe",
+    description: "Stripe payment processor connector",
+    category: "payment",
     supportsWebhooks: true,
-    requiredConfig: ['apiKey'],
-    optionalConfig: ['webhookSecret'],
+    requiredConfig: ["apiKey"],
+    optionalConfig: ["webhookSecret"],
   },
 });
 ```
@@ -201,14 +201,14 @@ If your connector supports webhooks:
 ```typescript
 class MyConnector implements Connector {
   // ... other methods ...
-  
+
   normalizeWebhook(payload: unknown, tenantId: string): NormalizedData[] {
     const webhook = payload as { type: string; data: unknown };
-    
-    if (webhook.type === 'charge.succeeded') {
+
+    if (webhook.type === "charge.succeeded") {
       return [this.normalize(webhook.data)];
     }
-    
+
     return [];
   }
 }
@@ -221,14 +221,10 @@ class MyConnector implements Connector {
 Throw `ConnectorError` for connector-specific errors:
 
 ```typescript
-import { ConnectorError } from '@settler/adapters';
+import { ConnectorError } from "@settler/adapters";
 
 if (!config.apiKey) {
-  throw new ConnectorError(
-    'API key is required',
-    'MISSING_API_KEY',
-    'stripe'
-  );
+  throw new ConnectorError("API key is required", "MISSING_API_KEY", "stripe");
 }
 ```
 
@@ -237,14 +233,10 @@ if (!config.apiKey) {
 Throw `ValidationError` for data validation failures:
 
 ```typescript
-import { ValidationError } from '@settler/adapters';
+import { ValidationError } from "@settler/adapters";
 
-if (typeof data.amount !== 'number') {
-  throw new ValidationError(
-    'Amount must be a number',
-    'amount',
-    data.amount
-  );
+if (typeof data.amount !== "number") {
+  throw new ValidationError("Amount must be a number", "amount", data.amount);
 }
 ```
 
@@ -253,29 +245,29 @@ if (typeof data.amount !== 'number') {
 ### Unit Tests
 
 ```typescript
-import { StripeConnector } from './stripe-connector';
-import { validateConnector } from '@settler/adapters';
+import { StripeConnector } from "./stripe-connector";
+import { validateConnector } from "@settler/adapters";
 
-describe('StripeConnector', () => {
-  it('should validate correctly', () => {
+describe("StripeConnector", () => {
+  it("should validate correctly", () => {
     const connector = new StripeConnector();
     const validation = validateConnector(connector);
     expect(validation.valid).toBe(true);
   });
-  
-  it('should normalize data correctly', () => {
+
+  it("should normalize data correctly", () => {
     const connector = new StripeConnector();
     const raw = {
-      id: 'ch_123',
+      id: "ch_123",
       amount: 1000,
-      currency: 'usd',
+      currency: "usd",
       created: 1234567890,
     };
-    
+
     const normalized = connector.normalize(raw);
-    expect(normalized.id).toBe('ch_123');
+    expect(normalized.id).toBe("ch_123");
     expect(normalized.amount).toBe(10.0);
-    expect(normalized.currency).toBe('USD');
+    expect(normalized.currency).toBe("USD");
   });
 });
 ```
@@ -285,18 +277,18 @@ describe('StripeConnector', () => {
 Test against real APIs (use test credentials):
 
 ```typescript
-it('should fetch data from Stripe', async () => {
+it("should fetch data from Stripe", async () => {
   const connector = new StripeConnector();
   const options = {
     dateRange: {
-      start: new Date('2024-01-01'),
-      end: new Date('2024-01-31'),
+      start: new Date("2024-01-01"),
+      end: new Date("2024-01-31"),
     },
     config: {
       apiKey: process.env.STRIPE_TEST_KEY,
     },
   };
-  
+
   const data = await connector.fetch(options);
   expect(data.length).toBeGreaterThan(0);
   expect(data[0].id).toBeDefined();

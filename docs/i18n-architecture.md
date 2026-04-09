@@ -93,18 +93,18 @@ Use `{paramName}` for dynamic values:
 ### Basic Usage with Hook
 
 ```tsx
-'use client';
+"use client";
 
-import { useTranslation } from '@/lib/i18n/hooks';
+import { useTranslation } from "@/lib/i18n/hooks";
 
 function MyComponent() {
   const { t, locale } = useTranslation();
-  
+
   return (
     <div>
-      <h1>{t('navigation.home')}</h1>
-      <Button>{t('buttons.create')}</Button>
-      <p>{t('forms.minLength', { min: 8 })}</p>
+      <h1>{t("navigation.home")}</h1>
+      <Button>{t("buttons.create")}</Button>
+      <p>{t("forms.minLength", { min: 8 })}</p>
     </div>
   );
 }
@@ -113,10 +113,10 @@ function MyComponent() {
 ### Using Translation Function Directly
 
 ```tsx
-import { translate, defaultLocale } from '@/lib/i18n';
+import { translate, defaultLocale } from "@/lib/i18n";
 
 // Server component or non-React code
-const text = translate('buttons.create', defaultLocale);
+const text = translate("buttons.create", defaultLocale);
 ```
 
 ### With I18n Provider
@@ -124,16 +124,12 @@ const text = translate('buttons.create', defaultLocale);
 Wrap your app with the I18nProvider (recommended for client components):
 
 ```tsx
-'use client';
+"use client";
 
-import { I18nProvider } from '@/lib/i18n/hooks';
+import { I18nProvider } from "@/lib/i18n/hooks";
 
 export default function RootLayout({ children }) {
-  return (
-    <I18nProvider>
-      {children}
-    </I18nProvider>
-  );
+  return <I18nProvider>{children}</I18nProvider>;
 }
 ```
 
@@ -154,9 +150,11 @@ const { t } = useTranslation();
 ```tsx
 const { t } = useTranslation();
 
-<label>{t('forms.email')}</label>
-{error && <p>{t('forms.invalidEmail')}</p>}
-<p>{t('forms.minLength', { min: 8 })}</p>
+<label>{t("forms.email")}</label>;
+{
+  error && <p>{t("forms.invalidEmail")}</p>;
+}
+<p>{t("forms.minLength", { min: 8 })}</p>;
 ```
 
 #### Empty States
@@ -165,13 +163,13 @@ const { t } = useTranslation();
 const { t } = useTranslation();
 
 <EmptyState
-  title={t('emptyStates.noProjects')}
-  description={t('emptyStates.noProjectsDescription')}
+  title={t("emptyStates.noProjects")}
+  description={t("emptyStates.noProjectsDescription")}
   action={{
-    label: t('buttons.createProject'),
-    onClick: handleCreate
+    label: t("buttons.createProject"),
+    onClick: handleCreate,
   }}
-/>
+/>;
 ```
 
 #### Error States
@@ -179,11 +177,7 @@ const { t } = useTranslation();
 ```tsx
 const { t } = useTranslation();
 
-<ErrorState
-  title={t('errors.network')}
-  onRetry={handleRetry}
-  retryText={t('errors.tryAgain')}
-/>
+<ErrorState title={t("errors.network")} onRetry={handleRetry} retryText={t("errors.tryAgain")} />;
 ```
 
 ---
@@ -219,7 +213,7 @@ Update `/lib/i18n/locales/en.json`:
 
 ```tsx
 const { t } = useTranslation();
-<p>{t('newSection.newKey')}</p>
+<p>{t("newSection.newKey")}</p>;
 ```
 
 ### Step 4: Add to Other Locales (When Ready)
@@ -339,6 +333,7 @@ When ready to migrate to next-intl:
 ### Do's
 
 ✅ **Externalize all user-facing strings**
+
 ```tsx
 // Good
 <Button>{t('buttons.create')}</Button>
@@ -348,53 +343,58 @@ When ready to migrate to next-intl:
 ```
 
 ✅ **Use descriptive key names**
+
 ```tsx
 // Good
-t('buttons.createProject')
+t("buttons.createProject");
 
 // Bad
-t('buttons.create')
+t("buttons.create");
 ```
 
 ✅ **Group related translations**
+
 ```tsx
 // Good
-t('forms.required')
-t('forms.invalidEmail')
+t("forms.required");
+t("forms.invalidEmail");
 
 // Bad
-t('required')
-t('emailError')
+t("required");
+t("emailError");
 ```
 
 ✅ **Use parameters for dynamic values**
+
 ```tsx
 // Good
-t('forms.minLength', { min: 8 })
-
+t("forms.minLength", { min: 8 })
 // Bad
-`Must be at least ${min} characters`
+`Must be at least ${min} characters`;
 ```
 
 ### Don'ts
 
 ❌ **Don't hardcode strings**
+
 ```tsx
 // Bad
 <Button>Create Project</Button>
 ```
 
 ❌ **Don't use generic keys**
+
 ```tsx
 // Bad
-t('text1')
-t('message')
+t("text1");
+t("message");
 ```
 
 ❌ **Don't mix languages**
+
 ```tsx
 // Bad
-t('buttons.create') + ' Project'
+t("buttons.create") + " Project";
 ```
 
 ---
@@ -411,15 +411,14 @@ t('buttons.create') + ' Project'
 ### Automated Testing
 
 ```tsx
-import { translate } from '@/lib/i18n';
+import { translate } from "@/lib/i18n";
 
-test('translates key correctly', () => {
-  expect(translate('buttons.create', 'en')).toBe('Create');
+test("translates key correctly", () => {
+  expect(translate("buttons.create", "en")).toBe("Create");
 });
 
-test('replaces parameters', () => {
-  expect(translate('forms.minLength', 'en', { min: 8 }))
-    .toBe('Must be at least 8 characters');
+test("replaces parameters", () => {
+  expect(translate("forms.minLength", "en", { min: 8 })).toBe("Must be at least 8 characters");
 });
 ```
 
@@ -430,6 +429,7 @@ test('replaces parameters', () => {
 ### Translation Not Found
 
 If a translation key is missing, the system will:
+
 1. Log a warning to console
 2. Return the key as fallback
 3. Fall back to English if locale not found
@@ -437,10 +437,11 @@ If a translation key is missing, the system will:
 ### Parameter Not Replaced
 
 Ensure parameters match exactly:
+
 ```tsx
 // Translation: "Must be at least {min} characters"
-t('forms.minLength', { min: 8 }) // ✅ Works
-t('forms.minLength', { minimum: 8 }) // ❌ Doesn't work
+t("forms.minLength", { min: 8 }); // ✅ Works
+t("forms.minLength", { minimum: 8 }); // ❌ Doesn't work
 ```
 
 ---

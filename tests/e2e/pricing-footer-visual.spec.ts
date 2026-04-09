@@ -31,8 +31,11 @@ test.describe("pricing and footer visual regression", () => {
     await page.goto("/pricing", { waitUntil: "networkidle" });
     await stabilize(page);
 
-    await expect(page.locator("footer[role='contentinfo']")).toHaveScreenshot("marketing-footer.png", {
-      maxDiffPixelRatio: 0.02,
-    });
+    await expect(page.locator("footer[role='contentinfo']")).toHaveScreenshot(
+      "marketing-footer.png",
+      {
+        maxDiffPixelRatio: 0.02,
+      }
+    );
   });
 });

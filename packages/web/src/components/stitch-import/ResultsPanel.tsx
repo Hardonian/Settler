@@ -159,7 +159,9 @@ export function ResultsPanel() {
         </Card>
         <Card className="p-4 border-amber-500/20 bg-amber-50/10 relative overflow-hidden group">
           <AlertTriangle className="absolute -right-2 -top-2 w-16 h-16 text-amber-500 opacity-5" />
-          <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Review</span>
+          <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+            Review
+          </span>
           <div className="text-2xl font-bold text-foreground dark:text-white mt-1">244</div>
           <div className="flex items-center gap-1 text-[11px] font-bold text-amber-600 mt-2">
             <TrendingDown className="w-3 h-3" /> 5%

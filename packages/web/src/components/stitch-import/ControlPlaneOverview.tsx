@@ -37,7 +37,10 @@ const ControlPlaneOverview: React.FC = () => {
             </span>
             <span className="flex items-center gap-1 text-sm font-bold text-foreground leading-none">
               Acme Corp / Prod
-              <ChevronDown className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" aria-hidden="true" />
+              <ChevronDown
+                className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors"
+                aria-hidden="true"
+              />
             </span>
           </div>
         </button>
@@ -89,7 +92,10 @@ const ControlPlaneOverview: React.FC = () => {
               <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 Uptime (24h)
               </span>
-              <Gauge className="h-5 w-5 rounded-md bg-primary/10 p-1 text-primary" aria-hidden="true" />
+              <Gauge
+                className="h-5 w-5 rounded-md bg-primary/10 p-1 text-primary"
+                aria-hidden="true"
+              />
             </div>
             <div>
               <div className="text-3xl font-bold tracking-tight text-foreground">
@@ -106,7 +112,10 @@ const ControlPlaneOverview: React.FC = () => {
               <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 Backlog Queue
               </span>
-              <Gauge className="h-5 w-5 rounded-md bg-amber-500/10 p-1 text-amber-600" aria-hidden="true" />
+              <Gauge
+                className="h-5 w-5 rounded-md bg-amber-500/10 p-1 text-amber-600"
+                aria-hidden="true"
+              />
             </div>
             <div>
               <div className="text-3xl font-bold tracking-tight text-foreground">452</div>
@@ -133,7 +142,9 @@ const ControlPlaneOverview: React.FC = () => {
           <div className="relative z-10 flex items-end justify-between">
             <div>
               <div className="text-2xl font-bold text-foreground">12 Spikes</div>
-              <div className="mt-1 text-xs font-medium text-muted-foreground">Detected in last 60m</div>
+              <div className="mt-1 text-xs font-medium text-muted-foreground">
+                Detected in last 60m
+              </div>
             </div>
             <button className="rounded-lg border border-border bg-card px-4 py-2 text-xs font-bold text-foreground shadow-sm transition-all hover:border-primary/30 hover:bg-muted/40 hover:text-primary">
               View Log
@@ -165,7 +176,9 @@ const ControlPlaneOverview: React.FC = () => {
                       <span className="rounded border border-blue-500/20 bg-blue-500/10 px-2 py-0.5 text-[10px] font-bold text-blue-700 dark:text-blue-400">
                         Running
                       </span>
-                      <span className="font-mono text-xs font-medium text-muted-foreground">2m 14s</span>
+                      <span className="font-mono text-xs font-medium text-muted-foreground">
+                        2m 14s
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -225,7 +238,9 @@ const ControlPlaneOverview: React.FC = () => {
                       <span className="rounded border border-amber-500/20 bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-400">
                         Retrying
                       </span>
-                      <span className="font-mono text-xs font-medium text-muted-foreground">0m 45s</span>
+                      <span className="font-mono text-xs font-medium text-muted-foreground">
+                        0m 45s
+                      </span>
                     </div>
                   </div>
                 </div>

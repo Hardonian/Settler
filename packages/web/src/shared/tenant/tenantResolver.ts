@@ -1,24 +1,26 @@
 /**
  * Tenant Resolution
- * 
+ *
  * Determines which tenant is being served based on:
  * - Request host/domain (primary domain or custom domain)
  * - URL path (optional /t/[tenantSlug] for preview)
  * - Default to main Settler tenant if no match
  */
 
-import { getUserRole, UserRole } from '../auth/roles';
-import type { PrismaClient } from '@prisma/client';
+import { getUserRole, UserRole } from "../auth/roles";
+import type { PrismaClient } from "@prisma/client";
 
 // Lazy-load Prisma to prevent initialization errors when DATABASE_URL is missing
 type PrismaTenantClient = PrismaClient;
 
 async function getPrisma(): Promise<PrismaTenantClient | null> {
   try {
-    const { prisma } = (await import('../db/prismaClient')) as unknown as { prisma: PrismaTenantClient };
+    const { prisma } = (await import("../db/prismaClient")) as unknown as {
+      prisma: PrismaTenantClient;
+    };
     return prisma;
   } catch (error) {
-    console.error('[TenantResolver] Failed to load Prisma:', error);
+    console.error("[TenantResolver] Failed to load Prisma:", error);
     return null;
   }
 }
@@ -40,7 +42,7 @@ export interface TenantResolutionResult {
  * Extract subdomain from host
  */
 function extractSubdomain(host: string): string | null {
-  const parts = host.split('.');
+  const parts = host.split(".");
   if (parts.length >= 3) {
     return parts[0] ?? null;
   }
@@ -67,10 +69,7 @@ async function findTenantByDomain(host: string): Promise<TenantSelect | null> {
     }
     const tenant = await prisma.tenant.findFirst({
       where: {
-        OR: [
-          { primaryDomain: host },
-          { customDomain: host },
-        ],
+        OR: [{ primaryDomain: host }, { customDomain: host }],
         isActive: true,
       },
       select: {
@@ -84,7 +83,7 @@ async function findTenantByDomain(host: string): Promise<TenantSelect | null> {
     });
     return tenant as TenantSelect | null;
   } catch (error) {
-    console.error('Failed to find tenant by domain:', error);
+    console.error("Failed to find tenant by domain:", error);
     return null;
   }
 }
@@ -111,7 +110,7 @@ async function findTenantBySlug(slug: string): Promise<TenantSelect | null> {
     });
     return tenant as TenantSelect | null;
   } catch (error) {
-    console.error('Failed to find tenant by slug:', error);
+    console.error("Failed to find tenant by slug:", error);
     return null;
   }
 }
@@ -126,7 +125,7 @@ async function getDefaultTenant(): Promise<TenantSelect | null> {
       return null;
     }
     const tenant = await prisma.tenant.findUnique({
-      where: { slug: 'default' },
+      where: { slug: "default" },
       select: {
         id: true,
         slug: true,
@@ -138,7 +137,7 @@ async function getDefaultTenant(): Promise<TenantSelect | null> {
     });
     return tenant as TenantSelect | null;
   } catch (error) {
-    console.error('Failed to get default tenant:', error);
+    console.error("Failed to get default tenant:", error);
     return null;
   }
 }
@@ -146,23 +145,16 @@ async function getDefaultTenant(): Promise<TenantSelect | null> {
 /**
  * Check if user can access tenant (for preview mode)
  */
-async function canAccessTenant(
-  userId: string | null,
-  tenantId: string
-): Promise<boolean> {
+async function canAccessTenant(userId: string | null, tenantId: string): Promise<boolean> {
   if (!userId) return false;
-  
+
   try {
     const role = await getUserRole(userId, tenantId);
-    
+
     // Super admin, tenant admin, and tenant editor can access
-    return [
-      UserRole.SUPER_ADMIN, 
-      UserRole.TENANT_ADMIN, 
-      UserRole.TENANT_EDITOR
-    ].includes(role);
+    return [UserRole.SUPER_ADMIN, UserRole.TENANT_ADMIN, UserRole.TENANT_EDITOR].includes(role);
   } catch (error) {
-    console.error('Failed to check tenant access:', error);
+    console.error("Failed to check tenant access:", error);
     return false;
   }
 }
@@ -176,9 +168,9 @@ export async function resolveTenant(
   userId?: string | null
 ): Promise<TenantResolutionResult> {
   try {
-    const host = request.headers.get('host') || '';
+    const host = request.headers.get("host") || "";
     const url = new URL(request.url);
-    
+
     // 1. Check custom domain or primary domain
     const tenantByDomain = await findTenantByDomain(host);
     if (tenantByDomain) {
@@ -188,7 +180,7 @@ export async function resolveTenant(
         tenant: tenantByDomain,
       };
     }
-    
+
     // 2. Check subdomain
     const subdomain = extractSubdomain(host);
     if (subdomain) {
@@ -201,14 +193,14 @@ export async function resolveTenant(
         };
       }
     }
-    
+
     // 3. Check path-based preview (if authenticated)
     const pathMatch = url.pathname.match(/^\/t\/([^/]+)/);
     if (pathMatch && userId) {
       const previewSlug = pathMatch[1];
       if (previewSlug) {
         const tenantBySlug = await findTenantBySlug(previewSlug);
-        if (tenantBySlug && await canAccessTenant(userId, tenantBySlug.id)) {
+        if (tenantBySlug && (await canAccessTenant(userId, tenantBySlug.id))) {
           return {
             tenantId: tenantBySlug.id,
             tenantSlug: tenantBySlug.slug,
@@ -217,7 +209,7 @@ export async function resolveTenant(
         }
       }
     }
-    
+
     // 4. Default tenant
     const defaultTenant = await getDefaultTenant();
     if (defaultTenant) {
@@ -228,13 +220,13 @@ export async function resolveTenant(
       };
     }
   } catch (error) {
-    console.error('Error resolving tenant:', error);
+    console.error("Error resolving tenant:", error);
   }
-  
+
   // Fallback: return null tenant (used when database is unavailable)
   return {
-    tenantId: '',
-    tenantSlug: 'default',
+    tenantId: "",
+    tenantSlug: "default",
     tenant: null,
   };
 }
@@ -257,7 +249,7 @@ export async function getTenantById(tenantId: string) {
       },
     });
   } catch (error) {
-    console.error('Failed to get tenant by ID:', error);
+    console.error("Failed to get tenant by ID:", error);
     return null;
   }
 }
@@ -280,7 +272,7 @@ export async function getTenantBySlug(slug: string) {
       },
     });
   } catch (error) {
-    console.error('Failed to get tenant by slug:', error);
+    console.error("Failed to get tenant by slug:", error);
     return null;
   }
 }

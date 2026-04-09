@@ -13,17 +13,20 @@ This document validates deployment across multiple platforms to ensure portabili
 **Status**: ✅ **DEPLOYED**
 
 **Evidence**:
+
 - `package.json` contains Vercel-specific scripts
 - `.vercel/` configuration exists
 - Build validation scripts exist
 
 **Configuration**:
+
 - Node.js runtime
 - Environment variables configured
 - Build command: `npm run build`
 - Output directory: `packages/web/.next`
 
 **Validation**:
+
 - [x] Build passes
 - [x] Environment variables portable
 - [x] Cold start behavior acceptable
@@ -33,6 +36,7 @@ This document validates deployment across multiple platforms to ensure portabili
 **Status**: ⚠️ **NOT YET DEPLOYED**
 
 **Required Configuration**:
+
 ```toml
 # fly.toml (to be created)
 app = "settler"
@@ -50,6 +54,7 @@ primary_region = "iad"
 ```
 
 **Validation Checklist**:
+
 - [ ] Create `fly.toml` configuration
 - [ ] Test build on Fly.io
 - [ ] Verify environment variable portability
@@ -61,11 +66,13 @@ primary_region = "iad"
 **Status**: ⚠️ **NOT YET DEPLOYED**
 
 **Required Configuration**:
+
 - Build Command: `npm run build`
 - Start Command: `npm start`
 - Environment: Node.js
 
 **Validation Checklist**:
+
 - [ ] Create `render.yaml` configuration
 - [ ] Test build on Render
 - [ ] Verify environment variable portability
@@ -77,10 +84,12 @@ primary_region = "iad"
 **Status**: ⚠️ **DOCKERFILE EXISTS BUT NOT VALIDATED**
 
 **Evidence**:
+
 - Dockerfile may exist in repository
 - Docker Compose configuration may exist
 
 **Validation Checklist**:
+
 - [ ] Verify Dockerfile exists and builds
 - [ ] Test Docker image locally
 - [ ] Verify multi-stage build works
@@ -117,29 +126,35 @@ NEXT_PUBLIC_APP_URL=https://...
 ### Platform-Specific Notes
 
 **Vercel**:
+
 - Environment variables set in dashboard
 - Supports preview deployments with different env vars
 
 **Fly.io**:
+
 - Environment variables set via `fly secrets set`
 - Supports secrets management
 
 **Render**:
+
 - Environment variables set in dashboard
 - Supports environment groups
 
 **Docker**:
+
 - Environment variables via `.env` file or `-e` flags
 - Supports docker-compose env files
 
 ## Build Validation
 
 ### Build Command
+
 ```bash
 npm run build
 ```
 
 ### Build Steps
+
 1. Install dependencies: `npm install`
 2. Type check: `npm run typecheck`
 3. Lint: `npm run lint`
@@ -147,6 +162,7 @@ npm run build
 5. Build web app: `cd packages/web && npm run build`
 
 ### Build Output
+
 - TypeScript compiled to JavaScript
 - Next.js static assets generated
 - API routes compiled
@@ -154,11 +170,13 @@ npm run build
 ## Cold Start Behavior
 
 ### Target Metrics
+
 - **Cold Start Time**: < 5 seconds
 - **Warm Request Time**: < 500ms
 - **Database Connection**: < 1 second
 
 ### Validation Steps
+
 1. Deploy to platform
 2. Wait for cold start (no requests for 15+ minutes)
 3. Make first request
@@ -169,12 +187,14 @@ npm run build
 ## Database Connectivity
 
 ### Connection Requirements
+
 - PostgreSQL connection string
 - SSL enabled for production
 - Connection pooling configured
 - Timeout handling
 
 ### Validation Steps
+
 1. Deploy application
 2. Verify database connection on startup
 3. Test query execution
@@ -184,11 +204,13 @@ npm run build
 ## Deployment Scripts
 
 ### Current Scripts
+
 - `scripts/vercel-deploy.sh` - Vercel deployment
 - `scripts/validate-build-safety.ts` - Build validation
 - `scripts/validate-nextjs-build.ts` - Next.js build validation
 
 ### Needed Scripts
+
 - `scripts/deploy-fly.sh` - Fly.io deployment
 - `scripts/deploy-render.sh` - Render deployment
 - `scripts/docker-build.sh` - Docker build validation
@@ -224,9 +246,9 @@ npm run build
 
 ## Status Summary
 
-| Platform | Status | Build | Env Vars | Cold Start | DB Connect |
-|----------|--------|-------|----------|------------|------------|
-| Vercel | ✅ Deployed | ✅ Passes | ✅ Portable | ✅ Acceptable | ✅ Works |
-| Fly.io | ⚠️ Not Deployed | ❌ Not Tested | ⚠️ Unknown | ❌ Not Tested | ❌ Not Tested |
-| Render | ⚠️ Not Deployed | ❌ Not Tested | ⚠️ Unknown | ❌ Not Tested | ❌ Not Tested |
-| Docker | ⚠️ Exists | ⚠️ Not Validated | ⚠️ Unknown | ❌ Not Tested | ❌ Not Tested |
+| Platform | Status          | Build            | Env Vars    | Cold Start    | DB Connect    |
+| -------- | --------------- | ---------------- | ----------- | ------------- | ------------- |
+| Vercel   | ✅ Deployed     | ✅ Passes        | ✅ Portable | ✅ Acceptable | ✅ Works      |
+| Fly.io   | ⚠️ Not Deployed | ❌ Not Tested    | ⚠️ Unknown  | ❌ Not Tested | ❌ Not Tested |
+| Render   | ⚠️ Not Deployed | ❌ Not Tested    | ⚠️ Unknown  | ❌ Not Tested | ❌ Not Tested |
+| Docker   | ⚠️ Exists       | ⚠️ Not Validated | ⚠️ Unknown  | ❌ Not Tested | ❌ Not Tested |

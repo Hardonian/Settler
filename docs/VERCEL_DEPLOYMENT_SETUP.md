@@ -55,6 +55,7 @@ After deployment, verify the environment variable is set:
 4. Check that `DATABASE_URL` is available (it won't show the value for security)
 
 Or use Vercel CLI:
+
 ```bash
 vercel env ls
 ```
@@ -94,6 +95,7 @@ curl https://your-domain.com/api/console/api-keys
 ### 3. Check Build Logs
 
 In Vercel Dashboard → Deployments → Latest → Build Logs:
+
 - ✅ Prisma client generated successfully
 - ✅ No DATABASE_URL errors
 - ✅ Build completed successfully
@@ -122,6 +124,7 @@ Ensure these are set in Vercel:
 ### Issue: Build Fails with "DATABASE_URL not found"
 
 **Solution:**
+
 1. Verify `DATABASE_URL` is set in Vercel environment variables
 2. Ensure it's set for the correct environment (Production/Preview)
 3. Clear build cache and redeploy
@@ -129,6 +132,7 @@ Ensure these are set in Vercel:
 ### Issue: Prisma Client Generation Fails
 
 **Solution:**
+
 1. Clear build cache
 2. Ensure `DATABASE_URL` is set before build
 3. Check build logs for specific error
@@ -136,6 +140,7 @@ Ensure these are set in Vercel:
 ### Issue: Database Connection Errors
 
 **Solution:**
+
 1. Verify `DATABASE_URL` format is correct
 2. Check Supabase IP allowlist (Settings → Database → Connection pooling)
 3. Verify database is accessible

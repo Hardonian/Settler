@@ -1,12 +1,11 @@
 /**
  * FinTech Module - Ledger Reconciliation
- * 
+ *
  * Part of Phase IV: Vertical Modules
  */
 
- 
-import { PrismaClient } from '@prisma/client';
-import { logInfo } from '../../../utils/logger';
+import { PrismaClient } from "@prisma/client";
+import { logInfo } from "../../../utils/logger";
 
 export interface LedgerEntry {
   id: string;
@@ -49,7 +48,7 @@ export class LedgerReconService {
     // Use Recon Core Engine for ledger reconciliation
     // Match entries by date, amount, account, reference
 
-    logInfo('Ledger reconciliation completed', { tenantId });
+    logInfo("Ledger reconciliation completed", { tenantId });
 
     return {
       matched: [],
@@ -69,17 +68,15 @@ export class LedgerReconService {
   ): Promise<{
     drift: number;
     percentage: number;
-    severity: 'low' | 'medium' | 'high' | 'critical';
+    severity: "low" | "medium" | "high" | "critical";
   }> {
     const drift = actualBalance - expectedBalance;
-    const percentage = expectedBalance !== 0
-      ? (drift / Math.abs(expectedBalance)) * 100
-      : 0;
+    const percentage = expectedBalance !== 0 ? (drift / Math.abs(expectedBalance)) * 100 : 0;
 
-    let severity: 'low' | 'medium' | 'high' | 'critical' = 'low';
-    if (Math.abs(percentage) > 10) severity = 'critical';
-    else if (Math.abs(percentage) > 5) severity = 'high';
-    else if (Math.abs(percentage) > 1) severity = 'medium';
+    let severity: "low" | "medium" | "high" | "critical" = "low";
+    if (Math.abs(percentage) > 10) severity = "critical";
+    else if (Math.abs(percentage) > 5) severity = "high";
+    else if (Math.abs(percentage) > 1) severity = "medium";
 
     return { drift, percentage, severity };
   }

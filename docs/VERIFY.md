@@ -4,11 +4,11 @@
 
 These scripts are defined in the repo root and implemented primarily via `scripts/verify-release.mjs`:
 
-| Script | Scope |
-| ------ | ----- |
-| `pnpm verify:fast` | Release-critical code health (root cleanliness, lint, typecheck, claims, boundaries, routes, security). Does **not** run the internal marketing/docs link crawl. |
-| `pnpm verify:fast:with-links` | Same as `verify:fast` plus `pnpm verify:internal-links`. |
-| `pnpm verify:full` | Broad gate including build, core tests, internal links, launch assets, and additional security stages—see `profiles.full` in `scripts/verify-release.mjs`. |
+| Script                        | Scope                                                                                                                                                            |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm verify:fast`            | Release-critical code health (root cleanliness, lint, typecheck, claims, boundaries, routes, security). Does **not** run the internal marketing/docs link crawl. |
+| `pnpm verify:fast:with-links` | Same as `verify:fast` plus `pnpm verify:internal-links`.                                                                                                         |
+| `pnpm verify:full`            | Broad gate including build, core tests, internal links, launch assets, and additional security stages—see `profiles.full` in `scripts/verify-release.mjs`.       |
 
 Canonical operator run detail is implemented in `@settler/reconciliation-core` (`resolveOperatorRunDetailForTenants`). The web app runs `prebuild` to compile that package and asserts dist freshness during `pnpm build` (see `packages/web/scripts/assert-reconciliation-core-dist.mjs`).
 
@@ -64,7 +64,8 @@ supabase migration up
 ls supabase/migrations/20260130*.sql
 ```
 
-**Expected**: 
+**Expected**:
+
 - `20260130000000_settler_receipts_hash_chain.sql`
 - `20260130000001_settler_tenant_context_helper.sql`
 - `20260130000002_settler_rls_hardening.sql`
@@ -135,6 +136,7 @@ ls supabase/migrations/20260130*.sql
 ### Environment Variables
 
 Verify these are set in Vercel:
+
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY` (if needed)

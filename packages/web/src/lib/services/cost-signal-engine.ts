@@ -1,6 +1,6 @@
 /**
  * Cost Signal Engine
- * 
+ *
  * Derives cost estimates from existing telemetry data without relying on paid APIs.
  * All cost calculations are based on heuristics and baselines.
  */
@@ -8,26 +8,86 @@
 // Cost baselines - inline definitions to avoid path issues
 const COST_BASELINES = {
   vercel: {
-    edgeRequest: { unit: 'request', costPerUnit: 0.0000001, description: 'Vercel Edge Request', confidence: 0.8, source: 'estimated' },
-    serverlessRequest: { unit: 'request', costPerUnit: 0.0000002, description: 'Vercel Serverless Request', confidence: 0.8, source: 'estimated' },
-    functionExecutionMs: { unit: 'ms', costPerUnit: 0.0000000001, description: 'Vercel Function Execution', confidence: 0.7, source: 'estimated' },
+    edgeRequest: {
+      unit: "request",
+      costPerUnit: 0.0000001,
+      description: "Vercel Edge Request",
+      confidence: 0.8,
+      source: "estimated",
+    },
+    serverlessRequest: {
+      unit: "request",
+      costPerUnit: 0.0000002,
+      description: "Vercel Serverless Request",
+      confidence: 0.8,
+      source: "estimated",
+    },
+    functionExecutionMs: {
+      unit: "ms",
+      costPerUnit: 0.0000000001,
+      description: "Vercel Function Execution",
+      confidence: 0.7,
+      source: "estimated",
+    },
   },
   supabase: {
-    query: { unit: 'query', costPerUnit: 0.0000001, description: 'Supabase Query', confidence: 0.8, source: 'estimated' },
-    storageGb: { unit: 'GB', costPerUnit: 0.021, description: 'Supabase Storage', confidence: 0.9, source: 'estimated' },
-    bandwidthGb: { unit: 'GB', costPerUnit: 0.09, description: 'Supabase Bandwidth', confidence: 0.9, source: 'estimated' },
+    query: {
+      unit: "query",
+      costPerUnit: 0.0000001,
+      description: "Supabase Query",
+      confidence: 0.8,
+      source: "estimated",
+    },
+    storageGb: {
+      unit: "GB",
+      costPerUnit: 0.021,
+      description: "Supabase Storage",
+      confidence: 0.9,
+      source: "estimated",
+    },
+    bandwidthGb: {
+      unit: "GB",
+      costPerUnit: 0.09,
+      description: "Supabase Bandwidth",
+      confidence: 0.9,
+      source: "estimated",
+    },
   },
   email: {
-    send: { unit: 'email', costPerUnit: 0.0001, description: 'Email Send', confidence: 0.9, source: 'estimated' },
+    send: {
+      unit: "email",
+      costPerUnit: 0.0001,
+      description: "Email Send",
+      confidence: 0.9,
+      source: "estimated",
+    },
   },
   webhook: {
-    delivery: { unit: 'webhook', costPerUnit: 0.0000001, description: 'Webhook Delivery', confidence: 0.7, source: 'estimated' },
+    delivery: {
+      unit: "webhook",
+      costPerUnit: 0.0000001,
+      description: "Webhook Delivery",
+      confidence: 0.7,
+      source: "estimated",
+    },
   },
   storage: {
-    gb: { unit: 'GB', costPerUnit: 0.023, description: 'Storage', confidence: 0.8, source: 'estimated' },
+    gb: {
+      unit: "GB",
+      costPerUnit: 0.023,
+      description: "Storage",
+      confidence: 0.8,
+      source: "estimated",
+    },
   },
   compute: {
-    hour: { unit: 'hour', costPerUnit: 0.1, description: 'Compute Hour', confidence: 0.7, source: 'estimated' },
+    hour: {
+      unit: "hour",
+      costPerUnit: 0.1,
+      description: "Compute Hour",
+      confidence: 0.7,
+      source: "estimated",
+    },
   },
 } as any;
 
@@ -39,18 +99,21 @@ export function getCostBaseline(category: string, type: string): any {
 // Ensure COST_BASELINES is considered used
 void COST_BASELINES;
 
-export function calculateCost(unitCount: number, baseline: any): { totalCost: number; confidence: number } {
+export function calculateCost(
+  unitCount: number,
+  baseline: any
+): { totalCost: number; confidence: number } {
   if (!baseline) return { totalCost: 0, confidence: 0 };
   return {
     totalCost: unitCount * baseline.costPerUnit,
     confidence: baseline.confidence || 0.5,
   };
 }
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from "@/lib/supabase/server";
 
 export interface CostInput {
   date: string; // YYYY-MM-DD
-  source: 'vercel' | 'supabase' | 'email' | 'webhook' | 'storage' | 'compute' | 'other';
+  source: "vercel" | "supabase" | "email" | "webhook" | "storage" | "compute" | "other";
   unitCount: number;
   unitCostEst: number;
   totalCostEst: number;
@@ -84,14 +147,14 @@ export async function deriveCostInputsFromEvents(
 
   // Query ops_events for the date
   let query = supabase
-    .from('ops_events')
-    .select('*')
-    .eq('created_at', date)
-    .gte('created_at', `${date}T00:00:00Z`)
-    .lt('created_at', `${date}T23:59:59Z`);
+    .from("ops_events")
+    .select("*")
+    .eq("created_at", date)
+    .gte("created_at", `${date}T00:00:00Z`)
+    .lt("created_at", `${date}T23:59:59Z`);
 
   if (organizationId) {
-    query = query.eq('organization_id', organizationId);
+    query = query.eq("organization_id", organizationId);
   }
 
   const { data: events, error } = await query;
@@ -112,7 +175,7 @@ export async function deriveCostInputsFromEvents(
   const eventGroups = new Map<string, EventRow[]>();
 
   for (const event of eventRows) {
-    const key = `${event.event_type || 'unknown'}:${event.event_category || 'unknown'}`;
+    const key = `${event.event_type || "unknown"}:${event.event_category || "unknown"}`;
     if (!eventGroups.has(key)) {
       eventGroups.set(key, []);
     }
@@ -121,18 +184,21 @@ export async function deriveCostInputsFromEvents(
 
   // Derive costs for each group
   for (const [key, groupEvents] of eventGroups) {
-    const [eventType, category] = key.split(':');
+    const [eventType, category] = key.split(":");
 
     // Vercel requests
-    if (eventType === 'api_request' && category === 'infrastructure') {
-      const baseline = getCostBaseline('vercel', 'edgeRequest');
+    if (eventType === "api_request" && category === "infrastructure") {
+      const baseline = getCostBaseline("vercel", "edgeRequest");
       if (baseline) {
         const unitCount = groupEvents.length;
         const { totalCost, confidence } = calculateCost(unitCount, baseline);
-        
+
         // Estimate execution time from duration_ms
-        const totalDurationMs = groupEvents.reduce((sum: number, e: any) => sum + ((e as EventRow).duration_ms || 0), 0);
-        const execBaseline = getCostBaseline('vercel', 'functionExecutionMs');
+        const totalDurationMs = groupEvents.reduce(
+          (sum: number, e: any) => sum + ((e as EventRow).duration_ms || 0),
+          0
+        );
+        const execBaseline = getCostBaseline("vercel", "functionExecutionMs");
         let execCost = 0;
         if (execBaseline) {
           execCost = totalDurationMs * execBaseline.costPerUnit;
@@ -140,12 +206,12 @@ export async function deriveCostInputsFromEvents(
 
         inputs.push({
           date,
-          source: 'vercel',
+          source: "vercel",
           unitCount,
           unitCostEst: baseline.costPerUnit,
           totalCostEst: totalCost + execCost,
           confidence: Math.min(confidence, 0.7), // Lower confidence for derived data
-          derivationMethod: 'request_count_from_ops_events',
+          derivationMethod: "request_count_from_ops_events",
           derivationMetadata: {
             eventType,
             eventCount: unitCount,
@@ -158,20 +224,20 @@ export async function deriveCostInputsFromEvents(
     }
 
     // Webhook deliveries
-    if (eventType === 'webhook_delivery') {
-      const baseline = getCostBaseline('webhook', 'delivery');
+    if (eventType === "webhook_delivery") {
+      const baseline = getCostBaseline("webhook", "delivery");
       if (baseline) {
         const unitCount = groupEvents.length;
         const { totalCost, confidence } = calculateCost(unitCount, baseline);
 
         inputs.push({
           date,
-          source: 'webhook',
+          source: "webhook",
           unitCount,
           unitCostEst: baseline.costPerUnit,
           totalCostEst: totalCost,
           confidence,
-          derivationMethod: 'webhook_count_from_ops_events',
+          derivationMethod: "webhook_count_from_ops_events",
           derivationMetadata: {
             eventCount: unitCount,
           },
@@ -181,21 +247,21 @@ export async function deriveCostInputsFromEvents(
     }
 
     // Database queries (estimated from API requests)
-    if (eventType === 'api_request' && category === 'application') {
+    if (eventType === "api_request" && category === "application") {
       // Estimate ~5 queries per API request on average
       const estimatedQueries = groupEvents.length * 5;
-      const baseline = getCostBaseline('supabase', 'query');
+      const baseline = getCostBaseline("supabase", "query");
       if (baseline) {
         const { totalCost, confidence } = calculateCost(estimatedQueries, baseline);
 
         inputs.push({
           date,
-          source: 'supabase',
+          source: "supabase",
           unitCount: estimatedQueries,
           unitCostEst: baseline.costPerUnit,
           totalCostEst: totalCost,
           confidence: confidence * 0.5, // Lower confidence for estimated queries
-          derivationMethod: 'estimated_query_count_from_api_requests',
+          derivationMethod: "estimated_query_count_from_api_requests",
           derivationMetadata: {
             apiRequestCount: groupEvents.length,
             queriesPerRequest: 5,
@@ -213,16 +279,14 @@ export async function deriveCostInputsFromEvents(
 /**
  * Calculate daily cost rollup from cost inputs
  */
-export async function calculateDailyCostRollup(
-  date: string
-): Promise<CostRollup> {
+export async function calculateDailyCostRollup(date: string): Promise<CostRollup> {
   const supabase = await createClient();
 
   // Get all cost inputs for the date
   const { data: inputs, error } = await supabase
-    .from('ops_cost_inputs')
-    .select('*')
-    .eq('date', date);
+    .from("ops_cost_inputs")
+    .select("*")
+    .eq("date", date);
 
   type CostInputRow = {
     total_cost_est?: number;
@@ -244,16 +308,16 @@ export async function calculateDailyCostRollup(
       computeCostEst: 0,
       confidence: 0,
       derivationSummary: {
-        message: 'No cost inputs available for this date',
+        message: "No cost inputs available for this date",
       },
     };
   }
 
   // Aggregate by source category
-  const infraSources = ['vercel', 'compute'];
-  const dataSources = ['supabase'];
-  const messagingSources = ['email', 'webhook'];
-  const storageSources = ['storage'];
+  const infraSources = ["vercel", "compute"];
+  const dataSources = ["supabase"];
+  const messagingSources = ["email", "webhook"];
+  const storageSources = ["storage"];
 
   let infraCost = 0;
   let dataCost = 0;
@@ -266,11 +330,11 @@ export async function calculateDailyCostRollup(
   for (const input of inputRows) {
     const cost = Number(input.total_cost_est || 0);
     const confidence = Number(input.confidence || 0);
-    const source = input.source || '';
+    const source = input.source || "";
 
     if (infraSources.includes(source)) {
       infraCost += cost;
-      if (source === 'compute') {
+      if (source === "compute") {
         computeCost += cost;
       }
     } else if (dataSources.includes(source)) {
@@ -298,7 +362,7 @@ export async function calculateDailyCostRollup(
     confidence: avgConfidence,
     derivationSummary: {
       inputCount: inputRows.length,
-      sources: [...new Set(inputRows.map((i) => i.source || '').filter(Boolean))],
+      sources: [...new Set(inputRows.map((i) => i.source || "").filter(Boolean))],
     },
   };
 }
@@ -321,12 +385,12 @@ export async function storeCostInputs(inputs: CostInput[]): Promise<void> {
     organization_id: input.organizationId || null,
   }));
 
-  const { error } = await supabase.from('ops_cost_inputs').upsert(records as any, {
-    onConflict: 'date,source,organization_id',
+  const { error } = await supabase.from("ops_cost_inputs").upsert(records as any, {
+    onConflict: "date,source,organization_id",
   });
 
   if (error) {
-    console.error('Failed to store cost inputs:', error);
+    console.error("Failed to store cost inputs:", error);
     throw error;
   }
 }
@@ -337,7 +401,7 @@ export async function storeCostInputs(inputs: CostInput[]): Promise<void> {
 export async function storeCostRollup(rollup: CostRollup): Promise<void> {
   const supabase = await createClient();
 
-  const { error } = await supabase.from('ops_cost_daily_rollups').upsert(
+  const { error } = await supabase.from("ops_cost_daily_rollups").upsert(
     {
       date: rollup.date,
       total_cost_est: rollup.totalCostEst,
@@ -350,12 +414,12 @@ export async function storeCostRollup(rollup: CostRollup): Promise<void> {
       derivation_summary: rollup.derivationSummary,
     } as any,
     {
-      onConflict: 'date',
+      onConflict: "date",
     }
   );
 
   if (error) {
-    console.error('Failed to store cost rollup:', error);
+    console.error("Failed to store cost rollup:", error);
     throw error;
   }
 }

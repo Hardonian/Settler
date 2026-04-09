@@ -3,83 +3,82 @@
  * Creates default alert rules for key metrics
  */
 
-import { query } from '../packages/api/src/db';
-import { upsertAlertThreshold } from '../packages/api/src/services/operator-mode/alerting';
-import { logInfo, logError } from '../packages/api/src/utils/logger';
+import { query } from "../packages/api/src/db";
+import { upsertAlertThreshold } from "../packages/api/src/services/operator-mode/alerting";
+import { logInfo, logError } from "../packages/api/src/utils/logger";
 
 // Default operator user ID (should be set via environment variable)
-const OPERATOR_USER_ID = process.env.OPERATOR_USER_ID || '00000000-0000-0000-0000-000000000000';
+const OPERATOR_USER_ID = process.env.OPERATOR_USER_ID || "00000000-0000-0000-0000-000000000000";
 
 interface DefaultAlertRule {
   name: string;
-  metric: 'error_rate' | 'slow_endpoint' | 'failed_ingestion' | 'billing_anomaly' | 'usage_limit';
+  metric: "error_rate" | "slow_endpoint" | "failed_ingestion" | "billing_anomaly" | "usage_limit";
   threshold: number;
-  operator: 'gt' | 'gte' | 'lt' | 'lte' | 'eq' | 'neq';
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  channels: Array<'email' | 'slack' | 'webhook'>;
+  operator: "gt" | "gte" | "lt" | "lte" | "eq" | "neq";
+  severity: "low" | "medium" | "high" | "critical";
+  channels: Array<"email" | "slack" | "webhook">;
   enabled: boolean;
 }
 
 const DEFAULT_ALERT_RULES: DefaultAlertRule[] = [
   {
-    name: 'High Error Rate',
-    metric: 'error_rate',
+    name: "High Error Rate",
+    metric: "error_rate",
     threshold: 0.05, // 5%
-    operator: 'gt',
-    severity: 'high',
-    channels: ['slack'],
+    operator: "gt",
+    severity: "high",
+    channels: ["slack"],
     enabled: true,
   },
   {
-    name: 'Critical Error Rate',
-    metric: 'error_rate',
-    threshold: 0.10, // 10%
-    operator: 'gt',
-    severity: 'critical',
-    channels: ['slack', 'email'],
+    name: "Critical Error Rate",
+    metric: "error_rate",
+    threshold: 0.1, // 10%
+    operator: "gt",
+    severity: "critical",
+    channels: ["slack", "email"],
     enabled: true,
   },
   {
-    name: 'Slow Endpoints',
-    metric: 'slow_endpoint',
+    name: "Slow Endpoints",
+    metric: "slow_endpoint",
     threshold: 5000, // 5 seconds P95
-    operator: 'gt',
-    severity: 'medium',
-    channels: ['slack'],
+    operator: "gt",
+    severity: "medium",
+    channels: ["slack"],
     enabled: true,
   },
   {
-    name: 'Failed Ingestions',
-    metric: 'failed_ingestion',
+    name: "Failed Ingestions",
+    metric: "failed_ingestion",
     threshold: 10, // 10 failures per day
-    operator: 'gt',
-    severity: 'high',
-    channels: ['slack'],
+    operator: "gt",
+    severity: "high",
+    channels: ["slack"],
     enabled: true,
   },
   {
-    name: 'Billing Anomalies',
-    metric: 'billing_anomaly',
+    name: "Billing Anomalies",
+    metric: "billing_anomaly",
     threshold: 5, // 5 anomalies per day
-    operator: 'gt',
-    severity: 'medium',
-    channels: ['slack'],
+    operator: "gt",
+    severity: "medium",
+    channels: ["slack"],
     enabled: true,
   },
 ];
 
 async function setupDefaultAlerts(): Promise<void> {
-  logInfo('Setting up default alert rules', { operatorUserId: OPERATOR_USER_ID });
+  logInfo("Setting up default alert rules", { operatorUserId: OPERATOR_USER_ID });
 
   try {
     // Verify operator user exists (or create a system user)
-    const users = await query<{ id: string }>(
-      `SELECT id FROM users WHERE id = $1 LIMIT 1`,
-      [OPERATOR_USER_ID]
-    );
+    const users = await query<{ id: string }>(`SELECT id FROM users WHERE id = $1 LIMIT 1`, [
+      OPERATOR_USER_ID,
+    ]);
 
     if (users.length === 0) {
-      logInfo('Operator user not found, creating system user', { userId: OPERATOR_USER_ID });
+      logInfo("Operator user not found, creating system user", { userId: OPERATOR_USER_ID });
       // Create a system user for operator mode alerts
       await query(
         `INSERT INTO users (id, email, password_hash, tenant_id, role)
@@ -103,7 +102,7 @@ async function setupDefaultAlerts(): Promise<void> {
         );
 
         if (existing.length > 0) {
-          logInfo('Alert rule already exists, updating', { name: rule.name });
+          logInfo("Alert rule already exists, updating", { name: rule.name });
           await upsertAlertThreshold(OPERATOR_USER_ID, {
             ...rule,
             id: existing[0].id,
@@ -112,35 +111,35 @@ async function setupDefaultAlerts(): Promise<void> {
         } else {
           const ruleId = await upsertAlertThreshold(OPERATOR_USER_ID, rule);
           createdRules.push(rule.name);
-          logInfo('Alert rule created', { name: rule.name, id: ruleId });
+          logInfo("Alert rule created", { name: rule.name, id: ruleId });
         }
       } catch (error) {
-        logError('Failed to create alert rule', error, { name: rule.name });
+        logError("Failed to create alert rule", error, { name: rule.name });
       }
     }
 
-    logInfo('Default alert rules setup completed', {
+    logInfo("Default alert rules setup completed", {
       created: createdRules.length,
       skipped: skippedRules.length,
       total: DEFAULT_ALERT_RULES.length,
     });
 
-    console.log('\n✅ Default alert rules setup completed:');
+    console.log("\n✅ Default alert rules setup completed:");
     console.log(`   Created: ${createdRules.length}`);
     console.log(`   Skipped: ${skippedRules.length}`);
     console.log(`   Total: ${DEFAULT_ALERT_RULES.length}`);
 
     if (createdRules.length > 0) {
-      console.log('\n   Created rules:');
-      createdRules.forEach(name => console.log(`   - ${name}`));
+      console.log("\n   Created rules:");
+      createdRules.forEach((name) => console.log(`   - ${name}`));
     }
 
     if (skippedRules.length > 0) {
-      console.log('\n   Updated rules:');
-      skippedRules.forEach(name => console.log(`   - ${name}`));
+      console.log("\n   Updated rules:");
+      skippedRules.forEach((name) => console.log(`   - ${name}`));
     }
   } catch (error) {
-    logError('Failed to setup default alert rules', error);
+    logError("Failed to setup default alert rules", error);
     throw error;
   }
 }
@@ -149,11 +148,11 @@ async function setupDefaultAlerts(): Promise<void> {
 if (require.main === module) {
   setupDefaultAlerts()
     .then(() => {
-      console.log('\n✅ Setup completed successfully');
+      console.log("\n✅ Setup completed successfully");
       process.exit(0);
     })
-    .catch(error => {
-      console.error('\n❌ Setup failed:', error);
+    .catch((error) => {
+      console.error("\n❌ Setup failed:", error);
       process.exit(1);
     });
 }

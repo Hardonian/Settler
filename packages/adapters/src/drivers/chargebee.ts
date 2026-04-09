@@ -234,7 +234,6 @@ export class ChargebeeDriver implements ConnectorDriver {
     }
   }
 
-   
   async handleWebhook(
     _payload: { eventId: string; eventType: string; payload: unknown; signature?: string },
     _credentials: Record<string, unknown>

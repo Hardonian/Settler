@@ -15,11 +15,13 @@
    - If it fails in `repo-integrity` or `typecheck`, stop rollout and revert.
 
 ## Rollback controls
+
 - Global kernel kill switch: `SETTLER_DISABLE_KERNEL=1`
 - Shadow mode: `SETTLER_KERNEL_EXECUTION_MODE=shadow`
 - Scoped kernel rollback: `SETTLER_DISABLE_OPERATION=<op>`
 
 ## Classification hints
+
 - `binary_unavailable`: kernel binary missing/not executable.
 - `protocol_mismatch`: kernel handshake/version incompatibility.
 - `timeout`: runner could not answer in window.

@@ -15,7 +15,7 @@ class ReconciliationError extends Error {
     timestamp;
     constructor(message, code, statusCode, details) {
         super(message);
-        this.name = 'ReconciliationError';
+        this.name = "ReconciliationError";
         this.code = code;
         this.statusCode = statusCode;
         this.details = details;
@@ -31,8 +31,8 @@ class ValidationError extends ReconciliationError {
     field;
     value;
     constructor(message, field, value, details) {
-        super(message, 'VALIDATION_ERROR', 400, details);
-        this.name = 'ValidationError';
+        super(message, "VALIDATION_ERROR", 400, details);
+        this.name = "ValidationError";
         this.field = field;
         this.value = value;
     }
@@ -43,8 +43,8 @@ exports.ValidationError = ValidationError;
  */
 class SecurityError extends ReconciliationError {
     constructor(message, details) {
-        super(message, 'SECURITY_ERROR', 403, details);
-        this.name = 'SecurityError';
+        super(message, "SECURITY_ERROR", 403, details);
+        this.name = "SecurityError";
     }
 }
 exports.SecurityError = SecurityError;
@@ -56,8 +56,8 @@ class CompilationError extends ReconciliationError {
     line;
     column;
     constructor(message, component, line, column, details) {
-        super(message, 'COMPILATION_ERROR', 500, details);
-        this.name = 'CompilationError';
+        super(message, "COMPILATION_ERROR", 500, details);
+        this.name = "CompilationError";
         this.component = component;
         this.line = line;
         this.column = column;
@@ -70,8 +70,8 @@ exports.CompilationError = CompilationError;
 class ConfigurationError extends ReconciliationError {
     configPath;
     constructor(message, configPath, details) {
-        super(message, 'CONFIGURATION_ERROR', 500, details);
-        this.name = 'ConfigurationError';
+        super(message, "CONFIGURATION_ERROR", 500, details);
+        this.name = "ConfigurationError";
         this.configPath = configPath;
     }
 }

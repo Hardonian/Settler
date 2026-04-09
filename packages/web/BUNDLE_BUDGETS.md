@@ -3,6 +3,7 @@
 ## Scale-Readiness: Performance Budget Guidelines
 
 **WHY THIS MATTERS AT SCALE:**
+
 - Every 100KB added = ~1s slower load time on 3G
 - Larger bundles = higher CDN costs
 - Poor performance = lower conversion rates
@@ -12,28 +13,28 @@
 
 ### Page Bundles (Initial Load)
 
-| Page Type | Budget | Current | Status |
-|-----------|--------|---------|--------|
-| Landing pages | 200KB | TBD | ⏳ Baseline needed |
-| Dashboard | 300KB | TBD | ⏳ Baseline needed |
-| Console pages | 250KB | TBD | ⏳ Baseline needed |
-| Admin pages | 350KB | TBD | ⏳ Baseline needed |
+| Page Type     | Budget | Current | Status             |
+| ------------- | ------ | ------- | ------------------ |
+| Landing pages | 200KB  | TBD     | ⏳ Baseline needed |
+| Dashboard     | 300KB  | TBD     | ⏳ Baseline needed |
+| Console pages | 250KB  | TBD     | ⏳ Baseline needed |
+| Admin pages   | 350KB  | TBD     | ⏳ Baseline needed |
 
 ### Shared Bundles
 
-| Bundle | Budget | Notes |
-|--------|--------|-------|
-| Framework chunk | 180KB | Next.js + React core |
-| Common chunk | 100KB | Shared utilities |
-| Vendor chunk | 150KB | Third-party libs |
+| Bundle          | Budget | Notes                |
+| --------------- | ------ | -------------------- |
+| Framework chunk | 180KB  | Next.js + React core |
+| Common chunk    | 100KB  | Shared utilities     |
+| Vendor chunk    | 150KB  | Third-party libs     |
 
 ### Total Bundle Size
 
-| Metric | Target | Notes |
-|--------|--------|-------|
-| First Load JS | < 300KB | Critical for performance |
-| Total JS | < 1MB | All pages combined |
-| Unused JS | < 20% | Code splitting effectiveness |
+| Metric        | Target  | Notes                        |
+| ------------- | ------- | ---------------------------- |
+| First Load JS | < 300KB | Critical for performance     |
+| Total JS      | < 1MB   | All pages combined           |
+| Unused JS     | < 20%   | Code splitting effectiveness |
 
 ## Monitoring
 
@@ -50,6 +51,7 @@ pnpm analyze:bundle
 ### CI/CD
 
 Add to GitHub Actions:
+
 ```yaml
 - name: Check bundle size
   run: |
@@ -64,11 +66,13 @@ Add to GitHub Actions:
 ### 1. Code Splitting
 
 ✅ **Current Implementation:**
+
 - Next.js automatic code splitting
 - Dynamic imports for heavy components
 - Route-based splitting (App Router)
 
 🎯 **Improvement Opportunities:**
+
 ```typescript
 // Heavy components - use dynamic imports
 const AdminDashboard = dynamic(() => import('@/components/admin/Dashboard'), {
@@ -86,33 +90,37 @@ const AnalyticsPanel = dynamic(() =>
 ### 2. Tree Shaking
 
 ✅ **Current Implementation:**
+
 ```javascript
 // next.config.js
 optimizePackageImports: [
-  'lucide-react',        // Icons: 300KB → 20KB per icon
-  'date-fns',            // Dates: 200KB → 2KB per function
-  'recharts',            // Charts: 400KB → varies by chart type
-]
+  "lucide-react", // Icons: 300KB → 20KB per icon
+  "date-fns", // Dates: 200KB → 2KB per function
+  "recharts", // Charts: 400KB → varies by chart type
+];
 ```
 
 🎯 **Best Practices:**
+
 ```typescript
 // ✅ Good - tree-shakeable
-import { ChevronRight } from 'lucide-react';
-import { format } from 'date-fns';
+import { ChevronRight } from "lucide-react";
+import { format } from "date-fns";
 
 // ❌ Bad - imports everything
-import * as Icons from 'lucide-react';
-import DateFns from 'date-fns';
+import * as Icons from "lucide-react";
+import DateFns from "date-fns";
 ```
 
 ### 3. Server Components
 
 ✅ **Current Implementation:**
+
 - Server Components for data fetching
 - Client Components marked with 'use client'
 
 🎯 **Optimization:**
+
 - Move more components to Server Components
 - Use React Server Actions for mutations
 - Minimize 'use client' boundary
@@ -120,12 +128,14 @@ import DateFns from 'date-fns';
 ### 4. External Dependencies
 
 Review before adding:
+
 - Is it tree-shakeable?
 - What's the bundle size?
 - Can we use a lighter alternative?
 - Do we need the whole library?
 
 **Heavy Dependencies (Monitor These):**
+
 ```typescript
 // Current heavy deps (size estimates)
 "framer-motion": "~180KB"      // Consider motion-one for smaller sites
@@ -146,6 +156,7 @@ Review before adding:
 ### Review Process
 
 When bundle increases:
+
 1. Identify what changed (bundle analysis)
 2. Justify the increase (feature value vs. cost)
 3. Explore alternatives (lighter lib, code split, lazy load)
@@ -172,13 +183,13 @@ pnpm bundle:size
 
 ## Performance Impact
 
-| Bundle Size | 3G Load Time | 4G Load Time | Impact |
-|-------------|--------------|--------------|--------|
-| 100KB | ~1s | ~0.3s | ✅ Excellent |
-| 200KB | ~2s | ~0.6s | ✅ Good |
-| 300KB | ~3s | ~0.9s | ⚠️ Acceptable |
-| 500KB | ~5s | ~1.5s | ❌ Poor |
-| 1MB | ~10s | ~3s | ❌ Unacceptable |
+| Bundle Size | 3G Load Time | 4G Load Time | Impact          |
+| ----------- | ------------ | ------------ | --------------- |
+| 100KB       | ~1s          | ~0.3s        | ✅ Excellent    |
+| 200KB       | ~2s          | ~0.6s        | ✅ Good         |
+| 300KB       | ~3s          | ~0.9s        | ⚠️ Acceptable   |
+| 500KB       | ~5s          | ~1.5s        | ❌ Poor         |
+| 1MB         | ~10s         | ~3s          | ❌ Unacceptable |
 
 ## Resources
 

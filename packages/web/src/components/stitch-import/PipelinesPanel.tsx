@@ -370,7 +370,9 @@ export function PipelinesPanel() {
                   <div className="text-xl font-bold mt-1">{selectedPipeline.latency || "---"}</div>
                 </Card>
                 <Card className="p-4 bg-muted/20 dark:bg-background border-border dark:border-border">
-                  <span className="text-[10px] font-bold text-muted-foreground uppercase">Processed</span>
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase">
+                    Processed
+                  </span>
                   <div className="text-xl font-bold mt-1 text-primary-600">
                     {selectedPipeline.throughput || "---"}
                   </div>
@@ -390,7 +392,9 @@ export function PipelinesPanel() {
                       <h4 className="text-sm font-bold">
                         {selectedPipeline.input || "Default Source"}
                       </h4>
-                      <p className="text-xs text-muted-foreground font-medium">Type: API Connector</p>
+                      <p className="text-xs text-muted-foreground font-medium">
+                        Type: API Connector
+                      </p>
                     </div>
                   </div>
                   <div className="relative">
@@ -412,7 +416,9 @@ export function PipelinesPanel() {
                       <h4 className="text-sm font-bold">
                         {selectedPipeline.output || "Default Sink"}
                       </h4>
-                      <p className="text-xs text-muted-foreground font-medium">Storage Class: Standard</p>
+                      <p className="text-xs text-muted-foreground font-medium">
+                        Storage Class: Standard
+                      </p>
                     </div>
                   </div>
                 </div>

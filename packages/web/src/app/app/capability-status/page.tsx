@@ -1,7 +1,7 @@
-import { headers } from 'next/headers';
-import fs from 'node:fs/promises';
-import path from 'node:path';
-import { CheckCircle, AlertTriangle, XCircle, Clock } from 'lucide-react';
+import { headers } from "next/headers";
+import fs from "node:fs/promises";
+import path from "node:path";
+import { CheckCircle, AlertTriangle, XCircle, Clock } from "lucide-react";
 
 type StatusPayload = {
   overallStatus?: string;
@@ -32,12 +32,12 @@ type Capability = {
 
 async function fetchLocal<T>(route: string): Promise<T | null> {
   const h = await headers();
-  const host = h.get('host') || 'localhost:3000';
-  const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
+  const host = h.get("host") || "localhost:3000";
+  const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
   try {
     const res = await fetch(`${protocol}://${host}${route}`, {
-      cache: 'no-store',
-      headers: { authorization: h.get('authorization') || '' },
+      cache: "no-store",
+      headers: { authorization: h.get("authorization") || "" },
     });
     if (!res.ok) return null;
     return (await res.json()) as T;
@@ -48,8 +48,8 @@ async function fetchLocal<T>(route: string): Promise<T | null> {
 
 async function loadCapabilities(): Promise<Capability[]> {
   try {
-    const file = path.join(process.cwd(), 'docs/reference/capability-surface.registry.json');
-    const json = JSON.parse(await fs.readFile(file, 'utf8'));
+    const file = path.join(process.cwd(), "docs/reference/capability-surface.registry.json");
+    const json = JSON.parse(await fs.readFile(file, "utf8"));
     return json.capabilities ?? [];
   } catch {
     return [];
@@ -57,25 +57,25 @@ async function loadCapabilities(): Promise<Capability[]> {
 }
 
 function systemStatusIcon(status?: string) {
-  const s = (status ?? '').toLowerCase();
-  if (s === 'operational' || s === 'ok' || s === 'healthy') {
+  const s = (status ?? "").toLowerCase();
+  if (s === "operational" || s === "ok" || s === "healthy") {
     return <CheckCircle className="h-4 w-4 text-green-600 shrink-0" aria-hidden="true" />;
   }
-  if (s === 'degraded' || s === 'warning') {
+  if (s === "degraded" || s === "warning") {
     return <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0" aria-hidden="true" />;
   }
-  if (s === 'down' || s === 'error' || s === 'critical') {
+  if (s === "down" || s === "error" || s === "critical") {
     return <XCircle className="h-4 w-4 text-red-500 shrink-0" aria-hidden="true" />;
   }
   return <Clock className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />;
 }
 
 function formatTimestamp(ts?: string): string {
-  if (!ts) return '—';
+  if (!ts) return "—";
   try {
-    return new Intl.DateTimeFormat('en-US', {
-      dateStyle: 'medium',
-      timeStyle: 'short',
+    return new Intl.DateTimeFormat("en-US", {
+      dateStyle: "medium",
+      timeStyle: "short",
     }).format(new Date(ts));
   } catch {
     return ts;
@@ -84,13 +84,13 @@ function formatTimestamp(ts?: string): string {
 
 export default async function CapabilityStatusPage() {
   const [status, health, capabilities] = await Promise.all([
-    fetchLocal<StatusPayload>('/api/status'),
-    fetchLocal<HealthPayload>('/api/status/health'),
+    fetchLocal<StatusPayload>("/api/status"),
+    fetchLocal<HealthPayload>("/api/status/health"),
     loadCapabilities(),
   ]);
 
   const connectivityHealthy = health?.healthy === true;
-  const healthStatus = health?.status ?? 'unavailable';
+  const healthStatus = health?.status ?? "unavailable";
 
   return (
     <div className="space-y-6">
@@ -116,7 +116,7 @@ export default async function CapabilityStatusPage() {
               <div className="mt-3 flex items-center gap-2">
                 {systemStatusIcon(status.overallStatus)}
                 <span className="text-sm font-medium capitalize text-foreground">
-                  {status.overallStatus ?? 'Unknown'}
+                  {status.overallStatus ?? "Unknown"}
                 </span>
               </div>
               {status.systems && status.systems.length > 0 && (
@@ -126,7 +126,7 @@ export default async function CapabilityStatusPage() {
                       <span className="text-muted-foreground">{s.name}</span>
                       <span className="flex items-center gap-1.5">
                         {systemStatusIcon(s.status)}
-                        <span className="capitalize text-foreground">{s.status ?? 'unknown'}</span>
+                        <span className="capitalize text-foreground">{s.status ?? "unknown"}</span>
                       </span>
                     </li>
                   ))}
@@ -135,7 +135,7 @@ export default async function CapabilityStatusPage() {
               {status.connectivity?.degraded_reasons &&
                 status.connectivity.degraded_reasons.length > 0 && (
                   <p className="mt-3 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:bg-amber-950/40 dark:text-amber-200 font-mono break-all">
-                    {status.connectivity.degraded_reasons.join(' · ')}
+                    {status.connectivity.degraded_reasons.join(" · ")}
                   </p>
                 )}
               {status.error && (
@@ -156,7 +156,9 @@ export default async function CapabilityStatusPage() {
             <>
               <div className="mt-3 flex items-center gap-2">
                 {systemStatusIcon(healthStatus)}
-                <span className="text-sm font-medium capitalize text-foreground">{healthStatus}</span>
+                <span className="text-sm font-medium capitalize text-foreground">
+                  {healthStatus}
+                </span>
               </div>
               <div className="mt-3 flex items-center gap-2">
                 {connectivityHealthy ? (
@@ -166,13 +168,13 @@ export default async function CapabilityStatusPage() {
                 )}
                 <span className="text-sm text-muted-foreground">
                   {connectivityHealthy
-                    ? 'Core probes succeeded'
-                    : 'One or more connectivity probes failed — see degraded reasons'}
+                    ? "Core probes succeeded"
+                    : "One or more connectivity probes failed — see degraded reasons"}
                 </span>
               </div>
               {health.degraded_reasons && health.degraded_reasons.length > 0 && (
                 <p className="mt-3 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:bg-amber-950/40 dark:text-amber-200 font-mono break-all">
-                  {health.degraded_reasons.join(' · ')}
+                  {health.degraded_reasons.join(" · ")}
                 </p>
               )}
               {health.error && (
@@ -205,9 +207,7 @@ export default async function CapabilityStatusPage() {
                     <dd className="text-foreground capitalize">{cap.visibility}</dd>
                   </div>
                 </dl>
-                {cap.gating && (
-                  <p className="mt-2 text-xs text-muted-foreground">{cap.gating}</p>
-                )}
+                {cap.gating && <p className="mt-2 text-xs text-muted-foreground">{cap.gating}</p>}
               </article>
             ))}
           </div>

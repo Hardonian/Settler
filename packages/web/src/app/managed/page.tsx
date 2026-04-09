@@ -171,7 +171,9 @@ export default function ManagedOperationsPage() {
                   <CardTitle className="text-base font-semibold">{item.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {item.description}
+                  </p>
                 </CardContent>
               </Card>
             ))}
@@ -226,7 +228,10 @@ export default function ManagedOperationsPage() {
           />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
             {whyManaged.map((item) => (
-              <div key={item.title} className="space-y-2 p-6 rounded-xl border border-border/60 bg-card/40">
+              <div
+                key={item.title}
+                className="space-y-2 p-6 rounded-xl border border-border/60 bg-card/40"
+              >
                 <h3 className="font-semibold text-sm text-foreground">{item.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
               </div>
@@ -242,9 +247,9 @@ export default function ManagedOperationsPage() {
               <h2 className="text-xl font-bold">How it works: what we do and what you control</h2>
             </div>
             <p className="text-muted-foreground text-sm mb-6 leading-relaxed">
-              Managed Operations is not a black box. You retain full console access, full audit trail
-              visibility, and final authority over every exception resolution. Here is what the
-              engagement model means in practice:
+              Managed Operations is not a black box. You retain full console access, full audit
+              trail visibility, and final authority over every exception resolution. Here is what
+              the engagement model means in practice:
             </p>
             <ul className="space-y-3">
               {operationalBoundaries.map((boundary) => (
@@ -287,7 +292,10 @@ export default function ManagedOperationsPage() {
               ].map((item) => (
                 <div key={item.step} className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <Badge variant="outline" className="h-7 w-7 rounded-full flex items-center justify-center text-sm font-bold">
+                    <Badge
+                      variant="outline"
+                      className="h-7 w-7 rounded-full flex items-center justify-center text-sm font-bold"
+                    >
                       {item.step}
                     </Badge>
                     <h3 className="font-semibold text-sm">{item.title}</h3>

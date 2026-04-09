@@ -5,7 +5,7 @@
 All required artifacts have been generated:
 
 1. ✅ **INTROSPECTION.sql** - Captures actual database state
-2. ✅ **GAPS_REPORT.sql** - Identifies gaps between intended and actual state  
+2. ✅ **GAPS_REPORT.sql** - Identifies gaps between intended and actual state
 3. ✅ **PATCH.sql** - Idempotent SQL patch to fix gaps
 4. ✅ **VERIFY.sql** - Verification queries to prove patch worked
 5. ✅ **ROLLBACK.sql** - Safe rollback procedures
@@ -42,6 +42,7 @@ psql $DATABASE_URL -f supabase/migrations/PATCH.sql
 ```
 
 **What it does:**
+
 - ✅ Creates missing critical tables (`tenants`, `billing_accounts`)
 - ✅ Enables RLS on critical tables
 - ✅ Creates RLS policies for tenant isolation
@@ -65,15 +66,15 @@ psql $DATABASE_URL -f supabase/migrations/VERIFY.sql > verification_report.txt
 
 ### Critical (Blocking Launch)
 
-| Object | Status | Action |
-|--------|--------|--------|
-| `tenants` table | ✅ Created if missing | PATCH.sql |
+| Object                   | Status                | Action    |
+| ------------------------ | --------------------- | --------- |
+| `tenants` table          | ✅ Created if missing | PATCH.sql |
 | `billing_accounts` table | ✅ Created if missing | PATCH.sql |
-| RLS on critical tables | ✅ Enabled | PATCH.sql |
-| RLS policies | ✅ Created | PATCH.sql |
-| Helper functions | ✅ Created | PATCH.sql |
-| Critical indexes | ✅ Created | PATCH.sql |
-| Grants | ✅ Configured | PATCH.sql |
+| RLS on critical tables   | ✅ Enabled            | PATCH.sql |
+| RLS policies             | ✅ Created            | PATCH.sql |
+| Helper functions         | ✅ Created            | PATCH.sql |
+| Critical indexes         | ✅ Created            | PATCH.sql |
+| Grants                   | ✅ Configured         | PATCH.sql |
 
 ### Standard (Non-Blocking)
 
@@ -91,7 +92,7 @@ psql $DATABASE_URL -f supabase/migrations/VERIFY.sql > verification_report.txt
 ✅ **Additive only** - Only adds missing objects  
 ✅ **Validated** - Includes validation checks before commit  
 ✅ **Explicit schema** - Always qualifies with `public.`  
-✅ **Safe search_path** - Functions set `search_path` explicitly  
+✅ **Safe search_path** - Functions set `search_path` explicitly
 
 ### What PATCH.sql Does NOT Do
 
@@ -99,7 +100,7 @@ psql $DATABASE_URL -f supabase/migrations/VERIFY.sql > verification_report.txt
 ❌ Rename objects  
 ❌ Modify existing data  
 ❌ Change column types  
-❌ Drop existing policies (only creates new ones)  
+❌ Drop existing policies (only creates new ones)
 
 ## 📊 EXPECTED RESULTS
 
@@ -147,7 +148,8 @@ After running VERIFY.sql, you should see:
 ### RLS blocking legitimate queries
 
 **Cause:** User doesn't have tenant membership  
-**Fix:** 
+**Fix:**
+
 1. Check `get_user_tenant_ids()` returns expected values
 2. Verify user has entry in `billing_accounts` or `tenant_users`
 3. Check JWT claims include `tenant_id` if using JWT-based context
@@ -185,16 +187,19 @@ For these cases, create a separate migration file with proper guards.
 ### RLS Policy Patterns Used
 
 **Tenant Isolation:**
+
 ```sql
 USING (tenant_id IN (SELECT * FROM public.get_user_tenant_ids()))
 ```
 
 **User Ownership:**
+
 ```sql
 USING (user_id = auth.uid())
 ```
 
 **Service Role Bypass:**
+
 ```sql
 TO service_role USING (true)
 ```
@@ -243,16 +248,19 @@ Before considering validation complete:
 When deploying to production:
 
 1. **Backup First**
+
    ```bash
    pg_dump $DATABASE_URL > backup_before_patch.sql
    ```
 
 2. **Run in Transaction**
+
    ```bash
    psql $DATABASE_URL -f supabase/migrations/PATCH.sql
    ```
 
 3. **Verify Immediately**
+
    ```bash
    psql $DATABASE_URL -f supabase/migrations/VERIFY.sql
    ```

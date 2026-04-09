@@ -1,8 +1,8 @@
 /**
  * Ops Insights View Component
- * 
+ *
  * Displays insights with filters, detail views, and action management
- * 
+ *
  * Performance optimizations:
  * - Caching with TTL
  * - Debounced filter changes
@@ -11,22 +11,22 @@
  * - Error boundaries
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import { usePerformanceMonitor } from '@/hooks/use-ops-intelligence';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { usePerformanceMonitor } from "@/hooks/use-ops-intelligence";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { AlertCircle, Info, AlertTriangle, XCircle, RefreshCw } from 'lucide-react';
+} from "@/components/ui/select";
+import { AlertCircle, Info, AlertTriangle, XCircle, RefreshCw } from "lucide-react";
 import {
   cache,
   CACHE_TTL_INSIGHTS,
@@ -38,14 +38,14 @@ import {
   getRiskLevelColorClass,
   validatePagination,
   isValidUUID,
-} from '@/lib/ops-intelligence';
+} from "@/lib/ops-intelligence";
 
 interface Insight {
   id: string;
-  type: 'cost' | 'support' | 'usage' | 'stability';
+  type: "cost" | "support" | "usage" | "stability";
   title: string;
   summary: string;
-  severity: 'info' | 'warn' | 'critical';
+  severity: "info" | "warn" | "critical";
   confidence: number;
   status: string;
   created_at: string;
@@ -57,7 +57,7 @@ interface Recommendation {
   id: string;
   action_type: string;
   description: string;
-  risk_level: 'low' | 'med' | 'high';
+  risk_level: "low" | "med" | "high";
   status: string;
   expected_impact: string;
   reversibility: boolean;
@@ -68,7 +68,7 @@ interface InsightsViewProps {
 }
 
 export function InsightsView({ userId: _userId }: InsightsViewProps) {
-  usePerformanceMonitor('InsightsView');
+  usePerformanceMonitor("InsightsView");
   const [insights, setInsights] = useState<Insight[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -78,9 +78,9 @@ export function InsightsView({ userId: _userId }: InsightsViewProps) {
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [executingAction, setExecutingAction] = useState<string | null>(null);
   const [filters, setFilters] = useState({
-    type: '',
-    severity: '',
-    status: 'active',
+    type: "",
+    severity: "",
+    status: "active",
   });
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -112,9 +112,9 @@ export function InsightsView({ userId: _userId }: InsightsViewProps) {
         page: validPage.toString(),
         limit: validLimit.toString(),
       });
-      if (filters.type) params.set('type', filters.type);
-      if (filters.severity) params.set('severity', filters.severity);
-      if (filters.status) params.set('status', filters.status);
+      if (filters.type) params.set("type", filters.type);
+      if (filters.severity) params.set("severity", filters.severity);
+      if (filters.status) params.set("status", filters.status);
 
       const data = await retryWithBackoff(async () => {
         const controller = new AbortController();
@@ -139,14 +139,18 @@ export function InsightsView({ userId: _userId }: InsightsViewProps) {
       const paginationData = data.pagination || { totalPages: 1 };
 
       // Cache the result
-      cache.set(cacheKey, { insights: insightsData, pagination: paginationData }, CACHE_TTL_INSIGHTS);
+      cache.set(
+        cacheKey,
+        { insights: insightsData, pagination: paginationData },
+        CACHE_TTL_INSIGHTS
+      );
 
       setInsights(insightsData);
       setTotalPages(paginationData.totalPages || 1);
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to load insights';
+      const errorMessage = error instanceof Error ? error.message : "Failed to load insights";
       setError(errorMessage);
-      console.error('Error loading insights:', error);
+      console.error("Error loading insights:", error);
     } finally {
       setLoading(false);
     }
@@ -161,7 +165,7 @@ export function InsightsView({ userId: _userId }: InsightsViewProps) {
   // Load insight detail with caching
   const loadInsightDetail = useCallback(async (insightId: string) => {
     if (!isValidUUID(insightId)) {
-      setError('Invalid insight ID');
+      setError("Invalid insight ID");
       return;
     }
 
@@ -218,52 +222,57 @@ export function InsightsView({ userId: _userId }: InsightsViewProps) {
       setRecommendations(data.recommendations || []);
       setActions(data.actions || []);
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to load insight details';
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to load insight details";
       setError(errorMessage);
-      console.error('Error loading insight detail:', error);
+      console.error("Error loading insight detail:", error);
     } finally {
       setLoadingDetail(false);
     }
   }, []);
 
   // Execute recommendation
-  const executeRecommendation = useCallback(async (recId: string, description: string) => {
-    if (!isValidUUID(recId)) {
-      setError('Invalid recommendation ID');
-      return;
-    }
-
-    setExecutingAction(recId);
-    setError(null);
-
-    try {
-      const response = await fetch(`/api/console/ops-recommendations/${recId}/execute`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          actionTaken: `Executed: ${description}`,
-          outcomeNotes: 'Action taken via UI',
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `HTTP ${response.status}`);
+  const executeRecommendation = useCallback(
+    async (recId: string, description: string) => {
+      if (!isValidUUID(recId)) {
+        setError("Invalid recommendation ID");
+        return;
       }
 
-      // Invalidate cache and reload
-      cache.delete(`insight-detail:${selectedInsight?.id}`);
-      if (selectedInsight) {
-        await loadInsightDetail(selectedInsight.id);
+      setExecutingAction(recId);
+      setError(null);
+
+      try {
+        const response = await fetch(`/api/console/ops-recommendations/${recId}/execute`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            actionTaken: `Executed: ${description}`,
+            outcomeNotes: "Action taken via UI",
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || `HTTP ${response.status}`);
+        }
+
+        // Invalidate cache and reload
+        cache.delete(`insight-detail:${selectedInsight?.id}`);
+        if (selectedInsight) {
+          await loadInsightDetail(selectedInsight.id);
+        }
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Failed to execute recommendation";
+        setError(errorMessage);
+        console.error("Error executing recommendation:", error);
+      } finally {
+        setExecutingAction(null);
       }
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to execute recommendation';
-      setError(errorMessage);
-      console.error('Error executing recommendation:', error);
-    } finally {
-      setExecutingAction(null);
-    }
-  }, [selectedInsight, loadInsightDetail]);
+    },
+    [selectedInsight, loadInsightDetail]
+  );
 
   // Initial load
   useEffect(() => {
@@ -273,9 +282,9 @@ export function InsightsView({ userId: _userId }: InsightsViewProps) {
   // Memoized badge components
   const getSeverityIcon = useCallback((severity: string) => {
     switch (severity) {
-      case 'critical':
+      case "critical":
         return <XCircle className="h-5 w-5 text-red-500" />;
-      case 'warn':
+      case "warn":
         return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
       default:
         return <Info className="h-5 w-5 text-blue-500" />;
@@ -284,10 +293,14 @@ export function InsightsView({ userId: _userId }: InsightsViewProps) {
 
   const getSeverityBadge = useCallback((severity: string) => {
     switch (severity) {
-      case 'critical':
+      case "critical":
         return <Badge variant="destructive">Critical</Badge>;
-      case 'warn':
-        return <Badge variant="outline" className="border-yellow-500 text-yellow-700">Warning</Badge>;
+      case "warn":
+        return (
+          <Badge variant="outline" className="border-yellow-500 text-yellow-700">
+            Warning
+          </Badge>
+        );
       default:
         return <Badge variant="outline">Info</Badge>;
     }
@@ -295,21 +308,21 @@ export function InsightsView({ userId: _userId }: InsightsViewProps) {
 
   const getTypeBadge = useCallback((type: string) => {
     const colors: Record<string, string> = {
-      cost: 'bg-purple-100 text-purple-700',
-      support: 'bg-blue-100 text-blue-700',
-      usage: 'bg-green-100 text-green-700',
-      stability: 'bg-red-100 text-red-700',
+      cost: "bg-purple-100 text-purple-700",
+      support: "bg-blue-100 text-blue-700",
+      usage: "bg-green-100 text-green-700",
+      stability: "bg-red-100 text-red-700",
     };
-    return <Badge className={colors[type] || ''}>{type}</Badge>;
+    return <Badge className={colors[type] || ""}>{type}</Badge>;
   }, []);
 
   const getStatusBadge = useCallback((status: string) => {
     switch (status) {
-      case 'active':
+      case "active":
         return <Badge className="bg-green-100 text-green-700">Active</Badge>;
-      case 'resolved':
+      case "resolved":
         return <Badge className="bg-gray-100 text-gray-700">Resolved</Badge>;
-      case 'expired':
+      case "expired":
         return <Badge className="bg-gray-100 text-gray-700">Expired</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
@@ -574,7 +587,9 @@ export function InsightsView({ userId: _userId }: InsightsViewProps) {
                             <div className="flex items-start justify-between">
                               <div>
                                 <CardTitle className="text-base">{rec.action_type}</CardTitle>
-                                <CardDescription className="mt-1">{rec.description}</CardDescription>
+                                <CardDescription className="mt-1">
+                                  {rec.description}
+                                </CardDescription>
                               </div>
                               <Badge className={getRiskLevelColorClass(rec.risk_level)}>
                                 {rec.risk_level}
@@ -586,9 +601,9 @@ export function InsightsView({ userId: _userId }: InsightsViewProps) {
                               Expected impact: {rec.expected_impact}
                             </p>
                             <p className="text-sm text-muted-foreground mb-4">
-                              Reversible: {rec.reversibility ? 'Yes' : 'No'}
+                              Reversible: {rec.reversibility ? "Yes" : "No"}
                             </p>
-                            {rec.status === 'suggested' && (
+                            {rec.status === "suggested" && (
                               <Button
                                 onClick={() => executeRecommendation(rec.id, rec.description)}
                                 disabled={executingAction === rec.id}
@@ -599,7 +614,7 @@ export function InsightsView({ userId: _userId }: InsightsViewProps) {
                                     Executing...
                                   </>
                                 ) : (
-                                  'Execute Action'
+                                  "Execute Action"
                                 )}
                               </Button>
                             )}

@@ -3,13 +3,13 @@
  * Helpers for testing reconciliation components
  */
 
-import React from 'react';
+import React from "react";
 import {
   ReconciliationTransaction,
   ReconciliationSettlement,
   ReconciliationException,
-  ReconciliationConfig
-} from '@settler/protocol';
+  ReconciliationConfig,
+} from "@settler/protocol";
 
 /**
  * Create mock transaction
@@ -19,13 +19,13 @@ export function createMockTransaction(
 ): ReconciliationTransaction {
   return {
     id: `tx_${Math.random().toString(36).substr(2, 9)}`,
-    provider: 'stripe',
+    provider: "stripe",
     providerTransactionId: `ch_${Math.random().toString(36).substr(2, 9)}`,
-    amount: { value: 100.0, currency: 'USD' },
-    currency: 'USD',
+    amount: { value: 100.0, currency: "USD" },
+    currency: "USD",
     date: new Date().toISOString(),
-    status: 'succeeded',
-    ...overrides
+    status: "succeeded",
+    ...overrides,
   };
 }
 
@@ -37,13 +37,13 @@ export function createMockSettlement(
 ): ReconciliationSettlement {
   return {
     id: `st_${Math.random().toString(36).substr(2, 9)}`,
-    provider: 'stripe',
+    provider: "stripe",
     providerSettlementId: `set_${Math.random().toString(36).substr(2, 9)}`,
-    amount: { value: 100.0, currency: 'USD' },
-    currency: 'USD',
+    amount: { value: 100.0, currency: "USD" },
+    currency: "USD",
     settlementDate: new Date().toISOString(),
-    status: 'completed',
-    ...overrides
+    status: "completed",
+    ...overrides,
   };
 }
 
@@ -55,12 +55,12 @@ export function createMockException(
 ): ReconciliationException {
   return {
     id: `exc_${Math.random().toString(36).substr(2, 9)}`,
-    category: 'amount_mismatch',
-    severity: 'high',
-    description: 'Transaction amount does not match settlement',
-    resolutionStatus: 'open',
+    category: "amount_mismatch",
+    severity: "high",
+    description: "Transaction amount does not match settlement",
+    resolutionStatus: "open",
     createdAt: new Date().toISOString(),
-    ...overrides
+    ...overrides,
   };
 }
 
@@ -71,7 +71,7 @@ export function createMockTransactions(count: number): ReconciliationTransaction
   return Array.from({ length: count }, (_, i) =>
     createMockTransaction({
       id: `tx_${i}`,
-      amount: { value: (i + 1) * 10, currency: 'USD' }
+      amount: { value: (i + 1) * 10, currency: "USD" },
     })
   );
 }
@@ -81,12 +81,12 @@ export function createMockTransactions(count: number): ReconciliationTransaction
  */
 export interface TestWrapperProps {
   children: React.ReactNode;
-  mode?: 'ui' | 'config';
+  mode?: "ui" | "config";
   config?: Partial<ReconciliationConfig>;
 }
 
-export function TestWrapper({ children, mode = 'ui', config = {} }: TestWrapperProps) {
-  const { CompilationProvider } = require('../context');
+export function TestWrapper({ children, mode = "ui", config = {} }: TestWrapperProps) {
+  const { CompilationProvider } = require("../context");
   return (
     <CompilationProvider mode={mode} config={config}>
       {children}
@@ -98,7 +98,7 @@ export function TestWrapper({ children, mode = 'ui', config = {} }: TestWrapperP
  * Wait for async updates
  */
 export function waitFor(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
@@ -124,6 +124,6 @@ export function createMockTelemetryProvider() {
     clear: () => {
       events.length = 0;
       errors.length = 0;
-    }
+    },
   };
 }

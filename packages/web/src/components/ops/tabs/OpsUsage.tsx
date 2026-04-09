@@ -1,12 +1,12 @@
 /**
  * Ops Usage Tab
- * 
+ *
  * Usage metrics and analytics
  */
 
-'use client';
+"use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function OpsUsage() {
   return (

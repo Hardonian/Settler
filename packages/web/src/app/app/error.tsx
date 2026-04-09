@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import Link from 'next/link';
-import { AlertCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useEffect } from "react";
+import Link from "next/link";
+import { AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function AppError({
   error,
@@ -14,7 +14,7 @@ export default function AppError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error('App route error', {
+    console.error("App route error", {
       message: error.message,
       digest: error.digest,
     });
@@ -34,7 +34,9 @@ export default function AppError({
         </CardHeader>
         <CardContent className="space-y-4">
           {error.digest ? (
-            <p className="text-xs text-muted-foreground font-mono bg-muted/30 rounded px-2 py-1">Error ID: {error.digest}</p>
+            <p className="text-xs text-muted-foreground font-mono bg-muted/30 rounded px-2 py-1">
+              Error ID: {error.digest}
+            </p>
           ) : null}
           <div className="flex gap-2">
             <Button onClick={reset}>Try again</Button>

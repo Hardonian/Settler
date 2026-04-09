@@ -27,29 +27,29 @@ import {
   ReconciliationTransaction,
   ReconciliationSettlement,
   ReconciliationRule,
-  ReconciliationConfig
-} from '@settler/protocol';
+  ReconciliationConfig,
+} from "@settler/protocol";
 
 // Define a reconciliation rule
 const rule: ReconciliationRule = {
-  id: 'rule-1',
-  name: 'Exact Amount Match',
-  field: 'amount',
-  type: 'exact',
-  priority: 1
+  id: "rule-1",
+  name: "Exact Amount Match",
+  field: "amount",
+  type: "exact",
+  priority: 1,
 };
 
 // Create a reconciliation config
 const config: ReconciliationConfig = {
-  version: '1.0.0',
+  version: "1.0.0",
   metadata: {
-    name: 'My Reconciliation Workflow',
+    name: "My Reconciliation Workflow",
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
   },
   rulesets: [],
   views: [],
-  widgets: {}
+  widgets: {},
 };
 ```
 

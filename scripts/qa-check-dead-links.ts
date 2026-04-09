@@ -6,8 +6,8 @@
  * Fails build if any internal link points to nonexistent route.
  */
 
-import { readFile } from 'fs/promises';
-import { join } from 'path';
+import { readFile } from "fs/promises";
+import { join } from "path";
 
 interface DeadLink {
   href: string;
@@ -21,12 +21,10 @@ interface RouteMatcher {
   regex: RegExp;
 }
 
-const OUTPUT_DIR = join(process.cwd(), 'qa');
+const OUTPUT_DIR = join(process.cwd(), "qa");
 
 function toMatcher(routePath: string): RouteMatcher {
-  const pattern = routePath
-    .replace(/\[\.\.\.([^\]]+)\]/g, '.+')
-    .replace(/\[([^\]]+)\]/g, '[^/]+');
+  const pattern = routePath.replace(/\[\.\.\.([^\]]+)\]/g, ".+").replace(/\[([^\]]+)\]/g, "[^/]+");
 
   return {
     path: routePath,
@@ -35,23 +33,21 @@ function toMatcher(routePath: string): RouteMatcher {
 }
 
 function isDynamicRoute(routePath: string): boolean {
-  return routePath.includes('[') && routePath.includes(']');
+  return routePath.includes("[") && routePath.includes("]");
 }
 
 async function checkDeadLinks() {
-  console.log('🔍 Checking for dead links...');
+  console.log("🔍 Checking for dead links...");
 
-  const routeRegistryContent = await readFile(join(OUTPUT_DIR, 'route-registry.json'), 'utf-8');
-  const linkRegistryContent = await readFile(join(OUTPUT_DIR, 'link-registry.json'), 'utf-8');
+  const routeRegistryContent = await readFile(join(OUTPUT_DIR, "route-registry.json"), "utf-8");
+  const linkRegistryContent = await readFile(join(OUTPUT_DIR, "link-registry.json"), "utf-8");
 
   const routeRegistry = JSON.parse(routeRegistryContent);
   const linkRegistry = JSON.parse(linkRegistryContent);
 
-  const pageRoutes = routeRegistry.routes.filter((r: any) => r.type === 'page');
+  const pageRoutes = routeRegistry.routes.filter((r: any) => r.type === "page");
   const staticRoutes = new Set<string>(
-    pageRoutes
-      .map((r: any) => String(r.path))
-      .filter((path: string) => !isDynamicRoute(path)),
+    pageRoutes.map((r: any) => String(r.path)).filter((path: string) => !isDynamicRoute(path))
   );
   const dynamicMatchers = pageRoutes
     .map((r: any) => String(r.path))
@@ -61,9 +57,9 @@ async function checkDeadLinks() {
   const deadLinks: DeadLink[] = [];
 
   for (const href of linkRegistry.paths) {
-    const normalizedHref = href.split('?')[0].split('#')[0];
+    const normalizedHref = href.split("?")[0].split("#")[0];
 
-    if (normalizedHref === '/') {
+    if (normalizedHref === "/") {
       continue;
     }
 
@@ -83,7 +79,7 @@ async function checkDeadLinks() {
           line: l.line,
           type: l.type,
         })),
-        reason: 'Route not found',
+        reason: "Route not found",
       });
     }
   }
@@ -91,29 +87,29 @@ async function checkDeadLinks() {
   if (deadLinks.length > 0) {
     console.error(`\n❌ Found ${deadLinks.length} dead link(s):\n`);
 
-    deadLinks.forEach(deadLink => {
+    deadLinks.forEach((deadLink) => {
       console.error(`  ${deadLink.href}`);
       console.error(`    Normalized: ${deadLink.normalizedHref}`);
       console.error(`    Reason: ${deadLink.reason}`);
       console.error(`    Found in:`);
-      deadLink.sources.forEach(source => {
+      deadLink.sources.forEach((source) => {
         console.error(`      - ${source.file}:${source.line} (${source.type})`);
       });
-      console.error('');
+      console.error("");
     });
 
-    console.error('💡 Fix dead links by:');
-    console.error('   1. Creating the missing route/page');
-    console.error('   2. Adding a redirect in next.config.js');
-    console.error('   3. Removing the dead link\n');
+    console.error("💡 Fix dead links by:");
+    console.error("   1. Creating the missing route/page");
+    console.error("   2. Adding a redirect in next.config.js");
+    console.error("   3. Removing the dead link\n");
 
     process.exit(1);
   } else {
-    console.log('✅ No dead links found!');
+    console.log("✅ No dead links found!");
   }
 }
 
-checkDeadLinks().catch(error => {
-  console.error('Error checking dead links:', error);
+checkDeadLinks().catch((error) => {
+  console.error("Error checking dead links:", error);
   process.exit(1);
 });

@@ -9,6 +9,7 @@ React.Settler offers a clear separation between open-source (free) and commercia
 **Perfect for:** Developers, startups, small projects, learning
 
 **Includes:**
+
 - ✅ Core protocol types (`@settler/protocol`)
 - ✅ Basic React components (Dashboard, TransactionTable, ExceptionTable, MetricCard, RuleSet, MatchRule)
 - ✅ Config compiler (compile to JSON)
@@ -20,6 +21,7 @@ React.Settler offers a clear separation between open-source (free) and commercia
 - ✅ MIT License
 
 **Use Cases:**
+
 - Building reconciliation UIs for internal tools
 - Learning and experimentation
 - Small projects with basic needs
@@ -30,6 +32,7 @@ React.Settler offers a clear separation between open-source (free) and commercia
 **Perfect for:** Growing businesses, production apps, marketplace integrations
 
 **Includes everything in OSS, plus:**
+
 - ✅ **MCP Server Integration** - AI assistant support
 - ✅ **Shopify App Integration** - Polaris design system, App Bridge
 - ✅ **Stripe Connect Integration** - Dashboard integration
@@ -42,6 +45,7 @@ React.Settler offers a clear separation between open-source (free) and commercia
 - ✅ **Priority Support** - Email support with 48-hour response
 
 **Use Cases:**
+
 - E-commerce platforms integrating with Shopify/Stripe
 - Marketplace apps needing webhook integration
 - Production apps requiring performance optimization
@@ -52,6 +56,7 @@ React.Settler offers a clear separation between open-source (free) and commercia
 **Perfect for:** Large organizations, enterprise deployments
 
 **Includes everything in Commercial, plus:**
+
 - ✅ **SSO Integration** - Single sign-on support
 - ✅ **RBAC** - Role-based access control
 - ✅ **Custom Integrations** - Build custom platform adapters
@@ -62,6 +67,7 @@ React.Settler offers a clear separation between open-source (free) and commercia
 - ✅ **Custom Themes** - Fully customizable UI
 
 **Use Cases:**
+
 - Enterprise deployments
 - White-label solutions
 - High-compliance requirements
@@ -69,27 +75,27 @@ React.Settler offers a clear separation between open-source (free) and commercia
 
 ## Feature Comparison
 
-| Feature | OSS | Commercial | Enterprise |
-|---------|-----|------------|------------|
-| Core Protocol | ✅ | ✅ | ✅ |
-| Basic Components | ✅ | ✅ | ✅ |
-| Config Compiler | ✅ | ✅ | ✅ |
-| Validation | ✅ | ✅ | ✅ |
-| Basic Security | ✅ | ✅ | ✅ |
-| Mobile Support | ✅ | ✅ | ✅ |
-| Accessibility | ✅ | ✅ | ✅ |
-| MCP Integration | ❌ | ✅ | ✅ |
-| Shopify Integration | ❌ | ✅ | ✅ |
-| Stripe Integration | ❌ | ✅ | ✅ |
-| Webhook Manager | ❌ | ✅ | ✅ |
-| Virtualized Tables | ❌ | ✅ | ✅ |
-| Telemetry | ❌ | ✅ | ✅ |
-| Audit Logging | ❌ | ✅ | ✅ |
-| SSO | ❌ | ❌ | ✅ |
-| RBAC | ❌ | ❌ | ✅ |
-| Custom Integrations | ❌ | ❌ | ✅ |
-| White Label | ❌ | ❌ | ✅ |
-| Dedicated Support | ❌ | ❌ | ✅ |
+| Feature             | OSS | Commercial | Enterprise |
+| ------------------- | --- | ---------- | ---------- |
+| Core Protocol       | ✅  | ✅         | ✅         |
+| Basic Components    | ✅  | ✅         | ✅         |
+| Config Compiler     | ✅  | ✅         | ✅         |
+| Validation          | ✅  | ✅         | ✅         |
+| Basic Security      | ✅  | ✅         | ✅         |
+| Mobile Support      | ✅  | ✅         | ✅         |
+| Accessibility       | ✅  | ✅         | ✅         |
+| MCP Integration     | ❌  | ✅         | ✅         |
+| Shopify Integration | ❌  | ✅         | ✅         |
+| Stripe Integration  | ❌  | ✅         | ✅         |
+| Webhook Manager     | ❌  | ✅         | ✅         |
+| Virtualized Tables  | ❌  | ✅         | ✅         |
+| Telemetry           | ❌  | ✅         | ✅         |
+| Audit Logging       | ❌  | ✅         | ✅         |
+| SSO                 | ❌  | ❌         | ✅         |
+| RBAC                | ❌  | ❌         | ✅         |
+| Custom Integrations | ❌  | ❌         | ✅         |
+| White Label         | ❌  | ❌         | ✅         |
+| Dedicated Support   | ❌  | ❌         | ✅         |
 
 ## Upgrade Path
 
@@ -100,21 +106,21 @@ React.Settler offers a clear separation between open-source (free) and commercia
 3. **Set license** in your app:
 
 ```tsx
-import { setLicense } from '@settler/react-settler';
+import { setLicense } from "@settler/react-settler";
 
 setLicense({
-  tier: 'commercial',
+  tier: "commercial",
   features: new Set([
-    'core',
-    'basic-components',
-    'mcp-integration',
-    'shopify-integration',
-    'stripe-integration',
-    'webhook-manager',
-    'virtualization',
-    'telemetry',
-    'audit-logging'
-  ])
+    "core",
+    "basic-components",
+    "mcp-integration",
+    "shopify-integration",
+    "stripe-integration",
+    "webhook-manager",
+    "virtualization",
+    "telemetry",
+    "audit-logging",
+  ]),
 });
 ```
 
@@ -162,6 +168,7 @@ Full accessibility (WCAG 2.1 AA) is included in OSS tier.
 - **Enterprise**: Custom solutions for large organizations
 
 This model ensures:
+
 - ✅ Developers can start free and upgrade when needed
 - ✅ Clear value proposition at each tier
 - ✅ Sustainable business model

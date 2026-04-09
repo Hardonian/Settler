@@ -5,35 +5,41 @@ This document summarizes all the production-grade features implemented in the Se
 ## ✅ SDK Architecture
 
 ### Typed Client with Full TypeScript Inference
+
 - Complete type safety for all API methods
 - IntelliSense support for all parameters and return types
 - Type inference for nested objects and arrays
 
 ### Automatic Retry with Exponential Backoff
+
 - Configurable retry attempts (default: 3)
 - Exponential backoff with jitter
 - Custom retry conditions
 - Automatic retry on rate limits (configurable)
 
 ### Request Deduplication
+
 - Prevents duplicate in-flight requests
 - Enabled by default for GET requests
 - Automatic cleanup of stale requests
 - Configurable via `deduplicateRequests` option
 
 ### Token Refresh Handling
+
 - Automatic token renewal before expiry
 - Configurable refresh threshold (default: 5 minutes)
 - Prevents concurrent refresh requests
 - Supports JWT tokens and custom token providers
 
 ### Webhook Signature Verification
+
 - HMAC-SHA256 signature verification
 - Timestamp extraction and validation
 - Replay attack prevention
 - Works in Node.js and browser environments
 
 ### Strongly Typed Error Classes
+
 - `NetworkError` - Network-related errors
 - `AuthError` - Authentication errors (401, 403)
 - `ValidationError` - Validation errors (400)
@@ -44,29 +50,34 @@ This document summarizes all the production-grade features implemented in the Se
 ## ✅ Developer Experience Features
 
 ### Zero-Config Defaults
+
 - Sensible defaults for all options
 - Works out of the box with just an API key
 - Override any default when needed
 
 ### Middleware Support
+
 - Custom middleware for logging, metrics, etc.
 - Built-in logging middleware
 - Built-in metrics middleware
 - Chain multiple middleware functions
 
 ### Request/Response Interceptors
+
 - Intercept requests before sending
 - Intercept responses after receiving
 - Modify headers, body, or query parameters
 - Access full request/response context
 
 ### Automatic Pagination Helpers
+
 - Async iterators for paginated endpoints
 - `listPaginated()` methods on all list endpoints
 - `collectPaginated()` utility to collect all results
 - Automatic cursor management
 
 ### Bundle Size Optimization
+
 - Zero runtime dependencies
 - Tree-shaking support
 - <50KB minified and gzipped
@@ -75,17 +86,20 @@ This document summarizes all the production-grade features implemented in the Se
 ## ✅ Testing Infrastructure
 
 ### MSW Mock Server
+
 - Complete API mock handlers
 - Error scenario mocking
 - Test fixtures for all types
 - Easy to extend for custom scenarios
 
 ### Example Test Fixtures
+
 - Mock data for all API types
 - Reusable test fixtures
 - Webhook signature helpers
 
 ### Integration Test Suite
+
 - End-to-end workflow tests
 - Pagination tests
 - Middleware tests
@@ -94,18 +108,21 @@ This document summarizes all the production-grade features implemented in the Se
 ## ✅ Documentation
 
 ### Inline JSDoc
+
 - Every public method documented
 - Parameter descriptions
 - Return type documentation
 - Usage examples in JSDoc
 
 ### README with Quickstart
+
 - 5-minute quickstart guide
 - Comprehensive usage examples
 - API reference
 - Error handling guide
 
 ### Migration Guide
+
 - Step-by-step migration from raw fetch
 - Before/after code comparisons
 - Common patterns and solutions

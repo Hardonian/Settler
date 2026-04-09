@@ -1,10 +1,10 @@
 /**
  * Data Retention Policies
- * 
+ *
  * Implements automated data retention and cleanup policies.
  */
 
-import { prisma } from '@/shared/db/prismaClient';
+import { prisma } from "@/shared/db/prismaClient";
 
 export interface RetentionPolicy {
   resourceType: string;
@@ -14,29 +14,29 @@ export interface RetentionPolicy {
 
 const RETENTION_POLICIES: RetentionPolicy[] = [
   {
-    resourceType: 'receipt',
+    resourceType: "receipt",
     retentionDays: 365, // 1 year
-    description: 'Receipts are retained for 1 year for compliance and audit purposes',
+    description: "Receipts are retained for 1 year for compliance and audit purposes",
   },
   {
-    resourceType: 'receipt_upload',
+    resourceType: "receipt_upload",
     retentionDays: 90, // 3 months
-    description: 'Receipt uploads are retained for 3 months',
+    description: "Receipt uploads are retained for 3 months",
   },
   {
-    resourceType: 'audit_log',
+    resourceType: "audit_log",
     retentionDays: 2555, // 7 years (compliance)
-    description: 'Audit logs are retained for 7 years for compliance',
+    description: "Audit logs are retained for 7 years for compliance",
   },
   {
-    resourceType: 'activity_log',
+    resourceType: "activity_log",
     retentionDays: 90, // 3 months
-    description: 'Activity logs are retained for 3 months',
+    description: "Activity logs are retained for 3 months",
   },
   {
-    resourceType: 'usage_event',
+    resourceType: "usage_event",
     retentionDays: 365, // 1 year
-    description: 'Usage events are retained for 1 year for billing and analytics',
+    description: "Usage events are retained for 1 year for billing and analytics",
   },
 ];
 
@@ -44,7 +44,7 @@ const RETENTION_POLICIES: RetentionPolicy[] = [
  * Get retention policy for a resource type
  */
 export function getRetentionPolicy(resourceType: string): RetentionPolicy | null {
-  return RETENTION_POLICIES.find(p => p.resourceType === resourceType) || null;
+  return RETENTION_POLICIES.find((p) => p.resourceType === resourceType) || null;
 }
 
 /**
@@ -61,7 +61,7 @@ export async function cleanupExpiredData(resourceType: string): Promise<number> 
 
   try {
     switch (resourceType) {
-      case 'receipt':
+      case "receipt":
         const receiptsDeleted = await prisma.receipt.deleteMany({
           where: {
             createdAt: {
@@ -71,18 +71,18 @@ export async function cleanupExpiredData(resourceType: string): Promise<number> 
         });
         return receiptsDeleted.count;
 
-      case 'receipt_upload':
+      case "receipt_upload":
         const uploadsDeleted = await prisma.receiptUpload.deleteMany({
           where: {
             createdAt: {
               lt: cutoffDate,
             },
-            status: 'completed', // Only delete completed uploads
+            status: "completed", // Only delete completed uploads
           },
         });
         return uploadsDeleted.count;
 
-      case 'audit_log':
+      case "audit_log":
         const auditLogsDeleted = await prisma.auditLog.deleteMany({
           where: {
             createdAt: {
@@ -92,12 +92,12 @@ export async function cleanupExpiredData(resourceType: string): Promise<number> 
         });
         return auditLogsDeleted.count;
 
-      case 'activity_log':
+      case "activity_log":
         // Activity logs are in Supabase, would need to use Supabase client
         // For now, return 0
         return 0;
 
-      case 'usage_event':
+      case "usage_event":
         // Usage events are in UsageEvent table
         const usageEventsDeleted = await prisma.usageEvent.deleteMany({
           where: {
@@ -134,13 +134,15 @@ export async function cleanupAllExpiredData(): Promise<Record<string, number>> {
 /**
  * Get data retention summary
  */
-export async function getRetentionSummary(): Promise<Array<{
-  resourceType: string;
-  retentionDays: number;
-  totalRecords: number;
-  expiredRecords: number;
-  nextCleanup: Date;
-}>> {
+export async function getRetentionSummary(): Promise<
+  Array<{
+    resourceType: string;
+    retentionDays: number;
+    totalRecords: number;
+    expiredRecords: number;
+    nextCleanup: Date;
+  }>
+> {
   const summary = [];
 
   for (const policy of RETENTION_POLICIES) {
@@ -152,7 +154,7 @@ export async function getRetentionSummary(): Promise<Array<{
       let expiredRecords = 0;
 
       switch (policy.resourceType) {
-        case 'receipt':
+        case "receipt":
           totalRecords = await prisma.receipt.count();
           expiredRecords = await prisma.receipt.count({
             where: {
@@ -163,7 +165,7 @@ export async function getRetentionSummary(): Promise<Array<{
           });
           break;
 
-        case 'receipt_upload':
+        case "receipt_upload":
           totalRecords = await prisma.receiptUpload.count();
           expiredRecords = await prisma.receiptUpload.count({
             where: {
@@ -174,7 +176,7 @@ export async function getRetentionSummary(): Promise<Array<{
           });
           break;
 
-        case 'audit_log':
+        case "audit_log":
           totalRecords = await prisma.auditLog.count();
           expiredRecords = await prisma.auditLog.count({
             where: {
@@ -185,7 +187,7 @@ export async function getRetentionSummary(): Promise<Array<{
           });
           break;
 
-        case 'usage_event':
+        case "usage_event":
           totalRecords = await prisma.usageEvent.count();
           expiredRecords = await prisma.usageEvent.count({
             where: {

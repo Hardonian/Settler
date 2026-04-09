@@ -8,6 +8,7 @@
 ## Problem
 
 Financial reconciliation is a critical but painful process for businesses that process payments across multiple systems. Manual reconciliation is error-prone, time-consuming, and doesn't scale. Existing solutions are either:
+
 - Too expensive (enterprise-only)
 - Too complex (require dedicated teams)
 - Too rigid (don't adapt to business needs)
@@ -22,6 +23,7 @@ Financial reconciliation is a critical but painful process for businesses that p
 **Settler Enterprise** is a Open Source Reconciliation Engine platform that automates financial data reconciliation across multiple systems with enterprise-grade reliability, security, and compliance.
 
 **Core Capabilities:**
+
 - **Reconciliation Engine:** Event-sourced matching engine for high-volume transaction processing
 - **Receipts API:** AI-powered OCR to extract structured JSON from PDFs and images
 - **Feature Flags:** Edge-compatible flags designed for financial rollouts
@@ -100,16 +102,19 @@ Financial reconciliation is a critical but painful process for businesses that p
 ### Competitive Advantages
 
 **vs. Legacy Solutions (SAP, Oracle):**
+
 - ✅ Modern, API-first architecture
 - ✅ Developer-friendly, self-serve
 - ✅ Lower cost, faster implementation
 
 **vs. Point Solutions (Stripe Reconciliation, etc.):**
+
 - ✅ Multi-system reconciliation (not vendor-locked)
 - ✅ Comprehensive audit trails
 - ✅ Enterprise-grade security and compliance
 
 **vs. Custom Solutions:**
+
 - ✅ Faster time-to-market
 - ✅ Lower total cost of ownership
 - ✅ Ongoing maintenance and updates

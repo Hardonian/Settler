@@ -1,17 +1,16 @@
 /**
  * Marketplace Intelligence
- * 
+ *
  * Evaluates marketplace items and automatically promotes/deprecates
  * Part 12: Economic & Marketplace Intelligence Engine
  */
 
- 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 // logInfo imported but unused - may be used in future
 
 export interface MarketplaceItem {
   id: string;
-  type: 'template' | 'workflow' | 'transform' | 'mapping' | 'validation';
+  type: "template" | "workflow" | "transform" | "mapping" | "validation";
   name: string;
   popularity: number;
   driftRate: number;
@@ -20,10 +19,10 @@ export interface MarketplaceItem {
 }
 
 export interface MarketplaceRecommendation {
-  action: 'promote' | 'deprecate' | 'update' | 'feature';
+  action: "promote" | "deprecate" | "update" | "feature";
   itemId: string;
   reason: string;
-  priority: 'low' | 'medium' | 'high';
+  priority: "low" | "medium" | "high";
 }
 
 export class MarketplaceIntelligence {
@@ -73,40 +72,40 @@ export class MarketplaceIntelligence {
       // Promote top items
       if (item.popularity > 0.8 && item.reliability > 0.9) {
         recommendations.push({
-          action: 'promote',
+          action: "promote",
           itemId: item.id,
           reason: `High popularity (${(item.popularity * 100).toFixed(0)}%) and reliability (${(item.reliability * 100).toFixed(0)}%)`,
-          priority: 'high',
+          priority: "high",
         });
       }
 
       // Deprecate unreliable items
       if (item.reliability < 0.5 && item.popularity < 0.3) {
         recommendations.push({
-          action: 'deprecate',
+          action: "deprecate",
           itemId: item.id,
           reason: `Low reliability (${(item.reliability * 100).toFixed(0)}%) and popularity (${(item.popularity * 100).toFixed(0)}%)`,
-          priority: 'medium',
+          priority: "medium",
         });
       }
 
       // Update items with high drift
       if (item.driftRate > 0.3) {
         recommendations.push({
-          action: 'update',
+          action: "update",
           itemId: item.id,
           reason: `High drift rate (${(item.driftRate * 100).toFixed(0)}%) - needs update`,
-          priority: 'high',
+          priority: "high",
         });
       }
 
       // Feature high-revenue items
       if (item.revenuePotential > 1000) {
         recommendations.push({
-          action: 'feature',
+          action: "feature",
           itemId: item.id,
           reason: `High revenue potential ($${item.revenuePotential.toFixed(2)})`,
-          priority: 'medium',
+          priority: "medium",
         });
       }
     }
@@ -148,14 +147,14 @@ export class MarketplaceIntelligence {
         take: 1000,
       });
 
-      const failures = results.filter((r: { status: string }) => r.status === 'failed').length;
-      const reliability = 1 - (failures / Math.max(results.length, 1));
+      const failures = results.filter((r: { status: string }) => r.status === "failed").length;
+      const reliability = 1 - failures / Math.max(results.length, 1);
 
       const revenuePotential = popularity * reliability * 1000; // Placeholder
 
       items.push({
         id: template.id,
-        type: 'template',
+        type: "template",
         name: template.name,
         popularity,
         driftRate,
@@ -204,10 +203,10 @@ export class MarketplaceIntelligence {
    */
   async surfaceTrendingTransforms(): Promise<MarketplaceItem[]> {
     const items = await this.evaluateItems();
-    
+
     // Filter for transforms
-    const transforms = items.filter(i => i.type === 'transform');
-    
+    const transforms = items.filter((i) => i.type === "transform");
+
     // Sort by popularity and reliability
     transforms.sort((a, b) => {
       const scoreA = a.popularity * a.reliability;

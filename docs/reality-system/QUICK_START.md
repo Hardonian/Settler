@@ -71,18 +71,18 @@ Evidence files will be written to `docs/reality-system/evidence/`.
 SELECT * FROM reality_metrics ORDER BY category, name;
 
 -- View metrics by status
-SELECT category, name, value, status, source 
-FROM reality_metrics 
+SELECT category, name, value, status, source
+FROM reality_metrics
 WHERE status = 'assumed';
 
 -- View recent events
-SELECT * FROM reality_events 
-ORDER BY created_at DESC 
+SELECT * FROM reality_events
+ORDER BY created_at DESC
 LIMIT 20;
 
 -- View latest weekly snapshot
-SELECT * FROM weekly_snapshots 
-ORDER BY week_start DESC 
+SELECT * FROM weekly_snapshots
+ORDER BY week_start DESC
 LIMIT 1;
 ```
 
@@ -149,7 +149,7 @@ name: Reality System
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Every hour
+    - cron: "0 * * * *" # Every hour
   workflow_dispatch:
 
 jobs:

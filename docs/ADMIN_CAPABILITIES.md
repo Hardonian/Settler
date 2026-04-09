@@ -17,6 +17,7 @@ This document defines **administrative capabilities** and **operational surfaces
 ### Health & Status
 
 **Endpoints:**
+
 - `GET /api/health` - Overall health with dependency checks
 - `GET /api/health/live` - Liveness probe
 - `GET /api/health/ready` - Readiness probe
@@ -25,6 +26,7 @@ This document defines **administrative capabilities** and **operational surfaces
 **Access:** Public (no authentication required)
 
 **Usage:**
+
 ```bash
 curl https://api.settler.io/api/health
 ```
@@ -34,17 +36,20 @@ curl https://api.settler.io/api/health
 ### Metrics & Observability
 
 **Endpoints:**
+
 - `GET /api/metrics` - Prometheus-compatible metrics
 - `GET /api/observability` - Observability dashboard (internal)
 
 **Access:** Internal (service-role key required)
 
 **Metrics:**
+
 - HTTP metrics (latency, error rate, request count)
 - Business metrics (reconciliations, webhook deliveries)
 - System metrics (connections, queue depth, cache hit/miss)
 
 **Usage:**
+
 ```bash
 curl -H "X-API-Key: service_role_key" https://api.settler.io/api/metrics
 ```
@@ -54,6 +59,7 @@ curl -H "X-API-Key: service_role_key" https://api.settler.io/api/metrics
 ### Admin Operations
 
 **Endpoints:**
+
 - `GET /api/admin/users` - List all users (admin only)
 - `GET /api/admin/tenants` - List all tenants (admin only)
 - `GET /api/admin/billing/reconcile` - Reconcile billing (admin only)
@@ -62,6 +68,7 @@ curl -H "X-API-Key: service_role_key" https://api.settler.io/api/metrics
 **Access:** Admin (service-role key or admin user required)
 
 **Usage:**
+
 ```bash
 curl -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/users
 ```
@@ -73,6 +80,7 @@ curl -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/users
 ### Operator Mode Endpoints
 
 **Endpoints:**
+
 - `GET /api/v1/operator-mode/health` - System health overview
 - `GET /api/v1/operator-mode/metrics` - System metrics
 - `GET /api/v1/operator-mode/errors` - Recent errors
@@ -83,6 +91,7 @@ curl -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/users
 **Access:** Admin (service-role key or admin user required)
 
 **Features:**
+
 - System health overview
 - Error monitoring
 - Usage statistics
@@ -94,12 +103,14 @@ curl -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/users
 ### Daily Operator Tasks
 
 **Scheduled Jobs:**
+
 - Daily insights generation (2 AM UTC)
 - Weekly briefing generation (Monday 9 AM UTC)
 - Usage aggregation (hourly)
 - Data retention cleanup (daily)
 
 **Manual Tasks:**
+
 - Review health endpoints
 - Review error logs
 - Review metrics dashboard
@@ -112,18 +123,21 @@ curl -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/users
 ### Feature Flag Management
 
 **Admin Capabilities:**
+
 - Enable/disable features globally
 - Enable/disable features per tenant
 - Roll out features gradually
 - Kill switch for risky features
 
 **Endpoints:**
+
 - `GET /api/v1/feature-flags` - List feature flags
 - `POST /api/v1/feature-flags` - Create feature flag
 - `PATCH /api/v1/feature-flags/:id` - Update feature flag
 - `DELETE /api/v1/feature-flags/:id` - Delete feature flag
 
 **Usage:**
+
 ```bash
 curl -H "X-API-Key: admin_key" https://api.settler.io/api/v1/feature-flags
 ```
@@ -133,12 +147,14 @@ curl -H "X-API-Key: admin_key" https://api.settler.io/api/v1/feature-flags
 ### Kill Switches
 
 **Risky Subsystems:**
+
 - Receipt parsing (AI/ML operations)
 - Reconciliation engine (matching algorithms)
 - Webhook delivery (external dependencies)
 - Payment processing (Stripe integration)
 
 **Kill Switch Procedure:**
+
 1. Identify risky subsystem
 2. Disable feature flag
 3. Monitor system health
@@ -151,16 +167,19 @@ curl -H "X-API-Key: admin_key" https://api.settler.io/api/v1/feature-flags
 ### Billing Reconciliation
 
 **Endpoints:**
+
 - `POST /api/admin/billing/reconcile` - Reconcile billing
 - `POST /api/admin/billing/sync` - Sync from Stripe
 - `GET /api/admin/billing/status` - Billing status
 
 **Purpose:**
+
 - Reconcile Stripe subscriptions with database
 - Fix billing discrepancies
 - Sync subscription status
 
 **Usage:**
+
 ```bash
 curl -X POST -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/billing/reconcile
 ```
@@ -170,17 +189,20 @@ curl -X POST -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/b
 ### Usage Tracking
 
 **Admin Capabilities:**
+
 - View usage by tenant
 - View usage by user
 - View usage by service
 - Export usage data
 
 **Endpoints:**
+
 - `GET /api/admin/usage/tenants` - Usage by tenant
 - `GET /api/admin/usage/users` - Usage by user
 - `GET /api/admin/usage/services` - Usage by service
 
 **Usage:**
+
 ```bash
 curl -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/usage/tenants
 ```
@@ -192,17 +214,20 @@ curl -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/usage/ten
 ### Data Export
 
 **Admin Capabilities:**
+
 - Export tenant data
 - Export user data
 - Export system data
 - Export audit logs
 
 **Endpoints:**
+
 - `GET /api/admin/export/tenant/:id` - Export tenant data
 - `GET /api/admin/export/user/:id` - Export user data
 - `GET /api/admin/export/audit` - Export audit logs
 
 **Usage:**
+
 ```bash
 curl -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/export/tenant/tenant_id
 ```
@@ -212,17 +237,20 @@ curl -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/export/te
 ### Data Deletion
 
 **Admin Capabilities:**
+
 - Delete tenant data
 - Delete user data
 - Delete system data (with caution)
 - Soft delete vs hard delete
 
 **Endpoints:**
+
 - `DELETE /api/admin/tenant/:id` - Delete tenant
 - `DELETE /api/admin/user/:id` - Delete user
 - `POST /api/admin/data/cleanup` - Cleanup expired data
 
 **Usage:**
+
 ```bash
 curl -X DELETE -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/tenant/tenant_id
 ```
@@ -234,18 +262,21 @@ curl -X DELETE -H "X-API-Key: service_role_key" https://api.settler.io/api/admin
 ### Access Control
 
 **Admin Capabilities:**
+
 - View all API keys
 - Revoke API keys
 - View authentication logs
 - View authorization logs
 
 **Endpoints:**
+
 - `GET /api/admin/api-keys` - List all API keys
 - `DELETE /api/admin/api-keys/:id` - Revoke API key
 - `GET /api/admin/auth/logs` - Authentication logs
 - `GET /api/admin/authz/logs` - Authorization logs
 
 **Usage:**
+
 ```bash
 curl -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/api-keys
 ```
@@ -255,17 +286,20 @@ curl -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/api-keys
 ### Security Monitoring
 
 **Admin Capabilities:**
+
 - View security events
 - View failed authentication attempts
 - View authorization failures
 - View suspicious activity
 
 **Endpoints:**
+
 - `GET /api/admin/security/events` - Security events
 - `GET /api/admin/security/failed-auth` - Failed authentication
 - `GET /api/admin/security/authz-failures` - Authorization failures
 
 **Usage:**
+
 ```bash
 curl -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/security/events
 ```
@@ -277,18 +311,21 @@ curl -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/security/
 ### System Monitoring
 
 **Admin Capabilities:**
+
 - View system health
 - View metrics
 - View error logs
 - View performance metrics
 
 **Endpoints:**
+
 - `GET /api/admin/monitoring/health` - System health
 - `GET /api/admin/monitoring/metrics` - Metrics
 - `GET /api/admin/monitoring/errors` - Error logs
 - `GET /api/admin/monitoring/performance` - Performance metrics
 
 **Usage:**
+
 ```bash
 curl -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/monitoring/health
 ```
@@ -298,17 +335,20 @@ curl -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/monitorin
 ### Alert Management
 
 **Admin Capabilities:**
+
 - View alerts
 - Acknowledge alerts
 - Resolve alerts
 - Configure alert thresholds
 
 **Endpoints:**
+
 - `GET /api/admin/alerts` - List alerts
 - `PATCH /api/admin/alerts/:id/acknowledge` - Acknowledge alert
 - `PATCH /api/admin/alerts/:id/resolve` - Resolve alert
 
 **Usage:**
+
 ```bash
 curl -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/alerts
 ```
@@ -320,17 +360,20 @@ curl -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/alerts
 ### Audit Logging
 
 **Admin Capabilities:**
+
 - View audit logs
 - Export audit logs
 - Search audit logs
 - Filter audit logs
 
 **Endpoints:**
+
 - `GET /api/admin/audit/logs` - List audit logs
 - `GET /api/admin/audit/export` - Export audit logs
 - `GET /api/admin/audit/search` - Search audit logs
 
 **Usage:**
+
 ```bash
 curl -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/audit/logs
 ```
@@ -340,16 +383,19 @@ curl -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/audit/log
 ### Compliance Operations
 
 **Admin Capabilities:**
+
 - Generate compliance reports
 - Export compliance data
 - Verify compliance controls
 - Document compliance activities
 
 **Endpoints:**
+
 - `GET /api/admin/compliance/reports` - Compliance reports
 - `GET /api/admin/compliance/export` - Export compliance data
 
 **Usage:**
+
 ```bash
 curl -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/compliance/reports
 ```
@@ -363,12 +409,14 @@ curl -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/complianc
 **Purpose:** Administrative access that bypasses RLS.
 
 **Usage:**
+
 - Billing reconciliation
 - System administration
 - Data export
 - Security operations
 
 **Security:**
+
 - ✅ Service-role keys require operational controls
 - ✅ All actions logged in audit trail
 - ✅ Keys rotated regularly
@@ -381,10 +429,12 @@ curl -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/complianc
 **Purpose:** Users with administrative privileges.
 
 **Roles:**
+
 - **OWNER:** Full access to tenant
 - **ADMIN:** Full operational access
 
 **Capabilities:**
+
 - Access admin endpoints
 - Manage tenant settings
 - Manage users
@@ -397,11 +447,13 @@ curl -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/complianc
 ### Reversible Operations
 
 **Operations:**
+
 - Feature flag changes (can be reverted)
 - Configuration changes (can be reverted)
 - Data exports (read-only)
 
 **Safety:**
+
 - ✅ Changes logged in audit trail
 - ✅ Changes can be reverted
 - ✅ Changes require confirmation
@@ -411,11 +463,13 @@ curl -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/complianc
 ### Irreversible Operations
 
 **Operations:**
+
 - Data deletion (permanent)
 - Account deletion (permanent)
 - API key revocation (permanent)
 
 **Safety:**
+
 - ✅ Operations require confirmation
 - ✅ Operations logged in audit trail
 - ✅ Operations require admin approval
@@ -426,6 +480,7 @@ curl -H "X-API-Key: service_role_key" https://api.settler.io/api/admin/complianc
 ## Summary
 
 Settler's admin capabilities:
+
 - ✅ **Health & Status:** Health endpoints and dependency checks
 - ✅ **Metrics & Observability:** Prometheus-compatible metrics
 - ✅ **Admin Operations:** User and tenant management
@@ -440,6 +495,7 @@ Settler's admin capabilities:
 - ✅ **Safety & Reversibility:** Reversible and irreversible operations
 
 **Key Principles:**
+
 - Admin capabilities must be safe, audited, and reversible
 - Operators need visibility and control
 - All admin actions are logged

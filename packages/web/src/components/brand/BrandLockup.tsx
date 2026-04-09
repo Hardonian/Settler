@@ -38,7 +38,11 @@ export function BrandLockup(props: BrandLockupProps) {
     } = props;
     return (
       <div className={cn("flex flex-col items-center", stackedGapClassName, className)}>
-        <BrandMark alt="" className={cn("h-14 w-14 sm:h-16 sm:w-16", markClassName)} priority={priority} />
+        <BrandMark
+          alt=""
+          className={cn("h-14 w-14 sm:h-16 sm:w-16", markClassName)}
+          priority={priority}
+        />
         <BrandWordmark
           alt={alt}
           className={cn("h-8 w-auto max-w-[min(100%,280px)] sm:h-9", wordmarkClassName)}

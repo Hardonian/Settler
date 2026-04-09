@@ -5,6 +5,7 @@ This document describes the backend contract verification system for ensuring th
 ## Overview
 
 The backend contract verification system:
+
 1. **Queries live database** to discover actual state (tables, columns, indexes, RLS policies, functions, etc.)
 2. **Compares against expected contract** from migrations and app code usage
 3. **Generates reconciliation migrations** to fix differences
@@ -38,6 +39,7 @@ curl https://your-app.com/api/health
 ```
 
 Response includes:
+
 - `checks.backendContract`: Status of critical tables
 - `checks.supabase`: Supabase connectivity
 - `checks.database`: Database connectivity
@@ -49,6 +51,7 @@ Response includes:
 Comprehensive verification script that queries live database catalogs:
 
 **What it checks:**
+
 - Extensions (uuid-ossp, pgcrypto, etc.)
 - Schemas (public, app_private, analytics)
 - Tables (existence, columns, types)
@@ -61,6 +64,7 @@ Comprehensive verification script that queries live database catalogs:
 - Realtime publications
 
 **Usage:**
+
 ```bash
 # Basic verification
 tsx scripts/verify-backend-contract.ts
@@ -70,12 +74,14 @@ tsx scripts/verify-backend-contract.ts --reconcile
 ```
 
 **Output:**
+
 - Prints results to console
 - Saves JSON report to `supabase/backend-verification-results.json`
 
 ### `scripts/smoke-test-backend.ts`
 
 Performs real queries against Supabase to verify:
+
 - Anon client connectivity
 - Service role connectivity
 - RLS enforcement
@@ -83,6 +89,7 @@ Performs real queries against Supabase to verify:
 - Table accessibility
 
 **Usage:**
+
 ```bash
 tsx scripts/smoke-test-backend.ts
 ```
@@ -90,12 +97,14 @@ tsx scripts/smoke-test-backend.ts
 ### `scripts/test-rls-policies.ts`
 
 Tests RLS policies by:
+
 - Creating test users and tenants
 - Testing anonymous access (should be blocked)
 - Testing authenticated access
 - Verifying tenant isolation
 
 **Usage:**
+
 ```bash
 tsx scripts/test-rls-policies.ts
 ```
@@ -107,12 +116,14 @@ tsx scripts/test-rls-policies.ts
 Generates an idempotent SQL migration to reconcile differences:
 
 **Usage:**
+
 ```bash
 # After running verification
 tsx scripts/generate-reconciliation-migration.ts [verification-results.json]
 ```
 
 **Output:**
+
 - Creates migration file: `supabase/migrations/[timestamp]_backend_contract_reconcile.sql`
 
 ## Expected Contract
@@ -138,26 +149,31 @@ The expected contract is derived from:
 When differences are found:
 
 1. **Run verification:**
+
    ```bash
    npm run db:verify
    ```
 
 2. **Review results:**
+
    ```bash
    cat supabase/backend-verification-results.json
    ```
 
 3. **Generate reconciliation migration:**
+
    ```bash
    npm run db:reconcile
    ```
 
 4. **Review migration:**
+
    ```bash
    cat supabase/migrations/[timestamp]_backend_contract_reconcile.sql
    ```
 
 5. **Apply migration:**
+
    ```bash
    supabase db push
    ```
@@ -206,6 +222,7 @@ export SUPABASE_SERVICE_ROLE_KEY=your-key
 ### "Table X does not exist"
 
 If a table is missing:
+
 1. Check if it's defined in the golden schema migration
 2. Check if migrations have been applied: `supabase migration list`
 3. Apply missing migrations: `supabase db push`
@@ -213,6 +230,7 @@ If a table is missing:
 ### "RLS not enabled on table X"
 
 Enable RLS:
+
 ```sql
 ALTER TABLE table_name ENABLE ROW LEVEL SECURITY;
 ```

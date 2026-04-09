@@ -15,6 +15,7 @@ To run migrations, I need your Supabase database password.
 You can provide it in one of these ways:
 
 **Option 1: Environment Variable**
+
 ```bash
 export SUPABASE_DB_PASSWORD="your-password-here"
 npm run db:migrate:auto
@@ -22,12 +23,14 @@ npm run db:migrate:auto
 
 **Option 2: Update .env file**
 Edit `.env` and replace `[YOUR_PASSWORD]` with your actual password:
+
 ```
 DATABASE_URL=postgresql://postgres:your-actual-password@db.johfcvvmtfiomzxipspz.supabase.co:5432/postgres
 ```
 
 **Option 3: Full Connection String**
 Provide the complete connection string with password:
+
 ```
 DATABASE_URL=postgresql://postgres:your-password@db.johfcvvmtfiomzxipspz.supabase.co:5432/postgres
 ```

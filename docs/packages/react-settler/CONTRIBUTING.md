@@ -31,6 +31,7 @@ Thank you for your interest in contributing to React.Settler! This document outl
 ### Enforcement
 
 All PRs are checked for:
+
 - No proprietary imports
 - No secrets or credentials
 - No internal URLs
@@ -59,6 +60,7 @@ npm run lint
 ## Making Changes
 
 1. **Create a branch**
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
@@ -69,6 +71,7 @@ npm run lint
    - Update documentation
 
 3. **Test your changes**
+
    ```bash
    npm run test
    npm run lint
@@ -76,6 +79,7 @@ npm run lint
    ```
 
 4. **Commit your changes**
+
    ```bash
    git commit -m "feat: add your feature"
    ```
@@ -109,19 +113,22 @@ npm run lint
 When adding new components:
 
 1. **Create component file**
+
    ```tsx
    // packages/react-settler/src/components/YourComponent.tsx
    ```
 
 2. **Export from index**
+
    ```tsx
    // packages/react-settler/src/index.ts
-   export { YourComponent } from './components/YourComponent';
+   export { YourComponent } from "./components/YourComponent";
    ```
 
 3. **Add types**
+
    ```tsx
-   export type { YourComponentProps } from './components/YourComponent';
+   export type { YourComponentProps } from "./components/YourComponent";
    ```
 
 4. **Update documentation**

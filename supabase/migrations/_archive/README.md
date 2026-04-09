@@ -13,6 +13,7 @@ This directory contains historical migration files that have been consolidated i
 ## Why Archive?
 
 The golden migration approach provides:
+
 1. **Single source of truth** - One file defines the entire schema
 2. **Idempotency** - Safe to run multiple times
 3. **Easier verification** - CI can verify schema parity against one file
@@ -21,6 +22,7 @@ The golden migration approach provides:
 ## Restoring Historical Migrations
 
 If you need to reference historical migrations:
+
 1. Check git history for the original migration files
 2. Review the consolidated golden migration
 3. Use production schema introspection: `npx tsx scripts/introspect-production-schema.ts`

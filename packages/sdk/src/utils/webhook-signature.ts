@@ -21,7 +21,6 @@ function getCrypto(): CryptoModule {
   // Node.js environment
   if (typeof require !== "undefined") {
     try {
-       
       const crypto = require("crypto") as CryptoModule;
       return crypto;
     } catch {

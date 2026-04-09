@@ -74,9 +74,7 @@ export default function AdminExceptionsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Exceptions</h1>
-          <p className="text-muted-foreground mt-1">
-            Queue management and triage workflow
-          </p>
+          <p className="text-muted-foreground mt-1">Queue management and triage workflow</p>
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
@@ -175,9 +173,7 @@ export default function AdminExceptionsPage() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="text-center py-8 text-muted-foreground">
-              Loading exceptions...
-            </div>
+            <div className="text-center py-8 text-muted-foreground">Loading exceptions...</div>
           ) : filteredExceptions.length === 0 ? (
             searchQuery || statusFilter !== "all" || severityFilter !== "all" ? (
               <NoResultsEmptyState searchQuery={searchQuery} />

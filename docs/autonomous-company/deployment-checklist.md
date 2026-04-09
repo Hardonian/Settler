@@ -21,8 +21,8 @@ Use this checklist to ensure complete deployment of the autonomous company syste
   ```
 - [ ] Verify tables created:
   ```sql
-  SELECT table_name FROM information_schema.tables 
-  WHERE table_schema = 'public' 
+  SELECT table_name FROM information_schema.tables
+  WHERE table_schema = 'public'
   AND table_name IN (
     'agent_runs', 'strategic_backlog', 'architecture_violations',
     'user_intent_insights', 'preemptive_support_actions',
@@ -46,6 +46,7 @@ Use this checklist to ensure complete deployment of the autonomous company syste
 - [ ] Agent Orchestrator deployed
 
 **Quick deploy all:**
+
 ```bash
 export OPENAI_API_KEY=sk-your-key-here  # Optional
 ./scripts/deploy-autonomous-agents.sh
@@ -135,17 +136,19 @@ See `.github/workflows/release-safety-check.yml` for example.
 If something fails:
 
 1. **Check agent runs table:**
+
    ```sql
-   SELECT * FROM agent_runs 
-   WHERE status = 'failed' 
+   SELECT * FROM agent_runs
+   WHERE status = 'failed'
    ORDER BY started_at DESC LIMIT 10;
    ```
 
 2. **Check function logs** in Supabase dashboard
 
 3. **Verify cron jobs:**
+
    ```sql
-   SELECT * FROM cron.job_run_details 
+   SELECT * FROM cron.job_run_details
    ORDER BY start_time DESC LIMIT 20;
    ```
 
@@ -169,6 +172,6 @@ After deployment, you should see:
 
 ---
 
-**Deployment Date:** _______________  
-**Deployed By:** _______________  
-**Notes:** _______________
+**Deployment Date:** ******\_\_\_******  
+**Deployed By:** ******\_\_\_******  
+**Notes:** ******\_\_\_******

@@ -167,7 +167,9 @@ function computeAnomalies(row: Record<string, number | null | undefined>): Alert
   return anomalies;
 }
 
-function computeIncidentCandidates(row: Record<string, number | null | undefined>): IncidentCandidate[] {
+function computeIncidentCandidates(
+  row: Record<string, number | null | undefined>
+): IncidentCandidate[] {
   const toNumber = (v: number | null | undefined) => Number(v ?? 0);
   const recentFailure = toNumber(row.recent_failure_rate);
   const baseFailure = toNumber(row.baseline_failure_rate);

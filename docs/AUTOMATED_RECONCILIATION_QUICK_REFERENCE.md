@@ -23,12 +23,12 @@ The automated reconciliation review system processes all reconciliation matches 
 
 ### Confidence Tiers
 
-| Tier | Confidence | Action | Description |
-|------|-----------|--------|-------------|
-| 1 | ≥95% | Auto-Approved | Immediately approved, no review needed |
-| 2 | 80-95% | Rule-Based Resolution | Rules applied (amount/date tolerance) |
-| 3 | 60-80% | Exception Handling | Automated exception processing |
-| 4 | <60% | System Flagged | Flagged for system-level review (NOT human) |
+| Tier | Confidence | Action                | Description                                 |
+| ---- | ---------- | --------------------- | ------------------------------------------- |
+| 1    | ≥95%       | Auto-Approved         | Immediately approved, no review needed      |
+| 2    | 80-95%     | Rule-Based Resolution | Rules applied (amount/date tolerance)       |
+| 3    | 60-80%     | Exception Handling    | Automated exception processing              |
+| 4    | <60%       | System Flagged        | Flagged for system-level review (NOT human) |
 
 ---
 
@@ -41,6 +41,7 @@ POST /api/v1/automated-review/run/:runId
 ```
 
 **Response:**
+
 ```json
 {
   "runId": "uuid",
@@ -60,6 +61,7 @@ POST /api/v1/automated-review/match/:matchId
 ```
 
 **Response:**
+
 ```json
 {
   "matchId": "uuid",
@@ -77,6 +79,7 @@ GET /api/v1/automated-review/run/:runId/statistics
 ```
 
 **Response:**
+
 ```json
 {
   "runId": "uuid",
@@ -97,6 +100,7 @@ GET /api/v1/automated-review/run/:runId/quality
 ```
 
 **Response:**
+
 ```json
 {
   "runId": "uuid",
@@ -118,6 +122,7 @@ GET /api/v1/automated-review/run/:runId/report
 ```
 
 **Response:**
+
 ```json
 {
   "runId": "uuid",
@@ -149,13 +154,13 @@ GET /api/v1/automated-review/run/:runId/report
 
 ## Quality Thresholds
 
-| Metric | Threshold | Alert Level |
-|--------|-----------|-------------|
-| Match Rate | ≥90% | Warning if <90%, Critical if <80% |
-| Auto-Resolution Rate | ≥90% | Warning if <90%, Critical if <80% |
-| Exception Rate | ≤10% | Warning if >10%, Critical if >20% |
-| Average Confidence | ≥75% | Warning if <75%, Critical if <65% |
-| Resolution Time | ≤10 min | Warning if >10 min, Critical if >30 min |
+| Metric               | Threshold | Alert Level                             |
+| -------------------- | --------- | --------------------------------------- |
+| Match Rate           | ≥90%      | Warning if <90%, Critical if <80%       |
+| Auto-Resolution Rate | ≥90%      | Warning if <90%, Critical if <80%       |
+| Exception Rate       | ≤10%      | Warning if >10%, Critical if >20%       |
+| Average Confidence   | ≥75%      | Warning if <75%, Critical if <65%       |
+| Resolution Time      | ≤10 min   | Warning if >10 min, Critical if >30 min |
 
 ---
 
@@ -196,6 +201,7 @@ All decisions are logged with:
 **Symptom:** Exception rate >10%
 
 **Actions:**
+
 1. Check quality report for patterns
 2. Review resolution rules
 3. Adjust confidence thresholds if needed
@@ -206,6 +212,7 @@ All decisions are logged with:
 **Symptom:** Match rate <90%
 
 **Actions:**
+
 1. Review matching rules
 2. Check data quality
 3. Adjust tolerance settings
@@ -216,6 +223,7 @@ All decisions are logged with:
 **Symptom:** Resolution time >10 minutes
 
 **Actions:**
+
 1. Check system performance
 2. Review batch processing
 3. Optimize database queries
@@ -245,6 +253,7 @@ All decisions are logged with:
 ## Support
 
 For questions or issues:
+
 - Review: `docs/AUTOMATED_RECONCILIATION_REVIEW_PLAN.md`
 - Implementation: `docs/AUTOMATED_RECONCILIATION_IMPLEMENTATION_SUMMARY.md`
 - API Docs: `packages/api/src/routes/v1/automated-review.ts`

@@ -1,13 +1,13 @@
 /**
  * Keyboard Shortcuts Hook
- * 
+ *
  * Provides keyboard navigation for admin dashboard (j/k, enter, r, e).
  * FinTech-native keyboard-first workflow.
  */
 
-'use client';
+"use client";
 
-import React, { useEffect, useCallback, useRef } from 'react';
+import React, { useEffect, useCallback, useRef } from "react";
 
 export interface KeyboardShortcutConfig {
   onNext?: () => void;
@@ -58,46 +58,42 @@ export function useKeyboardShortcuts(config: KeyboardShortcutConfig) {
 
       // Don't trigger shortcuts when typing in inputs
       const target = event.target as HTMLElement;
-      if (
-        target.tagName === 'INPUT' ||
-        target.tagName === 'TEXTAREA' ||
-        target.isContentEditable
-      ) {
+      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) {
         return;
       }
 
       switch (event.key) {
-        case 'j':
-        case 'ArrowDown':
+        case "j":
+        case "ArrowDown":
           if (handlersRef.current.onNext) {
             if (preventDefault) event.preventDefault();
             handlersRef.current.onNext();
           }
           break;
 
-        case 'k':
-        case 'ArrowUp':
+        case "k":
+        case "ArrowUp":
           if (handlersRef.current.onPrevious) {
             if (preventDefault) event.preventDefault();
             handlersRef.current.onPrevious();
           }
           break;
 
-        case 'Enter':
+        case "Enter":
           if (handlersRef.current.onSelect) {
             if (preventDefault) event.preventDefault();
             handlersRef.current.onSelect();
           }
           break;
 
-        case 'r':
+        case "r":
           if (handlersRef.current.onResolve) {
             if (preventDefault) event.preventDefault();
             handlersRef.current.onResolve();
           }
           break;
 
-        case 'e':
+        case "e":
           if (handlersRef.current.onEscalate) {
             if (preventDefault) event.preventDefault();
             handlersRef.current.onEscalate();
@@ -111,9 +107,9 @@ export function useKeyboardShortcuts(config: KeyboardShortcutConfig) {
   useEffect(() => {
     if (!enabled) return;
 
-    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [enabled, handleKeyDown]);
 }
@@ -124,9 +120,7 @@ export function useKeyboardShortcuts(config: KeyboardShortcutConfig) {
 export function KeyboardShortcutsHelp() {
   return (
     <div className="fixed bottom-4 right-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-lg p-4 text-sm z-50 max-w-xs">
-      <div className="font-semibold mb-2 text-slate-900 dark:text-white">
-        Keyboard Shortcuts
-      </div>
+      <div className="font-semibold mb-2 text-slate-900 dark:text-white">Keyboard Shortcuts</div>
       <div className="space-y-1 text-slate-600 dark:text-slate-400">
         <div className="flex justify-between">
           <span>j / ↓</span>

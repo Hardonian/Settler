@@ -1,8 +1,8 @@
 /**
  * Ops Briefings View Component
- * 
+ *
  * Displays weekly founder briefings
- * 
+ *
  * Performance optimizations:
  * - Caching with TTL
  * - Memoized computations
@@ -10,14 +10,14 @@
  * - Error handling
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import { usePerformanceMonitor } from '@/hooks/use-ops-intelligence';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Calendar, RefreshCw, AlertCircle } from 'lucide-react';
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { usePerformanceMonitor } from "@/hooks/use-ops-intelligence";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, RefreshCw, AlertCircle } from "lucide-react";
 import {
   cache,
   CACHE_TTL_BRIEFINGS,
@@ -25,7 +25,7 @@ import {
   retryWithBackoff,
   formatDateRange,
   validatePagination,
-} from '@/lib/ops-intelligence';
+} from "@/lib/ops-intelligence";
 
 interface Briefing {
   id: string;
@@ -44,7 +44,7 @@ interface BriefingsViewProps {
 }
 
 export function BriefingsView({ userId: _userId }: BriefingsViewProps) {
-  usePerformanceMonitor('BriefingsView');
+  usePerformanceMonitor("BriefingsView");
   const [briefings, setBriefings] = useState<Briefing[]>([]);
   const [selectedBriefing, setSelectedBriefing] = useState<Briefing | null>(null);
   const [loading, setLoading] = useState(true);
@@ -117,9 +117,9 @@ export function BriefingsView({ userId: _userId }: BriefingsViewProps) {
         setSelectedBriefing(briefingsData[0]);
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to load briefings';
+      const errorMessage = error instanceof Error ? error.message : "Failed to load briefings";
       setError(errorMessage);
-      console.error('Error loading briefings:', error);
+      console.error("Error loading briefings:", error);
     } finally {
       setLoading(false);
     }
@@ -157,9 +157,9 @@ export function BriefingsView({ userId: _userId }: BriefingsViewProps) {
       cache.set(cacheKey, data, CACHE_TTL_BRIEFINGS);
       setSelectedBriefing(data);
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to load briefing';
+      const errorMessage = error instanceof Error ? error.message : "Failed to load briefing";
       setError(errorMessage);
-      console.error('Error loading briefing detail:', error);
+      console.error("Error loading briefing detail:", error);
     }
   }, []);
 
@@ -170,16 +170,16 @@ export function BriefingsView({ userId: _userId }: BriefingsViewProps) {
 
   // Memoized date formatting
   const formatDate = useCallback((dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   }, []);
 
   // Memoized date range
   const selectedDateRange = useMemo(() => {
-    if (!selectedBriefing) return '';
+    if (!selectedBriefing) return "";
     return formatDateRange(selectedBriefing.period_start, selectedBriefing.period_end);
   }, [selectedBriefing]);
 
@@ -192,7 +192,7 @@ export function BriefingsView({ userId: _userId }: BriefingsViewProps) {
     const actions = selectedBriefing.summary_json.actions || {};
 
     return {
-      totalCost: metrics.totalCost ? Number(metrics.totalCost).toFixed(2) : 'N/A',
+      totalCost: metrics.totalCost ? Number(metrics.totalCost).toFixed(2) : "N/A",
       criticalIssues: insights.bySeverity?.critical || 0,
       highPriorityRecs: recommendations.byRiskLevel?.high || 0,
       verifiedActions: actions.verified || 0,
@@ -246,7 +246,7 @@ export function BriefingsView({ userId: _userId }: BriefingsViewProps) {
                 <Card
                   key={briefing.id}
                   className={`cursor-pointer hover:shadow-md transition-shadow ${
-                    selectedBriefing?.id === briefing.id ? 'ring-2 ring-primary' : ''
+                    selectedBriefing?.id === briefing.id ? "ring-2 ring-primary" : ""
                   }`}
                   onClick={() => {
                     setSelectedBriefing(briefing);
@@ -336,9 +336,7 @@ export function BriefingsView({ userId: _userId }: BriefingsViewProps) {
                   <Card>
                     <CardContent className="p-4">
                       <div className="text-2xl font-bold">
-                        {summaryStats.totalCost === 'N/A'
-                          ? 'N/A'
-                          : `$${summaryStats.totalCost}`}
+                        {summaryStats.totalCost === "N/A" ? "N/A" : `$${summaryStats.totalCost}`}
                       </div>
                       <div className="text-sm text-muted-foreground">Total Cost</div>
                     </CardContent>

@@ -1,12 +1,12 @@
 /**
  * Hardware / Runtime Flexibility
- * 
+ *
  * Support for SAFEs, local inference, GPU/CPU hybrid, cloud-agnostic deployments
  * Part 13: Long-Range Futureproofing
  */
 
 export interface RuntimeConfig {
-  type: 'safe' | 'local' | 'gpu' | 'cpu' | 'hybrid' | 'cloud';
+  type: "safe" | "local" | "gpu" | "cpu" | "hybrid" | "cloud";
   endpoint?: string;
   capabilities: string[];
 }
@@ -26,18 +26,18 @@ export class HardwareFlexibility {
   constructor() {
     // Register default runtimes
     this.registerRuntime({
-      type: 'cloud',
-      capabilities: ['scalable', 'managed'],
+      type: "cloud",
+      capabilities: ["scalable", "managed"],
     });
 
     this.registerRuntime({
-      type: 'local',
-      capabilities: ['low_latency', 'private'],
+      type: "local",
+      capabilities: ["low_latency", "private"],
     });
 
     this.registerRuntime({
-      type: 'hybrid',
-      capabilities: ['scalable', 'low_latency', 'flexible'],
+      type: "hybrid",
+      capabilities: ["scalable", "low_latency", "flexible"],
     });
   }
 
@@ -58,23 +58,20 @@ export class HardwareFlexibility {
   /**
    * Get optimal execution environment
    */
-  getOptimalEnvironment(
-    requirements: {
-      latency?: number;
-      cost?: number;
-      privacy?: boolean;
-      scale?: number;
-    }
-  ): ExecutionEnvironment | null {
-    const available = Array.from(this.environments.values())
-      .filter(e => e.available);
+  getOptimalEnvironment(requirements: {
+    latency?: number;
+    cost?: number;
+    privacy?: boolean;
+    scale?: number;
+  }): ExecutionEnvironment | null {
+    const available = Array.from(this.environments.values()).filter((e) => e.available);
 
     if (available.length === 0) {
       return null;
     }
 
     // Score each environment
-    const scored = available.map(env => {
+    const scored = available.map((env) => {
       let score = 0;
 
       if (requirements.latency && env.latency <= requirements.latency) {
@@ -131,24 +128,22 @@ export class HardwareFlexibility {
    */
   async executeHybrid(
     tasks: Array<{
-      type: 'gpu' | 'cpu';
+      type: "gpu" | "cpu";
       task: Record<string, unknown>;
     }>
   ): Promise<Array<{ success: boolean; result: Record<string, unknown> }>> {
     // TODO: Implement hybrid execution
     // This would route tasks to appropriate hardware
-    return tasks.map(t => ({ success: true, result: t.task }));
+    return tasks.map((t) => ({ success: true, result: t.task }));
   }
 
   /**
    * Cloud-agnostic deployment
    */
-  async deployCloudAgnostic(
-    config: {
-      provider: 'aws' | 'gcp' | 'azure' | 'vercel' | 'supabase';
-      region: string;
-    }
-  ): Promise<string> {
+  async deployCloudAgnostic(config: {
+    provider: "aws" | "gcp" | "azure" | "vercel" | "supabase";
+    region: string;
+  }): Promise<string> {
     // TODO: Implement cloud-agnostic deployment
     // This would deploy to any cloud provider
     return `deployed-to-${config.provider}-${config.region}`;

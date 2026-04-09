@@ -22,6 +22,7 @@
 **Goal:** Establish founder as the expert on reconciliation automation for B2B SaaS operators.
 
 **Tactics:**
+
 1. **Content Marketing:**
    - Blog posts on reconciliation pain points (month-end reconciliation, audit risk, manual work)
    - Case studies from early customers (before/after: hours saved, costs reduced)
@@ -39,12 +40,14 @@
    - Position against "AI platform" hype (deterministic results vs. magic)
 
 **Key Messages:**
+
 - "Reconciliation is a system behavior, not a human task"
 - "Stop spending 8-16 hours per month on manual reconciliation"
 - "95%+ instant resolution. Complete audit trail. No manual work."
 - "Built for B2B SaaS operators, not fintech builders"
 
 **Content Calendar:**
+
 - **Week 1:** Blog post: "Why Manual Reconciliation Fails (And How to Fix It)"
 - **Week 2:** Case study: "How [Customer] Saved 12 Hours/Month on Reconciliation"
 - **Week 3:** Technical deep-dive: "How Settler's Matching Algorithm Works"
@@ -59,6 +62,7 @@
 **Principle:** No broad awareness spend. Only pay for keywords where buyers are actively searching for solutions.
 
 **Target Keywords:**
+
 - "stripe shopify reconciliation"
 - "month-end reconciliation automation"
 - "reconciliation software for saas"
@@ -68,17 +72,20 @@
 **Budget:** $500-1,000/month initially. Scale based on CAC and conversion rates.
 
 **Landing Pages:**
+
 - Keyword-specific landing pages (e.g., "Stripe Shopify Reconciliation")
 - Clear value proposition (hours saved, costs reduced)
 - Free trial CTA (no credit card required)
 - ROI calculator
 
 **Retargeting:**
+
 - Retarget website visitors who didn't sign up
 - Retarget trial users who didn't convert
 - Focus on high-intent pages (pricing, docs, security)
 
 **No Paid Spend Until:**
+
 - Onboarding is flawless (first reconciliation works without explanation)
 - Conversion funnel is optimized (signup → trial → paid)
 - CAC is acceptable (< $500-1,000)
@@ -94,17 +101,20 @@
 **Target:** B2B SaaS operators (5-200 employees) doing month-end reconciliation.
 
 **Outreach Channels:**
+
 - LinkedIn (founder-led, personal messages)
 - Email (warm introductions, cold outreach)
 - Community engagement (Indie Hackers, SaaS communities)
 
 **Discovery Questions:**
+
 - "How do you currently handle month-end reconciliation?"
 - "How long does it take you to reconcile Stripe payments with Shopify orders?"
 - "What's your biggest pain point with reconciliation?"
 - "Have you looked into automation solutions?"
 
 **Qualification Signals:**
+
 - ✅ Spending 8+ hours/month on reconciliation
 - ✅ Manual process (spreadsheets, custom scripts)
 - ✅ Multiple platforms (Stripe + Shopify, QuickBooks, etc.)
@@ -131,6 +141,7 @@
 "Want to try it? 14-day free trial, no credit card required. You can run your first reconciliation in 15 minutes."
 
 **Who This Is NOT For:**
+
 - Fintech builders (we're not a fintech infrastructure platform)
 - Enterprises (>200 employees, need custom integrations—we have Enterprise plans but focus on 5-200)
 - Consumers (we're B2B only)
@@ -143,6 +154,7 @@
 ### ICP-Specific Examples and Language
 
 **Content Types:**
+
 1. **Pain-First Content:**
    - "Why Manual Reconciliation Fails (And How to Fix It)"
    - "8 Hours/Month Wasted on Manual Reconciliation"
@@ -164,6 +176,7 @@
    - "Settler vs. Accounting Software: Why Operators Need Operator Tools"
 
 **Language:**
+
 - ✅ "B2B SaaS operators" (not "businesses" or "companies")
 - ✅ "Month-end reconciliation" (not "transaction matching" or "financial reconciliation")
 - ✅ "Hours saved" (not "time saved" or "efficiency")
@@ -177,23 +190,27 @@
 ## METRICS & KPIs
 
 ### Acquisition Metrics:
+
 - **Website visitors:** Target: 1,000/month (organic + paid)
 - **Signups:** Target: 50/month (5% conversion rate)
 - **Trial starts:** Target: 40/month (80% of signups)
 - **Paid conversions:** Target: 10/month (25% of trials)
 
 ### Engagement Metrics:
+
 - **Time-to-value:** Target: < 15 minutes (signup → first reconciliation)
 - **Trial completion rate:** Target: 80% (complete first reconciliation)
 - **Feature adoption:** Target: 70% (use scheduled jobs, exports, etc.)
 
 ### Revenue Metrics:
+
 - **MRR:** Target: $1,000/month (Month 1-3), $5,000/month (Month 4-6), $20,000/month (Month 7-12)
 - **CAC:** Target: < $500-1,000
 - **LTV:** Target: $1,200-3,600 (12-36 month average)
 - **LTV/CAC:** Target: 2.4-3.6x
 
 ### Retention Metrics:
+
 - **Churn rate:** Target: < 5% monthly
 - **Net revenue retention:** Target: > 100% (expansion revenue > churn)
 - **Customer satisfaction:** Target: > 4.5/5 (NPS > 50)
@@ -203,6 +220,7 @@
 ## LAUNCH PLAN
 
 ### Pre-Launch (Week 1-2):
+
 - [ ] Finalize homepage copy (pain-first, ICP-focused)
 - [ ] Finalize pricing page (value-based, ROI-focused)
 - [ ] Finalize security page (engineer-focused, trust-building)
@@ -212,6 +230,7 @@
 - [ ] Test pricing enforcement (ensure billing works)
 
 ### Launch (Week 3):
+
 - [ ] Launch homepage (new copy live)
 - [ ] Launch pricing page (new copy live)
 - [ ] Launch security page (new copy live)
@@ -220,6 +239,7 @@
 - [ ] Email early adopters (announce launch, ask for feedback)
 
 ### Post-Launch (Week 4+):
+
 - [ ] Publish case study (first customer success story)
 - [ ] Publish technical deep-dive ("How Matching Works")
 - [ ] Start SEO content (keyword-optimized blog posts)
@@ -232,6 +252,7 @@
 ## SUCCESS CRITERIA
 
 **Month 1:**
+
 - [ ] 10 paying customers
 - [ ] $1,000 MRR
 - [ ] < $1,000 CAC
@@ -239,6 +260,7 @@
 - [ ] > 4.5/5 customer satisfaction
 
 **Month 3:**
+
 - [ ] 50 paying customers
 - [ ] $5,000 MRR
 - [ ] < $800 CAC
@@ -246,6 +268,7 @@
 - [ ] > 100% net revenue retention
 
 **Month 6:**
+
 - [ ] 200 paying customers
 - [ ] $20,000 MRR
 - [ ] < $600 CAC

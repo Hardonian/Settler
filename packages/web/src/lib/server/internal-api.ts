@@ -90,10 +90,11 @@ export async function triggerInternalReconciliationRun(
   try {
     baseUrl = getInternalApiUrl();
   } catch (err) {
-    throw Object.assign(
-      new Error("Reconciliation engine not configured."),
-      { code: "ENGINE_NOT_CONFIGURED", status: 503, cause: err }
-    );
+    throw Object.assign(new Error("Reconciliation engine not configured."), {
+      code: "ENGINE_NOT_CONFIGURED",
+      status: 503,
+      cause: err,
+    });
   }
 
   const url = `${baseUrl}/api/v1/reconciliation/run`;
@@ -118,10 +119,10 @@ export async function triggerInternalReconciliationRun(
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
     safeLogger.error("[InternalApiClient] Engine unreachable", { url, error: msg });
-    throw Object.assign(
-      new Error(`Reconciliation engine unreachable: ${msg}`),
-      { code: "ENGINE_UNAVAILABLE", status: 503 }
-    );
+    throw Object.assign(new Error(`Reconciliation engine unreachable: ${msg}`), {
+      code: "ENGINE_UNAVAILABLE",
+      status: 503,
+    });
   }
 
   if (!response.ok) {

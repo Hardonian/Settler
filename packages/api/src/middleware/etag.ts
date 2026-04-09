@@ -3,8 +3,8 @@
  * Implements HTTP ETags for cache validation on GET requests
  */
 
-import { Request, Response, NextFunction } from 'express';
-import { createHash } from 'crypto';
+import { Request, Response, NextFunction } from "express";
+import { createHash } from "crypto";
 
 export interface ETagRequest extends Request {
   etag?: string;
@@ -14,19 +14,15 @@ export interface ETagRequest extends Request {
  * Generate ETag from response body
  */
 function generateETag(body: string): string {
-  return `"${createHash('md5').update(body).digest('hex')}"`;
+  return `"${createHash("md5").update(body).digest("hex")}"`;
 }
 
 /**
  * ETag middleware for GET requests
  */
-export function etagMiddleware(
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void {
+export function etagMiddleware(req: Request, res: Response, next: NextFunction): void {
   // Only apply to GET/HEAD requests
-  if (req.method !== 'GET' && req.method !== 'HEAD') {
+  if (req.method !== "GET" && req.method !== "HEAD") {
     return next();
   }
 
@@ -35,14 +31,14 @@ export function etagMiddleware(
 
   // Override res.send
   res.send = function (body: unknown) {
-    const bodyString = typeof body === 'string' ? body : JSON.stringify(body);
+    const bodyString = typeof body === "string" ? body : JSON.stringify(body);
     const etag = generateETag(bodyString);
 
     // Set ETag header
-    res.setHeader('ETag', etag);
+    res.setHeader("ETag", etag);
 
     // Check if client sent If-None-Match header
-    const clientETag = req.headers['if-none-match'];
+    const clientETag = req.headers["if-none-match"];
     if (clientETag === etag || clientETag === `W/${etag}`) {
       // Resource hasn't changed
       res.status(304).end();
@@ -57,9 +53,9 @@ export function etagMiddleware(
     const bodyString = JSON.stringify(body);
     const etag = generateETag(bodyString);
 
-    res.setHeader('ETag', etag);
+    res.setHeader("ETag", etag);
 
-    const clientETag = req.headers['if-none-match'];
+    const clientETag = req.headers["if-none-match"];
     if (clientETag === etag || clientETag === `W/${etag}`) {
       res.status(304).end();
       return res;

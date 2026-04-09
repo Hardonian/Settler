@@ -17,6 +17,7 @@ Settler offers a clear progression from open-source protocol to managed platform
 **Value:** Foundation for building reconciliation solutions
 
 **Includes:**
+
 - `@settler/protocol` - Core types and interfaces
 - React.Settler OSS components
 - Basic validation and security
@@ -33,6 +34,7 @@ Settler offers a clear progression from open-source protocol to managed platform
 **Value:** Platform integrations, advanced telemetry, audit logging
 
 **Includes:**
+
 - All OSS features
 - Platform integrations (Shopify, Stripe, MCP)
 - Virtualized tables
@@ -52,6 +54,7 @@ Settler offers a clear progression from open-source protocol to managed platform
 **Value:** No infrastructure management, automatic scaling, support
 
 **Includes:**
+
 - Reconciliation Engine API
 - Receipts API
 - Feature Flags API
@@ -60,6 +63,7 @@ Settler offers a clear progression from open-source protocol to managed platform
 - Billing management
 
 **Tiers:**
+
 - **Starter:** $99/month (100K reconciliations/month)
 - **Professional:** $499/month (1M reconciliations/month)
 - **Enterprise:** Custom (unlimited usage)
@@ -76,6 +80,7 @@ Settler offers a clear progression from open-source protocol to managed platform
 **Value:** SLA guarantees, dedicated support, custom integrations
 
 **Includes:**
+
 - All platform features
 - SSO and RBAC
 - Custom integrations

@@ -86,6 +86,9 @@ export class TransactionsClient {
    * Get a single transaction by ID.
    */
   async get(id: string): Promise<TransactionResponse> {
-    return this.client.request<TransactionResponse>("GET", `/api/v1/transactions/${encodeURIComponent(id)}`);
+    return this.client.request<TransactionResponse>(
+      "GET",
+      `/api/v1/transactions/${encodeURIComponent(id)}`
+    );
   }
 }

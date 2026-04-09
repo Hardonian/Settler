@@ -3,16 +3,16 @@
  * Shows real-time progress for reconciliation runs
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { RefreshCw, Play, Pause } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { RefreshCw, Play, Pause } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 
 interface ProgressData {
   progressPercentage: number;
@@ -63,22 +63,22 @@ export function ProgressTracker({
         : `/api/v1/progress/reconciliation-results/${resultId}`;
 
       const res = await fetch(endpoint);
-      if (!res.ok) throw new Error('Failed to fetch progress');
+      if (!res.ok) throw new Error("Failed to fetch progress");
 
       const data = await res.json();
       setProgress(data);
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'Failed to load progress');
+      setError(error instanceof Error ? error.message : "Failed to load progress");
     } finally {
       setLoading(false);
     }
   };
 
   const formatETA = (eta?: string) => {
-    if (!eta) return 'Calculating...';
+    if (!eta) return "Calculating...";
     const etaDate = new Date(eta);
     const now = new Date();
-    if (etaDate < now) return 'Completed';
+    if (etaDate < now) return "Completed";
     return `~${formatDistanceToNow(etaDate)} remaining`;
   };
 
@@ -103,15 +103,11 @@ export function ProgressTracker({
             </CardDescription>
           </div>
           <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setIsPaused(!isPaused)}
-            >
+            <Button variant="outline" size="icon" onClick={() => setIsPaused(!isPaused)}>
               {isPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
             </Button>
             <Button variant="outline" size="icon" onClick={fetchProgress}>
-              <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
             </Button>
           </div>
         </div>
@@ -136,11 +132,15 @@ export function ProgressTracker({
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <div className="text-sm text-muted-foreground">Processed</div>
-                <div className="text-2xl font-bold">{progress.transactionsProcessed.toLocaleString()}</div>
+                <div className="text-2xl font-bold">
+                  {progress.transactionsProcessed.toLocaleString()}
+                </div>
               </div>
               <div>
                 <div className="text-sm text-muted-foreground">Total</div>
-                <div className="text-2xl font-bold">{progress.totalTransactions.toLocaleString()}</div>
+                <div className="text-2xl font-bold">
+                  {progress.totalTransactions.toLocaleString()}
+                </div>
               </div>
             </div>
 
@@ -156,7 +156,7 @@ export function ProgressTracker({
           </>
         ) : (
           <div className="text-center py-8 text-muted-foreground">
-            {loading ? 'Loading progress...' : 'No progress data available'}
+            {loading ? "Loading progress..." : "No progress data available"}
           </div>
         )}
       </CardContent>

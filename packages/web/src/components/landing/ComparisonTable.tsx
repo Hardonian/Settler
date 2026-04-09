@@ -1,16 +1,16 @@
 /**
  * Comparison Table Component
- * 
+ *
  * Compare Settler with competitors, highlighting unique features.
  */
 
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, XCircle, Sparkles } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle2, XCircle, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface Competitor {
   name: string;
@@ -20,45 +20,45 @@ interface Competitor {
 
 const competitors: Competitor[] = [
   {
-    name: 'Settler',
+    name: "Settler",
     features: {
-      'Deterministic Output': true,
-      'Hash Chain Evidence': true,
-      'Run Replay & Verification': true,
-      'AI-Assisted Exception Review': 'All Plans',
-      'Human-in-the-Loop Enforcement': true,
-      'Tenant Isolation (RLS)': true,
-      'Tamper-Evident Audit Trail': true,
-      'Open Source Core': true,
-      'Self-Hostable': true,
+      "Deterministic Output": true,
+      "Hash Chain Evidence": true,
+      "Run Replay & Verification": true,
+      "AI-Assisted Exception Review": "All Plans",
+      "Human-in-the-Loop Enforcement": true,
+      "Tenant Isolation (RLS)": true,
+      "Tamper-Evident Audit Trail": true,
+      "Open Source Core": true,
+      "Self-Hostable": true,
     },
   },
   {
-    name: 'Custom Scripts',
+    name: "Custom Scripts",
     features: {
-      'Deterministic Output': 'Varies',
-      'Hash Chain Evidence': false,
-      'Run Replay & Verification': false,
-      'AI-Assisted Exception Review': false,
-      'Human-in-the-Loop Enforcement': 'Manual',
-      'Tenant Isolation (RLS)': 'DIY',
-      'Tamper-Evident Audit Trail': false,
-      'Open Source Core': 'N/A',
-      'Self-Hostable': true,
+      "Deterministic Output": "Varies",
+      "Hash Chain Evidence": false,
+      "Run Replay & Verification": false,
+      "AI-Assisted Exception Review": false,
+      "Human-in-the-Loop Enforcement": "Manual",
+      "Tenant Isolation (RLS)": "DIY",
+      "Tamper-Evident Audit Trail": false,
+      "Open Source Core": "N/A",
+      "Self-Hostable": true,
     },
   },
   {
-    name: 'Generic ETL Tools',
+    name: "Generic ETL Tools",
     features: {
-      'Deterministic Output': 'Partial',
-      'Hash Chain Evidence': false,
-      'Run Replay & Verification': false,
-      'AI-Assisted Exception Review': false,
-      'Human-in-the-Loop Enforcement': false,
-      'Tenant Isolation (RLS)': 'Add-on',
-      'Tamper-Evident Audit Trail': 'Logs only',
-      'Open Source Core': 'Varies',
-      'Self-Hostable': 'Varies',
+      "Deterministic Output": "Partial",
+      "Hash Chain Evidence": false,
+      "Run Replay & Verification": false,
+      "AI-Assisted Exception Review": false,
+      "Human-in-the-Loop Enforcement": false,
+      "Tenant Isolation (RLS)": "Add-on",
+      "Tamper-Evident Audit Trail": "Logs only",
+      "Open Source Core": "Varies",
+      "Self-Hostable": "Varies",
     },
   },
 ];
@@ -81,9 +81,7 @@ export function ComparisonTable() {
           <Badge className="mb-4 bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400">
             Comparison
           </Badge>
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            How Settler Compares
-          </h2>
+          <h2 className="text-4xl md:text-5xl font-bold mb-4">How Settler Compares</h2>
           <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
             See why Settler's judgment layer and meaningful insights set us apart.
           </p>
@@ -100,12 +98,12 @@ export function ComparisonTable() {
                       <th
                         key={competitor.name}
                         className={`text-center p-4 font-semibold ${
-                          competitor.name === 'Settler'
-                            ? 'bg-gradient-to-b from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20'
-                            : ''
+                          competitor.name === "Settler"
+                            ? "bg-gradient-to-b from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20"
+                            : ""
                         }`}
                       >
-                        {competitor.name === 'Settler' && (
+                        {competitor.name === "Settler" && (
                           <Badge className="mb-2 bg-gradient-to-r from-blue-600 to-cyan-600">
                             <Sparkles className="w-3 h-3 mr-1" />
                             Best
@@ -128,24 +126,24 @@ export function ComparisonTable() {
                       onHoverEnd={() => setHoveredFeature(null)}
                       className={`border-b transition-colors ${
                         hoveredFeature === feature
-                          ? 'bg-blue-50 dark:bg-blue-900/10'
-                          : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                          ? "bg-blue-50 dark:bg-blue-900/10"
+                          : "hover:bg-slate-50 dark:hover:bg-slate-800/50"
                       }`}
                     >
                       <td className="p-4 font-medium">{feature}</td>
                       {competitors.map((competitor) => {
                         const value = competitor.features[feature];
-                        const isSettler = competitor.name === 'Settler';
+                        const isSettler = competitor.name === "Settler";
                         const isTrue = value === true;
-                        const isString = typeof value === 'string';
+                        const isString = typeof value === "string";
 
                         return (
                           <td
                             key={`${competitor.name}-${feature}`}
                             className={`text-center p-4 ${
                               isSettler && isTrue
-                                ? 'bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20'
-                                : ''
+                                ? "bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20"
+                                : ""
                             }`}
                           >
                             {isTrue ? (
@@ -183,7 +181,9 @@ export function ComparisonTable() {
           className="mt-8 text-center"
         >
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            Comparison based on publicly documented capabilities. &quot;Custom Scripts&quot; and &quot;Generic ETL Tools&quot; represent common alternatives, not specific named products.
+            Comparison based on publicly documented capabilities. &quot;Custom Scripts&quot; and
+            &quot;Generic ETL Tools&quot; represent common alternatives, not specific named
+            products.
           </p>
         </motion.div>
       </div>

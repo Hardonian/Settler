@@ -173,7 +173,8 @@ export async function getReferralStats(userId: string): Promise<{
 
   const totalReferrals = referrals?.length || 0;
   const completedReferrals =
-    referrals?.filter((r: Referral) => r.status === "completed" || r.status === "rewarded").length || 0;
+    referrals?.filter((r: Referral) => r.status === "completed" || r.status === "rewarded")
+      .length || 0;
   const totalRewards =
     referrals?.reduce((sum: number, r: Referral) => sum + (r.reward_amount || 0), 0) || 0;
 

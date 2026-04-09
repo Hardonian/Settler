@@ -79,7 +79,13 @@ function mergePage(
 describe("pre-go-live simulation (merged runs)", () => {
   it("produces identical pages under concurrent overlapping reads (operator poll storm)", () => {
     const random = seededRng(42);
-    const { job, ing } = buildCandidates("A", 24, 18, random, Date.parse("2026-03-01T00:00:00.000Z"));
+    const { job, ing } = buildCandidates(
+      "A",
+      24,
+      18,
+      random,
+      Date.parse("2026-03-01T00:00:00.000Z")
+    );
     const limit = 12;
     const expected = mergePage(job, ing, limit, null);
 
@@ -168,11 +174,23 @@ describe("pre-go-live simulation (tagged interleave)", () => {
   it("preserves total ordering when interleaving job and ingestion streams with shared clock", () => {
     const t0 = Date.parse("2026-05-01T12:00:00.000Z");
     const jobCandidates: MergeCandidate<Tagged>[] = [
-      { row: { tenant: "A", kind: "job", payload: "a" }, sortTimeMs: t0, id: "11111111-1111-4111-8111-111111111111" },
-      { row: { tenant: "A", kind: "job", payload: "b" }, sortTimeMs: t0 - 1, id: "11111111-1111-4111-8111-111111111112" },
+      {
+        row: { tenant: "A", kind: "job", payload: "a" },
+        sortTimeMs: t0,
+        id: "11111111-1111-4111-8111-111111111111",
+      },
+      {
+        row: { tenant: "A", kind: "job", payload: "b" },
+        sortTimeMs: t0 - 1,
+        id: "11111111-1111-4111-8111-111111111112",
+      },
     ];
     const ingCandidates: MergeCandidate<Tagged>[] = [
-      { row: { tenant: "A", kind: "ing", payload: "x" }, sortTimeMs: t0, id: "22222222-2222-4222-8222-222222222222" },
+      {
+        row: { tenant: "A", kind: "ing", payload: "x" },
+        sortTimeMs: t0,
+        id: "22222222-2222-4222-8222-222222222222",
+      },
     ];
 
     const merged = mergeDualStreamPage({

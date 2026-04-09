@@ -1,6 +1,6 @@
 /**
  * API Route Wrapper
- * 
+ *
  * Provides common middleware for API routes:
  * - Request size limits
  * - Rate limiting
@@ -8,12 +8,12 @@
  * - Metrics tracking
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { redisRateLimiters } from '@/lib/security/rate-limiter-redis';
-import { trackApiMetric } from '@/lib/monitoring/metrics';
-import { createErrorResponse } from '@/lib/server-error-handler';
-import { getApiVersion } from '@/lib/api/versioning';
-import { checkRequestSize } from './request-size-limit';
+import { NextRequest, NextResponse } from "next/server";
+import { redisRateLimiters } from "@/lib/security/rate-limiter-redis";
+import { trackApiMetric } from "@/lib/monitoring/metrics";
+import { createErrorResponse } from "@/lib/server-error-handler";
+import { getApiVersion } from "@/lib/api/versioning";
+import { checkRequestSize } from "./request-size-limit";
 
 export interface ApiWrapperConfig {
   rateLimiter?: (req: NextRequest) => Promise<NextResponse | null>;
@@ -55,7 +55,7 @@ export function withApiWrapper<T extends (...args: any[]) => Promise<NextRespons
 
       // Add version headers
       const version = getApiVersion(request);
-      response.headers.set('X-API-Version', version);
+      response.headers.set("X-API-Version", version);
 
       // Track metrics
       const status = response.status;
@@ -71,4 +71,3 @@ export function withApiWrapper<T extends (...args: any[]) => Promise<NextRespons
     }
   }) as T;
 }
-

@@ -11,6 +11,7 @@ Welcome to Settler! We're excited to have you on board. You're about to automate
 ## 🚀 Get Started in 5 Minutes
 
 **Step 1: Install the SDK**
+
 ```bash
 npm install @settler/sdk
 ```
@@ -20,6 +21,7 @@ Your API key is ready: `{{api_key}}`
 [View in Dashboard →](https://settler.io/dashboard/api-keys)
 
 **Step 3: Create your first job**
+
 ```typescript
 import Settler from "@settler/sdk";
 
@@ -29,9 +31,23 @@ const settler = new Settler({
 
 const job = await settler.jobs.create({
   name: "My First Reconciliation",
-  source: { adapter: "shopify", config: { /* ... */ } },
-  target: { adapter: "stripe", config: { /* ... */ } },
-  rules: { matching: [/* ... */] },
+  source: {
+    adapter: "shopify",
+    config: {
+      /* ... */
+    },
+  },
+  target: {
+    adapter: "stripe",
+    config: {
+      /* ... */
+    },
+  },
+  rules: {
+    matching: [
+      /* ... */
+    ],
+  },
 });
 ```
 
@@ -70,16 +86,19 @@ const job = await settler.jobs.create({
 ## 🎯 Common First Jobs
 
 **E-commerce**: Shopify ↔ Stripe reconciliation
+
 ```typescript
 // See example in docs: docs.settler.io/recipes/ecommerce
 ```
 
 **SaaS**: Stripe ↔ QuickBooks sync
+
 ```typescript
 // See example in docs: docs.settler.io/recipes/saas
 ```
 
 **Multi-Platform**: Stripe + PayPal → QuickBooks
+
 ```typescript
 // See example in docs: docs.settler.io/recipes/multi-platform
 ```

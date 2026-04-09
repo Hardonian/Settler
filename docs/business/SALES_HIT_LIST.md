@@ -5,6 +5,7 @@
 ### Fintech (Priority 1)
 
 #### Payment Processors
+
 1. **Stripe** (Enterprise)
    - **Pain**: Complex reconciliation across multiple products
    - **Contact**: engineering@stripe.com
@@ -24,6 +25,7 @@
    - **Status**: Researching
 
 #### Lending Platforms
+
 4. **Affirm** (Enterprise)
    - **Pain**: Loan reconciliation and reporting
    - **Contact**: engineering@affirm.com
@@ -37,6 +39,7 @@
    - **Status**: Researching
 
 #### Expense Management
+
 6. **Expensify** (Mid-market)
    - **Pain**: Receipt parsing accuracy
    - **Contact**: sales@expensify.com
@@ -52,6 +55,7 @@
 ### SaaS Companies (Priority 2)
 
 #### B2B SaaS
+
 8. **Salesforce** (Enterprise)
    - **Pain**: Subscription billing reconciliation
    - **Contact**: partnerships@salesforce.com
@@ -71,6 +75,7 @@
     - **Status**: Researching
 
 #### Marketplace Platforms
+
 11. **Shopify** (Enterprise)
     - **Pain**: Multi-party transaction reconciliation
     - **Contact**: partnerships@shopify.com
@@ -86,6 +91,7 @@
 ### Enterprise (Priority 3)
 
 #### Financial Services
+
 13. **Goldman Sachs** (Enterprise)
     - **Pain**: Complex financial operations
     - **Contact**: technology@goldmansachs.com
@@ -99,6 +105,7 @@
     - **Status**: Researching
 
 #### Retail
+
 15. **Amazon** (Enterprise)
     - **Pain**: Multi-party transaction reconciliation
     - **Contact**: partnerships@amazon.com
@@ -116,6 +123,7 @@
 ## Outreach Sequence
 
 ### Email 1: Introduction (Day 1)
+
 **Subject**: Reducing reconciliation complexity at [Company]
 
 **Body**:
@@ -129,6 +137,7 @@ Best,
 [Your Name]
 
 ### Email 2: Value Proposition (Day 4)
+
 **Subject**: Re: Reducing reconciliation complexity
 
 **Body**:
@@ -146,6 +155,7 @@ Best,
 [Your Name]
 
 ### Email 3: Case Study (Day 7)
+
 **Subject**: How [Similar Company] saved $500k/year
 
 **Body**:
@@ -159,6 +169,7 @@ Best,
 [Your Name]
 
 ### LinkedIn Follow-up (Day 10)
+
 - Connect on LinkedIn
 - Share relevant content
 - Comment on their posts
@@ -169,18 +180,21 @@ Best,
 ## Qualification Criteria
 
 ### Must Have
+
 - ✅ 10+ engineers
 - ✅ Financial operations complexity
 - ✅ Reconciliation pain points
 - ✅ Budget for developer tools ($10k+/year)
 
 ### Nice to Have
+
 - ✅ Fintech or SaaS company
 - ✅ High transaction volume
 - ✅ Compliance requirements
 - ✅ API-first approach
 
 ### Disqualify
+
 - ❌ No engineering team
 - ❌ No financial operations
 - ❌ No budget
@@ -191,6 +205,7 @@ Best,
 ## Sales Playbook
 
 ### Discovery Questions
+
 1. **Current process**: How do you handle reconciliation today?
 2. **Pain points**: What are the biggest challenges?
 3. **Cost**: How much engineering time is spent?
@@ -199,6 +214,7 @@ Best,
 6. **Decision makers**: Who's involved in the decision?
 
 ### Demo Script
+
 1. **Show the problem** (5 min)
    - Demo reconciliation with messy data
    - Show current pain points
@@ -219,6 +235,7 @@ Best,
    - Timeline
 
 ### Objection Handling
+
 - **"Too expensive"**: Calculate ROI, show cost savings
 - **"We can build it"**: Show time savings, edge cases
 - **"Not a priority"**: Quantify current cost, show ROI
@@ -229,6 +246,7 @@ Best,
 ## Metrics & Tracking
 
 ### Sales Metrics
+
 - **Outreach**: 50+ companies/month
 - **Response rate**: 10%+
 - **Demo rate**: 5%+
@@ -236,6 +254,7 @@ Best,
 - **Sales cycle**: 30-60 days
 
 ### Pipeline Stages
+
 1. **Research**: 100+ companies
 2. **Outreach**: 50+ companies
 3. **Qualified**: 20+ companies

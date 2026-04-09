@@ -4,10 +4,10 @@
  */
 
 export enum ExecutionStatus {
-  RUNNING = 'running',
-  COMPLETED = 'completed',
-  FAILED = 'failed',
-  CANCELLED = 'cancelled',
+  RUNNING = "running",
+  COMPLETED = "completed",
+  FAILED = "failed",
+  CANCELLED = "cancelled",
 }
 
 export interface ExecutionSummary {
@@ -32,7 +32,7 @@ export class Execution {
   private constructor(private props: ExecutionProps) {}
 
   static create(
-    props: Omit<ExecutionProps, 'id' | 'status' | 'startedAt' | 'createdAt'>
+    props: Omit<ExecutionProps, "id" | "status" | "startedAt" | "createdAt">
   ): Execution {
     return new Execution({
       ...props,
@@ -83,7 +83,7 @@ export class Execution {
     this.props.status = ExecutionStatus.COMPLETED;
     this.props.completedAt = new Date();
     this.props.summary = summary;
-    
+
     // Calculate accuracy if possible
     const total = summary.matched + summary.unmatched;
     if (total > 0) {

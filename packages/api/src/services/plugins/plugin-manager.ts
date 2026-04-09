@@ -1,17 +1,17 @@
 /**
  * Plugin Manager
- * 
+ *
  * Manages third-party plugins for extensibility
  * Part of Phase VIII: Future-Proof Architecture
  */
 
-import { logInfo, logError } from '../../utils/logger';
+import { logInfo, logError } from "../../utils/logger";
 
 export interface Plugin {
   id: string;
   name: string;
   version: string;
-  type: 'ingestion' | 'validator' | 'transformer' | 'workflow';
+  type: "ingestion" | "validator" | "transformer" | "workflow";
   entryPoint: string;
   config?: Record<string, unknown>;
 }
@@ -24,7 +24,7 @@ export class PluginManager {
    */
   async registerPlugin(plugin: Plugin): Promise<void> {
     this.plugins.set(plugin.id, plugin);
-    logInfo('Plugin registered', { pluginId: plugin.id, pluginName: plugin.name });
+    logInfo("Plugin registered", { pluginId: plugin.id, pluginName: plugin.name });
   }
 
   /**
@@ -37,9 +37,9 @@ export class PluginManager {
   /**
    * List plugins by type
    */
-  listPlugins(type?: Plugin['type']): Plugin[] {
+  listPlugins(type?: Plugin["type"]): Plugin[] {
     const allPlugins = Array.from(this.plugins.values());
-    return type ? allPlugins.filter(p => p.type === type) : allPlugins;
+    return type ? allPlugins.filter((p) => p.type === type) : allPlugins;
   }
 
   /**
@@ -57,10 +57,10 @@ export class PluginManager {
     try {
       // TODO: Load and execute plugin
       // This would dynamically load the plugin module and execute it
-      logInfo('Plugin executed', { pluginId, input });
+      logInfo("Plugin executed", { pluginId, input });
       return { success: true, result: input };
     } catch (error) {
-      logError('Plugin execution failed', { error, pluginId });
+      logError("Plugin execution failed", { error, pluginId });
       throw error;
     }
   }
@@ -70,6 +70,6 @@ export class PluginManager {
    */
   async unregisterPlugin(pluginId: string): Promise<void> {
     this.plugins.delete(pluginId);
-    logInfo('Plugin unregistered', { pluginId });
+    logInfo("Plugin unregistered", { pluginId });
   }
 }

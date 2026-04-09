@@ -19,6 +19,7 @@ Settler is designed to operate with minimal human intervention. This document ca
 **What:** Automatically provisions 14-day free trial for new signups
 
 **How:**
+
 - Database trigger `trigger_provision_trial_on_signup` fires on profile creation
 - Sets `plan_type = 'trial'`, `trial_start_date = NOW()`, `trial_end_date = NOW() + 14 days`
 - No manual intervention required
@@ -34,6 +35,7 @@ Settler is designed to operate with minimal human intervention. This document ca
 **What:** Automatically converts expired trials to free tier
 
 **How:**
+
 - Edge function `automated-onboarding-emails` calls `handle_trial_expiration()` daily
 - Updates `plan_type = 'free'` for expired trials
 - Logs expiration events to `activity_log`
@@ -49,6 +51,7 @@ Settler is designed to operate with minimal human intervention. This document ca
 **What:** Automatically tracks user onboarding progress based on actions
 
 **How:**
+
 - Database triggers fire on:
   - API key creation → `first_api_key` step
   - Reconciliation job creation → `first_job` step
@@ -67,6 +70,7 @@ Settler is designed to operate with minimal human intervention. This document ca
 **What:** Sends automated onboarding emails at Day 0, 1, 3, and trial expiration warnings
 
 **How:**
+
 - Edge function `automated-onboarding-emails` runs daily
 - Queries users by signup date
 - Sends welcome, onboarding reminder, activation, and expiration emails
@@ -83,6 +87,7 @@ Settler is designed to operate with minimal human intervention. This document ca
 **What:** Automated health monitoring of critical systems
 
 **How:**
+
 - Edge function `automated-health-checks` runs every 5 minutes
 - Checks:
   - Database connectivity
@@ -105,6 +110,7 @@ Settler is designed to operate with minimal human intervention. This document ca
 **What:** Automated troubleshooting and root cause analysis
 
 **How:**
+
 - Edge function `automated-diagnostics` analyzes:
   - Failed webhook processing
   - Billing sync issues
@@ -125,6 +131,7 @@ Settler is designed to operate with minimal human intervention. This document ca
 **What:** Tracks usage and warns users approaching limits
 
 **How:**
+
 - All API calls log to `usage_events` table
 - API endpoint `/api/console/usage/warnings` calculates usage vs. limits
 - `UsageWarningBanner` component displays warnings at 80%, 90%, 100%
@@ -141,6 +148,7 @@ Settler is designed to operate with minimal human intervention. This document ca
 **What:** Automated billing reconciliation and subscription management
 
 **How:**
+
 - Stripe webhooks update `subscriptions` table automatically
 - Usage events sync to Stripe via `sync-usage-to-stripe` edge function
 - Billing reconciliation runs daily via `compute-bill` edge function
@@ -157,6 +165,7 @@ Settler is designed to operate with minimal human intervention. This document ca
 **What:** AI-powered error classification and user confusion detection
 
 **How:**
+
 - Analyzes error logs and user actions
 - Classifies errors by type and severity
 - Detects user confusion patterns
@@ -173,6 +182,7 @@ Settler is designed to operate with minimal human intervention. This document ca
 **What:** AI-powered in-app help and troubleshooting
 
 **How:**
+
 - Contextual help based on user's current page/action
 - AI explanation of user data ("what am I seeing?")
 - Auto-generated insights from receipt/console data
@@ -287,6 +297,7 @@ Settler is designed to operate with minimal human intervention. This document ca
 ### Emergency Procedures
 
 1. **Disable Trial Provisioning:**
+
    ```sql
    DROP TRIGGER trigger_provision_trial_on_signup ON profiles;
    ```

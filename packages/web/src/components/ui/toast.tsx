@@ -107,7 +107,10 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) =
       )}
       role="status"
     >
-      <Icon className={cn("mt-0.5 h-5 w-5 flex-shrink-0", iconClass[toast.type])} aria-hidden="true" />
+      <Icon
+        className={cn("mt-0.5 h-5 w-5 flex-shrink-0", iconClass[toast.type])}
+        aria-hidden="true"
+      />
       <div className="flex-1 text-sm leading-relaxed">{toast.message}</div>
       <button
         type="button"

@@ -27,7 +27,10 @@ export function isAllowedProvenance(url: string): boolean {
   return /^(https|git\+https):\/\/[a-z0-9.-]+\//i.test(url);
 }
 
-export function validateRegistryEntries(kind: "adapters" | "rules", payload: unknown): RegistryEntry[] {
+export function validateRegistryEntries(
+  kind: "adapters" | "rules",
+  payload: unknown
+): RegistryEntry[] {
   if (!Array.isArray(payload)) {
     throw new Error(`${kind} registry must be an array`);
   }

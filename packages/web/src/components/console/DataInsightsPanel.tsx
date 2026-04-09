@@ -92,12 +92,8 @@ export function DataInsightsPanel({ dataType = "receipts" }: { dataType?: "recei
       <CardContent className="space-y-6 pt-6">
         {/* Summary */}
         <div>
-          <h3 className="text-sm font-semibold text-muted-foreground mb-2">
-            Summary
-          </h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            {insights.summary}
-          </p>
+          <h3 className="text-sm font-semibold text-muted-foreground mb-2">Summary</h3>
+          <p className="text-sm text-muted-foreground leading-relaxed">{insights.summary}</p>
         </div>
 
         {/* Trends */}
@@ -113,12 +109,8 @@ export function DataInsightsPanel({ dataType = "receipts" }: { dataType?: "recei
                   key={i}
                   className="bg-muted/20 rounded-lg p-3 border border-border/40 dark:border-border"
                 >
-                  <p className="text-xs text-muted-foreground mb-1">
-                    {trend.label}
-                  </p>
-                  <p className="text-lg font-bold text-foreground">
-                    {trend.value}
-                  </p>
+                  <p className="text-xs text-muted-foreground mb-1">{trend.label}</p>
+                  <p className="text-lg font-bold text-foreground">{trend.value}</p>
                   {trend.change && (
                     <p className="text-xs text-green-600 dark:text-green-400 mt-1">
                       {trend.change}
@@ -139,10 +131,7 @@ export function DataInsightsPanel({ dataType = "receipts" }: { dataType?: "recei
             </h3>
             <ul className="space-y-2">
               {insights.recommendations.map((rec, i) => (
-                <li
-                  key={i}
-                  className="text-sm text-muted-foreground flex items-start gap-2"
-                >
+                <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
                   <span className="text-blue-600 dark:text-blue-400 mt-1">•</span>
                   <span>{rec}</span>
                 </li>

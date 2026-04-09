@@ -3,19 +3,19 @@
  * Reports current reachability only — no historical uptime, SLA, or incident fiction.
  */
 
-import { validateSupabaseEnv } from '@/lib/env/validator';
+import { validateSupabaseEnv } from "@/lib/env/validator";
 
-export type ConnectivityCheckName = 'database' | 'supabase' | 'runtime_env';
+export type ConnectivityCheckName = "database" | "supabase" | "runtime_env";
 
 export type ConnectivityCheckResult = {
   ok: boolean;
-  status: 'healthy' | 'degraded';
+  status: "healthy" | "degraded";
   /** Machine-visible reason when not ok (safe for operators, no secrets). */
   reason?: string;
 };
 
 export type RuntimeConnectivityHealth = {
-  overall: 'healthy' | 'degraded';
+  overall: "healthy" | "degraded";
   checks: Record<ConnectivityCheckName, ConnectivityCheckResult>;
   degraded_reasons: string[];
   timestamp: string;
@@ -23,36 +23,36 @@ export type RuntimeConnectivityHealth = {
 
 async function checkDatabaseHealth(): Promise<ConnectivityCheckResult> {
   try {
-    const { prisma } = await import('@/shared/db/prismaClient');
+    const { prisma } = await import("@/shared/db/prismaClient");
     await prisma.$queryRaw`SELECT 1`;
-    return { ok: true, status: 'healthy' };
+    return { ok: true, status: "healthy" };
   } catch {
     return {
       ok: false,
-      status: 'degraded',
-      reason: 'database_query_failed',
+      status: "degraded",
+      reason: "database_query_failed",
     };
   }
 }
 
 async function checkSupabaseHealth(): Promise<ConnectivityCheckResult> {
   try {
-    const { createClient } = await import('@/lib/supabase/server');
+    const { createClient } = await import("@/lib/supabase/server");
     const supabase = await createClient();
-    const { error } = await supabase.from('users').select('id').limit(1);
+    const { error } = await supabase.from("users").select("id").limit(1);
     if (error) {
       return {
         ok: false,
-        status: 'degraded',
-        reason: 'supabase_users_probe_failed',
+        status: "degraded",
+        reason: "supabase_users_probe_failed",
       };
     }
-    return { ok: true, status: 'healthy' };
+    return { ok: true, status: "healthy" };
   } catch {
     return {
       ok: false,
-      status: 'degraded',
-      reason: 'supabase_client_unavailable',
+      status: "degraded",
+      reason: "supabase_client_unavailable",
     };
   }
 }
@@ -63,16 +63,16 @@ function checkApplicationRuntimeHealth(): ConnectivityCheckResult {
     if (!envValidation.isValid) {
       return {
         ok: false,
-        status: 'degraded',
-        reason: 'supabase_env_invalid_or_incomplete',
+        status: "degraded",
+        reason: "supabase_env_invalid_or_incomplete",
       };
     }
-    return { ok: true, status: 'healthy' };
+    return { ok: true, status: "healthy" };
   } catch {
     return {
       ok: false,
-      status: 'degraded',
-      reason: 'runtime_env_validation_threw',
+      status: "degraded",
+      reason: "runtime_env_validation_threw",
     };
   }
 }
@@ -93,7 +93,7 @@ function mergeConnectivityResults(
     .map(([name, c]) => `${name}:${c.reason}`);
 
   const anyFailed = Object.values(checks).some((c) => !c.ok);
-  const overall = anyFailed ? 'degraded' : 'healthy';
+  const overall = anyFailed ? "degraded" : "healthy";
 
   return {
     overall,
@@ -107,10 +107,7 @@ function mergeConnectivityResults(
  * Full async probe: database + Supabase + required env for Supabase.
  */
 export async function probeRuntimeConnectivityHealth(): Promise<RuntimeConnectivityHealth> {
-  const [database, supabase] = await Promise.all([
-    checkDatabaseHealth(),
-    checkSupabaseHealth(),
-  ]);
+  const [database, supabase] = await Promise.all([checkDatabaseHealth(), checkSupabaseHealth()]);
   const runtimeEnv = checkApplicationRuntimeHealth();
   return mergeConnectivityResults(database, supabase, runtimeEnv);
 }
@@ -121,20 +118,20 @@ export async function probeRuntimeConnectivityHealth(): Promise<RuntimeConnectiv
 export function connectivityHealthProbeFailed(timestamp: string): RuntimeConnectivityHealth {
   const degraded: ConnectivityCheckResult = {
     ok: false,
-    status: 'degraded',
-    reason: 'health_probe_exception',
+    status: "degraded",
+    reason: "health_probe_exception",
   };
   return {
-    overall: 'degraded',
+    overall: "degraded",
     checks: {
       database: degraded,
       supabase: degraded,
       runtime_env: degraded,
     },
     degraded_reasons: [
-      'database:health_probe_exception',
-      'supabase:health_probe_exception',
-      'runtime_env:health_probe_exception',
+      "database:health_probe_exception",
+      "supabase:health_probe_exception",
+      "runtime_env:health_probe_exception",
     ],
     timestamp,
   };

@@ -79,12 +79,14 @@ This document defines the tone, voice, style, and writing standards for all user
 ### 6. Avoid Vague Phrases
 
 ❌ **Avoid**:
+
 - "Click here"
 - "You can try"
 - "This might take a moment"
 - "Something went wrong" (without context)
 
 ✅ **Use**:
+
 - "Create Project" (specific action)
 - "Try Again" (clear action)
 - "Processing... This usually takes 2-3 seconds" (specific timing)
@@ -108,11 +110,13 @@ This document defines the tone, voice, style, and writing standards for all user
 ### Buttons & CTAs
 
 #### Primary Actions
+
 - Use action verbs: "Create", "Save", "Submit", "Continue"
 - Be specific: "Create Project" not "Create"
 - Use present tense: "Save Changes" not "Saving Changes"
 
 **Examples**:
+
 - ✅ "Create Project"
 - ✅ "Save Changes"
 - ✅ "View Dashboard"
@@ -121,20 +125,24 @@ This document defines the tone, voice, style, and writing standards for all user
 - ❌ "Create New Project" (if context is clear)
 
 #### Secondary Actions
+
 - Use descriptive verbs: "Cancel", "Back", "Skip"
 - Be clear about consequences: "Discard Changes" not "Cancel"
 
 **Examples**:
+
 - ✅ "Cancel"
 - ✅ "Discard Changes"
 - ✅ "Back to Dashboard"
 - ❌ "Go Back" (if context is clear)
 
 #### Destructive Actions
+
 - Be explicit: "Delete Project" not "Delete"
 - Confirm consequences: "Delete Project and All Data"
 
 **Examples**:
+
 - ✅ "Delete Project"
 - ✅ "Remove Integration"
 - ❌ "Delete" (too vague)
@@ -142,11 +150,13 @@ This document defines the tone, voice, style, and writing standards for all user
 ### Form Labels & Placeholders
 
 #### Labels
+
 - Use sentence case: "Email address" not "Email Address"
 - Be descriptive: "Project name" not "Name"
-- Indicate required fields: "Email address *" or use `required` attribute
+- Indicate required fields: "Email address \*" or use `required` attribute
 
 **Examples**:
+
 - ✅ "Email address"
 - ✅ "Project name"
 - ✅ "API key"
@@ -154,11 +164,13 @@ This document defines the tone, voice, style, and writing standards for all user
 - ❌ "Enter your email" (too verbose for label)
 
 #### Placeholders
+
 - Show example format: "you@example.com"
 - Be helpful: "Enter project name" not "Name"
 - Don't replace labels: Placeholders are hints, not labels
 
 **Examples**:
+
 - ✅ "you@example.com"
 - ✅ "my-awesome-project"
 - ✅ "Enter API key"
@@ -166,11 +178,13 @@ This document defines the tone, voice, style, and writing standards for all user
 - ❌ "Click here to enter email" (too verbose)
 
 #### Error Messages
+
 - Be specific: "Please enter a valid email address"
 - Be actionable: "Password must be at least 8 characters"
 - Avoid blame: "Invalid email" not "You entered an invalid email"
 
 **Examples**:
+
 - ✅ "Please enter a valid email address"
 - ✅ "Password must be at least 8 characters"
 - ✅ "This field is required"
@@ -180,6 +194,7 @@ This document defines the tone, voice, style, and writing standards for all user
 ### Empty States
 
 #### Structure
+
 1. **Headline**: What's missing (H3 or H4)
 2. **Description**: Why it's empty and what to do (body text)
 3. **CTA**: Clear next step (button)
@@ -187,16 +202,19 @@ This document defines the tone, voice, style, and writing standards for all user
 **Examples**:
 
 **No Projects**:
+
 - Headline: "No projects yet"
 - Description: "Create your first project to start reconciling transactions"
 - CTA: "Create Project"
 
 **No Results**:
+
 - Headline: "No results found"
 - Description: "Try adjusting your filters or search terms"
 - CTA: "Clear Filters"
 
 **No Data**:
+
 - Headline: "No data available"
 - Description: "Data will appear here once transactions are processed"
 - CTA: (none, or "View Documentation")
@@ -204,6 +222,7 @@ This document defines the tone, voice, style, and writing standards for all user
 ### Error States
 
 #### Structure
+
 1. **Title**: What went wrong (H3)
 2. **Message**: Specific error (sanitized, user-friendly)
 3. **Actions**: Retry, Contact Support
@@ -211,16 +230,19 @@ This document defines the tone, voice, style, and writing standards for all user
 **Examples**:
 
 **Network Error**:
+
 - Title: "Connection Error"
 - Message: "Unable to connect to the server. Please check your internet connection and try again."
 - Actions: "Try Again", "Contact Support"
 
 **Not Found**:
+
 - Title: "Page Not Found"
 - Message: "The page you're looking for doesn't exist or has been moved."
 - Actions: "Go Home", "Back"
 
 **Server Error**:
+
 - Title: "Server Error"
 - Message: "Something went wrong on our end. We've been notified and are working on a fix."
 - Actions: "Try Again", "Contact Support"
@@ -232,6 +254,7 @@ This document defines the tone, voice, style, and writing standards for all user
 - Set expectations: "This may take a few moments"
 
 **Examples**:
+
 - ✅ "Loading projects..."
 - ✅ "Saving changes..."
 - ✅ "Processing transaction..."
@@ -246,6 +269,7 @@ This document defines the tone, voice, style, and writing standards for all user
 - Use positive language: "Project created" not "Project was created"
 
 **Examples**:
+
 - ✅ "Project created successfully"
 - ✅ "Changes saved"
 - ✅ "Integration connected"
@@ -259,6 +283,7 @@ This document defines the tone, voice, style, and writing standards for all user
 - Use sentence case
 
 **Examples**:
+
 - ✅ "Delete this project permanently"
 - ✅ "Refresh the current view"
 - ✅ "Export data as CSV"
@@ -268,20 +293,24 @@ This document defines the tone, voice, style, and writing standards for all user
 ### Modals
 
 #### Titles
+
 - Use title case: "Delete Project"
 - Be specific: "Delete Project" not "Confirm"
 
 #### Descriptions
+
 - Explain consequences: "This will permanently delete the project and all associated data."
 - Be clear: "This action cannot be undone."
 
 #### Actions
+
 - Primary: Destructive action ("Delete Project")
 - Secondary: Cancel ("Cancel")
 
 **Examples**:
 
 **Delete Confirmation**:
+
 - Title: "Delete Project"
 - Description: "This will permanently delete 'My Project' and all associated data. This action cannot be undone."
 - Primary: "Delete Project"
@@ -303,12 +332,14 @@ This document defines the tone, voice, style, and writing standards for all user
 
 ### Example 3: Empty State
 
-❌ **Before**: 
+❌ **Before**:
+
 - Headline: "Nothing here"
 - Description: "You can try creating something"
 - CTA: "Click here"
 
 ✅ **After**:
+
 - Headline: "No projects yet"
 - Description: "Create your first project to start reconciling transactions"
 - CTA: "Create Project"
@@ -336,44 +367,44 @@ This document defines the tone, voice, style, and writing standards for all user
 
 Use these terms consistently across the product:
 
-| Term | Usage | Don't Use |
-|------|-------|-----------|
-| **Project** | User's reconciliation project | Job, Task, Workflow |
-| **Integration** | Connected platform (Stripe, Shopify) | Connector, Adapter, Service |
-| **Transaction** | Financial transaction record | Payment, Record, Item |
-| **Reconciliation** | Matching process | Matching, Sync, Comparison |
-| **Dashboard** | Main overview page | Home, Overview |
-| **Settings** | Configuration page | Preferences, Config |
-| **API Key** | Authentication key | Token, Secret, Credential |
+| Term               | Usage                                | Don't Use                   |
+| ------------------ | ------------------------------------ | --------------------------- |
+| **Project**        | User's reconciliation project        | Job, Task, Workflow         |
+| **Integration**    | Connected platform (Stripe, Shopify) | Connector, Adapter, Service |
+| **Transaction**    | Financial transaction record         | Payment, Record, Item       |
+| **Reconciliation** | Matching process                     | Matching, Sync, Comparison  |
+| **Dashboard**      | Main overview page                   | Home, Overview              |
+| **Settings**       | Configuration page                   | Preferences, Config         |
+| **API Key**        | Authentication key                   | Token, Secret, Credential   |
 
 ### Action Verbs
 
-| Action | Usage |
-|--------|-------|
-| **Create** | For new items (projects, integrations) |
-| **Add** | For adding items to collections |
-| **Save** | For saving changes |
-| **Delete** | For removing items |
-| **Remove** | For removing from collections |
-| **Update** | For modifying existing items |
-| **View** | For viewing details |
-| **Edit** | For editing items |
-| **Cancel** | For canceling actions |
-| **Confirm** | For confirming actions |
-| **Retry** | For retrying failed actions |
-| **Refresh** | For refreshing data |
+| Action      | Usage                                  |
+| ----------- | -------------------------------------- |
+| **Create**  | For new items (projects, integrations) |
+| **Add**     | For adding items to collections        |
+| **Save**    | For saving changes                     |
+| **Delete**  | For removing items                     |
+| **Remove**  | For removing from collections          |
+| **Update**  | For modifying existing items           |
+| **View**    | For viewing details                    |
+| **Edit**    | For editing items                      |
+| **Cancel**  | For canceling actions                  |
+| **Confirm** | For confirming actions                 |
+| **Retry**   | For retrying failed actions            |
+| **Refresh** | For refreshing data                    |
 
 ### Status Terms
 
-| Status | Usage |
-|--------|-------|
-| **Active** | Currently running/enabled |
-| **Inactive** | Currently stopped/disabled |
-| **Pending** | Waiting to start |
-| **Processing** | Currently running |
-| **Completed** | Finished successfully |
-| **Failed** | Finished with error |
-| **Cancelled** | User cancelled |
+| Status         | Usage                      |
+| -------------- | -------------------------- |
+| **Active**     | Currently running/enabled  |
+| **Inactive**   | Currently stopped/disabled |
+| **Pending**    | Waiting to start           |
+| **Processing** | Currently running          |
+| **Completed**  | Finished successfully      |
+| **Failed**     | Finished with error        |
+| **Cancelled**  | User cancelled             |
 
 ---
 
@@ -421,14 +452,12 @@ All user-facing strings should be externalized to `/lib/i18n/locales/en.json`:
 ### Component Usage
 
 ```tsx
-import { useTranslation } from '@/lib/i18n';
+import { useTranslation } from "@/lib/i18n";
 
 function MyComponent() {
   const { t } = useTranslation();
-  
-  return (
-    <Button>{t('buttons.create')}</Button>
-  );
+
+  return <Button>{t("buttons.create")}</Button>;
 }
 ```
 

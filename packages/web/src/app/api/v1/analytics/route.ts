@@ -57,5 +57,5 @@ export const POST = withSecurity(
       return NextResponse.json({ ok: true, received: 0 });
     }
   },
-  { rateLimit: { windowMs: 10000, maxRequests: 30 }, requireAuth: false },
+  { rateLimit: { windowMs: 10000, maxRequests: 30 }, requireAuth: false }
 );

@@ -34,7 +34,7 @@ router.get(
           title: "Choose Source Platform",
           description: "Where are your transactions coming from?",
           type: "select",
-          options: listAdapters().map(a => ({
+          options: listAdapters().map((a) => ({
             value: a.id,
             label: a.name,
             description: `Reconcile ${a.name} transactions`,
@@ -46,7 +46,7 @@ router.get(
           title: "Choose Target Platform",
           description: "Where should transactions be matched against?",
           type: "select",
-          options: listAdapters().map(a => ({
+          options: listAdapters().map((a) => ({
             value: a.id,
             label: a.name,
             description: `Match against ${a.name} transactions`,
@@ -63,7 +63,7 @@ router.get(
             const schema = getAdapterConfigSchema(adapter);
             if (!schema) return [];
 
-            return schema.required.map(field => ({
+            return schema.required.map((field) => ({
               name: field,
               label: schema.fields?.[field]?.description || field,
               type: schema.fields?.[field]?.type || "string",
@@ -83,7 +83,7 @@ router.get(
             const schema = getAdapterConfigSchema(adapter);
             if (!schema) return [];
 
-            return schema.required.map(field => ({
+            return schema.required.map((field) => ({
               name: field,
               label: schema.fields?.[field]?.description || field,
               type: schema.fields?.[field]?.type || "string",
@@ -228,7 +228,10 @@ router.post(
 
 // Helper functions
 
-function validateWizardStep(step: number, answers: Record<string, unknown>): {
+function validateWizardStep(
+  step: number,
+  answers: Record<string, unknown>
+): {
   valid: boolean;
   errors?: Array<{ field: string; message: string; code: string }>;
 } {
@@ -347,22 +350,22 @@ function generateJobConfig(answers: Record<string, unknown>): Record<string, unk
       matching: answers.rules || [],
     },
   };
-  
-  if (answers.schedule && typeof answers.schedule === 'object' && answers.schedule !== null) {
+
+  if (answers.schedule && typeof answers.schedule === "object" && answers.schedule !== null) {
     config.schedule = answers.schedule;
   }
-  
+
   return config;
 }
 
 function generateCLICommand(jobConfig: Record<string, unknown>): string {
   const source = jobConfig.source as Record<string, unknown> | undefined;
   const target = jobConfig.target as Record<string, unknown> | undefined;
-  const sourceAdapter = source?.adapter ?? 'unknown';
+  const sourceAdapter = source?.adapter ?? "unknown";
   const sourceConfig = source?.config ?? {};
-  const targetAdapter = target?.adapter ?? 'unknown';
+  const targetAdapter = target?.adapter ?? "unknown";
   const targetConfig = target?.config ?? {};
-  
+
   return `settler jobs create \\
   --name "${jobConfig.name}" \\
   --source-adapter ${sourceAdapter} \\

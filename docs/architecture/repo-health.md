@@ -129,15 +129,15 @@ No critical CVEs requiring immediate action identified at time of report.
 
 ## Verify Script Health
 
-| Script             | Command                                       | Status |
-| ------------------ | --------------------------------------------- | ------ |
-| `verify:fast`      | `pnpm verify:fast` (lint/typecheck/routes/security; no internal link crawl) | ✅     |
-| `verify:internal-links` | `pnpm verify:internal-links` (regenerates route registry + dead-link scan) | ✅     |
-| `verify:full`      | `pnpm verify:full`                            | ✅     |
-| `verify:schema`    | `tsx scripts/verify-schema.ts`                | ✅     |
-| `verify:contracts` | `tsx scripts/check-contract-compatibility.ts` | ✅     |
-| `suite-doctor`     | `node scripts/suite-doctor.mjs`               | ✅     |
-| `doctor`           | `node scripts/doctor.mjs`                     | ✅     |
+| Script                  | Command                                                                     | Status |
+| ----------------------- | --------------------------------------------------------------------------- | ------ |
+| `verify:fast`           | `pnpm verify:fast` (lint/typecheck/routes/security; no internal link crawl) | ✅     |
+| `verify:internal-links` | `pnpm verify:internal-links` (regenerates route registry + dead-link scan)  | ✅     |
+| `verify:full`           | `pnpm verify:full`                                                          | ✅     |
+| `verify:schema`         | `tsx scripts/verify-schema.ts`                                              | ✅     |
+| `verify:contracts`      | `tsx scripts/check-contract-compatibility.ts`                               | ✅     |
+| `suite-doctor`          | `node scripts/suite-doctor.mjs`                                             | ✅     |
+| `doctor`                | `node scripts/doctor.mjs`                                                   | ✅     |
 
 ---
 

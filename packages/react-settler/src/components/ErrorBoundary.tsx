@@ -3,8 +3,8 @@
  * Enterprise-grade error boundary with telemetry
  */
 
-import { Component, ErrorInfo, ReactNode } from 'react';
-import { ErrorTelemetry } from '@settler/protocol';
+import { Component, ErrorInfo, ReactNode } from "react";
+import { ErrorTelemetry } from "@settler/protocol";
 
 export interface ErrorBoundaryProps {
   children: ReactNode;
@@ -27,21 +27,21 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     this.state = {
       hasError: false,
       error: null,
-      errorInfo: null
+      errorInfo: null,
     };
   }
 
   static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
     return {
       hasError: true,
-      error
+      error,
     };
   }
 
   override componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     this.setState({
       error,
-      errorInfo
+      errorInfo,
     });
 
     // Call onError callback
@@ -53,11 +53,11 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     if (this.props.telemetryProvider) {
       this.props.telemetryProvider.trackError({
         error,
-        component: 'ErrorBoundary',
+        component: "ErrorBoundary",
         context: {
-          componentStack: errorInfo.componentStack
+          componentStack: errorInfo.componentStack,
         },
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     }
   }
@@ -65,7 +65,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   override render(): ReactNode {
     if (this.state.hasError && this.state.error) {
       if (this.props.fallback) {
-        if (typeof this.props.fallback === 'function') {
+        if (typeof this.props.fallback === "function") {
           return this.props.fallback(this.state.error, this.state.errorInfo!);
         }
         return this.props.fallback;
@@ -75,33 +75,31 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       return (
         <div
           style={{
-            padding: '2rem',
-            border: '1px solid #e0e0e0',
-            borderRadius: '8px',
-            backgroundColor: '#fff5f5'
+            padding: "2rem",
+            border: "1px solid #e0e0e0",
+            borderRadius: "8px",
+            backgroundColor: "#fff5f5",
           }}
         >
-          <h2 style={{ color: '#c53030', marginTop: 0 }}>Something went wrong</h2>
-          <p style={{ color: '#742a2a' }}>
-            {this.state.error.message || 'An unexpected error occurred'}
+          <h2 style={{ color: "#c53030", marginTop: 0 }}>Something went wrong</h2>
+          <p style={{ color: "#742a2a" }}>
+            {this.state.error.message || "An unexpected error occurred"}
           </p>
-          {process.env.NODE_ENV === 'development' && this.state.errorInfo && (
-            <details style={{ marginTop: '1rem' }}>
-              <summary style={{ cursor: 'pointer', fontWeight: 'bold' }}>
-                Error Details
-              </summary>
+          {process.env.NODE_ENV === "development" && this.state.errorInfo && (
+            <details style={{ marginTop: "1rem" }}>
+              <summary style={{ cursor: "pointer", fontWeight: "bold" }}>Error Details</summary>
               <pre
                 style={{
-                  marginTop: '0.5rem',
-                  padding: '1rem',
-                  backgroundColor: '#f7f7f7',
-                  borderRadius: '4px',
-                  overflow: 'auto',
-                  fontSize: '12px'
+                  marginTop: "0.5rem",
+                  padding: "1rem",
+                  backgroundColor: "#f7f7f7",
+                  borderRadius: "4px",
+                  overflow: "auto",
+                  fontSize: "12px",
                 }}
               >
                 {this.state.error.stack}
-                {'\n\n'}
+                {"\n\n"}
                 {this.state.errorInfo.componentStack}
               </pre>
             </details>

@@ -43,16 +43,19 @@ This runbook enables **solo-operator resilience**—ensuring Settler can operate
 ### Where Logs Live
 
 **Vercel Logs:**
+
 - Access: Vercel Dashboard → Project → Functions → Logs
 - Retention: 30 days (free tier), 90 days (pro tier)
 - Format: JSON structured logs
 
 **Supabase Logs:**
+
 - Access: Supabase Dashboard → Logs
 - Retention: 7 days (free tier), 30 days (pro tier)
 - Format: PostgreSQL logs, query logs
 
 **Application Logs:**
+
 - Currently: Console logs (stdout/stderr)
 - Planned: Sentry integration for error tracking
 - Planned: Structured logging to external service
@@ -60,6 +63,7 @@ This runbook enables **solo-operator resilience**—ensuring Settler can operate
 ### How to Access Logs
 
 **Vercel CLI:**
+
 ```bash
 # Install Vercel CLI
 npm install -g vercel
@@ -72,6 +76,7 @@ vercel logs [project-name] --follow
 ```
 
 **Supabase CLI:**
+
 ```bash
 # Install Supabase CLI
 npm install -g supabase
@@ -86,17 +91,20 @@ supabase logs
 ### Key Metrics to Monitor
 
 **API Health:**
+
 - Request rate
 - Error rate (target: <1%)
 - p95 latency (target: <200ms)
 - Availability (target: >99.9%)
 
 **Database:**
+
 - Connection pool usage (target: <80%)
 - Query latency (target: <100ms p95)
 - Disk usage (target: <80%)
 
 **Billing:**
+
 - Stripe webhook success rate (target: >99%)
 - Failed payment rate (target: <5%)
 - Subscription churn rate (target: <5% monthly)
@@ -108,14 +116,16 @@ supabase logs
 ### Detecting Billing Failures
 
 **Stripe Dashboard:**
+
 1. Go to `https://dashboard.stripe.com`
 2. Check "Payments" → "Failed" tab
 3. Check "Subscriptions" → Filter by "Past Due" or "Unpaid"
 
 **Database Check:**
+
 ```sql
 -- Check for past due subscriptions
-SELECT 
+SELECT
   s.id,
   s.status,
   s."stripeSubscriptionId",
@@ -128,9 +138,10 @@ ORDER BY s."updatedAt" DESC;
 ```
 
 **Webhook Event Check:**
+
 ```sql
 -- Check for failed webhook events
-SELECT 
+SELECT
   "eventId",
   type,
   status,
@@ -147,6 +158,7 @@ LIMIT 20;
 **Problem:** Stripe webhook events not processing
 
 **Investigation:**
+
 1. Check webhook endpoint: `https://settler.dev/api/stripe/webhook`
 2. Check Stripe Dashboard → Developers → Webhooks → Recent events
 3. Check database for failed events (see query above)
@@ -154,6 +166,7 @@ LIMIT 20;
 **Common Causes & Solutions:**
 
 **Webhook Secret Mismatch:**
+
 ```bash
 # Verify webhook secret matches Stripe dashboard
 # Stripe Dashboard → Developers → Webhooks → Signing secret
@@ -161,6 +174,7 @@ LIMIT 20;
 ```
 
 **Database Connection Issues:**
+
 ```bash
 # Test database connection
 psql $DATABASE_URL -c "SELECT 1;"
@@ -170,6 +184,7 @@ psql $DATABASE_URL -c "SELECT 1;"
 ```
 
 **Event Processing Failures:**
+
 ```sql
 -- Manually retry failed events (if needed)
 -- First, identify the event
@@ -184,6 +199,7 @@ LIMIT 1;
 ```
 
 **Idempotency Issues:**
+
 - Stripe webhook handler uses database-backed idempotency (`stripe_events` table)
 - If event already processed, handler returns `{ received: true, duplicate: true }`
 - No manual intervention needed for duplicates
@@ -191,11 +207,13 @@ LIMIT 1;
 ### Payment Recovery
 
 **Failed Payment:**
+
 1. Stripe automatically retries failed payments (3 attempts over 3 days)
 2. If all retries fail, subscription status changes to `past_due`
 3. Customer receives email notification from Stripe
 
 **Manual Recovery:**
+
 ```bash
 # Option 1: Use Stripe Customer Portal
 # Customer can update payment method via: https://settler.dev/console/billing
@@ -210,9 +228,10 @@ LIMIT 1;
 ### Subscription Management
 
 **Check Subscription Status:**
+
 ```sql
 -- Active subscriptions
-SELECT 
+SELECT
   s.id,
   s.status,
   s."planName",
@@ -226,10 +245,12 @@ ORDER BY s."createdAt" DESC;
 ```
 
 **Cancel Subscription:**
+
 - Customer can cancel via Customer Portal: `https://settler.dev/console/billing`
 - Or manually via Stripe Dashboard → Subscriptions → Cancel
 
 **Refund:**
+
 - Stripe Dashboard → Payments → [Payment] → Refund
 - Or via API: `stripe.refunds.create({ payment_intent: 'pi_xxx' })`
 
@@ -247,6 +268,7 @@ ORDER BY s."createdAt" DESC;
 ### Secrets to Rotate
 
 **JWT Secret:**
+
 ```bash
 # Generate new secret
 openssl rand -base64 32
@@ -259,6 +281,7 @@ openssl rand -base64 32
 ```
 
 **Encryption Key:**
+
 ```bash
 # Generate new encryption key (32 characters)
 openssl rand -hex 16
@@ -271,6 +294,7 @@ openssl rand -hex 16
 ```
 
 **Stripe API Keys:**
+
 ```bash
 # Stripe Dashboard → Developers → API Keys
 # Create new key → Update in Vercel Environment Variables
@@ -280,12 +304,14 @@ openssl rand -hex 16
 ```
 
 **Database Credentials:**
+
 ```bash
 # Supabase Dashboard → Settings → Database → Reset database password
 # Update: SUPABASE_SERVICE_ROLE_KEY (if changed)
 ```
 
 **Redis Credentials:**
+
 ```bash
 # Upstash Dashboard → Database → Settings → Reset password
 # Update: UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN
@@ -307,18 +333,21 @@ openssl rand -hex 16
 ### Daily Checks
 
 **Morning Routine (5 minutes):**
+
 1. Check Vercel deployment status
 2. Check Stripe dashboard for failed payments
 3. Check error logs (Vercel logs, Sentry if configured)
 4. Check database connection (Supabase dashboard)
 
 **Weekly Checks:**
+
 1. Review subscription churn (Stripe dashboard)
 2. Review API usage trends (if metrics available)
 3. Review error rates (target: <1%)
 4. Check database disk usage (target: <80%)
 
 **Monthly Checks:**
+
 1. Review billing reconciliation (Stripe → Database sync)
 2. Review security logs (if available)
 3. Review infrastructure costs (Vercel, Supabase, Upstash)
@@ -327,6 +356,7 @@ openssl rand -hex 16
 ### Common Tasks
 
 **Deploy New Version:**
+
 ```bash
 # Push to main branch (triggers Vercel deployment)
 git push origin main
@@ -336,12 +366,14 @@ vercel --prod
 ```
 
 **Check API Health:**
+
 ```bash
 curl https://api.settler.dev/health
 # Expected: { "status": "healthy", ... }
 ```
 
 **Check Database Health:**
+
 ```bash
 # Via Supabase Dashboard → Database → Health
 # Or via SQL:
@@ -349,6 +381,7 @@ psql $DATABASE_URL -c "SELECT version();"
 ```
 
 **Check Redis Health:**
+
 ```bash
 # Via Upstash Dashboard → Database → Health
 # Or via API:
@@ -363,23 +396,27 @@ curl -X GET "$UPSTASH_REDIS_REST_URL/ping" \
 ### Severity Levels
 
 **P0 - Critical:**
+
 - Complete service outage
 - Data loss
 - Security breach
 - **Response:** Immediate
 
 **P1 - High:**
+
 - Major feature degradation
 - Billing failures
 - High error rates
 - **Response:** 15 minutes
 
 **P2 - Medium:**
+
 - Minor feature issues
 - Performance degradation
 - **Response:** 1 hour
 
 **P3 - Low:**
+
 - UI bugs
 - Documentation issues
 - **Response:** 4 hours
@@ -396,17 +433,20 @@ curl -X GET "$UPSTASH_REDIS_REST_URL/ping" \
 ### Common Incidents
 
 **API Down:**
+
 - Check Vercel deployment status
 - Check database connectivity
 - Check recent deployments
 - Rollback if needed: `vercel rollback [deployment-url]`
 
 **Billing Failures:**
+
 - Check Stripe webhook events
 - Check database subscription status
 - Manually sync if needed (see "Recovering from Webhook Issues")
 
 **High Error Rates:**
+
 - Check application logs
 - Check database query performance
 - Check external API dependencies (Stripe, Shopify)
@@ -419,20 +459,24 @@ curl -X GET "$UPSTASH_REDIS_REST_URL/ping" \
 ### What to Backup
 
 **Database:**
+
 - Supabase provides automated daily backups (free tier: 7 days retention)
 - Manual backup: `pg_dump $DATABASE_URL > backup.sql`
 
 **Secrets:**
+
 - Store in password manager (1Password, LastPass)
 - Document in secure location (not in git)
 
 **Configuration:**
+
 - Environment variables: Documented in `.env.example`
 - Code: Version controlled in git
 
 ### Recovery Procedures
 
 **Database Recovery:**
+
 ```bash
 # Restore from Supabase backup
 # Supabase Dashboard → Database → Backups → Restore
@@ -442,6 +486,7 @@ psql $DATABASE_URL < backup.sql
 ```
 
 **Code Recovery:**
+
 ```bash
 # Rollback to previous deployment
 vercel rollback [deployment-url]
@@ -470,16 +515,19 @@ git push origin main
 ### Future Improvements
 
 **Monitoring:**
+
 - [ ] Set up Sentry for error tracking
 - [ ] Set up Datadog/New Relic for APM
 - [ ] Set up PagerDuty for on-call alerts
 
 **Automation:**
+
 - [ ] Automated daily health checks (cron job)
 - [ ] Automated billing reconciliation (daily sync)
 - [ ] Automated secret rotation (90-day schedule)
 
 **Documentation:**
+
 - [ ] Runbook for each critical system
 - [ ] Troubleshooting guides
 - [ ] Architecture diagrams

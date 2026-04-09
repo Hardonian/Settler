@@ -51,7 +51,7 @@ router.get(
       );
 
       res.json({
-        data: rules.map(r => ({
+        data: rules.map((r) => ({
           id: r.id,
           name: r.name,
           metric: r.metric,
@@ -86,7 +86,7 @@ router.post(
       );
 
       if (!result[0]) {
-        throw new Error('Failed to create alert rule');
+        throw new Error("Failed to create alert rule");
       }
       res.status(201).json({
         data: {
@@ -107,7 +107,7 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     try {
       const userId = req.userId!;
-      const { limit = 50, offset = 0 } = req.query as { limit?: number; offset?: number; };
+      const { limit = 50, offset = 0 } = req.query as { limit?: number; offset?: number };
 
       const alerts = await query<{
         id: string;
@@ -128,7 +128,7 @@ router.get(
       );
 
       res.json({
-        data: alerts.map(a => ({
+        data: alerts.map((a) => ({
           id: a.id,
           ruleId: a.rule_id,
           metric: a.metric,

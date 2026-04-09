@@ -39,9 +39,9 @@ SETTLER_BASE_URL=http://localhost:4000 npm start
 
 ## Scripts
 
-| Command                | Description                              |
-| ---------------------- | ---------------------------------------- |
-| `npm start`            | Create job, run reconciliation, export   |
+| Command                  | Description                            |
+| ------------------------ | -------------------------------------- |
+| `npm start`              | Create job, run reconciliation, export |
 | `npm run webhook-server` | Start the local webhook event receiver |
 
 ## Project structure

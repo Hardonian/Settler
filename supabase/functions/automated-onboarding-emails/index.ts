@@ -39,7 +39,8 @@ serve(async (req) => {
     );
 
     const now = new Date();
-    const frontendUrl = Deno.env.get("FRONTEND_URL") || Deno.env.get("NEXT_PUBLIC_APP_URL") || "https://settler.dev";
+    const frontendUrl =
+      Deno.env.get("FRONTEND_URL") || Deno.env.get("NEXT_PUBLIC_APP_URL") || "https://settler.dev";
 
     // Day 0: Welcome email for users who signed up today
     const day0 = new Date(now);
@@ -99,8 +100,10 @@ serve(async (req) => {
     }
 
     // Trial expiration warnings (3 days and 1 day before)
-    const { data: expiringTrials, error: expiringError } = await supabaseClient
-      .rpc("get_trials_expiring_soon", { p_days_ahead: 3 });
+    const { data: expiringTrials, error: expiringError } = await supabaseClient.rpc(
+      "get_trials_expiring_soon",
+      { p_days_ahead: 3 }
+    );
 
     if (!expiringError && expiringTrials) {
       for (const trial of expiringTrials) {
@@ -145,21 +148,16 @@ serve(async (req) => {
   }
 });
 
-async function sendWelcomeEmail(
-  supabase: any,
-  user: User,
-  frontendUrl: string
-): Promise<void> {
+async function sendWelcomeEmail(supabase: any, user: User, frontendUrl: string): Promise<void> {
   // Import premium template
-  const { getWelcomeEmailTemplate, getPlainTextVersion } = await import(
-    "https://esm.sh/@settler/api/services/email/premium-templates"
-  ).catch(() => {
-    // Fallback if import fails
-    return {
-      getWelcomeEmailTemplate: () => "",
-      getPlainTextVersion: () => "",
-    };
-  });
+  const { getWelcomeEmailTemplate, getPlainTextVersion } =
+    await import("https://esm.sh/@settler/api/services/email/premium-templates").catch(() => {
+      // Fallback if import fails
+      return {
+        getWelcomeEmailTemplate: () => "",
+        getPlainTextVersion: () => "",
+      };
+    });
 
   // Get trial end date
   const { data: profile } = await supabase
@@ -193,8 +191,9 @@ async function sendDay1OnboardingEmail(
   user: User,
   frontendUrl: string
 ): Promise<void> {
-  const { getDay1OnboardingEmailTemplate, getPlainTextVersion } = await import("./email-templates.ts");
-  
+  const { getDay1OnboardingEmailTemplate, getPlainTextVersion } =
+    await import("./email-templates.ts");
+
   // Check onboarding progress
   const { data: progress } = await supabase
     .from("onboarding_progress")
@@ -223,15 +222,17 @@ async function sendDay3ActivationEmail(
   user: User,
   frontendUrl: string
 ): Promise<void> {
-  const { getDay3ActivationEmailTemplate, getPlainTextVersion } = await import("./email-templates.ts");
-  
+  const { getDay3ActivationEmailTemplate, getPlainTextVersion } =
+    await import("./email-templates.ts");
+
   // Check if onboarding is complete
   const { data: progress } = await supabase
     .from("onboarding_progress")
     .select("step, completed")
     .eq("user_id", user.id);
 
-  const hasCompletedFirstJob = progress?.some((p: any) => p.step === "first_job" && p.completed) || false;
+  const hasCompletedFirstJob =
+    progress?.some((p: any) => p.step === "first_job" && p.completed) || false;
 
   const html = getDay3ActivationEmailTemplate({
     name: user.name || undefined,
@@ -253,8 +254,9 @@ async function sendTrialExpirationWarning(
   frontendUrl: string,
   daysRemaining: number
 ): Promise<void> {
-  const { getTrialExpirationWarningTemplate, getPlainTextVersion } = await import("./email-templates.ts");
-  
+  const { getTrialExpirationWarningTemplate, getPlainTextVersion } =
+    await import("./email-templates.ts");
+
   const html = getTrialExpirationWarningTemplate({
     name: trial.name || undefined,
     upgradeUrl: `${frontendUrl}/pricing`,
@@ -263,11 +265,20 @@ async function sendTrialExpirationWarning(
   });
 
   const text = getPlainTextVersion(html);
-  const subject = daysRemaining === 1
-    ? "⚠️ Your trial ends tomorrow"
-    : `⏰ Your trial ends in ${daysRemaining} days`;
+  const subject =
+    daysRemaining === 1
+      ? "⚠️ Your trial ends tomorrow"
+      : `⏰ Your trial ends in ${daysRemaining} days`;
 
-  await sendEmailViaResend(trial.email, subject, html, text, supabase, trial.user_id, `trial_expiring_${daysRemaining}`);
+  await sendEmailViaResend(
+    trial.email,
+    subject,
+    html,
+    text,
+    supabase,
+    trial.user_id,
+    `trial_expiring_${daysRemaining}`
+  );
 }
 
 async function sendEmailViaResend(
@@ -280,7 +291,7 @@ async function sendEmailViaResend(
   emailType: string
 ): Promise<void> {
   const resendApiKey = Deno.env.get("RESEND_API_KEY");
-  
+
   if (!resendApiKey) {
     console.warn("RESEND_API_KEY not configured, logging email send only");
     await logEmailSend(supabase, userId, emailType, subject, html);
@@ -291,7 +302,7 @@ async function sendEmailViaResend(
     const resendResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${resendApiKey}`,
+        Authorization: `Bearer ${resendApiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -326,11 +337,7 @@ async function logEmailSend(
   resendId?: string
 ): Promise<void> {
   // Get user email
-  const { data: user } = await supabase
-    .from("profiles")
-    .select("email")
-    .eq("id", userId)
-    .single();
+  const { data: user } = await supabase.from("profiles").select("email").eq("id", userId).single();
 
   if (!user?.email) return;
 

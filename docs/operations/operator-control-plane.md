@@ -31,6 +31,7 @@ Capabilities are explicit in API output:
 - Slack alerts capability: `SLACK_WEBHOOK_URL`
 
 If external systems are unavailable, the route remains functional and returns machine-visible degraded/capability state rather than hard-failing.
+
 - `ops_support_tickets`
 
 ## Surfaces

@@ -19,10 +19,15 @@ export default function RulesPage() {
         actions={
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" aria-hidden="true" />
+              <span
+                className="h-1.5 w-1.5 rounded-full bg-success animate-pulse"
+                aria-hidden="true"
+              />
               <span>System Healthy</span>
             </div>
-            <Badge variant="outline" className="font-mono text-[10px]">v2.3.1</Badge>
+            <Badge variant="outline" className="font-mono text-[10px]">
+              v2.3.1
+            </Badge>
           </div>
         }
       />
@@ -36,12 +41,7 @@ export default function RulesPage() {
           <Clock className="h-3.5 w-3.5" aria-hidden="true" />
           Version History
         </Button>
-        <Button
-          size="sm"
-          className="gap-2"
-          disabled
-          title="No pending changes to deploy"
-        >
+        <Button size="sm" className="gap-2" disabled title="No pending changes to deploy">
           <Rocket className="h-3.5 w-3.5" aria-hidden="true" />
           Save & Deploy v2.4
         </Button>

@@ -1,20 +1,17 @@
 /**
  * Shopify App Integration
  * React.Settler components optimized for Shopify app embeds
- * 
+ *
  * ⚠️ Commercial Feature: Requires Settler Commercial subscription
  */
-import { FEATURE_FLAGS, useFeatureGate } from '../utils/licensing';
+import { FEATURE_FLAGS, useFeatureGate } from "../utils/licensing";
 
-import React from 'react';
-import { ReconciliationDashboard } from '../components/ReconciliationDashboard';
-import { TransactionTable } from '../components/TransactionTable';
-import { ExceptionTable } from '../components/ExceptionTable';
-import { MetricCard } from '../components/MetricCard';
-import type {
-  ReconciliationTransaction,
-  ReconciliationException
-} from '@settler/protocol';
+import React from "react";
+import { ReconciliationDashboard } from "../components/ReconciliationDashboard";
+import { TransactionTable } from "../components/TransactionTable";
+import { ExceptionTable } from "../components/ExceptionTable";
+import { MetricCard } from "../components/MetricCard";
+import type { ReconciliationTransaction, ReconciliationException } from "@settler/protocol";
 
 export interface ShopifyAppProps {
   shop: string;
@@ -32,40 +29,38 @@ export function ShopifyApp({
   shop,
   transactions = [],
   exceptions = [],
-  onAction
+  onAction,
 }: ShopifyAppProps) {
   const { hasAccess, UpgradePrompt } = useFeatureGate(FEATURE_FLAGS.SHOPIFY_INTEGRATION);
-  
+
   if (!hasAccess) {
     return <UpgradePrompt />;
   }
-  
+
   return (
     <div
       style={{
-        padding: '1rem',
-        maxWidth: '100%',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+        padding: "1rem",
+        maxWidth: "100%",
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       }}
       data-shopify-app
       data-shop={shop}
     >
       <ReconciliationDashboard>
-        <div style={{ marginBottom: '1.5rem' }}>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+        <div style={{ marginBottom: "1.5rem" }}>
+          <h1 style={{ fontSize: "1.5rem", fontWeight: 600, marginBottom: "0.5rem" }}>
             Payment Reconciliation
           </h1>
-          <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-            Shop: {shop}
-          </p>
+          <p style={{ color: "#6b7280", fontSize: "0.875rem" }}>Shop: {shop}</p>
         </div>
 
         <div
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '1rem',
-            marginBottom: '1.5rem'
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gap: "1rem",
+            marginBottom: "1.5rem",
           }}
         >
           <MetricCard
@@ -75,7 +70,7 @@ export function ShopifyApp({
           />
           <MetricCard
             title="Match Rate"
-            value={`${Math.round((transactions.length - exceptions.length) / Math.max(transactions.length, 1) * 100)}%`}
+            value={`${Math.round(((transactions.length - exceptions.length) / Math.max(transactions.length, 1)) * 100)}%`}
             subtitle="Successfully matched"
             trend="up"
           />
@@ -83,25 +78,25 @@ export function ShopifyApp({
             title="Exceptions"
             value={exceptions.length}
             subtitle="Requiring review"
-            trend={exceptions.length > 0 ? 'down' : 'neutral'}
+            trend={exceptions.length > 0 ? "down" : "neutral"}
           />
         </div>
 
         {transactions.length > 0 && (
-          <div style={{ marginBottom: '1.5rem' }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.75rem' }}>
+          <div style={{ marginBottom: "1.5rem" }}>
+            <h2 style={{ fontSize: "1.25rem", fontWeight: 600, marginBottom: "0.75rem" }}>
               Transactions
             </h2>
             <div
               style={{
-                border: '1px solid #e5e7eb',
-                borderRadius: '8px',
-                overflow: 'hidden'
+                border: "1px solid #e5e7eb",
+                borderRadius: "8px",
+                overflow: "hidden",
               }}
             >
               <TransactionTable
                 transactions={transactions}
-                onSelect={(tx: ReconciliationTransaction) => onAction?.('transaction.selected', tx)}
+                onSelect={(tx: ReconciliationTransaction) => onAction?.("transaction.selected", tx)}
               />
             </div>
           </div>
@@ -109,19 +104,19 @@ export function ShopifyApp({
 
         {exceptions.length > 0 && (
           <div>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.75rem' }}>
+            <h2 style={{ fontSize: "1.25rem", fontWeight: 600, marginBottom: "0.75rem" }}>
               Exceptions
             </h2>
             <div
               style={{
-                border: '1px solid #e5e7eb',
-                borderRadius: '8px',
-                overflow: 'hidden'
+                border: "1px solid #e5e7eb",
+                borderRadius: "8px",
+                overflow: "hidden",
               }}
             >
               <ExceptionTable
                 exceptions={exceptions}
-                onResolve={(exc: ReconciliationException) => onAction?.('exception.resolved', exc)}
+                onResolve={(exc: ReconciliationException) => onAction?.("exception.resolved", exc)}
               />
             </div>
           </div>
@@ -136,15 +131,15 @@ export function ShopifyApp({
  * For use with Shopify App Bridge
  */
 export function useShopifyAppBridge() {
-  const [shop, setShop] = React.useState<string>('');
-  const [apiKey, setApiKey] = React.useState<string>('');
+  const [shop, setShop] = React.useState<string>("");
+  const [apiKey, setApiKey] = React.useState<string>("");
 
   React.useEffect(() => {
     // Extract shop and API key from Shopify App Bridge context
-    if (typeof window !== 'undefined' && (window as any).ShopifyAppBridge) {
+    if (typeof window !== "undefined" && (window as any).ShopifyAppBridge) {
       const appBridge = (window as any).ShopifyAppBridge;
       // Get shop domain from App Bridge
-      const shopDomain = appBridge.getShopDomain?.() || '';
+      const shopDomain = appBridge.getShopDomain?.() || "";
       setShop(shopDomain);
     }
   }, []);

@@ -43,11 +43,15 @@ const PipelineDrawer: React.FC = () => {
           {/* Stats Grid */}
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-xl bg-card dark:bg-[#192633] p-3 border border-border dark:border-border">
-              <div className="text-muted-foreground dark:text-muted-foreground text-xs mb-1">Latency (P99)</div>
+              <div className="text-muted-foreground dark:text-muted-foreground text-xs mb-1">
+                Latency (P99)
+              </div>
               <div className="text-lg font-bold dark:text-white">245ms</div>
             </div>
             <div className="rounded-xl bg-card dark:bg-[#192633] p-3 border border-border dark:border-border">
-              <div className="text-muted-foreground dark:text-muted-foreground text-xs mb-1">Processed</div>
+              <div className="text-muted-foreground dark:text-muted-foreground text-xs mb-1">
+                Processed
+              </div>
               <div className="text-lg font-bold dark:text-white">1.2M</div>
             </div>
           </div>

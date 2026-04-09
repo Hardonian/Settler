@@ -20,7 +20,6 @@ interface ProfileRow {
   [key: string]: unknown;
 }
 
-
 export interface UserDashboardData {
   user: {
     id: string;
@@ -97,7 +96,8 @@ export async function getUserDashboardData(): Promise<UserDashboardData | null> 
     const isFirstVisit = (activityCount || 0) === 0;
 
     // Get usage stats (in production, calculate from actual usage)
-    const planType = (profile?.plan_type as "free" | "trial" | "commercial" | "enterprise") || "free";
+    const planType =
+      (profile?.plan_type as "free" | "trial" | "commercial" | "enterprise") || "free";
     const usage = {
       reconciliations: {
         current: 0, // Calculate from reconciliation jobs
@@ -128,7 +128,10 @@ export async function getUserDashboardData(): Promise<UserDashboardData | null> 
       user: {
         id: profile?.id || "",
         email: profile?.email || "",
-        firstName: profile?.name && typeof profile.name === 'string' ? profile.name.split(" ")[0] : undefined,
+        firstName:
+          profile?.name && typeof profile.name === "string"
+            ? profile.name.split(" ")[0]
+            : undefined,
         planType: planType,
         trialEndDate: profile?.trial_end_date,
         industry: profile?.industry,
@@ -141,8 +144,11 @@ export async function getUserDashboardData(): Promise<UserDashboardData | null> 
       isFirstVisit,
     };
   } catch (error) {
-    const logger = (await import('@/lib/logging/logger')).logger;
-    logger.error("Error fetching user dashboard data", error instanceof Error ? error : new Error(String(error)));
+    const logger = (await import("@/lib/logging/logger")).logger;
+    logger.error(
+      "Error fetching user dashboard data",
+      error instanceof Error ? error : new Error(String(error))
+    );
     return null;
   }
 }
@@ -176,10 +182,7 @@ export async function savePreTestAnswers(
       ...(answers.industry && { industry: answers.industry }),
     };
 
-    const { error } = await (supabase
-      .from("profiles") as any)
-      .update(updateData)
-      .eq("id", user.id);
+    const { error } = await (supabase.from("profiles") as any).update(updateData).eq("id", user.id);
 
     if (error) {
       return { success: false, error: error.message };

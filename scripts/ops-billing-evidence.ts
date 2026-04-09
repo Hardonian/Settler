@@ -1,19 +1,19 @@
 #!/usr/bin/env tsx
 /**
  * Billing Incident Evidence Pack Generator
- * 
+ *
  * Exports a comprehensive evidence pack for billing incidents:
  * - StripeEvent logs (sanitized)
  * - Subscription timeline
  * - Usage aggregates
  * - Key tenant metadata
- * 
+ *
  * Usage: npm run ops:billing:evidence --tenant <tenant-id>
  */
 
-import { PrismaClient } from '@prisma/client';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
+import { PrismaClient } from "@prisma/client";
+import { writeFile, mkdir } from "fs/promises";
+import { join } from "path";
 
 const prisma = new PrismaClient();
 
@@ -91,7 +91,7 @@ async function generateEvidencePack(tenantId: string): Promise<EvidencePack> {
       error: true,
     },
     orderBy: {
-      receivedAt: 'desc',
+      receivedAt: "desc",
     },
     take: 100, // Limit to recent events
   });
@@ -111,7 +111,7 @@ async function generateEvidencePack(tenantId: string): Promise<EvidencePack> {
       createdAt: true,
     },
     orderBy: {
-      createdAt: 'desc',
+      createdAt: "desc",
     },
   });
 
@@ -133,7 +133,7 @@ async function generateEvidencePack(tenantId: string): Promise<EvidencePack> {
       eventCount: true,
     },
     orderBy: {
-      date: 'desc',
+      date: "desc",
     },
   });
 
@@ -185,7 +185,7 @@ async function saveEvidencePack(pack: EvidencePack, outputDir: string): Promise<
 
   // Save JSON
   const jsonPath = join(outputDir, `billing-evidence-${pack.tenantId}.json`);
-  await writeFile(jsonPath, JSON.stringify(pack, null, 2), 'utf-8');
+  await writeFile(jsonPath, JSON.stringify(pack, null, 2), "utf-8");
 
   // Generate markdown report
   const markdown = `# Billing Incident Evidence Pack
@@ -199,37 +199,62 @@ async function saveEvidencePack(pack: EvidencePack, outputDir: string): Promise<
 
 - **Slug:** ${pack.tenantMetadata.slug}
 - **Name:** ${pack.tenantMetadata.name}
-- **Status:** ${pack.tenantMetadata.isActive ? 'Active' : 'Inactive'}
+- **Status:** ${pack.tenantMetadata.isActive ? "Active" : "Inactive"}
 - **Created:** ${new Date(pack.tenantMetadata.createdAt).toLocaleString()}
 
 ## Billing Account
 
 - **Email:** ${pack.billingAccount.email}
 - **Status:** ${pack.billingAccount.status}
-- **Stripe Customer ID:** ${pack.billingAccount.stripeCustomerId || 'N/A'}
+- **Stripe Customer ID:** ${pack.billingAccount.stripeCustomerId || "N/A"}
 - **Created:** ${new Date(pack.billingAccount.createdAt).toLocaleString()}
 
 ## Subscription Timeline
 
-${pack.subscriptionTimeline.length > 0 ? pack.subscriptionTimeline.map((s) => `
+${
+  pack.subscriptionTimeline.length > 0
+    ? pack.subscriptionTimeline
+        .map(
+          (s) => `
 ### ${s.planName} (${s.status})
 
 - **Plan ID:** ${s.planId}
 - **Period:** ${new Date(s.currentPeriodStart).toLocaleDateString()} - ${new Date(s.currentPeriodEnd).toLocaleDateString()}
 - **Created:** ${new Date(s.createdAt).toLocaleString()}
-`).join('\n') : 'No subscriptions found'}
+`
+        )
+        .join("\n")
+    : "No subscriptions found"
+}
 
 ## Stripe Events (Last 100)
 
-${pack.stripeEvents.length > 0 ? pack.stripeEvents.map((e) => `
-- **${e.type}** (${e.status}) - ${new Date(e.receivedAt).toLocaleString()}${e.error ? `\n  Error: ${e.error}` : ''}
-`).join('\n') : 'No Stripe events found'}
+${
+  pack.stripeEvents.length > 0
+    ? pack.stripeEvents
+        .map(
+          (e) => `
+- **${e.type}** (${e.status}) - ${new Date(e.receivedAt).toLocaleString()}${e.error ? `\n  Error: ${e.error}` : ""}
+`
+        )
+        .join("\n")
+    : "No Stripe events found"
+}
 
 ## Usage Aggregates (Last 90 Days)
 
-${pack.usageAggregates.length > 0 ? pack.usageAggregates.slice(0, 20).map((u) => `
+${
+  pack.usageAggregates.length > 0
+    ? pack.usageAggregates
+        .slice(0, 20)
+        .map(
+          (u) => `
 - **${u.date}** - ${u.eventType}: ${u.totalQuantity} (${u.eventCount} events)
-`).join('\n') : 'No usage data found'}
+`
+        )
+        .join("\n")
+    : "No usage data found"
+}
 
 ---
 
@@ -237,17 +262,17 @@ ${pack.usageAggregates.length > 0 ? pack.usageAggregates.slice(0, 20).map((u) =>
 `;
 
   const mdPath = join(outputDir, `billing-evidence-${pack.tenantId}.md`);
-  await writeFile(mdPath, markdown, 'utf-8');
+  await writeFile(mdPath, markdown, "utf-8");
 
   return jsonPath;
 }
 
 async function main() {
   const args = process.argv.slice(2);
-  const tenantIndex = args.indexOf('--tenant');
-  
+  const tenantIndex = args.indexOf("--tenant");
+
   if (tenantIndex === -1 || !args[tenantIndex + 1]) {
-    console.error('Usage: npm run ops:billing:evidence --tenant <tenant-id>');
+    console.error("Usage: npm run ops:billing:evidence --tenant <tenant-id>");
     process.exit(1);
   }
 
@@ -257,12 +282,12 @@ async function main() {
     console.log(`📦 Generating billing evidence pack for tenant ${tenantId}...\n`);
 
     const pack = await generateEvidencePack(tenantId);
-    const outputDir = join(process.cwd(), 'ops', 'packs', 'billing-evidence');
+    const outputDir = join(process.cwd(), "ops", "packs", "billing-evidence");
     const jsonPath = await saveEvidencePack(pack, outputDir);
 
-    console.log('✅ Evidence pack generated successfully!');
+    console.log("✅ Evidence pack generated successfully!");
     console.log(`📄 JSON: ${jsonPath}`);
-    console.log(`📄 Markdown: ${jsonPath.replace('.json', '.md')}`);
+    console.log(`📄 Markdown: ${jsonPath.replace(".json", ".md")}`);
     console.log(`\n📊 Summary:`);
     console.log(`   - Stripe Events: ${pack.stripeEvents.length}`);
     console.log(`   - Subscriptions: ${pack.subscriptionTimeline.length}`);
@@ -270,7 +295,7 @@ async function main() {
 
     process.exit(0);
   } catch (error) {
-    console.error('❌ Failed to generate evidence pack:', error);
+    console.error("❌ Failed to generate evidence pack:", error);
     process.exit(1);
   } finally {
     await prisma.$disconnect();

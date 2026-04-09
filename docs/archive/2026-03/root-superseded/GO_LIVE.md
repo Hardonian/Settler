@@ -75,7 +75,8 @@ The system has been hardened through hostile audit and execution. Critical secur
 
 **Impact:** Customer A can see Customer B's reconciliation data.
 
-**Mitigation:** 
+**Mitigation:**
+
 - ✅ RLS migration created
 - ⚠️ **MUST BE APPLIED TO PRODUCTION**
 - ⚠️ Test RLS policies with multiple tenants
@@ -87,6 +88,7 @@ The system has been hardened through hostile audit and execution. Critical secur
 ### 3. Pricing Mismatch Risk: HIGH
 
 **Risk:** README claims "$0.01 per transaction" but:
+
 - Plans.ts shows tiered pricing ($99/month)
 - No usage-based billing implemented
 - Stripe products may not match
@@ -94,6 +96,7 @@ The system has been hardened through hostile audit and execution. Critical secur
 **Impact:** Customer confusion, revenue loss, legal issues.
 
 **Mitigation:**
+
 - ✅ Simplified pricing model created (`config/pricing-simple.ts`)
 - ⚠️ **MUST UPDATE STRIPE PRODUCTS**
 - ⚠️ **MUST UPDATE PLANS.TS OR DELETE IT**
@@ -110,6 +113,7 @@ The system has been hardened through hostile audit and execution. Critical secur
 **Impact:** Cannot bill per transaction, cannot enforce limits.
 
 **Mitigation:**
+
 - ✅ Usage tracking middleware created
 - ⚠️ **MUST INTEGRATE INTO RECONCILIATION FLOW**
 - ⚠️ **MUST CALL `trackReconciliationTransaction()` FOR EVERY TRANSACTION**
@@ -125,6 +129,7 @@ The system has been hardened through hostile audit and execution. Critical secur
 **Impact:** Losing money on every transaction.
 
 **Mitigation:**
+
 - ⚠️ **MUST TRACK ACTUAL COSTS PER TRANSACTION**
 - ⚠️ **MUST VERIFY COSTS < $0.01 PER TRANSACTION**
 - ⚠️ **MUST SET UP COST TRACKING DASHBOARD**
@@ -140,6 +145,7 @@ The system has been hardened through hostile audit and execution. Critical secur
 **Impact:** Higher costs, lower conversion, support burden.
 
 **Mitigation:**
+
 - ✅ Deletion script created
 - ⚠️ **MUST EXECUTE DELETION SCRIPT**
 - ⚠️ **MUST REMOVE FRONTEND REFERENCES**
@@ -269,6 +275,7 @@ Before declaring GO, manually test:
 **You can launch IF you complete the pre-launch checklist.**
 
 **You CANNOT launch until:**
+
 1. RLS is enabled on production
 2. Billing enforcement is applied to all routes
 3. Usage tracking is integrated

@@ -1,20 +1,20 @@
 #!/usr/bin/env tsx
 /**
  * Unified Reality Check
- * 
+ *
  * Single "one button" command that runs all reality checks:
  * - Typecheck + lint + tests
  * - Build
  * - Minimal Playwright route smoke (home, pricing, signup, login, console gating)
  * - Billing validation
  * - DB schema sanity checks
- * 
+ *
  * CI-friendly and fast.
  */
 
-import { execSync } from 'child_process';
-import { existsSync } from 'fs';
-import { join } from 'path';
+import { execSync } from "child_process";
+import { existsSync } from "fs";
+import { join } from "path";
 
 interface CheckStep {
   name: string;
@@ -31,8 +31,8 @@ function runCommand(command: string, description: string): boolean {
     console.log(`\n🔍 ${description}...`);
     execSync(command, {
       cwd: workspaceRoot,
-      stdio: 'inherit',
-      encoding: 'utf-8',
+      stdio: "inherit",
+      encoding: "utf-8",
     });
     console.log(`✅ ${description} passed\n`);
     return true;
@@ -43,48 +43,48 @@ function runCommand(command: string, description: string): boolean {
 }
 
 async function main() {
-  console.log('🚀 Running Unified Reality Check\n');
-  console.log('='.repeat(60));
-  console.log('This check ensures the repo is ready for production');
-  console.log('='.repeat(60));
+  console.log("🚀 Running Unified Reality Check\n");
+  console.log("=".repeat(60));
+  console.log("This check ensures the repo is ready for production");
+  console.log("=".repeat(60));
 
   const steps: CheckStep[] = [
     {
-      name: 'typecheck',
-      command: 'npm run typecheck',
-      description: 'Type check all packages',
+      name: "typecheck",
+      command: "npm run typecheck",
+      description: "Type check all packages",
       required: true,
     },
     {
-      name: 'lint',
-      command: 'npm run lint',
-      description: 'Lint all packages',
+      name: "lint",
+      command: "npm run lint",
+      description: "Lint all packages",
       required: true,
     },
     {
-      name: 'test',
-      command: 'npm run test',
-      description: 'Run unit tests',
+      name: "test",
+      command: "npm run test",
+      description: "Run unit tests",
       required: false, // Optional but recommended
-      skipIf: () => !existsSync(join(workspaceRoot, 'packages/api/src/__tests__')),
+      skipIf: () => !existsSync(join(workspaceRoot, "packages/api/src/__tests__")),
     },
     {
-      name: 'build',
-      command: 'npm run build',
-      description: 'Build all deployable apps',
+      name: "build",
+      command: "npm run build",
+      description: "Build all deployable apps",
       required: true,
     },
     {
-      name: 'smoke-routes',
-      command: 'npm run qa:smoke',
-      description: 'Smoke test key routes (no hard 500s)',
+      name: "smoke-routes",
+      command: "npm run qa:smoke",
+      description: "Smoke test key routes (no hard 500s)",
       required: false, // Optional - requires full environment
       skipIf: () => !process.env.BASE_URL && !process.env.E2E_BASE_URL,
     },
     {
-      name: 'billing-validation',
-      command: 'npm run validate:billing',
-      description: 'Validate billing/Stripe integration',
+      name: "billing-validation",
+      command: "npm run validate:billing",
+      description: "Validate billing/Stripe integration",
       required: false, // Optional - requires Stripe keys
       skipIf: () => !process.env.STRIPE_SECRET_KEY,
     },
@@ -104,28 +104,28 @@ async function main() {
 
     if (!passed && step.required) {
       console.error(`\n❌ Required check "${step.name}" failed`);
-      console.error('   Reality check cannot proceed\n');
+      console.error("   Reality check cannot proceed\n");
       process.exit(1);
     }
   }
 
   // Summary
-  console.log('\n' + '='.repeat(60));
-  console.log('📊 Reality Check Summary');
-  console.log('='.repeat(60));
+  console.log("\n" + "=".repeat(60));
+  console.log("📊 Reality Check Summary");
+  console.log("=".repeat(60));
 
-  const requiredPassed = results.filter(r => r.step.required && r.passed).length;
-  const requiredFailed = results.filter(r => r.step.required && !r.passed).length;
-  const optionalPassed = results.filter(r => !r.step.required && r.passed).length;
-  const optionalFailed = results.filter(r => !r.step.required && !r.passed).length;
+  const requiredPassed = results.filter((r) => r.step.required && r.passed).length;
+  const requiredFailed = results.filter((r) => r.step.required && !r.passed).length;
+  const optionalPassed = results.filter((r) => !r.step.required && r.passed).length;
+  const optionalFailed = results.filter((r) => !r.step.required && !r.passed).length;
 
   results.forEach(({ step, passed }) => {
-    const icon = passed ? '✅' : '❌';
-    const req = step.required ? '[REQUIRED]' : '[OPTIONAL]';
-    console.log(`${icon} ${req} ${step.name}: ${passed ? 'PASSED' : 'FAILED'}`);
+    const icon = passed ? "✅" : "❌";
+    const req = step.required ? "[REQUIRED]" : "[OPTIONAL]";
+    console.log(`${icon} ${req} ${step.name}: ${passed ? "PASSED" : "FAILED"}`);
   });
 
-  console.log('\n' + '='.repeat(60));
+  console.log("\n" + "=".repeat(60));
 
   if (requiredFailed > 0) {
     console.error(`\n❌ Reality check FAILED`);
@@ -149,11 +149,11 @@ async function main() {
   if (optionalPassed > 0) {
     console.log(`   ✅ All ${optionalPassed} optional checks passed`);
   }
-  console.log('\n   Ready for production deployment.\n');
+  console.log("\n   Ready for production deployment.\n");
   process.exit(0);
 }
 
-main().catch(err => {
-  console.error('\n❌ Fatal error during reality check:', err);
+main().catch((err) => {
+  console.error("\n❌ Fatal error during reality check:", err);
   process.exit(1);
 });

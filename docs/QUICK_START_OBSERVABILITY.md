@@ -28,7 +28,7 @@ NEXT_PUBLIC_SESSION_REPLAY_SITE_ID=1234567
 2. **Import and Use**
 
 ```typescript
-import { analytics, logger, telemetry } from '@/lib/observability';
+import { analytics, logger, telemetry } from "@/lib/observability";
 ```
 
 ## Common Patterns
@@ -47,25 +47,25 @@ function MyPage() {
 ### Track Events
 
 ```typescript
-import { analytics } from '@/lib/analytics';
+import { analytics } from "@/lib/analytics";
 
-analytics.trackEvent('button_click', {
-  button_name: 'Sign Up',
-  location: 'header',
+analytics.trackEvent("button_click", {
+  button_name: "Sign Up",
+  location: "header",
 });
 ```
 
 ### Track Errors
 
 ```typescript
-import { analytics } from '@/lib/analytics';
+import { analytics } from "@/lib/analytics";
 
 try {
   // ... code
 } catch (error) {
   analytics.trackError(error, {
-    component: 'CheckoutForm',
-    action: 'submit',
+    component: "CheckoutForm",
+    action: "submit",
   });
 }
 ```
@@ -90,16 +90,16 @@ function MyComponent() {
 ### Defensive API Calls
 
 ```typescript
-import { defensiveFetch, fetchJSON, fetchWithFallback } from '@/lib/api/client';
+import { defensiveFetch, fetchJSON, fetchWithFallback } from "@/lib/api/client";
 
 // With retries
-const response = await defensiveFetch('/api/data', {
+const response = await defensiveFetch("/api/data", {
   retries: 3,
   timeout: 5000,
 });
 
 // With fallback
-const data = await fetchWithFallback('/api/data', defaultData);
+const data = await fetchWithFallback("/api/data", defaultData);
 ```
 
 ### Error Boundaries
@@ -115,13 +115,13 @@ import { ErrorBoundary } from '@/components/ui/error-boundary';
 ### Logging
 
 ```typescript
-import { logger } from '@/lib/logging/logger';
+import { logger } from "@/lib/logging/logger";
 
-logger.debug('Debug message', { context: 'value' });
-logger.info('Info message');
-logger.warn('Warning message');
-logger.error('Error message', error);
-logger.critical('Critical error', error);
+logger.debug("Debug message", { context: "value" });
+logger.info("Info message");
+logger.warn("Warning message");
+logger.error("Error message", error);
+logger.critical("Critical error", error);
 ```
 
 ## Automatic Tracking

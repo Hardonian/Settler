@@ -80,6 +80,7 @@ supabase functions deploy auth_edge_guard
 ### Automated Deployment
 
 The GitHub workflow (`.github/workflows/deploy-edge-functions.yml`) will automatically:
+
 1. Set Supabase secrets from GitHub secrets (if configured)
 2. Deploy the `auth_edge_guard` function
 3. Deploy other edge functions
@@ -114,23 +115,23 @@ The function returns rate limit information in headers:
 
 ```typescript
 // Call the auth_edge_guard function
-const response = await fetch('https://your-project.supabase.co/functions/v1/auth_edge_guard', {
-  method: 'POST',
+const response = await fetch("https://your-project.supabase.co/functions/v1/auth_edge_guard", {
+  method: "POST",
   headers: {
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
   },
 });
 
 if (response.status === 200) {
   const data = await response.json();
-  console.log('Authenticated:', data.user);
-  console.log('Rate limits:', data.rateLimit);
+  console.log("Authenticated:", data.user);
+  console.log("Rate limits:", data.rateLimit);
 } else if (response.status === 429) {
-  const retryAfter = response.headers.get('Retry-After');
+  const retryAfter = response.headers.get("Retry-After");
   console.log(`Rate limited. Retry after ${retryAfter} seconds`);
 } else {
-  console.error('Authentication failed');
+  console.error("Authentication failed");
 }
 ```
 

@@ -1,12 +1,12 @@
 /**
  * Block Editor Component
- * 
+ *
  * Placeholder for future visual block editor.
  */
 
-'use client';
+"use client";
 
-import { PageBlock } from '@/domain/siteBuilder/pageSchema';
+import { PageBlock } from "@/domain/siteBuilder/pageSchema";
 
 interface BlockEditorProps {
   block: PageBlock;

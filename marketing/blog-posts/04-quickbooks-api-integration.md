@@ -15,6 +15,7 @@ This guide shows you how to integrate Settler with QuickBooks for automated reco
 ## Overview
 
 Settler's QuickBooks adapter allows you to:
+
 - Reconcile Stripe/Shopify transactions with QuickBooks
 - Sync reconciled transactions to QuickBooks automatically
 - Export reconciliation reports to QuickBooks format

@@ -1,13 +1,13 @@
 /**
  * Safe Error Handler Utility
- * 
+ *
  * CRITICAL: Never return 500 errors to users. Always return typed error responses.
  * This utility ensures all API routes handle errors gracefully.
  */
 
-import { NextResponse } from 'next/server';
-import { logger } from '@/lib/observability/logger';
-import { getTraceId } from '@/lib/observability/trace';
+import { NextResponse } from "next/server";
+import { logger } from "@/lib/observability/logger";
+import { getTraceId } from "@/lib/observability/trace";
 
 export interface SafeErrorResponse {
   error: string;
@@ -21,14 +21,17 @@ export interface SafeErrorResponse {
  * Normalize errors to safe responses
  * Never throws - always returns NextResponse
  */
-export async function normalizeError(error: unknown, context?: string): Promise<NextResponse<SafeErrorResponse>> {
+export async function normalizeError(
+  error: unknown,
+  context?: string
+): Promise<NextResponse<SafeErrorResponse>> {
   const traceId = await getTraceId();
-  
+
   // Log error for observability
-  const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+  const errorMessage = error instanceof Error ? error.message : "Unknown error";
   const errorStack = error instanceof Error ? error.stack : undefined;
-  
-  logger.error(`API Error${context ? ` in ${context}` : ''}`, {
+
+  logger.error(`API Error${context ? ` in ${context}` : ""}`, {
     trace_id: traceId,
     error: errorMessage,
     stack: errorStack,
@@ -38,12 +41,12 @@ export async function normalizeError(error: unknown, context?: string): Promise<
   // Determine error type and return appropriate response
   if (error instanceof Error) {
     // Validation errors (Zod, etc.)
-    if (error.name === 'ZodError' || error.message.includes('validation')) {
+    if (error.name === "ZodError" || error.message.includes("validation")) {
       return NextResponse.json(
         {
-          error: 'Validation Error',
+          error: "Validation Error",
           message: error.message,
-          code: 'VALIDATION_ERROR',
+          code: "VALIDATION_ERROR",
           trace_id: traceId,
         },
         { status: 400 }
@@ -51,12 +54,12 @@ export async function normalizeError(error: unknown, context?: string): Promise<
     }
 
     // Authentication errors
-    if (error.message.includes('Unauthorized') || error.message.includes('Authentication')) {
+    if (error.message.includes("Unauthorized") || error.message.includes("Authentication")) {
       return NextResponse.json(
         {
-          error: 'Unauthorized',
-          message: 'Authentication required',
-          code: 'UNAUTHORIZED',
+          error: "Unauthorized",
+          message: "Authentication required",
+          code: "UNAUTHORIZED",
           trace_id: traceId,
         },
         { status: 401 }
@@ -64,12 +67,12 @@ export async function normalizeError(error: unknown, context?: string): Promise<
     }
 
     // Not found errors
-    if (error.message.includes('not found') || error.message.includes('Not Found')) {
+    if (error.message.includes("not found") || error.message.includes("Not Found")) {
       return NextResponse.json(
         {
-          error: 'Not Found',
+          error: "Not Found",
           message: error.message,
-          code: 'NOT_FOUND',
+          code: "NOT_FOUND",
           trace_id: traceId,
         },
         { status: 404 }
@@ -77,12 +80,12 @@ export async function normalizeError(error: unknown, context?: string): Promise<
     }
 
     // Rate limit errors
-    if (error.message.includes('rate limit') || error.message.includes('Rate limit')) {
+    if (error.message.includes("rate limit") || error.message.includes("Rate limit")) {
       return NextResponse.json(
         {
-          error: 'Rate Limit Exceeded',
-          message: 'Too many requests. Please try again later.',
-          code: 'RATE_LIMIT_EXCEEDED',
+          error: "Rate Limit Exceeded",
+          message: "Too many requests. Please try again later.",
+          code: "RATE_LIMIT_EXCEEDED",
           retryable: true,
           trace_id: traceId,
         },
@@ -95,9 +98,9 @@ export async function normalizeError(error: unknown, context?: string): Promise<
   // This prevents hard failures and allows client to handle gracefully
   return NextResponse.json(
     {
-      error: 'Request Failed',
-      message: errorMessage || 'An unexpected error occurred. Please try again.',
-      code: 'INTERNAL_ERROR',
+      error: "Request Failed",
+      message: errorMessage || "An unexpected error occurred. Please try again.",
+      code: "INTERNAL_ERROR",
       retryable: true,
       trace_id: traceId,
     },
@@ -107,7 +110,7 @@ export async function normalizeError(error: unknown, context?: string): Promise<
 
 /**
  * Wrap async route handlers with safe error handling
- * 
+ *
  * Usage:
  *   export const POST = safeRouteHandler(async (request) => {
  *     // Your handler code
@@ -139,10 +142,10 @@ export async function safeServerAction<T>(
     const data = await action();
     return { success: true, data };
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     const traceId = await getTraceId();
-    
-    logger.error(`Server Action Error${context ? ` in ${context}` : ''}`, {
+
+    logger.error(`Server Action Error${context ? ` in ${context}` : ""}`, {
       trace_id: traceId,
       error: errorMessage,
       stack: error instanceof Error ? error.stack : undefined,
@@ -150,16 +153,16 @@ export async function safeServerAction<T>(
     });
 
     // Determine error code
-    let code = 'INTERNAL_ERROR';
+    let code = "INTERNAL_ERROR";
     if (error instanceof Error) {
-      if (error.name === 'ZodError') code = 'VALIDATION_ERROR';
-      else if (error.message.includes('Unauthorized')) code = 'UNAUTHORIZED';
-      else if (error.message.includes('not found')) code = 'NOT_FOUND';
+      if (error.name === "ZodError") code = "VALIDATION_ERROR";
+      else if (error.message.includes("Unauthorized")) code = "UNAUTHORIZED";
+      else if (error.message.includes("not found")) code = "NOT_FOUND";
     }
 
     return {
       success: false,
-      error: errorMessage || 'An unexpected error occurred',
+      error: errorMessage || "An unexpected error occurred",
       code,
     };
   }

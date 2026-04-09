@@ -117,10 +117,7 @@ jest.mock("@/shared/db/prismaClient", () => ({
   },
 }));
 
-function req(
-  url: string,
-  init: { method?: string; body?: unknown; jsonError?: boolean } = {}
-) {
+function req(url: string, init: { method?: string; body?: unknown; jsonError?: boolean } = {}) {
   return {
     url,
     method: init.method || "GET",
@@ -257,10 +254,13 @@ describe("non-run false-success invariants", () => {
     reconJobFindFirstMock.mockRejectedValue(new Error("database offline"));
 
     const response = await patchJobException(
-      req("http://localhost/api/jobs/11111111-1111-4111-8111-111111111111/exceptions/22222222-2222-4222-8222-222222222222", {
-        method: "PATCH",
-        body: { action: "review" },
-      }),
+      req(
+        "http://localhost/api/jobs/11111111-1111-4111-8111-111111111111/exceptions/22222222-2222-4222-8222-222222222222",
+        {
+          method: "PATCH",
+          body: { action: "review" },
+        }
+      ),
       {
         params: Promise.resolve({
           id: "11111111-1111-4111-8111-111111111111",
@@ -289,7 +289,9 @@ describe("non-run false-success invariants", () => {
   test("data import route returns 500 on unhandled import failures", async () => {
     createClientMock.mockRejectedValue(new Error("supabase unavailable"));
 
-    const response = await postDataImport(req("http://localhost/api/data/import", { method: "POST" }));
+    const response = await postDataImport(
+      req("http://localhost/api/data/import", { method: "POST" })
+    );
 
     expect(response.status).toBe(500);
     const payload = await response.json();

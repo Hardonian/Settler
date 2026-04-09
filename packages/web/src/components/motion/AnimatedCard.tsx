@@ -1,37 +1,37 @@
 /**
  * AnimatedCard
- * 
+ *
  * Card component with entrance animation and optional hover effects.
  */
 
-'use client';
+"use client";
 
-import * as React from 'react';
-import { motion, MotionProps } from 'framer-motion';
-import { Card, CardProps } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
-import { fadeUp, scale } from '@/lib/motion/variants';
-import { motionSprings, getReducedMotionSpring } from '@/lib/motion/tokens';
+import * as React from "react";
+import { motion, MotionProps } from "framer-motion";
+import { Card, CardProps } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { fadeUp, scale } from "@/lib/motion/variants";
+import { motionSprings, getReducedMotionSpring } from "@/lib/motion/tokens";
 
 export interface AnimatedCardProps extends CardProps {
   /**
    * Entrance animation variant
    * @default 'fadeUp'
    */
-  animation?: 'fadeUp' | 'scale' | 'fade' | 'none';
-  
+  animation?: "fadeUp" | "scale" | "fade" | "none";
+
   /**
    * Whether to show hover animation
    * @default true
    */
   hoverAnimation?: boolean;
-  
+
   /**
    * Animation delay in seconds
    * @default 0
    */
   delay?: number;
-  
+
   /**
    * Whether to animate on mount
    * @default true
@@ -42,7 +42,7 @@ export interface AnimatedCardProps extends CardProps {
 const AnimatedCard = React.forwardRef<HTMLDivElement, AnimatedCardProps>(
   (
     {
-      animation = 'fadeUp',
+      animation = "fadeUp",
       hoverAnimation = true,
       delay = 0,
       animateOnMount = true,
@@ -53,13 +53,13 @@ const AnimatedCard = React.forwardRef<HTMLDivElement, AnimatedCardProps>(
     ref
   ) => {
     const variants = React.useMemo(() => {
-      if (animation === 'none' || !animateOnMount) return undefined;
+      if (animation === "none" || !animateOnMount) return undefined;
       switch (animation) {
-        case 'scale':
+        case "scale":
           return scale;
-        case 'fade':
+        case "fade":
           return fadeUp; // fadeUp includes fade
-        case 'fadeUp':
+        case "fadeUp":
         default:
           return fadeUp;
       }
@@ -67,8 +67,8 @@ const AnimatedCard = React.forwardRef<HTMLDivElement, AnimatedCardProps>(
 
     const motionProps: MotionProps = {
       variants,
-      initial: animateOnMount ? 'hidden' : false,
-      animate: animateOnMount ? 'visible' : false,
+      initial: animateOnMount ? "hidden" : false,
+      animate: animateOnMount ? "visible" : false,
       transition: {
         delay: delay,
       },
@@ -89,17 +89,13 @@ const AnimatedCard = React.forwardRef<HTMLDivElement, AnimatedCardProps>(
     }
 
     return (
-      <motion.div
-        ref={ref}
-        {...motionProps}
-        className={cn('w-full', className)}
-      >
+      <motion.div ref={ref} {...motionProps} className={cn("w-full", className)}>
         <Card {...props}>{children}</Card>
       </motion.div>
     );
   }
 );
 
-AnimatedCard.displayName = 'AnimatedCard';
+AnimatedCard.displayName = "AnimatedCard";
 
 export { AnimatedCard };

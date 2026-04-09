@@ -7,7 +7,6 @@ export type WasmVerificationResponse = {
   error?: string;
 };
 
- 
 let wasmModule: { verify_manifest: (manifestJson: string, filesJson: string) => string } | null =
   null;
 
@@ -39,7 +38,10 @@ export async function verifyBundle(
     JSON.stringify(manifest),
     JSON.stringify(files)
   );
-  const response = safeJsonParse<WasmVerificationResponse>(responseJson, "WASM verification response");
+  const response = safeJsonParse<WasmVerificationResponse>(
+    responseJson,
+    "WASM verification response"
+  );
 
   if (!response) {
     throw new Error("Failed to parse WASM verification response");

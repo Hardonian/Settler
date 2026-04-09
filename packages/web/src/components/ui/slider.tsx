@@ -1,15 +1,18 @@
 /**
  * Slider Component
- * 
+ *
  * Simple range slider for numeric inputs.
  */
 
-'use client';
+"use client";
 
-import * as React from 'react';
-import { cn } from '@/lib/utils';
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
-export interface SliderProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> {
+export interface SliderProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "value" | "onChange"
+> {
   value: number[];
   onValueChange: (value: number[]) => void;
 }
@@ -24,7 +27,7 @@ export function Slider({ className, value, onValueChange, ...props }: SliderProp
     <input
       type="range"
       className={cn(
-        'w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700',
+        "w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700",
         className
       )}
       value={value[0]}

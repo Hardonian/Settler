@@ -214,9 +214,21 @@ devCommand
   .option("--no-event-log", "Skip event log service")
   .action((options: { port: string; workerPort: string; storage: boolean; eventLog: boolean }) => {
     const services: Array<{ name: string; command: string; enabled: boolean }> = [
-      { name: "control-plane", command: `pnpm --filter @settler/web dev -- --port ${options.port}`, enabled: true },
-      { name: "worker", command: `pnpm --filter @settler/api dev -- --port ${options.workerPort}`, enabled: true },
-      { name: "event-log", command: "pnpm --filter @jobforge/shared dev", enabled: options.eventLog !== false },
+      {
+        name: "control-plane",
+        command: `pnpm --filter @settler/web dev -- --port ${options.port}`,
+        enabled: true,
+      },
+      {
+        name: "worker",
+        command: `pnpm --filter @settler/api dev -- --port ${options.workerPort}`,
+        enabled: true,
+      },
+      {
+        name: "event-log",
+        command: "pnpm --filter @jobforge/shared dev",
+        enabled: options.eventLog !== false,
+      },
       { name: "storage", command: "supabase start", enabled: options.storage !== false },
     ];
 

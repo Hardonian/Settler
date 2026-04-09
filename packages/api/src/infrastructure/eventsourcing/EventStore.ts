@@ -3,9 +3,9 @@
  * Append-only event store backed by Postgres
  */
 
-import { Pool } from 'pg';
-import { EventEnvelope, SnapshotEnvelope } from '../../domain/eventsourcing/EventEnvelope';
-import { pool } from '../../db';
+import { Pool } from "pg";
+import { EventEnvelope, SnapshotEnvelope } from "../../domain/eventsourcing/EventEnvelope";
+import { pool } from "../../db";
 
 export interface IEventStore {
   append(event: EventEnvelope): Promise<void>;
@@ -18,10 +18,7 @@ export interface IEventStore {
   getEventsByType(eventType: string, limit?: number): Promise<EventEnvelope[]>;
   getEventsByCorrelationId(correlationId: string): Promise<EventEnvelope[]>;
   saveSnapshot(snapshot: SnapshotEnvelope): Promise<void>;
-  getLatestSnapshot(
-    aggregateId: string,
-    aggregateType: string
-  ): Promise<SnapshotEnvelope | null>;
+  getLatestSnapshot(aggregateId: string, aggregateType: string): Promise<SnapshotEnvelope | null>;
   getEventsAfterSnapshot(
     aggregateId: string,
     aggregateType: string,
@@ -65,7 +62,7 @@ export class PostgresEventStore implements IEventStore {
 
     const client = await this.db.connect();
     try {
-      await client.query('BEGIN');
+      await client.query("BEGIN");
 
       for (const event of events) {
         await client.query(
@@ -96,9 +93,9 @@ export class PostgresEventStore implements IEventStore {
         );
       }
 
-      await client.query('COMMIT');
+      await client.query("COMMIT");
     } catch (error) {
-      await client.query('ROLLBACK');
+      await client.query("ROLLBACK");
       throw error;
     } finally {
       client.release();
@@ -227,10 +224,9 @@ export class PostgresEventStore implements IEventStore {
     `;
 
     // Extract tenant_id from event metadata if available
-    const event = await this.db.query(
-      'SELECT metadata FROM event_store WHERE event_id = $1',
-      [snapshot.event_id]
-    );
+    const event = await this.db.query("SELECT metadata FROM event_store WHERE event_id = $1", [
+      snapshot.event_id,
+    ]);
     const tenantId = event.rows[0]?.metadata?.tenant_id || null;
 
     await this.db.query(query, [
@@ -304,7 +300,7 @@ export class PostgresEventStore implements IEventStore {
 
     // Get the event_store.id for the snapshot event
     const eventStoreIdResult = await this.db.query(
-      'SELECT id FROM event_store WHERE event_id = $1',
+      "SELECT id FROM event_store WHERE event_id = $1",
       [snapshotEventId]
     );
 
@@ -332,11 +328,7 @@ export class PostgresEventStore implements IEventStore {
       ORDER BY id ASC
     `;
 
-    const result = await this.db.query(query, [
-      aggregateId,
-      aggregateType,
-      snapshotEventStoreId,
-    ]);
+    const result = await this.db.query(query, [aggregateId, aggregateType, snapshotEventStoreId]);
 
     return result.rows.map((row) => ({
       id: row.id,

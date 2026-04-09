@@ -44,7 +44,9 @@ export default function ApiPlaygroundPage() {
 
     switch (endpoint) {
       case "reconcile": {
-        const sources = transactions.filter((t: any) => t.source === "stripe" || t.source === "shopify");
+        const sources = transactions.filter(
+          (t: any) => t.source === "stripe" || t.source === "shopify"
+        );
         const targets = transactions.filter(
           (t) => t.source === "quickbooks" || t.source === "bank_payout"
         );
@@ -65,7 +67,10 @@ export default function ApiPlaygroundPage() {
 
         return {
           ...baseResponse,
-          matches: matches.slice(0, planTier === "free" ? 5 : planTier === "pro" ? 20 : matches.length),
+          matches: matches.slice(
+            0,
+            planTier === "free" ? 5 : planTier === "pro" ? 20 : matches.length
+          ),
           total_matches: matches.length,
           matched_count: matchedCount,
           unmatched_count: unmatchedCount,
@@ -208,9 +213,7 @@ Content-Type: multipart/form-data
           </Link>
           <div className="flex items-center gap-4 mb-4">
             <Badge variant="outline">Demo Mode</Badge>
-            <h1 className="text-3xl sm:text-4xl font-bold text-foreground">
-              API Playground
-            </h1>
+            <h1 className="text-3xl sm:text-4xl font-bold text-foreground">API Playground</h1>
           </div>
           <p className="text-lg text-muted-foreground">
             Explore the API with feature flags and plan tiers. See how responses change based on
@@ -238,9 +241,7 @@ Content-Type: multipart/form-data
                         : "hover:border-border/60 dark:hover:border-border"
                     }`}
                   >
-                    <div className="font-semibold capitalize text-foreground">
-                      {tier}
-                    </div>
+                    <div className="font-semibold capitalize text-foreground">{tier}</div>
                     <div className="text-xs text-muted-foreground mt-1">
                       {tier === "free" && "Basic features, limited records"}
                       {tier === "pro" && "Full features, standard limits"}
@@ -265,9 +266,7 @@ Content-Type: multipart/form-data
                         {flag.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
                       </div>
                       {flag === "webhooks_enabled" && (
-                        <div className="text-xs text-muted-foreground">
-                          Always disabled in demo
-                        </div>
+                        <div className="text-xs text-muted-foreground">Always disabled in demo</div>
                       )}
                     </Label>
                     <Switch
@@ -342,7 +341,10 @@ Content-Type: multipart/form-data
               !featureFlags.auto_match_enabled ||
               !featureFlags.receipt_matching_enabled ||
               !featureFlags.export_enabled) && (
-              <Card elevation="sm" className="bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800">
+              <Card
+                elevation="sm"
+                className="bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800"
+              >
                 <CardContent className="p-4">
                   <div className="text-sm text-muted-foreground">
                     <strong>Notice:</strong> Some features are limited or disabled based on your
@@ -356,7 +358,10 @@ Content-Type: multipart/form-data
         </div>
 
         {/* Trust Notice */}
-        <Card elevation="sm" className="mt-6 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+        <Card
+          elevation="sm"
+          className="mt-6 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800"
+        >
           <CardContent className="p-6">
             <p className="text-sm text-muted-foreground">
               <strong>Read-only simulation.</strong> This playground simulates API responses based

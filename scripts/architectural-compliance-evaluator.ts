@@ -174,9 +174,9 @@ const HALLUCINATION_SIGNALS = [
   /tenant_id\s*:\s*['"]fake[-_]?tenant/i,
   /user_id\s*:\s*['"]fake[-_]?user/i,
   /account.*balance.*\$[0-9,]+.*example/i,
-  /balance.*1[0-9]{5,}/i,   // suspiciously large round numbers as examples
+  /balance.*1[0-9]{5,}/i, // suspiciously large round numbers as examples
   /transaction.*id.*['"](abc|xyz|foo|bar|test)[-_]?\d*/i,
-  /api[-_]?key\s*:\s*['"][a-zA-Z0-9]{32,}['"]/,  // hardcoded keys as examples
+  /api[-_]?key\s*:\s*['"][a-zA-Z0-9]{32,}['"]/, // hardcoded keys as examples
 ];
 
 /** Patterns confirming correct Stripe webhook handling */
@@ -241,9 +241,7 @@ function textContainsAny(text: string, patterns: RegExp[]): boolean {
 }
 
 function containsPlaceholder(text: string): boolean {
-  return /\bTODO\b|\bFIXME\b|\bHACK\b|\bXXX\b|\bPLACEHOLDER\b|\.\.\.\s*\/\/ implement/i.test(
-    text
-  );
+  return /\bTODO\b|\bFIXME\b|\bHACK\b|\bXXX\b|\bPLACEHOLDER\b|\.\.\.\s*\/\/ implement/i.test(text);
 }
 
 /**
@@ -288,9 +286,7 @@ function isMarketingContext(response: string, chatContext: string): boolean {
 function isAppRouteContext(response: string, chatContext: string): boolean {
   const combined = response + " " + chatContext;
   return (
-    /\/app\//.test(combined) ||
-    /app\s+route/i.test(combined) ||
-    /protected\s+route/i.test(combined)
+    /\/app\//.test(combined) || /app\s+route/i.test(combined) || /protected\s+route/i.test(combined)
   );
 }
 
@@ -317,9 +313,7 @@ function scoreTechnicalCorrectness(input: EvalInput): {
   const similarity = tokenJaccard(response, expected);
   if (similarity < 0.15) {
     score -= 2;
-    notes.push(
-      `Low semantic overlap with expected output (Jaccard ≈ ${similarity.toFixed(2)})`
-    );
+    notes.push(`Low semantic overlap with expected output (Jaccard ≈ ${similarity.toFixed(2)})`);
   } else if (similarity < 0.3) {
     score -= 1;
     notes.push(
@@ -343,9 +337,7 @@ function scoreTechnicalCorrectness(input: EvalInput): {
   const hallucPaths = countMatches(response, HALLUCINATED_PATH_SIGNALS);
   if (hallucPaths > 0) {
     score -= 1;
-    notes.push(
-      `References ${hallucPaths} non-existent Settler module path(s)`
-    );
+    notes.push(`References ${hallucPaths} non-existent Settler module path(s)`);
   }
 
   return { score: Math.max(0, score), notes };
@@ -373,17 +365,13 @@ function scoreBoundarySeparation(input: EvalInput): {
     const authHits = countMatches(response, MARKETING_AUTH_SIGNALS);
     if (authHits > 0) {
       score -= Math.min(3, authHits);
-      notes.push(
-        `Marketing-context response invokes auth/session logic (${authHits} signal(s))`
-      );
+      notes.push(`Marketing-context response invokes auth/session logic (${authHits} signal(s))`);
     }
 
     const supabaseHits = countMatches(response, SUPABASE_IN_MARKETING_SIGNALS);
     if (supabaseHits > 0) {
       score -= Math.min(2, supabaseHits);
-      notes.push(
-        `Supabase logic detected in marketing bundle context (${supabaseHits} signal(s))`
-      );
+      notes.push(`Supabase logic detected in marketing bundle context (${supabaseHits} signal(s))`);
     }
   }
 
@@ -393,16 +381,12 @@ function scoreBoundarySeparation(input: EvalInput): {
       /\/app\/.*(?:page|layout)\.tsx?[\s\S]{0,300}(?:export default|async function)(?![\s\S]{0,500}isAppAuthRequiredRoute)/;
     if (ungatedPattern.test(response)) {
       score -= 2;
-      notes.push(
-        "/app route component proposed without auth-gating via isAppAuthRequiredRoute"
-      );
+      notes.push("/app route component proposed without auth-gating via isAppAuthRequiredRoute");
     }
   }
 
   // Direct suggestion to remove middleware auth check
-  if (
-    /remove.*auth.*middleware|skip.*auth.*check|disable.*auth/i.test(response)
-  ) {
+  if (/remove.*auth.*middleware|skip.*auth.*check|disable.*auth/i.test(response)) {
     score -= 2;
     notes.push("Response suggests disabling or removing auth middleware check");
   }
@@ -428,9 +412,7 @@ function scoreDeterminismAndNonHallucination(input: EvalInput): {
   const hallucHits = countMatches(response, HALLUCINATION_SIGNALS);
   if (hallucHits > 0) {
     score -= Math.min(3, hallucHits);
-    notes.push(
-      `Fabricated identifiers or account data detected (${hallucHits} signal(s))`
-    );
+    notes.push(`Fabricated identifiers or account data detected (${hallucHits} signal(s))`);
   }
 
   // Hallucinated paths
@@ -457,15 +439,11 @@ function scoreDeterminismAndNonHallucination(input: EvalInput): {
 
   // Non-deterministic suggestions (e.g. Math.random, Date.now in recon logic)
   if (
-    /Math\.random\(\)|Date\.now\(\)|new Date\(\)(?!.*\/\/ deterministic)/i.test(
-      response
-    ) &&
+    /Math\.random\(\)|Date\.now\(\)|new Date\(\)(?!.*\/\/ deterministic)/i.test(response) &&
     /reconcili|recon|match/i.test(response)
   ) {
     score -= 1;
-    notes.push(
-      "Non-deterministic calls (Math.random/Date.now) proposed in reconciliation logic"
-    );
+    notes.push("Non-deterministic calls (Math.random/Date.now) proposed in reconciliation logic");
   }
 
   return { score: Math.max(0, score), notes };
@@ -522,14 +500,9 @@ function scoreSecurityAndTenantIsolation(input: EvalInput): {
   }
 
   // Stripe webhook raw-body check
-  const stripeWebhookMentioned = /stripe.*webhook|webhook.*stripe/i.test(
-    response
-  );
+  const stripeWebhookMentioned = /stripe.*webhook|webhook.*stripe/i.test(response);
   if (stripeWebhookMentioned) {
-    const hasCorrect = textContainsAny(
-      response,
-      STRIPE_WEBHOOK_CORRECT_SIGNALS
-    );
+    const hasCorrect = textContainsAny(response, STRIPE_WEBHOOK_CORRECT_SIGNALS);
     const hasBad = textContainsAny(response, STRIPE_WEBHOOK_BAD_SIGNALS);
     if (hasBad && !hasCorrect) {
       score -= 2;
@@ -571,17 +544,13 @@ function scoreArchitecturalAlignment(input: EvalInput): {
     !/requirePermission|requireAnyPermission/i.test(response)
   ) {
     score -= 1;
-    notes.push(
-      "INV-7: New /app route handler proposed without requirePermission guard"
-    );
+    notes.push("INV-7: New /app route handler proposed without requirePermission guard");
   }
 
   // INV-4: Trigger-based tenant propagation bypassed
   if (/skip.*trigger|bypass.*trigger|disable.*trigger/i.test(response)) {
     score -= 1;
-    notes.push(
-      "INV-4: Response suggests bypassing DB trigger-based tenant propagation"
-    );
+    notes.push("INV-4: Response suggests bypassing DB trigger-based tenant propagation");
   }
 
   // Non-deterministic export (Settler requires deterministic exports)
@@ -590,22 +559,16 @@ function scoreArchitecturalAlignment(input: EvalInput): {
     /Math\.random|Date\.now/i.test(response)
   ) {
     score -= 1;
-    notes.push(
-      "Determinism violation: non-deterministic value appears in module export"
-    );
+    notes.push("Determinism violation: non-deterministic value appears in module export");
   }
 
   // Hydration mismatch risk: server/client state divergence
   if (
-    /useEffect.*window|typeof window|localStorage|sessionStorage/i.test(
-      response
-    ) &&
+    /useEffect.*window|typeof window|localStorage|sessionStorage/i.test(response) &&
     !/['"]use client['"]/.test(response)
   ) {
     score -= 1;
-    notes.push(
-      'Hydration mismatch risk: browser-only API used without "use client" directive'
-    );
+    notes.push('Hydration mismatch risk: browser-only API used without "use client" directive');
   }
 
   return { score: Math.max(0, score), notes };
@@ -615,10 +578,7 @@ function scoreArchitecturalAlignment(input: EvalInput): {
 // Failure classification
 // ---------------------------------------------------------------------------
 
-function classifyFailure(
-  scores: Scores,
-  dimNotes: Record<string, string[]>
-): FailureType {
+function classifyFailure(scores: Scores, dimNotes: Record<string, string[]>): FailureType {
   // Find the lowest-scoring dimension(s) and map to failure type
   const mins: Array<{ key: keyof Scores; val: number }> = (
     Object.entries(scores) as Array<[keyof Scores, number]>
@@ -645,9 +605,7 @@ function classifyFailure(
 
   switch (lowest.key) {
     case "technical_correctness":
-      return dimNotes["technical"]?.some((n) =>
-        /fabricat|hallucin|fake|non-exist/i.test(n)
-      )
+      return dimNotes["technical"]?.some((n) => /fabricat|hallucin|fake|non-exist/i.test(n))
         ? "hallucination"
         : "incomplete guidance";
     case "boundary_separation_integrity":
@@ -674,16 +632,12 @@ function buildRiskSummary(
 ): string {
   const failing: string[] = [];
 
-  if (scores.technical_correctness <= 2)
-    failing.push("technical correctness failure");
-  if (scores.boundary_separation_integrity <= 2)
-    failing.push("boundary separation breach");
+  if (scores.technical_correctness <= 2) failing.push("technical correctness failure");
+  if (scores.boundary_separation_integrity <= 2) failing.push("boundary separation breach");
   if (scores.determinism_and_non_hallucination <= 2)
     failing.push("hallucination or non-determinism");
-  if (scores.security_and_tenant_isolation <= 2)
-    failing.push("security / tenant isolation risk");
-  if (scores.architectural_alignment <= 2)
-    failing.push("architectural constraint violation");
+  if (scores.security_and_tenant_isolation <= 2) failing.push("security / tenant isolation risk");
+  if (scores.architectural_alignment <= 2) failing.push("architectural constraint violation");
 
   const allNotes = Object.values(dimNotes).flat();
   const topNote = allNotes[0] ?? "No specific issue identified";
@@ -703,10 +657,7 @@ function buildRiskSummary(
   );
 }
 
-function buildImprovementGuidance(
-  scores: Scores,
-  dimNotes: Record<string, string[]>
-): string {
+function buildImprovementGuidance(scores: Scores, dimNotes: Record<string, string[]>): string {
   const lines: string[] = [];
 
   if (scores.boundary_separation_integrity <= 3) {
@@ -763,8 +714,7 @@ function buildImprovementGuidance(
 function evaluate(input: EvalInput): EvalResult {
   const { score: tc, notes: tcNotes } = scoreTechnicalCorrectness(input);
   const { score: bs, notes: bsNotes } = scoreBoundarySeparation(input);
-  const { score: dh, notes: dhNotes } =
-    scoreDeterminismAndNonHallucination(input);
+  const { score: dh, notes: dhNotes } = scoreDeterminismAndNonHallucination(input);
   const { score: st, notes: stNotes } = scoreSecurityAndTenantIsolation(input);
   const { score: aa, notes: aaNotes } = scoreArchitecturalAlignment(input);
 

@@ -47,16 +47,19 @@ Your finance team spends **2-3 hours daily** on manual reconciliation. Your engi
 ## Quick Start for Your Team
 
 **Week 1: Proof of Concept**
+
 - Your engineer sets up one reconciliation job (5 minutes)
 - Test with your most critical platform pair (e.g., Shopify ↔ Stripe)
 - Review first reports and validate accuracy
 
 **Week 2: Production Rollout**
+
 - Add remaining platforms
 - Configure scheduled jobs for daily reconciliation
 - Set up webhook alerts for mismatches
 
 **Week 3: Optimization**
+
 - Fine-tune matching rules based on real data
 - Train finance team on exception handling
 - Document processes for your team
@@ -76,11 +79,13 @@ Your finance team spends **2-3 hours daily** on manual reconciliation. Your engi
 ## ROI Calculator
 
 **Current State:**
+
 - Finance team: 2-3 hours/day × $50/hour = **$2,500-3,750/month**
 - Engineering time: 2-3 weeks/year × $100/hour = **$8,000-12,000/year**
 - Revenue leakage: ~0.1% of transactions = **$X,XXX/month** (varies)
 
 **With Settler:**
+
 - Finance team: 15 minutes/day × $50/hour = **$375/month** (85% reduction)
 - Engineering time: 2-4 hours/year = **$400-800/year** (95% reduction)
 - Revenue leakage: Near zero with automated reconciliation

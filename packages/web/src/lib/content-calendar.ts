@@ -49,10 +49,10 @@ export function generateContentCalendar(startDate: Date = new Date()): ContentIt
       const topicIndex = (month * 2 + i) % topics.length;
       const topic = topics[topicIndex];
       if (!topic) continue;
-      
+
       const dateStr = blogDate.toISOString().split("T")[0];
       if (!dateStr) continue;
-      
+
       calendar.push({
         date: dateStr,
         type: "blog",
@@ -73,10 +73,10 @@ export function generateContentCalendar(startDate: Date = new Date()): ContentIt
         const socialIndex = (month * 12 + week * 3 + day) % socialTopics.length;
         const socialTopic = socialTopics[socialIndex];
         if (!socialTopic) continue;
-        
+
         const socialDateStr = socialDate.toISOString().split("T")[0];
         if (!socialDateStr) continue;
-        
+
         calendar.push({
           date: socialDateStr,
           type: "social",

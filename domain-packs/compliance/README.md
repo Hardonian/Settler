@@ -19,19 +19,16 @@ Industry-specific templates and workflows for compliance and regulatory requirem
 ## Usage
 
 ```javascript
-const { SettlerClient } = require('@settler/sdk');
+const { SettlerClient } = require("@settler/sdk");
 
 const client = new SettlerClient({
   apiKey: process.env.SETTLER_API_KEY,
 });
 
 // Use Compliance module
-const diff = await client.compliance.comparePrivacyPolicies(
-  policy1,
-  policy2
-);
+const diff = await client.compliance.comparePrivacyPolicies(policy1, policy2);
 
-console.log('Policy differences:', diff);
+console.log("Policy differences:", diff);
 ```
 
 ## Templates

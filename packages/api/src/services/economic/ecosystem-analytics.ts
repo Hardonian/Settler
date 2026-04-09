@@ -1,12 +1,11 @@
 /**
  * Ecosystem Growth Analytics
- * 
+ *
  * Tracks vertical adoption, partner integration growth, pain points, opportunities
  * Part 12: Economic & Marketplace Intelligence Engine
  */
 
- 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 // logInfo imported but unused - may be used in future
 
 export interface EcosystemMetrics {
@@ -54,8 +53,15 @@ export class EcosystemAnalytics {
     const adoption = new Map<string, number>();
 
     // Get domain pack usage
-    const domainPacks = ['legal', 'finance', 'edtech', 'compliance', 'data-engineering', 'ecommerce'];
-    
+    const domainPacks = [
+      "legal",
+      "finance",
+      "edtech",
+      "compliance",
+      "data-engineering",
+      "ecommerce",
+    ];
+
     for (const pack of domainPacks) {
       // TODO: Query actual usage from database
       // For now, placeholder
@@ -82,7 +88,7 @@ export class EcosystemAnalytics {
     const painPoints: string[] = [];
 
     const failures = await this.prisma.reconResult.findMany({
-      where: { status: 'failed' },
+      where: { status: "failed" },
       take: 1000,
     });
 
@@ -123,9 +129,9 @@ export class EcosystemAnalytics {
     // Find common patterns that could be templates
     // TODO: Implement pattern detection
 
-    opportunities.push('High demand for e-commerce reconciliation templates');
-    opportunities.push('Growing need for real-time streaming recon');
-    opportunities.push('Demand for multi-currency support');
+    opportunities.push("High demand for e-commerce reconciliation templates");
+    opportunities.push("Growing need for real-time streaming recon");
+    opportunities.push("Demand for multi-currency support");
 
     return opportunities;
   }

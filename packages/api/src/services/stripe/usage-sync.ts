@@ -1,14 +1,13 @@
 /**
  * Stripe Usage Sync Service
- * 
+ *
  * Syncs metered usage to Stripe for billing
  * Part of Phase II: Billing Expansion
  */
 
- 
-import { PrismaClient } from '@prisma/client';
-import Stripe from 'stripe';
-import { logError, logInfo } from '../../utils/logger';
+import { PrismaClient } from "@prisma/client";
+import Stripe from "stripe";
+import { logError, logInfo } from "../../utils/logger";
 
 export class StripeUsageSync {
   private prisma: PrismaClient;
@@ -17,7 +16,7 @@ export class StripeUsageSync {
   constructor(prisma: PrismaClient, stripeKey: string) {
     this.prisma = prisma;
     // Use a supported API version - update when Stripe types are updated
-    this.stripe = new Stripe(stripeKey, { apiVersion: '2023-10-16' as Stripe.LatestApiVersion });
+    this.stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" as Stripe.LatestApiVersion });
   }
 
   /**
@@ -29,7 +28,7 @@ export class StripeUsageSync {
         where: { id: billingAccountId },
         include: {
           subscriptions: {
-            where: { status: 'active' },
+            where: { status: "active" },
             include: {
               billingAccount: true,
             },
@@ -38,7 +37,7 @@ export class StripeUsageSync {
       });
 
       if (!billingAccount?.stripeCustomerId) {
-        logError('No Stripe customer ID found', { billingAccountId });
+        logError("No Stripe customer ID found", { billingAccountId });
         return;
       }
 
@@ -60,7 +59,7 @@ export class StripeUsageSync {
       for (const event of usageEvents) {
         const key = event.eventType;
         if (!usageByType.has(key)) {
-          usageByType.set(key, { quantity: 0, unit: event.unit || 'unit' });
+          usageByType.set(key, { quantity: 0, unit: event.unit || "unit" });
         }
         const current = usageByType.get(key)!;
         current.quantity += Number(event.quantity);
@@ -77,19 +76,16 @@ export class StripeUsageSync {
         for (const [eventType, usage] of usageByType.entries()) {
           // Find matching subscription item by metadata or event type
           const matchingItem = subscriptionItems.data.find(
-            item => item.metadata?.eventType === eventType
+            (item) => item.metadata?.eventType === eventType
           );
 
           if (matchingItem && usage.quantity > 0) {
-            await this.stripe.subscriptionItems.createUsageRecord(
-              matchingItem.id,
-              {
-                quantity: Math.round(usage.quantity),
-                timestamp: Math.floor(endDate.getTime() / 1000),
-              }
-            );
+            await this.stripe.subscriptionItems.createUsageRecord(matchingItem.id, {
+              quantity: Math.round(usage.quantity),
+              timestamp: Math.floor(endDate.getTime() / 1000),
+            });
 
-            logInfo('Usage synced to Stripe', {
+            logInfo("Usage synced to Stripe", {
               billingAccountId,
               eventType,
               quantity: usage.quantity,
@@ -114,7 +110,7 @@ export class StripeUsageSync {
         },
       });
     } catch (error) {
-      logError('Failed to sync usage to Stripe', { error, billingAccountId });
+      logError("Failed to sync usage to Stripe", { error, billingAccountId });
       throw error;
     }
   }
@@ -127,7 +123,7 @@ export class StripeUsageSync {
       where: { id: billingAccountId },
       include: {
         subscriptions: {
-          where: { status: 'active' },
+          where: { status: "active" },
           take: 1,
         },
       },

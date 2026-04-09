@@ -11,6 +11,7 @@ The Settler integration framework includes comprehensive monitoring, alerting, r
 **Location**: `packages/adapters/src/metrics/prometheus.ts`
 
 **Metrics Exported**:
+
 - `settler_sync_started_total` - Counter of syncs started
 - `settler_sync_completed_total` - Counter of successful syncs
 - `settler_sync_failed_total` - Counter of failed syncs
@@ -31,6 +32,7 @@ The Settler integration framework includes comprehensive monitoring, alerting, r
 **Authentication**: Optional Bearer token via `PROMETHEUS_METRICS_TOKEN` env var
 
 **Example**:
+
 ```bash
 curl -H "Authorization: Bearer $PROMETHEUS_METRICS_TOKEN" \
   http://localhost:3000/api/metrics/prometheus
@@ -41,6 +43,7 @@ curl -H "Authorization: Bearer $PROMETHEUS_METRICS_TOKEN" \
 **Location**: `packages/adapters/src/alerting/alert-manager.ts`
 
 **Alert Rules**:
+
 - **Consecutive Failures (5)**: Warning when 5 consecutive syncs fail
 - **Consecutive Failures (10)**: Critical when 10 consecutive syncs fail
 - **Error Rate (10%)**: Warning when error rate exceeds 10%
@@ -48,6 +51,7 @@ curl -H "Authorization: Bearer $PROMETHEUS_METRICS_TOKEN" \
 - **Rate Limit Hit**: Info alert when rate limit is hit
 
 **Alert Severities**:
+
 - `critical` - Requires immediate attention
 - `warning` - Needs investigation
 - `info` - Informational
@@ -55,13 +59,15 @@ curl -H "Authorization: Bearer $PROMETHEUS_METRICS_TOKEN" \
 **Database Table**: `connector_alerts`
 
 **Notification Channels**:
+
 - Webhook (via `ALERT_WEBHOOK_URL` env var)
 - Console logging (for development)
 - Extensible to email, Slack, PagerDuty, etc.
 
 **Usage**:
+
 ```typescript
-import { AlertManager } from '@settler/adapters';
+import { AlertManager } from "@settler/adapters";
 
 const alertManager = new AlertManager(supabaseUrl, supabaseServiceKey);
 
@@ -86,6 +92,7 @@ await alertManager.resolveAlert(alertId, userId);
 **Location**: `packages/adapters/src/retry-queue/retry-queue.ts`
 
 **Features**:
+
 - Exponential backoff with jitter
 - Configurable max attempts (default: 5)
 - Dead letter queue for permanently failed jobs
@@ -94,17 +101,19 @@ await alertManager.resolveAlert(alertId, userId);
 **Database Table**: `retry_queue`
 
 **Configuration**:
+
 ```typescript
 const retryQueue = new RetryQueue(supabaseUrl, supabaseServiceKey, {
   maxAttempts: 5,
-  initialDelayMs: 1000,      // 1 second
-  maxDelayMs: 3600000,        // 1 hour
+  initialDelayMs: 1000, // 1 second
+  maxDelayMs: 3600000, // 1 hour
   backoffMultiplier: 2,
   jitter: true,
 });
 ```
 
 **Retry Schedule**:
+
 - Attempt 1: ~1 second
 - Attempt 2: ~2 seconds
 - Attempt 3: ~4 seconds
@@ -114,19 +123,14 @@ const retryQueue = new RetryQueue(supabaseUrl, supabaseServiceKey, {
 **Processor**: `supabase/functions/retry-queue-processor/index.ts`
 
 **Usage**:
+
 ```typescript
-import { RetryQueue } from '@settler/adapters';
+import { RetryQueue } from "@settler/adapters";
 
 const retryQueue = new RetryQueue(supabaseUrl, supabaseServiceKey);
 
 // Enqueue failed sync
-await retryQueue.enqueue(
-  connectorId,
-  tenantId,
-  syncRunId,
-  errorMessage,
-  errorType
-);
+await retryQueue.enqueue(connectorId, tenantId, syncRunId, errorMessage, errorType);
 
 // Get ready jobs
 const jobs = await retryQueue.getReadyJobs(100);
@@ -151,6 +155,7 @@ const deadLetter = await retryQueue.getDeadLetterQueue(100);
 **Validation Rules**:
 
 **Transactions**:
+
 - Required: `externalId`, `transactionType`, `amountCents`, `currency`, `occurredAt`
 - Valid transaction types: `debit`, `credit`, `transfer`, `fee`, `refund`
 - Amount must be non-negative
@@ -159,35 +164,42 @@ const deadLetter = await retryQueue.getDeadLetterQueue(100);
 - Warnings for unusual amounts or long descriptions
 
 **Accounts**:
+
 - Required: `providerAccountId`, `accountName`, `currency`
 - Currency validation
 
 **Balances**:
+
 - Required: `balanceCents`, `currency`, `snapshotAt`
 - Available balance cannot exceed total balance
 - Negative balance warnings
 
 **Payouts**:
+
 - Required: `externalId`, `amountCents`, `currency`, `status`, `initiatedAt`
 - Amount must be positive
 - `completedAt` cannot be before `initiatedAt`
 - Net amount cannot exceed gross amount
 
 **Invoices**:
+
 - Required: `externalId`, `amountCents`, `currency`, `status`
 - Line items total should match invoice amount (1% tolerance)
 - `dueDate` cannot be before `issueDate`
 
 **Subscriptions**:
+
 - Required: `externalId`, `customerId`, `amountCents`, `currency`, `status`
 - Period end cannot be before period start
 
 **Tax Estimates**:
+
 - Required: `externalId`, `amountCents`, `taxAmountCents`, `currency`, `occurredAt`
 - Tax amount cannot exceed transaction amount
 - Tax rate validation (0-100%)
 
 **Usage**:
+
 ```typescript
 import { validator } from '@settler/adapters';
 
@@ -216,6 +228,7 @@ console.log('Counts:', validation.counts);
 **Location**: `packages/adapters/src/performance/batch-processor.ts`
 
 **Features**:
+
 - Batch processing with configurable batch size
 - Concurrency control with semaphore
 - Parallel processing with limits
@@ -223,8 +236,9 @@ console.log('Counts:', validation.counts);
 - Deduplication utilities
 
 **Batch Processing**:
+
 ```typescript
-import { processInBatches } from '@settler/adapters';
+import { processInBatches } from "@settler/adapters";
 
 const { results, errors } = await processInBatches(
   items,
@@ -242,8 +256,9 @@ const { results, errors } = await processInBatches(
 ```
 
 **Parallel Processing**:
+
 ```typescript
-import { processParallel } from '@settler/adapters';
+import { processParallel } from "@settler/adapters";
 
 const { results, errors } = await processParallel(
   items,
@@ -256,8 +271,9 @@ const { results, errors } = await processParallel(
 ```
 
 **Streaming**:
+
 ```typescript
-import { streamProcess } from '@settler/adapters';
+import { streamProcess } from "@settler/adapters";
 
 for await (const result of streamProcess(items, processor, 100)) {
   // Process result
@@ -265,8 +281,9 @@ for await (const result of streamProcess(items, processor, 100)) {
 ```
 
 **Large Dataset Processing**:
+
 ```typescript
-import { processLargeDataset } from '@settler/adapters';
+import { processLargeDataset } from "@settler/adapters";
 
 const { results, processed } = await processLargeDataset(
   items,
@@ -275,7 +292,7 @@ const { results, processed } = await processLargeDataset(
     return batch.map(processItem);
   },
   1000, // batch size
-  500   // max memory MB
+  500 // max memory MB
 );
 ```
 
@@ -292,6 +309,7 @@ All enhancements are automatically integrated into `ConnectorRuntime`:
 ## Configuration
 
 **Environment Variables**:
+
 ```bash
 # Prometheus metrics
 PROMETHEUS_METRICS_TOKEN=your-token-here
@@ -310,21 +328,25 @@ RETRY_QUEUE_MAX_DELAY_MS=3600000
 Recommended Grafana dashboard queries:
 
 **Sync Success Rate**:
+
 ```promql
 rate(settler_sync_completed_total[5m]) / rate(settler_sync_started_total[5m])
 ```
 
 **Sync Duration (p95)**:
+
 ```promql
 histogram_quantile(0.95, rate(settler_sync_duration_seconds_bucket[5m]))
 ```
 
 **Error Rate**:
+
 ```promql
 rate(settler_sync_failed_total[5m]) / rate(settler_sync_started_total[5m])
 ```
 
 **Active Syncs**:
+
 ```promql
 sum(settler_sync_in_progress)
 ```
@@ -332,18 +354,21 @@ sum(settler_sync_in_progress)
 ## Troubleshooting
 
 ### High Error Rate
+
 1. Check `connector_alerts` table for active alerts
 2. Review `sync_runs` table for error patterns
 3. Check `retry_queue` for pending retries
 4. Review connector logs for specific errors
 
 ### Slow Syncs
+
 1. Check `settler_sync_duration_seconds` histogram
 2. Review batch processing configuration
 3. Check database indexes
 4. Consider increasing batch size or concurrency
 
 ### Retry Queue Backlog
+
 1. Check `retry_queue` table for pending jobs
 2. Verify retry queue processor is running
 3. Review retry configuration (max attempts, delays)

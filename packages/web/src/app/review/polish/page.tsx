@@ -70,7 +70,11 @@ export default async function PolishReviewPage() {
   const resolvedConfig = resolvePublicRuntimeUiConfig({
     tenantMetadata: tenant?.metadata ?? undefined,
     tenantBranding: tenant?.branding
-      ? { borderRadiusScale: tenant.branding.borderRadiusScale ? Number(tenant.branding.borderRadiusScale) : null }
+      ? {
+          borderRadiusScale: tenant.branding.borderRadiusScale
+            ? Number(tenant.branding.borderRadiusScale)
+            : null,
+        }
       : null,
   });
 
@@ -127,4 +131,3 @@ export default async function PolishReviewPage() {
     </div>
   );
 }
-

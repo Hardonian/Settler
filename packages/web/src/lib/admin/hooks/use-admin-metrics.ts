@@ -1,28 +1,28 @@
 /**
  * Admin Dashboard Hooks
- * 
+ *
  * React hooks for admin dashboard data fetching with TanStack Query.
  * Includes realtime SSE integration and fallback polling.
  */
 
-'use client';
+"use client";
 
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useRef, useState } from 'react';
-import { MetricsSnapshot, StreamEvent, HealthDelta } from '../metrics/types';
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useRef, useState } from "react";
+import { MetricsSnapshot, StreamEvent, HealthDelta } from "../metrics/types";
 
-const QUERY_KEY_METRICS = ['admin', 'metrics'] as const;
-const QUERY_KEY_EXCEPTIONS = ['admin', 'exceptions'] as const;
-const QUERY_KEY_RUNS = ['admin', 'runs'] as const;
-const QUERY_KEY_AUDIT = ['admin', 'audit'] as const;
+const QUERY_KEY_METRICS = ["admin", "metrics"] as const;
+const QUERY_KEY_EXCEPTIONS = ["admin", "exceptions"] as const;
+const QUERY_KEY_RUNS = ["admin", "runs"] as const;
+const QUERY_KEY_AUDIT = ["admin", "audit"] as const;
 
 /**
  * Fetch metrics snapshot
  */
-async function fetchMetrics(range: string = '24h', tenantId?: string): Promise<MetricsSnapshot> {
+async function fetchMetrics(range: string = "24h", tenantId?: string): Promise<MetricsSnapshot> {
   const params = new URLSearchParams({ range });
-  if (tenantId) params.set('tenantId', tenantId);
-  
+  if (tenantId) params.set("tenantId", tenantId);
+
   const res = await fetch(`/api/admin/metrics?${params}`);
   if (!res.ok) {
     throw new Error(`Failed to fetch metrics: ${res.statusText}`);
@@ -42,13 +42,13 @@ async function fetchExceptions(params: {
   offset?: number;
 }) {
   const searchParams = new URLSearchParams();
-  if (params.status) searchParams.set('status', params.status);
-  if (params.severity) searchParams.set('severity', params.severity);
-  if (params.source) searchParams.set('source', params.source);
-  if (params.tenantId) searchParams.set('tenantId', params.tenantId);
-  if (params.limit) searchParams.set('limit', String(params.limit));
-  if (params.offset) searchParams.set('offset', String(params.offset));
-  
+  if (params.status) searchParams.set("status", params.status);
+  if (params.severity) searchParams.set("severity", params.severity);
+  if (params.source) searchParams.set("source", params.source);
+  if (params.tenantId) searchParams.set("tenantId", params.tenantId);
+  if (params.limit) searchParams.set("limit", String(params.limit));
+  if (params.offset) searchParams.set("offset", String(params.offset));
+
   const res = await fetch(`/api/admin/exceptions?${searchParams}`);
   if (!res.ok) {
     throw new Error(`Failed to fetch exceptions: ${res.statusText}`);
@@ -66,11 +66,11 @@ async function fetchRuns(params: {
   offset?: number;
 }) {
   const searchParams = new URLSearchParams();
-  if (params.status) searchParams.set('status', params.status);
-  if (params.tenantId) searchParams.set('tenantId', params.tenantId);
-  if (params.limit) searchParams.set('limit', String(params.limit));
-  if (params.offset) searchParams.set('offset', String(params.offset));
-  
+  if (params.status) searchParams.set("status", params.status);
+  if (params.tenantId) searchParams.set("tenantId", params.tenantId);
+  if (params.limit) searchParams.set("limit", String(params.limit));
+  if (params.offset) searchParams.set("offset", String(params.offset));
+
   const res = await fetch(`/api/admin/runs?${searchParams}`);
   if (!res.ok) {
     throw new Error(`Failed to fetch runs: ${res.statusText}`);
@@ -91,14 +91,14 @@ async function fetchAudit(params: {
   offset?: number;
 }) {
   const searchParams = new URLSearchParams();
-  if (params.ruleId) searchParams.set('ruleId', params.ruleId);
-  if (params.source) searchParams.set('source', params.source);
-  if (params.status) searchParams.set('status', params.status);
-  if (params.actor) searchParams.set('actor', params.actor);
-  if (params.tenantId) searchParams.set('tenantId', params.tenantId);
-  if (params.limit) searchParams.set('limit', String(params.limit));
-  if (params.offset) searchParams.set('offset', String(params.offset));
-  
+  if (params.ruleId) searchParams.set("ruleId", params.ruleId);
+  if (params.source) searchParams.set("source", params.source);
+  if (params.status) searchParams.set("status", params.status);
+  if (params.actor) searchParams.set("actor", params.actor);
+  if (params.tenantId) searchParams.set("tenantId", params.tenantId);
+  if (params.limit) searchParams.set("limit", String(params.limit));
+  if (params.offset) searchParams.set("offset", String(params.offset));
+
   const res = await fetch(`/api/admin/audit?${searchParams}`);
   if (!res.ok) {
     throw new Error(`Failed to fetch audit trail: ${res.statusText}`);
@@ -109,7 +109,7 @@ async function fetchAudit(params: {
 /**
  * Hook for metrics snapshot
  */
-export function useAdminMetrics(range: string = '24h', tenantId?: string) {
+export function useAdminMetrics(range: string = "24h", tenantId?: string) {
   return useQuery({
     queryKey: [...QUERY_KEY_METRICS, range, tenantId],
     queryFn: () => fetchMetrics(range, tenantId),
@@ -121,14 +121,16 @@ export function useAdminMetrics(range: string = '24h', tenantId?: string) {
 /**
  * Hook for exceptions
  */
-export function useAdminExceptions(params: {
-  status?: string;
-  severity?: string;
-  source?: string;
-  tenantId?: string;
-  limit?: number;
-  offset?: number;
-} = {}) {
+export function useAdminExceptions(
+  params: {
+    status?: string;
+    severity?: string;
+    source?: string;
+    tenantId?: string;
+    limit?: number;
+    offset?: number;
+  } = {}
+) {
   return useQuery({
     queryKey: [...QUERY_KEY_EXCEPTIONS, params],
     queryFn: () => fetchExceptions(params),
@@ -140,12 +142,14 @@ export function useAdminExceptions(params: {
 /**
  * Hook for runs
  */
-export function useAdminRuns(params: {
-  status?: string;
-  tenantId?: string;
-  limit?: number;
-  offset?: number;
-} = {}) {
+export function useAdminRuns(
+  params: {
+    status?: string;
+    tenantId?: string;
+    limit?: number;
+    offset?: number;
+  } = {}
+) {
   return useQuery({
     queryKey: [...QUERY_KEY_RUNS, params],
     queryFn: () => fetchRuns(params),
@@ -157,15 +161,17 @@ export function useAdminRuns(params: {
 /**
  * Hook for audit trail
  */
-export function useAdminAudit(params: {
-  ruleId?: string;
-  source?: string;
-  status?: string;
-  actor?: string;
-  tenantId?: string;
-  limit?: number;
-  offset?: number;
-} = {}) {
+export function useAdminAudit(
+  params: {
+    ruleId?: string;
+    source?: string;
+    status?: string;
+    actor?: string;
+    tenantId?: string;
+    limit?: number;
+    offset?: number;
+  } = {}
+) {
   return useQuery({
     queryKey: [...QUERY_KEY_AUDIT, params],
     queryFn: () => fetchAudit(params),
@@ -177,17 +183,17 @@ export function useAdminAudit(params: {
 /**
  * Connection state for SSE
  */
-export type ConnectionState = 'connected' | 'reconnecting' | 'offline';
+export type ConnectionState = "connected" | "reconnecting" | "offline";
 
 /**
  * Hook for SSE stream connection
  */
 export function useAdminStream(
-  channels: string[] = ['metrics', 'exceptions', 'runs', 'health'],
+  channels: string[] = ["metrics", "exceptions", "runs", "health"],
   tenantId?: string,
   enabled: boolean = true
 ) {
-  const [connectionState, setConnectionState] = useState<ConnectionState>('offline');
+  const [connectionState, setConnectionState] = useState<ConnectionState>("offline");
   const [latency, setLatency] = useState<number | null>(null);
   const queryClient = useQueryClient();
   const eventSourceRef = useRef<EventSource | null>(null);
@@ -207,32 +213,32 @@ export function useAdminStream(
       }
 
       const params = new URLSearchParams({
-        channels: channels.join(','),
+        channels: channels.join(","),
       });
-      if (tenantId) params.set('tenantId', tenantId);
+      if (tenantId) params.set("tenantId", tenantId);
 
       const eventSource = new EventSource(`/api/admin/stream?${params}`);
       eventSourceRef.current = eventSource;
 
       eventSource.onopen = () => {
-        setConnectionState('connected');
+        setConnectionState("connected");
         reconnectAttempts.current = 0;
       };
 
       eventSource.onerror = () => {
-        setConnectionState('reconnecting');
+        setConnectionState("reconnecting");
         eventSource.close();
 
         // Exponential backoff reconnect
         if (reconnectAttempts.current < maxReconnectAttempts) {
           const delay = reconnectDelay * Math.pow(2, reconnectAttempts.current);
           reconnectAttempts.current++;
-          
+
           reconnectTimeoutRef.current = setTimeout(() => {
             connect();
           }, delay);
         } else {
-          setConnectionState('offline');
+          setConnectionState("offline");
         }
       };
 
@@ -242,19 +248,19 @@ export function useAdminStream(
 
           // Handle different event types
           switch (data.type) {
-            case 'metrics_delta':
+            case "metrics_delta":
               // Invalidate metrics query to trigger refetch
               queryClient.invalidateQueries({ queryKey: QUERY_KEY_METRICS });
               break;
-            case 'exceptions_delta':
+            case "exceptions_delta":
               // Invalidate exceptions query
               queryClient.invalidateQueries({ queryKey: QUERY_KEY_EXCEPTIONS });
               break;
-            case 'run_delta':
+            case "run_delta":
               // Invalidate runs query
               queryClient.invalidateQueries({ queryKey: QUERY_KEY_RUNS });
               break;
-            case 'health':
+            case "health":
               const health = data as HealthDelta;
               setConnectionState(health.status);
               setLatency(health.latency);
@@ -262,9 +268,8 @@ export function useAdminStream(
           }
         } catch (error) {
           // Error parsing event - non-critical, continue processing
-          if (process.env.NODE_ENV === 'development') {
-             
-            console.error('[Admin Stream] Error parsing event:', error);
+          if (process.env.NODE_ENV === "development") {
+            console.error("[Admin Stream] Error parsing event:", error);
           }
         }
       };
@@ -281,7 +286,7 @@ export function useAdminStream(
         clearTimeout(reconnectTimeoutRef.current);
       }
     };
-  }, [channels.join(','), tenantId, enabled, queryClient]);
+  }, [channels.join(","), tenantId, enabled, queryClient]);
 
   return {
     connectionState,

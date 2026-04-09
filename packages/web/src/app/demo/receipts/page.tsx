@@ -54,7 +54,10 @@ export default function ReceiptsDemoPage() {
       "Marketplace Purchase": "bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300",
       Travel: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300",
     };
-    return colors[category || ""] || "bg-muted/30 text-foreground/90 dark:bg-card/80 dark:text-muted-foreground/40";
+    return (
+      colors[category || ""] ||
+      "bg-muted/30 text-foreground/90 dark:bg-card/80 dark:text-muted-foreground/40"
+    );
   };
 
   return (
@@ -75,7 +78,8 @@ export default function ReceiptsDemoPage() {
             </h1>
           </div>
           <p className="text-lg text-muted-foreground">
-            Select a receipt to see how it&apos;s extracted, normalized, and matched to transactions.
+            Select a receipt to see how it&apos;s extracted, normalized, and matched to
+            transactions.
           </p>
         </div>
 
@@ -113,7 +117,9 @@ export default function ReceiptsDemoPage() {
                           </Badge>
                         </div>
                         <div className="text-right">
-                          <div className="font-bold text-lg">${receipt.total_amount.toFixed(2)}</div>
+                          <div className="font-bold text-lg">
+                            ${receipt.total_amount.toFixed(2)}
+                          </div>
                         </div>
                       </div>
                       <div className="text-sm text-muted-foreground">
@@ -262,7 +268,9 @@ export default function ReceiptsDemoPage() {
                                     >
                                       <span>
                                         {item.description}
-                                        {item.quantity && item.quantity > 1 && ` × ${item.quantity}`}
+                                        {item.quantity &&
+                                          item.quantity > 1 &&
+                                          ` × ${item.quantity}`}
                                       </span>
                                       <span>${item.total.toFixed(2)}</span>
                                     </div>
@@ -300,9 +308,7 @@ export default function ReceiptsDemoPage() {
                             <div className="space-y-4">
                               <div className="flex items-center gap-2">
                                 <CheckCircle2 className="w-5 h-5 text-green-500" />
-                                <span className="font-semibold text-foreground">
-                                  Match Found
-                                </span>
+                                <span className="font-semibold text-foreground">Match Found</span>
                                 <Badge variant="default">{matchResult.confidence}</Badge>
                               </div>
                               <div className="text-sm text-muted-foreground">
@@ -317,7 +323,9 @@ export default function ReceiptsDemoPage() {
                                     key={idx}
                                     className="text-xs text-muted-foreground bg-muted/20 p-2 rounded"
                                   >
-                                    <span className="font-medium">{ev.field}:</span> {String(ev.source_value)} = {String(ev.target_value)} ({ev.match_type})
+                                    <span className="font-medium">{ev.field}:</span>{" "}
+                                    {String(ev.source_value)} = {String(ev.target_value)} (
+                                    {ev.match_type})
                                   </div>
                                 ))}
                               </div>
@@ -342,7 +350,10 @@ export default function ReceiptsDemoPage() {
         )}
 
         {/* Trust Notice */}
-        <Card elevation="sm" className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+        <Card
+          elevation="sm"
+          className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800"
+        >
           <CardContent className="p-6">
             <p className="text-sm text-muted-foreground">
               <strong>Deterministic demo data.</strong> Production ingestion uses secure pipelines

@@ -1,6 +1,6 @@
 /**
  * Database Query Builder
- * 
+ *
  * Abstraction layer for database queries with:
  * - Automatic tenant isolation
  * - Query result caching
@@ -9,10 +9,10 @@
  * - Type safety
  */
 
-import { PrismaClient } from '@prisma/client';
-import { prisma } from '@/shared/db/prismaClient';
-import { UnifiedAuthContext } from '@/lib/api/unified-auth';
-import { withCache, generateCacheKey } from '@/lib/db/cache';
+import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/shared/db/prismaClient";
+import { UnifiedAuthContext } from "@/lib/api/unified-auth";
+import { withCache, generateCacheKey } from "@/lib/db/cache";
 
 export interface QueryOptions {
   /** Cache TTL in seconds (0 = no cache) */
@@ -63,10 +63,10 @@ export async function executeQuery<T>(
   const { auth, billingAccountId } = context;
 
   // Verify tenant access (unless skipped for admin)
-  if (!options.skipTenantCheck && auth.type === 'session') {
+  if (!options.skipTenantCheck && auth.type === "session") {
     const hasAccess = await verifyBillingAccountAccess(billingAccountId, auth.userId);
     if (!hasAccess) {
-      throw new Error('Forbidden: Access denied to billing account');
+      throw new Error("Forbidden: Access denied to billing account");
     }
   }
 
@@ -98,7 +98,7 @@ export async function executeQuery<T>(
       }
     } catch (error) {
       // Cache error, continue to query
-      console.warn('[Query Builder] Cache error, continuing:', error);
+      console.warn("[Query Builder] Cache error, continuing:", error);
     }
   }
 
@@ -106,24 +106,22 @@ export async function executeQuery<T>(
     try {
       // TODO: Add timeout handling
       const result = await query(prisma);
-      
+
       // Cache result if cache TTL specified
       if (cacheKey && options.cacheTtl) {
-        await withCache(
-          cacheKey,
-          async () => result,
-          { ttl: options.cacheTtl, skip: false }
-        ).catch(() => {
-          // Cache write error, don't fail query
-        });
+        await withCache(cacheKey, async () => result, { ttl: options.cacheTtl, skip: false }).catch(
+          () => {
+            // Cache write error, don't fail query
+          }
+        );
       }
-      
+
       return result;
     } catch (error) {
-      lastError = error instanceof Error ? error : new Error('Unknown error');
-      
+      lastError = error instanceof Error ? error : new Error("Unknown error");
+
       // Don't retry on auth errors
-      if (lastError.message.includes('Forbidden') || lastError.message.includes('Unauthorized')) {
+      if (lastError.message.includes("Forbidden") || lastError.message.includes("Unauthorized")) {
         throw lastError;
       }
 
@@ -136,7 +134,7 @@ export async function executeQuery<T>(
     }
   }
 
-  throw lastError || new Error('Query failed after retries');
+  throw lastError || new Error("Query failed after retries");
 }
 
 /**
@@ -154,7 +152,7 @@ export class QueryBuilder {
     options: QueryOptions & {
       take?: number;
       skip?: number;
-      orderBy?: Record<string, 'asc' | 'desc'>;
+      orderBy?: Record<string, "asc" | "desc">;
     } = {}
   ): Promise<T[]> {
     const { take = 50, skip = 0, orderBy, ...queryOptions } = options;
@@ -163,15 +161,17 @@ export class QueryBuilder {
       this.context,
       async (prismaClient) => {
         const modelName = String(model);
-        const modelClient = (prismaClient as unknown as Record<string, unknown>)[modelName] as {
-          findMany: (args: {
-            where: Record<string, unknown>;
-            take: number;
-            skip: number;
-            orderBy?: Record<string, 'asc' | 'desc'>;
-          }) => Promise<T[]>;
-        } | undefined;
-        
+        const modelClient = (prismaClient as unknown as Record<string, unknown>)[modelName] as
+          | {
+              findMany: (args: {
+                where: Record<string, unknown>;
+                take: number;
+                skip: number;
+                orderBy?: Record<string, "asc" | "desc">;
+              }) => Promise<T[]>;
+            }
+          | undefined;
+
         if (!modelClient) {
           throw new Error(`Model ${String(model)} not found in PrismaClient`);
         }
@@ -205,10 +205,12 @@ export class QueryBuilder {
       this.context,
       async (prismaClient) => {
         const modelName = String(model);
-        const modelClient = (prismaClient as unknown as Record<string, unknown>)[modelName] as {
-          findUnique: (args: { where: Record<string, unknown> }) => Promise<T | null>;
-        } | undefined;
-        
+        const modelClient = (prismaClient as unknown as Record<string, unknown>)[modelName] as
+          | {
+              findUnique: (args: { where: Record<string, unknown> }) => Promise<T | null>;
+            }
+          | undefined;
+
         if (!modelClient) {
           throw new Error(`Model ${String(model)} not found in PrismaClient`);
         }
@@ -239,10 +241,12 @@ export class QueryBuilder {
       this.context,
       async (prismaClient) => {
         const modelName = String(model);
-        const modelClient = (prismaClient as unknown as Record<string, unknown>)[modelName] as {
-          create: (args: { data: Record<string, unknown> }) => Promise<T>;
-        } | undefined;
-        
+        const modelClient = (prismaClient as unknown as Record<string, unknown>)[modelName] as
+          | {
+              create: (args: { data: Record<string, unknown> }) => Promise<T>;
+            }
+          | undefined;
+
         if (!modelClient) {
           throw new Error(`Model ${String(model)} not found in PrismaClient`);
         }
@@ -273,13 +277,15 @@ export class QueryBuilder {
       this.context,
       async (prismaClient) => {
         const modelName = String(model);
-        const modelClient = (prismaClient as unknown as Record<string, unknown>)[modelName] as {
-          update: (args: {
-            where: Record<string, unknown>;
-            data: Record<string, unknown>;
-          }) => Promise<T>;
-        } | undefined;
-        
+        const modelClient = (prismaClient as unknown as Record<string, unknown>)[modelName] as
+          | {
+              update: (args: {
+                where: Record<string, unknown>;
+                data: Record<string, unknown>;
+              }) => Promise<T>;
+            }
+          | undefined;
+
         if (!modelClient) {
           throw new Error(`Model ${String(model)} not found in PrismaClient`);
         }
@@ -311,10 +317,12 @@ export class QueryBuilder {
       this.context,
       async (prismaClient) => {
         const modelName = String(model);
-        const modelClient = (prismaClient as unknown as Record<string, unknown>)[modelName] as {
-          delete: (args: { where: Record<string, unknown> }) => Promise<T>;
-        } | undefined;
-        
+        const modelClient = (prismaClient as unknown as Record<string, unknown>)[modelName] as
+          | {
+              delete: (args: { where: Record<string, unknown> }) => Promise<T>;
+            }
+          | undefined;
+
         if (!modelClient) {
           throw new Error(`Model ${String(model)} not found in PrismaClient`);
         }

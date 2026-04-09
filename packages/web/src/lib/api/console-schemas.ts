@@ -1,11 +1,11 @@
 /**
  * Console API Validation Schemas
- * 
+ *
  * Zod schemas for input validation across all console API routes.
  * Ensures type safety and prevents invalid data from reaching handlers.
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 // Common schemas
 export const paginationSchema = z.object({
@@ -21,7 +21,7 @@ export const dateRangeSchema = z.object({
 // API Keys
 export const createApiKeySchema = z.object({
   name: z.string().min(1).max(100).optional(),
-  scopes: z.array(z.string()).optional().default(['*']),
+  scopes: z.array(z.string()).optional().default(["*"]),
   expiresAt: z.string().datetime().optional(),
 });
 
@@ -44,7 +44,7 @@ export const listFeatureFlagsSchema = paginationSchema.extend({
 
 export const updateFlagEnvironmentSchema = z.object({
   flagId: z.string().uuid(),
-  environment: z.enum(['development', 'staging', 'production']),
+  environment: z.enum(["development", "staging", "production"]),
   enabled: z.boolean().optional(),
   variant: z.unknown().optional(),
 });
@@ -59,8 +59,12 @@ export const getBillingSchema = z.object({});
 
 // Site Builder
 export const createPageSchema = z.object({
-  slug: z.string().min(1).max(200).regex(/^[a-z0-9-]+$/),
-  pageType: z.enum(['marketing', 'landing', 'docs']).optional().default('marketing'),
+  slug: z
+    .string()
+    .min(1)
+    .max(200)
+    .regex(/^[a-z0-9-]+$/),
+  pageType: z.enum(["marketing", "landing", "docs"]).optional().default("marketing"),
   blocks: z.array(z.unknown()).optional().default([]),
   seoTitle: z.string().max(200).optional(),
   seoDescription: z.string().max(500).optional(),
@@ -75,30 +79,46 @@ export const updatePageSchema = createPageSchema.partial().extend({
 export const updateBrandingSchema = z.object({
   logoUrl: z.string().url().optional(),
   faviconUrl: z.string().url().optional(),
-  primaryColor: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/).optional(),
-  secondaryColor: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/).optional(),
-  accentColor: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/).optional(),
-  backgroundColor: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/).optional(),
+  primaryColor: z
+    .string()
+    .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/)
+    .optional(),
+  secondaryColor: z
+    .string()
+    .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/)
+    .optional(),
+  accentColor: z
+    .string()
+    .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/)
+    .optional(),
+  backgroundColor: z
+    .string()
+    .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/)
+    .optional(),
   borderRadiusScale: z.number().min(0).max(2).optional(),
   fontFamilyPrimary: z.string().max(100).optional(),
   fontFamilySecondary: z.string().max(100).optional(),
 });
 
 export const updateNavigationSchema = z.object({
-  navItems: z.array(
-    z.object({
-      label: z.string().min(1),
-      href: z.string().min(1),
-      type: z.enum(['internal', 'external']),
-    })
-  ).optional(),
-  footerItems: z.array(
-    z.object({
-      label: z.string().min(1),
-      href: z.string().min(1),
-      type: z.enum(['internal', 'external']),
-    })
-  ).optional(),
+  navItems: z
+    .array(
+      z.object({
+        label: z.string().min(1),
+        href: z.string().min(1),
+        type: z.enum(["internal", "external"]),
+      })
+    )
+    .optional(),
+  footerItems: z
+    .array(
+      z.object({
+        label: z.string().min(1),
+        href: z.string().min(1),
+        type: z.enum(["internal", "external"]),
+      })
+    )
+    .optional(),
 });
 
 // Type exports

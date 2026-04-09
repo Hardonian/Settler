@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * PHASE 2: USER REALITY VALIDATION
- * 
+ *
  * Validates:
  * - Zero-touch onboarding flow
  * - First-success path produces real output within 3 minutes
@@ -9,8 +9,8 @@
  * - User can see prior work
  */
 
-import { supabase } from '../packages/api/src/infrastructure/supabase/client';
-import { logInfo, logError } from '../packages/api/src/utils/logger';
+import { supabase } from "../packages/api/src/infrastructure/supabase/client";
+import { logInfo, logError } from "../packages/api/src/utils/logger";
 
 interface OnboardingTest {
   test: string;
@@ -22,12 +22,7 @@ interface OnboardingTest {
 
 const results: OnboardingTest[] = [];
 
-function recordResult(
-  test: string,
-  passed: boolean,
-  evidence: string,
-  timeToComplete?: number
-) {
+function recordResult(test: string, passed: boolean, evidence: string, timeToComplete?: number) {
   results.push({
     test,
     passed,
@@ -42,23 +37,20 @@ function recordResult(
  */
 async function testOnboardingInfrastructure(): Promise<void> {
   try {
-    logInfo('[Onboarding] Testing infrastructure...');
-    
-    const { data, error } = await supabase
-      .from('onboarding_progress')
-      .select('*')
-      .limit(1);
+    logInfo("[Onboarding] Testing infrastructure...");
 
-    const exists = error === null || error.code !== '42P01'; // Table doesn't exist
+    const { data, error } = await supabase.from("onboarding_progress").select("*").limit(1);
+
+    const exists = error === null || error.code !== "42P01"; // Table doesn't exist
 
     recordResult(
-      'Onboarding Infrastructure',
+      "Onboarding Infrastructure",
       exists,
-      `Onboarding progress table: ${exists ? 'Exists' : 'Missing'}, Error: ${error?.message || 'None'}`
+      `Onboarding progress table: ${exists ? "Exists" : "Missing"}, Error: ${error?.message || "None"}`
     );
   } catch (error) {
     recordResult(
-      'Onboarding Infrastructure',
+      "Onboarding Infrastructure",
       false,
       `Error: ${error instanceof Error ? error.message : String(error)}`
     );
@@ -70,24 +62,24 @@ async function testOnboardingInfrastructure(): Promise<void> {
  */
 async function testOnboardingSteps(): Promise<void> {
   try {
-    logInfo('[Onboarding] Testing onboarding steps...');
-    
+    logInfo("[Onboarding] Testing onboarding steps...");
+
     // Check if onboarding_progress table has step tracking
     const { data, error } = await supabase
-      .from('onboarding_progress')
-      .select('current_step, completed_steps')
+      .from("onboarding_progress")
+      .select("current_step, completed_steps")
       .limit(1);
 
     const hasSteps = error === null || (data && data.length > 0);
 
     recordResult(
-      'Onboarding Steps Defined',
+      "Onboarding Steps Defined",
       hasSteps,
-      `Steps tracking: ${hasSteps ? 'Available' : 'Missing'}`
+      `Steps tracking: ${hasSteps ? "Available" : "Missing"}`
     );
   } catch (error) {
     recordResult(
-      'Onboarding Steps Defined',
+      "Onboarding Steps Defined",
       false,
       `Error: ${error instanceof Error ? error.message : String(error)}`
     );
@@ -99,19 +91,19 @@ async function testOnboardingSteps(): Promise<void> {
  */
 async function testFirstSuccessPath(): Promise<void> {
   try {
-    logInfo('[Onboarding] Testing first-success path...');
-    
+    logInfo("[Onboarding] Testing first-success path...");
+
     const startTime = Date.now();
-    
+
     // Simulate onboarding flow
     // 1. Create user/tenant
     // 2. Complete first step
     // 3. Generate first output
-    
+
     // Check if we can complete onboarding steps quickly
     const { data: existingProgress } = await supabase
-      .from('onboarding_progress')
-      .select('*')
+      .from("onboarding_progress")
+      .select("*")
       .limit(1);
 
     const endTime = Date.now();
@@ -119,14 +111,14 @@ async function testFirstSuccessPath(): Promise<void> {
     const targetTime = 180; // 3 minutes
 
     recordResult(
-      'First Success Path Timing',
+      "First Success Path Timing",
       timeToComplete < targetTime,
-      `Time to complete: ${timeToComplete.toFixed(2)}s (target: <${targetTime}s), Progress exists: ${existingProgress ? 'Yes' : 'No'}`,
+      `Time to complete: ${timeToComplete.toFixed(2)}s (target: <${targetTime}s), Progress exists: ${existingProgress ? "Yes" : "No"}`,
       timeToComplete
     );
   } catch (error) {
     recordResult(
-      'First Success Path Timing',
+      "First Success Path Timing",
       false,
       `Error: ${error instanceof Error ? error.message : String(error)}`
     );
@@ -138,24 +130,24 @@ async function testFirstSuccessPath(): Promise<void> {
  */
 async function testLeaveAndReturn(): Promise<void> {
   try {
-    logInfo('[Onboarding] Testing leave and return...');
-    
+    logInfo("[Onboarding] Testing leave and return...");
+
     // Check if onboarding progress persists
     const { data: progress } = await supabase
-      .from('onboarding_progress')
-      .select('user_id, current_step, completed_steps')
+      .from("onboarding_progress")
+      .select("user_id, current_step, completed_steps")
       .limit(1);
 
     const canResume = progress !== null && progress.length > 0;
 
     recordResult(
-      'Leave and Return',
+      "Leave and Return",
       canResume,
-      `Progress persistence: ${canResume ? 'Yes' : 'No'}, Can resume: ${canResume ? 'Yes' : 'No'}`
+      `Progress persistence: ${canResume ? "Yes" : "No"}, Can resume: ${canResume ? "Yes" : "No"}`
     );
   } catch (error) {
     recordResult(
-      'Leave and Return',
+      "Leave and Return",
       false,
       `Error: ${error instanceof Error ? error.message : String(error)}`
     );
@@ -167,41 +159,38 @@ async function testLeaveAndReturn(): Promise<void> {
  */
 async function testPriorWorkVisibility(): Promise<void> {
   try {
-    logInfo('[Onboarding] Testing prior work visibility...');
-    
+    logInfo("[Onboarding] Testing prior work visibility...");
+
     // Check if users can access their previous work
-    const { data: users } = await supabase
-      .from('users')
-      .select('id, email')
-      .limit(1);
+    const { data: users } = await supabase.from("users").select("id, email").limit(1);
 
     if (users && users.length > 0) {
       const userId = users[0].id;
-      
+
       // Check if user can see their projects/work
       const { data: projects } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('user_id', userId)
+        .from("projects")
+        .select("*")
+        .eq("user_id", userId)
         .limit(1);
 
       const canSeeWork = projects !== null;
 
       recordResult(
-        'Prior Work Visibility',
+        "Prior Work Visibility",
         canSeeWork || true, // Table might not exist, but concept is valid
-        `Can access prior work: ${canSeeWork ? 'Yes' : 'No'}, User exists: Yes`
+        `Can access prior work: ${canSeeWork ? "Yes" : "No"}, User exists: Yes`
       );
     } else {
       recordResult(
-        'Prior Work Visibility',
+        "Prior Work Visibility",
         true, // No users yet, but infrastructure exists
-        'No users found, but infrastructure ready'
+        "No users found, but infrastructure ready"
       );
     }
   } catch (error) {
     recordResult(
-      'Prior Work Visibility',
+      "Prior Work Visibility",
       false,
       `Error: ${error instanceof Error ? error.message : String(error)}`
     );
@@ -213,26 +202,23 @@ async function testPriorWorkVisibility(): Promise<void> {
  */
 async function testZeroTouchOnboarding(): Promise<void> {
   try {
-    logInfo('[Onboarding] Testing zero-touch onboarding...');
-    
+    logInfo("[Onboarding] Testing zero-touch onboarding...");
+
     // Check if onboarding can be automated
     // Look for automated onboarding functions/triggers
-    const { data: functions } = await supabase.rpc('get_functions').catch(() => ({ data: null }));
+    const { data: functions } = await supabase.rpc("get_functions").catch(() => ({ data: null }));
 
     // Check if tenant creation automatically creates onboarding progress
-    const { data: tenants } = await supabase
-      .from('tenants')
-      .select('id')
-      .limit(1);
+    const { data: tenants } = await supabase.from("tenants").select("id").limit(1);
 
     recordResult(
-      'Zero-Touch Onboarding',
+      "Zero-Touch Onboarding",
       true, // Concept validated by infrastructure
-      `Tenant creation: ${tenants ? 'Available' : 'Missing'}, Automated functions: ${functions ? 'Available' : 'Unknown'}`
+      `Tenant creation: ${tenants ? "Available" : "Missing"}, Automated functions: ${functions ? "Available" : "Unknown"}`
     );
   } catch (error) {
     recordResult(
-      'Zero-Touch Onboarding',
+      "Zero-Touch Onboarding",
       false,
       `Error: ${error instanceof Error ? error.message : String(error)}`
     );
@@ -243,10 +229,10 @@ async function testZeroTouchOnboarding(): Promise<void> {
  * Main execution
  */
 async function main() {
-  console.log('='.repeat(80));
-  console.log('PHASE 2: USER REALITY VALIDATION');
-  console.log('='.repeat(80));
-  console.log('');
+  console.log("=".repeat(80));
+  console.log("PHASE 2: USER REALITY VALIDATION");
+  console.log("=".repeat(80));
+  console.log("");
 
   try {
     await testOnboardingInfrastructure();
@@ -256,30 +242,31 @@ async function main() {
     await testPriorWorkVisibility();
     await testZeroTouchOnboarding();
 
-    console.log('');
-    console.log('='.repeat(80));
-    console.log('ONBOARDING VALIDATION RESULTS');
-    console.log('='.repeat(80));
-    console.log('');
+    console.log("");
+    console.log("=".repeat(80));
+    console.log("ONBOARDING VALIDATION RESULTS");
+    console.log("=".repeat(80));
+    console.log("");
 
-    const passed = results.filter(r => r.passed).length;
-    const failed = results.filter(r => !r.passed).length;
-    const avgTime = results
-      .filter(r => r.timeToComplete !== undefined)
-      .reduce((sum, r) => sum + (r.timeToComplete || 0), 0) / 
-      results.filter(r => r.timeToComplete !== undefined).length;
+    const passed = results.filter((r) => r.passed).length;
+    const failed = results.filter((r) => !r.passed).length;
+    const avgTime =
+      results
+        .filter((r) => r.timeToComplete !== undefined)
+        .reduce((sum, r) => sum + (r.timeToComplete || 0), 0) /
+      results.filter((r) => r.timeToComplete !== undefined).length;
 
-    results.forEach(result => {
-      const icon = result.passed ? '✅' : '❌';
+    results.forEach((result) => {
+      const icon = result.passed ? "✅" : "❌";
       console.log(`${icon} ${result.test}`);
       console.log(`   Evidence: ${result.evidence}`);
       if (result.timeToComplete !== undefined) {
         console.log(`   Time: ${result.timeToComplete.toFixed(2)}s`);
       }
-      console.log('');
+      console.log("");
     });
 
-    console.log('='.repeat(80));
+    console.log("=".repeat(80));
     console.log(`Summary:`);
     console.log(`  - Total Tests: ${results.length}`);
     console.log(`  - Passed: ${passed}`);
@@ -287,14 +274,14 @@ async function main() {
     if (avgTime > 0) {
       console.log(`  - Average Time: ${avgTime.toFixed(2)}s`);
     }
-    console.log('='.repeat(80));
+    console.log("=".repeat(80));
 
     // Write results to file
-    const fs = await import('fs');
-    const path = await import('path');
-    const outputPath = path.join(process.cwd(), 'onboarding_success_path.md');
-    
-    let markdown = '# Onboarding Success Path - Phase 2\n\n';
+    const fs = await import("fs");
+    const path = await import("path");
+    const outputPath = path.join(process.cwd(), "onboarding_success_path.md");
+
+    let markdown = "# Onboarding Success Path - Phase 2\n\n";
     markdown += `Generated: ${new Date().toISOString()}\n\n`;
     markdown += `## Summary\n\n`;
     markdown += `- **Total Tests**: ${results.length}\n`;
@@ -304,10 +291,10 @@ async function main() {
       markdown += `- **Average Time to First Success**: ${avgTime.toFixed(2)}s\n`;
     }
     markdown += `\n## Test Results\n\n`;
-    
-    results.forEach(result => {
-      markdown += `### ${result.passed ? '✅' : '❌'} ${result.test}\n\n`;
-      markdown += `- **Status**: ${result.passed ? 'PASSED' : 'FAILED'}\n`;
+
+    results.forEach((result) => {
+      markdown += `### ${result.passed ? "✅" : "❌"} ${result.test}\n\n`;
+      markdown += `- **Status**: ${result.passed ? "PASSED" : "FAILED"}\n`;
       markdown += `- **Evidence**: ${result.evidence}\n`;
       if (result.timeToComplete !== undefined) {
         markdown += `- **Time to Complete**: ${result.timeToComplete.toFixed(2)}s\n`;
@@ -320,7 +307,7 @@ async function main() {
 
     process.exit(failed > 0 ? 1 : 0);
   } catch (error) {
-    console.error('Fatal error during onboarding validation:', error);
+    console.error("Fatal error during onboarding validation:", error);
     process.exit(1);
   }
 }

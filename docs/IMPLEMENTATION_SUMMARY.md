@@ -3,18 +3,21 @@
 ## ✅ Completed Tasks
 
 ### 1. Security Fixes
+
 - ✅ **Fixed:** Removed `NEXT_PUBLIC_STRIPE_SECRET_KEY` from playground page
   - **File:** `packages/web/src/app/playground/page.tsx:34`
   - **Change:** Replaced with secure placeholder comment
   - **Impact:** Prevents secret keys from being exposed to browser
 
 ### 2. Workflow Fixes
+
 - ✅ **Fixed:** Corrected Supabase URL reference in migration workflow
   - **File:** `.github/workflows/supabase-migrate.yml:352-353`
   - **Change:** Updated to use `secrets.SUPABASE_URL` instead of `secrets.NEXT_PUBLIC_SUPABASE_URL`
   - **Impact:** Ensures workflow uses correct GitHub secret names
 
 ### 3. Verification Tools Created
+
 - ✅ **Script:** `scripts/verify-github-secrets.ts`
   - Analyzes codebase and workflows
   - Identifies required secrets
@@ -22,6 +25,7 @@
   - Usage: `npx tsx scripts/verify-github-secrets.ts`
 
 ### 4. Sync Tools Created
+
 - ✅ **Guide:** `docs/vercel-env-sync-guide.md`
   - Step-by-step instructions for syncing variables
   - Variable mappings and security best practices
@@ -41,9 +45,11 @@
 ### Immediate Actions Required
 
 1. **Verify GitHub Secrets**
+
    ```bash
    npx tsx scripts/verify-github-secrets.ts
    ```
+
    This will show you which secrets are missing or need attention.
 
 2. **Sync Variables to Vercel**
@@ -91,20 +97,26 @@ All documentation is in the `docs/` folder:
 ## 🛠️ Tools Available
 
 ### Verification Script
+
 ```bash
 npx tsx scripts/verify-github-secrets.ts
 ```
+
 Checks:
+
 - Secrets referenced in workflows
 - Missing critical variables
-- Incorrect NEXT_PUBLIC_ usage
+- Incorrect NEXT*PUBLIC* usage
 - Security issues
 
 ### Sync Guide Generator
+
 ```bash
 npx tsx scripts/sync-vercel-env.ts
 ```
+
 Generates:
+
 - Vercel sync guide (markdown)
 - JSON template for Vercel CLI
 
@@ -115,7 +127,7 @@ Generates:
    - Vercel variables are for runtime application
    - Some variables need to be in both places
 
-2. **NEXT_PUBLIC_ Variables**
+2. **NEXT*PUBLIC* Variables**
    - Must be set in Vercel dashboard
    - Should NOT be in GitHub secrets (use non-prefixed version)
    - Use same values as server-side counterparts
@@ -135,6 +147,7 @@ Generates:
 ## ✨ Summary
 
 All recommended fixes have been implemented:
+
 - ✅ Security issues fixed
 - ✅ Workflow issues corrected
 - ✅ Verification tools created

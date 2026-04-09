@@ -7,6 +7,7 @@
 ## Overview
 
 This document defines:
+
 - **Key metrics:** What to track and why
 - **Calculation methods:** How to calculate each metric
 - **Targets:** What good looks like
@@ -19,14 +20,17 @@ This document defines:
 ## Core Revenue Metrics
 
 ### Monthly Recurring Revenue (MRR)
+
 **Definition:** Total monthly recurring revenue from all active subscriptions
 
 **Calculation:**
+
 ```
 MRR = Sum of all active subscription monthly fees
 ```
 
 **Example:**
+
 - 10 Starter plans ($99/month) = $990
 - 2 Professional plans ($499/month) = $998
 - **Total MRR:** $1,988/month
@@ -38,14 +42,17 @@ MRR = Sum of all active subscription monthly fees
 ---
 
 ### Annual Recurring Revenue (ARR)
+
 **Definition:** MRR × 12
 
 **Calculation:**
+
 ```
 ARR = MRR × 12
 ```
 
 **Example:**
+
 - MRR: $1,988/month
 - **ARR:** $23,856/year
 
@@ -56,14 +63,17 @@ ARR = MRR × 12
 ---
 
 ### Customer Acquisition Cost (CAC)
+
 **Definition:** Total sales and marketing costs / New customers acquired
 
 **Calculation:**
+
 ```
 CAC = (Sales costs + Marketing costs) / New customers
 ```
 
 **Example:**
+
 - Sales costs: $2,000
 - Marketing costs: $1,000
 - New customers: 10
@@ -76,14 +86,17 @@ CAC = (Sales costs + Marketing costs) / New customers
 ---
 
 ### Lifetime Value (LTV)
+
 **Definition:** Average revenue per customer × Average customer lifetime
 
 **Calculation:**
+
 ```
 LTV = Average monthly revenue × Average months retained
 ```
 
 **Example:**
+
 - Average monthly revenue: $99
 - Average months retained: 24
 - **LTV:** $2,376
@@ -95,14 +108,17 @@ LTV = Average monthly revenue × Average months retained
 ---
 
 ### LTV:CAC Ratio
+
 **Definition:** LTV / CAC
 
 **Calculation:**
+
 ```
 LTV:CAC = LTV / CAC
 ```
 
 **Example:**
+
 - LTV: $2,376
 - CAC: $300
 - **LTV:CAC:** 7.9x
@@ -116,14 +132,17 @@ LTV:CAC = LTV / CAC
 ## Conversion Metrics
 
 ### Pilot-to-Paid Conversion Rate
+
 **Definition:** % of pilots that convert to paid plans
 
 **Calculation:**
+
 ```
 Conversion Rate = (Pilots converted / Total pilots) × 100
 ```
 
 **Example:**
+
 - Total pilots: 30
 - Pilots converted: 9
 - **Conversion Rate:** 30%
@@ -135,14 +154,17 @@ Conversion Rate = (Pilots converted / Total pilots) × 100
 ---
 
 ### Time-to-Convert
+
 **Definition:** Average days from pilot start to conversion
 
 **Calculation:**
+
 ```
 Time-to-Convert = Sum of (Conversion date - Pilot start date) / Conversions
 ```
 
 **Example:**
+
 - Average days to convert: 18 days
 - **Time-to-Convert:** 18 days
 
@@ -153,14 +175,17 @@ Time-to-Convert = Sum of (Conversion date - Pilot start date) / Conversions
 ---
 
 ### First Value Rate
+
 **Definition:** % of customers achieving first value milestone
 
 **Calculation:**
+
 ```
 First Value Rate = (Customers achieving first value / Total customers) × 100
 ```
 
 **Example:**
+
 - Total customers: 20
 - Customers achieving first value: 14
 - **First Value Rate:** 70%
@@ -172,14 +197,17 @@ First Value Rate = (Customers achieving first value / Total customers) × 100
 ---
 
 ### Time-to-First-Value
+
 **Definition:** Average days from signup to first value
 
 **Calculation:**
+
 ```
 Time-to-First-Value = Sum of (First value date - Signup date) / Customers
 ```
 
 **Example:**
+
 - Average days to first value: 3 days
 - **Time-to-First-Value:** 3 days
 
@@ -192,14 +220,17 @@ Time-to-First-Value = Sum of (First value date - Signup date) / Customers
 ## Churn Metrics
 
 ### Monthly Churn Rate
+
 **Definition:** % of customers who cancel each month
 
 **Calculation:**
+
 ```
 Churn Rate = (Customers lost / Customers at start of month) × 100
 ```
 
 **Example:**
+
 - Customers at start: 100
 - Customers lost: 3
 - **Churn Rate:** 3%
@@ -211,14 +242,17 @@ Churn Rate = (Customers lost / Customers at start of month) × 100
 ---
 
 ### Annual Churn Rate
+
 **Definition:** % of customers who cancel annually
 
 **Calculation:**
+
 ```
 Annual Churn Rate = Monthly Churn Rate × 12
 ```
 
 **Example:**
+
 - Monthly churn: 3%
 - **Annual Churn:** 36%
 
@@ -229,14 +263,17 @@ Annual Churn Rate = Monthly Churn Rate × 12
 ---
 
 ### Customer Retention Rate
+
 **Definition:** % of customers retained
 
 **Calculation:**
+
 ```
 Retention Rate = 100% - Churn Rate
 ```
 
 **Example:**
+
 - Churn rate: 3%
 - **Retention Rate:** 97%
 
@@ -249,14 +286,17 @@ Retention Rate = 100% - Churn Rate
 ## Growth Metrics
 
 ### New Customer Rate
+
 **Definition:** Number of new customers per month
 
 **Calculation:**
+
 ```
 New Customer Rate = New customers in month
 ```
 
 **Example:**
+
 - New customers: 10/month
 - **New Customer Rate:** 10/month
 
@@ -267,14 +307,17 @@ New Customer Rate = New customers in month
 ---
 
 ### Growth Rate
+
 **Definition:** % increase in MRR month-over-month
 
 **Calculation:**
+
 ```
 Growth Rate = ((Current MRR - Previous MRR) / Previous MRR) × 100
 ```
 
 **Example:**
+
 - Previous MRR: $1,000
 - Current MRR: $1,200
 - **Growth Rate:** 20%
@@ -286,14 +329,17 @@ Growth Rate = ((Current MRR - Previous MRR) / Previous MRR) × 100
 ---
 
 ### Net Revenue Retention (NRR)
+
 **Definition:** % of revenue retained from existing customers
 
 **Calculation:**
+
 ```
 NRR = ((Starting MRR + Expansion - Churn) / Starting MRR) × 100
 ```
 
 **Example:**
+
 - Starting MRR: $1,000
 - Expansion: $200
 - Churn: $100
@@ -308,14 +354,17 @@ NRR = ((Starting MRR + Expansion - Churn) / Starting MRR) × 100
 ## Usage Metrics
 
 ### Average Usage per Customer
+
 **Definition:** Average reconciliations/receipts per customer per month
 
 **Calculation:**
+
 ```
 Average Usage = Total usage / Active customers
 ```
 
 **Example:**
+
 - Total reconciliations: 500K
 - Active customers: 50
 - **Average Usage:** 10K reconciliations/customer/month
@@ -327,14 +376,17 @@ Average Usage = Total usage / Active customers
 ---
 
 ### Usage Distribution
+
 **Definition:** Distribution of usage across customers
 
 **Calculation:**
+
 ```
 Usage Distribution = Customers by usage tier
 ```
 
 **Example:**
+
 - Low usage (<50% of limit): 30%
 - Medium usage (50-80% of limit): 50%
 - High usage (>80% of limit): 20%
@@ -348,14 +400,17 @@ Usage Distribution = Customers by usage tier
 ## Margin Metrics
 
 ### Gross Margin
+
 **Definition:** % of revenue after cost of goods sold
 
 **Calculation:**
+
 ```
 Gross Margin = ((Revenue - COGS) / Revenue) × 100
 ```
 
 **Example:**
+
 - Revenue: $1,000
 - COGS: $300
 - **Gross Margin:** 70%
@@ -367,14 +422,17 @@ Gross Margin = ((Revenue - COGS) / Revenue) × 100
 ---
 
 ### Contribution Margin
+
 **Definition:** % of revenue after variable costs
 
 **Calculation:**
+
 ```
 Contribution Margin = ((Revenue - Variable Costs) / Revenue) × 100
 ```
 
 **Example:**
+
 - Revenue: $1,000
 - Variable costs: $200
 - **Contribution Margin:** 80%
@@ -388,18 +446,21 @@ Contribution Margin = ((Revenue - Variable Costs) / Revenue) × 100
 ## Tracking & Reporting
 
 ### Daily Metrics
+
 - New signups
 - New conversions
 - Churn events
 - Usage (reconciliations, receipts)
 
 ### Weekly Metrics
+
 - MRR
 - Conversion rate
 - Churn rate
 - First value rate
 
 ### Monthly Metrics
+
 - ARR
 - CAC
 - LTV
@@ -414,6 +475,7 @@ Contribution Margin = ((Revenue - Variable Costs) / Revenue) × 100
 ## Dashboard Requirements
 
 ### Revenue Dashboard
+
 - MRR trend
 - ARR trend
 - New customers
@@ -421,12 +483,14 @@ Contribution Margin = ((Revenue - Variable Costs) / Revenue) × 100
 - Conversion rate
 
 ### Customer Dashboard
+
 - Active customers
 - Pilot customers
 - Churned customers
 - Customer health scores
 
 ### Usage Dashboard
+
 - Total usage
 - Usage per customer
 - Usage distribution

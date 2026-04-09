@@ -1,10 +1,10 @@
 /**
  * ReadyLayer Types
- * 
+ *
  * Core types for ReadyLayer integration across GitHub, GitLab, and Bitbucket.
  */
 
-export type GitProvider = 'github' | 'gitlab' | 'bitbucket';
+export type GitProvider = "github" | "gitlab" | "bitbucket";
 
 export interface ReadyLayerConfig {
   provider: GitProvider;
@@ -66,7 +66,7 @@ export interface ReadyLayerInstallation {
   provider: GitProvider;
   accountId: string;
   accountName: string;
-  accountType: 'user' | 'organization';
+  accountType: "user" | "organization";
   repositories: Array<{
     id: string;
     name: string;
@@ -74,26 +74,26 @@ export interface ReadyLayerInstallation {
     url: string;
     enabled: boolean;
   }>;
-  subscriptionTier: 'free' | 'pro' | 'enterprise';
+  subscriptionTier: "free" | "pro" | "enterprise";
   createdAt: string;
   updatedAt: string;
 }
 
 export interface UpsellOpportunity {
   id: string;
-  type: 'feature' | 'limit' | 'support' | 'integration';
+  type: "feature" | "limit" | "support" | "integration";
   title: string;
   description: string;
   currentValue: string | number;
   upgradeValue: string | number;
   ctaText: string;
   ctaUrl: string;
-  priority: 'low' | 'medium' | 'high';
+  priority: "low" | "medium" | "high";
   dismissed: boolean;
 }
 
 export interface CustomerJourneyStage {
-  stage: 'onboarding' | 'active' | 'growth' | 'churn-risk' | 'churned';
+  stage: "onboarding" | "active" | "growth" | "churn-risk" | "churned";
   progress: number; // 0-100
   milestones: Array<{
     id: string;
@@ -106,6 +106,6 @@ export interface CustomerJourneyStage {
     title: string;
     description: string;
     url: string;
-    priority: 'low' | 'medium' | 'high';
+    priority: "low" | "medium" | "high";
   }>;
 }

@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { cn } from '@/lib/utils';
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
 export interface HeadingProps extends React.HTMLAttributes<HTMLHeadingElement> {
   /**
@@ -7,82 +7,71 @@ export interface HeadingProps extends React.HTMLAttributes<HTMLHeadingElement> {
    * @default 1
    */
   level?: 1 | 2 | 3 | 4 | 5 | 6;
-  
+
   /**
    * Visual size variant (can differ from semantic level)
    */
-  size?: 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl';
-  
+  size?: "xs" | "sm" | "base" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl";
+
   /**
    * Font weight
    * @default 'bold'
    */
-  weight?: 'normal' | 'medium' | 'semibold' | 'bold' | 'extrabold';
-  
+  weight?: "normal" | "medium" | "semibold" | "bold" | "extrabold";
+
   /**
    * Text alignment
    */
-  align?: 'left' | 'center' | 'right';
+  align?: "left" | "center" | "right";
 }
 
 const Heading = React.forwardRef<HTMLHeadingElement, HeadingProps>(
-  (
-    {
-      className,
-      level = 1,
-      size,
-      weight = 'bold',
-      align,
-      children,
-      ...props
-    },
-    ref
-  ) => {
+  ({ className, level = 1, size, weight = "bold", align, children, ...props }, ref) => {
     // Default size based on level if not specified
     const defaultSizes: Record<number, string> = {
-      1: '4xl',
-      2: '3xl',
-      3: '2xl',
-      4: 'xl',
-      5: 'lg',
-      6: 'base',
-    };
-    
-    const sizeVariant = size || defaultSizes[level] || 'base';
-    
-    const sizeClasses: Record<string, string> = {
-      xs: 'text-xs',
-      sm: 'text-sm',
-      base: 'text-base',
-      lg: 'text-lg',
-      xl: 'text-xl',
-      '2xl': 'text-2xl',
-      '3xl': 'text-3xl',
-      '4xl': 'text-4xl',
-      '5xl': 'text-5xl',
-    };
-    
-    const weightClasses: Record<string, string> = {
-      normal: 'font-normal',
-      medium: 'font-medium',
-      semibold: 'font-semibold',
-      bold: 'font-bold',
-      extrabold: 'font-extrabold',
-    };
-    
-    const alignClasses: Record<string, string> = {
-      left: 'text-left',
-      center: 'text-center',
-      right: 'text-right',
+      1: "4xl",
+      2: "3xl",
+      3: "2xl",
+      4: "xl",
+      5: "lg",
+      6: "base",
     };
 
-    const Component = `h${level}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+    const sizeVariant = size || defaultSizes[level] || "base";
+
+    const sizeClasses: Record<string, string> = {
+      xs: "text-xs",
+      sm: "text-sm",
+      base: "text-base",
+      lg: "text-lg",
+      xl: "text-xl",
+      "2xl": "text-2xl",
+      "3xl": "text-3xl",
+      "4xl": "text-4xl",
+      "5xl": "text-5xl",
+    };
+
+    const weightClasses: Record<string, string> = {
+      normal: "font-normal",
+      medium: "font-medium",
+      semibold: "font-semibold",
+      bold: "font-bold",
+      extrabold: "font-extrabold",
+    };
+
+    const alignClasses: Record<string, string> = {
+      left: "text-left",
+      center: "text-center",
+      right: "text-right",
+    };
+
+    const Component = `h${level}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 
     return (
       <Component
         ref={ref}
         className={cn(
-          'leading-tight tracking-tight',
+          "leading-tight tracking-tight",
           sizeClasses[sizeVariant],
           weightClasses[weight],
           align && alignClasses[align],
@@ -95,6 +84,6 @@ const Heading = React.forwardRef<HTMLHeadingElement, HeadingProps>(
     );
   }
 );
-Heading.displayName = 'Heading';
+Heading.displayName = "Heading";
 
 export { Heading };

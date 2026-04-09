@@ -2,4 +2,4 @@
  * Plugin Manager Index
  */
 
-export { PluginManager, type Plugin } from './plugin-manager';
+export { PluginManager, type Plugin } from "./plugin-manager";

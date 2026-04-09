@@ -1,5 +1,8 @@
 import type { OperatorRunDetail } from "@/types/operator-run-detail";
-import { deriveOperatorRunAttention, deriveOperatorRunNextActions } from "@/lib/runs/operator-run-truth";
+import {
+  deriveOperatorRunAttention,
+  deriveOperatorRunNextActions,
+} from "@/lib/runs/operator-run-truth";
 
 function baseRun(overrides: Partial<OperatorRunDetail> = {}): OperatorRunDetail {
   const compactProofSummary: OperatorRunDetail["compactProofSummary"] = {

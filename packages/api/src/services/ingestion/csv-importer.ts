@@ -25,7 +25,6 @@ class CSVParserError extends Error {
 
 const REQUIRED_MAPPING_FIELDS: Array<keyof CSVColumnMapping> = ["amount", "date"];
 
-
 const IMPORT_WORKBENCH_CONTRACT = {
   schemaUri: "contracts/ingestion/import-workbench.schema.json",
   version: "1.0.0",
@@ -72,16 +71,27 @@ const PROFILE_GATE_CONFIG: Record<
     currencySeverity: "warning" | "blocking";
   }
 > = {
-  csv_generic: { normalizationThreshold: 0.8, duplicateRowThreshold: 0.25, currencySeverity: "warning" },
-  bank_statement: { normalizationThreshold: 0.9, duplicateRowThreshold: 0.15, currencySeverity: "warning" },
-  processor_export: { normalizationThreshold: 0.95, duplicateRowThreshold: 0.1, currencySeverity: "blocking" },
+  csv_generic: {
+    normalizationThreshold: 0.8,
+    duplicateRowThreshold: 0.25,
+    currencySeverity: "warning",
+  },
+  bank_statement: {
+    normalizationThreshold: 0.9,
+    duplicateRowThreshold: 0.15,
+    currencySeverity: "warning",
+  },
+  processor_export: {
+    normalizationThreshold: 0.95,
+    duplicateRowThreshold: 0.1,
+    currencySeverity: "blocking",
+  },
 };
 
 function withRemediation(diagnostic: IngestionDiagnostic): IngestionDiagnostic {
   const remediation = DIAGNOSTIC_REMEDIATION[diagnostic.code];
   return remediation ? { ...diagnostic, remediation } : diagnostic;
 }
-
 
 /**
  * Auto-detect column mapping from CSV headers
@@ -442,13 +452,15 @@ export function buildImportWorkbenchPreview(params: {
     ...new Set(normalizedHeaders.filter((h, i) => normalizedHeaders.indexOf(h) !== i)),
   ];
   if (duplicateHeaders.length > 0) {
-    diagnostics.push(withRemediation({
-      severity: "blocking",
-      stage: "parse",
-      code: "duplicate_headers",
-      message: `Duplicate headers detected: ${duplicateHeaders.join(", ")}`,
-      details: { duplicateHeaders },
-    }));
+    diagnostics.push(
+      withRemediation({
+        severity: "blocking",
+        stage: "parse",
+        code: "duplicate_headers",
+        message: `Duplicate headers detected: ${duplicateHeaders.join(", ")}`,
+        details: { duplicateHeaders },
+      })
+    );
   }
 
   const baseline = params.schemaDriftBaseline;
@@ -469,22 +481,26 @@ export function buildImportWorkbenchPreview(params: {
     };
 
     if (hasDrift) {
-      diagnostics.push(withRemediation({
-        severity: "warning",
-        stage: "mapping",
-        code: "schema_drift_detected",
-        message: "Schema drift detected against baseline ingestion",
-        details: {
-          baselineIngestionId: baseline.ingestionId,
-          addedHeaders,
-          removedHeaders,
-        },
-      }));
+      diagnostics.push(
+        withRemediation({
+          severity: "warning",
+          stage: "mapping",
+          code: "schema_drift_detected",
+          message: "Schema drift detected against baseline ingestion",
+          details: {
+            baselineIngestionId: baseline.ingestionId,
+            addedHeaders,
+            removedHeaders,
+          },
+        })
+      );
     }
   }
 
   if (schemaDrift && params.schemaDriftHistory && params.schemaDriftHistory.length > 0) {
-    const driftedRuns = params.schemaDriftHistory.filter((item) => item.hasDrift).length + (schemaDrift.hasDrift ? 1 : 0);
+    const driftedRuns =
+      params.schemaDriftHistory.filter((item) => item.hasDrift).length +
+      (schemaDrift.hasDrift ? 1 : 0);
     const historyWindow = params.schemaDriftHistory.length + 1;
     const churnRate = driftedRuns / historyWindow;
     schemaDrift.trend = {
@@ -510,13 +526,15 @@ export function buildImportWorkbenchPreview(params: {
 
   const requiredMissing = REQUIRED_MAPPING_FIELDS.filter((field) => !effectiveMapping[field]);
   for (const missing of requiredMissing) {
-    diagnostics.push(withRemediation({
-      severity: "blocking",
-      stage: "mapping",
-      code: "required_mapping_missing",
-      message: `Required mapping missing for ${missing}`,
-      field: missing,
-    }));
+    diagnostics.push(
+      withRemediation({
+        severity: "blocking",
+        stage: "mapping",
+        code: "required_mapping_missing",
+        message: `Required mapping missing for ${missing}`,
+        field: missing,
+      })
+    );
   }
 
   let normalizedRows = 0;
@@ -528,13 +546,15 @@ export function buildImportWorkbenchPreview(params: {
     const row = rows[index];
     if (!row) {
       failedRows += 1;
-      diagnostics.push(withRemediation({
-        severity: "warning",
-        stage: "parse",
-        code: "empty_row_object",
-        message: "Encountered empty row object",
-        rowNumber: index + 1,
-      }));
+      diagnostics.push(
+        withRemediation({
+          severity: "warning",
+          stage: "parse",
+          code: "empty_row_object",
+          message: "Encountered empty row object",
+          rowNumber: index + 1,
+        })
+      );
       continue;
     }
 
@@ -547,15 +567,17 @@ export function buildImportWorkbenchPreview(params: {
     const amountNormalization = normalizeAmountWithReason(amountRaw);
     if (amountNormalization.amount === null || amountNormalization.amount <= 0) {
       failedRows += 1;
-      diagnostics.push(withRemediation({
-        severity: "blocking",
-        stage: "normalize",
-        code: "invalid_amount",
-        message: `Amount could not be normalized`,
-        rowNumber: index + 1,
-        field: effectiveMapping.amount,
-        details: { raw: amountRaw, reason: amountNormalization.reason },
-      }));
+      diagnostics.push(
+        withRemediation({
+          severity: "blocking",
+          stage: "normalize",
+          code: "invalid_amount",
+          message: `Amount could not be normalized`,
+          rowNumber: index + 1,
+          field: effectiveMapping.amount,
+          details: { raw: amountRaw, reason: amountNormalization.reason },
+        })
+      );
       continue;
     }
 
@@ -563,17 +585,19 @@ export function buildImportWorkbenchPreview(params: {
     const dateNormalization = parseDateWithReason(dateRaw);
     if (!dateNormalization.date) {
       failedRows += 1;
-      diagnostics.push(withRemediation({
-        severity: dateNormalization.ambiguous ? "warning" : "blocking",
-        stage: "normalize",
-        code: dateNormalization.ambiguous ? "ambiguous_date" : "invalid_date",
-        message: dateNormalization.ambiguous
-          ? "Date format is ambiguous; use YYYY-MM-DD or unambiguous slash format"
-          : "Date could not be parsed",
-        rowNumber: index + 1,
-        field: effectiveMapping.date,
-        details: { raw: dateRaw, reason: dateNormalization.reason },
-      }));
+      diagnostics.push(
+        withRemediation({
+          severity: dateNormalization.ambiguous ? "warning" : "blocking",
+          stage: "normalize",
+          code: dateNormalization.ambiguous ? "ambiguous_date" : "invalid_date",
+          message: dateNormalization.ambiguous
+            ? "Date format is ambiguous; use YYYY-MM-DD or unambiguous slash format"
+            : "Date could not be parsed",
+          rowNumber: index + 1,
+          field: effectiveMapping.date,
+          details: { raw: dateRaw, reason: dateNormalization.reason },
+        })
+      );
       continue;
     }
 
@@ -587,25 +611,29 @@ export function buildImportWorkbenchPreview(params: {
         currency = parsedCurrency;
       } else {
         defaultedFieldCounts.currency = (defaultedFieldCounts.currency ?? 0) + 1;
-        diagnostics.push(withRemediation({
-          severity: "info",
-          stage: "normalize",
-          code: "currency_defaulted",
-          message: "Currency defaulted to USD due to malformed value",
-          rowNumber: index + 1,
-          field: currencyColumn,
-          details: { raw: row[currencyColumn] },
-        }));
+        diagnostics.push(
+          withRemediation({
+            severity: "info",
+            stage: "normalize",
+            code: "currency_defaulted",
+            message: "Currency defaulted to USD due to malformed value",
+            rowNumber: index + 1,
+            field: currencyColumn,
+            details: { raw: row[currencyColumn] },
+          })
+        );
       }
     } else {
       defaultedFieldCounts.currency = (defaultedFieldCounts.currency ?? 0) + 1;
-      diagnostics.push(withRemediation({
-        severity: "info",
-        stage: "normalize",
-        code: "currency_defaulted",
-        message: "Currency defaulted to USD due to missing mapping/value",
-        rowNumber: index + 1,
-      }));
+      diagnostics.push(
+        withRemediation({
+          severity: "info",
+          stage: "normalize",
+          code: "currency_defaulted",
+          message: "Currency defaulted to USD due to missing mapping/value",
+          rowNumber: index + 1,
+        })
+      );
     }
 
     const normalized = NormalizedTransactionSchema.parse({
@@ -638,14 +666,16 @@ export function buildImportWorkbenchPreview(params: {
     const mappedColumns = new Set(Object.values(effectiveMapping).filter(Boolean));
     const droppedFields = Object.keys(row).filter((key) => !mappedColumns.has(key));
     if (droppedFields.length > 0) {
-      diagnostics.push(withRemediation({
-        severity: "info",
-        stage: "mapping",
-        code: "unmapped_fields_present",
-        message: "Row contains unmapped source fields",
-        rowNumber: index + 1,
-        details: { droppedFields },
-      }));
+      diagnostics.push(
+        withRemediation({
+          severity: "info",
+          stage: "mapping",
+          code: "unmapped_fields_present",
+          message: "Row contains unmapped source fields",
+          rowNumber: index + 1,
+          details: { droppedFields },
+        })
+      );
     }
   }
 
@@ -684,7 +714,9 @@ export function buildImportWorkbenchPreview(params: {
       gate: "normalization_success_ratio",
       severity: "warning",
       passed:
-        attemptedRows === 0 ? false : normalizedRows / attemptedRows >= profileGates.normalizationThreshold,
+        attemptedRows === 0
+          ? false
+          : normalizedRows / attemptedRows >= profileGates.normalizationThreshold,
       message:
         attemptedRows === 0
           ? "No rows to normalize"
@@ -717,13 +749,15 @@ export function buildImportWorkbenchPreview(params: {
   ];
 
   if (attemptedRows > 0 && failedRows / attemptedRows > 0.2) {
-    diagnostics.push(withRemediation({
-      severity: "warning",
-      stage: "quality_gate",
-      code: "high_dropped_row_ratio",
-      message: "Dropped-row ratio exceeds 20%",
-      details: { failedRows, attemptedRows, ratio: failedRows / attemptedRows },
-    }));
+    diagnostics.push(
+      withRemediation({
+        severity: "warning",
+        stage: "quality_gate",
+        code: "high_dropped_row_ratio",
+        message: "Dropped-row ratio exceeds 20%",
+        details: { failedRows, attemptedRows, ratio: failedRows / attemptedRows },
+      })
+    );
   }
 
   const hasBlocking =

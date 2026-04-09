@@ -100,7 +100,6 @@ export async function getPages(): Promise<ActionState<FormattedPage[]>> {
     });
 
     return { success: true, data: formattedPages };
-             
   } catch (error) {
     console.error(
       "Failed to fetch pages:",
@@ -123,7 +122,6 @@ export async function getPage(id: string): Promise<ActionState<TenantPageRecord>
     }
 
     return { success: true, data: page as TenantPageRecord };
-             
   } catch (error) {
     console.error(
       "Failed to fetch page:",
@@ -169,7 +167,6 @@ export async function createPage(formData: FormData): Promise<ActionState<Tenant
 
     revalidatePath("/admin/pages");
     return { success: true, data: newPage as TenantPageRecord };
-             
   } catch (error) {
     console.error(
       "Failed to create page:",
@@ -215,7 +212,6 @@ export async function updatePageBlocks(
     revalidatePath(`/${existingPage.slug}`); // Revalidate the public path too
 
     return { success: true };
-             
   } catch (error) {
     console.error(
       "Failed to update page:",
@@ -243,7 +239,6 @@ export async function deletePage(id: string): Promise<ActionState> {
 
     revalidatePath("/admin/pages");
     return { success: true };
-             
   } catch (error) {
     console.error(
       "Failed to delete page:",

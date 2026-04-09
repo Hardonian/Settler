@@ -125,11 +125,7 @@ Duplicate requests with the same idempotency key will return the original respon
 ```typescript
 import { verifyWebhookSignature } from "@settler/sdk";
 
-const isValid = verifyWebhookSignature(
-  payload,
-  signature,
-  webhookSecret
-);
+const isValid = verifyWebhookSignature(payload, signature, webhookSecret);
 ```
 
 ## Best Practices
@@ -206,11 +202,11 @@ import { Adapter } from "@settler/adapters";
 
 class CustomAdapter implements Adapter {
   name = "custom";
-  
+
   async fetch(config: any, dateRange: DateRange) {
     // Fetch data from your system
   }
-  
+
   normalize(data: any) {
     // Normalize to Settler format
   }
@@ -236,9 +232,7 @@ Settler supports multi-currency reconciliation:
 const job = await client.jobs.create({
   // ... other config
   rules: {
-    matching: [
-      { field: "amount", type: "exact", currency: "USD" },
-    ],
+    matching: [{ field: "amount", type: "exact", currency: "USD" }],
     currencyConversion: {
       enabled: true,
       baseCurrency: "USD",
@@ -329,16 +323,12 @@ Always verify webhook signatures:
 ```typescript
 app.post("/webhooks/settler", (req, res) => {
   const signature = req.headers["x-settler-signature"];
-  const isValid = verifyWebhookSignature(
-    req.body,
-    signature,
-    process.env.WEBHOOK_SECRET
-  );
-  
+  const isValid = verifyWebhookSignature(req.body, signature, process.env.WEBHOOK_SECRET);
+
   if (!isValid) {
     return res.status(401).send("Invalid signature");
   }
-  
+
   // Process webhook
 });
 ```

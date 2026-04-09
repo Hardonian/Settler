@@ -38,9 +38,9 @@ SETTLER_BASE_URL=http://localhost:4000 npm start
 
 ## Scripts
 
-| Command              | Description                                |
-| -------------------- | ------------------------------------------ |
-| `npm start`          | Run the reconciliation example             |
+| Command                 | Description                                     |
+| ----------------------- | ----------------------------------------------- |
+| `npm start`             | Run the reconciliation example                  |
 | `npm run check-results` | Fetch results for a previous job (set `JOB_ID`) |
 
 ## Project structure

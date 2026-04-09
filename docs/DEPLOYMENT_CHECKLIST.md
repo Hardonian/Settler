@@ -3,6 +3,7 @@
 ## Pre-Deployment Verification
 
 ### Database ✅
+
 - [x] All migrations applied
 - [x] Indexes created
 - [x] RLS policies active
@@ -10,6 +11,7 @@
 - [x] Super admin configured
 
 ### Code ✅
+
 - [x] All routes created
 - [x] All components created
 - [x] All utilities created
@@ -17,6 +19,7 @@
 - [x] Error handling comprehensive
 
 ### Testing ✅
+
 - [x] Setup tests passed
 - [x] API route tests passed
 - [x] Integration tests passed
@@ -24,6 +27,7 @@
 - [x] Route verification passed
 
 ### Security ✅
+
 - [x] Authentication required
 - [x] Subscription gate active
 - [x] RLS policies enforced
@@ -31,6 +35,7 @@
 - [x] Rate limiting active
 
 ### Performance ✅
+
 - [x] Indexes optimized
 - [x] Caching configured
 - [x] Query optimization done
@@ -39,6 +44,7 @@
 ## Deployment Steps
 
 1. **Verify Environment Variables**
+
    ```bash
    # Required:
    - NEXT_PUBLIC_SUPABASE_URL
@@ -47,12 +53,14 @@
    ```
 
 2. **Run Migrations** (if not already done)
+
    ```bash
    export DATABASE_URL="your-connection-string"
    npx tsx scripts/run-migrations-remote.ts
    ```
 
 3. **Configure Super Admin** (if not already done)
+
    ```bash
    export DATABASE_URL="your-connection-string"
    export USER_EMAIL="admin@settler.dev"
@@ -60,27 +68,31 @@
    ```
 
 4. **Verify Setup**
+
    ```bash
    export DATABASE_URL="your-connection-string"
    npx tsx scripts/test-setup.ts
    ```
 
 5. **Build Application**
+
    ```bash
    cd packages/web
    pnpm build
    ```
 
 6. **Start Application**
+
    ```bash
    pnpm start
    ```
 
 7. **Verify Endpoints**
+
    ```bash
    # Health check
    curl http://localhost:3000/api/console/health
-   
+
    # API logs (requires auth)
    curl -H "Authorization: Bearer TOKEN" \
      http://localhost:3000/api/console/api-logs
@@ -116,6 +128,7 @@
 If issues occur:
 
 1. **Database Rollback**
+
    ```sql
    -- Drop table (if needed)
    DROP TABLE IF EXISTS api_call_logs CASCADE;
@@ -129,6 +142,7 @@ If issues occur:
 ## Support
 
 For issues:
+
 1. Check health endpoint: `/api/console/health`
 2. Review logs: `SELECT * FROM api_call_logs ORDER BY created_at DESC LIMIT 100;`
 3. Check super admin: Verify user metadata

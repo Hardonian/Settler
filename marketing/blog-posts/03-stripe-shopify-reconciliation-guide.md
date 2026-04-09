@@ -15,6 +15,7 @@ If you run an e-commerce store, you likely use Shopify for orders and Stripe for
 ## The Problem
 
 **Manual Process:**
+
 1. Export Shopify orders (CSV)
 2. Export Stripe payments (CSV)
 3. Match orders to payments in Excel
@@ -31,6 +32,7 @@ If you run an e-commerce store, you likely use Shopify for orders and Stripe for
 ## The Solution: Automated Reconciliation
 
 **Automated Process:**
+
 1. Connect Shopify and Stripe via Settler API
 2. Configure matching rules
 3. Run reconciliation automatically
@@ -54,16 +56,19 @@ npm install @settler/sdk
 ### Step 2: Get API Keys
 
 **Settler API Key:**
+
 1. Sign up at [settler.io](https://settler.io)
 2. Go to Settings → API Keys
 3. Create new API key
 4. Copy key (starts with `sk_live_...`)
 
 **Stripe API Key:**
+
 1. Go to Stripe Dashboard → Developers → API Keys
 2. Copy Secret Key (starts with `sk_live_...`)
 
 **Shopify API Key:**
+
 1. Go to Shopify Admin → Apps → Develop apps
 2. Create app → Admin API access token
 3. Copy token (starts with `shpat_...`)
@@ -197,6 +202,7 @@ const csv = await settler.reports.export(job.data.id, {
 **Symptoms:** Many unmatched transactions
 
 **Solutions:**
+
 - Check matching rules (may be too strict)
 - Verify order IDs are in Stripe metadata
 - Adjust date range tolerance
@@ -207,6 +213,7 @@ const csv = await settler.reports.export(job.data.id, {
 **Symptoms:** Amounts don't match exactly
 
 **Solutions:**
+
 - Increase tolerance (e.g., $0.10)
 - Account for Stripe fees
 - Handle discounts separately
@@ -217,6 +224,7 @@ const csv = await settler.reports.export(job.data.id, {
 **Symptoms:** Orders without payments
 
 **Solutions:**
+
 - Check payment status (pending vs completed)
 - Verify date ranges
 - Check for failed payments
@@ -232,10 +240,7 @@ const csv = await settler.reports.export(job.data.id, {
 // Create webhook
 const webhook = await settler.webhooks.create({
   url: "https://your-app.com/webhooks/settler",
-  events: [
-    "reconciliation.matched",
-    "reconciliation.mismatch",
-  ],
+  events: ["reconciliation.matched", "reconciliation.mismatch"],
 });
 
 // Handle webhook events
@@ -256,11 +261,13 @@ app.post("/webhooks/settler", async (req, res) => {
 ## Results
 
 **Before (Manual):**
+
 - Time: 2-3 hours daily
 - Accuracy: 85-95%
 - Exceptions: 10-15%
 
 **After (Automated):**
+
 - Time: 5 minutes setup, then automatic
 - Accuracy: 99%+
 - Exceptions: <5%

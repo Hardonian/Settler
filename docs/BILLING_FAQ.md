@@ -7,6 +7,7 @@
 ## Overview
 
 This FAQ answers common questions about:
+
 - Pricing and plans
 - Usage limits and overages
 - Billing and payments
@@ -46,6 +47,7 @@ This FAQ answers common questions about:
 **Answer:** Yes. Settler offers a 14-day free trial with full access to all features. No credit card required.
 
 **Trial Includes:**
+
 - Full API access
 - Unlimited usage during trial
 - All standard integrations
@@ -53,6 +55,7 @@ This FAQ answers common questions about:
 - Email support
 
 **After Trial:**
+
 - Upgrade to a paid plan to continue
 - Or let trial expire (access revoked after 7-day grace period)
 
@@ -63,15 +66,18 @@ This FAQ answers common questions about:
 **Answer:** Depends on your plan:
 
 **Starter Plan:**
+
 - Hard limit: Usage blocked after limit
 - Upgrade prompt: Upgrade to Professional for higher limits
 
 **Professional Plan:**
+
 - Soft limit: Usage allowed with warning
 - Upgrade prompt: Upgrade to Enterprise for unlimited usage
 - Overage pricing: Optional ($0.005 per 1K reconciliations)
 
 **Enterprise Plan:**
+
 - Unlimited usage: No limits
 - Usage monitoring: Abuse prevention only
 
@@ -82,10 +88,12 @@ This FAQ answers common questions about:
 **Answer:** Yes. You can upgrade or downgrade at any time.
 
 **Upgrades:**
+
 - Immediate: Access to higher limits
 - Prorated billing: Pay difference for remaining period
 
 **Downgrades:**
+
 - End of period: Downgrade takes effect at end of billing period
 - Usage limits: Reduced limits apply after downgrade
 
@@ -102,6 +110,7 @@ This FAQ answers common questions about:
 - **Feature Flags:** Each evaluation counts toward limit
 
 **Tracking:**
+
 - Real-time: Usage tracked in real-time
 - Dashboard: View usage in Developer Console
 - Alerts: Email alerts when approaching limits
@@ -117,6 +126,7 @@ This FAQ answers common questions about:
 - **API Calls:** Each API call to reconciliation endpoint counts
 
 **Example:**
+
 - Job processes 1,000 transactions = 1 reconciliation (not 1,000)
 
 ---
@@ -162,6 +172,7 @@ This FAQ answers common questions about:
 - **Prorated:** Upgrades prorated for remaining period
 
 **Example:**
+
 - Sign up on January 15 → Charged on January 15, February 15, March 15, etc.
 
 ---

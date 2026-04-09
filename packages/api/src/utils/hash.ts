@@ -1,5 +1,5 @@
-import crypto from 'crypto';
-import bcrypt from 'bcrypt';
+import crypto from "crypto";
+import bcrypt from "bcrypt";
 
 const SALT_ROUNDS = 12;
 
@@ -21,7 +21,7 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 
 export function generateApiKey(): { key: string; prefix: string } {
   const randomBytes = crypto.randomBytes(32);
-  const key = `rk_${randomBytes.toString('base64url')}`;
+  const key = `rk_${randomBytes.toString("base64url")}`;
   const prefix = key.substring(0, 12); // First 12 characters for lookup
   return { key, prefix };
 }

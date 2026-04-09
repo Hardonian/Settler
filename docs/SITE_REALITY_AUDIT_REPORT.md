@@ -7,36 +7,45 @@ Fixed critical 500 errors on `/console`, `/playground`, `/pricing`, and `/trust`
 ## Root Causes Identified & Fixed
 
 ### 1. Prisma Import-Time Failures ✅ FIXED
+
 **Problem**: Console page imported Prisma at top level, causing 500 if DATABASE_URL missing or Prisma fails to initialize.
 
-**Fix**: 
+**Fix**:
+
 - Changed to lazy import: `const { prisma } = await import('@/shared/db/prismaClient').catch(() => ({ prisma: null }))`
 - Added graceful fallback when Prisma unavailable
 - Console page now renders public minimal shell even if database fails
 
 **Files Changed**:
+
 - `packages/web/src/app/console/page.tsx`
 
 ### 2. Trust Page Server-Side Fetch Failures ✅ FIXED
+
 **Problem**: `getRealityData()` fetch could hang or fail, causing 500.
 
 **Fix**:
+
 - Added 5-second timeout with AbortController
 - Wrapped in try-catch with graceful null return
 - Page renders with default values if API unavailable
 
 **Files Changed**:
+
 - `packages/web/src/app/trust/page.tsx`
 
 ### 3. Missing Error Boundaries ✅ FIXED
+
 **Problem**: Routes lacked error boundaries, causing unhandled errors to show "Internal Error".
 
 **Fix**:
+
 - Added `error.tsx` to `/console`, `/playground`, `/pricing`, `/trust`
 - Added global `error.tsx` and `not-found.tsx` at app root
 - All error boundaries show user-friendly messages, never stack traces
 
 **Files Added**:
+
 - `packages/web/src/app/error.tsx`
 - `packages/web/src/app/not-found.tsx`
 - `packages/web/src/app/console/runs/[runId]/error.tsx`
@@ -45,44 +54,52 @@ Fixed critical 500 errors on `/console`, `/playground`, `/pricing`, and `/trust`
 - `packages/web/src/app/trust/error.tsx`
 
 ### 4. Middleware Already Hardened ✅ VERIFIED
+
 **Status**: Middleware already had comprehensive try-catch and public route handling. No changes needed.
 
 ## Phase 1: Bisect Results
 
 ### Routes Tested
+
 - `/console` - ✅ Fixed (Prisma lazy import)
 - `/playground` - ✅ Already client component, no server-side issues
-- `/pricing` - ✅ Already client component, no server-side issues  
+- `/pricing` - ✅ Already client component, no server-side issues
 - `/trust` - ✅ Fixed (fetch timeout + error handling)
 
 ### Failure Points Identified
+
 1. **Console**: Prisma import at module level → Fixed with lazy import
 2. **Trust**: Server-side fetch without timeout → Fixed with AbortController
 
 ## Phase 2: Route & Link Registries ✅ COMPLETE
 
 ### Existing Scripts (Verified Working)
+
 - `scripts/qa-generate-route-registry.ts` - Generates route registry
 - `scripts/qa-extract-links.ts` - Extracts internal links
 - `scripts/qa-check-dead-links.ts` - Validates links against routes
 
 ### Commands Available
+
 ```bash
 npm run qa:routes  # Generate route registry
 npm run qa:links   # Extract links and check for dead links
 ```
 
 ### CI Integration
+
 - Already integrated in `.github/workflows/ci.yml` as `qa-links` job
 - Fails build if dead links found
 
 ## Phase 3: Playwright Tests ✅ COMPLETE
 
 ### Tests Added
+
 - `tests/e2e/site-reality-audit.spec.ts` - Comprehensive navigation & non-500 checks
 - `tests/e2e/reality-gates.spec.ts` - Basic reality gates (already existed)
 
 ### Test Coverage
+
 - ✅ Critical routes load without 500
 - ✅ No console errors on critical pages
 - ✅ Navigation links work
@@ -90,6 +107,7 @@ npm run qa:links   # Extract links and check for dead links
 - ✅ Homepage CTAs work
 
 ### CI Integration
+
 - `reality-gates` job runs after build
 - `qa-smoke` job runs comprehensive tests
 - Both upload artifacts on failure
@@ -97,11 +115,13 @@ npm run qa:links   # Extract links and check for dead links
 ## Phase 4: Content Truth Check ⚠️ PARTIAL
 
 ### Status
+
 - Trust page shows "ASSUMED" badges for unproven metrics
 - Reality API endpoint exists at `/api/public/reality`
 - Claims are marked with status badges
 
 ### Recommendations
+
 - Create `claims.ts` config file for all marketing claims
 - Add evidence URLs for each claim
 - Render badges from config only
@@ -109,11 +129,13 @@ npm run qa:links   # Extract links and check for dead links
 ## Phase 5: UI/UX Polish ⚠️ DEFERRED
 
 ### Status
+
 - Error boundaries provide consistent error UI
 - Loading states added where missing
 - Not-found pages consistent
 
 ### Remaining Work (Non-Critical)
+
 - Spacing consistency audit
 - Remove duplicate sections on homepage
 - Button hierarchy consistency
@@ -146,6 +168,7 @@ npm run qa:links   # Extract links and check for dead links
    - All server components have error handling
 
 ### Files Changed
+
 - `packages/web/src/app/console/page.tsx` - Lazy Prisma import
 - `packages/web/src/app/trust/page.tsx` - Fetch timeout
 - `packages/web/src/app/layout.tsx` - Already had try-catch (verified)
@@ -174,6 +197,7 @@ npm run qa:links   # Extract links and check for dead links
    - Used for link validation
 
 ### CI Workflow Updates
+
 - Added `qa:reality` command
 - Updated `qa-smoke` job to include reality audit
 - All tests run with `SAFE_MODE=1` for consistent behavior
@@ -204,6 +228,7 @@ npx playwright test tests/e2e/site-reality-audit.spec.ts
 ### Test Results
 
 **Critical Routes**:
+
 - `/` - ✅ 200 OK
 - `/console` - ✅ 200 OK (renders public shell if not authenticated)
 - `/playground` - ✅ 200 OK
@@ -212,6 +237,7 @@ npx playwright test tests/e2e/site-reality-audit.spec.ts
 - `/docs` - ✅ 200 OK
 
 **Error Handling**:
+
 - Non-existent route - ✅ Shows 404, not 500
 - Error boundary - ✅ Shows user-friendly message
 - Blank screen - ✅ Never occurs
@@ -219,6 +245,7 @@ npx playwright test tests/e2e/site-reality-audit.spec.ts
 ### Files Changed/Added
 
 **Error Boundaries**:
+
 - `packages/web/src/app/error.tsx` (NEW)
 - `packages/web/src/app/not-found.tsx` (NEW)
 - `packages/web/src/app/console/runs/[runId]/error.tsx` (NEW)
@@ -227,13 +254,16 @@ npx playwright test tests/e2e/site-reality-audit.spec.ts
 - `packages/web/src/app/trust/error.tsx` (NEW)
 
 **Core Fixes**:
+
 - `packages/web/src/app/console/page.tsx` (MODIFIED - lazy Prisma import)
 - `packages/web/src/app/trust/page.tsx` (MODIFIED - fetch timeout)
 
 **Tests**:
+
 - `tests/e2e/site-reality-audit.spec.ts` (NEW)
 
 **CI/CD**:
+
 - `.github/workflows/ci.yml` (MODIFIED - added qa:reality)
 - `package.json` (MODIFIED - added qa:reality command)
 

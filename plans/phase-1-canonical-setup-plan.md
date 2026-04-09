@@ -14,21 +14,23 @@ The Settler repository already has robust setup infrastructure in place. The goa
 ## Current State Assessment
 
 ### Existing Infrastructure ✅
-| Component | Location | Status |
-|-----------|----------|--------|
-| Canonical setup doc | `SETUP.md` | ✅ Created |
-| Bootstrap script | `scripts/bootstrap.mjs` | ✅ Comprehensive |
-| Doctor script | `scripts/doctor.mjs` | ✅ Robust validation |
-| Verify setup | `scripts/verify-setup.ts` | ✅ Available |
-| Env templates | `.env.local.example` | ✅ Working defaults |
+
+| Component           | Location                  | Status               |
+| ------------------- | ------------------------- | -------------------- |
+| Canonical setup doc | `SETUP.md`                | ✅ Created           |
+| Bootstrap script    | `scripts/bootstrap.mjs`   | ✅ Comprehensive     |
+| Doctor script       | `scripts/doctor.mjs`      | ✅ Robust validation |
+| Verify setup        | `scripts/verify-setup.ts` | ✅ Available         |
+| Env templates       | `.env.local.example`      | ✅ Working defaults  |
 
 ### Version Specifications (INCONSISTENT) ⚠️
-| File | Value |
-|------|-------|
-| `.node-version` | `24.12.0` |
-| `.nvmrc` | `24.12.0` |
-| `package.json engines` | `>=22.0.0 <25.0.0` |
-| `SETUP.md` | "Version 22.0 or higher" |
+
+| File                   | Value                    |
+| ---------------------- | ------------------------ |
+| `.node-version`        | `24.12.0`                |
+| `.nvmrc`               | `24.12.0`                |
+| `package.json engines` | `>=22.0.0 <25.0.0`       |
+| `SETUP.md`             | "Version 22.0 or higher" |
 
 ---
 
@@ -39,12 +41,14 @@ The Settler repository already has robust setup infrastructure in place. The goa
 **Current Issue**: `.node-version` and `.nvmrc` specify exact version `24.12.0`, but `package.json` says `>=22.0.0`. This creates confusion about the actual minimum version.
 
 **Action Items**:
+
 - [ ] Update `package.json` engines field to match exact version: `"node": ">=24.0.0 <25.0.0"`
 - [ ] Update `SETUP.md` to specify "Node.js 24.x (24.12.0 recommended)"
 - [ ] Add comment in `package.json` explaining why 24.x is required (if applicable)
 - [ ] Update `.npmrc` to ensure pnpm version is enforced
 
 **Files to Modify**:
+
 - `package.json` (engines field)
 - `SETUP.md`
 
@@ -53,6 +57,7 @@ The Settler repository already has robust setup infrastructure in place. The goa
 **Current State**: Services are defined in docker-compose files but not clearly documented in SETUP.md.
 
 **Action Items**:
+
 - [ ] Add "Required Services" section to `SETUP.md`:
   - **PostgreSQL** (port 5432) - Main database
   - **TigerBeetle** (port 4300) - Financial ledger
@@ -61,6 +66,7 @@ The Settler repository already has robust setup infrastructure in place. The goa
 - [ ] Document alternative: using Supabase local/Cloud for database
 
 **Files to Modify**:
+
 - `SETUP.md`
 
 ### 3. Environment Configuration Truthfulness (Priority: HIGH)
@@ -68,6 +74,7 @@ The Settler repository already has robust setup infrastructure in place. The goa
 **Current State**: `.env.local.example` exists and provides working defaults. Doctor script validates required vars.
 
 **Action Items**:
+
 - [ ] Audit `.env.local.example` against doctor.mjs required checks:
   - ✅ `NEXT_PUBLIC_SUPABASE_URL`
   - ✅ `NEXT_PUBLIC_SUPABASE_ANON_KEY`
@@ -81,43 +88,51 @@ The Settler repository already has robust setup infrastructure in place. The goa
 - [ ] Document which vars can use dev defaults vs must be real values
 
 **Files to Modify**:
+
 - `.env.local.example`
 
 ### 4. Time-to-First-Working-Screen Flow (Priority: MEDIUM)
 
 **Current State**: The path is:
+
 ```bash
 git clone → pnpm install → pnpm tb:start → pnpm dev
 ```
 
 **Action Items**:
+
 - [ ] Simplify the minimal path if possible
 - [ ] Add "Quick Start (Demo Mode)" section to SETUP.md
 - [ ] Document what user sees at each step
 - [ ] Add troubleshooting for common first-screen issues
 
 **Files to Modify**:
+
 - `SETUP.md`
 
 ### 5. Bootstrap Script Enhancement (Priority: MEDIUM)
 
 **Current State**: Bootstrap already:
+
 1. Copies `.env.local.example` → `.env.local`
 2. Runs `pnpm install`
 3. Runs `pnpm repo-integrity`
 4. Runs `pnpm doctor --first-run`
 
 **Potential Enhancements**:
+
 - [ ] Add optional `pnpm tb:start` step to bootstrap (with flag to skip)
 - [ ] Add interactive prompts for required configuration
 - [ ] Add "first-run complete" summary with next steps
 
 **Files to Modify**:
+
 - `scripts/bootstrap.mjs`
 
 ### 6. Doctor Script Enhancements (Priority: LOW)
 
 **Current State**: Comprehensive validation of:
+
 - Toolchain (Node, pnpm)
 - Env presence
 - Config shape (URL validation)
@@ -126,11 +141,13 @@ git clone → pnpm install → pnpm tb:start → pnpm dev
 - Pipeline checks
 
 **Potential Enhancements**:
+
 - [ ] Add "quick fix" suggestions with one-click commands
 - [ ] Add `--fix` flag to auto-remediate common issues
 - [ ] Improve error messages for missing services
 
 **Files to Modify**:
+
 - `scripts/doctor.mjs`
 
 ---
@@ -150,7 +167,7 @@ flowchart TD
     H --> I[pnpm tb:start]
     I --> J[pnpm dev]
     J --> K[Open http://localhost:3000]
-    
+
     style A fill:#e1f5fe
     style K fill:#c8e6c9
 ```
@@ -159,13 +176,13 @@ flowchart TD
 
 ## Files to Modify Summary
 
-| Priority | File | Change |
-|----------|------|--------|
-| HIGH | `package.json` | Align engines field to `>=24.0.0 <25.0.0` |
-| HIGH | `SETUP.md` | Update version, add services section |
-| HIGH | `.env.local.example` | Add required/optional comments |
-| MEDIUM | `scripts/bootstrap.mjs` | Optional: add tb:start to bootstrap |
-| LOW | `scripts/doctor.mjs` | Optional: add auto-fix suggestions |
+| Priority | File                    | Change                                    |
+| -------- | ----------------------- | ----------------------------------------- |
+| HIGH     | `package.json`          | Align engines field to `>=24.0.0 <25.0.0` |
+| HIGH     | `SETUP.md`              | Update version, add services section      |
+| HIGH     | `.env.local.example`    | Add required/optional comments            |
+| MEDIUM   | `scripts/bootstrap.mjs` | Optional: add tb:start to bootstrap       |
+| LOW      | `scripts/doctor.mjs`    | Optional: add auto-fix suggestions        |
 
 ---
 
@@ -183,7 +200,7 @@ flowchart TD
 ## Timeline Estimate
 
 - **Version consistency**: 1 file change
-- **Services documentation**: 1 section addition  
+- **Services documentation**: 1 section addition
 - **Env truthfulness**: 1 file update
 - **Time-to-screen flow**: 1 section addition
 

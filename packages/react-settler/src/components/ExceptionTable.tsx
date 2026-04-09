@@ -3,10 +3,10 @@
  * Displays reconciliation exceptions requiring manual review
  */
 
-import React, { useMemo } from 'react';
-import { ReconciliationException, sanitizeString } from '@settler/protocol';
-import { useCompilationContext } from '../context';
-import { useTelemetry } from '../hooks/useTelemetry';
+import React, { useMemo } from "react";
+import { ReconciliationException, sanitizeString } from "@settler/protocol";
+import { useCompilationContext } from "../context";
+import { useTelemetry } from "../hooks/useTelemetry";
 
 export interface ExceptionTableProps {
   exceptions: ReconciliationException[];
@@ -21,36 +21,36 @@ export const ExceptionTable = React.memo(function ExceptionTable({
   onResolve,
   className,
   showSeverity = true,
-  showCategory = true
+  showCategory = true,
 }: ExceptionTableProps) {
   const context = useCompilationContext();
-  const { track } = useTelemetry('ExceptionTable');
+  const { track } = useTelemetry("ExceptionTable");
 
   // Sanitize exception descriptions
   const sanitizedExceptions = useMemo(() => {
-    return exceptions.map(exc => ({
+    return exceptions.map((exc) => ({
       ...exc,
-      description: sanitizeString(exc.description)
+      description: sanitizeString(exc.description),
     }));
   }, [exceptions]);
 
   // In config mode, register widget
-  if (context.mode === 'config') {
+  if (context.mode === "config") {
     if (!context.config.widgets) {
       context.config.widgets = {};
     }
-    context.config.widgets['exception-table'] = {
-      id: 'exception-table',
-      type: 'exception-table',
+    context.config.widgets["exception-table"] = {
+      id: "exception-table",
+      type: "exception-table",
       props: {
         showSeverity,
-        showCategory
-      }
+        showCategory,
+      },
     };
   }
 
   // In UI mode, render table
-  if (context.mode === 'ui') {
+  if (context.mode === "ui") {
     return (
       <div className={className} data-widget="exception-table">
         <table>
@@ -71,9 +71,7 @@ export const ExceptionTable = React.memo(function ExceptionTable({
                 {showCategory && <td>{exception.category}</td>}
                 {showSeverity && (
                   <td>
-                    <span data-severity={exception.severity}>
-                      {exception.severity}
-                    </span>
+                    <span data-severity={exception.severity}>{exception.severity}</span>
                   </td>
                 )}
                 <td>{exception.description}</td>
@@ -82,7 +80,7 @@ export const ExceptionTable = React.memo(function ExceptionTable({
                   <td>
                     <button
                       onClick={() => {
-                        track('exception.resolved', { exceptionId: exception.id });
+                        track("exception.resolved", { exceptionId: exception.id });
                         onResolve(exception);
                       }}
                     >

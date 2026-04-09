@@ -1,17 +1,17 @@
 /**
  * Graceful UI Degradation Patterns
- * 
+ *
  * Components and utilities for handling missing data and failures gracefully.
  */
 
-'use client';
+"use client";
 
-import React from 'react';
-import { Skeleton } from '@/components/ui/loading';
-import { EmptyState } from '@/components/ui/empty-state';
-import { Card } from '@/components/ui/card';
-import { logger } from '../logging/logger';
-import { analytics } from '../analytics';
+import React from "react";
+import { Skeleton } from "@/components/ui/loading";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Card } from "@/components/ui/card";
+import { logger } from "../logging/logger";
+import { analytics } from "../analytics";
 
 export interface FallbackProps {
   error?: Error;
@@ -41,7 +41,7 @@ export function LoadingFallback({ count = 3 }: { count?: number }) {
 export function ErrorFallback({ error, retry, message }: FallbackProps) {
   const handleRetry = () => {
     if (retry) {
-      analytics.trackEvent('error_retry', {
+      analytics.trackEvent("error_retry", {
         error_message: error?.message,
         error_name: error?.name,
       });
@@ -52,11 +52,11 @@ export function ErrorFallback({ error, retry, message }: FallbackProps) {
   return (
     <EmptyState
       title="Something went wrong"
-      description={message || error?.message || 'An error occurred while loading this content.'}
+      description={message || error?.message || "An error occurred while loading this content."}
       action={
         retry
           ? {
-              label: 'Try again',
+              label: "Try again",
               onClick: handleRetry,
             }
           : undefined
@@ -69,8 +69,8 @@ export function ErrorFallback({ error, retry, message }: FallbackProps) {
  * Empty state fallback
  */
 export function EmptyFallback({
-  title = 'No data available',
-  description = 'There is no data to display at this time.',
+  title = "No data available",
+  description = "There is no data to display at this time.",
   action,
 }: {
   title?: string;
@@ -80,13 +80,7 @@ export function EmptyFallback({
     onClick: () => void;
   };
 }) {
-  return (
-    <EmptyState
-      title={title}
-      description={description}
-      action={action}
-    />
-  );
+  return <EmptyState title={title} description={description} action={action} />;
 }
 
 /**
@@ -104,9 +98,7 @@ export function PartialDataFallback({
       {children}
       {missingDataMessage && (
         <Card className="p-4 border-yellow-200 bg-yellow-50 dark:bg-yellow-900/20">
-          <p className="text-sm text-yellow-800 dark:text-yellow-200">
-            ⚠️ {missingDataMessage}
-          </p>
+          <p className="text-sm text-yellow-800 dark:text-yellow-200">⚠️ {missingDataMessage}</p>
         </Card>
       )}
     </div>
@@ -119,7 +111,7 @@ export function PartialDataFallback({
 export function TimeoutFallback({ retry }: { retry?: () => void }) {
   const handleRetry = () => {
     if (retry) {
-      analytics.trackEvent('timeout_retry');
+      analytics.trackEvent("timeout_retry");
       retry();
     }
   };
@@ -131,7 +123,7 @@ export function TimeoutFallback({ retry }: { retry?: () => void }) {
       action={
         retry
           ? {
-              label: 'Retry',
+              label: "Retry",
               onClick: handleRetry,
             }
           : undefined
@@ -146,7 +138,7 @@ export function TimeoutFallback({ retry }: { retry?: () => void }) {
 export function NetworkErrorFallback({ retry }: { retry?: () => void }) {
   const handleRetry = () => {
     if (retry) {
-      analytics.trackEvent('network_error_retry');
+      analytics.trackEvent("network_error_retry");
       retry();
     }
   };
@@ -158,7 +150,7 @@ export function NetworkErrorFallback({ retry }: { retry?: () => void }) {
       action={
         retry
           ? {
-              label: 'Retry',
+              label: "Retry",
               onClick: handleRetry,
             }
           : undefined
@@ -197,11 +189,11 @@ function ErrorBoundaryWrapper({
     const handleError = (event: ErrorEvent) => {
       setHasError(true);
       setError(event.error);
-      logger.error('Component error', event.error);
+      logger.error("Component error", event.error);
     };
 
-    window.addEventListener('error', handleError);
-    return () => window.removeEventListener('error', handleError);
+    window.addEventListener("error", handleError);
+    return () => window.removeEventListener("error", handleError);
   }, []);
 
   if (hasError && error) {

@@ -22,23 +22,19 @@ export default function ConsoleRunsError({
       <Card className="max-w-md p-6">
         <div className="flex flex-col items-center text-center">
           <AlertCircle className="h-12 w-12 text-destructive mb-4" />
-          <h2 className="text-xl font-semibold mb-2">
-            Failed to Load Reconciliation Runs
-          </h2>
+          <h2 className="text-xl font-semibold mb-2">Failed to Load Reconciliation Runs</h2>
           <p className="text-sm text-muted-foreground mb-6">
-            We encountered an error while loading your reconciliation runs. This may be
-            due to a network issue or a temporary server problem.
+            We encountered an error while loading your reconciliation runs. This may be due to a
+            network issue or a temporary server problem.
           </p>
           {error.digest && (
-            <p className="text-xs text-muted-foreground mb-4">
-              Error ID: {error.digest}
-            </p>
+            <p className="text-xs text-muted-foreground mb-4">Error ID: {error.digest}</p>
           )}
           <div className="flex gap-2">
             <Button onClick={reset} variant="default">
               Try Again
             </Button>
-            <Button onClick={() => window.location.href = "/console"} variant="outline">
+            <Button onClick={() => (window.location.href = "/console")} variant="outline">
               Go to Console
             </Button>
           </div>

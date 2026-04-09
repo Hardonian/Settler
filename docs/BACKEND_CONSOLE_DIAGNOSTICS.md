@@ -119,10 +119,12 @@ CREATE POLICY usage_events_billing_account_access ON usage_events
 ### 1. Missing Environment Variables
 
 **Symptoms:**
+
 - 500 error on all console routes
 - Health check shows `"env": { "supabaseUrl": false }`
 
 **Fix:**
+
 ```bash
 # Verify in Vercel/dashboard
 echo $NEXT_PUBLIC_SUPABASE_URL
@@ -136,10 +138,12 @@ vercel env add DATABASE_URL
 ### 2. Prisma Client Not Initialized
 
 **Symptoms:**
+
 - Error: `Prisma client not properly initialized`
 - Error: `Cannot read property 'billingAccount' of undefined`
 
 **Fix:**
+
 ```bash
 # Regenerate Prisma client
 cd packages/web
@@ -150,22 +154,26 @@ cat prisma/schema.prisma | grep -A 5 "model BillingAccount"
 ```
 
 **Root Cause:**
+
 - Prisma client generated with wrong engine type
 - `DATABASE_URL` not set during build
 - Prisma schema not synced
 
 **Prevention:**
+
 - Ensure `PRISMA_CLIENT_ENGINE_TYPE=binary` is set (see `packages/web/src/shared/db/prismaClient.ts`)
 - Set `DATABASE_URL` even during build (can be dummy URL)
 
 ### 3. Database Connection Failure
 
 **Symptoms:**
+
 - Error: `Can't reach database server`
 - Error: `Connection timeout`
 - Health check shows `"supabase": { "canConnect": false }`
 
 **Fix:**
+
 ```bash
 # Test connection
 psql $DATABASE_URL -c "SELECT 1"
@@ -176,25 +184,28 @@ psql $DATABASE_URL -c "SELECT 1"
 ```
 
 **Prisma Config:**
+
 ```typescript
 // In prismaClient.ts
 const prisma = new PrismaClient({
   datasources: {
     db: {
-      url: process.env.DATABASE_URL + "?connection_limit=5&pool_timeout=20"
-    }
-  }
+      url: process.env.DATABASE_URL + "?connection_limit=5&pool_timeout=20",
+    },
+  },
 });
 ```
 
 ### 4. Missing Database Tables
 
 **Symptoms:**
+
 - Error: `relation "api_keys" does not exist`
 - Error: `relation "billing_accounts" does not exist`
 - Health check shows `"migrations": { "criticalTablesExist": false }`
 
 **Fix:**
+
 ```bash
 # Run migrations
 npm run db:migrate:deploy
@@ -204,24 +215,27 @@ psql $DATABASE_URL -f supabase/migrations/[LATEST].sql
 ```
 
 **Verify:**
+
 ```sql
 -- Check tables exist
-SELECT table_name FROM information_schema.tables 
-WHERE table_schema = 'public' 
+SELECT table_name FROM information_schema.tables
+WHERE table_schema = 'public'
 AND table_name IN ('billing_accounts', 'api_keys', 'receipts', 'usage_events');
 ```
 
 ### 5. RLS Policy Missing/Incorrect
 
 **Symptoms:**
+
 - Error: `permission denied for table api_keys`
 - Error: `new row violates row-level security policy`
 - API returns empty arrays even when data exists
 
 **Fix:**
+
 ```sql
 -- Check RLS is enabled
-SELECT tablename, rowsecurity FROM pg_tables 
+SELECT tablename, rowsecurity FROM pg_tables
 WHERE schemaname = 'public' AND tablename = 'api_keys';
 
 -- Check policies exist
@@ -232,6 +246,7 @@ SELECT proname FROM pg_proc WHERE proname = 'current_user_id';
 ```
 
 **Recreate if missing:**
+
 ```sql
 -- See supabase/migrations/20260125000000_console_rls_fixes.sql
 ```
@@ -239,11 +254,13 @@ SELECT proname FROM pg_proc WHERE proname = 'current_user_id';
 ### 6. Authentication Failure
 
 **Symptoms:**
+
 - Error: `Unauthorized: Authentication required`
 - Error: `Failed to get user`
 - Health check shows `"auth": { "status": "error" }`
 
 **Fix:**
+
 ```bash
 # Verify Supabase client creation
 # Check cookies() function works in Next.js
@@ -251,21 +268,27 @@ SELECT proname FROM pg_proc WHERE proname = 'current_user_id';
 ```
 
 **Debug:**
+
 ```typescript
 // In route handler
 const supabase = await createClient();
-const { data: { user }, error } = await supabase.auth.getUser();
-console.log('Auth check:', { hasUser: !!user, error: error?.message });
+const {
+  data: { user },
+  error,
+} = await supabase.auth.getUser();
+console.log("Auth check:", { hasUser: !!user, error: error?.message });
 ```
 
 ### 7. Billing Account Missing
 
 **Symptoms:**
+
 - Console page loads but shows empty data
 - API returns empty arrays
 - No errors in logs
 
 **Fix:**
+
 ```typescript
 // Console page auto-creates billing account if missing
 // But if creation fails, check:
@@ -275,6 +298,7 @@ console.log('Auth check:', { hasUser: !!user, error: error?.message });
 ```
 
 **Manual Creation:**
+
 ```sql
 INSERT INTO billing_accounts (id, user_id, email, status)
 VALUES (gen_random_uuid(), '[USER_ID]', '[EMAIL]', 'active');
@@ -283,11 +307,13 @@ VALUES (gen_random_uuid(), '[USER_ID]', '[EMAIL]', 'active');
 ### 8. Prisma Binary Engine Not Available
 
 **Symptoms:**
+
 - Error: `Prisma Client was generated for the "client" engine type`
 - Error: `accelerateUrl is required`
 - Build fails or runtime errors
 
 **Fix:**
+
 ```bash
 # Ensure PRISMA_CLIENT_ENGINE_TYPE=binary during generation
 PRISMA_CLIENT_ENGINE_TYPE=binary npm run prisma:generate
@@ -297,6 +323,7 @@ grep -r "engineType" packages/web/node_modules/.prisma/client/
 ```
 
 **Prevention:**
+
 - See `packages/web/src/shared/db/prismaClient.ts` for engine type forcing
 - Set `NEXT_RUNTIME=nodejs` in environment
 
@@ -311,14 +338,14 @@ export async function listApiKeys(): Promise<ApiKeyListItem[]> {
     // ... query logic
     return keys;
   } catch (error) {
-    console.error('[listApiKeys] Error:', error);
+    console.error("[listApiKeys] Error:", error);
     return []; // Never throw
   }
 }
 
 // ❌ WRONG: Throwing errors
 export async function listApiKeys(): Promise<ApiKeyListItem[]> {
-  const keys = await supabase.from('api_keys').select('*');
+  const keys = await supabase.from("api_keys").select("*");
   if (keys.error) throw new Error(keys.error.message); // DON'T DO THIS
   return keys.data;
 }
@@ -334,8 +361,8 @@ export async function GET(request: NextRequest) {
     const receipts = await listReceipts(authContext.billingAccountId);
     return NextResponse.json({ receipts });
   } catch (error) {
-    if (error.message.includes('Unauthorized')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (error.message.includes("Unauthorized")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     // Return empty data instead of 500
     return NextResponse.json({ receipts: [] }, { status: 200 });
@@ -348,20 +375,24 @@ export async function GET(request: NextRequest) {
 ### Critical: Prisma Bypasses RLS
 
 **Problem:**
+
 - Prisma queries bypass Supabase RLS policies
 - Must manually verify `billing_account_id` belongs to user
 
 **Solution:**
+
 ```typescript
 // ✅ CORRECT: Verify access before querying
 async function verifyBillingAccountAccess(billingAccountId: string): Promise<boolean> {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   const billingAccount = await prisma.billingAccount.findFirst({
-    where: { id: billingAccountId, userId: user.id }
+    where: { id: billingAccountId, userId: user.id },
   });
-  
+
   return !!billingAccount;
 }
 
@@ -374,10 +405,7 @@ if (!hasAccess) return [];
 
 ```typescript
 // ✅ CORRECT: RLS automatically enforces tenant isolation
-const { data } = await supabase
-  .from('api_keys')
-  .select('*')
-  .eq('user_id', user.id); // RLS ensures user can only see their own keys
+const { data } = await supabase.from("api_keys").select("*").eq("user_id", user.id); // RLS ensures user can only see their own keys
 ```
 
 ## Testing & Verification
@@ -389,6 +417,7 @@ curl https://your-domain.com/api/health/console
 ```
 
 **Expected:**
+
 - Status: 200
 - `status: "healthy"`
 - All checks pass
@@ -400,6 +429,7 @@ curl -I https://your-domain.com/console
 ```
 
 **Expected:**
+
 - Status: 200
 - Shows sign-in prompt
 
@@ -410,6 +440,7 @@ curl https://your-domain.com/api/console/api-keys
 ```
 
 **Expected:**
+
 - Status: 401 (Unauthorized)
 - NOT 500
 
@@ -421,6 +452,7 @@ curl -H "Cookie: sb-access-token=..." https://your-domain.com/api/console/api-ke
 ```
 
 **Expected:**
+
 - Status: 200
 - JSON: `{ keys: [...] }` or `{ keys: [] }`
 - NOT 500
@@ -432,6 +464,7 @@ npm run test:smoke
 ```
 
 **Expected:**
+
 - All tests pass
 - Console route test passes
 
@@ -441,14 +474,14 @@ npm run test:smoke
 
 ```typescript
 // Structured logging in routes
-console.log('[Console] Request started', {
-  route: '/api/console/receipts',
+console.log("[Console] Request started", {
+  route: "/api/console/receipts",
   correlationId,
   userId: authContext.userId,
 });
 
-console.error('[Console] Error', {
-  route: '/api/console/receipts',
+console.error("[Console] Error", {
+  route: "/api/console/receipts",
   error: errorMessage,
   stack: errorStack,
 });
@@ -480,6 +513,7 @@ console.error('[Console] Error', {
 If console is broken:
 
 1. **Check Health Endpoint**
+
    ```bash
    curl https://your-domain.com/api/health/console
    ```
@@ -489,6 +523,7 @@ If console is broken:
    - Check Vercel deployment logs
 
 3. **Database Rollback** (if migration caused issues)
+
    ```sql
    -- See CONSOLE_VERIFICATION_CHECKLIST.md for rollback SQL
    ```

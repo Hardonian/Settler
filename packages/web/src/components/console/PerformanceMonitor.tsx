@@ -111,9 +111,7 @@ export function PerformanceMonitor() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold">Performance Monitor</h2>
-            <p className="text-muted-foreground">
-              API performance metrics and monitoring
-            </p>
+            <p className="text-muted-foreground">API performance metrics and monitoring</p>
           </div>
           <div className="flex items-center gap-2">
             <select

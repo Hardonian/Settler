@@ -77,9 +77,7 @@ export function PageHeader({
               {eyebrow}
             </p>
           )}
-          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            {title}
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">{title}</h1>
           {description && (
             <p className="mt-3 max-w-2xl text-base text-muted-foreground leading-relaxed">
               {description}
@@ -89,11 +87,7 @@ export function PageHeader({
         </div>
 
         {/* Actions */}
-        {actions && (
-          <div className="flex flex-wrap items-center gap-2 shrink-0">
-            {actions}
-          </div>
-        )}
+        {actions && <div className="flex flex-wrap items-center gap-2 shrink-0">{actions}</div>}
       </div>
     </section>
   );

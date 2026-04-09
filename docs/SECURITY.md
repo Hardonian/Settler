@@ -28,6 +28,7 @@ Settler Enterprise implements comprehensive security measures across all layers 
 - **Password Policy:** Enforced by Supabase (configurable)
 
 **Implementation:**
+
 - Location: `packages/web/src/lib/supabase/server.ts`
 - Session handling: Server-side session management
 - Token refresh: Automatic refresh token rotation
@@ -40,11 +41,13 @@ Settler Enterprise implements comprehensive security measures across all layers 
 - **API Authorization:** All routes check authentication and tenant access
 
 **RLS Policies:**
+
 - Location: `supabase/migrations/20250122000000_rls_enforcement_critical.sql`
 - Coverage: All critical tables (billing_accounts, subscriptions, usage_events, etc.)
 - Enforcement: Database-level, cannot be bypassed
 
 **Tenant Isolation:**
+
 - All API routes validate `tenantId` from auth context
 - Database queries filtered by tenant
 - Service role usage constrained to server-only contexts
@@ -68,6 +71,7 @@ Settler Enterprise implements comprehensive security measures across all layers 
 - **Data Retention:** Configurable retention policies
 
 **Implementation:**
+
 - Logging: `packages/web/src/lib/observability/logger.ts`
 - Error handling: Graceful error handling, no PII leaks
 - Audit: Event sourcing for audit trails
@@ -90,6 +94,7 @@ Settler Enterprise implements comprehensive security measures across all layers 
 - **Webhook Signatures:** For webhook endpoints (Stripe)
 
 **Implementation:**
+
 - API routes: `packages/web/src/app/api/**/route.ts`
 - Auth middleware: Checks authentication on all protected routes
 - API keys: Managed via console, stored securely
@@ -102,6 +107,7 @@ Settler Enterprise implements comprehensive security measures across all layers 
 - **CSRF Protection:** SameSite cookies, origin validation
 
 **Implementation:**
+
 - Validation: Zod schemas throughout codebase
 - Database: Prisma ORM prevents SQL injection
 - Frontend: React XSS protection, CSP headers
@@ -114,6 +120,7 @@ Settler Enterprise implements comprehensive security measures across all layers 
 - **Redis-Backed (optional):** Distributed rate limiting via Upstash Redis
 
 **Implementation:**
+
 - Rate limiting: Redis/Upstash for distributed limiting when configured; process-local in-memory fallback otherwise
 - Configuration: `RATE_LIMIT_DEFAULT`, `RATE_LIMIT_WINDOW_MS`
 - **Caveat:** Without Redis (`UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`), rate limits are per-process and will drift across instances. See `docs/security/VERIFICATION_SURFACES.md` for production guidance.
@@ -144,6 +151,7 @@ Settler Enterprise implements comprehensive security measures across all layers 
 - **Rotation:** Manual rotation process documented
 
 **Best Practices:**
+
 - `.env.example` documents all required variables
 - No secrets in code or logs
 - Secrets rotated regularly
@@ -160,6 +168,7 @@ Settler Enterprise implements comprehensive security measures across all layers 
 - **Replay Protection:** Timestamp validation
 
 **Implementation:**
+
 - Location: `packages/web/src/app/api/stripe/webhook/route.ts`
 - Runtime: Node.js (required for raw body access)
 - Verification: Stripe signature verification
@@ -172,6 +181,7 @@ Settler Enterprise implements comprehensive security measures across all layers 
 - **Secret Management:** Per-webhook secrets
 
 **Implementation:**
+
 - SDK: `packages/sdk/src/utils/webhook-signature.ts`
 - Verification: Constant-time comparison
 - Timestamp: Configurable max age
@@ -189,6 +199,7 @@ Settler Enterprise implements comprehensive security measures across all layers 
 - **Data Portability:** Export functionality
 
 **Evidence:**
+
 - Legal pages: `/legal/privacy`, `/legal/dpa`
 - Data export: API endpoints for data export
 - Deletion: Process documented
@@ -214,6 +225,7 @@ Settler Enterprise implements comprehensive security measures across all layers 
 - **Log Analysis:** Sentry integration
 
 **Implementation:**
+
 - Logger: `packages/web/src/lib/observability/logger.ts`
 - Sentry: Error tracking and monitoring
 - Logs: Structured, searchable, secure
@@ -226,6 +238,7 @@ Settler Enterprise implements comprehensive security measures across all layers 
 - **Incident Response:** Health check endpoints
 
 **Implementation:**
+
 - Sentry: `@sentry/nextjs` integration
 - Error boundaries: 7 error.tsx files
 - Health checks: `/api/health`, `/api/admin/health`

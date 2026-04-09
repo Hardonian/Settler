@@ -13,7 +13,7 @@ interface SafeImageProps extends Omit<ImageProps, "onError"> {
 
 /**
  * SafeImage component with robust error handling
- * 
+ *
  * Features:
  * - Graceful fallback UI if image fails to load
  * - Maintains aspect ratio to prevent CLS
@@ -35,17 +35,19 @@ export function SafeImage({
   const [isLoading, setIsLoading] = useState(true);
 
   // Calculate aspect ratio for fallback - ensure width/height are numbers
-  const widthNum = typeof width === 'number' ? width : (typeof width === 'string' ? parseFloat(width) : 0);
-  const heightNum = typeof height === 'number' ? height : (typeof height === 'string' ? parseFloat(height) : 0);
+  const widthNum =
+    typeof width === "number" ? width : typeof width === "string" ? parseFloat(width) : 0;
+  const heightNum =
+    typeof height === "number" ? height : typeof height === "string" ? parseFloat(height) : 0;
   const aspectRatio = widthNum > 0 && heightNum > 0 ? heightNum / widthNum : 16 / 9;
   const aspectRatioPercent = aspectRatio * 100;
 
   const handleError = () => {
     setHasError(true);
     setIsLoading(false);
-    
+
     // Log warning in dev only
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       console.warn(`[SafeImage] Failed to load image: ${src}`);
     }
   };
@@ -66,7 +68,7 @@ export function SafeImage({
           containerClassName
         )}
         style={{
-          width: widthNum || '100%',
+          width: widthNum || "100%",
           aspectRatio: widthNum && heightNum ? `${widthNum} / ${heightNum}` : undefined,
           paddingBottom: !widthNum || !heightNum ? `${aspectRatioPercent}%` : undefined,
         }}
@@ -80,14 +82,10 @@ export function SafeImage({
             </p>
           )}
           {fallbackCaption && (
-            <p className="text-xs text-slate-500 dark:text-slate-500">
-              {fallbackCaption}
-            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-500">{fallbackCaption}</p>
           )}
           {!fallbackTitle && !fallbackCaption && (
-            <p className="text-xs text-slate-500 dark:text-slate-500">
-              Image unavailable
-            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-500">Image unavailable</p>
           )}
         </div>
       </div>
@@ -118,9 +116,9 @@ export function SafeImage({
         )}
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         style={{
-          objectFit: 'contain',
-          maxWidth: '100%',
-          height: 'auto',
+          objectFit: "contain",
+          maxWidth: "100%",
+          height: "auto",
         }}
         onError={handleError}
         onLoad={handleLoad}

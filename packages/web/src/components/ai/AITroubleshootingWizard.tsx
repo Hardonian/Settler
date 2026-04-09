@@ -125,7 +125,9 @@ export function AITroubleshootingWizard() {
           <Wand2 className="w-5 h-5" />
           Troubleshooting Wizard
         </CardTitle>
-        <CardDescription>Answer a few questions and I&apos;ll help you solve the issue</CardDescription>
+        <CardDescription>
+          Answer a few questions and I&apos;ll help you solve the issue
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div>

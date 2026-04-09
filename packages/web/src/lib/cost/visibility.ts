@@ -1,11 +1,11 @@
 /**
  * Cost Visibility Service
- * 
+ *
  * Tracks and reports infrastructure costs per billing account.
  */
 
-import { prisma } from '@/shared/db/prismaClient';
-import { getCurrentUsage } from '@/lib/usage/tracking';
+import { prisma } from "@/shared/db/prismaClient";
+import { getCurrentUsage } from "@/lib/usage/tracking";
 
 export interface CostBreakdown {
   billingAccountId: string;
@@ -60,9 +60,9 @@ export async function getCostBreakdown(
 
     // Get usage for the period
     const [apiUsage, reconUsage, receiptUsage] = await Promise.all([
-      getCurrentUsage(billingAccountId, 'reconcile'), // Map 'api' to 'reconcile'
-      getCurrentUsage(billingAccountId, 'reconcile'),
-      getCurrentUsage(billingAccountId, 'receipts'),
+      getCurrentUsage(billingAccountId, "reconcile"), // Map 'api' to 'reconcile'
+      getCurrentUsage(billingAccountId, "reconcile"),
+      getCurrentUsage(billingAccountId, "receipts"),
     ]);
 
     // Calculate costs
@@ -108,7 +108,7 @@ export async function getCostBreakdown(
       estimatedMonthly,
     };
   } catch (error) {
-    console.error('[Cost Visibility] Error getting cost breakdown:', error);
+    console.error("[Cost Visibility] Error getting cost breakdown:", error);
     return null;
   }
 }
@@ -116,7 +116,9 @@ export async function getCostBreakdown(
 /**
  * Get cost summary for current period
  */
-export async function getCurrentPeriodCosts(billingAccountId: string): Promise<CostBreakdown | null> {
+export async function getCurrentPeriodCosts(
+  billingAccountId: string
+): Promise<CostBreakdown | null> {
   const now = new Date();
   const periodStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const periodEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);

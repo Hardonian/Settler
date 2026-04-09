@@ -1,11 +1,11 @@
 /**
  * Feature Flag Evaluator
- * 
+ *
  * Evaluates feature flags based on environment, overrides, and context.
  */
 
-import { prisma } from '@/shared/db/prismaClient';
-import { EvaluationContext, EvaluationResult, Environment } from './types';
+import { prisma } from "@/shared/db/prismaClient";
+import { EvaluationContext, EvaluationResult, Environment } from "./types";
 
 /**
  * Evaluate a feature flag
@@ -33,8 +33,8 @@ export async function evaluateFlag(params: {
     // Return default value if flag doesn't exist
     return {
       value: false,
-      source: 'default',
-      metadata: { reason: 'flag_not_found' },
+      source: "default",
+      metadata: { reason: "flag_not_found" },
     };
   }
 
@@ -44,17 +44,15 @@ export async function evaluateFlag(params: {
       where: {
         flagId: flag.id,
         environment,
-        targetKey: context.userId || context.tenantId || '',
-        expiresAt: context.userId
-          ? { gt: new Date() }
-          : undefined,
+        targetKey: context.userId || context.tenantId || "",
+        expiresAt: context.userId ? { gt: new Date() } : undefined,
       },
     });
 
     if (override && (!override.expiresAt || override.expiresAt > new Date())) {
       return {
         value: override.value,
-        source: 'override',
+        source: "override",
         environment,
         metadata: {
           overrideId: override.id,
@@ -76,17 +74,17 @@ export async function evaluateFlag(params: {
   });
 
   if (envSetting) {
-    if (flag.type === 'boolean') {
+    if (flag.type === "boolean") {
       return {
         value: envSetting.enabled,
-        source: 'environment',
+        source: "environment",
         environment,
         metadata: { enabled: envSetting.enabled },
       };
     } else {
       return {
         value: envSetting.variant ?? flag.defaultValue,
-        source: 'environment',
+        source: "environment",
         environment,
         metadata: { enabled: envSetting.enabled },
       };
@@ -95,8 +93,8 @@ export async function evaluateFlag(params: {
 
   // Return default value
   return {
-    value: flag.defaultValue ?? (flag.type === 'boolean' ? false : null),
-    source: 'default',
-    metadata: { reason: 'no_environment_setting' },
+    value: flag.defaultValue ?? (flag.type === "boolean" ? false : null),
+    source: "default",
+    metadata: { reason: "no_environment_setting" },
   };
 }

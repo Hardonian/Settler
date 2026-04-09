@@ -101,9 +101,7 @@ export default function EngineLandingPage() {
         {/* How it works */}
         <section className="py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-5xl mx-auto">
-            <h2 className="text-2xl font-bold text-foreground mb-10">
-              How the Engine Works
-            </h2>
+            <h2 className="text-2xl font-bold text-foreground mb-10">How the Engine Works</h2>
             <div className="grid gap-6 sm:grid-cols-2">
               {engineSteps.map((step) => {
                 const Icon = step.icon;
@@ -120,14 +118,10 @@ export default function EngineLandingPage() {
                         <p className="text-xs font-bold text-muted-foreground/60 dark:text-muted-foreground uppercase tracking-widest mb-0.5">
                           Step {step.step}
                         </p>
-                        <h3 className="text-base font-bold text-foreground">
-                          {step.title}
-                        </h3>
+                        <h3 className="text-base font-bold text-foreground">{step.title}</h3>
                       </div>
                     </div>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      {step.description}
-                    </p>
+                    <p className="text-sm text-muted-foreground mb-4">{step.description}</p>
                     <div className="rounded-lg bg-card dark:bg-card p-3 font-mono text-xs text-green-400 overflow-x-auto">
                       {step.code}
                     </div>
@@ -141,9 +135,7 @@ export default function EngineLandingPage() {
         {/* Quick access cards */}
         <section className="py-10 px-4 sm:px-6 lg:px-8 bg-white dark:bg-card border-t border-border/40 dark:border-border">
           <div className="max-w-5xl mx-auto">
-            <h2 className="text-xl font-bold text-foreground mb-6">
-              Engine Workflows
-            </h2>
+            <h2 className="text-xl font-bold text-foreground mb-6">Engine Workflows</h2>
             <div className="grid gap-4 sm:grid-cols-3">
               <Link
                 href="/engine/create-run-pack"
@@ -190,9 +182,7 @@ export default function EngineLandingPage() {
           <div className="max-w-5xl mx-auto">
             <div className="grid md:grid-cols-2 gap-12 items-start">
               <div>
-                <h2 className="text-2xl font-bold text-foreground mb-6">
-                  Engine Capabilities
-                </h2>
+                <h2 className="text-2xl font-bold text-foreground mb-6">Engine Capabilities</h2>
                 <ul className="space-y-3">
                   {capabilities.map((cap) => (
                     <li key={cap} className="flex items-start gap-3">

@@ -1,12 +1,12 @@
 /**
  * Dashboard Data Access
- * 
+ *
  * Centralized functions for fetching dashboard-related data.
  * These functions are pure data access - no React hooks, no state management.
  */
 
-import { createClient } from '@/lib/supabase/server';
-import { getExternalMetrics, type ExternalMetrics } from '@/lib/api/external';
+import { createClient } from "@/lib/supabase/server";
+import { getExternalMetrics, type ExternalMetrics } from "@/lib/api/external";
 
 export interface DashboardMetrics {
   newUsersWeek: number;
@@ -41,7 +41,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
   // Fetch KPI health data using RPC function (with fallback)
   let kpiData: KpiHealthData | null = null;
   try {
-    const result = await supabase.rpc('get_kpi_health_status').single() as {
+    const result = (await supabase.rpc("get_kpi_health_status").single()) as {
       data: KpiHealthData | null;
       error: Error | null;
     };
@@ -49,42 +49,42 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
       kpiData = result.data;
     }
   } catch (error) {
-    console.warn('RPC function not available, using fallback queries:', error);
+    console.warn("RPC function not available, using fallback queries:", error);
   }
 
   // Fetch recent activity count
   let recentActivityCount = 0;
   try {
     const { count } = await supabase
-      .from('activity_log')
-      .select('*', { count: 'exact', head: true })
-      .gte('created_at', new Date(Date.now() - 60 * 60 * 1000).toISOString());
+      .from("activity_log")
+      .select("*", { count: "exact", head: true })
+      .gte("created_at", new Date(Date.now() - 60 * 60 * 1000).toISOString());
     recentActivityCount = count || 0;
   } catch (error) {
-    console.warn('Error fetching activity count:', error);
+    console.warn("Error fetching activity count:", error);
   }
 
   // Fetch new users this week
   let newUsersCount = 0;
   try {
     const { count } = await supabase
-      .from('profiles')
-      .select('*', { count: 'exact', head: true })
-      .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
+      .from("profiles")
+      .select("*", { count: "exact", head: true })
+      .gte("created_at", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
     newUsersCount = count || 0;
   } catch (error) {
-    console.warn('Error fetching new users count:', error);
+    console.warn("Error fetching new users count:", error);
   }
 
   // Fetch most engaged post
   let topPost: TopPost | null = null;
   try {
     const { data: posts } = await supabase
-      .from('posts')
-      .select('id, title, views, upvotes')
-      .eq('status', 'published')
-      .gte('created_at', new Date().toISOString().split('T')[0])
-      .order('created_at', { ascending: false })
+      .from("posts")
+      .select("id, title, views, upvotes")
+      .eq("status", "published")
+      .gte("created_at", new Date().toISOString().split("T")[0])
+      .order("created_at", { ascending: false })
       .limit(10);
 
     if (posts && posts.length > 0) {
@@ -99,37 +99,35 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
       }
     }
   } catch (error) {
-    console.warn('Error fetching posts:', error);
+    console.warn("Error fetching posts:", error);
   }
 
   // Fetch total posts count
   let totalPosts = 0;
   try {
     const { count } = await supabase
-      .from('posts')
-      .select('*', { count: 'exact', head: true })
-      .eq('status', 'published');
+      .from("posts")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "published");
     totalPosts = count || 0;
   } catch (error) {
-    console.warn('Error fetching total posts:', error);
+    console.warn("Error fetching total posts:", error);
   }
 
   // Fetch total profiles count
   let totalProfiles = 0;
   try {
-    const { count } = await supabase
-      .from('profiles')
-      .select('*', { count: 'exact', head: true });
+    const { count } = await supabase.from("profiles").select("*", { count: "exact", head: true });
     totalProfiles = count || 0;
   } catch (error) {
-    console.warn('Error fetching total profiles:', error);
+    console.warn("Error fetching total profiles:", error);
   }
 
   return {
     newUsersWeek: newUsersCount,
     actionsLastHour: recentActivityCount,
     topPostEngagement: topPost ? (topPost.views || 0) + (topPost.upvotes || 0) * 2 : 0,
-    topPostTitle: topPost?.title || 'No posts today yet',
+    topPostTitle: topPost?.title || "No posts today yet",
     totalPosts,
     totalProfiles,
     allCylindersFiring: kpiData?.all_cylinders_firing ?? false,
@@ -143,7 +141,7 @@ export async function getExternalMetricsData(): Promise<ExternalMetrics> {
   try {
     return await getExternalMetrics();
   } catch (error) {
-    console.warn('Failed to fetch external metrics:', error);
+    console.warn("Failed to fetch external metrics:", error);
     return {
       github: {
         stars: 0,
@@ -154,7 +152,7 @@ export async function getExternalMetricsData(): Promise<ExternalMetrics> {
       },
       npm: {
         downloads: 0,
-        version: '0.0.0',
+        version: "0.0.0",
         lastUpdated: new Date().toISOString(),
       },
       timestamp: new Date().toISOString(),

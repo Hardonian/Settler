@@ -74,7 +74,9 @@ export const GET = withSecurity(
                 secondaryColor: branding.secondaryColor,
                 accentColor: branding.accentColor,
                 backgroundColor: branding.backgroundColor,
-                borderRadiusScale: branding.borderRadiusScale ? Number(branding.borderRadiusScale) : 1.0,
+                borderRadiusScale: branding.borderRadiusScale
+                  ? Number(branding.borderRadiusScale)
+                  : 1.0,
                 fontFamilyPrimary: branding.fontFamilyPrimary ?? null,
                 fontFamilySecondary: branding.fontFamilySecondary ?? null,
               }
@@ -124,7 +126,9 @@ export const PUT = withSecurity(
             secondaryColor: branding.secondaryColor,
             accentColor: branding.accentColor,
             backgroundColor: branding.backgroundColor,
-            borderRadiusScale: branding.borderRadiusScale ? Number(branding.borderRadiusScale) : 1.0,
+            borderRadiusScale: branding.borderRadiusScale
+              ? Number(branding.borderRadiusScale)
+              : 1.0,
             fontFamilyPrimary: branding.fontFamilyPrimary ?? null,
             fontFamilySecondary: branding.fontFamilySecondary ?? null,
           },
@@ -133,11 +137,13 @@ export const PUT = withSecurity(
       );
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return NextResponse.json({ error: "Invalid request", details: error.issues }, { status: 400 });
+        return NextResponse.json(
+          { error: "Invalid request", details: error.issues },
+          { status: 400 }
+        );
       }
       return handleApiError(error, "Failed to update branding");
     }
   },
   { rateLimit: { windowMs: 60_000, maxRequests: 30 }, requireAuth: true }
 );
-

@@ -1,6 +1,6 @@
-import { ReactNode } from 'react';
-import { Navigation } from '@/components/Navigation';
-import { Footer } from '@/components/Footer';
+import { ReactNode } from "react";
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
 
 interface PageLayoutProps {
   title: string;
@@ -22,9 +22,7 @@ export function PageLayout({ title, description, children }: PageLayoutProps) {
               <p className="mt-3 text-lg text-slate-600 dark:text-slate-300">{description}</p>
             ) : null}
           </header>
-          <article className="prose prose-slate dark:prose-invert max-w-none">
-            {children}
-          </article>
+          <article className="prose prose-slate dark:prose-invert max-w-none">{children}</article>
         </div>
       </main>
       <Footer />

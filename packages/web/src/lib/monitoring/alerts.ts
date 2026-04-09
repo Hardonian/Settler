@@ -1,15 +1,15 @@
 /**
  * Alerting System
- * 
+ *
  * Provides alerting for critical system events and anomalies.
  */
 
-import { performHealthCheck } from './health-check';
-import { getApiCallStats } from '@/domain/console/api-logs';
+import { performHealthCheck } from "./health-check";
+import { getApiCallStats } from "@/domain/console/api-logs";
 
 export interface Alert {
   id: string;
-  severity: 'critical' | 'warning' | 'info';
+  severity: "critical" | "warning" | "info";
   title: string;
   message: string;
   timestamp: Date;
@@ -25,17 +25,17 @@ const alerts: Map<string, Alert> = new Map();
 export async function checkHealthAlerts(): Promise<Alert[]> {
   const health = await performHealthCheck();
   const newAlerts: Alert[] = [];
-  
+
   for (const check of health.checks) {
-    if (check.status === 'unhealthy') {
+    if (check.status === "unhealthy") {
       const alertId = `health-${check.service}`;
-      
+
       if (!alerts.has(alertId)) {
         const alert: Alert = {
           id: alertId,
-          severity: 'critical',
+          severity: "critical",
           title: `${check.service} is unhealthy`,
-          message: check.error || 'Service is not responding',
+          message: check.error || "Service is not responding",
           timestamp: new Date(),
           metadata: {
             service: check.service,
@@ -43,17 +43,17 @@ export async function checkHealthAlerts(): Promise<Alert[]> {
             error: check.error,
           },
         };
-        
+
         alerts.set(alertId, alert);
         newAlerts.push(alert);
       }
-    } else if (check.status === 'degraded') {
+    } else if (check.status === "degraded") {
       const alertId = `health-${check.service}`;
-      
+
       if (!alerts.has(alertId)) {
         const alert: Alert = {
           id: alertId,
-          severity: 'warning',
+          severity: "warning",
           title: `${check.service} is degraded`,
           message: `Service is responding slowly (${check.latency}ms)`,
           timestamp: new Date(),
@@ -62,7 +62,7 @@ export async function checkHealthAlerts(): Promise<Alert[]> {
             latency: check.latency,
           },
         };
-        
+
         alerts.set(alertId, alert);
         newAlerts.push(alert);
       }
@@ -75,7 +75,7 @@ export async function checkHealthAlerts(): Promise<Alert[]> {
       }
     }
   }
-  
+
   return newAlerts;
 }
 
@@ -86,15 +86,15 @@ export async function checkErrorRateAlerts(tenantId?: string): Promise<Alert[]> 
   try {
     const stats = await getApiCallStats({ tenantId });
     const newAlerts: Alert[] = [];
-    
+
     // Alert if error rate is above 10%
     if (stats.errorRate > 0.1) {
-      const alertId = `error-rate-${tenantId || 'global'}`;
-      
+      const alertId = `error-rate-${tenantId || "global"}`;
+
       if (!alerts.has(alertId)) {
         const alert: Alert = {
           id: alertId,
-          severity: stats.errorRate > 0.25 ? 'critical' : 'warning',
+          severity: stats.errorRate > 0.25 ? "critical" : "warning",
           title: `High error rate detected`,
           message: `Error rate is ${(stats.errorRate * 100).toFixed(1)}% (threshold: 10%)`,
           timestamp: new Date(),
@@ -104,22 +104,22 @@ export async function checkErrorRateAlerts(tenantId?: string): Promise<Alert[]> 
             totalCalls: stats.totalCalls,
           },
         };
-        
+
         alerts.set(alertId, alert);
         newAlerts.push(alert);
       }
     } else {
       // Error rate is normal, resolve any existing alerts
-      const alertId = `error-rate-${tenantId || 'global'}`;
+      const alertId = `error-rate-${tenantId || "global"}`;
       const existingAlert = alerts.get(alertId);
       if (existingAlert && !existingAlert.resolved) {
         existingAlert.resolved = true;
       }
     }
-    
+
     return newAlerts;
   } catch (error) {
-    console.error('[alerts] Failed to check error rate:', error);
+    console.error("[alerts] Failed to check error rate:", error);
     return [];
   }
 }
@@ -131,15 +131,15 @@ export async function checkPerformanceAlerts(tenantId?: string): Promise<Alert[]
   try {
     const stats = await getApiCallStats({ tenantId });
     const newAlerts: Alert[] = [];
-    
+
     // Alert if average response time is above 1 second
     if (stats.averageResponseTime > 1000) {
-      const alertId = `performance-${tenantId || 'global'}`;
-      
+      const alertId = `performance-${tenantId || "global"}`;
+
       if (!alerts.has(alertId)) {
         const alert: Alert = {
           id: alertId,
-          severity: stats.averageResponseTime > 2000 ? 'critical' : 'warning',
+          severity: stats.averageResponseTime > 2000 ? "critical" : "warning",
           title: `Slow response times detected`,
           message: `Average response time is ${Math.round(stats.averageResponseTime)}ms (threshold: 1000ms)`,
           timestamp: new Date(),
@@ -149,22 +149,22 @@ export async function checkPerformanceAlerts(tenantId?: string): Promise<Alert[]
             totalCalls: stats.totalCalls,
           },
         };
-        
+
         alerts.set(alertId, alert);
         newAlerts.push(alert);
       }
     } else {
       // Performance is normal, resolve any existing alerts
-      const alertId = `performance-${tenantId || 'global'}`;
+      const alertId = `performance-${tenantId || "global"}`;
       const existingAlert = alerts.get(alertId);
       if (existingAlert && !existingAlert.resolved) {
         existingAlert.resolved = true;
       }
     }
-    
+
     return newAlerts;
   } catch (error) {
-    console.error('[alerts] Failed to check performance:', error);
+    console.error("[alerts] Failed to check performance:", error);
     return [];
   }
 }
@@ -174,19 +174,19 @@ export async function checkPerformanceAlerts(tenantId?: string): Promise<Alert[]
  */
 export async function runAllAlertChecks(tenantId?: string): Promise<Alert[]> {
   const allAlerts: Alert[] = [];
-  
+
   // Check health
   const healthAlerts = await checkHealthAlerts();
   allAlerts.push(...healthAlerts);
-  
+
   // Check error rates
   const errorAlerts = await checkErrorRateAlerts(tenantId);
   allAlerts.push(...errorAlerts);
-  
+
   // Check performance
   const performanceAlerts = await checkPerformanceAlerts(tenantId);
   allAlerts.push(...performanceAlerts);
-  
+
   return allAlerts;
 }
 
@@ -194,7 +194,7 @@ export async function runAllAlertChecks(tenantId?: string): Promise<Alert[]> {
  * Get active alerts
  */
 export function getActiveAlerts(): Alert[] {
-  return Array.from(alerts.values()).filter(alert => !alert.resolved);
+  return Array.from(alerts.values()).filter((alert) => !alert.resolved);
 }
 
 /**
@@ -212,7 +212,7 @@ export function resolveAlert(alertId: string): void {
  */
 export function clearOldAlerts(): void {
   const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
-  
+
   for (const [id, alert] of alerts.entries()) {
     if (alert.resolved && alert.timestamp.getTime() < oneDayAgo) {
       alerts.delete(id);

@@ -1,6 +1,6 @@
 /**
  * Weekly Reality Loop
- * 
+ *
  * Automated weekly job that:
  * - Snapshots all Reality Metrics
  * - Compares week-over-week deltas
@@ -8,7 +8,7 @@
  * - Stores result in weekly_snapshots
  * - Emits reality_events for failures
  * - Generates WEEKLY_REALITY_REPORT.md
- * 
+ *
  * Runs via cron (typically Monday mornings).
  */
 
@@ -89,7 +89,7 @@ serve(async (req) => {
     if (currentMetrics) {
       for (const metric of currentMetrics) {
         const key = `${metric.category}:${metric.name}`;
-        
+
         // Find previous value
         let previousValue: any = null;
         if (previousSnapshot?.metrics_snapshot) {
@@ -103,9 +103,7 @@ serve(async (req) => {
         }
 
         const currentValue = metric.value;
-        const delta = previousValue !== null 
-          ? calculateDelta(currentValue, previousValue)
-          : null;
+        const delta = previousValue !== null ? calculateDelta(currentValue, previousValue) : null;
 
         deltaSummary[key] = {
           current: currentValue,
@@ -139,7 +137,10 @@ serve(async (req) => {
         }
 
         // Check for regressions
-        if (delta !== null && isRegression(metric.category, metric.name, currentValue, previousValue, delta)) {
+        if (
+          delta !== null &&
+          isRegression(metric.category, metric.name, currentValue, previousValue, delta)
+        ) {
           risks.push({
             type: "regression",
             severity: "warning",
@@ -164,11 +165,13 @@ serve(async (req) => {
     const invariantViolations = await checkInvariants(supabase);
     if (invariantViolations.length > 0) {
       risks.push(...invariantViolations);
-      requiredActions.push(...invariantViolations.map((v: any) => ({
-        action: v.message,
-        priority: v.severity === "critical" ? "high" : "medium",
-        reason: "Invariant violation",
-      })));
+      requiredActions.push(
+        ...invariantViolations.map((v: any) => ({
+          action: v.message,
+          priority: v.severity === "critical" ? "high" : "medium",
+          reason: "Invariant violation",
+        }))
+      );
     }
 
     // Get events summary for the week
@@ -235,7 +238,8 @@ serve(async (req) => {
     await supabase.rpc("record_reality_event", {
       p_category: "system",
       p_event_name: "weekly_reality_snapshot_completed",
-      p_severity: risks.filter((r: any) => r.severity === "critical").length > 0 ? "warning" : "info",
+      p_severity:
+        risks.filter((r: any) => r.severity === "critical").length > 0 ? "warning" : "info",
       p_meta: {
         week_start: weekStartDate,
         snapshot_id: snapshot.id,
@@ -258,7 +262,7 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error("Error in weekly reality loop:", error);
-    
+
     // Record failure event
     try {
       const supabase = createClient(
@@ -323,12 +327,12 @@ function isRegression(
   if (category === "revenue" && typeof current === "number" && typeof previous === "number") {
     return current < previous;
   }
-  
+
   // Failure metrics should not increase
   if (category === "failure" && typeof current === "number" && typeof previous === "number") {
     return current > previous;
   }
-  
+
   return false;
 }
 
@@ -415,8 +419,10 @@ function generateWeeklyReport(params: {
   const topRisks = risks
     .sort((a, b) => {
       const severityOrder = { critical: 3, warning: 2, info: 1 };
-      return (severityOrder[b.severity as keyof typeof severityOrder] || 0) - 
-             (severityOrder[a.severity as keyof typeof severityOrder] || 0);
+      return (
+        (severityOrder[b.severity as keyof typeof severityOrder] || 0) -
+        (severityOrder[a.severity as keyof typeof severityOrder] || 0)
+      );
     })
     .slice(0, 5);
 
@@ -427,7 +433,9 @@ function generateWeeklyReport(params: {
 
   report += `## Metrics That Moved\n\n`;
   const movedMetrics = Object.entries(params.deltaSummary)
-    .filter(([_, delta]: [string, any]) => delta.delta && Math.abs(delta.delta.absolute || 0) > 0.01)
+    .filter(
+      ([_, delta]: [string, any]) => delta.delta && Math.abs(delta.delta.absolute || 0) > 0.01
+    )
     .slice(0, 10);
 
   if (movedMetrics.length > 0) {

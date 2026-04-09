@@ -291,9 +291,9 @@ CREATE INDEX IF NOT EXISTS "newsletter_subscriptions_subscribed_idx" ON "newslet
 -- ============================================================================
 
 -- Check all tables were created
-SELECT table_name 
-FROM information_schema.tables 
-WHERE table_schema = 'public' 
+SELECT table_name
+FROM information_schema.tables
+WHERE table_schema = 'public'
 AND table_name IN (
     'analytics_events',
     'sdk_downloads',
@@ -305,7 +305,7 @@ AND table_name IN (
 ORDER BY table_name;
 
 -- Check indexes
-SELECT 
+SELECT
     tablename,
     indexname
 FROM pg_indexes
@@ -360,6 +360,7 @@ RETURNING *;
 ## Usage Instructions
 
 ### Option 1: Use Supabase AI Chatbot
+
 1. Open Supabase Dashboard
 2. Navigate to SQL Editor
 3. Click on "AI Assistant" or chat icon
@@ -367,6 +368,7 @@ RETURNING *;
 5. Review and execute the generated SQL
 
 ### Option 2: Direct SQL Execution
+
 1. Open Supabase Dashboard
 2. Navigate to SQL Editor
 3. Paste the complete SQL migration from "Alternative: Direct SQL Migration" section
@@ -374,6 +376,7 @@ RETURNING *;
 5. Verify using the verification queries
 
 ### Option 3: Prisma Migration (if using Prisma)
+
 1. Add the models from `prisma/schema-additions.prisma` to your main `schema.prisma`
 2. Run: `npx prisma migrate dev --name add_analytics_and_chatbot`
 3. Generate client: `npx prisma generate`

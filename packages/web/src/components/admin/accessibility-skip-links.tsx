@@ -1,12 +1,12 @@
 /**
  * Accessibility Skip Links
- * 
+ *
  * Skip navigation links for keyboard users.
  */
 
-'use client';
+"use client";
 
-import Link from 'next/link';
+import Link from "next/link";
 
 export function SkipLinks() {
   return (

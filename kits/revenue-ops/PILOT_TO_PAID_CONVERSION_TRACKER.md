@@ -7,6 +7,7 @@
 ## Overview
 
 This tracker helps you:
+
 - **Track conversions:** Monitor pilot-to-paid conversion rates
 - **Identify patterns:** Understand what drives conversion
 - **Optimize conversion:** Improve conversion rates over time
@@ -19,7 +20,9 @@ This tracker helps you:
 ## Conversion Tracking
 
 ### Pilot Metrics
+
 **Track:**
+
 - Pilot start date
 - Pilot end date
 - Pilot duration
@@ -28,6 +31,7 @@ This tracker helps you:
 - Source (inbound, outbound, referral)
 
 **Example:**
+
 - Pilot ID: P-001
 - Start Date: 2025-01-01
 - End Date: 2025-01-15
@@ -39,7 +43,9 @@ This tracker helps you:
 ---
 
 ### Conversion Metrics
+
 **Track:**
+
 - Conversion status (converted, extended, stopped)
 - Conversion date
 - Plan selected (Starter, Professional, Enterprise)
@@ -47,6 +53,7 @@ This tracker helps you:
 - Conversion reason (why they converted)
 
 **Example:**
+
 - Conversion Status: Converted
 - Conversion Date: 2025-01-14
 - Plan Selected: Starter ($99/month)
@@ -56,13 +63,16 @@ This tracker helps you:
 ---
 
 ### Non-Conversion Metrics
+
 **Track:**
+
 - Non-conversion reason (why they didn't convert)
 - Feedback collected
 - Reconnect date
 - Follow-up actions
 
 **Example:**
+
 - Non-Conversion Reason: No budget
 - Feedback: "Great product, but can't justify cost right now"
 - Reconnect Date: 2025-04-01
@@ -73,9 +83,11 @@ This tracker helps you:
 ## Conversion Analysis
 
 ### Conversion Rate by ICP
+
 **Track:** Conversion rate for each ICP type
 
 **Example:**
+
 - E-commerce Finance Manager: 35%
 - SaaS Operations Lead: 30%
 - Accounting Firm Partner: 25%
@@ -87,9 +99,11 @@ This tracker helps you:
 ---
 
 ### Conversion Rate by Use Case
+
 **Track:** Conversion rate for each use case
 
 **Example:**
+
 - E-commerce payment reconciliation: 35%
 - Multi-currency reconciliation: 30%
 - Client reconciliation: 25%
@@ -101,9 +115,11 @@ This tracker helps you:
 ---
 
 ### Conversion Rate by Source
+
 **Track:** Conversion rate by acquisition source
 
 **Example:**
+
 - Inbound: 30%
 - Outbound: 25%
 - Referral: 40%
@@ -114,9 +130,11 @@ This tracker helps you:
 ---
 
 ### Conversion Rate by Pilot Duration
+
 **Track:** Conversion rate by pilot duration
 
 **Example:**
+
 - 14 days: 30%
 - 21 days: 35%
 - 30 days: 40%
@@ -128,9 +146,11 @@ This tracker helps you:
 ## Conversion Drivers
 
 ### Success Criteria Met
+
 **Track:** Which success criteria drive conversion
 
 **Example:**
+
 - First reconciliation: 80% conversion
 - Time-to-value <7 days: 75% conversion
 - Usage >1K transactions: 70% conversion
@@ -142,9 +162,11 @@ This tracker helps you:
 ---
 
 ### Value Realized
+
 **Track:** Value metrics that drive conversion
 
 **Example:**
+
 - Time saved >20 hours: 80% conversion
 - Cost savings >$2K: 75% conversion
 - ROI >10x: 70% conversion
@@ -157,9 +179,11 @@ This tracker helps you:
 ## Conversion Optimization
 
 ### Qualification Improvement
+
 **Action:** Improve qualification to increase conversion
 
 **Metrics:**
+
 - Qualification rate
 - Conversion rate by qualification score
 - Time-to-qualify
@@ -169,9 +193,11 @@ This tracker helps you:
 ---
 
 ### Onboarding Improvement
+
 **Action:** Improve onboarding to increase conversion
 
 **Metrics:**
+
 - Time-to-first-value
 - First value rate
 - Onboarding completion rate
@@ -181,9 +207,11 @@ This tracker helps you:
 ---
 
 ### Value Demonstration
+
 **Action:** Better value demonstration to increase conversion
 
 **Metrics:**
+
 - Value realization rate
 - Value metrics shown
 - Conversion rate by value metrics
@@ -195,14 +223,17 @@ This tracker helps you:
 ## Conversion Forecasting
 
 ### Pipeline Value
+
 **Definition:** Total MRR potential from active pilots
 
 **Calculation:**
+
 ```
 Pipeline Value = Sum of (Pilots × Expected Conversion Rate × Plan Value)
 ```
 
 **Example:**
+
 - Active pilots: 20
 - Expected conversion rate: 30%
 - Average plan value: $99/month
@@ -211,14 +242,17 @@ Pipeline Value = Sum of (Pilots × Expected Conversion Rate × Plan Value)
 ---
 
 ### Conversion Forecast
+
 **Definition:** Predicted conversions based on pipeline
 
 **Calculation:**
+
 ```
 Conversion Forecast = Active Pilots × Expected Conversion Rate
 ```
 
 **Example:**
+
 - Active pilots: 20
 - Expected conversion rate: 30%
 - **Conversion Forecast:** 6 conversions
@@ -228,6 +262,7 @@ Conversion Forecast = Active Pilots × Expected Conversion Rate
 ## Conversion Tracking Template
 
 ### For Each Pilot
+
 ```
 **Pilot ID:** P-XXX
 **Start Date:** YYYY-MM-DD

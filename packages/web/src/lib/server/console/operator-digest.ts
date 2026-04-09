@@ -59,11 +59,7 @@ export async function getOperatorDigest(): Promise<OperatorDigest> {
     };
 
     const tenantIds = Array.from(
-      new Set(
-        (memberships || [])
-          .map((m) => m.tenant_id)
-          .filter((id): id is string => Boolean(id))
-      )
+      new Set((memberships || []).map((m) => m.tenant_id).filter((id): id is string => Boolean(id)))
     );
 
     if (tenantIds.length === 0) {
@@ -91,8 +87,7 @@ export async function getOperatorDigest(): Promise<OperatorDigest> {
       .eq("user_id", user.id)
       .eq("is_connected", true);
 
-    const integrationCount =
-      integrationCountError != null ? -1 : (integrationCountResult ?? 0);
+    const integrationCount = integrationCountError != null ? -1 : (integrationCountResult ?? 0);
 
     const [
       tenantRows,
@@ -292,15 +287,14 @@ export async function getOperatorDigest(): Promise<OperatorDigest> {
     }
 
     items.sort((a, b) => {
-      const rank = (s: DigestSeverity) =>
-        s === "degraded" ? 0 : s === "attention" ? 1 : 2;
+      const rank = (s: DigestSeverity) => (s === "degraded" ? 0 : s === "attention" ? 1 : 2);
       return rank(a.severity) - rank(b.severity);
     });
 
     let billing: OperatorDigest["billing"];
     let billingAccountId =
-      tenantRows.find((row: (typeof tenantRows)[number]) => row.billingAccountId)?.billingAccountId ??
-      null;
+      tenantRows.find((row: (typeof tenantRows)[number]) => row.billingAccountId)
+        ?.billingAccountId ?? null;
     if (!billingAccountId) {
       const { data: baRow } = await supabase
         .from("billing_accounts")
@@ -323,9 +317,7 @@ export async function getOperatorDigest(): Promise<OperatorDigest> {
             ? cfg.limits.reconcile.monthlyVolume
             : null;
         const exceptionApprox =
-          reconVol != null
-            ? Math.floor(reconVol * cfg!.limits.exceptions.includedRate)
-            : null;
+          reconVol != null ? Math.floor(reconVol * cfg!.limits.exceptions.includedRate) : null;
         billing = {
           planCode,
           planName: cfg?.name ?? planCode,
@@ -364,9 +356,7 @@ export async function getOperatorDigest(): Promise<OperatorDigest> {
               ? cfg.limits.reconcile.monthlyVolume
               : null;
           const exceptionApprox =
-            reconVol != null
-              ? Math.floor(reconVol * cfg!.limits.exceptions.includedRate)
-              : null;
+            reconVol != null ? Math.floor(reconVol * cfg!.limits.exceptions.includedRate) : null;
           billing = {
             planCode,
             planName: cfg?.name ?? planCode,

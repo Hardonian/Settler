@@ -1,10 +1,10 @@
 /**
  * Generic CSV Exporter
- * 
+ *
  * Exports reconciled data to generic CSV format with customizable columns
  */
 
-import { query } from '../../db';
+import { query } from "../../db";
 
 export interface CSVExportOptions {
   dateRange: {
@@ -20,11 +20,7 @@ export class CSVExporter {
   /**
    * Export to generic CSV format
    */
-  async exportToCSV(
-    tenantId: string,
-    jobId: string,
-    options: CSVExportOptions
-  ): Promise<string> {
+  async exportToCSV(tenantId: string, jobId: string, options: CSVExportOptions): Promise<string> {
     const { dateRange, columns, includeFees, includeUnmatched } = options;
 
     // Get matched transactions
@@ -59,9 +55,9 @@ export class CSVExporter {
 
     // Build CSV
     const csvRows: string[] = [];
-    
+
     // Header
-    csvRows.push(columns.join(','));
+    csvRows.push(columns.join(","));
 
     // Data rows
     for (const match of matches) {
@@ -70,14 +66,14 @@ export class CSVExporter {
         const value = this.getColumnValue(match, col);
         row.push(this.escapeCSV(value));
       }
-      csvRows.push(row.join(','));
+      csvRows.push(row.join(","));
     }
 
     // Add fees if included
     if (includeFees) {
       for (const match of matches) {
-        const transactionId = (match).transaction_id;
-        if (typeof transactionId === 'string') {
+        const transactionId = match.transaction_id;
+        if (typeof transactionId === "string") {
           const fees = await query(
             `SELECT type, amount_value, amount_currency, description 
              FROM fees WHERE transaction_id = $1 AND tenant_id = $2`,
@@ -90,7 +86,7 @@ export class CSVExporter {
               const value = this.getFeeColumnValue(fee, col, match);
               row.push(this.escapeCSV(value));
             }
-            csvRows.push(row.join(','));
+            csvRows.push(row.join(","));
           }
         }
       }
@@ -123,11 +119,11 @@ export class CSVExporter {
           const value = this.getColumnValue(item, col);
           row.push(this.escapeCSV(value));
         }
-        csvRows.push(row.join(','));
+        csvRows.push(row.join(","));
       }
     }
 
-    return csvRows.join('\n');
+    return csvRows.join("\n");
   }
 
   /**
@@ -136,37 +132,56 @@ export class CSVExporter {
   private getColumnValue(match: Record<string, unknown>, column: string): string {
     const value = match[column];
     if (value === null || value === undefined) {
-      return '';
+      return "";
     }
-    if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' || value instanceof Date) {
+    if (
+      typeof value === "string" ||
+      typeof value === "number" ||
+      typeof value === "boolean" ||
+      value instanceof Date
+    ) {
       return String(value);
     }
-    return '';
+    return "";
   }
 
   /**
    * Get fee column value
    */
-  private getFeeColumnValue(fee: Record<string, unknown>, column: string, match: Record<string, unknown>): string {
-    if (column.startsWith('fee_')) {
-      const feeField = column.replace('fee_', '');
+  private getFeeColumnValue(
+    fee: Record<string, unknown>,
+    column: string,
+    match: Record<string, unknown>
+  ): string {
+    if (column.startsWith("fee_")) {
+      const feeField = column.replace("fee_", "");
       const value = fee[feeField];
       if (value === null || value === undefined) {
-        return '';
+        return "";
       }
-      if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' || value instanceof Date) {
+      if (
+        typeof value === "string" ||
+        typeof value === "number" ||
+        typeof value === "boolean" ||
+        value instanceof Date
+      ) {
         return String(value);
       }
-      return '';
+      return "";
     }
     const value = match[column];
     if (value === null || value === undefined) {
-      return '';
+      return "";
     }
-    if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' || value instanceof Date) {
+    if (
+      typeof value === "string" ||
+      typeof value === "number" ||
+      typeof value === "boolean" ||
+      value instanceof Date
+    ) {
       return String(value);
     }
-    return '';
+    return "";
   }
 
   /**
@@ -174,13 +189,13 @@ export class CSVExporter {
    */
   private escapeCSV(value: unknown): string {
     if (value === null || value === undefined) {
-      return '';
+      return "";
     }
 
     const stringValue = String(value);
-    
+
     // If value contains comma, quote, or newline, wrap in quotes and escape quotes
-    if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+    if (stringValue.includes(",") || stringValue.includes('"') || stringValue.includes("\n")) {
       return `"${stringValue.replace(/"/g, '""')}"`;
     }
 
@@ -192,18 +207,18 @@ export class CSVExporter {
    */
   getDefaultColumns(): string[] {
     return [
-      'transaction_id',
-      'provider_transaction_id',
-      'transaction_type',
-      'transaction_amount',
-      'transaction_currency',
-      'transaction_date',
-      'settlement_id',
-      'settlement_amount',
-      'settlement_currency',
-      'settlement_date',
-      'confidence_score',
-      'matched_at',
+      "transaction_id",
+      "provider_transaction_id",
+      "transaction_type",
+      "transaction_amount",
+      "transaction_currency",
+      "transaction_date",
+      "settlement_id",
+      "settlement_amount",
+      "settlement_currency",
+      "settlement_date",
+      "confidence_score",
+      "matched_at",
     ];
   }
 }

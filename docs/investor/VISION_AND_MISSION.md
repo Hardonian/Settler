@@ -5,6 +5,7 @@
 **Settler.dev is the Autonomous Data Operations Operating System — the infrastructure layer that makes data correctness, reconciliation, and workflow automation as reliable as electricity.**
 
 We envision a world where:
+
 - Every data operation is automatically validated, reconciled, and audited
 - Schema drift is detected and repaired before it causes problems
 - Complex workflows orchestrate themselves
@@ -16,6 +17,7 @@ We envision a world where:
 **To eliminate data correctness as a problem for every engineering team.**
 
 We do this by providing:
+
 1. **reconciliation engine** — The core engine that powers all data operations
 2. **Autonomous Intelligence** — Self-healing, self-optimizing, self-monitoring systems
 3. **Vertical Modules** — Industry-specific solutions that work out of the box

@@ -14,7 +14,11 @@ import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { ADMIN_DASHBOARD_MODULE_REGISTRY } from "@/lib/operator-customization/registry";
 import { OPERATOR_CUSTOMIZATION_PRESETS } from "@/lib/operator-customization/presets";
-import type { CustomizationPatch, ModulePlacement, OperatorSurfaceCustomization } from "@/lib/operator-customization/schema";
+import type {
+  CustomizationPatch,
+  ModulePlacement,
+  OperatorSurfaceCustomization,
+} from "@/lib/operator-customization/schema";
 
 const PREMIUM_PRESET_IDS = new Set(["buyer_demo", "exception_ops"]);
 
@@ -53,7 +57,9 @@ export default function OperatorCustomizationStudioPage() {
       message: string;
     }>
   >([]);
-  const [tenantOptions, setTenantOptions] = useState<Array<{ id: string; slug: string; name: string }>>([]);
+  const [tenantOptions, setTenantOptions] = useState<
+    Array<{ id: string; slug: string; name: string }>
+  >([]);
   const [selectedTenantId, setSelectedTenantId] = useState<string | null>(null);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
@@ -69,7 +75,9 @@ export default function OperatorCustomizationStudioPage() {
   );
 
   const loadTenants = useCallback(async () => {
-    const res = await fetch("/api/admin/operator-customization/tenants", { credentials: "include" });
+    const res = await fetch("/api/admin/operator-customization/tenants", {
+      credentials: "include",
+    });
     if (!res.ok) return;
     const json = (await res.json()) as { items: Array<{ id: string; slug: string; name: string }> };
     const items = json.items ?? [];
@@ -85,7 +93,9 @@ export default function OperatorCustomizationStudioPage() {
       setPayload(null);
       return;
     }
-    const res = await fetch(`/api/admin/operator-customization${tenantQuery}`, { credentials: "include" });
+    const res = await fetch(`/api/admin/operator-customization${tenantQuery}`, {
+      credentials: "include",
+    });
     if (!res.ok) {
       const b = (await res.json().catch(() => ({}))) as {
         error?: string;
@@ -144,7 +154,9 @@ export default function OperatorCustomizationStudioPage() {
 
   const sortedDraft = useMemo(() => {
     if (!draft) return [];
-    return [...draft.modules].sort((a, b) => a.order - b.order || a.moduleId.localeCompare(b.moduleId));
+    return [...draft.modules].sort(
+      (a, b) => a.order - b.order || a.moduleId.localeCompare(b.moduleId)
+    );
   }, [draft]);
 
   const diffSummary = useMemo(() => {
@@ -302,7 +314,9 @@ export default function OperatorCustomizationStudioPage() {
     });
     const json = await res.json().catch(() => ({}));
     if (!res.ok) {
-      setProposalError(typeof json.proposal?.rationale === "string" ? json.proposal.rationale : "rejected");
+      setProposalError(
+        typeof json.proposal?.rationale === "string" ? json.proposal.rationale : "rejected"
+      );
       return;
     }
     setProposal({
@@ -376,9 +390,9 @@ export default function OperatorCustomizationStudioPage() {
       <div>
         <h1 className="text-2xl font-bold">Operator Customization Studio</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Presentation-only layout for the admin dashboard. Does not change reconciliation results, evidence, or run
-          health semantics. Draft saves are persisted; publish makes the layout live for your operator session on this
-          workspace.
+          Presentation-only layout for the admin dashboard. Does not change reconciliation results,
+          evidence, or run health semantics. Draft saves are persisted; publish makes the layout
+          live for your operator session on this workspace.
         </p>
         <p className="text-sm mt-2">
           <Link href="/admin" className="underline underline-offset-2">
@@ -394,7 +408,8 @@ export default function OperatorCustomizationStudioPage() {
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
             <p className="text-muted-foreground text-xs">
-              Multiple active tenants exist. Customization writes are scoped to the workspace you select.
+              Multiple active tenants exist. Customization writes are scoped to the workspace you
+              select.
             </p>
             <label className="sr-only" htmlFor="tenant-select">
               Workspace
@@ -423,7 +438,10 @@ export default function OperatorCustomizationStudioPage() {
       ) : null}
 
       {payload?.tenant ? (
-        <p className="text-xs text-muted-foreground" data-testid="operator-customization-tenant-context">
+        <p
+          className="text-xs text-muted-foreground"
+          data-testid="operator-customization-tenant-context"
+        >
           Workspace: <span className="font-mono">{payload.tenant.slug}</span>
           {payload.entitlements ? (
             <>
@@ -435,14 +453,25 @@ export default function OperatorCustomizationStudioPage() {
       ) : null}
 
       {loadError ? (
-        <p className="text-sm text-destructive" role="alert" data-testid="operator-customization-error">
+        <p
+          className="text-sm text-destructive"
+          role="alert"
+          data-testid="operator-customization-error"
+        >
           {loadError}
         </p>
       ) : null}
 
       {saveStatus !== "idle" ? (
-        <p className="text-xs text-muted-foreground" data-testid="operator-customization-save-status">
-          {saveStatus === "saving" ? "Saving draft…" : saveStatus === "saved" ? "Draft saved (server)" : "Save failed"}
+        <p
+          className="text-xs text-muted-foreground"
+          data-testid="operator-customization-save-status"
+        >
+          {saveStatus === "saving"
+            ? "Saving draft…"
+            : saveStatus === "saved"
+              ? "Draft saved (server)"
+              : "Save failed"}
         </p>
       ) : null}
 
@@ -498,10 +527,20 @@ export default function OperatorCustomizationStudioPage() {
             >
               Publish draft
             </Button>
-            <Button size="sm" variant="outline" onClick={() => void revertDraft()} disabled={busy || awaitingTenantPick}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => void revertDraft()}
+              disabled={busy || awaitingTenantPick}
+            >
               Revert draft to published
             </Button>
-            <Button size="sm" variant="secondary" onClick={() => void load()} disabled={busy || awaitingTenantPick}>
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => void load()}
+              disabled={busy || awaitingTenantPick}
+            >
               Refresh
             </Button>
           </div>
@@ -592,14 +631,19 @@ export default function OperatorCustomizationStudioPage() {
                   <Switch
                     checked={m.enabled}
                     disabled={busy || def?.allowDisable === false}
-                    onCheckedChange={(v) => updatePlacement(m.moduleId, (x) => ({ ...x, enabled: v }))}
+                    onCheckedChange={(v) =>
+                      updatePlacement(m.moduleId, (x) => ({ ...x, enabled: v }))
+                    }
                     aria-label={`Enable ${m.moduleId}`}
                   />
                   <span className="text-sm">Visible</span>
                 </div>
                 {def?.allowTitleOverride ? (
                   <div className="space-y-1">
-                    <label className="text-xs text-muted-foreground" htmlFor={`title-${m.moduleId}`}>
+                    <label
+                      className="text-xs text-muted-foreground"
+                      htmlFor={`title-${m.moduleId}`}
+                    >
                       Title override
                     </label>
                     <Input
@@ -675,8 +719,8 @@ export default function OperatorCustomizationStudioPage() {
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-xs text-muted-foreground">
-            Advisory only: deterministic pattern match to a patch. Does not auto-publish; does not change reconciliation
-            truth.
+            Advisory only: deterministic pattern match to a patch. Does not auto-publish; does not
+            change reconciliation truth.
           </p>
           <Textarea
             value={promptText}
@@ -696,7 +740,10 @@ export default function OperatorCustomizationStudioPage() {
           </Button>
           {proposalError ? <p className="text-sm text-destructive">{proposalError}</p> : null}
           {proposal ? (
-            <div className="border rounded-md p-3 space-y-2 text-sm" data-testid="operator-customization-proposal-panel">
+            <div
+              className="border rounded-md p-3 space-y-2 text-sm"
+              data-testid="operator-customization-proposal-panel"
+            >
               <p className="font-medium">Rationale</p>
               <p className="text-muted-foreground">{proposal.rationale}</p>
               <p className="text-xs text-muted-foreground">Mode: {proposal.inferenceMode}</p>
@@ -708,7 +755,12 @@ export default function OperatorCustomizationStudioPage() {
               <pre className="text-xs bg-muted p-2 rounded-md overflow-x-auto">
                 {JSON.stringify(proposal.patch, null, 2)}
               </pre>
-              <Button size="sm" onClick={() => void applyProposal()} disabled={busy} data-testid="operator-customization-proposal-apply">
+              <Button
+                size="sm"
+                onClick={() => void applyProposal()}
+                disabled={busy}
+                data-testid="operator-customization-proposal-apply"
+              >
                 Apply to draft (not published)
               </Button>
             </div>
@@ -722,8 +774,8 @@ export default function OperatorCustomizationStudioPage() {
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
           <p className="text-muted-foreground text-xs">
-            Based on recorded module views (tenant-scoped). Dismiss is stored for this workspace and your operator
-            account (not session-only).
+            Based on recorded module views (tenant-scoped). Dismiss is stored for this workspace and
+            your operator account (not session-only).
           </p>
           {suggestions.length === 0 ? (
             <p className="text-muted-foreground">No suggestions right now.</p>

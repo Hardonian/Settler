@@ -1,6 +1,6 @@
 /**
  * Demo Data Types
- * 
+ *
  * Type definitions for deterministic demo data.
  * All demo data is static and reproducible - no randomness.
  */
@@ -36,13 +36,7 @@ export type TransactionStatus = z.infer<typeof TransactionStatusSchema>;
 /**
  * Match confidence level
  */
-export const MatchConfidenceSchema = z.enum([
-  "exact",
-  "high",
-  "medium",
-  "low",
-  "none",
-]);
+export const MatchConfidenceSchema = z.enum(["exact", "high", "medium", "low", "none"]);
 
 export type MatchConfidence = z.infer<typeof MatchConfidenceSchema>;
 
@@ -98,12 +92,16 @@ export const ShopifyOrderSchema = BaseTransactionSchema.extend({
   shopify_order_id: z.string(),
   shopify_order_number: z.string(),
   customer_email: z.string().optional(),
-  line_items: z.array(z.object({
-    id: z.string(),
-    title: z.string(),
-    quantity: z.number(),
-    price: z.number(),
-  })).optional(),
+  line_items: z
+    .array(
+      z.object({
+        id: z.string(),
+        title: z.string(),
+        quantity: z.number(),
+        price: z.number(),
+      })
+    )
+    .optional(),
   fulfillment_status: z.string().optional(),
 });
 
@@ -145,12 +143,16 @@ export const ReceiptSchema = z.object({
   currency: z.string().default("USD"),
   date: z.string(), // ISO 8601
   category: z.string().optional(),
-  items: z.array(z.object({
-    description: z.string(),
-    quantity: z.number().optional(),
-    unit_price: z.number().optional(),
-    total: z.number(),
-  })).optional(),
+  items: z
+    .array(
+      z.object({
+        description: z.string(),
+        quantity: z.number().optional(),
+        unit_price: z.number().optional(),
+        total: z.number(),
+      })
+    )
+    .optional(),
   tax_amount: z.number().optional(),
   total_amount: z.number(),
   payment_method: z.string().optional(),
@@ -183,12 +185,14 @@ export const MatchResultSchema = z.object({
   rule_used: MatchRuleTypeSchema,
   rule_id: z.string(),
   matched_at: z.string(), // ISO 8601
-  evidence: z.array(z.object({
-    field: z.string(),
-    source_value: z.unknown(),
-    target_value: z.unknown(),
-    match_type: z.string(),
-  })),
+  evidence: z.array(
+    z.object({
+      field: z.string(),
+      source_value: z.unknown(),
+      target_value: z.unknown(),
+      match_type: z.string(),
+    })
+  ),
   audit_trail_id: z.string(),
   deterministic_hash: z.string(), // SHA-256 of normalized record
 });

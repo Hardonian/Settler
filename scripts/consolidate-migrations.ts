@@ -1,14 +1,14 @@
 #!/usr/bin/env tsx
 /**
  * Migration Consolidation Script
- * 
+ *
  * Reads all migration files and consolidates them into a single golden migration.
  * Ensures idempotency by wrapping all statements appropriately.
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
-import { execSync } from 'child_process';
+import * as fs from "fs";
+import * as path from "path";
+import { execSync } from "child_process";
 
 interface MigrationFile {
   name: string;
@@ -18,19 +18,22 @@ interface MigrationFile {
 }
 
 function getAllMigrationFiles(): MigrationFile[] {
-  const migrationsDir = path.join(__dirname, '..', 'supabase', 'migrations');
-  const files = fs.readdirSync(migrationsDir)
-    .filter(f => f.endsWith('.sql') && f !== 'rollback_template.sql' && f !== 'verify_console_setup.sql')
-    .map(f => ({
+  const migrationsDir = path.join(__dirname, "..", "supabase", "migrations");
+  const files = fs
+    .readdirSync(migrationsDir)
+    .filter(
+      (f) => f.endsWith(".sql") && f !== "rollback_template.sql" && f !== "verify_console_setup.sql"
+    )
+    .map((f) => ({
       name: f,
       path: path.join(migrationsDir, f),
-      content: fs.readFileSync(path.join(migrationsDir, f), 'utf-8'),
+      content: fs.readFileSync(path.join(migrationsDir, f), "utf-8"),
       timestamp: extractTimestamp(f),
     }))
     .sort((a, b) => {
       // Sort by timestamp, but put 000_helper_functions first
-      if (a.name.startsWith('000_')) return -1;
-      if (b.name.startsWith('000_')) return 1;
+      if (a.name.startsWith("000_")) return -1;
+      if (b.name.startsWith("000_")) return 1;
       return a.timestamp.localeCompare(b.timestamp);
     });
 
@@ -39,7 +42,7 @@ function getAllMigrationFiles(): MigrationFile[] {
 
 function extractTimestamp(filename: string): string {
   const match = filename.match(/(\d{8,})/);
-  return match ? match[1] : '00000000';
+  return match ? match[1] : "00000000";
 }
 
 function consolidateMigrations(migrations: MigrationFile[]): string {
@@ -150,14 +153,14 @@ $$ LANGUAGE plpgsql;
 
     // Extract content, removing BEGIN/COMMIT blocks and comments
     let content = migration.content;
-    
+
     // Remove standalone BEGIN/COMMIT statements (we wrap everything in one transaction)
-    content = content.replace(/^BEGIN;?\s*$/gm, '');
-    content = content.replace(/^COMMIT;?\s*$/gm, '');
-    
+    content = content.replace(/^BEGIN;?\s*$/gm, "");
+    content = content.replace(/^COMMIT;?\s*$/gm, "");
+
     // Keep the actual SQL statements
     sections.push(content);
-    sections.push('\n');
+    sections.push("\n");
   }
 
   sections.push(`-- ============================================================================
@@ -167,35 +170,41 @@ $$ LANGUAGE plpgsql;
 COMMIT;
 `);
 
-  return sections.join('\n');
+  return sections.join("\n");
 }
 
 function main() {
-  console.log('🔄 Consolidating migrations...');
-  
+  console.log("🔄 Consolidating migrations...");
+
   const migrations = getAllMigrationFiles();
   console.log(`📦 Found ${migrations.length} migration files`);
 
   const consolidated = consolidateMigrations(migrations);
-  
-  const outputPath = path.join(__dirname, '..', 'supabase', 'migrations', '00000000_settler_golden_schema.sql');
+
+  const outputPath = path.join(
+    __dirname,
+    "..",
+    "supabase",
+    "migrations",
+    "00000000_settler_golden_schema.sql"
+  );
   fs.writeFileSync(outputPath, consolidated);
-  
+
   console.log(`✅ Consolidated migration written to: ${outputPath}`);
   console.log(`📊 Size: ${(consolidated.length / 1024).toFixed(2)} KB`);
-  
+
   // Create archive directory
-  const archiveDir = path.join(__dirname, '..', 'supabase', 'migrations', '_archive');
+  const archiveDir = path.join(__dirname, "..", "supabase", "migrations", "_archive");
   if (!fs.existsSync(archiveDir)) {
     fs.mkdirSync(archiveDir, { recursive: true });
     console.log(`📁 Created archive directory: ${archiveDir}`);
   }
-  
-  console.log('\n⚠️  Next steps:');
-  console.log('1. Review the golden migration file');
-  console.log('2. Test it on a clean database');
-  console.log('3. Move old migrations to _archive/');
-  console.log('4. Update CI to use the golden migration');
+
+  console.log("\n⚠️  Next steps:");
+  console.log("1. Review the golden migration file");
+  console.log("2. Test it on a clean database");
+  console.log("3. Move old migrations to _archive/");
+  console.log("4. Update CI to use the golden migration");
 }
 
 main();

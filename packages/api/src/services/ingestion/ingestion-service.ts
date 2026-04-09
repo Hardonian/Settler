@@ -6,17 +6,12 @@
 import { v4 as uuidv4 } from "uuid";
 import { query, transaction } from "../../db";
 import { logError, logInfo } from "../../utils/logger";
-import {
-  IngestionJobConfig,
-  NormalizedTransactionInput,
-} from "./types";
+import { IngestionJobConfig, NormalizedTransactionInput } from "./types";
 
 /**
  * Create a new ingestion record
  */
-export async function createIngestion(
-  config: IngestionJobConfig
-): Promise<string> {
+export async function createIngestion(config: IngestionJobConfig): Promise<string> {
   const ingestionId = uuidv4();
   const traceId = config.traceId || uuidv4();
 

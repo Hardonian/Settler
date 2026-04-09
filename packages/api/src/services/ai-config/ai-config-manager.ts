@@ -1,23 +1,22 @@
 /**
  * AI Config Manager
- * 
+ *
  * Manages user-configurable AI settings
  * Part of Phase VIII: Future-Proof Architecture
  */
 
- 
-import { PrismaClient } from '@prisma/client';
-import { logInfo } from '../../utils/logger';
-import { AIModel } from '../ai-mesh/ai-router';
+import { PrismaClient } from "@prisma/client";
+import { logInfo } from "../../utils/logger";
+import { AIModel } from "../ai-mesh/ai-router";
 
 export interface AIConfig {
   preferredModels: AIModel[];
   maxAISpend: number;
   fallbackRules: Array<{
     condition: string;
-    action: 'use_cheaper_model' | 'use_local' | 'skip_ai';
+    action: "use_cheaper_model" | "use_local" | "skip_ai";
   }>;
-  accuracyVsCost: 'accuracy' | 'balanced' | 'cost';
+  accuracyVsCost: "accuracy" | "balanced" | "cost";
 }
 
 export class AIConfigManager {
@@ -36,15 +35,15 @@ export class AIConfigManager {
     // TODO: Store in database or config table
     // For now, return defaults
     return {
-      preferredModels: ['gpt-4', 'claude-3-opus'],
+      preferredModels: ["gpt-4", "claude-3-opus"],
       maxAISpend: 1000,
       fallbackRules: [
         {
-          condition: 'cost > maxSpend',
-          action: 'use_cheaper_model',
+          condition: "cost > maxSpend",
+          action: "use_cheaper_model",
         },
       ],
-      accuracyVsCost: 'balanced',
+      accuracyVsCost: "balanced",
     };
   }
 
@@ -53,6 +52,6 @@ export class AIConfigManager {
    */
   async updateConfig(tenantId: string, config: Partial<AIConfig>): Promise<void> {
     // TODO: Save to database
-    logInfo('AI config updated', { tenantId, config });
+    logInfo("AI config updated", { tenantId, config });
   }
 }

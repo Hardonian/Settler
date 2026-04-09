@@ -25,6 +25,7 @@ This document defines the interaction patterns, motion rules, and feedback mecha
 ### When Motion is Allowed
 
 Motion is **allowed** for:
+
 - **State transitions**: When UI reflects a state change (e.g., form submission → loading → success)
 - **Page/route transitions**: When navigating between pages
 - **Progressive disclosure**: When revealing content (accordions, modals, dropdowns)
@@ -34,6 +35,7 @@ Motion is **allowed** for:
 ### When Motion is Forbidden
 
 Motion is **forbidden** for:
+
 - **Constant motion**: No infinite loops, pulsing, or continuous animation
 - **Decorative only**: Motion that doesn't reflect state or provide feedback
 - **Performance-critical areas**: Lists with 100+ items, real-time data streams
@@ -42,6 +44,7 @@ Motion is **forbidden** for:
 ### Motion Tokens
 
 All motion must use tokens from `@/lib/motion/tokens`:
+
 - **Durations**: `motionDurations` (fast: 0.1s, default: 0.2s, moderate: 0.3s, slow: 0.5s)
 - **Easing**: `motionEasing` (easeOut, easeInOut, sharp)
 - **Springs**: `motionSprings` (gentle, default, snappy, bouncy)
@@ -56,18 +59,21 @@ All motion must use tokens from `@/lib/motion/tokens`:
 ### When to Use State Machines
 
 State machines are **required** for:
+
 - **Multi-step flows**: Onboarding, wizards, setup processes
 - **Form submissions**: Any form with validation and async submission
 - **Async operations**: API calls, data fetching, file uploads
 - **Complex interactions**: Multi-modal dialogs, multi-select operations
 
 State machines are **optional** for:
+
 - **Simple toggles**: Boolean state (use `useState` is fine)
 - **Static content**: Display-only components
 
 ### Standard States
 
 All async operations must use these states:
+
 - `idle`: Initial state, ready for input
 - `pending`: Operation in progress
 - `success`: Operation completed successfully
@@ -94,6 +100,7 @@ All async operations must use these states:
 **When**: Multi-step flows, long-running operations
 
 **Implementation**:
+
 - Use `Progress` component with percentage
 - Show step indicators (e.g., "Step 2 of 5")
 - Animate progress bar with `motionDurations.moderate`
@@ -105,6 +112,7 @@ All async operations must use these states:
 **When**: Operation completes successfully
 
 **Implementation**:
+
 - Toast notification (non-blocking)
 - Success badge/icon (temporary, auto-dismiss)
 - Subtle celebration animation (respect reduced motion)
@@ -116,6 +124,7 @@ All async operations must use these states:
 **When**: Operation fails, validation errors
 
 **Implementation**:
+
 - Alert component with clear message
 - Inline validation errors (near input)
 - Retry button (if applicable)
@@ -128,6 +137,7 @@ All async operations must use these states:
 **When**: Async operations, data fetching
 
 **Implementation**:
+
 - Spinner (for < 1s operations)
 - Skeleton screens (for > 1s operations)
 - Progress indicator (for known duration)
@@ -197,6 +207,7 @@ All async operations must use these states:
 **Files**: `packages/web/src/components/Navigation.tsx`
 
 **Patterns**:
+
 - Smooth transitions between routes
 - Active state indication
 - Mobile menu animation
@@ -205,11 +216,13 @@ All async operations must use these states:
 
 ### Forms and Inputs
 
-**Files**: 
+**Files**:
+
 - `packages/web/src/app/signup/page.tsx`
 - `packages/web/src/app/console/onboarding/page.tsx`
 
 **Patterns**:
+
 - Inline validation (on blur or submit)
 - Loading state during submission
 - Success/error feedback
@@ -222,6 +235,7 @@ All async operations must use these states:
 **Files**: `packages/web/src/app/console/onboarding/page.tsx`
 
 **Patterns**:
+
 - Multi-step progression
 - Back/forward navigation
 - Progress indicator
@@ -234,11 +248,13 @@ All async operations must use these states:
 
 ### Dashboards, Lists, Cards
 
-**Files**: 
+**Files**:
+
 - `packages/web/src/app/dashboard/page.tsx`
 - `packages/web/src/app/console/page.tsx`
 
 **Patterns**:
+
 - Card hover effects (subtle)
 - List item animations (stagger)
 - Loading skeletons
@@ -249,6 +265,7 @@ All async operations must use these states:
 ### Loading States
 
 **Patterns**:
+
 - Spinner for < 1s
 - Skeleton for > 1s
 - Progress bar for known duration
@@ -259,6 +276,7 @@ All async operations must use these states:
 ### Empty States
 
 **Patterns**:
+
 - Clear message
 - Action button (if applicable)
 - Illustration (optional)
@@ -268,6 +286,7 @@ All async operations must use these states:
 ### Error States
 
 **Patterns**:
+
 - Clear error message
 - Retry button (if applicable)
 - Helpful guidance
@@ -282,6 +301,7 @@ All async operations must use these states:
 ### Error States in State Machines
 
 All async operations must handle:
+
 - **Network errors**: Timeout, connection failure
 - **Validation errors**: Client-side validation
 - **Server errors**: 4xx, 5xx responses
@@ -325,6 +345,7 @@ When implementing a new interaction:
 **File**: `packages/web/src/app/ux-playground/page.tsx` (StateMachineDemo)
 
 **Pattern**:
+
 1. User fills form → `idle` state
 2. User submits → `pending` state (disable inputs, show spinner)
 3. Success → `success` state (show success message, allow reset)
@@ -337,6 +358,7 @@ When implementing a new interaction:
 **File**: `packages/web/src/app/console/onboarding/page.tsx`
 
 **Pattern**:
+
 1. Show current step
 2. Validate step
 3. Allow back/forward navigation

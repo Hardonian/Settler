@@ -38,14 +38,14 @@ pnpm demo:seed:reset
 
 Generated files are placed in `demo/data/`:
 
-| File | Description | Records |
-|------|-------------|---------|
-| `demo_stripe_transactions.json` | Stripe charges and payouts | ~20 charges + payouts |
-| `demo_bank_transactions.json` | Bank deposits and fees | Transfers + fees |
-| `demo_expected_matches.json` | Expected match mappings | Per payout |
-| `stripe_normalized.json` | Normalized Stripe records | 50 charges + 5 payouts |
-| `bank_normalized.json` | Normalized Bank records | 5 deposits + fees |
-| `expected_matches.json` | Expected match mappings | 5 payout matches |
+| File                            | Description                | Records                |
+| ------------------------------- | -------------------------- | ---------------------- |
+| `demo_stripe_transactions.json` | Stripe charges and payouts | ~20 charges + payouts  |
+| `demo_bank_transactions.json`   | Bank deposits and fees     | Transfers + fees       |
+| `demo_expected_matches.json`    | Expected match mappings    | Per payout             |
+| `stripe_normalized.json`        | Normalized Stripe records  | 50 charges + 5 payouts |
+| `bank_normalized.json`          | Normalized Bank records    | 5 deposits + fees      |
+| `expected_matches.json`         | Expected match mappings    | 5 payout matches       |
 
 ### Seed Customization
 
@@ -67,11 +67,11 @@ CSV files for testing data import workflows and first-tenant validation scenario
 
 ### Files
 
-| File | Purpose |
-|------|---------|
-| `pilot-data/payments.csv` | Baseline payment events |
-| `pilot-data/refunds.csv` | Refund flow scenarios |
-| `pilot-data/settlements.csv` | Settlement events |
+| File                                   | Purpose                       |
+| -------------------------------------- | ----------------------------- |
+| `pilot-data/payments.csv`              | Baseline payment events       |
+| `pilot-data/refunds.csv`               | Refund flow scenarios         |
+| `pilot-data/settlements.csv`           | Settlement events             |
 | `pilot-data/discrepancy-scenarios.csv` | Controlled mismatch scenarios |
 
 ### Usage
@@ -95,13 +95,13 @@ Pre-generated datasets with known expected results ("golden datasets") for verif
 
 ### Files
 
-| File | Description |
-|------|-------------|
-| `payment_processor.csv` | Source: Payment processor data |
-| `bank_statement.csv` | Target: Bank statement data |
-| `internal_ledger.csv` | Additional source |
-| `invoice_system.csv` | Additional target |
-| `golden.json` | Expected reconciliation results |
+| File                    | Description                     |
+| ----------------------- | ------------------------------- |
+| `payment_processor.csv` | Source: Payment processor data  |
+| `bank_statement.csv`    | Target: Bank statement data     |
+| `internal_ledger.csv`   | Additional source               |
+| `invoice_system.csv`    | Additional target               |
+| `golden.json`           | Expected reconciliation results |
 
 ### Usage
 
@@ -131,12 +131,12 @@ The Settler playground is **designed to work without authentication**:
 
 ### Playground Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/v1/playground/demo-dataset` | GET | Get demo dataset |
-| `/api/v1/playground/demo-run` | POST | Run demo reconciliation |
-| `/api/v1/playground/reconcile` | POST | Run custom reconciliation |
-| `/api/v1/playground/examples` | GET | Get pre-filled examples |
+| Endpoint                          | Method | Description               |
+| --------------------------------- | ------ | ------------------------- |
+| `/api/v1/playground/demo-dataset` | GET    | Get demo dataset          |
+| `/api/v1/playground/demo-run`     | POST   | Run demo reconciliation   |
+| `/api/v1/playground/reconcile`    | POST   | Run custom reconciliation |
+| `/api/v1/playground/examples`     | GET    | Get pre-filled examples   |
 
 ### Testing Playground
 
@@ -155,10 +155,10 @@ curl -X POST http://localhost:4000/api/v1/playground/demo-run \
 
 ### Routes Returning 404 If Data Missing
 
-| Route | Behavior | Fix |
-|-------|----------|-----|
+| Route                                 | Behavior                         | Fix                  |
+| ------------------------------------- | -------------------------------- | -------------------- |
 | `GET /api/v1/playground/demo-dataset` | Returns 404 if demo data missing | Run `pnpm demo:seed` |
-| `POST /api/v1/playground/demo-run` | Returns 404 if demo data missing | Run `pnpm demo:seed` |
+| `POST /api/v1/playground/demo-run`    | Returns 404 if demo data missing | Run `pnpm demo:seed` |
 
 ### Graceful Degradation Routes
 
@@ -172,14 +172,14 @@ These routes work without demo data (return demo responses):
 
 ## Verification Checklist
 
-| Step | Command | Expected |
-|------|---------|----------|
-| Generate demo data | `pnpm demo:seed` | Exit 0, files in demo/data/ |
-| Verify files | `ls demo/data/` | JSON files present |
-| Test playground | `curl localhost:4000/api/v1/playground/demo-dataset` | Returns JSON data |
-| Run demo | `curl -X POST localhost:4000/api/v1/playground/demo-run` | Returns reconciliation results |
-| Test pilot | `ls pilot-data/` | CSV files present |
-| Verify test data | `pnpm verify:test-data` | Exit 0 |
+| Step               | Command                                                  | Expected                       |
+| ------------------ | -------------------------------------------------------- | ------------------------------ |
+| Generate demo data | `pnpm demo:seed`                                         | Exit 0, files in demo/data/    |
+| Verify files       | `ls demo/data/`                                          | JSON files present             |
+| Test playground    | `curl localhost:4000/api/v1/playground/demo-dataset`     | Returns JSON data              |
+| Run demo           | `curl -X POST localhost:4000/api/v1/playground/demo-run` | Returns reconciliation results |
+| Test pilot         | `ls pilot-data/`                                         | CSV files present              |
+| Verify test data   | `pnpm verify:test-data`                                  | Exit 0                         |
 
 ---
 
@@ -198,11 +198,13 @@ The playground works without DB. This error only occurs during full demo-run. Ig
 ### "Demo data returns empty"
 
 Check demo files exist:
+
 ```bash
 ls -la demo/data/
 ```
 
 Regenerate if needed:
+
 ```bash
 pnpm demo:seed:reset
 ```

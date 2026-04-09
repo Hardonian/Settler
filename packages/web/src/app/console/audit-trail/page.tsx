@@ -52,9 +52,7 @@ export default async function AuditTrailPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <span className="text-2xl font-bold font-mono">
-              {hasLogs ? uniqueActors : "—"}
-            </span>
+            <span className="text-2xl font-bold font-mono">{hasLogs ? uniqueActors : "—"}</span>
             <p className="text-[10px] text-muted-foreground mt-1">
               {hasLogs ? `Unique entities in last ${logs.length} events` : "No events recorded yet"}
             </p>

@@ -1,18 +1,18 @@
 /**
  * ReadyLayer Widget Component
- * 
+ *
  * Main widget component that adapts to platform design.
  * Used in GitHub/GitLab/Bitbucket integrations.
  */
 
-'use client';
+"use client";
 
-import React from 'react';
-import { usePlatform } from './PlatformProvider';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Activity, Settings, ArrowRight } from 'lucide-react';
+import React from "react";
+import { usePlatform } from "./PlatformProvider";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Activity, Settings, ArrowRight } from "lucide-react";
 
 interface ReadyLayerWidgetProps {
   repositoryName: string;
@@ -47,10 +47,7 @@ export function ReadyLayerWidget({
               RL
             </div>
             <div>
-              <CardTitle
-                className="text-base"
-                style={{ color: theme.colors.text }}
-              >
+              <CardTitle className="text-base" style={{ color: theme.colors.text }}>
                 ReadyLayer
               </CardTitle>
               <p className="text-xs opacity-70" style={{ color: theme.colors.text }}>
@@ -79,10 +76,7 @@ export function ReadyLayerWidget({
               {reconciliationCount.toLocaleString()}
             </div>
           </div>
-          <Activity
-            className="w-8 h-8 opacity-20"
-            style={{ color: theme.colors.primary }}
-          />
+          <Activity className="w-8 h-8 opacity-20" style={{ color: theme.colors.primary }} />
         </div>
 
         <div className="flex gap-2 pt-2 border-t" style={{ borderColor: theme.colors.border }}>
@@ -92,7 +86,7 @@ export function ReadyLayerWidget({
             onClick={onViewDashboard}
             style={{
               backgroundColor: theme.colors.primary,
-              color: '#ffffff',
+              color: "#ffffff",
             }}
           >
             View Dashboard

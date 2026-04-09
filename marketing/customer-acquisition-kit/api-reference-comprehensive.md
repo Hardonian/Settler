@@ -35,12 +35,14 @@ curl https://api.settler.io/api/v1/jobs \
 ```
 
 **Getting Your API Key:**
+
 1. Sign up at [settler.io](https://settler.io)
 2. Navigate to Settings → API Keys
 3. Create a new API key
 4. Copy and store securely (shown only once)
 
 **API Key Types:**
+
 - `sk_live_...` — Production API key
 - `sk_test_...` — Test API key (sandbox mode)
 
@@ -63,6 +65,7 @@ Use the `/api/v1/auth/token` endpoint with your API key to exchange for a JWT to
 Settler enforces rate limits to ensure fair usage and system stability.
 
 **Default Limits:**
+
 - **Free Tier:** 100 requests per 15 minutes
 - **Starter:** 500 requests per 15 minutes
 - **Growth:** 2,000 requests per 15 minutes
@@ -90,6 +93,7 @@ When rate limit is exceeded, you'll receive a `429 Too Many Requests` response:
 ```
 
 **Best Practices:**
+
 - Implement exponential backoff
 - Cache responses when possible
 - Use webhooks instead of polling
@@ -121,34 +125,35 @@ Settler uses standard HTTP status codes and returns detailed error information.
 
 ### Error Types
 
-| Status Code | Error Type | Description |
-|------------|------------|-------------|
-| `400` | `ValidationError` | Invalid request parameters |
-| `401` | `UnauthorizedError` | Missing or invalid authentication |
-| `403` | `ForbiddenError` | Insufficient permissions |
-| `404` | `NotFoundError` | Resource not found |
-| `409` | `ConflictError` | Resource conflict (e.g., duplicate job name) |
-| `429` | `RateLimitError` | Rate limit exceeded |
-| `500` | `InternalError` | Internal server error |
-| `503` | `ServiceUnavailableError` | Service temporarily unavailable |
+| Status Code | Error Type                | Description                                  |
+| ----------- | ------------------------- | -------------------------------------------- |
+| `400`       | `ValidationError`         | Invalid request parameters                   |
+| `401`       | `UnauthorizedError`       | Missing or invalid authentication            |
+| `403`       | `ForbiddenError`          | Insufficient permissions                     |
+| `404`       | `NotFoundError`           | Resource not found                           |
+| `409`       | `ConflictError`           | Resource conflict (e.g., duplicate job name) |
+| `429`       | `RateLimitError`          | Rate limit exceeded                          |
+| `500`       | `InternalError`           | Internal server error                        |
+| `503`       | `ServiceUnavailableError` | Service temporarily unavailable              |
 
 ### Error Codes
 
-| Code | Description |
-|------|-------------|
-| `INVALID_ADAPTER` | Adapter not supported |
-| `INVALID_CONFIG` | Adapter configuration invalid |
-| `INVALID_RULE` | Matching rule invalid |
-| `JOB_NOT_FOUND` | Job ID not found |
-| `REPORT_NOT_FOUND` | Report not found |
-| `WEBHOOK_NOT_FOUND` | Webhook not found |
-| `ADAPTER_ERROR` | Adapter execution error |
-| `RATE_LIMIT_EXCEEDED` | Rate limit exceeded |
-| `QUOTA_EXCEEDED` | Usage quota exceeded |
+| Code                  | Description                   |
+| --------------------- | ----------------------------- |
+| `INVALID_ADAPTER`     | Adapter not supported         |
+| `INVALID_CONFIG`      | Adapter configuration invalid |
+| `INVALID_RULE`        | Matching rule invalid         |
+| `JOB_NOT_FOUND`       | Job ID not found              |
+| `REPORT_NOT_FOUND`    | Report not found              |
+| `WEBHOOK_NOT_FOUND`   | Webhook not found             |
+| `ADAPTER_ERROR`       | Adapter execution error       |
+| `RATE_LIMIT_EXCEEDED` | Rate limit exceeded           |
+| `QUOTA_EXCEEDED`      | Usage quota exceeded          |
 
 ### Handling Errors
 
 **TypeScript SDK:**
+
 ```typescript
 import Settler from "@settler/sdk";
 
@@ -166,6 +171,7 @@ try {
 ```
 
 **cURL:**
+
 ```bash
 curl -X POST https://api.settler.io/api/v1/jobs \
   -H "X-API-Key: sk_..." \
@@ -229,13 +235,13 @@ Create a new reconciliation job.
 
 **Parameters:**
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `name` | string | Yes | Job name (max 255 chars) |
-| `source` | AdapterConfig | Yes | Source adapter configuration |
-| `target` | AdapterConfig | Yes | Target adapter configuration |
-| `rules` | MatchingRules | Yes | Matching rules |
-| `schedule` | string | No | Cron expression for scheduled runs |
+| Field      | Type          | Required | Description                        |
+| ---------- | ------------- | -------- | ---------------------------------- |
+| `name`     | string        | Yes      | Job name (max 255 chars)           |
+| `source`   | AdapterConfig | Yes      | Source adapter configuration       |
+| `target`   | AdapterConfig | Yes      | Target adapter configuration       |
+| `rules`    | MatchingRules | Yes      | Matching rules                     |
+| `schedule` | string        | No       | Cron expression for scheduled runs |
 
 **AdapterConfig:**
 
@@ -362,22 +368,22 @@ const job = await settler.jobs.create({
     adapter: "shopify",
     config: {
       apiKey: process.env.SHOPIFY_API_KEY,
-      shopDomain: "your-shop.myshopify.com"
-    }
+      shopDomain: "your-shop.myshopify.com",
+    },
   },
   target: {
     adapter: "stripe",
     config: {
-      apiKey: process.env.STRIPE_SECRET_KEY
-    }
+      apiKey: process.env.STRIPE_SECRET_KEY,
+    },
   },
   rules: {
     matching: [
       { field: "order_id", type: "exact" },
-      { field: "amount", type: "exact", tolerance: 0.01 }
+      { field: "amount", type: "exact", tolerance: 0.01 },
     ],
-    conflictResolution: "last-wins"
-  }
+    conflictResolution: "last-wins",
+  },
 });
 
 console.log("Job created:", job.data.id);
@@ -393,12 +399,12 @@ List all reconciliation jobs for your account.
 
 **Query Parameters:**
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `limit` | number | Number of results (default: 20, max: 100) |
-| `offset` | number | Pagination offset (default: 0) |
-| `status` | string | Filter by status (`active`, `paused`, `archived`) |
-| `adapter` | string | Filter by adapter (e.g., `stripe`, `shopify`) |
+| Parameter | Type   | Description                                       |
+| --------- | ------ | ------------------------------------------------- |
+| `limit`   | number | Number of results (default: 20, max: 100)         |
+| `offset`  | number | Pagination offset (default: 0)                    |
+| `status`  | string | Filter by status (`active`, `paused`, `archived`) |
+| `adapter` | string | Filter by adapter (e.g., `stripe`, `shopify`)     |
 
 **Response:** `200 OK`
 
@@ -453,9 +459,9 @@ Get details of a specific reconciliation job.
 
 **Path Parameters:**
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `id` | string | Job ID |
+| Parameter | Type   | Description |
+| --------- | ------ | ----------- |
+| `id`      | string | Job ID      |
 
 **Response:** `200 OK`
 
@@ -560,7 +566,7 @@ curl -X PATCH https://api.settler.io/api/v1/jobs/job_abc123 \
 
 ```typescript
 const updated = await settler.jobs.update("job_abc123", {
-  status: "paused"
+  status: "paused",
 });
 ```
 
@@ -574,14 +580,14 @@ Manually trigger a reconciliation job execution.
 
 **Path Parameters:**
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `id` | string | Job ID |
+| Parameter | Type   | Description |
+| --------- | ------ | ----------- |
+| `id`      | string | Job ID      |
 
 **Query Parameters:**
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
+| Parameter   | Type   | Description                                                   |
+| ----------- | ------ | ------------------------------------------------------------- |
 | `dateRange` | string | Optional date range (ISO 8601, e.g., `2026-01-01/2026-01-31`) |
 
 **Response:** `202 Accepted`
@@ -622,9 +628,9 @@ Delete a reconciliation job.
 
 **Path Parameters:**
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `id` | string | Job ID |
+| Parameter | Type   | Description |
+| --------- | ------ | ----------- |
+| `id`      | string | Job ID      |
 
 **Response:** `204 No Content`
 
@@ -655,20 +661,20 @@ Get a reconciliation report for a specific job.
 
 **Path Parameters:**
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `jobId` | string | Job ID |
+| Parameter | Type   | Description |
+| --------- | ------ | ----------- |
+| `jobId`   | string | Job ID      |
 
 **Query Parameters:**
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `startDate` | string | Start date (ISO 8601, e.g., `2026-01-01`) |
-| `endDate` | string | End date (ISO 8601, e.g., `2026-01-31`) |
-| `format` | string | Response format (`json`, `csv`) |
-| `includeMatches` | boolean | Include matched items (default: `true`) |
+| Parameter          | Type    | Description                               |
+| ------------------ | ------- | ----------------------------------------- |
+| `startDate`        | string  | Start date (ISO 8601, e.g., `2026-01-01`) |
+| `endDate`          | string  | End date (ISO 8601, e.g., `2026-01-31`)   |
+| `format`           | string  | Response format (`json`, `csv`)           |
+| `includeMatches`   | boolean | Include matched items (default: `true`)   |
 | `includeUnmatched` | boolean | Include unmatched items (default: `true`) |
-| `includeErrors` | boolean | Include errors (default: `true`) |
+| `includeErrors`    | boolean | Include errors (default: `true`)          |
 
 **Response:** `200 OK`
 
@@ -731,7 +737,7 @@ curl "https://api.settler.io/api/v1/reports/job_abc123?startDate=2026-01-01&endD
 ```typescript
 const report = await settler.reports.get("job_abc123", {
   startDate: "2026-01-01",
-  endDate: "2026-01-31"
+  endDate: "2026-01-31",
 });
 
 console.log(`Matched: ${report.data.summary.matched}`);
@@ -749,13 +755,13 @@ List all reports for your account.
 
 **Query Parameters:**
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `limit` | number | Number of results (default: 20, max: 100) |
-| `offset` | number | Pagination offset (default: 0) |
-| `jobId` | string | Filter by job ID |
-| `startDate` | string | Filter by start date |
-| `endDate` | string | Filter by end date |
+| Parameter   | Type   | Description                               |
+| ----------- | ------ | ----------------------------------------- |
+| `limit`     | number | Number of results (default: 20, max: 100) |
+| `offset`    | number | Pagination offset (default: 0)            |
+| `jobId`     | string | Filter by job ID                          |
+| `startDate` | string | Filter by start date                      |
+| `endDate`   | string | Filter by end date                        |
 
 **Response:** `200 OK`
 
@@ -812,22 +818,18 @@ Create a new webhook endpoint.
 ```json
 {
   "url": "https://your-app.com/webhooks/reconcile",
-  "events": [
-    "reconciliation.matched",
-    "reconciliation.mismatch",
-    "reconciliation.error"
-  ],
+  "events": ["reconciliation.matched", "reconciliation.mismatch", "reconciliation.error"],
   "secret": "optional_webhook_secret"
 }
 ```
 
 **Parameters:**
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `url` | string | Yes | Webhook URL (must be HTTPS) |
-| `events` | string[] | Yes | Events to subscribe to |
-| `secret` | string | No | Webhook secret for verification |
+| Field    | Type     | Required | Description                     |
+| -------- | -------- | -------- | ------------------------------- |
+| `url`    | string   | Yes      | Webhook URL (must be HTTPS)     |
+| `events` | string[] | Yes      | Events to subscribe to          |
+| `secret` | string   | No       | Webhook secret for verification |
 
 **Supported Events:**
 
@@ -845,10 +847,7 @@ Create a new webhook endpoint.
     "id": "wh_abc123",
     "userId": "user_xyz789",
     "url": "https://your-app.com/webhooks/reconcile",
-    "events": [
-      "reconciliation.matched",
-      "reconciliation.mismatch"
-    ],
+    "events": ["reconciliation.matched", "reconciliation.mismatch"],
     "secret": "whsec_xyz789",
     "status": "active",
     "createdAt": "2026-01-15T10:00:00Z"
@@ -874,7 +873,7 @@ curl -X POST https://api.settler.io/api/v1/webhooks \
 ```typescript
 const webhook = await settler.webhooks.create({
   url: "https://your-app.com/webhooks/reconcile",
-  events: ["reconciliation.matched", "reconciliation.mismatch"]
+  events: ["reconciliation.matched", "reconciliation.mismatch"],
 });
 
 console.log("Webhook ID:", webhook.data.id);
@@ -990,16 +989,13 @@ import crypto from "crypto";
 function verifyWebhook(payload: string, signature: string, secret: string): boolean {
   const [timestamp, hash] = signature.split(",");
   const [t, v1] = hash.split("=");
-  
+
   const expectedSignature = crypto
     .createHmac("sha256", secret)
     .update(`${timestamp}.${payload}`)
     .digest("hex");
-  
-  return crypto.timingSafeEqual(
-    Buffer.from(v1),
-    Buffer.from(expectedSignature)
-  );
+
+  return crypto.timingSafeEqual(Buffer.from(v1), Buffer.from(expectedSignature));
 }
 ```
 
@@ -1029,10 +1025,7 @@ List all available adapters.
         "required": ["apiKey"],
         "optional": ["webhookSecret"]
       },
-      "supportedEvents": [
-        "payment.succeeded",
-        "charge.refunded"
-      ]
+      "supportedEvents": ["payment.succeeded", "charge.refunded"]
     },
     {
       "id": "shopify",
@@ -1043,10 +1036,7 @@ List all available adapters.
         "required": ["apiKey", "shopDomain"],
         "optional": ["webhookSecret"]
       },
-      "supportedEvents": [
-        "order.created",
-        "order.updated"
-      ]
+      "supportedEvents": ["order.created", "order.updated"]
     }
   ],
   "count": 2

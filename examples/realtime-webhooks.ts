@@ -42,11 +42,7 @@ async function setupRealtimeReconciliation() {
   // Set up webhook
   const webhook = await settler.webhooks.create({
     url: "https://your-app.com/webhooks/settler",
-    events: [
-      "reconciliation.matched",
-      "reconciliation.mismatch",
-      "reconciliation.error",
-    ],
+    events: ["reconciliation.matched", "reconciliation.mismatch", "reconciliation.error"],
   });
 
   console.log("Webhook created:", webhook.data.id);

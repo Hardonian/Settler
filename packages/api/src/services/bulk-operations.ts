@@ -6,12 +6,7 @@
 import { query } from "../db";
 import { logError, logInfo } from "../utils/logger";
 
-export type BulkOperationType =
-  | "approve"
-  | "reject"
-  | "export"
-  | "correct"
-  | "link_receipts";
+export type BulkOperationType = "approve" | "reject" | "export" | "correct" | "link_receipts";
 
 export interface BulkOperationResult {
   id: string;
@@ -52,7 +47,7 @@ export async function createBulkOperation(
       ] as (string | number | boolean | null | Date)[]
     );
 
-    const operationId = result[0]?.id || '';
+    const operationId = result[0]?.id || "";
     logInfo("Bulk operation created", {
       operationId,
       tenantId,
@@ -136,13 +131,7 @@ export async function executeBulkOperation(
            items_processed = $1, succeeded_count = $2, failed_count = $3,
            error_details = $4, progress_percentage = 100
        WHERE id = $5`,
-      [
-        itemsProcessed,
-        succeededCount,
-        failedCount,
-        JSON.stringify(errorDetails),
-        operationId,
-      ]
+      [itemsProcessed, succeededCount, failedCount, JSON.stringify(errorDetails), operationId]
     );
 
     return {

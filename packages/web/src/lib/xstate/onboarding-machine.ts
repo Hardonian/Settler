@@ -1,6 +1,6 @@
 /**
  * Onboarding State Machine
- * 
+ *
  * Manages the multi-step onboarding flow:
  * 1. Create workspace (required)
  * 2. Add teammates (optional)
@@ -9,7 +9,7 @@
  * 5. View results (required)
  */
 
-import { setup, assign, fromPromise } from 'xstate';
+import { setup, assign, fromPromise } from "xstate";
 import {
   logFlowStarted,
   logStepViewed,
@@ -18,7 +18,7 @@ import {
   logFlowAbandoned,
   logError,
   logRetry,
-} from '@/lib/ux-events/logger';
+} from "@/lib/ux-events/logger";
 
 /**
  * Onboarding step definition
@@ -30,7 +30,7 @@ export interface OnboardingStep {
   actionLabel: string;
   actionUrl: string;
   optional: boolean;
-  status: 'completed' | 'current' | 'pending' | 'skipped';
+  status: "completed" | "current" | "pending" | "skipped";
 }
 
 /**
@@ -41,7 +41,7 @@ export interface OnboardingContext {
   workspaceName: string;
   workspaceSlug: string;
   inviteEmail: string;
-  inviteRole: 'admin' | 'member' | 'viewer';
+  inviteRole: "admin" | "member" | "viewer";
   steps: OnboardingStep[];
   progress: number;
   currentStepId: string;
@@ -52,20 +52,20 @@ export interface OnboardingContext {
  * Events for onboarding machine
  */
 export type OnboardingEvents =
-  | { type: 'LOAD_PROGRESS'; workspaceId: string }
-  | { type: 'UPDATE_WORKSPACE_NAME'; name: string }
-  | { type: 'UPDATE_WORKSPACE_SLUG'; slug: string }
-  | { type: 'CREATE_WORKSPACE' }
-  | { type: 'UPDATE_INVITE_EMAIL'; email: string }
-  | { type: 'UPDATE_INVITE_ROLE'; role: 'admin' | 'member' | 'viewer' }
-  | { type: 'SEND_INVITE' }
-  | { type: 'SKIP_TEAMMATES' }
-  | { type: 'SKIP_DATA_SOURCE' }
-  | { type: 'SKIP_RECONCILIATION' }
-  | { type: 'COMPLETE_STEP'; stepId: string }
-  | { type: 'GO_TO_STEP'; stepId: string }
-  | { type: 'RETRY' }
-  | { type: 'RESET' };
+  | { type: "LOAD_PROGRESS"; workspaceId: string }
+  | { type: "UPDATE_WORKSPACE_NAME"; name: string }
+  | { type: "UPDATE_WORKSPACE_SLUG"; slug: string }
+  | { type: "CREATE_WORKSPACE" }
+  | { type: "UPDATE_INVITE_EMAIL"; email: string }
+  | { type: "UPDATE_INVITE_ROLE"; role: "admin" | "member" | "viewer" }
+  | { type: "SEND_INVITE" }
+  | { type: "SKIP_TEAMMATES" }
+  | { type: "SKIP_DATA_SOURCE" }
+  | { type: "SKIP_RECONCILIATION" }
+  | { type: "COMPLETE_STEP"; stepId: string }
+  | { type: "GO_TO_STEP"; stepId: string }
+  | { type: "RETRY" }
+  | { type: "RESET" };
 
 /**
  * Load onboarding progress with timeout
@@ -82,15 +82,15 @@ async function loadProgress(workspaceId: string): Promise<{
       signal: controller.signal,
     });
     clearTimeout(timeoutId);
-    
+
     if (!response.ok) {
       throw new Error(`Failed to load onboarding progress: ${response.statusText}`);
     }
     return response.json();
   } catch (error) {
     clearTimeout(timeoutId);
-    if (error instanceof Error && error.name === 'AbortError') {
-      throw new Error('Request timed out. Please check your connection and try again.');
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error("Request timed out. Please check your connection and try again.");
     }
     throw error;
   }
@@ -107,14 +107,14 @@ async function createWorkspace(data: {
   const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
 
   try {
-    const response = await fetch('/api/workspaces', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const response = await fetch("/api/workspaces", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
       signal: controller.signal,
     });
     clearTimeout(timeoutId);
-    
+
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
       throw new Error(error.error || `Failed to create workspace: ${response.statusText}`);
@@ -122,8 +122,8 @@ async function createWorkspace(data: {
     return response.json();
   } catch (error) {
     clearTimeout(timeoutId);
-    if (error instanceof Error && error.name === 'AbortError') {
-      throw new Error('Request timed out. Please check your connection and try again.');
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error("Request timed out. Please check your connection and try again.");
     }
     throw error;
   }
@@ -143,17 +143,14 @@ async function completeStep(
   const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
   try {
-    const response = await fetch(
-      `/api/workspaces/${workspaceId}/onboarding/complete`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ stepId }),
-        signal: controller.signal,
-      }
-    );
+    const response = await fetch(`/api/workspaces/${workspaceId}/onboarding/complete`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ stepId }),
+      signal: controller.signal,
+    });
     clearTimeout(timeoutId);
-    
+
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
       throw new Error(error.error || `Failed to complete step: ${response.statusText}`);
@@ -161,8 +158,8 @@ async function completeStep(
     return response.json();
   } catch (error) {
     clearTimeout(timeoutId);
-    if (error instanceof Error && error.name === 'AbortError') {
-      throw new Error('Request timed out. Please check your connection and try again.');
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error("Request timed out. Please check your connection and try again.");
     }
     throw error;
   }
@@ -173,28 +170,28 @@ async function completeStep(
  */
 async function sendInvite(
   workspaceId: string,
-  data: { email: string; role: 'admin' | 'member' | 'viewer' }
+  data: { email: string; role: "admin" | "member" | "viewer" }
 ): Promise<void> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
   try {
     const response = await fetch(`/api/workspaces/${workspaceId}/invites`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
       signal: controller.signal,
     });
     clearTimeout(timeoutId);
-    
+
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
       throw new Error(error.error || `Failed to send invite: ${response.statusText}`);
     }
   } catch (error) {
     clearTimeout(timeoutId);
-    if (error instanceof Error && error.name === 'AbortError') {
-      throw new Error('Request timed out. Please check your connection and try again.');
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error("Request timed out. Please check your connection and try again.");
     }
     throw error;
   }
@@ -215,10 +212,7 @@ function isValidWorkspaceForm(context: OnboardingContext): boolean {
  * Validate invite form
  */
 function isValidInviteForm(context: OnboardingContext): boolean {
-  return (
-    context.inviteEmail.includes('@') &&
-    context.inviteEmail.trim().length > 0
-  );
+  return context.inviteEmail.includes("@") && context.inviteEmail.trim().length > 0;
 }
 
 /**
@@ -246,64 +240,59 @@ export const onboardingMachine = setup({
     createWorkspace: fromPromise(({ input }: { input: { name: string; slug: string } }) => {
       return createWorkspace(input);
     }),
-    completeStep: fromPromise(({
-      input,
-    }: {
-      input: { workspaceId: string; stepId: string };
-    }) => {
+    completeStep: fromPromise(({ input }: { input: { workspaceId: string; stepId: string } }) => {
       return completeStep(input.workspaceId, input.stepId);
     }),
-    sendInvite: fromPromise(({
-      input,
-    }: {
-      input: {
-        workspaceId: string;
-        email: string;
-        role: 'admin' | 'member' | 'viewer';
-      };
-    }) => {
-      return sendInvite(input.workspaceId, {
-        email: input.email,
-        role: input.role,
-      });
-    }),
+    sendInvite: fromPromise(
+      ({
+        input,
+      }: {
+        input: {
+          workspaceId: string;
+          email: string;
+          role: "admin" | "member" | "viewer";
+        };
+      }) => {
+        return sendInvite(input.workspaceId, {
+          email: input.email,
+          role: input.role,
+        });
+      }
+    ),
   },
 }).createMachine({
-  id: 'onboarding',
-  initial: 'initializing',
+  id: "onboarding",
+  initial: "initializing",
   context: {
     workspaceId: null,
-    workspaceName: '',
-    workspaceSlug: '',
-    inviteEmail: '',
-    inviteRole: 'member',
+    workspaceName: "",
+    workspaceSlug: "",
+    inviteEmail: "",
+    inviteRole: "member",
     steps: [],
     progress: 0,
-    currentStepId: 'create_workspace',
+    currentStepId: "create_workspace",
     error: null,
   },
   states: {
     initializing: {
       always: [
         {
-          guard: 'hasWorkspaceId',
-          target: 'loadingProgress',
+          guard: "hasWorkspaceId",
+          target: "loadingProgress",
         },
         {
-          target: 'createWorkspace',
+          target: "createWorkspace",
         },
       ],
     },
     loadingProgress: {
-      entry: [
-        assign({ error: null }),
-        () => logFlowStarted('onboarding', 'Onboarding'),
-      ],
+      entry: [assign({ error: null }), () => logFlowStarted("onboarding", "Onboarding")],
       invoke: {
-        src: 'loadProgress',
+        src: "loadProgress",
         input: ({ context }) => context.workspaceId!,
         onDone: {
-          target: 'idle',
+          target: "idle",
           actions: [
             assign({
               steps: ({ event }) => event.output.steps,
@@ -311,26 +300,24 @@ export const onboardingMachine = setup({
               currentStepId: ({ event }) => event.output.progress.currentStep,
             }),
             ({ context }) => {
-              const currentStep = context.steps.find(
-                (s) => s.id === context.currentStepId
-              );
+              const currentStep = context.steps.find((s) => s.id === context.currentStepId);
               if (currentStep) {
-                logStepViewed('onboarding', currentStep.id, currentStep.title);
+                logStepViewed("onboarding", currentStep.id, currentStep.title);
               }
             },
           ],
         },
         onError: {
-          target: 'error',
+          target: "error",
           actions: [
             assign({
               error: ({ event }) => event.error as Error,
             }),
             ({ event }) => {
               logError(
-                event.error instanceof Error ? event.error.message : 'Unknown error',
-                'load_progress',
-                'onboarding'
+                event.error instanceof Error ? event.error.message : "Unknown error",
+                "load_progress",
+                "onboarding"
               );
             },
           ],
@@ -338,7 +325,7 @@ export const onboardingMachine = setup({
       },
     },
     createWorkspace: {
-      initial: 'idle',
+      initial: "idle",
       states: {
         idle: {
           on: {
@@ -349,38 +336,38 @@ export const onboardingMachine = setup({
             },
             UPDATE_WORKSPACE_SLUG: {
               actions: assign({
-                workspaceSlug: ({ event }) => event.slug.toLowerCase().replace(/[^a-z0-9-]/g, ''),
+                workspaceSlug: ({ event }) => event.slug.toLowerCase().replace(/[^a-z0-9-]/g, ""),
               }),
             },
             CREATE_WORKSPACE: {
-              guard: 'isValidWorkspaceForm',
-              target: 'creating',
+              guard: "isValidWorkspaceForm",
+              target: "creating",
             },
           },
         },
         creating: {
           entry: assign({ error: null }),
           invoke: {
-            src: 'createWorkspace',
+            src: "createWorkspace",
             input: ({ context }) => ({
               name: context.workspaceName,
               slug: context.workspaceSlug,
             }),
             onDone: {
-              target: 'completingStep',
+              target: "completingStep",
               actions: assign({
                 workspaceId: ({ event }) => {
                   const id = event.output.workspace.id;
-                  if (typeof window !== 'undefined') {
-                    localStorage.setItem('current_workspace_id', id);
+                  if (typeof window !== "undefined") {
+                    localStorage.setItem("current_workspace_id", id);
                   }
                   return id;
                 },
-                currentStepId: () => 'create_workspace',
+                currentStepId: () => "create_workspace",
               }),
             },
             onError: {
-              target: 'error',
+              target: "error",
               actions: assign({
                 error: ({ event }) => event.error as Error,
               }),
@@ -389,8 +376,8 @@ export const onboardingMachine = setup({
         },
         error: {
           on: {
-            RETRY: { target: 'creating' },
-            RESET: { target: 'idle', actions: assign({ error: null }) },
+            RETRY: { target: "creating" },
+            RESET: { target: "idle", actions: assign({ error: null }) },
           },
         },
       },
@@ -398,13 +385,13 @@ export const onboardingMachine = setup({
     completingStep: {
       entry: assign({ error: null }),
       invoke: {
-        src: 'completeStep',
+        src: "completeStep",
         input: ({ context }) => ({
           workspaceId: context.workspaceId!,
           stepId: context.currentStepId,
         }),
         onDone: {
-          target: 'idle',
+          target: "idle",
           actions: [
             assign({
               steps: ({ event }) => event.output.steps,
@@ -412,31 +399,29 @@ export const onboardingMachine = setup({
               currentStepId: ({ event }) => event.output.progress.currentStep,
             }),
             ({ context, event }) => {
-              const completedStep = context.steps.find(
-                (s) => s.id === context.currentStepId
-              );
+              const completedStep = context.steps.find((s) => s.id === context.currentStepId);
               if (completedStep) {
-                logStepCompleted('onboarding', completedStep.id, completedStep.title);
+                logStepCompleted("onboarding", completedStep.id, completedStep.title);
               }
-              
+
               // Log flow completion if 100%
               if (event.output.progress.progress >= 100) {
-                logFlowCompleted('onboarding', 'Onboarding', 0, context.steps.length);
+                logFlowCompleted("onboarding", "Onboarding", 0, context.steps.length);
               }
             },
           ],
         },
         onError: {
-          target: 'error',
+          target: "error",
           actions: [
             assign({
               error: ({ event }) => event.error as Error,
             }),
             ({ context, event }) => {
               logError(
-                event.error instanceof Error ? event.error.message : 'Unknown error',
-                'complete_step',
-                'onboarding',
+                event.error instanceof Error ? event.error.message : "Unknown error",
+                "complete_step",
+                "onboarding",
                 context.currentStepId
               );
             },
@@ -444,8 +429,8 @@ export const onboardingMachine = setup({
         },
       },
       always: {
-        guard: 'isComplete',
-        target: 'complete',
+        guard: "isComplete",
+        target: "complete",
       },
     },
     idle: {
@@ -457,7 +442,7 @@ export const onboardingMachine = setup({
         },
         UPDATE_WORKSPACE_SLUG: {
           actions: assign({
-            workspaceSlug: ({ event }) => event.slug.toLowerCase().replace(/[^a-z0-9-]/g, ''),
+            workspaceSlug: ({ event }) => event.slug.toLowerCase().replace(/[^a-z0-9-]/g, ""),
           }),
         },
         UPDATE_INVITE_EMAIL: {
@@ -471,29 +456,29 @@ export const onboardingMachine = setup({
           }),
         },
         SEND_INVITE: {
-          guard: 'isValidInviteForm',
-          target: 'sendingInvite',
+          guard: "isValidInviteForm",
+          target: "sendingInvite",
         },
         SKIP_TEAMMATES: {
-          target: 'completingStep',
+          target: "completingStep",
           actions: assign({
-            currentStepId: () => 'skip_teammates',
+            currentStepId: () => "skip_teammates",
           }),
         },
         SKIP_DATA_SOURCE: {
-          target: 'completingStep',
+          target: "completingStep",
           actions: assign({
-            currentStepId: () => 'skip_data_source',
+            currentStepId: () => "skip_data_source",
           }),
         },
         SKIP_RECONCILIATION: {
-          target: 'completingStep',
+          target: "completingStep",
           actions: assign({
-            currentStepId: () => 'skip_reconciliation',
+            currentStepId: () => "skip_reconciliation",
           }),
         },
         COMPLETE_STEP: {
-          target: 'completingStep',
+          target: "completingStep",
           actions: assign({
             currentStepId: ({ event }) => event.stepId,
           }),
@@ -504,34 +489,34 @@ export const onboardingMachine = setup({
           }),
         },
         LOAD_PROGRESS: {
-          target: 'loadingProgress',
+          target: "loadingProgress",
           actions: assign({
             workspaceId: ({ event }) => event.workspaceId,
           }),
         },
       },
       always: {
-        guard: 'isComplete',
-        target: 'complete',
+        guard: "isComplete",
+        target: "complete",
       },
     },
     sendingInvite: {
       entry: assign({ error: null }),
       invoke: {
-        src: 'sendInvite',
+        src: "sendInvite",
         input: ({ context }) => ({
           workspaceId: context.workspaceId!,
           email: context.inviteEmail,
           role: context.inviteRole,
         }),
         onDone: {
-          target: 'idle',
+          target: "idle",
           actions: assign({
-            inviteEmail: () => '',
+            inviteEmail: () => "",
           }),
         },
         onError: {
-          target: 'error',
+          target: "error",
           actions: assign({
             error: ({ event }) => event.error as Error,
           }),
@@ -543,17 +528,17 @@ export const onboardingMachine = setup({
         assign({
           error: ({ event }) => {
             // Preserve existing error or use event error
-            if ('error' in event && event.error) {
+            if ("error" in event && event.error) {
               return event.error as Error;
             }
-            return new Error('An unexpected error occurred');
+            return new Error("An unexpected error occurred");
           },
         }),
         ({ context }) => {
           logError(
-            context.error?.message || 'Unknown error',
-            'state_machine_error',
-            'onboarding',
+            context.error?.message || "Unknown error",
+            "state_machine_error",
+            "onboarding",
             context.currentStepId
           );
         },
@@ -562,41 +547,41 @@ export const onboardingMachine = setup({
         RETRY: [
           {
             guard: ({ context }) => context.workspaceId !== null,
-            target: 'loadingProgress',
+            target: "loadingProgress",
             actions: ({ context }) => {
-              logRetry('onboarding', context.currentStepId, 1);
+              logRetry("onboarding", context.currentStepId, 1);
             },
           },
           {
-            target: 'createWorkspace.idle',
+            target: "createWorkspace.idle",
             actions: ({ context }) => {
-              logRetry('onboarding', context.currentStepId, 1);
+              logRetry("onboarding", context.currentStepId, 1);
             },
           },
         ],
         RESET: {
-          target: 'createWorkspace',
+          target: "createWorkspace",
           actions: [
             assign({
               workspaceId: null,
-              workspaceName: '',
-              workspaceSlug: '',
-              inviteEmail: '',
-              inviteRole: 'member',
+              workspaceName: "",
+              workspaceSlug: "",
+              inviteEmail: "",
+              inviteRole: "member",
               steps: [],
               progress: 0,
-              currentStepId: 'create_workspace',
+              currentStepId: "create_workspace",
               error: null,
             }),
             () => {
-              logFlowAbandoned('onboarding', 'Onboarding', 'create_workspace', 0);
+              logFlowAbandoned("onboarding", "Onboarding", "create_workspace", 0);
             },
           ],
         },
       },
     },
     complete: {
-      type: 'final',
+      type: "final",
     },
   },
 });

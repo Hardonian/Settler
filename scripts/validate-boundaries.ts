@@ -53,11 +53,7 @@ const FORBIDDEN_IN_MARKETING = [
   { pattern: /NEXT_PUBLIC_.*(?<!SUPABASE_URL|SUPABASE_ANON_KEY)/, name: "Server env in client" },
 ];
 
-const CLIENT_PATTERNS = [
-  /\.client\./,
-  /ClientComponent/,
-  /"use client"/,
-];
+const CLIENT_PATTERNS = [/\.client\./, /ClientComponent/, /"use client"/];
 
 // ============================================================================
 // TYPES
@@ -86,9 +82,7 @@ interface ValidationResult {
 // ============================================================================
 
 function isMarketingPath(filePath: string): boolean {
-  return MARKETING_PATHS.some((marketingPath) =>
-    filePath.includes(marketingPath)
-  );
+  return MARKETING_PATHS.some((marketingPath) => filePath.includes(marketingPath));
 }
 
 function isClientComponent(filePath: string): boolean {

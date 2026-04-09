@@ -1,11 +1,11 @@
 /**
  * Request Size Limit Middleware
- * 
+ *
  * Enforces request size limits on API routes.
  * Prevents DoS attacks via large request bodies.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
 export interface RequestSizeLimitConfig {
   maxSizeBytes: number;
@@ -21,7 +21,7 @@ export function checkRequestSize(
   request: NextRequest,
   maxSizeBytes = DEFAULT_MAX_SIZE
 ): NextResponse | null {
-  const contentLength = request.headers.get('content-length');
+  const contentLength = request.headers.get("content-length");
 
   if (contentLength) {
     const size = parseInt(contentLength, 10);
@@ -57,14 +57,14 @@ export function requestSizeLimit(
 export const requestSizeLimits = {
   webhook: requestSizeLimit({
     maxSizeBytes: 500 * 1024, // 500KB for webhooks
-    errorMessage: 'Webhook payload too large',
+    errorMessage: "Webhook payload too large",
   }),
   api: requestSizeLimit({
     maxSizeBytes: 10 * 1024 * 1024, // 10MB for API
-    errorMessage: 'Request body too large',
+    errorMessage: "Request body too large",
   }),
   upload: requestSizeLimit({
     maxSizeBytes: 50 * 1024 * 1024, // 50MB for uploads
-    errorMessage: 'File too large',
+    errorMessage: "File too large",
   }),
 };

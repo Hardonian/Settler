@@ -22,82 +22,92 @@ const router: Router = Router();
  * Test webhook endpoint (for development/testing)
  * POST /api/v1/webhooks/test
  */
-router.post("/test", authMiddleware, requirePermission(Permission.WEBHOOKS_READ), async (req: AuthRequest, res: Response) => {
-  try {
-    const { payload, secret, algorithm = "sha256" } = req.body;
+router.post(
+  "/test",
+  authMiddleware,
+  requirePermission(Permission.WEBHOOKS_READ),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const { payload, secret, algorithm = "sha256" } = req.body;
 
-    if (!payload || !secret) {
-      return res.status(400).json({
-        error: "Bad Request",
-        message: "payload and secret are required",
+      if (!payload || !secret) {
+        return res.status(400).json({
+          error: "Bad Request",
+          message: "payload and secret are required",
+        });
+      }
+
+      const { signature, timestamp, header } = generateRequestSignature(
+        typeof payload === "string" ? payload : JSON.stringify(payload),
+        secret,
+        algorithm as "sha256" | "sha512"
+      );
+
+      return res.json({
+        success: true,
+        signature,
+        timestamp,
+        header,
+        verification: {
+          algorithm,
+          instructions: {
+            "x-signature": signature,
+            "x-signature-timestamp": timestamp.toString(),
+          },
+        },
+      });
+    } catch (error) {
+      logError("Webhook test failed", error);
+      return res.status(500).json({
+        error: "Internal Server Error",
+        message: "Failed to generate webhook signature",
       });
     }
-
-    const { signature, timestamp, header } = generateRequestSignature(
-      typeof payload === "string" ? payload : JSON.stringify(payload),
-      secret,
-      algorithm as "sha256" | "sha512"
-    );
-
-    return res.json({
-      success: true,
-      signature,
-      timestamp,
-      header,
-      verification: {
-        algorithm,
-        instructions: {
-          "x-signature": signature,
-          "x-signature-timestamp": timestamp.toString(),
-        },
-      },
-    });
-  } catch (error) {
-    logError("Webhook test failed", error);
-    return res.status(500).json({
-      error: "Internal Server Error",
-      message: "Failed to generate webhook signature",
-    });
   }
-});
+);
 
 /**
  * Verify webhook signature
  * POST /api/v1/webhooks/verify
  */
-router.post("/verify", authMiddleware, requirePermission(Permission.WEBHOOKS_READ), async (req: AuthRequest, res: Response) => {
-  try {
-    const { payload, signature, timestamp, secret, algorithm = "sha256" } = req.body;
+router.post(
+  "/verify",
+  authMiddleware,
+  requirePermission(Permission.WEBHOOKS_READ),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const { payload, signature, timestamp, secret, algorithm = "sha256" } = req.body;
 
-    if (!payload || !signature || !timestamp || !secret) {
-      return res.status(400).json({
-        error: "Bad Request",
-        message: "payload, signature, timestamp, and secret are required",
+      if (!payload || !signature || !timestamp || !secret) {
+        return res.status(400).json({
+          error: "Bad Request",
+          message: "payload, signature, timestamp, and secret are required",
+        });
+      }
+
+      const verification = verifyRequestSignature(
+        typeof payload === "string" ? payload : JSON.stringify(payload),
+        signature,
+        timestamp,
+        secret,
+        algorithm as "sha256" | "sha512"
+      );
+
+      return res.json({
+        valid: verification.valid,
+        reason: verification.reason,
+        algorithm: verification.algorithm,
+        timestamp: verification.timestamp,
+      });
+    } catch (error) {
+      logError("Webhook verification failed", error);
+      return res.status(500).json({
+        error: "Internal Server Error",
+        message: "Failed to verify webhook signature",
       });
     }
-
-    const verification = verifyRequestSignature(
-      typeof payload === "string" ? payload : JSON.stringify(payload),
-      signature,
-      timestamp,
-      secret,
-      algorithm as "sha256" | "sha512"
-    );
-
-    return res.json({
-      valid: verification.valid,
-      reason: verification.reason,
-      algorithm: verification.algorithm,
-      timestamp: verification.timestamp,
-    });
-  } catch (error) {
-    logError("Webhook verification failed", error);
-    return res.status(500).json({
-      error: "Internal Server Error",
-      message: "Failed to verify webhook signature",
-    });
   }
-});
+);
 
 /**
  * Replay webhook (for testing)
@@ -151,25 +161,30 @@ router.post(
  * Get webhook delivery status
  * GET /api/v1/webhooks/:webhookId/status
  */
-router.get("/:webhookId/status", authMiddleware, requirePermission(Permission.WEBHOOKS_READ), async (req: AuthRequest, res: Response) => {
-  try {
-    const { webhookId } = req.params;
+router.get(
+  "/:webhookId/status",
+  authMiddleware,
+  requirePermission(Permission.WEBHOOKS_READ),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const { webhookId } = req.params;
 
-    // In production, fetch from database
-    return res.json({
-      webhookId,
-      status: "delivered",
-      deliveredAt: new Date().toISOString(),
-      attempts: 1,
-      lastAttemptAt: new Date().toISOString(),
-    });
-  } catch (error) {
-    logError("Failed to get webhook status", error);
-    return res.status(500).json({
-      error: "Internal Server Error",
-      message: "Failed to get webhook status",
-    });
+      // In production, fetch from database
+      return res.json({
+        webhookId,
+        status: "delivered",
+        deliveredAt: new Date().toISOString(),
+        attempts: 1,
+        lastAttemptAt: new Date().toISOString(),
+      });
+    } catch (error) {
+      logError("Failed to get webhook status", error);
+      return res.status(500).json({
+        error: "Internal Server Error",
+        message: "Failed to get webhook status",
+      });
+    }
   }
-});
+);
 
 export { router as webhookManagementRouter };

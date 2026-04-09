@@ -143,7 +143,9 @@ export default function AdminDatabasePage() {
       </div>
 
       {filteredTables.length === 0 && (
-        <div className="text-center py-8 text-muted-foreground">No tables found matching "{search}"</div>
+        <div className="text-center py-8 text-muted-foreground">
+          No tables found matching "{search}"
+        </div>
       )}
     </div>
   );

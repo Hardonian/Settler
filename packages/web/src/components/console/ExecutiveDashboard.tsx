@@ -1,15 +1,23 @@
 /**
  * Executive Dashboard Component
- * 
+ *
  * Displays key metrics and KPIs for executives.
  */
 
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { TrendingUp, TrendingDown, Users, DollarSign, Activity, Target, AlertCircle } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  TrendingUp,
+  TrendingDown,
+  Users,
+  DollarSign,
+  Activity,
+  Target,
+  AlertCircle,
+} from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ExecutiveMetrics {
   totalUsers: number;
@@ -41,14 +49,14 @@ export function ExecutiveDashboard() {
   useEffect(() => {
     async function fetchMetrics() {
       try {
-        const response = await fetch('/api/console/metrics');
+        const response = await fetch("/api/console/metrics");
         if (!response.ok) {
-          throw new Error('Failed to fetch metrics');
+          throw new Error("Failed to fetch metrics");
         }
         const data = await response.json();
         setMetrics(data);
       } catch (error: unknown) {
-        setError(error instanceof Error ? error.message : 'Unknown error');
+        setError(error instanceof Error ? error.message : "Unknown error");
       } finally {
         setLoading(false);
       }
@@ -88,29 +96,27 @@ export function ExecutiveDashboard() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">
-            {error || 'Failed to load metrics'}
-          </p>
+          <p className="text-muted-foreground">{error || "Failed to load metrics"}</p>
         </CardContent>
       </Card>
     );
   }
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(value);
   };
 
   const formatNumber = (value: number) => {
-    return new Intl.NumberFormat('en-US').format(value);
+    return new Intl.NumberFormat("en-US").format(value);
   };
 
   const formatPercent = (value: number) => {
-    return `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`;
+    return `${value >= 0 ? "+" : ""}${value.toFixed(1)}%`;
   };
 
   return (
@@ -137,9 +143,7 @@ export function ExecutiveDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(metrics.mrr)}</div>
-            <p className="text-xs text-muted-foreground">
-              ARR: {formatCurrency(metrics.arr)}
-            </p>
+            <p className="text-xs text-muted-foreground">ARR: {formatCurrency(metrics.arr)}</p>
           </CardContent>
         </Card>
 
@@ -163,9 +167,7 @@ export function ExecutiveDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatNumber(metrics.newUsers)}</div>
-            <p className="text-xs text-muted-foreground">
-              Last 7 days
-            </p>
+            <p className="text-xs text-muted-foreground">Last 7 days</p>
           </CardContent>
         </Card>
       </div>
@@ -215,9 +217,11 @@ export function ExecutiveDashboard() {
             )}
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold ${
-              metrics.userGrowthRate >= 0 ? 'text-green-600' : 'text-red-600'
-            }`}>
+            <div
+              className={`text-2xl font-bold ${
+                metrics.userGrowthRate >= 0 ? "text-green-600" : "text-red-600"
+              }`}
+            >
               {formatPercent(metrics.userGrowthRate)}
             </div>
             <p className="text-xs text-muted-foreground">Month-over-month</p>
@@ -230,9 +234,11 @@ export function ExecutiveDashboard() {
             <AlertCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold ${
-              metrics.churnRate < 5 ? 'text-green-600' : 'text-red-600'
-            }`}>
+            <div
+              className={`text-2xl font-bold ${
+                metrics.churnRate < 5 ? "text-green-600" : "text-red-600"
+              }`}
+            >
               {formatPercent(metrics.churnRate)}
             </div>
             <p className="text-xs text-muted-foreground">Last 30 days</p>
@@ -245,7 +251,9 @@ export function ExecutiveDashboard() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(metrics.averageRevenuePerUser)}</div>
+            <div className="text-2xl font-bold">
+              {formatCurrency(metrics.averageRevenuePerUser)}
+            </div>
             <p className="text-xs text-muted-foreground">Average per user</p>
           </CardContent>
         </Card>

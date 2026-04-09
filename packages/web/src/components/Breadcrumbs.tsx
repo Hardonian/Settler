@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { ChevronRight, Home } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import Link from "next/link";
+import { ChevronRight, Home } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface BreadcrumbItem {
   label: string;
@@ -22,9 +22,13 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
   return (
     <nav
       aria-label="Breadcrumb navigation"
-      className={cn('flex items-center space-x-2 text-sm text-muted-foreground mb-6', className)}
+      className={cn("flex items-center space-x-2 text-sm text-muted-foreground mb-6", className)}
     >
-      <ol className="flex items-center space-x-2" itemScope itemType="https://schema.org/BreadcrumbList">
+      <ol
+        className="flex items-center space-x-2"
+        itemScope
+        itemType="https://schema.org/BreadcrumbList"
+      >
         <li itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
           <Link
             href="/"
@@ -52,16 +56,12 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
             >
               <ChevronRight className="w-4 h-4 text-muted-foreground/50" aria-hidden="true" />
               {isLast ? (
-                <span
-                  className="text-foreground font-medium"
-                  aria-current="page"
-                  itemProp="name"
-                >
+                <span className="text-foreground font-medium" aria-current="page" itemProp="name">
                   {item.label}
                 </span>
               ) : (
                 <Link
-                  href={item.href || '#'}
+                  href={item.href || "#"}
                   className="hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
                   itemProp="item"
                 >

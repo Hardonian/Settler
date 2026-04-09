@@ -8,14 +8,14 @@ describe("batch-processor guards", () => {
   });
 
   it("processInBatches rejects invalid batchSize", async () => {
-    await expect(
-      processInBatches([1], async (b) => b, { batchSize: 0 })
-    ).rejects.toThrow(/batchSize/);
+    await expect(processInBatches([1], async (b) => b, { batchSize: 0 })).rejects.toThrow(
+      /batchSize/
+    );
   });
 
   it("processInBatches rejects invalid maxConcurrency", async () => {
-    await expect(
-      processInBatches([1], async (b) => b, { maxConcurrency: 0 })
-    ).rejects.toThrow(/maxConcurrency/);
+    await expect(processInBatches([1], async (b) => b, { maxConcurrency: 0 })).rejects.toThrow(
+      /maxConcurrency/
+    );
   });
 });

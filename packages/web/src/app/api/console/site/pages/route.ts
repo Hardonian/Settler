@@ -115,11 +115,13 @@ export const POST = withSecurity(
       return NextResponse.json({ page }, { status: 201 });
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return NextResponse.json({ error: "Invalid request", details: error.issues }, { status: 400 });
+        return NextResponse.json(
+          { error: "Invalid request", details: error.issues },
+          { status: 400 }
+        );
       }
       return handleApiError(error, "Failed to create page");
     }
   },
   { rateLimit: { windowMs: 60_000, maxRequests: 20 }, requireAuth: true }
 );
-

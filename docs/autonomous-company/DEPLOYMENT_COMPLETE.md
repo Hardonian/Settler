@@ -49,6 +49,7 @@ A complete autonomous company system that replaces 7 startup roles with AI agent
 **Migration:** `20260127000000_autonomous_agents_schema.sql`
 
 Creates 8 tables:
+
 - `agent_runs` - Execution tracking
 - `strategic_backlog` - Prioritized items
 - `architecture_violations` - Code quality issues
@@ -101,6 +102,7 @@ supabase db push
 ```
 
 Or manually:
+
 ```bash
 supabase functions deploy strategic-governor-agent
 supabase functions deploy architecture-sentinel-agent
@@ -133,26 +135,31 @@ npx tsx scripts/run-agent.ts strategic_governor
 ## What Happens After Deployment
 
 ### Immediate (First Day)
+
 - Architecture Sentinel runs at 2 AM UTC
 - User Intent Synthesizer runs at 3 AM UTC
 - Preemptive Support runs at 4 AM UTC
 - Autonomous CFO runs at 5 AM UTC
 
 ### Weekly
+
 - Strategic Governor runs every Monday at 9 AM UTC
 - Organic Growth runs every Sunday at 10 AM UTC
 
 ### On Events
+
 - Release Gatekeeper runs on every PR and deployment
 
 ## Monitoring
 
 ### Daily Checks
+
 ```bash
 ./scripts/monitor-agents.sh
 ```
 
 ### Database Queries
+
 ```sql
 -- Recent agent runs
 SELECT * FROM agent_runs ORDER BY started_at DESC LIMIT 20;
@@ -167,6 +174,7 @@ SELECT * FROM architecture_violations WHERE status = 'open' ORDER BY severity;
 ## Success Metrics
 
 Track these weekly:
+
 - Agent execution success rate (target: >90%)
 - Artifacts produced per agent
 - Manual interventions required (target: decreasing)
@@ -181,6 +189,7 @@ Track these weekly:
 ## Files Created
 
 ### Edge Functions
+
 - `supabase/functions/strategic-governor-agent/index.ts`
 - `supabase/functions/architecture-sentinel-agent/index.ts`
 - `supabase/functions/user-intent-synthesizer-agent/index.ts`
@@ -191,16 +200,19 @@ Track these weekly:
 - `supabase/functions/agent-orchestrator/index.ts`
 
 ### Database
+
 - `supabase/migrations/20260127000000_autonomous_agents_schema.sql`
 - `supabase/migrations/20260127000001_agent_cron_jobs.sql`
 
 ### Scripts
+
 - `scripts/deploy-autonomous-agents.sh`
 - `scripts/monitor-agents.sh`
 - `scripts/setup-autonomous-agents.ts`
 - `scripts/run-agent.ts`
 
 ### Documentation
+
 - `docs/autonomous-company/README.md`
 - `docs/autonomous-company/role-replacement-map.md`
 - `docs/autonomous-company/setup-guide.md`
@@ -209,6 +221,7 @@ Track these weekly:
 - `docs/autonomous-company/deployment-checklist.md`
 
 ### CI/CD
+
 - `.github/workflows/release-safety-check.yml`
 
 ---

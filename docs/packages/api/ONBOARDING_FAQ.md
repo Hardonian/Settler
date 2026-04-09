@@ -5,6 +5,7 @@
 ### What is multi-tenancy?
 
 Multi-tenancy allows multiple customers (tenants) to use the same application instance while keeping their data completely isolated. Each tenant has their own:
+
 - Data (isolated via Row Level Security)
 - Resource quotas
 - Configuration
@@ -13,6 +14,7 @@ Multi-tenancy allows multiple customers (tenants) to use the same application in
 ### How is data isolated?
 
 We use **PostgreSQL Row Level Security (RLS)** to ensure complete data isolation:
+
 - Each database query is automatically filtered by tenant ID
 - Tenants cannot access other tenants' data, even with direct SQL access
 - All tables have RLS policies enabled
@@ -20,6 +22,7 @@ We use **PostgreSQL Row Level Security (RLS)** to ensure complete data isolation
 ### What is schema-per-tenant?
 
 Schema-per-tenant is an optional isolation mode where each tenant gets their own database schema. This provides:
+
 - Stronger isolation
 - Easier data migration
 - Better performance for large tenants
@@ -31,15 +34,15 @@ Enable with: `ENABLE_SCHEMA_PER_TENANT=true`
 ### How do I create a new tenant?
 
 ```typescript
-import { TenantService } from '@settler/api';
+import { TenantService } from "@settler/api";
 
 const tenantService = new TenantService(tenantRepo, userRepo);
 
 const { tenant, owner } = await tenantService.createTenant({
-  name: 'Acme Corp',
-  slug: 'acme-corp',
-  ownerEmail: 'admin@acme.com',
-  ownerPasswordHash: await hashPassword('secure-password'),
+  name: "Acme Corp",
+  slug: "acme-corp",
+  ownerEmail: "admin@acme.com",
+  ownerPasswordHash: await hashPassword("secure-password"),
   tier: TenantTier.STARTER,
 });
 ```
@@ -58,15 +61,12 @@ const { tenant, owner } = await tenantService.createTenant({
 Yes! Enterprise tenants can create sub-accounts:
 
 ```typescript
-const { tenant: subAccount } = await tenantService.createSubAccount(
-  parentTenantId,
-  {
-    name: 'Acme Europe',
-    slug: 'acme-europe',
-    ownerEmail: 'admin-eu@acme.com',
-    ownerPasswordHash: await hashPassword('password'),
-  }
-);
+const { tenant: subAccount } = await tenantService.createSubAccount(parentTenantId, {
+  name: "Acme Europe",
+  slug: "acme-europe",
+  ownerEmail: "admin-eu@acme.com",
+  ownerPasswordHash: await hashPassword("password"),
+});
 ```
 
 ## Quotas & Limits
@@ -82,7 +82,7 @@ const { tenant: subAccount } = await tenantService.createSubAccount(
 ### How do I check quota usage?
 
 ```typescript
-import { QuotaService } from '@settler/api';
+import { QuotaService } from "@settler/api";
 
 const quotaService = new QuotaService(tenantRepo);
 const usage = await quotaService.getUsage(tenantId);
@@ -104,11 +104,13 @@ console.log(usage);
 ### How do I increase quotas?
 
 **Option 1: Upgrade Tier**
+
 ```typescript
 await tenantService.upgradeTier(tenantId, TenantTier.GROWTH);
 ```
 
 **Option 2: Custom Quota Adjustment**
+
 ```sql
 UPDATE tenants
 SET quotas = jsonb_set(quotas, '{storageBytes}', '2147483648'::jsonb)
@@ -120,15 +122,17 @@ WHERE id = 'tenant-id';
 ### How do I set up a custom domain?
 
 1. **Add Domain**:
+
 ```typescript
-tenant.setCustomDomain('api.acme.com', false);
+tenant.setCustomDomain("api.acme.com", false);
 await tenantRepo.save(tenant);
 ```
 
 2. **Verify DNS**: Add CNAME record pointing to Settler
 3. **Verify Domain**:
+
 ```typescript
-await tenantService.verifyCustomDomain(tenantId, 'api.acme.com');
+await tenantService.verifyCustomDomain(tenantId, "api.acme.com");
 ```
 
 4. **Update DNS**: Point domain to Settler's load balancer
@@ -145,6 +149,7 @@ await tenantService.verifyCustomDomain(tenantId, 'api.acme.com');
 ### How do feature flags work?
 
 Feature flags allow you to:
+
 - Enable/disable features per tenant or user
 - A/B test features with percentage rollouts
 - Kill switch features instantly
@@ -152,29 +157,29 @@ Feature flags allow you to:
 ### Create a Feature Flag
 
 ```typescript
-import { FeatureFlagService } from '@settler/api';
+import { FeatureFlagService } from "@settler/api";
 
 const flagService = new FeatureFlagService();
 
 // Tenant-specific flag
-await flagService.setFlag('new-feature', true, {
+await flagService.setFlag("new-feature", true, {
   tenantId: tenantId,
   rolloutPercentage: 50, // 50% of tenant's users
-  description: 'New reconciliation algorithm',
+  description: "New reconciliation algorithm",
 });
 
 // User-specific flag
-await flagService.setFlag('beta-feature', true, {
+await flagService.setFlag("beta-feature", true, {
   tenantId: tenantId,
   userId: userId,
-  description: 'Beta feature for specific user',
+  description: "Beta feature for specific user",
 });
 ```
 
 ### Check Feature Flag
 
 ```typescript
-const enabled = await flagService.isEnabled('new-feature', tenantId, userId);
+const enabled = await flagService.isEnabled("new-feature", tenantId, userId);
 if (enabled) {
   // Use new feature
 }
@@ -184,7 +189,7 @@ if (enabled) {
 
 ```typescript
 // Immediately disable feature for all tenants
-await flagService.killSwitch('new-feature', 'Critical bug found', userId);
+await flagService.killSwitch("new-feature", "Critical bug found", userId);
 ```
 
 ## Rate Limiting
@@ -192,6 +197,7 @@ await flagService.killSwitch('new-feature', 'Critical bug found', userId);
 ### How does rate limiting work?
 
 We use **Token Bucket** algorithm:
+
 - Each tenant has a bucket with tokens
 - Tokens refill at a constant rate
 - Requests consume tokens
@@ -200,13 +206,14 @@ We use **Token Bucket** algorithm:
 ### Adaptive Rate Limiting
 
 Adaptive rate limiting adjusts limits based on success rate:
+
 - High success rate (>95%): Increase rate slightly
 - Low success rate (<80%): Decrease rate
 
 ### Check Rate Limit Status
 
 ```typescript
-import { tokenBucket } from '@settler/api';
+import { tokenBucket } from "@settler/api";
 
 const { allowed, remaining, resetAt } = await tokenBucket.consume(
   `tenant:${tenantId}`,
@@ -224,6 +231,7 @@ const { allowed, remaining, resetAt } = await tokenBucket.consume(
 ### How does the prioritized queue work?
 
 Jobs are queued with priorities:
+
 - **Enterprise**: Bypass queue, execute immediately
 - **Scale**: High priority (10x multiplier)
 - **Growth**: Medium priority (5x multiplier)
@@ -233,9 +241,9 @@ Jobs are queued with priorities:
 ### Add Job to Queue
 
 ```typescript
-import { PrioritizedQueue, QueuePriority } from '@settler/api';
+import { PrioritizedQueue, QueuePriority } from "@settler/api";
 
-const queue = new PrioritizedQueue('reconciliation', async (job) => {
+const queue = new PrioritizedQueue("reconciliation", async (job) => {
   // Process job
 });
 
@@ -254,6 +262,7 @@ await queue.add(
 ### How do I view traces?
 
 Traces are exported to OpenTelemetry collector. View in:
+
 - **Jaeger**: `http://jaeger:16686`
 - **Tempo**: `http://tempo:3200`
 - **Datadog/New Relic**: If configured
@@ -267,16 +276,19 @@ View in Grafana dashboards (see `monitoring/grafana-dashboards.json`).
 ### What metrics are tracked?
 
 **RED Method** (Rate, Errors, Duration):
+
 - HTTP request rate
 - HTTP error rate
 - HTTP request duration (p50, p95, p99)
 
 **Business Metrics**:
+
 - Reconciliation success rate
 - Job execution time
 - Webhook delivery success
 
 **Multi-Tenant Metrics**:
+
 - Quota usage per tenant
 - Rate limit hits
 - Resource usage (noisy neighbor detection)
@@ -326,6 +338,7 @@ await TenantContext.withTenantContext(client, tenantId, async () => {
 ### 2. Monitor Quota Usage
 
 Set up alerts for quota usage > 80%:
+
 ```promql
 tenant_quota_usage / tenant_quota_limit > 0.8
 ```
@@ -346,7 +359,7 @@ try {
   if (error instanceof QuotaExceededError) {
     // Return user-friendly error
     return res.status(429).json({
-      error: 'Storage quota exceeded',
+      error: "Storage quota exceeded",
       currentUsage: error.currentUsage,
       limit: error.limit,
     });
@@ -364,6 +377,7 @@ try {
 ## Support
 
 For additional help:
+
 - **Documentation**: `/docs`
 - **SRE Runbook**: `/docs/SRE_RUNBOOK.md`
 - **Support Email**: support@settler.io

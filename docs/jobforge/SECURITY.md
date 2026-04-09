@@ -41,11 +41,11 @@ Expected: Cross-tenant reads return 0 rows.
 
 ```typescript
 // ❌ WRONG: Service key on client
-const supabase = createClient(url, serviceRoleKey) // Exposed to browser!
+const supabase = createClient(url, serviceRoleKey); // Exposed to browser!
 
 // ✅ CORRECT: Service key only on server
 // app/api/jobs/route.ts (server-only)
-const supabase = createClient(url, serviceRoleKey)
+const supabase = createClient(url, serviceRoleKey);
 ```
 
 ### RPC-Only Mutations
@@ -72,26 +72,26 @@ Blocks private IPs and internal services:
 
 ```typescript
 const BLOCKED_HOSTS = [
-  'localhost',
-  '127.0.0.1',
-  '0.0.0.0',
-  '169.254.169.254', // AWS metadata
-  'metadata.google.internal', // GCP metadata
-]
+  "localhost",
+  "127.0.0.1",
+  "0.0.0.0",
+  "169.254.169.254", // AWS metadata
+  "metadata.google.internal", // GCP metadata
+];
 
-const PRIVATE_IP_RANGES = [/^10\./, /^172\.(1[6-9]|2[0-9]|3[0-1])\./, /^192\.168\./]
+const PRIVATE_IP_RANGES = [/^10\./, /^172\.(1[6-9]|2[0-9]|3[0-1])\./, /^192\.168\./];
 ```
 
 ### Allowlist Enforcement
 
 ```typescript
 await client.enqueueJob({
-  type: 'connector.http.request',
+  type: "connector.http.request",
   payload: {
-    url: 'https://api.example.com/webhook',
-    allowlist: ['api.example.com', '*.trusted-domain.com'],
+    url: "https://api.example.com/webhook",
+    allowlist: ["api.example.com", "*.trusted-domain.com"],
   },
-})
+});
 ```
 
 **Best Practices:**
@@ -106,20 +106,20 @@ await client.enqueueJob({
 
 ```typescript
 // Worker signs webhook payload
-const signature = createHmac('sha256', secret).update(payloadString).digest('hex')
+const signature = createHmac("sha256", secret).update(payloadString).digest("hex");
 
-headers['X-JobForge-Signature'] = `sha256=${signature}`
+headers["X-JobForge-Signature"] = `sha256=${signature}`;
 ```
 
 ### Verification (Receiver)
 
 ```typescript
 // Webhook receiver verifies signature
-const receivedSig = request.headers['x-jobforge-signature']
-const expectedSig = `sha256=${computeHmac(request.body, secret)}`
+const receivedSig = request.headers["x-jobforge-signature"];
+const expectedSig = `sha256=${computeHmac(request.body, secret)}`;
 
 if (receivedSig !== expectedSig) {
-  throw new Error('Invalid signature')
+  throw new Error("Invalid signature");
 }
 ```
 
@@ -127,12 +127,12 @@ if (receivedSig !== expectedSig) {
 
 ```typescript
 // Check timestamp (reject if >5 minutes old)
-const timestamp = request.headers['x-jobforge-timestamp']
-const age = Date.now() - new Date(timestamp).getTime()
+const timestamp = request.headers["x-jobforge-timestamp"];
+const age = Date.now() - new Date(timestamp).getTime();
 
 if (age > 300_000) {
   // 5 minutes
-  throw new Error('Timestamp too old')
+  throw new Error("Timestamp too old");
 }
 ```
 
@@ -144,17 +144,17 @@ if (age > 300_000) {
 
 ```typescript
 // ❌ WRONG
-await db.insert('connector_configs', {
-  webhook_secret: 'actual-secret-value', // Plaintext in DB!
-})
+await db.insert("connector_configs", {
+  webhook_secret: "actual-secret-value", // Plaintext in DB!
+});
 
 // ✅ CORRECT
-await db.insert('connector_configs', {
-  webhook_secret_ref: 'WEBHOOK_SECRET_TENANT_123', // Reference only
-})
+await db.insert("connector_configs", {
+  webhook_secret_ref: "WEBHOOK_SECRET_TENANT_123", // Reference only
+});
 
 // Worker fetches from env
-const secret = process.env[config.webhook_secret_ref]
+const secret = process.env[config.webhook_secret_ref];
 ```
 
 ### Secrets Rotation
@@ -170,11 +170,11 @@ const secret = process.env[config.webhook_secret_ref]
 ```typescript
 const PayloadSchema = z.object({
   url: z.string().url(),
-  method: z.enum(['GET', 'POST', 'PUT', 'DELETE']),
+  method: z.enum(["GET", "POST", "PUT", "DELETE"]),
   timeout_ms: z.number().int().positive().max(60_000),
-})
+});
 
-const validated = PayloadSchema.parse(payload) // Throws if invalid
+const validated = PayloadSchema.parse(payload); // Throws if invalid
 ```
 
 ### SQL Injection Prevention
@@ -297,12 +297,12 @@ Configure automatic cleanup:
 ```typescript
 // Delete jobs older than retention period
 await client.enqueueJob({
-  type: 'system.cleanup',
+  type: "system.cleanup",
   payload: {
     retention_days: 90,
-    statuses: ['succeeded', 'failed', 'dead'],
+    statuses: ["succeeded", "failed", "dead"],
   },
-})
+});
 ```
 
 ## Security Checklist

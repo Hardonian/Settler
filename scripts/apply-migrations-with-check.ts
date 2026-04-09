@@ -1,15 +1,15 @@
 #!/usr/bin/env tsx
 /**
  * Apply Migrations with Status Check
- * 
+ *
  * Checks which migrations have been applied and applies only pending ones.
  * Requires DATABASE_URL environment variable.
  */
 
-import { Pool } from 'pg';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as dotenv from 'dotenv';
+import { Pool } from "pg";
+import * as fs from "fs";
+import * as path from "path";
+import * as dotenv from "dotenv";
 
 dotenv.config();
 
@@ -28,9 +28,9 @@ function getConnectionString(): string {
   }
 
   throw new Error(
-    'DATABASE_URL environment variable is required.\n' +
-    'Set it to your PostgreSQL connection string, e.g.:\n' +
-    'DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres'
+    "DATABASE_URL environment variable is required.\n" +
+      "Set it to your PostgreSQL connection string, e.g.:\n" +
+      "DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres"
   );
 }
 
@@ -51,8 +51,8 @@ async function ensureMigrationsTable(pool: Pool): Promise<void> {
  */
 async function getAppliedMigrations(pool: Pool): Promise<Set<string>> {
   await ensureMigrationsTable(pool);
-  
-  const result = await pool.query('SELECT version FROM schema_migrations ORDER BY version');
+
+  const result = await pool.query("SELECT version FROM schema_migrations ORDER BY version");
   return new Set(result.rows.map((row: { version: string }) => row.version));
 }
 
@@ -61,7 +61,7 @@ async function getAppliedMigrations(pool: Pool): Promise<Set<string>> {
  */
 async function markMigrationApplied(pool: Pool, migrationName: string): Promise<void> {
   await pool.query(
-    'INSERT INTO schema_migrations (version) VALUES ($1) ON CONFLICT (version) DO NOTHING',
+    "INSERT INTO schema_migrations (version) VALUES ($1) ON CONFLICT (version) DO NOTHING",
     [migrationName]
   );
 }
@@ -75,49 +75,51 @@ async function executeMigration(
   pool: Pool
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const migrationSQL = fs.readFileSync(migrationPath, 'utf8');
-    
+    const migrationSQL = fs.readFileSync(migrationPath, "utf8");
+
     // Execute migration
     await pool.query(migrationSQL);
-    
+
     // Mark as applied
     await markMigrationApplied(pool, migrationName);
-    
+
     return { success: true };
   } catch (error: any) {
     const errorMessage = error.message.toLowerCase();
-    
+
     // Check if it's a "already exists" error that we can ignore
-    if (errorMessage.includes('already exists') ||
-        errorMessage.includes('duplicate') ||
-        errorMessage.includes('already enabled') ||
-        errorMessage.includes('already defined') ||
-        (errorMessage.includes('does not exist') && errorMessage.includes('drop'))) {
+    if (
+      errorMessage.includes("already exists") ||
+      errorMessage.includes("duplicate") ||
+      errorMessage.includes("already enabled") ||
+      errorMessage.includes("already defined") ||
+      (errorMessage.includes("does not exist") && errorMessage.includes("drop"))
+    ) {
       // Still mark as applied since the objects exist
       await markMigrationApplied(pool, migrationName);
       return { success: true };
     }
-    
+
     // Handle deadlocks - retry once
-    if (errorMessage.includes('deadlock') || errorMessage.includes('lock')) {
+    if (errorMessage.includes("deadlock") || errorMessage.includes("lock")) {
       console.log(`   ⚠️  Deadlock detected, retrying...`);
       try {
         // Wait a bit and retry
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         await pool.query(migrationSQL);
         await markMigrationApplied(pool, migrationName);
         return { success: true };
       } catch (retryError: any) {
         const retryMessage = retryError.message.toLowerCase();
         // If retry also fails but objects exist, mark as applied
-        if (retryMessage.includes('already exists') || retryMessage.includes('duplicate')) {
+        if (retryMessage.includes("already exists") || retryMessage.includes("duplicate")) {
           await markMigrationApplied(pool, migrationName);
           return { success: true };
         }
         return { success: false, error: `Deadlock retry failed: ${retryError.message}` };
       }
     }
-    
+
     return { success: false, error: error.message };
   }
 }
@@ -127,16 +129,16 @@ async function executeMigration(
  */
 async function applyPendingMigrations(): Promise<void> {
   const connectionString = getConnectionString();
-  
-  console.log('🚀 Checking for pending migrations...');
-  const maskedConnection = connectionString.replace(/:[^:@]+@/, ':****@');
+
+  console.log("🚀 Checking for pending migrations...");
+  const maskedConnection = connectionString.replace(/:[^:@]+@/, ":****@");
   console.log(`   Connection: ${maskedConnection}\n`);
 
   // Parse connection string to handle IPv6 issues
   let parsedConnection = connectionString;
-  
+
   // Force IPv4 for Supabase connections (fixes IPv6 connectivity issues)
-  if (connectionString.includes('supabase.co')) {
+  if (connectionString.includes("supabase.co")) {
     try {
       const url = new URL(connectionString);
       // Use connection pooler port (6543) which handles IPv6 better, or force IPv4
@@ -150,9 +152,12 @@ async function applyPendingMigrations(): Promise<void> {
 
   const pool = new Pool({
     connectionString: parsedConnection,
-    ssl: connectionString.includes('supabase.co') || connectionString.includes('pooler') ? {
-      rejectUnauthorized: false,
-    } : false,
+    ssl:
+      connectionString.includes("supabase.co") || connectionString.includes("pooler")
+        ? {
+            rejectUnauthorized: false,
+          }
+        : false,
     connectionTimeoutMillis: 30000,
     // Force IPv4 if IPv6 fails
     keepAlive: true,
@@ -161,36 +166,37 @@ async function applyPendingMigrations(): Promise<void> {
 
   try {
     // Test connection
-    await pool.query('SELECT 1');
-    console.log('✅ Database connection established\n');
+    await pool.query("SELECT 1");
+    console.log("✅ Database connection established\n");
 
     // Get applied migrations
     const appliedMigrations = await getAppliedMigrations(pool);
     console.log(`📋 Found ${appliedMigrations.size} applied migration(s)`);
 
     // Get all migration files
-    const migrationsDir = path.join(process.cwd(), 'supabase', 'migrations');
+    const migrationsDir = path.join(process.cwd(), "supabase", "migrations");
     if (!fs.existsSync(migrationsDir)) {
       throw new Error(`Migrations directory not found: ${migrationsDir}`);
     }
 
-    const migrationFiles = fs.readdirSync(migrationsDir)
-      .filter(file => file.endsWith('.sql') && file !== 'rollback_template.sql')
+    const migrationFiles = fs
+      .readdirSync(migrationsDir)
+      .filter((file) => file.endsWith(".sql") && file !== "rollback_template.sql")
       .sort();
 
     console.log(`📦 Found ${migrationFiles.length} migration file(s) total\n`);
 
     // Find pending migrations
-    const pendingMigrations = migrationFiles.filter(file => !appliedMigrations.has(file));
-    
+    const pendingMigrations = migrationFiles.filter((file) => !appliedMigrations.has(file));
+
     if (pendingMigrations.length === 0) {
-      console.log('✅ All migrations have been applied!');
+      console.log("✅ All migrations have been applied!");
       return;
     }
 
     console.log(`🔄 Found ${pendingMigrations.length} pending migration(s):`);
-    pendingMigrations.forEach(file => console.log(`   - ${file}`));
-    console.log('');
+    pendingMigrations.forEach((file) => console.log(`   - ${file}`));
+    console.log("");
 
     // Apply pending migrations
     let successCount = 0;
@@ -199,9 +205,9 @@ async function applyPendingMigrations(): Promise<void> {
     for (const migrationFile of pendingMigrations) {
       const migrationPath = path.join(migrationsDir, migrationFile);
       console.log(`📦 Applying: ${migrationFile}`);
-      
+
       const result = await executeMigration(migrationPath, migrationFile, pool);
-      
+
       if (result.success) {
         console.log(`   ✅ Applied successfully\n`);
         successCount++;
@@ -212,17 +218,18 @@ async function applyPendingMigrations(): Promise<void> {
       }
     }
 
-    console.log('📊 Migration Summary:');
+    console.log("📊 Migration Summary:");
     console.log(`   Applied: ${successCount}`);
     console.log(`   Failed: ${failCount}`);
-    console.log(`   Total applied: ${appliedMigrations.size + successCount}/${migrationFiles.length}`);
+    console.log(
+      `   Total applied: ${appliedMigrations.size + successCount}/${migrationFiles.length}`
+    );
 
     if (failCount === 0) {
-      console.log('\n✅ All pending migrations applied successfully!');
+      console.log("\n✅ All pending migrations applied successfully!");
     }
-
   } catch (error: any) {
-    console.error('\n❌ Migration process failed:', error.message);
+    console.error("\n❌ Migration process failed:", error.message);
     throw error;
   } finally {
     await pool.end();
@@ -236,7 +243,7 @@ if (require.main === module) {
       process.exit(0);
     })
     .catch((error) => {
-      console.error('Fatal error:', error.message);
+      console.error("Fatal error:", error.message);
       process.exit(1);
     });
 }

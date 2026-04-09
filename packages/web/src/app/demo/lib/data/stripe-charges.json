@@ -34,7 +34,7 @@
     "source": "stripe",
     "stripe_charge_id": "ch_3QxYz5555555555aaaaaa",
     "stripe_customer_id": "cus_GHI789RST",
-    "amount": 299.00,
+    "amount": 299.0,
     "currency": "USD",
     "timestamp": "2024-01-17T09:15:00Z",
     "status": "completed",
@@ -55,7 +55,7 @@
     "timestamp": "2024-01-18T16:45:00Z",
     "status": "refunded",
     "description": "Refunded purchase - Customer request",
-    "fee": 2.80,
+    "fee": 2.8,
     "net_amount": 77.19,
     "metadata": {
       "refund_reason": "customer_request"
@@ -66,7 +66,7 @@
     "source": "stripe",
     "stripe_charge_id": "ch_3QxYz2222222222cccccc",
     "stripe_customer_id": "cus_MNO345PQR",
-    "amount": 199.50,
+    "amount": 199.5,
     "currency": "USD",
     "timestamp": "2024-01-19T11:30:00Z",
     "status": "completed",

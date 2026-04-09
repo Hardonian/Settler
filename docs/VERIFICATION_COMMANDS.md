@@ -14,6 +14,7 @@ pnpm verify
 ```
 
 Runs complete verification:
+
 - Linting
 - Type checking
 - Build verification
@@ -39,6 +40,7 @@ pnpm run verify:setup
 ```
 
 Validates:
+
 - Environment variable presence
 - Workspace integrity
 - Toolchain versions
@@ -239,32 +241,32 @@ pnpm verify:schema
 
 ## Command Quick Reference
 
-| Category | Command | Purpose |
-|----------|---------|---------|
-| **Setup** | `pnpm run bootstrap` | Initial setup |
-| **Setup** | `pnpm run verify:setup` | Verify environment |
-| **Setup** | `pnpm run doctor -- --first-run` | Diagnostic check |
-| **Dev** | `pnpm tb:start` | Start local infra |
-| **Dev** | `pnpm dev` | Start dev servers |
-| **Test** | `pnpm test` | Run tests |
-| **Test** | `pnpm test:e2e` | Run E2E tests |
-| **Quality** | `pnpm lint` | Lint code |
-| **Quality** | `pnpm typecheck` | Type check |
-| **Quality** | `pnpm validate` | Full validation |
-| **Demo** | `pnpm demo:seed` | Seed demo data |
-| **Build** | `pnpm build` | Build application |
-| **Full** | `pnpm verify` | Complete verification |
+| Category    | Command                          | Purpose               |
+| ----------- | -------------------------------- | --------------------- |
+| **Setup**   | `pnpm run bootstrap`             | Initial setup         |
+| **Setup**   | `pnpm run verify:setup`          | Verify environment    |
+| **Setup**   | `pnpm run doctor -- --first-run` | Diagnostic check      |
+| **Dev**     | `pnpm tb:start`                  | Start local infra     |
+| **Dev**     | `pnpm dev`                       | Start dev servers     |
+| **Test**    | `pnpm test`                      | Run tests             |
+| **Test**    | `pnpm test:e2e`                  | Run E2E tests         |
+| **Quality** | `pnpm lint`                      | Lint code             |
+| **Quality** | `pnpm typecheck`                 | Type check            |
+| **Quality** | `pnpm validate`                  | Full validation       |
+| **Demo**    | `pnpm demo:seed`                 | Seed demo data        |
+| **Build**   | `pnpm build`                     | Build application     |
+| **Full**    | `pnpm verify`                    | Complete verification |
 
 ---
 
 ## Success Criteria
 
-| Command | Success Indicator |
-|---------|------------------|
-| `pnpm verify` | Exit code 0 |
-| `pnpm dev` | Web at :3000, API at :4000 |
-| `pnpm tb:status` | "OK" status |
-| `pnpm demo:seed` | Demo data in DB |
+| Command          | Success Indicator          |
+| ---------------- | -------------------------- |
+| `pnpm verify`    | Exit code 0                |
+| `pnpm dev`       | Web at :3000, API at :4000 |
+| `pnpm tb:status` | "OK" status                |
+| `pnpm demo:seed` | Demo data in DB            |
 
 ---
 

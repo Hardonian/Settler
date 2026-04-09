@@ -9,7 +9,9 @@ const RoleMatrix: React.FC = () => {
       <div className="rounded-full bg-muted/40 p-4 mb-4">
         <Shield className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
       </div>
-      <h3 className="text-lg font-bold text-foreground mb-2">Role Management Not Yet Implemented</h3>
+      <h3 className="text-lg font-bold text-foreground mb-2">
+        Role Management Not Yet Implemented
+      </h3>
       <p className="text-sm text-muted-foreground max-w-md mb-4">
         Backend role and permission management infrastructure is not yet connected. The role matrix
         will be activated once the permission system is fully wired to this interface.

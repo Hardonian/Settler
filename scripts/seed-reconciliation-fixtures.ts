@@ -1,42 +1,42 @@
 /**
  * Seed Reconciliation Fixtures
- * 
+ *
  * One-command seed script for reconciliation testing.
  * Creates test data: ingestion sources, transactions, and triggers reconciliation.
  */
 
-import { PrismaClient } from '@prisma/client';
-import { createClient } from '@supabase/supabase-js';
-import * as dotenv from 'dotenv';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as csv from 'csv-parse/sync';
+import { PrismaClient } from "@prisma/client";
+import { createClient } from "@supabase/supabase-js";
+import * as dotenv from "dotenv";
+import * as fs from "fs";
+import * as path from "path";
+import * as csv from "csv-parse/sync";
 
-dotenv.config({ path: '.env.local' });
+dotenv.config({ path: ".env.local" });
 
 const prisma = new PrismaClient();
-const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 interface CSVRow {
   date: string;
   amount: string;
   description: string;
   currency: string;
-  source: 'bank' | 'receipt';
+  source: "bank" | "receipt";
 }
 
 async function seedFixtures() {
-  console.log('🌱 Seeding reconciliation fixtures...\n');
+  console.log("🌱 Seeding reconciliation fixtures...\n");
 
   if (!supabaseUrl || !supabaseServiceRoleKey) {
-    console.error('❌ Missing Supabase credentials');
+    console.error("❌ Missing Supabase credentials");
     process.exit(1);
   }
 
   // Read CSV fixture
-  const csvPath = path.join(__dirname, '../fixtures/reconciliation-test-data.csv');
-  const csvContent = fs.readFileSync(csvPath, 'utf-8');
+  const csvPath = path.join(__dirname, "../fixtures/reconciliation-test-data.csv");
+  const csvContent = fs.readFileSync(csvPath, "utf-8");
   const rows = csv.parse(csvContent, {
     columns: true,
     skip_empty_lines: true,
@@ -51,7 +51,7 @@ async function seedFixtures() {
   // Create test user
   const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
     email: testEmail,
-    password: 'TestPassword123!',
+    password: "TestPassword123!",
     email_confirm: true,
   });
 
@@ -67,7 +67,7 @@ async function seedFixtures() {
     data: {
       userId,
       email: testEmail,
-      status: 'active',
+      status: "active",
     },
   });
   console.log(`✅ Created billing account: ${billingAccount.id}`);
@@ -76,7 +76,7 @@ async function seedFixtures() {
   const tenant = await prisma.tenant.create({
     data: {
       slug: `test-reconciliation-${Date.now()}`,
-      name: 'Test Reconciliation Tenant',
+      name: "Test Reconciliation Tenant",
       billingAccountId: billingAccount.id,
       isActive: true,
     },
@@ -94,10 +94,10 @@ async function seedFixtures() {
     data: {
       tenantId: tenant.id,
       userId,
-      name: 'Test Bank Feed',
-      type: 'csv',
+      name: "Test Bank Feed",
+      type: "csv",
       connectorType: null,
-      status: 'active',
+      status: "active",
     },
   });
 
@@ -105,10 +105,10 @@ async function seedFixtures() {
     data: {
       tenantId: tenant.id,
       userId,
-      name: 'Test Receipt Feed',
-      type: 'csv',
+      name: "Test Receipt Feed",
+      type: "csv",
       connectorType: null,
-      status: 'active',
+      status: "active",
     },
   });
   console.log(`✅ Created ingestion sources: bank=${bankSource.id}, receipt=${receiptSource.id}`);
@@ -119,7 +119,7 @@ async function seedFixtures() {
       sourceId: bankSource.id,
       tenantId: tenant.id,
       userId,
-      status: 'completed',
+      status: "completed",
       startedAt: new Date(),
       completedAt: new Date(),
       rawRecordCount: 0,
@@ -133,7 +133,7 @@ async function seedFixtures() {
       sourceId: receiptSource.id,
       tenantId: tenant.id,
       userId,
-      status: 'completed',
+      status: "completed",
       startedAt: new Date(),
       completedAt: new Date(),
       rawRecordCount: 0,
@@ -149,7 +149,7 @@ async function seedFixtures() {
   for (const row of rows) {
     const transactionDate = new Date(row.date);
     const amount = parseFloat(row.amount);
-    const isBank = row.source === 'bank';
+    const isBank = row.source === "bank";
 
     const transaction = await prisma.normalizedTransaction.create({
       data: {
@@ -180,8 +180,8 @@ async function seedFixtures() {
       tenantId: tenant.id,
       userId,
       ingestionId: bankIngestion.id,
-      name: 'Test Reconciliation Run',
-      status: 'pending',
+      name: "Test Reconciliation Run",
+      status: "pending",
       startedAt: new Date(),
       sourceCount: bankTransactions.length,
       targetCount: receiptTransactions.length,
@@ -190,19 +190,20 @@ async function seedFixtures() {
   console.log(`✅ Created reconciliation run: ${reconciliationRun.id}`);
 
   // Run matching (using deterministic matcher)
-  const { runDeterministicMatching } = await import('../packages/web/src/lib/reconciliation/deterministic-matcher');
+  const { runDeterministicMatching } =
+    await import("../packages/web/src/lib/reconciliation/deterministic-matcher");
 
   const matchResult = await runDeterministicMatching(
     tenant.id,
     reconciliationRun.id,
-    bankTransactions.map(t => ({
+    bankTransactions.map((t) => ({
       id: t.id,
       amount: Number(t.amount),
       date: t.date,
       description: t.description,
       currency: t.currency,
     })),
-    receiptTransactions.map(t => ({
+    receiptTransactions.map((t) => ({
       id: t.id,
       amount: Number(t.amount),
       date: t.date,
@@ -215,7 +216,7 @@ async function seedFixtures() {
   await prisma.reconciliationRun.update({
     where: { id: reconciliationRun.id },
     data: {
-      status: 'completed',
+      status: "completed",
       completedAt: new Date(),
       matchedCount: matchResult.matchedCount,
       unmatchedSourceCount: matchResult.unmatchedCount,
@@ -236,7 +237,9 @@ async function seedFixtures() {
 
   console.log(`\n✅ Fixture seeding complete!`);
   console.log(`\nTo test reconciliation:`);
-  console.log(`  curl http://localhost:3000/api/console/reconciliation?id=${reconciliationRun.id} \\`);
+  console.log(
+    `  curl http://localhost:3000/api/console/reconciliation?id=${reconciliationRun.id} \\`
+  );
   console.log(`    -H "Authorization: Bearer <token>"`);
 
   return {
@@ -248,11 +251,11 @@ async function seedFixtures() {
 
 seedFixtures()
   .then(() => {
-    console.log('\n✅ Done');
+    console.log("\n✅ Done");
     process.exit(0);
   })
   .catch((error) => {
-    console.error('\n❌ Error:', error);
+    console.error("\n❌ Error:", error);
     process.exit(1);
   })
   .finally(() => {

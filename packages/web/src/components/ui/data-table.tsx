@@ -22,14 +22,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Search, ChevronLeft, ChevronRight, AlertCircle, Inbox } from "lucide-react";
 import { Button } from "./button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "./table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./table";
 import { Card, CardContent, CardHeader } from "./card";
 
 // ─── Column Definition ────────────────────────────────────────────────────────
@@ -133,13 +126,7 @@ function SkeletonRows({ columns, count = 5 }: { columns: number; count?: number 
 
 // ─── Internal: Empty row ─────────────────────────────────────────────────────
 
-function EmptyRow({
-  columns,
-  state,
-}: {
-  columns: number;
-  state?: DataTableEmptyState;
-}) {
+function EmptyRow({ columns, state }: { columns: number; state?: DataTableEmptyState }) {
   return (
     <TableRow>
       <TableCell colSpan={columns} className="h-56">
@@ -148,9 +135,7 @@ function EmptyRow({
             <Inbox className="h-7 w-7 text-muted-foreground/50" aria-hidden="true" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-foreground">
-              {state?.title ?? "No data"}
-            </p>
+            <p className="text-sm font-semibold text-foreground">{state?.title ?? "No data"}</p>
             <p className="mt-1 text-xs text-muted-foreground max-w-xs leading-relaxed">
               {state?.description ?? "Nothing to display here yet."}
             </p>

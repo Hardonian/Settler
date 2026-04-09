@@ -73,7 +73,9 @@ export function NoRunsEmptyState() {
           <div className="mb-4 text-muted-foreground dark:text-muted-foreground">
             <FileSearch className="w-12 h-12" />
           </div>
-          <h3 className="text-lg font-semibold text-foreground dark:text-white mb-2">No runs yet</h3>
+          <h3 className="text-lg font-semibold text-foreground dark:text-white mb-2">
+            No runs yet
+          </h3>
           <p className="text-sm text-muted-foreground dark:text-muted-foreground max-w-sm mb-4">
             No reconciliation runs recorded. Trigger a run via the API or CLI to get started.
           </p>

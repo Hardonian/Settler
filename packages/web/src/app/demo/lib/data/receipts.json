@@ -41,8 +41,8 @@
       {
         "description": "Blueberry Muffin",
         "quantity": 1,
-        "unit_price": 3.50,
-        "total": 3.50
+        "unit_price": 3.5,
+        "total": 3.5
       },
       {
         "description": "Tax",
@@ -135,7 +135,7 @@
     "id": "demo_receipt_006",
     "source": "receipt",
     "vendor_name": "United Airlines",
-    "amount": 599.00,
+    "amount": 599.0,
     "currency": "USD",
     "date": "2024-01-19T12:00:00Z",
     "category": "Travel",
@@ -143,12 +143,12 @@
       {
         "description": "Flight - SFO to JFK",
         "quantity": 1,
-        "unit_price": 599.00,
-        "total": 599.00
+        "unit_price": 599.0,
+        "total": 599.0
       }
     ],
     "tax_amount": 0,
-    "total_amount": 599.00,
+    "total_amount": 599.0,
     "payment_method": "Credit Card",
     "receipt_number": "UA-789012",
     "metadata": {

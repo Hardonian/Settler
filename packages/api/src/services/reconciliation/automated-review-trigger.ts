@@ -1,6 +1,6 @@
 /**
  * Automated Review Trigger Service
- * 
+ *
  * Triggers automated review for reconciliation runs that have completed.
  * Can be called as a scheduled job or webhook handler.
  */
@@ -13,9 +13,7 @@ import { checkQualityThresholds, generateQualityReport } from "./quality-monitor
 /**
  * Process completed reconciliation runs that haven't been reviewed
  */
-export async function processPendingReviews(
-  limit: number = 100
-): Promise<{
+export async function processPendingReviews(limit: number = 100): Promise<{
   processed: number;
   reviewed: number;
   errors: number;
@@ -52,14 +50,14 @@ export async function processPendingReviews(
     for (const run of runs) {
       try {
         stats.processed++;
-        
+
         // Auto-review the run
         const reviewStats = await autoReviewRun(run.id, run.tenant_id);
         stats.reviewed += reviewStats.reviewed;
 
         // Check quality and generate report
         await checkQualityThresholds(run.id, run.tenant_id);
-        
+
         logInfo("Pending review processed", {
           runId: run.id,
           tenantId: run.tenant_id,
@@ -85,10 +83,7 @@ export async function processPendingReviews(
  * Trigger automated review for a specific reconciliation run
  * Called automatically after reconciliation completes
  */
-export async function triggerAutomatedReview(
-  runId: string,
-  tenantId: string
-): Promise<void> {
+export async function triggerAutomatedReview(runId: string, tenantId: string): Promise<void> {
   try {
     // Verify run is completed
     const runResult = await query<{
@@ -117,10 +112,10 @@ export async function triggerAutomatedReview(
 
     // Auto-review the run
     const reviewStats = await autoReviewRun(runId, tenantId);
-    
+
     // Check quality thresholds
     const alerts = await checkQualityThresholds(runId, tenantId);
-    
+
     // Generate quality report
     const report = await generateQualityReport(runId, tenantId);
 

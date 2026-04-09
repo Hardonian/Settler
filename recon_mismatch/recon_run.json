@@ -4,10 +4,7 @@
   "completed_at": "2026-02-01T00:54:26.857956",
   "total_source": 2,
   "total_target": 2,
-  "match_keys": [
-    "external_id",
-    "amount"
-  ],
+  "match_keys": ["external_id", "amount"],
   "matched_count": 1,
   "mismatched_count": 0,
   "source_orphan_count": 1,
@@ -21,12 +18,8 @@
       "severity": "high",
       "message": "Found 1 source orphans and 1 target orphans",
       "details": {
-        "orphaned_sources": [
-          "stripe_m1"
-        ],
-        "orphaned_targets": [
-          "shopify_m1"
-        ]
+        "orphaned_sources": ["stripe_m1"],
+        "orphaned_targets": ["shopify_m1"]
       },
       "remediation": "Review unmatched transactions for data quality issues"
     }

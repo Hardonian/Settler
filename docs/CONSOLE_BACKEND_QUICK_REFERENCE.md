@@ -46,19 +46,21 @@ DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[PROJECT].supabase.co:5432/post
 ## Error Handling Pattern
 
 **Domain functions NEVER throw** - they return empty arrays/null:
+
 ```typescript
 export async function listApiKeys(): Promise<ApiKeyListItem[]> {
   try {
     // ... query
     return keys;
   } catch (error) {
-    console.error('[listApiKeys] Error:', error);
+    console.error("[listApiKeys] Error:", error);
     return []; // ✅ Never throw
   }
 }
 ```
 
 **Route handlers catch and return safe responses**:
+
 ```typescript
 export async function GET(request: NextRequest) {
   try {
@@ -66,8 +68,8 @@ export async function GET(request: NextRequest) {
     const data = await listApiKeys();
     return NextResponse.json({ keys: data });
   } catch (error) {
-    if (error.message.includes('Unauthorized')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (error.message.includes("Unauthorized")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     return NextResponse.json({ keys: [] }, { status: 200 }); // ✅ Never 500
   }

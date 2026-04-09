@@ -1,14 +1,14 @@
 /**
  * Cost Control Middleware
- * 
+ *
  * Enforces cost limits before processing requests
  * Implements backpressure and degradation paths
  */
 
-import { Response, NextFunction } from 'express';
-import { TenantRequest } from './tenant';
-import { costControlService, CostControlResult } from '../services/cost-control';
-import { logWarn } from '../utils/logger';
+import { Response, NextFunction } from "express";
+import { TenantRequest } from "./tenant";
+import { costControlService, CostControlResult } from "../services/cost-control";
+import { logWarn } from "../utils/logger";
 
 export interface CostControlOptions {
   costDriverId: string;
@@ -24,7 +24,7 @@ export function enforceCostControl(options: CostControlOptions) {
   return async (req: TenantRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
       if (!req.tenantId) {
-        res.status(403).json({ error: 'TenantNotFound', message: 'Tenant context required' });
+        res.status(403).json({ error: "TenantNotFound", message: "Tenant context required" });
         return;
       }
 
@@ -41,21 +41,21 @@ export function enforceCostControl(options: CostControlOptions) {
 
       if (!result.allowed) {
         if (options.failOpen) {
-          logWarn('Cost limit exceeded but failing open', {
+          logWarn("Cost limit exceeded but failing open", {
             tenantId: req.tenantId,
             costDriverId: options.costDriverId,
             reason: result.reason,
           });
           // Continue but mark as degraded
-          (req as any).costControlStatus = 'degraded';
+          (req as any).costControlStatus = "degraded";
           (req as any).costControlReason = result.reason;
           return next();
         }
 
         // Fail closed
         res.status(429).json({
-          error: 'CostLimitExceeded',
-          message: result.reason || 'Cost limit exceeded',
+          error: "CostLimitExceeded",
+          message: result.reason || "Cost limit exceeded",
           costDriverId: options.costDriverId,
           currentUsage: result.currentUsage,
           limit: result.limit,
@@ -74,20 +74,20 @@ export function enforceCostControl(options: CostControlOptions) {
       );
 
       // Attach cost control status to request
-      (req as any).costControlStatus = 'allowed';
+      (req as any).costControlStatus = "allowed";
       (req as any).costControlResult = result;
 
       next();
     } catch (error) {
-      logWarn('Error in cost control middleware', {
+      logWarn("Error in cost control middleware", {
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
       });
       // Fail closed for cost control
       if (!options.failOpen) {
         res.status(500).json({
-          error: 'CostControlError',
-          message: 'Failed to check cost limits',
+          error: "CostControlError",
+          message: "Failed to check cost limits",
         });
         return;
       }
@@ -111,7 +111,7 @@ export function checkAbuse() {
       const abuseCheck = await costControlService.detectAbuse(req.tenantId, billingAccountId);
 
       if (abuseCheck.isAbuse) {
-        logWarn('Abuse detected', {
+        logWarn("Abuse detected", {
           tenantId: req.tenantId,
           reason: abuseCheck.reason,
           actions: abuseCheck.actions,
@@ -123,7 +123,7 @@ export function checkAbuse() {
         (req as any).abuseActions = abuseCheck.actions;
 
         // If abuse actions include throttle, enforce stricter limits
-        if (abuseCheck.actions.includes('throttle')) {
+        if (abuseCheck.actions.includes("throttle")) {
           // Add delay to slow down requests
           await new Promise((resolve) => setTimeout(resolve, 1000));
         }
@@ -131,7 +131,7 @@ export function checkAbuse() {
 
       next();
     } catch (error) {
-      logWarn('Error checking abuse', {
+      logWarn("Error checking abuse", {
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
       });

@@ -1,10 +1,10 @@
 /**
  * Ops Intelligence Hooks
- * 
+ *
  * Custom hooks for Ops Intelligence functionality
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 /**
  * Performance monitoring hook
@@ -36,7 +36,7 @@ export function useErrorTracking(componentName: string) {
       });
     };
 
-    window.addEventListener('error', errorHandler);
-    return () => window.removeEventListener('error', errorHandler);
+    window.addEventListener("error", errorHandler);
+    return () => window.removeEventListener("error", errorHandler);
   }, [componentName]);
 }

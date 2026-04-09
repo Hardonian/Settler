@@ -1,13 +1,13 @@
 /**
  * Dashboard Page Template
- * 
+ *
  * Main dashboard for Settler.dev
  * Part of Section 3: UI/UX Design System
  */
 
-import React from 'react';
-import { DiffViewer } from '../src/components/recon/DiffViewer';
-import { SchemaInspector } from '../src/components/recon/SchemaInspector';
+import React from "react";
+import { DiffViewer } from "../src/components/recon/DiffViewer";
+import { SchemaInspector } from "../src/components/recon/SchemaInspector";
 
 export const Dashboard: React.FC = () => {
   return (
@@ -25,17 +25,17 @@ export const Dashboard: React.FC = () => {
           <DiffViewer
             items={[
               {
-                field: 'amount',
-                source: 100.00,
-                target: 100.00,
-                status: 'matched',
+                field: "amount",
+                source: 100.0,
+                target: 100.0,
+                status: "matched",
                 confidence: 1.0,
               },
               {
-                field: 'currency',
-                source: 'USD',
-                target: 'USD',
-                status: 'matched',
+                field: "currency",
+                source: "USD",
+                target: "USD",
+                status: "matched",
                 confidence: 1.0,
               },
             ]}
@@ -45,12 +45,12 @@ export const Dashboard: React.FC = () => {
           <h2>Schema Inspector</h2>
           <SchemaInspector
             schema={{
-              name: 'Payment Schema',
-              version: '1.0.0',
+              name: "Payment Schema",
+              version: "1.0.0",
               fields: [
-                { name: 'id', type: 'string', required: true },
-                { name: 'amount', type: 'number', required: true },
-                { name: 'currency', type: 'string', required: true },
+                { name: "id", type: "string", required: true },
+                { name: "amount", type: "number", required: true },
+                { name: "currency", type: "string", required: true },
               ],
             }}
           />

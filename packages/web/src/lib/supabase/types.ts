@@ -1,25 +1,27 @@
 /**
  * Type-safe extensions for Supabase queries
- * 
+ *
  * Provides proper types for queries that Supabase's generated types
  * don't fully support (cross-schema queries, etc.)
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '@/types/database.types';
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/database.types";
 
 // Re-export table types for convenience
-export type ConnectorRow = Database['public']['Tables']['connectors']['Row'];
-export type ConnectorInsert = Database['public']['Tables']['connectors']['Insert'];
-export type ConnectorUpdate = Database['public']['Tables']['connectors']['Update'];
+export type ConnectorRow = Database["public"]["Tables"]["connectors"]["Row"];
+export type ConnectorInsert = Database["public"]["Tables"]["connectors"]["Insert"];
+export type ConnectorUpdate = Database["public"]["Tables"]["connectors"]["Update"];
 
-export type ConnectorCredentialsRow = Database['public']['Tables']['connector_credentials']['Row'];
-export type ConnectorCredentialsInsert = Database['public']['Tables']['connector_credentials']['Insert'];
-export type ConnectorCredentialsUpdate = Database['public']['Tables']['connector_credentials']['Update'];
+export type ConnectorCredentialsRow = Database["public"]["Tables"]["connector_credentials"]["Row"];
+export type ConnectorCredentialsInsert =
+  Database["public"]["Tables"]["connector_credentials"]["Insert"];
+export type ConnectorCredentialsUpdate =
+  Database["public"]["Tables"]["connector_credentials"]["Update"];
 
-export type WebhookEventRow = Database['public']['Tables']['webhook_events']['Row'];
-export type WebhookEventInsert = Database['public']['Tables']['webhook_events']['Insert'];
-export type WebhookEventUpdate = Database['public']['Tables']['webhook_events']['Update'];
+export type WebhookEventRow = Database["public"]["Tables"]["webhook_events"]["Row"];
+export type WebhookEventInsert = Database["public"]["Tables"]["webhook_events"]["Insert"];
+export type WebhookEventUpdate = Database["public"]["Tables"]["webhook_events"]["Update"];
 
 export type MembershipRow = {
   tenant_id: string;
@@ -35,8 +37,14 @@ export type MembershipRow = {
  */
 export interface ConnectorsQueryBuilder {
   select(columns: string): {
-    eq(column: string, value: unknown): {
-      eq(column: string, value: unknown): {
+    eq(
+      column: string,
+      value: unknown
+    ): {
+      eq(
+        column: string,
+        value: unknown
+      ): {
         limit(count: number): Promise<{ data: ConnectorRow[] | null; error: unknown }>;
         single(): Promise<{ data: ConnectorRow | null; error: unknown }>;
       };
@@ -60,7 +68,10 @@ export interface ConnectorsQueryBuilder {
  */
 export interface ConnectorCredentialsQueryBuilder {
   select(columns: string): {
-    eq(column: string, value: unknown): {
+    eq(
+      column: string,
+      value: unknown
+    ): {
       single(): Promise<{ data: ConnectorCredentialsRow | null; error: unknown }>;
     };
   };
@@ -78,9 +89,18 @@ export interface ConnectorCredentialsQueryBuilder {
  */
 export interface MembershipsQueryBuilder {
   select(columns: string): {
-    eq(column: string, value: unknown): {
-      eq(column: string, value: unknown): {
-        eq(column: string, value: unknown): {
+    eq(
+      column: string,
+      value: unknown
+    ): {
+      eq(
+        column: string,
+        value: unknown
+      ): {
+        eq(
+          column: string,
+          value: unknown
+        ): {
           single(): Promise<{ data: MembershipRow | null; error: unknown }>;
           limit(count: number): Promise<{ data: MembershipRow[] | null; error: unknown }>;
         };
@@ -106,25 +126,23 @@ export interface WebhookEventsQueryBuilder {
  * Note: This doesn't extend SupabaseClient to avoid method override conflicts
  */
 export interface ExtendedSupabaseClient {
-  from(table: 'connectors'): ConnectorsQueryBuilder;
-  from(table: 'connector_credentials'): ConnectorCredentialsQueryBuilder;
-  from(table: 'webhook_events'): WebhookEventsQueryBuilder;
-  from(table: 'app_private.memberships'): MembershipsQueryBuilder;
+  from(table: "connectors"): ConnectorsQueryBuilder;
+  from(table: "connector_credentials"): ConnectorCredentialsQueryBuilder;
+  from(table: "webhook_events"): WebhookEventsQueryBuilder;
+  from(table: "app_private.memberships"): MembershipsQueryBuilder;
   // Include all other SupabaseClient methods
-  auth: SupabaseClient<Database>['auth'];
-  storage: SupabaseClient<Database>['storage'];
-  functions: SupabaseClient<Database>['functions'];
-  rest: SupabaseClient<Database>['rest'];
-  realtime: SupabaseClient<Database>['realtime'];
-  schema: SupabaseClient<Database>['schema'];
+  auth: SupabaseClient<Database>["auth"];
+  storage: SupabaseClient<Database>["storage"];
+  functions: SupabaseClient<Database>["functions"];
+  rest: SupabaseClient<Database>["rest"];
+  realtime: SupabaseClient<Database>["realtime"];
+  schema: SupabaseClient<Database>["schema"];
 }
 
 /**
  * Type-safe assertion helper
  * Use this instead of 'as any' to maintain type safety
  */
-export function asExtendedClient(
-  client: SupabaseClient<Database>
-): ExtendedSupabaseClient {
+export function asExtendedClient(client: SupabaseClient<Database>): ExtendedSupabaseClient {
   return client as unknown as ExtendedSupabaseClient;
 }

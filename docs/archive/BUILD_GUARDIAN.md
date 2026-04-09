@@ -60,6 +60,7 @@ npm run typecheck
 ### TypeScript Errors
 
 **Issue**: Type errors in strict mode
+
 ```typescript
 // ❌ Bad
 function process(data: any) { ... }
@@ -73,6 +74,7 @@ function process(data: ReconData): ReconResult { ... }
 ### Missing Prisma Client
 
 **Issue**: `@prisma/client` not found
+
 ```bash
 # Fix
 npm run prisma:generate
@@ -81,23 +83,26 @@ npm run prisma:generate
 ### Import Path Issues
 
 **Issue**: Module not found errors
+
 ```typescript
 // ❌ Bad - relative path
-import { ReconEngine } from '../../../core/recon-engine';
+import { ReconEngine } from "../../../core/recon-engine";
 
 // ✅ Good - package import
-import { ReconEngine } from '@settler/core';
+import { ReconEngine } from "@settler/core";
 ```
 
 ### Vercel Build Failures
 
 **Common Causes**:
+
 1. Missing environment variables
 2. TypeScript errors
 3. Missing dependencies
 4. Build timeout (large bundles)
 
 **Debug**:
+
 ```bash
 # Check Vercel build logs
 vercel logs
@@ -148,6 +153,7 @@ npm run build
 ## Environment Variables
 
 Required for build:
+
 - `NODE_ENV` - Environment (development/production)
 - `DATABASE_URL` - Database connection
 - `SUPABASE_URL` - Supabase endpoint
@@ -205,6 +211,7 @@ See `.env.example` for full list.
 ## Support
 
 For build issues:
+
 1. Check this guide
 2. Review build logs
 3. Run `npm run build:guardian`

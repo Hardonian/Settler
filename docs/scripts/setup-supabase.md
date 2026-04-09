@@ -12,6 +12,7 @@ This guide will help you set up and migrate your Supabase database automatically
    - Copy the connection string or note your project URL and database password
 
 2. Set environment variables:
+
    ```bash
    export DATABASE_URL="postgresql://postgres:[YOUR-PASSWORD]@db.[YOUR-PROJECT-REF].supabase.co:5432/postgres"
    # OR
@@ -27,12 +28,14 @@ This guide will help you set up and migrate your Supabase database automatically
 ### Option 2: Local Supabase Development
 
 1. Start Supabase locally:
+
    ```bash
    # If you have Supabase CLI installed
    supabase start
    ```
 
 2. Run migrations:
+
    ```bash
    npm run db:migrate:auto
    ```
@@ -42,6 +45,7 @@ This guide will help you set up and migrate your Supabase database automatically
 ### Option 3: Custom PostgreSQL Database
 
 Set environment variables:
+
 ```bash
 export DB_HOST="localhost"
 export DB_PORT="5432"
@@ -52,6 +56,7 @@ export DB_SSL="false"
 ```
 
 Then run:
+
 ```bash
 npm run db:migrate:auto
 ```
@@ -104,17 +109,17 @@ npm run db:migrate:auto
 
 ## Environment Variables Reference
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `DATABASE_URL` | Full PostgreSQL connection string | `postgresql://user:pass@host:port/db` |
-| `SUPABASE_URL` | Your Supabase project URL | `https://xxx.supabase.co` |
-| `SUPABASE_DB_PASSWORD` | Database password (from Supabase dashboard) | `your-password` |
-| `DB_HOST` | Database host | `localhost` or `db.xxx.supabase.co` |
-| `DB_PORT` | Database port | `5432` or `54322` (local) |
-| `DB_NAME` | Database name | `postgres` |
-| `DB_USER` | Database user | `postgres` |
-| `DB_PASSWORD` | Database password | `your-password` |
-| `DB_SSL` | Enable SSL | `true` or `false` |
+| Variable               | Description                                 | Example                               |
+| ---------------------- | ------------------------------------------- | ------------------------------------- |
+| `DATABASE_URL`         | Full PostgreSQL connection string           | `postgresql://user:pass@host:port/db` |
+| `SUPABASE_URL`         | Your Supabase project URL                   | `https://xxx.supabase.co`             |
+| `SUPABASE_DB_PASSWORD` | Database password (from Supabase dashboard) | `your-password`                       |
+| `DB_HOST`              | Database host                               | `localhost` or `db.xxx.supabase.co`   |
+| `DB_PORT`              | Database port                               | `5432` or `54322` (local)             |
+| `DB_NAME`              | Database name                               | `postgres`                            |
+| `DB_USER`              | Database user                               | `postgres`                            |
+| `DB_PASSWORD`          | Database password                           | `your-password`                       |
+| `DB_SSL`               | Enable SSL                                  | `true` or `false`                     |
 
 ## Next Steps
 

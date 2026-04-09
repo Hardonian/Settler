@@ -235,10 +235,7 @@ export function TenantsObservabilityDashboard() {
                   </tr>
                 ) : (
                   tenants.map((tenant) => (
-                    <tr
-                      key={tenant.id}
-                      className="border-b hover:bg-muted/10 dark:hover:bg-card"
-                    >
+                    <tr key={tenant.id} className="border-b hover:bg-muted/10 dark:hover:bg-card">
                       <td className="p-4 font-medium">{tenant.name}</td>
                       <td className="p-4 font-mono text-xs">{tenant.slug}</td>
                       <td className="p-4">

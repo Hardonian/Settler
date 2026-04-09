@@ -58,7 +58,9 @@ function parseArgs(argv: string[]): Args {
 }
 
 function printHelp(): void {
-  console.log(`\nUsage: pnpm tenant:create [options]\n\nOptions:\n  --name <name>             Workspace display name\n  --slug <slug>             Workspace slug\n  --owner-email <email>     Owner operator email\n  --base-url <url>          API base URL (default: $SETTLER_API_BASE_URL or http://localhost:4000)\n  --api-key <key>           Operator API key (default: $SETTLER_OPERATOR_API_KEY)\n  --execute                 Execute API calls (default is dry-run plan only)\n  --write-env               Persist .env.tenant.<slug> file\n  -h, --help                Show help\n`);
+  console.log(
+    `\nUsage: pnpm tenant:create [options]\n\nOptions:\n  --name <name>             Workspace display name\n  --slug <slug>             Workspace slug\n  --owner-email <email>     Owner operator email\n  --base-url <url>          API base URL (default: $SETTLER_API_BASE_URL or http://localhost:4000)\n  --api-key <key>           Operator API key (default: $SETTLER_OPERATOR_API_KEY)\n  --execute                 Execute API calls (default is dry-run plan only)\n  --write-env               Persist .env.tenant.<slug> file\n  -h, --help                Show help\n`
+  );
 }
 
 async function postJson(

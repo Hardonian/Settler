@@ -3,8 +3,8 @@
  * Prevents Server-Side Request Forgery attacks
  */
 
-import dns from 'dns';
-import { promisify } from 'util';
+import dns from "dns";
+import { promisify } from "util";
 
 const dnsLookup = promisify(dns.lookup);
 
@@ -20,12 +20,7 @@ const PRIVATE_IP_RANGES = [
 ];
 
 // Reserved/localhost domains
-const RESERVED_DOMAINS = [
-  'localhost',
-  '127.0.0.1',
-  '0.0.0.0',
-  '::1',
-];
+const RESERVED_DOMAINS = ["localhost", "127.0.0.1", "0.0.0.0", "::1"];
 
 /**
  * Check if hostname is an internal IP
@@ -48,7 +43,7 @@ export async function validateExternalUrl(url: string): Promise<boolean> {
     const parsed = new URL(url);
 
     // Must use HTTPS (except for localhost in dev)
-    if (parsed.protocol !== 'https:' && parsed.hostname !== 'localhost') {
+    if (parsed.protocol !== "https:" && parsed.hostname !== "localhost") {
       return false;
     }
 
@@ -84,7 +79,7 @@ export function isAllowedUrl(url: string, allowedDomains: string[] = []): boolea
 
     // If allowlist is empty, use general validation
     if (allowedDomains.length === 0) {
-      return parsed.protocol === 'https:' && !isInternalIP(parsed.hostname);
+      return parsed.protocol === "https:" && !isInternalIP(parsed.hostname);
     }
 
     // Check if hostname is in allowlist

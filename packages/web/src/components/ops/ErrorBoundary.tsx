@@ -1,15 +1,15 @@
 /**
  * Error Boundary for Ops Intelligence Components
- * 
+ *
  * Catches and displays errors gracefully
  */
 
-'use client';
+"use client";
 
-import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { AlertCircle } from 'lucide-react';
+import React from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { AlertCircle } from "lucide-react";
 
 interface Props {
   children: React.ReactNode;
@@ -32,7 +32,7 @@ export class OpsIntelligenceErrorBoundary extends React.Component<Props, State> 
   }
 
   override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Ops Intelligence Error:', error, errorInfo);
+    console.error("Ops Intelligence Error:", error, errorInfo);
   }
 
   override render() {
@@ -54,9 +54,7 @@ export class OpsIntelligenceErrorBoundary extends React.Component<Props, State> 
           </CardHeader>
           <CardContent>
             {this.state.error && (
-              <p className="text-sm text-muted-foreground mb-4">
-                {this.state.error.message}
-              </p>
+              <p className="text-sm text-muted-foreground mb-4">{this.state.error.message}</p>
             )}
             <Button
               onClick={() => {

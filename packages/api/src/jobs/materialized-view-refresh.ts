@@ -3,8 +3,8 @@
  * Periodically refreshes materialized views for optimal query performance
  */
 
-import { refreshAllMaterializedViews } from '../infrastructure/query-optimization';
-import { logInfo, logError } from '../utils/logger';
+import { refreshAllMaterializedViews } from "../infrastructure/query-optimization";
+import { logInfo, logError } from "../utils/logger";
 
 /**
  * Refresh all materialized views
@@ -12,11 +12,11 @@ import { logInfo, logError } from '../utils/logger';
  */
 export async function refreshMaterializedViewsJob(): Promise<void> {
   try {
-    logInfo('Starting materialized view refresh job');
+    logInfo("Starting materialized view refresh job");
     await refreshAllMaterializedViews();
-    logInfo('Materialized view refresh job completed');
+    logInfo("Materialized view refresh job completed");
   } catch (error) {
-    logError('Materialized view refresh job failed', error);
+    logError("Materialized view refresh job failed", error);
     throw error;
   }
 }
@@ -28,18 +28,21 @@ export async function refreshMaterializedViewsJob(): Promise<void> {
 export function startMaterializedViewRefreshJob(): void {
   // Run immediately on startup
   refreshMaterializedViewsJob().catch((error) => {
-    logError('Initial materialized view refresh failed', error);
+    logError("Initial materialized view refresh failed", error);
   });
 
   // Then run every 15 minutes
-  const interval = setInterval(() => {
-    refreshMaterializedViewsJob().catch((error) => {
-      logError('Periodic materialized view refresh failed', error);
-    });
-  }, 15 * 60 * 1000); // 15 minutes
+  const interval = setInterval(
+    () => {
+      refreshMaterializedViewsJob().catch((error) => {
+        logError("Periodic materialized view refresh failed", error);
+      });
+    },
+    15 * 60 * 1000
+  ); // 15 minutes
 
   // Cleanup on process exit
-  process.on('SIGTERM', () => {
+  process.on("SIGTERM", () => {
     clearInterval(interval);
   });
 }

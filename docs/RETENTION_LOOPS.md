@@ -19,12 +19,14 @@ Reconciliation becomes core infrastructure that customers depend on daily. Once 
 ### Implementation
 
 **Integration Depth:**
+
 - Reconciliation jobs run automatically
 - Data flows through Settler API
 - Audit trails stored in Settler
 - Reports generated from Settler data
 
 **Switching Costs:**
+
 - Re-implement reconciliation logic
 - Migrate historical data
 - Retrain team
@@ -43,12 +45,14 @@ More integrations = more value. As customers add more data sources, Settler beco
 ### Implementation
 
 **Integration Growth:**
+
 - Start with 1-2 integrations (Stripe, Shopify)
 - Add more over time (QuickBooks, PayPal, etc.)
 - Each integration increases value
 - More integrations = higher switching cost
 
 **Value Increase:**
+
 - More comprehensive reconciliation
 - Better matching accuracy
 - More complete audit trails
@@ -67,12 +71,14 @@ Audit trails and compliance evidence become critical for customers. This creates
 ### Implementation
 
 **Audit Trails:**
+
 - Complete reconciliation history
 - Matching decisions logged
 - Exception handling tracked
 - Full audit trail for compliance
 
 **Compliance Value:**
+
 - Required for audits
 - Required for regulatory compliance
 - Evidence for disputes
@@ -91,6 +97,7 @@ Best-in-class developer experience creates switching costs and makes developers 
 ### Implementation
 
 **DX Features:**
+
 - TypeScript SDK with full type safety
 - Comprehensive documentation
 - Real-time developer console
@@ -98,6 +105,7 @@ Best-in-class developer experience creates switching costs and makes developers 
 - Fast API responses
 
 **Switching Costs:**
+
 - Re-learn new API
 - Re-write integration code
 - Lose developer productivity
@@ -116,6 +124,7 @@ Proactive alerts keep customers engaged and create value through early problem d
 ### Implementation
 
 **Alert Types:**
+
 - Reconciliation failures
 - Unmatched transactions
 - Approaching usage limits
@@ -123,6 +132,7 @@ Proactive alerts keep customers engaged and create value through early problem d
 - System health issues
 
 **Engagement:**
+
 - Daily/weekly email digests
 - Real-time alerts for critical issues
 - Proactive recommendations
@@ -141,12 +151,14 @@ Automated reports and exports create ongoing value and become part of customer w
 ### Implementation
 
 **Report Types:**
+
 - Daily reconciliation summaries
 - Weekly exception reports
 - Monthly usage reports
 - Custom export schedules
 
 **Workflow Integration:**
+
 - Reports sent to stakeholders
 - Exports feed into other systems
 - Become part of business processes
@@ -165,12 +177,14 @@ Feature flags enable gradual rollouts and A/B testing, creating ongoing engageme
 ### Implementation
 
 **Use Cases:**
+
 - Gradual feature rollouts
 - A/B testing
 - Risk mitigation
 - Feature toggling
 
 **Engagement:**
+
 - Customers experiment with features
 - Gradual adoption increases
 - Feature usage creates value
@@ -189,12 +203,14 @@ Usage-based pricing aligns value with cost, making customers feel they're gettin
 ### Implementation
 
 **Pricing Model:**
+
 - Pay for what you use
 - Transparent pricing
 - No surprise bills
 - Scales with growth
 
 **Value Perception:**
+
 - Customers see value for cost
 - Fair pricing reduces churn risk
 - Growth = more value = more revenue
@@ -213,12 +229,14 @@ Excellent support creates relationships and makes customers feel valued.
 ### Implementation
 
 **Support Channels:**
+
 - Email support
 - Developer console help
 - Documentation
 - Community (future)
 
 **Success Activities:**
+
 - Onboarding assistance
 - Best practices guidance
 - Proactive check-ins
@@ -237,6 +255,7 @@ Self-service onboarding and value discovery create organic engagement.
 ### Implementation
 
 **PLG Features:**
+
 - Free tier for evaluation
 - Self-service signup
 - Interactive playground
@@ -244,6 +263,7 @@ Self-service onboarding and value discovery create organic engagement.
 - Quick time-to-value
 
 **Engagement:**
+
 - Customers discover value themselves
 - Low friction to start
 - Quick wins create momentum
@@ -281,17 +301,20 @@ Self-service onboarding and value discovery create organic engagement.
 ### Key Metrics
 
 **Monthly Churn Rate:**
+
 - Target: <5% (Year 1)
 - Target: <3% (Year 3)
 - Target: <2% (Year 5)
 
 **Retention by Cohort:**
+
 - Month 1: >90%
 - Month 3: >80%
 - Month 6: >70%
 - Month 12: >60%
 
 **Lifetime Value:**
+
 - Year 1: $1,660 (20 months average)
 - Year 3: $3,300 (33 months average)
 - Year 5: $6,000 (50 months average)
@@ -299,12 +322,14 @@ Self-service onboarding and value discovery create organic engagement.
 ### Measurement
 
 **Tracking:**
+
 - Churn events logged
 - Retention by cohort analyzed
 - Lifetime value calculated
 - Retention loop effectiveness measured
 
 **Dashboards:**
+
 - `/console/admin/retention` - Retention metrics
 - `/console/admin/cohorts` - Cohort analysis
 - `/console/admin/churn` - Churn analysis
@@ -318,6 +343,7 @@ Self-service onboarding and value discovery create organic engagement.
 **Goal:** Get to first value quickly (<5 minutes)
 
 **Strategies:**
+
 - Streamlined signup
 - Quick start guide
 - Interactive playground
@@ -328,6 +354,7 @@ Self-service onboarding and value discovery create organic engagement.
 **Goal:** Keep customers active and engaged
 
 **Strategies:**
+
 - Daily/weekly digests
 - Proactive alerts
 - Usage insights
@@ -338,6 +365,7 @@ Self-service onboarding and value discovery create organic engagement.
 **Goal:** Increase value over time
 
 **Strategies:**
+
 - Add more integrations
 - Increase usage
 - Upgrade to higher tier
@@ -348,6 +376,7 @@ Self-service onboarding and value discovery create organic engagement.
 **Goal:** Prevent churn
 
 **Strategies:**
+
 - Identify at-risk customers
 - Proactive outreach
 - Address issues quickly
@@ -360,18 +389,21 @@ Self-service onboarding and value discovery create organic engagement.
 ### At-Risk Indicators
 
 **Usage Patterns:**
+
 - Declining usage
 - No usage for 30+ days
 - Below plan limits
 - No recent API calls
 
 **Support Signals:**
+
 - Multiple support tickets
 - Payment failures
 - Feature requests not addressed
 - Negative feedback
 
 **Business Signals:**
+
 - Company downsizing
 - Industry changes
 - Competitive pressure
@@ -380,18 +412,21 @@ Self-service onboarding and value discovery create organic engagement.
 ### Intervention Strategies
 
 **Early Intervention:**
+
 - Proactive check-in
 - Usage insights
 - Best practices
 - Feature recommendations
 
 **At-Risk Intervention:**
+
 - Personal outreach
 - Custom solutions
 - Discounts/credits
 - Feature prioritization
 
 **Churn Prevention:**
+
 - Win-back campaigns
 - Exit surveys
 - Feedback collection
@@ -404,18 +439,21 @@ Self-service onboarding and value discovery create organic engagement.
 ### Continuous Improvement
 
 **Metrics:**
+
 - Track retention loop effectiveness
 - Measure engagement by loop
 - Analyze churn by loop usage
 - Optimize based on data
 
 **Experiments:**
+
 - A/B test retention strategies
 - Test different engagement frequencies
 - Optimize onboarding flow
 - Improve feature adoption
 
 **Iteration:**
+
 - Regular review of retention loops
 - Update strategies based on data
 - Add new retention loops
@@ -433,6 +471,7 @@ Settler implements **10 retention loops** across workflow lock-in, data network 
 - **Sustainable growth:** Retention supports scaling
 
 **Key Success Factors:**
+
 1. Workflow lock-in creates high switching costs
 2. Compliance evidence creates regulatory moat
 3. Data network effects increase value over time

@@ -10,6 +10,7 @@
 This guide walks through setting up all external services required for Settler production deployment.
 
 **Services Required:**
+
 1. ✅ Supabase (Database, Auth, RLS)
 2. ✅ Upstash Redis (Job queues, caching, rate limiting)
 3. ✅ Resend (Transactional email)
@@ -53,6 +54,7 @@ supabase db push
 ```
 
 **Or use the API:**
+
 ```bash
 # Set environment variables
 export SUPABASE_URL=https://your-project.supabase.co
@@ -75,6 +77,7 @@ npm run db:migrate:prod
 ### Step 5: Set Environment Variables
 
 **In Vercel:**
+
 ```
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_ANON_KEY=your-anon-key
@@ -82,6 +85,7 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ```
 
 **In Supabase Dashboard (for Edge Functions):**
+
 - Go to **Settings** → **Edge Functions** → **Secrets**
 - Add same variables
 
@@ -123,6 +127,7 @@ curl https://your-redis.upstash.io/get/mykey \
 ### Step 4: Set Environment Variables
 
 **In Vercel:**
+
 ```
 UPSTASH_REDIS_REST_URL=https://your-redis.upstash.io
 UPSTASH_REDIS_REST_TOKEN=your-rest-token
@@ -158,12 +163,14 @@ REDIS_TLS=true
 5. Wait for verification (can take up to 24 hours)
 
 **For Development:**
+
 - Use Resend's test domain: `onboarding@resend.dev`
 - No domain verification needed
 
 ### Step 4: Set Environment Variables
 
 **In Vercel:**
+
 ```
 RESEND_API_KEY=re_your_api_key_here
 RESEND_FROM_EMAIL=noreply@settler.dev
@@ -193,6 +200,7 @@ RESEND_FROM_NAME=Settler
 ### Step 3: Set Environment Variables
 
 **In Vercel:**
+
 ```
 SENTRY_DSN=https://your-key@sentry.io/your-project-id
 SENTRY_ENVIRONMENT=production
@@ -244,11 +252,13 @@ SENTRY_TRACES_SAMPLE_RATE=0.1
 ### Required Variables Checklist
 
 **Supabase:**
+
 - [ ] `SUPABASE_URL`
 - [ ] `SUPABASE_ANON_KEY`
 - [ ] `SUPABASE_SERVICE_ROLE_KEY`
 
 **Redis:**
+
 - [ ] `UPSTASH_REDIS_REST_URL`
 - [ ] `UPSTASH_REDIS_REST_TOKEN`
 - [ ] `REDIS_HOST`
@@ -257,15 +267,18 @@ SENTRY_TRACES_SAMPLE_RATE=0.1
 - [ ] `REDIS_TLS=true`
 
 **Email:**
+
 - [ ] `RESEND_API_KEY`
 - [ ] `RESEND_FROM_EMAIL`
 - [ ] `RESEND_FROM_NAME`
 
 **Security:**
+
 - [ ] `JWT_SECRET` (generate: `openssl rand -base64 32`)
 - [ ] `ENCRYPTION_KEY` (generate: `openssl rand -hex 16`)
 
 **Observability (Optional):**
+
 - [ ] `SENTRY_DSN`
 - [ ] `SENTRY_ENVIRONMENT`
 - [ ] `SENTRY_TRACES_SAMPLE_RATE`
@@ -288,23 +301,23 @@ npm run db:migrate:local
 
 ```typescript
 // In your code
-import { isRedisAvailable } from '@/infrastructure/redis/client';
-console.log('Redis available:', isRedisAvailable());
+import { isRedisAvailable } from "@/infrastructure/redis/client";
+console.log("Redis available:", isRedisAvailable());
 ```
 
 ### Test Resend Email
 
 ```typescript
 // In your code
-import { sendVerificationEmail } from '@/lib/email';
-await sendVerificationEmail('test@example.com', 'https://...');
+import { sendVerificationEmail } from "@/lib/email";
+await sendVerificationEmail("test@example.com", "https://...");
 ```
 
 ### Test Sentry
 
 ```typescript
 // Trigger an error
-throw new Error('Test error');
+throw new Error("Test error");
 // Check Sentry dashboard
 ```
 
@@ -349,31 +362,37 @@ throw new Error('Test error');
 ### Supabase Connection Issues
 
 **Error:** "Connection refused"
+
 - Check `SUPABASE_URL` is correct
 - Check database is running (Supabase Dashboard)
 
 **Error:** "Invalid API key"
+
 - Verify `SUPABASE_ANON_KEY` or `SUPABASE_SERVICE_ROLE_KEY`
 - Check key hasn't been rotated
 
 ### Redis Connection Issues
 
 **Error:** "Connection timeout"
+
 - Check `REDIS_HOST` and `REDIS_PORT`
 - Verify `REDIS_TLS=true` for Upstash
 - Check firewall/network settings
 
 **Error:** "Authentication failed"
+
 - Verify `REDIS_PASSWORD` is correct
 - Check if using TCP password (not REST token)
 
 ### Resend Email Issues
 
 **Error:** "Invalid API key"
+
 - Verify `RESEND_API_KEY` is correct
 - Check API key hasn't been revoked
 
 **Error:** "Domain not verified"
+
 - Verify domain DNS records
 - Wait for DNS propagation (up to 24 hours)
 - Use test domain for development

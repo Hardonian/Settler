@@ -1,10 +1,5 @@
 import { SettlerClient } from "../client";
-import {
-  ReconciliationJob,
-  CreateJobRequest,
-  ApiResponse,
-  ListResponse,
-} from "../types";
+import { ReconciliationJob, CreateJobRequest, ApiResponse, ListResponse } from "../types";
 import { createPaginatedIterator, PaginationOptions } from "../utils/pagination";
 
 /**
@@ -15,10 +10,10 @@ export class JobsClient {
 
   /**
    * Creates a new reconciliation job
-   * 
+   *
    * @param request - Job creation request
    * @returns Promise resolving to the created job
-   * 
+   *
    * @example
    * ```typescript
    * const job = await client.jobs.create({
@@ -41,19 +36,17 @@ export class JobsClient {
    * ```
    */
   async create(request: CreateJobRequest): Promise<ApiResponse<ReconciliationJob>> {
-    return this.client.request<ApiResponse<ReconciliationJob>>(
-      "POST",
-      "/api/v1/jobs",
-      { body: request }
-    );
+    return this.client.request<ApiResponse<ReconciliationJob>>("POST", "/api/v1/jobs", {
+      body: request,
+    });
   }
 
   /**
    * Lists all reconciliation jobs
-   * 
+   *
    * @param options - Pagination options
    * @returns Promise resolving to a list of jobs
-   * 
+   *
    * @example
    * ```typescript
    * const jobs = await client.jobs.list();
@@ -69,74 +62,65 @@ export class JobsClient {
       query.limit = String(options.limit);
     }
 
-    return this.client.request<ListResponse<ReconciliationJob>>(
-      "GET",
-      "/api/v1/jobs",
-      { query }
-    );
+    return this.client.request<ListResponse<ReconciliationJob>>("GET", "/api/v1/jobs", { query });
   }
 
   /**
    * Gets a reconciliation job by ID
-   * 
+   *
    * @param id - Job ID
    * @returns Promise resolving to the job
-   * 
+   *
    * @example
    * ```typescript
    * const job = await client.jobs.get('job_1234567890');
    * ```
    */
   async get(id: string): Promise<ApiResponse<ReconciliationJob>> {
-    return this.client.request<ApiResponse<ReconciliationJob>>(
-      "GET",
-      `/api/v1/jobs/${id}`
-    );
+    return this.client.request<ApiResponse<ReconciliationJob>>("GET", `/api/v1/jobs/${id}`);
   }
 
   /**
    * Runs a reconciliation job manually
-   * 
+   *
    * @param id - Job ID
    * @returns Promise resolving to the execution details
-   * 
+   *
    * @example
    * ```typescript
    * const execution = await client.jobs.run('job_1234567890');
    * console.log(`Execution started: ${execution.data.id}`);
    * ```
    */
-  async run(id: string): Promise<ApiResponse<{ id: string; jobId: string; status: string; startedAt: string }>> {
-    return this.client.request<ApiResponse<{ id: string; jobId: string; status: string; startedAt: string }>>(
-      "POST",
-      `/api/v1/jobs/${id}/run`
-    );
+  async run(
+    id: string
+  ): Promise<ApiResponse<{ id: string; jobId: string; status: string; startedAt: string }>> {
+    return this.client.request<
+      ApiResponse<{ id: string; jobId: string; status: string; startedAt: string }>
+    >("POST", `/api/v1/jobs/${id}/run`);
   }
 
   /**
    * Deletes a reconciliation job
-   * 
+   *
    * @param id - Job ID
    * @returns Promise that resolves when the job is deleted
-   * 
+   *
    * @example
    * ```typescript
    * await client.jobs.delete('job_1234567890');
    * ```
    */
   async delete(id: string): Promise<void> {
-    await this.client.request<void>(
-      "DELETE",
-      `/api/v1/jobs/${id}`
-    );
+    await this.client.request<void>("DELETE", `/api/v1/jobs/${id}`);
   }
 
   /**
    * Returns an async iterator for paginated job listing
-   * 
+   *
    * @param options - Pagination options
    * @returns Async iterator over jobs
-   * 
+   *
    * @example
    * ```typescript
    * for await (const job of client.jobs.listPaginated()) {

@@ -96,7 +96,9 @@ async function testAgentOrchestrator() {
 
     return true;
   } catch (error) {
-    console.error(`  ✗ Orchestrator test failed: ${error instanceof Error ? error.message : String(error)}`);
+    console.error(
+      `  ✗ Orchestrator test failed: ${error instanceof Error ? error.message : String(error)}`
+    );
     return false;
   }
 }
@@ -116,7 +118,10 @@ async function getAgentMetrics() {
     return;
   }
 
-  const byAgent = new Map<string, { total: number; success: number; failed: number; avgDuration: number }>();
+  const byAgent = new Map<
+    string,
+    { total: number; success: number; failed: number; avgDuration: number }
+  >();
 
   runs?.forEach((run) => {
     if (!byAgent.has(run.agent_type)) {
@@ -135,7 +140,9 @@ async function getAgentMetrics() {
     const successRate = ((stats.success / stats.total) * 100).toFixed(1);
     const avgDuration = (stats.avgDuration / 1000).toFixed(1);
     console.log(`  ${agentType}:`);
-    console.log(`    Runs: ${stats.total} | Success: ${stats.success} (${successRate}%) | Failed: ${stats.failed}`);
+    console.log(
+      `    Runs: ${stats.total} | Success: ${stats.success} (${successRate}%) | Failed: ${stats.failed}`
+    );
     console.log(`    Avg Duration: ${avgDuration}s`);
   });
 }

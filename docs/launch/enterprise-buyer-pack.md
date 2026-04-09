@@ -7,13 +7,13 @@ Settler’s differentiation is **reconciliation intelligence**, **exception and 
 
 ## 1) Shared responsibility matrix (summary)
 
-| Area | Settler (product + docs) | Customer |
-| --- | --- | --- |
-| Reconciliation runs, exceptions, proofpacks, replay UX | Provide software and APIs; tenant-scoped behavior | Configure data sources, policies, and review workflows |
-| Application uptime / SLA | Contractual only when agreed; **public endpoints show connectivity, not SLA** | Monitor their integration and network path |
-| Data store backup / RPO/RTO | Document operator path; targets are **deployment-specific** | Own backup/restore for their infra and cloud accounts |
-| Auth / tenant isolation | Enforce in product; tests + verification commands in repo | IdP, API keys, least-privilege practices |
-| Compliance (SOC2, PCI, etc.) | Roadmap / assessment as stated in `claims.ts` | Their auditor scope and cardholder environments |
+| Area                                                   | Settler (product + docs)                                                      | Customer                                               |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------- | ------------------------------------------------------ |
+| Reconciliation runs, exceptions, proofpacks, replay UX | Provide software and APIs; tenant-scoped behavior                             | Configure data sources, policies, and review workflows |
+| Application uptime / SLA                               | Contractual only when agreed; **public endpoints show connectivity, not SLA** | Monitor their integration and network path             |
+| Data store backup / RPO/RTO                            | Document operator path; targets are **deployment-specific**                   | Own backup/restore for their infra and cloud accounts  |
+| Auth / tenant isolation                                | Enforce in product; tests + verification commands in repo                     | IdP, API keys, least-privilege practices               |
+| Compliance (SOC2, PCI, etc.)                           | Roadmap / assessment as stated in `claims.ts`                                 | Their auditor scope and cardholder environments        |
 
 Full operational sequence: `docs/launch/canonical-go-live-path.md`.
 
@@ -26,13 +26,13 @@ Do not infer multi-region active-active from public status copy; verify in contr
 
 ## 3) Pilot success rubric (measurable)
 
-| # | Criterion | Pass threshold (example) | Evidence |
-| --- | --- | --- | --- |
-| 1 | Deterministic run completion | ≥ agreed % of pilot runs reach terminal state without operator override | Run IDs, logs |
-| 2 | Exception triage | Exceptions carry policy + lineage usable in adjudication | Screenshots / exports |
-| 3 | Proofpack depth | Proofpack links resolve for pilot runs | URLs or artifact hashes |
-| 4 | Replay | Same inputs reproduce comparable outcomes within documented boundaries | Replay command output |
-| 5 | Tenant isolation | No cross-tenant data in pilot tests | `pnpm run verify:tenant` style evidence in customer’s env |
+| #   | Criterion                    | Pass threshold (example)                                                | Evidence                                                  |
+| --- | ---------------------------- | ----------------------------------------------------------------------- | --------------------------------------------------------- |
+| 1   | Deterministic run completion | ≥ agreed % of pilot runs reach terminal state without operator override | Run IDs, logs                                             |
+| 2   | Exception triage             | Exceptions carry policy + lineage usable in adjudication                | Screenshots / exports                                     |
+| 3   | Proofpack depth              | Proofpack links resolve for pilot runs                                  | URLs or artifact hashes                                   |
+| 4   | Replay                       | Same inputs reproduce comparable outcomes within documented boundaries  | Replay command output                                     |
+| 5   | Tenant isolation             | No cross-tenant data in pilot tests                                     | `pnpm run verify:tenant` style evidence in customer’s env |
 
 Thresholds are **negotiated per pilot**, not universal guarantees.
 

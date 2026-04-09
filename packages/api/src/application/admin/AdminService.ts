@@ -3,10 +3,10 @@
  * Provides admin/debug endpoints for inspecting and managing sagas and events
  */
 
-import { SagaOrchestrator } from '../sagas/SagaOrchestrator';
-import { IEventStore } from '../../infrastructure/eventsourcing/EventStore';
-import { DeadLetterQueue } from '../../infrastructure/resilience/DeadLetterQueue';
-import { EventEnvelope } from '../../domain/eventsourcing/EventEnvelope';
+import { SagaOrchestrator } from "../sagas/SagaOrchestrator";
+import { IEventStore } from "../../infrastructure/eventsourcing/EventStore";
+import { DeadLetterQueue } from "../../infrastructure/resilience/DeadLetterQueue";
+import { EventEnvelope } from "../../domain/eventsourcing/EventEnvelope";
 
 export class AdminService {
   constructor(
@@ -35,9 +35,7 @@ export class AdminService {
   /**
    * List events by correlation ID
    */
-  async listEventsByCorrelationId(
-    correlationId: string
-  ): Promise<EventEnvelope[]> {
+  async listEventsByCorrelationId(correlationId: string): Promise<EventEnvelope[]> {
     return await this.eventStore.getEventsByCorrelationId(correlationId);
   }
 
@@ -76,10 +74,7 @@ export class AdminService {
   /**
    * Resolve a dead letter queue entry
    */
-  async resolveDeadLetterEntry(
-    id: string,
-    resolutionNotes?: string
-  ): Promise<void> {
+  async resolveDeadLetterEntry(id: string, resolutionNotes?: string): Promise<void> {
     await this.deadLetterQueue.resolveEntry(id, resolutionNotes);
   }
 
@@ -101,13 +96,13 @@ export class AdminService {
 
     for (const event of events) {
       switch (event.event_type) {
-        case 'RecordMatched':
+        case "RecordMatched":
           matched++;
           break;
-        case 'RecordUnmatched':
+        case "RecordUnmatched":
           unmatched++;
           break;
-        case 'ReconciliationFailed':
+        case "ReconciliationFailed":
           errors++;
           break;
       }

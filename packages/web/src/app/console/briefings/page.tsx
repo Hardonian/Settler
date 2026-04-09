@@ -1,28 +1,31 @@
 /**
  * Ops Briefings Page
- * 
+ *
  * View weekly founder briefings
  */
 
-import { Suspense } from 'react';
-import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
-import { getUserRole, UserRole } from '@/shared/auth/roles';
-import { BriefingsView } from '@/components/ops/BriefingsView';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle } from 'lucide-react';
-import { ErrorBoundary } from '@/components/ui/error-boundary';
-import { OpsIntelligenceErrorBoundary } from '@/components/ops/ErrorBoundary';
+import { Suspense } from "react";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { getUserRole, UserRole } from "@/shared/auth/roles";
+import { BriefingsView } from "@/components/ops/BriefingsView";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { AlertCircle } from "lucide-react";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { OpsIntelligenceErrorBoundary } from "@/components/ops/ErrorBoundary";
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 async function BriefingsContent() {
   const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    redirect('/console');
+    redirect("/console");
   }
 
   // Check if user is admin
@@ -38,9 +41,7 @@ async function BriefingsContent() {
               <AlertCircle className="h-5 w-5 text-destructive" />
               Access Denied
             </CardTitle>
-            <CardDescription>
-              This page is restricted to administrators only.
-            </CardDescription>
+            <CardDescription>This page is restricted to administrators only.</CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">

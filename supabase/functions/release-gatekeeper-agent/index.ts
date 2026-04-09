@@ -1,9 +1,9 @@
 /**
  * Release Gatekeeper Agent (QA/Release Replacement)
- * 
+ *
  * Replaces: QA / Release Manager role
  * Runs: On PR/commit events + Post-deploy
- * 
+ *
  * What it does:
  * - Blocks deploys if error rate spikes
  * - Detects RLS violations

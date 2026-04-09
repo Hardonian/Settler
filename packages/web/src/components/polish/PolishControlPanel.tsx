@@ -86,7 +86,11 @@ export function PolishControlPanel() {
 
           <div className="space-y-2">
             <Label>Radius scale (0.5–2.0)</Label>
-            <Input value={radiusScale} onChange={(e) => setRadiusScale(e.target.value)} inputMode="decimal" />
+            <Input
+              value={radiusScale}
+              onChange={(e) => setRadiusScale(e.target.value)}
+              inputMode="decimal"
+            />
           </div>
 
           <div className="space-y-2">
@@ -173,4 +177,3 @@ export function PolishControlPanel() {
     </Card>
   );
 }
-

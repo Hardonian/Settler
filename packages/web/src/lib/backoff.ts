@@ -25,29 +25,26 @@ export function calculateBackoffDelay(
   config: Partial<BackoffConfig> = {}
 ): number {
   const cfg = { ...DEFAULT_CONFIG, ...config };
-  
+
   // Exponential: baseDelay * 2^(attempt - 1)
   const exponentialDelay = cfg.baseDelayMs * Math.pow(2, attempt - 1);
-  
+
   // Cap at max delay
   const cappedDelay = Math.min(exponentialDelay, cfg.maxDelayMs);
-  
+
   // Add jitter (random 0-25% of delay)
   if (cfg.jitter) {
     const jitterAmount = cappedDelay * 0.25 * Math.random();
     return Math.floor(cappedDelay + jitterAmount);
   }
-  
+
   return Math.floor(cappedDelay);
 }
 
 /**
  * Get next available_at timestamp for a job
  */
-export function getNextAvailableAt(
-  attempt: number,
-  config: Partial<BackoffConfig> = {}
-): Date {
+export function getNextAvailableAt(attempt: number, config: Partial<BackoffConfig> = {}): Date {
   const delayMs = calculateBackoffDelay(attempt, config);
   return new Date(Date.now() + delayMs);
 }

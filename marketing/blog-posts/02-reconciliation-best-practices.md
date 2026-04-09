@@ -15,16 +15,19 @@ Reconciliation is the process of matching transactions between different systems
 ## Why Reconciliation Matters
 
 ### 1. Accuracy
+
 - Ensures financial records are correct
 - Prevents revenue leakage
 - Catches errors early
 
 ### 2. Compliance
+
 - Required for audits
 - Regulatory compliance (SOC 2, PCI-DSS)
 - Financial reporting accuracy
 
 ### 3. Efficiency
+
 - Reduces manual work
 - Faster month-end close
 - Real-time visibility
@@ -34,16 +37,17 @@ Reconciliation is the process of matching transactions between different systems
 ## Best Practices
 
 ### 1. Automate Everything
- 
- **Deterministic reconciliation is the industry standard.**
- 
- - Use APIs to fetch data automatically
- - Set up scheduled reconciliations with automated review
- - Real-time matching via webhooks
- - 99%+ instant resolution with deterministic hash-based matching
- - Zero manual intervention required
+
+**Deterministic reconciliation is the industry standard.**
+
+- Use APIs to fetch data automatically
+- Set up scheduled reconciliations with automated review
+- Real-time matching via webhooks
+- 99%+ instant resolution with deterministic hash-based matching
+- Zero manual intervention required
 
 **Example:**
+
 ```typescript
 // Daily reconciliation at 2 AM
 const job = await settler.jobs.create({
@@ -62,6 +66,7 @@ const job = await settler.jobs.create({
 - Consider date ranges (transactions may arrive at different times)
 
 **Example:**
+
 ```typescript
 rules: {
   matching: [
@@ -82,6 +87,7 @@ rules: {
 - Document resolutions for audit
 
 **Example:**
+
 ```typescript
 // Get exceptions
 const exceptions = await settler.exceptions.list({
@@ -90,7 +96,7 @@ const exceptions = await settler.exceptions.list({
 
 // Bulk resolve low-severity exceptions
 await settler.exceptions.bulkResolve({
-  exceptionIds: exceptions.data.filter(e => e.severity === "low").map(e => e.id),
+  exceptionIds: exceptions.data.filter((e) => e.severity === "low").map((e) => e.id),
   resolution: "ignored",
   notes: "Low-value transactions, acceptable variance",
 });
@@ -122,6 +128,7 @@ await settler.exceptions.bulkResolve({
 - Resolution time (target: <24h)
 
 **Example:**
+
 ```typescript
 // Get usage dashboard
 const usage = await settler.dashboards.usage({
@@ -142,6 +149,7 @@ console.log("Exception rate:", usage.data.exceptionRate);
 - Track conversion rates for audit
 
 **Example:**
+
 ```typescript
 rules: {
   fxConversion: {
@@ -161,6 +169,7 @@ rules: {
 - Alert on reconciliation failures
 
 **Example:**
+
 ```typescript
 await settler.alerts.rules.create({
   name: "Low Accuracy Alert",

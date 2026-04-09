@@ -49,11 +49,7 @@ export class DeterminismAuditor {
    * Check that a value does not contain wall-clock timestamps
    * in deterministic execution paths
    */
-  assertNoTimestampInDeterministicPath(
-    value: unknown,
-    subsystem: string,
-    location: string
-  ): void {
+  assertNoTimestampInDeterministicPath(value: unknown, subsystem: string, location: string): void {
     const serialized = typeof value === "string" ? value : JSON.stringify(value);
     // ISO timestamps
     const isoPattern = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
@@ -76,10 +72,7 @@ export class DeterminismAuditor {
    * Check that connector output is normalized and does not contain
    * non-deterministic elements
    */
-  assertConnectorOutputDeterministic(
-    output: Record<string, unknown>,
-    connectorId: string
-  ): void {
+  assertConnectorOutputDeterministic(output: Record<string, unknown>, connectorId: string): void {
     const serialized = JSON.stringify(output);
     // Check for UUID v4 patterns (random)
     const uuidV4 = /[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/gi;
@@ -88,7 +81,8 @@ export class DeterminismAuditor {
         violationType: "connector_non_deterministic_output",
         subsystem: "connector",
         location: connectorId,
-        description: "Connector output contains random UUID v4 values that break replay determinism",
+        description:
+          "Connector output contains random UUID v4 values that break replay determinism",
         severity: "warning",
         detectedAt: new Date().toISOString(),
       });
@@ -98,11 +92,7 @@ export class DeterminismAuditor {
   /**
    * Assert that AI never directly modifies execution state
    */
-  assertAIAdvisoryOnly(
-    action: string,
-    mutatesState: boolean,
-    subsystem: string
-  ): void {
+  assertAIAdvisoryOnly(action: string, mutatesState: boolean, subsystem: string): void {
     if (mutatesState) {
       this.violations.push({
         violationType: "ai_modified_execution_state",

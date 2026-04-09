@@ -9,7 +9,13 @@ export function stableSortStrings(values: readonly string[]): string[] {
   return [...values].sort(codePointCompare);
 }
 
-type CanonicalValue = null | boolean | number | string | CanonicalValue[] | { [key: string]: CanonicalValue };
+type CanonicalValue =
+  | null
+  | boolean
+  | number
+  | string
+  | CanonicalValue[]
+  | { [key: string]: CanonicalValue };
 
 function canonicalize(value: unknown): CanonicalValue {
   if (value === null) return null;
@@ -43,4 +49,3 @@ export function canonicalJson(value: unknown): string {
 export function stableSha256(input: string): string {
   return createHash("sha256").update(input).digest("hex");
 }
-

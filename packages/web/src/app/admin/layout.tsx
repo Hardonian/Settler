@@ -97,7 +97,10 @@ function AdminNavContent() {
   return (
     <>
       {adminNavSections.map((section, idx) => (
-        <div key={section.label} className={cn("space-y-0.5", idx > 0 && "mt-5 pt-5 border-t border-border/60")}>
+        <div
+          key={section.label}
+          className={cn("space-y-0.5", idx > 0 && "mt-5 pt-5 border-t border-border/60")}
+        >
           <p className="mb-1.5 px-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
             {section.label}
           </p>
@@ -160,7 +163,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           {/* Footer */}
           <div className="border-t border-border/60 p-3">
             <div className="flex items-center gap-2 rounded-md px-3 py-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-success flex-shrink-0" aria-hidden="true" />
+              <span
+                className="h-1.5 w-1.5 rounded-full bg-success flex-shrink-0"
+                aria-hidden="true"
+              />
               <span className="text-[10px] text-muted-foreground/60 font-medium uppercase tracking-wide">
                 Tenant: default
               </span>
@@ -174,8 +180,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <Alert variant="info">
               <AlertTitle>Internal control plane</AlertTitle>
               <AlertDescription>
-                Admin routes require a super-admin role (platform operator). Tenant administrators use the Console for
-                tenant-scoped operations; delegated tenant admin for control-plane surfaces is not exposed here.
+                Admin routes require a super-admin role (platform operator). Tenant administrators
+                use the Console for tenant-scoped operations; delegated tenant admin for
+                control-plane surfaces is not exposed here.
               </AlertDescription>
             </Alert>
             <OperationalRouteNotice />

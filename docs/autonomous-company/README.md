@@ -9,11 +9,13 @@ Settler operates as a **mostly self-running SaaS company** through systematic ro
 ## Quick Start
 
 1. **Deploy Database Schema**
+
    ```bash
    supabase db push
    ```
 
 2. **Deploy Edge Functions**
+
    ```bash
    supabase functions deploy strategic-governor-agent
    supabase functions deploy architecture-sentinel-agent
@@ -37,25 +39,27 @@ Settler operates as a **mostly self-running SaaS company** through systematic ro
 
 ## Agent Overview
 
-| Agent | Role Replaced | Schedule | Purpose |
-|-------|--------------|----------|---------|
-| **Strategic Governor** | CEO/Strategy | Weekly | Prioritized backlog from metrics |
-| **Architecture Sentinel** | CTO/Tech Lead | Daily | Code quality & tech debt detection |
-| **User Intent Synthesizer** | Product Manager | Daily | Behavior analysis & feature demand |
-| **Preemptive Support** | Customer Support | Real-time + Daily | Proactive issue resolution |
-| **Organic Growth** | Growth Marketer | Weekly | Content generation from usage |
-| **Autonomous CFO** | Finance/Ops | Daily | Runway tracking & cost analysis |
-| **Release Gatekeeper** | QA/Release | On PR/Deploy | Automated safety checks |
+| Agent                       | Role Replaced    | Schedule          | Purpose                            |
+| --------------------------- | ---------------- | ----------------- | ---------------------------------- |
+| **Strategic Governor**      | CEO/Strategy     | Weekly            | Prioritized backlog from metrics   |
+| **Architecture Sentinel**   | CTO/Tech Lead    | Daily             | Code quality & tech debt detection |
+| **User Intent Synthesizer** | Product Manager  | Daily             | Behavior analysis & feature demand |
+| **Preemptive Support**      | Customer Support | Real-time + Daily | Proactive issue resolution         |
+| **Organic Growth**          | Growth Marketer  | Weekly            | Content generation from usage      |
+| **Autonomous CFO**          | Finance/Ops      | Daily             | Runway tracking & cost analysis    |
+| **Release Gatekeeper**      | QA/Release       | On PR/Deploy      | Automated safety checks            |
 
 ## Key Features
 
 ### ✅ Decision Automation
+
 - Strategic prioritization based on metrics
 - Architecture enforcement
 - Feature demand scoring
 - Financial forecasting
 
 ### ✅ Artifact Production
+
 - Weekly strategy reports
 - Prioritized backlogs
 - User insights
@@ -63,6 +67,7 @@ Settler operates as a **mostly self-running SaaS company** through systematic ro
 - Financial reports
 
 ### ✅ Early Problem Detection
+
 - Error rate spikes
 - Performance regressions
 - Security violations
@@ -70,6 +75,7 @@ Settler operates as a **mostly self-running SaaS company** through systematic ro
 - Churn risks
 
 ### ✅ Compounding Value
+
 - Each week produces new insights
 - Manual effort trends toward zero
 - Product improves autonomously
@@ -135,6 +141,7 @@ While most roles are automated, humans still:
 ## Success Metrics
 
 Track weekly:
+
 - Agent execution success rate
 - Artifacts produced
 - Manual interventions required
@@ -153,4 +160,4 @@ See [Verification Report](./verification-report.md) for detailed metrics.
 
 **Goal**: Transform Settler from "a startup you run" into "an asset that runs itself"
 
-*Last updated: 2026-01-27*
+_Last updated: 2026-01-27_

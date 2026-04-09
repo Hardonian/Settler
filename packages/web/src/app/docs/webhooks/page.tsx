@@ -1,26 +1,28 @@
-import { Metadata } from 'next';
-import { CodeBlock } from '@/components/docs/CodeBlock';
+import { Metadata } from "next";
+import { CodeBlock } from "@/components/docs/CodeBlock";
 
 export const metadata: Metadata = {
-  title: 'Webhooks - Docs',
-  description: 'Webhook integration guide',
+  title: "Webhooks - Docs",
+  description: "Webhook integration guide",
 };
 
 export default function WebhooksPage() {
   return (
     <div className="prose prose-slate dark:prose-invert max-w-none">
       <h1>Webhooks</h1>
-      
+
       <p>
-        Settler can send webhooks to notify your application of important events, such as when
-        a reconciliation job completes or fails.
+        Settler can send webhooks to notify your application of important events, such as when a
+        reconciliation job completes or fails.
       </p>
 
       <section>
         <h2>Setting Up Webhooks</h2>
         <p>Configure webhooks in the Console:</p>
         <ol>
-          <li>Go to <a href="/console/webhooks">Console → Webhooks</a></li>
+          <li>
+            Go to <a href="/console/webhooks">Console → Webhooks</a>
+          </li>
           <li>Click "Add Webhook"</li>
           <li>Enter your endpoint URL</li>
           <li>Select events to subscribe to</li>
@@ -31,9 +33,15 @@ export default function WebhooksPage() {
       <section>
         <h2>Webhook Events</h2>
         <ul>
-          <li><code>reconciliation.completed</code> - Job completed successfully</li>
-          <li><code>reconciliation.failed</code> - Job failed</li>
-          <li><code>receipt.parsed</code> - Receipt parsing completed</li>
+          <li>
+            <code>reconciliation.completed</code> - Job completed successfully
+          </li>
+          <li>
+            <code>reconciliation.failed</code> - Job failed
+          </li>
+          <li>
+            <code>receipt.parsed</code> - Receipt parsing completed
+          </li>
         </ul>
       </section>
 
@@ -62,7 +70,8 @@ export default function WebhooksPage() {
       <section>
         <h2>Verifying Webhooks</h2>
         <p>
-          Webhooks include a signature header that you can verify to ensure the request came from Settler.
+          Webhooks include a signature header that you can verify to ensure the request came from
+          Settler.
         </p>
         <CodeBlock
           code={`import crypto from 'crypto';

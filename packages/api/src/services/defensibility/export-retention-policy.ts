@@ -1,19 +1,19 @@
 /**
  * Export Retention Policy Service
- * 
+ *
  * Creates switching friction by limiting export availability after cancellation.
  * Exports are only available for a limited time after account cancellation.
- * 
+ *
  * PHASE: Workflow Lock-In Reinforcement
- * 
+ *
  * Based on narrative compression requirements:
  * - Export available for 30 days after cancellation (creates switching friction)
  * - After 30 days, exports are deleted (customers lose access to historical data)
  * - This makes switching more expensive (customers must export before canceling)
  */
 
-import { logError, logInfo } from '../../utils/logger';
-import { query } from '../../db';
+import { logError, logInfo } from "../../utils/logger";
+import { query } from "../../db";
 
 export interface ExportRetentionPolicy {
   tier: string;
@@ -23,27 +23,27 @@ export interface ExportRetentionPolicy {
 
 const RETENTION_POLICIES: Record<string, ExportRetentionPolicy> = {
   free: {
-    tier: 'free',
+    tier: "free",
     activeAccountDays: 7, // 7 days for free tier
     cancelledAccountDays: 7, // 7 days after cancellation
   },
   starter: {
-    tier: 'starter',
+    tier: "starter",
     activeAccountDays: 30, // 30 days for starter tier
     cancelledAccountDays: 30, // 30 days after cancellation
   },
   growth: {
-    tier: 'growth',
+    tier: "growth",
     activeAccountDays: 90, // 90 days for growth tier
     cancelledAccountDays: 30, // 30 days after cancellation (creates switching friction)
   },
   scale: {
-    tier: 'scale',
+    tier: "scale",
     activeAccountDays: 365, // 1 year for scale tier
     cancelledAccountDays: 30, // 30 days after cancellation
   },
   enterprise: {
-    tier: 'enterprise',
+    tier: "enterprise",
     activeAccountDays: 2555, // 7 years for enterprise tier
     cancelledAccountDays: 90, // 90 days after cancellation (longer for enterprise)
   },
@@ -51,7 +51,7 @@ const RETENTION_POLICIES: Record<string, ExportRetentionPolicy> = {
 
 /**
  * Export Retention Policy Service
- * 
+ *
  * Manages export availability and deletion based on account status
  */
 export class ExportRetentionPolicyService {
@@ -60,18 +60,18 @@ export class ExportRetentionPolicyService {
    */
   getRetentionPolicy(tierId: string): ExportRetentionPolicy {
     const tierMap: Record<string, string> = {
-      base: 'starter',
-      pro: 'growth',
+      base: "starter",
+      pro: "growth",
     };
 
     const mappedTier = tierMap[tierId] || tierId;
     const policy = RETENTION_POLICIES[mappedTier];
-    return policy ?? RETENTION_POLICIES['free']!;
+    return policy ?? RETENTION_POLICIES["free"]!;
   }
 
   /**
    * Check if export is still available
-   * 
+   *
    * Returns true if export is available, false if it should be deleted
    */
   async isExportAvailable(
@@ -93,7 +93,7 @@ export class ExportRetentionPolicyService {
       );
 
       if (exportResult.length === 0) {
-        return { available: false, reason: 'Export not found' };
+        return { available: false, reason: "Export not found" };
       }
 
       const exportData = exportResult[0] as {
@@ -105,12 +105,12 @@ export class ExportRetentionPolicyService {
         plan_id: string | null;
       };
 
-      const policy = this.getRetentionPolicy(exportData.plan_id || 'free');
+      const policy = this.getRetentionPolicy(exportData.plan_id || "free");
       const createdAt = new Date(exportData.created_at);
       const now = new Date();
 
       // Check if account is cancelled
-      if (exportData.account_status === 'cancelled' && exportData.cancelled_at) {
+      if (exportData.account_status === "cancelled" && exportData.cancelled_at) {
         const cancelledAt = new Date(exportData.cancelled_at);
         const daysSinceCancellation = Math.floor(
           (now.getTime() - cancelledAt.getTime()) / (1000 * 60 * 60 * 24)
@@ -145,9 +145,7 @@ export class ExportRetentionPolicyService {
       if (daysSinceCreation > policy.activeAccountDays) {
         return {
           available: false,
-          expiresAt: new Date(
-            createdAt.getTime() + policy.activeAccountDays * 24 * 60 * 60 * 1000
-          ),
+          expiresAt: new Date(createdAt.getTime() + policy.activeAccountDays * 24 * 60 * 60 * 1000),
           reason: `Export expired after ${policy.activeAccountDays} days`,
         };
       }
@@ -162,14 +160,14 @@ export class ExportRetentionPolicyService {
         reason: `Export expires after ${policy.activeAccountDays} days`,
       };
     } catch (error) {
-      logError('Failed to check export availability', error, { exportId, tenantId });
-      return { available: false, reason: 'Error checking availability' };
+      logError("Failed to check export availability", error, { exportId, tenantId });
+      return { available: false, reason: "Error checking availability" };
     }
   }
 
   /**
    * Delete expired exports
-   * 
+   *
    * Should be run as a scheduled job (daily)
    */
   async deleteExpiredExports(): Promise<{
@@ -202,10 +200,7 @@ export class ExportRetentionPolicyService {
         plan_id: string | null;
       }>) {
         try {
-          const availability = await this.isExportAvailable(
-            exportData.id,
-            exportData.tenant_id
-          );
+          const availability = await this.isExportAvailable(exportData.id, exportData.tenant_id);
 
           if (!availability.available) {
             // Delete export (set status to deleted)
@@ -216,7 +211,7 @@ export class ExportRetentionPolicyService {
               [exportData.id]
             );
 
-            logInfo('Deleted expired export', {
+            logInfo("Deleted expired export", {
               exportId: exportData.id,
               tenantId: exportData.tenant_id,
               reason: availability.reason,
@@ -225,7 +220,7 @@ export class ExportRetentionPolicyService {
             deleted++;
           }
         } catch (error) {
-          logError('Failed to delete expired export', error, {
+          logError("Failed to delete expired export", error, {
             exportId: exportData.id,
             tenantId: exportData.tenant_id,
           });
@@ -233,7 +228,7 @@ export class ExportRetentionPolicyService {
         }
       }
 
-      logInfo('Completed export retention cleanup', {
+      logInfo("Completed export retention cleanup", {
         deleted,
         errors,
         totalChecked: exportsResult.length,
@@ -241,14 +236,14 @@ export class ExportRetentionPolicyService {
 
       return { deleted, errors };
     } catch (error) {
-      logError('Failed to delete expired exports', error);
+      logError("Failed to delete expired exports", error);
       return { deleted, errors: errors + 1 };
     }
   }
 
   /**
    * Get export expiration warning for tenant
-   * 
+   *
    * Warns tenants about export expiration after cancellation
    */
   async getExpirationWarning(tenantId: string): Promise<string | null> {
@@ -273,8 +268,8 @@ export class ExportRetentionPolicyService {
         plan_id: string | null;
       };
 
-      if (account.status === 'cancelled' && account.cancelled_at) {
-        const policy = this.getRetentionPolicy(account.plan_id || 'free');
+      if (account.status === "cancelled" && account.cancelled_at) {
+        const policy = this.getRetentionPolicy(account.plan_id || "free");
         const cancelledAt = new Date(account.cancelled_at);
         const now = new Date();
         const daysSinceCancellation = Math.floor(
@@ -283,17 +278,21 @@ export class ExportRetentionPolicyService {
         const daysRemaining = policy.cancelledAccountDays - daysSinceCancellation;
 
         if (daysRemaining > 0) {
-          return `Your account has been cancelled. Exports will be deleted in ${daysRemaining} days. ` +
-            `Please download any exports you need before they expire.`;
+          return (
+            `Your account has been cancelled. Exports will be deleted in ${daysRemaining} days. ` +
+            `Please download any exports you need before they expire.`
+          );
         } else {
-          return `Your account has been cancelled. Exports have been deleted. ` +
-            `To access historical data, please reactivate your account.`;
+          return (
+            `Your account has been cancelled. Exports have been deleted. ` +
+            `To access historical data, please reactivate your account.`
+          );
         }
       }
 
       return null;
     } catch (error) {
-      logError('Failed to get expiration warning', error, { tenantId });
+      logError("Failed to get expiration warning", error, { tenantId });
       return null;
     }
   }

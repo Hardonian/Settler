@@ -13,7 +13,12 @@ export interface MultiSourceConfig {
   }>;
   targetAdapter: string;
   targetConfig: Record<string, unknown>;
-  conflictResolutionStrategy: "first_wins" | "last_wins" | "highest_amount" | "lowest_amount" | "manual";
+  conflictResolutionStrategy:
+    | "first_wins"
+    | "last_wins"
+    | "highest_amount"
+    | "lowest_amount"
+    | "manual";
   duplicateDetectionEnabled: boolean;
 }
 
@@ -88,7 +93,7 @@ export async function detectConflicts(
 ): Promise<ConflictDetectionResult[]> {
   try {
     const conflicts: ConflictDetectionResult[] = [];
-    const seenTransactions = new Map<string, Array<typeof transactions[0]>>();
+    const seenTransactions = new Map<string, Array<(typeof transactions)[0]>>();
 
     // Group transactions by external ID or amount+date+description
     for (const tx of transactions) {
@@ -137,7 +142,7 @@ export async function detectConflicts(
             );
 
             conflicts.push({
-              conflictId: conflictResult[0]?.id || '',
+              conflictId: conflictResult[0]?.id || "",
               conflictType: "duplicate_transaction",
               sourceAdapter1: tx1.adapter,
               sourceAdapter2: tx2.adapter,
@@ -232,10 +237,10 @@ export async function runMultiSourceReconciliation(
     const conflicts = await detectConflicts(tenantId, multiSourceJobId, allTransactions);
 
     // Update job with recon_run_id
-    await query(
-      `UPDATE multi_source_jobs SET recon_run_id = $1 WHERE id = $2`,
-      [reconRunId, multiSourceJobId]
-    );
+    await query(`UPDATE multi_source_jobs SET recon_run_id = $1 WHERE id = $2`, [
+      reconRunId,
+      multiSourceJobId,
+    ]);
 
     return {
       multiSourceJobId,

@@ -18,10 +18,10 @@ npm install @settler/sdk
 ### 3. Initialize the Client
 
 ```typescript
-import { SettlerClient } from '@settler/sdk';
+import { SettlerClient } from "@settler/sdk";
 
 const client = new SettlerClient({
-  apiKey: 'rk_your_api_key_here',
+  apiKey: "rk_your_api_key_here",
 });
 ```
 
@@ -31,12 +31,12 @@ const client = new SettlerClient({
 // Reconcile transactions
 const result = await client.reconcile({
   left: [
-    { id: '1', amount: 100.00, date: '2025-01-01' },
-    { id: '2', amount: 200.00, date: '2025-01-02' },
+    { id: "1", amount: 100.0, date: "2025-01-01" },
+    { id: "2", amount: 200.0, date: "2025-01-02" },
   ],
   right: [
-    { id: 'a', amount: 100.00, date: '2025-01-01' },
-    { id: 'b', amount: 200.00, date: '2025-01-02' },
+    { id: "a", amount: 100.0, date: "2025-01-01" },
+    { id: "b", amount: 200.0, date: "2025-01-02" },
   ],
 });
 
@@ -53,12 +53,14 @@ console.log(result.unmatched); // Transactions that couldn't be matched
 Reconciliation matches transactions from two sources (e.g., bank statements vs. accounting records).
 
 **Key Features:**
+
 - Deterministic matching algorithms
 - Handles edge cases automatically
 - Built-in audit trails
 - Type-safe results
 
 **Example:**
+
 ```typescript
 const result = await client.reconcile({
   left: bankTransactions,
@@ -75,12 +77,14 @@ const result = await client.reconcile({
 Parse receipts from images or PDFs into structured JSON.
 
 **Key Features:**
+
 - High accuracy OCR
 - Structured JSON output
 - Line-item extraction
 - Multi-format support
 
 **Example:**
+
 ```typescript
 const receipt = await client.receipts.parse({
   image: receiptImageBuffer,
@@ -100,18 +104,20 @@ console.log(receipt.items); // Array of line items
 Manage feature flags and entitlements with usage-based limits.
 
 **Key Features:**
+
 - Real-time evaluation
 - Usage-based limits
 - Environment-specific configs
 - Type-safe evaluation
 
 **Example:**
+
 ```typescript
 const flag = await client.featureFlags.evaluate({
-  key: 'new-checkout-flow',
+  key: "new-checkout-flow",
   context: {
-    userId: 'user-123',
-    environment: 'production',
+    userId: "user-123",
+    environment: "production",
   },
 });
 
@@ -131,11 +137,13 @@ if (flag.enabled) {
 Match transactions from two sources.
 
 **Parameters:**
+
 - `left`: Array of left-side transactions
 - `right`: Array of right-side transactions
 - `options`: Optional configuration
 
 **Returns:**
+
 - `matches`: Array of matched transaction pairs
 - `unmatched`: Array of unmatched transactions
 - `confidence`: Overall confidence score
@@ -147,10 +155,12 @@ Match transactions from two sources.
 Parse a receipt image or PDF.
 
 **Parameters:**
+
 - `image`: Buffer or file path
 - `options`: Optional parsing options
 
 **Returns:**
+
 - `vendor`: Vendor name
 - `total`: Total amount
 - `items`: Array of line items
@@ -163,10 +173,12 @@ Parse a receipt image or PDF.
 Evaluate a feature flag.
 
 **Parameters:**
+
 - `key`: Feature flag key
 - `context`: Evaluation context
 
 **Returns:**
+
 - `enabled`: Whether flag is enabled
 - `variant`: Variant value (if applicable)
 - `source`: Evaluation source
@@ -182,11 +194,11 @@ try {
   const result = await client.reconcile({ left, right });
 } catch (error) {
   if (error instanceof SettlerError) {
-    console.error('Settler API error:', error.message);
-    console.error('Error code:', error.code);
-    console.error('Status code:', error.statusCode);
+    console.error("Settler API error:", error.message);
+    console.error("Error code:", error.code);
+    console.error("Status code:", error.statusCode);
   } else {
-    console.error('Unexpected error:', error);
+    console.error("Unexpected error:", error);
   }
 }
 ```
@@ -207,7 +219,7 @@ try {
 The SDK is fully typed. Use TypeScript for better developer experience:
 
 ```typescript
-import { SettlerClient, ReconciliationResult } from '@settler/sdk';
+import { SettlerClient, ReconciliationResult } from "@settler/sdk";
 
 const client = new SettlerClient({ apiKey: process.env.SETTLER_API_KEY! });
 const result: ReconciliationResult = await client.reconcile({ left, right });
@@ -223,8 +235,8 @@ try {
   // Process result
 } catch (error) {
   // Log error, show user-friendly message
-  logger.error('Reconciliation failed', error);
-  showError('Failed to reconcile transactions. Please try again.');
+  logger.error("Reconciliation failed", error);
+  showError("Failed to reconcile transactions. Please try again.");
 }
 ```
 
@@ -234,15 +246,15 @@ Configure webhooks to receive notifications:
 
 ```typescript
 // In your webhook handler
-app.post('/webhooks/settler', async (req, res) => {
+app.post("/webhooks/settler", async (req, res) => {
   const event = req.body;
-  
-  if (event.type === 'reconciliation.completed') {
+
+  if (event.type === "reconciliation.completed") {
     // Handle reconciliation completion
-  } else if (event.type === 'receipt.parsed') {
+  } else if (event.type === "receipt.parsed") {
     // Handle receipt parsing
   }
-  
+
   res.json({ received: true });
 });
 ```
@@ -285,11 +297,14 @@ if (usage.remaining < usage.limit * 0.1) {
 ### Complete Reconciliation Flow
 
 ```typescript
-import { SettlerClient } from '@settler/sdk';
+import { SettlerClient } from "@settler/sdk";
 
 const client = new SettlerClient({ apiKey: process.env.SETTLER_API_KEY! });
 
-async function reconcileBankStatement(bankTransactions: Transaction[], accountingRecords: Transaction[]) {
+async function reconcileBankStatement(
+  bankTransactions: Transaction[],
+  accountingRecords: Transaction[]
+) {
   try {
     const result = await client.reconcile({
       left: bankTransactions,
@@ -319,7 +334,7 @@ async function reconcileBankStatement(bankTransactions: Transaction[], accountin
 
     return result;
   } catch (error) {
-    console.error('Reconciliation failed:', error);
+    console.error("Reconciliation failed:", error);
     throw error;
   }
 }
@@ -341,7 +356,7 @@ async function processReceipt(imageBuffer: Buffer) {
 
     // Validate confidence
     if (receipt.confidence < 0.8) {
-      throw new Error('Low confidence score, manual review required');
+      throw new Error("Low confidence score, manual review required");
     }
 
     // Store receipt
@@ -355,7 +370,7 @@ async function processReceipt(imageBuffer: Buffer) {
 
     return receipt;
   } catch (error) {
-    console.error('Receipt processing failed:', error);
+    console.error("Receipt processing failed:", error);
     throw error;
   }
 }

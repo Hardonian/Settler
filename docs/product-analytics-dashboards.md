@@ -11,6 +11,7 @@
 This document provides recommendations for building product analytics dashboards using the events defined in our [Event Taxonomy](./event-taxonomy.md). These dashboards help track user behavior, measure feature adoption, and analyze experiment results.
 
 **Supported Analytics Tools:**
+
 - Google Analytics 4 (GA4)
 - PostHog
 - Amplitude
@@ -25,20 +26,23 @@ This document provides recommendations for building product analytics dashboards
 ### 1. User Engagement
 
 **Metrics:**
+
 - Daily/Monthly Active Users (DAU/MAU)
 - Session duration
 - Pages per session
 - Return rate
 
 **Events:**
+
 - `session_started`
 - `session_ended`
 - `page_view`
 
 **Dashboard Query Example:**
+
 ```sql
 -- DAU (conceptual, tool-agnostic)
-SELECT 
+SELECT
   DATE(timestamp) as date,
   COUNT(DISTINCT userId) as daily_active_users
 FROM events
@@ -68,17 +72,20 @@ GROUP BY DATE(timestamp)
 ### Dashboard Setup
 
 **Funnel Visualization:**
+
 ```
 Started → Step 1 → Step 2 → Step 3 → Completed
  100%     85%       70%       60%       55%
 ```
 
 **Metrics to Track:**
+
 - Overall conversion rate: 55%
 - Biggest drop-off: Step 1 → Step 2 (15% drop)
 - Average completion time: 5.2 minutes
 
 **Alerts:**
+
 - Conversion rate drops below 50%
 - Step completion time exceeds 10 minutes
 - Abandon rate increases >20%
@@ -104,17 +111,20 @@ Started → Step 1 → Step 2 → Step 3 → Completed
 ### Dashboard Setup
 
 **Funnel:**
+
 ```
 View Page → Create Job → Run Job → Success
   100%        45%         80%       95%
 ```
 
 **Metrics:**
+
 - Job creation conversion: 45%
 - First run rate: 80%
 - Success rate: 95%
 
 **Cohort Analysis:**
+
 - Track users who create jobs vs. those who don't
 - Compare behavior of users who run jobs vs. those who don't
 
@@ -139,18 +149,21 @@ View Page → Create Job → Run Job → Success
 ### Dashboard Setup
 
 **Funnel:**
+
 ```
 View Pricing → Click Signup → Start Trial → Subscribe
    100%           25%           80%         30%
 ```
 
 **Metrics:**
+
 - Pricing page CTR: 25%
 - Trial start rate: 80%
 - Trial to paid: 30%
 - Overall conversion: 6% (25% × 80% × 30%)
 
 **Revenue Metrics:**
+
 - Average Revenue Per User (ARPU)
 - Monthly Recurring Revenue (MRR)
 - Customer Lifetime Value (LTV)
@@ -168,6 +181,7 @@ View Pricing → Click Signup → Start Trial → Subscribe
 ### Dashboard Setup
 
 **Feature Usage Table:**
+
 ```
 Feature              | Users | Usage Rate | Trend
 ---------------------|-------|------------|-------
@@ -177,6 +191,7 @@ Realtime Dashboard  | 890   | 32%        | → 0%
 ```
 
 **Adoption Curve:**
+
 - Track `feature_used` events over time
 - Compare adoption rates across features
 - Identify features with low adoption
@@ -195,6 +210,7 @@ Realtime Dashboard  | 890   | 32%        | → 0%
 ### Dashboard Setup
 
 **Experiment Results Table:**
+
 ```
 Experiment              | Variant    | Users | Conversion | Lift
 ------------------------|------------|-------|------------|-------
@@ -207,11 +223,13 @@ Dashboard Layout       | Control    | 1000  | 45%        | -
 ```
 
 **Funnel Comparison:**
+
 - Compare funnels for each variant
 - Identify where variants differ
 - Measure impact on key metrics
 
 **Statistical Analysis:**
+
 - Calculate p-values
 - Determine confidence intervals
 - Check for statistical significance
@@ -230,6 +248,7 @@ Dashboard Layout       | Control    | 1000  | 45%        | -
 ### Dashboard Setup
 
 **Error Tracking:**
+
 ```
 Error Type          | Count | Rate   | Trend
 --------------------|-------|--------|-------
@@ -239,6 +258,7 @@ Flag Fallbacks      | 12    | 0.1%   | → 0%
 ```
 
 **Friction Points:**
+
 - Identify forms with high abandon rates
 - Track validation failures by field
 - Monitor API error patterns
@@ -257,6 +277,7 @@ Flag Fallbacks      | 12    | 0.1%   | → 0%
 ### Dashboard Setup
 
 **Cohort Retention Table:**
+
 ```
 Cohort      | Day 1 | Day 7 | Day 14 | Day 30
 ------------|-------|-------|--------|-------
@@ -266,6 +287,7 @@ Cohort      | Day 1 | Day 7 | Day 14 | Day 30
 ```
 
 **Retention Curve:**
+
 - Plot retention over time
 - Compare cohorts
 - Identify trends
@@ -280,11 +302,13 @@ Cohort      | Day 1 | Day 7 | Day 14 | Day 30
 All events from our taxonomy are automatically sent to GA4.
 
 **Funnel Setup:**
+
 1. Go to Explore → Funnel Exploration
 2. Add events in order: `onboarding_started` → `onboarding_step_completed` → `onboarding_completed`
 3. Set conversion window
 
 **Custom Dimensions:**
+
 - `experiment_key` - Experiment identifier
 - `experiment_variant` - Variant name
 - `user_segment` - User segment
@@ -295,11 +319,13 @@ All events from our taxonomy are automatically sent to GA4.
 Events are sent with properties including experiment context.
 
 **Funnel Setup:**
+
 1. Create funnel in PostHog
 2. Add steps: `onboarding_started` → `onboarding_completed`
 3. Filter by experiment variant if needed
 
 **Cohort Analysis:**
+
 - Create cohorts based on experiment variants
 - Compare behavior between cohorts
 
@@ -309,6 +335,7 @@ Events are sent with properties including experiment context.
 All events include standard properties (userId, timestamp, route).
 
 **Chart Builder:**
+
 1. Create funnel chart
 2. Add events in sequence
 3. Group by experiment variant
@@ -321,6 +348,7 @@ All events include standard properties (userId, timestamp, route).
 ### 1. Executive Dashboard
 
 **Metrics:**
+
 - DAU/MAU
 - Conversion rates (onboarding, subscription)
 - Revenue metrics (MRR, ARPU)
@@ -331,6 +359,7 @@ All events include standard properties (userId, timestamp, route).
 ### 2. Product Dashboard
 
 **Metrics:**
+
 - Feature adoption rates
 - User engagement (sessions, duration)
 - Funnel conversion rates
@@ -341,6 +370,7 @@ All events include standard properties (userId, timestamp, route).
 ### 3. Experiment Dashboard
 
 **Metrics:**
+
 - Active experiments
 - Variant distributions
 - Conversion rates by variant
@@ -351,6 +381,7 @@ All events include standard properties (userId, timestamp, route).
 ### 4. Growth Dashboard
 
 **Metrics:**
+
 - User acquisition
 - Activation rate
 - Retention curves
@@ -366,7 +397,7 @@ All events include standard properties (userId, timestamp, route).
 
 ```javascript
 // Conceptual query (adapt to your analytics tool)
-SELECT 
+SELECT
   COUNT(DISTINCT CASE WHEN event = 'onboarding_completed' THEN userId END) * 100.0 /
   COUNT(DISTINCT CASE WHEN event = 'onboarding_started' THEN userId END) as conversion_rate
 FROM events
@@ -378,7 +409,7 @@ WHERE event IN ('onboarding_started', 'onboarding_completed')
 
 ```javascript
 // Compare conversion rates by variant
-SELECT 
+SELECT
   properties.experiment_variant as variant,
   COUNT(DISTINCT CASE WHEN event = 'subscription_started' THEN userId END) * 100.0 /
   COUNT(DISTINCT CASE WHEN event = 'trial_started' THEN userId END) as conversion_rate
@@ -392,7 +423,7 @@ GROUP BY properties.experiment_variant
 
 ```javascript
 // Track feature usage over time
-SELECT 
+SELECT
   DATE(timestamp) as date,
   properties.feature_name as feature,
   COUNT(DISTINCT userId) as users
@@ -424,6 +455,7 @@ ORDER BY date DESC, feature
 ### Weekly Reports
 
 **Include:**
+
 - Key metrics summary
 - Top performing experiments
 - Feature adoption highlights

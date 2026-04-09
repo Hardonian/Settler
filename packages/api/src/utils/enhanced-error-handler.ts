@@ -35,18 +35,23 @@ function generateSuggestion(error: ApiError, details?: unknown): string | undefi
   if (error instanceof ValidationError) {
     if (Array.isArray(details)) {
       const fieldErrors = details as Array<{ field: string; code: string }>;
-      
+
       // Suggest fixes based on error codes
       const suggestions: Record<string, string> = {
         REQUIRED_FIELD_MISSING: "Add the missing required field to your request.",
-        INVALID_FIELD_TYPE: "Check the field type matches the expected format (string, number, boolean, or array).",
+        INVALID_FIELD_TYPE:
+          "Check the field type matches the expected format (string, number, boolean, or array).",
         INVALID_ADAPTER: "Use a supported adapter. See /api/v1/adapters for available options.",
-        UNKNOWN_FIELD: "Remove the unknown field or check the adapter documentation for valid fields.",
+        UNKNOWN_FIELD:
+          "Remove the unknown field or check the adapter documentation for valid fields.",
       };
 
       const firstError = fieldErrors[0];
       if (firstError?.code) {
-        return suggestions[firstError.code] || "Check the field requirements in the adapter documentation.";
+        return (
+          suggestions[firstError.code] ||
+          "Check the field requirements in the adapter documentation."
+        );
       }
       return "Check the field requirements in the adapter documentation.";
     }
@@ -164,7 +169,9 @@ export function handleEnhancedError(
     };
     if (error.details) {
       if (Array.isArray(error.details)) {
-        errorResponse.details = (error.details as Array<{ field: string; message: string; code: string }>).map(d => {
+        errorResponse.details = (
+          error.details as Array<{ field: string; message: string; code: string }>
+        ).map((d) => {
           const detail: {
             field: string;
             message: string;
@@ -214,7 +221,7 @@ export function handleEnhancedError(
   }
 
   // Unknown error
-  logError('Unknown error', error, context);
+  logError("Unknown error", error, context);
   res.status(statusCode).json({
     error: {
       code: "INTERNAL_SERVER_ERROR",

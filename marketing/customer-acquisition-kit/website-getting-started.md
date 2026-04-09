@@ -78,7 +78,7 @@ const exceptions = await settler.reconciliations.exceptions(reconciliation.data.
 
 if (exceptions.data.length > 0) {
   // System automatically explains why each exception occurred
-  exceptions.data.forEach(exception => {
+  exceptions.data.forEach((exception) => {
     console.log(`${exception.reason}: ${exception.details}`);
     // Each exception includes automatic explanation and suggested action
   });
@@ -116,8 +116,18 @@ if (exceptions.data.length > 0) {
 ```typescript
 const reconciliation = await settler.reconciliations.create({
   name: "Order Payment Reconciliation",
-  source: { adapter: "shopify", config: { /* ... */ } },
-  target: { adapter: "stripe", config: { /* ... */ } },
+  source: {
+    adapter: "shopify",
+    config: {
+      /* ... */
+    },
+  },
+  target: {
+    adapter: "stripe",
+    config: {
+      /* ... */
+    },
+  },
   // Matching happens automatically - no rules needed
   // System explains mismatches automatically
 });
@@ -135,11 +145,31 @@ const reconciliation = await settler.reconciliations.create({
 const reconciliation = await settler.reconciliations.create({
   name: "Multi-Payment Reconciliation",
   sources: [
-    { adapter: "stripe", config: { /* ... */ } },
-    { adapter: "paypal", config: { /* ... */ } },
-    { adapter: "square", config: { /* ... */ } },
+    {
+      adapter: "stripe",
+      config: {
+        /* ... */
+      },
+    },
+    {
+      adapter: "paypal",
+      config: {
+        /* ... */
+      },
+    },
+    {
+      adapter: "square",
+      config: {
+        /* ... */
+      },
+    },
   ],
-  target: { adapter: "quickbooks", config: { /* ... */ } },
+  target: {
+    adapter: "quickbooks",
+    config: {
+      /* ... */
+    },
+  },
   // Matching happens automatically across all sources
   // System explains mismatches automatically
 });
@@ -156,8 +186,18 @@ const reconciliation = await settler.reconciliations.create({
 ```typescript
 const reconciliation = await settler.reconciliations.create({
   name: "Payment to Accounting Sync",
-  source: { adapter: "stripe", config: { /* ... */ } },
-  target: { adapter: "quickbooks", config: { /* ... */ } },
+  source: {
+    adapter: "stripe",
+    config: {
+      /* ... */
+    },
+  },
+  target: {
+    adapter: "quickbooks",
+    config: {
+      /* ... */
+    },
+  },
   // Sync happens continuously - no schedule needed
   // System explains mismatches automatically
   // Exceptions are explicit, auditable, and bounded
@@ -171,6 +211,7 @@ const reconciliation = await settler.reconciliations.create({
 ## Supported Platforms
 
 ### Payment Processors
+
 - ✅ Stripe
 - ✅ PayPal
 - ✅ Square
@@ -178,18 +219,21 @@ const reconciliation = await settler.reconciliations.create({
 - ✅ Braintree
 
 ### E-commerce Platforms
+
 - ✅ Shopify
 - ✅ WooCommerce
 - ✅ BigCommerce
 - ✅ Magento
 
 ### Accounting Systems
+
 - ✅ QuickBooks
 - ✅ Xero
 - ✅ NetSuite
 - ✅ Sage
 
 ### More Integrations
+
 We're adding new adapters regularly. [Request an adapter →](https://settler.io/adapters/request)
 
 ---
@@ -197,27 +241,35 @@ We're adding new adapters regularly. [Request an adapter →](https://settler.io
 ## Features
 
 ### 🔌 15+ Built-in Adapters
+
 Connect to Stripe, Shopify, QuickBooks, PayPal, and more with one line of code.
 
 ### ⚡ Real-Time Processing
+
 Webhook-driven reconciliation as events happen—no polling required.
 
 ### 🎯 Automatic Matching
+
 Matching happens automatically. System handles edge cases and explains mismatches.
 
 ### 🔄 Automatic Retries
+
 Built-in exponential backoff and error handling. Never lose a transaction.
 
 ### 📊 Rich Reports
+
 JSON, CSV, and PDF exports with detailed insights and audit trails.
 
 ### 🔐 Enterprise Security
+
 SOC 2 Type II ready, GDPR compliant, PCI-DSS ready. Compliance built-in.
 
 ### 📈 Scales Automatically
+
 Handle millions of transactions without infrastructure management.
 
 ### 🛠️ TypeScript First
+
 Full type safety and IntelliSense support. Works with your existing stack.
 
 ---

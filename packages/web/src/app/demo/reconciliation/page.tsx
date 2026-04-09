@@ -129,8 +129,7 @@ export default function ReconciliationDemoPage() {
           <CardHeader>
             <CardTitle>Reconciliation Run</CardTitle>
             <CardDescription>
-              {runState === "before" &&
-                "Click 'Run Reconciliation' to start the matching process."}
+              {runState === "before" && "Click 'Run Reconciliation' to start the matching process."}
               {runState === "running" && "Processing transactions..."}
               {runState === "after" && "Reconciliation complete. Review matches below."}
             </CardDescription>
@@ -205,8 +204,8 @@ export default function ReconciliationDemoPage() {
                 <CardHeader>
                   <CardTitle>Before Reconciliation</CardTitle>
                   <CardDescription>
-                    {sourceTransactions.length} source transactions and{" "}
-                    {targetTransactions.length} target transactions waiting to be matched.
+                    {sourceTransactions.length} source transactions and {targetTransactions.length}{" "}
+                    target transactions waiting to be matched.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -217,15 +216,10 @@ export default function ReconciliationDemoPage() {
                       </h3>
                       <div className="space-y-2">
                         {enrichedSources.slice(0, 5).map((tx) => (
-                          <div
-                            key={tx.id}
-                            className="p-3 bg-muted/20 rounded border text-sm"
-                          >
+                          <div key={tx.id} className="p-3 bg-muted/20 rounded border text-sm">
                             <div className="flex justify-between items-start mb-1">
                               <span className="font-medium">{tx.source}</span>
-                              <span className="text-muted-foreground">
-                                ${tx.amount.toFixed(2)}
-                              </span>
+                              <span className="text-muted-foreground">${tx.amount.toFixed(2)}</span>
                             </div>
                             <div className="text-xs text-muted-foreground">
                               {new Date(tx.timestamp).toLocaleDateString()}
@@ -240,15 +234,10 @@ export default function ReconciliationDemoPage() {
                       </h3>
                       <div className="space-y-2">
                         {enrichedTargets.slice(0, 5).map((tx) => (
-                          <div
-                            key={tx.id}
-                            className="p-3 bg-muted/20 rounded border text-sm"
-                          >
+                          <div key={tx.id} className="p-3 bg-muted/20 rounded border text-sm">
                             <div className="flex justify-between items-start mb-1">
                               <span className="font-medium">{tx.source}</span>
-                              <span className="text-muted-foreground">
-                                ${tx.amount.toFixed(2)}
-                              </span>
+                              <span className="text-muted-foreground">${tx.amount.toFixed(2)}</span>
                             </div>
                             <div className="text-xs text-muted-foreground">
                               {new Date(tx.timestamp).toLocaleDateString()}
@@ -273,9 +262,7 @@ export default function ReconciliationDemoPage() {
             >
               <Tabs defaultValue="matches" className="space-y-6">
                 <TabsList>
-                  <TabsTrigger value="matches">
-                    Matches ({matches.length})
-                  </TabsTrigger>
+                  <TabsTrigger value="matches">Matches ({matches.length})</TabsTrigger>
                   <TabsTrigger value="unmatched">
                     Unmatched ({unmatchedSources.length + unmatchedTargets.length})
                   </TabsTrigger>
@@ -293,8 +280,12 @@ export default function ReconciliationDemoPage() {
                     <CardContent>
                       <div className="space-y-4">
                         {matches.map((match) => {
-                          const source = enrichedSources.find((t) => t.id === match.source_transaction_id);
-                          const target = enrichedTargets.find((t) => t.id === match.target_transaction_id);
+                          const source = enrichedSources.find(
+                            (t) => t.id === match.source_transaction_id
+                          );
+                          const target = enrichedTargets.find(
+                            (t) => t.id === match.target_transaction_id
+                          );
 
                           return (
                             <motion.div
@@ -340,7 +331,9 @@ export default function ReconciliationDemoPage() {
                                   </div>
                                   {match.evidence.map((ev, idx) => (
                                     <div key={idx} className="text-xs text-muted-foreground">
-                                      <span className="font-medium">{ev.field}:</span> {String(ev.source_value)} = {String(ev.target_value)} ({ev.match_type})
+                                      <span className="font-medium">{ev.field}:</span>{" "}
+                                      {String(ev.source_value)} = {String(ev.target_value)} (
+                                      {ev.match_type})
                                     </div>
                                   ))}
                                   <div className="text-xs text-muted-foreground mt-2">
@@ -435,33 +428,29 @@ export default function ReconciliationDemoPage() {
                           <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                             {matches.filter((m: any) => m.confidence === "exact").length}
                           </div>
-                          <div className="text-sm text-muted-foreground">
-                            Exact Matches
-                          </div>
+                          <div className="text-sm text-muted-foreground">Exact Matches</div>
                         </div>
                         <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded border">
                           <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                             {matches.filter((m: any) => m.confidence === "high").length}
                           </div>
-                          <div className="text-sm text-muted-foreground">
-                            High Confidence
-                          </div>
+                          <div className="text-sm text-muted-foreground">High Confidence</div>
                         </div>
                         <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded border">
                           <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
-                            {matches.filter((m: any) => m.confidence === "medium" || m.confidence === "low").length}
+                            {
+                              matches.filter(
+                                (m: any) => m.confidence === "medium" || m.confidence === "low"
+                              ).length
+                            }
                           </div>
-                          <div className="text-sm text-muted-foreground">
-                            Review Needed
-                          </div>
+                          <div className="text-sm text-muted-foreground">Review Needed</div>
                         </div>
                         <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded border">
                           <div className="text-2xl font-bold text-red-600 dark:text-red-400">
                             {unmatchedSources.length + unmatchedTargets.length}
                           </div>
-                          <div className="text-sm text-muted-foreground">
-                            Unmatched
-                          </div>
+                          <div className="text-sm text-muted-foreground">Unmatched</div>
                         </div>
                       </div>
                     </CardContent>

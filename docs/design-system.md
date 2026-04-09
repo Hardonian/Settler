@@ -20,6 +20,7 @@ All design tokens are centralized in `/src/design-system/tokens.ts` and exported
 ### Color Palette
 
 #### Primary Colors
+
 ```typescript
 primary: {
   50: '#f0f9ff',
@@ -31,6 +32,7 @@ primary: {
 ```
 
 #### Electric Accents
+
 ```typescript
 electric: {
   cyan: '#06b6d4',
@@ -42,6 +44,7 @@ electric: {
 ```
 
 #### Semantic Colors (CSS Variables)
+
 - `--background`: Background color
 - `--foreground`: Text color
 - `--card`: Card background
@@ -73,6 +76,7 @@ spacing: {
 ### Typography Scale
 
 #### Font Sizes
+
 ```typescript
 fontSize: {
   xs: '0.75rem',      // 12px
@@ -87,6 +91,7 @@ fontSize: {
 ```
 
 #### Font Weights
+
 - `normal`: 400
 - `medium`: 500
 - `semibold`: 600
@@ -94,6 +99,7 @@ fontSize: {
 - `extrabold`: 800
 
 #### Font Families
+
 - **Sans**: Inter (primary), system-ui fallback
 - **Mono**: ui-monospace, SFMono-Regular, Menlo
 
@@ -157,6 +163,7 @@ breakpoints: {
 ### Buttons
 
 **Variants:**
+
 - `default`: Primary action (blue background)
 - `destructive`: Destructive action (red background)
 - `outline`: Secondary action (outlined)
@@ -165,12 +172,14 @@ breakpoints: {
 - `link`: Link-style button
 
 **Sizes:**
+
 - `sm`: Small (36px height)
 - `default`: Default (40px height)
 - `lg`: Large (44px height)
 - `icon`: Icon-only (40x40px)
 
 **Usage:**
+
 ```tsx
 <Button variant="default" size="lg" fullWidth>
   Click me
@@ -180,35 +189,35 @@ breakpoints: {
 ### Inputs
 
 **Sizes:**
+
 - `sm`: Small (36px height)
 - `default`: Default (40px height)
 - `lg`: Large (44px height)
 
 **States:**
+
 - Normal
 - Error (with `error` prop)
 - Disabled
 - With icons (left/right)
 
 **Usage:**
+
 ```tsx
-<Input 
-  type="email" 
-  placeholder="Enter email"
-  error={hasError}
-  leftIcon={<Mail />}
-/>
+<Input type="email" placeholder="Enter email" error={hasError} leftIcon={<Mail />} />
 ```
 
 ### Cards
 
 **Elevation:**
+
 - `none`: No shadow
 - `sm`: Small shadow
 - `default`: Medium shadow
 - `lg`: Large shadow
 
 **Usage:**
+
 ```tsx
 <Card elevation="lg" hover>
   <CardHeader>
@@ -226,6 +235,7 @@ breakpoints: {
 Standardized container component with max-width and responsive padding.
 
 **Max Widths:**
+
 - `sm`: 640px
 - `md`: 768px
 - `lg`: 1024px
@@ -234,12 +244,14 @@ Standardized container component with max-width and responsive padding.
 - `full`: 100%
 
 **Padding:**
+
 - `none`: No padding
 - `sm`: 1rem (16px)
 - `default`: Responsive (16px mobile, 24px tablet, 32px desktop)
 - `lg`: Responsive (24px mobile, 32px tablet, 48px desktop)
 
 **Usage:**
+
 ```tsx
 <Container maxWidth="xl" padding="default">
   Content
@@ -251,6 +263,7 @@ Standardized container component with max-width and responsive padding.
 Standardized section component with consistent spacing and optional container.
 
 **Padding:**
+
 - `none`: No padding
 - `sm`: 32px mobile, 48px tablet
 - `default`: 48px mobile, 64px tablet, 80px desktop
@@ -258,12 +271,14 @@ Standardized section component with consistent spacing and optional container.
 - `xl`: 80px mobile, 96px tablet, 128px desktop
 
 **Backgrounds:**
+
 - `default`: Transparent
 - `muted`: Muted background
 - `accent`: Accent background
 - `transparent`: Explicitly transparent
 
 **Usage:**
+
 ```tsx
 <Section padding="default" background="muted" container>
   <h2>Section Title</h2>
@@ -339,13 +354,13 @@ All components and layouts use mobile-first responsive design:
 
 ```tsx
 // Mobile-first responsive classes
-className="text-base md:text-lg lg:text-xl"
+className = "text-base md:text-lg lg:text-xl";
 
 // Responsive padding
-className="px-4 md:px-6 lg:px-8"
+className = "px-4 md:px-6 lg:px-8";
 
 // Responsive grid
-className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3";
 ```
 
 ## Accessibility
@@ -353,6 +368,7 @@ className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
 ### Focus States
 
 All interactive elements have visible focus states:
+
 - Focus ring: 2px solid `ring` color
 - Focus offset: 2px
 - Border radius: 4px

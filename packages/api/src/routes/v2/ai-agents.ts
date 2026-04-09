@@ -60,36 +60,42 @@ router.get(
   "/",
   requirePermission(Permission.ADMIN_READ),
   async (req: AuthRequest, res: Response) => {
-  try {
-    const tenantId = requireTenantContext(req, res);
-    if (!tenantId) return;
-    if (
-      !(await authorizeTenantActionOr403(
+    try {
+      const tenantId = requireTenantContext(req, res);
+      if (!tenantId) return;
+      if (
+        !(await authorizeTenantActionOr403(
+          req,
+          res,
+          tenantId,
+          "tenant.operator.control",
+          "AI agent control plane access is not authorized"
+        ))
+      ) {
+        return;
+      }
+      const capability = requireStrategicSurfaceAvailability(
         req,
         res,
-        tenantId,
-        "tenant.operator.control",
-        "AI agent control plane access is not authorized"
-      ))
-    ) {
+        "/api/v2/ai-agents",
+        AI_AGENTS_SURFACE
+      );
+      if (!capability) return;
+      ensureAgentsInitialized();
+      const agents = agentOrchestrator.listAgents();
+      res.json({
+        data: agents,
+        capability,
+        count: agents.length,
+        metadata: buildStrategicSurfaceMetadata(req, capability),
+      });
+      return;
+    } catch (error: unknown) {
+      handleRouteError(res, error, "Failed to list agents", 500);
       return;
     }
-    const capability = requireStrategicSurfaceAvailability(req, res, "/api/v2/ai-agents", AI_AGENTS_SURFACE);
-    if (!capability) return;
-    ensureAgentsInitialized();
-    const agents = agentOrchestrator.listAgents();
-    res.json({
-      data: agents,
-      capability,
-      count: agents.length,
-      metadata: buildStrategicSurfaceMetadata(req, capability),
-    });
-    return;
-  } catch (error: unknown) {
-    handleRouteError(res, error, "Failed to list agents", 500);
-    return;
   }
-});
+);
 
 /**
  * GET /api/v2/ai-agents/stats
@@ -142,62 +148,63 @@ router.get(
   "/:agentId",
   requirePermission(Permission.ADMIN_READ),
   async (req: AuthRequest, res: Response) => {
-  try {
-    const tenantId = requireTenantContext(req, res);
-    if (!tenantId) return;
-    if (
-      !(await authorizeTenantActionOr403(
+    try {
+      const tenantId = requireTenantContext(req, res);
+      if (!tenantId) return;
+      if (
+        !(await authorizeTenantActionOr403(
+          req,
+          res,
+          tenantId,
+          "tenant.operator.control",
+          "AI agent control plane access is not authorized"
+        ))
+      ) {
+        return;
+      }
+      const capability = requireStrategicSurfaceAvailability(
         req,
         res,
-        tenantId,
-        "tenant.operator.control",
-        "AI agent control plane access is not authorized"
-      ))
-    ) {
+        "/api/v2/ai-agents/:agentId",
+        AI_AGENTS_SURFACE
+      );
+      if (!capability) return;
+      ensureAgentsInitialized();
+      const agentIdParam = req.params["agentId"];
+      const agentId = Array.isArray(agentIdParam) ? (agentIdParam[0] ?? "") : (agentIdParam ?? "");
+      if (!agentId) {
+        return res.status(400).json({
+          error: "Agent ID is required",
+        });
+      }
+      const agent = agentOrchestrator.getAgent(agentId);
+
+      if (!agent) {
+        return res.status(404).json({
+          error: "Agent not found",
+          message: `Agent ${agentId} not found`,
+        });
+      }
+
+      const status = await agent.getStatus();
+
+      res.json({
+        data: {
+          id: agent.id,
+          name: agent.name,
+          type: agent.type,
+          status,
+        },
+        capability,
+        metadata: buildStrategicSurfaceMetadata(req, capability),
+      });
+      return;
+    } catch (error: unknown) {
+      handleRouteError(res, error, "Failed to get agent", 500);
       return;
     }
-    const capability = requireStrategicSurfaceAvailability(
-      req,
-      res,
-      "/api/v2/ai-agents/:agentId",
-      AI_AGENTS_SURFACE
-    );
-    if (!capability) return;
-    ensureAgentsInitialized();
-    const agentIdParam = req.params["agentId"];
-    const agentId = Array.isArray(agentIdParam) ? (agentIdParam[0] ?? "") : (agentIdParam ?? "");
-    if (!agentId) {
-      return res.status(400).json({
-        error: "Agent ID is required",
-      });
-    }
-    const agent = agentOrchestrator.getAgent(agentId);
-
-    if (!agent) {
-      return res.status(404).json({
-        error: "Agent not found",
-        message: `Agent ${agentId} not found`,
-      });
-    }
-
-    const status = await agent.getStatus();
-
-    res.json({
-      data: {
-        id: agent.id,
-        name: agent.name,
-        type: agent.type,
-        status,
-      },
-      capability,
-      metadata: buildStrategicSurfaceMetadata(req, capability),
-    });
-    return;
-  } catch (error: unknown) {
-    handleRouteError(res, error, "Failed to get agent", 500);
-    return;
   }
-});
+);
 
 /**
  * POST /api/v2/ai-agents/:agentId/execute
@@ -207,57 +214,58 @@ router.post(
   "/:agentId/execute",
   requirePermission(Permission.ADMIN_WRITE),
   async (req: AuthRequest, res: Response) => {
-  try {
-    const tenantId = requireTenantContext(req, res);
-    if (!tenantId) return;
-    if (
-      !(await authorizeTenantActionOr403(
+    try {
+      const tenantId = requireTenantContext(req, res);
+      if (!tenantId) return;
+      if (
+        !(await authorizeTenantActionOr403(
+          req,
+          res,
+          tenantId,
+          "tenant.operator.control",
+          "AI agent control plane mutation is not authorized"
+        ))
+      ) {
+        return;
+      }
+      const capability = requireStrategicSurfaceAvailability(
         req,
         res,
-        tenantId,
-        "tenant.operator.control",
-        "AI agent control plane mutation is not authorized"
-      ))
-    ) {
+        "/api/v2/ai-agents/:agentId/execute",
+        AI_AGENTS_SURFACE
+      );
+      if (!capability) return;
+      ensureAgentsInitialized();
+      const agentIdParam = req.params["agentId"];
+      const agentId = Array.isArray(agentIdParam) ? (agentIdParam[0] ?? "") : (agentIdParam ?? "");
+      if (!agentId) {
+        return res.status(400).json({ error: "Agent ID is required" });
+      }
+      const { action, params } = req.body;
+
+      const response = await agentOrchestrator.execute({
+        agentId,
+        action,
+        params: params || {},
+        context: {
+          tenantId,
+          userId: req.userId ?? null,
+          traceId: req.traceId ?? null,
+        },
+      });
+
+      res.json({
+        data: response,
+        capability,
+        metadata: buildStrategicSurfaceMetadata(req, capability),
+      });
+      return;
+    } catch (error: unknown) {
+      handleRouteError(res, error, "Failed to execute agent action", 400);
       return;
     }
-    const capability = requireStrategicSurfaceAvailability(
-      req,
-      res,
-      "/api/v2/ai-agents/:agentId/execute",
-      AI_AGENTS_SURFACE
-    );
-    if (!capability) return;
-    ensureAgentsInitialized();
-    const agentIdParam = req.params["agentId"];
-    const agentId = Array.isArray(agentIdParam) ? (agentIdParam[0] ?? "") : (agentIdParam ?? "");
-    if (!agentId) {
-      return res.status(400).json({ error: "Agent ID is required" });
-    }
-    const { action, params } = req.body;
-
-    const response = await agentOrchestrator.execute({
-      agentId,
-      action,
-      params: params || {},
-      context: {
-        tenantId,
-        userId: req.userId ?? null,
-        traceId: req.traceId ?? null,
-      },
-    });
-
-    res.json({
-      data: response,
-      capability,
-      metadata: buildStrategicSurfaceMetadata(req, capability),
-    });
-    return;
-  } catch (error: unknown) {
-    handleRouteError(res, error, "Failed to execute agent action", 400);
-    return;
   }
-});
+);
 
 /**
  * POST /api/v2/ai-agents/:agentId/enable
@@ -267,59 +275,60 @@ router.post(
   "/:agentId/enable",
   requirePermission(Permission.ADMIN_WRITE),
   async (req: AuthRequest, res: Response) => {
-  try {
-    const tenantId = requireTenantContext(req, res);
-    if (!tenantId) return;
-    if (
-      !(await authorizeTenantActionOr403(
+    try {
+      const tenantId = requireTenantContext(req, res);
+      if (!tenantId) return;
+      if (
+        !(await authorizeTenantActionOr403(
+          req,
+          res,
+          tenantId,
+          "tenant.operator.control",
+          "AI agent control plane mutation is not authorized"
+        ))
+      ) {
+        return;
+      }
+      const capability = requireStrategicSurfaceAvailability(
         req,
         res,
-        tenantId,
-        "tenant.operator.control",
-        "AI agent control plane mutation is not authorized"
-      ))
-    ) {
+        "/api/v2/ai-agents/:agentId/enable",
+        AI_AGENTS_SURFACE
+      );
+      if (!capability) return;
+      ensureAgentsInitialized();
+      const agentIdParam = req.params["agentId"];
+      const agentId = Array.isArray(agentIdParam) ? (agentIdParam[0] ?? "") : (agentIdParam ?? "");
+      if (!agentId) {
+        return res.status(400).json({ error: "Agent ID is required" });
+      }
+      const agent = agentOrchestrator.getAgent(agentId);
+
+      if (!agent) {
+        return res.status(404).json({
+          error: "Agent not found",
+          message: `Agent ${agentId} not found`,
+        });
+      }
+
+      agent.enable();
+
+      res.json({
+        data: {
+          agentId,
+          enabled: true,
+        },
+        capability,
+        metadata: buildStrategicSurfaceMetadata(req, capability),
+        message: "Agent enabled successfully",
+      });
+      return;
+    } catch (error: unknown) {
+      handleRouteError(res, error, "Failed to enable agent", 400);
       return;
     }
-    const capability = requireStrategicSurfaceAvailability(
-      req,
-      res,
-      "/api/v2/ai-agents/:agentId/enable",
-      AI_AGENTS_SURFACE
-    );
-    if (!capability) return;
-    ensureAgentsInitialized();
-    const agentIdParam = req.params["agentId"];
-    const agentId = Array.isArray(agentIdParam) ? (agentIdParam[0] ?? "") : (agentIdParam ?? "");
-    if (!agentId) {
-      return res.status(400).json({ error: "Agent ID is required" });
-    }
-    const agent = agentOrchestrator.getAgent(agentId);
-
-    if (!agent) {
-      return res.status(404).json({
-        error: "Agent not found",
-        message: `Agent ${agentId} not found`,
-      });
-    }
-
-    agent.enable();
-
-    res.json({
-      data: {
-        agentId,
-        enabled: true,
-      },
-      capability,
-      metadata: buildStrategicSurfaceMetadata(req, capability),
-      message: "Agent enabled successfully",
-    });
-    return;
-  } catch (error: unknown) {
-    handleRouteError(res, error, "Failed to enable agent", 400);
-    return;
   }
-});
+);
 
 /**
  * POST /api/v2/ai-agents/:agentId/disable
@@ -329,58 +338,59 @@ router.post(
   "/:agentId/disable",
   requirePermission(Permission.ADMIN_WRITE),
   async (req: AuthRequest, res: Response) => {
-  try {
-    const tenantId = requireTenantContext(req, res);
-    if (!tenantId) return;
-    if (
-      !(await authorizeTenantActionOr403(
+    try {
+      const tenantId = requireTenantContext(req, res);
+      if (!tenantId) return;
+      if (
+        !(await authorizeTenantActionOr403(
+          req,
+          res,
+          tenantId,
+          "tenant.operator.control",
+          "AI agent control plane mutation is not authorized"
+        ))
+      ) {
+        return;
+      }
+      const capability = requireStrategicSurfaceAvailability(
         req,
         res,
-        tenantId,
-        "tenant.operator.control",
-        "AI agent control plane mutation is not authorized"
-      ))
-    ) {
+        "/api/v2/ai-agents/:agentId/disable",
+        AI_AGENTS_SURFACE
+      );
+      if (!capability) return;
+      ensureAgentsInitialized();
+      const agentIdParam = req.params["agentId"];
+      const agentId = Array.isArray(agentIdParam) ? (agentIdParam[0] ?? "") : (agentIdParam ?? "");
+      if (!agentId) {
+        return res.status(400).json({ error: "Agent ID is required" });
+      }
+      const agent = agentOrchestrator.getAgent(agentId);
+
+      if (!agent) {
+        return res.status(404).json({
+          error: "Agent not found",
+          message: `Agent ${agentId} not found`,
+        });
+      }
+
+      agent.disable();
+
+      res.json({
+        data: {
+          agentId,
+          enabled: false,
+        },
+        capability,
+        metadata: buildStrategicSurfaceMetadata(req, capability),
+        message: "Agent disabled successfully",
+      });
+      return;
+    } catch (error: unknown) {
+      handleRouteError(res, error, "Failed to disable agent", 400);
       return;
     }
-    const capability = requireStrategicSurfaceAvailability(
-      req,
-      res,
-      "/api/v2/ai-agents/:agentId/disable",
-      AI_AGENTS_SURFACE
-    );
-    if (!capability) return;
-    ensureAgentsInitialized();
-    const agentIdParam = req.params["agentId"];
-    const agentId = Array.isArray(agentIdParam) ? (agentIdParam[0] ?? "") : (agentIdParam ?? "");
-    if (!agentId) {
-      return res.status(400).json({ error: "Agent ID is required" });
-    }
-    const agent = agentOrchestrator.getAgent(agentId);
-
-    if (!agent) {
-      return res.status(404).json({
-        error: "Agent not found",
-        message: `Agent ${agentId} not found`,
-      });
-    }
-
-    agent.disable();
-
-    res.json({
-      data: {
-        agentId,
-        enabled: false,
-      },
-      capability,
-      metadata: buildStrategicSurfaceMetadata(req, capability),
-      message: "Agent disabled successfully",
-    });
-    return;
-  } catch (error: unknown) {
-    handleRouteError(res, error, "Failed to disable agent", 400);
-    return;
   }
-});
+);
 
 export default router;

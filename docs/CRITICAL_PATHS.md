@@ -6,6 +6,7 @@
 ## Overview
 
 This document identifies critical user paths that are essential for business operations. Each path must have:
+
 - Graceful error handling
 - Fallback mechanisms
 - Monitoring/alerting
@@ -29,13 +30,13 @@ This document identifies critical user paths that are essential for business ope
 
 ### Failure Points & Mitigations
 
-| Failure Point | Impact | Mitigation |
-|--------------|--------|------------|
-| Landing page fails to load | User can't start journey | Static page, CDN cached |
-| Supabase Auth down | Can't sign up | Show error message, retry button |
-| Auth redirect fails | User stuck | Fallback to manual redirect |
-| Console page fails | User can't access app | Error boundary, retry |
-| API key generation fails | User can't use API | Show error, manual retry endpoint |
+| Failure Point              | Impact                   | Mitigation                        |
+| -------------------------- | ------------------------ | --------------------------------- |
+| Landing page fails to load | User can't start journey | Static page, CDN cached           |
+| Supabase Auth down         | Can't sign up            | Show error message, retry button  |
+| Auth redirect fails        | User stuck               | Fallback to manual redirect       |
+| Console page fails         | User can't access app    | Error boundary, retry             |
+| API key generation fails   | User can't use API       | Show error, manual retry endpoint |
 
 ### Monitoring
 
@@ -65,15 +66,15 @@ This document identifies critical user paths that are essential for business ope
 
 ### Failure Points & Mitigations
 
-| Failure Point | Impact | Mitigation |
-|--------------|--------|------------|
-| Pricing page fails | Can't see plans | Static page, cached |
-| Checkout API fails | Can't start payment | Error message, retry |
-| Stripe Checkout down | Can't pay | Stripe handles, retry later |
-| Webhook fails | Payment succeeds but no subscription | Idempotency + reconciliation job |
-| Webhook signature invalid | Security risk | Reject, log, alert |
-| Subscription creation fails | User paid but no access | Reconciliation job fixes |
-| Billing page shows wrong status | User confusion | Polling + manual refresh |
+| Failure Point                   | Impact                               | Mitigation                       |
+| ------------------------------- | ------------------------------------ | -------------------------------- |
+| Pricing page fails              | Can't see plans                      | Static page, cached              |
+| Checkout API fails              | Can't start payment                  | Error message, retry             |
+| Stripe Checkout down            | Can't pay                            | Stripe handles, retry later      |
+| Webhook fails                   | Payment succeeds but no subscription | Idempotency + reconciliation job |
+| Webhook signature invalid       | Security risk                        | Reject, log, alert               |
+| Subscription creation fails     | User paid but no access              | Reconciliation job fixes         |
+| Billing page shows wrong status | User confusion                       | Polling + manual refresh         |
 
 ### Monitoring
 
@@ -108,13 +109,13 @@ This document identifies critical user paths that are essential for business ope
 
 ### Failure Points & Mitigations
 
-| Failure Point | Impact | Mitigation |
-|--------------|--------|------------|
-| API key invalid | Request rejected | Clear error message |
-| Quota exceeded | Request rejected | 429 status, upgrade prompt |
-| Usage tracking fails | Billing incorrect | Non-blocking, retry queue |
-| Database down | API unavailable | Graceful degradation, cached responses |
-| Processing fails | Request fails | Error response, retry guidance |
+| Failure Point        | Impact            | Mitigation                             |
+| -------------------- | ----------------- | -------------------------------------- |
+| API key invalid      | Request rejected  | Clear error message                    |
+| Quota exceeded       | Request rejected  | 429 status, upgrade prompt             |
+| Usage tracking fails | Billing incorrect | Non-blocking, retry queue              |
+| Database down        | API unavailable   | Graceful degradation, cached responses |
+| Processing fails     | Request fails     | Error response, retry guidance         |
 
 ### Monitoring
 
@@ -145,12 +146,12 @@ This document identifies critical user paths that are essential for business ope
 
 ### Failure Points & Mitigations
 
-| Failure Point | Impact | Mitigation |
-|--------------|--------|------------|
-| Billing page fails | Can't manage subscription | Error boundary, retry |
-| Portal API fails | Can't access Stripe portal | Error message, manual link |
-| Webhook fails | Changes not reflected | Reconciliation job |
-| Status out of sync | User confusion | Polling, manual refresh |
+| Failure Point      | Impact                     | Mitigation                 |
+| ------------------ | -------------------------- | -------------------------- |
+| Billing page fails | Can't manage subscription  | Error boundary, retry      |
+| Portal API fails   | Can't access Stripe portal | Error message, manual link |
+| Webhook fails      | Changes not reflected      | Reconciliation job         |
+| Status out of sync | User confusion             | Polling, manual refresh    |
 
 ### Monitoring
 
@@ -178,13 +179,13 @@ This document identifies critical user paths that are essential for business ope
 
 ### Failure Points & Mitigations
 
-| Failure Point | Impact | Mitigation |
-|--------------|--------|------------|
-| File upload fails | Can't process | Retry, clear error |
-| Storage unavailable | Upload fails | Fallback storage, retry |
-| Processing queue full | Delayed processing | Queue monitoring, scaling |
-| OCR service down | Processing fails | Retry queue, fallback provider |
-| Result storage fails | Data loss | Retry, audit log |
+| Failure Point         | Impact             | Mitigation                     |
+| --------------------- | ------------------ | ------------------------------ |
+| File upload fails     | Can't process      | Retry, clear error             |
+| Storage unavailable   | Upload fails       | Fallback storage, retry        |
+| Processing queue full | Delayed processing | Queue monitoring, scaling      |
+| OCR service down      | Processing fails   | Retry queue, fallback provider |
+| Result storage fails  | Data loss          | Retry, audit log               |
 
 ### Monitoring
 
@@ -211,11 +212,11 @@ This document identifies critical user paths that are essential for business ope
 
 ### Failure Points & Mitigations
 
-| Failure Point | Impact | Mitigation |
-|--------------|--------|------------|
-| Flag not found | Returns default | Graceful fallback |
-| Evaluation fails | Returns default | Log error, return safe default |
-| Usage tracking fails | Billing incorrect | Non-blocking, retry |
+| Failure Point        | Impact            | Mitigation                     |
+| -------------------- | ----------------- | ------------------------------ |
+| Flag not found       | Returns default   | Graceful fallback              |
+| Evaluation fails     | Returns default   | Log error, return safe default |
+| Usage tracking fails | Billing incorrect | Non-blocking, retry            |
 
 ### Monitoring
 
@@ -239,11 +240,11 @@ This document identifies critical user paths that are essential for business ope
 
 ### Failure Points & Mitigations
 
-| Failure Point | Impact | Mitigation |
-|--------------|--------|------------|
-| Audit log query fails | Can't investigate | Error message, retry |
-| Logs missing | Compliance risk | Alert on missing logs |
-| Query timeout | Slow investigation | Pagination, indexes |
+| Failure Point         | Impact             | Mitigation            |
+| --------------------- | ------------------ | --------------------- |
+| Audit log query fails | Can't investigate  | Error message, retry  |
+| Logs missing          | Compliance risk    | Alert on missing logs |
+| Query timeout         | Slow investigation | Pagination, indexes   |
 
 ### Monitoring
 
@@ -257,6 +258,7 @@ This document identifies critical user paths that are essential for business ope
 
 **Impact**: Most operations fail  
 **Mitigation**:
+
 - Read replicas for read operations
 - Cached responses where possible
 - Graceful error messages
@@ -266,6 +268,7 @@ This document identifies critical user paths that are essential for business ope
 
 **Impact**: Rate limiting fails, queues stop  
 **Mitigation**:
+
 - Fallback to in-memory rate limiting
 - Queue jobs retry when Redis returns
 - Graceful degradation
@@ -274,6 +277,7 @@ This document identifies critical user paths that are essential for business ope
 
 **Impact**: Billing operations fail  
 **Mitigation**:
+
 - Queue checkout requests for retry
 - Show user-friendly error messages
 - Manual reconciliation when Stripe returns
@@ -282,6 +286,7 @@ This document identifies critical user paths that are essential for business ope
 
 **Impact**: Users can't log in  
 **Mitigation**:
+
 - Show maintenance page
 - Cache session tokens locally
 - Retry logic
@@ -306,6 +311,7 @@ This document identifies critical user paths that are essential for business ope
 ### Webhook Reconciliation
 
 If webhooks are missed:
+
 ```bash
 # Manual reconciliation endpoint
 POST /api/admin/billing/reconcile
@@ -351,14 +357,14 @@ POST /api/admin/billing/reconcile
 
 ## Alerting Thresholds
 
-| Metric | Warning | Critical |
-|--------|---------|----------|
-| Signup failure rate | > 3% | > 10% |
-| Checkout failure rate | > 2% | > 5% |
-| Webhook failure rate | > 1% | > 5% |
-| API error rate | > 1% | > 5% |
-| Database latency | > 500ms | > 2s |
-| API latency (p95) | > 1s | > 5s |
+| Metric                | Warning | Critical |
+| --------------------- | ------- | -------- |
+| Signup failure rate   | > 3%    | > 10%    |
+| Checkout failure rate | > 2%    | > 5%     |
+| Webhook failure rate  | > 1%    | > 5%     |
+| API error rate        | > 1%    | > 5%     |
+| Database latency      | > 500ms | > 2s     |
+| API latency (p95)     | > 1s    | > 5s     |
 
 ## Post-Incident Actions
 

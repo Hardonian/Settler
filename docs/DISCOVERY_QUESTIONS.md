@@ -7,6 +7,7 @@
 ## Overview
 
 Discovery questions help sales teams:
+
 - **Understand needs:** What problem are they solving?
 - **Qualify prospects:** Do they fit our ICP?
 - **Uncover pain:** What's the real pain point?
@@ -19,6 +20,7 @@ Discovery questions help sales teams:
 ## Problem Discovery
 
 ### Current State
+
 1. **"What's your current reconciliation process?"**
    - Understand: Manual vs automated, tools used, workflow
    - Listen for: Time-consuming, error-prone, doesn't scale
@@ -40,6 +42,7 @@ Discovery questions help sales teams:
 ## Use Case Discovery
 
 ### Use Case
+
 1. **"What's your use case? (Stripe + Shopify + QuickBooks?)"**
    - Understand: Specific use case, systems involved
    - Listen for: Multi-system reconciliation, standard integrations
@@ -61,6 +64,7 @@ Discovery questions help sales teams:
 ## Authority Discovery
 
 ### Decision Making
+
 1. **"Who makes budget decisions for tools like this?"**
    - Understand: Decision maker, approval process
    - Listen for: Finance Manager, CFO, Operations Lead
@@ -82,6 +86,7 @@ Discovery questions help sales teams:
 ## Budget Discovery
 
 ### Budget & ROI
+
 1. **"What's your budget for reconciliation tools?"**
    - Understand: Budget range, approval status
    - Listen for: $100-$500/month, budget approved or pending
@@ -103,6 +108,7 @@ Discovery questions help sales teams:
 ## Pain Discovery
 
 ### Pain Points
+
 1. **"What's the biggest pain point with your current process?"**
    - Understand: Primary pain, frustration
    - Listen for: Time-consuming, error-prone, doesn't scale
@@ -124,6 +130,7 @@ Discovery questions help sales teams:
 ## Technical Discovery
 
 ### Technical Requirements
+
 1. **"Do you have API access to your systems?"**
    - Understand: API availability, technical capability
    - Listen for: Yes, standard APIs, can integrate
@@ -145,6 +152,7 @@ Discovery questions help sales teams:
 ## Timeline Discovery
 
 ### Timeline & Urgency
+
 1. **"When do you need this solved?"**
    - Understand: Urgency, timeline
    - Listen for: Within 30 days, urgent, specific date
@@ -166,12 +174,14 @@ Discovery questions help sales teams:
 ## Discovery Best Practices
 
 ### Do's
+
 - ✅ **Ask open-ended questions:** "What's your current process?" (not "Do you use Excel?")
 - ✅ **Listen more than you talk:** 70% listening, 30% talking
 - ✅ **Follow up:** "Tell me more about that" (dig deeper)
 - ✅ **Take notes:** Document answers, track qualification
 
 ### Don'ts
+
 - ❌ **Don't pitch:** Discovery is about understanding, not selling
 - ❌ **Don't interrupt:** Let them finish their thoughts
 - ❌ **Don't assume:** Ask, don't assume you know their situation
@@ -182,21 +192,27 @@ Discovery questions help sales teams:
 ## Discovery Script Template
 
 ### Opening
+
 "Thanks for your interest in Settler. I'd like to understand your situation better so I can see if we're a good fit. Is that okay?"
 
 ### Problem Discovery
+
 "Let's start with your current process. What's your current reconciliation process? How long does it take? What's your error rate?"
 
 ### Use Case Discovery
+
 "What systems do you need to reconcile between? How many transactions do you process per month?"
 
 ### Authority Discovery
+
 "Who makes budget decisions for tools like this? What's your budget approval process?"
 
 ### Budget Discovery
+
 "What's your budget for reconciliation tools? How do you justify tool purchases?"
 
 ### Closing
+
 "Based on what you've told me, Settler sounds like a good fit. Would you like to try a 14-day pilot?"
 
 ---

@@ -1,9 +1,9 @@
 /**
  * Rules Engine Moat
- * 
+ *
  * Stores user mapping rules and learned patterns that improve match rate over time.
  * This creates data gravity and workflow lock-in.
- * 
+ *
  * Why this is a moat:
  * 1. Data gravity: Rules accumulate over time, making switching costly
  * 2. Learning: Rules improve with usage (success_rate increases)
@@ -11,14 +11,14 @@
  * 4. Compounding: More rules → better matches → more usage → more rules
  */
 
-import { prisma } from '@/shared/db/prismaClient';
+import { prisma } from "@/shared/db/prismaClient";
 
 export type RuleType =
-  | 'field_mapping'
-  | 'vendor_normalization'
-  | 'amount_tolerance'
-  | 'date_tolerance'
-  | 'custom_logic';
+  | "field_mapping"
+  | "vendor_normalization"
+  | "amount_tolerance"
+  | "date_tolerance"
+  | "custom_logic";
 
 export interface ReconciliationRule {
   id: string;
@@ -53,23 +53,25 @@ export interface CreateRuleInput {
  * Create a new reconciliation rule
  */
 export async function createRule(input: CreateRuleInput): Promise<ReconciliationRule> {
-  const rule = await prisma.$queryRaw<Array<{
-    id: string;
-    billing_account_id: string;
-    tenant_id: string | null;
-    user_id: string | null;
-    rule_name: string;
-    rule_type: string;
-    source_field: string | null;
-    target_field: string | null;
-    rule_config: unknown;
-    match_count: number;
-    success_rate: number;
-    last_used_at: Date | null;
-    is_active: boolean;
-    created_at: Date;
-    updated_at: Date;
-  }>>`
+  const rule = await prisma.$queryRaw<
+    Array<{
+      id: string;
+      billing_account_id: string;
+      tenant_id: string | null;
+      user_id: string | null;
+      rule_name: string;
+      rule_type: string;
+      source_field: string | null;
+      target_field: string | null;
+      rule_config: unknown;
+      match_count: number;
+      success_rate: number;
+      last_used_at: Date | null;
+      is_active: boolean;
+      created_at: Date;
+      updated_at: Date;
+    }>
+  >`
     INSERT INTO reconciliation_rules (
       billing_account_id,
       tenant_id,
@@ -103,7 +105,7 @@ export async function createRule(input: CreateRuleInput): Promise<Reconciliation
   `;
 
   if (!rule || rule.length === 0 || !rule[0]) {
-    throw new Error('Failed to create rule');
+    throw new Error("Failed to create rule");
   }
 
   return mapRuleFromDb(rule[0]);
@@ -113,23 +115,25 @@ export async function createRule(input: CreateRuleInput): Promise<Reconciliation
  * Get all active rules for a billing account
  */
 export async function getActiveRules(billingAccountId: string): Promise<ReconciliationRule[]> {
-  const rules = await prisma.$queryRaw<Array<{
-    id: string;
-    billing_account_id: string;
-    tenant_id: string | null;
-    user_id: string | null;
-    rule_name: string;
-    rule_type: string;
-    source_field: string | null;
-    target_field: string | null;
-    rule_config: unknown;
-    match_count: number;
-    success_rate: number;
-    last_used_at: Date | null;
-    is_active: boolean;
-    created_at: Date;
-    updated_at: Date;
-  }>>`
+  const rules = await prisma.$queryRaw<
+    Array<{
+      id: string;
+      billing_account_id: string;
+      tenant_id: string | null;
+      user_id: string | null;
+      rule_name: string;
+      rule_type: string;
+      source_field: string | null;
+      target_field: string | null;
+      rule_config: unknown;
+      match_count: number;
+      success_rate: number;
+      last_used_at: Date | null;
+      is_active: boolean;
+      created_at: Date;
+      updated_at: Date;
+    }>
+  >`
     SELECT *
     FROM reconciliation_rules
     WHERE billing_account_id = ${billingAccountId}::uuid
@@ -181,12 +185,14 @@ export async function getRuleStatistics(billingAccountId: string): Promise<{
   averageSuccessRate: number;
   topRules: Array<{ ruleName: string; matchCount: number; successRate: number }>;
 }> {
-  const stats = await prisma.$queryRaw<Array<{
-    total_rules: number;
-    active_rules: number;
-    total_matches: number;
-    avg_success_rate: number;
-  }>>`
+  const stats = await prisma.$queryRaw<
+    Array<{
+      total_rules: number;
+      active_rules: number;
+      total_matches: number;
+      avg_success_rate: number;
+    }>
+  >`
     SELECT
       COUNT(*) as total_rules,
       COUNT(*) FILTER (WHERE is_active = true) as active_rules,
@@ -196,11 +202,13 @@ export async function getRuleStatistics(billingAccountId: string): Promise<{
     WHERE billing_account_id = ${billingAccountId}::uuid
   `;
 
-  const topRules = await prisma.$queryRaw<Array<{
-    rule_name: string;
-    match_count: number;
-    success_rate: number;
-  }>>`
+  const topRules = await prisma.$queryRaw<
+    Array<{
+      rule_name: string;
+      match_count: number;
+      success_rate: number;
+    }>
+  >`
     SELECT
       rule_name,
       match_count,
@@ -224,7 +232,7 @@ export async function getRuleStatistics(billingAccountId: string): Promise<{
     activeRules: Number(stat.active_rules) || 0,
     totalMatches: Number(stat.total_matches) || 0,
     averageSuccessRate: Number(stat.avg_success_rate) || 0,
-    topRules: topRules.map(r => ({
+    topRules: topRules.map((r) => ({
       ruleName: r.rule_name,
       matchCount: Number(r.match_count) || 0,
       successRate: Number(r.success_rate) || 0,

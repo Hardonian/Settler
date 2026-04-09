@@ -3,24 +3,37 @@
  * Visual rule builder with templates and preview
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Play, Save } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Plus, Play, Save } from "lucide-react";
 
 interface CustomField {
   name: string;
-  type: 'string' | 'number' | 'date' | 'boolean';
+  type: "string" | "number" | "date" | "boolean";
   sourcePath: string;
   targetPath: string;
 }
@@ -29,7 +42,7 @@ interface MatchingRule {
   id?: string;
   name: string;
   description?: string;
-  ruleType: 'exact' | 'fuzzy' | 'range' | 'custom';
+  ruleType: "exact" | "fuzzy" | "range" | "custom";
   ruleConfig: {
     fields: CustomField[];
     conditions?: Array<{
@@ -37,7 +50,7 @@ interface MatchingRule {
       operator: string;
       value: unknown;
     }>;
-    compositeOperator?: 'AND' | 'OR';
+    compositeOperator?: "AND" | "OR";
     weight?: number;
   };
   customFields?: CustomField[];
@@ -52,10 +65,10 @@ export function EnhancedRulesEngine() {
   const [error, setError] = useState<string | null>(null);
   const [testResult, setTestResult] = useState<any>(null);
   const [newField, setNewField] = useState<CustomField>({
-    name: '',
-    type: 'string',
-    sourcePath: '',
-    targetPath: '',
+    name: "",
+    type: "string",
+    sourcePath: "",
+    targetPath: "",
   });
 
   useEffect(() => {
@@ -65,12 +78,12 @@ export function EnhancedRulesEngine() {
   const fetchRules = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/v1/advanced-matching-rules');
-      if (!res.ok) throw new Error('Failed to fetch rules');
+      const res = await fetch("/api/v1/advanced-matching-rules");
+      if (!res.ok) throw new Error("Failed to fetch rules");
       const data = await res.json();
       setRules(data.data || []);
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'Failed to load rules');
+      setError(error instanceof Error ? error.message : "Failed to load rules");
     } finally {
       setLoading(false);
     }
@@ -78,12 +91,12 @@ export function EnhancedRulesEngine() {
 
   const handleCreateRule = () => {
     setSelectedRule({
-      name: '',
-      description: '',
-      ruleType: 'exact',
+      name: "",
+      description: "",
+      ruleType: "exact",
       ruleConfig: {
         fields: [],
-        compositeOperator: 'AND',
+        compositeOperator: "AND",
       },
       isActive: true,
     });
@@ -91,7 +104,7 @@ export function EnhancedRulesEngine() {
 
   const handleSaveRule = async () => {
     if (!selectedRule || !selectedRule.name) {
-      setError('Rule name is required');
+      setError("Rule name is required");
       return;
     }
 
@@ -99,21 +112,21 @@ export function EnhancedRulesEngine() {
       setLoading(true);
       setError(null);
 
-      const res = await fetch('/api/v1/advanced-matching-rules', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/v1/advanced-matching-rules", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(selectedRule),
       });
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.message || 'Failed to save rule');
+        throw new Error(data.message || "Failed to save rule");
       }
 
       await fetchRules();
       setSelectedRule(null);
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'Failed to save rule');
+      setError(error instanceof Error ? error.message : "Failed to save rule");
     } finally {
       setLoading(false);
     }
@@ -121,7 +134,7 @@ export function EnhancedRulesEngine() {
 
   const handleAddField = () => {
     if (!selectedRule || !newField.name || !newField.sourcePath || !newField.targetPath) {
-      setError('All field properties are required');
+      setError("All field properties are required");
       return;
     }
 
@@ -133,7 +146,7 @@ export function EnhancedRulesEngine() {
       },
     });
 
-    setNewField({ name: '', type: 'string', sourcePath: '', targetPath: '' });
+    setNewField({ name: "", type: "string", sourcePath: "", targetPath: "" });
   };
 
   const handleTestRule = async () => {
@@ -141,20 +154,20 @@ export function EnhancedRulesEngine() {
 
     try {
       setLoading(true);
-      const res = await fetch(`/api/v1/advanced-matching-rules/${selectedRule.id || 'test'}/test`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch(`/api/v1/advanced-matching-rules/${selectedRule.id || "test"}/test`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          sourceData: { amount: 100, description: 'Test transaction' },
-          targetData: { amount: 100, description: 'Test transaction' },
+          sourceData: { amount: 100, description: "Test transaction" },
+          targetData: { amount: 100, description: "Test transaction" },
         }),
       });
 
-      if (!res.ok) throw new Error('Failed to test rule');
+      if (!res.ok) throw new Error("Failed to test rule");
       const data = await res.json();
       setTestResult(data);
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'Failed to test rule');
+      setError(error instanceof Error ? error.message : "Failed to test rule");
     } finally {
       setLoading(false);
     }
@@ -222,11 +235,7 @@ export function EnhancedRulesEngine() {
                           )}
                         </TableCell>
                         <TableCell>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setSelectedRule(rule)}
-                          >
+                          <Button size="sm" variant="outline" onClick={() => setSelectedRule(rule)}>
                             Edit
                           </Button>
                         </TableCell>
@@ -270,7 +279,7 @@ export function EnhancedRulesEngine() {
                       <div>
                         <Label>Description</Label>
                         <Textarea
-                          value={selectedRule.description || ''}
+                          value={selectedRule.description || ""}
                           onChange={(e) =>
                             setSelectedRule({ ...selectedRule, description: e.target.value })
                           }
@@ -319,7 +328,9 @@ export function EnhancedRulesEngine() {
                           />
                           <Select
                             value={newField.type}
-                            onValueChange={(value: any) => setNewField({ ...newField, type: value })}
+                            onValueChange={(value: any) =>
+                              setNewField({ ...newField, type: value })
+                            }
                           >
                             <SelectTrigger>
                               <SelectValue />
@@ -334,13 +345,17 @@ export function EnhancedRulesEngine() {
                           <Input
                             placeholder="Source path"
                             value={newField.sourcePath}
-                            onChange={(e) => setNewField({ ...newField, sourcePath: e.target.value })}
+                            onChange={(e) =>
+                              setNewField({ ...newField, sourcePath: e.target.value })
+                            }
                           />
                           <div className="flex gap-2">
                             <Input
                               placeholder="Target path"
                               value={newField.targetPath}
-                              onChange={(e) => setNewField({ ...newField, targetPath: e.target.value })}
+                              onChange={(e) =>
+                                setNewField({ ...newField, targetPath: e.target.value })
+                              }
                             />
                             <Button onClick={handleAddField} size="icon">
                               <Plus className="h-4 w-4" />
@@ -373,8 +388,8 @@ export function EnhancedRulesEngine() {
                         <div className="space-y-4">
                           <div>
                             <div className="font-semibold">Match Result:</div>
-                            <Badge variant={testResult.matches ? 'default' : 'destructive'}>
-                              {testResult.matches ? 'MATCH' : 'NO MATCH'}
+                            <Badge variant={testResult.matches ? "default" : "destructive"}>
+                              {testResult.matches ? "MATCH" : "NO MATCH"}
                             </Badge>
                           </div>
                           <div>

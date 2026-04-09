@@ -3,9 +3,11 @@
 ## E-commerce Platform Reconciliation
 
 ### Problem
+
 An e-commerce platform processes payments through Stripe, PayPal, and Square. They need to reconcile these payments with bank deposits daily, but manual reconciliation is time-consuming and error-prone.
 
 ### Solution
+
 Use React.Settler to define reconciliation rules declaratively:
 
 ```tsx
@@ -27,13 +29,14 @@ Use React.Settler to define reconciliation rules declaratively:
       priority={2}
     />
   </RuleSet>
-  
+
   <TransactionTable transactions={stripeTransactions} />
   <ExceptionTable exceptions={exceptions} />
 </ReconciliationDashboard>
 ```
 
 ### Benefits
+
 - Automated daily reconciliation
 - Exception handling for mismatches
 - Customizable dashboard for operations team
@@ -42,9 +45,11 @@ Use React.Settler to define reconciliation rules declaratively:
 ## SaaS Subscription Reconciliation
 
 ### Problem
+
 A SaaS company needs to match Stripe subscription payments with QuickBooks entries, handling prorations, refunds, and upgrades.
 
 ### Solution
+
 Define complex matching rules using React components:
 
 ```tsx
@@ -68,6 +73,7 @@ Define complex matching rules using React components:
 ```
 
 ### Benefits
+
 - Handles complex subscription scenarios
 - Proration tolerance for partial periods
 - Custom rules for refunds and upgrades
@@ -76,16 +82,18 @@ Define complex matching rules using React components:
 ## Marketplace Payout Reconciliation
 
 ### Problem
+
 A marketplace needs to reconcile individual seller payouts with aggregated Stripe transfers, handling fees and splits.
 
 ### Solution
+
 Build a custom reconciliation dashboard:
 
 ```tsx
 <ReconciliationDashboard>
   <MetricCard title="Total Payouts" value={payouts.length} />
   <MetricCard title="Match Rate" value="98%" trend="up" />
-  
+
   <RuleSet id="marketplace-rules">
     <MatchRule
       id="seller-id-match"
@@ -103,12 +111,13 @@ Build a custom reconciliation dashboard:
       priority={2}
     />
   </RuleSet>
-  
+
   <ExceptionTable exceptions={exceptions} onResolve={handleResolve} />
 </ReconciliationDashboard>
 ```
 
 ### Benefits
+
 - Handles complex many-to-many matching
 - Fee calculation and verification
 - Exception queue for manual review
@@ -117,20 +126,16 @@ Build a custom reconciliation dashboard:
 ## Multi-Currency Reconciliation
 
 ### Problem
+
 A global platform processes payments in multiple currencies and needs to reconcile with FX conversions.
 
 ### Solution
+
 Define rules that account for currency differences:
 
 ```tsx
 <RuleSet id="multi-currency-rules">
-  <MatchRule
-    id="currency-match"
-    name="Match Currency"
-    field="currency"
-    type="exact"
-    priority={1}
-  />
+  <MatchRule id="currency-match" name="Match Currency" field="currency" type="exact" priority={1} />
   <MatchRule
     id="fx-amount"
     name="FX Converted Amount"
@@ -143,6 +148,7 @@ Define rules that account for currency differences:
 ```
 
 ### Benefits
+
 - Handles FX rate fluctuations
 - Tolerance for conversion differences
 - Multi-currency dashboard views
@@ -151,13 +157,15 @@ Define rules that account for currency differences:
 ## Custom Reconciliation Backend
 
 ### Problem
+
 A company wants to use React.Settler's UI components but has their own reconciliation engine.
 
 ### Solution
+
 Compile React components to JSON and consume with custom backend:
 
 ```tsx
-import { compileToJSON } from '@settler/react-settler';
+import { compileToJSON } from "@settler/react-settler";
 
 const workflow = (
   <ReconciliationDashboard>
@@ -172,6 +180,7 @@ const jsonConfig = compileToJSON(workflow);
 ```
 
 ### Benefits
+
 - Use React.Settler UI components
 - Integrate with existing backend
 - Protocol-agnostic JSON config

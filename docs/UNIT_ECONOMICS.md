@@ -15,16 +15,19 @@ Settler's unit economics are designed for sustainable, scalable growth with stro
 ### Infrastructure Costs (15% of Revenue)
 
 **Database (Supabase):**
+
 - Base: $25/month (Pro plan)
 - Usage: ~$0.10 per 1M queries
 - Estimated: $100-500/month at scale
 
 **Cache (Upstash Redis):**
+
 - Base: $0 (free tier)
 - Usage: ~$0.20 per 100K commands
 - Estimated: $50-200/month at scale
 
 **Hosting (Vercel):**
+
 - Base: $20/month (Pro plan)
 - Usage: ~$0.40 per 1M function invocations
 - Estimated: $200-1000/month at scale
@@ -34,6 +37,7 @@ Settler's unit economics are designed for sustainable, scalable growth with stro
 ### Engineering Costs (Variable)
 
 **Team:**
+
 - Year 1: 1-2 engineers
 - Year 3: 5-10 engineers
 - Year 5: 20-30 engineers
@@ -43,11 +47,13 @@ Settler's unit economics are designed for sustainable, scalable growth with stro
 ### Sales & Marketing Costs (Variable)
 
 **Year 1:**
+
 - 1-2 sales reps: $100K-150K/year each
 - Marketing: $50K-100K/year
 - Total: $250K-400K/year
 
 **Year 3:**
+
 - 5-10 sales reps
 - Marketing: $500K-1M/year
 - Total: $1.5M-3M/year
@@ -55,6 +61,7 @@ Settler's unit economics are designed for sustainable, scalable growth with stro
 ### Operations Costs (Fixed)
 
 **Tools & Services:**
+
 - Monitoring (Sentry): $50-200/month
 - Analytics: $100-500/month
 - Other tools: $200-500/month
@@ -67,23 +74,27 @@ Settler's unit economics are designed for sustainable, scalable growth with stro
 ### Pricing Structure
 
 **Free Tier:**
+
 - Base: $0/month
 - Usage: $0.01 per transaction over 100
 - Average revenue: $0-10/month
 
 **Starter Tier:**
+
 - Base: $29/month
 - Usage: $0.01 per transaction over 1,000
 - Average revenue: $29-100/month
 - Average: $50/month
 
 **Growth Tier:**
+
 - Base: $99/month
 - Usage: $0.01 per transaction over 10,000
 - Average revenue: $99-500/month
 - Average: $200/month
 
 **Enterprise Tier:**
+
 - Base: $500-10,000+/month
 - Usage: Volume discounts
 - Average revenue: $2,000-10,000/month
@@ -92,12 +103,14 @@ Settler's unit economics are designed for sustainable, scalable growth with stro
 ### Revenue Mix (Year 1)
 
 **Target Distribution:**
+
 - Free: 50% of customers, 5% of revenue
 - Starter: 40% of customers, 40% of revenue
 - Growth: 8% of customers, 35% of revenue
 - Enterprise: 2% of customers, 20% of revenue
 
 **Average Revenue Per User (ARPU):**
+
 - Calculation: Weighted average
 - Year 1 Target: $83/month
 - Year 3 Target: $100/month
@@ -112,16 +125,19 @@ Settler's unit economics are designed for sustainable, scalable growth with stro
 **Calculation:** Sales & Marketing Spend / New Customers
 
 **Year 1:**
+
 - Sales & Marketing: $300K/year
 - New Customers: 1,000/year
 - CAC: $300
 
 **Year 3:**
+
 - Sales & Marketing: $2M/year
 - New Customers: 10,000/year
 - CAC: $200
 
 **Year 5:**
+
 - Sales & Marketing: $10M/year
 - New Customers: 50,000/year
 - CAC: $200
@@ -133,16 +149,19 @@ Settler's unit economics are designed for sustainable, scalable growth with stro
 **Calculation:** ARPU × Average Lifetime (months)
 
 **Assumptions:**
+
 - ARPU: $83/month (Year 1)
 - Average Lifetime: 20 months (5% monthly churn)
 - LTV: $83 × 20 = $1,660
 
 **Year 3:**
+
 - ARPU: $100/month
 - Average Lifetime: 33 months (3% monthly churn)
 - LTV: $100 × 33 = $3,300
 
 **Year 5:**
+
 - ARPU: $120/month
 - Average Lifetime: 50 months (2% monthly churn)
 - LTV: $120 × 50 = $6,000
@@ -150,16 +169,19 @@ Settler's unit economics are designed for sustainable, scalable growth with stro
 ### LTV/CAC Ratio
 
 **Year 1:**
+
 - LTV: $1,660
 - CAC: $300
 - Ratio: 5.5:1 ✅
 
 **Year 3:**
+
 - LTV: $3,300
 - CAC: $200
 - Ratio: 16.5:1 ✅
 
 **Year 5:**
+
 - LTV: $6,000
 - CAC: $200
 - Ratio: 30:1 ✅
@@ -171,6 +193,7 @@ Settler's unit economics are designed for sustainable, scalable growth with stro
 **Calculation:** CAC / (ARPU × Gross Margin)
 
 **Year 1:**
+
 - CAC: $300
 - ARPU: $83/month
 - Gross Margin: 85%
@@ -178,6 +201,7 @@ Settler's unit economics are designed for sustainable, scalable growth with stro
 - Payback: $300 / $70.55 = 4.3 months ✅
 
 **Year 3:**
+
 - CAC: $200
 - ARPU: $100/month
 - Gross Margin: 85%
@@ -194,12 +218,14 @@ Settler's unit economics are designed for sustainable, scalable growth with stro
 
 **Revenue:** 100%
 **Cost of Goods Sold (COGS):** 15%
+
 - Infrastructure: 15%
 - Support: 0% (scales with revenue)
 
 **Gross Margin:** 85%
 
 **Breakdown:**
+
 - Infrastructure: 15%
 - Engineering: 0% (not COGS)
 - Sales & Marketing: 0% (not COGS)
@@ -218,12 +244,14 @@ Settler's unit economics are designed for sustainable, scalable growth with stro
 **Year 5 Target:** <2% monthly
 
 **Churn Drivers:**
+
 - Product fit: Low (workflow lock-in)
 - Price sensitivity: Low (low price point)
 - Competition: Medium (first-mover advantage)
 - Support: Low (good support)
 
 **Retention Strategies:**
+
 - Workflow lock-in (reconciliation becomes core infrastructure)
 - Data network effects (more integrations = more value)
 - Compliance evidence (audit trails become competitive moat)
@@ -236,6 +264,7 @@ Settler's unit economics are designed for sustainable, scalable growth with stro
 ### Year 1
 
 **Assumptions:**
+
 - Starting customers: 0
 - New customers: 1,000
 - ARPU: $83/month
@@ -243,6 +272,7 @@ Settler's unit economics are designed for sustainable, scalable growth with stro
 - Ending customers: ~600
 
 **Revenue:**
+
 - Starting MRR: $0
 - New MRR: 1,000 × $83 = $83K
 - Churned MRR: ~$25K
@@ -254,6 +284,7 @@ Settler's unit economics are designed for sustainable, scalable growth with stro
 ### Year 3
 
 **Assumptions:**
+
 - Starting customers: 600
 - New customers: 10,000
 - ARPU: $100/month
@@ -261,6 +292,7 @@ Settler's unit economics are designed for sustainable, scalable growth with stro
 - Ending customers: ~7,000
 
 **Revenue:**
+
 - Starting MRR: $58K
 - New MRR: 10,000 × $100 = $1M
 - Churned MRR: ~$200K
@@ -272,6 +304,7 @@ Settler's unit economics are designed for sustainable, scalable growth with stro
 ### Year 5
 
 **Assumptions:**
+
 - Starting customers: 7,000
 - New customers: 50,000
 - ARPU: $120/month
@@ -279,6 +312,7 @@ Settler's unit economics are designed for sustainable, scalable growth with stro
 - Ending customers: ~40,000
 
 **Revenue:**
+
 - Starting MRR: $858K
 - New MRR: 50,000 × $120 = $6M
 - Churned MRR: ~$1.2M
@@ -294,6 +328,7 @@ Settler's unit economics are designed for sustainable, scalable growth with stro
 ### Break-Even Analysis
 
 **Year 1:**
+
 - Revenue: $700K ARR
 - COGS: $105K (15%)
 - Gross Profit: $595K
@@ -301,6 +336,7 @@ Settler's unit economics are designed for sustainable, scalable growth with stro
 - **Net Profit: $95K** ✅
 
 **Year 3:**
+
 - Revenue: $10M ARR
 - COGS: $1.5M (15%)
 - Gross Profit: $8.5M
@@ -308,6 +344,7 @@ Settler's unit economics are designed for sustainable, scalable growth with stro
 - **Net Profit: $3.5M** ✅
 
 **Year 5:**
+
 - Revenue: $68M ARR
 - COGS: $10.2M (15%)
 - Gross Profit: $57.8M
@@ -348,15 +385,19 @@ Settler's unit economics are designed for sustainable, scalable growth with stro
 ### Key Variables
 
 **ARPU Impact:**
+
 - +10% ARPU → +10% LTV → +10% profitability
 
 **Churn Impact:**
+
 - -1% churn → +20% LTV → +20% profitability
 
 **CAC Impact:**
+
 - -10% CAC → +10% profitability
 
 **Gross Margin Impact:**
+
 - -5% margin → -5% profitability
 
 ---

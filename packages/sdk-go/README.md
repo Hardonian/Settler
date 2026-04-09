@@ -16,7 +16,7 @@ package main
 import (
 	"fmt"
 	"log"
-	
+
 	"github.com/settler/settler-go/settler"
 )
 

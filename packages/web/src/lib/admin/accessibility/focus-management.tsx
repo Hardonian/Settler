@@ -1,12 +1,12 @@
 /**
  * Focus Management Utilities
- * 
+ *
  * Utilities for managing focus in admin dashboard for accessibility.
  */
 
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 /**
  * Trap focus within an element
@@ -26,7 +26,7 @@ export function useFocusTrap(active: boolean) {
     const lastElement = focusableElements[focusableElements.length - 1];
 
     const handleTab = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return;
+      if (e.key !== "Tab") return;
 
       if (e.shiftKey) {
         // Shift + Tab
@@ -43,11 +43,11 @@ export function useFocusTrap(active: boolean) {
       }
     };
 
-    container.addEventListener('keydown', handleTab);
+    container.addEventListener("keydown", handleTab);
     firstElement?.focus();
 
     return () => {
-      container.removeEventListener('keydown', handleTab);
+      container.removeEventListener("keydown", handleTab);
     };
   }, [active]);
 
@@ -74,14 +74,14 @@ export function SkipToMainContent() {
 export function useScreenReaderAnnouncement() {
   const announceRef = useRef<HTMLDivElement>(null);
 
-  const announce = (message: string, priority: 'polite' | 'assertive' = 'polite') => {
+  const announce = (message: string, priority: "polite" | "assertive" = "polite") => {
     if (!announceRef.current) return;
 
-    const announcement = document.createElement('div');
-    announcement.setAttribute('role', 'status');
-    announcement.setAttribute('aria-live', priority);
-    announcement.setAttribute('aria-atomic', 'true');
-    announcement.className = 'sr-only';
+    const announcement = document.createElement("div");
+    announcement.setAttribute("role", "status");
+    announcement.setAttribute("aria-live", priority);
+    announcement.setAttribute("aria-atomic", "true");
+    announcement.className = "sr-only";
     announcement.textContent = message;
 
     announceRef.current.appendChild(announcement);

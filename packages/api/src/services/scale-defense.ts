@@ -1,23 +1,23 @@
 /**
  * Scale Defense Service
- * 
+ *
  * PHASE 6: Operational Scale Defense
- * 
+ *
  * Ensures Settler scales better than competitors:
  * - Tenant-level isolation and throttling
  * - Background job prioritization
  * - Graceful degradation under load
  * - Kill switches for misbehaving integrations
- * 
+ *
  * Goal: Growth does not increase fragility, failures are local not systemic
  */
 
-import { supabase } from '../infrastructure/supabase/client';
-import { logError, logWarn, logInfo } from '../utils/logger';
+import { supabase } from "../infrastructure/supabase/client";
+import { logError, logWarn, logInfo } from "../utils/logger";
 
 export interface TenantThrottle {
   tenantId: string;
-  throttleLevel: 'none' | 'light' | 'moderate' | 'heavy' | 'blocked';
+  throttleLevel: "none" | "light" | "moderate" | "heavy" | "blocked";
   reason?: string;
   until?: Date;
   requestsPerSecond: number;
@@ -27,7 +27,7 @@ export interface TenantThrottle {
 export interface JobPriority {
   jobId: string;
   tenantId: string;
-  priority: 'critical' | 'high' | 'normal' | 'low';
+  priority: "critical" | "high" | "normal" | "low";
   estimatedDuration: number; // seconds
   resourceRequirements: {
     cpu: number; // 0-1
@@ -38,7 +38,7 @@ export interface JobPriority {
 
 export interface KillSwitch {
   id: string;
-  targetType: 'integration' | 'tenant' | 'feature';
+  targetType: "integration" | "tenant" | "feature";
   targetId: string;
   reason: string;
   isActive: boolean;
@@ -63,11 +63,11 @@ export class ScaleDefenseService {
       }
 
       // Check kill switch
-      const killSwitch = await this.getKillSwitch('tenant', tenantId);
+      const killSwitch = await this.getKillSwitch("tenant", tenantId);
       if (killSwitch?.isActive) {
         return {
           tenantId,
-          throttleLevel: 'blocked',
+          throttleLevel: "blocked",
           reason: killSwitch.reason,
           requestsPerSecond: 0,
           requestsPerMinute: 0,
@@ -95,11 +95,11 @@ export class ScaleDefenseService {
 
       return throttle;
     } catch (error) {
-      logError('Error checking tenant throttle', error);
+      logError("Error checking tenant throttle", error);
       // Fail open - allow request if throttle check fails
       return {
         tenantId,
-        throttleLevel: 'none',
+        throttleLevel: "none",
         requestsPerSecond: 100,
         requestsPerMinute: 6000,
       };
@@ -121,19 +121,19 @@ export class ScaleDefenseService {
 
       // Count requests in last minute
       const { count: minuteCount } = await supabase
-        .from('usage_events')
-        .select('*', { count: 'exact', head: true })
-        .eq('tenant_id', tenantId)
-        .eq('event_type', 'api_request')
-        .gte('timestamp', oneMinuteAgo.toISOString());
+        .from("usage_events")
+        .select("*", { count: "exact", head: true })
+        .eq("tenant_id", tenantId)
+        .eq("event_type", "api_request")
+        .gte("timestamp", oneMinuteAgo.toISOString());
 
       // Count requests in last hour
       const { count: hourCount } = await supabase
-        .from('usage_events')
-        .select('*', { count: 'exact', head: true })
-        .eq('tenant_id', tenantId)
-        .eq('event_type', 'api_request')
-        .gte('timestamp', oneHourAgo.toISOString());
+        .from("usage_events")
+        .select("*", { count: "exact", head: true })
+        .eq("tenant_id", tenantId)
+        .eq("event_type", "api_request")
+        .gte("timestamp", oneHourAgo.toISOString());
 
       return {
         requestsPerSecond: (minuteCount || 0) / 60,
@@ -141,7 +141,7 @@ export class ScaleDefenseService {
         requestsPerHour: hourCount || 0,
       };
     } catch (error) {
-      logError('Error getting tenant request rate', error);
+      logError("Error getting tenant request rate", error);
       return {
         requestsPerSecond: 0,
         requestsPerMinute: 0,
@@ -157,22 +157,22 @@ export class ScaleDefenseService {
     requestsPerSecond: number;
     requestsPerMinute: number;
     requestsPerHour: number;
-  }): TenantThrottle['throttleLevel'] {
+  }): TenantThrottle["throttleLevel"] {
     // Thresholds (adjust based on plan)
-    if (requestRate.requestsPerSecond > 100) return 'heavy';
-    if (requestRate.requestsPerSecond > 50) return 'moderate';
-    if (requestRate.requestsPerSecond > 20) return 'light';
-    return 'none';
+    if (requestRate.requestsPerSecond > 100) return "heavy";
+    if (requestRate.requestsPerSecond > 50) return "moderate";
+    if (requestRate.requestsPerSecond > 20) return "light";
+    return "none";
   }
 
   /**
    * Get requests per second for throttle level
    */
   private getRequestsPerSecond(
-    throttleLevel: TenantThrottle['throttleLevel'],
+    throttleLevel: TenantThrottle["throttleLevel"],
     planLimits: { baseRps: number }
   ): number {
-    const multipliers: Record<TenantThrottle['throttleLevel'], number> = {
+    const multipliers: Record<TenantThrottle["throttleLevel"], number> = {
       none: 1.0,
       light: 0.8,
       moderate: 0.5,
@@ -186,10 +186,10 @@ export class ScaleDefenseService {
    * Get requests per minute for throttle level
    */
   private getRequestsPerMinute(
-    throttleLevel: TenantThrottle['throttleLevel'],
+    throttleLevel: TenantThrottle["throttleLevel"],
     planLimits: { baseRpm: number }
   ): number {
-    const multipliers: Record<TenantThrottle['throttleLevel'], number> = {
+    const multipliers: Record<TenantThrottle["throttleLevel"], number> = {
       none: 1.0,
       light: 0.8,
       moderate: 0.5,
@@ -222,27 +222,27 @@ export class ScaleDefenseService {
   ): Promise<JobPriority> {
     try {
       // Determine priority based on job type and tenant
-      let priority: JobPriority['priority'] = 'normal';
+      let priority: JobPriority["priority"] = "normal";
 
       // Critical jobs: reconciliation results, exports
-      if (jobType === 'reconciliation' || jobType === 'export') {
-        priority = 'critical';
+      if (jobType === "reconciliation" || jobType === "export") {
+        priority = "critical";
       }
 
       // High priority: syncs, webhooks
-      if (jobType === 'sync' || jobType === 'webhook') {
-        priority = 'high';
+      if (jobType === "sync" || jobType === "webhook") {
+        priority = "high";
       }
 
       // Low priority: analytics, reporting
-      if (jobType === 'analytics' || jobType === 'reporting') {
-        priority = 'low';
+      if (jobType === "analytics" || jobType === "reporting") {
+        priority = "low";
       }
 
       // Check tenant throttle
       const throttle = await this.checkTenantThrottle(tenantId);
-      if (throttle.throttleLevel === 'heavy' || throttle.throttleLevel === 'blocked') {
-        priority = 'low'; // Degrade priority for throttled tenants
+      if (throttle.throttleLevel === "heavy" || throttle.throttleLevel === "blocked") {
+        priority = "low"; // Degrade priority for throttled tenants
       }
 
       return {
@@ -257,11 +257,11 @@ export class ScaleDefenseService {
         },
       };
     } catch (error) {
-      logError('Error prioritizing job', error);
+      logError("Error prioritizing job", error);
       return {
         jobId,
         tenantId,
-        priority: 'normal',
+        priority: "normal",
         estimatedDuration,
         resourceRequirements: {
           cpu: 0.5,
@@ -321,7 +321,7 @@ export class ScaleDefenseService {
    * Activate kill switch
    */
   async activateKillSwitch(
-    targetType: KillSwitch['targetType'],
+    targetType: KillSwitch["targetType"],
     targetId: string,
     reason: string
   ): Promise<KillSwitch> {
@@ -340,26 +340,24 @@ export class ScaleDefenseService {
       this.killSwitchCache.set(killSwitch.id, killSwitch);
 
       // Store in database
-      await supabase
-        .from('usage_events')
-        .insert({
-          tenant_id: targetId, // Simplified
-          event_type: 'kill_switch',
-          quantity: 1,
-          metadata: {
-            target_type: targetType,
-            target_id: targetId,
-            reason,
-            is_active: true,
-            activated_at: new Date().toISOString(),
-          },
-        });
+      await supabase.from("usage_events").insert({
+        tenant_id: targetId, // Simplified
+        event_type: "kill_switch",
+        quantity: 1,
+        metadata: {
+          target_type: targetType,
+          target_id: targetId,
+          reason,
+          is_active: true,
+          activated_at: new Date().toISOString(),
+        },
+      });
 
-      logWarn('Kill switch activated', { targetType, targetId, reason });
+      logWarn("Kill switch activated", { targetType, targetId, reason });
 
       return killSwitch;
     } catch (error) {
-      logError('Error activating kill switch', error);
+      logError("Error activating kill switch", error);
       throw error;
     }
   }
@@ -367,7 +365,10 @@ export class ScaleDefenseService {
   /**
    * Deactivate kill switch
    */
-  async deactivateKillSwitch(targetType: KillSwitch['targetType'], targetId: string): Promise<void> {
+  async deactivateKillSwitch(
+    targetType: KillSwitch["targetType"],
+    targetId: string
+  ): Promise<void> {
     try {
       const killSwitchId = `${targetType}:${targetId}`;
       const killSwitch = this.killSwitchCache.get(killSwitchId);
@@ -378,9 +379,9 @@ export class ScaleDefenseService {
         this.killSwitchCache.set(killSwitchId, killSwitch);
       }
 
-      logInfo('Kill switch deactivated', { targetType, targetId });
+      logInfo("Kill switch deactivated", { targetType, targetId });
     } catch (error) {
-      logError('Error deactivating kill switch', error);
+      logError("Error deactivating kill switch", error);
     }
   }
 
@@ -388,7 +389,7 @@ export class ScaleDefenseService {
    * Get kill switch
    */
   async getKillSwitch(
-    targetType: KillSwitch['targetType'],
+    targetType: KillSwitch["targetType"],
     targetId: string
   ): Promise<KillSwitch | null> {
     try {
@@ -400,13 +401,13 @@ export class ScaleDefenseService {
 
       // Query database
       const { data } = await supabase
-        .from('usage_events')
-        .select('*')
-        .eq('event_type', 'kill_switch')
-        .eq('metadata->>target_type', targetType)
-        .eq('metadata->>target_id', targetId)
-        .eq('metadata->>is_active', true)
-        .order('created_at', { ascending: false })
+        .from("usage_events")
+        .select("*")
+        .eq("event_type", "kill_switch")
+        .eq("metadata->>target_type", targetType)
+        .eq("metadata->>target_id", targetId)
+        .eq("metadata->>is_active", true)
+        .order("created_at", { ascending: false })
         .limit(1)
         .single();
 
@@ -415,10 +416,12 @@ export class ScaleDefenseService {
           id: killSwitchId,
           targetType,
           targetId,
-          reason: data.metadata?.reason as string || 'Unknown',
+          reason: (data.metadata?.reason as string) || "Unknown",
           isActive: true,
           createdAt: new Date(data.created_at),
-          activatedAt: data.metadata?.activated_at ? new Date(data.metadata.activated_at as string) : undefined,
+          activatedAt: data.metadata?.activated_at
+            ? new Date(data.metadata.activated_at as string)
+            : undefined,
         };
         this.killSwitchCache.set(killSwitchId, killSwitch);
         return killSwitch;
@@ -426,7 +429,7 @@ export class ScaleDefenseService {
 
       return null;
     } catch (error) {
-      logError('Error getting kill switch', error);
+      logError("Error getting kill switch", error);
       return null;
     }
   }
@@ -434,35 +437,38 @@ export class ScaleDefenseService {
   /**
    * Check if operation should be degraded
    */
-  async shouldDegrade(tenantId: string, _operationType: string): Promise<{
+  async shouldDegrade(
+    tenantId: string,
+    _operationType: string
+  ): Promise<{
     degrade: boolean;
     reason?: string;
     degradedFeatures?: string[];
   }> {
     try {
       // Check kill switch
-      const killSwitch = await this.getKillSwitch('tenant', tenantId);
+      const killSwitch = await this.getKillSwitch("tenant", tenantId);
       if (killSwitch?.isActive) {
         return {
           degrade: true,
           reason: killSwitch.reason,
-          degradedFeatures: ['all'],
+          degradedFeatures: ["all"],
         };
       }
 
       // Check throttle
       const throttle = await this.checkTenantThrottle(tenantId);
-      if (throttle.throttleLevel === 'heavy' || throttle.throttleLevel === 'moderate') {
+      if (throttle.throttleLevel === "heavy" || throttle.throttleLevel === "moderate") {
         return {
           degrade: true,
           reason: `Tenant throttled: ${throttle.throttleLevel}`,
-          degradedFeatures: ['background_jobs', 'analytics', 'reporting'],
+          degradedFeatures: ["background_jobs", "analytics", "reporting"],
         };
       }
 
       return { degrade: false };
     } catch (error) {
-      logError('Error checking degradation', error);
+      logError("Error checking degradation", error);
       return { degrade: false };
     }
   }

@@ -57,11 +57,15 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
 
     switch (event.type) {
       case "reconciliation.completed":
-        console.log(`[${ts}] ✓ Reconciliation completed – job=${event.data.jobId} matched=${event.data.matched} unmatched=${event.data.unmatched}`);
+        console.log(
+          `[${ts}] ✓ Reconciliation completed – job=${event.data.jobId} matched=${event.data.matched} unmatched=${event.data.unmatched}`
+        );
         break;
 
       case "reconciliation.failed":
-        console.log(`[${ts}] ✗ Reconciliation failed – job=${event.data.jobId} error=${event.data.error}`);
+        console.log(
+          `[${ts}] ✗ Reconciliation failed – job=${event.data.jobId} error=${event.data.error}`
+        );
         break;
 
       case "exception.created":

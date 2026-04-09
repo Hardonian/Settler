@@ -168,10 +168,7 @@ export async function evaluateLifecycleStage(userId: string): Promise<LifecycleS
   }
 
   // Churned: No activity for 90+ days or explicit cancellation
-  if (
-    (metricsData?.days_since_last_activity || 0) > 90 ||
-    metricsData?.explicitly_cancelled
-  ) {
+  if ((metricsData?.days_since_last_activity || 0) > 90 || metricsData?.explicitly_cancelled) {
     newStage = "churned";
   }
 
@@ -236,8 +233,7 @@ export async function calculateChurnRisk(userId: string): Promise<number> {
   }
 
   // Update churn risk
-  await (supabase
-    .from("user_lifecycle") as any)
+  await (supabase.from("user_lifecycle") as any)
     .update({
       churn_risk_score: Math.min(riskScore, 1.0),
       churn_risk_reasons: reasons,
@@ -287,8 +283,7 @@ export async function calculateExpansionOpportunity(userId: string): Promise<num
   }
 
   // Update expansion score
-  await (supabase
-    .from("user_lifecycle") as any)
+  await (supabase.from("user_lifecycle") as any)
     .update({
       expansion_opportunity_score: Math.min(opportunityScore, 1.0),
       updated_at: new Date().toISOString(),

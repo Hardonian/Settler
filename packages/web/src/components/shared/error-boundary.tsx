@@ -1,18 +1,18 @@
 /**
  * Shared Error Boundary Component
- * 
+ *
  * Catches errors in any component tree and displays user-friendly error UI.
  * Used across all routes and major components.
  */
 
-'use client';
+"use client";
 
-import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { AlertCircle, RefreshCw, Home } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { appLogger } from '@/lib/utils/logger';
+import React, { Component, ErrorInfo, ReactNode } from "react";
+import { AlertCircle, RefreshCw, Home } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { appLogger } from "@/lib/utils/logger";
 
 interface Props {
   children: ReactNode;
@@ -43,7 +43,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     appLogger.error(
-      `Error boundary caught error${this.props.context ? ` in ${this.props.context}` : ''}`,
+      `Error boundary caught error${this.props.context ? ` in ${this.props.context}` : ""}`,
       error,
       {
         componentStack: errorInfo.componentStack,
@@ -77,8 +77,8 @@ export class ErrorBoundary extends Component<Props, State> {
               <p className="text-sm text-muted-foreground dark:text-muted-foreground">
                 An unexpected error occurred. Our team has been notified.
               </p>
-              
-              {process.env.NODE_ENV === 'development' && this.state.error && (
+
+              {process.env.NODE_ENV === "development" && this.state.error && (
                 <details className="text-xs">
                   <summary className="cursor-pointer text-muted-foreground dark:text-muted-foreground mb-2">
                     Error Details (Development Only)

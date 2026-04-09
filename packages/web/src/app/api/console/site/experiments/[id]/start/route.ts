@@ -30,7 +30,10 @@ export const POST = withSecurity(
         select: { id: true, status: true },
       });
       if (!experiment) {
-        return NextResponse.json({ success: false, error: "Experiment not found" }, { status: 404 });
+        return NextResponse.json(
+          { success: false, error: "Experiment not found" },
+          { status: 404 }
+        );
       }
 
       if (experiment.status === "running") {
@@ -52,4 +55,3 @@ export const POST = withSecurity(
   },
   { rateLimit: { windowMs: 60_000, maxRequests: 20 }, requireAuth: true }
 );
-

@@ -6,7 +6,7 @@
 
 **Senior backend engineer (10 seconds):**
 Current: "Some kind of financial data pipeline... reconciliation control plane? What does 'provable financial truth' mean concretely?"
-Problem: "control plane" is infrastructure jargon. "Provable financial truth" is abstract. The engineer needs to know what it *does*, not what category it belongs to.
+Problem: "control plane" is infrastructure jargon. "Provable financial truth" is abstract. The engineer needs to know what it _does_, not what category it belongs to.
 
 **Startup founder (10 seconds):**
 Current: "Reconciliation software... open source... something about determinism. Is this for my finance team or my engineering team?"
@@ -69,12 +69,12 @@ Teams reconcile financial data across Stripe, QuickBooks, bank feeds, internal l
 
 ### Where this loop must appear
 
-| Location | Current state | Recommendation |
-|---|---|---|
-| README intro | Partially present ("How it works" section) | Good structure. Replace "Ingest and normalize" with clearer verbs. See Phase 5. |
-| Docs homepage | Present but buried | Lead with the loop before the doc map |
-| Landing page hero | Not present — hero focuses on category positioning | Add the loop as a visual sequence below the hero |
-| Demo walkthrough | Present in docs/demo.md | Expand with expected output descriptions |
+| Location          | Current state                                      | Recommendation                                                                  |
+| ----------------- | -------------------------------------------------- | ------------------------------------------------------------------------------- |
+| README intro      | Partially present ("How it works" section)         | Good structure. Replace "Ingest and normalize" with clearer verbs. See Phase 5. |
+| Docs homepage     | Present but buried                                 | Lead with the loop before the doc map                                           |
+| Landing page hero | Not present — hero focuses on category positioning | Add the loop as a visual sequence below the hero                                |
+| Demo walkthrough  | Present in docs/demo.md                            | Expand with expected output descriptions                                        |
 
 ### Recommended README "How it works" rewrite
 
@@ -146,34 +146,34 @@ Teams reconcile financial data across Stripe, QuickBooks, bank feeds, internal l
 
 ### Current terminology audit
 
-| Current term | Problem | Recommended replacement |
-|---|---|---|
-| "Reconciliation control plane" | Kubernetes jargon; unclear to non-infra engineers | "Reconciliation engine" |
-| "Provable financial truth" | Abstract; philosophical | "Verifiable reconciliation results" |
-| "Evidence artifacts" | "Artifact" is CI/CD jargon | "Evidence" or "evidence pack" |
-| "Deterministic pipeline" | Pipeline is ETL jargon | "Replayable workflow" or "deterministic run" |
-| "Governance boundaries" | Vague enterprise speak | "Access controls and audit trails" |
-| "Failure surface reduction" | Academic risk language | "Fewer reconciliation errors" |
-| "Probabilistic drift" | ML/stats jargon | "Inconsistent results" |
-| "Operational confidence" | Vague | "Reliable, repeatable results" |
-| "Reconciliation infrastructure" | Category label, not value | "Reconciliation engine" |
-| "Variance sets" | Financial quant jargon | "Mismatches" or "discrepancies" |
-| "Exception operations" | Internal process term | "Mismatch review" |
-| "Tenant isolation" | Infrastructure jargon | "Workspace separation" |
-| "Policy-based access controls" | Verbose | "Role-based permissions" |
-| "Connector payloads" | Developer jargon | "Data from connected systems" |
+| Current term                    | Problem                                           | Recommended replacement                      |
+| ------------------------------- | ------------------------------------------------- | -------------------------------------------- |
+| "Reconciliation control plane"  | Kubernetes jargon; unclear to non-infra engineers | "Reconciliation engine"                      |
+| "Provable financial truth"      | Abstract; philosophical                           | "Verifiable reconciliation results"          |
+| "Evidence artifacts"            | "Artifact" is CI/CD jargon                        | "Evidence" or "evidence pack"                |
+| "Deterministic pipeline"        | Pipeline is ETL jargon                            | "Replayable workflow" or "deterministic run" |
+| "Governance boundaries"         | Vague enterprise speak                            | "Access controls and audit trails"           |
+| "Failure surface reduction"     | Academic risk language                            | "Fewer reconciliation errors"                |
+| "Probabilistic drift"           | ML/stats jargon                                   | "Inconsistent results"                       |
+| "Operational confidence"        | Vague                                             | "Reliable, repeatable results"               |
+| "Reconciliation infrastructure" | Category label, not value                         | "Reconciliation engine"                      |
+| "Variance sets"                 | Financial quant jargon                            | "Mismatches" or "discrepancies"              |
+| "Exception operations"          | Internal process term                             | "Mismatch review"                            |
+| "Tenant isolation"              | Infrastructure jargon                             | "Workspace separation"                       |
+| "Policy-based access controls"  | Verbose                                           | "Role-based permissions"                     |
+| "Connector payloads"            | Developer jargon                                  | "Data from connected systems"                |
 
 ### Landing page specific fixes
 
-| Current text | Issue | Recommended text |
-|---|---|---|
-| "Reconciliation Infrastructure for Financial Operations" (hero h1) | Category label, not benefit | "Reconcile Financial Data. Prove Every Result." |
-| "Normalize data. Apply explicit rules. Surface variances for review." (hero subtitle) | Passive, jargon-heavy | "Match transactions across systems. Detect mismatches instantly. Generate verifiable evidence for every run." |
-| "Operational Confidence Through Determinism" (section header) | Abstract | "Same Data, Same Rules, Same Results" |
-| "Deterministic Reconciliation Engine" (badge) | Fine for engineers, opaque for others | "Open Source Reconciliation Engine" |
-| "Discuss Your Architecture" (CTA) | Presumes the visitor has an architecture problem | "Talk to Us" or "Book a Demo" |
-| "What Mature Financial Infrastructure Evolves Toward" (section header) | Condescending framing | "Why Teams Switch to Settler" |
-| "Failure Surface Reduction" (card title) | Incomprehensible to target users | "Fewer Reconciliation Errors" |
+| Current text                                                                          | Issue                                            | Recommended text                                                                                              |
+| ------------------------------------------------------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| "Reconciliation Infrastructure for Financial Operations" (hero h1)                    | Category label, not benefit                      | "Reconcile Financial Data. Prove Every Result."                                                               |
+| "Normalize data. Apply explicit rules. Surface variances for review." (hero subtitle) | Passive, jargon-heavy                            | "Match transactions across systems. Detect mismatches instantly. Generate verifiable evidence for every run." |
+| "Operational Confidence Through Determinism" (section header)                         | Abstract                                         | "Same Data, Same Rules, Same Results"                                                                         |
+| "Deterministic Reconciliation Engine" (badge)                                         | Fine for engineers, opaque for others            | "Open Source Reconciliation Engine"                                                                           |
+| "Discuss Your Architecture" (CTA)                                                     | Presumes the visitor has an architecture problem | "Talk to Us" or "Book a Demo"                                                                                 |
+| "What Mature Financial Infrastructure Evolves Toward" (section header)                | Condescending framing                            | "Why Teams Switch to Settler"                                                                                 |
+| "Failure Surface Reduction" (card title)                                              | Incomprehensible to target users                 | "Fewer Reconciliation Errors"                                                                                 |
 
 ---
 
@@ -182,6 +182,7 @@ Teams reconcile financial data across Stripe, QuickBooks, bank feeds, internal l
 ### Canonical five-minute demo
 
 **Setup (30 seconds):**
+
 ```bash
 git clone https://github.com/settler/settler
 cd settler
@@ -189,34 +190,41 @@ pnpm install
 ```
 
 **Step 1 — Run the demo reconciliation (60 seconds):**
+
 ```bash
 pnpm demo
 ```
+
 What happens: Settler loads sample transaction data from two sources (e.g., Stripe charges and internal ledger entries), applies matching rules, and produces results.
 
 **Step 2 — See the mismatches (60 seconds):**
 Open `examples/demo-output/results.json`. Show:
+
 - Matched transactions (amounts and dates align)
 - Mismatched transactions (amount differs by $0.50)
 - Unmatched transactions (exists in source A but not source B)
 
 **Step 3 — Inspect the evidence (60 seconds):**
 Open `examples/demo-output/evidence.json`. Show:
+
 - Input data fingerprint
 - Rules that were applied
 - SHA-256 hash of the complete run
 - Timestamp and run metadata
 
 **Step 4 — Replay the run (60 seconds):**
+
 ```bash
 pnpm settler:replay examples/demo-output/evidence.json
 ```
+
 What happens: Settler re-executes the same reconciliation. The output hash matches the original. This proves the results are reproducible.
 
 **Step 5 — View the report (30 seconds):**
 Open `examples/demo-output/report.html` in a browser. Show the human-readable reconciliation summary.
 
 **Key demo talking points:**
+
 - "This is the same workflow you would use in production, just with sample data."
 - "Every run produces evidence. Every run can be replayed."
 - "The matching rules are code — you can version control them, review them in PRs, test them in CI."
@@ -246,16 +254,17 @@ Open source is not a distribution strategy for Settler. It is a requirement of t
 
 ### Recommended visuals
 
-| Visual | Purpose | Where it appears |
-|---|---|---|
-| **Reconciliation flow diagram** | Shows data flowing from two sources → matching engine → results + evidence | README, landing hero, docs homepage |
-| **Mismatch detail view** | Shows a specific discrepancy: expected $100.00, got $99.50, with field-level diff | Landing page, demo walkthrough |
-| **Evidence pack viewer** | Shows the structure of an evidence JSON: inputs, rules, outputs, hash | Docs, demo walkthrough |
-| **Run timeline** | Shows a sequence of reconciliation runs with status (matched / mismatches found / replayed) | Dashboard screenshot, landing page |
-| **Replay comparison** | Side-by-side: original run fingerprint vs replay fingerprint (match confirmed) | Demo walkthrough, docs |
-| **Review queue** | Shows queued mismatches with status, assignee, and resolution | Landing page, product docs |
+| Visual                          | Purpose                                                                                     | Where it appears                    |
+| ------------------------------- | ------------------------------------------------------------------------------------------- | ----------------------------------- |
+| **Reconciliation flow diagram** | Shows data flowing from two sources → matching engine → results + evidence                  | README, landing hero, docs homepage |
+| **Mismatch detail view**        | Shows a specific discrepancy: expected $100.00, got $99.50, with field-level diff           | Landing page, demo walkthrough      |
+| **Evidence pack viewer**        | Shows the structure of an evidence JSON: inputs, rules, outputs, hash                       | Docs, demo walkthrough              |
+| **Run timeline**                | Shows a sequence of reconciliation runs with status (matched / mismatches found / replayed) | Dashboard screenshot, landing page  |
+| **Replay comparison**           | Side-by-side: original run fingerprint vs replay fingerprint (match confirmed)              | Demo walkthrough, docs              |
+| **Review queue**                | Shows queued mismatches with status, assignee, and resolution                               | Landing page, product docs          |
 
 ### Visual design principles
+
 - Use real data structures (JSON snippets, actual field names) — not abstract diagrams
 - Show before/after: messy spreadsheet vs structured Settler output
 - Keep colors minimal: black/white/slate with red for mismatches, green for matches
@@ -265,6 +274,7 @@ Open source is not a distribution strategy for Settler. It is a requirement of t
 ## PHASE 9 — Developer Attraction
 
 ### Current strengths
+
 - Clean monorepo structure with clear package boundaries
 - TypeScript SDK with good API design in the code example
 - Apache 2.0 license
@@ -273,15 +283,15 @@ Open source is not a distribution strategy for Settler. It is a requirement of t
 
 ### Friction points
 
-| Friction | Impact | Fix |
-|---|---|---|
+| Friction                                | Impact                                                            | Fix                                                                                                                                                |
+| --------------------------------------- | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Quickstart requires Postgres + Supabase | Blocks immediate trial; most devs do not have Supabase configured | Add a zero-dependency demo mode that runs against local JSON files (the `pnpm demo` command partially does this — make it the primary entry point) |
-| No `npx` or single-command start | Developers expect `npx create-settler` or `docker compose up` | Add a `docker compose` quickstart and/or npx scaffolding |
-| README quickstart has 6 steps | Too many steps before first value | Reduce to 3: clone, install, `pnpm demo` |
-| Demo output is JSON files | Not visual; hard to appreciate the value | Add a `report.html` viewer that opens automatically, or a terminal-based summary |
-| No GitHub topic tags visible | Reduces discoverability | Add topics: reconciliation, fintech, open-source, audit, financial-data |
-| README has too many doc links | Decision paralysis | Reduce to 3 links: Quickstart, API Reference, Architecture |
-| No animated GIF or screenshot in README | Developers expect visual proof of what a tool does | Add a terminal recording or screenshot |
+| No `npx` or single-command start        | Developers expect `npx create-settler` or `docker compose up`     | Add a `docker compose` quickstart and/or npx scaffolding                                                                                           |
+| README quickstart has 6 steps           | Too many steps before first value                                 | Reduce to 3: clone, install, `pnpm demo`                                                                                                           |
+| Demo output is JSON files               | Not visual; hard to appreciate the value                          | Add a `report.html` viewer that opens automatically, or a terminal-based summary                                                                   |
+| No GitHub topic tags visible            | Reduces discoverability                                           | Add topics: reconciliation, fintech, open-source, audit, financial-data                                                                            |
+| README has too many doc links           | Decision paralysis                                                | Reduce to 3 links: Quickstart, API Reference, Architecture                                                                                         |
+| No animated GIF or screenshot in README | Developers expect visual proof of what a tool does                | Add a terminal recording or screenshot                                                                                                             |
 
 ### Recommended README structure for developer attraction
 
@@ -305,6 +315,7 @@ Open source is not a distribution strategy for Settler. It is a requirement of t
 **Title they see:** "Settler — Open Source Reconciliation Engine"
 
 **First 10 seconds:**
+
 - Clicks through to GitHub
 - Sees README: "open-source reconciliation control plane for provable financial truth"
 - Reaction: "What is a reconciliation control plane? Is this for Kubernetes? ...No, it's financial. Okay, but what does 'provable financial truth' mean?"
@@ -315,12 +326,14 @@ Open source is not a distribution strategy for Settler. It is a requirement of t
 **Would they try it?** Probably not on first visit.
 
 **Why not:**
+
 1. The value proposition requires reading past the first sentence
 2. No visual proof of what it does
 3. Quickstart requires Supabase setup — too much friction for a "let me try this" moment
 4. The name "Settler" does not self-describe (unlike "Papermark" which implies document marking)
 
 **Improvements:**
+
 1. Lead with a concrete problem statement: "Reconciling financial data across Stripe, QuickBooks, and your database? Settler matches records, finds discrepancies, and proves the results."
 2. Add a terminal recording showing `pnpm demo` → output → replay
 3. Make `pnpm demo` work with zero external dependencies
@@ -386,6 +399,7 @@ pnpm demo
 \`\`\`
 
 This runs a sample reconciliation against demo data. Open `examples/demo-output/` to see:
+
 - `results.json` — matched and mismatched records
 - `evidence.json` — cryptographic proof of what data, rules, and config produced these results
 - `report.html` — human-readable reconciliation summary
@@ -420,14 +434,14 @@ pnpm settler:replay examples/demo-output/evidence.json
 
 See Phase 4 above. Summary:
 
-| Differentiator | One-line outcome |
-|---|---|
-| Replayable runs | Re-run any reconciliation and get identical results |
-| Verifiable evidence | Every result has a cryptographic proof chain |
-| Rules as code | Reconciliation logic in version control, testable in CI |
-| Structured exceptions | Mismatches are queued, assigned, and tracked |
-| Self-hostable | Your financial data stays in your infrastructure |
-| Deterministic execution | Same data + same rules = same results, always |
+| Differentiator          | One-line outcome                                        |
+| ----------------------- | ------------------------------------------------------- |
+| Replayable runs         | Re-run any reconciliation and get identical results     |
+| Verifiable evidence     | Every result has a cryptographic proof chain            |
+| Rules as code           | Reconciliation logic in version control, testable in CI |
+| Structured exceptions   | Mismatches are queued, assigned, and tracked            |
+| Self-hostable           | Your financial data stays in your infrastructure        |
+| Deterministic execution | Same data + same rules = same results, always           |
 
 ### 6. Demo narrative
 
@@ -468,44 +482,44 @@ See Phase 5 table above. Priority changes:
 
 ### 10. Screenshot plan
 
-| Screenshot | Description | Priority |
-|---|---|---|
-| Terminal demo recording | `pnpm demo` → output → replay | P0 — add to README |
-| Mismatch detail | Specific discrepancy with field-level diff | P0 — add to landing page |
-| Evidence JSON viewer | Structured view of evidence.json | P1 — add to docs |
-| Review queue | List of mismatches with status/assignee | P1 — add to landing page |
-| Reconciliation timeline | Sequence of runs with outcomes | P2 — add to dashboard docs |
-| Replay comparison | Original vs replay fingerprint match | P2 — add to demo walkthrough |
+| Screenshot              | Description                                | Priority                     |
+| ----------------------- | ------------------------------------------ | ---------------------------- |
+| Terminal demo recording | `pnpm demo` → output → replay              | P0 — add to README           |
+| Mismatch detail         | Specific discrepancy with field-level diff | P0 — add to landing page     |
+| Evidence JSON viewer    | Structured view of evidence.json           | P1 — add to docs             |
+| Review queue            | List of mismatches with status/assignee    | P1 — add to landing page     |
+| Reconciliation timeline | Sequence of runs with outcomes             | P2 — add to dashboard docs   |
+| Replay comparison       | Original vs replay fingerprint match       | P2 — add to demo walkthrough |
 
 ### 11. Adoption friction analysis
 
-| Friction point | Severity | Current state | Recommended fix |
-|---|---|---|---|
-| Supabase required for quickstart | High | Cannot try without external DB | Make `pnpm demo` fully self-contained (it may already be — clarify in README) |
-| No Docker quickstart | Medium | No docker-compose for local dev | Add `docker compose up` one-liner |
-| No visual in README | High | Text-only README | Add terminal recording GIF |
-| Too many doc links | Medium | 7+ links in README | Reduce to 3 primary paths |
-| Name does not self-describe | Low | "Settler" requires explanation | Cannot change — mitigate with clear tagline |
-| No TTFV metric | Medium | No mention of expected demo time | Add "Try it in 60 seconds" framing |
-| CTA says "Discuss Your Architecture" | Medium | Presumes architecture complexity | Change to "Book a Demo" or "Talk to Us" |
+| Friction point                       | Severity | Current state                    | Recommended fix                                                               |
+| ------------------------------------ | -------- | -------------------------------- | ----------------------------------------------------------------------------- |
+| Supabase required for quickstart     | High     | Cannot try without external DB   | Make `pnpm demo` fully self-contained (it may already be — clarify in README) |
+| No Docker quickstart                 | Medium   | No docker-compose for local dev  | Add `docker compose up` one-liner                                             |
+| No visual in README                  | High     | Text-only README                 | Add terminal recording GIF                                                    |
+| Too many doc links                   | Medium   | 7+ links in README               | Reduce to 3 primary paths                                                     |
+| Name does not self-describe          | Low      | "Settler" requires explanation   | Cannot change — mitigate with clear tagline                                   |
+| No TTFV metric                       | Medium   | No mention of expected demo time | Add "Try it in 60 seconds" framing                                            |
+| CTA says "Discuss Your Architecture" | Medium   | Presumes architecture complexity | Change to "Book a Demo" or "Talk to Us"                                       |
 
 ### 12. Product clarity score
 
-| Dimension | Score (1-10) | Notes |
-|---|---|---|
-| One-sentence clarity | 5/10 | "Control plane for provable financial truth" requires decoding |
-| Homepage value proposition | 6/10 | Technically accurate but abstract; hero heading is a category label |
-| Developer quickstart | 6/10 | Exists but requires Supabase; demo path is buried |
-| Demo quality | 7/10 | `pnpm demo` + replay is strong; lacks visual output |
-| Technical credibility | 8/10 | Rust kernel, SHA-256 evidence, typed SDK — genuinely differentiated |
-| Documentation structure | 7/10 | Well-organized; good reader-path segmentation |
-| OSS appeal | 6/10 | Apache 2.0 is right; OSS narrative is underdeveloped |
-| Visual storytelling | 3/10 | No screenshots, GIFs, or visual evidence of the product |
-| Differentiation clarity | 6/10 | Real differentiators exist but are expressed in infrastructure language |
-| Overall adoption readiness | 6/10 | Strong engine, weak presentation layer |
+| Dimension                  | Score (1-10) | Notes                                                                   |
+| -------------------------- | ------------ | ----------------------------------------------------------------------- |
+| One-sentence clarity       | 5/10         | "Control plane for provable financial truth" requires decoding          |
+| Homepage value proposition | 6/10         | Technically accurate but abstract; hero heading is a category label     |
+| Developer quickstart       | 6/10         | Exists but requires Supabase; demo path is buried                       |
+| Demo quality               | 7/10         | `pnpm demo` + replay is strong; lacks visual output                     |
+| Technical credibility      | 8/10         | Rust kernel, SHA-256 evidence, typed SDK — genuinely differentiated     |
+| Documentation structure    | 7/10         | Well-organized; good reader-path segmentation                           |
+| OSS appeal                 | 6/10         | Apache 2.0 is right; OSS narrative is underdeveloped                    |
+| Visual storytelling        | 3/10         | No screenshots, GIFs, or visual evidence of the product                 |
+| Differentiation clarity    | 6/10         | Real differentiators exist but are expressed in infrastructure language |
+| Overall adoption readiness | 6/10         | Strong engine, weak presentation layer                                  |
 
 **Summary:** Settler has a genuinely differentiated technical core (deterministic execution, cryptographic evidence, replayable runs, Rust verification kernel). The gap is entirely in presentation: the product's value is expressed in infrastructure vocabulary instead of outcome language. The fixes are straightforward — clearer copy, visual proof, and a frictionless demo path. The engine does not need to change. The story does.
 
 ---
 
-*This audit does not modify engine logic, APIs, or features. All recommendations target clarity, terminology, and developer experience.*
+_This audit does not modify engine logic, APIs, or features. All recommendations target clarity, terminology, and developer experience._

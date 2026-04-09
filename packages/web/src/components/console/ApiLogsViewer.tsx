@@ -1,12 +1,18 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { RefreshCw, Download } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { RefreshCw, Download } from "lucide-react";
 
 interface ApiCallLog {
   id: string;
@@ -41,94 +47,101 @@ export function ApiLogsViewer() {
   const [stats, setStats] = useState<ApiLogStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
-    method: '',
-    path: '',
-    statusCode: '',
-    limit: '100',
+    method: "",
+    path: "",
+    statusCode: "",
+    limit: "100",
   });
-  
+
   useEffect(() => {
     loadLogs();
   }, [filters]);
-  
+
   async function loadLogs() {
     setLoading(true);
     try {
       // Fetch logs and stats in parallel
       const logParams = new URLSearchParams();
-      if (filters.method) logParams.set('method', filters.method);
-      if (filters.path) logParams.set('path', filters.path);
-      if (filters.statusCode) logParams.set('statusCode', filters.statusCode);
-      logParams.set('limit', filters.limit);
-      
+      if (filters.method) logParams.set("method", filters.method);
+      if (filters.path) logParams.set("path", filters.path);
+      if (filters.statusCode) logParams.set("statusCode", filters.statusCode);
+      logParams.set("limit", filters.limit);
+
       const statsParams = new URLSearchParams(logParams);
-      statsParams.set('stats', 'true');
-      
+      statsParams.set("stats", "true");
+
       const [logsResponse, statsResponse] = await Promise.all([
         fetch(`/api/console/api-logs?${logParams}`),
         fetch(`/api/console/api-logs?${statsParams}`),
       ]);
-      
+
       const logsData = await logsResponse.json();
       const statsData = await statsResponse.json();
-      
+
       if (logsData.logs) {
-        setLogs(logsData.logs.map((log: any) => ({
-          ...log,
-          timestamp: new Date(log.timestamp),
-        })));
+        setLogs(
+          logsData.logs.map((log: any) => ({
+            ...log,
+            timestamp: new Date(log.timestamp),
+          }))
+        );
       }
-      
+
       if (statsData.stats) {
         setStats(statsData.stats);
       }
     } catch (error: unknown) {
-      console.error('Failed to load API logs:', error);
+      console.error("Failed to load API logs:", error);
     } finally {
       setLoading(false);
     }
   }
-  
+
   function getStatusColor(statusCode: number): string {
-    if (statusCode >= 200 && statusCode < 300) return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-    if (statusCode >= 300 && statusCode < 400) return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-    if (statusCode >= 400 && statusCode < 500) return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-    return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+    if (statusCode >= 200 && statusCode < 300)
+      return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+    if (statusCode >= 300 && statusCode < 400)
+      return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
+    if (statusCode >= 400 && statusCode < 500)
+      return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+    return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
   }
-  
+
   function getMethodColor(method: string): string {
     const colors: Record<string, string> = {
-      GET: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-      POST: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-      PUT: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-      DELETE: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-      PATCH: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+      GET: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+      POST: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+      PUT: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+      DELETE: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+      PATCH: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
     };
-    return colors[method] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+    return colors[method] || "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
   }
-  
+
   function exportLogs() {
     const csv = [
-      ['Timestamp', 'Method', 'Path', 'Status', 'Response Time (ms)', 'Error'].join(','),
-      ...logs.map(log => [
-        log.timestamp.toISOString(),
-        log.method,
-        log.path,
-        log.statusCode,
-        log.responseTime,
-        log.error || '',
-      ].join(',')),
-    ].join('\n');
-    
-    const blob = new Blob([csv], { type: 'text/csv' });
+      ["Timestamp", "Method", "Path", "Status", "Response Time (ms)", "Error"].join(","),
+      ...logs.map((log) =>
+        [
+          log.timestamp.toISOString(),
+          log.method,
+          log.path,
+          log.statusCode,
+          log.responseTime,
+          log.error || "",
+        ].join(",")
+      ),
+    ].join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = `api-logs-${new Date().toISOString()}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   }
-  
+
   if (loading && logs.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -139,7 +152,7 @@ export function ApiLogsViewer() {
       </div>
     );
   }
-  
+
   return (
     <div className="space-y-6">
       {/* Stats Overview */}
@@ -166,14 +179,12 @@ export function ApiLogsViewer() {
           <Card>
             <CardHeader className="pb-3">
               <CardDescription>Methods</CardDescription>
-              <CardTitle className="text-lg">
-                {Object.keys(stats.byMethod).join(', ')}
-              </CardTitle>
+              <CardTitle className="text-lg">{Object.keys(stats.byMethod).join(", ")}</CardTitle>
             </CardHeader>
           </Card>
         </div>
       )}
-      
+
       {/* Filters */}
       <Card>
         <CardHeader>
@@ -182,7 +193,10 @@ export function ApiLogsViewer() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Select value={filters.method} onValueChange={(value) => setFilters({ ...filters, method: value })}>
+            <Select
+              value={filters.method}
+              onValueChange={(value) => setFilters({ ...filters, method: value })}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="All Methods" />
               </SelectTrigger>
@@ -195,14 +209,17 @@ export function ApiLogsViewer() {
                 <SelectItem value="PATCH">PATCH</SelectItem>
               </SelectContent>
             </Select>
-            
+
             <Input
               placeholder="Filter by path..."
               value={filters.path}
               onChange={(e) => setFilters({ ...filters, path: e.target.value })}
             />
-            
-            <Select value={filters.statusCode} onValueChange={(value) => setFilters({ ...filters, statusCode: value })}>
+
+            <Select
+              value={filters.statusCode}
+              onValueChange={(value) => setFilters({ ...filters, statusCode: value })}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="All Status Codes" />
               </SelectTrigger>
@@ -217,7 +234,7 @@ export function ApiLogsViewer() {
                 <SelectItem value="500">500 Server Error</SelectItem>
               </SelectContent>
             </Select>
-            
+
             <div className="flex gap-2">
               <Button onClick={loadLogs} variant="outline" size="default">
                 <RefreshCw className="w-4 h-4 mr-2" />
@@ -231,7 +248,7 @@ export function ApiLogsViewer() {
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Logs Table */}
       <Card>
         <CardHeader>
@@ -263,26 +280,16 @@ export function ApiLogsViewer() {
                 ) : (
                   logs.map((log) => (
                     <tr key={log.id} className="border-b hover:bg-muted/10 dark:hover:bg-card">
-                      <td className="p-2 font-mono text-xs">
-                        {log.timestamp.toLocaleString()}
-                      </td>
+                      <td className="p-2 font-mono text-xs">{log.timestamp.toLocaleString()}</td>
                       <td className="p-2">
-                        <Badge className={getMethodColor(log.method)}>
-                          {log.method}
-                        </Badge>
+                        <Badge className={getMethodColor(log.method)}>{log.method}</Badge>
                       </td>
-                      <td className="p-2 font-mono text-xs max-w-md truncate">
-                        {log.path}
-                      </td>
+                      <td className="p-2 font-mono text-xs max-w-md truncate">{log.path}</td>
                       <td className="p-2">
-                        <Badge className={getStatusColor(log.statusCode)}>
-                          {log.statusCode}
-                        </Badge>
+                        <Badge className={getStatusColor(log.statusCode)}>{log.statusCode}</Badge>
                       </td>
                       <td className="p-2">{log.responseTime}ms</td>
-                      <td className="p-2 text-red-600 dark:text-red-400">
-                        {log.error || '-'}
-                      </td>
+                      <td className="p-2 text-red-600 dark:text-red-400">{log.error || "-"}</td>
                     </tr>
                   ))
                 )}

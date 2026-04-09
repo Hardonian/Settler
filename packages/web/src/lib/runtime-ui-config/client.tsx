@@ -90,7 +90,9 @@ export function RuntimeUiConfigProvider({
   const [source, setSource] = useState<RuntimeUiConfigContextValue["source"]>(
     initialConfig ? "remote" : "default"
   );
-  const [allowOverride, setAllowOverride] = useState<boolean>(process.env.NODE_ENV !== "production");
+  const [allowOverride, setAllowOverride] = useState<boolean>(
+    process.env.NODE_ENV !== "production"
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -111,7 +113,9 @@ export function RuntimeUiConfigProvider({
         setAllowOverride(canOverride);
 
         const override = readLocalOverride(canOverride);
-        const merged = override ? safeParsePublicRuntimeUiConfig({ ...remote, ...override }) : remote;
+        const merged = override
+          ? safeParsePublicRuntimeUiConfig({ ...remote, ...override })
+          : remote;
 
         if (!cancelled) {
           setConfig(merged);
@@ -152,7 +156,9 @@ export function RuntimeUiConfigProvider({
     [config, source, allowOverride]
   );
 
-  return <RuntimeUiConfigContext.Provider value={value}>{children}</RuntimeUiConfigContext.Provider>;
+  return (
+    <RuntimeUiConfigContext.Provider value={value}>{children}</RuntimeUiConfigContext.Provider>
+  );
 }
 
 export function useRuntimeUiConfig(): RuntimeUiConfigContextValue {
@@ -167,4 +173,3 @@ export function useRuntimeUiConfig(): RuntimeUiConfigContextValue {
   }
   return ctx;
 }
-

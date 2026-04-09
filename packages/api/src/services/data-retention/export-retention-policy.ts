@@ -1,10 +1,10 @@
 /**
  * Export Retention Policy
- * 
+ *
  * Creates switching friction by limiting export availability.
  * Exports expire after a set period, requiring users to stay on platform
  * to maintain access to their data.
- * 
+ *
  * PHASE: Data Moat Reinforcement
  */
 
@@ -172,10 +172,7 @@ export class ExportRetentionPolicy {
   /**
    * Extend export expiration (for enterprise customers)
    */
-  async extendExportExpiration(
-    exportId: string,
-    additionalDays: number
-  ): Promise<void> {
+  async extendExportExpiration(exportId: string, additionalDays: number): Promise<void> {
     try {
       const exportResult = await query(
         `SELECT expires_at
@@ -188,9 +185,7 @@ export class ExportRetentionPolicy {
         throw new Error(`Export ${exportId} not found`);
       }
 
-      const currentExpiresAt = new Date(
-        (exportResult[0] as { expires_at: Date }).expires_at
-      );
+      const currentExpiresAt = new Date((exportResult[0] as { expires_at: Date }).expires_at);
       const newExpiresAt = new Date(currentExpiresAt);
       newExpiresAt.setDate(newExpiresAt.getDate() + additionalDays);
 

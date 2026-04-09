@@ -1,6 +1,6 @@
 /**
  * Console API Route Handler
- * 
+ *
  * Standardized handler for all /api/console routes with:
  * - Unified authentication (session + API key)
  * - Input validation (Zod)
@@ -11,13 +11,17 @@
  * - Caching support
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { requireAuth, UnifiedAuthContext } from '@/lib/api/unified-auth';
-import { createErrorResponse, ErrorCodes } from '@/lib/server-error-handler';
-import { getCorrelationId, addCorrelationHeaders, createLogger } from '@/lib/monitoring/correlation';
-import { redisRateLimiters } from '@/lib/security/rate-limiter-redis';
-import { trackApiMetric } from '@/lib/monitoring/metrics';
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { requireAuth, UnifiedAuthContext } from "@/lib/api/unified-auth";
+import { createErrorResponse, ErrorCodes } from "@/lib/server-error-handler";
+import {
+  getCorrelationId,
+  addCorrelationHeaders,
+  createLogger,
+} from "@/lib/monitoring/correlation";
+import { redisRateLimiters } from "@/lib/security/rate-limiter-redis";
+import { trackApiMetric } from "@/lib/monitoring/metrics";
 
 export interface ConsoleApiContext {
   auth: UnifiedAuthContext;
@@ -51,7 +55,10 @@ interface ConsoleApiConfig<TInput = unknown> {
   /** Require specific scopes for API key auth */
   requiredScopes?: string[];
   /** Custom error handler */
-  onError?: <TOutput = unknown>(error: unknown, context: ConsoleApiContext) => NextResponse<ConsoleApiResponse<TOutput>>;
+  onError?: <TOutput = unknown>(
+    error: unknown,
+    context: ConsoleApiContext
+  ) => NextResponse<ConsoleApiResponse<TOutput>>;
 }
 
 /**
@@ -80,26 +87,38 @@ export function createConsoleHandler<TInput = unknown, TOutput = unknown>(
       try {
         auth = await requireAuth(request);
       } catch (error) {
-        logger.warn('Authentication failed', { error: error instanceof Error ? error.message : 'Unknown' });
+        logger.warn("Authentication failed", {
+          error: error instanceof Error ? error.message : "Unknown",
+        });
         const response = NextResponse.json<ConsoleApiResponse>(
-          { error: 'Unauthorized', meta: { correlationId, timestamp: new Date().toISOString() } },
+          { error: "Unauthorized", meta: { correlationId, timestamp: new Date().toISOString() } },
           { status: 401 }
         );
-        return addCorrelationHeaders(response, correlationId) as NextResponse<ConsoleApiResponse<TOutput>>;
+        return addCorrelationHeaders(response, correlationId) as NextResponse<
+          ConsoleApiResponse<TOutput>
+        >;
       }
 
       // 3. Scope checking (for API key auth)
-      if (auth.type === 'api_key' && config.requiredScopes) {
+      if (auth.type === "api_key" && config.requiredScopes) {
         const hasScope = config.requiredScopes.some(
-          (scope) => auth.scopes?.includes(scope) || auth.scopes?.includes('*')
+          (scope) => auth.scopes?.includes(scope) || auth.scopes?.includes("*")
         );
         if (!hasScope) {
-          logger.warn('Insufficient scopes', { requiredScopes: config.requiredScopes, userScopes: auth.scopes });
+          logger.warn("Insufficient scopes", {
+            requiredScopes: config.requiredScopes,
+            userScopes: auth.scopes,
+          });
           const response = NextResponse.json<ConsoleApiResponse>(
-            { error: 'Forbidden: Insufficient permissions', meta: { correlationId, timestamp: new Date().toISOString() } },
+            {
+              error: "Forbidden: Insufficient permissions",
+              meta: { correlationId, timestamp: new Date().toISOString() },
+            },
             { status: 403 }
           );
-          return addCorrelationHeaders(response, correlationId) as NextResponse<ConsoleApiResponse<TOutput>>;
+          return addCorrelationHeaders(response, correlationId) as NextResponse<
+            ConsoleApiResponse<TOutput>
+          >;
         }
       }
 
@@ -110,27 +129,33 @@ export function createConsoleHandler<TInput = unknown, TOutput = unknown>(
           const body = await request.json().catch(() => ({}));
           const parsed = config.schema.safeParse(body);
           if (!parsed.success) {
-            logger.warn('Validation failed', { errors: parsed.error.issues });
+            logger.warn("Validation failed", { errors: parsed.error.issues });
             const response = NextResponse.json<ConsoleApiResponse>(
               {
-                error: 'Validation failed',
+                error: "Validation failed",
                 meta: { correlationId, timestamp: new Date().toISOString() },
               },
               { status: 400 }
             );
-            return addCorrelationHeaders(response, correlationId) as NextResponse<ConsoleApiResponse<TOutput>>;
+            return addCorrelationHeaders(response, correlationId) as NextResponse<
+              ConsoleApiResponse<TOutput>
+            >;
           }
           input = parsed.data;
         } catch (error) {
-          logger.warn('Failed to parse request body', { error: error instanceof Error ? error.message : 'Unknown' });
+          logger.warn("Failed to parse request body", {
+            error: error instanceof Error ? error.message : "Unknown",
+          });
           const response = NextResponse.json<ConsoleApiResponse>(
             {
-              error: 'Invalid request body',
+              error: "Invalid request body",
               meta: { correlationId, timestamp: new Date().toISOString() },
             },
             { status: 400 }
           );
-          return addCorrelationHeaders(response, correlationId) as NextResponse<ConsoleApiResponse<TOutput>>;
+          return addCorrelationHeaders(response, correlationId) as NextResponse<
+            ConsoleApiResponse<TOutput>
+          >;
         }
       } else {
         input = {} as TInput;
@@ -179,13 +204,15 @@ export function createConsoleHandler<TInput = unknown, TOutput = unknown>(
       }
 
       // Default error handling
-      logger.error('Handler error', {
-        error: error instanceof Error ? error.message : 'Unknown error',
+      logger.error("Handler error", {
+        error: error instanceof Error ? error.message : "Unknown error",
         stack: error instanceof Error ? error.stack : undefined,
       });
 
       const response = createErrorResponse(error, 500, ErrorCodes.INTERNAL_ERROR);
-      return addCorrelationHeaders(response, correlationId) as NextResponse<ConsoleApiResponse<TOutput>>;
+      return addCorrelationHeaders(response, correlationId) as NextResponse<
+        ConsoleApiResponse<TOutput>
+      >;
     }
   };
 }
@@ -195,7 +222,7 @@ export function createConsoleHandler<TInput = unknown, TOutput = unknown>(
  */
 export function createConsoleGetHandler<TOutput = unknown>(
   handler: (context: ConsoleApiContext) => Promise<TOutput>,
-  config: Omit<ConsoleApiConfig, 'schema'> = {}
+  config: Omit<ConsoleApiConfig, "schema"> = {}
 ) {
   return createConsoleHandler(async (context) => handler(context), config);
 }
@@ -206,7 +233,7 @@ export function createConsoleGetHandler<TOutput = unknown>(
 export function createConsoleMutationHandler<TInput = unknown, TOutput = unknown>(
   handler: ConsoleApiHandler<TInput, TOutput>,
   schema: z.ZodSchema<TInput>,
-  config: Omit<ConsoleApiConfig<TInput>, 'schema'> = {}
+  config: Omit<ConsoleApiConfig<TInput>, "schema"> = {}
 ) {
   return createConsoleHandler(handler, { ...config, schema });
 }

@@ -35,8 +35,7 @@ export function AuditLogViewer() {
       }
     } catch (error: unknown) {
       // Error fetching audit logs - handled by error state
-      if (process.env.NODE_ENV === 'development') {
-         
+      if (process.env.NODE_ENV === "development") {
         console.error("Failed to fetch audit logs:", error);
       }
     } finally {
@@ -78,7 +77,9 @@ export function AuditLogViewer() {
         </div>
 
         {loading ? (
-          <div className="text-center py-8 text-muted-foreground dark:text-muted-foreground">Loading...</div>
+          <div className="text-center py-8 text-muted-foreground dark:text-muted-foreground">
+            Loading...
+          </div>
         ) : (
           <div className="space-y-2 max-h-96 overflow-y-auto">
             {filteredLogs.map((log) => (
@@ -89,7 +90,9 @@ export function AuditLogViewer() {
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <Badge variant="outline">{log.action}</Badge>
-                    <span className="text-muted-foreground dark:text-muted-foreground">{log.resource}</span>
+                    <span className="text-muted-foreground dark:text-muted-foreground">
+                      {log.resource}
+                    </span>
                   </div>
                   <span className="text-xs text-muted-foreground dark:text-muted-foreground">
                     {new Date(log.timestamp).toLocaleString()}

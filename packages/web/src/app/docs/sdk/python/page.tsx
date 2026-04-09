@@ -2,25 +2,25 @@
  * Python SDK Documentation Page
  */
 
-'use client';
+"use client";
 
-import { Navigation } from '@/components/Navigation';
-import { Footer } from '@/components/Footer';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { CodeBlock } from '@/components/ui/code-block';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import Link from 'next/link';
-import { Package, Code2, Zap, Shield } from 'lucide-react';
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { CodeBlock } from "@/components/ui/code-block";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Link from "next/link";
+import { Package, Code2, Zap, Shield } from "lucide-react";
 
 export default function PythonSDKPage() {
   const features = [
-    { icon: Code2, title: 'Pythonic API', description: 'Clean, intuitive Python interface' },
-    { icon: Zap, title: 'Automatic Retries', description: 'Exponential backoff built-in' },
-    { icon: Shield, title: 'Type Hints', description: 'Full type annotations for IDE support' },
-    { icon: Package, title: 'Production Ready', description: 'Battle-tested in production' },
+    { icon: Code2, title: "Pythonic API", description: "Clean, intuitive Python interface" },
+    { icon: Zap, title: "Automatic Retries", description: "Exponential backoff built-in" },
+    { icon: Shield, title: "Type Hints", description: "Full type annotations for IDE support" },
+    { icon: Package, title: "Production Ready", description: "Battle-tested in production" },
   ];
 
   const installationCode = `pip install settler-sdk
@@ -118,11 +118,13 @@ asyncio.run(main())`;
       <Navigation />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
-        <Breadcrumbs items={[
-          { label: 'Docs', href: '/docs' },
-          { label: 'SDK', href: '/docs/sdk' },
-          { label: 'Python' },
-        ]} />
+        <Breadcrumbs
+          items={[
+            { label: "Docs", href: "/docs" },
+            { label: "SDK", href: "/docs/sdk" },
+            { label: "Python" },
+          ]}
+        />
 
         <div className="mt-8">
           <div className="flex items-center gap-3 mb-4">
@@ -130,9 +132,7 @@ asyncio.run(main())`;
             <Badge variant="outline">Python 3.8+</Badge>
             <Badge variant="outline">Async Support</Badge>
           </div>
-          <h1 className="text-4xl font-bold text-foreground mb-4">
-            Python SDK
-          </h1>
+          <h1 className="text-4xl font-bold text-foreground mb-4">Python SDK</h1>
           <p className="text-xl text-muted-foreground mb-8">
             Production-grade Python SDK with async support and full type hints.
           </p>
@@ -205,14 +205,10 @@ asyncio.run(main())`;
         {/* Next Steps */}
         <div className="flex gap-4">
           <Button asChild>
-            <Link href="/console/playground">
-              Try in Playground
-            </Link>
+            <Link href="/console/playground">Try in Playground</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/docs/sdk/go">
-              Go SDK →
-            </Link>
+            <Link href="/docs/sdk/go">Go SDK →</Link>
           </Button>
         </div>
       </div>

@@ -34,7 +34,7 @@ pnpm add @settler/sdk
 import Settler from "@settler/sdk";
 
 const settler = new Settler({
-  apiKey: process.env.SETTLER_API_KEY
+  apiKey: process.env.SETTLER_API_KEY,
 });
 
 // Create a reconciliation job
@@ -44,22 +44,22 @@ const job = await settler.jobs.create({
     adapter: "shopify",
     config: {
       apiKey: process.env.SHOPIFY_API_KEY,
-      shopDomain: "your-shop.myshopify.com"
-    }
+      shopDomain: "your-shop.myshopify.com",
+    },
   },
   target: {
     adapter: "stripe",
     config: {
-      apiKey: process.env.STRIPE_SECRET_KEY
-    }
+      apiKey: process.env.STRIPE_SECRET_KEY,
+    },
   },
   rules: {
     matching: [
       { field: "order_id", type: "exact" },
-      { field: "amount", type: "exact", tolerance: 0.01 }
+      { field: "amount", type: "exact", tolerance: 0.01 },
     ],
-    conflictResolution: "last-wins"
-  }
+    conflictResolution: "last-wins",
+  },
 });
 
 console.log("Job created:", job.data.id);
@@ -71,9 +71,9 @@ console.log("Job created:", job.data.id);
 import Settler from "@settler/sdk";
 
 const settler = new Settler({
-  apiKey: "sk_live_abc123...",        // Required
-  baseUrl: "https://api.settler.io",  // Optional (default)
-  timeout: 30000                      // Optional (30 seconds)
+  apiKey: "sk_live_abc123...", // Required
+  baseUrl: "https://api.settler.io", // Optional (default)
+  timeout: 30000, // Optional (30 seconds)
 });
 ```
 
@@ -86,18 +86,18 @@ const job = await settler.jobs.create({
   name: "My Reconciliation Job",
   source: {
     adapter: "shopify",
-    config: { apiKey: "...", shopDomain: "..." }
+    config: { apiKey: "...", shopDomain: "..." },
   },
   target: {
     adapter: "stripe",
-    config: { apiKey: "..." }
+    config: { apiKey: "..." },
   },
   rules: {
     matching: [
       { field: "order_id", type: "exact" },
-      { field: "amount", type: "exact", tolerance: 0.01 }
-    ]
-  }
+      { field: "amount", type: "exact", tolerance: 0.01 },
+    ],
+  },
 });
 ```
 
@@ -106,11 +106,11 @@ const job = await settler.jobs.create({
 ```typescript
 const jobs = await settler.jobs.list({
   limit: 10,
-  status: "active"
+  status: "active",
 });
 
 console.log(`Found ${jobs.count} jobs`);
-jobs.data.forEach(job => {
+jobs.data.forEach((job) => {
   console.log(`- ${job.name} (${job.id})`);
 });
 ```
@@ -128,10 +128,8 @@ console.log("Job status:", job.data.status);
 const updated = await settler.jobs.update("job_abc123", {
   status: "paused",
   rules: {
-    matching: [
-      { field: "order_id", type: "exact" }
-    ]
-  }
+    matching: [{ field: "order_id", type: "exact" }],
+  },
 });
 ```
 
@@ -139,7 +137,7 @@ const updated = await settler.jobs.update("job_abc123", {
 
 ```typescript
 const execution = await settler.jobs.run("job_abc123", {
-  dateRange: "2026-01-01/2026-01-31"
+  dateRange: "2026-01-01/2026-01-31",
 });
 
 console.log("Execution ID:", execution.data.id);
@@ -160,7 +158,7 @@ const report = await settler.reports.get("job_abc123", {
   startDate: "2026-01-01",
   endDate: "2026-01-31",
   includeMatches: true,
-  includeUnmatched: true
+  includeUnmatched: true,
 });
 
 console.log(`Matched: ${report.data.summary.matched}`);
@@ -173,7 +171,7 @@ console.log(`Accuracy: ${report.data.summary.accuracy}%`);
 ```typescript
 const reports = await settler.reports.list({
   limit: 10,
-  jobId: "job_abc123"
+  jobId: "job_abc123",
 });
 ```
 
@@ -184,12 +182,8 @@ const reports = await settler.reports.list({
 ```typescript
 const webhook = await settler.webhooks.create({
   url: "https://your-app.com/webhooks/reconcile",
-  events: [
-    "reconciliation.matched",
-    "reconciliation.mismatch",
-    "reconciliation.error"
-  ],
-  secret: "optional_secret"
+  events: ["reconciliation.matched", "reconciliation.mismatch", "reconciliation.error"],
+  secret: "optional_secret",
 });
 
 console.log("Webhook ID:", webhook.data.id);
@@ -225,7 +219,7 @@ if (!isValid) {
 ```typescript
 const adapters = await settler.adapters.list();
 
-adapters.data.forEach(adapter => {
+adapters.data.forEach((adapter) => {
   console.log(`${adapter.name} (${adapter.id})`);
   console.log(`  Required: ${adapter.config.required.join(", ")}`);
 });
@@ -278,7 +272,7 @@ import type {
   Webhook,
   Adapter,
   MatchingRule,
-  AdapterConfig
+  AdapterConfig,
 } from "@settler/sdk";
 
 function processJob(job: ReconciliationJob) {
@@ -303,7 +297,7 @@ const settler = new Settler({
   onResponse: (response) => {
     console.log("Response status:", response.status);
     return response;
-  }
+  },
 });
 ```
 
@@ -317,8 +311,8 @@ const settler = new Settler({
   retry: {
     maxRetries: 3,
     retryDelay: 1000, // 1 second
-    retryableStatuses: [429, 500, 503]
-  }
+    retryableStatuses: [429, 500, 503],
+  },
 });
 ```
 
@@ -464,6 +458,7 @@ The Settler Web Playground lets you test the API without writing code.
 ### Try Without Signup
 
 The playground works in sandbox mode without requiring an account. Perfect for:
+
 - Testing adapters
 - Exploring API capabilities
 - Learning the API
@@ -577,7 +572,7 @@ import (
 
 func main() {
     client := settler.NewClient("sk_live_abc123...")
-    
+
     job, err := client.Jobs.Create(settler.CreateJobRequest{
         Name: "Shopify-Stripe Reconciliation",
         Source: settler.AdapterConfig{
@@ -600,11 +595,11 @@ func main() {
             },
         },
     })
-    
+
     if err != nil {
         panic(err)
     }
-    
+
     fmt.Printf("Job created: %s\n", job.ID)
 }
 ```
@@ -681,17 +676,14 @@ try {
 Implement exponential backoff:
 
 ```typescript
-async function withRetry<T>(
-  fn: () => Promise<T>,
-  maxRetries = 3
-): Promise<T> {
+async function withRetry<T>(fn: () => Promise<T>, maxRetries = 3): Promise<T> {
   for (let i = 0; i < maxRetries; i++) {
     try {
       return await fn();
     } catch (error) {
       if (error instanceof RateLimitError && i < maxRetries - 1) {
         const delay = Math.pow(2, i) * 1000;
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
         continue;
       }
       throw error;
@@ -718,7 +710,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const settler = new Settler({
-  apiKey: process.env.SETTLER_API_KEY!
+  apiKey: process.env.SETTLER_API_KEY!,
 });
 ```
 
@@ -735,15 +727,15 @@ const settler = new Settler({
     logger.info("API Request", {
       method: config.method,
       url: config.url,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   },
   onResponse: (response) => {
     logger.info("API Response", {
       status: response.status,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-  }
+  },
 });
 ```
 

@@ -13,6 +13,7 @@ npm run db:migrate:pending
 ```
 
 This script:
+
 - Checks which migrations have been applied
 - Only applies pending migrations
 - Tracks applied migrations in `schema_migrations` table
@@ -24,6 +25,7 @@ npm run db:migrate:all
 ```
 
 This script:
+
 - Applies ALL migrations in order
 - Ignores "already exists" errors (safe to run multiple times)
 - Useful for initial setup
@@ -62,6 +64,7 @@ supabase db push
 Found **67 migration files** in `supabase/migrations/`
 
 Key migrations include:
+
 - Console setup migrations
 - RLS policy migrations
 - Index optimization migrations
@@ -76,24 +79,26 @@ After applying migrations, verify:
 SELECT * FROM schema_migrations ORDER BY applied_at DESC LIMIT 10;
 
 -- Check critical tables exist
-SELECT table_name FROM information_schema.tables 
-WHERE table_schema = 'public' 
+SELECT table_name FROM information_schema.tables
+WHERE table_schema = 'public'
 AND table_name IN ('billing_accounts', 'api_keys', 'receipts', 'usage_events', 'feature_flags');
 
 -- Check indexes exist
-SELECT indexname FROM pg_indexes 
-WHERE schemaname = 'public' 
+SELECT indexname FROM pg_indexes
+WHERE schemaname = 'public'
 AND indexname LIKE 'idx_%';
 ```
 
 ## Important Migrations
 
 ### Console Setup
+
 - `20260126000000_console_complete_setup.sql` - Complete console setup
 - `20260125000000_console_rls_fixes.sql` - RLS policies
 - `20260130000004_optimize_console_indexes.sql` - Performance indexes (NEW)
 
 ### Critical for Console
+
 - `20250120000002_billing_rls_policies.sql` - Billing RLS
 - `20260127000002_missing_rls_policies.sql` - Additional RLS
 - `20260130000002_settler_rls_hardening.sql` - RLS hardening

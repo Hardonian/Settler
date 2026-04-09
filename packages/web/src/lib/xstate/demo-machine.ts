@@ -1,12 +1,12 @@
 /**
  * Demo State Machine
- * 
+ *
  * Reference implementation demonstrating XState patterns and conventions.
  * This machine handles a simple form submission flow with validation.
  */
 
-import { setup, assign, fromPromise } from 'xstate';
-import { AsyncContext } from './types';
+import { setup, assign, fromPromise } from "xstate";
+import { AsyncContext } from "./types";
 
 /**
  * Context for the demo form machine
@@ -26,29 +26,29 @@ interface DemoFormContext extends AsyncContext<{ message: string }, Error> {
  * Events for the demo form machine
  */
 type DemoFormEvents =
-  | { type: 'UPDATE_NAME'; name: string }
-  | { type: 'UPDATE_EMAIL'; email: string }
-  | { type: 'SUBMIT' }
-  | { type: 'RETRY' }
-  | { type: 'RESET' };
+  | { type: "UPDATE_NAME"; name: string }
+  | { type: "UPDATE_EMAIL"; email: string }
+  | { type: "SUBMIT" }
+  | { type: "RETRY" }
+  | { type: "RESET" };
 
 /**
  * Validation function (simulated)
  */
-function validateForm(data: DemoFormContext['formData']): {
+function validateForm(data: DemoFormContext["formData"]): {
   isValid: boolean;
-  errors: DemoFormContext['validationErrors'];
+  errors: DemoFormContext["validationErrors"];
 } {
-  const errors: DemoFormContext['validationErrors'] = {};
-  
+  const errors: DemoFormContext["validationErrors"] = {};
+
   if (!data.name || data.name.trim().length < 2) {
-    errors.name = 'Name must be at least 2 characters';
+    errors.name = "Name must be at least 2 characters";
   }
-  
-  if (!data.email || !data.email.includes('@')) {
-    errors.email = 'Email must be valid';
+
+  if (!data.email || !data.email.includes("@")) {
+    errors.email = "Email must be valid";
   }
-  
+
   return {
     isValid: Object.keys(errors).length === 0,
     errors,
@@ -58,15 +58,15 @@ function validateForm(data: DemoFormContext['formData']): {
 /**
  * Submit function (simulated async)
  */
-async function submitForm(data: DemoFormContext['formData']): Promise<{ message: string }> {
+async function submitForm(data: DemoFormContext["formData"]): Promise<{ message: string }> {
   // Simulate network delay
   await new Promise((resolve) => setTimeout(resolve, 1500));
-  
+
   // Simulate occasional failure (20% chance)
   if (Math.random() < 0.2) {
-    throw new Error('Network error: Please try again');
+    throw new Error("Network error: Please try again");
   }
-  
+
   return {
     message: `Hello, ${data.name}! Your form has been submitted successfully.`,
   };
@@ -90,17 +90,17 @@ export const demoFormMachine = setup({
     },
   },
   actors: {
-    submitForm: fromPromise(({ input }: { input: DemoFormContext['formData'] }) => {
+    submitForm: fromPromise(({ input }: { input: DemoFormContext["formData"] }) => {
       return submitForm(input);
     }),
   },
 }).createMachine({
-  id: 'demoForm',
-  initial: 'idle',
+  id: "demoForm",
+  initial: "idle",
   context: {
     formData: {
-      name: '',
-      email: '',
+      name: "",
+      email: "",
     },
     validationErrors: {},
     data: null,
@@ -141,18 +141,18 @@ export const demoFormMachine = setup({
               const validation = validateForm(context.formData);
               return validation.isValid;
             },
-            target: 'submitting',
+            target: "submitting",
           },
           {
             guard: ({ context }: { context: DemoFormContext }) => {
               return Object.keys(context.validationErrors).length > 0;
             },
-            target: 'validationError',
+            target: "validationError",
           },
         ],
         RESET: {
           actions: assign({
-            formData: () => ({ name: '', email: '' }),
+            formData: () => ({ name: "", email: "" }),
             validationErrors: () => ({}),
             data: null,
             error: null,
@@ -163,7 +163,7 @@ export const demoFormMachine = setup({
     validationError: {
       on: {
         UPDATE_NAME: {
-          target: 'idle',
+          target: "idle",
           actions: assign({
             formData: ({ context, event }) => ({
               ...context.formData,
@@ -177,7 +177,7 @@ export const demoFormMachine = setup({
           }),
         },
         UPDATE_EMAIL: {
-          target: 'idle',
+          target: "idle",
           actions: assign({
             formData: ({ context, event }) => ({
               ...context.formData,
@@ -195,23 +195,23 @@ export const demoFormMachine = setup({
             const validation = validateForm(context.formData);
             return validation.isValid;
           },
-          target: 'submitting',
+          target: "submitting",
         },
       },
     },
     submitting: {
       entry: assign({ error: null }),
       invoke: {
-        src: 'submitForm',
+        src: "submitForm",
         input: ({ context }) => context.formData,
         onDone: {
-          target: 'success',
+          target: "success",
           actions: assign({
             data: ({ event }) => event.output,
           }),
         },
         onError: {
-          target: 'error',
+          target: "error",
           actions: assign({
             error: ({ event }) => event.error as Error,
           }),
@@ -219,16 +219,16 @@ export const demoFormMachine = setup({
       },
       on: {
         RESET: {
-          target: 'idle',
+          target: "idle",
         },
       },
     },
     success: {
       on: {
         RESET: {
-          target: 'idle',
+          target: "idle",
           actions: assign({
-            formData: () => ({ name: '', email: '' }),
+            formData: () => ({ name: "", email: "" }),
             validationErrors: () => ({}),
             data: null,
             error: null,
@@ -239,12 +239,12 @@ export const demoFormMachine = setup({
     error: {
       on: {
         RETRY: {
-          target: 'submitting',
+          target: "submitting",
         },
         RESET: {
-          target: 'idle',
+          target: "idle",
           actions: assign({
-            formData: () => ({ name: '', email: '' }),
+            formData: () => ({ name: "", email: "" }),
             validationErrors: () => ({}),
             data: null,
             error: null,

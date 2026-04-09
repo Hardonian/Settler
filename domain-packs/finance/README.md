@@ -18,19 +18,16 @@ Industry-specific templates and workflows for financial reconciliation.
 ## Usage
 
 ```javascript
-const { SettlerClient } = require('@settler/sdk');
+const { SettlerClient } = require("@settler/sdk");
 
 const client = new SettlerClient({
   apiKey: process.env.SETTLER_API_KEY,
 });
 
 // Use FinTech module
-const result = await client.fintech.reconcileLedgers(
-  sourceEntries,
-  targetEntries
-);
+const result = await client.fintech.reconcileLedgers(sourceEntries, targetEntries);
 
-console.log('Reconciliation result:', result);
+console.log("Reconciliation result:", result);
 ```
 
 ## Templates

@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { ReactNode, useEffect } from 'react';
-import { cn } from '@/lib/utils';
+import { ReactNode, useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 interface AnimatedPageWrapperProps {
   children: ReactNode;
   className?: string;
-  'aria-label'?: string;
+  "aria-label"?: string;
 }
 
 /**
@@ -15,8 +15,8 @@ interface AnimatedPageWrapperProps {
  */
 export function AnimatedPageWrapper({
   children,
-  className = '',
-  'aria-label': ariaLabel,
+  className = "",
+  "aria-label": ariaLabel,
 }: AnimatedPageWrapperProps) {
   useEffect(() => {
     // Component mounted
@@ -25,23 +25,19 @@ export function AnimatedPageWrapper({
   return (
     <>
       {/* Skip to main content for accessibility */}
-      <a 
-        href="#main-content" 
-        className="skip-to-main"
-        aria-label="Skip to main content"
-      >
+      <a href="#main-content" className="skip-to-main" aria-label="Skip to main content">
         Skip to main content
       </a>
-      <div 
+      <div
         id="main-content"
         className={cn(
-          'min-h-screen',
-          'bg-gradient-to-br from-background via-primary-50/50 to-electric-indigo/10',
-          'dark:from-background dark:via-background dark:to-background',
+          "min-h-screen",
+          "bg-gradient-to-br from-background via-primary-50/50 to-electric-indigo/10",
+          "dark:from-background dark:via-background dark:to-background",
           className
         )}
         role="main"
-        aria-label={ariaLabel || 'Page content'}
+        aria-label={ariaLabel || "Page content"}
       >
         {children}
       </div>

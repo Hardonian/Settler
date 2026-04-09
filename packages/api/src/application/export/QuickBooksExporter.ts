@@ -1,11 +1,11 @@
 /**
  * QuickBooks Online Exporter
- * 
+ *
  * Exports reconciled data to QuickBooks Online CSV format
  * as specified in the Product & Technical Specification.
  */
 
-import { query } from '../../db';
+import { query } from "../../db";
 
 export interface QuickBooksExportOptions {
   dateRange: {
@@ -63,14 +63,14 @@ export class QuickBooksExporter {
 
     // Build CSV rows
     const csvRows: string[] = [];
-    
+
     // QuickBooks CSV header
-    csvRows.push('Date,Transaction Type,Num,Name,Memo,Account,Class,Amount');
+    csvRows.push("Date,Transaction Type,Num,Name,Memo,Account,Class,Amount");
 
     for (const match of matches) {
-      const glAccount = glAccountMapping[match.transaction_type] || 'Accounts Receivable';
+      const glAccount = glAccountMapping[match.transaction_type] || "Accounts Receivable";
       const amount = match.settlement_amount;
-      const date = match.settlement_date.toISOString().split('T')[0];
+      const date = match.settlement_date.toISOString().split("T")[0];
       const memo = `Reconciled: ${match.transaction_type} - ${match.transaction_id.substring(0, 8)}`;
 
       csvRows.push(
@@ -86,7 +86,7 @@ export class QuickBooksExporter {
         );
 
         for (const fee of fees) {
-          const feeGLAccount = glAccountMapping[`fee_${fee.type}`] || 'Payment Processing Fees';
+          const feeGLAccount = glAccountMapping[`fee_${fee.type}`] || "Payment Processing Fees";
           csvRows.push(
             `${date},Fee,${match.transaction_id.substring(0, 8)},,${fee.type} fee,${feeGLAccount},,${-fee.amount_value}`
           );
@@ -118,8 +118,8 @@ export class QuickBooksExporter {
       );
 
       for (const item of unmatched) {
-        const glAccount = glAccountMapping[item.transaction_type] || 'Accounts Receivable';
-        const date = item.created_at.toISOString().split('T')[0];
+        const glAccount = glAccountMapping[item.transaction_type] || "Accounts Receivable";
+        const date = item.created_at.toISOString().split("T")[0];
         const memo = `Unmatched: ${item.transaction_type} - ${item.transaction_id.substring(0, 8)}`;
 
         csvRows.push(
@@ -128,7 +128,7 @@ export class QuickBooksExporter {
       }
     }
 
-    return csvRows.join('\n');
+    return csvRows.join("\n");
   }
 
   /**
@@ -136,13 +136,13 @@ export class QuickBooksExporter {
    */
   getGLAccountMappingTemplate(): Record<string, string> {
     return {
-      'capture': 'Accounts Receivable',
-      'refund': 'Accounts Receivable',
-      'chargeback': 'Chargebacks',
-      'adjustment': 'Adjustments',
-      'fee_processing': 'Payment Processing Fees',
-      'fee_fx': 'FX Fees',
-      'fee_chargeback': 'Chargeback Fees',
+      capture: "Accounts Receivable",
+      refund: "Accounts Receivable",
+      chargeback: "Chargebacks",
+      adjustment: "Adjustments",
+      fee_processing: "Payment Processing Fees",
+      fee_fx: "FX Fees",
+      fee_chargeback: "Chargeback Fees",
     };
   }
 }

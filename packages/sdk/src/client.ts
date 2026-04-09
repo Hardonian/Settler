@@ -10,11 +10,7 @@ import { TransactionsClient } from "./clients/transactions";
 import { SettlementsClient } from "./clients/settlements";
 import { FeesClient } from "./clients/fees";
 import { ExportsClient } from "./clients/exports";
-import {
-  parseError,
-  NetworkError,
-  SettlerError,
-} from "./errors";
+import { parseError, NetworkError, SettlerError } from "./errors";
 import { withRetry, RetryConfig } from "./utils/retry";
 import { withDeduplication } from "./utils/deduplication";
 import { TokenManager, TokenInfo } from "./utils/token-refresh";
@@ -58,14 +54,14 @@ export interface SettlerConfig {
 
 /**
  * Production-grade TypeScript SDK client for Settler API
- * 
+ *
  * @example
  * ```typescript
  * const client = new SettlerClient({
  *   apiKey: 'sk_your_api_key',
  *   enableLogging: true,
  * });
- * 
+ *
  * const job = await client.jobs.create({
  *   name: 'My Reconciliation Job',
  *   source: { adapter: 'shopify', config: {...} },
@@ -98,7 +94,7 @@ export class SettlerClient {
 
   /**
    * Creates a new Settler client instance
-   * 
+   *
    * @param config - Configuration options for the client
    */
   constructor(config: SettlerConfig) {
@@ -147,9 +143,9 @@ export class SettlerClient {
 
   /**
    * Adds a middleware to the middleware chain
-   * 
+   *
    * @param middleware - Middleware function to add
-   * 
+   *
    * @example
    * ```typescript
    * client.use(async (context, next) => {
@@ -166,12 +162,12 @@ export class SettlerClient {
 
   /**
    * Makes an HTTP request to the Settler API
-   * 
+   *
    * @param method - HTTP method (GET, POST, PUT, DELETE, etc.)
    * @param path - API path (e.g., '/api/v1/jobs')
    * @param options - Request options (body, query parameters)
    * @returns Promise resolving to the response data
-   * 
+   *
    * @throws {NetworkError} When network request fails
    * @throws {AuthError} When authentication fails
    * @throws {ValidationError} When request validation fails
@@ -196,12 +192,12 @@ export class SettlerClient {
       };
 
       // Execute middleware chain
-      const response = await this.middlewareChain.execute(
+      const response = (await this.middlewareChain.execute(
         requestContext,
         async (context: RequestContext): Promise<ResponseContext<T>> => {
           return this.executeRequest(context);
         }
-      ) as ResponseContext<T>;
+      )) as ResponseContext<T>;
 
       return response.data;
     };
@@ -220,9 +216,7 @@ export class SettlerClient {
   /**
    * Internal method to execute the actual HTTP request
    */
-  private async executeRequest<T>(
-    context: RequestContext
-  ): Promise<ResponseContext<T>> {
+  private async executeRequest<T>(context: RequestContext): Promise<ResponseContext<T>> {
     const url = new URL(`${this.baseUrl}${context.path}`);
 
     if (context.query) {
@@ -235,12 +229,12 @@ export class SettlerClient {
     // Support both Bearer token (for session auth) and X-API-Key (for API key auth)
     let authHeader: string;
     let useBearer = false;
-    
+
     if (this.tokenManager) {
       const token = await this.tokenManager.getToken();
       authHeader = token;
       useBearer = true;
-    } else if (this.apiKey.startsWith('rk_')) {
+    } else if (this.apiKey.startsWith("rk_")) {
       // API key format
       authHeader = this.apiKey;
       useBearer = false;
@@ -252,9 +246,7 @@ export class SettlerClient {
 
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
-      ...(useBearer
-        ? { Authorization: `Bearer ${authHeader}` }
-        : { "X-API-Key": authHeader }),
+      ...(useBearer ? { Authorization: `Bearer ${authHeader}` } : { "X-API-Key": authHeader }),
       ...context.headers,
     };
 
@@ -262,7 +254,7 @@ export class SettlerClient {
       method: context.method,
       headers,
     };
-    
+
     if (context.body !== undefined && context.body !== null) {
       fetchOptions.body = JSON.stringify(context.body);
     }

@@ -48,7 +48,9 @@ export async function saveDraft(
   config: OperatorSurfaceCustomization,
   entitlements: OperatorCustomizationEntitlements
 ): Promise<
-  { ok: true } | { ok: false; errors: string[] } | { ok: false; code: "preset_not_entitled"; presetId: string }
+  | { ok: true }
+  | { ok: false; errors: string[] }
+  | { ok: false; code: "preset_not_entitled"; presetId: string }
 > {
   const n = normalizeOperatorCustomization(config);
   if (!n.ok) return n;

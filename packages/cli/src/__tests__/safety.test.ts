@@ -5,11 +5,7 @@ declare const expect: any;
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import {
-  readLimitedUtf8,
-  requireUnsafeAcknowledgement,
-  resolveWithinCwd,
-} from "../lib/safety";
+import { readLimitedUtf8, requireUnsafeAcknowledgement, resolveWithinCwd } from "../lib/safety";
 
 describe("cli safety helpers", () => {
   test("rejects oversized JSON inputs", async () => {

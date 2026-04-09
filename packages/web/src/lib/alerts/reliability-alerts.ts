@@ -1,11 +1,11 @@
 /**
  * Reliability Alert Utilities
- * 
+ *
  * Functions for sending reliability alerts via various channels.
  */
 
 export interface AlertOptions {
-  severity: 'high' | 'medium' | 'low';
+  severity: "high" | "medium" | "low";
   type: string;
   message: string;
   details?: unknown;
@@ -17,16 +17,17 @@ export interface AlertOptions {
 export async function sendSlackAlert(options: AlertOptions): Promise<void> {
   const webhookUrl = process.env.SLACK_WEBHOOK_URL;
   if (!webhookUrl) {
-    console.warn('[Alerts] SLACK_WEBHOOK_URL not configured, skipping Slack alert');
+    console.warn("[Alerts] SLACK_WEBHOOK_URL not configured, skipping Slack alert");
     return;
   }
 
   try {
-    const color = options.severity === 'high' ? 'danger' : options.severity === 'medium' ? 'warning' : 'good';
-    
+    const color =
+      options.severity === "high" ? "danger" : options.severity === "medium" ? "warning" : "good";
+
     await fetch(webhookUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         text: `🚨 Reliability Alert: ${options.message}`,
         attachments: [
@@ -34,29 +35,31 @@ export async function sendSlackAlert(options: AlertOptions): Promise<void> {
             color,
             fields: [
               {
-                title: 'Severity',
+                title: "Severity",
                 value: options.severity.toUpperCase(),
                 short: true,
               },
               {
-                title: 'Type',
+                title: "Type",
                 value: options.type,
                 short: true,
               },
               {
-                title: 'Details',
-                value: options.details ? JSON.stringify(options.details, null, 2) : 'No additional details',
+                title: "Details",
+                value: options.details
+                  ? JSON.stringify(options.details, null, 2)
+                  : "No additional details",
                 short: false,
               },
             ],
-            footer: 'Settler Reliability Monitoring',
+            footer: "Settler Reliability Monitoring",
             ts: Math.floor(Date.now() / 1000),
           },
         ],
       }),
     });
   } catch (error) {
-    console.error('[Alerts] Failed to send Slack alert:', error);
+    console.error("[Alerts] Failed to send Slack alert:", error);
   }
 }
 
@@ -66,14 +69,14 @@ export async function sendSlackAlert(options: AlertOptions): Promise<void> {
 export async function sendEmailAlert(options: AlertOptions): Promise<void> {
   const alertEmail = process.env.ALERT_EMAIL_TO;
   if (!alertEmail) {
-    console.warn('[Alerts] ALERT_EMAIL_TO not configured, skipping email alert');
+    console.warn("[Alerts] ALERT_EMAIL_TO not configured, skipping email alert");
     return;
   }
 
   // If you have an email service configured, use it here
   // For now, just log the alert
   // eslint-disable-next-line no-console
-  console.log('[Email Alert]', {
+  console.log("[Email Alert]", {
     to: alertEmail,
     subject: `[${options.severity.toUpperCase()}] Reliability Alert: ${options.type}`,
     message: options.message,
@@ -87,34 +90,34 @@ export async function sendEmailAlert(options: AlertOptions): Promise<void> {
 export async function sendPagerDutyAlert(options: AlertOptions): Promise<void> {
   const integrationKey = process.env.PAGERDUTY_INTEGRATION_KEY;
   if (!integrationKey) {
-    console.warn('[Alerts] PAGERDUTY_INTEGRATION_KEY not configured, skipping PagerDuty alert');
+    console.warn("[Alerts] PAGERDUTY_INTEGRATION_KEY not configured, skipping PagerDuty alert");
     return;
   }
 
   // Only send high severity alerts to PagerDuty
-  if (options.severity !== 'high') {
+  if (options.severity !== "high") {
     return;
   }
 
   try {
-    await fetch('https://events.pagerduty.com/v2/enqueue', {
-      method: 'POST',
+    await fetch("https://events.pagerduty.com/v2/enqueue", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         routing_key: integrationKey,
-        event_action: 'trigger',
+        event_action: "trigger",
         payload: {
           summary: options.message,
-          severity: 'critical',
-          source: 'settler-reliability',
+          severity: "critical",
+          source: "settler-reliability",
           custom_details: options.details || {},
         },
       }),
     });
   } catch (error) {
-    console.error('[Alerts] Failed to send PagerDuty alert:', error);
+    console.error("[Alerts] Failed to send PagerDuty alert:", error);
   }
 }
 
@@ -122,11 +125,7 @@ export async function sendPagerDutyAlert(options: AlertOptions): Promise<void> {
  * Send alert to all configured channels
  */
 export async function sendAlert(options: AlertOptions): Promise<void> {
-  const promises = [
-    sendSlackAlert(options),
-    sendEmailAlert(options),
-    sendPagerDutyAlert(options),
-  ];
+  const promises = [sendSlackAlert(options), sendEmailAlert(options), sendPagerDutyAlert(options)];
 
   await Promise.allSettled(promises);
 }

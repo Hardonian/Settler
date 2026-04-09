@@ -5,6 +5,7 @@ This document describes the required GitHub repository secrets for Receipt Conso
 ## Required Secrets
 
 ### Database Connection
+
 - **`DATABASE_URL`** (Required)
   - PostgreSQL connection string with password
   - Format: `postgresql://user:password@host:port/database?schema=public`
@@ -12,6 +13,7 @@ This document describes the required GitHub repository secrets for Receipt Conso
   - **Auto-injected on commit** - Used by all workflows for database operations
 
 ### Supabase Credentials
+
 - **`SUPABASE_URL`** (Required)
   - Your Supabase project URL
   - Format: `https://xxxxx.supabase.co`
@@ -35,6 +37,7 @@ This document describes the required GitHub repository secrets for Receipt Conso
   - Found in project URL or dashboard
 
 ### E2E Testing (Optional)
+
 - **`E2E_BASE_URL`** (Optional)
   - Base URL for E2E tests
   - Default: `http://localhost:3000`
@@ -51,6 +54,7 @@ This document describes the required GitHub repository secrets for Receipt Conso
   - Format: `rk_xxxxx`
 
 ### Vercel Deployment (Optional)
+
 - **`VERCEL_TOKEN`** (Optional)
   - Vercel API token
   - Generate at: https://vercel.com/account/tokens
@@ -105,17 +109,20 @@ After adding secrets, verify they work by:
 ## Troubleshooting
 
 ### "Secret not found" error
+
 - Ensure secret name matches exactly (case-sensitive)
 - Check that secret is added to the correct repository
 - Verify workflow has access to the secret
 
 ### "Database connection failed" error
+
 - Verify `DATABASE_URL` format is correct
 - Check that database password is correct
 - Ensure database allows connections from GitHub Actions IPs
 - Check firewall/network settings
 
 ### "Permission denied" error
+
 - Verify `SUPABASE_SERVICE_ROLE_KEY` is correct
 - Check that service role key has necessary permissions
 - Ensure RLS policies allow service role access
@@ -125,6 +132,7 @@ After adding secrets, verify they work by:
 If you're migrating from local `.env` files:
 
 1. Export your local secrets:
+
    ```bash
    # Don't commit this file!
    cat > .env.local << EOF
@@ -141,6 +149,7 @@ If you're migrating from local `.env` files:
    - Remove from `.env.local` (or add to `.gitignore`)
 
 3. Update workflows to use secrets:
+
    ```yaml
    env:
      DATABASE_URL: ${{ secrets.DATABASE_URL }}

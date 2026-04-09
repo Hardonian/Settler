@@ -1,30 +1,30 @@
 /**
  * Admin Ops Console
- * 
+ *
  * Live operations console with realtime exception triage workflow.
  * Split-pane design: list on left, detail on right.
  */
 
-'use client';
+"use client";
 
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect } from "react";
 
-import { useAdminExceptions, useAdminStream } from '@/lib/admin/hooks/use-admin-metrics';
-import { useKeyboardShortcuts } from '@/lib/admin/hooks/use-keyboard-shortcuts';
-import { ExceptionItem } from '@/lib/admin/metrics/types';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { AlertCircle, CheckCircle2, Clock, Search } from 'lucide-react';
-import { KeyboardShortcutsHelp } from '@/lib/admin/hooks/use-keyboard-shortcuts';
-import { adminLogger } from '@/lib/admin/utils/logger';
+import { useAdminExceptions, useAdminStream } from "@/lib/admin/hooks/use-admin-metrics";
+import { useKeyboardShortcuts } from "@/lib/admin/hooks/use-keyboard-shortcuts";
+import { ExceptionItem } from "@/lib/admin/metrics/types";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { AlertCircle, CheckCircle2, Clock, Search } from "lucide-react";
+import { KeyboardShortcutsHelp } from "@/lib/admin/hooks/use-keyboard-shortcuts";
+import { adminLogger } from "@/lib/admin/utils/logger";
 
 export default function AdminOpsConsole() {
   const [selectedException, setSelectedException] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [severityFilter, setSeverityFilter] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [severityFilter, setSeverityFilter] = useState<string>("all");
   const selectedIndexRef = useRef<number>(0);
 
   // Fetch exceptions
@@ -33,15 +33,15 @@ export default function AdminOpsConsole() {
   });
 
   // Connect to SSE stream
-  const { connectionState } = useAdminStream(['exceptions'], undefined, true);
+  const { connectionState } = useAdminStream(["exceptions"], undefined, true);
 
   // Filter exceptions
   const filteredExceptions = useMemo(() => {
     if (!exceptionsData?.items) return [];
-    
+
     return exceptionsData.items.filter((ex: ExceptionItem) => {
-      if (statusFilter !== 'all' && ex.status !== statusFilter) return false;
-      if (severityFilter !== 'all' && ex.severity !== severityFilter) return false;
+      if (statusFilter !== "all" && ex.status !== statusFilter) return false;
+      if (severityFilter !== "all" && ex.severity !== severityFilter) return false;
       if (searchQuery && !ex.reason.toLowerCase().includes(searchQuery.toLowerCase())) return false;
       return true;
     });
@@ -94,7 +94,9 @@ export default function AdminOpsConsole() {
   // Update selected index when exceptions change
   useEffect(() => {
     if (selectedException && filteredExceptions.length > 0) {
-      const index = filteredExceptions.findIndex((ex: ExceptionItem) => ex.id === selectedException);
+      const index = filteredExceptions.findIndex(
+        (ex: ExceptionItem) => ex.id === selectedException
+      );
       if (index >= 0) {
         selectedIndexRef.current = index;
       }
@@ -107,19 +109,19 @@ export default function AdminOpsConsole() {
   const handleResolve = async (id: string) => {
     try {
       const response = await fetch(`/api/admin/exceptions/${id}/resolve`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ resolutionNotes: 'Resolved via ops console' }),
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resolutionNotes: "Resolved via ops console" }),
       });
       if (!response.ok) {
-        throw new Error('Failed to resolve exception');
+        throw new Error("Failed to resolve exception");
       }
       // Refresh data
       window.location.reload();
     } catch (error) {
       // Error handling would trigger toast notification
       if (error instanceof Error) {
-        adminLogger.error('Failed to resolve exception', error, { exceptionId: id });
+        adminLogger.error("Failed to resolve exception", error, { exceptionId: id });
       }
     }
   };
@@ -127,39 +129,39 @@ export default function AdminOpsConsole() {
   const handleEscalate = async (id: string) => {
     try {
       const response = await fetch(`/api/admin/exceptions/${id}/escalate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ escalationReason: 'Escalated via ops console' }),
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ escalationReason: "Escalated via ops console" }),
       });
       if (!response.ok) {
-        throw new Error('Failed to escalate exception');
+        throw new Error("Failed to escalate exception");
       }
       // Refresh data
       window.location.reload();
     } catch (error) {
       // Error handling would trigger toast notification
       if (error instanceof Error) {
-        adminLogger.error('Failed to escalate exception', error, { exceptionId: id });
+        adminLogger.error("Failed to escalate exception", error, { exceptionId: id });
       }
     }
   };
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'critical':
-        return 'bg-destructive/10 text-destructive border-destructive/20';
-      case 'warn':
-        return 'bg-amber-500/10 text-amber-600 border-amber-500/20';
+      case "critical":
+        return "bg-destructive/10 text-destructive border-destructive/20";
+      case "warn":
+        return "bg-amber-500/10 text-amber-600 border-amber-500/20";
       default:
-        return 'bg-primary/10 text-primary border-primary/20';
+        return "bg-primary/10 text-primary border-primary/20";
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'resolved':
+      case "resolved":
         return <CheckCircle2 className="w-4 h-4" />;
-      case 'in_review':
+      case "in_review":
         return <Clock className="w-4 h-4" />;
       default:
         return <AlertCircle className="w-4 h-4" />;
@@ -173,17 +175,18 @@ export default function AdminOpsConsole() {
         {/* Header */}
         <div className="p-4 border-b border-border bg-card/80">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-foreground">
-              Exception Queue
-            </h2>
+            <h2 className="text-lg font-semibold text-foreground">Exception Queue</h2>
             <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${
-                connectionState === 'connected' ? 'bg-green-500' :
-                connectionState === 'reconnecting' ? 'bg-yellow-500' : 'bg-red-500'
-              }`} />
-              <span className="text-xs text-muted-foreground">
-                {connectionState}
-              </span>
+              <div
+                className={`w-2 h-2 rounded-full ${
+                  connectionState === "connected"
+                    ? "bg-green-500"
+                    : connectionState === "reconnecting"
+                      ? "bg-yellow-500"
+                      : "bg-red-500"
+                }`}
+              />
+              <span className="text-xs text-muted-foreground">{connectionState}</span>
             </div>
           </div>
 
@@ -226,13 +229,9 @@ export default function AdminOpsConsole() {
         {/* List */}
         <div className="flex-1 overflow-y-auto">
           {isLoading ? (
-            <div className="p-4 text-center text-muted-foreground">
-              Loading exceptions...
-            </div>
+            <div className="p-4 text-center text-muted-foreground">Loading exceptions...</div>
           ) : filteredExceptions.length === 0 ? (
-            <div className="p-4 text-center text-muted-foreground">
-              No exceptions found
-            </div>
+            <div className="p-4 text-center text-muted-foreground">No exceptions found</div>
           ) : (
             <div className="divide-y divide-border/40">
               {filteredExceptions.map((ex: ExceptionItem, index: number) => (
@@ -243,13 +242,13 @@ export default function AdminOpsConsole() {
                     selectedIndexRef.current = index;
                   }}
                   className={`w-full p-4 text-left hover:bg-muted/30 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
-                    selectedException === ex.id ? 'bg-muted/30 ring-2 ring-primary' : ''
+                    selectedException === ex.id ? "bg-muted/30 ring-2 ring-primary" : ""
                   }`}
                   aria-selected={selectedException === ex.id}
                   role="option"
                   tabIndex={0}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
+                    if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
                       setSelectedException(ex.id);
                       selectedIndexRef.current = index;
@@ -260,9 +259,7 @@ export default function AdminOpsConsole() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         {getStatusIcon(ex.status)}
-                        <span className="text-sm font-medium text-foreground">
-                          {ex.reason}
-                        </span>
+                        <span className="text-sm font-medium text-foreground">{ex.reason}</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         <span>{ex.source}</span>
@@ -270,9 +267,7 @@ export default function AdminOpsConsole() {
                         <span>{new Date(ex.createdAt).toLocaleString()}</span>
                       </div>
                     </div>
-                    <Badge className={getSeverityColor(ex.severity)}>
-                      {ex.severity}
-                    </Badge>
+                    <Badge className={getSeverityColor(ex.severity)}>{ex.severity}</Badge>
                   </div>
                 </button>
               ))}
@@ -304,16 +299,16 @@ function ExceptionDetail({ exception }: { exception: ExceptionItem }) {
     setIsResolving(true);
     try {
       const response = await fetch(`/api/admin/exceptions/${exception.id}/resolve`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ resolutionNotes: 'Resolved via admin console' }),
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resolutionNotes: "Resolved via admin console" }),
       });
       if (response.ok) {
         // Toast would be shown here
         window.location.reload();
       }
     } catch (error) {
-      adminLogger.error('Failed to resolve exception', error);
+      adminLogger.error("Failed to resolve exception", error);
     } finally {
       setIsResolving(false);
     }
@@ -323,16 +318,16 @@ function ExceptionDetail({ exception }: { exception: ExceptionItem }) {
     setIsEscalating(true);
     try {
       const response = await fetch(`/api/admin/exceptions/${exception.id}/escalate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ escalationReason: 'Escalated via admin console' }),
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ escalationReason: "Escalated via admin console" }),
       });
       if (response.ok) {
         // Toast would be shown here
         window.location.reload();
       }
     } catch (error) {
-      adminLogger.error('Failed to escalate exception', error);
+      adminLogger.error("Failed to escalate exception", error);
     } finally {
       setIsEscalating(false);
     }
@@ -344,20 +339,22 @@ function ExceptionDetail({ exception }: { exception: ExceptionItem }) {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>{exception.reason}</CardTitle>
-            <Badge className={
-              exception.severity === 'critical' ? 'bg-destructive/10 text-destructive border-destructive/20' :
-              exception.severity === 'warn' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' :
-              'bg-primary/10 text-primary border-primary/20'
-            }>
+            <Badge
+              className={
+                exception.severity === "critical"
+                  ? "bg-destructive/10 text-destructive border-destructive/20"
+                  : exception.severity === "warn"
+                    ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                    : "bg-primary/10 text-primary border-primary/20"
+              }
+            >
               {exception.severity}
             </Badge>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <h3 className="text-sm font-medium text-foreground mb-2">
-              Details
-            </h3>
+            <h3 className="text-sm font-medium text-foreground mb-2">Details</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Source:</span>
@@ -376,9 +373,7 @@ function ExceptionDetail({ exception }: { exception: ExceptionItem }) {
               {exception.ruleId && (
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Rule ID:</span>
-                  <span className="text-foreground font-mono text-xs">
-                    {exception.ruleId}
-                  </span>
+                  <span className="text-foreground font-mono text-xs">{exception.ruleId}</span>
                 </div>
               )}
             </div>
@@ -386,9 +381,7 @@ function ExceptionDetail({ exception }: { exception: ExceptionItem }) {
 
           {exception.evidence && (
             <div>
-              <h3 className="text-sm font-medium text-foreground mb-2">
-                Evidence
-              </h3>
+              <h3 className="text-sm font-medium text-foreground mb-2">Evidence</h3>
               <pre className="text-xs bg-muted/40 dark:bg-card p-3 rounded overflow-auto">
                 {JSON.stringify(exception.evidence, null, 2)}
               </pre>
@@ -396,24 +389,19 @@ function ExceptionDetail({ exception }: { exception: ExceptionItem }) {
           )}
 
           <div className="flex gap-2 pt-4 border-t border-border/40">
-            <Button 
-              variant="default" 
+            <Button
+              variant="default"
               size="sm"
               onClick={handleResolve}
-              disabled={isResolving || exception.status === 'resolved'}
+              disabled={isResolving || exception.status === "resolved"}
             >
-              {isResolving ? 'Resolving...' : 'Mark Resolved (r)'}
+              {isResolving ? "Resolving..." : "Mark Resolved (r)"}
             </Button>
             <Button variant="outline" size="sm">
               Create Adjustment
             </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={handleEscalate}
-              disabled={isEscalating}
-            >
-              {isEscalating ? 'Escalating...' : 'Escalate (e)'}
+            <Button variant="outline" size="sm" onClick={handleEscalate} disabled={isEscalating}>
+              {isEscalating ? "Escalating..." : "Escalate (e)"}
             </Button>
           </div>
         </CardContent>

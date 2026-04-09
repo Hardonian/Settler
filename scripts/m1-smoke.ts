@@ -50,11 +50,15 @@ async function main() {
   await runCommand("pnpm", ["build"], baseEnv);
 
   console.log("[M1 smoke] Start app with missing secrets and check /app fails gracefully...");
-  const startProc = spawn("node", ["node_modules/next/dist/bin/next", "start", "-p", String(PORT)], {
-    cwd: WEB_DIR,
-    env: baseEnv,
-    stdio: ["ignore", "pipe", "pipe"],
-  });
+  const startProc = spawn(
+    "node",
+    ["node_modules/next/dist/bin/next", "start", "-p", String(PORT)],
+    {
+      cwd: WEB_DIR,
+      env: baseEnv,
+      stdio: ["ignore", "pipe", "pipe"],
+    }
+  );
   startProc.stdout.on("data", (chunk) => process.stdout.write(chunk));
   startProc.stderr.on("data", (chunk) => process.stderr.write(chunk));
 

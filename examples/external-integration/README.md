@@ -59,7 +59,7 @@ npm start
 ### 1. SDK Client
 
 ```javascript
-import { SettlerClient } from '@settler/sdk';
+import { SettlerClient } from "@settler/sdk";
 
 const client = new SettlerClient({
   apiKey: process.env.SETTLER_API_KEY,
@@ -69,6 +69,7 @@ const client = new SettlerClient({
 ### 2. Public API Routes
 
 All functionality accessed via:
+
 - `/api/v1/jobs` - Job management
 - `/api/v1/reports` - Reports
 - `/api/v1/webhooks` - Webhook management
@@ -77,6 +78,7 @@ All functionality accessed via:
 ### 3. Webhook Events
 
 Subscribe to public events:
+
 - `reconciliation.completed`
 - `reconciliation.failed`
 - `ingestion.completed`

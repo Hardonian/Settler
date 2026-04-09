@@ -157,9 +157,7 @@ export default function NodeDetailPage() {
           <div>
             <div className="flex items-center gap-3 mb-3">
               <Server className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-              <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-                {node.name}
-              </h1>
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground">{node.name}</h1>
               <Badge className={getStatusBadge(node.status)}>{node.status}</Badge>
             </div>
             <p className="text-muted-foreground text-sm md:text-base">
@@ -235,41 +233,27 @@ export default function NodeDetailPage() {
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <span className="text-sm font-medium text-muted-foreground">
-                    Model:
-                  </span>
-                  <span className="ml-2 text-sm text-muted-foreground">
-                    {node.config.model}
-                  </span>
+                  <span className="text-sm font-medium text-muted-foreground">Model:</span>
+                  <span className="ml-2 text-sm text-muted-foreground">{node.config.model}</span>
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-muted-foreground">
-                    Version:
-                  </span>
-                  <span className="ml-2 text-sm text-muted-foreground">
-                    {node.config.version}
-                  </span>
+                  <span className="text-sm font-medium text-muted-foreground">Version:</span>
+                  <span className="ml-2 text-sm text-muted-foreground">{node.config.version}</span>
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-muted-foreground">
-                    Endpoint:
-                  </span>
+                  <span className="text-sm font-medium text-muted-foreground">Endpoint:</span>
                   <span className="ml-2 text-sm text-muted-foreground font-mono">
                     {node.config.endpoint}
                   </span>
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-muted-foreground">
-                    Created:
-                  </span>
+                  <span className="text-sm font-medium text-muted-foreground">Created:</span>
                   <span className="ml-2 text-sm text-muted-foreground">
                     {new Date(node.createdAt).toLocaleDateString()}
                   </span>
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-muted-foreground">
-                    Last Active:
-                  </span>
+                  <span className="text-sm font-medium text-muted-foreground">Last Active:</span>
                   <span className="ml-2 text-sm text-muted-foreground">
                     {new Date(node.lastActive).toLocaleString()}
                   </span>
@@ -290,17 +274,11 @@ export default function NodeDetailPage() {
                   <Badge className={getStatusBadge(node.status)}>{node.status}</Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">
-                    Average Latency
-                  </span>
-                  <span className="text-sm font-medium text-foreground">
-                    {node.latency}ms
-                  </span>
+                  <span className="text-sm text-muted-foreground">Average Latency</span>
+                  <span className="text-sm font-medium text-foreground">{node.latency}ms</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">
-                    Request Accuracy
-                  </span>
+                  <span className="text-sm text-muted-foreground">Request Accuracy</span>
                   <span className="text-sm font-medium text-green-600 dark:text-green-400">
                     {node.accuracy}%
                   </span>

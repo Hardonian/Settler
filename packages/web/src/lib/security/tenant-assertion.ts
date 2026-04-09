@@ -1,14 +1,14 @@
 /**
  * Tenant Assertion Helpers
- * 
+ *
  * CRITICAL: Server-side tenant isolation checks
  * These complement RLS policies and ensure tenant_id is always validated server-side.
  */
 
-import { createClient } from '@/lib/supabase/server';
-import { prisma } from '@/shared/db/prismaClient';
-import { NextResponse } from 'next/server';
-import { safeLogger } from '@/lib/observability/safe-logger';
+import { createClient } from "@/lib/supabase/server";
+import { prisma } from "@/shared/db/prismaClient";
+import { NextResponse } from "next/server";
+import { safeLogger } from "@/lib/observability/safe-logger";
 
 export interface TenantAssertionResult {
   allowed: boolean;
@@ -20,12 +20,12 @@ export interface TenantAssertionResult {
  * Assert that a tenant_id belongs to the authenticated user
  * This is a server-side check that complements RLS
  */
-export async function assertTenantAccess(
-  tenantId: string
-): Promise<TenantAssertionResult> {
+export async function assertTenantAccess(tenantId: string): Promise<TenantAssertionResult> {
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return {
@@ -33,9 +33,9 @@ export async function assertTenantAccess(
         tenantId,
         error: NextResponse.json(
           {
-            error: 'Unauthorized',
-            message: 'Authentication required',
-            code: 'UNAUTHORIZED',
+            error: "Unauthorized",
+            message: "Authentication required",
+            code: "UNAUTHORIZED",
           },
           { status: 401 }
         ),
@@ -47,7 +47,7 @@ export async function assertTenantAccess(
       where: {
         userId: user.id,
         tenantId,
-        status: 'active',
+        status: "active",
         deletedAt: null,
       },
       select: { id: true },
@@ -59,9 +59,9 @@ export async function assertTenantAccess(
         tenantId,
         error: NextResponse.json(
           {
-            error: 'Forbidden',
-            message: 'You do not have access to this tenant',
-            code: 'TENANT_ACCESS_DENIED',
+            error: "Forbidden",
+            message: "You do not have access to this tenant",
+            code: "TENANT_ACCESS_DENIED",
           },
           { status: 403 }
         ),
@@ -73,7 +73,7 @@ export async function assertTenantAccess(
       tenantId,
     };
   } catch (error) {
-    await safeLogger.error('[assertTenantAccess] Error', {
+    await safeLogger.error("[assertTenantAccess] Error", {
       tenantId,
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
@@ -83,9 +83,9 @@ export async function assertTenantAccess(
       tenantId,
       error: NextResponse.json(
         {
-          error: 'Tenant Check Failed',
-          message: 'Unable to verify tenant access. Please try again.',
-          code: 'TENANT_CHECK_FAILED',
+          error: "Tenant Check Failed",
+          message: "Unable to verify tenant access. Please try again.",
+          code: "TENANT_CHECK_FAILED",
           retryable: true,
         },
         { status: 403 }
@@ -100,16 +100,16 @@ export async function assertTenantAccess(
  */
 export async function assertTenantRow<T extends { tenantId?: string | null }>(
   row: T | null,
-  resourceType: string = 'resource'
+  resourceType: string = "resource"
 ): Promise<{ allowed: boolean; error?: NextResponse }> {
   if (!row || !row.tenantId) {
     return {
       allowed: false,
       error: NextResponse.json(
         {
-          error: 'Not Found',
+          error: "Not Found",
           message: `${resourceType} not found`,
-          code: 'NOT_FOUND',
+          code: "NOT_FOUND",
         },
         { status: 404 }
       ),
@@ -131,12 +131,10 @@ export async function assertTenantRow<T extends { tenantId?: string | null }>(
  * Require tenant context - throws if tenant access is denied
  * Use this in server actions or route handlers
  */
-export async function requireTenantContext(
-  tenantId: string
-): Promise<string> {
+export async function requireTenantContext(tenantId: string): Promise<string> {
   const assertion = await assertTenantAccess(tenantId);
   if (!assertion.allowed) {
-    await safeLogger.warn('[requireTenantContext] Tenant access denied', {
+    await safeLogger.warn("[requireTenantContext] Tenant access denied", {
       tenantId,
     });
     // Return tenantId anyway - let the caller handle the error response

@@ -170,15 +170,15 @@ For managed accounts, email support@settler.io with:
 
 ## What gets deleted
 
-| Data                      | Local teardown       | Managed account closure |
-| ------------------------- | -------------------- | ----------------------- |
-| Reconciliation runs       | Docker volume removal | Deleted within 5 days   |
-| Exception records         | Docker volume removal | Deleted within 5 days   |
-| Audit logs                | Docker volume removal | Retained 90 days (regulatory), then deleted |
-| Evidence / proofpacks     | Docker volume removal | Deleted within 5 days   |
-| API keys                  | Immediate             | Immediate               |
-| Webhook registrations     | Immediate             | Immediate               |
-| Billing data              | N/A                   | Retained per legal requirements |
+| Data                  | Local teardown        | Managed account closure                     |
+| --------------------- | --------------------- | ------------------------------------------- |
+| Reconciliation runs   | Docker volume removal | Deleted within 5 days                       |
+| Exception records     | Docker volume removal | Deleted within 5 days                       |
+| Audit logs            | Docker volume removal | Retained 90 days (regulatory), then deleted |
+| Evidence / proofpacks | Docker volume removal | Deleted within 5 days                       |
+| API keys              | Immediate             | Immediate                                   |
+| Webhook registrations | Immediate             | Immediate                                   |
+| Billing data          | N/A                   | Retained per legal requirements             |
 
 ## Verify cleanup
 

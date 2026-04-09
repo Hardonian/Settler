@@ -1,19 +1,19 @@
 /**
  * Block Configuration Panel
- * 
+ *
  * Form for editing block properties.
  */
 
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { PageBlock } from '@/domain/siteBuilder/pageSchema';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useState } from "react";
+import { PageBlock } from "@/domain/siteBuilder/pageSchema";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface BlockConfigPanelProps {
   block: PageBlock;
@@ -57,17 +57,17 @@ export function BlockConfigPanel({ block, onUpdate }: BlockConfigPanelProps) {
             <Label>Block ID</Label>
             <Input value={block.id} disabled className="mt-1" />
           </div>
-          
+
           <div className="flex items-center gap-2">
             <Switch
               checked={block.visible !== false}
-              onCheckedChange={(checked) => handleFieldChange('visible', checked)}
+              onCheckedChange={(checked) => handleFieldChange("visible", checked)}
             />
             <Label>Visible</Label>
           </div>
 
           {/* Type-specific fields */}
-          {block.type === 'hero' && (
+          {block.type === "hero" && (
             <Tabs defaultValue="content">
               <TabsList>
                 <TabsTrigger value="content">Content</TabsTrigger>
@@ -79,23 +79,23 @@ export function BlockConfigPanel({ block, onUpdate }: BlockConfigPanelProps) {
                   <Label>Title</Label>
                   <Input
                     value={block.title}
-                    onChange={(e) => handleFieldChange('title', e.target.value)}
+                    onChange={(e) => handleFieldChange("title", e.target.value)}
                     className="mt-1"
                   />
                 </div>
                 <div>
                   <Label>Subtitle</Label>
                   <Input
-                    value={block.subtitle || ''}
-                    onChange={(e) => handleFieldChange('subtitle', e.target.value)}
+                    value={block.subtitle || ""}
+                    onChange={(e) => handleFieldChange("subtitle", e.target.value)}
                     className="mt-1"
                   />
                 </div>
                 <div>
                   <Label>Description</Label>
                   <Textarea
-                    value={block.description || ''}
-                    onChange={(e) => handleFieldChange('description', e.target.value)}
+                    value={block.description || ""}
+                    onChange={(e) => handleFieldChange("description", e.target.value)}
                     className="mt-1"
                     rows={3}
                   />
@@ -105,16 +105,20 @@ export function BlockConfigPanel({ block, onUpdate }: BlockConfigPanelProps) {
                 <div>
                   <Label>Primary CTA Label</Label>
                   <Input
-                    value={block.primaryCta?.label || ''}
-                    onChange={(e) => handleNestedFieldChange(['primaryCta', 'label'], e.target.value)}
+                    value={block.primaryCta?.label || ""}
+                    onChange={(e) =>
+                      handleNestedFieldChange(["primaryCta", "label"], e.target.value)
+                    }
                     className="mt-1"
                   />
                 </div>
                 <div>
                   <Label>Primary CTA Link</Label>
                   <Input
-                    value={block.primaryCta?.href || ''}
-                    onChange={(e) => handleNestedFieldChange(['primaryCta', 'href'], e.target.value)}
+                    value={block.primaryCta?.href || ""}
+                    onChange={(e) =>
+                      handleNestedFieldChange(["primaryCta", "href"], e.target.value)
+                    }
                     className="mt-1"
                   />
                 </div>
@@ -123,8 +127,8 @@ export function BlockConfigPanel({ block, onUpdate }: BlockConfigPanelProps) {
                 <div>
                   <Label>Alignment</Label>
                   <select
-                    value={block.alignment || 'center'}
-                    onChange={(e) => handleFieldChange('alignment', e.target.value)}
+                    value={block.alignment || "center"}
+                    onChange={(e) => handleFieldChange("alignment", e.target.value)}
                     className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2"
                   >
                     <option value="left">Left</option>
@@ -135,8 +139,8 @@ export function BlockConfigPanel({ block, onUpdate }: BlockConfigPanelProps) {
                 <div>
                   <Label>Background Gradient</Label>
                   <Input
-                    value={block.backgroundGradient || ''}
-                    onChange={(e) => handleFieldChange('backgroundGradient', e.target.value)}
+                    value={block.backgroundGradient || ""}
+                    onChange={(e) => handleFieldChange("backgroundGradient", e.target.value)}
                     className="mt-1"
                     placeholder="linear-gradient(...)"
                   />
@@ -145,21 +149,21 @@ export function BlockConfigPanel({ block, onUpdate }: BlockConfigPanelProps) {
             </Tabs>
           )}
 
-          {block.type === 'featureGrid' && (
+          {block.type === "featureGrid" && (
             <div className="space-y-4">
               <div>
                 <Label>Title</Label>
                 <Input
-                  value={block.title || ''}
-                  onChange={(e) => handleFieldChange('title', e.target.value)}
+                  value={block.title || ""}
+                  onChange={(e) => handleFieldChange("title", e.target.value)}
                   className="mt-1"
                 />
               </div>
               <div>
                 <Label>Description</Label>
                 <Textarea
-                  value={block.description || ''}
-                  onChange={(e) => handleFieldChange('description', e.target.value)}
+                  value={block.description || ""}
+                  onChange={(e) => handleFieldChange("description", e.target.value)}
                   className="mt-1"
                   rows={2}
                 />
@@ -171,7 +175,7 @@ export function BlockConfigPanel({ block, onUpdate }: BlockConfigPanelProps) {
                   min="1"
                   max="4"
                   value={block.columns || 3}
-                  onChange={(e) => handleFieldChange('columns', parseInt(e.target.value))}
+                  onChange={(e) => handleFieldChange("columns", parseInt(e.target.value))}
                   className="mt-1"
                 />
               </div>
@@ -184,21 +188,21 @@ export function BlockConfigPanel({ block, onUpdate }: BlockConfigPanelProps) {
             </div>
           )}
 
-          {block.type === 'ctaBanner' && (
+          {block.type === "ctaBanner" && (
             <div className="space-y-4">
               <div>
                 <Label>Title</Label>
                 <Input
                   value={block.title}
-                  onChange={(e) => handleFieldChange('title', e.target.value)}
+                  onChange={(e) => handleFieldChange("title", e.target.value)}
                   className="mt-1"
                 />
               </div>
               <div>
                 <Label>Description</Label>
                 <Textarea
-                  value={block.description || ''}
-                  onChange={(e) => handleFieldChange('description', e.target.value)}
+                  value={block.description || ""}
+                  onChange={(e) => handleFieldChange("description", e.target.value)}
                   className="mt-1"
                   rows={2}
                 />
@@ -207,7 +211,7 @@ export function BlockConfigPanel({ block, onUpdate }: BlockConfigPanelProps) {
                 <Label>Primary CTA Label</Label>
                 <Input
                   value={block.primaryCta.label}
-                  onChange={(e) => handleNestedFieldChange(['primaryCta', 'label'], e.target.value)}
+                  onChange={(e) => handleNestedFieldChange(["primaryCta", "label"], e.target.value)}
                   className="mt-1"
                 />
               </div>
@@ -215,7 +219,7 @@ export function BlockConfigPanel({ block, onUpdate }: BlockConfigPanelProps) {
                 <Label>Primary CTA Link</Label>
                 <Input
                   value={block.primaryCta.href}
-                  onChange={(e) => handleNestedFieldChange(['primaryCta', 'href'], e.target.value)}
+                  onChange={(e) => handleNestedFieldChange(["primaryCta", "href"], e.target.value)}
                   className="mt-1"
                 />
               </div>

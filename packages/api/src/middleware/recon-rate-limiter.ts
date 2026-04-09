@@ -1,15 +1,15 @@
 /**
  * Recon Rate Limiter
- * 
+ *
  * Tier-based rate limiting for reconciliation operations
  * Part of Phase II: API & Billing Expansion
  */
 
-import { Response, NextFunction } from 'express';
- 
-import type { PrismaClient } from '@prisma/client';
-import type { TenantRequest } from './tenant';
-import { logError } from '../utils/logger';
+import { Response, NextFunction } from "express";
+
+import type { PrismaClient } from "@prisma/client";
+import type { TenantRequest } from "./tenant";
+import { logError } from "../utils/logger";
 
 interface RateLimitConfig {
   rpm: number; // Requests per minute
@@ -93,9 +93,9 @@ export class ReconRateLimiter {
       const result = await this.prisma.$queryRaw<Array<{ tier: string }>>`
         SELECT tier FROM tenants WHERE id = ${tenantId}::uuid
       `;
-      return result[0]?.tier || 'free';
+      return result[0]?.tier || "free";
     } catch {
-      return 'free';
+      return "free";
     }
   }
 
@@ -106,7 +106,7 @@ export class ReconRateLimiter {
     const runningJobs = await this.prisma.reconResult.count({
       where: {
         tenantId,
-        status: 'running',
+        status: "running",
       },
     });
 
@@ -142,7 +142,7 @@ export class ReconRateLimiter {
     return async (req: TenantRequest, res: Response, next: NextFunction) => {
       const tenantId = req.tenantId;
       if (!tenantId) {
-        return res.status(401).json({ error: 'Unauthorized' });
+        return res.status(401).json({ error: "Unauthorized" });
       }
 
       try {
@@ -155,29 +155,32 @@ export class ReconRateLimiter {
 
         if (!hasRpmCapacity) {
           return res.status(429).json({
-            error: 'Rate limit exceeded',
+            error: "Rate limit exceeded",
             message: `Rate limit of ${limits.rpm} requests per minute exceeded`,
             retryAfter: 60,
           });
         }
 
         // Check concurrent jobs limit (for job execution endpoints)
-        if (req.path.includes('/execute')) {
-          const hasConcurrentCapacity = await this.checkConcurrentJobs(tenantId, limits.concurrentJobs);
+        if (req.path.includes("/execute")) {
+          const hasConcurrentCapacity = await this.checkConcurrentJobs(
+            tenantId,
+            limits.concurrentJobs
+          );
           if (!hasConcurrentCapacity) {
             return res.status(429).json({
-              error: 'Concurrent job limit exceeded',
+              error: "Concurrent job limit exceeded",
               message: `Maximum ${limits.concurrentJobs} concurrent jobs allowed`,
             });
           }
         }
 
         // Check monthly reconciliation limit (for job execution endpoints)
-        if (req.path.includes('/execute')) {
+        if (req.path.includes("/execute")) {
           const hasMonthlyCapacity = await this.checkMonthlyRecons(tenantId, limits.monthlyRecons);
           if (!hasMonthlyCapacity) {
             return res.status(429).json({
-              error: 'Monthly reconciliation limit exceeded',
+              error: "Monthly reconciliation limit exceeded",
               message: `Monthly limit of ${limits.monthlyRecons} reconciliations exceeded`,
             });
           }
@@ -185,7 +188,7 @@ export class ReconRateLimiter {
 
         return next();
       } catch (error) {
-        logError('Rate limiter error', error);
+        logError("Rate limiter error", error);
         // On error, allow the request (fail open)
         return next();
       }

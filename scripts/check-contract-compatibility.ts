@@ -1,15 +1,15 @@
 #!/usr/bin/env tsx
 /**
  * Contract Compatibility Check
- * 
+ *
  * Verifies that Platform API responses match OSS contract schemas.
  * Ensures no drift between Platform and OSS contract surface.
- * 
+ *
  * Usage: tsx scripts/check-contract-compatibility.ts
  */
 
-import { readFileSync, existsSync } from 'fs';
-import { join } from 'path';
+import { readFileSync, existsSync } from "fs";
+import { join } from "path";
 
 interface ContractVersion {
   name: string;
@@ -21,7 +21,7 @@ interface CompatibilityIssue {
   contract: string;
   endpoint: string;
   issue: string;
-  severity: 'error' | 'warning';
+  severity: "error" | "warning";
 }
 
 /**
@@ -32,9 +32,9 @@ function loadContractSchemas(): ContractVersion[] {
 
   // Check for contracts in multiple locations
   const possiblePaths = [
-    join(process.cwd(), 'packages/api/src/services/contracts'),
-    join(process.cwd(), 'contracts'),
-    join(process.cwd(), 'node_modules/@settler/contracts'),
+    join(process.cwd(), "packages/api/src/services/contracts"),
+    join(process.cwd(), "contracts"),
+    join(process.cwd(), "node_modules/@settler/contracts"),
   ];
 
   for (const basePath of possiblePaths) {
@@ -63,50 +63,50 @@ async function checkContractCompatibility(): Promise<CompatibilityIssue[]> {
 
   if (contracts.length === 0) {
     issues.push({
-      contract: 'all',
-      endpoint: 'N/A',
-      issue: 'No contract schemas found. Contracts may not be properly synced with OSS.',
-      severity: 'warning',
+      contract: "all",
+      endpoint: "N/A",
+      issue: "No contract schemas found. Contracts may not be properly synced with OSS.",
+      severity: "warning",
     });
   }
 
   // Check for contract version pinning
-  const packageJsonPath = join(process.cwd(), 'package.json');
+  const packageJsonPath = join(process.cwd(), "package.json");
   if (existsSync(packageJsonPath)) {
     try {
-      const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
+      const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
       const dependencies = { ...packageJson.dependencies, ...packageJson.devDependencies };
-      
+
       // Check if @settler/contracts is pinned
-      if (dependencies['@settler/contracts']) {
-        const version = dependencies['@settler/contracts'];
-        if (version.includes('^') || version.includes('~')) {
+      if (dependencies["@settler/contracts"]) {
+        const version = dependencies["@settler/contracts"];
+        if (version.includes("^") || version.includes("~")) {
           issues.push({
-            contract: '@settler/contracts',
-            endpoint: 'N/A',
+            contract: "@settler/contracts",
+            endpoint: "N/A",
             issue: `Contract version is not pinned (${version}). Consider pinning to exact version for stability.`,
-            severity: 'warning',
+            severity: "warning",
           });
         }
       }
     } catch (error) {
       issues.push({
-        contract: 'package.json',
-        endpoint: 'N/A',
-        issue: `Failed to read package.json: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        severity: 'warning',
+        contract: "package.json",
+        endpoint: "N/A",
+        issue: `Failed to read package.json: ${error instanceof Error ? error.message : "Unknown error"}`,
+        severity: "warning",
       });
     }
   }
 
   // Check for contract compatibility file
-  const contractLockPath = join(process.cwd(), 'contracts.lock');
+  const contractLockPath = join(process.cwd(), "contracts.lock");
   if (!existsSync(contractLockPath)) {
     issues.push({
-      contract: 'contracts.lock',
-      endpoint: 'N/A',
-      issue: 'No contracts.lock file found. Consider adding one to track contract versions.',
-      severity: 'warning',
+      contract: "contracts.lock",
+      endpoint: "N/A",
+      issue: "No contracts.lock file found. Consider adding one to track contract versions.",
+      severity: "warning",
     });
   }
 
@@ -114,23 +114,23 @@ async function checkContractCompatibility(): Promise<CompatibilityIssue[]> {
 }
 
 async function main() {
-  console.log('🔍 Checking contract compatibility...\n');
+  console.log("🔍 Checking contract compatibility...\n");
 
   const issues = await checkContractCompatibility();
 
   if (issues.length === 0) {
-    console.log('✅ Contract compatibility check passed');
+    console.log("✅ Contract compatibility check passed");
     process.exit(0);
   }
 
-  const errors = issues.filter(i => i.severity === 'error');
-  const warnings = issues.filter(i => i.severity === 'warning');
+  const errors = issues.filter((i) => i.severity === "error");
+  const warnings = issues.filter((i) => i.severity === "warning");
 
   if (errors.length > 0) {
     console.error(`\n❌ Found ${errors.length} error(s):`);
-    errors.forEach(issue => {
+    errors.forEach((issue) => {
       console.error(`  [${issue.contract}] ${issue.issue}`);
-      if (issue.endpoint !== 'N/A') {
+      if (issue.endpoint !== "N/A") {
         console.error(`    Endpoint: ${issue.endpoint}`);
       }
     });
@@ -138,9 +138,9 @@ async function main() {
 
   if (warnings.length > 0) {
     console.warn(`\n⚠️  Found ${warnings.length} warning(s):`);
-    warnings.forEach(issue => {
+    warnings.forEach((issue) => {
       console.warn(`  [${issue.contract}] ${issue.issue}`);
-      if (issue.endpoint !== 'N/A') {
+      if (issue.endpoint !== "N/A") {
         console.warn(`    Endpoint: ${issue.endpoint}`);
       }
     });
@@ -153,6 +153,6 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error('Fatal error during contract compatibility check:', error);
+  console.error("Fatal error during contract compatibility check:", error);
   process.exit(1);
 });

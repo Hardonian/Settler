@@ -22,136 +22,148 @@ const router: Router = Router();
  * Get audit logs with filtering
  * Requires ADMIN_AUDIT permission — audit logs are sensitive compliance evidence.
  */
-router.get("/logs", requirePermission(Permission.ADMIN_AUDIT), async (req: AuthRequest, res: Response) => {
-  try {
-    const tenantId = req.tenantId!;
-    const {
-      actor,
-      action,
-      schemaName,
-      tableName,
-      startDate,
-      endDate,
-      complianceTags,
-      limit = 100,
-      offset = 0,
-    } = req.query;
+router.get(
+  "/logs",
+  requirePermission(Permission.ADMIN_AUDIT),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = req.tenantId!;
+      const {
+        actor,
+        action,
+        schemaName,
+        tableName,
+        startDate,
+        endDate,
+        complianceTags,
+        limit = 100,
+        offset = 0,
+      } = req.query;
 
-    const filters: AuditLogFilter = {};
-    if (actor) filters.actor = actor as string;
-    if (action) filters.action = action as string;
-    if (schemaName) filters.schemaName = schemaName as string;
-    if (tableName) filters.tableName = tableName as string;
-    if (startDate) filters.startDate = new Date(startDate as string);
-    if (endDate) filters.endDate = new Date(endDate as string);
-    if (complianceTags) {
-      filters.complianceTags = Array.isArray(complianceTags)
-        ? (complianceTags as string[])
-        : [complianceTags as string];
-    }
+      const filters: AuditLogFilter = {};
+      if (actor) filters.actor = actor as string;
+      if (action) filters.action = action as string;
+      if (schemaName) filters.schemaName = schemaName as string;
+      if (tableName) filters.tableName = tableName as string;
+      if (startDate) filters.startDate = new Date(startDate as string);
+      if (endDate) filters.endDate = new Date(endDate as string);
+      if (complianceTags) {
+        filters.complianceTags = Array.isArray(complianceTags)
+          ? (complianceTags as string[])
+          : [complianceTags as string];
+      }
 
-    const logs = await getAuditLogs(tenantId, filters, {
-      limit: parseInt(limit as string),
-      offset: parseInt(offset as string),
-    });
-
-    return res.json({
-      data: logs,
-      pagination: {
+      const logs = await getAuditLogs(tenantId, filters, {
         limit: parseInt(limit as string),
         offset: parseInt(offset as string),
-        total: logs.length,
-      },
-      traceId: req.traceId,
-    });
-  } catch (error) {
-    logError("Failed to get audit logs", error, { traceId: req.traceId });
-    return res.status(500).json({
-      error: "Internal Server Error",
-      message: "Failed to get audit logs",
-      traceId: req.traceId,
-    });
+      });
+
+      return res.json({
+        data: logs,
+        pagination: {
+          limit: parseInt(limit as string),
+          offset: parseInt(offset as string),
+          total: logs.length,
+        },
+        traceId: req.traceId,
+      });
+    } catch (error) {
+      logError("Failed to get audit logs", error, { traceId: req.traceId });
+      return res.status(500).json({
+        error: "Internal Server Error",
+        message: "Failed to get audit logs",
+        traceId: req.traceId,
+      });
+    }
   }
-});
+);
 
 /**
  * POST /api/v1/audit-trail/exports
  * Create audit export
  * Requires ADMIN_AUDIT permission — exports carry full audit evidence payload.
  */
-router.post("/exports", requirePermission(Permission.ADMIN_AUDIT), async (req: AuthRequest, res: Response) => {
-  try {
-    const tenantId = req.tenantId!;
-    const userId = req.userId!;
-    const { filters, exportFormat = "csv", expiresInDays = 7 } = req.body;
+router.post(
+  "/exports",
+  requirePermission(Permission.ADMIN_AUDIT),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = req.tenantId!;
+      const userId = req.userId!;
+      const { filters, exportFormat = "csv", expiresInDays = 7 } = req.body;
 
-    const exportId = await createAuditExport(
-      tenantId,
-      userId,
-      filters || {},
-      exportFormat,
-      expiresInDays
-    );
+      const exportId = await createAuditExport(
+        tenantId,
+        userId,
+        filters || {},
+        exportFormat,
+        expiresInDays
+      );
 
-    logInfo("Audit export created", { exportId, tenantId, userId, traceId: req.traceId });
+      logInfo("Audit export created", { exportId, tenantId, userId, traceId: req.traceId });
 
-    return res.status(201).json({
-      id: exportId,
-      traceId: req.traceId,
-    });
-  } catch (error) {
-    logError("Failed to create audit export", error, { traceId: req.traceId });
-    return res.status(500).json({
-      error: "Internal Server Error",
-      message: "Failed to create audit export",
-      traceId: req.traceId,
-    });
+      return res.status(201).json({
+        id: exportId,
+        traceId: req.traceId,
+      });
+    } catch (error) {
+      logError("Failed to create audit export", error, { traceId: req.traceId });
+      return res.status(500).json({
+        error: "Internal Server Error",
+        message: "Failed to create audit export",
+        traceId: req.traceId,
+      });
+    }
   }
-});
+);
 
 /**
  * GET /api/v1/audit-trail/exports/:exportId
  * Get audit export
  * Requires ADMIN_AUDIT permission — export download is as sensitive as the logs themselves.
  */
-router.get("/exports/:exportId", requirePermission(Permission.ADMIN_AUDIT), async (req: AuthRequest, res: Response) => {
-  try {
-    const exportIdParam = req.params["exportId"];
-    const exportId = Array.isArray(exportIdParam)
-      ? (exportIdParam[0] ?? "")
-      : (exportIdParam ?? "");
-    const tenantId = req.tenantId!;
+router.get(
+  "/exports/:exportId",
+  requirePermission(Permission.ADMIN_AUDIT),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const exportIdParam = req.params["exportId"];
+      const exportId = Array.isArray(exportIdParam)
+        ? (exportIdParam[0] ?? "")
+        : (exportIdParam ?? "");
+      const tenantId = req.tenantId!;
 
-    if (!exportId) {
-      return res.status(400).json({
-        error: "Bad Request",
-        message: "exportId is required",
+      if (!exportId) {
+        return res.status(400).json({
+          error: "Bad Request",
+          message: "exportId is required",
+          traceId: req.traceId,
+        });
+      }
+
+      const exportData = await getAuditExport(tenantId, exportId);
+
+      if (!exportData) {
+        return res.status(404).json({
+          error: "Not Found",
+          message: "Audit export not found",
+          traceId: req.traceId,
+        });
+      }
+
+      return res.json({
+        ...exportData,
+        traceId: req.traceId,
+      });
+    } catch (error) {
+      logError("Failed to get audit export", error, { traceId: req.traceId });
+      return res.status(500).json({
+        error: "Internal Server Error",
+        message: "Failed to get audit export",
         traceId: req.traceId,
       });
     }
-
-    const exportData = await getAuditExport(tenantId, exportId);
-
-    if (!exportData) {
-      return res.status(404).json({
-        error: "Not Found",
-        message: "Audit export not found",
-        traceId: req.traceId,
-      });
-    }
-
-    return res.json({
-      ...exportData,
-      traceId: req.traceId,
-    });
-  } catch (error) {
-    logError("Failed to get audit export", error, { traceId: req.traceId });
-    return res.status(500).json({
-      error: "Internal Server Error",
-      message: "Failed to get audit export",
-      traceId: req.traceId,
-    });
   }
-});
+);
 
 export default router;

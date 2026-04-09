@@ -3,7 +3,8 @@ import { loadEnvFiles } from "./scripts/load-env-for-tests";
 
 loadEnvFiles();
 
-const BASE_URL = process.env.E2E_BASE_URL || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const BASE_URL =
+  process.env.E2E_BASE_URL || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
 export default defineConfig({
   testDir: "./tests/e2e",

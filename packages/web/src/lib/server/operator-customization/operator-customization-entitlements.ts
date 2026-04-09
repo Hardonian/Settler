@@ -65,9 +65,11 @@ export function isPresetIdEntitled(
   return entitlements.capabilities.advanced_presets === true;
 }
 
-export function assertPremiumProposalLaneAllowed(entitlements: OperatorCustomizationEntitlements): {
-  ok: true;
-} | { ok: false; code: "premium_lane_not_entitled" } {
+export function assertPremiumProposalLaneAllowed(entitlements: OperatorCustomizationEntitlements):
+  | {
+      ok: true;
+    }
+  | { ok: false; code: "premium_lane_not_entitled" } {
   if (entitlements.capabilities.premium_proposal_lane) return { ok: true };
   return { ok: false, code: "premium_lane_not_entitled" };
 }

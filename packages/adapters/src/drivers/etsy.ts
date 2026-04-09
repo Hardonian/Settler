@@ -34,7 +34,6 @@ export class EtsyDriver implements ConnectorDriver {
     optionalConfig: ["redirect_uri", "webhook_secret"],
   };
 
-   
   async getAuthUrl(options: AuthUrlOptions): Promise<string> {
     const config = options as unknown as { clientId: string; redirectUri: string };
     const params = new URLSearchParams({

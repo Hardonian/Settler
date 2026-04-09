@@ -39,12 +39,14 @@ import {
   ReconciliationDashboard,
   TransactionTable,
   ExceptionTable,
-  MetricCard
-} from '@settler/react-settler';
+  MetricCard,
+} from "@settler/react-settler";
 
 function MyDashboard() {
-  const transactions = [/* your data */];
-  
+  const transactions = [
+    /* your data */
+  ];
+
   return (
     <ReconciliationDashboard>
       <MetricCard title="Transactions" value={transactions.length} />
@@ -57,47 +59,47 @@ function MyDashboard() {
 ### Commercial Tier ($99/month)
 
 ```tsx
-import { setLicense, FEATURE_FLAGS } from '@settler/react-settler';
+import { setLicense, FEATURE_FLAGS } from "@settler/react-settler";
 
 // Set commercial license
 setLicense({
-  tier: 'commercial',
+  tier: "commercial",
   features: new Set([
     FEATURE_FLAGS.SHOPIFY_INTEGRATION,
     FEATURE_FLAGS.VIRTUALIZATION,
     // ... other commercial features
-  ])
+  ]),
 });
 
 // Now use commercial features
-import { ShopifyApp, VirtualizedTable } from '@settler/react-settler';
+import { ShopifyApp, VirtualizedTable } from "@settler/react-settler";
 
-<ShopifyApp shop="myshop.myshopify.com" transactions={transactions} />
+<ShopifyApp shop="myshop.myshopify.com" transactions={transactions} />;
 ```
 
 [Get Commercial License →](https://settler.dev/pricing)
 
 ## Feature Comparison
 
-| Feature | OSS | Commercial | Enterprise |
-|---------|-----|------------|------------|
-| Core Protocol | ✅ | ✅ | ✅ |
-| Basic Components | ✅ | ✅ | ✅ |
-| Config Compiler | ✅ | ✅ | ✅ |
-| Validation | ✅ | ✅ | ✅ |
-| Security Basics | ✅ | ✅ | ✅ |
-| Mobile Support | ✅ | ✅ | ✅ |
-| Accessibility | ✅ | ✅ | ✅ |
-| MCP Integration | ❌ | ✅ | ✅ |
-| Shopify Integration | ❌ | ✅ | ✅ |
-| Stripe Integration | ❌ | ✅ | ✅ |
-| Webhook Manager | ❌ | ✅ | ✅ |
-| Virtualized Tables | ❌ | ✅ | ✅ |
-| Telemetry | ❌ | ✅ | ✅ |
-| Audit Logging | ❌ | ✅ | ✅ |
-| SSO | ❌ | ❌ | ✅ |
-| RBAC | ❌ | ❌ | ✅ |
-| White Label | ❌ | ❌ | ✅ |
+| Feature             | OSS | Commercial | Enterprise |
+| ------------------- | --- | ---------- | ---------- |
+| Core Protocol       | ✅  | ✅         | ✅         |
+| Basic Components    | ✅  | ✅         | ✅         |
+| Config Compiler     | ✅  | ✅         | ✅         |
+| Validation          | ✅  | ✅         | ✅         |
+| Security Basics     | ✅  | ✅         | ✅         |
+| Mobile Support      | ✅  | ✅         | ✅         |
+| Accessibility       | ✅  | ✅         | ✅         |
+| MCP Integration     | ❌  | ✅         | ✅         |
+| Shopify Integration | ❌  | ✅         | ✅         |
+| Stripe Integration  | ❌  | ✅         | ✅         |
+| Webhook Manager     | ❌  | ✅         | ✅         |
+| Virtualized Tables  | ❌  | ✅         | ✅         |
+| Telemetry           | ❌  | ✅         | ✅         |
+| Audit Logging       | ❌  | ✅         | ✅         |
+| SSO                 | ❌  | ❌         | ✅         |
+| RBAC                | ❌  | ❌         | ✅         |
+| White Label         | ❌  | ❌         | ✅         |
 
 ## Documentation
 

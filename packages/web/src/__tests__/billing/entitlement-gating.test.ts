@@ -8,7 +8,9 @@
 import { checkEntitlement, canUseService } from "@/domain/billing/entitlements";
 import { prisma } from "@/shared/db/prismaClient";
 
-const hasDatabaseUrl = Boolean(process.env.DATABASE_URL || process.env.SUPABASE_DATABASE_URL || process.env.DIRECT_URL);
+const hasDatabaseUrl = Boolean(
+  process.env.DATABASE_URL || process.env.SUPABASE_DATABASE_URL || process.env.DIRECT_URL
+);
 
 const describeIfDatabase = hasDatabaseUrl ? describe : describe.skip;
 

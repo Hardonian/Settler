@@ -42,8 +42,12 @@ export default function AdminDashboard() {
   const [timeRange, setTimeRange] = useState<"24h" | "7d" | "30d">("24h");
   const { data: metrics, isLoading } = useAdminMetrics(timeRange);
   const { connectionState, latency } = useAdminStream(["metrics"], undefined, true);
-  const { data: customization, loading: customizationLoading, error: customizationError, fallbackLayout } =
-    useOperatorDashboardCustomization();
+  const {
+    data: customization,
+    loading: customizationLoading,
+    error: customizationError,
+    fallbackLayout,
+  } = useOperatorDashboardCustomization();
 
   useTickScheduler(() => {}, true);
 
@@ -52,7 +56,8 @@ export default function AdminDashboard() {
 
   const layout = customization?.published ?? fallbackLayout;
   const sortedModules = useMemo(
-    () => [...layout.modules].sort((a, b) => a.order - b.order || a.moduleId.localeCompare(b.moduleId)),
+    () =>
+      [...layout.modules].sort((a, b) => a.order - b.order || a.moduleId.localeCompare(b.moduleId)),
     [layout.modules]
   );
 
@@ -88,7 +93,8 @@ export default function AdminDashboard() {
             Real-time oversight and reconciliation operations
           </p>
           <p className="text-xs text-muted-foreground/80 mt-1">
-            Operating mode: <span className="font-medium text-foreground">{operatingModeLabel}</span>
+            Operating mode:{" "}
+            <span className="font-medium text-foreground">{operatingModeLabel}</span>
             {layout.lastAppliedPresetId ? (
               <>
                 {" "}
@@ -163,7 +169,11 @@ export default function AdminDashboard() {
         switch (placement.moduleId) {
           case "usage_warning":
             return (
-              <ModuleViewTracker key={placement.moduleId} moduleId="usage_warning" tenantId={signalTenantId}>
+              <ModuleViewTracker
+                key={placement.moduleId}
+                moduleId="usage_warning"
+                tenantId={signalTenantId}
+              >
                 {kpis && kpis.totalVolume > 0 ? (
                   <UsageWarning
                     current={kpis.totalVolume}
@@ -175,7 +185,11 @@ export default function AdminDashboard() {
             );
           case "kpi_tiles":
             return (
-              <ModuleViewTracker key={placement.moduleId} moduleId="kpi_tiles" tenantId={signalTenantId}>
+              <ModuleViewTracker
+                key={placement.moduleId}
+                moduleId="kpi_tiles"
+                tenantId={signalTenantId}
+              >
                 <ModuleChrome placement={placement} moduleId="kpi_tiles">
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {isLoading ? (
@@ -213,7 +227,9 @@ export default function AdminDashboard() {
                         />
                         <KPITile
                           title="Avg Time to Resolve"
-                          value={kpis?.avgTimeToResolve ? formatDuration(kpis.avgTimeToResolve) : "0ms"}
+                          value={
+                            kpis?.avgTimeToResolve ? formatDuration(kpis.avgTimeToResolve) : "0ms"
+                          }
                           {...(kpis?.avgTimeToResolve !== undefined
                             ? { trend: kpis.avgTimeToResolve < 3600000 ? "up" : "down" }
                             : {})}
@@ -246,7 +262,11 @@ export default function AdminDashboard() {
             );
           case "exception_heatmap":
             return (
-              <ModuleViewTracker key={placement.moduleId} moduleId="exception_heatmap" tenantId={signalTenantId}>
+              <ModuleViewTracker
+                key={placement.moduleId}
+                moduleId="exception_heatmap"
+                tenantId={signalTenantId}
+              >
                 <ModuleChrome placement={placement} moduleId="exception_heatmap">
                   <Card>
                     <CardContent className="pt-6">
@@ -265,7 +285,9 @@ export default function AdminDashboard() {
                                 tabIndex={0}
                                 aria-label={`${item.source} exceptions: ${item.count} ${item.severity}`}
                               >
-                                <div className="text-sm text-muted-foreground mb-1">{item.source}</div>
+                                <div className="text-sm text-muted-foreground mb-1">
+                                  {item.source}
+                                </div>
                                 <div className="flex items-center gap-2">
                                   <Badge
                                     className={
@@ -298,7 +320,11 @@ export default function AdminDashboard() {
             );
           case "activity_feed":
             return (
-              <ModuleViewTracker key={placement.moduleId} moduleId="activity_feed" tenantId={signalTenantId}>
+              <ModuleViewTracker
+                key={placement.moduleId}
+                moduleId="activity_feed"
+                tenantId={signalTenantId}
+              >
                 <ModuleChrome placement={placement} moduleId="activity_feed">
                   <Card>
                     <CardContent className="pt-6">
@@ -316,7 +342,10 @@ export default function AdminDashboard() {
                               className="flex items-start gap-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors"
                               role="listitem"
                             >
-                              <div className="w-2 h-2 rounded-full bg-blue-500 mt-2" aria-hidden="true" />
+                              <div
+                                className="w-2 h-2 rounded-full bg-blue-500 mt-2"
+                                aria-hidden="true"
+                              />
                               <div className="flex-1">
                                 <div className="text-sm text-foreground">{activity.message}</div>
                                 <div className="text-xs text-muted-foreground mt-1">
@@ -329,7 +358,9 @@ export default function AdminDashboard() {
                           ))}
                         </div>
                       ) : (
-                        <div className="text-center py-8 text-muted-foreground">No recent activity</div>
+                        <div className="text-center py-8 text-muted-foreground">
+                          No recent activity
+                        </div>
                       )}
                     </CardContent>
                   </Card>

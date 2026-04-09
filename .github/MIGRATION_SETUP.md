@@ -5,13 +5,15 @@
 Two workflows are available for applying database migrations:
 
 ### 1. Automatic Migrations (`migrations.yml`)
-- **Triggers**: 
+
+- **Triggers**:
   - Push to `main` or `develop` branches when migration files change
   - Pull requests to `main` or `develop`
   - Manual dispatch
 - **Behavior**: Automatically applies migrations to staging on push, requires manual approval for production
 
 ### 2. Safe Mode Migrations (`migrations-safe.yml`)
+
 - **Triggers**: Manual dispatch only
 - **Features**:
   - Validates migration syntax before applying
@@ -24,6 +26,7 @@ Two workflows are available for applying database migrations:
 Set these secrets in GitHub repository settings (`Settings > Secrets and variables > Actions`):
 
 ### Staging Environment
+
 - `SUPABASE_DB_URL_STAGING` - PostgreSQL connection string for staging
   - Format: `postgresql://postgres:[password]@[host]:[port]/postgres`
 - `SUPABASE_DB_PASSWORD_STAGING` - Database password for staging
@@ -31,6 +34,7 @@ Set these secrets in GitHub repository settings (`Settings > Secrets and variabl
 - `SUPABASE_ACCESS_TOKEN` - Supabase access token (optional, for CLI)
 
 ### Production Environment
+
 - `SUPABASE_DB_URL_PRODUCTION` - PostgreSQL connection string for production
 - `SUPABASE_DB_PASSWORD_PRODUCTION` - Database password for production
 - `SUPABASE_PROJECT_ID_PRODUCTION` - Supabase project ID (optional)
@@ -39,6 +43,7 @@ Set these secrets in GitHub repository settings (`Settings > Secrets and variabl
 ## Getting Connection Strings
 
 ### From Supabase Dashboard
+
 1. Go to your Supabase project
 2. Navigate to `Settings > Database`
 3. Find "Connection string" section
@@ -46,6 +51,7 @@ Set these secrets in GitHub repository settings (`Settings > Secrets and variabl
 5. Replace `[YOUR-PASSWORD]` with your actual database password
 
 ### Format
+
 ```
 postgresql://postgres.xxxxx:[PASSWORD]@aws-0-us-west-1.pooler.supabase.com:6543/postgres
 ```
@@ -53,10 +59,12 @@ postgresql://postgres.xxxxx:[PASSWORD]@aws-0-us-west-1.pooler.supabase.com:6543/
 ## Environment Protection Rules
 
 ### Staging Environment
+
 - No approval required
 - Auto-applies on push to `main`/`develop`
 
 ### Production Environment
+
 - **Requires manual approval** (set in GitHub Environments)
 - Only applies via `workflow_dispatch` with manual trigger
 - Double-check before approving!
@@ -71,6 +79,7 @@ postgresql://postgres.xxxxx:[PASSWORD]@aws-0-us-west-1.pooler.supabase.com:6543/
 ## Usage
 
 ### Automatic (on push)
+
 ```bash
 # Just commit and push migration files
 git add supabase/migrations/20260130000000_new_migration.sql
@@ -79,6 +88,7 @@ git push origin main
 ```
 
 ### Manual (Safe Mode)
+
 1. Go to `Actions` tab in GitHub
 2. Select "Apply Database Migrations (Safe Mode)"
 3. Click "Run workflow"
@@ -87,6 +97,7 @@ git push origin main
 6. Click "Run workflow"
 
 ### Manual (Direct)
+
 1. Go to `Actions` tab
 2. Select "Apply Database Migrations"
 3. Click "Run workflow"
@@ -96,6 +107,7 @@ git push origin main
 ## Migration File Naming
 
 Migrations are applied in alphabetical order. Use timestamp prefix:
+
 ```
 20260130000000_description.sql
 20260130000001_description.sql
@@ -105,31 +117,36 @@ Migrations are applied in alphabetical order. Use timestamp prefix:
 ## Verification
 
 After migrations run, check:
+
 1. GitHub Actions logs for success/failure
 2. Migration summary in workflow summary
 3. Database tables exist:
    ```sql
-   SELECT table_name FROM information_schema.tables 
-   WHERE table_schema = 'public' 
+   SELECT table_name FROM information_schema.tables
+   WHERE table_schema = 'public'
    AND table_name IN ('receipts', 'ai_analysis_usage', 'ai_analyses');
    ```
 
 ## Troubleshooting
 
 ### Migration Fails
+
 1. Check GitHub Actions logs
 2. Verify connection string format
 3. Check database permissions
 4. Verify migration SQL syntax
 
 ### Connection Issues
+
 1. Verify secrets are set correctly
 2. Check IP allowlist in Supabase (if enabled)
 3. Verify password is correct
 4. Check connection string format
 
 ### Rollback
+
 Migrations don't auto-rollback. To rollback:
+
 1. Create a new migration that reverses changes
 2. Apply via workflow
 3. Or manually run rollback SQL
@@ -147,6 +164,7 @@ Migrations don't auto-rollback. To rollback:
 ## Migration Checklist
 
 Before pushing migrations:
+
 - [ ] Migration file follows naming convention
 - [ ] SQL syntax is valid
 - [ ] Migration is idempotent (can be run multiple times safely)

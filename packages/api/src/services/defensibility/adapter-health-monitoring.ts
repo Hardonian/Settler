@@ -1,11 +1,11 @@
 /**
  * Adapter Health Monitoring Service
- * 
+ *
  * Proactively monitors adapter health and tracks maintenance burden.
  * This demonstrates the value of Settler's adapter maintenance to customers.
- * 
+ *
  * PHASE: Integration & Adapter Gravity Reinforcement
- * 
+ *
  * Based on narrative compression requirements:
  * - Track adapter health metrics
  * - Proactively detect API changes
@@ -13,12 +13,12 @@
  * - Demonstrate value of Settler's adapter maintenance
  */
 
-import { logError, logInfo } from '../../utils/logger';
-import { query } from '../../db';
+import { logError, logInfo } from "../../utils/logger";
+import { query } from "../../db";
 
 export interface AdapterHealthMetrics {
   adapterType: string;
-  healthStatus: 'healthy' | 'degraded' | 'unhealthy' | 'unknown';
+  healthStatus: "healthy" | "degraded" | "unhealthy" | "unknown";
   lastChecked: Date;
   successRate: number; // 0-1
   averageResponseTime: number; // milliseconds
@@ -30,7 +30,7 @@ export interface AdapterHealthMetrics {
 
 export interface AdapterMaintenanceEvent {
   adapterType: string;
-  eventType: 'api_change' | 'bug_fix' | 'feature_update' | 'security_patch';
+  eventType: "api_change" | "bug_fix" | "feature_update" | "security_patch";
   description: string;
   affectedCustomers: number;
   resolvedAt: Date;
@@ -38,7 +38,7 @@ export interface AdapterMaintenanceEvent {
 
 /**
  * Adapter Health Monitoring Service
- * 
+ *
  * Tracks adapter health and maintenance to demonstrate value
  */
 export class AdapterHealthMonitoringService {
@@ -59,9 +59,8 @@ export class AdapterHealthMonitoringService {
         `SELECT id FROM billing_accounts WHERE tenant_id IS NULL LIMIT 1`,
         []
       );
-      const billingAccountId = billingAccountResult.length > 0 
-        ? (billingAccountResult[0] as { id: string }).id 
-        : null;
+      const billingAccountId =
+        billingAccountResult.length > 0 ? (billingAccountResult[0] as { id: string }).id : null;
 
       if (!billingAccountId) {
         // Create a system billing account if it doesn't exist
@@ -76,13 +75,16 @@ export class AdapterHealthMonitoringService {
           ) VALUES (
             $1, 'adapter_health_check', 1, $2, NOW()
           )`,
-          [newBillingAccountId, JSON.stringify({
-            adapterType,
-            success: metrics.success,
-            responseTime: metrics.responseTime,
-            error: metrics.error,
-            timestamp: new Date().toISOString(),
-          })]
+          [
+            newBillingAccountId,
+            JSON.stringify({
+              adapterType,
+              success: metrics.success,
+              responseTime: metrics.responseTime,
+              error: metrics.error,
+              timestamp: new Date().toISOString(),
+            }),
+          ]
         );
         return;
       }
@@ -104,13 +106,13 @@ export class AdapterHealthMonitoringService {
         ]
       );
 
-      logInfo('Recorded adapter health check', {
+      logInfo("Recorded adapter health check", {
         adapterType,
         success: metrics.success,
         responseTime: metrics.responseTime,
       });
     } catch (error) {
-      logError('Failed to record adapter health check', error, { adapterType });
+      logError("Failed to record adapter health check", error, { adapterType });
     }
   }
 
@@ -133,7 +135,7 @@ export class AdapterHealthMonitoringService {
       if (healthChecks.length === 0) {
         return {
           adapterType,
-          healthStatus: 'unknown',
+          healthStatus: "unknown",
           lastChecked: new Date(),
           successRate: 0,
           averageResponseTime: 0,
@@ -144,11 +146,12 @@ export class AdapterHealthMonitoringService {
       }
 
       const checks = healthChecks.map(
-        (h) => JSON.parse((h as { metadata: string }).metadata) as {
-          success: boolean;
-          responseTime: number;
-          error?: string;
-        }
+        (h) =>
+          JSON.parse((h as { metadata: string }).metadata) as {
+            success: boolean;
+            responseTime: number;
+            error?: string;
+          }
       );
 
       const successCount = checks.filter((c) => c.success).length;
@@ -158,13 +161,13 @@ export class AdapterHealthMonitoringService {
       const errorRate = checks.filter((c) => c.error).length / checks.length;
 
       // Determine health status
-      let healthStatus: 'healthy' | 'degraded' | 'unhealthy';
+      let healthStatus: "healthy" | "degraded" | "unhealthy";
       if (successRate >= 0.95 && errorRate < 0.05) {
-        healthStatus = 'healthy';
+        healthStatus = "healthy";
       } else if (successRate >= 0.8 && errorRate < 0.2) {
-        healthStatus = 'degraded';
+        healthStatus = "degraded";
       } else {
-        healthStatus = 'unhealthy';
+        healthStatus = "unhealthy";
       }
 
       // Get maintenance events
@@ -190,10 +193,10 @@ export class AdapterHealthMonitoringService {
         maintenanceEvents: maintenanceCount,
       };
     } catch (error) {
-      logError('Failed to get adapter health', error, { adapterType });
+      logError("Failed to get adapter health", error, { adapterType });
       return {
         adapterType,
-        healthStatus: 'unknown',
+        healthStatus: "unknown",
         lastChecked: new Date(),
         successRate: 0,
         averageResponseTime: 0,
@@ -206,13 +209,10 @@ export class AdapterHealthMonitoringService {
 
   /**
    * Record adapter maintenance event
-   * 
+   *
    * Tracks when adapters are updated, demonstrating maintenance value
    */
-  async recordMaintenanceEvent(
-    adapterType: string,
-    event: AdapterMaintenanceEvent
-  ): Promise<void> {
+  async recordMaintenanceEvent(adapterType: string, event: AdapterMaintenanceEvent): Promise<void> {
     try {
       // Count affected customers
       const customerCount = await query(
@@ -230,9 +230,8 @@ export class AdapterHealthMonitoringService {
         `SELECT id FROM billing_accounts WHERE tenant_id IS NULL LIMIT 1`,
         []
       );
-      const billingAccountId = billingAccountResult.length > 0 
-        ? (billingAccountResult[0] as { id: string }).id 
-        : null;
+      const billingAccountId =
+        billingAccountResult.length > 0 ? (billingAccountResult[0] as { id: string }).id : null;
 
       if (!billingAccountId) {
         // Create a system billing account if it doesn't exist
@@ -247,13 +246,16 @@ export class AdapterHealthMonitoringService {
           ) VALUES (
             $1, 'adapter_maintenance', 1, $2, NOW()
           )`,
-          [newBillingAccountId, JSON.stringify({
-            adapterType,
-            eventType: event.eventType,
-            description: event.description,
-            affectedCustomers,
-            resolvedAt: event.resolvedAt.toISOString(),
-          })]
+          [
+            newBillingAccountId,
+            JSON.stringify({
+              adapterType,
+              eventType: event.eventType,
+              description: event.description,
+              affectedCustomers,
+              resolvedAt: event.resolvedAt.toISOString(),
+            }),
+          ]
         );
         return;
       }
@@ -276,19 +278,19 @@ export class AdapterHealthMonitoringService {
         ]
       );
 
-      logInfo('Recorded adapter maintenance event', {
+      logInfo("Recorded adapter maintenance event", {
         adapterType,
         eventType: event.eventType,
         affectedCustomers,
       });
     } catch (error) {
-      logError('Failed to record adapter maintenance event', error, { adapterType });
+      logError("Failed to record adapter maintenance event", error, { adapterType });
     }
   }
 
   /**
    * Get maintenance burden metrics
-   * 
+   *
    * Demonstrates the value of Settler's adapter maintenance
    */
   async getMaintenanceBurdenMetrics(): Promise<{
@@ -342,7 +344,7 @@ export class AdapterHealthMonitoringService {
         maintenanceCostEstimate,
       };
     } catch (error) {
-      logError('Failed to get maintenance burden metrics', error);
+      logError("Failed to get maintenance burden metrics", error);
       return {
         totalAdapters: 0,
         totalMaintenanceEvents: 0,

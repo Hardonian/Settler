@@ -1,6 +1,6 @@
 /**
  * Console-Specific Error Handling
- * 
+ *
  * Standardized error handling for console routes with:
  * - User-friendly error messages
  * - Consistent error formatting
@@ -8,9 +8,9 @@
  * - Logging and monitoring
  */
 
-import { NextResponse } from 'next/server';
-import { ErrorCodes } from '@/lib/server-error-handler';
-import { getCorrelationId, addCorrelationHeaders } from '@/lib/monitoring/correlation';
+import { NextResponse } from "next/server";
+import { ErrorCodes } from "@/lib/server-error-handler";
+import { getCorrelationId, addCorrelationHeaders } from "@/lib/monitoring/correlation";
 
 export interface ConsoleError {
   code: string;
@@ -27,76 +27,84 @@ export interface ConsoleError {
  * Map error to user-friendly console error
  */
 export function mapToConsoleError(error: unknown): ConsoleError {
-  const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+  const errorMessage = error instanceof Error ? error.message : "Unknown error";
 
   // Authentication errors
-  if (errorMessage.includes('Unauthorized') || errorMessage.includes('authentication')) {
+  if (errorMessage.includes("Unauthorized") || errorMessage.includes("authentication")) {
     return {
       code: ErrorCodes.UNAUTHORIZED,
       message: errorMessage,
-      userMessage: 'Please sign in to access this feature.',
+      userMessage: "Please sign in to access this feature.",
       recoverable: true,
       action: {
-        label: 'Sign In',
-        url: '/signup',
+        label: "Sign In",
+        url: "/signup",
       },
     };
   }
 
   // Permission errors
-  if (errorMessage.includes('Forbidden') || errorMessage.includes('permission')) {
+  if (errorMessage.includes("Forbidden") || errorMessage.includes("permission")) {
     return {
       code: ErrorCodes.FORBIDDEN,
       message: errorMessage,
-      userMessage: 'You don\'t have permission to perform this action.',
+      userMessage: "You don't have permission to perform this action.",
       recoverable: false,
     };
   }
 
   // Validation errors
-  if (errorMessage.includes('validation') || errorMessage.includes('Invalid')) {
+  if (errorMessage.includes("validation") || errorMessage.includes("Invalid")) {
     return {
       code: ErrorCodes.VALIDATION_ERROR,
       message: errorMessage,
-      userMessage: 'Please check your input and try again.',
+      userMessage: "Please check your input and try again.",
       recoverable: true,
     };
   }
 
   // Database errors
-  if (errorMessage.includes('database') || errorMessage.includes('prisma') || errorMessage.includes('connection')) {
+  if (
+    errorMessage.includes("database") ||
+    errorMessage.includes("prisma") ||
+    errorMessage.includes("connection")
+  ) {
     return {
       code: ErrorCodes.DATABASE_ERROR,
       message: errorMessage,
-      userMessage: 'We\'re experiencing database issues. Please try again in a moment.',
+      userMessage: "We're experiencing database issues. Please try again in a moment.",
       recoverable: true,
       action: {
-        label: 'Retry',
-        url: '#',
+        label: "Retry",
+        url: "#",
       },
     };
   }
 
   // Rate limit errors
-  if (errorMessage.includes('rate limit') || errorMessage.includes('too many')) {
+  if (errorMessage.includes("rate limit") || errorMessage.includes("too many")) {
     return {
       code: ErrorCodes.RATE_LIMIT_EXCEEDED,
       message: errorMessage,
-      userMessage: 'You\'ve made too many requests. Please wait a moment and try again.',
+      userMessage: "You've made too many requests. Please wait a moment and try again.",
       recoverable: true,
     };
   }
 
   // Network errors
-  if (errorMessage.includes('network') || errorMessage.includes('fetch') || errorMessage.includes('timeout')) {
+  if (
+    errorMessage.includes("network") ||
+    errorMessage.includes("fetch") ||
+    errorMessage.includes("timeout")
+  ) {
     return {
       code: ErrorCodes.NETWORK_ERROR,
       message: errorMessage,
-      userMessage: 'Network error. Please check your connection and try again.',
+      userMessage: "Network error. Please check your connection and try again.",
       recoverable: true,
       action: {
-        label: 'Retry',
-        url: '#',
+        label: "Retry",
+        url: "#",
       },
     };
   }
@@ -105,11 +113,12 @@ export function mapToConsoleError(error: unknown): ConsoleError {
   return {
     code: ErrorCodes.INTERNAL_ERROR,
     message: errorMessage,
-    userMessage: 'Something went wrong. Please try again or contact support if the problem persists.',
+    userMessage:
+      "Something went wrong. Please try again or contact support if the problem persists.",
     recoverable: true,
     action: {
-      label: 'Contact Support',
-      url: '/console/support',
+      label: "Contact Support",
+      url: "/console/support",
     },
   };
 }
@@ -125,7 +134,7 @@ export async function createConsoleErrorResponse(
   const correlationId = await getCorrelationId();
 
   // Log error with context
-  console.error('[Console Error]', {
+  console.error("[Console Error]", {
     code: consoleError.code,
     message: consoleError.message,
     userMessage: consoleError.userMessage,

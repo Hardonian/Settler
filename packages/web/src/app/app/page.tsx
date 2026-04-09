@@ -54,7 +54,7 @@ export default async function AppPage() {
   try {
     const health = await performHealthCheck();
     const alerts = await runAllAlertChecks();
-    
+
     // Transform checks array to object for component compatibility
     const checksObj: Record<string, any> = {};
     health.checks.forEach((c: any) => {
@@ -90,9 +90,7 @@ export default async function AppPage() {
       {/* Hero Header */}
       <section className="relative overflow-hidden rounded-2xl border border-primary/10 bg-gradient-to-br from-primary/5 via-background to-background p-8 shadow-sm glass">
         <div className="relative z-10">
-          <p className="section-eyebrow text-primary/70">
-            Control Plane
-          </p>
+          <p className="section-eyebrow text-primary/70">Control Plane</p>
           <h1 className="mt-3 text-4xl font-bold tracking-tight text-foreground">
             Deterministic Reconciliation Dashboard
           </h1>
@@ -114,7 +112,9 @@ export default async function AppPage() {
             <Card className="panel bg-background/50">
               <CardContent className="p-4 pt-3">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Integrity</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Integrity
+                  </p>
                   <ShieldCheck className="w-3 h-3 text-primary/60" aria-hidden="true" />
                 </div>
                 <p className="kpi-value text-primary">{stats?.metrics?.integrity_score ?? 100}%</p>
@@ -130,7 +130,9 @@ export default async function AppPage() {
             <Card className="panel bg-background/50">
               <CardContent className="p-4 pt-3">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Total Runs</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Total Runs
+                  </p>
                   <PieChart className="w-3 h-3 text-muted-foreground/60" aria-hidden="true" />
                 </div>
                 <p className="kpi-value">{stats?.metrics?.total_runs ?? 0}</p>
@@ -142,7 +144,9 @@ export default async function AppPage() {
             <Card className="panel bg-destructive/5 border-destructive/20">
               <CardContent className="p-4 pt-3">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-destructive/80">Mismatches</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-destructive/80">
+                    Mismatches
+                  </p>
                   <AlertCircle className="w-3 h-3 text-destructive/60" aria-hidden="true" />
                 </div>
                 <p className="kpi-value text-destructive">{stats?.metrics?.unmatched_runs ?? 0}</p>
@@ -151,13 +155,24 @@ export default async function AppPage() {
             </Card>
 
             {/* Pending Exceptions */}
-            <Card className={`panel ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "bg-amber-500/5 border-amber-500/20" : "bg-background/50"}`}>
+            <Card
+              className={`panel ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "bg-amber-500/5 border-amber-500/20" : "bg-background/50"}`}
+            >
               <CardContent className="p-4 pt-3">
                 <div className="flex items-center justify-between mb-2">
-                  <p className={`text-[10px] font-bold uppercase tracking-widest ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "text-amber-600" : "text-muted-foreground"}`}>Exceptions</p>
-                  <Zap className={`w-3 h-3 ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "text-amber-500/60" : "text-muted-foreground/60"}`} aria-hidden="true" />
+                  <p
+                    className={`text-[10px] font-bold uppercase tracking-widest ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "text-amber-600" : "text-muted-foreground"}`}
+                  >
+                    Exceptions
+                  </p>
+                  <Zap
+                    className={`w-3 h-3 ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "text-amber-500/60" : "text-muted-foreground/60"}`}
+                    aria-hidden="true"
+                  />
                 </div>
-                <p className={`kpi-value ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "text-amber-600 dark:text-amber-400" : ""}`}>
+                <p
+                  className={`kpi-value ${(stats?.metrics?.pending_exceptions ?? 0) > 0 ? "text-amber-600 dark:text-amber-400" : ""}`}
+                >
                   {stats?.metrics?.pending_exceptions ?? 0}
                 </p>
                 {(stats?.metrics?.pending_exceptions ?? 0) > 0 ? (
@@ -183,7 +198,9 @@ export default async function AppPage() {
                     <History className="w-4 h-4 text-primary" />
                     Recent Activity
                   </CardTitle>
-                  <CardDescription className="text-xs">Latest reconciliation results and state changes</CardDescription>
+                  <CardDescription className="text-xs">
+                    Latest reconciliation results and state changes
+                  </CardDescription>
                 </div>
                 <Link
                   href="/app/runs"
@@ -255,9 +272,7 @@ export default async function AppPage() {
           </Card>
 
           <section>
-            <h2 className="section-eyebrow mb-4 px-1">
-              Critical Workflows
-            </h2>
+            <h2 className="section-eyebrow mb-4 px-1">Critical Workflows</h2>
             <div className="grid gap-3">
               {workflows.map((workflow) => (
                 <Link

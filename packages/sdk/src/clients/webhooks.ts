@@ -10,10 +10,10 @@ export class WebhooksClient {
 
   /**
    * Creates a new webhook
-   * 
+   *
    * @param request - Webhook creation request
    * @returns Promise resolving to the created webhook
-   * 
+   *
    * @example
    * ```typescript
    * const webhook = await client.webhooks.create({
@@ -24,19 +24,15 @@ export class WebhooksClient {
    * ```
    */
   async create(request: CreateWebhookRequest): Promise<ApiResponse<Webhook>> {
-    return this.client.request<ApiResponse<Webhook>>(
-      "POST",
-      "/api/v1/webhooks",
-      { body: request }
-    );
+    return this.client.request<ApiResponse<Webhook>>("POST", "/api/v1/webhooks", { body: request });
   }
 
   /**
    * Lists all webhooks
-   * 
+   *
    * @param options - Pagination options
    * @returns Promise resolving to a list of webhooks
-   * 
+   *
    * @example
    * ```typescript
    * const webhooks = await client.webhooks.list();
@@ -51,55 +47,45 @@ export class WebhooksClient {
       query.limit = String(options.limit);
     }
 
-    return this.client.request<ListResponse<Webhook>>(
-      "GET",
-      "/api/v1/webhooks",
-      { query }
-    );
+    return this.client.request<ListResponse<Webhook>>("GET", "/api/v1/webhooks", { query });
   }
 
   /**
    * Gets a webhook by ID
-   * 
+   *
    * @param id - Webhook ID
    * @returns Promise resolving to the webhook
-   * 
+   *
    * @example
    * ```typescript
    * const webhook = await client.webhooks.get('wh_1234567890');
    * ```
    */
   async get(id: string): Promise<ApiResponse<Webhook>> {
-    return this.client.request<ApiResponse<Webhook>>(
-      "GET",
-      `/api/v1/webhooks/${id}`
-    );
+    return this.client.request<ApiResponse<Webhook>>("GET", `/api/v1/webhooks/${id}`);
   }
 
   /**
    * Deletes a webhook
-   * 
+   *
    * @param id - Webhook ID
    * @returns Promise that resolves when the webhook is deleted
-   * 
+   *
    * @example
    * ```typescript
    * await client.webhooks.delete('wh_1234567890');
    * ```
    */
   async delete(id: string): Promise<void> {
-    await this.client.request<void>(
-      "DELETE",
-      `/api/v1/webhooks/${id}`
-    );
+    await this.client.request<void>("DELETE", `/api/v1/webhooks/${id}`);
   }
 
   /**
    * Returns an async iterator for paginated webhook listing
-   * 
+   *
    * @param options - Pagination options
    * @returns Async iterator over webhooks
-   * 
+   *
    * @example
    * ```typescript
    * for await (const webhook of client.webhooks.listPaginated()) {

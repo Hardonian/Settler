@@ -21,6 +21,7 @@ Reconcile Stripe payments and charges.
 ```
 
 **Supported Events:**
+
 - `payment.succeeded`
 - `charge.refunded`
 - `payment_intent.succeeded`
@@ -43,6 +44,7 @@ Reconcile Shopify orders and transactions.
 ```
 
 **Supported Events:**
+
 - `order.created`
 - `order.updated`
 - `transaction.created`
@@ -130,13 +132,13 @@ All adapters must return data in this format:
 
 ```typescript
 interface NormalizedData {
-  id: string;                    // Unique identifier
-  amount: number;                 // Transaction amount
-  currency: string;                // ISO currency code (USD, EUR, etc.)
-  date: Date;                     // Transaction date
+  id: string; // Unique identifier
+  amount: number; // Transaction amount
+  currency: string; // ISO currency code (USD, EUR, etc.)
+  date: Date; // Transaction date
   metadata: Record<string, unknown>; // Additional platform-specific data
-  sourceId?: string;              // Original platform ID
-  referenceId?: string;           // Reference number (order ID, invoice, etc.)
+  sourceId?: string; // Original platform ID
+  referenceId?: string; // Reference number (order ID, invoice, etc.)
 }
 ```
 
@@ -154,10 +156,10 @@ export class CSVAdapter implements Adapter {
   async fetch(options: FetchOptions): Promise<NormalizedData[]> {
     const { config } = options;
     const filePath = config.filePath as string;
-    
+
     const fileContent = fs.readFileSync(filePath, "utf-8");
     const records = csv.parse(fileContent, { columns: true });
-    
+
     return records.map((record: any) => this.normalize(record));
   }
 
@@ -230,7 +232,7 @@ describe("MyCustomAdapter", () => {
   it("should normalize data correctly", () => {
     const rawData = { id: "123", amount: "99.99", currency: "USD" };
     const normalized = adapter.normalize(rawData);
-    
+
     expect(normalized.id).toBe("123");
     expect(normalized.amount).toBe(99.99);
     expect(normalized.currency).toBe("USD");

@@ -1,6 +1,6 @@
 /**
  * Ops Intelligence Cache
- * 
+ *
  * Simple in-memory cache with TTL for API responses
  */
 
@@ -71,8 +71,11 @@ class SimpleCache {
 export const cache = new SimpleCache();
 
 // Clean expired entries every 5 minutes
-if (typeof window !== 'undefined') {
-  setInterval(() => {
-    cache.clean();
-  }, 5 * 60 * 1000);
+if (typeof window !== "undefined") {
+  setInterval(
+    () => {
+      cache.clean();
+    },
+    5 * 60 * 1000
+  );
 }

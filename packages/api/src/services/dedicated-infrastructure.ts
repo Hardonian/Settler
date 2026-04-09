@@ -74,7 +74,7 @@ export async function provisionDedicatedInfrastructure(
       ] as (string | number | boolean | null | Date)[]
     );
 
-    const infrastructureId = result[0]?.id || '';
+    const infrastructureId = result[0]?.id || "";
 
     logInfo("Dedicated infrastructure provisioned", {
       infrastructureId,

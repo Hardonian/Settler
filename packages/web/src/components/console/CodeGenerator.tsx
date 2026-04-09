@@ -1,17 +1,17 @@
 /**
  * Code Generator Component
- * 
+ *
  * Generates code snippets from API calls in multiple languages.
  */
 
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Copy, Check, AlertCircle } from 'lucide-react';
-import { generateAllCodeSnippets, ApiCall } from '@/lib/playground/code-generator';
+import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Copy, Check, AlertCircle } from "lucide-react";
+import { generateAllCodeSnippets, ApiCall } from "@/lib/playground/code-generator";
 
 interface CodeGeneratorProps {
   apiCall: ApiCall;
@@ -22,7 +22,7 @@ export function CodeGenerator({ apiCall, apiKey }: CodeGeneratorProps) {
   const [copied, setCopied] = useState<string | null>(null);
 
   // Validate inputs
-  if (!apiKey || !apiKey.startsWith('rk_')) {
+  if (!apiKey || !apiKey.startsWith("rk_")) {
     return (
       <Card>
         <CardContent className="py-8">
@@ -57,7 +57,7 @@ export function CodeGenerator({ apiCall, apiKey }: CodeGeneratorProps) {
       setCopied(language);
       setTimeout(() => setCopied(null), 2000);
     } catch (error: unknown) {
-      console.error('Failed to copy:', error);
+      console.error("Failed to copy:", error);
     }
   };
 
@@ -65,9 +65,7 @@ export function CodeGenerator({ apiCall, apiKey }: CodeGeneratorProps) {
     <Card>
       <CardHeader>
         <CardTitle>Generated Code</CardTitle>
-        <CardDescription>
-          Copy code snippets for your preferred language
-        </CardDescription>
+        <CardDescription>Copy code snippets for your preferred language</CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue={snippets[0]?.language}>

@@ -1,19 +1,18 @@
 /**
  * Health Optimization AI
- * 
+ *
  * Detects recurrent failures and proposes improvements
  * Part of Phase VII: Platform Intelligence
  */
 
- 
-import { PrismaClient } from '@prisma/client';
-import { logInfo } from '../../utils/logger';
+import { PrismaClient } from "@prisma/client";
+import { logInfo } from "../../utils/logger";
 
 export interface HealthRecommendation {
-  type: 'template_suggestion' | 'workflow_improvement' | 'mapping_fix' | 'validation_rule';
+  type: "template_suggestion" | "workflow_improvement" | "mapping_fix" | "validation_rule";
   description: string;
   confidence: number;
-  impact: 'low' | 'medium' | 'high';
+  impact: "low" | "medium" | "high";
   action: Record<string, unknown>;
 }
 
@@ -34,7 +33,7 @@ export class HealthOptimizer {
     const failedJobs = await this.prisma.reconResult.findMany({
       where: {
         tenantId,
-        status: 'failed',
+        status: "failed",
         startedAt: {
           gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // Last 30 days
         },
@@ -47,7 +46,7 @@ export class HealthOptimizer {
     // Group by error type
     const errorPatterns = new Map<string, number>();
     for (const job of failedJobs) {
-      const error = job.errorMessage || 'unknown';
+      const error = job.errorMessage || "unknown";
       errorPatterns.set(error, (errorPatterns.get(error) || 0) + 1);
     }
 
@@ -55,10 +54,10 @@ export class HealthOptimizer {
     for (const [error, count] of errorPatterns.entries()) {
       if (count > 5) {
         recommendations.push({
-          type: 'template_suggestion',
+          type: "template_suggestion",
           description: `Common error pattern detected: ${error.substring(0, 50)}...`,
           confidence: 0.8,
-          impact: 'high',
+          impact: "high",
           action: {
             createTemplate: true,
             errorPattern: error,
@@ -82,7 +81,7 @@ export class HealthOptimizer {
     // Group by field path
     const driftPatterns = new Map<string, number>();
     for (const drift of drifts) {
-      const field = drift.fieldPath || 'unknown';
+      const field = drift.fieldPath || "unknown";
       driftPatterns.set(field, (driftPatterns.get(field) || 0) + 1);
     }
 
@@ -90,10 +89,10 @@ export class HealthOptimizer {
     for (const [field, count] of driftPatterns.entries()) {
       if (count > 3) {
         recommendations.push({
-          type: 'mapping_fix',
+          type: "mapping_fix",
           description: `Frequent drift detected in field: ${field}`,
           confidence: 0.9,
-          impact: 'medium',
+          impact: "medium",
           action: {
             fieldPath: field,
             frequency: count,
@@ -103,7 +102,10 @@ export class HealthOptimizer {
       }
     }
 
-    logInfo('Health optimization analysis completed', { tenantId, recommendations: recommendations.length });
+    logInfo("Health optimization analysis completed", {
+      tenantId,
+      recommendations: recommendations.length,
+    });
     return recommendations;
   }
 }

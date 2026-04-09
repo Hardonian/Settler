@@ -1,6 +1,6 @@
 /**
  * Reconciliation Quality Monitor
- * 
+ *
  * Monitors reconciliation quality metrics and triggers alerts when thresholds are exceeded.
  * Implements industry-standard quality monitoring practices.
  */
@@ -24,17 +24,22 @@ export interface QualityMetrics {
 
 // Industry-standard quality thresholds
 const QUALITY_THRESHOLDS = {
-  MATCH_RATE_MIN: 0.90,              // Minimum 90% match rate
-  AUTO_RESOLUTION_RATE_MIN: 0.90,    // Minimum 90% auto-resolution rate
-  EXCEPTION_RATE_MAX: 0.10,           // Maximum 10% exception rate
-  CONFIDENCE_AVG_MIN: 0.75,           // Minimum 0.75 average confidence
-  RESOLUTION_TIME_MAX_MINUTES: 10,    // Maximum 10 minutes resolution time
+  MATCH_RATE_MIN: 0.9, // Minimum 90% match rate
+  AUTO_RESOLUTION_RATE_MIN: 0.9, // Minimum 90% auto-resolution rate
+  EXCEPTION_RATE_MAX: 0.1, // Maximum 10% exception rate
+  CONFIDENCE_AVG_MIN: 0.75, // Minimum 0.75 average confidence
+  RESOLUTION_TIME_MAX_MINUTES: 10, // Maximum 10 minutes resolution time
 } as const;
 
 export interface QualityAlert {
   runId: string;
   tenantId: string;
-  alertType: "match_rate_low" | "auto_resolution_rate_low" | "exception_rate_high" | "confidence_low" | "resolution_time_high";
+  alertType:
+    | "match_rate_low"
+    | "auto_resolution_rate_low"
+    | "exception_rate_high"
+    | "confidence_low"
+    | "resolution_time_high";
   severity: "warning" | "critical";
   message: string;
   currentValue: number;
@@ -112,12 +117,10 @@ export async function calculateQualityMetrics(
     const totalProcessed = matchedTransactions + unmatchedTransactions;
 
     const matchRate = totalProcessed > 0 ? matchedTransactions / totalProcessed : 0;
-    const autoResolutionRate = totalMatches > 0 
-      ? (autoApprovedMatches + ruleResolvedMatches) / totalMatches 
-      : 0;
-    const exceptionRate = totalMatches > 0 
-      ? (exceptionHandledMatches + systemFlaggedMatches) / totalMatches 
-      : 0;
+    const autoResolutionRate =
+      totalMatches > 0 ? (autoApprovedMatches + ruleResolvedMatches) / totalMatches : 0;
+    const exceptionRate =
+      totalMatches > 0 ? (exceptionHandledMatches + systemFlaggedMatches) / totalMatches : 0;
     const averageConfidence = run.confidence_avg ? Number(run.confidence_avg) : 0;
 
     // Calculate resolution time
@@ -162,7 +165,7 @@ export async function checkQualityThresholds(
         runId,
         tenantId,
         alertType: "match_rate_low",
-        severity: metrics.matchRate < 0.80 ? "critical" : "warning",
+        severity: metrics.matchRate < 0.8 ? "critical" : "warning",
         message: `Match rate ${(metrics.matchRate * 100).toFixed(1)}% is below threshold ${(QUALITY_THRESHOLDS.MATCH_RATE_MIN * 100).toFixed(1)}%`,
         currentValue: metrics.matchRate,
         threshold: QUALITY_THRESHOLDS.MATCH_RATE_MIN,
@@ -176,7 +179,7 @@ export async function checkQualityThresholds(
         runId,
         tenantId,
         alertType: "auto_resolution_rate_low",
-        severity: metrics.autoResolutionRate < 0.80 ? "critical" : "warning",
+        severity: metrics.autoResolutionRate < 0.8 ? "critical" : "warning",
         message: `Auto-resolution rate ${(metrics.autoResolutionRate * 100).toFixed(1)}% is below threshold ${(QUALITY_THRESHOLDS.AUTO_RESOLUTION_RATE_MIN * 100).toFixed(1)}%`,
         currentValue: metrics.autoResolutionRate,
         threshold: QUALITY_THRESHOLDS.AUTO_RESOLUTION_RATE_MIN,
@@ -190,7 +193,7 @@ export async function checkQualityThresholds(
         runId,
         tenantId,
         alertType: "exception_rate_high",
-        severity: metrics.exceptionRate > 0.20 ? "critical" : "warning",
+        severity: metrics.exceptionRate > 0.2 ? "critical" : "warning",
         message: `Exception rate ${(metrics.exceptionRate * 100).toFixed(1)}% exceeds threshold ${(QUALITY_THRESHOLDS.EXCEPTION_RATE_MAX * 100).toFixed(1)}%`,
         currentValue: metrics.exceptionRate,
         threshold: QUALITY_THRESHOLDS.EXCEPTION_RATE_MAX,
@@ -232,7 +235,7 @@ export async function checkQualityThresholds(
         runId,
         tenantId,
         alertCount: alerts.length,
-        alerts: alerts.map(a => a.alertType),
+        alerts: alerts.map((a) => a.alertType),
       });
     } else {
       logInfo("Quality metrics within thresholds", {
@@ -268,9 +271,9 @@ export async function generateQualityReport(
     const alerts = await checkQualityThresholds(runId, tenantId);
 
     // Determine overall status
-    const criticalAlerts = alerts.filter(a => a.severity === "critical");
-    const warningAlerts = alerts.filter(a => a.severity === "warning");
-    
+    const criticalAlerts = alerts.filter((a) => a.severity === "critical");
+    const warningAlerts = alerts.filter((a) => a.severity === "warning");
+
     let status: "pass" | "warning" | "critical";
     if (criticalAlerts.length > 0) {
       status = "critical";

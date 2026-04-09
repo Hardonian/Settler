@@ -20,14 +20,11 @@
 **Message:** Found 1 source orphans and 1 target orphans
 
 **Details:**
+
 ```json
 {
-  "orphaned_sources": [
-    "stripe_m1"
-  ],
-  "orphaned_targets": [
-    "shopify_m1"
-  ]
+  "orphaned_sources": ["stripe_m1"],
+  "orphaned_targets": ["shopify_m1"]
 }
 ```
 
@@ -46,4 +43,3 @@ These source records had no matching target:
 These target records had no matching source:
 
 - `shopify_m1`: No source records found with key: pi_mismatch_demo|99.99
-

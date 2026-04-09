@@ -1,18 +1,18 @@
 /**
  * Meaningful Changes Feed Component
- * 
+ *
  * Displays changes ranked by impact, urgency, and confidence.
  * Each change shows: summary, why it matters, evidence, impact, and suggested next step.
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { AlertTriangle, CheckCircle2, Info, TrendingUp, ArrowRight } from 'lucide-react';
-import type { MeaningfulChange } from '@/lib/domain/types';
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle, CheckCircle2, Info, TrendingUp, ArrowRight } from "lucide-react";
+import type { MeaningfulChange } from "@/lib/domain/types";
 
 interface MeaningfulChangesFeedProps {
   tenantId?: string;
@@ -24,7 +24,7 @@ export function MeaningfulChangesFeed({ limit = 50 }: MeaningfulChangesFeedProps
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<{
-    severity?: 'info' | 'warning' | 'critical';
+    severity?: "info" | "warning" | "critical";
     minRiskScore?: number;
   }>({});
 
@@ -38,9 +38,10 @@ export function MeaningfulChangesFeed({ limit = 50 }: MeaningfulChangesFeedProps
       setError(null);
 
       const params = new URLSearchParams();
-      if (filters.severity) params.append('severity', filters.severity);
-      if (filters.minRiskScore !== undefined) params.append('minRiskScore', filters.minRiskScore.toString());
-      params.append('limit', limit.toString());
+      if (filters.severity) params.append("severity", filters.severity);
+      if (filters.minRiskScore !== undefined)
+        params.append("minRiskScore", filters.minRiskScore.toString());
+      params.append("limit", limit.toString());
 
       const res = await fetch(`/api/console/meaningful-changes?${params.toString()}`);
 
@@ -51,44 +52,44 @@ export function MeaningfulChangesFeed({ limit = 50 }: MeaningfulChangesFeedProps
       const data = await res.json();
       setChanges(data.changes || []);
     } catch (error: unknown) {
-      console.error('Failed to fetch meaningful changes:', error);
-      setError(error instanceof Error ? error.message : 'Failed to load changes');
+      console.error("Failed to fetch meaningful changes:", error);
+      setError(error instanceof Error ? error.message : "Failed to load changes");
       setChanges([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const getUrgencyColor = (urgency: MeaningfulChange['urgency']) => {
+  const getUrgencyColor = (urgency: MeaningfulChange["urgency"]) => {
     switch (urgency) {
-      case 'critical':
-        return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
-      case 'high':
-        return 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400';
-      case 'medium':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
-      case 'low':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400';
+      case "critical":
+        return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
+      case "high":
+        return "bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400";
+      case "medium":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400";
+      case "low":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400";
     }
   };
 
-  const getUrgencyIcon = (urgency: MeaningfulChange['urgency']) => {
+  const getUrgencyIcon = (urgency: MeaningfulChange["urgency"]) => {
     switch (urgency) {
-      case 'critical':
+      case "critical":
         return <AlertTriangle className="w-4 h-4" />;
-      case 'high':
+      case "high":
         return <TrendingUp className="w-4 h-4" />;
-      case 'medium':
+      case "medium":
         return <Info className="w-4 h-4" />;
-      case 'low':
+      case "low":
         return <CheckCircle2 className="w-4 h-4" />;
     }
   };
 
   const formatCurrency = (amount: number, currency: string) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency || "USD",
     }).format(amount);
   };
 
@@ -127,11 +128,13 @@ export function MeaningfulChangesFeed({ limit = 50 }: MeaningfulChangesFeedProps
             <div>
               <label className="text-sm font-medium mb-2 block">Severity</label>
               <select
-                value={filters.severity || ''}
+                value={filters.severity || ""}
                 onChange={(e) =>
                   setFilters({
                     ...filters,
-                    severity: e.target.value ? (e.target.value as 'info' | 'warning' | 'critical') : undefined,
+                    severity: e.target.value
+                      ? (e.target.value as "info" | "warning" | "critical")
+                      : undefined,
                   })
                 }
                 className="px-3 py-2 border rounded-md"
@@ -149,7 +152,7 @@ export function MeaningfulChangesFeed({ limit = 50 }: MeaningfulChangesFeedProps
                 min="0"
                 max="1"
                 step="0.1"
-                value={filters.minRiskScore ?? ''}
+                value={filters.minRiskScore ?? ""}
                 onChange={(e) =>
                   setFilters({
                     ...filters,
@@ -160,10 +163,7 @@ export function MeaningfulChangesFeed({ limit = 50 }: MeaningfulChangesFeedProps
               />
             </div>
             <div className="flex items-end">
-              <Button
-                variant="outline"
-                onClick={() => setFilters({})}
-              >
+              <Button variant="outline" onClick={() => setFilters({})}>
                 Clear Filters
               </Button>
             </div>
@@ -263,12 +263,8 @@ export function MeaningfulChangesFeed({ limit = 50 }: MeaningfulChangesFeedProps
 
                   {/* Metadata */}
                   <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                    <span>
-                      Source: {change.event.sourceId}
-                    </span>
-                    <span>
-                      {new Date(change.event.timestamp).toLocaleString()}
-                    </span>
+                    <span>Source: {change.event.sourceId}</span>
+                    <span>{new Date(change.event.timestamp).toLocaleString()}</span>
                   </div>
                 </div>
               </CardContent>

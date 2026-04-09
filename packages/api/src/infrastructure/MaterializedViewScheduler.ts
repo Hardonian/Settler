@@ -8,7 +8,12 @@
  */
 
 import { logInfo, logError, logWarn } from "../utils/logger";
-import { RefreshConfig, CronRefreshConfig, TenantViewConfig, COMMON_VIEW_TEMPLATES } from "./MaterializedViewConfig";
+import {
+  RefreshConfig,
+  CronRefreshConfig,
+  TenantViewConfig,
+  COMMON_VIEW_TEMPLATES,
+} from "./MaterializedViewConfig";
 import {
   refreshMaterializedView,
   getTenantConfig,

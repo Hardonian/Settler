@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { SubscriptionGate } from '@/components/console/SubscriptionGate';
-import { SubscriptionTier, SubscriptionStatus } from './subscription-access';
+import { useEffect, useState } from "react";
+import { SubscriptionGate } from "@/components/console/SubscriptionGate";
+import { SubscriptionTier, SubscriptionStatus } from "./subscription-access";
 
 interface RBACGateProps {
   /** Minimum subscription tier required */
@@ -23,12 +23,12 @@ interface RBACGateProps {
 
 /**
  * RBAC Gate Component
- * 
+ *
  * Combines subscription tier checks with role-based access control.
  * Can truncate content for lower tiers instead of hiding completely.
  */
 export function RBACGate({
-  requiredTier = 'unsubscribed',
+  requiredTier = "unsubscribed",
   requiredRole,
   feature,
   children,
@@ -47,17 +47,17 @@ export function RBACGate({
   async function loadAccess() {
     try {
       const [subResponse, roleResponse] = await Promise.all([
-        fetch('/api/console/subscription-status').catch(() => null),
-        requiredRole ? fetch('/api/console/user-role').catch(() => null) : Promise.resolve(null),
+        fetch("/api/console/subscription-status").catch(() => null),
+        requiredRole ? fetch("/api/console/user-role").catch(() => null) : Promise.resolve(null),
       ]);
 
       if (subResponse && subResponse.ok) {
-        const subData = await subResponse.json() as SubscriptionStatus;
+        const subData = (await subResponse.json()) as SubscriptionStatus;
         setSubscription(subData);
       } else {
         // Default to unsubscribed on error
         setSubscription({
-          tier: 'unsubscribed',
+          tier: "unsubscribed",
           hasSubscription: false,
           isPaid: false,
           isEnterprise: false,
@@ -65,14 +65,14 @@ export function RBACGate({
       }
 
       if (roleResponse && roleResponse.ok) {
-        const roleData = await roleResponse.json() as { role?: string };
+        const roleData = (await roleResponse.json()) as { role?: string };
         setUserRole(roleData.role || null);
       }
     } catch (error) {
-      console.error('Failed to load access:', error);
+      console.error("Failed to load access:", error);
       // Default to unsubscribed on error
       setSubscription({
-        tier: 'unsubscribed',
+        tier: "unsubscribed",
         hasSubscription: false,
         isPaid: false,
         isEnterprise: false,
@@ -98,12 +98,12 @@ export function RBACGate({
     enterprise: 3,
   };
 
-  const userTier = subscription?.tier ? tierOrder[subscription.tier] ?? 0 : 0;
+  const userTier = subscription?.tier ? (tierOrder[subscription.tier] ?? 0) : 0;
   const requiredTierLevel = tierOrder[requiredTier] ?? 0;
   const hasTierAccess = userTier >= requiredTierLevel;
 
   // Check role if required
-  const hasRoleAccess = !requiredRole || userRole === requiredRole || userRole === 'admin';
+  const hasRoleAccess = !requiredRole || userRole === requiredRole || userRole === "admin";
 
   if (!hasTierAccess || !hasRoleAccess) {
     if (truncate && hasTierAccess && !hasRoleAccess) {
@@ -117,7 +117,13 @@ export function RBACGate({
         </>
       );
     }
-    return fallback || <SubscriptionGate requiredTier={requiredTier} feature={feature}>{null}</SubscriptionGate>;
+    return (
+      fallback || (
+        <SubscriptionGate requiredTier={requiredTier} feature={feature}>
+          {null}
+        </SubscriptionGate>
+      )
+    );
   }
 
   return <>{children}</>;
@@ -154,8 +160,8 @@ export function TruncateContent({
       {visible}
       {hidden > 0 && showUpgrade && (
         <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-800">
-          Showing {visible.length} of {items.length} items. 
-          {tier !== 'enterprise' && ' Upgrade to see more.'}
+          Showing {visible.length} of {items.length} items.
+          {tier !== "enterprise" && " Upgrade to see more."}
         </div>
       )}
     </>

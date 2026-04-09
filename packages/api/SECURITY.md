@@ -51,11 +51,13 @@ When reporting a vulnerability, please include:
 ### Encryption
 
 **At Rest:**
+
 - Database: AES-256 encryption (managed by cloud provider)
 - Sensitive fields: AES-256-GCM application-level encryption
 - API keys: bcrypt hashing (12 rounds)
 
 **In Transit:**
+
 - TLS 1.3 for all API traffic
 - mTLS for service-to-service communication (enterprise)
 - HSTS headers enforced
@@ -95,7 +97,7 @@ When reporting a vulnerability, please include:
 
 - **Minimum Version**: TLS 1.2
 - **Preferred**: TLS 1.3
-- **Cipher Suites**: 
+- **Cipher Suites**:
   - TLS_AES_256_GCM_SHA384
   - TLS_CHACHA20_POLY1305_SHA256
   - TLS_AES_128_GCM_SHA256
@@ -138,6 +140,7 @@ When reporting a vulnerability, please include:
 ## Security Updates
 
 Security updates are released as:
+
 - **Critical**: Immediate patch release
 - **High**: Next patch release (within 1 week)
 - **Medium/Low**: Next minor release
@@ -147,6 +150,7 @@ Subscribe to security advisories: security-advisories@settler.io
 ## Bug Bounty
 
 We operate a responsible disclosure program. Bounties are awarded based on:
+
 - Severity of vulnerability
 - Quality of report
 - Impact assessment
@@ -163,6 +167,7 @@ We operate a responsible disclosure program. Bounties are awarded based on:
 ## Disclosure Policy
 
 We follow responsible disclosure:
+
 1. Reporter notifies security@settler.io
 2. We acknowledge within 24 hours
 3. We investigate and develop fix

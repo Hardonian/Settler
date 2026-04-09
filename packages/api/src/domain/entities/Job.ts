@@ -4,14 +4,14 @@
  */
 
 export enum JobStatus {
-  ACTIVE = 'active',
-  PAUSED = 'paused',
-  ARCHIVED = 'archived',
+  ACTIVE = "active",
+  PAUSED = "paused",
+  ARCHIVED = "archived",
 }
 
 export interface MatchingRule {
   field: string;
-  type: 'exact' | 'fuzzy' | 'range';
+  type: "exact" | "fuzzy" | "range";
   tolerance?: number;
   threshold?: number;
   days?: number;
@@ -19,7 +19,7 @@ export interface MatchingRule {
 
 export interface ReconciliationRules {
   matching: MatchingRule[];
-  conflictResolution: 'first-wins' | 'last-wins' | 'manual-review';
+  conflictResolution: "first-wins" | "last-wins" | "manual-review";
 }
 
 export interface JobProps {
@@ -42,7 +42,7 @@ export class Job {
   private constructor(private props: JobProps) {}
 
   static create(
-    props: Omit<JobProps, 'id' | 'status' | 'version' | 'createdAt' | 'updatedAt'>
+    props: Omit<JobProps, "id" | "status" | "version" | "createdAt" | "updatedAt">
   ): Job {
     return new Job({
       ...props,
@@ -148,10 +148,7 @@ export class Job {
     this.props.version += 1;
   }
 
-  updateConfigs(
-    sourceConfigEncrypted: string,
-    targetConfigEncrypted: string
-  ): void {
+  updateConfigs(sourceConfigEncrypted: string, targetConfigEncrypted: string): void {
     this.props.sourceConfigEncrypted = sourceConfigEncrypted;
     this.props.targetConfigEncrypted = targetConfigEncrypted;
     this.props.updatedAt = new Date();

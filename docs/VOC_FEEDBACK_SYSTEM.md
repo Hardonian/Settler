@@ -53,7 +53,13 @@ The Voice-of-Customer (VOC) system collects, structures, and analyzes customer f
 interface Feedback {
   id: string;
   timestamp: string;
-  source: "sales_call" | "user_interview" | "support_ticket" | "github_issue" | "community" | "survey";
+  source:
+    | "sales_call"
+    | "user_interview"
+    | "support_ticket"
+    | "github_issue"
+    | "community"
+    | "survey";
   persona: "cto" | "cfo" | "finance_ops" | "developer";
   userId?: string;
   company?: string;
@@ -101,6 +107,7 @@ interface Feedback {
 6. **Feature Requests:** What features did they ask for?
 
 **Template:**
+
 ```
 Sales Call Feedback
 Date: [Date]
@@ -128,6 +135,7 @@ Feature Requests:
 6. **Feature Requests:** Prioritized list
 
 **Template:**
+
 ```
 User Interview Feedback
 Date: [Date]
@@ -165,6 +173,7 @@ Tags: [tag1, tag2, tag3]
 4. **Feature Request:** What feature would solve this?
 
 **Template:**
+
 ```
 Support Ticket Feedback
 Ticket ID: [ID]
@@ -214,6 +223,7 @@ CREATE INDEX idx_feedback_created_at ON feedback(created_at DESC);
 ### Weekly Aggregation Process
 
 **Monday:** Collect all feedback from previous week
+
 - Sales calls (SDR/AE)
 - User interviews (Product/Founder)
 - Support tickets (Support)
@@ -221,23 +231,27 @@ CREATE INDEX idx_feedback_created_at ON feedback(created_at DESC);
 - Community messages (Community manager)
 
 **Tuesday:** Categorize and prioritize
+
 - Group by persona
 - Group by pain type (Activation, Retention, Expansion)
 - Tag with severity
 - Count frequency
 
 **Wednesday:** Map to roadmap
+
 - Match feedback to existing epics/stories
 - Create new stories if needed
 - Prioritize based on frequency + impact
 - Estimate effort
 
 **Thursday:** Update roadmap
+
 - Add high-priority items to current sprint
 - Add medium-priority items to backlog
 - Defer low-priority items
 
 **Friday:** Share insights
+
 - Weekly feedback summary
 - Top 5 pains this week
 - Roadmap updates
@@ -250,36 +264,43 @@ CREATE INDEX idx_feedback_created_at ON feedback(created_at DESC);
 ### JTBD Statements
 
 **Developer (CTO/VP Eng):**
+
 - "When I'm building payment integrations, I want to eliminate custom reconciliation code so that I can focus on core product features and reduce maintenance burden."
 - "When I'm evaluating reconciliation tools, I want a simple API integration so that I can get started in minutes without complex setup."
 
 **Finance (CFO/Finance Director):**
+
 - "When I'm closing the books, I want automated reconciliation so that I can reduce month-end close time from 5-7 days to 1 day."
 - "When I'm ensuring compliance, I want complete audit trails so that I can pass audits without manual documentation."
 
 **Operations (Finance Ops Manager):**
+
 - "When I'm reconciling transactions, I want an exception queue so that I can quickly resolve unmatched items without digging through spreadsheets."
 - "When I'm handling multi-currency transactions, I want automatic FX conversion so that I don't have to manually look up exchange rates."
 
 ### Top Pains & Outcomes
 
 **Activation Pains:**
+
 1. Adapter configuration unclear (Frequency: High, Impact: High)
 2. No test mode (Frequency: Medium, Impact: High)
 3. Generic error messages (Frequency: High, Impact: High)
 
 **Retention Pains:**
+
 1. Exception queue missing (Frequency: High, Impact: High)
 2. Report format overwhelming (Frequency: Medium, Impact: Medium)
 3. No confidence scores (Frequency: Medium, Impact: Medium)
 
 **Expansion Pains:**
+
 1. Multi-currency support missing (Frequency: Low, Impact: High)
 2. No direct accounting sync (Frequency: Medium, Impact: Medium)
 
 ### Language Bank
 
 **Problem Language:**
+
 - "Manual reconciliation takes hours"
 - "Spreadsheets are error-prone"
 - "We can't scale manual processes"
@@ -290,6 +311,7 @@ CREATE INDEX idx_feedback_created_at ON feedback(created_at DESC);
 - "Finance team is overwhelmed"
 
 **Solution Language:**
+
 - "Automate reconciliation"
 - "Real-time matching"
 - "99%+ accuracy"
@@ -306,18 +328,23 @@ CREATE INDEX idx_feedback_created_at ON feedback(created_at DESC);
 ### Simple Rules
 
 **Rule 1: Activation Blockers**
+
 - If 3+ customers report same activation blocker → Fix in current sprint
 
 **Rule 2: Retention Risks**
+
 - If 2+ customers churn due to same issue → Fix in current sprint
 
 **Rule 3: High-Value Feature Requests**
+
 - If 5+ enterprise customers request same feature → Add to roadmap (next quarter)
 
 **Rule 4: Competitive Threats**
+
 - If 2+ customers mention competitor → Analyze competitor, prioritize differentiation
 
 **Rule 5: Market Signals**
+
 - If 10+ customers request same feature → Add to roadmap (next quarter)
 
 ---

@@ -28,7 +28,9 @@ export function SettlerLogo({
     return <BrandWordmark alt={alt} className={className} priority={priority} />;
   }
   if (variant === "stacked") {
-    return <BrandLockup orientation="stacked" alt={alt} className={className} priority={priority} />;
+    return (
+      <BrandLockup orientation="stacked" alt={alt} className={className} priority={priority} />
+    );
   }
   return <BrandLockup alt={alt} className={className} priority={priority} />;
 }

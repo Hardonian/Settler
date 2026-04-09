@@ -596,7 +596,8 @@ export async function getConsoleActivationOverview(): Promise<ConsoleActivationO
           label: "Workspace created",
           achieved: true,
           achievedAt: null,
-          evidenceSummary: "Tenant membership exists in Supabase; Prisma was not queried for createdAt.",
+          evidenceSummary:
+            "Tenant membership exists in Supabase; Prisma was not queried for createdAt.",
         },
         source_connected: {
           id: "source_connected",

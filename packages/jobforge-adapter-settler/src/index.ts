@@ -3,7 +3,7 @@
  * JobForge adapter for Settler (contract management platform)
  */
 
-import { z } from 'zod'
+import { z } from "zod";
 
 /**
  * Job Type: settler.contract.process
@@ -15,17 +15,17 @@ export const SettlerContractProcessPayloadSchema = z.object({
   tenant_id: z.string().uuid(),
   extract_fields: z
     .array(z.string())
-    .default(['parties', 'effective_date', 'expiration_date', 'payment_terms']),
+    .default(["parties", "effective_date", "expiration_date", "payment_terms"]),
   notify_on_complete: z.boolean().default(true),
-})
+});
 
-export type SettlerContractProcessPayload = z.infer<typeof SettlerContractProcessPayloadSchema>
+export type SettlerContractProcessPayload = z.infer<typeof SettlerContractProcessPayloadSchema>;
 
 export interface SettlerContractProcessResult {
-  contract_id: string
-  extracted_data: Record<string, unknown>
-  confidence_scores: Record<string, number>
-  review_required: boolean
+  contract_id: string;
+  extracted_data: Record<string, unknown>;
+  confidence_scores: Record<string, number>;
+  review_required: boolean;
 }
 
 /**
@@ -36,22 +36,22 @@ export const SettlerNotificationSendPayloadSchema = z.object({
   tenant_id: z.string().uuid(),
   user_id: z.string().uuid(),
   notification_type: z.enum([
-    'contract_expiring',
-    'signature_required',
-    'contract_executed',
-    'review_requested',
+    "contract_expiring",
+    "signature_required",
+    "contract_executed",
+    "review_requested",
   ]),
   contract_id: z.string().uuid(),
   metadata: z.record(z.unknown()).optional(),
-  channels: z.array(z.enum(['email', 'sms', 'in_app'])).default(['email', 'in_app']),
-})
+  channels: z.array(z.enum(["email", "sms", "in_app"])).default(["email", "in_app"]),
+});
 
-export type SettlerNotificationSendPayload = z.infer<typeof SettlerNotificationSendPayloadSchema>
+export type SettlerNotificationSendPayload = z.infer<typeof SettlerNotificationSendPayloadSchema>;
 
 export interface SettlerNotificationSendResult {
-  notification_id: string
-  channels_sent: string[]
-  failed_channels: string[]
+  notification_id: string;
+  channels_sent: string[];
+  failed_channels: string[];
 }
 
 /**
@@ -64,17 +64,17 @@ export const SettlerReportMonthlyPayloadSchema = z.object({
   month: z.number().int().min(1).max(12),
   include_charts: z.boolean().default(true),
   delivery_emails: z.array(z.string().email()).optional(),
-})
+});
 
-export type SettlerReportMonthlyPayload = z.infer<typeof SettlerReportMonthlyPayloadSchema>
+export type SettlerReportMonthlyPayload = z.infer<typeof SettlerReportMonthlyPayloadSchema>;
 
 export interface SettlerReportMonthlyResult {
-  report_id: string
-  total_contracts: number
-  new_contracts: number
-  expiring_contracts: number
-  total_value: number
-  artifact_ref: string
+  report_id: string;
+  total_contracts: number;
+  new_contracts: number;
+  expiring_contracts: number;
+  total_value: number;
+  artifact_ref: string;
 }
 
 /**
@@ -188,4 +188,4 @@ export async function settlerContractProcessHandler(
   };
 }
   `,
-}
+};

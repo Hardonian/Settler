@@ -2,4 +2,4 @@
  * AI Config Manager Index
  */
 
-export { AIConfigManager, type AIConfig } from './ai-config-manager';
+export { AIConfigManager, type AIConfig } from "./ai-config-manager";

@@ -1,6 +1,6 @@
 /**
  * Deterministic Matching Engine
- * 
+ *
  * Matches transactions using deterministic rules.
  * Same inputs always produce same outputs.
  */
@@ -74,7 +74,12 @@ function calculateConfidence(
   if (ruleType === "amount_exact" && evidenceCount >= 1) {
     return "exact";
   }
-  if (ruleType === "amount_tolerance" && evidenceCount >= 1 && amountDiff !== undefined && amountDiff <= 0.01) {
+  if (
+    ruleType === "amount_tolerance" &&
+    evidenceCount >= 1 &&
+    amountDiff !== undefined &&
+    amountDiff <= 0.01
+  ) {
     return "high";
   }
   if (ruleType === "amount_date_window" && evidenceCount >= 2) {
@@ -95,22 +100,14 @@ function calculateConfidence(
 /**
  * Check if two amounts match within tolerance
  */
-function amountsMatch(
-  amount1: number,
-  amount2: number,
-  tolerance = 0
-): boolean {
+function amountsMatch(amount1: number, amount2: number, tolerance = 0): boolean {
   return Math.abs(amount1 - amount2) <= tolerance;
 }
 
 /**
  * Check if two dates are within window
  */
-function datesWithinWindow(
-  date1: string,
-  date2: string,
-  windowDays: number
-): boolean {
+function datesWithinWindow(date1: string, date2: string, windowDays: number): boolean {
   const d1 = new Date(date1);
   const d2 = new Date(date2);
   const diffDays = Math.abs((d1.getTime() - d2.getTime()) / (1000 * 60 * 60 * 24));
@@ -329,12 +326,8 @@ export function matchReceiptToTransaction(
       timestamp: receipt.date,
       status: "completed" as const,
     };
-    
-    const match = matchWithRule(
-      receiptTransaction,
-      transaction,
-      rule
-    );
+
+    const match = matchWithRule(receiptTransaction, transaction, rule);
 
     if (match) {
       return match;

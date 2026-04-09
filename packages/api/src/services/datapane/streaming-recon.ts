@@ -1,12 +1,12 @@
 /**
  * Streaming Reconciliation
- * 
+ *
  * Incremental file ingestion, streaming schema diffs, real-time validation
  * Part 10: Next-Gen Data Plane & Processing Layers
  */
 
-import { EventEmitter } from 'events';
-import { logInfo } from '../../utils/logger';
+import { EventEmitter } from "events";
+import { logInfo } from "../../utils/logger";
 
 export interface StreamingReconConfig {
   batchSize: number;
@@ -16,7 +16,7 @@ export interface StreamingReconConfig {
 }
 
 export interface StreamingUpdate {
-  type: 'ingestion' | 'schema_diff' | 'validation' | 'recon';
+  type: "ingestion" | "schema_diff" | "validation" | "recon";
   data: Record<string, unknown>;
   timestamp: Date;
 }
@@ -58,8 +58,8 @@ export class StreamingRecon extends EventEmitter {
     this.buffer.push({ data, sourceId, timestamp: new Date() });
 
     // Emit ingestion event
-    this.emit('ingestion', {
-      type: 'ingestion',
+    this.emit("ingestion", {
+      type: "ingestion",
       data,
       timestamp: new Date(),
     } as StreamingUpdate);
@@ -78,10 +78,10 @@ export class StreamingRecon extends EventEmitter {
 
     if (previousSchema) {
       const diff = this.computeSchemaDiff(previousSchema, schema);
-      
+
       if (diff.changes.length > 0) {
-        this.emit('schema_diff', {
-          type: 'schema_diff',
+        this.emit("schema_diff", {
+          type: "schema_diff",
           data: diff,
           timestamp: new Date(),
         } as StreamingUpdate);
@@ -113,8 +113,8 @@ export class StreamingRecon extends EventEmitter {
     const valid = errors.length === 0;
 
     if (this.config.enableRealTimeValidation) {
-      this.emit('validation', {
-        type: 'validation',
+      this.emit("validation", {
+        type: "validation",
         data: { valid, errors },
         timestamp: new Date(),
       } as StreamingUpdate);
@@ -155,8 +155,8 @@ export class StreamingRecon extends EventEmitter {
 
       // Emit progress
       const progress = processed / total;
-      this.emit('recon', {
-        type: 'recon',
+      this.emit("recon", {
+        type: "recon",
         data: { matched, unmatched, progress },
         timestamp: new Date(),
       } as StreamingUpdate);
@@ -174,8 +174,8 @@ export class StreamingRecon extends EventEmitter {
     }
 
     const batch = this.buffer.splice(0, this.config.batchSize);
-    logInfo('Flushing streaming buffer', { batchSize: batch.length });
-    
+    logInfo("Flushing streaming buffer", { batchSize: batch.length });
+
     // Process batch
     // TODO: Implement batch processing
   }
@@ -188,25 +188,21 @@ export class StreamingRecon extends EventEmitter {
     newSchema: SchemaDefinition
   ): {
     changes: Array<{
-      type: 'added' | 'removed' | 'modified';
+      type: "added" | "removed" | "modified";
       field: string;
       oldValue?: unknown;
       newValue?: unknown;
     }>;
   } {
     const changes: Array<{
-      type: 'added' | 'removed' | 'modified';
+      type: "added" | "removed" | "modified";
       field: string;
       oldValue?: unknown;
       newValue?: unknown;
     }> = [];
 
-    const oldFieldsMap = new Map(
-      (oldSchema.fields || []).map((f) => [f.name, f])
-    );
-    const newFieldsMap = new Map(
-      (newSchema.fields || []).map((f) => [f.name, f])
-    );
+    const oldFieldsMap = new Map((oldSchema.fields || []).map((f) => [f.name, f]));
+    const newFieldsMap = new Map((newSchema.fields || []).map((f) => [f.name, f]));
 
     const oldFields = new Set(oldFieldsMap.keys());
     const newFields = new Set(newFieldsMap.keys());
@@ -216,7 +212,7 @@ export class StreamingRecon extends EventEmitter {
       if (!oldFields.has(field)) {
         const fieldDef = newFieldsMap.get(field);
         changes.push({
-          type: 'added',
+          type: "added",
           field,
           newValue: fieldDef,
         });
@@ -228,7 +224,7 @@ export class StreamingRecon extends EventEmitter {
       if (!newFields.has(field)) {
         const fieldDef = oldFieldsMap.get(field);
         changes.push({
-          type: 'removed',
+          type: "removed",
           field,
           oldValue: fieldDef,
         });
@@ -242,7 +238,7 @@ export class StreamingRecon extends EventEmitter {
         const newValue = newFieldsMap.get(field);
         if (JSON.stringify(oldValue) !== JSON.stringify(newValue)) {
           changes.push({
-            type: 'modified',
+            type: "modified",
             field,
             oldValue,
             newValue,
@@ -271,10 +267,7 @@ export class StreamingRecon extends EventEmitter {
   /**
    * Match two records
    */
-  private match(
-    source: Record<string, unknown>,
-    target: Record<string, unknown>
-  ): boolean {
+  private match(source: Record<string, unknown>, target: Record<string, unknown>): boolean {
     // TODO: Implement matching logic
     return JSON.stringify(source) === JSON.stringify(target);
   }

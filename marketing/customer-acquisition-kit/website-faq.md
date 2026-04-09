@@ -140,6 +140,7 @@ You can also receive webhooks from Settler when reconciliation completes or mism
 **Typical accuracy:** 95-99% (depends on data quality and matching rules)
 
 **Improving accuracy:**
+
 - Fine-tune matching rules
 - Use fuzzy matching for edge cases
 - Add custom matching logic
@@ -226,6 +227,7 @@ rules: {
 **One reconciliation** = matching one source transaction with one target transaction.
 
 **Example:**
+
 - 100 Shopify orders matched with 100 Stripe payments = **100 reconciliations**
 - 100 Shopify orders, 95 matched, 5 unmatched = **100 reconciliations** (matched + unmatched)
 
@@ -236,6 +238,7 @@ rules: {
 **No service interruption:** Reconciliation continues automatically.
 
 **Example:**
+
 - Starter plan: 10,000/month included
 - Actual usage: 12,000
 - Overage: 2,000 × $0.01 = $20

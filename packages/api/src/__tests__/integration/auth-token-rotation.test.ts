@@ -3,15 +3,15 @@
  * Tests refresh token rotation functionality
  */
 
-import request from 'supertest';
-import app from '../../index';
-import { query } from '../../db';
-import { revokeAllUserTokens } from '../../infrastructure/security/token-rotation';
+import request from "supertest";
+import app from "../../index";
+import { query } from "../../db";
+import { revokeAllUserTokens } from "../../infrastructure/security/token-rotation";
 
-const shouldRunDbTests = process.env.RUN_DB_TESTS === 'true';
+const shouldRunDbTests = process.env.RUN_DB_TESTS === "true";
 const describeTokenRotation = shouldRunDbTests ? describe : describe.skip;
 
-describeTokenRotation('Token Rotation Integration', () => {
+describeTokenRotation("Token Rotation Integration", () => {
   let testUserId: string;
   let refreshToken: string;
 
@@ -21,17 +21,15 @@ describeTokenRotation('Token Rotation Integration', () => {
       `INSERT INTO users (email, password_hash, role)
        VALUES ($1, $2, $3)
        RETURNING id`,
-      ['test-token-rotation@example.com', '$2b$10$test', 'developer']
+      ["test-token-rotation@example.com", "$2b$10$test", "developer"]
     );
-    testUserId = users[0]?.id || '';
+    testUserId = users[0]?.id || "";
 
     // Login to get tokens
-    const loginResponse = await request(app)
-      .post('/api/v1/auth/login')
-      .send({
-        email: 'test-token-rotation@example.com',
-        password: 'test-password',
-      });
+    const loginResponse = await request(app).post("/api/v1/auth/login").send({
+      email: "test-token-rotation@example.com",
+      password: "test-password",
+    });
 
     if (loginResponse.status === 200 && loginResponse.body.data) {
       refreshToken = loginResponse.body.data.refreshToken;
@@ -42,46 +40,46 @@ describeTokenRotation('Token Rotation Integration', () => {
     // Cleanup
     if (testUserId) {
       await revokeAllUserTokens(testUserId);
-      await query('DELETE FROM users WHERE id = $1', [testUserId]);
+      await query("DELETE FROM users WHERE id = $1", [testUserId]);
     }
   });
 
-  describe('POST /api/v1/auth/refresh', () => {
-    it('should rotate refresh token on refresh', async () => {
+  describe("POST /api/v1/auth/refresh", () => {
+    it("should rotate refresh token on refresh", async () => {
       const oldRefreshToken = refreshToken;
 
       const response = await request(app)
-        .post('/api/v1/auth/refresh')
+        .post("/api/v1/auth/refresh")
         .send({ refreshToken: oldRefreshToken });
 
       expect(response.status).toBe(200);
-      expect(response.body.data).toHaveProperty('accessToken');
-      expect(response.body.data).toHaveProperty('refreshToken');
+      expect(response.body.data).toHaveProperty("accessToken");
+      expect(response.body.data).toHaveProperty("refreshToken");
       expect(response.body.data.refreshToken).not.toBe(oldRefreshToken);
 
       // Old token should be revoked
       const revokedResponse = await request(app)
-        .post('/api/v1/auth/refresh')
+        .post("/api/v1/auth/refresh")
         .send({ refreshToken: oldRefreshToken });
 
       expect(revokedResponse.status).toBe(401);
     });
 
-    it('should reject invalid refresh token', async () => {
+    it("should reject invalid refresh token", async () => {
       const response = await request(app)
-        .post('/api/v1/auth/refresh')
-        .send({ refreshToken: 'invalid-token' });
+        .post("/api/v1/auth/refresh")
+        .send({ refreshToken: "invalid-token" });
 
       expect(response.status).toBe(401);
-      expect(response.body.error).toBe('INVALID_TOKEN');
+      expect(response.body.error).toBe("INVALID_TOKEN");
     });
 
-    it('should reject expired refresh token', async () => {
+    it("should reject expired refresh token", async () => {
       // This would require creating an expired token, which is complex
       // For now, we test that invalid tokens are rejected
       const response = await request(app)
-        .post('/api/v1/auth/refresh')
-        .send({ refreshToken: 'expired-token' });
+        .post("/api/v1/auth/refresh")
+        .send({ refreshToken: "expired-token" });
 
       expect(response.status).toBe(401);
     });

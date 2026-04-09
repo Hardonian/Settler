@@ -27,7 +27,11 @@ export const GET = withSecurity(
       const config = resolvePublicRuntimeUiConfig({
         tenantMetadata: tenant?.metadata ?? undefined,
         tenantBranding: tenant?.branding
-          ? { borderRadiusScale: tenant.branding.borderRadiusScale ? Number(tenant.branding.borderRadiusScale) : null }
+          ? {
+              borderRadiusScale: tenant.branding.borderRadiusScale
+                ? Number(tenant.branding.borderRadiusScale)
+                : null,
+            }
           : null,
       });
 
@@ -42,7 +46,10 @@ export const GET = withSecurity(
       );
 
       // Light caching at the edge/CDN; keep iteration fast while reducing load.
-      res.headers.set("Cache-Control", "public, max-age=0, s-maxage=60, stale-while-revalidate=300");
+      res.headers.set(
+        "Cache-Control",
+        "public, max-age=0, s-maxage=60, stale-while-revalidate=300"
+      );
       res.headers.set("Vary", "Host");
       return res;
     } catch {
@@ -56,11 +63,13 @@ export const GET = withSecurity(
         },
         { status: 200 }
       );
-      res.headers.set("Cache-Control", "public, max-age=0, s-maxage=30, stale-while-revalidate=120");
+      res.headers.set(
+        "Cache-Control",
+        "public, max-age=0, s-maxage=30, stale-while-revalidate=120"
+      );
       res.headers.set("Vary", "Host");
       return res;
     }
   },
   { rateLimit: { windowMs: 60_000, maxRequests: 120 }, requireAuth: false }
 );
-

@@ -1,12 +1,12 @@
-import { Navigation } from '@/components/Navigation';
-import { Footer } from '@/components/Footer';
-import { AnimatedPageWrapper } from '@/components/AnimatedPageWrapper';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { Metadata } from 'next';
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
+import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Acceptable Use Policy',
-  description: 'Settler Acceptable Use Policy - Guidelines for using our services responsibly.',
+  title: "Acceptable Use Policy",
+  description: "Settler Acceptable Use Policy - Guidelines for using our services responsibly.",
   robots: {
     index: true,
     follow: true,
@@ -19,15 +19,19 @@ export default function AcceptableUsePolicyPage() {
   return (
     <AnimatedPageWrapper aria-label="Acceptable Use Policy page">
       <Navigation />
-      
+
       <section className="px-4 sm:px-6 lg:px-8 pt-24">
         <div className="max-w-4xl mx-auto">
-          <Breadcrumbs items={[{ label: 'Legal', href: '/legal' }, { label: 'Acceptable Use Policy' }]} />
+          <Breadcrumbs
+            items={[{ label: "Legal", href: "/legal" }, { label: "Acceptable Use Policy" }]}
+          />
         </div>
       </section>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h1 className="text-4xl font-bold mb-8 text-slate-900 dark:text-white">Acceptable Use Policy</h1>
+        <h1 className="text-4xl font-bold mb-8 text-slate-900 dark:text-white">
+          Acceptable Use Policy
+        </h1>
         <div className="prose prose-slate dark:prose-invert max-w-none">
           <p className="text-slate-600 dark:text-slate-400 mb-8">
             <strong>Last Updated:</strong> January 1, 2024
@@ -35,13 +39,13 @@ export default function AcceptableUsePolicyPage() {
 
           <h3>1. Introduction</h3>
           <p>
-            This Acceptable Use Policy ("AUP") governs your use of Settler's services ("Services"). 
-            By using our Services, you agree to comply with this AUP. Violations may result in 
+            This Acceptable Use Policy ("AUP") governs your use of Settler's services ("Services").
+            By using our Services, you agree to comply with this AUP. Violations may result in
             suspension or termination of your account.
           </p>
 
           <h3>2. Prohibited Activities</h3>
-          
+
           <h4>2.1 Illegal Activities</h4>
           <p>You may not use our Services to:</p>
           <ul>
@@ -81,9 +85,7 @@ export default function AcceptableUsePolicyPage() {
           </ul>
 
           <h3>3. API Usage Guidelines</h3>
-          <p>
-            When using our API, you must:
-          </p>
+          <p>When using our API, you must:</p>
           <ul>
             <li>Respect rate limits and quotas</li>
             <li>Use appropriate authentication methods</li>
@@ -93,9 +95,7 @@ export default function AcceptableUsePolicyPage() {
           </ul>
 
           <h3>4. Data Protection</h3>
-          <p>
-            You are responsible for:
-          </p>
+          <p>You are responsible for:</p>
           <ul>
             <li>Securing your API keys and credentials</li>
             <li>Protecting data you process through our Services</li>
@@ -104,9 +104,7 @@ export default function AcceptableUsePolicyPage() {
           </ul>
 
           <h3>5. Monitoring and Enforcement</h3>
-          <p>
-            We monitor usage of our Services to detect violations. We reserve the right to:
-          </p>
+          <p>We monitor usage of our Services to detect violations. We reserve the right to:</p>
           <ul>
             <li>Investigate suspected violations</li>
             <li>Suspend or terminate accounts that violate this AUP</li>
@@ -116,15 +114,13 @@ export default function AcceptableUsePolicyPage() {
 
           <h3>6. Reporting Violations</h3>
           <p>
-            If you become aware of any violation of this AUP, please report it to{' '}
-            <a href="mailto:abuse@settler.dev">abuse@settler.dev</a>. We will investigate 
-            all reports promptly.
+            If you become aware of any violation of this AUP, please report it to{" "}
+            <a href="mailto:abuse@settler.dev">abuse@settler.dev</a>. We will investigate all
+            reports promptly.
           </p>
 
           <h3>7. Consequences of Violations</h3>
-          <p>
-            Violations of this AUP may result in:
-          </p>
+          <p>Violations of this AUP may result in:</p>
           <ul>
             <li>Warning notices</li>
             <li>Temporary suspension of Services</li>
@@ -135,20 +131,20 @@ export default function AcceptableUsePolicyPage() {
 
           <h3>8. Changes to This Policy</h3>
           <p>
-            We may update this AUP from time to time. We will notify you of material changes 
-            by posting the updated policy on this page and updating the "Last Updated" date.
+            We may update this AUP from time to time. We will notify you of material changes by
+            posting the updated policy on this page and updating the "Last Updated" date.
           </p>
 
           <h3>9. Contact</h3>
           <p>
-            Questions about this AUP should be directed to{' '}
+            Questions about this AUP should be directed to{" "}
             <a href="mailto:legal@settler.dev">legal@settler.dev</a>.
           </p>
 
           <div className="mt-8 p-4 bg-slate-100 dark:bg-slate-800 rounded-lg">
             <p className="text-sm text-muted-foreground mb-0">
-              <strong>Disclaimer:</strong> This policy is provided for informational purposes only 
-              and does not constitute legal advice. Please consult with a legal professional for 
+              <strong>Disclaimer:</strong> This policy is provided for informational purposes only
+              and does not constitute legal advice. Please consult with a legal professional for
               advice specific to your situation.
             </p>
           </div>

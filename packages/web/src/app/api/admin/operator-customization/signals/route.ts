@@ -26,7 +26,10 @@ export const POST = withSecurity(
 
       const body = BodySchema.safeParse(await request.json().catch(() => null));
       if (!body.success) {
-        return NextResponse.json({ error: "invalid_body", issues: body.error.issues }, { status: 400 });
+        return NextResponse.json(
+          { error: "invalid_body", issues: body.error.issues },
+          { status: 400 }
+        );
       }
 
       const resolved = await resolveCustomizationTenantId(body.data.tenantId ?? null);

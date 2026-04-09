@@ -64,7 +64,8 @@ const ONBOARDING_STEPS: OnboardingStepInfo[] = [
   {
     id: "first_reconciliation",
     title: "Review Reconciliation Results",
-    description: "Open the runs view to see how results, exceptions, and audit trails are organized",
+    description:
+      "Open the runs view to see how results, exceptions, and audit trails are organized",
     actionLabel: "View Runs",
     actionUrl: "/console/runs",
     optional: false,

@@ -10,6 +10,7 @@
 Verify all required environment variables are set in Vercel:
 
 **Required:**
+
 - `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous key
 - `SUPABASE_SERVICE_ROLE_KEY` - Supabase service role key (server-only)
@@ -17,6 +18,7 @@ Verify all required environment variables are set in Vercel:
 - `NEXT_PUBLIC_SITE_URL` - Site URL (e.g., https://settler.dev)
 
 **Optional but Recommended:**
+
 - `STRIPE_SECRET_KEY` - Stripe secret key (for billing)
 - `STRIPE_WEBHOOK_SECRET` - Stripe webhook secret
 - `SENTRY_DSN` - Sentry error tracking
@@ -26,11 +28,13 @@ Verify all required environment variables are set in Vercel:
 ### Database Migrations
 
 1. **Verify migrations are up to date:**
+
    ```bash
    npm run verify:schema
    ```
 
 2. **Apply migrations if needed:**
+
    ```bash
    npm run db:migrate:prod
    ```
@@ -44,16 +48,19 @@ Verify all required environment variables are set in Vercel:
 ### Build Verification
 
 1. **Run type check:**
+
    ```bash
    npm run typecheck
    ```
 
 2. **Run linting:**
+
    ```bash
    npm run lint
    ```
 
 3. **Run build:**
+
    ```bash
    npm run build
    ```
@@ -76,9 +83,11 @@ Verify all required environment variables are set in Vercel:
 #### Health Checks
 
 1. **Global health endpoint:**
+
    ```bash
    curl https://settler.dev/api/health
    ```
+
    Expected: `{"status":"healthy",...}`
 
 2. **Console health endpoint:**

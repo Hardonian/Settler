@@ -58,9 +58,7 @@ async function getStripeClient(config: StripeConnectorConfig): Promise<any> {
     });
   } catch (error) {
     logError("Failed to load Stripe SDK", error);
-    throw new Error(
-      "Stripe SDK not available. Install with: npm install stripe"
-    );
+    throw new Error("Stripe SDK not available. Install with: npm install stripe");
   }
 }
 
@@ -198,9 +196,7 @@ export function normalizeStripeTransaction(
 /**
  * Normalize Stripe payout to internal format
  */
-export function normalizeStripePayout(
-  payout: StripePayout
-): NormalizedTransactionInput {
+export function normalizeStripePayout(payout: StripePayout): NormalizedTransactionInput {
   return {
     amount: Math.abs(payout.amount) / 100, // Convert cents to dollars
     currency: payout.currency.toUpperCase(),
@@ -264,10 +260,9 @@ export async function createStripeSource(
  * Get Stripe connector config from source
  */
 export async function getStripeConfig(sourceId: string): Promise<StripeConnectorConfig> {
-  const results = await query(
-    `SELECT config_encrypted FROM ingestion_sources WHERE id = $1`,
-    [sourceId]
-  );
+  const results = await query(`SELECT config_encrypted FROM ingestion_sources WHERE id = $1`, [
+    sourceId,
+  ]);
 
   if (results.length === 0) {
     throw new Error(`Source ${sourceId} not found`);

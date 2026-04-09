@@ -2,7 +2,7 @@
  * Logging Types
  */
 
-export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'critical';
+export type LogLevel = "debug" | "info" | "warn" | "error" | "critical";
 
 export interface LogEntry {
   level: LogLevel;

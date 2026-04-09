@@ -3,13 +3,13 @@
  * Disable connectors and pause background jobs without redeploy
  */
 
-import { query } from '../../db';
-import { logInfo, logError, logWarn } from '../../utils/logger';
+import { query } from "../../db";
+import { logInfo, logError, logWarn } from "../../utils/logger";
 
 export interface KillSwitch {
   id: string;
   name: string;
-  type: 'connector' | 'background_job' | 'feature' | 'endpoint';
+  type: "connector" | "background_job" | "feature" | "endpoint";
   target: string; // connector type, job type, feature name, or endpoint path
   enabled: boolean;
   reason?: string;
@@ -23,23 +23,23 @@ export interface KillSwitch {
  */
 export async function setKillSwitch(
   name: string,
-  type: KillSwitch['type'],
+  type: KillSwitch["type"],
   target: string,
   enabled: boolean,
   reason?: string,
   createdBy?: string
 ): Promise<string> {
-  if (!name || typeof name !== 'string' || name.trim().length === 0) {
-    throw new Error('Invalid kill switch name');
+  if (!name || typeof name !== "string" || name.trim().length === 0) {
+    throw new Error("Invalid kill switch name");
   }
-  if (!type || typeof type !== 'string') {
-    throw new Error('Invalid kill switch type');
+  if (!type || typeof type !== "string") {
+    throw new Error("Invalid kill switch type");
   }
-  if (!target || typeof target !== 'string' || target.trim().length === 0) {
-    throw new Error('Invalid kill switch target');
+  if (!target || typeof target !== "string" || target.trim().length === 0) {
+    throw new Error("Invalid kill switch target");
   }
-  if (typeof enabled !== 'boolean') {
-    throw new Error('Invalid enabled value: must be boolean');
+  if (typeof enabled !== "boolean") {
+    throw new Error("Invalid enabled value: must be boolean");
   }
 
   try {
@@ -57,11 +57,11 @@ export async function setKillSwitch(
     );
 
     const killSwitchId = result?.[0]?.id;
-    if (!killSwitchId || typeof killSwitchId !== 'string') {
-      throw new Error('Failed to create kill switch: no ID returned');
+    if (!killSwitchId || typeof killSwitchId !== "string") {
+      throw new Error("Failed to create kill switch: no ID returned");
     }
 
-    logInfo('Kill switch updated', {
+    logInfo("Kill switch updated", {
       id: killSwitchId,
       name,
       type,
@@ -72,7 +72,7 @@ export async function setKillSwitch(
 
     return killSwitchId;
   } catch (error) {
-    logError('Failed to set kill switch', error, { name, type, target });
+    logError("Failed to set kill switch", error, { name, type, target });
     throw error;
   }
 }
@@ -81,7 +81,7 @@ export async function setKillSwitch(
  * Check if kill switch is enabled
  */
 export async function isKillSwitchEnabled(
-  type: KillSwitch['type'],
+  type: KillSwitch["type"],
   target: string
 ): Promise<boolean> {
   try {
@@ -94,7 +94,7 @@ export async function isKillSwitchEnabled(
 
     return result.length > 0;
   } catch (error) {
-    logError('Failed to check kill switch', error, { type, target });
+    logError("Failed to check kill switch", error, { type, target });
     // Fail closed - assume kill switch is enabled if check fails
     return true;
   }
@@ -104,14 +104,14 @@ export async function isKillSwitchEnabled(
  * Check if connector is disabled
  */
 export async function isConnectorDisabled(connectorType: string): Promise<boolean> {
-  return isKillSwitchEnabled('connector', connectorType);
+  return isKillSwitchEnabled("connector", connectorType);
 }
 
 /**
  * Check if background job is paused
  */
 export async function isBackgroundJobPaused(jobType: string): Promise<boolean> {
-  return isKillSwitchEnabled('background_job', jobType);
+  return isKillSwitchEnabled("background_job", jobType);
 }
 
 /**
@@ -134,10 +134,10 @@ export async function getAllKillSwitches(): Promise<KillSwitch[]> {
      ORDER BY type, target`
   );
 
-  return switches.map(sw => ({
+  return switches.map((sw) => ({
     id: sw.id,
     name: sw.name,
-    type: sw.type as KillSwitch['type'],
+    type: sw.type as KillSwitch["type"],
     target: sw.target,
     enabled: sw.enabled,
     reason: sw.reason || undefined,
@@ -157,14 +157,14 @@ export async function disableConnector(
 ): Promise<void> {
   await setKillSwitch(
     `connector_${connectorType}`,
-    'connector',
+    "connector",
     connectorType,
     true, // enabled = true means kill switch is active (disabled)
     reason,
     createdBy
   );
 
-  logWarn('Connector disabled via kill switch', { connectorType, reason });
+  logWarn("Connector disabled via kill switch", { connectorType, reason });
 }
 
 /**
@@ -173,14 +173,14 @@ export async function disableConnector(
 export async function enableConnector(connectorType: string): Promise<void> {
   await setKillSwitch(
     `connector_${connectorType}`,
-    'connector',
+    "connector",
     connectorType,
     false, // enabled = false means kill switch is inactive (enabled)
-    'Manually enabled',
+    "Manually enabled",
     undefined
   );
 
-  logInfo('Connector enabled via kill switch', { connectorType });
+  logInfo("Connector enabled via kill switch", { connectorType });
 }
 
 /**
@@ -193,14 +193,14 @@ export async function pauseBackgroundJob(
 ): Promise<void> {
   await setKillSwitch(
     `background_job_${jobType}`,
-    'background_job',
+    "background_job",
     jobType,
     true, // enabled = true means kill switch is active (paused)
     reason,
     createdBy
   );
 
-  logWarn('Background job paused via kill switch', { jobType, reason });
+  logWarn("Background job paused via kill switch", { jobType, reason });
 }
 
 /**
@@ -209,12 +209,12 @@ export async function pauseBackgroundJob(
 export async function resumeBackgroundJob(jobType: string): Promise<void> {
   await setKillSwitch(
     `background_job_${jobType}`,
-    'background_job',
+    "background_job",
     jobType,
     false, // enabled = false means kill switch is inactive (resumed)
-    'Manually resumed',
+    "Manually resumed",
     undefined
   );
 
-  logInfo('Background job resumed via kill switch', { jobType });
+  logInfo("Background job resumed via kill switch", { jobType });
 }

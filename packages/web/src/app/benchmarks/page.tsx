@@ -79,7 +79,9 @@ export default function BenchmarksPage() {
 
       <Section className="py-12" containerClassName="max-w-7xl">
         <div className="mx-auto mb-14 max-w-4xl text-center">
-          <h1 className="mb-4 text-fluid-4xl font-bold text-foreground">Performance by the Numbers</h1>
+          <h1 className="mb-4 text-fluid-4xl font-bold text-foreground">
+            Performance by the Numbers
+          </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Settler is benchmarked continuously against realistic high-volume financial data
             workloads. Numbers below are from the production engine, not synthetic demos.
@@ -91,7 +93,9 @@ export default function BenchmarksPage() {
           {metrics.map((metric) => (
             <Card key={metric.label} className="border-border">
               <CardContent className="pt-6 text-center pb-6">
-                <div className="mb-1 text-3xl font-bold text-primary-600 md:text-4xl">{metric.value}</div>
+                <div className="mb-1 text-3xl font-bold text-primary-600 md:text-4xl">
+                  {metric.value}
+                </div>
                 <div className="font-semibold text-foreground text-sm">{metric.label}</div>
                 <div className="text-xs text-muted-foreground mt-1">{metric.sub}</div>
               </CardContent>
@@ -191,9 +195,10 @@ export default function BenchmarksPage() {
             </p>
             <h3>Latency Measurement</h3>
             <p>
-              All latency figures are client-side wall-clock times including full network round-trip.
-              Internal stage timings are captured via structured spans at the engine boundary and
-              summed for end-to-end reporting. The edge CDN is included in all p95/p99 measurements.
+              All latency figures are client-side wall-clock times including full network
+              round-trip. Internal stage timings are captured via structured spans at the engine
+              boundary and summed for end-to-end reporting. The edge CDN is included in all p95/p99
+              measurements.
             </p>
             <h3>Throughput Measurement</h3>
             <p>

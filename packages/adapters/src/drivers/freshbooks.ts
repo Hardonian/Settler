@@ -35,7 +35,6 @@ export class FreshBooksDriver implements ConnectorDriver {
 
   private readonly apiUrl = "https://api.freshbooks.com";
 
-   
   async getAuthUrl(options: AuthUrlOptions): Promise<string> {
     const config = options as unknown as { clientId: string; redirectUri: string };
     const params = new URLSearchParams({

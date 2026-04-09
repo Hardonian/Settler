@@ -156,7 +156,9 @@ console.log(report.data.summary);`);
                         <p className="text-lg font-medium text-muted-foreground">
                           Reconciling 150+ transactions...
                         </p>
-                        <p className="text-sm text-muted-foreground">Applying deterministic rules...</p>
+                        <p className="text-sm text-muted-foreground">
+                          Applying deterministic rules...
+                        </p>
                       </div>
                     )}
 

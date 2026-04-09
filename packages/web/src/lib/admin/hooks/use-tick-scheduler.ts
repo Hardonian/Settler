@@ -1,20 +1,20 @@
 /**
  * Tick Scheduler Hook
- * 
+ *
  * Limits chart/visualization updates to prevent UI thrashing.
  * Implements 4fps max update rate for smooth but performant rendering.
  */
 
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
 const MAX_FPS = 4;
 const TICK_INTERVAL_MS = 1000 / MAX_FPS;
 
 /**
  * Hook for throttled tick updates
- * 
+ *
  * @param callback Function to call on each tick
  * @param enabled Whether the scheduler is enabled
  * @returns Current tick count
@@ -41,7 +41,7 @@ export function useTickScheduler(
     }
 
     intervalRef.current = setInterval(() => {
-      setTick(prev => {
+      setTick((prev) => {
         const next = prev + 1;
         callbackRef.current(next);
         return next;
@@ -61,7 +61,7 @@ export function useTickScheduler(
 
 /**
  * Hook for throttled value updates (for counters that need to be responsive)
- * 
+ *
  * @param value Current value
  * @param enabled Whether throttling is enabled
  * @returns Throttled value

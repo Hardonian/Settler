@@ -1,4 +1,4 @@
-declare module 'opossum' {
+declare module "opossum" {
   export interface Options {
     timeout?: number;
     errorThresholdPercentage?: number;

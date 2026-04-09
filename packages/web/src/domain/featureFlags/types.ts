@@ -1,12 +1,12 @@
 /**
  * Feature Flags Domain Types
- * 
+ *
  * Type definitions for feature flag management and evaluation.
  */
 
-export type FlagType = 'boolean' | 'string' | 'number';
+export type FlagType = "boolean" | "string" | "number";
 
-export type Environment = 'production' | 'staging' | 'development' | string;
+export type Environment = "production" | "staging" | "development" | string;
 
 export interface FeatureFlag {
   id: string;
@@ -52,7 +52,7 @@ export interface EvaluationContext {
 
 export interface EvaluationResult {
   value: unknown;
-  source: 'default' | 'environment' | 'override';
+  source: "default" | "environment" | "override";
   environment?: Environment;
   metadata?: Record<string, unknown>;
 }

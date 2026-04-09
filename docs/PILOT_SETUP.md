@@ -49,6 +49,7 @@ Navigate to **Console > Settings** or use the API:
 ### 5. Review Together
 
 Walk the prospect through:
+
 - Dashboard KPIs (match rate, exception count)
 - Run detail (matched vs unmatched breakdown)
 - Exception queue (what needs attention)
@@ -60,31 +61,34 @@ Walk the prospect through:
 
 Recommended metrics for pilot evaluation:
 
-| Metric | Target | How to Measure |
-|--------|--------|----------------|
-| Match rate | > 90% on first run, > 95% after rule tuning | Run summary |
-| Time to first result | < 1 hour from setup | Timestamp of first completed run |
-| Exception resolution rate | > 80% during pilot | Exception status distribution |
-| Operator confidence | Operators can triage without help | Qualitative feedback |
-| Data freshness | Syncs complete within SLA | Integration last-sync timestamps |
+| Metric                    | Target                                      | How to Measure                   |
+| ------------------------- | ------------------------------------------- | -------------------------------- |
+| Match rate                | > 90% on first run, > 95% after rule tuning | Run summary                      |
+| Time to first result      | < 1 hour from setup                         | Timestamp of first completed run |
+| Exception resolution rate | > 80% during pilot                          | Exception status distribution    |
+| Operator confidence       | Operators can triage without help           | Qualitative feedback             |
+| Data freshness            | Syncs complete within SLA                   | Integration last-sync timestamps |
 
 ---
 
 ## Trial Success Playbook
 
 ### Week 1: Setup & First Run
+
 - Connect integrations
 - Run first reconciliation
 - Review results with prospect
 - Tune tolerance rules based on initial findings
 
 ### Week 2: Daily Operations
+
 - Schedule recurring reconciliation runs
 - Prospect team triages exceptions independently
 - Monitor match rate trends
 - Identify recurring exception patterns
 
 ### Week 3-4: Optimization & Evaluation
+
 - Refine rules to reduce false positives
 - Review audit trail completeness
 - Evaluate against success criteria

@@ -128,7 +128,7 @@ Failed steps are scheduled for retry:
 
 ```sql
 UPDATE saga_state
-SET 
+SET
   retry_count = retry_count + 1,
   next_retry_at = NOW() + INTERVAL '1 minute' * POWER(2, retry_count)
 WHERE saga_id = $1
@@ -166,7 +166,7 @@ interface SagaState {
   currentStep: string;
   stepHistory: Array<{
     step: string;
-    status: 'started' | 'completed' | 'failed' | 'compensated';
+    status: "started" | "completed" | "failed" | "compensated";
     timestamp: Date;
   }>;
   data: Record<string, unknown>;
@@ -182,6 +182,7 @@ interface SagaState {
 **Scenario**: Saga crashes between steps
 
 **Recovery**:
+
 1. Load saga state from database
 2. Identify last completed step
 3. Resume from next step
@@ -198,6 +199,7 @@ async resumeSaga(sagaId: string, sagaType: string) {
 **Scenario**: Shopify/Stripe API is down
 
 **Recovery**:
+
 1. Circuit breaker opens after threshold failures
 2. Saga step fails with retryable error
 3. Scheduled for retry with exponential backoff
@@ -208,6 +210,7 @@ async resumeSaga(sagaId: string, sagaType: string) {
 **Scenario**: Step exceeds timeout
 
 **Recovery**:
+
 1. Timeout error detected
 2. If retryable, schedule retry
 3. If not retryable, start compensation
@@ -217,6 +220,7 @@ async resumeSaga(sagaId: string, sagaType: string) {
 **Scenario**: Validation error or permanent failure
 
 **Recovery**:
+
 1. Mark step as failed
 2. Execute compensation for completed steps
 3. Mark saga as failed
@@ -238,6 +242,7 @@ interface DeadLetterEntry {
 ```
 
 **DLQ Operations**:
+
 - Manual review
 - Root cause analysis
 - Manual retry or resolution
@@ -304,7 +309,7 @@ await commandHandler.handleStartReconciliation(command);
 await commandHandler.handleStartReconciliation(command);
 
 // 3. Verify only one saga instance exists
-const sagas = await db.query('SELECT * FROM saga_state WHERE ...');
+const sagas = await db.query("SELECT * FROM saga_state WHERE ...");
 expect(sagas.length).toBe(1);
 ```
 

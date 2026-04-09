@@ -236,7 +236,9 @@ export default function OpenSourcePage() {
                   {selfHostBenefits.map((benefit) => (
                     <li key={benefit} className="flex items-start gap-2.5">
                       <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm text-foreground dark:text-muted-foreground">{benefit}</span>
+                      <span className="text-sm text-foreground dark:text-muted-foreground">
+                        {benefit}
+                      </span>
                     </li>
                   ))}
                 </ul>

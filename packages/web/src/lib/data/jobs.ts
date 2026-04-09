@@ -1,10 +1,10 @@
 /**
  * Jobs Data Access
- * 
+ *
  * Centralized functions for fetching reconciliation job data.
  */
 
-import { SettlerClient } from '@settler/sdk';
+import { SettlerClient } from "@settler/sdk";
 
 export interface Job {
   id: string;
@@ -30,5 +30,5 @@ export async function getJobs(apiKey: string, options?: { limit?: number }): Pro
 export async function getJobExecution(_jobId: string, _apiKey: string): Promise<never> {
   // This would typically call an API endpoint
   // For now, real-time updates are handled via EventSource
-  throw new Error('Use EventSource for real-time job execution updates');
+  throw new Error("Use EventSource for real-time job execution updates");
 }

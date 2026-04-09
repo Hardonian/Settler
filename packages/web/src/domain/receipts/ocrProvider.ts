@@ -1,11 +1,11 @@
 /**
  * OCR Provider Abstraction
- * 
+ *
  * Defines interface for OCR providers and provides a stub implementation.
  * Can be extended with real providers (Google Vision, AWS Textract, etc.) via environment variables.
  */
 
-import { OcrResult } from './types';
+import { OcrResult } from "./types";
 
 export interface OcrProvider {
   extractText(imageData: Buffer | string, mimeType: string): Promise<OcrResult>;
@@ -45,10 +45,10 @@ Thank you for shopping!
  * Get OCR provider based on environment configuration
  */
 export function getOcrProvider(): OcrProvider {
-  const providerType = process.env.RECEIPTS_OCR_PROVIDER || 'stub';
+  const providerType = process.env.RECEIPTS_OCR_PROVIDER || "stub";
 
   switch (providerType) {
-    case 'stub':
+    case "stub":
       return new StubOcrProvider();
     // Future providers:
     // case 'google-vision':

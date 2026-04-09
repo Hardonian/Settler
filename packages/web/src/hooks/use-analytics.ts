@@ -1,13 +1,13 @@
 /**
  * Analytics Hook
- * 
+ *
  * React hook for tracking analytics events.
  */
 
-import { useCallback } from 'react';
-import { analytics } from '@/lib/analytics';
-import { usePathname } from 'next/navigation';
-import { useEffect } from 'react';
+import { useCallback } from "react";
+import { analytics } from "@/lib/analytics";
+import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 /**
  * Hook to track page views automatically

@@ -33,6 +33,7 @@ The repository already has some cleanup scripts:
 ### 1. Create a Clean-Install Script (`scripts/clean-install.mjs`)
 
 A dedicated script that:
+
 - Detects the platform (Windows/macOS/Linux)
 - Safely removes `node_modules` directories
 - Clears pnpm cache if needed (with user confirmation)
@@ -85,12 +86,12 @@ Add EACCES troubleshooting section to:
 
 ## Files to Modify
 
-| File | Action |
-|------|--------|
-| `scripts/clean-install.mjs` | Create new file |
-| `package.json` | Add `reinstall` and `reinstall:force` scripts |
-| `docs/troubleshooting/installation-and-setup.md` | Add EACCES section |
-| `SETUP.md` | Reference reinstall command |
+| File                                             | Action                                        |
+| ------------------------------------------------ | --------------------------------------------- |
+| `scripts/clean-install.mjs`                      | Create new file                               |
+| `package.json`                                   | Add `reinstall` and `reinstall:force` scripts |
+| `docs/troubleshooting/installation-and-setup.md` | Add EACCES section                            |
+| `SETUP.md`                                       | Reference reinstall command                   |
 
 ## Mermaid Workflow
 

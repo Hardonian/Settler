@@ -1,6 +1,6 @@
 /**
  * UX System Playground
- * 
+ *
  * Internal route for verifying motion system and state machine patterns.
  * This demonstrates:
  * - Motion primitives (AnimatedButton, AnimatedCard, Reveal)
@@ -9,22 +9,22 @@
  * - Reduced motion support
  */
 
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { AnimatedButton } from '@/components/motion/AnimatedButton';
-import { AnimatedCard } from '@/components/motion/AnimatedCard';
-import { Reveal } from '@/components/motion/Reveal';
-import { useMachineState } from '@/lib/xstate/hooks';
-import { demoFormMachine } from '@/lib/xstate/demo-machine';
-import { CheckCircle2, XCircle, Loader2, AlertCircle } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { AnimatedButton } from "@/components/motion/AnimatedButton";
+import { AnimatedCard } from "@/components/motion/AnimatedCard";
+import { Reveal } from "@/components/motion/Reveal";
+import { useMachineState } from "@/lib/xstate/hooks";
+import { demoFormMachine } from "@/lib/xstate/demo-machine";
+import { CheckCircle2, XCircle, Loader2, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function UXPlaygroundPage() {
-  const [activeSection, setActiveSection] = useState<'motion' | 'state'>('motion');
+  const [activeSection, setActiveSection] = useState<"motion" | "state">("motion");
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 py-12 px-4">
@@ -44,14 +44,14 @@ export default function UXPlaygroundPage() {
         <Reveal variant="fadeUp" delay={0.1}>
           <div className="flex gap-4 mb-8">
             <AnimatedButton
-              variant={activeSection === 'motion' ? 'default' : 'outline'}
-              onClick={() => setActiveSection('motion')}
+              variant={activeSection === "motion" ? "default" : "outline"}
+              onClick={() => setActiveSection("motion")}
             >
               Motion Primitives
             </AnimatedButton>
             <AnimatedButton
-              variant={activeSection === 'state' ? 'default' : 'outline'}
-              onClick={() => setActiveSection('state')}
+              variant={activeSection === "state" ? "default" : "outline"}
+              onClick={() => setActiveSection("state")}
             >
               State Machine Demo
             </AnimatedButton>
@@ -59,7 +59,7 @@ export default function UXPlaygroundPage() {
         </Reveal>
 
         {/* Motion Primitives Section */}
-        {activeSection === 'motion' && (
+        {activeSection === "motion" && (
           <div className="space-y-6">
             <Reveal variant="fadeUp" delay={0.1}>
               <Card>
@@ -154,7 +154,7 @@ export default function UXPlaygroundPage() {
         )}
 
         {/* State Machine Demo Section */}
-        {activeSection === 'state' && (
+        {activeSection === "state" && (
           <Reveal variant="fadeUp" delay={0.1}>
             <StateMachineDemo />
           </Reveal>
@@ -173,15 +173,15 @@ function StateMachineDemo() {
   const context = state.context;
 
   const handleSubmit = () => {
-    send({ type: 'SUBMIT' });
+    send({ type: "SUBMIT" });
   };
 
   const handleReset = () => {
-    send({ type: 'RESET' });
+    send({ type: "RESET" });
   };
 
   const handleRetry = () => {
-    send({ type: 'RETRY' });
+    send({ type: "RETRY" });
   };
 
   return (
@@ -221,7 +221,7 @@ function StateMachineDemo() {
                 <span className="text-sm">Error</span>
               </>
             )}
-            {state.value === 'validationError' && (
+            {state.value === "validationError" && (
               <>
                 <AlertCircle className="w-4 h-4 text-yellow-600" />
                 <span className="text-sm">Validation Error</span>
@@ -237,9 +237,7 @@ function StateMachineDemo() {
             <Input
               id="demo-name"
               value={context.formData.name}
-              onChange={(e) =>
-                send({ type: 'UPDATE_NAME', name: e.target.value })
-              }
+              onChange={(e) => send({ type: "UPDATE_NAME", name: e.target.value })}
               disabled={isPending}
               className="mt-1"
             />
@@ -254,9 +252,7 @@ function StateMachineDemo() {
               id="demo-email"
               type="email"
               value={context.formData.email}
-              onChange={(e) =>
-                send({ type: 'UPDATE_EMAIL', email: e.target.value })
-              }
+              onChange={(e) => send({ type: "UPDATE_EMAIL", email: e.target.value })}
               disabled={isPending}
               className="mt-1"
             />
@@ -290,7 +286,7 @@ function StateMachineDemo() {
 
         {/* Actions */}
         <div className="flex gap-4">
-          {isIdle || state.value === 'validationError' ? (
+          {isIdle || state.value === "validationError" ? (
             <AnimatedButton onClick={handleSubmit} disabled={isPending} className="flex-1">
               {isPending ? (
                 <>
@@ -298,7 +294,7 @@ function StateMachineDemo() {
                   Submitting...
                 </>
               ) : (
-                'Submit'
+                "Submit"
               )}
             </AnimatedButton>
           ) : null}

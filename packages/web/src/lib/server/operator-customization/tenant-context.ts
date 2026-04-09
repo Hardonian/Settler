@@ -20,7 +20,9 @@ export type ResolvedCustomizationTenant = {
  */
 export async function resolveCustomizationTenantId(
   requestedTenantId: string | null
-): Promise<{ ok: true; tenant: ResolvedCustomizationTenant } | { ok: false; response: NextResponse }> {
+): Promise<
+  { ok: true; tenant: ResolvedCustomizationTenant } | { ok: false; response: NextResponse }
+> {
   if (requestedTenantId) {
     try {
       const t = await prisma.tenant.findFirst({

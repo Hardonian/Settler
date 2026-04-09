@@ -5,8 +5,7 @@ const transactionMock = jest.fn();
 
 jest.mock("../../db", () => ({
   query: (...args: unknown[]) => queryMock(...args),
-  transaction: (fn: (client: { query: typeof queryMock }) => Promise<void>) =>
-    transactionMock(fn),
+  transaction: (fn: (client: { query: typeof queryMock }) => Promise<void>) => transactionMock(fn),
 }));
 
 jest.mock("../../utils/logger", () => ({

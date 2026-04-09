@@ -20,6 +20,7 @@ Settler is designed with compliance and security as foundational principles. Thi
 **Target Completion:** Q2 2026
 
 **Scope:**
+
 - Security
 - Availability
 - Processing Integrity
@@ -27,6 +28,7 @@ Settler is designed with compliance and security as foundational principles. Thi
 - Privacy
 
 **Controls:**
+
 - Access controls (RLS, API keys, JWT)
 - Encryption at rest and in transit
 - Audit logging
@@ -40,11 +42,13 @@ Settler is designed with compliance and security as foundational principles. Thi
 ### Encryption
 
 **At Rest:**
+
 - Database: AES-256 encryption (Supabase managed)
 - Sensitive fields: Field-level encryption (AES-256-GCM)
 - API keys: Hashed with bcrypt
 
 **In Transit:**
+
 - TLS 1.3 for all connections
 - API endpoints: HTTPS only
 - Webhooks: HMAC signature verification
@@ -52,16 +56,19 @@ Settler is designed with compliance and security as foundational principles. Thi
 ### Data Retention
 
 **Active Customers:**
+
 - Transaction data: Retained per customer contract
 - Audit logs: 7 years (compliance requirement)
 - Reconciliation results: Configurable (default 1 year)
 
 **Cancelled Customers:**
+
 - Data retention: 30 days after cancellation
 - Export availability: 7 days after cancellation
 - Automatic deletion: After retention period
 
 **Data Deletion:**
+
 - Automated deletion after retention period
 - Manual deletion available on request
 - Confirmation of deletion provided
@@ -73,6 +80,7 @@ Settler is designed with compliance and security as foundational principles. Thi
 ### Audit Logging
 
 **Comprehensive Audit Trail:**
+
 - All API calls logged with:
   - User ID
   - Tenant ID
@@ -82,12 +90,14 @@ Settler is designed with compliance and security as foundational principles. Thi
   - Request/response (sanitized)
 
 **Reconciliation Audits:**
+
 - Every reconciliation run audited
 - Match decisions tracked
 - Manual overrides logged
 - Confidence scores recorded
 
 **Data Access Logs:**
+
 - Database queries logged (in production with proper tooling)
 - Export requests tracked
 - API key usage monitored
@@ -95,12 +105,14 @@ Settler is designed with compliance and security as foundational principles. Thi
 ### Deterministic Behavior
 
 **Reconciliation Guarantees:**
+
 - Same inputs produce same outputs
 - Event-sourced architecture ensures reproducibility
 - Idempotency keys prevent duplicate processing
 - Versioned contracts for backward compatibility
 
 **Compliance Exports:**
+
 - GDPR-compliant data exports
 - CCPA-compliant data exports
 - Complete audit trail included
@@ -113,11 +125,13 @@ Settler is designed with compliance and security as foundational principles. Thi
 ### Row-Level Security (RLS)
 
 **Database-Level Isolation:**
+
 - PostgreSQL RLS policies enforce tenant boundaries
 - All queries automatically filtered by tenant
 - No cross-tenant data access possible
 
 **API-Level Isolation:**
+
 - Tenant ID required for all operations
 - Authorization middleware validates tenant access
 - API keys scoped to tenants
@@ -125,11 +139,13 @@ Settler is designed with compliance and security as foundational principles. Thi
 ### Access Controls
 
 **Authentication:**
+
 - JWT tokens (15min access, 7d refresh)
 - API keys (hashed storage)
 - OAuth 2.0 for integrations
 
 **Authorization:**
+
 - Role-based access control (RBAC)
 - Scoped permissions (read, write, admin)
 - Tenant-level permissions
@@ -141,21 +157,25 @@ Settler is designed with compliance and security as foundational principles. Thi
 ### GDPR Compliance
 
 **Right to Access:**
+
 - Complete data export available
 - Machine-readable format (JSON, CSV)
 - Includes all personal data
 
 **Right to Erasure:**
+
 - Data deletion on request
 - Confirmation of deletion
 - Automated deletion after retention period
 
 **Data Minimization:**
+
 - Only collect necessary data
 - Anonymize patterns for cross-customer intelligence
 - PII excluded from analytics
 
 **Consent Management:**
+
 - Opt-in for cross-customer intelligence
 - Clear privacy policy
 - Consent tracking
@@ -163,16 +183,19 @@ Settler is designed with compliance and security as foundational principles. Thi
 ### CCPA Compliance
 
 **Right to Know:**
+
 - Data categories disclosed
 - Data sources disclosed
 - Third-party sharing disclosed
 
 **Right to Delete:**
+
 - Deletion on request
 - Confirmation provided
 - Third-party deletion requested
 
 **Non-Discrimination:**
+
 - No discrimination for exercising rights
 - Equal service regardless of privacy choices
 
@@ -183,23 +206,27 @@ Settler is designed with compliance and security as foundational principles. Thi
 ### Export Capabilities
 
 **Formats:**
+
 - JSON (machine-readable)
 - CSV (human-readable)
 - PDF (reports)
 
 **Included Data:**
+
 - All transactions
 - Reconciliation results
 - Audit logs
 - Configuration data
 
 **Excluded Data (Lossy Exports):**
+
 - Derived artifacts (proprietary)
 - Longitudinal insights (proprietary)
 - ML confidence scores (proprietary)
 - Cross-customer patterns (anonymized, aggregated)
 
 **Export Limitations:**
+
 - Frequency limits (plan-based)
 - Size limits (plan-based)
 - Retention period (30-90 days)
@@ -211,17 +238,20 @@ Settler is designed with compliance and security as foundational principles. Thi
 ### Security Incidents
 
 **Detection:**
+
 - Automated monitoring
 - Anomaly detection
 - Alert system
 
 **Response:**
+
 - Incident response team
 - Customer notification (if required)
 - Regulatory notification (if required)
 - Post-incident review
 
 **Breach Notification:**
+
 - Customer notification within 72 hours
 - Regulatory notification as required
 - Public disclosure if required
@@ -251,14 +281,17 @@ Settler is designed with compliance and security as foundational principles. Thi
 ## Compliance Contacts
 
 **Privacy Inquiries:**
+
 - Email: privacy@settler.dev
 - Response Time: 30 days
 
 **Security Incidents:**
+
 - Email: security@settler.dev
 - Response Time: 4 hours
 
 **Compliance Questions:**
+
 - Email: compliance@settler.dev
 - Response Time: 5 business days
 
@@ -296,6 +329,7 @@ This document is updated quarterly or when compliance requirements change. Custo
 **Guarantee:** Same inputs produce same outputs, always.
 
 **Enforcement:**
+
 - Event-sourced architecture
 - Idempotency keys
 - Versioned contracts
@@ -306,6 +340,7 @@ This document is updated quarterly or when compliance requirements change. Custo
 **Guarantee:** Data retained per contract terms, deleted after retention period.
 
 **Enforcement:**
+
 - Automated retention policies
 - Manual deletion available
 - Confirmation of deletion
@@ -315,6 +350,7 @@ This document is updated quarterly or when compliance requirements change. Custo
 **Guarantee:** Complete audit trail for all operations.
 
 **Enforcement:**
+
 - Comprehensive logging
 - Immutable audit logs
 - 7-year retention

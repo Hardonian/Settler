@@ -17,104 +17,117 @@ import {
 
 const router: Router = Router();
 
-router.post("/", requirePermission(Permission.ADMIN_WRITE), enforceFreezeState(), async (req: AuthRequest, res: Response) => {
-  try {
-    const tenantId = req.tenantId!;
-    const {
-      infrastructureType,
-      resourceConfig,
-      isolationLevel,
-      dataRetentionDays,
-      securityConfig,
-    } = req.body;
-
-    if (!infrastructureType || !resourceConfig) {
-      return res.status(400).json({
-        error: "Bad Request",
-        message: "infrastructureType and resourceConfig are required",
-        traceId: req.traceId,
-      });
-    }
-
-    const infrastructureId = await provisionDedicatedInfrastructure(
-      tenantId,
-      infrastructureType,
-      resourceConfig,
-      {
+router.post(
+  "/",
+  requirePermission(Permission.ADMIN_WRITE),
+  enforceFreezeState(),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = req.tenantId!;
+      const {
+        infrastructureType,
+        resourceConfig,
         isolationLevel,
         dataRetentionDays,
         securityConfig,
+      } = req.body;
+
+      if (!infrastructureType || !resourceConfig) {
+        return res.status(400).json({
+          error: "Bad Request",
+          message: "infrastructureType and resourceConfig are required",
+          traceId: req.traceId,
+        });
       }
-    );
 
-    return res.status(201).json({ id: infrastructureId, traceId: req.traceId });
-  } catch (error) {
-    logError("Failed to provision dedicated infrastructure", error, { traceId: req.traceId });
-    return res.status(500).json({
-      error: "Internal Server Error",
-      message: "Failed to provision dedicated infrastructure",
-      traceId: req.traceId,
-    });
-  }
-});
+      const infrastructureId = await provisionDedicatedInfrastructure(
+        tenantId,
+        infrastructureType,
+        resourceConfig,
+        {
+          isolationLevel,
+          dataRetentionDays,
+          securityConfig,
+        }
+      );
 
-router.get("/", requirePermission(Permission.ADMIN_READ), async (req: AuthRequest, res: Response) => {
-  try {
-    const tenantId = req.tenantId!;
-    const { isActive, infrastructureType } = req.query;
-
-    const infrastructure = await listDedicatedInfrastructure(tenantId, {
-      isActive: isActive === "true" ? true : isActive === "false" ? false : undefined,
-      infrastructureType: infrastructureType as string | undefined,
-    });
-
-    return res.json({ data: infrastructure, traceId: req.traceId });
-  } catch (error) {
-    logError("Failed to list dedicated infrastructure", error, { traceId: req.traceId });
-    return res.status(500).json({
-      error: "Internal Server Error",
-      message: "Failed to list dedicated infrastructure",
-      traceId: req.traceId,
-    });
-  }
-});
-
-router.get("/:infrastructureId", requirePermission(Permission.ADMIN_READ), async (req: AuthRequest, res: Response) => {
-  try {
-    const infrastructureIdParam = req.params["infrastructureId"];
-    const infrastructureId = Array.isArray(infrastructureIdParam)
-      ? (infrastructureIdParam[0] ?? "")
-      : (infrastructureIdParam ?? "");
-    const tenantId = req.tenantId!;
-
-    if (!infrastructureId) {
-      return res.status(400).json({
-        error: "Bad Request",
-        message: "infrastructureId is required",
+      return res.status(201).json({ id: infrastructureId, traceId: req.traceId });
+    } catch (error) {
+      logError("Failed to provision dedicated infrastructure", error, { traceId: req.traceId });
+      return res.status(500).json({
+        error: "Internal Server Error",
+        message: "Failed to provision dedicated infrastructure",
         traceId: req.traceId,
       });
     }
+  }
+);
 
-    const infrastructure = await getDedicatedInfrastructure(tenantId, infrastructureId);
+router.get(
+  "/",
+  requirePermission(Permission.ADMIN_READ),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = req.tenantId!;
+      const { isActive, infrastructureType } = req.query;
 
-    if (!infrastructure) {
-      return res.status(404).json({
-        error: "Not Found",
-        message: "Dedicated infrastructure not found",
+      const infrastructure = await listDedicatedInfrastructure(tenantId, {
+        isActive: isActive === "true" ? true : isActive === "false" ? false : undefined,
+        infrastructureType: infrastructureType as string | undefined,
+      });
+
+      return res.json({ data: infrastructure, traceId: req.traceId });
+    } catch (error) {
+      logError("Failed to list dedicated infrastructure", error, { traceId: req.traceId });
+      return res.status(500).json({
+        error: "Internal Server Error",
+        message: "Failed to list dedicated infrastructure",
         traceId: req.traceId,
       });
     }
-
-    return res.json({ ...infrastructure, traceId: req.traceId });
-  } catch (error) {
-    logError("Failed to get dedicated infrastructure", error, { traceId: req.traceId });
-    return res.status(500).json({
-      error: "Internal Server Error",
-      message: "Failed to get dedicated infrastructure",
-      traceId: req.traceId,
-    });
   }
-});
+);
+
+router.get(
+  "/:infrastructureId",
+  requirePermission(Permission.ADMIN_READ),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const infrastructureIdParam = req.params["infrastructureId"];
+      const infrastructureId = Array.isArray(infrastructureIdParam)
+        ? (infrastructureIdParam[0] ?? "")
+        : (infrastructureIdParam ?? "");
+      const tenantId = req.tenantId!;
+
+      if (!infrastructureId) {
+        return res.status(400).json({
+          error: "Bad Request",
+          message: "infrastructureId is required",
+          traceId: req.traceId,
+        });
+      }
+
+      const infrastructure = await getDedicatedInfrastructure(tenantId, infrastructureId);
+
+      if (!infrastructure) {
+        return res.status(404).json({
+          error: "Not Found",
+          message: "Dedicated infrastructure not found",
+          traceId: req.traceId,
+        });
+      }
+
+      return res.json({ ...infrastructure, traceId: req.traceId });
+    } catch (error) {
+      logError("Failed to get dedicated infrastructure", error, { traceId: req.traceId });
+      return res.status(500).json({
+        error: "Internal Server Error",
+        message: "Failed to get dedicated infrastructure",
+        traceId: req.traceId,
+      });
+    }
+  }
+);
 
 router.delete(
   "/:infrastructureId",

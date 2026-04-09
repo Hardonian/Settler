@@ -1,6 +1,6 @@
 /**
  * PII (Personally Identifiable Information) Filter
- * 
+ *
  * Removes or redacts PII from data to comply with privacy regulations.
  * Used in admin observability dashboards to protect user privacy.
  */
@@ -21,28 +21,28 @@ const PII_PATTERNS = {
  */
 export function redactPII(text: string): string {
   let redacted = text;
-  
+
   // Redact emails (keep domain for analytics)
   redacted = redacted.replace(PII_PATTERNS.email, (match) => {
-    const [, domain] = match.split('@');
+    const [, domain] = match.split("@");
     return `***@${domain}`;
   });
-  
+
   // Redact phone numbers
-  redacted = redacted.replace(PII_PATTERNS.phone, '***-***-****');
-  
+  redacted = redacted.replace(PII_PATTERNS.phone, "***-***-****");
+
   // Redact SSN
-  redacted = redacted.replace(PII_PATTERNS.ssn, '***-**-****');
-  
+  redacted = redacted.replace(PII_PATTERNS.ssn, "***-**-****");
+
   // Redact credit cards
-  redacted = redacted.replace(PII_PATTERNS.creditCard, '****-****-****-****');
-  
+  redacted = redacted.replace(PII_PATTERNS.creditCard, "****-****-****-****");
+
   // Redact IP addresses (keep first octet for geolocation)
   redacted = redacted.replace(PII_PATTERNS.ipAddress, (match) => {
-    const parts = match.split('.');
+    const parts = match.split(".");
     return `${parts[0]}.***.***.***`;
   });
-  
+
   return redacted;
 }
 
@@ -51,41 +51,41 @@ export function redactPII(text: string): string {
  */
 export function removePIIFromObject<T extends Record<string, unknown>>(
   obj: T,
-  fieldsToRemove: string[] = ['email', 'phone', 'ssn', 'creditCard', 'ipAddress']
+  fieldsToRemove: string[] = ["email", "phone", "ssn", "creditCard", "ipAddress"]
 ): T {
   const cleaned = { ...obj } as Record<string, unknown>;
-  
+
   for (const [key, value] of Object.entries(cleaned)) {
     // Remove specified fields
     if (fieldsToRemove.includes(key.toLowerCase())) {
       delete cleaned[key];
       continue;
     }
-    
+
     // Recursively clean nested objects
-    if (value && typeof value === 'object' && !Array.isArray(value)) {
+    if (value && typeof value === "object" && !Array.isArray(value)) {
       cleaned[key] = removePIIFromObject(value as Record<string, unknown>, fieldsToRemove);
     }
-    
+
     // Clean arrays
     if (Array.isArray(value)) {
       cleaned[key] = value.map((item) => {
-        if (item && typeof item === 'object') {
+        if (item && typeof item === "object") {
           return removePIIFromObject(item as Record<string, unknown>, fieldsToRemove);
         }
-        if (typeof item === 'string') {
+        if (typeof item === "string") {
           return redactPII(item);
         }
         return item;
       });
     }
-    
+
     // Clean strings
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       cleaned[key] = redactPII(value);
     }
   }
-  
+
   return cleaned as T;
 }
 
@@ -107,32 +107,32 @@ export function sanitizeUserData(user: {
   [key: string]: unknown;
 } {
   const sanitized: Record<string, unknown> = {
-    id: user.id || 'unknown',
+    id: user.id || "unknown",
   };
-  
+
   // Keep email domain for analytics, redact local part
   if (user.email) {
-    const [, domain] = user.email.split('@');
+    const [, domain] = user.email.split("@");
     sanitized.email = `***@${domain}`;
   }
-  
+
   // Keep name if provided (names are generally not PII in this context)
   if (user.name) {
     sanitized.name = user.name;
   }
-  
+
   // Clean metadata
   if (user.metadata) {
     sanitized.metadata = removePIIFromObject(user.metadata);
   }
-  
+
   // Remove sensitive fields
   delete sanitized.phone;
   delete sanitized.ssn;
   delete sanitized.creditCard;
   delete sanitized.password;
   delete sanitized.token;
-  
+
   return sanitized as typeof sanitized & { id: string };
 }
 
@@ -146,36 +146,36 @@ export function sanitizeApiData(data: {
   [key: string]: unknown;
 }): Record<string, unknown> {
   const sanitized: Record<string, unknown> = {};
-  
+
   // Sanitize headers (remove auth tokens)
   if (data.headers) {
     const cleanedHeaders: Record<string, string> = {};
     for (const [key, value] of Object.entries(data.headers)) {
       const lowerKey = key.toLowerCase();
-      if (lowerKey === 'authorization' || lowerKey === 'cookie' || lowerKey === 'x-api-key') {
-        cleanedHeaders[key] = '***REDACTED***';
+      if (lowerKey === "authorization" || lowerKey === "cookie" || lowerKey === "x-api-key") {
+        cleanedHeaders[key] = "***REDACTED***";
       } else {
         cleanedHeaders[key] = redactPII(value);
       }
     }
     sanitized.headers = cleanedHeaders;
   }
-  
+
   // Sanitize body
   if (data.body) {
-    if (typeof data.body === 'string') {
+    if (typeof data.body === "string") {
       sanitized.body = redactPII(data.body);
-    } else if (typeof data.body === 'object') {
+    } else if (typeof data.body === "object") {
       sanitized.body = removePIIFromObject(data.body as Record<string, unknown>);
     } else {
       sanitized.body = data.body;
     }
   }
-  
+
   // Sanitize query params
   if (data.query) {
     sanitized.query = removePIIFromObject(data.query);
   }
-  
+
   return sanitized;
 }

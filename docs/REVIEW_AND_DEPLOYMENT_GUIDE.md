@@ -7,6 +7,7 @@ This guide walks through reviewing, testing, and deploying the production readin
 ### 1. Code Review
 
 **New Files to Review:**
+
 - [ ] `packages/web/src/lib/observability/*` - Observability utilities
 - [ ] `packages/web/src/lib/api/auth-gate.ts` - Auth gating
 - [ ] `scripts/doctor.ts` - Health check script
@@ -17,6 +18,7 @@ This guide walks through reviewing, testing, and deploying the production readin
 - [ ] Documentation files in `/docs`
 
 **Modified Files to Review:**
+
 - [ ] `packages/web/middleware.ts` - Trace ID propagation
 - [ ] `packages/web/src/lib/api/error-handler.ts` - Trace ID in errors
 - [ ] `packages/web/src/app/api/stripe/webhook/route.ts` - Enhanced logging
@@ -78,6 +80,7 @@ npm run qa:crawl:local
 ### 3. Environment Variables
 
 **Required for Production:**
+
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `STRIPE_SECRET_KEY`
@@ -85,6 +88,7 @@ npm run qa:crawl:local
 - `DATABASE_URL` or `SUPABASE_DATABASE_URL`
 
 **Optional but Recommended:**
+
 - `METRICS_AUTH_TOKEN` - For `/api/metrics` endpoint
 - `SUPABASE_SERVICE_ROLE_KEY` - For admin operations
 
@@ -133,6 +137,7 @@ gitleaks detect --verbose
 ### Staging Deployment
 
 1. **Merge to `develop` branch:**
+
    ```bash
    git checkout develop
    git merge feature/production-readiness
@@ -142,14 +147,16 @@ gitleaks detect --verbose
 2. **Vercel will auto-deploy** (if connected to `develop` branch)
 
 3. **Verify Deployment:**
+
    ```bash
    # Check health endpoint
    curl https://staging.settler.dev/api/health
-   
+
    # Should return JSON with trace_id
    ```
 
 4. **Run Smoke Tests:**
+
    ```bash
    E2E_BASE_URL=https://staging.settler.dev npm run test:smoke
    ```
@@ -162,6 +169,7 @@ gitleaks detect --verbose
 ### Production Deployment
 
 1. **Merge to `main` branch:**
+
    ```bash
    git checkout main
    git merge develop
@@ -176,11 +184,12 @@ gitleaks detect --verbose
    - Monitor error rates
 
 4. **Post-Deployment Verification:**
+
    ```bash
    # Run doctor script against production
    # (Set production env vars first)
    npm run doctor
-   
+
    # Check metrics endpoint
    curl https://settler.dev/api/metrics \
      -H "Authorization: Bearer $METRICS_AUTH_TOKEN"
@@ -249,8 +258,8 @@ curl https://settler.dev/api/metrics \
 
 ```sql
 -- View recent audit logs
-SELECT * FROM audit_log 
-ORDER BY created_at DESC 
+SELECT * FROM audit_log
+ORDER BY created_at DESC
 LIMIT 10;
 ```
 

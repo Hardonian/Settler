@@ -82,7 +82,7 @@
 | `INVESTOR-RELATIONS-PRIVATE`             | project-dir (dir)   | Y                 | Y              | allowlisted | Intentional top-level project area in monorepo layout.                |
 | `kits`                                   | project-dir (dir)   | Y                 | Y              | allowlisted | Intentional top-level project area in monorepo layout.                |
 | `launch`                                 | core-dir (dir)      | Y                 | Y              | allowlisted | Canonical project root directory.                                     |
-| `launch/launch-checklist.md`                    | docs-file (file)    | Y                 | Y              | allowlisted | Historical or canonical documentation retained at root.               |
+| `launch/launch-checklist.md`             | docs-file (file)    | Y                 | Y              | allowlisted | Historical or canonical documentation retained at root.               |
 | `LAUNCH_READY.md`                        | docs-file (file)    | Y                 | Y              | allowlisted | Historical or canonical documentation retained at root.               |
 | `LAUNCHKIT.md`                           | docs-file (file)    | Y                 | Y              | allowlisted | Historical or canonical documentation retained at root.               |
 | `legal`                                  | project-dir (dir)   | Y                 | Y              | allowlisted | Intentional top-level project area in monorepo layout.                |

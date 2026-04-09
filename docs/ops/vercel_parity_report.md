@@ -33,6 +33,7 @@ All workspace packages have valid `package.json` files:
 10. ✅ `packages/web` - Next.js web application (Vercel deployment target)
 
 **Non-workspace packages** (not part of npm workspace, correctly excluded):
+
 - `packages/sdk-go` - Go SDK (no package.json, expected)
 - `packages/sdk-python` - Python SDK (no package.json, expected)
 - `packages/sdk-ruby` - Ruby SDK (no package.json, expected)
@@ -40,6 +41,7 @@ All workspace packages have valid `package.json` files:
 ### Vercel Configuration
 
 **Root `vercel.json`:**
+
 ```json
 {
   "buildCommand": "cd packages/web && npm run build:vercel",
@@ -51,6 +53,7 @@ All workspace packages have valid `package.json` files:
 ```
 
 **Package-level `packages/web/vercel.json`:**
+
 ```json
 {
   "buildCommand": "cd ../.. && npx turbo run build --filter=@settler/web...",
@@ -78,11 +81,13 @@ All workspace packages have valid `package.json` files:
 **Issue:** Both root `vercel.json` and `packages/web/vercel.json` exist with different configurations.
 
 **Root vercel.json:**
+
 - Build: `cd packages/web && npm run build:vercel`
 - Output: `packages/web/.next`
 - Regions: Multiple (iad1, sfo1, lhr1, syd1)
 
 **packages/web/vercel.json:**
+
 - Build: `cd ../.. && npx turbo run build --filter=@settler/web...`
 - Output: Not specified (defaults to `.next`)
 - Regions: Single (iad1)
@@ -103,6 +108,7 @@ All workspace packages have valid `package.json` files:
 #### 🟡 WARNING: Optional Script Dependencies
 
 **Issue:** `build:vercel` script references optional `scripts/vercel-build-optimizer.js`:
+
 ```bash
 (test -f ../../scripts/vercel-build-optimizer.js && node ../../scripts/vercel-build-optimizer.js || echo '⚠️  Build optimizer script not available')
 ```

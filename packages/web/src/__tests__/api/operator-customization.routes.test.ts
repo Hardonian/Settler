@@ -1,6 +1,9 @@
 /** @jest-environment node */
 
-import { GET as getCustomization, PUT as putCustomization } from "@/app/api/admin/operator-customization/route";
+import {
+  GET as getCustomization,
+  PUT as putCustomization,
+} from "@/app/api/admin/operator-customization/route";
 import {
   GET as getProposals,
   POST as postProposal,
@@ -85,14 +88,18 @@ describe("operator customization API", () => {
 
   it("GET returns 403 when not super-admin", async () => {
     (isSuperAdmin as jest.Mock).mockResolvedValueOnce(false);
-    const response = await getCustomization(req("http://localhost/api/admin/operator-customization"));
+    const response = await getCustomization(
+      req("http://localhost/api/admin/operator-customization")
+    );
     expect(response.status).toBe(403);
     (isSuperAdmin as jest.Mock).mockResolvedValue(true);
   });
 
   it("GET returns 400 when multiple tenants and tenantId omitted", async () => {
     prismaMock.tenant.count.mockResolvedValue(2);
-    const response = await getCustomization(req("http://localhost/api/admin/operator-customization"));
+    const response = await getCustomization(
+      req("http://localhost/api/admin/operator-customization")
+    );
     expect(response.status).toBe(400);
     const j = await response.json();
     expect(j.code).toBe("ambiguous_tenant");
@@ -100,7 +107,8 @@ describe("operator customization API", () => {
 
   it("PUT returns 400 when multiple tenants and tenantId omitted", async () => {
     prismaMock.tenant.count.mockResolvedValue(2);
-    const { defaultAdminDashboardCustomization } = await import("@/lib/operator-customization/registry");
+    const { defaultAdminDashboardCustomization } =
+      await import("@/lib/operator-customization/registry");
     const response = await putCustomization(
       req("http://localhost/api/admin/operator-customization", {
         method: "PUT",
@@ -138,7 +146,9 @@ describe("operator customization API", () => {
   it("GET succeeds for single-tenant implicit resolve", async () => {
     prismaMock.tenant.count.mockResolvedValue(1);
     prismaMock.tenant.findFirst.mockResolvedValue({ id: T1, slug: "only" });
-    const response = await getCustomization(req("http://localhost/api/admin/operator-customization"));
+    const response = await getCustomization(
+      req("http://localhost/api/admin/operator-customization")
+    );
     expect(response.status).toBe(200);
     const j = await response.json();
     expect(j.tenant.slug).toBe("only");
@@ -156,7 +166,8 @@ describe("operator customization API", () => {
   it("PUT rejects advanced preset when plan is starter", async () => {
     prismaMock.tenant.count.mockResolvedValue(1);
     prismaMock.tenant.findFirst.mockResolvedValue({ id: T1, slug: "solo" });
-    const { defaultAdminDashboardCustomization } = await import("@/lib/operator-customization/registry");
+    const { defaultAdminDashboardCustomization } =
+      await import("@/lib/operator-customization/registry");
     const draft = defaultAdminDashboardCustomization();
     draft.lastAppliedPresetId = "buyer_demo";
     const response = await putCustomization(
@@ -189,7 +200,9 @@ describe("operator customization API", () => {
     prismaMock.tenant.findFirst.mockResolvedValue({ id: T1, slug: "solo" });
     prismaMock.tenant.count.mockResolvedValue(2);
     prismaMock.operatorCustomizationProposal.findMany.mockResolvedValue([]);
-    await getProposals(req(`http://localhost/api/admin/operator-customization/proposals?tenantId=${T1}`));
+    await getProposals(
+      req(`http://localhost/api/admin/operator-customization/proposals?tenantId=${T1}`)
+    );
     expect(prismaMock.operatorCustomizationProposal.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { tenantId: T1, userId: "00000000-0000-0000-0000-000000000099" },
@@ -213,7 +226,10 @@ describe("operator customization API", () => {
     expect(response.status).toBe(200);
     expect(prismaMock.operatorCustomizationProposal.create).toHaveBeenCalledWith(
       expect.objectContaining({
-        data: expect.objectContaining({ tenantId: T1, userId: "00000000-0000-0000-0000-000000000099" }),
+        data: expect.objectContaining({
+          tenantId: T1,
+          userId: "00000000-0000-0000-0000-000000000099",
+        }),
       })
     );
   });

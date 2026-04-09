@@ -44,7 +44,7 @@ async function main() {
   console.log("Execution started:", execution.data.id);
 
   // Wait for completion (in production, use webhooks)
-  await new Promise(resolve => setTimeout(resolve, 5000));
+  await new Promise((resolve) => setTimeout(resolve, 5000));
 
   // Get results
   const report = await settler.reports.get(job.data.id);

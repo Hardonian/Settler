@@ -129,14 +129,8 @@ const nextConfig = {
         ),
         // Workspace packages with ESM dist output — resolve directly so webpack
         // can bundle them instead of trying to require() them as CJS externals.
-        "@jobforge/sdk-ts": path.resolve(
-          __dirname,
-          "../../packages/jobforge-sdk-ts/dist/index.js"
-        ),
-        "@jobforge/shared": path.resolve(
-          __dirname,
-          "../../packages/jobforge-shared/dist/index.js"
-        ),
+        "@jobforge/sdk-ts": path.resolve(__dirname, "../../packages/jobforge-sdk-ts/dist/index.js"),
+        "@jobforge/shared": path.resolve(__dirname, "../../packages/jobforge-shared/dist/index.js"),
         "@settler/api/lib/email-lifecycle": path.resolve(
           __dirname,
           "../api/dist/lib/email-lifecycle.js"

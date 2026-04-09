@@ -9,11 +9,12 @@ This guide provides quick instructions for executing the reality validation scri
 ## Prerequisites
 
 1. **Environment Variables**
+
    ```bash
    # Required for billing validation
    STRIPE_SECRET_KEY=sk_test_...
    STRIPE_WEBHOOK_SECRET=whsec_...
-   
+
    # Required for all validations
    DATABASE_URL=postgresql://...
    SUPABASE_URL=https://...
@@ -33,6 +34,7 @@ This guide provides quick instructions for executing the reality validation scri
 **Script**: `scripts/validate-billing-reality.ts`
 
 **What it tests**:
+
 - Creates test product and price
 - Simulates successful payment
 - Simulates failed payment
@@ -42,6 +44,7 @@ This guide provides quick instructions for executing the reality validation scri
 - Tests graceful degradation
 
 **Run**:
+
 ```bash
 npm run validate:billing
 ```
@@ -53,6 +56,7 @@ npm run validate:billing
 **Script**: `scripts/validate-onboarding-reality.ts`
 
 **What it tests**:
+
 - Onboarding infrastructure exists
 - Onboarding steps defined
 - First-success path timing (< 3 minutes)
@@ -61,6 +65,7 @@ npm run validate:billing
 - Zero-touch onboarding
 
 **Run**:
+
 ```bash
 npm run validate:onboarding
 ```
@@ -72,6 +77,7 @@ npm run validate:onboarding
 **Script**: `scripts/validate-tenant-isolation.ts`
 
 **What it tests**:
+
 - Direct DB cross-tenant access attempts
 - API key isolation
 - Usage data isolation
@@ -79,6 +85,7 @@ npm run validate:onboarding
 - Write access isolation
 
 **Run**:
+
 ```bash
 npm run validate:tenant-isolation
 ```
@@ -90,6 +97,7 @@ npm run validate:tenant-isolation
 **Script**: `scripts/validate-failure-injection.ts`
 
 **What it tests**:
+
 - Missing environment variables
 - Supabase connectivity failures
 - Malformed input handling
@@ -98,6 +106,7 @@ npm run validate:tenant-isolation
 - Safe mode configuration
 
 **Run**:
+
 ```bash
 npm run validate:failure-injection
 ```
@@ -176,6 +185,7 @@ After running validations:
 ## Support
 
 For issues or questions:
+
 - Check `REALITY_REPORT.md` for comprehensive status
 - Review individual phase documentation
 - Check validation script source code for details

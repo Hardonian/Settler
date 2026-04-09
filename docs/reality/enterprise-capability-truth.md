@@ -12,12 +12,12 @@ This document is the public-facing truth map for enterprise identity and export 
 
 ## Capability table
 
-| Capability | Status | Boundary | Verification path |
-| --- | --- | --- | --- |
-| Tenant-scoped RBAC | Verified | API/Web permissions are tenant-scoped and enforced at request boundaries. | `pnpm run verify:tenant`; `pnpm run test:cross-tenant` |
-| SSO (OIDC) | Implemented / unverified | Env contracts for Okta / Entra / Google Workspace; no IdP runtime proof in-repo. | `pnpm run verify:enterprise-identity` (exit 0 = all three env contracts; exit 2 = degraded) + per-deployment IdP smoke. SAML is not GA in this path. |
-| SCIM lifecycle provisioning | Missing | No SCIM routes ship in this repository. | `pnpm run verify:scim-posture` (explicit not_applicable boundary). |
-| Audit export / SIEM handoff | Implemented / unverified | Export surfaces exist; mapping and ingestion behavior are deployment-specific. | `pnpm run verify:security:evidence` + tenant-scoped export contract tests. |
+| Capability                  | Status                   | Boundary                                                                         | Verification path                                                                                                                                    |
+| --------------------------- | ------------------------ | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tenant-scoped RBAC          | Verified                 | API/Web permissions are tenant-scoped and enforced at request boundaries.        | `pnpm run verify:tenant`; `pnpm run test:cross-tenant`                                                                                               |
+| SSO (OIDC)                  | Implemented / unverified | Env contracts for Okta / Entra / Google Workspace; no IdP runtime proof in-repo. | `pnpm run verify:enterprise-identity` (exit 0 = all three env contracts; exit 2 = degraded) + per-deployment IdP smoke. SAML is not GA in this path. |
+| SCIM lifecycle provisioning | Missing                  | No SCIM routes ship in this repository.                                          | `pnpm run verify:scim-posture` (explicit not_applicable boundary).                                                                                   |
+| Audit export / SIEM handoff | Implemented / unverified | Export surfaces exist; mapping and ingestion behavior are deployment-specific.   | `pnpm run verify:security:evidence` + tenant-scoped export contract tests.                                                                           |
 
 ## Claim gating policy
 

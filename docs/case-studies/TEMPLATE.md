@@ -18,6 +18,7 @@
 [2-3 sentence summary of the case study]
 
 **Key Results:**
+
 - [Result 1]
 - [Result 2]
 - [Result 3]
@@ -35,6 +36,7 @@
 [Specific problem they were facing]
 
 **Pain Points:**
+
 - [Pain point 1]
 - [Pain point 2]
 - [Pain point 3]
@@ -44,6 +46,7 @@
 [What they were using before Settler]
 
 **Issues with Previous Solution:**
+
 - [Issue 1]
 - [Issue 2]
 - [Issue 3]
@@ -57,6 +60,7 @@
 [Why they chose Settler]
 
 **Key Factors:**
+
 - [Factor 1]
 - [Factor 2]
 - [Factor 3]
@@ -66,12 +70,14 @@
 [How they implemented Settler]
 
 **Timeline:**
+
 - Week 1: [Milestone]
 - Week 2: [Milestone]
 - Week 3: [Milestone]
 - Week 4: [Go-live]
 
 **Key Features Used:**
+
 - [Feature 1]
 - [Feature 2]
 - [Feature 3]
@@ -83,16 +89,19 @@
 ### Quantitative Results
 
 **Before Settler:**
+
 - [Metric 1]: [Value]
 - [Metric 2]: [Value]
 - [Metric 3]: [Value]
 
 **After Settler:**
+
 - [Metric 1]: [Value] ([X]% improvement)
 - [Metric 2]: [Value] ([X]% improvement)
 - [Metric 3]: [Value] ([X]% improvement)
 
 **Key Metrics:**
+
 - Time saved: [X] hours/month ([X]% reduction)
 - Cost savings: $[X]/month ([X]% reduction)
 - Error rate: [X]% → [X]% ([X]% reduction)
@@ -101,13 +110,15 @@
 ### Qualitative Results
 
 **Benefits:**
+
 - [Benefit 1]
 - [Benefit 2]
 - [Benefit 3]
 
 **Feedback:**
+
 > "[Customer quote about their experience]"
-> 
+>
 > — [Customer Name], [Title]
 
 ---
@@ -119,6 +130,7 @@
 [How they integrated Settler]
 
 **Integrations Used:**
+
 - [Integration 1]
 - [Integration 2]
 - [Integration 3]
@@ -128,6 +140,7 @@
 [Technical architecture details]
 
 **Key Components:**
+
 - [Component 1]
 - [Component 2]
 - [Component 3]
@@ -139,6 +152,7 @@
 ### Cost Savings
 
 **Monthly Savings:**
+
 - Labor cost reduction: $[X]
 - Error correction savings: $[X]
 - Infrastructure savings: $[X]
@@ -151,6 +165,7 @@
 ### Time Savings
 
 **Time Saved:**
+
 - Manual reconciliation: [X] hours/month
 - Error correction: [X] hours/month
 - Reporting: [X] hours/month
@@ -163,7 +178,7 @@
 ## Customer Testimonial
 
 > "[Full customer testimonial quote]"
-> 
+>
 > — [Customer Name], [Title], [Company]
 
 ---
@@ -195,6 +210,7 @@
 [What the customer plans to do next]
 
 **Future Plans:**
+
 - [Plan 1]
 - [Plan 2]
 - [Plan 3]
@@ -206,6 +222,7 @@
 [Summary conclusion]
 
 **Key Takeaways:**
+
 - [Takeaway 1]
 - [Takeaway 2]
 - [Takeaway 3]

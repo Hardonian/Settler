@@ -3,7 +3,7 @@
  * Defines the contract for API key data persistence
  */
 
-import { ApiKey } from '../entities/ApiKey';
+import { ApiKey } from "../entities/ApiKey";
 
 export interface IApiKeyRepository {
   findById(id: string): Promise<ApiKey | null>;

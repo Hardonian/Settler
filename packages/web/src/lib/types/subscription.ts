@@ -1,14 +1,14 @@
 /**
  * Subscription Type Definitions
- * 
+ *
  * Centralized type definitions for subscription and access control
  */
 
-export type SubscriptionTier = 
-  | 'unsubscribed'
-  | 'subscribed_unpaid'
-  | 'subscribed_paid'
-  | 'enterprise';
+export type SubscriptionTier =
+  | "unsubscribed"
+  | "subscribed_unpaid"
+  | "subscribed_paid"
+  | "enterprise";
 
 export interface SubscriptionStatus {
   tier: SubscriptionTier;
@@ -34,6 +34,6 @@ export interface AccessLevel {
 }
 
 // Re-export from subscription-access for convenience
-export type { SubscriptionTier as SubscriptionTierType } from '../subscription-access';
-export type { SubscriptionStatus as SubscriptionStatusType } from '../subscription-access';
-export type { AccessLevel as AccessLevelType } from '../subscription-access';
+export type { SubscriptionTier as SubscriptionTierType } from "../subscription-access";
+export type { SubscriptionStatus as SubscriptionStatusType } from "../subscription-access";
+export type { AccessLevel as AccessLevelType } from "../subscription-access";

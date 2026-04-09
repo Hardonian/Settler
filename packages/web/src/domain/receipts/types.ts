@@ -1,6 +1,6 @@
 /**
  * Receipt Domain Types
- * 
+ *
  * Type definitions for receipt parsing and normalization.
  */
 

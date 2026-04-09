@@ -5,45 +5,48 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { savePreTestAnswers } from "@/lib/data/user-dashboard";
-import { withUniversalBillingGate } from '@/middleware/billing-gate-universal';
-import { appLogger } from '@/lib/utils/logger';
-import { withSecurity } from '@/lib/middleware/api-security';
+import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
+import { appLogger } from "@/lib/utils/logger";
+import { withSecurity } from "@/lib/middleware/api-security";
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs'; // Ensure Node.js runtime for Supabase
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs"; // Ensure Node.js runtime for Supabase
 
 export const POST = withSecurity(
-  withUniversalBillingGate(async function POST(request: NextRequest) {
-  try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+  withUniversalBillingGate(
+    async function POST(request: NextRequest) {
+      try {
+        const supabase = await createClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
 
-    if (!user) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-    }
+        if (!user) {
+          return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+        }
 
-    const answers = await request.json();
+        const answers = await request.json();
 
-    const result = await savePreTestAnswers(answers);
+        const result = await savePreTestAnswers(answers);
 
-    if (!result.success) {
-      return NextResponse.json({ error: result.error }, { status: 400 });
-    }
+        if (!result.success) {
+          return NextResponse.json({ error: result.error }, { status: 400 });
+        }
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    appLogger.error("Pre-test save error", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'An error occurred',
-        message: 'Please try again later or contact support if the issue persists',
-      },
-      { status: 200 }
-    );
-  }
-}, { feature: 'POST API' }),
+        return NextResponse.json({ success: true });
+      } catch (error) {
+        appLogger.error("Pre-test save error", error);
+        return NextResponse.json(
+          {
+            success: false,
+            error: "An error occurred",
+            message: "Please try again later or contact support if the issue persists",
+          },
+          { status: 200 }
+        );
+      }
+    },
+    { feature: "POST API" }
+  ),
   { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
 );

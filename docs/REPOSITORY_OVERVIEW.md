@@ -28,12 +28,14 @@ Settler-API/
 **Purpose**: Next.js application with marketing site and Developer Console
 
 **Key Features**:
+
 - Marketing pages (landing, pricing, docs)
 - Developer Console (`/console`)
 - API routes (`/api/console/*`)
 - Authentication (Supabase)
 
 **Console Routes**:
+
 - `/console` - Overview
 - `/console/api-keys` - API key management
 - `/console/usage` - Usage analytics
@@ -42,6 +44,7 @@ Settler-API/
 - `/console/billing` - Billing dashboard
 
 **Setup**:
+
 ```bash
 cd packages/web
 npm install
@@ -55,6 +58,7 @@ npm run dev
 **Purpose**: Official SDK for Settler API
 
 **Key Features**:
+
 - Full TypeScript support
 - Console client included
 - Automatic retries
@@ -62,14 +66,16 @@ npm run dev
 - Webhook verification
 
 **Console Client**:
+
 ```typescript
-import Settler from '@settler/sdk';
-const client = new Settler({ apiKey: 'rk_...' });
+import Settler from "@settler/sdk";
+const client = new Settler({ apiKey: "rk_..." });
 await client.console.listApiKeys();
 await client.console.getUsage(7);
 ```
 
 **Setup**:
+
 ```bash
 npm install @settler/sdk
 ```
@@ -81,11 +87,13 @@ npm install @settler/sdk
 **Purpose**: Command-line interface for Settler
 
 **Key Features**:
+
 - Console management commands
 - Uses SDK internally
 - Consistent with SDK/Console UI
 
 **Console Commands**:
+
 ```bash
 settler console api-keys list
 settler console usage summary
@@ -93,6 +101,7 @@ settler console health
 ```
 
 **Setup**:
+
 ```bash
 npm install -g @settler/cli
 export SETTLER_API_KEY=rk_...
@@ -128,22 +137,27 @@ export SETTLER_API_KEY=rk_...
 ### Key Files
 
 **Backend**:
+
 - `packages/web/src/app/api/console/*` - API routes
 - `packages/web/src/domain/console/*` - Domain logic
 - `packages/web/src/lib/api/unified-auth.ts` - Unified auth
 - `packages/web/src/lib/console/activity-logger.ts` - Logging
 
 **Frontend**:
+
 - `packages/web/src/app/console/*` - Console pages
 - `packages/web/src/components/console/*` - Components
 
 **SDK**:
+
 - `packages/sdk/src/clients/console.ts` - Console client
 
 **CLI**:
+
 - `packages/cli/src/commands/console.ts` - Console commands
 
 **Types**:
+
 - `packages/web/src/shared/types/console.ts` - Shared types
 
 ## Database Migrations
@@ -151,16 +165,19 @@ export SETTLER_API_KEY=rk_...
 ### Location
 
 Migrations are in `supabase/migrations/`:
+
 - `20260125000000_console_rls_fixes.sql` - RLS fixes
 - `20260125000001_console_activity_logging.sql` - Activity logging
 
 ### Automatic Deployment
 
 Migrations run automatically:
+
 - **PR Push** → Preview database
 - **PR Merge** → Production database
 
 **Workflows**:
+
 - `.github/workflows/supabase-migrate.yml` - Main migration workflow
 - `.github/workflows/auto-migrate-on-pr-push.yml` - PR push workflow
 
@@ -171,15 +188,18 @@ See [Automatic Migrations Guide](AUTOMATIC_MIGRATIONS.md) for setup.
 ### Required
 
 **Supabase**:
+
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY` (for admin ops)
 
 **Database**:
+
 - `DATABASE_URL`
 - `DIRECT_URL` (for Prisma)
 
 **Auth**:
+
 - `JWT_SECRET`
 - `ENCRYPTION_KEY`
 
@@ -320,6 +340,7 @@ npm run test:smoke
 ## Contributing
 
 See [CONTRIBUTING.md](../CONTRIBUTING.md) for:
+
 - Code style guidelines
 - Testing requirements
 - Pull request process

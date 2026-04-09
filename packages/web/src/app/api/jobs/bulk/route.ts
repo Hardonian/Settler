@@ -239,10 +239,12 @@ export const POST = withSecurity(
             });
         }
 
-        const results: Array<{ jobId: string; success: boolean; error?: string }> = jobIds.map((jobId) => {
-          const error = failedByJob.get(jobId);
-          return error ? { jobId, success: false, error } : { jobId, success: true };
-        });
+        const results: Array<{ jobId: string; success: boolean; error?: string }> = jobIds.map(
+          (jobId) => {
+            const error = failedByJob.get(jobId);
+            return error ? { jobId, success: false, error } : { jobId, success: true };
+          }
+        );
 
         const successCount = results.filter((r: { success: boolean }) => r.success).length;
         const failureCount = results.filter((r) => !r.success).length;

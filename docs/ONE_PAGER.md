@@ -9,6 +9,7 @@
 Settler provides the API infrastructure for financial evidence, deterministic computation, and developer flags. One typed SDK that reconciles anything, parses receipts to JSON, and manages entitlements.
 
 **Core Products:**
+
 1. **Reconciliation API** - Event-sourced matching at $0.01/transaction
 2. **Receipt Parsing** - AI-powered OCR to structured JSON
 3. **Feature Flags** - Edge-compatible entitlements
@@ -35,6 +36,7 @@ Settler provides the API infrastructure for financial evidence, deterministic co
 - Export evidence artifacts for compliance
 
 **Developer-First:**
+
 - TypeScript SDK with full type safety
 - Comprehensive documentation
 - Real-time developer console
@@ -49,6 +51,7 @@ Settler provides the API infrastructure for financial evidence, deterministic co
 - **SOM:** $1M ARR Year 1 → $50M ARR Year 5
 
 **Target Customers:**
+
 - 10,000+ fintech companies
 - 50,000+ SMBs needing reconciliation
 - Enterprise customers ($10K-$100K+ annually)
@@ -58,12 +61,14 @@ Settler provides the API infrastructure for financial evidence, deterministic co
 ## Business Model
 
 **Usage-Based Pricing:**
+
 - Free: 100 transactions/month free
 - Starter: $29/month + $0.01 per transaction over 1,000
 - Growth: $99/month + $0.01 per transaction over 10,000
 - Enterprise: Custom pricing
 
 **Unit Economics:**
+
 - Gross Margin: 85%+
 - CAC Payback: <3 months
 - LTV/CAC: 5:1+
@@ -74,12 +79,14 @@ Settler provides the API infrastructure for financial evidence, deterministic co
 ## Competitive Advantage
 
 **Technical Moat:**
+
 - Event-sourced architecture (deterministic, auditable)
 - Developer-first API (TypeScript SDK, comprehensive docs)
 - Multi-tenant security (RLS policies, tenant isolation)
 - Edge-compatible (low latency, global distribution)
 
 **Business Moat:**
+
 - Workflow lock-in (reconciliation becomes core infrastructure)
 - Data network effects (more integrations = more value)
 - Compliance evidence (audit trails become competitive moat)
@@ -90,6 +97,7 @@ Settler provides the API infrastructure for financial evidence, deterministic co
 ## Traction
 
 **Current Status:**
+
 - ✅ Production-ready platform
 - ✅ Comprehensive security (RLS, tenant isolation)
 - ✅ Stripe billing integration
@@ -97,6 +105,7 @@ Settler provides the API infrastructure for financial evidence, deterministic co
 - ✅ 50+ integration adapters
 
 **Key Metrics:**
+
 - Time-to-value: <5 minutes
 - API reliability: 99.9% uptime SLA
 - Security: SOC 2 ready, GDPR compliant
@@ -109,12 +118,14 @@ Settler provides the API infrastructure for financial evidence, deterministic co
 **$2M Seed Round**
 
 **Use of Funds:**
+
 - Engineering: $800K (4 engineers)
 - Sales & Marketing: $600K (2 sales, marketing)
 - Operations: $400K (infrastructure, tools)
 - Reserve: $200K (runway)
 
 **18-Month Milestones:**
+
 - $1M ARR
 - 1,000 paying customers
 - 10 enterprise customers

@@ -18,19 +18,16 @@ Industry-specific templates and workflows for legal tech.
 ## Usage
 
 ```javascript
-const { SettlerClient } = require('@settler/sdk');
+const { SettlerClient } = require("@settler/sdk");
 
 const client = new SettlerClient({
   apiKey: process.env.SETTLER_API_KEY,
 });
 
 // Use LegalTech module
-const diff = await client.legaltech.diffContracts(
-  contract1,
-  contract2
-);
+const diff = await client.legaltech.diffContracts(contract1, contract2);
 
-console.log('Contract differences:', diff);
+console.log("Contract differences:", diff);
 ```
 
 ## Templates

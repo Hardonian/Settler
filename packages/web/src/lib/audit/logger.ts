@@ -1,42 +1,42 @@
 /**
  * Audit Logger
- * 
+ *
  * Comprehensive audit logging for all sensitive operations.
  * Provides compliance-ready audit trail.
  */
 
-import { prisma } from '@/shared/db/prismaClient';
-import { headers } from 'next/headers';
+import { prisma } from "@/shared/db/prismaClient";
+import { headers } from "next/headers";
 
-export type AuditAction = 
-  | 'create'
-  | 'update'
-  | 'delete'
-  | 'read'
-  | 'execute'
-  | 'login'
-  | 'logout'
-  | 'export'
-  | 'import'
-  | 'approve'
-  | 'reject'
-  | 'review'
-  | 'match'
-  | 'notify';
+export type AuditAction =
+  | "create"
+  | "update"
+  | "delete"
+  | "read"
+  | "execute"
+  | "login"
+  | "logout"
+  | "export"
+  | "import"
+  | "approve"
+  | "reject"
+  | "review"
+  | "match"
+  | "notify";
 
 export type AuditResourceType =
-  | 'api_key'
-  | 'receipt'
-  | 'feature_flag'
-  | 'reconciliation'
-  | 'reconciliation_job'
-  | 'reconciliation_match'
-  | 'billing_account'
-  | 'subscription'
-  | 'user'
-  | 'tenant'
-  | 'webhook'
-  | 'integration';
+  | "api_key"
+  | "receipt"
+  | "feature_flag"
+  | "reconciliation"
+  | "reconciliation_job"
+  | "reconciliation_match"
+  | "billing_account"
+  | "subscription"
+  | "user"
+  | "tenant"
+  | "webhook"
+  | "integration";
 
 export interface AuditLogEntry {
   userId?: string;
@@ -58,12 +58,12 @@ export interface AuditLogEntry {
 async function getRequestMetadata(): Promise<{ ipAddress?: string; userAgent?: string }> {
   try {
     const headersList = await headers();
-    const ipAddress = 
-      headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-      headersList.get('x-real-ip') ||
+    const ipAddress =
+      headersList.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      headersList.get("x-real-ip") ||
       undefined;
-    const userAgent = headersList.get('user-agent') || undefined;
-    
+    const userAgent = headersList.get("user-agent") || undefined;
+
     return { ipAddress, userAgent };
   } catch {
     // Headers not available (e.g., in background job)
@@ -94,7 +94,7 @@ export async function logAuditEvent(entry: AuditLogEntry): Promise<void> {
     });
   } catch (error) {
     // Don't block operations if audit logging fails
-    console.error('[Audit Logger] Error logging audit event:', error);
+    console.error("[Audit Logger] Error logging audit event:", error);
   }
 }
 
@@ -126,7 +126,7 @@ export async function queryAuditLogs(options: {
     } = options;
 
     const where: Record<string, unknown> = {};
-    
+
     if (userId) where.userId = userId;
     if (billingAccountId) where.billingAccountId = billingAccountId;
     if (tenantId) where.tenantId = tenantId;
@@ -142,7 +142,7 @@ export async function queryAuditLogs(options: {
     const [logs, total] = await Promise.all([
       prisma.auditLog.findMany({
         where,
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
         take: limit,
         skip: offset,
       }),
@@ -156,7 +156,7 @@ export async function queryAuditLogs(options: {
       offset,
     };
   } catch (error) {
-    console.error('[Audit Logger] Error querying audit logs:', error);
+    console.error("[Audit Logger] Error querying audit logs:", error);
     return {
       logs: [],
       total: 0,
@@ -178,8 +178,8 @@ export async function logApiKeyCreated(
   await logAuditEvent({
     userId,
     billingAccountId,
-    action: 'create',
-    resourceType: 'api_key',
+    action: "create",
+    resourceType: "api_key",
     resourceId: apiKeyId,
     metadata,
   });
@@ -197,8 +197,8 @@ export async function logApiKeyRevoked(
   await logAuditEvent({
     userId,
     billingAccountId,
-    action: 'delete',
-    resourceType: 'api_key',
+    action: "delete",
+    resourceType: "api_key",
     resourceId: apiKeyId,
     metadata,
   });
@@ -216,8 +216,8 @@ export async function logReceiptParsed(
   await logAuditEvent({
     userId,
     billingAccountId,
-    action: 'create',
-    resourceType: 'receipt',
+    action: "create",
+    resourceType: "receipt",
     resourceId: receiptId,
     metadata,
   });
@@ -236,8 +236,8 @@ export async function logFeatureFlagUpdated(
   await logAuditEvent({
     userId,
     billingAccountId,
-    action: 'update',
-    resourceType: 'feature_flag',
+    action: "update",
+    resourceType: "feature_flag",
     resourceId: flagId,
     changes,
     metadata,
@@ -258,8 +258,8 @@ export async function logReconciliationExecuted(
     userId,
     billingAccountId,
     tenantId,
-    action: 'execute',
-    resourceType: 'reconciliation',
+    action: "execute",
+    resourceType: "reconciliation",
     resourceId: jobId,
     metadata,
   });

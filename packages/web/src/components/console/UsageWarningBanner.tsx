@@ -61,8 +61,8 @@ export function UsageWarningBanner() {
         warningToShow.severity === "critical"
           ? "border-red-500 bg-red-50 dark:bg-red-900/20"
           : warningToShow.severity === "warning"
-          ? "border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20"
-          : "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+            ? "border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20"
+            : "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
       }`}
     >
       <div className="flex items-start justify-between">
@@ -72,8 +72,8 @@ export function UsageWarningBanner() {
               warningToShow.severity === "critical"
                 ? "text-red-600 dark:text-red-400"
                 : warningToShow.severity === "warning"
-                ? "text-yellow-600 dark:text-yellow-400"
-                : "text-blue-600 dark:text-blue-400"
+                  ? "text-yellow-600 dark:text-yellow-400"
+                  : "text-blue-600 dark:text-blue-400"
             }`}
           />
           <div className="flex-1">
@@ -82,8 +82,8 @@ export function UsageWarningBanner() {
                 warningToShow.severity === "critical"
                   ? "text-red-900 dark:text-red-300"
                   : warningToShow.severity === "warning"
-                  ? "text-yellow-900 dark:text-yellow-300"
-                  : "text-blue-900 dark:text-blue-300"
+                    ? "text-yellow-900 dark:text-yellow-300"
+                    : "text-blue-900 dark:text-blue-300"
               }
             >
               Usage Limit Warning
@@ -93,8 +93,8 @@ export function UsageWarningBanner() {
                 warningToShow.severity === "critical"
                   ? "text-red-800 dark:text-red-400"
                   : warningToShow.severity === "warning"
-                  ? "text-yellow-800 dark:text-yellow-400"
-                  : "text-blue-800 dark:text-blue-400"
+                    ? "text-yellow-800 dark:text-yellow-400"
+                    : "text-blue-800 dark:text-blue-400"
               }
             >
               {warningToShow.message}

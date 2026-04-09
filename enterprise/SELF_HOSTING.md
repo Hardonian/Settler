@@ -28,6 +28,7 @@ Settler is designed to be runnable on your own infrastructure for maximum data p
 ## Architecture
 
 The self-hosted stack includes:
+
 - **API Service**: Handles HTTP requests (Node.js)
 - **Worker Service**: Processes reconciliation jobs and webhooks (Node.js)
 - **PostgreSQL**: Ledger and state storage
@@ -35,12 +36,12 @@ The self-hosted stack includes:
 
 ## Configuration
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `PORT` | API Port | 3000 |
-| `DATABASE_URL` | Postgres Connection String | - |
-| `REDIS_URL` | Redis Connection String | - |
-| `ENCRYPTION_KEY` | 32-byte hex key for data encryption | - |
+| Variable         | Description                         | Default |
+| ---------------- | ----------------------------------- | ------- |
+| `PORT`           | API Port                            | 3000    |
+| `DATABASE_URL`   | Postgres Connection String          | -       |
+| `REDIS_URL`      | Redis Connection String             | -       |
+| `ENCRYPTION_KEY` | 32-byte hex key for data encryption | -       |
 
 ## Enterprise Support
 

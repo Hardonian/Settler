@@ -16,9 +16,7 @@ type CachedIdempotencyResponse = {
 
 function getRequestHash(req: AuthRequest): string {
   const body = req.body === undefined ? "" : JSON.stringify(req.body);
-  return createHash("sha256")
-    .update(`${req.method}:${req.path}:${body}`)
-    .digest("hex");
+  return createHash("sha256").update(`${req.method}:${req.path}:${body}`).digest("hex");
 }
 
 export function idempotencyMiddleware() {
@@ -37,7 +35,12 @@ export function idempotencyMiddleware() {
     }
 
     if (idempotencyKey.length > MAX_KEY_LENGTH) {
-      sendError(res, 400, "INVALID_IDEMPOTENCY_KEY", `Idempotency key exceeds ${MAX_KEY_LENGTH} chars`);
+      sendError(
+        res,
+        400,
+        "INVALID_IDEMPOTENCY_KEY",
+        `Idempotency key exceeds ${MAX_KEY_LENGTH} chars`
+      );
       return;
     }
 

@@ -7,6 +7,7 @@
 ## Overview
 
 This template helps you:
+
 - **Document decisions:** Record important decisions
 - **Track rationale:** Understand why decisions were made
 - **Learn from history:** Reference past decisions
@@ -19,6 +20,7 @@ This template helps you:
 ## Decision Log Entry Template
 
 ### Decision ID
+
 **Format:** DEC-YYYY-MM-DD-XXX
 
 **Example:** DEC-2025-01-20-001
@@ -26,6 +28,7 @@ This template helps you:
 ---
 
 ### Decision Date
+
 **Format:** YYYY-MM-DD
 
 **Example:** 2025-01-20
@@ -33,6 +36,7 @@ This template helps you:
 ---
 
 ### Decision Title
+
 **Format:** Brief description of decision
 
 **Example:** "Pilot duration set to 14 days"
@@ -40,6 +44,7 @@ This template helps you:
 ---
 
 ### Decision Context
+
 **Description:** What led to this decision?
 
 **Example:**
@@ -48,9 +53,11 @@ This template helps you:
 ---
 
 ### Decision Options
+
 **Description:** What options were considered?
 
 **Example:**
+
 1. **14-day pilot:** Standard pilot duration
 2. **30-day pilot:** Extended pilot duration
 3. **7-day pilot:** Shorter pilot duration
@@ -58,6 +65,7 @@ This template helps you:
 ---
 
 ### Decision Made
+
 **Description:** What decision was made?
 
 **Example:**
@@ -66,9 +74,11 @@ This template helps you:
 ---
 
 ### Rationale
+
 **Description:** Why was this decision made?
 
 **Example:**
+
 - 14-day pilots have 30% conversion rate (same as 30-day)
 - Faster sales cycle (18 days vs 28 days)
 - Lower support burden
@@ -77,9 +87,11 @@ This template helps you:
 ---
 
 ### Expected Outcomes
+
 **Description:** What outcomes are expected?
 
 **Example:**
+
 - Faster sales cycles
 - Similar conversion rates
 - Lower support burden
@@ -88,9 +100,11 @@ This template helps you:
 ---
 
 ### Risks & Mitigation
+
 **Description:** What risks exist and how are they mitigated?
 
 **Example:**
+
 - **Risk:** Customers may need more time
 - **Mitigation:** Offer 30-day extension if needed
 - **Risk:** Lower conversion rate
@@ -99,9 +113,11 @@ This template helps you:
 ---
 
 ### Success Criteria
+
 **Description:** How will we know this decision was successful?
 
 **Example:**
+
 - Conversion rate maintained at 30%+
 - Sales cycle reduced to <20 days
 - Support burden reduced by 20%+
@@ -109,6 +125,7 @@ This template helps you:
 ---
 
 ### Review Date
+
 **Format:** YYYY-MM-DD
 
 **Description:** When will we review this decision?
@@ -118,6 +135,7 @@ This template helps you:
 ---
 
 ### Review Results
+
 **Description:** What were the results of the review?
 
 **Example:**
@@ -128,6 +146,7 @@ This template helps you:
 ## Decision Log Examples
 
 ### Example 1: Pricing Decision
+
 **Decision ID:** DEC-2025-01-15-001
 **Date:** 2025-01-15
 **Title:** "Starter plan pricing set to $99/month"
@@ -135,18 +154,21 @@ This template helps you:
 **Context:** "We were debating between $99/month and $149/month for Starter plan."
 
 **Options:**
+
 1. $99/month: Lower price, higher volume
 2. $149/month: Higher price, lower volume
 
 **Decision:** "$99/month for Starter plan"
 
 **Rationale:**
+
 - $99/month is more accessible
 - Higher volume potential
 - Still profitable at average usage
 - Competitive pricing
 
 **Expected Outcomes:**
+
 - Higher signup rate
 - More conversions
 - Higher MRR growth
@@ -156,6 +178,7 @@ This template helps you:
 ---
 
 ### Example 2: Pilot Duration Decision
+
 **Decision ID:** DEC-2025-01-20-002
 **Date:** 2025-01-20
 **Title:** "Pilot duration set to 14 days"
@@ -163,17 +186,20 @@ This template helps you:
 **Context:** "We were debating between 14-day and 30-day pilots."
 
 **Options:**
+
 1. 14-day pilot: Standard duration
 2. 30-day pilot: Extended duration
 
 **Decision:** "14-day pilot for standard, 30-day for enterprise"
 
 **Rationale:**
+
 - 14-day pilots have similar conversion rates
 - Faster sales cycles
 - Lower support burden
 
 **Expected Outcomes:**
+
 - Faster sales cycles
 - Similar conversion rates
 - Lower support burden
@@ -185,6 +211,7 @@ This template helps you:
 ## Decision Log Best Practices
 
 ### Do's
+
 - ✅ **Document all major decisions:** Pricing, features, processes
 - ✅ **Include context:** Why decision was made
 - ✅ **Document rationale:** Reasoning behind decision
@@ -192,6 +219,7 @@ This template helps you:
 - ✅ **Update with results:** Document outcomes
 
 ### Don'ts
+
 - ❌ **Don't document minor decisions:** Focus on major decisions
 - ❌ **Don't skip context:** Include background information
 - ❌ **Don't forget rationale:** Explain why decision was made
@@ -203,16 +231,19 @@ This template helps you:
 ## Decision Log Maintenance
 
 ### Weekly Review
+
 - Review recent decisions
 - Update with results
 - Identify decisions to review
 
 ### Monthly Review
+
 - Review all decisions
 - Update with outcomes
 - Archive completed decisions
 
 ### Quarterly Review
+
 - Review major decisions
 - Assess decision quality
 - Learn from history

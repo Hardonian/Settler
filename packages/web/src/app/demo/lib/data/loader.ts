@@ -1,6 +1,6 @@
 /**
  * Demo Data Loader
- * 
+ *
  * Loads and validates demo data from JSON files.
  * Provides graceful degradation if files are missing or invalid.
  */
@@ -15,10 +15,7 @@ import {
   type Transaction,
   type Receipt,
 } from "./types";
-import {
-  hashTransaction,
-  deterministicAuditTrailId,
-} from "./deterministic";
+import { hashTransaction, deterministicAuditTrailId } from "./deterministic";
 
 // Import JSON data
 import stripeChargesData from "./stripe-charges.json";
@@ -98,7 +95,9 @@ export function getSourceTransactions(): Transaction[] {
  * Get all target transactions (QuickBooks, Bank payouts)
  */
 export function getTargetTransactions(): Transaction[] {
-  return loadTransactions().filter((t: any) => t.source === "quickbooks" || t.source === "bank_payout");
+  return loadTransactions().filter(
+    (t: any) => t.source === "quickbooks" || t.source === "bank_payout"
+  );
 }
 
 /**

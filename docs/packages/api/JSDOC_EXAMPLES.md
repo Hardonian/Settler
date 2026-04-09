@@ -2,16 +2,16 @@
 
 ## Function Documentation
 
-```typescript
+````typescript
 /**
  * Creates a new reconciliation job
- * 
+ *
  * @param userId - The ID of the user creating the job
  * @param request - Job creation request with source, target, and rules
  * @returns Promise resolving to the created job response
  * @throws {ValidationError} When request validation fails
  * @throws {InternalServerError} When job creation fails
- * 
+ *
  * @example
  * ```typescript
  * const job = await jobService.createJob(userId, {
@@ -23,17 +23,17 @@
  * ```
  */
 async createJob(userId: string, request: CreateJobRequest): Promise<JobResponse>
-```
+````
 
 ## Class Documentation
 
-```typescript
+````typescript
 /**
  * Service for managing reconciliation jobs
- * 
+ *
  * Handles creation, retrieval, listing, and deletion of reconciliation jobs.
  * All operations are tenant-scoped and enforce proper authorization.
- * 
+ *
  * @example
  * ```typescript
  * const jobService = new JobRouteService();
@@ -43,14 +43,14 @@ async createJob(userId: string, request: CreateJobRequest): Promise<JobResponse>
 export class JobRouteService {
   // ...
 }
-```
+````
 
 ## Type Documentation
 
 ```typescript
 /**
  * Configuration for creating a reconciliation job
- * 
+ *
  * @property name - Human-readable name for the job
  * @property source - Source adapter configuration
  * @property target - Target adapter configuration

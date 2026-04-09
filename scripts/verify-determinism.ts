@@ -457,7 +457,9 @@ function printResults(result: DeterminismCheckResult): void {
   }
 
   console.log("───────────────────────────────────────────────────────────────");
-  console.log(`Total: ${result.summary.total} | Passed: ${result.summary.passed} | Failed: ${result.summary.failed} | Warnings: ${result.summary.warnings}`);
+  console.log(
+    `Total: ${result.summary.total} | Passed: ${result.summary.passed} | Failed: ${result.summary.failed} | Warnings: ${result.summary.warnings}`
+  );
   console.log(`Status: ${result.passed ? "✅ PASSED" : "❌ FAILED"}`);
   console.log("───────────────────────────────────────────────────────────────\n");
 }

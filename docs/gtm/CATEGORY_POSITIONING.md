@@ -9,6 +9,7 @@
 We're not entering an existing category. We're **creating** the category of "Open Source Reconciliation Engine."
 
 **Why This Category:**
+
 1. **reconciliation engine** is the core primitive
 2. **Autonomous** means self-healing, self-optimizing, self-monitoring
 3. **Operating System** means it's infrastructure, not a tool
@@ -25,14 +26,14 @@ We're not entering an existing category. We're **creating** the category of "Ope
 
 ### Differentiation Matrix
 
-| Feature | Settler.dev | ETL Tools | Data Quality | Workflow Orchestration |
-|---------|-------------|-----------|--------------|----------------------|
-| reconciliation engine | ✅ Core | ❌ | ❌ | ❌ |
-| AI-Driven | ✅ | ❌ | Partial | ❌ |
-| Self-Healing | ✅ | ❌ | ❌ | ❌ |
-| Vertical Modules | ✅ | ❌ | ❌ | ❌ |
-| Workflow OS | ✅ | ❌ | ❌ | ✅ |
-| Developer-First | ✅ | Partial | Partial | Partial |
+| Feature               | Settler.dev | ETL Tools | Data Quality | Workflow Orchestration |
+| --------------------- | ----------- | --------- | ------------ | ---------------------- |
+| reconciliation engine | ✅ Core     | ❌        | ❌           | ❌                     |
+| AI-Driven             | ✅          | ❌        | Partial      | ❌                     |
+| Self-Healing          | ✅          | ❌        | ❌           | ❌                     |
+| Vertical Modules      | ✅          | ❌        | ❌           | ❌                     |
+| Workflow OS           | ✅          | ❌        | ❌           | ✅                     |
+| Developer-First       | ✅          | Partial   | Partial      | Partial                |
 
 ---
 

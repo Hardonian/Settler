@@ -37,4 +37,3 @@ Amounts are converted to integer cents using the configured rounding mode before
 ## Bounds
 
 Determinism applies to engine outputs, not to external systems or any downstream interpretation of variances. The engine surfaces discrepancies; it does not certify correctness or compliance.
-

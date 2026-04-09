@@ -3,10 +3,7 @@
  * Lives in reconciliation-core so the canonical detail read model stays core-owned.
  */
 
-import {
-  buildCanonicalRunResultContract,
-  type ConfigDriftStatus,
-} from "./canonical-run-result.js";
+import { buildCanonicalRunResultContract, type ConfigDriftStatus } from "./canonical-run-result.js";
 
 export interface RunConfigurationSummary {
   sourceAdapter: string | null;
@@ -183,7 +180,9 @@ export function buildRunConfigurationSummary(input: {
     targetAdapter: input.targetAdapter ?? null,
     reconStrategy: effectiveReconStrategy,
     templateId: effectiveTemplateId,
-    validationRuleCount: Array.isArray(effectiveValidationRules) ? effectiveValidationRules.length : 0,
+    validationRuleCount: Array.isArray(effectiveValidationRules)
+      ? effectiveValidationRules.length
+      : 0,
     validationRuleLabels,
     ruleVersionCount: Array.isArray(snapshot?.ruleVersions) ? snapshot.ruleVersions.length : 0,
     ruleVersionLabels,

@@ -8,6 +8,7 @@
 ## Philosophy
 
 Settler ships with clear boundaries. This document distinguishes between:
+
 - **Not yet built** — planned features on the roadmap
 - **Known limitations** — constraints with workarounds
 - **Intentionally incomplete** — features that work but aren't production-hardened
@@ -19,6 +20,7 @@ Settler ships with clear boundaries. This document distinguishes between:
 **Status:** Functional (API/backend)
 
 The `JobSchedulerService` (`packages/api/src/infrastructure/jobs/scheduler-service.ts`) is implemented and supports:
+
 - Cron expression scheduling via `node-cron`
 - Timezone-aware execution (`scheduleCron` and `scheduleTimezone` fields on the ReconJob model)
 - Idempotent job execution with retry logic
@@ -28,6 +30,7 @@ The `JobSchedulerService` (`packages/api/src/infrastructure/jobs/scheduler-servi
 Additionally, 5 cron endpoint routes exist in `packages/web/src/app/api/cron/` covering daily cost rollups, email lifecycle, monthly summaries, reliability alert checks, and low-activity detection.
 
 **What's not yet built:**
+
 - Console UI for creating/editing schedule configuration (schedules must be configured via API or database)
 - Visual schedule monitoring dashboard
 
@@ -46,6 +49,7 @@ The connector ecosystem consists of multiple packages:
 - **`packages/jobforge-adapter-settler`** — Settler-specific JobForge adapter
 
 The `packages/adapters/` package provides a connector driver framework with 14 registered drivers:
+
 - **Banking/Open Banking:** Plaid, TrueLayer
 - **Payments:** Stripe Connect, PayPal (with enhanced and payouts variants)
 - **Commerce:** Shopify, WooCommerce, Wix Stores, Amazon Seller, Etsy, eBay, TikTok Shop, Meta Commerce, Google Pay
@@ -54,6 +58,7 @@ The `packages/adapters/` package provides a connector driver framework with 14 r
 - **Tax:** Avalara, TaxJar
 
 The adapter framework includes:
+
 - Connector driver base class with credential encryption
 - Connector runtime with sandboxed execution
 - Concurrency protection and rate limiting per connector
@@ -62,6 +67,7 @@ The adapter framework includes:
 - Alert management
 
 **What's partial or evolving:**
+
 - Not all drivers have been integration-tested against live APIs
 - OAuth2 flows exist in the driver contracts but are not wired through a universal console UI
 - CSV ingestion remains the simplest onboarding path for operators who don't need live connectors
@@ -73,6 +79,7 @@ The adapter framework includes:
 **Status:** Partial (API layer built, matching engine currency-unaware)
 
 **What's implemented:**
+
 - Currency API routes at `/api/v1/currency/*` (rate lookup, rate submission, conversion)
 - `FXService` with conversion recording, provider tracking, and rate-date awareness
 - FX provider chain with ECB (European Central Bank) provider and extensible `FXRateProvider` interface
@@ -80,6 +87,7 @@ The adapter framework includes:
 - FX conversion tracking stored in `fx_conversions` table
 
 **What's not yet complete:**
+
 - The reconciliation matching engine does not incorporate currency conversion into its tolerance/matching logic — matching is effectively single-currency
 - The FX rate sync job framework exists but relies on the external `exchangerate.host` API which may require an API key for production volume
 - Multi-currency tolerance zones (e.g., matching within an FX-adjusted threshold) are not implemented
@@ -101,6 +109,7 @@ The observability stack is substantially built out:
 - **Structured logging**: Request-scoped trace IDs, tenant context in log entries
 
 **What's still evolving:**
+
 - Alert channel integrations (Slack, PagerDuty, email) are defined in the type system but delivery implementations vary in completeness
 - Dashboard coverage will expand as new features are instrumented
 - Custom per-tenant dashboard provisioning is not automated
@@ -112,11 +121,13 @@ The observability stack is substantially built out:
 **Status:** Functional with Redis-based distributed implementation and in-memory fallback
 
 **What's implemented:**
+
 - Redis-backed token bucket rate limiting (`packages/api/src/infrastructure/rate-limiting/TokenBucket.ts`) with atomic Lua script operations
 - Tier-based rate limiting for reconciliation operations (`packages/api/src/middleware/recon-rate-limiter.ts`) with per-tier RPM, concurrent job, and monthly recon limits (free/starter/pro/business/enterprise tiers)
 - Adaptive rate limiting support
 
 **Fallback behavior:**
+
 - If Redis is unavailable, rate limiting falls back to in-memory storage
 - In fallback mode, rate limits reset on server restart and are per-instance (not distributed)
 
@@ -139,21 +150,21 @@ For comprehensive known limitations, see [../KNOWN_LIMITATIONS.md](../KNOWN_LIMI
 
 ## Production Readiness Indicators
 
-| Component | Status | Notes |
-|-----------|--------|-------|
-| Core Reconciliation | Ready | Primary workflow functional |
-| Evidence Generation | Ready | Deterministic evidence produced |
-| Manual Review Queue | Ready | Full audit trail |
-| Tenant Isolation | Ready | RLS enforced |
-| Stripe Ingestion | Ready | API-based with enhanced adapter |
-| Bank CSV Import | Ready | CSV upload |
-| Multi-tenancy | Ready | Workspace isolation |
-| Scheduled Runs | Functional | Backend scheduler with cron/timezone support; no console UI for configuration |
+| Component             | Status     | Notes                                                                                       |
+| --------------------- | ---------- | ------------------------------------------------------------------------------------------- |
+| Core Reconciliation   | Ready      | Primary workflow functional                                                                 |
+| Evidence Generation   | Ready      | Deterministic evidence produced                                                             |
+| Manual Review Queue   | Ready      | Full audit trail                                                                            |
+| Tenant Isolation      | Ready      | RLS enforced                                                                                |
+| Stripe Ingestion      | Ready      | API-based with enhanced adapter                                                             |
+| Bank CSV Import       | Ready      | CSV upload                                                                                  |
+| Multi-tenancy         | Ready      | Workspace isolation                                                                         |
+| Scheduled Runs        | Functional | Backend scheduler with cron/timezone support; no console UI for configuration               |
 | Enterprise Connectors | Functional | 14+ drivers in adapter framework; SDK and runtime built; not all drivers integration-tested |
-| Observability | Functional | Prometheus, Grafana dashboards, SLO alerting, health probes, tracing |
-| Rate Limiting | Functional | Redis-based distributed token bucket; in-memory fallback |
-| Multi-currency | Partial | API routes, FX service, and rate sync exist; matching engine is currency-unaware |
-| Advanced Analytics | Partial | Basic reconciliation metrics; advanced analytics evolving |
+| Observability         | Functional | Prometheus, Grafana dashboards, SLO alerting, health probes, tracing                        |
+| Rate Limiting         | Functional | Redis-based distributed token bucket; in-memory fallback                                    |
+| Multi-currency        | Partial    | API routes, FX service, and rate sync exist; matching engine is currency-unaware            |
+| Advanced Analytics    | Partial    | Basic reconciliation metrics; advanced analytics evolving                                   |
 
 ---
 

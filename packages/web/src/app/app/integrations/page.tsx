@@ -22,9 +22,7 @@ export default function IntegrationsPage() {
               </Link>
             </Button>
             <Button size="sm" asChild>
-              <Link href="/docs/integrations">
-                Add Integration
-              </Link>
+              <Link href="/docs/integrations">Add Integration</Link>
             </Button>
           </div>
         }

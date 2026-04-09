@@ -26,48 +26,52 @@ const querySchema = z.object({
     .default("0"),
 });
 
-router.get("/", requirePermission(Permission.REPORTS_EXPORT), async (req: AuthRequest, res: Response) => {
-  try {
-    const tenantId = req.tenantId;
-    if (!tenantId) {
-      return res.status(401).json({
-        code: "UNAUTHORIZED",
-        message: "Tenant context is required",
-        traceId: req.traceId,
-        retryable: false,
+router.get(
+  "/",
+  requirePermission(Permission.REPORTS_EXPORT),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = req.tenantId;
+      if (!tenantId) {
+        return res.status(401).json({
+          code: "UNAUTHORIZED",
+          message: "Tenant context is required",
+          traceId: req.traceId,
+          retryable: false,
+        });
+      }
+
+      const parsed = querySchema.safeParse(req.query);
+      if (!parsed.success) {
+        return res.status(400).json({
+          code: "BAD_REQUEST",
+          message: "runId (uuid) query parameter is required",
+          traceId: req.traceId,
+          retryable: false,
+        });
+      }
+
+      const exportDocument = await buildReconciliationExport(tenantId, parsed.data.runId, {
+        limit: parsed.data.limit,
+        offset: parsed.data.offset,
+      });
+      if (!exportDocument) {
+        return res.status(404).json({
+          code: "NOT_FOUND",
+          message: "Reconciliation run not found",
+          traceId: req.traceId,
+          retryable: false,
+        });
+      }
+
+      res.setHeader("Content-Type", "application/json");
+      return res.status(200).json(exportDocument);
+    } catch (error: unknown) {
+      return handleRouteError(res, error, "Failed to export reconciliation data", 500, {
+        userId: req.userId,
       });
     }
-
-    const parsed = querySchema.safeParse(req.query);
-    if (!parsed.success) {
-      return res.status(400).json({
-        code: "BAD_REQUEST",
-        message: "runId (uuid) query parameter is required",
-        traceId: req.traceId,
-        retryable: false,
-      });
-    }
-
-    const exportDocument = await buildReconciliationExport(tenantId, parsed.data.runId, {
-      limit: parsed.data.limit,
-      offset: parsed.data.offset,
-    });
-    if (!exportDocument) {
-      return res.status(404).json({
-        code: "NOT_FOUND",
-        message: "Reconciliation run not found",
-        traceId: req.traceId,
-        retryable: false,
-      });
-    }
-
-    res.setHeader("Content-Type", "application/json");
-    return res.status(200).json(exportDocument);
-  } catch (error: unknown) {
-    return handleRouteError(res, error, "Failed to export reconciliation data", 500, {
-      userId: req.userId,
-    });
   }
-});
+);
 
 export { router as exportRouter };

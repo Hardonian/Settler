@@ -1,6 +1,6 @@
 /**
  * Monitoring & Metrics Utilities
- * 
+ *
  * Provides utilities for tracking metrics, errors, and performance.
  * Integrates with Sentry and custom logging.
  */
@@ -15,7 +15,7 @@ export interface MetricEvent {
 export interface ErrorEvent {
   error: Error;
   context?: Record<string, unknown>;
-  severity?: 'low' | 'medium' | 'high' | 'critical';
+  severity?: "low" | "medium" | "high" | "critical";
 }
 
 /**
@@ -24,18 +24,18 @@ export interface ErrorEvent {
 export async function trackMetric(event: MetricEvent): Promise<void> {
   try {
     // Log to console in development
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       // eslint-disable-next-line no-console
-      console.log('[Metric]', event.name, event.value, event.tags);
+      console.log("[Metric]", event.name, event.value, event.tags);
     }
 
     // Send to Sentry if configured
     if (process.env.SENTRY_DSN) {
       try {
-        const Sentry = await import('@sentry/nextjs');
+        const Sentry = await import("@sentry/nextjs");
         Sentry.metrics.distribution(event.name, event.value, {
           tags: event.tags,
-          unit: 'none',
+          unit: "none",
         });
       } catch {
         // Sentry not available, skip
@@ -56,7 +56,7 @@ export async function trackMetric(event: MetricEvent): Promise<void> {
     */
   } catch (error) {
     // Don't throw - metrics are non-critical
-    console.warn('[Metrics] Failed to track metric:', error);
+    console.warn("[Metrics] Failed to track metric:", error);
   }
 }
 
@@ -66,17 +66,21 @@ export async function trackMetric(event: MetricEvent): Promise<void> {
 export async function trackError(event: ErrorEvent): Promise<void> {
   try {
     // Log error
-    console.error('[Error]', event.error.message, event.context);
+    console.error("[Error]", event.error.message, event.context);
 
     // Send to Sentry if configured
     if (process.env.SENTRY_DSN) {
       try {
-        const Sentry = await import('@sentry/nextjs');
+        const Sentry = await import("@sentry/nextjs");
         // Convert context to primitive types for Sentry
         const tags: Record<string, string | number | boolean> = {};
         if (event.context) {
           for (const [key, value] of Object.entries(event.context)) {
-            if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+            if (
+              typeof value === "string" ||
+              typeof value === "number" ||
+              typeof value === "boolean"
+            ) {
               tags[key] = value;
             } else {
               tags[key] = String(value);
@@ -84,7 +88,7 @@ export async function trackError(event: ErrorEvent): Promise<void> {
           }
         }
         Sentry.captureException(event.error, {
-          level: event.severity === 'critical' ? 'error' : 'warning',
+          level: event.severity === "critical" ? "error" : "warning",
           tags,
         });
       } catch {
@@ -119,7 +123,7 @@ export async function trackError(event: ErrorEvent): Promise<void> {
     */
   } catch (error) {
     // Don't throw - error tracking is non-critical
-    console.warn('[Monitoring] Failed to track error:', error);
+    console.warn("[Monitoring] Failed to track error:", error);
   }
 }
 
@@ -132,16 +136,16 @@ export async function trackWebhookMetric(
   durationMs: number
 ): Promise<void> {
   await trackMetric({
-    name: 'webhook.processed',
+    name: "webhook.processed",
     value: success ? 1 : 0,
     tags: {
       event_type: eventType,
-      status: success ? 'success' : 'failed',
+      status: success ? "success" : "failed",
     },
   });
 
   await trackMetric({
-    name: 'webhook.duration_ms',
+    name: "webhook.duration_ms",
     value: durationMs,
     tags: {
       event_type: eventType,
@@ -159,7 +163,7 @@ export async function trackApiMetric(
   durationMs: number
 ): Promise<void> {
   await trackMetric({
-    name: 'api.request',
+    name: "api.request",
     value: 1,
     tags: {
       endpoint,
@@ -169,7 +173,7 @@ export async function trackApiMetric(
   });
 
   await trackMetric({
-    name: 'api.duration_ms',
+    name: "api.duration_ms",
     value: durationMs,
     tags: {
       endpoint,
@@ -188,12 +192,12 @@ export async function trackDbMetric(
   success: boolean
 ): Promise<void> {
   await trackMetric({
-    name: 'db.query',
+    name: "db.query",
     value: durationMs,
     tags: {
       operation,
       table,
-      status: success ? 'success' : 'failed',
+      status: success ? "success" : "failed",
     },
   });
 }

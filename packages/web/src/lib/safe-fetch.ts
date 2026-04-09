@@ -56,7 +56,7 @@ export async function safeFetch<T = unknown>(
       };
     }
 
-    const data = await response.json() as T;
+    const data = (await response.json()) as T;
 
     return {
       success: true,
@@ -64,12 +64,12 @@ export async function safeFetch<T = unknown>(
     };
   } catch (error) {
     if (error instanceof Error) {
-      if (error.name === 'AbortError') {
+      if (error.name === "AbortError") {
         return {
           success: false,
           error: {
-            message: 'Request timeout',
-            code: 'TIMEOUT',
+            message: "Request timeout",
+            code: "TIMEOUT",
           },
         };
       }
@@ -86,8 +86,8 @@ export async function safeFetch<T = unknown>(
     return {
       success: false,
       error: {
-        message: 'Unknown error occurred',
-        code: 'UNKNOWN',
+        message: "Unknown error occurred",
+        code: "UNKNOWN",
       },
     };
   }
@@ -98,7 +98,7 @@ export async function safeFetch<T = unknown>(
  */
 export function maskToken(token: string): string {
   if (!token || token.length < 4) {
-    return '****';
+    return "****";
   }
   return `****${token.slice(-4)}`;
 }
@@ -117,7 +117,7 @@ export function containsSecrets(str: string): boolean {
     /api[_-]?key\s*[:=]\s*[A-Za-z0-9]{20,}/i,
   ];
 
-  return secretPatterns.some(pattern => pattern.test(str));
+  return secretPatterns.some((pattern) => pattern.test(str));
 }
 
 /**
@@ -141,9 +141,8 @@ export function sanitizeForLogging(str: string): string {
   );
 
   // Mask API key patterns
-  sanitized = sanitized.replace(
-    /api[_-]?key\s*[:=]\s*([A-Za-z0-9]{20,})/gi,
-    (match, key) => match.replace(key, maskToken(key))
+  sanitized = sanitized.replace(/api[_-]?key\s*[:=]\s*([A-Za-z0-9]{20,})/gi, (match, key) =>
+    match.replace(key, maskToken(key))
   );
 
   return sanitized;

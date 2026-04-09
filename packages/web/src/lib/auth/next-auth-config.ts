@@ -13,6 +13,6 @@ export interface NextAuthDisabledConfig {
 
 export const authOptions: NextAuthDisabledConfig = {
   enabled: false,
-  reason: 'next_auth_not_installed_use_oidc_env_contract',
-  verificationPath: ['pnpm run verify:enterprise-identity'],
+  reason: "next_auth_not_installed_use_oidc_env_contract",
+  verificationPath: ["pnpm run verify:enterprise-identity"],
 };

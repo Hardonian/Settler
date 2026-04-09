@@ -1,13 +1,13 @@
 /**
  * Safe Helper Functions
- * 
+ *
  * Provides safe wrappers for common operations with graceful error handling.
  * These functions never throw unhandled errors and always return a result object.
  */
 
-import Stripe from 'stripe';
-import { getStripeClient } from '@/domain/billing/stripeService';
-import { createClient } from '@/lib/supabase/server';
+import Stripe from "stripe";
+import { getStripeClient } from "@/domain/billing/stripeService";
+import { createClient } from "@/lib/supabase/server";
 
 export interface SafeResult<T> {
   success: boolean;
@@ -67,7 +67,7 @@ export async function safeFetch(
       return { success: true, data: response };
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
-      
+
       // Don't retry on network errors if we're out of retries
       if (attempt < retries) {
         await new Promise((resolve) => setTimeout(resolve, retryDelay * (attempt + 1)));
@@ -78,8 +78,8 @@ export async function safeFetch(
 
   return {
     success: false,
-    error: lastError?.message || 'Fetch failed',
-    code: 'FETCH_ERROR',
+    error: lastError?.message || "Fetch failed",
+    code: "FETCH_ERROR",
   };
 }
 
@@ -90,13 +90,14 @@ export async function safeFetch(
 export async function safeSupabase() {
   try {
     const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const supabaseAnonKey =
+      process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     if (!supabaseUrl || !supabaseAnonKey) {
       return {
         success: false as const,
-        error: 'Supabase not configured',
-        code: 'SUPABASE_NOT_CONFIGURED',
+        error: "Supabase not configured",
+        code: "SUPABASE_NOT_CONFIGURED",
       };
     }
 
@@ -108,8 +109,8 @@ export async function safeSupabase() {
   } catch (error) {
     return {
       success: false as const,
-      error: error instanceof Error ? error.message : 'Failed to create Supabase client',
-      code: 'SUPABASE_ERROR',
+      error: error instanceof Error ? error.message : "Failed to create Supabase client",
+      code: "SUPABASE_ERROR",
     };
   }
 }
@@ -124,8 +125,8 @@ export function safeStripe(): SafeResult<Stripe> {
     if (!stripeSecretKey) {
       return {
         success: false,
-        error: 'Stripe not configured',
-        code: 'STRIPE_NOT_CONFIGURED',
+        error: "Stripe not configured",
+        code: "STRIPE_NOT_CONFIGURED",
       };
     }
 
@@ -133,7 +134,7 @@ export function safeStripe(): SafeResult<Stripe> {
     if (!stripe) {
       return {
         success: false,
-        error: 'Stripe is not configured (demo mode)',
+        error: "Stripe is not configured (demo mode)",
       };
     }
     return {
@@ -143,8 +144,8 @@ export function safeStripe(): SafeResult<Stripe> {
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to create Stripe client',
-      code: 'STRIPE_ERROR',
+      error: error instanceof Error ? error.message : "Failed to create Stripe client",
+      code: "STRIPE_ERROR",
     };
   }
 }
@@ -153,9 +154,7 @@ export function safeStripe(): SafeResult<Stripe> {
  * Safe database query wrapper
  * Handles Prisma errors gracefully
  */
-export async function safeDbQuery<T>(
-  queryFn: () => Promise<T>
-): Promise<SafeResult<T>> {
+export async function safeDbQuery<T>(queryFn: () => Promise<T>): Promise<SafeResult<T>> {
   try {
     const data = await queryFn();
     return {
@@ -164,25 +163,25 @@ export async function safeDbQuery<T>(
     };
   } catch (error: any) {
     // Handle Prisma-specific errors
-    if (error?.code === 'P2002') {
+    if (error?.code === "P2002") {
       return {
         success: false,
-        error: 'Record already exists',
-        code: 'DUPLICATE_RECORD',
+        error: "Record already exists",
+        code: "DUPLICATE_RECORD",
       };
     }
-    if (error?.code === 'P2025') {
+    if (error?.code === "P2025") {
       return {
         success: false,
-        error: 'Record not found',
-        code: 'NOT_FOUND',
+        error: "Record not found",
+        code: "NOT_FOUND",
       };
     }
 
     return {
       success: false,
-      error: error?.message || 'Database query failed',
-      code: error?.code || 'DB_ERROR',
+      error: error?.message || "Database query failed",
+      code: error?.code || "DB_ERROR",
     };
   }
 }
@@ -200,8 +199,8 @@ export function safeJsonParse<T>(json: string): SafeResult<T> {
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Invalid JSON',
-      code: 'JSON_PARSE_ERROR',
+      error: error instanceof Error ? error.message : "Invalid JSON",
+      code: "JSON_PARSE_ERROR",
     };
   }
 }
@@ -215,7 +214,7 @@ export async function safeWithTimeout<T>(
 ): Promise<SafeResult<T>> {
   try {
     const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error('Operation timed out')), timeoutMs);
+      setTimeout(() => reject(new Error("Operation timed out")), timeoutMs);
     });
 
     const data = await Promise.race([operation(), timeoutPromise]);
@@ -226,8 +225,8 @@ export async function safeWithTimeout<T>(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Operation failed',
-      code: 'TIMEOUT',
+      error: error instanceof Error ? error.message : "Operation failed",
+      code: "TIMEOUT",
     };
   }
 }
@@ -262,7 +261,7 @@ export async function retryWithBackoff<T>(
 
   return {
     success: false,
-    error: lastError?.message || 'Operation failed after retries',
-    code: 'RETRY_EXHAUSTED',
+    error: lastError?.message || "Operation failed after retries",
+    code: "RETRY_EXHAUSTED",
   };
 }

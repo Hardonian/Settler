@@ -402,9 +402,7 @@ export function sortRecordsDeterministically(
 /**
  * Sort matches deterministically for reproducible output
  */
-export function sortMatchesDeterministically(
-  matches: DeterministicMatch[]
-): DeterministicMatch[] {
+export function sortMatchesDeterministically(matches: DeterministicMatch[]): DeterministicMatch[] {
   return [...matches].sort((a, b) => {
     // Primary sort: by confidence (descending)
     if (a.confidence !== b.confidence) {

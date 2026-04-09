@@ -3,6 +3,7 @@
 ## Current Architecture
 
 ### Framework & Stack
+
 - **Next.js 14** with App Router (`packages/web/`)
 - **React 18** with TypeScript
 - **Tailwind CSS** for styling
@@ -38,12 +39,14 @@ packages/web/src/app/
 ### Current Page Rendering
 
 **Marketing Pages** (e.g., `/`, `/pricing`):
+
 - Hard-coded React components with static content
 - Navigation items hard-coded in `Navigation.tsx`
 - Footer items hard-coded in `Footer.tsx`
 - No tenant awareness or dynamic configuration
 
 **Console Pages** (`/console/*`):
+
 - Protected by auth check in `console/layout.tsx`
 - Uses `ConsoleLayout` component with hard-coded sidebar navigation
 - Fetches data from API routes (`/api/console/*`)
@@ -52,11 +55,13 @@ packages/web/src/app/
 ### Navigation System
 
 **Main Navigation** (`components/Navigation.tsx`):
+
 - Hard-coded array of navigation items
 - Fixed logo and branding
 - No tenant-specific customization
 
 **Console Navigation** (`components/console/ConsoleLayout.tsx`):
+
 - Hard-coded sidebar items
 - Fixed styling and layout
 - No tenant-specific customization
@@ -64,16 +69,19 @@ packages/web/src/app/
 ### Authentication & User Model
 
 **Auth Provider**: Supabase Auth
+
 - Server-side auth via `lib/supabase/server.ts`
 - Session management via cookies
 - User object from `supabase.auth.getUser()`
 
 **Account Model**:
+
 - `BillingAccount` in Prisma schema (has `tenantId` field)
 - Links to Stripe customer/subscription
 - Used for billing, usage tracking, feature flags
 
 **Current Tenant Usage**:
+
 - `tenantId` exists in `BillingAccount` but not fully utilized
 - Some domain logic references `tenantId` (feature flags, usage events)
 - No tenant resolution or multi-tenant UI layer
@@ -81,12 +89,14 @@ packages/web/src/app/
 ### Theming & Styling
 
 **Design System**:
+
 - Tailwind CSS with custom theme tokens
 - Dark mode support via `DarkModeToggle`
 - Custom UI components in `components/ui/`
 - No tenant-specific theming currently
 
 **Color System**:
+
 - Hard-coded gradient colors (electric-cyan, electric-purple, etc.)
 - CSS variables for theme colors
 - No dynamic tenant branding
@@ -94,11 +104,13 @@ packages/web/src/app/
 ### Component Structure
 
 **Marketing Components**:
+
 - `AnimatedHero`, `AnimatedPricingCard`, `ConversionCTA`, etc.
 - Reusable but content is hard-coded in page components
 - No block-based or schema-driven rendering
 
 **Console Components**:
+
 - `ConsoleLayout` for sidebar navigation
 - Domain-specific components in `components/console/`
 - Data fetching via API routes
@@ -106,65 +118,80 @@ packages/web/src/app/
 ## Where to Plug In Tenant-Aware Theming & Config
 
 ### 1. Tenant Resolution Layer
+
 **Location**: `src/shared/tenant/tenantResolver.ts`
 
 **Purpose**: Determine which tenant is being served based on:
+
 - Request host/domain (primary domain or custom domain)
 - URL path (optional `/t/[tenantSlug]` for preview)
 - Default to main Settler tenant if no match
 
 **Integration Points**:
+
 - Next.js middleware for early tenant resolution
 - Server components can access resolved tenant
 - API routes can use tenant context
 
 ### 2. Theme Provider
+
 **Location**: `src/components/tenant/TenantThemeProvider.tsx`
 
-**Purpose**: 
+**Purpose**:
+
 - Fetch `TenantBranding` config for resolved tenant
 - Provide theme tokens (colors, fonts) via React Context
 - Apply CSS variables or Tailwind classes dynamically
 
 **Integration Points**:
+
 - Wrap root layout or specific layouts
 - Components can consume theme via context
 - Navigation/Footer can use tenant branding
 
 ### 3. Navigation System
+
 **Location**: `src/components/tenant/TenantNavigation.tsx`
 
 **Purpose**:
+
 - Replace hard-coded `Navigation.tsx` with tenant-aware version
 - Read from `TenantNavigation.navItems` and `.footerItems`
 - Fall back to default if not configured
 
 **Integration Points**:
+
 - Replace `Navigation` import in layouts
 - Console navigation can also be tenant-aware
 
 ### 4. Page Rendering Layer
+
 **Location**: `src/domain/siteBuilder/pageRenderer.tsx`
 
 **Purpose**:
+
 - Replace hard-coded page components with `PageRenderer`
 - Read `TenantPage.blocks` JSON and render block components
 - Support experiments/variants for A/B testing
 
 **Integration Points**:
+
 - Marketing pages (`/`, `/pricing`, etc.) can use `PageRenderer`
 - Docs pages can optionally use block-based rendering
 - Keep existing pages as fallback during migration
 
 ### 5. Console Site Designer
+
 **Location**: `src/app/console/site/`
 
 **Purpose**:
+
 - No-code editor for tenant admins/marketers
 - Edit pages, branding, navigation via UI
 - Manage experiments and variants
 
 **Integration Points**:
+
 - Add to `ConsoleLayout` sidebar navigation
 - Use existing console auth and layout patterns
 - API routes in `/api/console/site/*`
@@ -195,29 +222,29 @@ packages/web/src/app/
 ```typescript
 // src/shared/tenant/tenantResolver.ts
 export async function resolveTenant(request: Request): Promise<Tenant | null> {
-  const host = request.headers.get('host') || '';
+  const host = request.headers.get("host") || "";
   const url = new URL(request.url);
-  
+
   // 1. Check custom domain
   const tenantByDomain = await findTenantByDomain(host);
   if (tenantByDomain) return tenantByDomain;
-  
+
   // 2. Check subdomain
   const subdomain = extractSubdomain(host);
   if (subdomain) {
     const tenantBySlug = await findTenantBySlug(subdomain);
     if (tenantBySlug) return tenantBySlug;
   }
-  
+
   // 3. Check path-based preview (if authenticated)
   const pathMatch = url.pathname.match(/^\/t\/([^/]+)/);
   if (pathMatch) {
     const tenantBySlug = await findTenantBySlug(pathMatch[1]);
-    if (tenantBySlug && await canAccessTenant(userId, tenantBySlug.id)) {
+    if (tenantBySlug && (await canAccessTenant(userId, tenantBySlug.id))) {
       return tenantBySlug;
     }
   }
-  
+
   // 4. Default tenant
   return await getDefaultTenant();
 }
@@ -226,17 +253,20 @@ export async function resolveTenant(request: Request): Promise<Tenant | null> {
 ## Migration Strategy
 
 ### Phase 1: Non-Breaking Addition
+
 - Add tenant models to Prisma
 - Create default tenant (slug: "default") with current hard-coded config
 - Implement tenant resolution (defaults to main tenant)
 - Existing pages continue to work unchanged
 
 ### Phase 2: Gradual Migration
+
 - Migrate one page at a time to block-based rendering
 - Keep old page as fallback if tenant page not found
 - Test with default tenant first
 
 ### Phase 3: Full Multi-Tenant
+
 - All marketing pages use `PageRenderer`
 - Navigation and branding fully tenant-aware
 - Console site designer available for tenant admins

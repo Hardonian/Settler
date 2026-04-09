@@ -3,8 +3,8 @@
  * Enhances page metadata for better SEO
  */
 
-import { Metadata } from 'next';
-import { generateMetadata as baseGenerateMetadata } from '@/lib/metadata';
+import { Metadata } from "next";
+import { generateMetadata as baseGenerateMetadata } from "@/lib/metadata";
 
 interface EnhancedMetadataOptions {
   title: string;
@@ -46,11 +46,11 @@ export function generateEnhancedMetadata({
       canonical: canonical || baseMetadata.alternates?.canonical,
     },
     // Add category for content organization
-    category: 'Financial Technology',
+    category: "Financial Technology",
     // Add application name for PWA
-    applicationName: 'Settler',
+    applicationName: "Settler",
     // Add referrer policy
-    referrer: 'strict-origin-when-cross-origin',
+    referrer: "strict-origin-when-cross-origin",
   };
 }
 
@@ -75,23 +75,23 @@ export function generateBlogMetadata({
   slug: string;
 }): Metadata {
   const canonical = `/blog/${slug}`;
-  
+
   return generateEnhancedMetadata({
     title,
     description,
-    keywords: ['financial reconciliation', 'API', 'developer tools', 'fintech'],
+    keywords: ["financial reconciliation", "API", "developer tools", "fintech"],
     ogImage: image,
     canonical,
     structuredData: {
-      '@context': 'https://schema.org',
-      '@type': 'BlogPosting',
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
       headline: title,
       description,
       image: image,
       datePublished: publishedDate,
       dateModified: modifiedDate || publishedDate,
       author: {
-        '@type': 'Person',
+        "@type": "Person",
         name: author,
       },
     },
@@ -113,20 +113,20 @@ export function generateDocsMetadata({
   slug: string;
 }): Metadata {
   const canonical = section ? `/docs/${section}/${slug}` : `/docs/${slug}`;
-  
+
   return generateEnhancedMetadata({
     title,
     description,
-    keywords: ['API documentation', 'developer docs', 'integration guide'],
+    keywords: ["API documentation", "developer docs", "integration guide"],
     canonical,
     structuredData: {
-      '@context': 'https://schema.org',
-      '@type': 'TechArticle',
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
       headline: title,
       description,
       about: {
-        '@type': 'SoftwareApplication',
-        name: 'Settler API',
+        "@type": "SoftwareApplication",
+        name: "Settler API",
       },
     },
   });

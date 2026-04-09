@@ -5,6 +5,7 @@
 ## Overview
 
 This repository follows an **open-core** architecture where:
+
 - **Private Canonical Repo**: Production source of truth for Vercel deployments
 - **Public Mirror Repo**: Contains ONLY OSS SDK/API client + docs/examples
 
@@ -13,21 +14,25 @@ This repository follows an **open-core** architecture where:
 All files are classified into one of four categories:
 
 ### OSS_PUBLIC ✅
+
 - Safe to publish publicly under open-source license
 - Includes: SDK packages, API clients, public docs, examples
 - **Allowed in public mirror**: YES
 
 ### PLATFORM_PROPRIETARY 🔒
+
 - Licensed platform code, production services, proprietary features
 - Includes: Web app, API services, adapters, database schema
 - **Allowed in public mirror**: NO
 
 ### INTERNAL_BUSINESS 📊
+
 - Business strategy, investor materials, operations, commercial documents
 - Includes: Investor decks, strategy docs, business plans
 - **Allowed in public mirror**: NO
 
 ### SECRET_RISK ⚠️
+
 - Secrets, API keys, tokens, sensitive credentials
 - **Allowed in public mirror**: NO
 - **CI FAILS** if detected
@@ -35,6 +40,7 @@ All files are classified into one of four categories:
 ## File Placement Rules
 
 ### OSS_PUBLIC Files
+
 - `packages/sdk/**`
 - `packages/sdk-python/**`
 - `packages/sdk-go/**`
@@ -47,6 +53,7 @@ All files are classified into one of four categories:
 - `examples/**`
 
 ### PLATFORM_PROPRIETARY Files
+
 - `packages/web/**`
 - `packages/api/**`
 - `packages/adapters/**`
@@ -57,6 +64,7 @@ All files are classified into one of four categories:
 - `config/**`
 
 ### INTERNAL_BUSINESS Files
+
 - `internal/**`
 - `strategic/**`
 - `docs/internal/**`
@@ -120,13 +128,16 @@ All files are classified into one of four categories:
 ## Enforcement
 
 ### Pre-Commit
+
 - Classification tool can be added to pre-commit hook (optional)
 
 ### Pre-Merge
+
 - GitHub Actions workflows enforce classification
 - Required checks must pass before merge
 
 ### Pre-Publish
+
 - Mirror verification ensures only OSS_PUBLIC content
 - Classification check runs before publish
 

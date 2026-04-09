@@ -6,7 +6,12 @@
 import { query } from "../db";
 import { logError, logInfo } from "../utils/logger";
 
-export type SLAMetricType = "uptime" | "latency_p95" | "latency_p99" | "error_rate" | "support_response";
+export type SLAMetricType =
+  | "uptime"
+  | "latency_p95"
+  | "latency_p99"
+  | "error_rate"
+  | "support_response";
 
 export interface SLAAgreement {
   id: string;
@@ -80,7 +85,7 @@ export async function createSLAAgreement(
       ] as (string | number | boolean | null | Date)[]
     );
 
-    const agreementId = result[0]?.id || '';
+    const agreementId = result[0]?.id || "";
     logInfo("SLA agreement created", { agreementId, tenantId, slaType, targetValue });
     return agreementId;
   } catch (error) {
@@ -130,7 +135,7 @@ export async function recordSLAMetric(
       ] as (string | number | boolean | null | Date)[]
     );
 
-    const metricId = result[0]?.id || '';
+    const metricId = result[0]?.id || "";
 
     // Check for violation
     const isViolation = checkSLAViolation(metricType, measuredValue, targetValue);
@@ -228,7 +233,7 @@ async function createSLAViolation(
       ] as (string | number | boolean | null | Date)[]
     );
 
-    const violationId = result[0]?.id || '';
+    const violationId = result[0]?.id || "";
     logInfo("SLA violation created", {
       violationId,
       tenantId,

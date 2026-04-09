@@ -6,34 +6,38 @@ This guide explains how to set secrets for Supabase Edge Functions, specifically
 
 The `auth_edge_guard` function requires the following secrets:
 
-| Secret Name | Description | Default Value | Required |
-|------------|-------------|---------------|----------|
-| `UPSTASH_REDIS_REST_URL` | Upstash Redis REST API URL | - | Yes |
-| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis REST API token | - | Yes |
-| `IP_RPM` | Rate limit per IP (requests per minute) | 300 | No |
-| `USER_RPM` | Rate limit per user (requests per minute) | 900 | No |
-| `CACHE_MAX_AGE` | Authentication cache TTL in seconds | 90 | No |
+| Secret Name                | Description                               | Default Value | Required |
+| -------------------------- | ----------------------------------------- | ------------- | -------- |
+| `UPSTASH_REDIS_REST_URL`   | Upstash Redis REST API URL                | -             | Yes      |
+| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis REST API token              | -             | Yes      |
+| `IP_RPM`                   | Rate limit per IP (requests per minute)   | 300           | No       |
+| `USER_RPM`                 | Rate limit per user (requests per minute) | 900           | No       |
+| `CACHE_MAX_AGE`            | Authentication cache TTL in seconds       | 90            | No       |
 
 ## Setting Secrets
 
 ### Method 1: Using Supabase CLI (Recommended)
 
 1. **Install Supabase CLI** (if not already installed):
+
    ```bash
    npm install -g supabase
    ```
 
 2. **Login to Supabase**:
+
    ```bash
    supabase login
    ```
 
 3. **Link your project** (if not already linked):
+
    ```bash
    supabase link --project-ref your-project-ref
    ```
 
 4. **Set secrets individually**:
+
    ```bash
    supabase secrets set UPSTASH_REDIS_REST_URL="https://pretty-buck-23396.upstash.io"
    supabase secrets set UPSTASH_REDIS_REST_TOKEN="AVtkAAIncDJjZmUxNTlhNmMyMjI0YmNjYTk5YjY4YzI2YzEyZjUyN3AyMjMzOTY"
@@ -43,6 +47,7 @@ The `auth_edge_guard` function requires the following secrets:
    ```
 
 5. **Or use the provided script**:
+
    ```bash
    # Set environment variables first
    export UPSTASH_REDIS_REST_URL="https://pretty-buck-23396.upstash.io"
@@ -50,7 +55,7 @@ The `auth_edge_guard` function requires the following secrets:
    export IP_RPM="300"
    export USER_RPM="900"
    export CACHE_MAX_AGE="90"
-   
+
    # Run the script
    chmod +x scripts/set-supabase-secrets.sh
    ./scripts/set-supabase-secrets.sh

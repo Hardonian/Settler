@@ -1,6 +1,6 @@
 /**
  * Type Guards
- * 
+ *
  * Utility functions for type checking and narrowing
  */
 
@@ -15,21 +15,21 @@ export function isDefined<T>(value: T | null | undefined): value is T {
  * Check if value is a string
  */
 export function isString(value: unknown): value is string {
-  return typeof value === 'string';
+  return typeof value === "string";
 }
 
 /**
  * Check if value is a number
  */
 export function isNumber(value: unknown): value is number {
-  return typeof value === 'number' && !isNaN(value);
+  return typeof value === "number" && !isNaN(value);
 }
 
 /**
  * Check if value is an object (and not null or array)
  */
 export function isObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 /**
@@ -66,10 +66,7 @@ export function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] | undefi
 /**
  * Type-safe nested property access
  */
-export function getNestedProperty(
-  obj: unknown,
-  path: string[]
-): unknown {
+export function getNestedProperty(obj: unknown, path: string[]): unknown {
   let current: unknown = obj;
   for (const key of path) {
     if (!isObject(current) || !(key in current)) {

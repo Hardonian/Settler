@@ -3,13 +3,13 @@
  * Automated backups with restore verification
  */
 
-import { exec } from 'child_process';
-import { promisify } from 'util';
-import { query } from '../../db';
-import { logInfo, logError } from '../../utils/logger';
-import { config } from '../../config';
-import * as fs from 'fs';
-import * as path from 'path';
+import { exec } from "child_process";
+import { promisify } from "util";
+import { query } from "../../db";
+import { logInfo, logError } from "../../utils/logger";
+import { config } from "../../config";
+import * as fs from "fs";
+import * as path from "path";
 
 const execAsync = promisify(exec);
 
@@ -17,7 +17,7 @@ export interface BackupRecord {
   id: string;
   filename: string;
   sizeBytes: number;
-  status: 'pending' | 'completed' | 'failed' | 'verified';
+  status: "pending" | "completed" | "failed" | "verified";
   createdAt: Date;
   verifiedAt?: Date;
   restoreTested: boolean;
@@ -28,9 +28,9 @@ export interface BackupRecord {
  * Create database backup
  */
 export async function createBackup(): Promise<BackupRecord> {
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
   const filename = `settler-backup-${timestamp}.sql`;
-  const backupDir = process.env.BACKUP_DIR || '/tmp/backups';
+  const backupDir = process.env.BACKUP_DIR || "/tmp/backups";
   const backupPath = path.join(backupDir, filename);
 
   // Ensure backup directory exists
@@ -48,29 +48,34 @@ export async function createBackup(): Promise<BackupRecord> {
     );
 
     const backupId = result?.[0]?.id;
-    if (!backupId || typeof backupId !== 'string') {
-      throw new Error('Failed to create backup record: no ID returned');
+    if (!backupId || typeof backupId !== "string") {
+      throw new Error("Failed to create backup record: no ID returned");
     }
 
-    logInfo('Starting database backup', { backupId, filename });
+    logInfo("Starting database backup", { backupId, filename });
 
     // Validate config
-    if (!config.database.host || !config.database.name || !config.database.user || !config.database.password) {
-      throw new Error('Database configuration incomplete');
+    if (
+      !config.database.host ||
+      !config.database.name ||
+      !config.database.user ||
+      !config.database.password
+    ) {
+      throw new Error("Database configuration incomplete");
     }
 
     // Create pg_dump command
     const pgDumpCmd = [
-      'pg_dump',
+      "pg_dump",
       `--host=${String(config.database.host)}`,
       `--port=${String(config.database.port || 5432)}`,
       `--username=${String(config.database.user)}`,
       `--dbname=${String(config.database.name)}`,
-      '--format=plain',
-      '--no-owner',
-      '--no-acl',
+      "--format=plain",
+      "--no-owner",
+      "--no-acl",
       `--file=${backupPath}`,
-    ].join(' ');
+    ].join(" ");
 
     // Set PGPASSWORD environment variable
     const env = {
@@ -82,12 +87,12 @@ export async function createBackup(): Promise<BackupRecord> {
     try {
       await Promise.race([
         execAsync(pgDumpCmd, { env }),
-        new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Backup timeout after 30 minutes')), 30 * 60 * 1000)
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Backup timeout after 30 minutes")), 30 * 60 * 1000)
         ),
       ]);
     } catch (execError: any) {
-      if (execError.message?.includes('timeout')) {
+      if (execError.message?.includes("timeout")) {
         throw execError;
       }
       throw new Error(`pg_dump failed: ${execError.message || String(execError)}`);
@@ -99,7 +104,7 @@ export async function createBackup(): Promise<BackupRecord> {
       const stats = fs.statSync(backupPath);
       sizeBytes = stats.size || 0;
     } catch (statError) {
-      logError('Failed to get backup file size', statError, { backupPath });
+      logError("Failed to get backup file size", statError, { backupPath });
       // Continue anyway - size is optional
     }
 
@@ -111,7 +116,7 @@ export async function createBackup(): Promise<BackupRecord> {
       [sizeBytes, backupId]
     );
 
-    logInfo('Database backup completed', {
+    logInfo("Database backup completed", {
       backupId,
       filename,
       sizeBytes,
@@ -121,12 +126,12 @@ export async function createBackup(): Promise<BackupRecord> {
       id: backupId,
       filename,
       sizeBytes,
-      status: 'completed',
+      status: "completed",
       createdAt: new Date(),
       restoreTested: false,
     };
   } catch (error) {
-    logError('Database backup failed', error, { filename });
+    logError("Database backup failed", error, { filename });
 
     // Update backup record with error
     const result = await query<{ id: string }>(
@@ -139,10 +144,7 @@ export async function createBackup(): Promise<BackupRecord> {
         `UPDATE backup_records
          SET status = 'failed', error_message = $1
          WHERE id = $2`,
-        [
-          error instanceof Error ? error.message : 'Unknown error',
-          result[0].id,
-        ]
+        [error instanceof Error ? error.message : "Unknown error", result[0].id]
       );
     }
 
@@ -155,34 +157,31 @@ export async function createBackup(): Promise<BackupRecord> {
  */
 export async function verifyBackup(backupId: string): Promise<boolean> {
   try {
-    logInfo('Verifying backup', { backupId });
+    logInfo("Verifying backup", { backupId });
 
     // Get backup record
     const backup = await query<{
       filename: string;
       status: string;
-    }>(
-      `SELECT filename, status FROM backup_records WHERE id = $1`,
-      [backupId]
-    );
+    }>(`SELECT filename, status FROM backup_records WHERE id = $1`, [backupId]);
 
     if (!backup || backup.length === 0 || !backup[0]) {
-      throw new Error('Backup record not found');
+      throw new Error("Backup record not found");
     }
 
     const backupRecord = backup[0];
-    if (!backupRecord.filename || typeof backupRecord.filename !== 'string') {
-      throw new Error('Invalid backup record: missing filename');
+    if (!backupRecord.filename || typeof backupRecord.filename !== "string") {
+      throw new Error("Invalid backup record: missing filename");
     }
-    if (backupRecord.status !== 'completed') {
+    if (backupRecord.status !== "completed") {
       throw new Error(`Backup status is ${backupRecord.status}, cannot verify`);
     }
 
-    const backupDir = process.env.BACKUP_DIR || '/tmp/backups';
+    const backupDir = process.env.BACKUP_DIR || "/tmp/backups";
     const backupPath = path.join(backupDir, backupRecord.filename);
 
     if (!fs.existsSync(backupPath)) {
-      throw new Error('Backup file not found');
+      throw new Error("Backup file not found");
     }
 
     // Create test database name
@@ -194,17 +193,17 @@ export async function verifyBackup(backupId: string): Promise<boolean> {
 
       // Restore backup to test database
       if (!config.database.host || !config.database.user || !config.database.password) {
-        throw new Error('Database configuration incomplete for restore');
+        throw new Error("Database configuration incomplete for restore");
       }
 
       const restoreCmd = [
-        'psql',
+        "psql",
         `--host=${String(config.database.host)}`,
         `--port=${String(config.database.port || 5432)}`,
         `--username=${String(config.database.user)}`,
         `--dbname=${testDbName}`,
         `--file=${backupPath}`,
-      ].join(' ');
+      ].join(" ");
 
       const env = {
         ...process.env,
@@ -214,12 +213,12 @@ export async function verifyBackup(backupId: string): Promise<boolean> {
       try {
         await Promise.race([
           execAsync(restoreCmd, { env }),
-          new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Restore timeout after 30 minutes')), 30 * 60 * 1000)
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("Restore timeout after 30 minutes")), 30 * 60 * 1000)
           ),
         ]);
       } catch (restoreError: any) {
-        if (restoreError.message?.includes('timeout')) {
+        if (restoreError.message?.includes("timeout")) {
           throw restoreError;
         }
         throw new Error(`Restore failed: ${restoreError.message || String(restoreError)}`);
@@ -232,7 +231,7 @@ export async function verifyBackup(backupId: string): Promise<boolean> {
       );
 
       if (testQuery.length === 0) {
-        throw new Error('Restore verification failed: no tables found');
+        throw new Error("Restore verification failed: no tables found");
       }
 
       // Update backup record
@@ -243,7 +242,7 @@ export async function verifyBackup(backupId: string): Promise<boolean> {
         [backupId]
       );
 
-      logInfo('Backup verified successfully', { backupId });
+      logInfo("Backup verified successfully", { backupId });
 
       return true;
     } finally {
@@ -251,23 +250,20 @@ export async function verifyBackup(backupId: string): Promise<boolean> {
       try {
         await query(`DROP DATABASE IF EXISTS ${testDbName}`);
       } catch (cleanupError) {
-        logError('Failed to cleanup test database', cleanupError, {
+        logError("Failed to cleanup test database", cleanupError, {
           testDbName,
         });
       }
     }
   } catch (error) {
-    logError('Backup verification failed', error, { backupId });
+    logError("Backup verification failed", error, { backupId });
 
     // Update backup record
     await query(
       `UPDATE backup_records
        SET error_message = $1
        WHERE id = $2`,
-      [
-        error instanceof Error ? error.message : 'Unknown error',
-        backupId,
-      ]
+      [error instanceof Error ? error.message : "Unknown error", backupId]
     );
 
     return false;
@@ -295,11 +291,11 @@ export async function listBackups(limit: number = 10): Promise<BackupRecord[]> {
     [limit]
   );
 
-  return backups.map(backup => ({
+  return backups.map((backup) => ({
     id: backup.id,
     filename: backup.filename,
     sizeBytes: Number(backup.size_bytes || 0),
-    status: backup.status as BackupRecord['status'],
+    status: backup.status as BackupRecord["status"],
     createdAt: backup.created_at,
     verifiedAt: backup.verified_at || undefined,
     restoreTested: backup.restore_tested,
@@ -312,19 +308,19 @@ export async function listBackups(limit: number = 10): Promise<BackupRecord[]> {
  */
 export async function scheduleDailyBackup(): Promise<void> {
   try {
-    logInfo('Starting scheduled daily backup');
+    logInfo("Starting scheduled daily backup");
 
     const backup = await createBackup();
 
     // Verify backup
     await verifyBackup(backup.id);
 
-    logInfo('Scheduled daily backup completed', { backupId: backup.id });
+    logInfo("Scheduled daily backup completed", { backupId: backup.id });
 
     // Clean up old backups (keep last 30 days)
     await cleanupOldBackups(30);
   } catch (error) {
-    logError('Scheduled daily backup failed', error);
+    logError("Scheduled daily backup failed", error);
     throw error;
   }
 }
@@ -342,7 +338,7 @@ async function cleanupOldBackups(daysToKeep: number): Promise<void> {
     [cutoffDate]
   );
 
-  const backupDir = process.env.BACKUP_DIR || '/tmp/backups';
+  const backupDir = process.env.BACKUP_DIR || "/tmp/backups";
 
   for (const backup of oldBackups) {
     const backupPath = path.join(backupDir, backup.filename);
@@ -350,12 +346,10 @@ async function cleanupOldBackups(daysToKeep: number): Promise<void> {
       if (fs.existsSync(backupPath)) {
         fs.unlinkSync(backupPath);
       }
-      await query(`DELETE FROM backup_records WHERE filename = $1`, [
-        backup.filename,
-      ]);
-      logInfo('Deleted old backup', { filename: backup.filename });
+      await query(`DELETE FROM backup_records WHERE filename = $1`, [backup.filename]);
+      logInfo("Deleted old backup", { filename: backup.filename });
     } catch (error) {
-      logError('Failed to delete old backup', error, {
+      logError("Failed to delete old backup", error, {
         filename: backup.filename,
       });
     }

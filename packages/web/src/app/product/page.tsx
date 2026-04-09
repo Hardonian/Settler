@@ -76,7 +76,9 @@ export default function ProductPage() {
                   className="rounded-xl border border-border/60 bg-card/40 p-5 text-left"
                 >
                   <h3 className="text-sm font-semibold text-foreground">{pillar.title}</h3>
-                  <p className="mt-2 text-xs text-muted-foreground leading-relaxed">{pillar.body}</p>
+                  <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
+                    {pillar.body}
+                  </p>
                 </div>
               ))}
             </div>

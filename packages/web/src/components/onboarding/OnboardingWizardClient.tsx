@@ -1,13 +1,13 @@
 /**
  * Client-side Onboarding Wizard Component
- * 
+ *
  * Fetches onboarding progress client-side for better UX.
  */
 
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { OnboardingWizard } from './OnboardingWizard';
+import { useEffect, useState } from "react";
+import { OnboardingWizard } from "./OnboardingWizard";
 
 export function OnboardingWizardClient() {
   const [progress, setProgress] = useState<{
@@ -20,7 +20,7 @@ export function OnboardingWizardClient() {
       actionLabel: string;
       actionUrl: string;
       optional: boolean;
-      status: 'completed' | 'current' | 'pending' | 'skipped';
+      status: "completed" | "current" | "pending" | "skipped";
     }>;
   } | null>(null);
   const [loading, setLoading] = useState(true);
@@ -28,13 +28,13 @@ export function OnboardingWizardClient() {
   useEffect(() => {
     async function fetchProgress() {
       try {
-        const response = await fetch('/api/onboarding/progress');
+        const response = await fetch("/api/onboarding/progress");
         if (response.ok) {
           const data = await response.json();
           setProgress(data);
         }
       } catch (error: unknown) {
-        console.error('[Onboarding] Error fetching progress:', error);
+        console.error("[Onboarding] Error fetching progress:", error);
       } finally {
         setLoading(false);
       }

@@ -1,9 +1,9 @@
 /**
  * Generate Ops Insights
- * 
+ *
  * Daily scheduled function to generate insights and recommendations.
  * Runs via cron or manual trigger.
- * 
+ *
  * Note: This is a simplified version that works in Deno.
  * For full logic, see packages/api/src/services/ops-intelligence/
  */
@@ -96,9 +96,7 @@ serve(async (req) => {
     // Generate and save recommendations for each insight
     let recommendationsCount = 0;
     for (const { id: insightId } of savedInsights) {
-      const insight = insights.find((i) => 
-        savedInsights.some((s) => s.id === insightId)
-      );
+      const insight = insights.find((i) => savedInsights.some((s) => s.id === insightId));
       if (!insight) continue;
 
       const recommendations = generateRecommendationsInline(insight);
@@ -168,12 +166,18 @@ async function generateInsightsInline(supabase: any, timeWindow: { start: Date; 
     const { data: previousWeekCost } = await supabase
       .from("usage_aggregate_daily")
       .select("estimated_cost")
-      .gte("date", new Date(weekAgo.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0])
+      .gte(
+        "date",
+        new Date(weekAgo.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]
+      )
       .lt("date", weekAgo.toISOString().split("T")[0]);
 
-    const currentTotal = currentWeekCost?.reduce((sum: number, r: any) => sum + (r.estimated_cost || 0), 0) || 0;
-    const previousTotal = previousWeekCost?.reduce((sum: number, r: any) => sum + (r.estimated_cost || 0), 0) || 0;
-    const wowChange = previousTotal > 0 ? ((currentTotal - previousTotal) / previousTotal) * 100 : 0;
+    const currentTotal =
+      currentWeekCost?.reduce((sum: number, r: any) => sum + (r.estimated_cost || 0), 0) || 0;
+    const previousTotal =
+      previousWeekCost?.reduce((sum: number, r: any) => sum + (r.estimated_cost || 0), 0) || 0;
+    const wowChange =
+      previousTotal > 0 ? ((currentTotal - previousTotal) / previousTotal) * 100 : 0;
 
     if (Math.abs(wowChange) > 20) {
       insights.push({
@@ -221,7 +225,7 @@ async function generateInsightsInline(supabase: any, timeWindow: { start: Date; 
             title: `Support ticket spike: ${currentCount} tickets (+${change.toFixed(0)}%)`,
             summary: `Ticket volume increased from ${previousCount} to ${currentCount} this week.`,
             severity: change > 100 ? "critical" : "warn",
-            confidence: 0.90,
+            confidence: 0.9,
             timeWindow: {
               start: weekAgo.toISOString(),
               end: now.toISOString(),

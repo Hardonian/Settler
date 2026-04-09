@@ -194,7 +194,8 @@ export const PLAN_SPINE: Record<PlanCode, PlanSpineEntry> = {
       },
     },
     marketing: {
-      publicLine: "Free tier for validation; volume + exception supervision beyond included limits.",
+      publicLine:
+        "Free tier for validation; volume + exception supervision beyond included limits.",
       internalBillingDescriptor: "starter_volume_exception_supervision",
     },
     capabilities: {
@@ -227,7 +228,8 @@ export const PLAN_SPINE: Record<PlanCode, PlanSpineEntry> = {
       },
     },
     marketing: {
-      publicLine: "Usage-based cloud control plane with metered reconciliation and exception supervision.",
+      publicLine:
+        "Usage-based cloud control plane with metered reconciliation and exception supervision.",
       internalBillingDescriptor: "growth_volume_exception_supervision",
     },
     capabilities: {
@@ -373,11 +375,11 @@ export function mapLegacyPlanTypeToPlanCode(planType: string): PlanCode {
   // Stripe/subscription-era plan IDs that predate the canonical PlanCode taxonomy.
   // These must stay here so billing-gating middleware aligns with the canonical hierarchy.
   const extendedMap: Record<string, PlanCode> = {
-    free: "starter",   // free tier → starter capability level
+    free: "starter", // free tier → starter capability level
     trial: "growth",
     commercial: "growth",
-    base: "starter",   // legacy "base" plan → starter
-    pro: "growth",     // legacy "pro" plan → growth
+    base: "starter", // legacy "base" plan → starter
+    pro: "growth", // legacy "pro" plan → growth
   };
   return extendedMap[t] ?? "starter";
 }

@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { AlertCircle } from 'lucide-react';
-import Link from 'next/link';
+import { useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { AlertCircle } from "lucide-react";
+import Link from "next/link";
 
 export default function RunError({
   error,
@@ -15,8 +15,8 @@ export default function RunError({
 }) {
   useEffect(() => {
     // Log error to monitoring service in production
-    if (process.env.NODE_ENV === 'production') {
-      console.error('Run page error:', {
+    if (process.env.NODE_ENV === "production") {
+      console.error("Run page error:", {
         message: error.message,
         digest: error.digest,
         stack: error.stack,
@@ -38,12 +38,10 @@ export default function RunError({
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            {error.message || 'An unexpected error occurred. Please try again.'}
+            {error.message || "An unexpected error occurred. Please try again."}
           </p>
           {error.digest && (
-            <p className="text-xs text-muted-foreground font-mono">
-              Error ID: {error.digest}
-            </p>
+            <p className="text-xs text-muted-foreground font-mono">Error ID: {error.digest}</p>
           )}
           <div className="flex gap-2">
             <Button onClick={reset} variant="default">

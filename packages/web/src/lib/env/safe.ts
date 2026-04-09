@@ -1,11 +1,11 @@
 /**
  * Safe Environment Variable Access
- * 
+ *
  * Provides safe access to environment variables that never throws during render.
  * Returns partial mode indicators when env vars are missing.
  */
 
-import { validateSupabaseEnv } from './validator';
+import { validateSupabaseEnv } from "./validator";
 
 export interface EnvStatus {
   ok: boolean;
@@ -19,7 +19,7 @@ export interface EnvStatus {
  */
 export function getSupabaseEnvStatus(): EnvStatus {
   const validation = validateSupabaseEnv();
-  
+
   return {
     ok: validation.isValid,
     missing: validation.missing,

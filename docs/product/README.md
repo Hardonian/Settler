@@ -28,7 +28,6 @@ AI is used to assist exception triage and operator prioritization. Final reconci
 
 Pricing is usage and capability based: OSS core is self-hostable; hosted and enterprise tiers add governance, advanced controls, and support. See product pricing page for current plans, and keep implementation claims bounded to currently shipped features.
 
-
 ## Canonical links
 
 - [Docs hub](../README.md)

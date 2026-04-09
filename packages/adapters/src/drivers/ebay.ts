@@ -43,7 +43,6 @@ export class EbayDriver implements ConnectorDriver {
     return (urls[env] ?? urls.sandbox) as string;
   }
 
-   
   async getAuthUrl(options: AuthUrlOptions): Promise<string> {
     const config = options as unknown as {
       clientId: string;

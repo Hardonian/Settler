@@ -1,9 +1,9 @@
 /**
  * User Intent Synthesizer Agent (PM Replacement)
- * 
+ *
  * Replaces: Product Manager role
  * Runs: Daily
- * 
+ *
  * What it does:
  * - Reads receipt usage patterns
  * - Analyzes console abandonment points
@@ -29,13 +29,17 @@ async function generateInsights(
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
         messages: [
-          { role: "system", content: "You are an expert analyst providing strategic insights. Be concise, specific, and actionable." },
+          {
+            role: "system",
+            content:
+              "You are an expert analyst providing strategic insights. Be concise, specific, and actionable.",
+          },
           { role: "user", content: prompt },
         ],
         temperature: 0.7,
@@ -132,7 +136,9 @@ serve(async (req) => {
           insight_type: "pain_point",
           user_goal: "Upload and parse receipts",
           observed_behavior: `${failedUploads.length} receipt uploads failed out of ${receiptUploads!.length} attempts`,
-          failure_pattern: topError ? `${topError[0]}: ${topError[1]} occurrences` : "Various errors",
+          failure_pattern: topError
+            ? `${topError[0]}: ${topError[1]} occurrences`
+            : "Various errors",
           affected_user_count: new Set(failedUploads.map((u) => u.id)).size,
           frequency_score: failureRate,
           severity_score: failureRate > 0.3 ? 0.9 : failureRate > 0.2 ? 0.7 : 0.5,
@@ -317,7 +323,10 @@ serve(async (req) => {
       .limit(1000);
 
     if (errors && errors.length > 0) {
-      const errorGroups = new Map<string, { count: number; users: Set<string>; samples: string[] }>();
+      const errorGroups = new Map<
+        string,
+        { count: number; users: Set<string>; samples: string[] }
+      >();
       errors.forEach((e) => {
         const key = e.error_type || "unknown";
         if (!errorGroups.has(key)) {

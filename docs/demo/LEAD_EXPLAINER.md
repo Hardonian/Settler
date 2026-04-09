@@ -22,9 +22,9 @@ flagged exceptions, confidence scores, and a full audit trail — without the ma
 
 I've set up a demo account so you can see it with real data. Here's the login:
 
-  URL:      [your demo URL]
-  Email:    viewer@settler.dev
-  Password: [your shared password]
+URL: [your demo URL]
+Email: viewer@settler.dev
+Password: [your shared password]
 
 Start at /app/runs — you'll see a completed reconciliation run with 89 automatically matched
 records, a few flagged for review, and a connector that surfaced an auth issue. It's a realistic
@@ -55,6 +55,7 @@ Settler brings it down to under an hour by automating the matching and surfacing
 actually needs a human decision.
 
 **What you saw in the demo:**
+
 - A completed monthly reconciliation of Stripe vs Chase (142 records, 89 auto-matched)
 - Fuzzy matches flagged for review with amount differences shown
 - A degraded connector (Shopify OAuth expired) surfaced as an operational alert
@@ -98,5 +99,5 @@ Reset or revoke access: ping [your name/team]
 
 ---
 
-*Internal note: rotate the viewer password after each lead session.
-See `docs/demo/ACCESS_SHARING.md` for the full access management process.*
+_Internal note: rotate the viewer password after each lead session.
+See `docs/demo/ACCESS_SHARING.md` for the full access management process._

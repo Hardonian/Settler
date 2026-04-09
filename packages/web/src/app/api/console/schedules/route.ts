@@ -109,10 +109,7 @@ export const PATCH = withSecurity(
         };
 
         if (!jobId || typeof jobId !== "string") {
-          return NextResponse.json(
-            { error: "jobId is required" },
-            { status: 400 }
-          );
+          return NextResponse.json({ error: "jobId is required" }, { status: 400 });
         }
 
         // Verify job belongs to this tenant
@@ -125,25 +122,31 @@ export const PATCH = withSecurity(
         });
 
         if (!existing) {
-          return NextResponse.json(
-            { error: "Job not found" },
-            { status: 404 }
-          );
+          return NextResponse.json({ error: "Job not found" }, { status: 404 });
         }
 
         const cronValidation = validateScheduleCron(scheduleCron);
         if (!cronValidation.valid) {
           return NextResponse.json(
-            { error: cronValidation.errors.join(" "), capability: { state: "degraded", reason: "invalid_cron_expression" } },
+            {
+              error: cronValidation.errors.join(" "),
+              capability: { state: "degraded", reason: "invalid_cron_expression" },
+            },
             { status: 400 }
           );
         }
 
-        const tzToValidate = scheduleCron === null ? (scheduleTimezone || existing.scheduleTimezone) : (scheduleTimezone || existing.scheduleTimezone);
+        const tzToValidate =
+          scheduleCron === null
+            ? scheduleTimezone || existing.scheduleTimezone
+            : scheduleTimezone || existing.scheduleTimezone;
         const timezoneValidation = validateScheduleTimezone(tzToValidate);
         if (!timezoneValidation.valid) {
           return NextResponse.json(
-            { error: timezoneValidation.errors.join(" "), capability: { state: "degraded", reason: "invalid_schedule_timezone" } },
+            {
+              error: timezoneValidation.errors.join(" "),
+              capability: { state: "degraded", reason: "invalid_schedule_timezone" },
+            },
             { status: 400 }
           );
         }

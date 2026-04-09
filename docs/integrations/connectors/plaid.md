@@ -55,14 +55,17 @@ PLAID_ENVIRONMENT=sandbox|development|production
 ## Common Errors
 
 ### "Invalid credentials"
+
 - Verify PLAID_CLIENT_ID and PLAID_SECRET are correct
 - Check environment matches (sandbox vs production)
 
 ### "Item not found"
+
 - Reconnect the integration
 - Verify the Plaid item is still active
 
 ### "Rate limit exceeded"
+
 - Plaid has rate limits per item
 - Wait before retrying sync
 

@@ -7,6 +7,7 @@
 This guide helps you migrate from Settler API v1 to v2.
 
 **Timeline:**
+
 - **v2 Release**: TBD
 - **v1 Deprecation**: TBD (6 months after v2 release)
 - **v1 Sunset**: TBD (12 months after v2 release)
@@ -16,12 +17,14 @@ This guide helps you migrate from Settler API v1 to v2.
 ### Authentication
 
 #### v1
+
 ```typescript
 // JWT tokens valid for 1 hour
 const token = await login(email, password);
 ```
 
 #### v2
+
 ```typescript
 // Short-lived access tokens (15 min) + refresh tokens
 const { accessToken, refreshToken } = await login(email, password);
@@ -31,6 +34,7 @@ const newAccessToken = await refreshToken(refreshToken);
 ```
 
 **Migration Steps:**
+
 1. Update authentication flow to handle refresh tokens
 2. Implement token refresh logic
 3. Update token expiration handling
@@ -38,6 +42,7 @@ const newAccessToken = await refreshToken(refreshToken);
 ### Job Creation
 
 #### v1
+
 ```typescript
 POST /api/v1/jobs
 {
@@ -51,6 +56,7 @@ POST /api/v1/jobs
 ```
 
 #### v2
+
 ```typescript
 POST /api/v2/jobs
 {
@@ -68,12 +74,14 @@ POST /api/v2/jobs
 ```
 
 **Changes:**
+
 - `sourceAdapter` → `source.adapter`
 - `targetAdapter` → `target.adapter`
 - `sourceConfig` → `source.config`
 - `targetConfig` → `target.config`
 
 **Migration Steps:**
+
 1. Update job creation requests
 2. Update job update requests
 3. Update job response parsing
@@ -81,6 +89,7 @@ POST /api/v2/jobs
 ### Response Format
 
 #### v1
+
 ```json
 {
   "id": "job-id",
@@ -90,6 +99,7 @@ POST /api/v2/jobs
 ```
 
 #### v2
+
 ```json
 {
   "data": {
@@ -105,16 +115,19 @@ POST /api/v2/jobs
 ```
 
 **Changes:**
+
 - Response wrapped in `data` object
 - Added `meta` object with version info
 
 **Migration Steps:**
+
 1. Update response parsing to access `data` property
 2. Handle `meta` object if needed
 
 ### Error Format
 
 #### v1
+
 ```json
 {
   "error": "ValidationError",
@@ -123,6 +136,7 @@ POST /api/v2/jobs
 ```
 
 #### v2
+
 ```json
 {
   "error": {
@@ -143,11 +157,13 @@ POST /api/v2/jobs
 ```
 
 **Changes:**
+
 - Error object structure changed
 - Added `details` array for validation errors
 - Added `meta.requestId` for tracing
 
 **Migration Steps:**
+
 1. Update error handling to access `error.code`
 2. Handle `error.details` array
 3. Use `meta.requestId` for support requests
@@ -174,6 +190,7 @@ query {
 ```
 
 **Migration Steps:**
+
 1. Evaluate GraphQL vs REST for your use case
 2. Update API client if using GraphQL
 3. Test GraphQL queries
@@ -181,11 +198,13 @@ query {
 ### Enhanced Webhooks
 
 v2 webhooks include:
+
 - Retry configuration
 - Signature verification improvements
 - Event filtering
 
 **Migration Steps:**
+
 1. Update webhook signature verification
 2. Configure retry settings
 3. Update event filtering logic
@@ -222,6 +241,7 @@ v2 webhooks include:
 ### Complete Migration Example
 
 #### v1 Code
+
 ```typescript
 import { SettlerClient } from '@settler/sdk';
 
@@ -243,10 +263,11 @@ console.log(jobData.name);
 ```
 
 #### v2 Code
+
 ```typescript
 import { SettlerClient } from '@settler/sdk';
 
-const client = new SettlerClient({ 
+const client = new SettlerClient({
   apiKey: 'rk_...',
   version: 'v2' // Specify version
 });

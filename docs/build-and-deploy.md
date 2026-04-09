@@ -5,10 +5,11 @@ This document describes the build pipeline, deployment process, and how to troub
 ## Overview
 
 The Settler monorepo uses:
+
 - **Turbo** for monorepo task orchestration
 - **TypeScript** with strict type checking
 - **Vercel** for deployment of the API and Web packages
-- **Node.js 20+ (see `.nvmrc`)
+- \*\*Node.js 20+ (see `.nvmrc`)
 
 ## Monorepo Structure
 
@@ -68,6 +69,7 @@ cd packages/api && npm run build
 ```
 
 The build pipeline ensures:
+
 1. Dependencies are built first (`^build` dependency)
 2. Type checking runs before builds (`typecheck` dependency)
 3. Outputs are cached by Turbo for faster subsequent builds
@@ -77,6 +79,7 @@ The build pipeline ensures:
 ### Root Configuration
 
 The root `tsconfig.json` defines strict settings:
+
 - `strict: true` - All strict type checking enabled
 - `noUnusedLocals: true` - Unused local variables are errors
 - `noUnusedParameters: true` - Unused parameters are errors
@@ -85,6 +88,7 @@ The root `tsconfig.json` defines strict settings:
 ### Package Configurations
 
 Each package extends the root config:
+
 - `packages/*/tsconfig.json` - Extends `../../tsconfig.json`
 - Package-specific overrides are allowed (e.g., `outDir`, `rootDir`)
 
@@ -98,14 +102,15 @@ For code that is intentionally unused (e.g., reserved for future features):
 4. **Unused functions**: Export them or add module-level reference: `void _functionName;`
 
 Example:
+
 ```typescript
 // Reserved for future use
 const _futureFeature = computeSomething();
 void _futureFeature;
 
 // Unused parameter in Express route
-router.get('/endpoint', async (_req: Request, res: Response) => {
-  res.json({ data: 'ok' });
+router.get("/endpoint", async (_req: Request, res: Response) => {
+  res.json({ data: "ok" });
 });
 ```
 
@@ -179,12 +184,14 @@ If you encounter TypeScript errors:
 ### Build Failures
 
 1. **Check Turbo cache**:
+
    ```bash
    npm run clean
    npm run build
    ```
 
 2. **Verify dependencies are built**:
+
    ```bash
    # Build dependencies first
    cd packages/types && npm run build
@@ -213,6 +220,7 @@ If you encounter TypeScript errors:
 ### Pre-commit Hooks
 
 Husky is configured to run:
+
 - `lint-staged` - Runs ESLint and Prettier on staged files
 
 ### Recommended CI Checks

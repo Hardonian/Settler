@@ -17,18 +17,18 @@ Settler uses CQRS (Command Query Responsibility Segregation) and Event Sourcing 
 
 ```typescript
 interface EventEnvelope {
-  id: string;                    // Unique event ID
-  aggregate_id: string;          // Reconciliation ID
-  aggregate_type: string;        // 'reconciliation'
-  event_type: string;            // 'ReconciliationStarted', etc.
-  event_version: number;         // Schema version
-  data: unknown;                 // Event-specific data
+  id: string; // Unique event ID
+  aggregate_id: string; // Reconciliation ID
+  aggregate_type: string; // 'reconciliation'
+  event_type: string; // 'ReconciliationStarted', etc.
+  event_version: number; // Schema version
+  data: unknown; // Event-specific data
   metadata: {
     tenant_id: string;
     user_id?: string;
     timestamp: string;
-    correlation_id: string;      // Groups related events
-    causation_id?: string;       // Parent event ID
+    correlation_id: string; // Groups related events
+    causation_id?: string; // Parent event ID
   };
   created_at: Date;
 }
@@ -93,6 +93,7 @@ interface StartReconciliationCommand {
 ```
 
 **Command Handler Responsibilities**:
+
 1. Validate permissions and input
 2. Check current state (if needed)
 3. Emit events (do NOT directly modify state)
@@ -102,11 +103,11 @@ interface StartReconciliationCommand {
 async handleStartReconciliation(command: StartReconciliationCommand) {
   // Validate
   await this.validatePermissions(command);
-  
+
   // Emit event
   const event = ReconciliationEvents.ReconciliationStarted(...);
   await this.eventStore.append(event);
-  
+
   // Publish for projections
   await this.eventBus.publish(event);
 }
@@ -130,6 +131,7 @@ async handleReconciliationStarted(event: EventEnvelope) {
 ```
 
 **Read Model Tables**:
+
 - `reconciliation_summary`: Current status and statistics
 - `tenant_usage_view`: Usage metrics per tenant/day
 - `error_hotspots_view`: Error patterns
@@ -140,11 +142,11 @@ Event handlers update projections:
 
 ```typescript
 // Subscribe to events
-eventBus.subscribe('ReconciliationStarted', async (event) => {
+eventBus.subscribe("ReconciliationStarted", async (event) => {
   await projectionHandlers.handleReconciliationStarted(event);
 });
 
-eventBus.subscribe('RecordMatched', async (event) => {
+eventBus.subscribe("RecordMatched", async (event) => {
   await projectionHandlers.handleRecordMatched(event);
 });
 ```
@@ -180,10 +182,7 @@ eventBus.subscribe('RecordMatched', async (event) => {
 ### Get Events for Aggregate
 
 ```typescript
-const events = await eventStore.getEvents(
-  reconciliationId,
-  'reconciliation'
-);
+const events = await eventStore.getEvents(reconciliationId, "reconciliation");
 ```
 
 ### Get Events by Correlation ID
@@ -195,10 +194,13 @@ const events = await eventStore.getEventsByCorrelationId(correlationId);
 ### Query Read Model
 
 ```typescript
-const summary = await db.query(`
+const summary = await db.query(
+  `
   SELECT * FROM reconciliation_summary
   WHERE reconciliation_id = $1
-`, [reconciliationId]);
+`,
+  [reconciliationId]
+);
 ```
 
 ## Best Practices

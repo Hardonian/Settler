@@ -213,9 +213,7 @@ export default function Schematics() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <h4 className="font-semibold text-foreground mb-4">
-                  Mermaid Diagram
-                </h4>
+                <h4 className="font-semibold text-foreground mb-4">Mermaid Diagram</h4>
                 <div className="bg-muted/20 p-4 rounded-lg border border-border/40 dark:border-border">
                   <pre className="text-xs font-mono text-muted-foreground whitespace-pre-wrap overflow-x-auto">
                     {selectedSchematicData.mermaid}
@@ -240,11 +238,7 @@ export default function Schematics() {
                 >
                   <Link href="/console">Open Console</Link>
                 </Button>
-                <Button
-                  variant="outline"
-                  className="border-border"
-                  asChild
-                >
+                <Button variant="outline" className="border-border" asChild>
                   <Link href="/cookbook">View Cookbooks</Link>
                 </Button>
               </div>
@@ -270,12 +264,7 @@ export default function Schematics() {
             >
               <Link href="/cookbook">View Cookbook</Link>
             </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-border"
-              asChild
-            >
+            <Button variant="outline" size="lg" className="border-border" asChild>
               <Link href="/docs">Read Docs</Link>
             </Button>
           </div>

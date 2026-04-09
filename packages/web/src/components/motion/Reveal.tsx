@@ -1,53 +1,56 @@
 /**
  * Reveal
- * 
+ *
  * Wrapper component that animates children on mount or when visible.
  * Supports intersection observer for scroll-triggered animations.
  */
 
-'use client';
+"use client";
 
-import * as React from 'react';
-import { motion, MotionProps, useInView } from 'framer-motion';
-import { cn } from '@/lib/utils';
-import { fadeUp, fade, scale, fadeDown } from '@/lib/motion/variants';
+import * as React from "react";
+import { motion, MotionProps, useInView } from "framer-motion";
+import { cn } from "@/lib/utils";
+import { fadeUp, fade, scale, fadeDown } from "@/lib/motion/variants";
 
 // Exclude motion-specific props that conflict with HTML attributes
-type MotionConflictKeys = 
-  | 'onDrag' 
-  | 'onDragStart' 
-  | 'onDragEnd' 
-  | 'onAnimationStart' 
-  | 'onAnimationComplete'
-  | 'onUpdate'
-  | 'onLayoutAnimationStart'
-  | 'onLayoutAnimationComplete';
+type MotionConflictKeys =
+  | "onDrag"
+  | "onDragStart"
+  | "onDragEnd"
+  | "onAnimationStart"
+  | "onAnimationComplete"
+  | "onUpdate"
+  | "onLayoutAnimationStart"
+  | "onLayoutAnimationComplete";
 
-export interface RevealProps extends Omit<React.HTMLAttributes<HTMLDivElement>, MotionConflictKeys> {
+export interface RevealProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  MotionConflictKeys
+> {
   /**
    * Animation variant
    * @default 'fadeUp'
    */
-  variant?: 'fadeUp' | 'fadeDown' | 'fade' | 'scale' | 'none';
-  
+  variant?: "fadeUp" | "fadeDown" | "fade" | "scale" | "none";
+
   /**
    * Whether to trigger on scroll (uses Intersection Observer)
    * @default false
    */
   triggerOnScroll?: boolean;
-  
+
   /**
    * Animation delay in seconds
    * @default 0
    */
   delay?: number;
-  
+
   /**
    * Stagger delay for children (if using stagger)
    * @default 0
    */
   staggerDelay?: number;
-  
+
   /**
    * Children to animate
    */
@@ -65,7 +68,7 @@ const variantMap = {
 const Reveal = React.forwardRef<HTMLDivElement, RevealProps>(
   (
     {
-      variant = 'fadeUp',
+      variant = "fadeUp",
       triggerOnScroll = false,
       delay = 0,
       staggerDelay = 0,
@@ -78,7 +81,7 @@ const Reveal = React.forwardRef<HTMLDivElement, RevealProps>(
     const internalRef = React.useRef<HTMLDivElement>(null);
     const isInView = useInView(internalRef, {
       once: true,
-      margin: '-100px',
+      margin: "-100px",
     });
 
     const actualRef = (ref || internalRef) as React.RefObject<HTMLDivElement>;
@@ -87,21 +90,21 @@ const Reveal = React.forwardRef<HTMLDivElement, RevealProps>(
 
     const motionProps: MotionProps = {
       variants: variants || undefined,
-      initial: variant !== 'none' ? 'hidden' : false,
+      initial: variant !== "none" ? "hidden" : false,
       animate:
-        variant !== 'none'
+        variant !== "none"
           ? triggerOnScroll
             ? isInView
-              ? 'visible'
-              : 'hidden'
-            : 'visible'
+              ? "visible"
+              : "hidden"
+            : "visible"
           : false,
       transition: {
         delay: delay + staggerDelay,
       },
     };
 
-    if (variant === 'none') {
+    if (variant === "none") {
       return (
         <div ref={actualRef} className={className} {...props}>
           {children}
@@ -110,18 +113,13 @@ const Reveal = React.forwardRef<HTMLDivElement, RevealProps>(
     }
 
     return (
-      <motion.div
-        ref={actualRef}
-        {...motionProps}
-        className={cn('w-full', className)}
-        {...props}
-      >
+      <motion.div ref={actualRef} {...motionProps} className={cn("w-full", className)} {...props}>
         {children}
       </motion.div>
     );
   }
 );
 
-Reveal.displayName = 'Reveal';
+Reveal.displayName = "Reveal";
 
 export { Reveal };

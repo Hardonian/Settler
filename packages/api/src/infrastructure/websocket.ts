@@ -1,6 +1,6 @@
 /**
  * WebSocket Infrastructure
- * 
+ *
  * Provides real-time updates for:
  * - Reconciliation job status
  * - Webhook deliveries
@@ -8,9 +8,9 @@
  * - Live metrics
  */
 
-import { Server as HTTPServer } from 'http';
-import { Server as SocketIOServer, Socket } from 'socket.io';
-import { logInfo } from '../utils/logger';
+import { Server as HTTPServer } from "http";
+import { Server as SocketIOServer, Socket } from "socket.io";
+import { logInfo } from "../utils/logger";
 
 export interface WebSocketServer {
   io: SocketIOServer;
@@ -27,19 +27,20 @@ let wsServer: WebSocketServer | null = null;
 export function initializeWebSocket(httpServer: HTTPServer): WebSocketServer {
   const io = new SocketIOServer(httpServer, {
     cors: {
-      origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
-      methods: ['GET', 'POST'],
+      origin: process.env.ALLOWED_ORIGINS?.split(",") || "*",
+      methods: ["GET", "POST"],
       credentials: true,
     },
-    transports: ['websocket', 'polling'],
+    transports: ["websocket", "polling"],
   });
 
   // Authentication middleware
   io.use((socket, next) => {
-    const token = socket.handshake.auth.token || socket.handshake.headers.authorization?.replace('Bearer ', '');
-    
+    const token =
+      socket.handshake.auth.token || socket.handshake.headers.authorization?.replace("Bearer ", "");
+
     if (!token) {
-      return next(new Error('Authentication required'));
+      return next(new Error("Authentication required"));
     }
 
     // In production, verify JWT token
@@ -47,10 +48,10 @@ export function initializeWebSocket(httpServer: HTTPServer): WebSocketServer {
     next();
   });
 
-  io.on('connection', (socket: Socket) => {
+  io.on("connection", (socket: Socket) => {
     const tenantId = socket.handshake.auth.tenantId;
-    
-    logInfo('WebSocket client connected', {
+
+    logInfo("WebSocket client connected", {
       socketId: socket.id,
       tenantId,
     });
@@ -61,24 +62,24 @@ export function initializeWebSocket(httpServer: HTTPServer): WebSocketServer {
     }
 
     // Handle room subscriptions
-    socket.on('subscribe', (room: string) => {
+    socket.on("subscribe", (room: string) => {
       socket.join(room);
-      logInfo('Client subscribed to room', {
+      logInfo("Client subscribed to room", {
         socketId: socket.id,
         room,
       });
     });
 
-    socket.on('unsubscribe', (room: string) => {
+    socket.on("unsubscribe", (room: string) => {
       socket.leave(room);
-      logInfo('Client unsubscribed from room', {
+      logInfo("Client unsubscribed from room", {
         socketId: socket.id,
         room,
       });
     });
 
-    socket.on('disconnect', () => {
-      logInfo('WebSocket client disconnected', {
+    socket.on("disconnect", () => {
+      logInfo("WebSocket client disconnected", {
         socketId: socket.id,
       });
     });
@@ -110,12 +111,17 @@ export function getWebSocketServer(): WebSocketServer | null {
 /**
  * Broadcast reconciliation job update
  */
-export function broadcastJobUpdate(tenantId: string, jobId: string, status: string, data?: unknown): void {
+export function broadcastJobUpdate(
+  tenantId: string,
+  jobId: string,
+  status: string,
+  data?: unknown
+): void {
   if (!wsServer) {
     return;
   }
 
-  wsServer.broadcastToTenant(tenantId, 'job:update', {
+  wsServer.broadcastToTenant(tenantId, "job:update", {
     jobId,
     status,
     data,
@@ -131,7 +137,7 @@ export function broadcastWebhookUpdate(tenantId: string, webhookId: string, stat
     return;
   }
 
-  wsServer.broadcastToTenant(tenantId, 'webhook:update', {
+  wsServer.broadcastToTenant(tenantId, "webhook:update", {
     webhookId,
     status,
     timestamp: new Date().toISOString(),

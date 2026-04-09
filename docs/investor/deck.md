@@ -5,7 +5,7 @@
 **Settler.dev**  
 The Autonomous Data Operations Operating System
 
-*Making data correctness as reliable as electricity*
+_Making data correctness as reliable as electricity_
 
 ---
 
@@ -19,6 +19,7 @@ The Autonomous Data Operations Operating System
 - No standard way to ensure data correctness
 
 **Every engineering team faces the same problems:**
+
 - Manual reconciliation between systems
 - Schema drift goes undetected
 - Workflow fragmentation
@@ -31,6 +32,7 @@ The Autonomous Data Operations Operating System
 **reconciliation engine is the Foundation**
 
 Every data operation is fundamentally about reconciliation:
+
 - Validation = Recon data against rules
 - Transformation = Recon input to output schema
 - Mapping = Recon source fields to target fields
@@ -46,19 +48,23 @@ Every data operation is fundamentally about reconciliation:
 **Settler.dev: Open Source Reconciliation Engine**
 
 **Core Engine:** reconciliation engine
+
 - Deterministic reconciliation
 - AI-driven drift detection and auto-repair
 - Comprehensive audit trail
 
 **Workflow Orchestration:**
+
 - Ingestion → Transform → Validate → Recon → Map → Audit → Report
 - Self-healing through AI agents
 - Self-optimizing through usage analysis
 
 **Vertical Modules:**
+
 - LegalTech, FinTech, EdTech, Compliance
 
 **Developer Experience:**
+
 - RESTful API, SDKs, starter kits
 
 ---
@@ -66,6 +72,7 @@ Every data operation is fundamentally about reconciliation:
 ## Slide 5: Demo Flow
 
 **Live Demo:**
+
 1. Create reconciliation job (30 seconds)
 2. Execute reconciliation (automatic)
 3. View results with drift detection (AI-powered)
@@ -73,6 +80,7 @@ Every data operation is fundamentally about reconciliation:
 5. Generate audit report (one click)
 
 **Key Moments:**
+
 - Zero configuration needed
 - AI detects and repairs drift automatically
 - Complete audit trail
@@ -105,6 +113,7 @@ Every data operation is fundamentally about reconciliation:
 - Enterprise: Custom (unlimited)
 
 **Expansion Vectors:**
+
 - Vertical module add-ons
 - Enterprise services
 - Marketplace revenue share
@@ -118,21 +127,25 @@ Every data operation is fundamentally about reconciliation:
 ## Slide 8: Traction Projections
 
 **Months 1-6:**
+
 - 10 customers, $50K ARR
 - Public beta launch
 - Developer community
 
 **Months 7-12:**
+
 - 100 customers, $5M ARR
 - Product-market fit
 - 3 case studies
 
 **Months 13-18:**
+
 - 500 customers, $30M ARR
 - Scale phase
 - International expansion
 
 **Months 19-24:**
+
 - 1,000 customers, $70M ARR
 - Market leadership
 - Category creation
@@ -144,12 +157,14 @@ Every data operation is fundamentally about reconciliation:
 **Direct Competitors: None.** We're creating a new category.
 
 **Adjacent Competitors:**
+
 - ETL Tools (Fivetran, Airbyte) - No reconciliation, no AI
 - Data Quality (Great Expectations) - No workflow orchestration
 - Workflow Orchestration (Airflow) - No data correctness primitives
 - Financial Reconciliation (BlackLine) - Finance-only, no developer API
 
 **Why We Win:**
+
 - Category creation
 - Recon Core architecture
 - AI-driven autonomous operations
@@ -163,18 +178,21 @@ Every data operation is fundamentally about reconciliation:
 **Series A: $10M**
 
 **Use of Funds:**
+
 - 40% Product Development (20 engineers)
 - 30% Go-to-Market (sales, marketing)
 - 20% Customer Success (support, onboarding)
 - 10% Operations (infrastructure, compliance)
 
 **Milestones (18 months):**
+
 - 500 customers
 - $30M ARR
 - Product-market fit
 - Market leadership
 
 **Why Now:**
+
 - AI maturity enables autonomous operations
 - API proliferation creates demand
 - Compliance pressure requires audit trails
@@ -185,11 +203,13 @@ Every data operation is fundamentally about reconciliation:
 ## Slide 11: The Team
 
 **Founding Team:**
+
 - [Founder 1]: [Background]
 - [Founder 2]: [Background]
 - [Founder 3]: [Background]
 
 **Advisors:**
+
 - [Advisor 1]: [Background]
 - [Advisor 2]: [Background]
 
@@ -200,6 +220,7 @@ Every data operation is fundamentally about reconciliation:
 **Settler.dev is the infrastructure layer that makes data correctness as reliable as electricity.**
 
 We envision a world where:
+
 - Every data operation is automatically validated, reconciled, and audited
 - Schema drift is detected and repaired before it causes problems
 - Complex workflows orchestrate themselves

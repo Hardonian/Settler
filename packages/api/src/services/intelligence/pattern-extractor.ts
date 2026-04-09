@@ -5,7 +5,6 @@
  * Part of Section 6: Multi-Agent Evolution Layer
  */
 
- 
 import { PrismaClient } from "@prisma/client";
 // logInfo imported but unused - may be used in future
 
@@ -252,11 +251,7 @@ export class PatternExtractor {
     for (const pattern of patterns) {
       if (pattern.confidence > 0.7) {
         const priority: "low" | "medium" | "high" =
-          pattern.frequency > 20
-            ? "high"
-            : pattern.frequency > 10
-              ? "medium"
-              : "low";
+          pattern.frequency > 20 ? "high" : pattern.frequency > 10 ? "medium" : "low";
 
         recommendations.push({
           type: pattern.type,

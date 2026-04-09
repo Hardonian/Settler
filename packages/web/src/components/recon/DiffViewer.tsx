@@ -1,17 +1,17 @@
 /**
  * Diff Viewer Component
- * 
+ *
  * Visualizes reconciliation differences
  * Part of Section 3: UI/UX Design System
  */
 
-import React from 'react';
+import React from "react";
 
 interface DiffItem {
   field: string;
   source: any;
   target: any;
-  status: 'matched' | 'unmatched' | 'conflict';
+  status: "matched" | "unmatched" | "conflict";
   confidence?: number;
 }
 
@@ -26,9 +26,15 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({ items, onItemClick }) =>
       <div className="diff-header">
         <h3>Reconciliation Results</h3>
         <div className="diff-stats">
-          <span className="stat matched">Matched: {items.filter(i => i.status === 'matched').length}</span>
-          <span className="stat unmatched">Unmatched: {items.filter(i => i.status === 'unmatched').length}</span>
-          <span className="stat conflict">Conflicts: {items.filter(i => i.status === 'conflict').length}</span>
+          <span className="stat matched">
+            Matched: {items.filter((i) => i.status === "matched").length}
+          </span>
+          <span className="stat unmatched">
+            Unmatched: {items.filter((i) => i.status === "unmatched").length}
+          </span>
+          <span className="stat conflict">
+            Conflicts: {items.filter((i) => i.status === "conflict").length}
+          </span>
         </div>
       </div>
       <div className="diff-list">

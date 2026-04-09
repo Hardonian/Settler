@@ -1,11 +1,11 @@
 /**
  * Motion Variants
- * 
+ *
  * Reusable animation variants for common patterns.
  * All variants respect prefers-reduced-motion.
  */
 
-import { Variants } from 'framer-motion';
+import { Variants } from "framer-motion";
 import {
   motionDurations,
   motionEasing,
@@ -14,7 +14,7 @@ import {
   motionScales,
   getReducedMotionDuration,
   getReducedMotionSpring,
-} from './tokens';
+} from "./tokens";
 
 /**
  * Fade variants - opacity only

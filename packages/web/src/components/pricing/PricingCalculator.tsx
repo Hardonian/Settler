@@ -1,18 +1,18 @@
 /**
  * Pricing Calculator Component
- * 
+ *
  * Helps users estimate their monthly cost based on usage.
  */
 
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { useState } from "react";
+import Link from "next/link";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface Plan {
   name: string;
@@ -23,13 +23,13 @@ interface Plan {
 
 const PLANS: Plan[] = [
   {
-    name: 'Starter',
+    name: "Starter",
     price: 99,
     includedReconciliations: 10000,
     maxReconciliations: 10000,
   },
   {
-    name: 'Growth',
+    name: "Growth",
     price: 299,
     includedReconciliations: 100000,
     maxReconciliations: 100000,
@@ -41,13 +41,13 @@ export function PricingCalculator() {
   const [exceptionRate, setExceptionRate] = useState<number>(1);
 
   // Calculate recommended plan - always guaranteed to return a plan
-  const recommendedPlan: Plan = PLANS.find(
-    plan => monthlyReconciliations <= plan.maxReconciliations
-  ) ?? PLANS[PLANS.length - 1]!;
+  const recommendedPlan: Plan =
+    PLANS.find((plan) => monthlyReconciliations <= plan.maxReconciliations) ??
+    PLANS[PLANS.length - 1]!;
 
   // Calculate exceptions
   const monthlyExceptions = Math.ceil((monthlyReconciliations * exceptionRate) / 100);
-  const exceptionCost = monthlyExceptions * 0.10;
+  const exceptionCost = monthlyExceptions * 0.1;
 
   // Calculate total cost
   const totalCost = recommendedPlan.price + exceptionCost;
@@ -56,9 +56,7 @@ export function PricingCalculator() {
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle>Pricing Calculator</CardTitle>
-        <CardDescription>
-          Estimate your monthly cost based on reconciliation volume
-        </CardDescription>
+        <CardDescription>Estimate your monthly cost based on reconciliation volume</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-4">
@@ -72,9 +70,7 @@ export function PricingCalculator() {
               onChange={(e) => setMonthlyReconciliations(parseInt(e.target.value) || 0)}
               className="mt-1"
             />
-            <p className="text-sm text-slate-500 mt-1">
-              Expected monthly reconciliation volume
-            </p>
+            <p className="text-sm text-slate-500 mt-1">Expected monthly reconciliation volume</p>
           </div>
 
           <div>
@@ -90,14 +86,15 @@ export function PricingCalculator() {
               className="mt-1"
             />
             <p className="text-sm text-slate-500 mt-1">
-              Exception rate requiring system review (most customers see 0.5-1% with our automated resolution)
+              Exception rate requiring system review (most customers see 0.5-1% with our automated
+              resolution)
             </p>
           </div>
         </div>
 
         <div className="border-t pt-6">
           <h3 className="font-semibold mb-4">Estimated Monthly Cost</h3>
-          
+
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-sm text-slate-600">Recommended Plan:</span>
@@ -124,7 +121,12 @@ export function PricingCalculator() {
             <div className="border-t pt-3 flex justify-between items-center">
               <span className="text-base font-semibold">Total Estimated Cost:</span>
               <span className="text-2xl font-bold text-blue-600">
-                ${totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/month
+                $
+                {totalCost.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+                /month
               </span>
             </div>
           </div>
@@ -132,7 +134,8 @@ export function PricingCalculator() {
           {monthlyReconciliations > recommendedPlan.maxReconciliations && (
             <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
               <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                Your usage exceeds the {recommendedPlan.name} plan limit. Contact us for Enterprise pricing (typically $2K-$10K/month).
+                Your usage exceeds the {recommendedPlan.name} plan limit. Contact us for Enterprise
+                pricing (typically $2K-$10K/month).
               </p>
             </div>
           )}

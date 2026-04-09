@@ -389,7 +389,7 @@ export class PDFGenerator {
       }),
       errors: errors.map((e) => ({
         id: e.id,
-        message: (e.message) || "Unknown error",
+        message: e.message || "Unknown error",
         timestamp: e.timestamp,
       })),
       dateRange: {

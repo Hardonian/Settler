@@ -133,9 +133,7 @@ export function LiveActivityFeed() {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">
-                    {item.title}
-                  </p>
+                  <p className="text-sm font-medium text-foreground truncate">{item.title}</p>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <span>{item.meta}</span>
                     <span>•</span>

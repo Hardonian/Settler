@@ -1,11 +1,11 @@
 /**
  * Request Validation Utilities
- * 
+ *
  * Validates and sanitizes incoming requests for admin endpoints.
  */
 
-import { NextRequest } from 'next/server';
-import { z } from 'zod';
+import { NextRequest } from "next/server";
+import { z } from "zod";
 
 /**
  * Validate request body with Zod schema
@@ -22,12 +22,12 @@ export async function validateRequestBody<T>(
     if (error instanceof z.ZodError) {
       return {
         success: false,
-        error: `Validation error: ${error.issues.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')}`,
+        error: `Validation error: ${error.issues.map((e) => `${e.path.join(".")}: ${e.message}`).join(", ")}`,
       };
     }
     return {
       success: false,
-      error: 'Invalid request body',
+      error: "Invalid request body",
     };
   }
 }
@@ -51,12 +51,12 @@ export function validateQueryParams<T>(
     if (error instanceof z.ZodError) {
       return {
         success: false,
-        error: `Validation error: ${error.issues.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')}`,
+        error: `Validation error: ${error.issues.map((e) => `${e.path.join(".")}: ${e.message}`).join(", ")}`,
       };
     }
     return {
       success: false,
-      error: 'Invalid query parameters',
+      error: "Invalid query parameters",
     };
   }
 }
@@ -64,8 +64,11 @@ export function validateQueryParams<T>(
 /**
  * Check request size limit
  */
-export function checkRequestSize(request: NextRequest, maxSizeBytes: number = 1024 * 1024): boolean {
-  const contentLength = request.headers.get('content-length');
+export function checkRequestSize(
+  request: NextRequest,
+  maxSizeBytes: number = 1024 * 1024
+): boolean {
+  const contentLength = request.headers.get("content-length");
   if (contentLength) {
     const size = parseInt(contentLength, 10);
     return size <= maxSizeBytes;

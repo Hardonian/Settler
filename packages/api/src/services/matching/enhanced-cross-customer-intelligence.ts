@@ -1,9 +1,9 @@
 /**
  * Enhanced Cross-Customer Intelligence
- * 
+ *
  * Aggregates anonymized reconciliation patterns across all customers.
  * This creates a proprietary data moat that competitors cannot replicate.
- * 
+ *
  * PHASE: Data Moat Reinforcement
  */
 
@@ -32,7 +32,7 @@ export interface PatternInsight {
 
 /**
  * Enhanced Cross-Customer Intelligence Service
- * 
+ *
  * Stores patterns in database and provides insights that improve matching
  */
 export class EnhancedCrossCustomerIntelligence {
@@ -166,27 +166,25 @@ export class EnhancedCrossCustomerIntelligence {
       }
 
       // Convert to insights
-      const insights: PatternInsight[] = Array.from(aggregatedPatterns.values()).map(
-        (pattern) => {
-          const insight = this.generateInsight(pattern);
-          // Convert pattern to Record<string, unknown> for hashing
-          const patternRecord: Record<string, unknown> = {
-            sourceAdapter: pattern.sourceAdapter,
-            targetAdapter: pattern.targetAdapter,
-            matchType: pattern.matchType,
-            averageConfidence: pattern.averageConfidence,
-            averageAmountDiff: pattern.averageAmountDiff,
-            averageDateDiff: pattern.averageDateDiff,
-            frequency: pattern.frequency,
-          };
-          return {
-            patternId: this.hashPattern(patternRecord),
-            insight: insight.text,
-            confidence: Math.min(1.0, pattern.frequency / 100), // Higher frequency = higher confidence
-            recommendedAction: insight.action,
-          };
-        }
-      );
+      const insights: PatternInsight[] = Array.from(aggregatedPatterns.values()).map((pattern) => {
+        const insight = this.generateInsight(pattern);
+        // Convert pattern to Record<string, unknown> for hashing
+        const patternRecord: Record<string, unknown> = {
+          sourceAdapter: pattern.sourceAdapter,
+          targetAdapter: pattern.targetAdapter,
+          matchType: pattern.matchType,
+          averageConfidence: pattern.averageConfidence,
+          averageAmountDiff: pattern.averageAmountDiff,
+          averageDateDiff: pattern.averageDateDiff,
+          frequency: pattern.frequency,
+        };
+        return {
+          patternId: this.hashPattern(patternRecord),
+          insight: insight.text,
+          confidence: Math.min(1.0, pattern.frequency / 100), // Higher frequency = higher confidence
+          recommendedAction: insight.action,
+        };
+      });
 
       return insights;
     } catch (error) {
@@ -199,25 +197,18 @@ export class EnhancedCrossCustomerIntelligence {
    * Get historical match rate for adapter pair
    * This is a proprietary feature that competitors cannot replicate
    */
-  async getHistoricalMatchRate(
-    sourceAdapter: string,
-    targetAdapter: string
-  ): Promise<number> {
+  async getHistoricalMatchRate(sourceAdapter: string, targetAdapter: string): Promise<number> {
     try {
       const insights = await this.getPatternInsights(sourceAdapter, targetAdapter);
-      
+
       if (insights.length === 0) {
         return 0.5; // Default to 50% if no data
       }
 
       // Calculate weighted average confidence
-      const totalFrequency = insights.reduce(
-        (sum, insight) => sum + insight.confidence * 100,
-        0
-      );
+      const totalFrequency = insights.reduce((sum, insight) => sum + insight.confidence * 100, 0);
       const weightedConfidence = insights.reduce(
-        (sum, insight) =>
-          sum + insight.confidence * insight.confidence * 100,
+        (sum, insight) => sum + insight.confidence * insight.confidence * 100,
         0
       );
 
@@ -321,8 +312,7 @@ export class EnhancedCrossCustomerIntelligence {
         if (
           optInEvent.data &&
           optOutEvent.data &&
-          new Date(optOutEvent.data.timestamp) >
-            new Date(optInEvent.data.timestamp)
+          new Date(optOutEvent.data.timestamp) > new Date(optInEvent.data.timestamp)
         ) {
           return false;
         }
@@ -343,7 +333,7 @@ export class EnhancedCrossCustomerIntelligence {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash;
     }
     return Math.abs(hash).toString(36);
@@ -380,5 +370,4 @@ export class EnhancedCrossCustomerIntelligence {
   }
 }
 
-export const enhancedCrossCustomerIntelligence =
-  new EnhancedCrossCustomerIntelligence();
+export const enhancedCrossCustomerIntelligence = new EnhancedCrossCustomerIntelligence();

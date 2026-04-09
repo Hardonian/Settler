@@ -1,6 +1,6 @@
 /**
  * Code Generator for API Playground
- * 
+ *
  * Generates code snippets from API calls:
  * - TypeScript/JavaScript
  * - Python
@@ -15,7 +15,7 @@ export interface CodeSnippet {
 }
 
 export interface ApiCall {
-  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   endpoint: string;
   headers?: Record<string, string>;
   body?: unknown;
@@ -26,16 +26,16 @@ export interface ApiCall {
  */
 export function generateTypeScriptCode(apiCall: ApiCall, apiKey: string): string {
   const headers = {
-    'Content-Type': 'application/json',
-    'x-api-key': apiKey,
+    "Content-Type": "application/json",
+    "x-api-key": apiKey,
     ...apiCall.headers,
   };
 
   const headersString = Object.entries(headers)
     .map(([key, value]) => `    '${key}': '${value}'`)
-    .join(',\n');
+    .join(",\n");
 
-  if (apiCall.method === 'GET') {
+  if (apiCall.method === "GET") {
     return `import { SettlerClient } from '@settler/sdk';
 
 const client = new SettlerClient({
@@ -43,16 +43,14 @@ const client = new SettlerClient({
 });
 
 const result = await client.${getMethodName(apiCall.endpoint)}(${
-      apiCall.body ? JSON.stringify(apiCall.body, null, 2) : ''
+      apiCall.body ? JSON.stringify(apiCall.body, null, 2) : ""
     });
 
 // eslint-disable-next-line no-console
 console.log(result);`;
   }
 
-  const bodyString = apiCall.body
-    ? `,\n  body: ${JSON.stringify(apiCall.body, null, 2)}`
-    : '';
+  const bodyString = apiCall.body ? `,\n  body: ${JSON.stringify(apiCall.body, null, 2)}` : "";
 
   return `const response = await fetch('${apiCall.endpoint}', {
   method: '${apiCall.method}',
@@ -71,18 +69,16 @@ console.log(data);`;
  */
 export function generatePythonCode(apiCall: ApiCall, apiKey: string): string {
   const headers = {
-    'Content-Type': 'application/json',
-    'x-api-key': apiKey,
+    "Content-Type": "application/json",
+    "x-api-key": apiKey,
     ...apiCall.headers,
   };
 
   const headersString = Object.entries(headers)
     .map(([key, value]) => `    '${key}': '${value}'`)
-    .join(',\n');
+    .join(",\n");
 
-  const bodyString = apiCall.body
-    ? `,\n    json=${JSON.stringify(apiCall.body, null, 2)}`
-    : '';
+  const bodyString = apiCall.body ? `,\n    json=${JSON.stringify(apiCall.body, null, 2)}` : "";
 
   return `import requests
 
@@ -101,18 +97,16 @@ print(response.json())`;
  */
 export function generateCurlCode(apiCall: ApiCall, apiKey: string): string {
   const headers = {
-    'Content-Type': 'application/json',
-    'x-api-key': apiKey,
+    "Content-Type": "application/json",
+    "x-api-key": apiKey,
     ...apiCall.headers,
   };
 
   const headersString = Object.entries(headers)
     .map(([key, value]) => `-H '${key}: ${value}'`)
-    .join(' \\\n  ');
+    .join(" \\\n  ");
 
-  const bodyString = apiCall.body
-    ? ` \\\n  -d '${JSON.stringify(apiCall.body)}'`
-    : '';
+  const bodyString = apiCall.body ? ` \\\n  -d '${JSON.stringify(apiCall.body)}'` : "";
 
   return `curl -X ${apiCall.method} \\
   '${apiCall.endpoint}' \\
@@ -157,29 +151,26 @@ ${bodyString}
 /**
  * Generate all code snippets for an API call
  */
-export function generateAllCodeSnippets(
-  apiCall: ApiCall,
-  apiKey: string
-): CodeSnippet[] {
+export function generateAllCodeSnippets(apiCall: ApiCall, apiKey: string): CodeSnippet[] {
   return [
     {
-      language: 'typescript',
-      label: 'TypeScript',
+      language: "typescript",
+      label: "TypeScript",
       code: generateTypeScriptCode(apiCall, apiKey),
     },
     {
-      language: 'python',
-      label: 'Python',
+      language: "python",
+      label: "Python",
       code: generatePythonCode(apiCall, apiKey),
     },
     {
-      language: 'curl',
-      label: 'cURL',
+      language: "curl",
+      label: "cURL",
       code: generateCurlCode(apiCall, apiKey),
     },
     {
-      language: 'go',
-      label: 'Go',
+      language: "go",
+      label: "Go",
       code: generateGoCode(apiCall, apiKey),
     },
   ];
@@ -189,8 +180,8 @@ export function generateAllCodeSnippets(
  * Get method name from endpoint (for SDK methods)
  */
 function getMethodName(endpoint: string): string {
-  if (endpoint.includes('/reconcile')) return 'reconcile';
-  if (endpoint.includes('/receipts')) return 'receipts.parse';
-  if (endpoint.includes('/feature-flags')) return 'featureFlags.evaluate';
-  return 'request';
+  if (endpoint.includes("/reconcile")) return "reconcile";
+  if (endpoint.includes("/receipts")) return "receipts.parse";
+  if (endpoint.includes("/feature-flags")) return "featureFlags.evaluate";
+  return "request";
 }

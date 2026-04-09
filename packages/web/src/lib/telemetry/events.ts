@@ -1,32 +1,32 @@
 /**
  * UX Telemetry Events
- * 
+ *
  * Unified event catalog and tracking system for user interactions.
- * 
+ *
  * Note: For product analytics events (onboarding, conversions, experiments),
  * use the ProductEvents from './product-events.ts'
  */
 
-import { analytics } from '../analytics';
-import { logger } from '../logging/logger';
+import { analytics } from "../analytics";
+import { logger } from "../logging/logger";
 
 export type TelemetryEventType =
-  | 'button_click'
-  | 'cta_click'
-  | 'scroll_depth'
-  | 'form_start'
-  | 'form_abandon'
-  | 'form_submit'
-  | 'funnel_step'
-  | 'conversion'
-  | 'dead_click'
-  | 'rage_click'
-  | 'link_click'
-  | 'search'
-  | 'video_play'
-  | 'video_complete'
-  | 'download'
-  | 'share';
+  | "button_click"
+  | "cta_click"
+  | "scroll_depth"
+  | "form_start"
+  | "form_abandon"
+  | "form_submit"
+  | "funnel_step"
+  | "conversion"
+  | "dead_click"
+  | "rage_click"
+  | "link_click"
+  | "search"
+  | "video_play"
+  | "video_complete"
+  | "download"
+  | "share";
 
 export interface TelemetryEvent {
   type: TelemetryEventType;
@@ -43,14 +43,14 @@ class Telemetry {
    * Track button click
    */
   trackButtonClick(buttonName: string, properties?: Record<string, any>) {
-    this.track('button_click', buttonName, properties);
+    this.track("button_click", buttonName, properties);
   }
 
   /**
    * Track CTA click
    */
   trackCTAClick(ctaName: string, properties?: Record<string, any>) {
-    this.track('cta_click', ctaName, {
+    this.track("cta_click", ctaName, {
       ...properties,
       cta_name: ctaName,
     });
@@ -66,7 +66,7 @@ class Telemetry {
 
     if (milestone) {
       this.scrollDepthTracked.add(milestone);
-      this.track('scroll_depth', `scroll_${milestone}`, {
+      this.track("scroll_depth", `scroll_${milestone}`, {
         depth: milestone,
         percentage: milestone,
       });
@@ -78,7 +78,7 @@ class Telemetry {
    */
   trackFormStart(formName: string) {
     this.formStartTimes.set(formName, Date.now());
-    this.track('form_start', formName);
+    this.track("form_start", formName);
   }
 
   /**
@@ -88,7 +88,7 @@ class Telemetry {
     const startTime = this.formStartTimes.get(formName);
     const duration = startTime ? Date.now() - startTime : undefined;
 
-    this.track('form_abandon', formName, {
+    this.track("form_abandon", formName, {
       duration,
       fields_completed: fieldsCompleted,
       total_fields: totalFields,
@@ -105,7 +105,7 @@ class Telemetry {
     const startTime = this.formStartTimes.get(formName);
     const duration = startTime ? Date.now() - startTime : undefined;
 
-    this.track('form_submit', formName, {
+    this.track("form_submit", formName, {
       success,
       duration,
       ...properties,
@@ -117,8 +117,13 @@ class Telemetry {
   /**
    * Track funnel step
    */
-  trackFunnelStep(funnelName: string, step: string, stepNumber: number, properties?: Record<string, any>) {
-    this.track('funnel_step', `${funnelName}_${step}`, {
+  trackFunnelStep(
+    funnelName: string,
+    step: string,
+    stepNumber: number,
+    properties?: Record<string, any>
+  ) {
+    this.track("funnel_step", `${funnelName}_${step}`, {
       funnel: funnelName,
       step,
       step_number: stepNumber,
@@ -130,7 +135,7 @@ class Telemetry {
    * Track conversion
    */
   trackConversion(conversionName: string, value?: number, properties?: Record<string, any>) {
-    this.track('conversion', conversionName, {
+    this.track("conversion", conversionName, {
       value,
       ...properties,
     });
@@ -140,7 +145,7 @@ class Telemetry {
    * Track link click
    */
   trackLinkClick(url: string, text?: string, properties?: Record<string, any>) {
-    this.track('link_click', url, {
+    this.track("link_click", url, {
       url,
       link_text: text,
       ...properties,
@@ -151,7 +156,7 @@ class Telemetry {
    * Track search
    */
   trackSearch(query: string, resultsCount?: number, properties?: Record<string, any>) {
-    this.track('search', query, {
+    this.track("search", query, {
       query,
       results_count: resultsCount,
       ...properties,
@@ -162,7 +167,7 @@ class Telemetry {
    * Detect and track dead clicks (clicks that don't trigger any action)
    */
   trackDeadClick(element: HTMLElement, x: number, y: number) {
-    this.track('dead_click', 'dead_click', {
+    this.track("dead_click", "dead_click", {
       element: element.tagName,
       x,
       y,
@@ -174,7 +179,7 @@ class Telemetry {
    * Detect and track rage clicks (multiple rapid clicks)
    */
   trackRageClick(element: HTMLElement, clickCount: number) {
-    this.track('rage_click', 'rage_click', {
+    this.track("rage_click", "rage_click", {
       element: element.tagName,
       click_count: clickCount,
       url: window.location.href,
@@ -185,14 +190,14 @@ class Telemetry {
    * Track video play
    */
   trackVideoPlay(videoId: string, properties?: Record<string, any>) {
-    this.track('video_play', videoId, properties);
+    this.track("video_play", videoId, properties);
   }
 
   /**
    * Track video completion
    */
   trackVideoComplete(videoId: string, duration?: number, properties?: Record<string, any>) {
-    this.track('video_complete', videoId, {
+    this.track("video_complete", videoId, {
       duration,
       ...properties,
     });
@@ -202,7 +207,7 @@ class Telemetry {
    * Track download
    */
   trackDownload(fileName: string, fileType?: string, properties?: Record<string, any>) {
-    this.track('download', fileName, {
+    this.track("download", fileName, {
       file_name: fileName,
       file_type: fileType,
       ...properties,
@@ -213,7 +218,7 @@ class Telemetry {
    * Track share
    */
   trackShare(platform: string, content?: string, properties?: Record<string, any>) {
-    this.track('share', platform, {
+    this.track("share", platform, {
       platform,
       content,
       ...properties,
@@ -240,7 +245,7 @@ class Telemetry {
     });
 
     // Log in development
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       logger.debug(`Telemetry: ${type} - ${name}`, event.properties);
     }
   }
@@ -256,7 +261,7 @@ class Telemetry {
 export const telemetry = new Telemetry();
 
 // Initialize scroll depth tracking
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   let ticking = false;
 
   const handleScroll = () => {
@@ -274,38 +279,42 @@ if (typeof window !== 'undefined') {
     }
   };
 
-  window.addEventListener('scroll', handleScroll, { passive: true });
+  window.addEventListener("scroll", handleScroll, { passive: true });
 }
 
 // Initialize dead click detection
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   let clickTimeout: NodeJS.Timeout | null = null;
 
-  document.addEventListener('click', (e) => {
-    const target = e.target as HTMLElement;
-    
-    // Check if click is on an interactive element
-    const isInteractive = target.closest('a, button, [role="button"], input, select, textarea');
-    
-    if (!isInteractive) {
-      // Potential dead click - wait a bit to see if anything happens
-      clickTimeout = setTimeout(() => {
-        telemetry.trackDeadClick(target, e.clientX, e.clientY);
-      }, 500);
-    } else {
-      if (clickTimeout) {
-        clearTimeout(clickTimeout);
-        clickTimeout = null;
+  document.addEventListener(
+    "click",
+    (e) => {
+      const target = e.target as HTMLElement;
+
+      // Check if click is on an interactive element
+      const isInteractive = target.closest('a, button, [role="button"], input, select, textarea');
+
+      if (!isInteractive) {
+        // Potential dead click - wait a bit to see if anything happens
+        clickTimeout = setTimeout(() => {
+          telemetry.trackDeadClick(target, e.clientX, e.clientY);
+        }, 500);
+      } else {
+        if (clickTimeout) {
+          clearTimeout(clickTimeout);
+          clickTimeout = null;
+        }
       }
-    }
-  }, true);
+    },
+    true
+  );
 }
 
 // Initialize rage click detection
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   const clickTimestamps = new Map<string, number[]>();
 
-  document.addEventListener('click', (e) => {
+  document.addEventListener("click", (e) => {
     const target = e.target as HTMLElement;
     const elementId = target.id || target.className || target.tagName;
     const now = Date.now();

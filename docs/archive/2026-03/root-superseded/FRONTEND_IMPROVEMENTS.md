@@ -7,12 +7,14 @@ This document outlines all frontend improvements, optimizations, and new feature
 ## 🎨 Builder.io Integration (NEW)
 
 ### Visual Page Builder
+
 - **Fusion Builder.io** integration for visual page editing
 - Non-technical team members can create/edit marketing pages
 - Real-time preview with local dev server
 - Automatic page revalidation on publish
 
 ### Features
+
 - ✅ Pre-registered Settler components (CTAs, testimonials, feature cards)
 - ✅ SEO-optimized with custom fields (title, description, keywords, OG images)
 - ✅ Webhook integration for automatic cache revalidation
@@ -20,6 +22,7 @@ This document outlines all frontend improvements, optimizations, and new feature
 - ✅ Catch-all routes for Builder pages (`/builder/*`)
 
 ### Files Added
+
 - `src/lib/builder/config.ts` - Builder.io initialization
 - `src/lib/builder/component-registry.ts` - Component registration
 - `src/components/BuilderPage.tsx` - Page rendering
@@ -28,6 +31,7 @@ This document outlines all frontend improvements, optimizations, and new feature
 - `BUILDER_IO_SETUP.md` - Complete setup documentation
 
 ### Usage
+
 1. Create pages in Builder.io visual editor
 2. Use registered Settler components
 3. Publish → pages go live instantly at `/builder/[path]`
@@ -38,40 +42,47 @@ This document outlines all frontend improvements, optimizations, and new feature
 ## 🎯 UI/UX Improvements
 
 ### 1. Unified Loading States (NEW)
+
 **File**: `src/components/ui/LoadingState.tsx`
 
 **Problem**: Inconsistent loading UI across pages (some spinners, some skeletons)
 
 **Solution**: Created unified LoadingState component with 4 variants:
+
 - **Spinner**: Classic rotating spinner (default)
 - **Skeleton**: Content placeholders to prevent layout shift
 - **Pulse**: Animated blocks for complex layouts
 - **Dots**: Minimal bouncing dots indicator
 
 **Features**:
+
 - Accessible with ARIA labels and `role="status"`
 - 4 size options: sm, md, lg, full
 - Optional loading message
 - Prevents Cumulative Layout Shift (CLS)
 
 **Usage**:
-```tsx
-import LoadingState from '@/components/ui/LoadingState';
 
-<LoadingState variant="skeleton" size="lg" message="Loading page..." />
+```tsx
+import LoadingState from "@/components/ui/LoadingState";
+
+<LoadingState variant="skeleton" size="lg" message="Loading page..." />;
 ```
 
 ### 2. Unified Error States (NEW)
+
 **File**: `src/components/ui/ErrorState.tsx`
 
 **Problem**: Inconsistent error handling, minimal user feedback
 
 **Solution**: Created comprehensive ErrorState component with:
+
 - **Full variant**: Complete error page with icon, actions, and help text
 - **Minimal variant**: Inline error banner for forms/sections
 - **InlineError**: Compact error for form fields
 
 **Features**:
+
 - Retry, Home, and Back button options
 - Stack trace display in development mode
 - Accessible with `role="alert"` and `aria-live`
@@ -79,8 +90,9 @@ import LoadingState from '@/components/ui/LoadingState';
 - Help link to contact support
 
 **Usage**:
+
 ```tsx
-import ErrorState from '@/components/ui/ErrorState';
+import ErrorState from "@/components/ui/ErrorState";
 
 <ErrorState
   title="Failed to load data"
@@ -88,15 +100,17 @@ import ErrorState from '@/components/ui/ErrorState';
   error={error}
   showRetry
   onRetry={() => refetch()}
-/>
+/>;
 ```
 
 ### 3. Toast Notification System (NEW)
+
 **File**: `src/lib/toast.tsx`
 
 **Problem**: No centralized notification system for user feedback
 
 **Solution**: Created beautiful toast notification system with:
+
 - 4 types: success, error, info, warning
 - Auto-dismiss with configurable duration
 - Stacked notifications in top-right corner
@@ -104,6 +118,7 @@ import ErrorState from '@/components/ui/ErrorState';
 - Dark mode support
 
 **Features**:
+
 - Context-based API with `useToast()` hook
 - Singleton `toast` helper for use outside React
 - Accessible with ARIA live regions
@@ -111,21 +126,24 @@ import ErrorState from '@/components/ui/ErrorState';
 - Manual dismiss button
 
 **Usage**:
+
 ```tsx
-import { useToast } from '@/lib/toast';
+import { useToast } from "@/lib/toast";
 
 const { success, error, info, warning } = useToast();
 
-success('Settings saved', 'Your changes have been applied.');
-error('Failed to save', 'Please try again.');
+success("Settings saved", "Your changes have been applied.");
+error("Failed to save", "Please try again.");
 ```
 
 ### 4. Improved Button Component (NEW)
+
 **File**: `src/components/ui/ImprovedButton.tsx`
 
 **Problem**: Button text wrapping issues on mobile, no loading states
 
 **Solution**: Complete button component rewrite with:
+
 - **Fixed text wrapping**: `whitespace-nowrap` + `text-ellipsis`
 - **Loading state**: Built-in spinner with `loading` prop
 - **6 variants**: default, destructive, outline, ghost, link, gradient
@@ -133,6 +151,7 @@ error('Failed to save', 'Please try again.');
 - **Full width option**: `fullWidth` prop
 
 **Features**:
+
 - Proper max-width constraints
 - Accessible loading states with `aria-busy`
 - Focus rings for keyboard navigation
@@ -141,12 +160,13 @@ error('Failed to save', 'Please try again.');
 - ButtonGroup for grouping multiple buttons
 
 **Usage**:
+
 ```tsx
-import Button from '@/components/ui/ImprovedButton';
+import Button from "@/components/ui/ImprovedButton";
 
 <Button variant="gradient" size="lg" loading={isLoading} fullWidth>
   Start Free Trial
-</Button>
+</Button>;
 ```
 
 ---
@@ -154,16 +174,19 @@ import Button from '@/components/ui/ImprovedButton';
 ## 🚀 Performance Optimizations
 
 ### Bundle Size Improvements
+
 1. **Dynamic Imports**: All Builder.io components lazy-loaded
 2. **Tree Shaking**: Strict TypeScript eliminates dead code
 3. **Code Splitting**: Per-route splitting with Next.js App Router
 
 ### Runtime Performance
+
 1. **Loading Skeletons**: Prevent CLS with skeleton loaders
 2. **Image Optimization**: WebP/AVIF with Next.js Image
 3. **ISR**: Builder pages revalidate every 60s (configurable)
 
 ### Network Optimizations
+
 1. **Webhook Revalidation**: Auto-revalidate on content publish
 2. **Static Generation**: Pre-render Builder pages at build time
 3. **Client-Side Caching**: React Query with optimized stale times
@@ -173,18 +196,21 @@ import Button from '@/components/ui/ImprovedButton';
 ## ♿ Accessibility Improvements
 
 ### ARIA Support
+
 - ✅ All loading states have `role="status"` and ARIA labels
 - ✅ Error states have `role="alert"` and `aria-live` regions
 - ✅ Buttons have `aria-busy` during loading
 - ✅ Toast notifications use `aria-live="polite"`
 
 ### Keyboard Navigation
+
 - ✅ Focus rings on all interactive elements
 - ✅ Escape key dismisses toasts
 - ✅ Tab navigation through button groups
 - ✅ Focus management in error states
 
 ### Screen Reader Support
+
 - ✅ Semantic HTML with proper headings
 - ✅ `sr-only` labels for icon-only buttons
 - ✅ Descriptive button labels
@@ -195,6 +221,7 @@ import Button from '@/components/ui/ImprovedButton';
 ## 📊 SEO Enhancements
 
 ### Builder.io Pages
+
 - ✅ Custom SEO fields (title, description, keywords)
 - ✅ Open Graph images for social sharing
 - ✅ Twitter Card metadata
@@ -202,6 +229,7 @@ import Button from '@/components/ui/ImprovedButton';
 - ✅ Dynamic `generateMetadata()` for each page
 
 ### Performance SEO
+
 - ✅ Improved Core Web Vitals scores
 - ✅ Reduced CLS with skeleton loaders
 - ✅ Faster LCP with optimized images
@@ -212,12 +240,14 @@ import Button from '@/components/ui/ImprovedButton';
 ## 🎯 Conversion Optimizations
 
 ### Improved CTAs
+
 1. **Enhanced Trust Badges**: Social proof indicators
 2. **Urgency Signals**: Limited-time offers, countdown timers
 3. **Multi-Variant CTAs**: Gradient, minimal, default options
 4. **Better Copy**: Clear value propositions
 
 ### Form Improvements
+
 1. **Inline Error Messages**: Real-time validation feedback
 2. **Loading States**: Visual feedback during submission
 3. **Success Toasts**: Confirmation messages
@@ -255,6 +285,7 @@ packages/web/src/
 ## 🔧 Configuration Changes
 
 ### Environment Variables Added
+
 ```bash
 # Builder.io
 NEXT_PUBLIC_BUILDER_API_KEY=your-key
@@ -264,6 +295,7 @@ NEXT_PUBLIC_BUILDER_PREVIEW_URL=http://localhost:3000
 ```
 
 ### Package Dependencies Added
+
 ```json
 {
   "@builder.io/react": "^3.x",
@@ -277,16 +309,17 @@ NEXT_PUBLIC_BUILDER_PREVIEW_URL=http://localhost:3000
 
 ### Before vs After
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| Loading UI Consistency | 3/10 | 10/10 | +233% |
-| Error Handling Coverage | 4/10 | 10/10 | +150% |
-| Accessibility Score | 7/10 | 9.5/10 | +36% |
-| User Feedback Clarity | 5/10 | 10/10 | +100% |
-| CLS (Layout Shift) | 0.15 | <0.1 | +50% |
-| Developer Experience | 6/10 | 9/10 | +50% |
+| Metric                  | Before | After  | Improvement |
+| ----------------------- | ------ | ------ | ----------- |
+| Loading UI Consistency  | 3/10   | 10/10  | +233%       |
+| Error Handling Coverage | 4/10   | 10/10  | +150%       |
+| Accessibility Score     | 7/10   | 9.5/10 | +36%        |
+| User Feedback Clarity   | 5/10   | 10/10  | +100%       |
+| CLS (Layout Shift)      | 0.15   | <0.1   | +50%        |
+| Developer Experience    | 6/10   | 9/10   | +50%        |
 
 ### User Experience Improvements
+
 - ✅ Consistent loading indicators across all pages
 - ✅ Clear error messages with actionable steps
 - ✅ Real-time feedback via toast notifications
@@ -299,6 +332,7 @@ NEXT_PUBLIC_BUILDER_PREVIEW_URL=http://localhost:3000
 ## 🎓 Developer Guide
 
 ### Using Loading States
+
 ```tsx
 // Spinner for quick actions
 <LoadingState variant="spinner" size="sm" />
@@ -311,6 +345,7 @@ NEXT_PUBLIC_BUILDER_PREVIEW_URL=http://localhost:3000
 ```
 
 ### Using Error States
+
 ```tsx
 // Full page error
 <ErrorState
@@ -329,21 +364,23 @@ NEXT_PUBLIC_BUILDER_PREVIEW_URL=http://localhost:3000
 ```
 
 ### Using Toasts
+
 ```tsx
 // In React components
 const { success, error } = useToast();
 
-success('Saved!', 'Your changes have been saved.');
-error('Failed', 'Please try again later.');
+success("Saved!", "Your changes have been saved.");
+error("Failed", "Please try again later.");
 
 // Outside React (API calls, utils)
-import { toast } from '@/lib/toast';
+import { toast } from "@/lib/toast";
 
-toast.success('Upload complete');
-toast.error('Network error');
+toast.success("Upload complete");
+toast.error("Network error");
 ```
 
 ### Using Builder.io
+
 ```tsx
 // In visual editor: https://builder.io
 // 1. Create new page
@@ -370,6 +407,7 @@ toast.error('Network error');
 ## 🚦 Testing Checklist
 
 ### Manual Testing
+
 - [x] Loading states display correctly on slow 3G
 - [x] Error states show appropriate messages
 - [x] Toast notifications appear and auto-dismiss
@@ -378,12 +416,14 @@ toast.error('Network error');
 - [x] Webhooks trigger revalidation
 
 ### Accessibility Testing
+
 - [x] Screen reader announces loading/error states
 - [x] Keyboard navigation works on all components
 - [x] Focus indicators visible on all interactive elements
 - [x] Color contrast meets WCAG AA standards
 
 ### Performance Testing
+
 - [x] Lighthouse score >90 for all metrics
 - [x] CLS <0.1 on all pages
 - [x] LCP <2.5s on cable connection
@@ -435,6 +475,7 @@ This update brings **professional-grade UI/UX** to the Settler frontend:
 ---
 
 **Questions or Issues?**
+
 - Documentation: See `BUILDER_IO_SETUP.md`
 - Support: frontend-support@settler.dev
 - Slack: #frontend-improvements

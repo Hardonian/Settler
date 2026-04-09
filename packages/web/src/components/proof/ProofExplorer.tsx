@@ -131,10 +131,7 @@ export function ProofExplorer() {
         <h3 className="font-semibold mb-3">Audit / Replay Intelligence</h3>
         <div className="grid gap-3 md:grid-cols-2 text-sm">
           {dashboardData.auditEvents.map((event) => (
-            <div
-              key={event.id}
-              className="rounded border border-border/40 dark:border-border p-3"
-            >
+            <div key={event.id} className="rounded border border-border/40 dark:border-border p-3">
               <p className="font-medium">{event.action}</p>
               <p className="text-muted-foreground">trace: {event.traceId}</p>
               <p className="text-muted-foreground">

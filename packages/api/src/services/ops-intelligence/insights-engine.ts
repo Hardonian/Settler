@@ -1,9 +1,9 @@
 /**
  * Ops Intelligence Insights Engine
- * 
+ *
  * Deterministic insight generation from real metrics.
  * Generates insights for: cost, support, usage, stability
- * 
+ *
  * Performance optimizations:
  * - Parallel queries where possible
  * - Query batching
@@ -11,11 +11,11 @@
  * - Timeout protection
  */
 
-import { createClient } from '@supabase/supabase-js';
-import { logInfo, logError } from '../../utils/logger';
+import { createClient } from "@supabase/supabase-js";
+import { logInfo, logError } from "../../utils/logger";
 
-export type InsightType = 'cost' | 'support' | 'usage' | 'stability';
-export type InsightSeverity = 'info' | 'warn' | 'critical';
+export type InsightType = "cost" | "support" | "usage" | "stability";
+export type InsightSeverity = "info" | "warn" | "critical";
 
 export interface Insight {
   type: InsightType;
@@ -58,45 +58,46 @@ export async function generateInsights(
 
   try {
     // Generate insights in parallel for better performance
-    const [costInsights, supportInsights, usageInsights, stabilityInsights] = await Promise.allSettled([
-      generateCostInsights(supabase, timeWindow),
-      generateSupportInsights(supabase, timeWindow),
-      generateUsageInsights(supabase, timeWindow),
-      generateStabilityInsights(supabase, timeWindow),
-    ]);
+    const [costInsights, supportInsights, usageInsights, stabilityInsights] =
+      await Promise.allSettled([
+        generateCostInsights(supabase, timeWindow),
+        generateSupportInsights(supabase, timeWindow),
+        generateUsageInsights(supabase, timeWindow),
+        generateStabilityInsights(supabase, timeWindow),
+      ]);
 
     // Collect successful insights
-    if (costInsights.status === 'fulfilled') {
+    if (costInsights.status === "fulfilled") {
       insights.push(...costInsights.value);
     } else {
-      logError('Failed to generate cost insights', costInsights.reason);
+      logError("Failed to generate cost insights", costInsights.reason);
     }
 
-    if (supportInsights.status === 'fulfilled') {
+    if (supportInsights.status === "fulfilled") {
       insights.push(...supportInsights.value);
     } else {
-      logError('Failed to generate support insights', supportInsights.reason);
+      logError("Failed to generate support insights", supportInsights.reason);
     }
 
-    if (usageInsights.status === 'fulfilled') {
+    if (usageInsights.status === "fulfilled") {
       insights.push(...usageInsights.value);
     } else {
-      logError('Failed to generate usage insights', usageInsights.reason);
+      logError("Failed to generate usage insights", usageInsights.reason);
     }
 
-    if (stabilityInsights.status === 'fulfilled') {
+    if (stabilityInsights.status === "fulfilled") {
       insights.push(...stabilityInsights.value);
     } else {
-      logError('Failed to generate stability insights', stabilityInsights.reason);
+      logError("Failed to generate stability insights", stabilityInsights.reason);
     }
 
-    logInfo('Generated insights', {
+    logInfo("Generated insights", {
       count: insights.length,
       byType: {
-        cost: costInsights.status === 'fulfilled' ? costInsights.value.length : 0,
-        support: supportInsights.status === 'fulfilled' ? supportInsights.value.length : 0,
-        usage: usageInsights.status === 'fulfilled' ? usageInsights.value.length : 0,
-        stability: stabilityInsights.status === 'fulfilled' ? stabilityInsights.value.length : 0,
+        cost: costInsights.status === "fulfilled" ? costInsights.value.length : 0,
+        support: supportInsights.status === "fulfilled" ? supportInsights.value.length : 0,
+        usage: usageInsights.status === "fulfilled" ? usageInsights.value.length : 0,
+        stability: stabilityInsights.status === "fulfilled" ? stabilityInsights.value.length : 0,
       },
     });
 
@@ -105,7 +106,7 @@ export async function generateInsights(
       generatedAt: new Date(),
     };
   } catch (error) {
-    logError('Failed to generate insights', error);
+    logError("Failed to generate insights", error);
     // Return partial results rather than failing completely
     return {
       insights,
@@ -117,7 +118,7 @@ export async function generateInsights(
 /**
  * Generate cost-related insights
  */
- 
+
 async function generateCostInsights(
   supabase: any,
   _timeWindow: { start: Date; end: Date }
@@ -131,38 +132,47 @@ async function generateCostInsights(
     // Parallel queries for better performance
     const [currentWeekResult, previousWeekResult] = await Promise.allSettled([
       supabase
-        .from('usage_aggregate_daily')
-        .select('estimated_cost')
-        .gte('date', weekAgo.toISOString().split('T')[0])
-        .lt('date', now.toISOString().split('T')[0]),
+        .from("usage_aggregate_daily")
+        .select("estimated_cost")
+        .gte("date", weekAgo.toISOString().split("T")[0])
+        .lt("date", now.toISOString().split("T")[0]),
       supabase
-        .from('usage_aggregate_daily')
-        .select('estimated_cost')
-        .gte('date', new Date(weekAgo.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
-        .lt('date', weekAgo.toISOString().split('T')[0]),
+        .from("usage_aggregate_daily")
+        .select("estimated_cost")
+        .gte(
+          "date",
+          new Date(weekAgo.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]
+        )
+        .lt("date", weekAgo.toISOString().split("T")[0]),
     ]);
 
     const currentWeekCost =
-      currentWeekResult.status === 'fulfilled' && currentWeekResult.value.data
+      currentWeekResult.status === "fulfilled" && currentWeekResult.value.data
         ? currentWeekResult.value.data
         : [];
     const previousWeekCost =
-      previousWeekResult.status === 'fulfilled' && previousWeekResult.value.data
+      previousWeekResult.status === "fulfilled" && previousWeekResult.value.data
         ? previousWeekResult.value.data
         : [];
 
-     
-    const currentTotal = currentWeekCost.reduce((sum: number, r: any) => sum + (r.estimated_cost || 0), 0);
-     
-    const previousTotal = previousWeekCost.reduce((sum: number, r: any) => sum + (r.estimated_cost || 0), 0);
-    const wowChange = previousTotal > 0 ? ((currentTotal - previousTotal) / previousTotal) * 100 : 0;
+    const currentTotal = currentWeekCost.reduce(
+      (sum: number, r: any) => sum + (r.estimated_cost || 0),
+      0
+    );
+
+    const previousTotal = previousWeekCost.reduce(
+      (sum: number, r: any) => sum + (r.estimated_cost || 0),
+      0
+    );
+    const wowChange =
+      previousTotal > 0 ? ((currentTotal - previousTotal) / previousTotal) * 100 : 0;
 
     if (Math.abs(wowChange) > 20) {
       insights.push({
-        type: 'cost',
-        title: `Cost ${wowChange > 0 ? 'increased' : 'decreased'} ${Math.abs(wowChange).toFixed(1)}% week-over-week`,
-        summary: `Weekly cost ${wowChange > 0 ? 'spike' : 'drop'} detected. Current week: $${currentTotal.toFixed(2)}, Previous week: $${previousTotal.toFixed(2)}.`,
-        severity: wowChange > 50 ? 'critical' : wowChange > 30 ? 'warn' : 'info',
+        type: "cost",
+        title: `Cost ${wowChange > 0 ? "increased" : "decreased"} ${Math.abs(wowChange).toFixed(1)}% week-over-week`,
+        summary: `Weekly cost ${wowChange > 0 ? "spike" : "drop"} detected. Current week: $${currentTotal.toFixed(2)}, Previous week: $${previousTotal.toFixed(2)}.`,
+        severity: wowChange > 50 ? "critical" : wowChange > 30 ? "warn" : "info",
         confidence: 0.85,
         timeWindow: {
           start: weekAgo.toISOString(),
@@ -186,18 +196,21 @@ async function generateCostInsights(
     // High-cost orgs analysis (with error handling)
     try {
       const { data: orgCosts } = await supabase
-        .from('usage_aggregate_daily')
-        .select('tenant_id, estimated_cost')
-        .gte('date', monthAgo.toISOString().split('T')[0])
-        .lt('date', now.toISOString().split('T')[0])
+        .from("usage_aggregate_daily")
+        .select("tenant_id, estimated_cost")
+        .gte("date", monthAgo.toISOString().split("T")[0])
+        .lt("date", now.toISOString().split("T")[0])
         .limit(1000); // Limit to prevent huge queries
 
       if (orgCosts) {
         const orgCostMap = new Map<string, number>();
-         
+
         orgCosts.forEach((r: any) => {
           if (r.tenant_id) {
-            orgCostMap.set(r.tenant_id, (orgCostMap.get(r.tenant_id) || 0) + (r.estimated_cost || 0));
+            orgCostMap.set(
+              r.tenant_id,
+              (orgCostMap.get(r.tenant_id) || 0) + (r.estimated_cost || 0)
+            );
           }
         });
 
@@ -207,9 +220,9 @@ async function generateCostInsights(
             // Check if org has active subscription
             try {
               const { data: subscriptions } = await supabase
-                .from('subscriptions')
-                .select('billing_account_id, status')
-                .eq('status', 'active')
+                .from("subscriptions")
+                .select("billing_account_id, status")
+                .eq("status", "active")
                 .limit(100);
 
               const hasActiveSub = subscriptions?.some(() => true); // Simplified check
@@ -229,10 +242,10 @@ async function generateCostInsights(
 
         if (highCostLowRevOrgs.length > 0) {
           insights.push({
-            type: 'cost',
+            type: "cost",
             title: `${highCostLowRevOrgs.length} organization(s) with high cost and low/no revenue`,
             summary: `Found ${highCostLowRevOrgs.length} org(s) with monthly cost > $100 but no active subscription or cost > $500.`,
-            severity: highCostLowRevOrgs.length > 5 ? 'critical' : 'warn',
+            severity: highCostLowRevOrgs.length > 5 ? "critical" : "warn",
             confidence: 0.75,
             timeWindow: {
               start: monthAgo.toISOString(),
@@ -251,11 +264,11 @@ async function generateCostInsights(
         }
       }
     } catch (error) {
-      logError('Error analyzing high-cost orgs', error);
+      logError("Error analyzing high-cost orgs", error);
       // Continue with other insights
     }
   } catch (error) {
-    logError('Failed to generate cost insights', error);
+    logError("Failed to generate cost insights", error);
   }
 
   return insights;
@@ -264,7 +277,7 @@ async function generateCostInsights(
 /**
  * Generate support-related insights
  */
- 
+
 async function generateSupportInsights(
   supabase: any,
   _timeWindow: { start: Date; end: Date }
@@ -278,25 +291,25 @@ async function generateSupportInsights(
     // Parallel queries
     const [currentWeekResult, previousWeekResult] = await Promise.allSettled([
       supabase
-        .from('ops_support_tickets')
-        .select('category, id')
-        .gte('created_at', weekAgo.toISOString())
-        .lt('created_at', now.toISOString())
+        .from("ops_support_tickets")
+        .select("category, id")
+        .gte("created_at", weekAgo.toISOString())
+        .lt("created_at", now.toISOString())
         .limit(1000),
       supabase
-        .from('ops_support_tickets')
-        .select('category, id')
-        .gte('created_at', twoWeeksAgo.toISOString())
-        .lt('created_at', weekAgo.toISOString())
+        .from("ops_support_tickets")
+        .select("category, id")
+        .gte("created_at", twoWeeksAgo.toISOString())
+        .lt("created_at", weekAgo.toISOString())
         .limit(1000),
     ]);
 
     const currentWeekTickets =
-      currentWeekResult.status === 'fulfilled' && currentWeekResult.value.data
+      currentWeekResult.status === "fulfilled" && currentWeekResult.value.data
         ? currentWeekResult.value.data
         : [];
     const previousWeekTickets =
-      previousWeekResult.status === 'fulfilled' && previousWeekResult.value.data
+      previousWeekResult.status === "fulfilled" && previousWeekResult.value.data
         ? previousWeekResult.value.data
         : [];
 
@@ -304,15 +317,13 @@ async function generateSupportInsights(
       const currentByCategory = new Map<string, number>();
       const previousByCategory = new Map<string, number>();
 
-       
       currentWeekTickets.forEach((t: any) => {
-        const cat = t.category || 'uncategorized';
+        const cat = t.category || "uncategorized";
         currentByCategory.set(cat, (currentByCategory.get(cat) || 0) + 1);
       });
 
-       
       previousWeekTickets.forEach((t: any) => {
-        const cat = t.category || 'uncategorized';
+        const cat = t.category || "uncategorized";
         previousByCategory.set(cat, (previousByCategory.get(cat) || 0) + 1);
       });
 
@@ -322,11 +333,11 @@ async function generateSupportInsights(
           const change = ((currentCount - previousCount) / previousCount) * 100;
           if (change > 50 && currentCount >= 5) {
             insights.push({
-              type: 'support',
+              type: "support",
               title: `Support ticket spike in "${category}": ${currentCount} tickets (+${change.toFixed(0)}%)`,
               summary: `Category "${category}" saw ${currentCount} tickets this week vs ${previousCount} last week.`,
-              severity: change > 100 ? 'critical' : 'warn',
-              confidence: 0.90,
+              severity: change > 100 ? "critical" : "warn",
+              confidence: 0.9,
               timeWindow: {
                 start: weekAgo.toISOString(),
                 end: now.toISOString(),
@@ -346,7 +357,7 @@ async function generateSupportInsights(
       }
     }
   } catch (error) {
-    logError('Failed to generate support insights', error);
+    logError("Failed to generate support insights", error);
   }
 
   return insights;
@@ -355,7 +366,7 @@ async function generateSupportInsights(
 /**
  * Generate usage-related insights
  */
- 
+
 async function generateUsageInsights(
   supabase: any,
   _timeWindow: { start: Date; end: Date }
@@ -369,25 +380,25 @@ async function generateUsageInsights(
     // Parallel queries with limits for performance
     const [currentWeekResult, previousWeekResult] = await Promise.allSettled([
       supabase
-        .from('usage_events')
-        .select('event_type, tenant_id')
-        .gte('timestamp', weekAgo.toISOString())
-        .lt('timestamp', now.toISOString())
+        .from("usage_events")
+        .select("event_type, tenant_id")
+        .gte("timestamp", weekAgo.toISOString())
+        .lt("timestamp", now.toISOString())
         .limit(10000), // Limit to prevent huge queries
       supabase
-        .from('usage_events')
-        .select('event_type, tenant_id')
-        .gte('timestamp', twoWeeksAgo.toISOString())
-        .lt('timestamp', weekAgo.toISOString())
+        .from("usage_events")
+        .select("event_type, tenant_id")
+        .gte("timestamp", twoWeeksAgo.toISOString())
+        .lt("timestamp", weekAgo.toISOString())
         .limit(10000),
     ]);
 
     const currentWeekUsage =
-      currentWeekResult.status === 'fulfilled' && currentWeekResult.value.data
+      currentWeekResult.status === "fulfilled" && currentWeekResult.value.data
         ? currentWeekResult.value.data
         : [];
     const previousWeekUsage =
-      previousWeekResult.status === 'fulfilled' && previousWeekResult.value.data
+      previousWeekResult.status === "fulfilled" && previousWeekResult.value.data
         ? previousWeekResult.value.data
         : [];
 
@@ -395,7 +406,6 @@ async function generateUsageInsights(
       const currentByFeature = new Map<string, Set<string>>();
       const previousByFeature = new Map<string, Set<string>>();
 
-       
       currentWeekUsage.forEach((u: any) => {
         if (u.event_type && u.tenant_id) {
           if (!currentByFeature.has(u.event_type)) {
@@ -405,7 +415,6 @@ async function generateUsageInsights(
         }
       });
 
-       
       previousWeekUsage.forEach((u: any) => {
         if (u.event_type && u.tenant_id) {
           if (!previousByFeature.has(u.event_type)) {
@@ -424,11 +433,11 @@ async function generateUsageInsights(
             const change = ((currentCount - previousCount) / previousCount) * 100;
             if (Math.abs(change) > 30) {
               insights.push({
-                type: 'usage',
-                title: `Feature "${feature}" adoption ${change > 0 ? 'increased' : 'decreased'} ${Math.abs(change).toFixed(0)}%`,
+                type: "usage",
+                title: `Feature "${feature}" adoption ${change > 0 ? "increased" : "decreased"} ${Math.abs(change).toFixed(0)}%`,
                 summary: `${feature} is now used by ${currentCount} orgs (was ${previousCount}).`,
-                severity: change < -50 ? 'warn' : 'info',
-                confidence: 0.80,
+                severity: change < -50 ? "warn" : "info",
+                confidence: 0.8,
                 timeWindow: {
                   start: weekAgo.toISOString(),
                   end: now.toISOString(),
@@ -451,7 +460,7 @@ async function generateUsageInsights(
       }
     }
   } catch (error) {
-    logError('Failed to generate usage insights', error);
+    logError("Failed to generate usage insights", error);
   }
 
   return insights;
@@ -460,7 +469,7 @@ async function generateUsageInsights(
 /**
  * Generate stability-related insights
  */
- 
+
 async function generateStabilityInsights(
   supabase: any,
   _timeWindow: { start: Date; end: Date }
@@ -475,51 +484,55 @@ async function generateStabilityInsights(
     const [currentWeekResult, previousWeekResult, webhooksResult, jobsResult] =
       await Promise.allSettled([
         supabase
-          .from('error_logs')
-          .select('id, severity, created_at')
-          .gte('created_at', weekAgo.toISOString())
-          .lt('created_at', now.toISOString())
+          .from("error_logs")
+          .select("id, severity, created_at")
+          .gte("created_at", weekAgo.toISOString())
+          .lt("created_at", now.toISOString())
           .limit(5000),
         supabase
-          .from('error_logs')
-          .select('id, severity')
-          .gte('created_at', twoWeeksAgo.toISOString())
-          .lt('created_at', weekAgo.toISOString())
+          .from("error_logs")
+          .select("id, severity")
+          .gte("created_at", twoWeeksAgo.toISOString())
+          .lt("created_at", weekAgo.toISOString())
           .limit(5000),
         supabase
-          .from('ops_webhooks')
-          .select('status, created_at')
-          .gte('created_at', weekAgo.toISOString())
-          .lt('created_at', now.toISOString())
+          .from("ops_webhooks")
+          .select("status, created_at")
+          .gte("created_at", weekAgo.toISOString())
+          .lt("created_at", now.toISOString())
           .limit(1000),
         supabase
-          .from('ops_jobs')
-          .select('status, created_at')
-          .gte('created_at', weekAgo.toISOString())
-          .lt('created_at', now.toISOString())
+          .from("ops_jobs")
+          .select("status, created_at")
+          .gte("created_at", weekAgo.toISOString())
+          .lt("created_at", now.toISOString())
           .limit(1000),
       ]);
 
     // Error rate analysis
-    if (currentWeekResult.status === 'fulfilled' && previousWeekResult.status === 'fulfilled') {
+    if (currentWeekResult.status === "fulfilled" && previousWeekResult.status === "fulfilled") {
       const currentWeekErrors = currentWeekResult.value.data || [];
       const previousWeekErrors = previousWeekResult.value.data || [];
 
       const currentCount = currentWeekErrors.length;
       const previousCount = previousWeekErrors.length;
-       
-      const currentCritical = currentWeekErrors.filter((e: any) => e.severity === 'critical').length;
-       
-      const previousCritical = previousWeekErrors.filter((e: any) => e.severity === 'critical').length;
+
+      const currentCritical = currentWeekErrors.filter(
+        (e: any) => e.severity === "critical"
+      ).length;
+
+      const previousCritical = previousWeekErrors.filter(
+        (e: any) => e.severity === "critical"
+      ).length;
 
       if (previousCount > 0) {
         const errorRateChange = ((currentCount - previousCount) / previousCount) * 100;
         if (errorRateChange > 50) {
           insights.push({
-            type: 'stability',
+            type: "stability",
             title: `Error rate increased ${errorRateChange.toFixed(0)}% week-over-week`,
             summary: `Current week: ${currentCount} errors (${currentCritical} critical) vs ${previousCount} last week.`,
-            severity: errorRateChange > 100 || currentCritical > 10 ? 'critical' : 'warn',
+            severity: errorRateChange > 100 || currentCritical > 10 ? "critical" : "warn",
             confidence: 0.95,
             timeWindow: {
               start: weekAgo.toISOString(),
@@ -541,20 +554,20 @@ async function generateStabilityInsights(
     }
 
     // Webhook failure analysis
-    if (webhooksResult.status === 'fulfilled' && webhooksResult.value.data) {
+    if (webhooksResult.status === "fulfilled" && webhooksResult.value.data) {
       const webhooks = webhooksResult.value.data;
       const total = webhooks.length;
-       
-      const failed = webhooks.filter((w: any) => w.status === 'failed').length;
+
+      const failed = webhooks.filter((w: any) => w.status === "failed").length;
       const failureRate = total > 0 ? (failed / total) * 100 : 0;
 
       if (failureRate > 10 && total >= 10) {
         insights.push({
-          type: 'stability',
+          type: "stability",
           title: `Webhook failure rate: ${failureRate.toFixed(1)}% (${failed}/${total})`,
           summary: `High webhook failure rate detected. ${failed} out of ${total} webhooks failed this week.`,
-          severity: failureRate > 25 ? 'critical' : 'warn',
-          confidence: 0.90,
+          severity: failureRate > 25 ? "critical" : "warn",
+          confidence: 0.9,
           timeWindow: {
             start: weekAgo.toISOString(),
             end: now.toISOString(),
@@ -572,20 +585,20 @@ async function generateStabilityInsights(
     }
 
     // Job backlog analysis
-    if (jobsResult.status === 'fulfilled' && jobsResult.value.data) {
+    if (jobsResult.status === "fulfilled" && jobsResult.value.data) {
       const jobs = jobsResult.value.data;
-       
-      const pending = jobs.filter((j: any) => j.status === 'pending').length;
-       
-      const failed = jobs.filter((j: any) => j.status === 'failed').length;
+
+      const pending = jobs.filter((j: any) => j.status === "pending").length;
+
+      const failed = jobs.filter((j: any) => j.status === "failed").length;
       const total = jobs.length;
 
       if (pending > 50 || failed > 20) {
         insights.push({
-          type: 'stability',
+          type: "stability",
           title: `Job backlog: ${pending} pending, ${failed} failed`,
           summary: `Job queue has ${pending} pending jobs and ${failed} failed jobs. Consider scaling or investigation.`,
-          severity: pending > 100 || failed > 50 ? 'critical' : 'warn',
+          severity: pending > 100 || failed > 50 ? "critical" : "warn",
           confidence: 0.85,
           timeWindow: {
             start: weekAgo.toISOString(),
@@ -603,7 +616,7 @@ async function generateStabilityInsights(
       }
     }
   } catch (error) {
-    logError('Failed to generate stability insights', error);
+    logError("Failed to generate stability insights", error);
   }
 
   return insights;

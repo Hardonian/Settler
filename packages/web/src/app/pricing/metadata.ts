@@ -1,16 +1,17 @@
-import { Metadata } from 'next';
+import { Metadata } from "next";
 
 export const pricingMetadata: Metadata = {
-  title: 'Pricing - Settler',
-  description: 'Simple, transparent pricing for Settler. Start free, scale as you grow. All plans include our core reconciliation engine.',
+  title: "Pricing - Settler",
+  description:
+    "Simple, transparent pricing for Settler. Start free, scale as you grow. All plans include our core reconciliation engine.",
   openGraph: {
-    title: 'Pricing - Settler',
-    description: 'Simple, transparent pricing for Settler. Start free, scale as you grow.',
-    type: 'website',
+    title: "Pricing - Settler",
+    description: "Simple, transparent pricing for Settler. Start free, scale as you grow.",
+    type: "website",
   },
   twitter: {
-    card: 'summary_large_image',
-    title: 'Pricing - Settler',
-    description: 'Simple, transparent pricing for Settler. Start free, scale as you grow.',
+    card: "summary_large_image",
+    title: "Pricing - Settler",
+    description: "Simple, transparent pricing for Settler. Start free, scale as you grow.",
   },
 };

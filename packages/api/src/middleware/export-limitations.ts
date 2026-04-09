@@ -1,9 +1,9 @@
 /**
  * Export Limitations Middleware
- * 
+ *
  * Limits export frequency and requires approval for large exports.
  * This creates switching friction by making exports less convenient.
- * 
+ *
  * PHASE: Workflow Lock-In Reinforcement
  */
 
@@ -69,9 +69,7 @@ export async function exportLimitationsMiddleware(
     );
 
     const planId =
-      planResult.length > 0
-        ? (planResult[0] as { plan_id: string }).plan_id
-        : "starter";
+      planResult.length > 0 ? (planResult[0] as { plan_id: string }).plan_id : "starter";
 
     const limits: ExportLimits = getLimitsForPlan(planId);
 
@@ -87,8 +85,7 @@ export async function exportLimitationsMiddleware(
       [tenantId, today]
     );
 
-    const dailyCount =
-      (dailyExports[0] as { count: number })?.count || 0;
+    const dailyCount = (dailyExports[0] as { count: number })?.count || 0;
 
     if (dailyCount >= limits.dailyLimit) {
       res.status(429).json({
@@ -113,8 +110,7 @@ export async function exportLimitationsMiddleware(
       [tenantId, monthStart]
     );
 
-    const monthlyCount =
-      (monthlyExports[0] as { count: number })?.count || 0;
+    const monthlyCount = (monthlyExports[0] as { count: number })?.count || 0;
 
     if (monthlyCount >= limits.monthlyLimit) {
       res.status(429).json({
@@ -127,14 +123,13 @@ export async function exportLimitationsMiddleware(
     }
 
     // Check size limit (if export size is known)
-    const estimatedRows = (req.body).estimatedRows || 0;
+    const estimatedRows = req.body.estimatedRows || 0;
     if (estimatedRows > limits.sizeLimit) {
       res.status(400).json({
         error: "Export size exceeds limit",
         limit: limits.sizeLimit,
         estimated: estimatedRows,
-        message:
-          "Large exports require approval. Please contact support or upgrade your plan.",
+        message: "Large exports require approval. Please contact support or upgrade your plan.",
       });
       return;
     }
@@ -174,9 +169,7 @@ function getLimitsForPlan(planId: string): ExportLimits {
 /**
  * Get export limits for tenant
  */
-export async function getExportLimits(
-  tenantId: string
-): Promise<ExportLimits> {
+export async function getExportLimits(tenantId: string): Promise<ExportLimits> {
   try {
     const planResult = await query(
       `SELECT plan_id
@@ -190,9 +183,7 @@ export async function getExportLimits(
     );
 
     const planId =
-      planResult.length > 0
-        ? (planResult[0] as { plan_id: string }).plan_id
-        : "starter";
+      planResult.length > 0 ? (planResult[0] as { plan_id: string }).plan_id : "starter";
 
     return getLimitsForPlan(planId);
   } catch (error) {

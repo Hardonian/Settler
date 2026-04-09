@@ -61,7 +61,11 @@ function safeReadJson(absPath: string): unknown {
 
 function runCommand(cmd: string): string {
   try {
-    return execSync(cmd, { cwd: repoRoot, encoding: "utf8", stdio: ["pipe", "pipe", "pipe"] }).trim();
+    return execSync(cmd, {
+      cwd: repoRoot,
+      encoding: "utf8",
+      stdio: ["pipe", "pipe", "pipe"],
+    }).trim();
   } catch {
     return "unknown";
   }
@@ -87,9 +91,7 @@ function collectGitMetadata(): {
     runCommand("git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown");
   const tag = process.env.GITHUB_REF?.startsWith("refs/tags/")
     ? process.env.GITHUB_REF.replace("refs/tags/", "")
-    : runCommand(
-        "git describe --exact-match --tags HEAD 2>/dev/null || echo ''"
-      ) || null;
+    : runCommand("git describe --exact-match --tags HEAD 2>/dev/null || echo ''") || null;
 
   return { commitSha, branch, tag: tag || null, ref };
 }
@@ -106,9 +108,7 @@ function collectCIMetadata(): {
   const runId = process.env.GITHUB_RUN_ID ?? null;
   const repository = process.env.GITHUB_REPOSITORY ?? null;
   const runUrl =
-    runId && repository
-      ? `https://github.com/${repository}/actions/runs/${runId}`
-      : null;
+    runId && repository ? `https://github.com/${repository}/actions/runs/${runId}` : null;
 
   return {
     runId,
@@ -147,11 +147,7 @@ interface ArtifactEntry {
   present: boolean;
 }
 
-function collectArtifact(
-  sourceRel: string,
-  bundleFile: string,
-  required = true
-): ArtifactEntry {
+function collectArtifact(sourceRel: string, bundleFile: string, required = true): ArtifactEntry {
   const sourcePath = path.join(repoRoot, sourceRel);
   const present = existsSync(sourcePath);
   if (present) {
@@ -194,17 +190,18 @@ function aggregateVerificationResults(artifacts: ArtifactEntry[]): {
     anyDegraded || missingRequired.length > 0 ? "partial" : "complete";
 
   // Determine cross-tenant status
-  const crossTenantStatus = (crossTenant as Record<string, unknown>)?.status as string | null ?? null;
+  const crossTenantStatus =
+    ((crossTenant as Record<string, unknown>)?.status as string | null) ?? null;
   const crossTenantPassed = crossTenantStatus === "passed";
 
   const overallStatus: "pass" | "partial" | "fail" =
     missingRequired.length > 0
       ? "fail"
       : anyDegraded
-      ? "partial"
-      : crossTenantPassed
-      ? "pass"
-      : "fail";
+        ? "partial"
+        : crossTenantPassed
+          ? "pass"
+          : "fail";
 
   const checks: Record<string, unknown> = {
     routeRegistry: routeRegistry
@@ -220,7 +217,8 @@ function aggregateVerificationResults(artifacts: ArtifactEntry[]): {
           status: degradedChecks.tenantCoverage ? "degraded" : "pass",
           verified: (tenantCoverage as Record<string, unknown>).verifiedRoutes ?? null,
           tenantScoped: (tenantCoverage as Record<string, unknown>).tenantScopedRoutes ?? null,
-          missingCount: ((tenantCoverage as Record<string, unknown>).missingRoutes as unknown[])?.length ?? 0,
+          missingCount:
+            ((tenantCoverage as Record<string, unknown>).missingRoutes as unknown[])?.length ?? 0,
           degraded: degradedChecks.tenantCoverage,
         }
       : { status: "missing" },
@@ -236,8 +234,12 @@ function aggregateVerificationResults(artifacts: ArtifactEntry[]): {
     headerProbe: headerProbe
       ? {
           status: degradedChecks.headerProbe ? "degraded" : "pass",
-          failedChecks: ((headerProbe as Record<string, unknown>).counts as Record<string, number>)?.failed ?? null,
-          probeableRoutes: ((headerProbe as Record<string, unknown>).coverage as Record<string, number>)?.probeableRoutes ?? null,
+          failedChecks:
+            ((headerProbe as Record<string, unknown>).counts as Record<string, number>)?.failed ??
+            null,
+          probeableRoutes:
+            ((headerProbe as Record<string, unknown>).coverage as Record<string, number>)
+              ?.probeableRoutes ?? null,
           degraded: degradedChecks.headerProbe,
           degradedReasons: (headerProbe as Record<string, unknown>).degradedReasons ?? null,
         }
@@ -308,9 +310,7 @@ const artifacts: ArtifactEntry[] = [
 // Check for missing required artifacts
 const missingRequired = artifacts.filter((a) => a.required && !a.present);
 if (missingRequired.length > 0) {
-  console.error(
-    "[generate-release-bundle] FATAL: Missing required security artifacts:"
-  );
+  console.error("[generate-release-bundle] FATAL: Missing required security artifacts:");
   for (const a of missingRequired) {
     console.error(`  - ${a.sourceRel} (required)`);
   }
@@ -339,10 +339,7 @@ const buildMetadata = {
   ci: ciMeta,
 };
 
-writeFileSync(
-  path.join(bundleDir, "build-metadata.json"),
-  JSON.stringify(buildMetadata, null, 2)
-);
+writeFileSync(path.join(bundleDir, "build-metadata.json"), JSON.stringify(buildMetadata, null, 2));
 
 // Step 5: Write verification-results.json
 const verificationResults = {
@@ -393,7 +390,7 @@ const manifest = {
     source: a.sourceRel,
     required: a.required,
     present: a.present,
-    sha256: a.present ? checksumMap[a.bundleFile] ?? null : null,
+    sha256: a.present ? (checksumMap[a.bundleFile] ?? null) : null,
   })),
   checksumAlgorithm: "sha256",
   checksums: checksumMap,

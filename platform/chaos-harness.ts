@@ -6,11 +6,7 @@
  * integrity, execution idempotency, and tenant isolation.
  */
 
-import type {
-  ChaosFault,
-  ChaosFaultType,
-  ChaosInvariant,
-} from "./primitives";
+import type { ChaosFault, ChaosFaultType, ChaosInvariant } from "./primitives";
 import { DeterminismAuditor } from "./determinism";
 
 export interface ChaosScenario {

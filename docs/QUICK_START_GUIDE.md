@@ -20,6 +20,7 @@ psql -d your_database -f supabase/migrations/20241201000003_enhance_rls_policies
 Choose one method:
 
 **Option A: Via Billing Account Metadata**
+
 ```sql
 UPDATE billing_accounts
 SET metadata = jsonb_set(COALESCE(metadata, '{}'), '{role}', '"SUPER_ADMIN"')
@@ -30,11 +31,12 @@ WHERE user_id = 'YOUR_USER_ID';
 Users with `@settler.dev` email automatically get super admin access.
 
 **Option C: Via User Metadata**
+
 ```sql
 UPDATE auth.users
 SET raw_user_meta_data = jsonb_set(
-  COALESCE(raw_user_meta_data, '{}'), 
-  '{role}', 
+  COALESCE(raw_user_meta_data, '{}'),
+  '{role}',
   '"SUPER_ADMIN"'
 )
 WHERE id = 'YOUR_USER_ID';
@@ -45,8 +47,9 @@ WHERE id = 'YOUR_USER_ID';
 API logging is already enabled for routes using `withApiLogging()`. To enable globally:
 
 Add to `packages/web/middleware.ts`:
+
 ```typescript
-import { logApiRequest } from '@/middleware/api-logger';
+import { logApiRequest } from "@/middleware/api-logger";
 
 // In middleware function, after creating response:
 await logApiRequest(request, response, {
@@ -88,22 +91,27 @@ curl -H "Authorization: Bearer YOUR_TOKEN" \
 ## 🎯 Key Endpoints
 
 ### Developer Endpoints
+
 - `GET /api/console/api-logs` - View API call logs
 - `GET /api/console/api-logs?stats=true` - Get statistics
 - `GET /console/api-logs` - UI for viewing logs
 
 ### Super Admin Endpoints
+
 - `GET /api/console/tenants` - List all tenants
 - `GET /api/console/tenants?includeMetrics=true` - With metrics
 - `GET /console/admin/tenants` - UI dashboard
 
 ### Monitoring Endpoints
+
 - `GET /api/console/health` - System health check
 
 ## ⚙️ Configuration
 
 ### Rate Limits
+
 Edit `packages/web/src/lib/security/rate-limiter.ts`:
+
 ```typescript
 export const RATE_LIMIT_CONFIGS = {
   api: {
@@ -115,7 +123,9 @@ export const RATE_LIMIT_CONFIGS = {
 ```
 
 ### Cache TTL
+
 Edit `packages/web/src/lib/cache/api-cache.ts`:
+
 ```typescript
 export const CACHE_CONFIGS = {
   logs: {
@@ -126,7 +136,9 @@ export const CACHE_CONFIGS = {
 ```
 
 ### Log Retention
+
 Edit `supabase/migrations/20241201000002_add_log_retention_policy.sql`:
+
 ```sql
 -- Change 90 days to your preferred retention period
 WHERE created_at < NOW() - INTERVAL '90 days'
@@ -135,21 +147,25 @@ WHERE created_at < NOW() - INTERVAL '90 days'
 ## 🔧 Troubleshooting
 
 ### Logs Not Appearing
+
 1. Check RLS policies: `SELECT * FROM pg_policies WHERE tablename = 'api_call_logs';`
 2. Verify tenant_id: Check billing_accounts table
 3. Check service role permissions
 
 ### Rate Limiting Too Strict
+
 1. Increase limits in `RATE_LIMIT_CONFIGS`
 2. Clear rate limit store (restart server)
 3. Check rate limit headers in response
 
 ### Cache Not Working
+
 1. Verify cache TTL settings
 2. Check cache key generation
 3. Clear cache: `clearAllCache()` in code
 
 ### Health Checks Failing
+
 1. Check Supabase connection
 2. Verify database permissions
 3. Check API logging table exists
@@ -157,20 +173,23 @@ WHERE created_at < NOW() - INTERVAL '90 days'
 ## 📊 Monitoring
 
 ### View Active Alerts
+
 ```typescript
-import { getActiveAlerts } from '@/lib/monitoring/alerts';
+import { getActiveAlerts } from "@/lib/monitoring/alerts";
 const alerts = getActiveAlerts();
 ```
 
 ### Check System Health
+
 ```bash
 curl http://localhost:3000/api/console/health
 ```
 
 ### View Recent Logs
+
 ```sql
-SELECT * FROM api_call_logs 
-ORDER BY created_at DESC 
+SELECT * FROM api_call_logs
+ORDER BY created_at DESC
 LIMIT 100;
 ```
 

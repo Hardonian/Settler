@@ -1,16 +1,16 @@
 /**
  * Subscription Tier Gate for API Routes
- * 
+ *
  * Enforces subscription tier requirements on API endpoints
  * Integrates with existing auth-gate for comprehensive security
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { getSubscriptionStatus } from '@/lib/get-subscription-status';
-import { SubscriptionTier } from '@/lib/subscription-access';
-import { getTraceId } from '@/lib/observability/trace';
-import { logger } from '@/lib/observability/logger';
-import { ErrorCode } from '@/lib/api/error-handler';
+import { NextRequest, NextResponse } from "next/server";
+import { getSubscriptionStatus } from "@/lib/get-subscription-status";
+import { SubscriptionTier } from "@/lib/subscription-access";
+import { getTraceId } from "@/lib/observability/trace";
+import { logger } from "@/lib/observability/logger";
+import { ErrorCode } from "@/lib/api/error-handler";
 
 export interface SubscriptionGateOptions {
   /** Minimum subscription tier required */
@@ -37,7 +37,7 @@ export async function requireSubscriptionTier(
   try {
     // Get subscription status
     const subscription = await getSubscriptionStatus();
-    
+
     // Check if user has required tier
     const tierOrder: Record<SubscriptionTier, number> = {
       unsubscribed: 0,
@@ -50,7 +50,7 @@ export async function requireSubscriptionTier(
     const requiredTierLevel = tierOrder[options.requiredTier] ?? 0;
 
     if (userTier < requiredTierLevel) {
-      await logger.warn('Subscription tier insufficient', {
+      await logger.warn("Subscription tier insufficient", {
         trace_id: traceId,
         route: request.nextUrl.pathname,
         user_tier: subscription.tier,
@@ -67,7 +67,7 @@ export async function requireSubscriptionTier(
             code: ErrorCode.FORBIDDEN,
             tier: subscription.tier,
             required_tier: options.requiredTier,
-            upgrade_url: '/console/billing',
+            upgrade_url: "/console/billing",
             trace_id: traceId,
             timestamp: new Date().toISOString(),
           },
@@ -81,7 +81,7 @@ export async function requireSubscriptionTier(
       tier: subscription.tier,
     };
   } catch (error) {
-    await logger.error('Subscription check failed', {
+    await logger.error("Subscription check failed", {
       trace_id: traceId,
       route: request.nextUrl.pathname,
       error: error instanceof Error ? error.message : String(error),
@@ -91,7 +91,7 @@ export async function requireSubscriptionTier(
     if (options.allowUnauthenticated) {
       return {
         authorized: true,
-        tier: 'unsubscribed',
+        tier: "unsubscribed",
       };
     }
 
@@ -99,8 +99,8 @@ export async function requireSubscriptionTier(
       authorized: false,
       error: NextResponse.json(
         {
-          error: 'Subscription check failed',
-          message: 'Unable to verify subscription status. Please try again or contact support.',
+          error: "Subscription check failed",
+          message: "Unable to verify subscription status. Please try again or contact support.",
           code: ErrorCode.INTERNAL_ERROR,
           trace_id: traceId,
           timestamp: new Date().toISOString(),

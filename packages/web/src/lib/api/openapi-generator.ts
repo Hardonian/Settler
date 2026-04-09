@@ -1,15 +1,15 @@
 /**
  * OpenAPI/Swagger Schema Generator
- * 
+ *
  * Generates OpenAPI 3.0 schemas from Zod schemas and route handlers.
  * Enables API documentation and client generation.
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 export interface OpenAPIRoute {
   path: string;
-  method: 'get' | 'post' | 'put' | 'patch' | 'delete';
+  method: "get" | "post" | "put" | "patch" | "delete";
   summary: string;
   description?: string;
   tags?: string[];
@@ -37,7 +37,7 @@ export function zodToOpenAPI(schema: z.ZodSchema): Record<string, unknown> {
     }
 
     return {
-      type: 'object',
+      type: "object",
       properties,
       required: required.length > 0 ? required : undefined,
     };
@@ -52,28 +52,28 @@ export function zodToOpenAPI(schema: z.ZodSchema): Record<string, unknown> {
 function zodTypeToOpenAPI(type: z.ZodType): Record<string, unknown> {
   if (type instanceof z.ZodString) {
     const checks = (type._def as { checks?: Array<{ kind: string; value?: unknown }> }).checks;
-    const minCheck = checks?.find((c) => c.kind === 'min');
-    const maxCheck = checks?.find((c) => c.kind === 'max');
+    const minCheck = checks?.find((c) => c.kind === "min");
+    const maxCheck = checks?.find((c) => c.kind === "max");
     return {
-      type: 'string',
-      ...(minCheck && typeof minCheck.value === 'number' && { minLength: minCheck.value }),
-      ...(maxCheck && typeof maxCheck.value === 'number' && { maxLength: maxCheck.value }),
+      type: "string",
+      ...(minCheck && typeof minCheck.value === "number" && { minLength: minCheck.value }),
+      ...(maxCheck && typeof maxCheck.value === "number" && { maxLength: maxCheck.value }),
     };
   }
 
   if (type instanceof z.ZodNumber) {
     const checks = (type._def as { checks?: Array<{ kind: string; value?: unknown }> }).checks;
-    const minCheck = checks?.find((c) => c.kind === 'min');
-    const maxCheck = checks?.find((c) => c.kind === 'max');
+    const minCheck = checks?.find((c) => c.kind === "min");
+    const maxCheck = checks?.find((c) => c.kind === "max");
     return {
-      type: 'number',
-      ...(minCheck && typeof minCheck.value === 'number' && { minimum: minCheck.value }),
-      ...(maxCheck && typeof maxCheck.value === 'number' && { maximum: maxCheck.value }),
+      type: "number",
+      ...(minCheck && typeof minCheck.value === "number" && { minimum: minCheck.value }),
+      ...(maxCheck && typeof maxCheck.value === "number" && { maximum: maxCheck.value }),
     };
   }
 
   if (type instanceof z.ZodBoolean) {
-    return { type: 'boolean' };
+    return { type: "boolean" };
   }
 
   if (type instanceof z.ZodArray) {
@@ -81,12 +81,12 @@ function zodTypeToOpenAPI(type: z.ZodType): Record<string, unknown> {
     const innerType = def.type;
     if (innerType) {
       return {
-        type: 'array',
+        type: "array",
         items: zodTypeToOpenAPI(innerType),
       };
     }
     return {
-      type: 'array',
+      type: "array",
       items: {},
     };
   }
@@ -94,7 +94,7 @@ function zodTypeToOpenAPI(type: z.ZodType): Record<string, unknown> {
   if (type instanceof z.ZodEnum) {
     const def = type._def as unknown as { values?: readonly string[] };
     return {
-      type: 'string',
+      type: "string",
       enum: def.values || [],
     };
   }
@@ -105,10 +105,10 @@ function zodTypeToOpenAPI(type: z.ZodType): Record<string, unknown> {
     if (innerType) {
       return zodTypeToOpenAPI(innerType);
     }
-    return { type: 'object' };
+    return { type: "object" };
   }
 
-  return { type: 'object' };
+  return { type: "object" };
 }
 
 /**
@@ -129,39 +129,39 @@ export function generateOpenAPISpec(routes: OpenAPIRoute[]): Record<string, unkn
     };
 
     // Request body
-    if (route.requestSchema && ['post', 'put', 'patch'].includes(route.method)) {
+    if (route.requestSchema && ["post", "put", "patch"].includes(route.method)) {
       try {
         pathItem.requestBody = {
           required: true,
           content: {
-            'application/json': {
+            "application/json": {
               schema: zodToOpenAPI(route.requestSchema as z.ZodSchema),
             },
           },
         };
       } catch (error) {
         // Skip if schema conversion fails
-        console.warn('Failed to convert request schema to OpenAPI', error);
+        console.warn("Failed to convert request schema to OpenAPI", error);
       }
     }
 
     // Responses
     pathItem.responses = {
-      '200': {
-        description: 'Success',
+      "200": {
+        description: "Success",
         ...(route.responseSchema && {
           content: {
-            'application/json': {
+            "application/json": {
               schema: zodToOpenAPI(route.responseSchema as z.ZodSchema),
             },
           },
         }),
       },
-      '400': { description: 'Bad Request' },
-      '401': { description: 'Unauthorized' },
-      '403': { description: 'Forbidden' },
-      '429': { description: 'Rate Limit Exceeded' },
-      '500': { description: 'Internal Server Error' },
+      "400": { description: "Bad Request" },
+      "401": { description: "Unauthorized" },
+      "403": { description: "Forbidden" },
+      "429": { description: "Rate Limit Exceeded" },
+      "500": { description: "Internal Server Error" },
     };
 
     // Security
@@ -181,30 +181,30 @@ export function generateOpenAPISpec(routes: OpenAPIRoute[]): Record<string, unkn
   }
 
   return {
-    openapi: '3.0.0',
+    openapi: "3.0.0",
     info: {
-      title: 'Settler Console API',
-      version: '1.0.0',
-      description: 'API for managing Settler console resources',
+      title: "Settler Console API",
+      version: "1.0.0",
+      description: "API for managing Settler console resources",
     },
     servers: [
       {
-        url: process.env.NEXT_PUBLIC_SITE_URL || 'https://settler.dev',
-        description: 'Production',
+        url: process.env.NEXT_PUBLIC_SITE_URL || "https://settler.dev",
+        description: "Production",
       },
     ],
     paths,
     components: {
       securitySchemes: {
         bearerAuth: {
-          type: 'http',
-          scheme: 'bearer',
-          bearerFormat: 'JWT',
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
         },
         apiKeyAuth: {
-          type: 'apiKey',
-          in: 'header',
-          name: 'x-api-key',
+          type: "apiKey",
+          in: "header",
+          name: "x-api-key",
         },
       },
     },

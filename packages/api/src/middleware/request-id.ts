@@ -16,10 +16,10 @@
  * - Support ticket investigation
  */
 
-import { Request, Response, NextFunction } from 'express';
-import { randomUUID } from 'crypto';
+import { Request, Response, NextFunction } from "express";
+import { randomUUID } from "crypto";
 
-declare module 'express' {
+declare module "express" {
   interface Request {
     requestId?: string;
   }
@@ -39,11 +39,11 @@ export function requestIdMiddleware() {
   return (req: Request, res: Response, next: NextFunction): void => {
     // Try to get existing request ID from headers (from client, load balancer, or proxy)
     const existingId =
-      req.get('X-Request-ID') ||
-      req.get('X-Request-Id') ||
-      req.get('x-request-id') ||
-      req.get('X-Correlation-ID') ||
-      req.get('X-Correlation-Id');
+      req.get("X-Request-ID") ||
+      req.get("X-Request-Id") ||
+      req.get("x-request-id") ||
+      req.get("X-Correlation-ID") ||
+      req.get("X-Correlation-Id");
 
     // Generate new ID if not provided
     const requestId = existingId || randomUUID();
@@ -52,7 +52,7 @@ export function requestIdMiddleware() {
     req.requestId = requestId;
 
     // Set response header for client-side correlation
-    res.setHeader('X-Request-ID', requestId);
+    res.setHeader("X-Request-ID", requestId);
 
     next();
   };
@@ -71,7 +71,6 @@ export function getRequestId(req: Request): string | undefined {
  * Returns true if ID is a valid UUID v4
  */
 export function isValidRequestId(id: string): boolean {
-  const uuidV4Regex =
-    /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  const uuidV4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
   return uuidV4Regex.test(id);
 }

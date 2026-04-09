@@ -1,6 +1,6 @@
 /**
  * TypeScript Types for DOM Reality System
- * 
+ *
  * Shared types used across DOM reality inspection, testing, and reporting.
  */
 
@@ -22,8 +22,14 @@ export interface DOMRealityReport {
 }
 
 export interface DOMIssue {
-  type: 'invisible' | 'hydration_mismatch' | 'layout_shift' | 'accessibility' | 'css_root_cause' | 'missing_content';
-  severity: 'critical' | 'warning' | 'info';
+  type:
+    | "invisible"
+    | "hydration_mismatch"
+    | "layout_shift"
+    | "accessibility"
+    | "css_root_cause"
+    | "missing_content";
+  severity: "critical" | "warning" | "info";
   element: string;
   selector?: string;
   description: string;

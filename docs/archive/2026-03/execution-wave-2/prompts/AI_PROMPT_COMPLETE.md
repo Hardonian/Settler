@@ -9,7 +9,9 @@ Copy this entire document and paste it into Supabase AI Assistant for comprehens
 You are helping with Settler's PostgreSQL database schema in Supabase. Here's everything you need to know:
 
 ### Core Principle: Tenant Isolation
+
 **ALL tables enforce tenant isolation via RLS using `tenant_users` membership.**
+
 - Pattern: `tenant_id IN (SELECT tenant_id FROM tenant_users WHERE user_id = auth.uid())`
 - Never expose data across tenants
 - Always include `tenant_id` in WHERE clauses
@@ -23,6 +25,7 @@ You are helping with Settler's PostgreSQL database schema in Supabase. Here's ev
 **Purpose**: Store receipts with SHA256 hash chain for audit trail integrity
 
 **Schema**:
+
 ```sql
 CREATE TABLE receipts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -42,6 +45,7 @@ CREATE TABLE receipts (
 ```
 
 **Indexes**:
+
 - `idx_receipts_tenant_id` ON `tenant_id`
 - `idx_receipts_source_id` ON `source_id`
 - `idx_receipts_hash` ON `hash` (for chain verification)
@@ -52,6 +56,7 @@ CREATE TABLE receipts (
 - GIN index on `evidence_refs` (for evidence searches)
 
 **RLS Policy**: `receipts_tenant_isolation`
+
 ```sql
 CREATE POLICY receipts_tenant_isolation ON receipts
   FOR ALL
@@ -63,26 +68,28 @@ CREATE POLICY receipts_tenant_isolation ON receipts
 ```
 
 **Hash Chain Logic**:
+
 - `canonical_json`: Stable JSON serialization (keys sorted recursively)
 - `hash`: SHA256(canonical_json) → 64 hex characters
 - `prev_hash`: References `hash` of previous receipt for this tenant/source
 - Verification: Check hash matches canonical JSON, verify prev_hash exists
 
 **Common Queries**:
+
 ```sql
 -- Get receipts for tenant
-SELECT * FROM receipts 
-WHERE tenant_id = $1 
+SELECT * FROM receipts
+WHERE tenant_id = $1
 ORDER BY created_at DESC;
 
 -- Get previous receipt hash
-SELECT hash FROM receipts 
-WHERE tenant_id = $1 
-ORDER BY created_at DESC 
+SELECT hash FROM receipts
+WHERE tenant_id = $1
+ORDER BY created_at DESC
 LIMIT 1;
 
 -- Verify receipt chain
-SELECT hash, prev_hash FROM receipts 
+SELECT hash, prev_hash FROM receipts
 WHERE tenant_id = $1 AND hash = $2;
 ```
 
@@ -93,6 +100,7 @@ WHERE tenant_id = $1 AND hash = $2;
 **Purpose**: Track AI analysis token consumption per tenant per period
 
 **Schema**:
+
 ```sql
 CREATE TABLE ai_analysis_usage (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -106,11 +114,13 @@ CREATE TABLE ai_analysis_usage (
 ```
 
 **Indexes**:
+
 - `idx_ai_analysis_usage_tenant_id` ON `tenant_id`
 - `idx_ai_analysis_usage_period_start` ON `period_start DESC`
 - `idx_ai_analysis_usage_tenant_period` ON `(tenant_id, period_start DESC)`
 
 **RLS Policy**: `ai_analysis_usage_tenant_isolation`
+
 ```sql
 CREATE POLICY ai_analysis_usage_tenant_isolation ON ai_analysis_usage
   FOR ALL
@@ -122,30 +132,33 @@ CREATE POLICY ai_analysis_usage_tenant_isolation ON ai_analysis_usage
 ```
 
 **Token Limits by Tier**:
+
 - **Free**: 1 analysis per week (limit = 1, period = 'week')
 - **Pro**: 10 analyses per month (limit = 10, period = 'month') + add-ons + overage
 - **Enterprise**: Unlimited (limit = -1)
 
 **Period Calculation**:
+
 - **Day**: `date_trunc('day', NOW())`
 - **Week**: `date_trunc('week', NOW())` (starts Sunday)
 - **Month**: `date_trunc('month', NOW())` (starts 1st)
 
 **Common Queries**:
+
 ```sql
 -- Get current period usage
-SELECT tokens_used, period_start 
-FROM ai_analysis_usage 
-WHERE tenant_id = $1 
+SELECT tokens_used, period_start
+FROM ai_analysis_usage
+WHERE tenant_id = $1
   AND period_start >= date_trunc('month', NOW())
-ORDER BY period_start DESC 
+ORDER BY period_start DESC
 LIMIT 1;
 
 -- Upsert token usage (increment)
 INSERT INTO ai_analysis_usage (tenant_id, period_start, tokens_used)
 VALUES ($1, date_trunc('month', NOW()), 10)
 ON CONFLICT (tenant_id, period_start)
-DO UPDATE SET 
+DO UPDATE SET
   tokens_used = ai_analysis_usage.tokens_used + EXCLUDED.tokens_used,
   updated_at = NOW();
 ```
@@ -157,6 +170,7 @@ DO UPDATE SET
 **Purpose**: Store AI analysis results with metadata
 
 **Schema**:
+
 ```sql
 CREATE TABLE ai_analyses (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -172,6 +186,7 @@ CREATE TABLE ai_analyses (
 ```
 
 **Indexes**:
+
 - `idx_ai_analyses_tenant_id` ON `tenant_id`
 - `idx_ai_analyses_type` ON `analysis_type`
 - `idx_ai_analyses_created_at` ON `created_at DESC`
@@ -179,6 +194,7 @@ CREATE TABLE ai_analyses (
 - GIN index on `result` (for JSONB queries)
 
 **RLS Policy**: `ai_analyses_tenant_isolation`
+
 ```sql
 CREATE POLICY ai_analyses_tenant_isolation ON ai_analyses
   FOR ALL
@@ -190,6 +206,7 @@ CREATE POLICY ai_analyses_tenant_isolation ON ai_analyses
 ```
 
 **Result JSONB Structure**:
+
 ```json
 {
   "summary": "Analysis summary text",
@@ -200,15 +217,16 @@ CREATE POLICY ai_analyses_tenant_isolation ON ai_analyses
 ```
 
 **Common Queries**:
+
 ```sql
 -- Get recent analyses
-SELECT * FROM ai_analyses 
-WHERE tenant_id = $1 
-ORDER BY created_at DESC 
+SELECT * FROM ai_analyses
+WHERE tenant_id = $1
+ORDER BY created_at DESC
 LIMIT 10;
 
 -- Get analyses by type
-SELECT * FROM ai_analyses 
+SELECT * FROM ai_analyses
 WHERE tenant_id = $1 AND analysis_type = 'reconciliation'
 ORDER BY created_at DESC;
 ```
@@ -222,6 +240,7 @@ ORDER BY created_at DESC;
 **Purpose**: Set session variable for RLS policies that use `current_setting`
 
 **Definition**:
+
 ```sql
 CREATE OR REPLACE FUNCTION set_tenant_context(tenant_id UUID)
 RETURNS void AS $$
@@ -242,6 +261,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 These existing tables had RLS policies updated to use `tenant_users` membership:
 
 ### Tables Updated:
+
 1. `recon_jobs`
 2. `recon_results`
 3. `recon_audits`
@@ -250,6 +270,7 @@ These existing tables had RLS policies updated to use `tenant_users` membership:
 6. `alerts`
 
 ### New Policy Pattern:
+
 ```sql
 CREATE POLICY table_tenant_isolation ON table_name
   FOR ALL
@@ -267,6 +288,7 @@ CREATE POLICY table_tenant_isolation ON table_name
 ## TRIGGERS
 
 ### `update_receipts_updated_at`
+
 ```sql
 CREATE TRIGGER update_receipts_updated_at
   BEFORE UPDATE ON receipts
@@ -275,6 +297,7 @@ CREATE TRIGGER update_receipts_updated_at
 ```
 
 ### `update_ai_analysis_usage_updated_at`
+
 ```sql
 CREATE TRIGGER update_ai_analysis_usage_updated_at
   BEFORE UPDATE ON ai_analysis_usage
@@ -312,41 +335,46 @@ CREATE TRIGGER update_ai_analysis_usage_updated_at
 ## VERIFICATION QUERIES
 
 ### Check Tables Exist
+
 ```sql
-SELECT table_name 
-FROM information_schema.tables 
-WHERE table_schema = 'public' 
+SELECT table_name
+FROM information_schema.tables
+WHERE table_schema = 'public'
 AND table_name IN ('receipts', 'ai_analysis_usage', 'ai_analyses');
 ```
 
 ### Check RLS Enabled
+
 ```sql
-SELECT tablename, rowsecurity 
-FROM pg_tables 
-WHERE schemaname = 'public' 
+SELECT tablename, rowsecurity
+FROM pg_tables
+WHERE schemaname = 'public'
 AND tablename IN ('receipts', 'ai_analysis_usage', 'ai_analyses');
 ```
 
 ### Check Policies Exist
+
 ```sql
-SELECT tablename, policyname 
-FROM pg_policies 
-WHERE schemaname = 'public' 
+SELECT tablename, policyname
+FROM pg_policies
+WHERE schemaname = 'public'
 AND tablename IN ('receipts', 'ai_analysis_usage', 'ai_analyses');
 ```
 
 ### Check Function Exists
+
 ```sql
-SELECT proname, prosrc 
-FROM pg_proc 
+SELECT proname, prosrc
+FROM pg_proc
 WHERE proname = 'set_tenant_context';
 ```
 
 ### Check Indexes
+
 ```sql
-SELECT tablename, indexname 
-FROM pg_indexes 
-WHERE schemaname = 'public' 
+SELECT tablename, indexname
+FROM pg_indexes
+WHERE schemaname = 'public'
 AND tablename IN ('receipts', 'ai_analysis_usage', 'ai_analyses')
 ORDER BY tablename, indexname;
 ```
@@ -356,11 +384,12 @@ ORDER BY tablename, indexname;
 ## COMMON OPERATIONS
 
 ### Create Receipt with Hash Chain
+
 ```sql
 -- 1. Get previous hash
-SELECT hash FROM receipts 
-WHERE tenant_id = $1 
-ORDER BY created_at DESC 
+SELECT hash FROM receipts
+WHERE tenant_id = $1
+ORDER BY created_at DESC
 LIMIT 1;
 
 -- 2. Calculate hash (in application: SHA256(canonical_json))
@@ -374,16 +403,18 @@ INSERT INTO receipts (
 ```
 
 ### Record Token Usage
+
 ```sql
 INSERT INTO ai_analysis_usage (tenant_id, period_start, tokens_used)
 VALUES ($1, date_trunc('month', NOW()), 10)
 ON CONFLICT (tenant_id, period_start)
-DO UPDATE SET 
+DO UPDATE SET
   tokens_used = ai_analysis_usage.tokens_used + EXCLUDED.tokens_used,
   updated_at = NOW();
 ```
 
 ### Store AI Analysis
+
 ```sql
 INSERT INTO ai_analyses (
   tenant_id, analysis_type, input_data, result, tokens_used, confidence, created_by
@@ -393,10 +424,11 @@ INSERT INTO ai_analyses (
 ```
 
 ### Get Token Usage Status
+
 ```sql
-SELECT 
+SELECT
   tokens_used,
-  CASE 
+  CASE
     WHEN period_start >= date_trunc('month', NOW()) THEN 'current_month'
     WHEN period_start >= date_trunc('week', NOW()) THEN 'current_week'
     ELSE 'past'
@@ -447,6 +479,7 @@ LIMIT 1;
 ## MIGRATION ORDER IS CRITICAL
 
 Apply migrations in this exact order:
+
 1. receipts table (foundation)
 2. tenant context function (helper)
 3. RLS hardening (security)

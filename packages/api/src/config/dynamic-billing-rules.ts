@@ -62,7 +62,12 @@ export const BILLING_TIERS: Record<string, BillingTier> = {
       auth_users: 5000,
       storage_gb: 10,
     },
-    features: ["core_reconciliation", "standard_integrations", "basic_analytics", "email_support_sla"],
+    features: [
+      "core_reconciliation",
+      "standard_integrations",
+      "basic_analytics",
+      "email_support_sla",
+    ],
   },
   growth: {
     id: "growth",

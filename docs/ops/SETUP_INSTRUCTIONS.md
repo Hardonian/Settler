@@ -40,6 +40,7 @@ supabase migration up
 **Migration File:** `supabase/migrations/20250127000000_create_ops_tables.sql`
 
 **Creates:**
+
 - `ops_errors` table
 - `ops_jobs` table
 - `ops_webhooks` table
@@ -71,6 +72,7 @@ npm run check:production
 ```
 
 **Expected Output:**
+
 - ✅ All integrity checks passed
 - ✅ Vercel parity check passed
 - ✅ Production check passed
@@ -123,6 +125,7 @@ gh api repos/:owner/:repo/branches/main/protection \
 4. Verify:
 
 **Build & Development Settings:**
+
 - **Framework Preset:** Next.js
 - **Root Directory:** (leave empty or set to repository root)
 - **Build Command:** `cd packages/web && npm run build:vercel`
@@ -130,6 +133,7 @@ gh api repos/:owner/:repo/branches/main/protection \
 - **Install Command:** `npm ci --prefer-offline --no-audit --omit=optional`
 
 **Environment Variables:**
+
 - Verify all required env vars are set
 - Check `config/env.schema.ts` for required variables
 

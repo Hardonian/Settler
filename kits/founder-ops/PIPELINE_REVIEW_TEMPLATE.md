@@ -7,6 +7,7 @@
 ## Overview
 
 This template helps you:
+
 - **Track pipeline:** Monitor pipeline health
 - **Forecast revenue:** Predict revenue from pipeline
 - **Identify issues:** Catch pipeline problems early
@@ -19,9 +20,11 @@ This template helps you:
 ## Pipeline Stages
 
 ### Stage 1: Lead
+
 **Definition:** Prospect expressed interest
 
 **Criteria:**
+
 - Website signup
 - Inbound inquiry
 - Outbound response
@@ -32,9 +35,11 @@ This template helps you:
 ---
 
 ### Stage 2: Qualified
+
 **Definition:** Prospect meets qualification criteria
 
 **Criteria:**
+
 - Problem clarity
 - Data readiness
 - Authority
@@ -46,9 +51,11 @@ This template helps you:
 ---
 
 ### Stage 3: Demo
+
 **Definition:** Demo conducted
 
 **Criteria:**
+
 - Demo completed
 - Use case confirmed
 - Value demonstrated
@@ -58,9 +65,11 @@ This template helps you:
 ---
 
 ### Stage 4: Pilot
+
 **Definition:** Pilot active
 
 **Criteria:**
+
 - Pilot started
 - Setup complete
 - First reconciliation run
@@ -70,9 +79,11 @@ This template helps you:
 ---
 
 ### Stage 5: Paid
+
 **Definition:** Customer converted to paid plan
 
 **Criteria:**
+
 - Paid plan active
 - Billing confirmed
 - Access granted
@@ -84,14 +95,17 @@ This template helps you:
 ## Pipeline Metrics
 
 ### Pipeline Value
+
 **Definition:** Total MRR potential from pipeline
 
 **Calculation:**
+
 ```
 Pipeline Value = Sum of (Deals × Expected Conversion Rate × Plan Value)
 ```
 
 **Example:**
+
 - Leads: 50 × 30% × $99 = $1,485/month
 - Qualified: 15 × 50% × $99 = $743/month
 - Demos: 8 × 60% × $99 = $475/month
@@ -101,14 +115,17 @@ Pipeline Value = Sum of (Deals × Expected Conversion Rate × Plan Value)
 ---
 
 ### Conversion Forecast
+
 **Definition:** Predicted conversions based on pipeline
 
 **Calculation:**
+
 ```
 Conversion Forecast = Pipeline Deals × Expected Conversion Rate
 ```
 
 **Example:**
+
 - Leads: 50 × 30% = 15 qualified
 - Qualified: 15 × 50% = 8 demos
 - Demos: 8 × 60% = 5 pilots
@@ -118,9 +135,11 @@ Conversion Forecast = Pipeline Deals × Expected Conversion Rate
 ---
 
 ### Pipeline Health Score
+
 **Definition:** Overall pipeline health (0-100)
 
 **Components:**
+
 - Pipeline value vs target (40%)
 - Conversion rates vs target (30%)
 - Pipeline velocity (20%)
@@ -133,9 +152,11 @@ Conversion Forecast = Pipeline Deals × Expected Conversion Rate
 ## Pipeline Review Template
 
 ### Current Pipeline Status
+
 **Date:** YYYY-MM-DD
 
 **Pipeline Stages:**
+
 - Leads: [X] (target: [Y])
 - Qualified: [X] (target: [Y])
 - Demos: [X] (target: [Y])
@@ -148,7 +169,9 @@ Conversion Forecast = Pipeline Deals × Expected Conversion Rate
 ---
 
 ### Conversion Rates
+
 **Stage Conversion Rates:**
+
 - Leads → Qualified: [X]% (target: 30%+)
 - Qualified → Demo: [X]% (target: 50%+)
 - Demo → Pilot: [X]% (target: 60%+)
@@ -159,7 +182,9 @@ Conversion Forecast = Pipeline Deals × Expected Conversion Rate
 ---
 
 ### Pipeline Velocity
+
 **Average Time in Each Stage:**
+
 - Lead → Qualified: [X] days
 - Qualified → Demo: [X] days
 - Demo → Pilot: [X] days
@@ -170,7 +195,9 @@ Conversion Forecast = Pipeline Deals × Expected Conversion Rate
 ---
 
 ### Deal Quality
+
 **Qualification Scores:**
+
 - Average qualification score: [X]/5 (target: 4+)
 - Highly qualified deals: [X]% (target: 30%+)
 - Disqualified deals: [X]% (target: 50%+)
@@ -180,9 +207,11 @@ Conversion Forecast = Pipeline Deals × Expected Conversion Rate
 ## Pipeline Issues & Actions
 
 ### Issue 1: Low Lead Generation
+
 **Problem:** Not enough leads in pipeline
 
 **Actions:**
+
 - Increase outreach volume
 - Optimize landing pages
 - Improve SEO/content
@@ -191,9 +220,11 @@ Conversion Forecast = Pipeline Deals × Expected Conversion Rate
 ---
 
 ### Issue 2: Low Qualification Rate
+
 **Problem:** Low conversion from leads to qualified
 
 **Actions:**
+
 - Improve qualification criteria
 - Better discovery questions
 - Improve messaging
@@ -202,9 +233,11 @@ Conversion Forecast = Pipeline Deals × Expected Conversion Rate
 ---
 
 ### Issue 3: Low Demo Conversion
+
 **Problem:** Low conversion from qualified to demo
 
 **Actions:**
+
 - Improve demo offer
 - Better demo scheduling
 - Follow up faster
@@ -213,9 +246,11 @@ Conversion Forecast = Pipeline Deals × Expected Conversion Rate
 ---
 
 ### Issue 4: Low Pilot Conversion
+
 **Problem:** Low conversion from demo to pilot
 
 **Actions:**
+
 - Improve demo value demonstration
 - Better pilot offer
 - Faster pilot setup
@@ -224,9 +259,11 @@ Conversion Forecast = Pipeline Deals × Expected Conversion Rate
 ---
 
 ### Issue 5: Low Paid Conversion
+
 **Problem:** Low conversion from pilot to paid
 
 **Actions:**
+
 - Improve pilot success criteria
 - Better value demonstration
 - Faster conversion process
@@ -237,13 +274,16 @@ Conversion Forecast = Pipeline Deals × Expected Conversion Rate
 ## Pipeline Optimization
 
 ### Lead Generation Optimization
+
 **Actions:**
+
 - Increase outreach volume
 - Optimize channels
 - Improve messaging
 - Ask for referrals
 
 **Metrics:**
+
 - Leads per week
 - Lead sources
 - Lead quality
@@ -251,13 +291,16 @@ Conversion Forecast = Pipeline Deals × Expected Conversion Rate
 ---
 
 ### Qualification Optimization
+
 **Actions:**
+
 - Improve qualification criteria
 - Better discovery questions
 - Improve messaging
 - Disqualify bad fits earlier
 
 **Metrics:**
+
 - Qualification rate
 - Qualification scores
 - Disqualification rate
@@ -265,13 +308,16 @@ Conversion Forecast = Pipeline Deals × Expected Conversion Rate
 ---
 
 ### Conversion Optimization
+
 **Actions:**
+
 - Improve conversion rates at each stage
 - Reduce sales cycle time
 - Improve deal quality
 - Better follow-up
 
 **Metrics:**
+
 - Conversion rates
 - Sales cycle time
 - Deal quality scores

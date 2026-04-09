@@ -1,18 +1,18 @@
 /**
  * Workflow Entanglement Service
- * 
+ *
  * PHASE 3: Workflow Entanglement
- * 
+ *
  * Embeds Settler into how work is done:
  * - Settler-generated outputs referenced downstream
  * - Stable identifiers used externally
  * - Repeatable automation hooks
- * 
+ *
  * Goal: Removing Settler breaks established workflows
  */
 
-import { supabase } from '../infrastructure/supabase/client';
-import { logError } from '../utils/logger';
+import { supabase } from "../infrastructure/supabase/client";
+import { logError } from "../utils/logger";
 
 export interface WorkflowReference {
   id: string;
@@ -21,7 +21,7 @@ export interface WorkflowReference {
   settlerEntityId: string;
   externalSystem: string; // 'accounting', 'erp', 'compliance', 'finance'
   externalReference: string; // External ID that references Settler output
-  referenceType: 'report' | 'audit' | 'compliance' | 'finance' | 'api';
+  referenceType: "report" | "audit" | "compliance" | "finance" | "api";
   createdAt: Date;
   lastUsed: Date;
   usageCount: number;
@@ -30,7 +30,7 @@ export interface WorkflowReference {
 export interface AutomationHook {
   id: string;
   tenantId: string;
-  hookType: 'cron' | 'webhook' | 'api' | 'event';
+  hookType: "cron" | "webhook" | "api" | "event";
   trigger: string; // Cron expression, webhook URL, event name
   targetEntityType: string;
   targetEntityId?: string;
@@ -60,25 +60,25 @@ export class WorkflowEntanglementService {
     settlerEntityId: string,
     externalSystem: string,
     externalReference: string,
-    referenceType: WorkflowReference['referenceType']
+    referenceType: WorkflowReference["referenceType"]
   ): Promise<WorkflowReference> {
     try {
       // Check if reference already exists
       const { data: existing } = await supabase
-        .from('usage_events')
-        .select('*')
-        .eq('tenant_id', tenantId)
-        .eq('event_type', `workflow_ref:${settlerEntityType}`)
-        .eq('metadata->>settler_entity_id', settlerEntityId)
-        .eq('metadata->>external_system', externalSystem)
-        .eq('metadata->>external_reference', externalReference)
+        .from("usage_events")
+        .select("*")
+        .eq("tenant_id", tenantId)
+        .eq("event_type", `workflow_ref:${settlerEntityType}`)
+        .eq("metadata->>settler_entity_id", settlerEntityId)
+        .eq("metadata->>external_system", externalSystem)
+        .eq("metadata->>external_reference", externalReference)
         .limit(1)
         .single();
 
       if (existing) {
         // Update existing reference
         await supabase
-          .from('usage_events')
+          .from("usage_events")
           .update({
             metadata: {
               ...existing.metadata,
@@ -87,7 +87,7 @@ export class WorkflowEntanglementService {
             },
             updated_at: new Date().toISOString(),
           })
-          .eq('id', existing.id);
+          .eq("id", existing.id);
 
         return {
           id: existing.id,
@@ -105,7 +105,7 @@ export class WorkflowEntanglementService {
 
       // Create new reference
       const { data: newRef } = await supabase
-        .from('usage_events')
+        .from("usage_events")
         .insert({
           tenant_id: tenantId,
           event_type: `workflow_ref:${settlerEntityType}`,
@@ -136,7 +136,7 @@ export class WorkflowEntanglementService {
         usageCount: 1,
       };
     } catch (error) {
-      logError('Error registering external reference', error);
+      logError("Error registering external reference", error);
       throw error;
     }
   }
@@ -160,7 +160,7 @@ export class WorkflowEntanglementService {
    */
   async createAutomationHook(
     tenantId: string,
-    hookType: AutomationHook['hookType'],
+    hookType: AutomationHook["hookType"],
     trigger: string,
     targetEntityType: string,
     targetEntityId: string | undefined,
@@ -168,7 +168,7 @@ export class WorkflowEntanglementService {
   ): Promise<AutomationHook> {
     try {
       const { data: hook } = await supabase
-        .from('usage_events')
+        .from("usage_events")
         .insert({
           tenant_id: tenantId,
           event_type: `automation_hook:${hookType}`,
@@ -202,7 +202,7 @@ export class WorkflowEntanglementService {
         updatedAt: new Date(),
       };
     } catch (error) {
-      logError('Error creating automation hook', error);
+      logError("Error creating automation hook", error);
       throw error;
     }
   }
@@ -213,14 +213,14 @@ export class WorkflowEntanglementService {
   async recordHookExecution(hookId: string): Promise<void> {
     try {
       const { data: hook } = await supabase
-        .from('usage_events')
-        .select('*')
-        .eq('id', hookId)
+        .from("usage_events")
+        .select("*")
+        .eq("id", hookId)
         .single();
 
       if (hook) {
         await supabase
-          .from('usage_events')
+          .from("usage_events")
           .update({
             metadata: {
               ...hook.metadata,
@@ -229,10 +229,10 @@ export class WorkflowEntanglementService {
             },
             updated_at: new Date().toISOString(),
           })
-          .eq('id', hookId);
+          .eq("id", hookId);
       }
     } catch (error) {
-      logError('Error recording hook execution', error);
+      logError("Error recording hook execution", error);
     }
   }
 
@@ -243,10 +243,10 @@ export class WorkflowEntanglementService {
     try {
       // Get external references
       const { data: references } = await supabase
-        .from('usage_events')
-        .select('metadata')
-        .eq('tenant_id', tenantId)
-        .like('event_type', 'workflow_ref:%');
+        .from("usage_events")
+        .select("metadata")
+        .eq("tenant_id", tenantId)
+        .like("event_type", "workflow_ref:%");
 
       const externalSystems = new Set<string>();
       references?.forEach((ref) => {
@@ -258,11 +258,11 @@ export class WorkflowEntanglementService {
 
       // Get automation hooks
       const { count: automationHooks } = await supabase
-        .from('usage_events')
-        .select('*', { count: 'exact', head: true })
-        .eq('tenant_id', tenantId)
-        .like('event_type', 'automation_hook:%')
-        .eq('metadata->>is_active', true);
+        .from("usage_events")
+        .select("*", { count: "exact", head: true })
+        .eq("tenant_id", tenantId)
+        .like("event_type", "automation_hook:%")
+        .eq("metadata->>is_active", true);
 
       // Calculate breaking change risk
       const breakingChangeRisk = this.calculateBreakingChangeRisk(
@@ -279,7 +279,7 @@ export class WorkflowEntanglementService {
         breakingChangeRisk,
       };
     } catch (error) {
-      logError('Error getting entanglement metrics', error);
+      logError("Error getting entanglement metrics", error);
       return {
         tenantId,
         externalReferences: 0,
@@ -303,7 +303,7 @@ export class WorkflowEntanglementService {
     const hookScore = Math.min(hooks / 50, 1);
     const systemScore = Math.min(downstreamSystems / 10, 1);
 
-    return (referenceScore * 0.4 + hookScore * 0.4 + systemScore * 0.2);
+    return referenceScore * 0.4 + hookScore * 0.4 + systemScore * 0.2;
   }
 
   /**
@@ -314,7 +314,7 @@ export class WorkflowEntanglementService {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32-bit integer
     }
     return Math.abs(hash).toString(16);

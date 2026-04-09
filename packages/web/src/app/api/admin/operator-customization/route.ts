@@ -11,7 +11,10 @@ import { ADMIN_DASHBOARD_MODULE_REGISTRY } from "@/lib/operator-customization/re
 import { OperatorSurfaceCustomizationSchema } from "@/lib/operator-customization/schema";
 import { getOperatorCustomizationEntitlementsForTenant } from "@/lib/server/operator-customization/operator-customization-entitlements";
 import { handleOperatorCustomizationRoute } from "@/lib/server/operator-customization/operator-customization-route-guard";
-import { getCustomizationState, saveDraft } from "@/lib/server/operator-customization/customization-service";
+import {
+  getCustomizationState,
+  saveDraft,
+} from "@/lib/server/operator-customization/customization-service";
 import { resolveCustomizationTenantId } from "@/lib/server/operator-customization/tenant-context";
 import { prisma } from "@/shared/db/prismaClient";
 
@@ -33,7 +36,9 @@ export const GET = withSecurity(async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const entitlements = await getOperatorCustomizationEntitlementsForTenant(resolved.tenant.tenantId);
+    const entitlements = await getOperatorCustomizationEntitlementsForTenant(
+      resolved.tenant.tenantId
+    );
     const state = await getCustomizationState(prisma, resolved.tenant.tenantId, userId);
 
     return NextResponse.json({
@@ -74,13 +79,18 @@ export const PUT = withSecurity(
 
       const body = PutBodySchema.safeParse(await request.json().catch(() => null));
       if (!body.success) {
-        return NextResponse.json({ error: "invalid_body", issues: body.error.issues }, { status: 400 });
+        return NextResponse.json(
+          { error: "invalid_body", issues: body.error.issues },
+          { status: 400 }
+        );
       }
 
       const resolved = await resolveCustomizationTenantId(body.data.tenantId ?? null);
       if (!resolved.ok) return resolved.response;
 
-      const entitlements = await getOperatorCustomizationEntitlementsForTenant(resolved.tenant.tenantId);
+      const entitlements = await getOperatorCustomizationEntitlementsForTenant(
+        resolved.tenant.tenantId
+      );
 
       const parsedConfig = OperatorSurfaceCustomizationSchema.safeParse(body.data.draft);
       if (!parsedConfig.success) {
@@ -110,7 +120,10 @@ export const PUT = withSecurity(
           );
         }
         if ("errors" in saved) {
-          return NextResponse.json({ error: "validation_failed", errors: saved.errors }, { status: 400 });
+          return NextResponse.json(
+            { error: "validation_failed", errors: saved.errors },
+            { status: 400 }
+          );
         }
         return NextResponse.json({ error: "save_failed" }, { status: 500 });
       }

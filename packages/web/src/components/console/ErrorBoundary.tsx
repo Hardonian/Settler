@@ -1,17 +1,17 @@
 /**
  * Error Boundary for Console Routes
- * 
+ *
  * Prevents 500 errors from crashing the entire page.
  * Shows graceful error UI with actionable next steps.
  */
 
-'use client';
+"use client";
 
-import { Component, ReactNode } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { AlertTriangle } from 'lucide-react';
+import { Component, ReactNode } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { AlertTriangle } from "lucide-react";
 
 interface Props {
   children: ReactNode;
@@ -35,7 +35,7 @@ export class ConsoleErrorBoundary extends Component<Props, State> {
 
   override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // Log error for monitoring
-    console.error('[ConsoleErrorBoundary] Caught error:', {
+    console.error("[ConsoleErrorBoundary] Caught error:", {
       error: error.message,
       stack: error.stack,
       componentStack: errorInfo.componentStack,
@@ -58,15 +58,11 @@ export class ConsoleErrorBoundary extends Component<Props, State> {
                 <AlertTriangle className="w-5 h-5 text-red-600" />
                 <CardTitle>Something went wrong</CardTitle>
               </div>
-              <CardDescription>
-                We encountered an error while loading this page.
-              </CardDescription>
+              <CardDescription>We encountered an error while loading this page.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="bg-muted/10 rounded-lg p-4">
-                <p className="text-sm text-muted-foreground mb-2">
-                  This might be due to:
-                </p>
+                <p className="text-sm text-muted-foreground mb-2">This might be due to:</p>
                 <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
                   <li>Database connection issues</li>
                   <li>Missing authentication</li>
@@ -74,8 +70,8 @@ export class ConsoleErrorBoundary extends Component<Props, State> {
                   <li>Temporary service unavailability</li>
                 </ul>
               </div>
-              
-              {process.env.NODE_ENV === 'development' && this.state.error && (
+
+              {process.env.NODE_ENV === "development" && this.state.error && (
                 <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
                   <p className="text-xs font-mono text-red-800 dark:text-red-200 break-all">
                     {this.state.error.message}

@@ -10,12 +10,14 @@ export default function OperatorPage() {
   return (
     <div className="space-y-8 pb-12 max-w-3xl">
       <div>
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary/70 mb-2">Operator</p>
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary/70 mb-2">
+          Operator
+        </p>
         <h1 className="text-3xl font-semibold tracking-tight">Console operator hub</h1>
         <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-          This route previously showed illustrative fleet metrics. Those are removed: Settler does not
-          ship synthetic multi-region orchestration truth in the product console. Use the surfaces
-          below, which fail closed or cite query-backed evidence.
+          This route previously showed illustrative fleet metrics. Those are removed: Settler does
+          not ship synthetic multi-region orchestration truth in the product console. Use the
+          surfaces below, which fail closed or cite query-backed evidence.
         </p>
       </div>
 
@@ -24,8 +26,8 @@ export default function OperatorPage() {
           <CardHeader>
             <CardTitle className="text-base">Operator digest</CardTitle>
             <CardDescription>
-              Workspaces needing attention, run failures, exception depth, proof gaps, and plan limit
-              context from the canonical commercial spine.
+              Workspaces needing attention, run failures, exception depth, proof gaps, and plan
+              limit context from the canonical commercial spine.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -44,7 +46,10 @@ export default function OperatorPage() {
             <CardDescription>Tenant-scoped incident list when configured.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Link href="/operator/incidents" className="text-sm font-medium text-primary hover:underline">
+            <Link
+              href="/operator/incidents"
+              className="text-sm font-medium text-primary hover:underline"
+            >
               Open incidents →
             </Link>
           </CardContent>

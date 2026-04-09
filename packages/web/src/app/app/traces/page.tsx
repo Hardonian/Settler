@@ -63,9 +63,7 @@ export default function TracesPage() {
                     </p>
                   </div>
                 </div>
-                <Badge variant="success">
-                  COMPLETED
-                </Badge>
+                <Badge variant="success">COMPLETED</Badge>
               </div>
 
               <div className="p-8">

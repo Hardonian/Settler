@@ -100,7 +100,8 @@ export const ADMIN_DASHBOARD_MODULE_REGISTRY: Record<string, DashboardModuleDefi
     id: "usage_warning",
     category: "signal",
     defaultTitle: "Usage warning",
-    defaultHelp: "Highlights when volume approaches a configured attention threshold (presentation only).",
+    defaultHelp:
+      "Highlights when volume approaches a configured attention threshold (presentation only).",
     locked: false,
     truthClass: "presentation_summary",
     sourceOfTruthHint: "Derived from KPI totalVolume + local threshold",

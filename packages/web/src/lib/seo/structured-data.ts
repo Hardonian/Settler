@@ -3,34 +3,34 @@
  * Implements Schema.org markup for better search engine understanding
  */
 
-import { getImageUrl } from '@/lib/images/image-config';
+import { getImageUrl } from "@/lib/images/image-config";
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://settler.dev';
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://settler.dev";
 
 /**
  * Product schema for Settler API
  */
 export function generateProductSchema() {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
-    name: 'Settler OSS Reconciliation Engine',
-    applicationCategory: 'DeveloperApplication',
-    operatingSystem: 'Any',
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Settler OSS Reconciliation Engine",
+    applicationCategory: "DeveloperApplication",
+    operatingSystem: "Any",
     description:
-      'Open-source reconciliation engine that normalizes financial data, applies explicit rules, and surfaces variances for review.',
+      "Open-source reconciliation engine that normalizes financial data, applies explicit rules, and surfaces variances for review.",
     url: baseUrl,
-    downloadUrl: 'https://www.npmjs.com/package/@settler/sdk',
-    screenshot: getImageUrl('ogImage'),
+    downloadUrl: "https://www.npmjs.com/package/@settler/sdk",
+    screenshot: getImageUrl("ogImage"),
     featureList: [
-      'Deterministic reconciliation rules',
-      'Provider-agnostic adapters',
-      'Variance reporting with evidence',
-      'Inspectability and replay',
-      'Human-in-the-loop workflows',
+      "Deterministic reconciliation rules",
+      "Provider-agnostic adapters",
+      "Variance reporting with evidence",
+      "Inspectability and replay",
+      "Human-in-the-loop workflows",
     ],
-    applicationSubCategory: 'Financial Technology',
-    softwareVersion: '1.0.0',
+    applicationSubCategory: "Financial Technology",
+    softwareVersion: "1.0.0",
     releaseNotes: `${baseUrl}/changelog`,
   };
 }
@@ -40,10 +40,10 @@ export function generateProductSchema() {
  */
 export function generateBreadcrumbSchema(items: Array<{ name: string; url: string }>) {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
     itemListElement: items.map((item, index) => ({
-      '@type': 'ListItem',
+      "@type": "ListItem",
       position: index + 1,
       name: item.name,
       item: `${baseUrl}${item.url}`,
@@ -72,28 +72,28 @@ export function generateArticleSchema({
   url: string;
 }) {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'Article',
+    "@context": "https://schema.org",
+    "@type": "Article",
     headline: title,
     description,
-    image: image || getImageUrl('ogImage'),
+    image: image || getImageUrl("ogImage"),
     datePublished: publishedDate,
     dateModified: modifiedDate || publishedDate,
     author: {
-      '@type': 'Person',
+      "@type": "Person",
       name: author,
     },
     publisher: {
-      '@type': 'Organization',
-      name: 'Settler',
+      "@type": "Organization",
+      name: "Settler",
       logo: {
-        '@type': 'ImageObject',
-        url: getImageUrl('logoMain'),
+        "@type": "ImageObject",
+        url: getImageUrl("logoMain"),
       },
     },
     mainEntityOfPage: {
-      '@type': 'WebPage',
-      '@id': `${baseUrl}${url}`,
+      "@type": "WebPage",
+      "@id": `${baseUrl}${url}`,
     },
   };
 }
@@ -111,12 +111,12 @@ export function generateHowToSchema({
   steps: Array<{ name: string; text: string; image?: string }>;
 }) {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'HowTo',
+    "@context": "https://schema.org",
+    "@type": "HowTo",
     name,
     description,
     step: steps.map((step, index) => ({
-      '@type': 'HowToStep',
+      "@type": "HowToStep",
       position: index + 1,
       name: step.name,
       text: step.text,
@@ -146,8 +146,8 @@ export function generateVideoSchema({
   duration: string;
 }) {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'VideoObject',
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
     name,
     description,
     thumbnailUrl,
@@ -156,11 +156,11 @@ export function generateVideoSchema({
     duration,
     uploadDate: new Date().toISOString(),
     publisher: {
-      '@type': 'Organization',
-      name: 'Settler',
+      "@type": "Organization",
+      name: "Settler",
       logo: {
-        '@type': 'ImageObject',
-        url: getImageUrl('logoMain'),
+        "@type": "ImageObject",
+        url: getImageUrl("logoMain"),
       },
     },
   };
@@ -181,14 +181,14 @@ export function generateReviewSchema({
   datePublished: string;
 }) {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'Review',
+    "@context": "https://schema.org",
+    "@type": "Review",
     author: {
-      '@type': 'Person',
+      "@type": "Person",
       name: author,
     },
     reviewRating: {
-      '@type': 'Rating',
+      "@type": "Rating",
       ratingValue: rating,
       bestRating: 5,
       worstRating: 1,
@@ -215,19 +215,19 @@ export function generateServiceSchema({
   provider?: string;
 }) {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'Service',
+    "@context": "https://schema.org",
+    "@type": "Service",
     name,
     description,
     serviceType,
     provider: provider || {
-      '@type': 'Organization',
-      name: 'Settler',
+      "@type": "Organization",
+      name: "Settler",
       url: baseUrl,
     },
     ...(areaServed && {
       areaServed: {
-        '@type': 'Country',
+        "@type": "Country",
         name: areaServed,
       },
     }),

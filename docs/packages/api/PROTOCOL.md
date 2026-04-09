@@ -26,6 +26,7 @@ The React.Settler Protocol is a framework-agnostic, typed protocol for defining 
 ### Core Entities
 
 #### `ReconciliationTransaction`
+
 Represents a transaction that needs to be reconciled.
 
 ```typescript
@@ -43,6 +44,7 @@ interface ReconciliationTransaction {
 ```
 
 #### `ReconciliationSettlement`
+
 Represents a settlement/payout that needs to be reconciled.
 
 ```typescript
@@ -60,6 +62,7 @@ interface ReconciliationSettlement {
 ```
 
 #### `ReconciliationException`
+
 Represents an exception requiring manual review.
 
 ```typescript
@@ -79,6 +82,7 @@ interface ReconciliationException {
 ### Rule System
 
 #### `ReconciliationRule`
+
 Defines how transactions and settlements should be matched.
 
 ```typescript
@@ -94,16 +98,19 @@ interface ReconciliationRule {
 ```
 
 **Rule Types:**
+
 - `exact`: Exact match required
 - `fuzzy`: Fuzzy matching with threshold
 - `range`: Match within tolerance range
 - `regex`: Pattern-based matching
 
 **Rule Fields:**
+
 - `transactionId`, `amount`, `date`, `referenceId`
 - `providerTransactionId`, `providerSettlementId`, `currency`
 
 #### `ReconciliationRuleSet`
+
 Collection of rules with conflict resolution strategy.
 
 ```typescript
@@ -119,6 +126,7 @@ interface ReconciliationRuleSet {
 ### View Configuration
 
 #### `ReconciliationViewConfig`
+
 Defines how reconciliation data should be displayed.
 
 ```typescript
@@ -199,6 +207,7 @@ When React components are compiled, they produce a `ReconciliationConfig` JSON s
 ## Versioning
 
 Protocol versions follow semantic versioning:
+
 - **Major**: Breaking changes to types or schema
 - **Minor**: New types or features (backward compatible)
 - **Patch**: Bug fixes and clarifications

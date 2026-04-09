@@ -48,10 +48,7 @@ function sleep(ms: number): Promise<void> {
 /**
  * Executes a function with automatic retry and exponential backoff
  */
-export async function withRetry<T>(
-  fn: () => Promise<T>,
-  config: RetryConfig = {}
-): Promise<T> {
+export async function withRetry<T>(fn: () => Promise<T>, config: RetryConfig = {}): Promise<T> {
   const retryConfig = { ...DEFAULT_RETRY_CONFIG, ...config };
   let lastError: SettlerError;
 
@@ -59,7 +56,8 @@ export async function withRetry<T>(
     try {
       return await fn();
     } catch (error) {
-      lastError = error instanceof SettlerError ? error : new NetworkError(String(error), error as Error);
+      lastError =
+        error instanceof SettlerError ? error : new NetworkError(String(error), error as Error);
 
       // Don't retry on last attempt
       if (attempt === retryConfig.maxRetries) {

@@ -54,8 +54,8 @@ export function RunOperatorTruthPanel({ run }: RunOperatorTruthPanelProps) {
             What needs attention on this run
           </h2>
           <p className="text-xs text-muted-foreground mt-1 max-w-2xl leading-relaxed">
-            Signals below come from the canonical run payload — exceptions, proof posture, drift, and
-            recorded deltas. Nothing here is inferred client-side.
+            Signals below come from the canonical run payload — exceptions, proof posture, drift,
+            and recorded deltas. Nothing here is inferred client-side.
           </p>
         </div>
       </div>
@@ -78,10 +78,7 @@ export function RunOperatorTruthPanel({ run }: RunOperatorTruthPanelProps) {
                 return (
                   <li
                     key={`${item.code}-${item.title}`}
-                    className={cn(
-                      "rounded-xl border p-4 text-sm",
-                      severityStyles[item.severity]
-                    )}
+                    className={cn("rounded-xl border p-4 text-sm", severityStyles[item.severity])}
                   >
                     <div className="flex items-start gap-3">
                       <Icon
@@ -100,7 +97,9 @@ export function RunOperatorTruthPanel({ run }: RunOperatorTruthPanelProps) {
                             {severityLabel[item.severity]}
                           </span>
                         </div>
-                        <p className="text-xs leading-relaxed text-muted-foreground">{item.detail}</p>
+                        <p className="text-xs leading-relaxed text-muted-foreground">
+                          {item.detail}
+                        </p>
                       </div>
                     </div>
                   </li>
@@ -139,9 +138,13 @@ export function RunOperatorTruthPanel({ run }: RunOperatorTruthPanelProps) {
                           {action.label}
                         </Link>
                       ) : (
-                        <span className="text-sm font-semibold text-foreground">{action.label}</span>
+                        <span className="text-sm font-semibold text-foreground">
+                          {action.label}
+                        </span>
                       )}
-                      <p className="text-xs text-muted-foreground leading-relaxed">{action.rationale}</p>
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        {action.rationale}
+                      </p>
                     </div>
                   </div>
                 </li>

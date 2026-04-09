@@ -3,6 +3,7 @@
 ## Overview
 
 Database migrations are now **automatically applied** when:
+
 1. **PR Push**: When you push changes to a PR that include migration files
 2. **PR Merge**: When a PR with migrations is merged to `main`
 
@@ -15,6 +16,7 @@ No manual CLI commands or local setup required! 🎉
 **Workflow**: `.github/workflows/auto-migrate-on-pr-push.yml`
 
 **Triggers when:**
+
 - PR is opened, updated, or reopened
 - Files changed include:
   - `supabase/migrations/**/*.sql`
@@ -22,6 +24,7 @@ No manual CLI commands or local setup required! 🎉
   - `prisma/schema.prisma`
 
 **What happens:**
+
 - Detects migration file changes
 - Runs migrations against **preview/test database** (safe to test)
 - Verifies migrations applied successfully
@@ -34,10 +37,12 @@ No manual CLI commands or local setup required! 🎉
 **Workflow**: `.github/workflows/supabase-migrate.yml`
 
 **Triggers when:**
+
 - Code is pushed to `main` branch
 - Files changed include migration files
 
 **What happens:**
+
 - Detects migration file changes
 - Runs migrations against **production database**
 - Deploys edge functions (if changed)
@@ -88,22 +93,25 @@ Migrations are automatically detected from:
 ### Adding a New Migration
 
 1. **Create migration file**:
+
    ```bash
    # Create new migration file
    touch supabase/migrations/20260125000000_console_rls_fixes.sql
    ```
 
 2. **Write your migration SQL**:
+
    ```sql
    -- Migration: console_rls_fixes
    BEGIN;
-   
+
    CREATE OR REPLACE FUNCTION current_user_id() RETURNS UUID AS $$
    -- ... your migration code ...
    COMMIT;
    ```
 
 3. **Commit and push**:
+
    ```bash
    git add supabase/migrations/20260125000000_console_rls_fixes.sql
    git commit -m "Add Console RLS fixes"
@@ -131,6 +139,7 @@ Migrations are automatically detected from:
 ### Migration Logs
 
 Each migration run includes:
+
 - ✅ Migration files detected
 - ✅ Migration validation
 - ✅ Migration execution
@@ -224,6 +233,7 @@ But with automatic migrations, you shouldn't need to! 🚀
 ## Support
 
 If migrations aren't running automatically:
+
 1. Check GitHub Actions workflow status
 2. Verify secrets are configured
 3. Check migration file paths and names

@@ -19,7 +19,7 @@ export interface TenantBranding {
 export interface TenantNavigationItem {
   label: string;
   href: string;
-  type: 'internal' | 'external';
+  type: "internal" | "external";
   iconKey?: string;
   children?: TenantNavigationItem[];
 }

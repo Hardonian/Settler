@@ -1,28 +1,28 @@
 /**
  * Funnel CTA Component
- * 
+ *
  * PHASE 2: FUNNEL & CONVERSION CONTRACTS
- * 
+ *
  * Displays contextual next-step CTAs based on user's funnel stage.
  * No dead ends - every page has a clear next action.
  */
 
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight, Lock, Sparkles } from 'lucide-react';
-import Link from 'next/link';
-import { getNextAction, type FunnelStage } from '@/lib/gtm/funnels';
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowRight, Lock, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { getNextAction, type FunnelStage } from "@/lib/gtm/funnels";
 
 interface FunnelCTAProps {
   userId?: string;
-  variant?: 'inline' | 'card' | 'banner';
+  variant?: "inline" | "card" | "banner";
   className?: string;
 }
 
-export function FunnelCTA({ userId, variant = 'card', className }: FunnelCTAProps) {
+export function FunnelCTA({ userId, variant = "card", className }: FunnelCTAProps) {
   const [stage, setStage] = useState<FunnelStage | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -41,7 +41,7 @@ export function FunnelCTA({ userId, variant = 'card', className }: FunnelCTAProp
           setStage(data.stage);
         }
       } catch (error: unknown) {
-        console.error('[FunnelCTA] Failed to load stage:', error);
+        console.error("[FunnelCTA] Failed to load stage:", error);
       } finally {
         setLoading(false);
       }
@@ -59,16 +59,12 @@ export function FunnelCTA({ userId, variant = 'card', className }: FunnelCTAProp
     return null; // End of funnel
   }
 
-  const isUpgrade = nextAction.type === 'upgrade';
-  const isGate = nextAction.type === 'gate';
+  const isUpgrade = nextAction.type === "upgrade";
+  const isGate = nextAction.type === "gate";
 
-  if (variant === 'inline') {
+  if (variant === "inline") {
     return (
-      <Button
-        asChild
-        variant={isUpgrade ? 'default' : 'outline'}
-        className={className}
-      >
+      <Button asChild variant={isUpgrade ? "default" : "outline"} className={className}>
         <Link href={nextAction.url}>
           {nextAction.label}
           {isUpgrade && <Sparkles className="w-4 h-4 ml-2" />}
@@ -78,21 +74,23 @@ export function FunnelCTA({ userId, variant = 'card', className }: FunnelCTAProp
     );
   }
 
-  if (variant === 'banner') {
+  if (variant === "banner") {
     return (
-      <div className={`bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 ${className}`}>
+      <div
+        className={`bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 ${className}`}
+      >
         <div className="flex items-center justify-between">
           <div>
             <div className="font-semibold text-foreground mb-1">
-              {isGate ? 'Unlock This Feature' : nextAction.label}
+              {isGate ? "Unlock This Feature" : nextAction.label}
             </div>
             <div className="text-sm text-muted-foreground">
               {isGate
-                ? 'Upgrade your plan to access this feature'
-                : 'Continue your journey with Settler'}
+                ? "Upgrade your plan to access this feature"
+                : "Continue your journey with Settler"}
             </div>
           </div>
-          <Button asChild variant={isUpgrade ? 'default' : 'outline'}>
+          <Button asChild variant={isUpgrade ? "default" : "outline"}>
             <Link href={nextAction.url}>
               {nextAction.label}
               {isUpgrade && <Sparkles className="w-4 h-4 ml-2" />}
@@ -111,18 +109,16 @@ export function FunnelCTA({ userId, variant = 'card', className }: FunnelCTAProp
         <div className="flex items-center gap-2">
           {isGate && <Lock className="w-5 h-5 text-muted-foreground/60" />}
           {!isGate && <Sparkles className="w-5 h-5 text-blue-600" />}
-          <CardTitle>
-            {isGate ? 'Unlock This Feature' : 'Next Step'}
-          </CardTitle>
+          <CardTitle>{isGate ? "Unlock This Feature" : "Next Step"}</CardTitle>
         </div>
         <CardDescription>
           {isGate
-            ? 'Upgrade your plan to access this feature'
-            : 'Continue your journey with Settler'}
+            ? "Upgrade your plan to access this feature"
+            : "Continue your journey with Settler"}
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Button asChild variant={isUpgrade ? 'default' : 'outline'} className="w-full">
+        <Button asChild variant={isUpgrade ? "default" : "outline"} className="w-full">
           <Link href={nextAction.url}>
             {nextAction.label}
             {isUpgrade && <Sparkles className="w-4 h-4 ml-2" />}

@@ -1,23 +1,23 @@
 /**
  * Learning Loops Service
- * 
+ *
  * PHASE 5: Internal Learning & Feedback Loops
- * 
+ *
  * Makes the system smarter over time:
  * - Pattern detection from past reconciliations
  * - Anomaly baselines per tenant
  * - Auto-suggestions derived from historical outcomes
- * 
+ *
  * Rules: Learning is tenant-isolated, explainable improvements only
  */
 
-import { supabase } from '../infrastructure/supabase/client';
-import { logError } from '../utils/logger';
+import { supabase } from "../infrastructure/supabase/client";
+import { logError } from "../utils/logger";
 
 export interface Pattern {
   id: string;
   tenantId: string;
-  patternType: 'matching' | 'validation' | 'transformation' | 'anomaly';
+  patternType: "matching" | "validation" | "transformation" | "anomaly";
   patternKey: string;
   patternValue: Record<string, unknown>;
   confidence: number; // 0-1
@@ -40,11 +40,11 @@ export interface AnomalyBaseline {
 export interface AutoSuggestion {
   id: string;
   tenantId: string;
-  suggestionType: 'matching_rule' | 'validation_rule' | 'transformation' | 'optimization';
+  suggestionType: "matching_rule" | "validation_rule" | "transformation" | "optimization";
   suggestion: string;
   rationale: string;
   confidence: number;
-  estimatedImpact: 'high' | 'medium' | 'low';
+  estimatedImpact: "high" | "medium" | "low";
   createdAt: Date;
 }
 
@@ -79,7 +79,7 @@ export class LearningLoopsService {
         confidenceAvg: outcome.confidenceAvg,
       });
     } catch (error) {
-      logError('Error learning from reconciliation', error);
+      logError("Error learning from reconciliation", error);
     }
   }
 
@@ -100,14 +100,20 @@ export class LearningLoopsService {
 
       // Store patterns
       for (const [rule, count] of rulePatterns.entries()) {
-        await this.storePattern(tenantId, 'matching', rule, {
+        await this.storePattern(
+          tenantId,
+          "matching",
           rule,
-          successCount: count,
-          reconciliationId,
-        }, `Rule "${rule}" successfully matched ${count} items`);
+          {
+            rule,
+            successCount: count,
+            reconciliationId,
+          },
+          `Rule "${rule}" successfully matched ${count} items`
+        );
       }
     } catch (error) {
-      logError('Error learning matching patterns', error);
+      logError("Error learning matching patterns", error);
     }
   }
 
@@ -123,25 +129,37 @@ export class LearningLoopsService {
       // Learn from passed validations
       const passedRules = validationResults.filter((v) => v.passed);
       passedRules.forEach((result) => {
-        this.storePattern(tenantId, 'validation', result.rule, {
-          rule: result.rule,
-          passed: true,
-          reconciliationId,
-        }, `Validation rule "${result.rule}" passed`);
+        this.storePattern(
+          tenantId,
+          "validation",
+          result.rule,
+          {
+            rule: result.rule,
+            passed: true,
+            reconciliationId,
+          },
+          `Validation rule "${result.rule}" passed`
+        );
       });
 
       // Learn from failed validations (for improvement)
       const failedRules = validationResults.filter((v) => !v.passed);
       failedRules.forEach((result) => {
-        this.storePattern(tenantId, 'validation', result.rule, {
-          rule: result.rule,
-          passed: false,
-          reason: result.reason,
-          reconciliationId,
-        }, `Validation rule "${result.rule}" failed: ${result.reason || 'unknown reason'}`);
+        this.storePattern(
+          tenantId,
+          "validation",
+          result.rule,
+          {
+            rule: result.rule,
+            passed: false,
+            reason: result.reason,
+            reconciliationId,
+          },
+          `Validation rule "${result.rule}" failed: ${result.reason || "unknown reason"}`
+        );
       });
     } catch (error) {
-      logError('Error learning validation patterns', error);
+      logError("Error learning validation patterns", error);
     }
   }
 
@@ -150,7 +168,7 @@ export class LearningLoopsService {
    */
   private async storePattern(
     tenantId: string,
-    patternType: Pattern['patternType'],
+    patternType: Pattern["patternType"],
     patternKey: string,
     patternValue: Record<string, unknown>,
     explanation: string
@@ -158,11 +176,11 @@ export class LearningLoopsService {
     try {
       // Check if pattern exists
       const { data: existing } = await supabase
-        .from('usage_events')
-        .select('*')
-        .eq('tenant_id', tenantId)
-        .eq('event_type', `pattern:${patternType}`)
-        .eq('metadata->>pattern_key', patternKey)
+        .from("usage_events")
+        .select("*")
+        .eq("tenant_id", tenantId)
+        .eq("event_type", `pattern:${patternType}`)
+        .eq("metadata->>pattern_key", patternKey)
         .limit(1)
         .single();
 
@@ -172,7 +190,7 @@ export class LearningLoopsService {
         const confidence = this.calculatePatternConfidence(occurrenceCount);
 
         await supabase
-          .from('usage_events')
+          .from("usage_events")
           .update({
             metadata: {
               ...existing.metadata,
@@ -184,29 +202,27 @@ export class LearningLoopsService {
             },
             updated_at: new Date().toISOString(),
           })
-          .eq('id', existing.id);
+          .eq("id", existing.id);
       } else {
         // Create new pattern
-        await supabase
-          .from('usage_events')
-          .insert({
-            tenant_id: tenantId,
-            event_type: `pattern:${patternType}`,
-            quantity: 1,
-            metadata: {
-              pattern_type: patternType,
-              pattern_key: patternKey,
-              pattern_value: patternValue,
-              occurrence_count: 1,
-              confidence: 0.5,
-              first_observed: new Date().toISOString(),
-              last_observed: new Date().toISOString(),
-              explanation,
-            },
-          });
+        await supabase.from("usage_events").insert({
+          tenant_id: tenantId,
+          event_type: `pattern:${patternType}`,
+          quantity: 1,
+          metadata: {
+            pattern_type: patternType,
+            pattern_key: patternKey,
+            pattern_value: patternValue,
+            occurrence_count: 1,
+            confidence: 0.5,
+            first_observed: new Date().toISOString(),
+            last_observed: new Date().toISOString(),
+            explanation,
+          },
+        });
       }
     } catch (error) {
-      logError('Error storing pattern', error);
+      logError("Error storing pattern", error);
     }
   }
 
@@ -231,33 +247,29 @@ export class LearningLoopsService {
   ): Promise<void> {
     try {
       // Update matched count baseline
-      await this.updateBaseline(tenantId, 'matched_count', metrics.matchedCount);
-      
+      await this.updateBaseline(tenantId, "matched_count", metrics.matchedCount);
+
       // Update unmatched count baseline
-      await this.updateBaseline(tenantId, 'unmatched_count', metrics.unmatchedCount);
-      
+      await this.updateBaseline(tenantId, "unmatched_count", metrics.unmatchedCount);
+
       // Update confidence baseline
-      await this.updateBaseline(tenantId, 'confidence_avg', metrics.confidenceAvg);
+      await this.updateBaseline(tenantId, "confidence_avg", metrics.confidenceAvg);
     } catch (error) {
-      logError('Error updating anomaly baselines', error);
+      logError("Error updating anomaly baselines", error);
     }
   }
 
   /**
    * Update baseline for a metric
    */
-  private async updateBaseline(
-    tenantId: string,
-    metric: string,
-    value: number
-  ): Promise<void> {
+  private async updateBaseline(tenantId: string, metric: string, value: number): Promise<void> {
     try {
       // Get existing baseline
       const { data: existing } = await supabase
-        .from('usage_events')
-        .select('*')
-        .eq('tenant_id', tenantId)
-        .eq('event_type', `baseline:${metric}`)
+        .from("usage_events")
+        .select("*")
+        .eq("tenant_id", tenantId)
+        .eq("event_type", `baseline:${metric}`)
         .limit(1)
         .single();
 
@@ -276,7 +288,7 @@ export class LearningLoopsService {
         const newStdDev = Math.sqrt(newVariance);
 
         await supabase
-          .from('usage_events')
+          .from("usage_events")
           .update({
             metadata: {
               ...existing.metadata,
@@ -287,26 +299,24 @@ export class LearningLoopsService {
             },
             updated_at: new Date().toISOString(),
           })
-          .eq('id', existing.id);
+          .eq("id", existing.id);
       } else {
         // Create new baseline
-        await supabase
-          .from('usage_events')
-          .insert({
-            tenant_id: tenantId,
-            event_type: `baseline:${metric}`,
-            quantity: value,
-            metadata: {
-              metric,
-              baseline_value: value,
-              standard_deviation: 0,
-              sample_size: 1,
-              last_updated: new Date().toISOString(),
-            },
-          });
+        await supabase.from("usage_events").insert({
+          tenant_id: tenantId,
+          event_type: `baseline:${metric}`,
+          quantity: value,
+          metadata: {
+            metric,
+            baseline_value: value,
+            standard_deviation: 0,
+            sample_size: 1,
+            last_updated: new Date().toISOString(),
+          },
+        });
       }
     } catch (error) {
-      logError('Error updating baseline', error);
+      logError("Error updating baseline", error);
     }
   }
 
@@ -321,10 +331,10 @@ export class LearningLoopsService {
     try {
       // Get baseline
       const { data: baseline } = await supabase
-        .from('usage_events')
-        .select('metadata')
-        .eq('tenant_id', tenantId)
-        .eq('event_type', `baseline:${metric}`)
+        .from("usage_events")
+        .select("metadata")
+        .eq("tenant_id", tenantId)
+        .eq("event_type", `baseline:${metric}`)
         .limit(1)
         .single();
 
@@ -332,7 +342,7 @@ export class LearningLoopsService {
         return {
           isAnomaly: false,
           deviation: 0,
-          explanation: 'No baseline established yet',
+          explanation: "No baseline established yet",
         };
       }
 
@@ -351,11 +361,11 @@ export class LearningLoopsService {
           : `Value ${value} is within normal range (baseline: ${baselineValue.toFixed(2)}, std dev: ${stdDev.toFixed(2)})`,
       };
     } catch (error) {
-      logError('Error detecting anomaly', error);
+      logError("Error detecting anomaly", error);
       return {
         isAnomaly: false,
         deviation: 0,
-        explanation: 'Error detecting anomaly',
+        explanation: "Error detecting anomaly",
       };
     }
   }
@@ -369,11 +379,11 @@ export class LearningLoopsService {
 
       // Get patterns
       const { data: patterns } = await supabase
-        .from('usage_events')
-        .select('*')
-        .eq('tenant_id', tenantId)
-        .like('event_type', 'pattern:%')
-        .order('metadata->>occurrence_count', { ascending: false })
+        .from("usage_events")
+        .select("*")
+        .eq("tenant_id", tenantId)
+        .like("event_type", "pattern:%")
+        .order("metadata->>occurrence_count", { ascending: false })
         .limit(50);
 
       // Generate suggestions from high-confidence patterns
@@ -382,7 +392,7 @@ export class LearningLoopsService {
         const occurrenceCount = pattern.metadata?.occurrence_count || 0;
 
         if (confidence > 0.7 && occurrenceCount >= 5) {
-          const patternType = pattern.event_type.split(':')[1];
+          const patternType = pattern.event_type.split(":")[1];
           const patternKey = pattern.metadata?.pattern_key as string;
 
           suggestions.push({
@@ -392,7 +402,7 @@ export class LearningLoopsService {
             suggestion: `Use pattern "${patternKey}" (observed ${occurrenceCount} times)`,
             rationale: `This pattern has been successful ${occurrenceCount} times with ${(confidence * 100).toFixed(0)}% confidence`,
             confidence,
-            estimatedImpact: confidence > 0.85 ? 'high' : confidence > 0.75 ? 'medium' : 'low',
+            estimatedImpact: confidence > 0.85 ? "high" : confidence > 0.75 ? "medium" : "low",
             createdAt: new Date(pattern.created_at),
           });
         }
@@ -400,7 +410,7 @@ export class LearningLoopsService {
 
       return suggestions;
     } catch (error) {
-      logError('Error generating auto-suggestions', error);
+      logError("Error generating auto-suggestions", error);
       return [];
     }
   }
@@ -408,16 +418,16 @@ export class LearningLoopsService {
   /**
    * Map pattern type to suggestion type
    */
-  private mapPatternTypeToSuggestionType(patternType: string): AutoSuggestion['suggestionType'] {
+  private mapPatternTypeToSuggestionType(patternType: string): AutoSuggestion["suggestionType"] {
     switch (patternType) {
-      case 'matching':
-        return 'matching_rule';
-      case 'validation':
-        return 'validation_rule';
-      case 'transformation':
-        return 'transformation';
+      case "matching":
+        return "matching_rule";
+      case "validation":
+        return "validation_rule";
+      case "transformation":
+        return "transformation";
       default:
-        return 'optimization';
+        return "optimization";
     }
   }
 
@@ -433,31 +443,33 @@ export class LearningLoopsService {
     try {
       // Get pattern count
       const { count: patterns } = await supabase
-        .from('usage_events')
-        .select('*', { count: 'exact', head: true })
-        .eq('tenant_id', tenantId)
-        .like('event_type', 'pattern:%');
+        .from("usage_events")
+        .select("*", { count: "exact", head: true })
+        .eq("tenant_id", tenantId)
+        .like("event_type", "pattern:%");
 
       // Get baseline count
       const { count: baselines } = await supabase
-        .from('usage_events')
-        .select('*', { count: 'exact', head: true })
-        .eq('tenant_id', tenantId)
-        .like('event_type', 'baseline:%');
+        .from("usage_events")
+        .select("*", { count: "exact", head: true })
+        .eq("tenant_id", tenantId)
+        .like("event_type", "baseline:%");
 
       // Get suggestion count
       const suggestions = await this.generateAutoSuggestions(tenantId);
 
       // Calculate learning efficiency (based on pattern confidence)
       const { data: allPatterns } = await supabase
-        .from('usage_events')
-        .select('metadata')
-        .eq('tenant_id', tenantId)
-        .like('event_type', 'pattern:%');
+        .from("usage_events")
+        .select("metadata")
+        .eq("tenant_id", tenantId)
+        .like("event_type", "pattern:%");
 
-      const avgConfidence = allPatterns && allPatterns.length > 0
-        ? allPatterns.reduce((sum, p) => sum + (p.metadata?.confidence || 0), 0) / allPatterns.length
-        : 0;
+      const avgConfidence =
+        allPatterns && allPatterns.length > 0
+          ? allPatterns.reduce((sum, p) => sum + (p.metadata?.confidence || 0), 0) /
+            allPatterns.length
+          : 0;
 
       return {
         patterns: patterns || 0,
@@ -466,7 +478,7 @@ export class LearningLoopsService {
         learningEfficiency: avgConfidence,
       };
     } catch (error) {
-      logError('Error getting learning metrics', error);
+      logError("Error getting learning metrics", error);
       return {
         patterns: 0,
         baselines: 0,

@@ -20,6 +20,7 @@ npx tsx scripts/verify-rls-status.ts
 ```
 
 **OR use GitHub Actions:**
+
 - Go to Actions → "Apply RLS Migration" → Run workflow
 
 ### Step 2: Update Stripe Products (5 min)
@@ -33,6 +34,7 @@ npx tsx scripts/update-stripe-products.ts
 ```
 
 **OR use GitHub Actions:**
+
 - Go to Actions → "Update Stripe Products" → Run workflow
 
 ### Step 3: Run Smoke Tests (5 min)

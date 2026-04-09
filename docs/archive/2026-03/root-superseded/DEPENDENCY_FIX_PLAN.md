@@ -18,6 +18,7 @@ npm audit
 ```
 
 **Expected fixes:**
+
 - devalue vulnerabilities
 - diff vulnerability
 - h3 vulnerability
@@ -76,23 +77,27 @@ npm audit
 ### Step 1: Standardize Stripe Versions
 
 #### Update packages/api/package.json
+
 ```diff
 -    "stripe": "^14.25.0"
 +    "stripe": "^20.0.0"
 ```
 
 #### Update packages/adapters/package.json
+
 ```diff
 -    "stripe": "^14.21.0"
 +    "stripe": "^20.0.0"
 ```
 
 **Note:** Review breaking changes in Stripe API v20
+
 - Migration guide: https://github.com/stripe/stripe-node/blob/master/CHANGELOG.md
 
 ### Step 2: Standardize bcrypt Versions
 
 #### Update packages/api/package.json
+
 ```diff
 -    "bcrypt": "^5.1.1"
 +    "bcrypt": "^6.0.0"
@@ -104,6 +109,7 @@ npm audit
 ### Step 3: Standardize uuid Versions
 
 #### Update packages/api/package.json
+
 ```diff
 -    "uuid": "^9.0.1"
 +    "uuid": "^10.0.0"
@@ -113,6 +119,7 @@ npm audit
 ```
 
 #### Update packages/edge-ai-core/package.json
+
 ```diff
 -    "uuid": "^9.0.1"
 +    "uuid": "^10.0.0"
@@ -124,12 +131,14 @@ npm audit
 ### Step 4: Standardize dotenv Versions
 
 #### Update packages/api/package.json
+
 ```diff
 -    "dotenv": "^16.3.1"
 +    "dotenv": "^16.4.5"
 ```
 
 #### Update packages/cli/package.json
+
 ```diff
 -    "dotenv": "^16.3.1"
 +    "dotenv": "^16.4.5"
@@ -160,6 +169,7 @@ npm audit fix --force
 ```
 
 **⚠️ WARNING:** This will:
+
 - Downgrade prisma from 7.1.0 to 6.19.2 (breaking change)
 - Upgrade bcrypt to 6.0.0 (already done in Phase 2)
 - Downgrade @vercel/blob to 0.0.2 (breaking change)
@@ -167,6 +177,7 @@ npm audit fix --force
 ### Option B: Manual Targeted Fixes (Recommended)
 
 #### Fix tar vulnerability
+
 ```bash
 # Check current bcrypt version after Phase 2
 # Should already be on 6.0.0, which includes fixed tar version
@@ -176,12 +187,14 @@ npm ls bcrypt
 #### Fix undici vulnerability via @vercel/blob
 
 Edit `packages/web/package.json`:
+
 ```diff
 -    "@vercel/blob": "^0.26.0"
 +    "@vercel/blob": "^0.27.0"
 ```
 
 Check for latest safe version:
+
 ```bash
 npm view @vercel/blob versions --json | tail -20
 ```
@@ -189,17 +202,20 @@ npm view @vercel/blob versions --json | tail -20
 #### Fix hono/prisma vulnerability
 
 Check if hono is actually needed:
+
 ```bash
 npm ls hono
 ```
 
 If hono is only used by @prisma/dev (dev dependency):
+
 ```bash
 # Consider if dev-mode vulnerability is acceptable
 # or wait for prisma update
 ```
 
 Monitor Prisma releases:
+
 - https://github.com/prisma/prisma/releases
 
 ---
@@ -211,6 +227,7 @@ Monitor Prisma releases:
 These are already in the root package.json and don't need to be in individual packages:
 
 #### packages/web/package.json
+
 ```diff
   "devDependencies": {
     "@next/bundle-analyzer": "^16.0.7",
@@ -233,6 +250,7 @@ These are already in the root package.json and don't need to be in individual pa
 ```
 
 #### packages/api/package.json
+
 ```diff
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
@@ -263,6 +281,7 @@ These are already in the root package.json and don't need to be in individual pa
 ```
 
 Apply similar changes to:
+
 - packages/cli/package.json
 - packages/edge-ai-core/package.json
 - packages/sdk/package.json
@@ -274,6 +293,7 @@ Apply similar changes to:
 ### Step 2: Hoist Common Testing Dependencies to Root
 
 Add to root `package.json` devDependencies (if not already present):
+
 ```json
 "devDependencies": {
   "@types/jest": "^29.5.11",
@@ -311,6 +331,7 @@ depcheck
 ### Step 3: Review Flagged Dependencies
 
 For packages/web, manually verify usage:
+
 ```bash
 # Check if critters is used
 grep -r "critters" packages/web/src/
@@ -323,6 +344,7 @@ grep -r "gray-matter" packages/web/src/
 ```
 
 For packages/api, manually verify:
+
 ```bash
 # Check if pdfkit is used
 grep -r "pdfkit" packages/api/src/
@@ -365,12 +387,14 @@ npm install -D @next/bundle-analyzer@^14.2.35
    - https://docs.sentry.io/platforms/javascript/migration/v7-to-v8/
 
 2. Update packages/web/package.json:
+
 ```diff
 -    "@sentry/nextjs": "^7.91.0"
 +    "@sentry/nextjs": "^8.40.0"
 ```
 
 3. Update packages/api/package.json:
+
 ```diff
 -    "@sentry/node": "^7.91.0"
 -    "@sentry/profiling-node": "^7.91.0"
@@ -387,6 +411,7 @@ npm install -D @next/bundle-analyzer@^14.2.35
 ### Step 1: Add Dependency Management Scripts
 
 Add to root `package.json`:
+
 ```json
 "scripts": {
   "deps:check": "npm outdated --workspaces",
@@ -399,6 +424,7 @@ Add to root `package.json`:
 ### Step 2: Set Up Automated Dependency Updates
 
 Create `.github/renovate.json`:
+
 ```json
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
@@ -417,6 +443,7 @@ Create `.github/renovate.json`:
 ```
 
 Or enable Dependabot in `.github/dependabot.yml`:
+
 ```yaml
 version: 2
 updates:
@@ -433,6 +460,7 @@ updates:
 ### Step 3: Add Pre-commit Hook for Lock File
 
 Add to `.husky/pre-commit`:
+
 ```bash
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
@@ -466,16 +494,19 @@ After completing all phases:
 If issues arise during any phase:
 
 1. **Revert package.json changes:**
+
    ```bash
    git checkout HEAD -- package.json packages/*/package.json
    ```
 
 2. **Restore package-lock.json:**
+
    ```bash
    git checkout HEAD -- package-lock.json
    ```
 
 3. **Reinstall dependencies:**
+
    ```bash
    rm -rf node_modules packages/*/node_modules
    npm install

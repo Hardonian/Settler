@@ -1,26 +1,26 @@
 /**
  * Fees API Routes
- * 
+ *
  * REST API endpoints for fee visibility and reporting
  */
 
-import { Router, Response } from 'express';
-import { z } from 'zod';
-import { validateRequest } from '../../middleware/validation';
-import { AuthRequest } from '../../middleware/auth';
-import { requirePermission } from '../../middleware/authorization';
-import { Permission } from '../../infrastructure/security/Permissions';
-import { query } from '../../db';
-import { sendSuccess, sendPaginated } from '../../utils/api-response';
-import { handleRouteError } from '../../utils/error-handler';
+import { Router, Response } from "express";
+import { z } from "zod";
+import { validateRequest } from "../../middleware/validation";
+import { AuthRequest } from "../../middleware/auth";
+import { requirePermission } from "../../middleware/authorization";
+import { Permission } from "../../infrastructure/security/Permissions";
+import { query } from "../../db";
+import { sendSuccess, sendPaginated } from "../../utils/api-response";
+import { handleRouteError } from "../../utils/error-handler";
 
 const router: Router = Router();
 
 // Validation schemas
 const getFeesSchema = z.object({
   query: z.object({
-    page: z.string().regex(/^\d+$/).transform(Number).optional().default('1'),
-    limit: z.string().regex(/^\d+$/).transform(Number).optional().default('100'),
+    page: z.string().regex(/^\d+$/).transform(Number).optional().default("1"),
+    limit: z.string().regex(/^\d+$/).transform(Number).optional().default("100"),
     transactionId: z.string().uuid().optional(),
     settlementId: z.string().uuid().optional(),
     type: z.string().optional(),
@@ -43,17 +43,18 @@ const getEffectiveRateSchema = z.object({
  * List fees with filtering and pagination
  */
 router.get(
-  '/',
+  "/",
   requirePermission(Permission.REPORTS_READ),
   validateRequest(getFeesSchema),
   async (req: AuthRequest, res: Response) => {
     try {
       const queryParams = getFeesSchema.parse({ query: req.query });
-      const { page, limit, transactionId, settlementId, type, startDate, endDate } = queryParams.query;
+      const { page, limit, transactionId, settlementId, type, startDate, endDate } =
+        queryParams.query;
       const tenantId = req.tenantId!;
       const offset = (page - 1) * limit;
 
-      let whereClause = 'tenant_id = $1';
+      let whereClause = "tenant_id = $1";
       const params: (string | number)[] = [tenantId];
       let paramIndex = 2;
 
@@ -93,7 +94,7 @@ router.get(
         params
       );
       if (!countResult[0]) {
-        throw new Error('Failed to get fee count');
+        throw new Error("Failed to get fee count");
       }
       const total = parseInt(countResult[0].count, 10);
 
@@ -121,7 +122,7 @@ router.get(
       sendPaginated(res, fees, { page, limit, total });
       return;
     } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to fetch fees', 500);
+      handleRouteError(res, error, "Failed to fetch fees", 500);
     }
   }
 );
@@ -131,7 +132,7 @@ router.get(
  * Calculate effective rate for transactions
  */
 router.get(
-  '/effective-rate',
+  "/effective-rate",
   requirePermission(Permission.REPORTS_READ),
   validateRequest(getEffectiveRateSchema),
   async (req: AuthRequest, res: Response) => {
@@ -140,7 +141,7 @@ router.get(
       const { transactionId, provider, startDate, endDate } = queryParams.query;
       const tenantId = req.tenantId!;
 
-      let whereClause = 't.tenant_id = $1';
+      let whereClause = "t.tenant_id = $1";
       const params: (string | number)[] = [tenantId];
       let paramIndex = 2;
 
@@ -190,7 +191,7 @@ router.get(
       sendSuccess(res, result);
       return;
     } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to calculate effective rate', 500);
+      handleRouteError(res, error, "Failed to calculate effective rate", 500);
       return;
     }
   }

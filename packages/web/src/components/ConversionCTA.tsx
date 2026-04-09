@@ -1,7 +1,7 @@
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface ConversionCTAProps {
   title?: string;
@@ -10,19 +10,19 @@ interface ConversionCTAProps {
   primaryLink?: string;
   secondaryAction?: string;
   secondaryLink?: string;
-  variant?: 'default' | 'gradient' | 'minimal';
+  variant?: "default" | "gradient" | "minimal";
 }
 
 export function ConversionCTA({
-  title = 'Ready to Get Started?',
-  description = 'Start reconciling your data in minutes. No credit card required.',
-  primaryAction = 'Start Free Trial',
-  primaryLink = '/playground',
-  secondaryAction = 'View Pricing',
-  secondaryLink = '/pricing',
-  variant = 'gradient',
+  title = "Ready to Get Started?",
+  description = "Start reconciling your data in minutes. No credit card required.",
+  primaryAction = "Start Free Trial",
+  primaryLink = "/playground",
+  secondaryAction = "View Pricing",
+  secondaryLink = "/pricing",
+  variant = "gradient",
 }: ConversionCTAProps) {
-  if (variant === 'minimal') {
+  if (variant === "minimal") {
     return (
       <div className="text-center py-12" role="region" aria-labelledby="cta-title">
         <h3 id="cta-title" className="text-2xl font-bold mb-4 text-foreground">
@@ -34,21 +34,13 @@ export function ConversionCTA({
           role="group"
           aria-label="Call to action buttons"
         >
-          <Button
-            asChild
-            size="lg"
-            variant="default"
-          >
-            <Link href={primaryLink || '/'} aria-label={primaryAction}>
+          <Button asChild size="lg" variant="default">
+            <Link href={primaryLink || "/"} aria-label={primaryAction}>
               {primaryAction}
             </Link>
           </Button>
           {secondaryAction && secondaryLink && (
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-            >
+            <Button asChild size="lg" variant="outline">
               <Link href={secondaryLink} aria-label={secondaryAction}>
                 {secondaryAction}
               </Link>
@@ -59,13 +51,13 @@ export function ConversionCTA({
     );
   }
 
-  if (variant === 'gradient') {
+  if (variant === "gradient") {
     return (
       <Card
         className={cn(
-          'bg-gradient-to-r from-primary-600 to-electric-indigo',
-          'border-0 shadow-2xl',
-          'transition-all duration-500 hover:shadow-3xl'
+          "bg-gradient-to-r from-primary-600 to-electric-indigo",
+          "border-0 shadow-2xl",
+          "transition-all duration-500 hover:shadow-3xl"
         )}
         elevation="lg"
         hover={false}
@@ -80,19 +72,31 @@ export function ConversionCTA({
           <div className="flex items-center justify-center gap-6 mt-4 text-primary-100 text-sm">
             <span className="flex items-center gap-1">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clipRule="evenodd"
+                />
               </svg>
               No credit card required
             </span>
             <span className="flex items-center gap-1">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clipRule="evenodd"
+                />
               </svg>
               30-day free trial
             </span>
             <span className="flex items-center gap-1">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clipRule="evenodd"
+                />
               </svg>
               Cancel anytime
             </span>
@@ -110,7 +114,7 @@ export function ConversionCTA({
               asChild
               className="bg-white text-primary-600 hover:bg-primary-50"
             >
-              <Link href={primaryLink || '/'} aria-label={primaryAction}>
+              <Link href={primaryLink || "/"} aria-label={primaryAction}>
                 {primaryAction}
               </Link>
             </Button>
@@ -133,12 +137,7 @@ export function ConversionCTA({
   }
 
   return (
-    <Card
-      elevation="lg"
-      hover={true}
-      role="region"
-      aria-labelledby="cta-title"
-    >
+    <Card elevation="lg" hover={true} role="region" aria-labelledby="cta-title">
       <CardHeader className="text-center">
         <CardTitle id="cta-title" className="text-2xl md:text-3xl mb-2">
           {title}
@@ -151,21 +150,13 @@ export function ConversionCTA({
           role="group"
           aria-label="Call to action buttons"
         >
-          <Button
-            size="lg"
-            asChild
-            variant="default"
-          >
-            <Link href={primaryLink || '/'} aria-label={primaryAction}>
+          <Button size="lg" asChild variant="default">
+            <Link href={primaryLink || "/"} aria-label={primaryAction}>
               {primaryAction}
             </Link>
           </Button>
           {secondaryAction && secondaryLink && (
-            <Button
-              size="lg"
-              variant="outline"
-              asChild
-            >
+            <Button size="lg" variant="outline" asChild>
               <Link href={secondaryLink} aria-label={secondaryAction}>
                 {secondaryAction}
               </Link>

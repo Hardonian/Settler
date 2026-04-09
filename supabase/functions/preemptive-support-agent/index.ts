@@ -1,9 +1,9 @@
 /**
  * Preemptive Support AI Agent (Support Replacement)
- * 
+ *
  * Replaces: Customer Support role
  * Runs: Real-time (on error events) + Daily batch
- * 
+ *
  * What it does:
  * - Monitors error frequency by user/org
  * - Detects repeated UI hesitation patterns
@@ -16,10 +16,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 
 // OpenAI helper
-async function callOpenAI(
-  prompt: string,
-  systemPrompt?: string
-): Promise<string> {
+async function callOpenAI(prompt: string, systemPrompt?: string): Promise<string> {
   const apiKey = Deno.env.get("OPENAI_API_KEY");
   if (!apiKey) return "";
 
@@ -27,7 +24,7 @@ async function callOpenAI(
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -267,11 +264,7 @@ serve(async (req) => {
       .from("analytics_events")
       .select("user_id, event")
       .gte("created_at", dayAgo.toISOString())
-      .in("event", [
-        "onboarding.step_completed",
-        "receipt.upload_completed",
-        "recon.job_completed",
-      ])
+      .in("event", ["onboarding.step_completed", "receipt.upload_completed", "recon.job_completed"])
       .limit(5000);
 
     const completedUsers = new Set(completionEvents?.map((e) => e.user_id) || []);
@@ -304,7 +297,8 @@ serve(async (req) => {
         action_content: action.action_content,
         confidence_score: action.confidence_score,
         shown_in: action.action_type === "in_app_explanation" ? "console" : undefined,
-        shown_at: action.action_type === "in_app_explanation" ? new Date().toISOString() : undefined,
+        shown_at:
+          action.action_type === "in_app_explanation" ? new Date().toISOString() : undefined,
       });
     }
 
@@ -323,10 +317,12 @@ serve(async (req) => {
         outputs: {
           actions_taken: actions.length,
           actions_by_type: {
-            in_app_explanation: actions.filter((a) => a.action_type === "in_app_explanation").length,
+            in_app_explanation: actions.filter((a) => a.action_type === "in_app_explanation")
+              .length,
             email_guidance: actions.filter((a) => a.action_type === "email_guidance").length,
           },
-          high_confidence_actions: actions.filter((a) => a.confidence_score >= CONFIDENCE_THRESHOLD).length,
+          high_confidence_actions: actions.filter((a) => a.confidence_score >= CONFIDENCE_THRESHOLD)
+            .length,
         },
       })
       .eq("id", runId);

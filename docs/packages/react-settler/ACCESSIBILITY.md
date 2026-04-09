@@ -78,9 +78,9 @@ All interactive elements meet minimum touch target size (44x44px):
 ```tsx
 <button
   style={{
-    minWidth: '44px',
-    minHeight: '44px',
-    touchAction: 'manipulation' // Prevents double-tap zoom
+    minWidth: "44px",
+    minHeight: "44px",
+    touchAction: "manipulation", // Prevents double-tap zoom
   }}
 >
   Action
@@ -100,12 +100,12 @@ Components adapt to screen size:
 ### Automated Testing
 
 ```tsx
-import { render } from '@testing-library/react';
-import { axe, toHaveNoViolations } from 'jest-axe';
+import { render } from "@testing-library/react";
+import { axe, toHaveNoViolations } from "jest-axe";
 
 expect.extend(toHaveNoViolations);
 
-test('should have no accessibility violations', async () => {
+test("should have no accessibility violations", async () => {
   const { container } = render(<TransactionTable transactions={transactions} />);
   const results = await axe(container);
   expect(results).toHaveNoViolations();

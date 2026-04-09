@@ -27,7 +27,7 @@
  * ```
  */
 
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
 /**
  * Success response shape
@@ -72,10 +72,7 @@ export type ApiResponse<T> = ApiSuccess<T> | ApiError;
  *
  * Scale-Readiness: Standardized success responses
  */
-export function apiSuccess<T>(
-  data: T,
-  meta?: ApiSuccess<T>['meta']
-): NextResponse<ApiSuccess<T>> {
+export function apiSuccess<T>(data: T, meta?: ApiSuccess<T>["meta"]): NextResponse<ApiSuccess<T>> {
   return NextResponse.json({
     success: true,
     data,
@@ -113,43 +110,24 @@ export function apiError(
 /**
  * Create a not found error response
  */
-export function apiNotFound(
-  resource: string = 'Resource'
-): NextResponse<ApiError> {
-  return apiError(
-    'NOT_FOUND',
-    `${resource} not found`,
-    undefined,
-    404
-  );
+export function apiNotFound(resource: string = "Resource"): NextResponse<ApiError> {
+  return apiError("NOT_FOUND", `${resource} not found`, undefined, 404);
 }
 
 /**
  * Create an unauthorized error response
  */
 export function apiUnauthorized(
-  message: string = 'Authentication required'
+  message: string = "Authentication required"
 ): NextResponse<ApiError> {
-  return apiError(
-    'UNAUTHORIZED',
-    message,
-    undefined,
-    401
-  );
+  return apiError("UNAUTHORIZED", message, undefined, 401);
 }
 
 /**
  * Create a forbidden error response
  */
-export function apiForbidden(
-  message: string = 'Access denied'
-): NextResponse<ApiError> {
-  return apiError(
-    'FORBIDDEN',
-    message,
-    undefined,
-    403
-  );
+export function apiForbidden(message: string = "Access denied"): NextResponse<ApiError> {
+  return apiError("FORBIDDEN", message, undefined, 403);
 }
 
 /**
@@ -158,51 +136,39 @@ export function apiForbidden(
 export function apiValidationError(
   validationErrors: Record<string, string>
 ): NextResponse<ApiError> {
-  return apiError(
-    'VALIDATION_ERROR',
-    'Validation failed',
-    { fields: validationErrors },
-    400
-  );
+  return apiError("VALIDATION_ERROR", "Validation failed", { fields: validationErrors }, 400);
 }
 
 /**
  * Create an internal server error response
  */
 export function apiInternalError(
-  message: string = 'Internal server error',
+  message: string = "Internal server error",
   details?: Record<string, unknown>
 ): NextResponse<ApiError> {
   // Log the error server-side
-  console.error('[API Internal Error]', { message, details });
+  console.error("[API Internal Error]", { message, details });
 
   // Don't expose internal details in production
-  const exposedDetails = process.env.NODE_ENV === 'development' ? details : undefined;
+  const exposedDetails = process.env.NODE_ENV === "development" ? details : undefined;
 
-  return apiError(
-    'INTERNAL_ERROR',
-    message,
-    exposedDetails,
-    500
-  );
+  return apiError("INTERNAL_ERROR", message, exposedDetails, 500);
 }
 
 /**
  * Create a rate limit error response
  */
-export function apiRateLimitError(
-  retryAfter?: number
-): NextResponse<ApiError> {
+export function apiRateLimitError(retryAfter?: number): NextResponse<ApiError> {
   const response = apiError(
-    'RATE_LIMIT_EXCEEDED',
-    'Too many requests',
+    "RATE_LIMIT_EXCEEDED",
+    "Too many requests",
     retryAfter ? { retryAfter } : undefined,
     429
   );
 
   // Add Retry-After header if provided
   if (retryAfter) {
-    response.headers.set('Retry-After', String(retryAfter));
+    response.headers.set("Retry-After", String(retryAfter));
   }
 
   return response;
@@ -231,18 +197,14 @@ export function apiPaginatedSuccess<T>(
 /**
  * Type guard for API success
  */
-export function isApiSuccess<T>(
-  response: ApiResponse<T>
-): response is ApiSuccess<T> {
+export function isApiSuccess<T>(response: ApiResponse<T>): response is ApiSuccess<T> {
   return response.success === true;
 }
 
 /**
  * Type guard for API error
  */
-export function isApiError<T>(
-  response: ApiResponse<T>
-): response is ApiError {
+export function isApiError<T>(response: ApiResponse<T>): response is ApiError {
   return response.success === false;
 }
 

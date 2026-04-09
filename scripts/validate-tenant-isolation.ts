@@ -1,6 +1,6 @@
 /**
  * Tenant Isolation Verification Script
- * 
+ *
  * PROVES that tenant isolation works end-to-end:
  * 1. Creates two users with different tenants
  * 2. Creates data for each tenant
@@ -8,14 +8,14 @@
  * 4. Verifies RLS blocks cross-tenant access
  */
 
-import { createClient } from '@supabase/supabase-js';
-import { PrismaClient } from '@prisma/client';
-import * as dotenv from 'dotenv';
+import { createClient } from "@supabase/supabase-js";
+import { PrismaClient } from "@prisma/client";
+import * as dotenv from "dotenv";
 
-dotenv.config({ path: '.env.local' });
+dotenv.config({ path: ".env.local" });
 
-const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 const prisma = new PrismaClient();
 
 interface TestResult {
@@ -27,42 +27,44 @@ interface TestResult {
 const results: TestResult[] = [];
 
 async function testTenantIsolation() {
-  console.log('🔒 Testing Tenant Isolation...\n');
+  console.log("🔒 Testing Tenant Isolation...\n");
 
   if (!supabaseUrl || !supabaseServiceRoleKey) {
-    console.error('❌ Missing Supabase credentials');
+    console.error("❌ Missing Supabase credentials");
     process.exit(1);
   }
 
   const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey);
 
   // Test 1: Verify RLS is enabled on critical tables
-  console.log('Test 1: Verifying RLS is enabled...');
+  console.log("Test 1: Verifying RLS is enabled...");
   try {
     const tables = [
-      'billing_accounts',
-      'subscriptions',
-      'normalized_transactions',
-      'reconciliation_runs',
-      'reconciliation_matches',
-      'ingestion_sources',
+      "billing_accounts",
+      "subscriptions",
+      "normalized_transactions",
+      "reconciliation_runs",
+      "reconciliation_matches",
+      "ingestion_sources",
     ];
 
     for (const table of tables) {
-      const { data, error } = await supabaseAdmin.rpc('get_table_rls_status', { table_name: table });
-      if (error && !error.message.includes('does not exist')) {
+      const { data, error } = await supabaseAdmin.rpc("get_table_rls_status", {
+        table_name: table,
+      });
+      if (error && !error.message.includes("does not exist")) {
         // RLS status function might not exist, check directly
         const { data: policies } = await supabaseAdmin
-          .from('pg_policies')
-          .select('*')
-          .eq('tablename', table)
+          .from("pg_policies")
+          .select("*")
+          .eq("tablename", table)
           .limit(1);
-        
+
         if (!policies || policies.length === 0) {
           results.push({
             test: `RLS enabled on ${table}`,
             passed: false,
-            error: 'No RLS policies found',
+            error: "No RLS policies found",
           });
         } else {
           results.push({
@@ -79,14 +81,14 @@ async function testTenantIsolation() {
     }
   } catch (error) {
     results.push({
-      test: 'RLS verification',
+      test: "RLS verification",
       passed: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 
   // Test 2: Create test users and tenants
-  console.log('\nTest 2: Creating test users...');
+  console.log("\nTest 2: Creating test users...");
   const testUser1Email = `test-tenant-isolation-1-${Date.now()}@settler.dev`;
   const testUser2Email = `test-tenant-isolation-2-${Date.now()}@settler.dev`;
 
@@ -101,7 +103,7 @@ async function testTenantIsolation() {
     // Create user 1
     const { data: auth1, error: authError1 } = await supabaseAdmin.auth.admin.createUser({
       email: testUser1Email,
-      password: 'TestPassword123!',
+      password: "TestPassword123!",
       email_confirm: true,
     });
 
@@ -115,7 +117,7 @@ async function testTenantIsolation() {
       data: {
         userId: user1Id,
         email: testUser1Email,
-        status: 'active',
+        status: "active",
       },
     });
     billingAccount1Id = billingAccount1.id;
@@ -124,7 +126,7 @@ async function testTenantIsolation() {
     const tenant1 = await prisma.tenant.create({
       data: {
         slug: `test-tenant-1-${Date.now()}`,
-        name: 'Test Tenant 1',
+        name: "Test Tenant 1",
         billingAccountId: billingAccount1Id,
         isActive: true,
       },
@@ -140,7 +142,7 @@ async function testTenantIsolation() {
     // Create user 2
     const { data: auth2, error: authError2 } = await supabaseAdmin.auth.admin.createUser({
       email: testUser2Email,
-      password: 'TestPassword123!',
+      password: "TestPassword123!",
       email_confirm: true,
     });
 
@@ -154,7 +156,7 @@ async function testTenantIsolation() {
       data: {
         userId: user2Id,
         email: testUser2Email,
-        status: 'active',
+        status: "active",
       },
     });
     billingAccount2Id = billingAccount2.id;
@@ -163,7 +165,7 @@ async function testTenantIsolation() {
     const tenant2 = await prisma.tenant.create({
       data: {
         slug: `test-tenant-2-${Date.now()}`,
-        name: 'Test Tenant 2',
+        name: "Test Tenant 2",
         billingAccountId: billingAccount2Id,
         isActive: true,
       },
@@ -177,30 +179,30 @@ async function testTenantIsolation() {
     });
 
     results.push({
-      test: 'Create test users and tenants',
+      test: "Create test users and tenants",
       passed: true,
     });
   } catch (error) {
     results.push({
-      test: 'Create test users and tenants',
+      test: "Create test users and tenants",
       passed: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : "Unknown error",
     });
-    console.error('Failed to create test users:', error);
+    console.error("Failed to create test users:", error);
     return;
   }
 
   // Test 3: Create data for tenant 1
-  console.log('\nTest 3: Creating data for tenant 1...');
+  console.log("\nTest 3: Creating data for tenant 1...");
   let transaction1Id: string;
   try {
     const source1 = await prisma.ingestionSource.create({
       data: {
         tenantId: tenant1Id,
         userId: user1Id,
-        name: 'Test Source 1',
-        type: 'csv',
-        status: 'active',
+        name: "Test Source 1",
+        type: "csv",
+        status: "active",
       },
     });
 
@@ -209,145 +211,159 @@ async function testTenantIsolation() {
         tenantId: tenant1Id,
         sourceId: source1.id,
         ingestionId: source1.id, // Simplified
-        amount: 100.00,
-        currency: 'USD',
+        amount: 100.0,
+        currency: "USD",
         date: new Date(),
-        description: 'Test transaction for tenant 1',
+        description: "Test transaction for tenant 1",
       },
     });
     transaction1Id = transaction1.id;
 
     results.push({
-      test: 'Create data for tenant 1',
+      test: "Create data for tenant 1",
       passed: true,
     });
   } catch (error) {
     results.push({
-      test: 'Create data for tenant 1',
+      test: "Create data for tenant 1",
       passed: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 
   // Test 4: User 1 can access their own data
-  console.log('\nTest 4: User 1 accessing their own data...');
+  console.log("\nTest 4: User 1 accessing their own data...");
   try {
     // Get session for user 1
     const { data: session1 } = await supabaseAdmin.auth.signInWithPassword({
       email: testUser1Email,
-      password: 'TestPassword123!',
+      password: "TestPassword123!",
     });
 
     if (!session1.session) {
-      throw new Error('Failed to create session for user 1');
+      throw new Error("Failed to create session for user 1");
     }
 
-    const supabaseUser1 = createClient(supabaseUrl, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '', {
-      global: {
-        headers: {
-          Authorization: `Bearer ${session1.session.access_token}`,
+    const supabaseUser1 = createClient(
+      supabaseUrl,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
+      {
+        global: {
+          headers: {
+            Authorization: `Bearer ${session1.session.access_token}`,
+          },
         },
-      },
-    });
+      }
+    );
 
     const { data: transactions, error: queryError } = await supabaseUser1
-      .from('normalized_transactions')
-      .select('*')
-      .eq('id', transaction1Id);
+      .from("normalized_transactions")
+      .select("*")
+      .eq("id", transaction1Id);
 
     if (queryError) {
       throw new Error(`Query failed: ${queryError.message}`);
     }
 
     if (!transactions || transactions.length === 0) {
-      throw new Error('User 1 cannot access their own transaction');
+      throw new Error("User 1 cannot access their own transaction");
     }
 
     results.push({
-      test: 'User 1 can access their own data',
+      test: "User 1 can access their own data",
       passed: true,
     });
   } catch (error) {
     results.push({
-      test: 'User 1 can access their own data',
+      test: "User 1 can access their own data",
       passed: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 
   // Test 5: User 2 CANNOT access tenant 1's data (RLS blocks it)
-  console.log('\nTest 5: User 2 attempting to access tenant 1 data (should be blocked)...');
+  console.log("\nTest 5: User 2 attempting to access tenant 1 data (should be blocked)...");
   try {
     const { data: session2 } = await supabaseAdmin.auth.signInWithPassword({
       email: testUser2Email,
-      password: 'TestPassword123!',
+      password: "TestPassword123!",
     });
 
     if (!session2.session) {
-      throw new Error('Failed to create session for user 2');
+      throw new Error("Failed to create session for user 2");
     }
 
-    const supabaseUser2 = createClient(supabaseUrl, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '', {
-      global: {
-        headers: {
-          Authorization: `Bearer ${session2.session.access_token}`,
+    const supabaseUser2 = createClient(
+      supabaseUrl,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
+      {
+        global: {
+          headers: {
+            Authorization: `Bearer ${session2.session.access_token}`,
+          },
         },
-      },
-    });
+      }
+    );
 
     const { data: crossTenantTransactions, error: crossTenantError } = await supabaseUser2
-      .from('normalized_transactions')
-      .select('*')
-      .eq('id', transaction1Id);
+      .from("normalized_transactions")
+      .select("*")
+      .eq("id", transaction1Id);
 
     // RLS should block this - should return empty array, not error
     if (crossTenantTransactions && crossTenantTransactions.length > 0) {
-      throw new Error('SECURITY BREACH: User 2 can access tenant 1 data!');
+      throw new Error("SECURITY BREACH: User 2 can access tenant 1 data!");
     }
 
     // If we get here, RLS is working
     results.push({
-      test: 'User 2 CANNOT access tenant 1 data (RLS blocks)',
+      test: "User 2 CANNOT access tenant 1 data (RLS blocks)",
       passed: true,
     });
   } catch (error) {
-    if (error instanceof Error && error.message.includes('SECURITY BREACH')) {
+    if (error instanceof Error && error.message.includes("SECURITY BREACH")) {
       results.push({
-        test: 'User 2 CANNOT access tenant 1 data (RLS blocks)',
+        test: "User 2 CANNOT access tenant 1 data (RLS blocks)",
         passed: false,
         error: error.message,
       });
     } else {
       // RLS might return empty array, which is correct
       results.push({
-        test: 'User 2 CANNOT access tenant 1 data (RLS blocks)',
+        test: "User 2 CANNOT access tenant 1 data (RLS blocks)",
         passed: true,
       });
     }
   }
 
   // Cleanup
-  console.log('\nCleaning up test data...');
+  console.log("\nCleaning up test data...");
   try {
-    await prisma.normalizedTransaction.deleteMany({ where: { tenantId: { in: [tenant1Id, tenant2Id] } } });
-    await prisma.ingestionSource.deleteMany({ where: { tenantId: { in: [tenant1Id, tenant2Id] } } });
+    await prisma.normalizedTransaction.deleteMany({
+      where: { tenantId: { in: [tenant1Id, tenant2Id] } },
+    });
+    await prisma.ingestionSource.deleteMany({
+      where: { tenantId: { in: [tenant1Id, tenant2Id] } },
+    });
     await prisma.tenant.deleteMany({ where: { id: { in: [tenant1Id, tenant2Id] } } });
-    await prisma.billingAccount.deleteMany({ where: { id: { in: [billingAccount1Id, billingAccount2Id] } } });
+    await prisma.billingAccount.deleteMany({
+      where: { id: { in: [billingAccount1Id, billingAccount2Id] } },
+    });
     await supabaseAdmin.auth.admin.deleteUser(user1Id);
     await supabaseAdmin.auth.admin.deleteUser(user2Id);
-    console.log('✅ Cleanup complete');
+    console.log("✅ Cleanup complete");
   } catch (error) {
-    console.error('⚠️  Cleanup failed:', error);
+    console.error("⚠️  Cleanup failed:", error);
   }
 
   // Print results
-  console.log('\n' + '='.repeat(60));
-  console.log('TENANT ISOLATION TEST RESULTS');
-  console.log('='.repeat(60));
+  console.log("\n" + "=".repeat(60));
+  console.log("TENANT ISOLATION TEST RESULTS");
+  console.log("=".repeat(60));
 
   let allPassed = true;
   for (const result of results) {
-    const icon = result.passed ? '✅' : '❌';
+    const icon = result.passed ? "✅" : "❌";
     console.log(`${icon} ${result.test}`);
     if (!result.passed && result.error) {
       console.log(`   Error: ${result.error}`);
@@ -355,18 +371,18 @@ async function testTenantIsolation() {
     }
   }
 
-  console.log('\n' + '='.repeat(60));
+  console.log("\n" + "=".repeat(60));
   if (allPassed) {
-    console.log('✅ ALL TESTS PASSED - Tenant isolation is working correctly');
+    console.log("✅ ALL TESTS PASSED - Tenant isolation is working correctly");
   } else {
-    console.log('❌ SOME TESTS FAILED - Tenant isolation needs attention');
+    console.log("❌ SOME TESTS FAILED - Tenant isolation needs attention");
     process.exit(1);
   }
 }
 
 testTenantIsolation()
   .catch((error) => {
-    console.error('Test failed:', error);
+    console.error("Test failed:", error);
     process.exit(1);
   })
   .finally(() => {

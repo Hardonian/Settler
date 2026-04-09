@@ -14,6 +14,7 @@ This document describes the patterns and conventions for managing state in the S
 **Definition:** Data that comes from APIs, databases, or external services.
 
 **Characteristics:**
+
 - Can be cached
 - Can be invalidated
 - Can be refetched
@@ -23,6 +24,7 @@ This document describes the patterns and conventions for managing state in the S
 **Management:** TanStack Query (React Query)
 
 **Examples:**
+
 - Dashboard metrics
 - User profiles
 - Reconciliation jobs
@@ -34,6 +36,7 @@ This document describes the patterns and conventions for managing state in the S
 **Definition:** State that controls UI behavior and doesn't come from a server.
 
 **Characteristics:**
+
 - Component-specific
 - Doesn't need caching
 - Doesn't need invalidation
@@ -42,6 +45,7 @@ This document describes the patterns and conventions for managing state in the S
 **Management:** React `useState` or `useReducer`
 
 **Examples:**
+
 - Modal open/close
 - Form input values
 - UI toggles (sidebar, dropdowns)
@@ -53,6 +57,7 @@ This document describes the patterns and conventions for managing state in the S
 **Definition:** UI state that needs to be shared across many components.
 
 **When to use:**
+
 - Multi-step workflows (onboarding, wizards)
 - Complex UI state that spans multiple pages
 - State that doesn't fit server state but needs to be global
@@ -60,6 +65,7 @@ This document describes the patterns and conventions for managing state in the S
 **Management:** Zustand (if/when needed)
 
 **Examples:**
+
 - Onboarding progress
 - Multi-step form state
 - Global UI preferences (not persisted)
@@ -71,6 +77,7 @@ This document describes the patterns and conventions for managing state in the S
 **When to use:** Fetching data from APIs/databases
 
 **Pattern:**
+
 ```typescript
 // 1. Data access function (lib/data/example.ts)
 export async function getExampleData(): Promise<ExampleData> {
@@ -90,10 +97,10 @@ export function useExampleData() {
 // 3. Component usage
 export default function ExampleComponent() {
   const { data, isLoading, isError } = useExampleData();
-  
+
   if (isLoading) return <Loading />;
   if (isError) return <ErrorState />;
-  
+
   return <div>{data}</div>;
 }
 ```
@@ -103,10 +110,11 @@ export default function ExampleComponent() {
 **When to use:** Component-specific UI state
 
 **Pattern:**
+
 ```typescript
 export default function Modal() {
   const [isOpen, setIsOpen] = useState(false);
-  
+
   return (
     <>
       <button onClick={() => setIsOpen(true)}>Open</button>
@@ -121,15 +129,16 @@ export default function Modal() {
 **When to use:** Form inputs before submission
 
 **Pattern:**
+
 ```typescript
 export default function Form() {
   const [formData, setFormData] = useState({ name: '', email: '' });
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await submitForm(formData);
   };
-  
+
   return (
     <form onSubmit={handleSubmit}>
       <input
@@ -148,17 +157,18 @@ export default function Form() {
 **When to use:** Real-time updates via Server-Sent Events
 
 **Pattern:**
+
 ```typescript
 // Custom hook for EventSource
 export function useRealtimeExecution({ jobId, apiKey }) {
   const [data, setData] = useState(null);
-  
+
   useEffect(() => {
     const eventSource = new EventSource(`/api/realtime/${jobId}`);
     eventSource.onmessage = (e) => setData(JSON.parse(e.data));
     return () => eventSource.close();
   }, [jobId]);
-  
+
   return { data };
 }
 ```
@@ -170,20 +180,22 @@ export function useRealtimeExecution({ jobId, apiKey }) {
 **When to use:** Filters, pagination, search that should be shareable
 
 **Pattern:**
+
 ```typescript
 import { useSearchParams } from 'next/navigation';
 
 export default function FilteredList() {
   const searchParams = useSearchParams();
   const filter = searchParams.get('filter') || 'all';
-  
+
   const { data } = useFilteredData({ filter });
-  
+
   return <List data={data} />;
 }
 ```
 
 **Benefits:**
+
 - Shareable URLs
 - Browser back/forward works
 - Deep linking
@@ -193,16 +205,17 @@ export default function FilteredList() {
 **When to use:** State computed from other state
 
 **Pattern:**
+
 ```typescript
 export default function Component() {
   const { data } = useData();
-  
+
   // Derived state - computed from data
   const filtered = useMemo(
     () => data.filter(item => item.active),
     [data]
   );
-  
+
   return <List items={filtered} />;
 }
 ```
@@ -217,13 +230,16 @@ export default function Component() {
 // DON'T DO THIS
 const [data, setData] = useState(null);
 useEffect(() => {
-  fetch('/api/data').then(res => res.json()).then(setData);
+  fetch("/api/data")
+    .then((res) => res.json())
+    .then(setData);
 }, []);
 ```
 
 **Why:** No caching, no error handling, refetches on every mount, duplicates logic.
 
 **✅ Do this instead:**
+
 ```typescript
 const { data } = useData();
 ```
@@ -233,15 +249,16 @@ const { data } = useData();
 ```typescript
 // DON'T DO THIS
 const [state, setState] = useState({
-  data: null,        // Server state
-  loading: true,     // UI state
-  isModalOpen: false // UI state
+  data: null, // Server state
+  loading: true, // UI state
+  isModalOpen: false, // UI state
 });
 ```
 
 **Why:** Hard to manage, can't cache server state properly.
 
 **✅ Do this instead:**
+
 ```typescript
 const { data, isLoading } = useData(); // Server state
 const [isModalOpen, setIsModalOpen] = useState(false); // UI state
@@ -252,18 +269,19 @@ const [isModalOpen, setIsModalOpen] = useState(false); // UI state
 ```typescript
 // Component A
 useEffect(() => {
-  fetch('/api/data').then(setData);
+  fetch("/api/data").then(setData);
 }, []);
 
 // Component B
 useEffect(() => {
-  fetch('/api/data').then(setData); // Duplicate fetch!
+  fetch("/api/data").then(setData); // Duplicate fetch!
 }, []);
 ```
 
 **Why:** Duplicate requests, no shared cache.
 
 **✅ Do this instead:**
+
 ```typescript
 // Both components use the same hook
 const { data } = useData(); // Shared cache, single request
@@ -281,6 +299,7 @@ const [error, setError] = useState(null);
 **Why:** Duplicates logic, inconsistent UX.
 
 **✅ Do this instead:**
+
 ```typescript
 const { data, isLoading, isError, error } = useData();
 // Use <DataLoader /> component
@@ -291,6 +310,7 @@ const { data, isLoading, isError, error } = useData();
 ### Server Components for Initial Data
 
 **Pattern:**
+
 ```typescript
 // app/page.tsx (Server Component)
 export default async function Page() {
@@ -300,6 +320,7 @@ export default async function Page() {
 ```
 
 **Benefits:**
+
 - Faster initial load
 - Better SEO
 - No client-side JavaScript needed
@@ -307,6 +328,7 @@ export default async function Page() {
 ### Client Components with React Query
 
 **Pattern:**
+
 ```typescript
 // app/page.tsx (Client Component)
 'use client';
@@ -317,6 +339,7 @@ export default function Page() {
 ```
 
 **Benefits:**
+
 - Caching
 - Background refetching
 - Optimistic updates
@@ -324,6 +347,7 @@ export default function Page() {
 ### Hybrid Approach
 
 **Pattern:**
+
 ```typescript
 // Server Component fetches initial data
 export default async function Page() {
@@ -342,6 +366,7 @@ export function ClientPage({ initialData }) {
 ```
 
 **Benefits:**
+
 - Fast initial load (SSR)
 - Client-side caching and updates
 
@@ -352,17 +377,19 @@ export function ClientPage({ initialData }) {
 **When to use:** Onboarding, wizards, multi-step forms
 
 **Pattern:**
+
 ```typescript
 // app/onboarding/[step]/page.tsx
 export default function OnboardingStep({ params }) {
   const step = params.step;
   const { data } = useOnboardingData();
-  
+
   return <StepComponent step={step} data={data} />;
 }
 ```
 
 **Benefits:**
+
 - Shareable URLs
 - Browser navigation works
 - Can bookmark progress
@@ -372,9 +399,10 @@ export default function OnboardingStep({ params }) {
 **When to use:** Complex workflows that don't fit URL params
 
 **Pattern:**
+
 ```typescript
 // lib/stores/onboarding.ts (if needed)
-import { create } from 'zustand';
+import { create } from "zustand";
 
 interface OnboardingState {
   step: number;
@@ -407,9 +435,9 @@ test('fetches data', async () => {
   const wrapper = ({ children }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
-  
+
   const { result } = renderHook(() => useData(), { wrapper });
-  
+
   await waitFor(() => expect(result.current.isSuccess).toBe(true));
   expect(result.current.data).toBeDefined();
 });

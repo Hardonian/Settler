@@ -1,11 +1,11 @@
 /**
  * Multi-Region & Failover
- * 
+ *
  * Regional redundancy, tenant locality, failover routing, isolated execution zones
  * Part 11: Resilience & Zero-Fault Hardening
  */
 
-import { logInfo, logWarn } from '../../utils/logger';
+import { logInfo, logWarn } from "../../utils/logger";
 
 export interface Region {
   id: string;
@@ -27,26 +27,26 @@ export class MultiRegionManager {
 
   constructor() {
     // Initialize default regions
-    this.regions.set('us-east-1', {
-      id: 'us-east-1',
-      name: 'US East (N. Virginia)',
-      endpoint: 'https://api-us-east-1.settler.io',
+    this.regions.set("us-east-1", {
+      id: "us-east-1",
+      name: "US East (N. Virginia)",
+      endpoint: "https://api-us-east-1.settler.io",
       latency: 50,
       available: true,
     });
 
-    this.regions.set('us-west-2', {
-      id: 'us-west-2',
-      name: 'US West (Oregon)',
-      endpoint: 'https://api-us-west-2.settler.io',
+    this.regions.set("us-west-2", {
+      id: "us-west-2",
+      name: "US West (Oregon)",
+      endpoint: "https://api-us-west-2.settler.io",
       latency: 60,
       available: true,
     });
 
-    this.regions.set('eu-west-1', {
-      id: 'eu-west-1',
-      name: 'EU (Ireland)',
-      endpoint: 'https://api-eu-west-1.settler.io',
+    this.regions.set("eu-west-1", {
+      id: "eu-west-1",
+      name: "EU (Ireland)",
+      endpoint: "https://api-eu-west-1.settler.io",
       latency: 80,
       available: true,
     });
@@ -57,7 +57,7 @@ export class MultiRegionManager {
    */
   async registerTenantLocality(locality: TenantLocality): Promise<void> {
     this.tenantLocalities.set(locality.tenantId, locality);
-    logInfo('Tenant locality registered', { tenantId: locality.tenantId });
+    logInfo("Tenant locality registered", { tenantId: locality.tenantId });
   }
 
   /**
@@ -65,7 +65,7 @@ export class MultiRegionManager {
    */
   getOptimalRegion(tenantId: string): Region {
     const locality = this.tenantLocalities.get(tenantId);
-    
+
     if (locality) {
       // Try preferred region first
       const preferred = this.regions.get(locality.preferredRegion);
@@ -84,10 +84,10 @@ export class MultiRegionManager {
 
     // Default to lowest latency available region
     const availableRegions = Array.from(this.regions.values())
-      .filter(r => r.available)
+      .filter((r) => r.available)
       .sort((a, b) => a.latency - b.latency);
 
-    return availableRegions[0] || this.regions.get('us-east-1')!;
+    return availableRegions[0] || this.regions.get("us-east-1")!;
   }
 
   /**
@@ -119,7 +119,7 @@ export class MultiRegionManager {
           };
         } catch (error: unknown) {
           const errorMessage = error instanceof Error ? error.message : String(error);
-          logWarn('Region request failed, trying next', {
+          logWarn("Region request failed, trying next", {
             regionId,
             error: errorMessage,
           });
@@ -127,7 +127,7 @@ export class MultiRegionManager {
       }
     }
 
-    throw new Error('All regions failed');
+    throw new Error("All regions failed");
   }
 
   /**
@@ -137,7 +137,7 @@ export class MultiRegionManager {
     const region = this.regions.get(regionId);
     if (region) {
       region.available = false;
-      logWarn('Region marked as unavailable', { regionId });
+      logWarn("Region marked as unavailable", { regionId });
     }
   }
 
@@ -148,7 +148,7 @@ export class MultiRegionManager {
     const region = this.regions.get(regionId);
     if (region) {
       region.available = true;
-      logInfo('Region marked as available', { regionId });
+      logInfo("Region marked as available", { regionId });
     }
   }
 

@@ -24,12 +24,16 @@ describe("command-level unsafe acknowledgement behavior", () => {
     originalCwd = process.cwd();
     process.chdir(path.resolve(process.cwd(), "../.."));
     jest.resetModules();
-    jest.doMock("@settler/sdk", () => ({
-      __esModule: true,
-      default: class MockSettler {
-        adapters = { list: async () => ({ data: [] }) };
-      },
-    }), { virtual: true });
+    jest.doMock(
+      "@settler/sdk",
+      () => ({
+        __esModule: true,
+        default: class MockSettler {
+          adapters = { list: async () => ({ data: [] }) };
+        },
+      }),
+      { virtual: true }
+    );
 
     const adapters = await import("../commands/adapters");
     const future = await import("../commands/future");
@@ -51,9 +55,12 @@ describe("command-level unsafe acknowledgement behavior", () => {
 
   test("adapters install without --allow-unsafe prints guidance", async () => {
     await expect(
-      commands.adaptersCommand.parseAsync(["node", "adapters", "install", "--name", "nonexistent"], {
-        from: "node",
-      })
+      commands.adaptersCommand.parseAsync(
+        ["node", "adapters", "install", "--name", "nonexistent"],
+        {
+          from: "node",
+        }
+      )
     ).rejects.toThrow("EXIT_1");
 
     const errorOutput = errorSpy.mock.calls.map((call: [string]) => String(call[0])).join("\n");

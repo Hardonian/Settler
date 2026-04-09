@@ -206,9 +206,7 @@ export default function ContributorsPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2">
-                        <h3 className="text-xl font-bold text-foreground">
-                          {type.title}
-                        </h3>
+                        <h3 className="text-xl font-bold text-foreground">{type.title}</h3>
                         {type.badge && (
                           <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
                             {type.badge}
@@ -293,9 +291,7 @@ export default function ContributorsPage() {
                       {way.step}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-xl font-bold mb-2 text-foreground">
-                        {way.title}
-                      </h3>
+                      <h3 className="text-xl font-bold mb-2 text-foreground">{way.title}</h3>
                       <p className="text-muted-foreground mb-4 leading-relaxed">
                         {way.description}
                       </p>
@@ -357,9 +353,7 @@ export default function ContributorsPage() {
                     <div className="w-12 h-12 mx-auto mb-3 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white">
                       <Icon className="w-6 h-6" />
                     </div>
-                    <div className="text-3xl font-bold text-foreground mb-1">
-                      {stat.value}
-                    </div>
+                    <div className="text-3xl font-bold text-foreground mb-1">{stat.value}</div>
                     <div className="text-sm text-muted-foreground">{stat.label}</div>
                   </SpotlightCard>
                 </div>
@@ -377,9 +371,7 @@ export default function ContributorsPage() {
         <div className="max-w-4xl mx-auto relative z-10">
           <SpotlightCard className="p-10 text-center">
             <Heart className="w-12 h-12 mx-auto mb-4 text-red-500" />
-            <h2 className="text-3xl font-bold mb-4 text-foreground">
-              Ready to Contribute?
-            </h2>
+            <h2 className="text-3xl font-bold mb-4 text-foreground">Ready to Contribute?</h2>
             <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
               Join our open source community and help build the future of financial reconciliation.
             </p>

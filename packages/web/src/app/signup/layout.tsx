@@ -16,10 +16,6 @@ export const metadata: Metadata = generateMetadata({
   canonical: "https://settler.dev/signup",
 });
 
-export default function SignUpLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function SignUpLayout({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }

@@ -2,25 +2,37 @@
  * Node.js/TypeScript SDK Documentation Page
  */
 
-'use client';
+"use client";
 
-import { Navigation } from '@/components/Navigation';
-import { Footer } from '@/components/Footer';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { CodeBlock } from '@/components/ui/code-block';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import Link from 'next/link';
-import { Package, Code2, Zap, Shield, ArrowRight } from 'lucide-react';
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { CodeBlock } from "@/components/ui/code-block";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Link from "next/link";
+import { Package, Code2, Zap, Shield, ArrowRight } from "lucide-react";
 
 export default function NodeJSSDKPage() {
   const features = [
-    { icon: Code2, title: 'Full TypeScript Support', description: 'Complete type inference and IntelliSense' },
-    { icon: Zap, title: 'Automatic Retries', description: 'Exponential backoff with configurable retry logic' },
-    { icon: Shield, title: 'Request Deduplication', description: 'Prevents duplicate in-flight requests' },
-    { icon: Package, title: 'Small Bundle', description: '<50KB minified and gzipped' },
+    {
+      icon: Code2,
+      title: "Full TypeScript Support",
+      description: "Complete type inference and IntelliSense",
+    },
+    {
+      icon: Zap,
+      title: "Automatic Retries",
+      description: "Exponential backoff with configurable retry logic",
+    },
+    {
+      icon: Shield,
+      title: "Request Deduplication",
+      description: "Prevents duplicate in-flight requests",
+    },
+    { icon: Package, title: "Small Bundle", description: "<50KB minified and gzipped" },
   ];
 
   const installationCode = `npm install @settler/sdk
@@ -113,11 +125,13 @@ app.post('/webhooks/settler', express.raw({ type: 'application/json' }), (req, r
       <Navigation />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
-        <Breadcrumbs items={[
-          { label: 'Docs', href: '/docs' },
-          { label: 'SDK', href: '/docs/sdk' },
-          { label: 'Node.js/TypeScript' },
-        ]} />
+        <Breadcrumbs
+          items={[
+            { label: "Docs", href: "/docs" },
+            { label: "SDK", href: "/docs/sdk" },
+            { label: "Node.js/TypeScript" },
+          ]}
+        />
 
         <div className="mt-8">
           <div className="flex items-center gap-3 mb-4">
@@ -125,9 +139,7 @@ app.post('/webhooks/settler', express.raw({ type: 'application/json' }), (req, r
             <Badge variant="outline">TypeScript</Badge>
             <Badge variant="outline">Node.js 18+</Badge>
           </div>
-          <h1 className="text-4xl font-bold text-foreground mb-4">
-            Node.js/TypeScript SDK
-          </h1>
+          <h1 className="text-4xl font-bold text-foreground mb-4">Node.js/TypeScript SDK</h1>
           <p className="text-xl text-muted-foreground mb-8">
             Production-grade TypeScript SDK with full type safety, automatic retries, and more.
           </p>
@@ -213,7 +225,10 @@ app.post('/webhooks/settler', express.raw({ type: 'application/json' }), (req, r
                   </p>
                 </div>
                 <Button asChild variant="outline">
-                  <Link href="https://github.com/settler/settler/tree/main/packages/sdk" target="_blank">
+                  <Link
+                    href="https://github.com/settler/settler/tree/main/packages/sdk"
+                    target="_blank"
+                  >
                     View on GitHub <ArrowRight className="w-4 h-4 ml-2" />
                   </Link>
                 </Button>
@@ -225,14 +240,10 @@ app.post('/webhooks/settler', express.raw({ type: 'application/json' }), (req, r
         {/* Next Steps */}
         <div className="flex gap-4">
           <Button asChild>
-            <Link href="/console/playground">
-              Try in Playground
-            </Link>
+            <Link href="/console/playground">Try in Playground</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/docs/sdk/python">
-              Python SDK →
-            </Link>
+            <Link href="/docs/sdk/python">Python SDK →</Link>
           </Button>
         </div>
       </div>

@@ -1,6 +1,6 @@
 /**
  * Performance Optimization Utilities
- * 
+ *
  * Provides utilities for performance monitoring and optimization.
  */
 
@@ -15,7 +15,7 @@ export async function measureTime<T>(
   const result = await fn();
   const durationMs = performance.now() - start;
 
-  if (label && process.env.NODE_ENV === 'development') {
+  if (label && process.env.NODE_ENV === "development") {
     // eslint-disable-next-line no-console
     console.log(`[Performance] ${label}: ${durationMs.toFixed(2)}ms`);
   }
@@ -43,16 +43,14 @@ export async function batchProcess<T, R>(
         const result = await processor(item);
         results.push(result);
       } catch (error) {
-        console.error('[Batch] Error processing item:', error);
+        console.error("[Batch] Error processing item:", error);
         // Continue processing other items
       }
     }
   }
 
   // Process in parallel with concurrency limit
-  const workers = Array.from({ length: Math.min(concurrency, items.length) }, () =>
-    processBatch()
-  );
+  const workers = Array.from({ length: Math.min(concurrency, items.length) }, () => processBatch());
   await Promise.all(workers);
 
   return results;
@@ -100,11 +98,14 @@ export function throttle<T extends (...args: any[]) => any>(
         clearTimeout(timeoutId);
       }
 
-      timeoutId = setTimeout(() => {
-        lastCall = Date.now();
-        fn(...args);
-        timeoutId = null;
-      }, delayMs - (now - lastCall));
+      timeoutId = setTimeout(
+        () => {
+          lastCall = Date.now();
+          fn(...args);
+          timeoutId = null;
+        },
+        delayMs - (now - lastCall)
+      );
     }
   };
 }

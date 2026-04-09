@@ -5,12 +5,14 @@ This document summarizes all fixes and provides a quick reference for syncing en
 ## ✅ Fixes Implemented
 
 ### 1. Security Fix: Removed Client-Side Secret Key Exposure
+
 - **File:** `packages/web/src/app/playground/page.tsx`
 - **Change:** Removed `NEXT_PUBLIC_STRIPE_SECRET_KEY` usage
 - **Impact:** Prevents secret keys from being exposed to browser
 - **Status:** ✅ Fixed
 
 ### 2. Workflow Fix: Corrected Supabase URL Reference
+
 - **File:** `.github/workflows/supabase-migrate.yml`
 - **Change:** Updated to use `secrets.SUPABASE_URL` instead of `secrets.NEXT_PUBLIC_SUPABASE_URL`
 - **Impact:** Ensures workflow uses correct GitHub secret name
@@ -19,16 +21,19 @@ This document summarizes all fixes and provides a quick reference for syncing en
 ## 📋 Tools Created
 
 ### 1. GitHub Secrets Verification Script
+
 - **File:** `scripts/verify-github-secrets.ts`
 - **Purpose:** Analyzes codebase and workflows to identify required secrets
 - **Usage:** `npx tsx scripts/verify-github-secrets.ts`
 
 ### 2. Vercel Environment Variable Sync Guide
+
 - **File:** `docs/vercel-env-sync-guide.md`
 - **Purpose:** Step-by-step guide for syncing variables to Vercel
 - **Includes:** Variable mappings, security best practices, troubleshooting
 
 ### 3. Vercel Environment Variables Template
+
 - **File:** `scripts/vercel-env-vars-template.json`
 - **Purpose:** JSON template for Vercel CLI import
 - **Usage:** Fill in values and use with Vercel CLI
@@ -36,19 +41,22 @@ This document summarizes all fixes and provides a quick reference for syncing en
 ## 🔄 Variable Sync Process
 
 ### Step 1: Verify GitHub Secrets
+
 ```bash
 # Run verification script
 npx tsx scripts/verify-github-secrets.ts
 ```
 
 This will:
+
 - List all secrets referenced in workflows
 - Identify missing critical variables
-- Check for incorrect NEXT_PUBLIC_ usage
+- Check for incorrect NEXT*PUBLIC* usage
 
 ### Step 2: Sync to Vercel
 
 **Option A: Vercel Dashboard (Recommended)**
+
 1. Go to Vercel Dashboard → Your Project → Settings → Environment Variables
 2. For each variable in `docs/vercel-env-sync-guide.md`:
    - Click "Add"
@@ -56,6 +64,7 @@ This will:
    - Select environments (Production, Preview, Development)
 
 **Option B: Vercel CLI**
+
 ```bash
 # Install Vercel CLI
 npm i -g vercel
@@ -72,6 +81,7 @@ vercel env add SUPABASE_URL production
 ```
 
 ### Step 3: Verify Sync
+
 1. Check Vercel dashboard shows all variables
 2. Trigger a new deployment
 3. Check build logs for any missing variable errors
@@ -80,7 +90,9 @@ vercel env add SUPABASE_URL production
 ## 📊 Variable Categories
 
 ### Server-Side Only (GitHub Secrets → Vercel)
+
 These should be encrypted in Vercel:
+
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `DATABASE_URL`
 - `JWT_SECRET`
@@ -89,8 +101,10 @@ These should be encrypted in Vercel:
 - `RESEND_API_KEY`
 - `UPSTASH_REDIS_REST_TOKEN`
 
-### Client-Side (NEXT_PUBLIC_*)
+### Client-Side (NEXT*PUBLIC*\*)
+
 These are exposed to the browser:
+
 - `NEXT_PUBLIC_SUPABASE_URL` (use same value as `SUPABASE_URL`)
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` (use same value as `SUPABASE_ANON_KEY`)
 - `NEXT_PUBLIC_SITE_URL`
@@ -98,7 +112,9 @@ These are exposed to the browser:
 - `NEXT_PUBLIC_SENTRY_DSN` (optional)
 
 ### Both (Set in Both Places)
+
 Some variables are used in both contexts:
+
 - `SUPABASE_URL` → Also set as `NEXT_PUBLIC_SUPABASE_URL` in Vercel
 - `SUPABASE_ANON_KEY` → Also set as `NEXT_PUBLIC_SUPABASE_ANON_KEY` in Vercel
 
@@ -138,16 +154,19 @@ Some variables are used in both contexts:
 ## 🆘 Troubleshooting
 
 ### Variables not syncing from GitHub
+
 - Check GitHub integration is enabled in Vercel
 - Some variables (especially `NEXT_PUBLIC_`) need manual setup
 - Verify GitHub secrets exist in repository settings
 
 ### Build failures
+
 - Check Vercel build logs for missing variable names
 - Ensure variables are set for correct environment
 - Verify variable names match exactly (case-sensitive)
 
 ### Client-side variables not accessible
+
 - Ensure `NEXT_PUBLIC_` prefix is used
 - Check variable is set in Vercel (not just GitHub)
 - May need to redeploy after adding variables

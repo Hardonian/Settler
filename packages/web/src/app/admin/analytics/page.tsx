@@ -118,9 +118,7 @@ export default function AdminAnalyticsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold mb-2">Admin Analytics</h1>
-          <p className="text-muted-foreground">
-            Internal analytics dashboard (admin only)
-          </p>
+          <p className="text-muted-foreground">Internal analytics dashboard (admin only)</p>
         </div>
         <div className="flex gap-2">
           <Select value={dateRange} onValueChange={handleDateRangeChange}>
@@ -260,9 +258,7 @@ export default function AdminAnalyticsPage() {
                   onClick={() => (window.location.href = `/admin/workspaces/${workspace.id}`)}
                 >
                   <div>
-                    <div className="font-medium text-foreground">
-                      {workspace.name}
-                    </div>
+                    <div className="font-medium text-foreground">{workspace.name}</div>
                     <div className="text-sm text-muted-foreground">
                       {workspace.plan} • ${workspace.mrr}/month • {workspace.status}
                     </div>

@@ -1,20 +1,20 @@
 /**
  * Receipts API Marketing Page
- * 
+ *
  * Product page for Settler Receipts API - converts receipt images/PDFs to structured JSON.
  */
 
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Navigation } from '@/components/Navigation';
-import { Footer } from '@/components/Footer';
-import { Receipt, Code, Zap, Shield } from 'lucide-react';
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
+import { Receipt, Code, Zap, Shield } from "lucide-react";
 
 export default function ReceiptsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-white">
       <Navigation />
-      
+
       <main className="container mx-auto px-4 py-16">
         {/* Hero Section */}
         <div className="text-center mb-16">
@@ -25,8 +25,8 @@ export default function ReceiptsPage() {
             Receipts → JSON API
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            Turn receipt images and PDFs into structured JSON. Built for bookkeeping tools, 
-            AI agents, and fintech apps that need reliable receipt parsing.
+            Turn receipt images and PDFs into structured JSON. Built for bookkeeping tools, AI
+            agents, and fintech apps that need reliable receipt parsing.
           </p>
           <div className="flex gap-4 justify-center">
             <Button asChild size="lg" className="bg-electric-cyan hover:bg-electric-cyan/90">
@@ -44,8 +44,8 @@ export default function ReceiptsPage() {
             <Code className="w-8 h-8 text-electric-cyan mb-4" />
             <h3 className="text-xl font-semibold mb-2">Structured JSON</h3>
             <p className="text-muted-foreground">
-              Get clean, normalized JSON with vendor, date, totals, line items, and more. 
-              No manual parsing required.
+              Get clean, normalized JSON with vendor, date, totals, line items, and more. No manual
+              parsing required.
             </p>
           </div>
           <div className="p-6 rounded-lg border border-border/40 bg-white">
@@ -60,8 +60,8 @@ export default function ReceiptsPage() {
             <Shield className="w-8 h-8 text-electric-indigo mb-4" />
             <h3 className="text-xl font-semibold mb-2">Type-Safe</h3>
             <p className="text-muted-foreground">
-              Fully typed TypeScript SDK. Predictable responses, clear error handling, 
-              and comprehensive documentation.
+              Fully typed TypeScript SDK. Predictable responses, clear error handling, and
+              comprehensive documentation.
             </p>
           </div>
         </div>
@@ -70,7 +70,7 @@ export default function ReceiptsPage() {
         <div className="bg-card rounded-lg p-8 mb-16">
           <h2 className="text-2xl font-bold text-white mb-4">Example Response</h2>
           <pre className="text-sm text-muted-foreground/40 overflow-x-auto">
-{`{
+            {`{
   "id": "rec_abc123",
   "vendor": "ACME Grocery",
   "date": "2024-01-15T14:30:00Z",
@@ -105,13 +105,15 @@ export default function ReceiptsPage() {
             <div className="p-6 rounded-lg bg-muted/10">
               <h3 className="text-xl font-semibold mb-2">Bookkeeping Tools</h3>
               <p className="text-muted-foreground">
-                Automatically extract expense data from receipts for accounting software integration.
+                Automatically extract expense data from receipts for accounting software
+                integration.
               </p>
             </div>
             <div className="p-6 rounded-lg bg-muted/10">
               <h3 className="text-xl font-semibold mb-2">AI Agents</h3>
               <p className="text-muted-foreground">
-                Give your AI assistant the ability to read and understand receipts for expense tracking.
+                Give your AI assistant the ability to read and understand receipts for expense
+                tracking.
               </p>
             </div>
             <div className="p-6 rounded-lg bg-muted/10">

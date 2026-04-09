@@ -7,6 +7,7 @@
 ## Overview
 
 This email template helps you:
+
 - **Summarize results:** Highlight pilot results, value realized
 - **Demonstrate ROI:** Show cost savings, time savings
 - **Make it easy:** Clear upgrade path, simple process
@@ -19,11 +20,13 @@ This email template helps you:
 ## Conversion Email Template
 
 ### Subject Line Options
+
 - "Your pilot results: Ready to upgrade?"
 - "Pilot success: Upgrade to continue using Settler"
 - "Your Settler pilot ends today: Upgrade now"
 
 ### Email Body
+
 ```
 Hi [Name],
 
@@ -62,9 +65,11 @@ Your 14-day Settler pilot ends today. Based on your pilot results, Settler looks
 ## Conversion Email Variations
 
 ### Variation 1: High Usage
+
 **For:** Customers with high usage during pilot
 
 **Key Changes:**
+
 - Highlight high usage
 - Suggest Professional plan if approaching limits
 - Emphasize value at scale
@@ -72,9 +77,11 @@ Your 14-day Settler pilot ends today. Based on your pilot results, Settler looks
 ---
 
 ### Variation 2: Low Usage
+
 **For:** Customers with low usage during pilot
 
 **Key Changes:**
+
 - Acknowledge lower usage
 - Emphasize value even at lower volumes
 - Highlight growth potential
@@ -82,9 +89,11 @@ Your 14-day Settler pilot ends today. Based on your pilot results, Settler looks
 ---
 
 ### Variation 3: Extended Pilot
+
 **For:** Customers who extended pilot
 
 **Key Changes:**
+
 - Acknowledge extended pilot
 - Highlight continued value
 - Emphasize commitment to success
@@ -94,9 +103,11 @@ Your 14-day Settler pilot ends today. Based on your pilot results, Settler looks
 ## Follow-Up Emails
 
 ### Follow-Up 1: Day After Conversion Email
+
 **Subject:** "Re: Your pilot results: Ready to upgrade?"
 
 **Body:**
+
 ```
 Hi [Name],
 
@@ -110,9 +121,11 @@ If you have questions or would like to discuss, I'm here to help. Let me know if
 ---
 
 ### Follow-Up 2: Day 3 After Conversion Email
+
 **Subject:** "Last chance: Upgrade before pilot expires"
 
 **Body:**
+
 ```
 Hi [Name],
 
@@ -130,6 +143,7 @@ If you have questions, reply to this email or schedule a call: [calendar link]
 ## Conversion Email Best Practices
 
 ### Do's
+
 - ✅ **Be specific:** Use actual pilot results, not estimates
 - ✅ **Show value:** Highlight time savings, cost savings, ROI
 - ✅ **Make it easy:** Clear upgrade link, simple process
@@ -137,6 +151,7 @@ If you have questions, reply to this email or schedule a call: [calendar link]
 - ✅ **Provide options:** Offer different plans if appropriate
 
 ### Don'ts
+
 - ❌ **Don't oversell:** Avoid hype, be honest about results
 - ❌ **Don't be pushy:** Don't pressure, let data drive decision
 - ❌ **Don't ignore concerns:** Address questions, provide answers
@@ -148,12 +163,14 @@ If you have questions, reply to this email or schedule a call: [calendar link]
 ## Conversion Metrics
 
 ### Key Metrics
+
 - **Conversion Rate:** % of pilots that convert (target: 30%+)
 - **Time-to-Convert:** Days from pilot end to conversion (target: <7 days)
 - **Email Open Rate:** % of conversion emails opened (target: 50%+)
 - **Email Click Rate:** % of conversion emails clicked (target: 20%+)
 
 ### Tracking
+
 - **CRM:** Track conversion emails sent, opened, clicked
 - **Dashboard:** Monitor conversion metrics
 - **Review:** Weekly review of conversion performance

@@ -9,11 +9,11 @@ This guide shows how to integrate value event tracking and funnel optimization i
 When a reconciliation completes:
 
 ```typescript
-import { trackValueEvent } from '@/lib/gtm/value-events';
+import { trackValueEvent } from "@/lib/gtm/value-events";
 
 // After reconciliation completes
 await trackValueEvent({
-  type: 'reconciliation_completed',
+  type: "reconciliation_completed",
   userId: user.id,
   tenantId: tenant.id,
   billingAccountId: billingAccount.id,
@@ -21,8 +21,8 @@ await trackValueEvent({
   amount: result.totalAmountMatched,
   timeSavedMs: estimatedTimeSaved,
   metadata: {
-    sourceAdapter: 'stripe',
-    targetAdapter: 'shopify',
+    sourceAdapter: "stripe",
+    targetAdapter: "shopify",
     reconciliationId: result.id,
   },
 });
@@ -33,12 +33,12 @@ await trackValueEvent({
 When user completes a milestone:
 
 ```typescript
-import { trackFunnelTransition } from '@/lib/gtm/funnels';
+import { trackFunnelTransition } from "@/lib/gtm/funnels";
 
 // When user runs first reconciliation
 await trackFunnelTransition({
-  from: 'first_api_call',
-  to: 'first_reconciliation',
+  from: "first_api_call",
+  to: "first_reconciliation",
   userId: user.id,
   metadata: {
     reconciliationId: result.id,
@@ -51,15 +51,12 @@ await trackFunnelTransition({
 In your console dashboard:
 
 ```tsx
-import { ROIProofBlock } from '@/components/gtm/ROIProofBlock';
+import { ROIProofBlock } from "@/components/gtm/ROIProofBlock";
 
 export default function Dashboard() {
   return (
     <div>
-      <ROIProofBlock 
-        billingAccountId={billingAccount.id}
-        periodDays={30}
-      />
+      <ROIProofBlock billingAccountId={billingAccount.id} periodDays={30} />
     </div>
   );
 }
@@ -70,15 +67,12 @@ export default function Dashboard() {
 In gated pages:
 
 ```tsx
-import { FunnelCTA } from '@/components/gtm/FunnelCTA';
+import { FunnelCTA } from "@/components/gtm/FunnelCTA";
 
 export default function GatedFeature() {
   return (
     <div>
-      <FunnelCTA 
-        userId={user.id}
-        variant="banner"
-      />
+      <FunnelCTA userId={user.id} variant="banner" />
     </div>
   );
 }
@@ -93,7 +87,7 @@ export default function GatedFeature() {
 ```typescript
 // After reconciliation completes
 await trackValueEvent({
-  type: 'reconciliation_completed',
+  type: "reconciliation_completed",
   userId: user.id,
   tenantId: tenant.id,
   billingAccountId: billingAccount.id,
@@ -107,7 +101,7 @@ await trackValueEvent({
 
 // Track matched records
 await trackValueEvent({
-  type: 'reconciliation_matched',
+  type: "reconciliation_matched",
   userId: user.id,
   tenantId: tenant.id,
   billingAccountId: billingAccount.id,
@@ -120,7 +114,7 @@ await trackValueEvent({
 
 // Track unmatched (value: visibility)
 await trackValueEvent({
-  type: 'reconciliation_unmatched_detected',
+  type: "reconciliation_unmatched_detected",
   userId: user.id,
   tenantId: tenant.id,
   billingAccountId: billingAccount.id,
@@ -138,7 +132,7 @@ await trackValueEvent({
 ```typescript
 // After integration connects
 await trackValueEvent({
-  type: 'integration_connected',
+  type: "integration_connected",
   userId: user.id,
   tenantId: tenant.id,
   billingAccountId: billingAccount.id,
@@ -153,7 +147,7 @@ await trackValueEvent({
 const existingIntegrations = await countIntegrations(userId);
 if (existingIntegrations === 0) {
   await trackValueEvent({
-    type: 'first_integration',
+    type: "first_integration",
     userId: user.id,
     tenantId: tenant.id,
     billingAccountId: billingAccount.id,
@@ -162,10 +156,10 @@ if (existingIntegrations === 0) {
       integrationId: integration.id,
     },
   });
-  
+
   await trackFunnelTransition({
-    from: 'first_reconciliation',
-    to: 'first_integration',
+    from: "first_reconciliation",
+    to: "first_integration",
     userId: user.id,
   });
 }
@@ -178,7 +172,7 @@ if (existingIntegrations === 0) {
 ```typescript
 // After records processed
 await trackValueEvent({
-  type: 'records_processed',
+  type: "records_processed",
   userId: user.id,
   tenantId: tenant.id,
   billingAccountId: billingAccount.id,
@@ -191,7 +185,7 @@ await trackValueEvent({
 
 // After normalization
 await trackValueEvent({
-  type: 'records_normalized',
+  type: "records_normalized",
   userId: user.id,
   tenantId: tenant.id,
   billingAccountId: billingAccount.id,
@@ -211,7 +205,7 @@ await trackValueEvent({
 const hasApiCalls = await checkHasApiCalls(userId);
 if (!hasApiCalls) {
   await trackValueEvent({
-    type: 'first_api_call',
+    type: "first_api_call",
     userId: user.id,
     tenantId: tenant.id,
     billingAccountId: billingAccount.id,
@@ -221,10 +215,10 @@ if (!hasApiCalls) {
       method: request.method,
     },
   });
-  
+
   await trackFunnelTransition({
-    from: 'signed_up',
-    to: 'first_api_call',
+    from: "signed_up",
+    to: "first_api_call",
     userId: user.id,
   });
 }
@@ -235,7 +229,7 @@ if (!hasApiCalls) {
 ### useValueEventTracking
 
 ```tsx
-import { useValueEventTracking } from '@/hooks/useValueTracking';
+import { useValueEventTracking } from "@/hooks/useValueTracking";
 
 function MyComponent() {
   const { track } = useValueEventTracking({
@@ -246,7 +240,7 @@ function MyComponent() {
 
   const handleReconciliationComplete = async () => {
     await track({
-      type: 'reconciliation_completed',
+      type: "reconciliation_completed",
       quantity: result.matchedCount,
     });
   };
@@ -256,14 +250,14 @@ function MyComponent() {
 ### useFunnelTracking
 
 ```tsx
-import { useFunnelTracking } from '@/hooks/useValueTracking';
+import { useFunnelTracking } from "@/hooks/useValueTracking";
 
 function MyComponent() {
   const { trackTransition } = useFunnelTracking(user.id);
 
   const handleUpgrade = async () => {
-    await trackTransition('first_integration', 'upgraded', {
-      planId: 'starter',
+    await trackTransition("first_integration", "upgraded", {
+      planId: "starter",
     });
   };
 }
@@ -272,12 +266,12 @@ function MyComponent() {
 ### usePageTracking
 
 ```tsx
-import { usePageTracking } from '@/hooks/useValueTracking';
+import { usePageTracking } from "@/hooks/useValueTracking";
 
 function MyPage() {
   // Automatically tracks page views and funnel transitions
   usePageTracking();
-  
+
   return <div>...</div>;
 }
 ```
@@ -295,22 +289,22 @@ function MyPage() {
 ### Test Value Events
 
 ```typescript
-import { trackValueEvent } from '@/lib/gtm/value-events';
+import { trackValueEvent } from "@/lib/gtm/value-events";
 
 // In test
 await trackValueEvent({
-  type: 'reconciliation_completed',
-  userId: 'test-user',
-  tenantId: 'test-tenant',
-  billingAccountId: 'test-billing',
+  type: "reconciliation_completed",
+  userId: "test-user",
+  tenantId: "test-tenant",
+  billingAccountId: "test-billing",
   quantity: 100,
 });
 
 // Verify in database
 const events = await prisma.usageEvent.findMany({
   where: {
-    eventType: 'value:reconciliation_completed',
-    userId: 'test-user',
+    eventType: "value:reconciliation_completed",
+    userId: "test-user",
   },
 });
 
@@ -321,19 +315,19 @@ expect(events[0].quantity).toBe(100);
 ### Test Funnel Transitions
 
 ```typescript
-import { trackFunnelTransition } from '@/lib/gtm/funnels';
+import { trackFunnelTransition } from "@/lib/gtm/funnels";
 
 await trackFunnelTransition({
-  from: 'visitor',
-  to: 'playground_engaged',
-  userId: 'test-user',
+  from: "visitor",
+  to: "playground_engaged",
+  userId: "test-user",
 });
 
 // Verify transition tracked
 const events = await prisma.usageEvent.findMany({
   where: {
-    eventType: 'funnel:visitor→playground_engaged',
-    userId: 'test-user',
+    eventType: "funnel:visitor→playground_engaged",
+    userId: "test-user",
   },
 });
 
@@ -353,6 +347,7 @@ expect(events.length).toBe(1);
 ### Dashboards
 
 Create dashboards for:
+
 - Funnel conversion rates
 - Value events by type
 - ROI metrics by tenant

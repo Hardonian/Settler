@@ -4,10 +4,10 @@
  */
 
 export enum UserRole {
-  OWNER = 'owner',
-  ADMIN = 'admin',
-  DEVELOPER = 'developer',
-  VIEWER = 'viewer',
+  OWNER = "owner",
+  ADMIN = "admin",
+  DEVELOPER = "developer",
+  VIEWER = "viewer",
 }
 
 export interface UserProps {
@@ -28,7 +28,7 @@ export interface UserProps {
 export class User {
   private constructor(private props: UserProps) {}
 
-  static create(props: Omit<UserProps, 'id' | 'createdAt' | 'updatedAt'>): User {
+  static create(props: Omit<UserProps, "id" | "createdAt" | "updatedAt">): User {
     return new User({
       ...props,
       id: crypto.randomUUID(),
@@ -94,9 +94,7 @@ export class User {
   }
 
   scheduleDeletion(gracePeriodDays: number = 30): void {
-    this.props.deletionScheduledAt = new Date(
-      Date.now() + gracePeriodDays * 24 * 60 * 60 * 1000
-    );
+    this.props.deletionScheduledAt = new Date(Date.now() + gracePeriodDays * 24 * 60 * 60 * 1000);
   }
 
   markAsDeleted(): void {

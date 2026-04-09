@@ -1,6 +1,6 @@
 /**
  * Rule Optimization Service
- * 
+ *
  * Analyzes reconciliation results to suggest rule improvements.
  * Enterprise-ready with:
  * - Type-safe Prisma queries
@@ -9,11 +9,11 @@
  * - Actionable suggestions
  */
 
-import { PrismaClient, Prisma } from '@prisma/client';
-import { logError } from '../utils/logger';
+import { PrismaClient, Prisma } from "@prisma/client";
+import { logError } from "../utils/logger";
 
 interface OptimizationSuggestion {
-  type: 'amount_tolerance' | 'date_window' | 'fuzzy_threshold' | 'currency_conversion';
+  type: "amount_tolerance" | "date_window" | "fuzzy_threshold" | "currency_conversion";
   currentValue: number | string;
   suggestedValue: number | string;
   confidence: number;
@@ -37,10 +37,10 @@ export async function suggestRuleOptimizations(
       where: {
         reconJobId: jobId,
         tenantId: tenantId,
-        status: 'completed',
+        status: "completed",
       },
       orderBy: {
-        startedAt: 'desc',
+        startedAt: "desc",
       },
       take: 10, // Analyze last 10 runs
     });
@@ -55,7 +55,7 @@ export async function suggestRuleOptimizations(
       where: {
         runId: { in: runs },
         tenantId: tenantId,
-        matchType: 'unmatched',
+        matchType: "unmatched",
       },
       include: {
         sourceTransaction: true,
@@ -74,18 +74,25 @@ export async function suggestRuleOptimizations(
       .map((d: Prisma.Decimal) => Math.abs(Number(d)));
 
     if (amountDiffs.length > 0) {
-      const avgAmountDiff = amountDiffs.reduce((a: number, b: number) => a + b, 0) / amountDiffs.length;
-      const p95AmountDiff = amountDiffs.sort((a: number, b: number) => a - b)[Math.floor(amountDiffs.length * 0.95)] || 0;
+      const avgAmountDiff =
+        amountDiffs.reduce((a: number, b: number) => a + b, 0) / amountDiffs.length;
+      const p95AmountDiff =
+        amountDiffs.sort((a: number, b: number) => a - b)[Math.floor(amountDiffs.length * 0.95)] ||
+        0;
 
       // Suggest tolerance increase if many small differences
       if (avgAmountDiff < 0.1 && p95AmountDiff < 0.5) {
         suggestions.push({
-          type: 'amount_tolerance',
+          type: "amount_tolerance",
           currentValue: 0.01,
           suggestedValue: Math.max(0.01, p95AmountDiff * 1.2),
           confidence: 0.8,
           reason: `${Math.round((amountDiffs.filter((d: number) => d <= p95AmountDiff).length / amountDiffs.length) * 100)}% of unmatched transactions have amount differences within ${p95AmountDiff.toFixed(2)}`,
-          expectedImprovement: Math.round((amountDiffs.filter((d: number) => d <= p95AmountDiff).length / unmatchedMatches.length) * 100),
+          expectedImprovement: Math.round(
+            (amountDiffs.filter((d: number) => d <= p95AmountDiff).length /
+              unmatchedMatches.length) *
+              100
+          ),
         });
       }
     }
@@ -98,17 +105,21 @@ export async function suggestRuleOptimizations(
 
     if (dateDiffs.length > 0) {
       const avgDateDiff = dateDiffs.reduce((a: number, b: number) => a + b, 0) / dateDiffs.length;
-      const p95DateDiff = dateDiffs.sort((a: number, b: number) => a - b)[Math.floor(dateDiffs.length * 0.95)] || 0;
+      const p95DateDiff =
+        dateDiffs.sort((a: number, b: number) => a - b)[Math.floor(dateDiffs.length * 0.95)] || 0;
 
       // Suggest window increase if many small differences
       if (avgDateDiff < 3 && p95DateDiff < 7) {
         suggestions.push({
-          type: 'date_window',
+          type: "date_window",
           currentValue: 7,
           suggestedValue: Math.max(7, Math.ceil(p95DateDiff * 1.2)),
           confidence: 0.75,
           reason: `${Math.round((dateDiffs.filter((d: number) => d <= p95DateDiff).length / dateDiffs.length) * 100)}% of unmatched transactions have date differences within ${p95DateDiff} days`,
-          expectedImprovement: Math.round((dateDiffs.filter((d: number) => d <= p95DateDiff).length / unmatchedMatches.length) * 100),
+          expectedImprovement: Math.round(
+            (dateDiffs.filter((d: number) => d <= p95DateDiff).length / unmatchedMatches.length) *
+              100
+          ),
         });
       }
     }
@@ -122,12 +133,14 @@ export async function suggestRuleOptimizations(
 
     if (currencyMismatches.length > unmatchedMatches.length * 0.1) {
       suggestions.push({
-        type: 'currency_conversion',
-        currentValue: 'disabled',
-        suggestedValue: 'enabled',
+        type: "currency_conversion",
+        currentValue: "disabled",
+        suggestedValue: "enabled",
         confidence: 0.9,
         reason: `${currencyMismatches.length} unmatched transactions appear to be currency mismatches`,
-        expectedImprovement: Math.round((currencyMismatches.length / unmatchedMatches.length) * 100),
+        expectedImprovement: Math.round(
+          (currencyMismatches.length / unmatchedMatches.length) * 100
+        ),
       });
     }
 

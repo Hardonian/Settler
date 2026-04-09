@@ -1,17 +1,17 @@
 #!/usr/bin/env tsx
 /**
  * Direct Migration Application Script
- * 
+ *
  * Applies migrations directly without checking schema_migrations table.
  * Useful for initial setup or when schema_migrations table doesn't exist yet.
- * 
+ *
  * Usage: tsx scripts/apply-migrations-direct.ts
  */
 
-import { Pool } from 'pg';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as dotenv from 'dotenv';
+import { Pool } from "pg";
+import * as fs from "fs";
+import * as path from "path";
+import * as dotenv from "dotenv";
 
 dotenv.config();
 
@@ -31,8 +31,8 @@ function getConnectionString(): string {
   }
 
   throw new Error(
-    'DATABASE_URL environment variable is required.\n' +
-    'Set it to your PostgreSQL connection string.'
+    "DATABASE_URL environment variable is required.\n" +
+      "Set it to your PostgreSQL connection string."
   );
 }
 
@@ -55,8 +55,8 @@ async function executeMigration(
       throw new Error(`Migration file not found: ${migrationPath}`);
     }
 
-    const migrationSQL = fs.readFileSync(migrationPath, 'utf8');
-    
+    const migrationSQL = fs.readFileSync(migrationPath, "utf8");
+
     // Execute the entire migration as a single transaction
     try {
       await pool.query(migrationSQL);
@@ -65,10 +65,12 @@ async function executeMigration(
       console.log(`✓ Migration completed: ${migrationName}`);
     } catch (error: any) {
       // Check if it's a "already exists" error that we can ignore
-      if (error.message.includes('already exists') ||
-          error.message.includes('duplicate') ||
-          error.message.includes('already enabled') ||
-          (error.message.includes('does not exist') && error.message.includes('DROP'))) {
+      if (
+        error.message.includes("already exists") ||
+        error.message.includes("duplicate") ||
+        error.message.includes("already enabled") ||
+        (error.message.includes("does not exist") && error.message.includes("DROP"))
+      ) {
         console.log(`⚠ Migration warning (ignored): ${migrationName} - ${error.message}`);
         result.success = true;
         result.statementsExecuted = 0;
@@ -91,16 +93,19 @@ async function executeMigration(
  */
 async function applyAllMigrations(): Promise<void> {
   const connectionString = getConnectionString();
-  
-  console.log('🚀 Applying all migrations...');
-  const maskedConnection = connectionString.replace(/:[^:@]+@/, ':****@');
+
+  console.log("🚀 Applying all migrations...");
+  const maskedConnection = connectionString.replace(/:[^:@]+@/, ":****@");
   console.log(`   Connection: ${maskedConnection}\n`);
 
   const pool = new Pool({
     connectionString,
-    ssl: connectionString.includes('supabase.co') || connectionString.includes('pooler') ? {
-      rejectUnauthorized: false,
-    } : false,
+    ssl:
+      connectionString.includes("supabase.co") || connectionString.includes("pooler")
+        ? {
+            rejectUnauthorized: false,
+          }
+        : false,
     connectionTimeoutMillis: 30000,
     keepAlive: true,
     keepAliveInitialDelayMillis: 10000,
@@ -108,17 +113,18 @@ async function applyAllMigrations(): Promise<void> {
 
   try {
     // Test connection
-    await pool.query('SELECT 1');
-    console.log('✅ Database connection established\n');
+    await pool.query("SELECT 1");
+    console.log("✅ Database connection established\n");
 
     // Get all migration files
-    const migrationsDir = path.join(process.cwd(), 'supabase', 'migrations');
+    const migrationsDir = path.join(process.cwd(), "supabase", "migrations");
     if (!fs.existsSync(migrationsDir)) {
       throw new Error(`Migrations directory not found: ${migrationsDir}`);
     }
 
-    const migrationFiles = fs.readdirSync(migrationsDir)
-      .filter(file => file.endsWith('.sql') && file !== 'rollback_template.sql')
+    const migrationFiles = fs
+      .readdirSync(migrationsDir)
+      .filter((file) => file.endsWith(".sql") && file !== "rollback_template.sql")
       .sort();
 
     console.log(`📦 Found ${migrationFiles.length} migration file(s) to apply:\n`);
@@ -131,11 +137,11 @@ async function applyAllMigrations(): Promise<void> {
     for (const migrationFile of migrationFiles) {
       const migrationPath = path.join(migrationsDir, migrationFile);
       console.log(`📦 Applying: ${migrationFile}`);
-      
+
       try {
         const result = await executeMigration(migrationPath, migrationFile, pool);
         results.push(result);
-        
+
         if (result.success) {
           successCount++;
           console.log(`   ✅ Success\n`);
@@ -157,32 +163,33 @@ async function applyAllMigrations(): Promise<void> {
       }
     }
 
-    console.log('📊 Migration Summary:');
+    console.log("📊 Migration Summary:");
     console.log(`   Total: ${migrationFiles.length}`);
     console.log(`   Successful: ${successCount}`);
     console.log(`   Failed: ${failCount}`);
-    console.log(`   Skipped (already exists): ${results.filter(r => r.success && r.statementsExecuted === 0).length}`);
+    console.log(
+      `   Skipped (already exists): ${results.filter((r) => r.success && r.statementsExecuted === 0).length}`
+    );
 
     if (failCount === 0) {
-      console.log('\n✅ All migrations applied successfully!');
+      console.log("\n✅ All migrations applied successfully!");
     } else {
-      console.log('\n⚠️  Some migrations failed (check errors above)');
+      console.log("\n⚠️  Some migrations failed (check errors above)");
       console.log('   Note: "already exists" errors are normal and can be ignored');
     }
-
   } catch (error: any) {
-    console.error('\n❌ Migration process failed:', error.message);
-    if (error.code === 'ENETUNREACH' || error.message.includes('ENETUNREACH')) {
-      console.error('\n💡 Network connectivity issue detected.');
-      console.error('   This might be due to:');
-      console.error('   1. IPv6 connectivity issues');
-      console.error('   2. Firewall blocking connection');
-      console.error('   3. Database not accessible from this network');
-      console.error('\n   Solutions:');
-      console.error('   - Run migrations from a machine with database access');
-      console.error('   - Use Supabase connection pooler (port 6543)');
-      console.error('   - Check Supabase IP allowlist settings');
-      console.error('   - Use Vercel CLI or Supabase CLI for migrations');
+    console.error("\n❌ Migration process failed:", error.message);
+    if (error.code === "ENETUNREACH" || error.message.includes("ENETUNREACH")) {
+      console.error("\n💡 Network connectivity issue detected.");
+      console.error("   This might be due to:");
+      console.error("   1. IPv6 connectivity issues");
+      console.error("   2. Firewall blocking connection");
+      console.error("   3. Database not accessible from this network");
+      console.error("\n   Solutions:");
+      console.error("   - Run migrations from a machine with database access");
+      console.error("   - Use Supabase connection pooler (port 6543)");
+      console.error("   - Check Supabase IP allowlist settings");
+      console.error("   - Use Vercel CLI or Supabase CLI for migrations");
     }
     throw error;
   } finally {
@@ -197,7 +204,7 @@ if (require.main === module) {
       process.exit(0);
     })
     .catch((error) => {
-      console.error('Fatal error:', error.message);
+      console.error("Fatal error:", error.message);
       process.exit(1);
     });
 }

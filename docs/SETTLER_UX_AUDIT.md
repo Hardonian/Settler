@@ -12,7 +12,7 @@ This audit identifies broken routes, confusing IA, missing states, and workspace
 ### Fixed Dead Links ✅
 
 1. **/admin/branding** - Created placeholder page
-2. **/admin/flags** - Created placeholder page  
+2. **/admin/flags** - Created placeholder page
 3. **/admin/settings** - Created placeholder page
 4. **/docs/getting-started** - Created getting started page
 5. **/docs/integrations** - Created integrations listing page
@@ -20,6 +20,7 @@ This audit identifies broken routes, confusing IA, missing states, and workspace
 ### Remaining Dead Links (Documentation References)
 
 These are markdown file references, not user-facing routes:
+
 - `/docs/diagnostics-playbook.md` - Internal doc reference
 - `/docs/event-catalog.md` - Internal doc reference
 - `/docs/observability-architecture.md` - Internal doc reference
@@ -32,6 +33,7 @@ These are markdown file references, not user-facing routes:
 ### Current Structure
 
 **Public Marketing Site:**
+
 - `/` - Homepage
 - `/docs` - Documentation hub
 - `/pricing` - Pricing page
@@ -39,6 +41,7 @@ These are markdown file references, not user-facing routes:
 - `/cookbook`, `/runbooks`, `/schematics` - Documentation sections
 
 **Console (Customer Workspace):**
+
 - `/console` - Dashboard
 - `/console/api-keys` - API key management
 - `/console/receipts` - Receipt management
@@ -46,6 +49,7 @@ These are markdown file references, not user-facing routes:
 - `/console/playground` - Console playground
 
 **Admin (Internal Only):**
+
 - `/admin` - Admin dashboard
 - `/admin/experiments` - A/B testing
 - `/admin/pages` - Page management
@@ -90,6 +94,7 @@ These are markdown file references, not user-facing routes:
    - Missing error boundaries
 
 **Fix:** Create shared components:
+
 - `components/EmptyState.tsx`
 - `components/ErrorState.tsx`
 - `components/Skeleton.tsx`
@@ -111,20 +116,20 @@ These are markdown file references, not user-facing routes:
 
 ## Route Status Matrix
 
-| Route | Status | Notes |
-|-------|--------|-------|
-| `/` | ✅ Working | Homepage |
-| `/docs` | ✅ Working | Docs hub |
-| `/docs/getting-started` | ✅ Fixed | New page created |
-| `/docs/integrations` | ✅ Fixed | New page created |
-| `/console` | ✅ Working | Dashboard |
-| `/console/playground` | ✅ Working | Console playground |
-| `/playground` | ✅ Working | Public playground |
-| `/pricing` | ✅ Working | Pricing page |
-| `/admin` | ✅ Working | Admin dashboard |
-| `/admin/branding` | ✅ Fixed | Placeholder created |
-| `/admin/flags` | ✅ Fixed | Placeholder created |
-| `/admin/settings` | ✅ Fixed | Placeholder created |
+| Route                   | Status     | Notes               |
+| ----------------------- | ---------- | ------------------- |
+| `/`                     | ✅ Working | Homepage            |
+| `/docs`                 | ✅ Working | Docs hub            |
+| `/docs/getting-started` | ✅ Fixed   | New page created    |
+| `/docs/integrations`    | ✅ Fixed   | New page created    |
+| `/console`              | ✅ Working | Dashboard           |
+| `/console/playground`   | ✅ Working | Console playground  |
+| `/playground`           | ✅ Working | Public playground   |
+| `/pricing`              | ✅ Working | Pricing page        |
+| `/admin`                | ✅ Working | Admin dashboard     |
+| `/admin/branding`       | ✅ Fixed   | Placeholder created |
+| `/admin/flags`          | ✅ Fixed   | Placeholder created |
+| `/admin/settings`       | ✅ Fixed   | Placeholder created |
 
 ## Next Steps
 

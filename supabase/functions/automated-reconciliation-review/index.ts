@@ -1,6 +1,6 @@
 /**
  * Automated Reconciliation Review Edge Function
- * 
+ *
  * Processes completed reconciliation runs and automatically reviews matches
  * according to industry best practices. Eliminates all manual intervention.
  */
@@ -18,8 +18,8 @@ const SYSTEM_USER_ID = "system:automated_review";
 // Industry-standard confidence thresholds
 const CONFIDENCE_THRESHOLDS = {
   AUTO_APPROVE: 0.95,
-  RULE_BASED: 0.80,
-  EXCEPTION_HANDLING: 0.60,
+  RULE_BASED: 0.8,
+  EXCEPTION_HANDLING: 0.6,
 } as const;
 
 serve(async (req) => {
@@ -38,21 +38,15 @@ serve(async (req) => {
     if (runId && tenantId) {
       // Process specific run
       const result = await processRun(supabaseClient, runId, tenantId);
-      return new Response(
-        JSON.stringify({ success: true, ...result }),
-        {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ success: true, ...result }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     } else {
       // Process pending reviews
       const result = await processPendingReviews(supabaseClient);
-      return new Response(
-        JSON.stringify({ success: true, ...result }),
-        {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ success: true, ...result }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
   } catch (error) {
     console.error("Error:", error);
@@ -187,9 +181,7 @@ async function processRun(
 /**
  * Process pending reviews
  */
-async function processPendingReviews(
-  supabase: ReturnType<typeof createClient>
-) {
+async function processPendingReviews(supabase: ReturnType<typeof createClient>) {
   // Find completed runs that haven't been fully reviewed
   const { data: runs, error: runsError } = await supabase
     .from("reconciliation_runs")
@@ -237,7 +229,7 @@ function applyRuleBasedResolution(match: MatchRecord): { action: string; rule: s
   const dateDiff = match.date_diff ? Math.abs(Number(match.date_diff)) : null;
 
   // Rule 1: Amount mismatch within tolerance
-  if (amountDiff !== null && amountDiff <= 1.00) {
+  if (amountDiff !== null && amountDiff <= 1.0) {
     return {
       action: "rule_resolved",
       rule: "amount_mismatch_within_tolerance",

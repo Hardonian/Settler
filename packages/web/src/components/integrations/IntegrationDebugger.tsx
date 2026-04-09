@@ -107,9 +107,7 @@ export function IntegrationDebugger({ integrationId }: IntegrationDebuggerProps)
             <TabsContent value="documentation" className="mt-4">
               <div className="bg-muted/20 rounded-lg p-4">
                 <h4 className="font-semibold text-foreground mb-2">Documentation</h4>
-                <p className="text-sm text-muted-foreground">
-                  {debugResult.documentation}
-                </p>
+                <p className="text-sm text-muted-foreground">{debugResult.documentation}</p>
                 <Button asChild size="sm" variant="outline" className="mt-3">
                   <Link href={`/docs/integrations/${integrationId}`}>View Full Docs</Link>
                 </Button>
@@ -131,9 +129,7 @@ export function IntegrationDebugger({ integrationId }: IntegrationDebuggerProps)
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-muted-foreground">
-                    No related errors found
-                  </p>
+                  <p className="text-sm text-muted-foreground">No related errors found</p>
                 )}
               </div>
             </TabsContent>

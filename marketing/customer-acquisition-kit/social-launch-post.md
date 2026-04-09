@@ -25,6 +25,7 @@ Settler is a **Reconciliation-as-a-Service API** that automates cross-platform d
 ✅ **Free tier** — 1,000 reconciliations/month to get started
 
 **Perfect for:**
+
 - E-commerce stores reconciling orders and payments
 - SaaS companies with multi-platform revenue streams
 - Finance teams automating daily reconciliation
@@ -251,6 +252,7 @@ Manual reconciliation is a pain. It takes hours, causes revenue leakage, and fai
 Settler is an API-first platform that normalizes, validates, and reconciles data across all sources in real-time.
 
 **Quick Start:**
+
 ```typescript
 import Settler from "@settler/sdk";
 
@@ -262,9 +264,9 @@ const job = await settler.jobs.create({
   rules: {
     matching: [
       { field: "order_id", type: "exact" },
-      { field: "amount", type: "exact", tolerance: 0.01 }
-    ]
-  }
+      { field: "amount", type: "exact", tolerance: 0.01 },
+    ],
+  },
 });
 ```
 
@@ -315,6 +317,7 @@ Modern businesses run on 10+ platforms (Stripe, Shopify, QuickBooks, PayPal, Net
 Settler is an API-first platform that normalizes, validates, and reconciles data across all sources in real-time. Think "Resend for reconciliation" — dead-simple onboarding, pure API, usage-based pricing.
 
 **Quick Example:**
+
 ```typescript
 import Settler from "@settler/sdk";
 
@@ -326,9 +329,9 @@ const job = await settler.jobs.create({
   rules: {
     matching: [
       { field: "order_id", type: "exact" },
-      { field: "amount", type: "exact", tolerance: 0.01 }
-    ]
-  }
+      { field: "amount", type: "exact", tolerance: 0.01 },
+    ],
+  },
 });
 
 const report = await settler.reports.get(job.id);
@@ -381,6 +384,7 @@ If you run an e-commerce store or SaaS, you probably deal with Stripe, Shopify, 
 Settler is an API-first platform that normalizes, validates, and reconciles data across all sources in real-time.
 
 **Quick Start:**
+
 ```typescript
 import Settler from "@settler/sdk";
 
@@ -456,9 +460,9 @@ const job = await settler.jobs.create({
   rules: {
     matching: [
       { field: "order_id", type: "exact" },
-      { field: "amount", type: "exact", tolerance: 0.01 }
-    ]
-  }
+      { field: "amount", type: "exact", tolerance: 0.01 },
+    ],
+  },
 });
 
 const report = await settler.reports.get(job.id);
@@ -545,6 +549,7 @@ Founder, Settler
 ## General Social Media Tips
 
 **Best Practices:**
+
 1. **Use visuals** — Screenshots, GIFs, or short demo videos work best
 2. **Engage early** — Respond to comments within the first hour
 3. **Cross-post** — Share on multiple platforms but tailor the message

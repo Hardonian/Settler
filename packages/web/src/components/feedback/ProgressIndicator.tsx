@@ -1,18 +1,18 @@
 /**
  * ProgressIndicator
- * 
+ *
  * Shows progress through multi-step flows with step indicators and percentage.
  * Animates progress changes smoothly.
  */
 
-'use client';
+"use client";
 
-import * as React from 'react';
-import { motion } from 'framer-motion';
-import { Progress } from '@/components/ui/progress';
-import { CheckCircle2, Circle } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { motionDurations, getReducedMotionDuration } from '@/lib/motion/tokens';
+import * as React from "react";
+import { motion } from "framer-motion";
+import { Progress } from "@/components/ui/progress";
+import { CheckCircle2, Circle } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { motionDurations, getReducedMotionDuration } from "@/lib/motion/tokens";
 
 export interface ProgressStep {
   id: string;
@@ -26,24 +26,24 @@ export interface ProgressIndicatorProps {
    * Current progress percentage (0-100)
    */
   progress: number;
-  
+
   /**
    * Steps to display (optional)
    */
   steps?: ProgressStep[];
-  
+
   /**
    * Show percentage text
    * @default true
    */
   showPercentage?: boolean;
-  
+
   /**
    * Size variant
    * @default 'default'
    */
-  size?: 'sm' | 'default' | 'lg';
-  
+  size?: "sm" | "default" | "lg";
+
   /**
    * Custom className
    */
@@ -54,24 +54,22 @@ export function ProgressIndicator({
   progress,
   steps,
   showPercentage = true,
-  size = 'default',
+  size = "default",
   className,
 }: ProgressIndicatorProps) {
   const clampedProgress = Math.max(0, Math.min(100, progress));
-  
+
   const sizeClasses = {
-    sm: 'h-1',
-    default: 'h-2',
-    lg: 'h-3',
+    sm: "h-1",
+    default: "h-2",
+    lg: "h-3",
   };
 
   return (
-    <div className={cn('w-full', className)}>
+    <div className={cn("w-full", className)}>
       {/* Progress Bar */}
       <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-          Progress
-        </span>
+        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Progress</span>
         {showPercentage && (
           <motion.span
             key={clampedProgress}
@@ -122,12 +120,12 @@ export function ProgressIndicator({
                 </motion.div>
                 <span
                   className={cn(
-                    'text-xs mt-1 text-center',
+                    "text-xs mt-1 text-center",
                     step.current
-                      ? 'text-blue-600 dark:text-blue-400 font-medium'
+                      ? "text-blue-600 dark:text-blue-400 font-medium"
                       : step.completed
-                      ? 'text-green-600 dark:text-green-400'
-                      : 'text-slate-500'
+                        ? "text-green-600 dark:text-green-400"
+                        : "text-slate-500"
                   )}
                 >
                   {step.label}
@@ -136,10 +134,8 @@ export function ProgressIndicator({
               {index < steps.length - 1 && (
                 <div
                   className={cn(
-                    'flex-1 h-0.5 mx-2',
-                    step.completed
-                      ? 'bg-green-500'
-                      : 'bg-slate-200 dark:bg-slate-700'
+                    "flex-1 h-0.5 mx-2",
+                    step.completed ? "bg-green-500" : "bg-slate-200 dark:bg-slate-700"
                   )}
                 />
               )}

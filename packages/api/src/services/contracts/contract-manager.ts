@@ -1,27 +1,26 @@
 /**
  * Data Contract Manager
- * 
+ *
  * Manages data contract versioning and breaking change detection
  * Part of Phase V: AIOS
  */
 
- 
-import { PrismaClient, Prisma } from '@prisma/client';
-import { logInfo } from '../../utils/logger';
+import { PrismaClient, Prisma } from "@prisma/client";
+import { logInfo } from "../../utils/logger";
 
 export interface ContractSchema {
-  type: 'object' | 'array';
+  type: "object" | "array";
   properties?: Record<string, unknown>;
   required?: string[];
   additionalProperties?: boolean;
 }
 
 export interface BreakingChange {
-  type: 'field_removed' | 'field_type_changed' | 'required_added' | 'enum_restricted';
+  type: "field_removed" | "field_type_changed" | "required_added" | "enum_restricted";
   field: string;
   before: unknown;
   after: unknown;
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  severity: "low" | "medium" | "high" | "critical";
 }
 
 export class ContractManager {
@@ -50,7 +49,7 @@ export class ContractManager {
       },
     });
 
-    logInfo('Contract version created', { tenantId, contractName, version });
+    logInfo("Contract version created", { tenantId, contractName, version });
     return contract;
   }
 
@@ -84,7 +83,7 @@ export class ContractManager {
     });
 
     if (!oldContract || !newContract) {
-      throw new Error('Contract versions not found');
+      throw new Error("Contract versions not found");
     }
 
     const oldSchema = oldContract.schemaDefinition as unknown as ContractSchema;
@@ -95,16 +94,16 @@ export class ContractManager {
     // Detect field removals
     const oldFields = Object.keys(oldSchema.properties || {});
     const newFields = Object.keys(newSchema.properties || {});
-    
+
     for (const field of oldFields) {
       if (!newFields.includes(field)) {
         const fieldValue = oldSchema.properties?.[field];
         breakingChanges.push({
-          type: 'field_removed',
+          type: "field_removed",
           field,
           before: fieldValue,
           after: null,
-          severity: 'critical',
+          severity: "critical",
         });
       }
     }
@@ -116,14 +115,14 @@ export class ContractManager {
         const newField = newSchema.properties?.[field] as { type?: string } | undefined;
         const oldType = oldField?.type;
         const newType = newField?.type;
-        
+
         if (oldType !== newType) {
           breakingChanges.push({
-            type: 'field_type_changed',
+            type: "field_type_changed",
             field,
             before: oldType,
             after: newType,
-            severity: 'high',
+            severity: "high",
           });
         }
       }
@@ -132,15 +131,15 @@ export class ContractManager {
     // Detect new required fields
     const oldRequired = oldSchema.required || [];
     const newRequired = newSchema.required || [];
-    
+
     for (const field of newRequired) {
       if (!oldRequired.includes(field)) {
         breakingChanges.push({
-          type: 'required_added',
+          type: "required_added",
           field,
           before: { required: false },
           after: { required: true },
-          severity: 'high',
+          severity: "high",
         });
       }
     }

@@ -22,6 +22,7 @@ Settler has accumulated planning docs, audits, launch notes, and execution summa
 ## Revival policy
 
 Archived docs are historical context, not default truth. If reviving content:
+
 1. validate against current code reality,
 2. merge durable content into canonical docs,
 3. keep the archived source for traceability.
@@ -29,9 +30,9 @@ Archived docs are historical context, not default truth. If reviving content:
 ## Indexing requirement
 
 Every archived move must be recorded in:
+
 - `docs/_meta/archive-index.md`
 - `docs/_meta/archive-index.json`
-
 
 ## Execution wave folders
 

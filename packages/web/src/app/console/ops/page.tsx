@@ -1,28 +1,31 @@
 /**
  * Founder Ops Command Center
- * 
+ *
  * Admin-only dashboard for operational monitoring and management.
  * Tabs: Overview, Customers, Usage, Jobs/Queues, Webhooks, Errors, Billing, Exports, Runbooks
  */
 
-import { Suspense } from 'react';
-import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
-import { getUserRole, UserRole } from '@/shared/auth/roles';
-import { OpsDashboard } from '@/components/ops/OpsDashboard';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle } from 'lucide-react';
-import { ErrorBoundary } from '@/components/ui/error-boundary';
+import { Suspense } from "react";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { getUserRole, UserRole } from "@/shared/auth/roles";
+import { OpsDashboard } from "@/components/ops/OpsDashboard";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { AlertCircle } from "lucide-react";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 async function OpsContent() {
   const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    redirect('/console');
+    redirect("/console");
   }
 
   // Check if user is admin
@@ -38,9 +41,7 @@ async function OpsContent() {
               <AlertCircle className="h-5 w-5 text-destructive" />
               Access Denied
             </CardTitle>
-            <CardDescription>
-              This page is restricted to administrators only.
-            </CardDescription>
+            <CardDescription>This page is restricted to administrators only.</CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">

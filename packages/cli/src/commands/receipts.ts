@@ -2,16 +2,15 @@ import { Command } from "commander";
 import { SettlerClient } from "@settler/sdk";
 import chalk from "chalk";
 
-export const receiptsCommand = new Command("receipts")
-  .description("Manage receipts");
+export const receiptsCommand = new Command("receipts").description("Manage receipts");
 
 receiptsCommand
   .command("parse <file>")
   .description("Parse a receipt from a file or URL")
   .option("-u, --url", "Treat file argument as a URL")
   .action(async (file, options) => {
-    const client = new SettlerClient({ 
-      apiKey: process.env.SETTLER_API_KEY || "demo_key" 
+    const client = new SettlerClient({
+      apiKey: process.env.SETTLER_API_KEY || "demo_key",
     });
 
     console.log(chalk.blue(`Parsing receipt: ${file}...`));
@@ -38,8 +37,8 @@ receiptsCommand
   .command("get <id>")
   .description("Get a receipt by ID")
   .action(async (id) => {
-    const client = new SettlerClient({ 
-      apiKey: process.env.SETTLER_API_KEY || "demo_key" 
+    const client = new SettlerClient({
+      apiKey: process.env.SETTLER_API_KEY || "demo_key",
     });
 
     try {

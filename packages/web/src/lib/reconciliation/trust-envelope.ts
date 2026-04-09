@@ -8,10 +8,7 @@
  */
 
 import { createHmac } from "node:crypto";
-import {
-  stableHash,
-  type ReconciliationProofCapsule,
-} from "@settler/protocol";
+import { stableHash, type ReconciliationProofCapsule } from "@settler/protocol";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -98,9 +95,7 @@ function buildRuleHash(rules: Record<string, unknown>): string {
   return stableHash(rules);
 }
 
-function buildOutputHash(
-  matches: ReadonlyArray<unknown>
-): string {
+function buildOutputHash(matches: ReadonlyArray<unknown>): string {
   return stableHash(matches);
 }
 
@@ -140,10 +135,7 @@ function computeSignature(
  * four hashes are additionally signed with HMAC-SHA256 so downstream
  * consumers can verify the capsule has not been tampered with.
  */
-export function seal(
-  input: SealInput,
-  options: SealOptions = {}
-): ReconciliationProofCapsule {
+export function seal(input: SealInput, options: SealOptions = {}): ReconciliationProofCapsule {
   const inputHash = buildInputHash(input);
   const ruleHash = buildRuleHash(input.rules);
   const outputHash = buildOutputHash(input.matches);

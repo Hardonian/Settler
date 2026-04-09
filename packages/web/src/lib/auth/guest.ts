@@ -5,9 +5,9 @@
  * Uses Supabase anonymous auth if available, otherwise falls back to session storage.
  */
 
-import { createClient } from '@/lib/supabase/client';
-import { safeAsync } from '@/lib/safe';
-import { safeJsonParse } from '@/lib/utils/safe-parse';
+import { createClient } from "@/lib/supabase/client";
+import { safeAsync } from "@/lib/safe";
+import { safeJsonParse } from "@/lib/utils/safe-parse";
 
 export interface GuestSession {
   id: string;
@@ -15,7 +15,7 @@ export interface GuestSession {
   isAnonymous: boolean;
 }
 
-const GUEST_SESSION_KEY = 'settler_guest_session';
+const GUEST_SESSION_KEY = "settler_guest_session";
 
 /**
  * Initialize guest session
@@ -27,42 +27,42 @@ export async function initGuestSession(): Promise<GuestSession> {
   if (existing) {
     return existing;
   }
-  
+
   // Try Supabase anonymous auth
   const supabaseResult = await safeAsync(async () => {
     const supabase = createClient();
     const { data, error } = await supabase.auth.signInAnonymously();
-    
+
     if (error) {
       throw error;
     }
-    
+
     return {
       id: data.user?.id || generateGuestId(),
       createdAt: new Date().toISOString(),
       isAnonymous: true,
     } as GuestSession;
   });
-  
+
   if (supabaseResult) {
     // Store session
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       localStorage.setItem(GUEST_SESSION_KEY, JSON.stringify(supabaseResult));
     }
     return supabaseResult;
   }
-  
+
   // Fallback to local session
   const guestSession: GuestSession = {
     id: generateGuestId(),
     createdAt: new Date().toISOString(),
     isAnonymous: false,
   };
-  
-  if (typeof window !== 'undefined') {
+
+  if (typeof window !== "undefined") {
     localStorage.setItem(GUEST_SESSION_KEY, JSON.stringify(guestSession));
   }
-  
+
   return guestSession;
 }
 
@@ -70,7 +70,7 @@ export async function initGuestSession(): Promise<GuestSession> {
  * Get current guest session
  */
 export function getGuestSession(): GuestSession | null {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return null;
   }
 
@@ -93,7 +93,7 @@ export function hasGuestSession(): boolean {
  * Clear guest session
  */
 export function clearGuestSession(): void {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     localStorage.removeItem(GUEST_SESSION_KEY);
   }
 }

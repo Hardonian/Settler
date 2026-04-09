@@ -35,22 +35,26 @@ A step-by-step guide to getting started with Settler. From signup to production 
 5. **Important:** Store it securely (shown only once)
 
 **Test vs. Live Keys:**
+
 - `sk_test_...` — Sandbox mode (no real data)
 - `sk_live_...` — Production mode (real reconciliations)
 
 ### Step 3: Install SDK
 
 **npm:**
+
 ```bash
 npm install @settler/sdk
 ```
 
 **yarn:**
+
 ```bash
 yarn add @settler/sdk
 ```
 
 **pnpm:**
+
 ```bash
 pnpm add @settler/sdk
 ```
@@ -73,7 +77,7 @@ pnpm add @settler/sdk
 import Settler from "@settler/sdk";
 
 const settler = new Settler({
-  apiKey: process.env.SETTLER_API_KEY
+  apiKey: process.env.SETTLER_API_KEY,
 });
 
 const job = await settler.jobs.create({
@@ -82,21 +86,21 @@ const job = await settler.jobs.create({
     adapter: "shopify",
     config: {
       apiKey: process.env.SHOPIFY_API_KEY,
-      shopDomain: "your-shop.myshopify.com"
-    }
+      shopDomain: "your-shop.myshopify.com",
+    },
   },
   target: {
     adapter: "stripe",
     config: {
-      apiKey: process.env.STRIPE_SECRET_KEY
-    }
+      apiKey: process.env.STRIPE_SECRET_KEY,
+    },
   },
   rules: {
     matching: [
       { field: "order_id", type: "exact" },
-      { field: "amount", type: "exact", tolerance: 0.01 }
-    ]
-  }
+      { field: "amount", type: "exact", tolerance: 0.01 },
+    ],
+  },
 });
 
 console.log("Job created:", job.data.id);
@@ -123,37 +127,44 @@ When you first sign up, Settler guides you through an interactive onboarding flo
 ### Welcome Screen
 
 **What you'll see:**
+
 - Welcome message
 - Product overview (30-second video)
 - "Get Started" button
 
 **What happens:**
+
 - Click "Get Started" to begin
 
 ### Step 1: Choose Your Use Case
 
 **Options:**
+
 - E-commerce (Shopify, WooCommerce, etc.)
 - SaaS (Stripe, PayPal, etc.)
 - Accounting (QuickBooks, Xero, etc.)
 - Custom (Other platforms)
 
 **What happens:**
+
 - Select your use case
 - We'll pre-configure adapters for you
 
 ### Step 2: Connect Your Platforms
 
 **What you'll see:**
+
 - List of recommended adapters
 - "Connect" buttons for each platform
 
 **What happens:**
+
 - Click "Connect" for each platform
 - Enter API keys/credentials
 - Test connection (automatic)
 
 **Example:**
+
 ```
 ✅ Stripe Connected
 ✅ Shopify Connected
@@ -163,16 +174,19 @@ When you first sign up, Settler guides you through an interactive onboarding flo
 ### Step 3: Configure Matching Rules
 
 **What you'll see:**
+
 - Visual rule builder
 - Pre-configured rules based on your use case
 - Option to customize
 
 **What happens:**
+
 - Review pre-configured rules
 - Adjust if needed
 - Click "Save"
 
 **Example Rules:**
+
 - Match by `order_id` (exact)
 - Match by `amount` (exact, tolerance: $0.01)
 - Match by `date` (range: 1 day)
@@ -180,16 +194,19 @@ When you first sign up, Settler guides you through an interactive onboarding flo
 ### Step 4: Test Your First Reconciliation
 
 **What you'll see:**
+
 - "Run Test" button
 - Real-time progress indicator
 - Results preview
 
 **What happens:**
+
 - Click "Run Test"
 - Wait for reconciliation (usually < 10 seconds)
 - View results
 
 **Results Preview:**
+
 ```
 ✅ Matched: 145 transactions
 ⚠️  Unmatched: 3 transactions
@@ -200,11 +217,13 @@ When you first sign up, Settler guides you through an interactive onboarding flo
 ### Step 5: Set Up Webhooks (Optional)
 
 **What you'll see:**
+
 - Webhook configuration form
 - Example webhook URL
 - Event selection
 
 **What happens:**
+
 - Enter your webhook URL
 - Select events to subscribe to
 - Test webhook delivery
@@ -212,23 +231,27 @@ When you first sign up, Settler guides you through an interactive onboarding flo
 ### Step 6: Schedule Reconciliation (Optional)
 
 **What you'll see:**
+
 - Schedule configuration
 - Cron expression builder
 - Timezone selector
 
 **What happens:**
+
 - Set schedule (e.g., "Daily at 2 AM")
 - Save schedule
 
 ### Step 7: Complete Onboarding
 
 **What you'll see:**
+
 - Success message
 - Next steps
 - Links to documentation
 - "Go to Dashboard" button
 
 **What happens:**
+
 - Click "Go to Dashboard"
 - Start using Settler!
 
@@ -258,24 +281,24 @@ const job = await settler.jobs.create({
     adapter: "shopify",
     config: {
       apiKey: process.env.SHOPIFY_API_KEY,
-      shopDomain: "your-shop.myshopify.com"
-    }
+      shopDomain: "your-shop.myshopify.com",
+    },
   },
   target: {
     adapter: "stripe",
     config: {
-      apiKey: process.env.STRIPE_SECRET_KEY
-    }
+      apiKey: process.env.STRIPE_SECRET_KEY,
+    },
   },
   rules: {
     matching: [
       { field: "order_id", type: "exact" },
       { field: "amount", type: "exact", tolerance: 0.01 },
-      { field: "date", type: "range", days: 1 }
+      { field: "date", type: "range", days: 1 },
     ],
-    conflictResolution: "last-wins"
+    conflictResolution: "last-wins",
   },
-  schedule: "0 2 * * *" // Daily at 2 AM
+  schedule: "0 2 * * *", // Daily at 2 AM
 });
 ```
 
@@ -289,32 +312,32 @@ const job = await settler.jobs.create({
   sources: [
     {
       adapter: "stripe",
-      config: { apiKey: process.env.STRIPE_SECRET_KEY }
+      config: { apiKey: process.env.STRIPE_SECRET_KEY },
     },
     {
       adapter: "paypal",
-      config: { apiKey: process.env.PAYPAL_CLIENT_ID, secret: process.env.PAYPAL_SECRET }
+      config: { apiKey: process.env.PAYPAL_CLIENT_ID, secret: process.env.PAYPAL_SECRET },
     },
     {
       adapter: "square",
-      config: { apiKey: process.env.SQUARE_ACCESS_TOKEN }
-    }
+      config: { apiKey: process.env.SQUARE_ACCESS_TOKEN },
+    },
   ],
   target: {
     adapter: "quickbooks",
     config: {
       clientId: process.env.QB_CLIENT_ID,
       clientSecret: process.env.QB_CLIENT_SECRET,
-      realmId: process.env.QB_REALM_ID
-    }
+      realmId: process.env.QB_REALM_ID,
+    },
   },
   rules: {
     matching: [
       { field: "transaction_id", type: "fuzzy", threshold: 0.8 },
       { field: "amount", type: "exact", tolerance: 0.01 },
-      { field: "customer_email", type: "exact" }
-    ]
-  }
+      { field: "customer_email", type: "exact" },
+    ],
+  },
 });
 ```
 
@@ -344,7 +367,7 @@ const webhook = await settler.webhooks.create({
 // 3. Handle webhook events
 app.post("/webhooks/reconcile", async (req, res) => {
   const { event, data } = req.body;
-  
+
   if (event === "reconciliation.mismatch") {
     // Alert finance team
     await notifyFinanceTeam({
@@ -354,7 +377,7 @@ app.post("/webhooks/reconcile", async (req, res) => {
       actualAmount: data.actualAmount
     });
   }
-  
+
   res.json({ received: true });
 });
 ```
@@ -369,11 +392,12 @@ Use test API keys to experiment safely:
 
 ```typescript
 const settler = new Settler({
-  apiKey: process.env.SETTLER_TEST_API_KEY // sk_test_...
+  apiKey: process.env.SETTLER_TEST_API_KEY, // sk_test_...
 });
 ```
 
 **Test Mode Features:**
+
 - No real reconciliations
 - Sandbox data
 - No usage limits
@@ -422,7 +446,7 @@ console.assert(report.data.summary.totalTransactions > 0, "Should have transacti
 // Use a webhook testing service like webhook.site
 const webhook = await settler.webhooks.create({
   url: "https://webhook.site/your-unique-id",
-  events: ["reconciliation.matched"]
+  events: ["reconciliation.matched"],
 });
 
 // Trigger a reconciliation
@@ -466,7 +490,7 @@ import Settler, { SettlerError } from "@settler/sdk";
 
 async function createJobWithRetry(config: CreateJobRequest, maxRetries = 3) {
   const settler = new Settler({ apiKey: process.env.SETTLER_API_KEY });
-  
+
   for (let i = 0; i < maxRetries; i++) {
     try {
       return await settler.jobs.create(config);
@@ -474,20 +498,20 @@ async function createJobWithRetry(config: CreateJobRequest, maxRetries = 3) {
       if (error instanceof SettlerError) {
         if (error.type === "RateLimitError" && i < maxRetries - 1) {
           const delay = Math.pow(2, i) * 1000;
-          await new Promise(resolve => setTimeout(resolve, delay));
+          await new Promise((resolve) => setTimeout(resolve, delay));
           continue;
         }
         // Log error
         logger.error("Settler error", {
           type: error.type,
           message: error.message,
-          details: error.details
+          details: error.details,
         });
       }
       throw error;
     }
   }
-  
+
   throw new Error("Max retries exceeded");
 }
 ```
@@ -501,24 +525,24 @@ import Settler from "@settler/sdk";
 
 async function monitorJob(jobId: string) {
   const settler = new Settler({ apiKey: process.env.SETTLER_API_KEY });
-  
+
   setInterval(async () => {
     try {
       const report = await settler.reports.get(jobId);
       const { matched, unmatched, errors, accuracy } = report.data.summary;
-      
+
       // Send metrics to your monitoring service
       metrics.gauge("settler.matched", matched);
       metrics.gauge("settler.unmatched", unmatched);
       metrics.gauge("settler.errors", errors);
       metrics.gauge("settler.accuracy", accuracy);
-      
+
       // Alert if accuracy drops below threshold
       if (accuracy < 95) {
         await alert({
           level: "warning",
           message: `Reconciliation accuracy dropped to ${accuracy}%`,
-          jobId
+          jobId,
         });
       }
     } catch (error) {
@@ -541,15 +565,15 @@ const settler = new Settler({
     logger.info("Settler API Request", {
       method: config.method,
       url: config.url,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   },
   onResponse: (response) => {
     logger.info("Settler API Response", {
       status: response.status,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-  }
+  },
 });
 ```
 
@@ -595,6 +619,7 @@ Once you're comfortable with the basics, explore:
 **Issue: "Invalid API Key"**
 
 **Solution:**
+
 - Check that you're using the correct API key
 - Ensure the API key starts with `sk_live_...` or `sk_test_...`
 - Verify the API key hasn't been revoked
@@ -602,6 +627,7 @@ Once you're comfortable with the basics, explore:
 **Issue: "Adapter Connection Failed"**
 
 **Solution:**
+
 - Verify adapter API keys are correct
 - Check adapter configuration (required fields)
 - Test adapter connection manually
@@ -609,6 +635,7 @@ Once you're comfortable with the basics, explore:
 **Issue: "No Matches Found"**
 
 **Solution:**
+
 - Review matching rules (may be too strict)
 - Check date ranges (transactions may be outside range)
 - Verify data exists in both source and target
@@ -616,6 +643,7 @@ Once you're comfortable with the basics, explore:
 **Issue: "Webhook Not Receiving Events"**
 
 **Solution:**
+
 - Verify webhook URL is accessible (HTTPS required)
 - Check webhook secret matches
 - Verify webhook is active (not paused)

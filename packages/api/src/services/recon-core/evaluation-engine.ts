@@ -61,10 +61,10 @@ export interface EvaluationMetrics {
  * Scoring weights configuration
  */
 export interface ScoringWeights {
-  accuracy: number;    // Match correctness
-  confidence: number;  // Confidence score
-  coverage: number;    // Records processed
-  grounding: number;   // Evidence quality
+  accuracy: number; // Match correctness
+  confidence: number; // Confidence score
+  coverage: number; // Records processed
+  grounding: number; // Evidence quality
 }
 
 /**
@@ -106,11 +106,13 @@ export class EvaluationEngine {
 
     // Calculate component scores
     const accuracyScore = this.calculateAccuracyScore(run);
-    const confidenceScore = this.calculateConfidenceScore(run as unknown as {
-      confidenceAvg: number | null;
-      confidenceMin: number | null;
-      confidenceMax: number | null;
-    });
+    const confidenceScore = this.calculateConfidenceScore(
+      run as unknown as {
+        confidenceAvg: number | null;
+        confidenceMin: number | null;
+        confidenceMax: number | null;
+      }
+    );
     const coverageScore = this.calculateCoverageScore(run);
     const groundingScore = await this.calculateGroundingScore(run.id);
 
@@ -290,8 +292,7 @@ export class EvaluationEngine {
     // Calculate average of previous runs
     const previousRuns = history.slice(1);
     const previousAvg =
-      previousRuns.reduce((sum, r) => sum + Number(r.confidenceAvg || 0), 0) /
-      previousRuns.length;
+      previousRuns.reduce((sum, r) => sum + Number(r.confidenceAvg || 0), 0) / previousRuns.length;
 
     const currentScore = Number(confidenceAvg || 0);
     const delta = currentScore - previousAvg;

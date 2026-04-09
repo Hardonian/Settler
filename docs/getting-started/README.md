@@ -72,12 +72,14 @@ pnpm verify
 ```
 
 This command will:
+
 - Lint the codebase
 - Run the TypeScript compiler
 - Execute the full test suite (unit, integration)
 - Verify repository integrity and boundaries
 
 For a faster, iterative check during development:
+
 ```bash
 pnpm check
 ```

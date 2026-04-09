@@ -7,6 +7,7 @@
 ## Overview
 
 This checklist helps you:
+
 - **Gather requirements:** Know what you need from customers
 - **Set expectations:** Be clear about what customers need to provide
 - **Ensure success:** Make sure customers have everything needed
@@ -19,9 +20,11 @@ This checklist helps you:
 ## Required Inputs
 
 ### 1. API Access (Required)
+
 **What:** API keys or access tokens for systems to reconcile
 
 **Systems:**
+
 - Stripe API key
 - Shopify API key
 - QuickBooks API credentials
@@ -30,6 +33,7 @@ This checklist helps you:
 - Other systems (as needed)
 
 **How to Get:**
+
 - Provide API setup guides
 - Help customers generate API keys
 - Offer to help with API setup
@@ -39,14 +43,17 @@ This checklist helps you:
 ---
 
 ### 2. Sample Data (Required)
+
 **What:** Sample transaction data for testing
 
 **Requirements:**
+
 - At least 1K transactions
 - Data from multiple systems (if multi-system reconciliation)
 - Historical data (if available)
 
 **Formats:**
+
 - CSV export
 - JSON export
 - API access (preferred)
@@ -56,9 +63,11 @@ This checklist helps you:
 ---
 
 ### 3. Use Case Details (Required)
+
 **What:** Clear understanding of what they're trying to solve
 
 **Details Needed:**
+
 - Current reconciliation process
 - Systems involved
 - Volume (transactions/month)
@@ -70,9 +79,11 @@ This checklist helps you:
 ---
 
 ### 4. Contact Information (Required)
+
 **What:** Primary contact for pilot
 
 **Details Needed:**
+
 - Name
 - Email
 - Phone (optional)
@@ -86,9 +97,11 @@ This checklist helps you:
 ## Optional Inputs
 
 ### 5. Historical Data (Optional)
+
 **What:** Past reconciliation data for comparison
 
 **Use Cases:**
+
 - Compare Settler results to manual process
 - Validate accuracy
 - Show improvement
@@ -98,9 +111,11 @@ This checklist helps you:
 ---
 
 ### 6. Integration Requirements (Optional)
+
 **What:** Specific integration requirements or customizations
 
 **Use Cases:**
+
 - Custom field mappings
 - Specific matching rules
 - Custom integrations
@@ -110,9 +125,11 @@ This checklist helps you:
 ---
 
 ### 7. Compliance Requirements (Optional)
+
 **What:** Compliance or regulatory requirements
 
 **Use Cases:**
+
 - Audit trail requirements
 - Data retention requirements
 - Compliance certifications
@@ -124,9 +141,11 @@ This checklist helps you:
 ## Input Gathering Process
 
 ### Step 1: Request Inputs (Day 0)
+
 **Action:** Send welcome email with input checklist
 
 **Email Template:**
+
 ```
 Hi [Name],
 
@@ -149,9 +168,11 @@ I'll send you setup guides and help you get started. Let me know if you have que
 ---
 
 ### Step 2: Follow Up (Day 1)
+
 **Action:** Check in on input gathering
 
 **Email Template:**
+
 ```
 Hi [Name],
 
@@ -163,9 +184,11 @@ Just checking in. Have you been able to gather the required inputs? If you need 
 ---
 
 ### Step 3: Verify Inputs (Day 2)
+
 **Action:** Verify all required inputs received
 
 **Checklist:**
+
 - [ ] API access confirmed
 - [ ] Sample data received
 - [ ] Use case details documented
@@ -176,13 +199,16 @@ Just checking in. Have you been able to gather the required inputs? If you need 
 ## Input Validation
 
 ### API Access Validation
+
 **Check:**
+
 - API keys are valid
 - API permissions are correct
 - API connections work
 - Data can be accessed
 
 **If Invalid:**
+
 - Help customer fix API keys
 - Provide API setup guide
 - Offer to help troubleshoot
@@ -190,13 +216,16 @@ Just checking in. Have you been able to gather the required inputs? If you need 
 ---
 
 ### Sample Data Validation
+
 **Check:**
+
 - Data format is correct
 - Data volume is sufficient (1K+ transactions)
 - Data includes required fields
 - Data is from multiple systems (if multi-system reconciliation)
 
 **If Invalid:**
+
 - Help customer export data correctly
 - Provide data format templates
 - Offer to help with data preparation
@@ -204,13 +233,16 @@ Just checking in. Have you been able to gather the required inputs? If you need 
 ---
 
 ### Use Case Validation
+
 **Check:**
+
 - Use case is clear
 - Systems involved are supported
 - Volume is sufficient (10K+ transactions/month)
 - Success criteria are defined
 
 **If Invalid:**
+
 - Ask clarifying questions
 - Provide use case examples
 - Offer to discuss use case further
@@ -220,7 +252,9 @@ Just checking in. Have you been able to gather the required inputs? If you need 
 ## Missing Inputs Handling
 
 ### If API Access Missing
+
 **Action:**
+
 - Provide API setup guides
 - Offer to help with API setup
 - Schedule setup call
@@ -229,7 +263,9 @@ Just checking in. Have you been able to gather the required inputs? If you need 
 ---
 
 ### If Sample Data Missing
+
 **Action:**
+
 - Help customer export data
 - Provide data format templates
 - Offer to use demo data for testing
@@ -238,7 +274,9 @@ Just checking in. Have you been able to gather the required inputs? If you need 
 ---
 
 ### If Use Case Unclear
+
 **Action:**
+
 - Ask clarifying questions
 - Provide use case examples
 - Schedule discovery call
@@ -249,13 +287,16 @@ Just checking in. Have you been able to gather the required inputs? If you need 
 ## Input Checklist Template
 
 ### For Customers
+
 **Required Inputs:**
+
 - [ ] API access to systems (Stripe, Shopify, QuickBooks, etc.)
 - [ ] Sample data (at least 1K transactions)
 - [ ] Use case details (what you're trying to solve)
 - [ ] Contact information (name, email, phone)
 
 **Optional Inputs:**
+
 - [ ] Historical data (for comparison)
 - [ ] Integration requirements (if any)
 - [ ] Compliance requirements (if any)
@@ -263,13 +304,16 @@ Just checking in. Have you been able to gather the required inputs? If you need 
 ---
 
 ### For Sales/Customer Success
+
 **Input Gathering:**
+
 - [ ] Welcome email sent with input checklist
 - [ ] Follow-up email sent (Day 1)
 - [ ] Inputs verified (Day 2)
 - [ ] Missing inputs identified and addressed
 
 **Input Validation:**
+
 - [ ] API access validated
 - [ ] Sample data validated
 - [ ] Use case validated

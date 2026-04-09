@@ -61,7 +61,9 @@ export const POST = withSecurity(
           : [];
 
         if (jobsToImport.length > 0) {
-          const { error } = await (supabase.from("reconciliation_jobs") as any).upsert(jobsToImport);
+          const { error } = await (supabase.from("reconciliation_jobs") as any).upsert(
+            jobsToImport
+          );
           if (error) {
             return NextResponse.json(
               {

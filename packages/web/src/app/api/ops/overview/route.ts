@@ -95,10 +95,7 @@ export const GET = withSecurity(
         });
       } catch (error) {
         appLogger.error("Ops overview error", error);
-        return NextResponse.json(
-          { error: "Failed to load ops overview data" },
-          { status: 500 }
-        );
+        return NextResponse.json({ error: "Failed to load ops overview data" }, { status: 500 });
       }
     },
     { feature: "GET API" }

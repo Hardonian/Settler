@@ -4,12 +4,8 @@
     "severity": "high",
     "message": "Found 1 source orphans and 1 target orphans",
     "details": {
-      "orphaned_sources": [
-        "stripe_m1"
-      ],
-      "orphaned_targets": [
-        "shopify_m1"
-      ]
+      "orphaned_sources": ["stripe_m1"],
+      "orphaned_targets": ["shopify_m1"]
     },
     "remediation": "Review unmatched transactions for data quality issues"
   }

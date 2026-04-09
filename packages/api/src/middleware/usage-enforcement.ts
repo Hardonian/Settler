@@ -1,6 +1,6 @@
 /**
  * Usage Enforcement Middleware
- * 
+ *
  * Checks usage limits before allowing operations.
  * Works with Supabase client used in API routes.
  */

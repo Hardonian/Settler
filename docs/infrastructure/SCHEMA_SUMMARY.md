@@ -3,14 +3,17 @@
 ## Quick Reference
 
 ### New Tables (3)
+
 1. **receipts** - Hash chain receipts with tamper detection
 2. **ai_analysis_usage** - Token usage tracking per period
 3. **ai_analyses** - AI analysis results storage
 
 ### New Functions (1)
+
 1. **set_tenant_context(UUID)** - Sets tenant context for RLS
 
 ### Updated Policies (6)
+
 - recon_jobs, recon_results, recon_audits, drift_events, workflow_runs, alerts
 - All now use `tenant_users` membership instead of `current_setting`
 
@@ -26,6 +29,7 @@ tenant_users ──> (many) access to tenant data via RLS
 ## RLS Pattern
 
 All tables use this RLS pattern:
+
 ```sql
 CREATE POLICY table_tenant_isolation ON table_name
   FOR ALL

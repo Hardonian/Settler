@@ -1,13 +1,13 @@
 /**
  * Realtime Execution Hook
- * 
+ *
  * Custom hook for managing real-time execution updates via EventSource.
  * This is a special case that doesn't use React Query since it's a stream.
  */
 
-'use client';
+"use client";
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef } from "react";
 
 export interface ExecutionUpdate {
   type: string;
@@ -95,16 +95,16 @@ export function useRealtimeExecution({
 
     eventSource.onopen = () => {
       setConnected(true);
-      addLog('Connected to real-time updates');
+      addLog("Connected to real-time updates");
     };
 
     eventSource.onmessage = (event) => {
       try {
         const data: ExecutionUpdate = JSON.parse(event.data);
 
-        if (data.type === 'connected') {
-          addLog('Connection established');
-        } else if (data.type === 'execution_update') {
+        if (data.type === "connected") {
+          addLog("Connection established");
+        } else if (data.type === "execution_update") {
           setExecution(data);
           addLog(`Status update: ${data.status}`);
           onUpdate?.(data);
@@ -113,22 +113,22 @@ export function useRealtimeExecution({
             addError(data.error);
           }
 
-          if (data.status === 'completed' || data.status === 'failed') {
+          if (data.status === "completed" || data.status === "failed") {
             disconnect();
-            addLog('Reconciliation finished. Connection closed.');
+            addLog("Reconciliation finished. Connection closed.");
           }
         }
       } catch (error) {
-        console.error('Failed to parse SSE message:', error);
-        addError('Failed to parse update message');
+        console.error("Failed to parse SSE message:", error);
+        addError("Failed to parse update message");
       }
     };
 
     eventSource.onerror = (error) => {
-      console.error('SSE error:', error);
+      console.error("SSE error:", error);
       setConnected(false);
-      addLog('Connection error. Attempting to reconnect...');
-      onError?.(error instanceof Error ? error : new Error('SSE connection error'));
+      addLog("Connection error. Attempting to reconnect...");
+      onError?.(error instanceof Error ? error : new Error("SSE connection error"));
 
       // Reconnect after 5 seconds
       reconnectTimeoutRef.current = setTimeout(() => {

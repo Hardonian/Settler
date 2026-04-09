@@ -8,6 +8,7 @@
 ## Overview
 
 Settler includes demo data generation that simulates realistic Stripe ↔ Bank reconciliation scenarios. This walkthrough shows how to:
+
 1. Seed the database with demo data
 2. Verify the seeded state
 3. Run reconciliation
@@ -18,6 +19,7 @@ Settler includes demo data generation that simulates realistic Stripe ↔ Bank r
 ## Prerequisites
 
 Before starting, ensure:
+
 - Node.js 24.x installed
 - pnpm installed
 - Docker running (for TigerBeetle/Postgres)
@@ -43,10 +45,12 @@ pnpm tb:start
 ```
 
 Starts:
+
 - PostgreSQL on port 5432
 - TigerBeetle on port 4300
 
 Verify services:
+
 ```bash
 pnpm tb:status
 ```
@@ -62,6 +66,7 @@ pnpm demo:seed
 ```
 
 Creates demo transactions:
+
 - 50 Stripe charges
 - 5 payouts
 - Corresponding bank deposits
@@ -92,6 +97,7 @@ pnpm run doctor
 ```
 
 Look for:
+
 ```
 ✓ database: Seed Data - Data present
 ```
@@ -111,6 +117,7 @@ pnpm dev
 ```
 
 Check:
+
 - `/console/transactions` — View seeded transactions
 - `/console/reconciliation` — View reconciliation runs
 - `/console/review` — View manual review queue
@@ -145,6 +152,7 @@ curl -X POST http://localhost:4000/api/reconciliation/run \
 ### Expected Outcomes
 
 The demo data produces:
+
 - **Matched transactions:** ~40 (exact matches within tolerance)
 - **Mismatched transactions:** ~5 (amount differences >1%)
 - **Unmatched:** ~5 (no corresponding record)
@@ -162,12 +170,13 @@ The demo data produces:
 The seed script generates:
 
 ### Stripe Charges
+
 ```json
 {
   "id": "ch_...",
   "externalId": "ch_abc123",
-  "amount": 99.00,
-  "fee": 3.20,
+  "amount": 99.0,
+  "fee": 3.2,
   "currency": "USD",
   "status": "succeeded",
   "created": "2026-03-15T10:30:00Z"
@@ -175,17 +184,19 @@ The seed script generates:
 ```
 
 ### Bank Deposits
+
 ```json
 {
   "id": "txn_...",
   "externalId": "txn_xyz789",
-  "amount": 95.80,
+  "amount": 95.8,
   "type": "credit",
   "date": "2026-03-16T09:00:00Z"
 }
 ```
 
 ### Expected Matches
+
 - Stripe charge → Bank deposit (amount - fee within tolerance)
 - Payout → Bank deposit (total payout amount)
 
@@ -211,14 +222,14 @@ const TRANSACTION_COUNT = 100; // Default: 50
 
 ## Verification Checklist
 
-| Step | Command | Success Indicator |
-|------|---------|------------------|
-| Bootstrap | `pnpm run bootstrap` | Exit 0, no errors |
-| Start infra | `pnpm tb:status` | "OK" status |
-| Seed data | `pnpm demo:seed` | "Seeding complete" |
-| Check seed | `pnpm run doctor` | "Seed Data: OK" |
-| Start app | `pnpm dev` | :3000, :4000 accessible |
-| Run recon | Console or API | Results generated |
+| Step        | Command              | Success Indicator       |
+| ----------- | -------------------- | ----------------------- |
+| Bootstrap   | `pnpm run bootstrap` | Exit 0, no errors       |
+| Start infra | `pnpm tb:status`     | "OK" status             |
+| Seed data   | `pnpm demo:seed`     | "Seeding complete"      |
+| Check seed  | `pnpm run doctor`    | "Seed Data: OK"         |
+| Start app   | `pnpm dev`           | :3000, :4000 accessible |
+| Run recon   | Console or API       | Results generated       |
 
 ---
 
@@ -239,6 +250,7 @@ pnpm tb:start
 ### "Transactions not appearing"
 
 Check database:
+
 ```bash
 pnpm db:check
 ```

@@ -1,13 +1,13 @@
 /**
  * Console API Middleware
- * 
+ *
  * Request/response logging and monitoring middleware for console routes.
  * Provides observability and debugging capabilities.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { getCorrelationId, addCorrelationHeaders } from '@/lib/monitoring/correlation';
-import { trackApiMetric } from '@/lib/monitoring/metrics';
+import { NextRequest, NextResponse } from "next/server";
+import { getCorrelationId, addCorrelationHeaders } from "@/lib/monitoring/correlation";
+import { trackApiMetric } from "@/lib/monitoring/metrics";
 
 export interface ConsoleMiddlewareConfig {
   /** Log request/response bodies (be careful with sensitive data) */
@@ -39,7 +39,7 @@ export function withConsoleLogging(
 
     // Log request
     const requestLog: Record<string, unknown> = {
-      type: 'request',
+      type: "request",
       correlationId,
       method,
       path,
@@ -55,7 +55,7 @@ export function withConsoleLogging(
     }
 
     // eslint-disable-next-line no-console
-    console.log('[Console API Request]', JSON.stringify(requestLog));
+    console.log("[Console API Request]", JSON.stringify(requestLog));
 
     // Execute handler
     let response: NextResponse;
@@ -63,12 +63,12 @@ export function withConsoleLogging(
       response = await handler(req);
     } catch (error) {
       // Log error
-      console.error('[Console API Error]', {
-        type: 'error',
+      console.error("[Console API Error]", {
+        type: "error",
         correlationId,
         method,
         path,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
         stack: error instanceof Error ? error.stack : undefined,
         duration: Date.now() - startTime,
       });
@@ -79,7 +79,7 @@ export function withConsoleLogging(
     // Log response
     const duration = Date.now() - startTime;
     const responseLog: Record<string, unknown> = {
-      type: 'response',
+      type: "response",
       correlationId,
       method,
       path,
@@ -92,7 +92,7 @@ export function withConsoleLogging(
     await trackApiMetric(path, method, response.status, duration);
 
     // eslint-disable-next-line no-console
-    console.log('[Console API Response]', JSON.stringify(responseLog));
+    console.log("[Console API Response]", JSON.stringify(responseLog));
 
     // Add correlation headers
     return addCorrelationHeaders(response, correlationId);
@@ -109,16 +109,16 @@ export function withSecurityHeaders(
     const response = await handler(req);
 
     // Add security headers
-    response.headers.set('X-Content-Type-Options', 'nosniff');
-    response.headers.set('X-Frame-Options', 'DENY');
-    response.headers.set('X-XSS-Protection', '1; mode=block');
-    response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    response.headers.set("X-Content-Type-Options", "nosniff");
+    response.headers.set("X-Frame-Options", "DENY");
+    response.headers.set("X-XSS-Protection", "1; mode=block");
+    response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
 
     // Add CORS headers if needed
-    const origin = req.headers.get('origin');
-    if (origin && origin.includes('settler.dev')) {
-      response.headers.set('Access-Control-Allow-Origin', origin);
-      response.headers.set('Access-Control-Allow-Credentials', 'true');
+    const origin = req.headers.get("origin");
+    if (origin && origin.includes("settler.dev")) {
+      response.headers.set("Access-Control-Allow-Origin", origin);
+      response.headers.set("Access-Control-Allow-Credentials", "true");
     }
 
     return response;
@@ -129,7 +129,11 @@ export function withSecurityHeaders(
  * Combine multiple middleware functions
  */
 export function composeMiddleware(
-  ...middlewares: Array<(handler: (req: NextRequest) => Promise<NextResponse>) => (req: NextRequest) => Promise<NextResponse>>
+  ...middlewares: Array<
+    (
+      handler: (req: NextRequest) => Promise<NextResponse>
+    ) => (req: NextRequest) => Promise<NextResponse>
+  >
 ) {
   return (handler: (req: NextRequest) => Promise<NextResponse>) => {
     return middlewares.reduceRight((acc, middleware) => middleware(acc), handler);

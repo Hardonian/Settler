@@ -1,20 +1,19 @@
 /**
  * Product Evolution AI
- * 
+ *
  * Proposes new features, modules, and improvements
  * Part of Phase VII: Platform Intelligence
  */
 
- 
-import { PrismaClient } from '@prisma/client';
-import { logInfo } from '../../utils/logger';
+import { PrismaClient } from "@prisma/client";
+import { logInfo } from "../../utils/logger";
 
 export interface ProductProposal {
-  type: 'vertical_module' | 'workflow_recipe' | 'mapping_template' | 'api_enhancement';
+  type: "vertical_module" | "workflow_recipe" | "mapping_template" | "api_enhancement";
   title: string;
   description: string;
   rationale: string;
-  estimatedImpact: 'low' | 'medium' | 'high';
+  estimatedImpact: "low" | "medium" | "high";
   priority: number;
 }
 
@@ -39,37 +38,37 @@ export class ProductEvolutionAI {
     // Propose new vertical modules based on usage
     if (usagePatterns.legalTerms > 100) {
       proposals.push({
-        type: 'vertical_module',
-        title: 'LegalTech Module Enhancement',
-        description: 'Expand contract analysis capabilities',
+        type: "vertical_module",
+        title: "LegalTech Module Enhancement",
+        description: "Expand contract analysis capabilities",
         rationale: `High usage of legal-related terms (${usagePatterns.legalTerms} occurrences)`,
-        estimatedImpact: 'high',
+        estimatedImpact: "high",
         priority: 8,
       });
     }
 
     if (usagePatterns.educationTerms > 50) {
       proposals.push({
-        type: 'vertical_module',
-        title: 'EdTech Module Enhancement',
-        description: 'Add LMS integration templates',
+        type: "vertical_module",
+        title: "EdTech Module Enhancement",
+        description: "Add LMS integration templates",
         rationale: `Education-related usage detected (${usagePatterns.educationTerms} occurrences)`,
-        estimatedImpact: 'medium',
+        estimatedImpact: "medium",
         priority: 6,
       });
     }
 
     // Propose workflow recipes
     proposals.push({
-      type: 'workflow_recipe',
-      title: 'Automated Monthly Reconciliation Workflow',
-      description: 'Pre-built workflow for monthly financial reconciliation',
-      rationale: 'Common pattern across multiple tenants',
-      estimatedImpact: 'high',
+      type: "workflow_recipe",
+      title: "Automated Monthly Reconciliation Workflow",
+      description: "Pre-built workflow for monthly financial reconciliation",
+      rationale: "Common pattern across multiple tenants",
+      estimatedImpact: "high",
       priority: 9,
     });
 
-    logInfo('Product evolution proposals generated', { count: proposals.length });
+    logInfo("Product evolution proposals generated", { count: proposals.length });
     return proposals;
   }
 

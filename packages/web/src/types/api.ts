@@ -1,6 +1,6 @@
 /**
  * API Request/Response Types
- * 
+ *
  * Common types for API route handlers to eliminate 'any' usage
  */
 
@@ -31,14 +31,19 @@ export async function parseRequestBody<T extends Record<string, unknown>>(
 /**
  * Type-safe Supabase RPC call wrapper
  */
-export function createRpcCall<TArgs extends Record<string, unknown>, TReturn>(
-  rpcName: string
-) {
+export function createRpcCall<TArgs extends Record<string, unknown>, TReturn>(rpcName: string) {
   return async (
-    supabase: { rpc: (name: string, args: TArgs) => Promise<{ data: TReturn | null; error: unknown }> },
+    supabase: {
+      rpc: (name: string, args: TArgs) => Promise<{ data: TReturn | null; error: unknown }>;
+    },
     args: TArgs
   ): Promise<{ data: TReturn | null; error: unknown }> => {
-    return await (supabase.rpc as (name: string, args: TArgs) => Promise<{ data: TReturn | null; error: unknown }>)(rpcName, args);
+    return await (
+      supabase.rpc as (
+        name: string,
+        args: TArgs
+      ) => Promise<{ data: TReturn | null; error: unknown }>
+    )(rpcName, args);
   };
 }
 
@@ -50,6 +55,9 @@ export function safeRpcCall<TArgs extends Record<string, unknown>, TReturn>(
   rpcName: string,
   args: TArgs
 ): Promise<{ data: TReturn | null; error: unknown }> {
-  const rpcFn = supabase.rpc as unknown as (name: string, args: TArgs) => Promise<{ data: TReturn | null; error: unknown }>;
+  const rpcFn = supabase.rpc as unknown as (
+    name: string,
+    args: TArgs
+  ) => Promise<{ data: TReturn | null; error: unknown }>;
   return rpcFn(rpcName, args);
 }

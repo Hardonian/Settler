@@ -97,7 +97,9 @@ function integrationStatusToStatusType(status: string): StatusType {
   }
 }
 
-function alertSeverityVariant(severity: string): "destructive" | "warning" | "secondary" | "outline" {
+function alertSeverityVariant(
+  severity: string
+): "destructive" | "warning" | "secondary" | "outline" {
   switch (severity) {
     case "critical":
       return "destructive";
@@ -272,7 +274,8 @@ export default function DemoConsolePage() {
           )}
           <p className="flex items-center gap-1 text-xs text-muted-foreground mt-2">
             <Clock className="w-3 h-3" aria-hidden="true" />
-            Sample data loaded {data.fetchedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+            Sample data loaded{" "}
+            {data.fetchedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
           </p>
         </div>
 
@@ -370,7 +373,13 @@ export default function DemoConsolePage() {
             </CardHeader>
             <CardContent className="flex items-center justify-between">
               <span className="text-2xl font-bold tabular-nums">{metrics.matchRate}%</span>
-              <Sparkline values={metrics.trendMatchRate} label="Match rate trend last 30 days" tone="success" width={120} height={32} />
+              <Sparkline
+                values={metrics.trendMatchRate}
+                label="Match rate trend last 30 days"
+                tone="success"
+                width={120}
+                height={32}
+              />
             </CardContent>
           </Card>
           <Card>
@@ -381,7 +390,13 @@ export default function DemoConsolePage() {
             </CardHeader>
             <CardContent className="flex items-center justify-between">
               <span className="text-2xl font-bold tabular-nums">{metrics.openExceptions}</span>
-              <Sparkline values={metrics.trendExceptions} label="Open exceptions trend last 30 days" tone="warning" width={120} height={32} />
+              <Sparkline
+                values={metrics.trendExceptions}
+                label="Open exceptions trend last 30 days"
+                tone="warning"
+                width={120}
+                height={32}
+              />
             </CardContent>
           </Card>
           <Card>
@@ -394,7 +409,12 @@ export default function DemoConsolePage() {
               <span className="text-2xl font-bold tabular-nums">
                 {formatCount(metrics.totalRecordsProcessed)}
               </span>
-              <Sparkline values={metrics.trendVolume} label="Record volume trend last 30 days" width={120} height={32} />
+              <Sparkline
+                values={metrics.trendVolume}
+                label="Record volume trend last 30 days"
+                width={120}
+                height={32}
+              />
             </CardContent>
           </Card>
         </div>
@@ -527,10 +547,7 @@ export default function DemoConsolePage() {
                     {integration.category} — {formatCount(integration.recordsSynced)} records
                   </p>
                 </div>
-                <StatusBadge
-                  status={integrationStatusToStatusType(integration.status)}
-                  size="sm"
-                />
+                <StatusBadge status={integrationStatusToStatusType(integration.status)} size="sm" />
               </div>
             ))}
           </div>

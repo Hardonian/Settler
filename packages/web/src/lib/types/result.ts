@@ -84,10 +84,7 @@ export function isErr<T, E>(result: Result<T, E>): result is Failure<E> {
  * Map over the success value
  * Leaves errors unchanged
  */
-export function map<T, U, E>(
-  result: Result<T, E>,
-  fn: (value: T) => U
-): Result<U, E> {
+export function map<T, U, E>(result: Result<T, E>, fn: (value: T) => U): Result<U, E> {
   if (result.success) {
     return ok(fn(result.data));
   }
@@ -98,10 +95,7 @@ export function map<T, U, E>(
  * Map over the error value
  * Leaves success unchanged
  */
-export function mapErr<T, E, F>(
-  result: Result<T, E>,
-  fn: (error: E) => F
-): Result<T, F> {
+export function mapErr<T, E, F>(result: Result<T, E>, fn: (error: E) => F): Result<T, F> {
   if (!result.success) {
     return err(fn(result.error));
   }
@@ -172,25 +166,25 @@ export function appError(
  */
 export const ErrorCode = {
   // Validation errors (4xx)
-  INVALID_INPUT: 'INVALID_INPUT',
-  NOT_FOUND: 'NOT_FOUND',
-  UNAUTHORIZED: 'UNAUTHORIZED',
-  FORBIDDEN: 'FORBIDDEN',
-  CONFLICT: 'CONFLICT',
+  INVALID_INPUT: "INVALID_INPUT",
+  NOT_FOUND: "NOT_FOUND",
+  UNAUTHORIZED: "UNAUTHORIZED",
+  FORBIDDEN: "FORBIDDEN",
+  CONFLICT: "CONFLICT",
 
   // System errors (5xx)
-  INTERNAL_ERROR: 'INTERNAL_ERROR',
-  DATABASE_ERROR: 'DATABASE_ERROR',
-  EXTERNAL_API_ERROR: 'EXTERNAL_API_ERROR',
-  TIMEOUT: 'TIMEOUT',
+  INTERNAL_ERROR: "INTERNAL_ERROR",
+  DATABASE_ERROR: "DATABASE_ERROR",
+  EXTERNAL_API_ERROR: "EXTERNAL_API_ERROR",
+  TIMEOUT: "TIMEOUT",
 
   // Business logic errors
-  INSUFFICIENT_FUNDS: 'INSUFFICIENT_FUNDS',
-  RATE_LIMIT_EXCEEDED: 'RATE_LIMIT_EXCEEDED',
-  FEATURE_DISABLED: 'FEATURE_DISABLED',
+  INSUFFICIENT_FUNDS: "INSUFFICIENT_FUNDS",
+  RATE_LIMIT_EXCEEDED: "RATE_LIMIT_EXCEEDED",
+  FEATURE_DISABLED: "FEATURE_DISABLED",
 } as const;
 
-export type ErrorCode = typeof ErrorCode[keyof typeof ErrorCode];
+export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];
 
 /**
  * Convert an unknown error to AppError
@@ -202,31 +196,19 @@ export function toAppError(error: unknown): AppError {
   }
 
   if (error instanceof Error) {
-    return appError(
-      ErrorCode.INTERNAL_ERROR,
-      error.message,
-      { name: error.name },
-      error
-    );
+    return appError(ErrorCode.INTERNAL_ERROR, error.message, { name: error.name }, error);
   }
 
-  return appError(
-    ErrorCode.INTERNAL_ERROR,
-    'An unexpected error occurred',
-    { error: String(error) }
-  );
+  return appError(ErrorCode.INTERNAL_ERROR, "An unexpected error occurred", {
+    error: String(error),
+  });
 }
 
 /**
  * Type guard for AppError
  */
 export function isAppError(value: unknown): value is AppError {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'code' in value &&
-    'message' in value
-  );
+  return typeof value === "object" && value !== null && "code" in value && "message" in value;
 }
 
 /**
@@ -238,9 +220,7 @@ export type AsyncResult<T, E = AppError> = Promise<Result<T, E>>;
  * Wrap an async operation in a Result
  * Catches errors and converts them to Result
  */
-export async function tryCatch<T>(
-  fn: () => Promise<T>
-): AsyncResult<T, AppError> {
+export async function tryCatch<T>(fn: () => Promise<T>): AsyncResult<T, AppError> {
   try {
     const data = await fn();
     return ok(data);
@@ -253,9 +233,7 @@ export async function tryCatch<T>(
  * Wrap a sync operation in a Result
  * Catches errors and converts them to Result
  */
-export function tryCatchSync<T>(
-  fn: () => T
-): Result<T, AppError> {
+export function tryCatchSync<T>(fn: () => T): Result<T, AppError> {
   try {
     const data = fn();
     return ok(data);

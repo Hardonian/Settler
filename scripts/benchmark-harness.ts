@@ -122,7 +122,9 @@ function generateInput(index: number, tenantId: string): ReconciliationInput {
 }
 
 function simulateReplay(output: ReconciliationOutput): { hash: string; match: boolean } {
-  const replayHash = sha256(stableStringify({ matched: output.matched, unmatched: output.unmatched, runId: output.runId }));
+  const replayHash = sha256(
+    stableStringify({ matched: output.matched, unmatched: output.unmatched, runId: output.runId })
+  );
   return {
     hash: replayHash,
     match: replayHash === output.outputHash,
@@ -210,7 +212,9 @@ async function runConcurrentBenchmark(count: number): Promise<BenchmarkStats> {
   };
 }
 
-async function runReplayBenchmark(count: number): Promise<BenchmarkStats & { allMatched: boolean }> {
+async function runReplayBenchmark(
+  count: number
+): Promise<BenchmarkStats & { allMatched: boolean }> {
   // First create outputs
   const outputs: ReconciliationOutput[] = [];
   for (let i = 0; i < count; i++) {
@@ -385,7 +389,9 @@ async function main(): Promise<void> {
 
   if (!QUIET) {
     console.log("CAS Statistics");
-    console.log(`  hits=${casHits}  misses=${casMisses}  hit_rate=${(casHitRate * 100).toFixed(2)}%`);
+    console.log(
+      `  hits=${casHits}  misses=${casMisses}  hit_rate=${(casHitRate * 100).toFixed(2)}%`
+    );
     console.log();
   }
 

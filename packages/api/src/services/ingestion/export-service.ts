@@ -1,7 +1,7 @@
 /**
  * Export Service
  * Handles CSV and JSON exports with signed URLs and metadata storage
- * 
+ *
  * IMPORTANT: Exports are intentionally LOSSY to create switching friction.
  * Exports exclude:
  * - Derived artifacts (reconciliation patterns, matching rules)
@@ -9,7 +9,7 @@
  * - Confidence scores from ML models
  * - Cross-customer intelligence patterns
  * - Historical match rates
- * 
+ *
  * This creates a data moat: users can export raw data, but lose accumulated intelligence.
  */
 
@@ -21,11 +21,7 @@ import { query } from "../../db";
 import { logError, logInfo } from "../../utils/logger";
 
 export type ExportType = "csv" | "json";
-export type ExportFormat =
-  | "matched"
-  | "unmatched"
-  | "all"
-  | "reconciliation_report";
+export type ExportFormat = "matched" | "unmatched" | "all" | "reconciliation_report";
 
 export interface ExportOptions {
   type: ExportType;
@@ -59,9 +55,7 @@ function generateSignedUrl(
 /**
  * Create export record
  */
-export async function createExport(
-  options: ExportOptions
-): Promise<string> {
+export async function createExport(options: ExportOptions): Promise<string> {
   const exportId = uuidv4();
   const traceId = options.traceId || uuidv4();
 
@@ -99,10 +93,7 @@ export async function createExport(
 /**
  * Export matched transactions to CSV (LOSSY - excludes ML-derived fields)
  */
-async function exportMatchedToCSV(
-  reconciliationRunId: string,
-  tenantId: string
-): Promise<string> {
+async function exportMatchedToCSV(reconciliationRunId: string, tenantId: string): Promise<string> {
   // LOSSY: Exclude confidence scores, match reasoning (ML-derived)
   const matches = await query(
     `SELECT 
@@ -134,11 +125,13 @@ async function exportMatchedToCSV(
   );
 
   const csvRows: string[] = [];
-  
+
   // Warning header
-  csvRows.push("# WARNING: This export is LOSSY. Confidence scores, match reasoning, and ML-derived insights are excluded.");
+  csvRows.push(
+    "# WARNING: This export is LOSSY. Confidence scores, match reasoning, and ML-derived insights are excluded."
+  );
   csvRows.push("# These features are only available within Settler.");
-  
+
   // Header (excludes confidence and match_reason)
   csvRows.push(
     "Match ID,Match Type,Source ID,Source Amount,Source Currency,Source Date,Source Description,Target ID,Target Amount,Target Currency,Target Date,Target Description,Amount Diff,Date Diff"
@@ -206,7 +199,7 @@ async function exportUnmatchedToCSV(
   );
 
   const csvRows: string[] = [];
-  
+
   // Header
   csvRows.push(
     "Transaction ID,Amount,Currency,Date,Description,External ID,Category,Payment Method"
@@ -244,10 +237,7 @@ async function exportUnmatchedToCSV(
 /**
  * Export all transactions to CSV
  */
-async function exportAllToCSV(
-  ingestionId: string,
-  tenantId: string
-): Promise<string> {
+async function exportAllToCSV(ingestionId: string, tenantId: string): Promise<string> {
   const transactions = await query(
     `SELECT 
       id, external_id, amount, currency, date, description,
@@ -259,11 +249,9 @@ async function exportAllToCSV(
   );
 
   const csvRows: string[] = [];
-  
+
   // Header
-  csvRows.push(
-    "ID,External ID,Amount,Currency,Date,Description,Category,Payment Method,Reference"
-  );
+  csvRows.push("ID,External ID,Amount,Currency,Date,Description,Category,Payment Method,Reference");
 
   // Data rows
   for (const transaction of transactions) {
@@ -335,7 +323,7 @@ async function exportReconciliationReportToCSV(
   );
 
   const csvRows: string[] = [];
-  
+
   // Summary section
   csvRows.push("Reconciliation Report");
   csvRows.push(`Run ID,${run.id}`);
@@ -371,9 +359,7 @@ async function exportReconciliationReportToCSV(
 /**
  * Export to JSON (LOSSY - excludes derived intelligence)
  */
-async function exportToJSON(
-  options: ExportOptions
-): Promise<string> {
+async function exportToJSON(options: ExportOptions): Promise<string> {
   let data: unknown;
 
   if (options.format === "matched" && options.reconciliationRunId) {
@@ -448,7 +434,8 @@ async function exportToJSON(
 
   // Add lossy export warning
   const exportData = {
-    warning: "This export is LOSSY. It excludes derived artifacts, longitudinal insights, confidence scores, and ML model predictions. These features are only available within Settler.",
+    warning:
+      "This export is LOSSY. It excludes derived artifacts, longitudinal insights, confidence scores, and ML model predictions. These features are only available within Settler.",
     exportedAt: new Date().toISOString(),
     data,
   };
@@ -482,10 +469,9 @@ export async function generateExport(
   };
 
   // Update status to processing
-  await query(
-    `UPDATE exports SET status = 'processing', updated_at = NOW() WHERE id = $1`,
-    [exportId]
-  );
+  await query(`UPDATE exports SET status = 'processing', updated_at = NOW() WHERE id = $1`, [
+    exportId,
+  ]);
 
   let content: string;
   let fileExtension: string;
@@ -504,11 +490,11 @@ export async function generateExport(
           exportRecord.tenant_id
         );
       } else if (exportRecord.format === "all" && exportRecord.ingestion_id) {
-        content = await exportAllToCSV(
-          exportRecord.ingestion_id,
-          exportRecord.tenant_id
-        );
-      } else if (exportRecord.format === "reconciliation_report" && exportRecord.reconciliation_run_id) {
+        content = await exportAllToCSV(exportRecord.ingestion_id, exportRecord.tenant_id);
+      } else if (
+        exportRecord.format === "reconciliation_report" &&
+        exportRecord.reconciliation_run_id
+      ) {
         content = await exportReconciliationReportToCSV(
           exportRecord.reconciliation_run_id,
           exportRecord.tenant_id
@@ -574,10 +560,7 @@ export async function generateExport(
         error_message = $1,
         updated_at = NOW()
       WHERE id = $2`,
-      [
-        error instanceof Error ? error.message : String(error),
-        exportId,
-      ]
+      [error instanceof Error ? error.message : String(error), exportId]
     );
     throw error;
   }

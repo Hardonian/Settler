@@ -153,22 +153,32 @@ const settler = new Settler({
 const stripeJob = await settler.jobs.create({
   name: "Stripe Reconciliation",
   source: { adapter: "stripe", config: { apiKey: process.env.STRIPE_SECRET_KEY } },
-  target: { adapter: "quickbooks", config: { /* ... */ } },
+  target: {
+    adapter: "quickbooks",
+    config: {
+      /* ... */
+    },
+  },
   rules: { matching: [{ field: "transaction_id", type: "exact" }] },
 });
 
 const paypalJob = await settler.jobs.create({
   name: "PayPal Reconciliation",
-  source: { adapter: "paypal", config: { clientId: process.env.PAYPAL_CLIENT_ID, clientSecret: process.env.PAYPAL_SECRET } },
-  target: { adapter: "quickbooks", config: { /* ... */ } },
+  source: {
+    adapter: "paypal",
+    config: { clientId: process.env.PAYPAL_CLIENT_ID, clientSecret: process.env.PAYPAL_SECRET },
+  },
+  target: {
+    adapter: "quickbooks",
+    config: {
+      /* ... */
+    },
+  },
   rules: { matching: [{ field: "transaction_id", type: "exact" }] },
 });
 
 // Run all reconciliations
-await Promise.all([
-  settler.jobs.run(stripeJob.data.id),
-  settler.jobs.run(paypalJob.data.id),
-]);
+await Promise.all([settler.jobs.run(stripeJob.data.id), settler.jobs.run(paypalJob.data.id)]);
 ```
 
 ### 4. Real-Time Webhook Reconciliation
@@ -191,19 +201,25 @@ app.use(express.json());
 // Create job
 const job = await settler.jobs.create({
   name: "Real-Time Reconciliation",
-  source: { adapter: "shopify", config: { /* ... */ } },
-  target: { adapter: "stripe", config: { /* ... */ } },
+  source: {
+    adapter: "shopify",
+    config: {
+      /* ... */
+    },
+  },
+  target: {
+    adapter: "stripe",
+    config: {
+      /* ... */
+    },
+  },
   rules: { matching: [{ field: "order_id", type: "exact" }] },
 });
 
 // Set up webhook
 const webhook = await settler.webhooks.create({
   url: "https://your-app.com/webhooks/settler",
-  events: [
-    "reconciliation.matched",
-    "reconciliation.mismatch",
-    "reconciliation.error",
-  ],
+  events: ["reconciliation.matched", "reconciliation.mismatch", "reconciliation.error"],
 });
 
 // Handle webhook events
@@ -252,7 +268,7 @@ await settler.exceptions.resolve(exceptions.data[0].id, {
 
 // Bulk resolve
 await settler.exceptions.bulkResolve({
-  exceptionIds: exceptions.data.map(e => e.id),
+  exceptionIds: exceptions.data.map((e) => e.id),
   resolution: "ignored",
   notes: "Low-value transactions, acceptable variance",
 });
@@ -279,7 +295,7 @@ async function createJobWithRetry(config: any, maxRetries = 3) {
       if (error instanceof SettlerError) {
         if (error.type === "RateLimitError" && i < maxRetries - 1) {
           const delay = Math.pow(2, i) * 1000;
-          await new Promise(resolve => setTimeout(resolve, delay));
+          await new Promise((resolve) => setTimeout(resolve, delay));
           continue;
         }
         // Log error
@@ -375,8 +391,18 @@ const settler = new Settler({
 // Daily reconciliation at 2 AM
 const dailyJob = await settler.jobs.create({
   name: "Daily Reconciliation",
-  source: { adapter: "shopify", config: { /* ... */ } },
-  target: { adapter: "stripe", config: { /* ... */ } },
+  source: {
+    adapter: "shopify",
+    config: {
+      /* ... */
+    },
+  },
+  target: {
+    adapter: "stripe",
+    config: {
+      /* ... */
+    },
+  },
   rules: { matching: [{ field: "order_id", type: "exact" }] },
   schedule: "0 2 * * *", // Cron: Daily at 2 AM
 });
@@ -384,8 +410,18 @@ const dailyJob = await settler.jobs.create({
 // Weekly reconciliation on Monday at 9 AM
 const weeklyJob = await settler.jobs.create({
   name: "Weekly Reconciliation",
-  source: { adapter: "stripe", config: { /* ... */ } },
-  target: { adapter: "quickbooks", config: { /* ... */ } },
+  source: {
+    adapter: "stripe",
+    config: {
+      /* ... */
+    },
+  },
+  target: {
+    adapter: "quickbooks",
+    config: {
+      /* ... */
+    },
+  },
   rules: { matching: [{ field: "transaction_id", type: "exact" }] },
   schedule: "0 9 * * 1", // Cron: Monday at 9 AM
 });
@@ -412,7 +448,9 @@ const job = await settler.jobs.create({
   },
   target: {
     adapter: "quickbooks",
-    config: { /* ... */ },
+    config: {
+      /* ... */
+    },
   },
   rules: {
     matching: [
@@ -466,16 +504,13 @@ try {
 Implement retry logic for transient errors:
 
 ```typescript
-async function withRetry<T>(
-  fn: () => Promise<T>,
-  maxRetries = 3
-): Promise<T> {
+async function withRetry<T>(fn: () => Promise<T>, maxRetries = 3): Promise<T> {
   for (let i = 0; i < maxRetries; i++) {
     try {
       return await fn();
     } catch (error) {
       if (i === maxRetries - 1) throw error;
-      await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+      await new Promise((resolve) => setTimeout(resolve, 1000 * (i + 1)));
     }
   }
   throw new Error("Max retries exceeded");
@@ -492,16 +527,13 @@ import crypto from "crypto";
 function verifyWebhook(payload: string, signature: string, secret: string): boolean {
   const [timestamp, hash] = signature.split(",");
   const [t, v1] = hash.split("=");
-  
+
   const expectedSignature = crypto
     .createHmac("sha256", secret)
     .update(`${timestamp}.${payload}`)
     .digest("hex");
-  
-  return crypto.timingSafeEqual(
-    Buffer.from(v1),
-    Buffer.from(expectedSignature)
-  );
+
+  return crypto.timingSafeEqual(Buffer.from(v1), Buffer.from(expectedSignature));
 }
 ```
 
@@ -511,9 +543,9 @@ function verifyWebhook(payload: string, signature: string, secret: string): bool
 
 Runnable, self-contained projects you can clone and use immediately:
 
-| Kit | Description | Command |
-|-----|-------------|---------|
-| [settler-recon-starter](starter-kits/settler-recon-starter/) | End-to-end reconciliation (Stripe → ledger) | `cd starter-kits/settler-recon-starter && npm install && npm start` |
+| Kit                                                                | Description                                  | Command                                                                |
+| ------------------------------------------------------------------ | -------------------------------------------- | ---------------------------------------------------------------------- |
+| [settler-recon-starter](starter-kits/settler-recon-starter/)       | End-to-end reconciliation (Stripe → ledger)  | `cd starter-kits/settler-recon-starter && npm install && npm start`    |
 | [settler-workflow-starter](starter-kits/settler-workflow-starter/) | Webhook-driven pipeline (reconcile → export) | `cd starter-kits/settler-workflow-starter && npm install && npm start` |
 
 Each kit includes `package.json`, TypeScript source, `.env.example`, and a README with instructions.

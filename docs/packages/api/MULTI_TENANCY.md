@@ -9,22 +9,26 @@ Settler's multi-tenancy platform provides complete data isolation, resource quot
 ### Data Isolation
 
 **Row Level Security (RLS)**
+
 - PostgreSQL RLS policies automatically filter all queries by tenant ID
 - Complete data isolation at the database level
 - No application-level filtering required
 
 **Schema-Per-Tenant (Optional)**
+
 - Each tenant can have their own database schema
 - Stronger isolation for enterprise customers
 - Easier data migration and backup
 
 **Connection Pooling**
+
 - Tenant-aware connection pool sets context automatically
 - RLS policies enforce isolation per connection
 
 ### Resource Quotas
 
 **Quota Types**:
+
 - **Rate Limits**: Requests per minute (adaptive token bucket)
 - **Storage**: Total storage in bytes
 - **Concurrent Jobs**: Maximum concurrent reconciliation jobs
@@ -32,6 +36,7 @@ Settler's multi-tenancy platform provides complete data isolation, resource quot
 - **Custom Domains**: Number of custom domains allowed
 
 **Enforcement**:
+
 - Quotas checked before resource allocation
 - `429 Too Many Requests` when exceeded
 - Enterprise tenants bypass quotas automatically
@@ -39,6 +44,7 @@ Settler's multi-tenancy platform provides complete data isolation, resource quot
 ### Observability
 
 **OpenTelemetry Tracing**:
+
 - HTTP requests (automatic instrumentation)
 - Database queries (with tenant context)
 - Cache operations
@@ -46,12 +52,14 @@ Settler's multi-tenancy platform provides complete data isolation, resource quot
 - Business logic spans
 
 **Prometheus Metrics**:
+
 - RED method (Rate, Errors, Duration)
 - Multi-tenant usage metrics
 - Quota usage and limits
 - Noisy neighbor detection
 
 **Grafana Dashboards**:
+
 - Pre-configured dashboards for monitoring
 - RED method visualization
 - Tenant usage analytics
@@ -60,6 +68,7 @@ Settler's multi-tenancy platform provides complete data isolation, resource quot
 ### Feature Flags
 
 **Capabilities**:
+
 - Per-tenant flags
 - Per-user flags
 - A/B testing with percentage rollouts
@@ -67,6 +76,7 @@ Settler's multi-tenancy platform provides complete data isolation, resource quot
 - Audit log of all changes
 
 **Hierarchy**:
+
 1. User-specific flags (highest priority)
 2. Tenant-specific flags
 3. Global flags (lowest priority)
@@ -74,6 +84,7 @@ Settler's multi-tenancy platform provides complete data isolation, resource quot
 ### Queue System
 
 **Prioritization**:
+
 - Enterprise: Bypass queue, execute immediately
 - Scale: High priority (10x multiplier)
 - Growth: Medium priority (5x multiplier)
@@ -122,6 +133,7 @@ Settler's multi-tenancy platform provides complete data isolation, resource quot
 ### RLS Policies
 
 All tenant-scoped tables have RLS enabled:
+
 - `users`
 - `jobs`
 - `executions`
@@ -138,10 +150,10 @@ All tenant-scoped tables have RLS enabled:
 
 ```typescript
 const { tenant, owner } = await tenantService.createTenant({
-  name: 'Acme Corp',
-  slug: 'acme-corp',
-  ownerEmail: 'admin@acme.com',
-  ownerPasswordHash: await hashPassword('password'),
+  name: "Acme Corp",
+  slug: "acme-corp",
+  ownerEmail: "admin@acme.com",
+  ownerPasswordHash: await hashPassword("password"),
   tier: TenantTier.STARTER,
 });
 ```
@@ -163,11 +175,7 @@ if (!allowed) {
 ### Use Feature Flag
 
 ```typescript
-const enabled = await featureFlagService.isEnabled(
-  'new-feature',
-  tenantId,
-  userId
-);
+const enabled = await featureFlagService.isEnabled("new-feature", tenantId, userId);
 
 if (enabled) {
   // Use new feature
@@ -192,6 +200,7 @@ await queue.add(
 ### Tenant Isolation Tests
 
 Tests verify:
+
 - RLS policies prevent cross-tenant access
 - Tenant context properly filters data
 - Schema-per-tenant isolation (if enabled)
@@ -199,6 +208,7 @@ Tests verify:
 ### Quota Enforcement Tests
 
 Tests verify:
+
 - Quotas are enforced correctly
 - Enterprise tenants bypass quotas
 - Usage tracking is accurate
@@ -206,6 +216,7 @@ Tests verify:
 ### Load Tests
 
 Tests verify:
+
 - System handles concurrent requests
 - Rate limiting works under load
 - Connection pooling scales
@@ -213,6 +224,7 @@ Tests verify:
 ### Chaos Tests
 
 Tests verify:
+
 - System handles failures gracefully
 - Concurrent modifications are safe
 - Invalid input is handled

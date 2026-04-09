@@ -29,9 +29,7 @@ export default function EdgeNodesPage() {
       <Card className="border-border/40 dark:border-border">
         <CardContent className="flex flex-col items-center justify-center py-16 text-center">
           <Server className="w-14 h-14 text-muted-foreground/60 mb-4" />
-          <CardTitle className="text-xl mb-2 text-foreground">
-            No Edge Nodes Registered
-          </CardTitle>
+          <CardTitle className="text-xl mb-2 text-foreground">No Edge Nodes Registered</CardTitle>
           <CardDescription className="max-w-sm mb-6">
             Edge node management is available once nodes are deployed and connected. Deploy your
             first node to start monitoring edge reconciliation jobs.

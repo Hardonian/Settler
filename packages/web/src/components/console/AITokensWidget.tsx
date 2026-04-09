@@ -1,18 +1,18 @@
 /**
  * AI Tokens Widget
- * 
+ *
  * Displays current AI token usage and allows purchasing add-ons.
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Sparkles, Plus } from 'lucide-react';
-import { ConsoleErrorBoundary } from './ErrorBoundary';
-import Link from 'next/link';
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Sparkles, Plus } from "lucide-react";
+import { ConsoleErrorBoundary } from "./ErrorBoundary";
+import Link from "next/link";
 
 interface AITokenInfo {
   plan: string;
@@ -31,13 +31,13 @@ export function AITokensWidget() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/console/billing/ai-tokens')
+    fetch("/api/console/billing/ai-tokens")
       .then((res) => res.json())
       .then((data) => {
         setTokenInfo(data);
       })
       .catch((error) => {
-        console.error('Failed to fetch AI token info:', error);
+        console.error("Failed to fetch AI token info:", error);
       })
       .finally(() => {
         setLoading(false);
@@ -91,13 +91,15 @@ export function AITokensWidget() {
     );
   }
 
-  const usagePercent = tokenInfo.totalAvailableTokens > 0
-    ? Math.min(100, (tokenInfo.purchasedTokens / tokenInfo.totalAvailableTokens) * 100)
-    : 0;
+  const usagePercent =
+    tokenInfo.totalAvailableTokens > 0
+      ? Math.min(100, (tokenInfo.purchasedTokens / tokenInfo.totalAvailableTokens) * 100)
+      : 0;
 
-  const pricePer1M = tokenInfo.plan === 'scale' 
-    ? tokenInfo.pricing.enterprise.pricePer1M 
-    : tokenInfo.pricing.commercial.pricePer1M;
+  const pricePer1M =
+    tokenInfo.plan === "scale"
+      ? tokenInfo.pricing.enterprise.pricePer1M
+      : tokenInfo.pricing.commercial.pricePer1M;
 
   return (
     <ConsoleErrorBoundary>
@@ -114,7 +116,7 @@ export function AITokensWidget() {
               </CardDescription>
             </div>
             <Badge variant="outline" className="bg-purple-50 dark:bg-purple-900/20">
-              {tokenInfo.plan === 'scale' ? 'Enterprise' : 'Commercial'}
+              {tokenInfo.plan === "scale" ? "Enterprise" : "Commercial"}
             </Badge>
           </div>
         </CardHeader>

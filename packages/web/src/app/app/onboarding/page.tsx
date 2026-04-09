@@ -1,14 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-  CheckCircle,
-  Info,
-  Network,
-  ShieldCheck,
-  Circle,
-  ArrowRight,
-} from "lucide-react";
+import { CheckCircle, Info, Network, ShieldCheck, Circle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -50,10 +43,7 @@ const OnboardingPage: React.FC = () => {
         <form className="flex flex-col gap-6" onSubmit={(e) => e.preventDefault()}>
           {/* Workspace Name */}
           <div className="space-y-1.5">
-            <label
-              className="block text-sm font-medium text-foreground"
-              htmlFor="workspace-name"
-            >
+            <label className="block text-sm font-medium text-foreground" htmlFor="workspace-name">
               Workspace Name
             </label>
             <div className="relative">
@@ -72,10 +62,7 @@ const OnboardingPage: React.FC = () => {
 
           {/* Subdomain / Workspace URL */}
           <div className="space-y-1.5">
-            <label
-              className="block text-sm font-medium text-foreground"
-              htmlFor="subdomain"
-            >
+            <label className="block text-sm font-medium text-foreground" htmlFor="subdomain">
               Workspace URL
             </label>
             <div className="flex rounded-[var(--ui-radius-md)] shadow-sm overflow-hidden border border-border focus-within:ring-2 focus-within:ring-ring">
@@ -98,10 +85,12 @@ const OnboardingPage: React.FC = () => {
           {/* Tenant Mode */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="block text-sm font-medium text-foreground">
-                Tenant Mode
-              </label>
-              <button type="button" className="text-muted-foreground hover:text-foreground transition-colors" aria-label="Learn about tenant modes">
+              <label className="block text-sm font-medium text-foreground">Tenant Mode</label>
+              <button
+                type="button"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Learn about tenant modes"
+              >
                 <Info className="h-4 w-4" />
               </button>
             </div>
@@ -118,7 +107,10 @@ const OnboardingPage: React.FC = () => {
               />
               <span className="flex flex-1">
                 <span className="flex flex-col gap-1">
-                  <span className="text-sm font-bold text-primary flex items-center gap-2" id="tenant-mode-0-label">
+                  <span
+                    className="text-sm font-bold text-primary flex items-center gap-2"
+                    id="tenant-mode-0-label"
+                  >
                     <Network className="h-4 w-4" aria-hidden="true" />
                     Shared Environment
                   </span>
@@ -141,7 +133,10 @@ const OnboardingPage: React.FC = () => {
               />
               <span className="flex flex-1">
                 <span className="flex flex-col gap-1">
-                  <span className="text-sm font-bold text-foreground flex items-center gap-2" id="tenant-mode-1-label">
+                  <span
+                    className="text-sm font-bold text-foreground flex items-center gap-2"
+                    id="tenant-mode-1-label"
+                  >
                     <ShieldCheck className="h-4 w-4" aria-hidden="true" />
                     Isolated Environment
                   </span>
@@ -150,15 +145,16 @@ const OnboardingPage: React.FC = () => {
                   </span>
                 </span>
               </span>
-              <Circle className="text-muted-foreground h-5 w-5 shrink-0 mt-0.5" aria-hidden="true" />
+              <Circle
+                className="text-muted-foreground h-5 w-5 shrink-0 mt-0.5"
+                aria-hidden="true"
+              />
             </label>
           </div>
 
           {/* Audit-Ready Defaults */}
           <div className="pt-2 border-t border-border/60 space-y-4">
-            <h3 className="text-sm font-semibold text-foreground">
-              Audit-Ready Defaults
-            </h3>
+            <h3 className="text-sm font-semibold text-foreground">Audit-Ready Defaults</h3>
 
             {[
               {
@@ -194,17 +190,10 @@ const OnboardingPage: React.FC = () => {
 
           {/* Footer actions */}
           <div className="flex gap-3 pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              className="flex-1"
-            >
+            <Button type="button" variant="outline" className="flex-1">
               Save Draft
             </Button>
-            <Button
-              type="button"
-              className="flex-[2] gap-2"
-            >
+            <Button type="button" className="flex-[2] gap-2">
               Next Step
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Button>

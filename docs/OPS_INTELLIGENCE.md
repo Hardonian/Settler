@@ -38,24 +38,28 @@ Ops Intelligence is a closed-loop operational intelligence system that transform
 ## Insight Types
 
 ### Cost Insights
+
 - Cost WoW/MoM changes beyond thresholds
 - High-cost orgs with low revenue
 - Cost per event spikes
 - Cost-to-value ratio anomalies
 
 ### Support Insights
+
 - Ticket spikes by category
 - Repeated tickets with same root cause
 - Orgs with abnormal ticket density
 - Support cost per org anomalies
 
 ### Usage Insights
+
 - Feature adoption rising/falling
 - Inactive or churn-risk orgs
 - Heavy users approaching limits
 - Low engagement after signup
 
 ### Stability Insights
+
 - Error rate spikes
 - Webhook failure trends
 - Job backlog growth
@@ -78,6 +82,7 @@ Ops Intelligence is a closed-loop operational intelligence system that transform
 ### Viewing Insights
 
 Navigate to `/console/insights` to:
+
 - Filter by type, severity, status
 - View insight details with evidence
 - See linked recommendations
@@ -86,6 +91,7 @@ Navigate to `/console/insights` to:
 ### Viewing Briefings
 
 Navigate to `/console/briefings` to:
+
 - View weekly founder briefings
 - See summary statistics
 - Review recommendations and actions
@@ -110,16 +116,19 @@ Navigate to `/console/briefings` to:
 ## Scheduled Jobs
 
 ### Daily Insights Generation
+
 - **Schedule**: Daily at 2 AM UTC
 - **Function**: `generate-ops-insights`
 - **Purpose**: Generate new insights from metrics
 
 ### Weekly Briefing Generation
+
 - **Schedule**: Monday at 9 AM UTC
 - **Function**: `generate-weekly-briefing`
 - **Purpose**: Generate weekly founder briefing
 
 ### Insight Expiration
+
 - **Schedule**: Daily at 3 AM UTC
 - **Function**: `expire_insights()` RPC
 - **Purpose**: Mark expired insights as expired
@@ -135,11 +144,13 @@ Navigate to `/console/briefings` to:
 ## Testing
 
 Run tests:
+
 ```bash
 npm test -- ops-intelligence
 ```
 
 Test files:
+
 - `packages/api/src/services/ops-intelligence/__tests__/insights-engine.test.ts`
 - `packages/api/src/services/ops-intelligence/__tests__/recommendation-engine.test.ts`
 

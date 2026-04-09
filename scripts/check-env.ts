@@ -1,23 +1,23 @@
 #!/usr/bin/env tsx
 /**
  * Environment Variable Validation Script
- * 
+ *
  * Validates that all required environment variables are set and valid
  * according to the schema defined in config/env.schema.ts
- * 
+ *
  * Usage:
  *   tsx scripts/check-env.ts [environment]
- * 
+ *
  * Examples:
  *   tsx scripts/check-env.ts production
  *   tsx scripts/check-env.ts local
  */
 
-import { ENV_VAR_SCHEMA, getRequiredEnvVars, validateEnvVar } from '../config/env.schema';
+import { ENV_VAR_SCHEMA, getRequiredEnvVars, validateEnvVar } from "../config/env.schema";
 
 interface ValidationResult {
   name: string;
-  status: 'ok' | 'missing' | 'invalid';
+  status: "ok" | "missing" | "invalid";
   error?: string;
 }
 
@@ -33,9 +33,9 @@ interface ValidationReport {
   environment: string;
 }
 
-function validateEnvironment(environment: string = 'production'): ValidationReport {
+function validateEnvironment(environment: string = "production"): ValidationReport {
   const required = getRequiredEnvVars(
-    environment as 'local' | 'development' | 'preview' | 'staging' | 'production'
+    environment as "local" | "development" | "preview" | "staging" | "production"
   );
 
   const results: ValidationResult[] = [];
@@ -47,7 +47,7 @@ function validateEnvironment(environment: string = 'production'): ValidationRepo
     const value = process.env[spec.name];
     const result: ValidationResult = {
       name: spec.name,
-      status: 'ok',
+      status: "ok",
     };
 
     if (!value) {
@@ -55,8 +55,8 @@ function validateEnvironment(environment: string = 'production'): ValidationRepo
         // Has default, so it's OK
         ok++;
       } else if (spec.required) {
-        result.status = 'missing';
-        result.error = 'Required but not set';
+        result.status = "missing";
+        result.error = "Required but not set";
         missing++;
       } else {
         // Optional and not set, that's OK
@@ -66,7 +66,7 @@ function validateEnvironment(environment: string = 'production'): ValidationRepo
       // Value is set, validate it
       const validation = validateEnvVar(spec, value);
       if (!validation.valid) {
-        result.status = 'invalid';
+        result.status = "invalid";
         result.error = validation.error;
         invalid++;
       } else {
@@ -107,24 +107,24 @@ function printReport(report: ValidationReport, json: boolean = false): void {
   if (report.summary.missing > 0 || report.summary.invalid > 0) {
     console.log(`Issues:\n`);
     for (const result of report.results) {
-      if (result.status === 'missing') {
+      if (result.status === "missing") {
         console.log(`  ❌ ${result.name}: ${result.error}`);
-      } else if (result.status === 'invalid') {
+      } else if (result.status === "invalid") {
         console.log(`  ⚠️  ${result.name}: ${result.error}`);
       }
     }
-    console.log('');
+    console.log("");
   }
 
   if (report.summary.missing === 0 && report.summary.invalid === 0) {
-    console.log('✅ All environment variables are valid!\n');
+    console.log("✅ All environment variables are valid!\n");
   }
 }
 
 // Main execution
 const args = process.argv.slice(2);
-const environment = args.find((arg) => !arg.startsWith('--')) || 'production';
-const json = args.includes('--json');
+const environment = args.find((arg) => !arg.startsWith("--")) || "production";
+const json = args.includes("--json");
 
 try {
   const report = validateEnvironment(environment);
@@ -137,6 +137,6 @@ try {
 
   process.exit(0);
 } catch (error) {
-  console.error('❌ Validation script error:', error);
+  console.error("❌ Validation script error:", error);
   process.exit(1);
 }

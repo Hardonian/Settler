@@ -22,7 +22,7 @@ export interface ApiKeyProps {
 export class ApiKey {
   private constructor(private props: ApiKeyProps) {}
 
-  static create(props: Omit<ApiKeyProps, 'id' | 'createdAt' | 'updatedAt'>): ApiKey {
+  static create(props: Omit<ApiKeyProps, "id" | "createdAt" | "updatedAt">): ApiKey {
     return new ApiKey({
       ...props,
       id: crypto.randomUUID(),
@@ -103,7 +103,7 @@ export class ApiKey {
   }
 
   hasScope(scope: string): boolean {
-    return this.props.scopes.includes(scope) || this.props.scopes.includes('*');
+    return this.props.scopes.includes(scope) || this.props.scopes.includes("*");
   }
 
   isIpAllowed(ip: string): boolean {

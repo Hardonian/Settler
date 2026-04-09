@@ -9,7 +9,9 @@ const ReviewQueue: React.FC = () => {
       {/* Triage Carousel (Horizontal Scroll) */}
       <div className="pt-4 pb-2">
         <div className="px-4 mb-2 flex items-center justify-between">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Queue</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Queue
+          </h2>
           <span className="text-xs text-primary cursor-pointer hover:underline">View All</span>
         </div>
         <div className="flex overflow-x-auto gap-3 px-4 pb-4 no-scrollbar snap-x snap-mandatory">

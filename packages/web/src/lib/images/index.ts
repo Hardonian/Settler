@@ -10,4 +10,4 @@ export {
   type ImageCategory,
   type ImageConfig,
   type SettlerImageKey,
-} from './image-config';
+} from "./image-config";

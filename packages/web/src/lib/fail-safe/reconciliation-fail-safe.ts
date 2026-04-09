@@ -1,11 +1,11 @@
 /**
  * Reconciliation Fail-Safe Service
- * 
+ *
  * Implements fail-safe behaviors for reconciliation operations,
  * ensuring partial results are returned with warnings rather than silent failures.
  */
 
-import { prisma } from '@/shared/db/prismaClient';
+import { prisma } from "@/shared/db/prismaClient";
 
 export interface FailSafeResult<T> {
   success: boolean;
@@ -13,7 +13,7 @@ export interface FailSafeResult<T> {
   partial?: boolean;
   warnings: string[];
   errors: string[];
-  confidence: 'high' | 'medium' | 'low';
+  confidence: "high" | "medium" | "low";
 }
 
 export interface ReconciliationResult {
@@ -42,8 +42,8 @@ export async function executeReconciliationWithFailSafe(
       return {
         success: false,
         warnings: [],
-        errors: ['Reconciliation job not found'],
-        confidence: 'low',
+        errors: ["Reconciliation job not found"],
+        confidence: "low",
       };
     }
 
@@ -65,21 +65,24 @@ export async function executeReconciliationWithFailSafe(
       // Check for partial results
       if (result.total > 0 && result.matched < result.total * 0.5) {
         partial = true;
-        warnings.push('Less than 50% of transactions matched. Review recommended.');
+        warnings.push("Less than 50% of transactions matched. Review recommended.");
       }
 
       if (result.conflicts > result.total * 0.1) {
         partial = true;
-        warnings.push('High conflict rate detected. Automated exception handling will process conflicts.');
+        warnings.push(
+          "High conflict rate detected. Automated exception handling will process conflicts."
+        );
       }
     } catch (reconciliationError) {
       // Fail-safe: Return partial results if available
-      const errorMessage = reconciliationError instanceof Error 
-        ? reconciliationError.message 
-        : 'Unknown error during reconciliation';
-      
+      const errorMessage =
+        reconciliationError instanceof Error
+          ? reconciliationError.message
+          : "Unknown error during reconciliation";
+
       errors.push(`Reconciliation encountered errors: ${errorMessage}`);
-      
+
       // Try to get partial results
       const partialResult = await getPartialResults(jobId);
       if (partialResult) {
@@ -87,9 +90,9 @@ export async function executeReconciliationWithFailSafe(
           success: false,
           data: partialResult,
           partial: true,
-          warnings: ['Reconciliation completed with errors. Partial results available.'],
+          warnings: ["Reconciliation completed with errors. Partial results available."],
           errors,
-          confidence: 'low',
+          confidence: "low",
         };
       }
 
@@ -97,16 +100,16 @@ export async function executeReconciliationWithFailSafe(
         success: false,
         warnings: [],
         errors,
-        confidence: 'low',
+        confidence: "low",
       };
     }
 
     // Determine confidence level
-    let confidence: 'high' | 'medium' | 'low' = 'high';
+    let confidence: "high" | "medium" | "low" = "high";
     if (result.accuracy < 80) {
-      confidence = 'low';
+      confidence = "low";
     } else if (result.accuracy < 95) {
-      confidence = 'medium';
+      confidence = "medium";
     }
 
     return {
@@ -118,12 +121,12 @@ export async function executeReconciliationWithFailSafe(
       confidence,
     };
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     return {
       success: false,
       warnings: [],
       errors: [`Failed to execute reconciliation: ${errorMessage}`],
-      confidence: 'low',
+      confidence: "low",
     };
   }
 }
@@ -136,7 +139,7 @@ async function getPartialResults(jobId: string): Promise<ReconciliationResult | 
     // Try to get any partial results from ReconResult (where these fields actually exist)
     const latestResult = await prisma.reconResult.findFirst({
       where: { reconJobId: jobId },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       select: {
         matchedCount: true,
         unmatchedSourceCount: true,
@@ -150,19 +153,24 @@ async function getPartialResults(jobId: string): Promise<ReconciliationResult | 
       // Calculate accuracy from summary metadata if available
       const summary = latestResult.summary as Record<string, unknown> | null;
       const accuracy = summary?.accuracy ? Number(summary.accuracy) : 0;
-      
+
       return {
         matched: latestResult.matchedCount || 0,
-        unmatched: (latestResult.unmatchedSourceCount || 0) + (latestResult.unmatchedTargetCount || 0),
+        unmatched:
+          (latestResult.unmatchedSourceCount || 0) + (latestResult.unmatchedTargetCount || 0),
         conflicts: latestResult.conflictCount || 0,
-        total: (latestResult.matchedCount || 0) + (latestResult.unmatchedSourceCount || 0) + (latestResult.unmatchedTargetCount || 0) + (latestResult.conflictCount || 0),
+        total:
+          (latestResult.matchedCount || 0) +
+          (latestResult.unmatchedSourceCount || 0) +
+          (latestResult.unmatchedTargetCount || 0) +
+          (latestResult.conflictCount || 0),
         accuracy,
       };
     }
 
     return null;
   } catch (error) {
-    console.error('[Fail-Safe] Error getting partial results:', error);
+    console.error("[Fail-Safe] Error getting partial results:", error);
     return null;
   }
 }
@@ -181,12 +189,12 @@ export async function validateReconciliationSafety(
     });
 
     if (!job) {
-      return { safe: false, warnings: ['Job not found'] };
+      return { safe: false, warnings: ["Job not found"] };
     }
 
     // Check for potential issues
-    if (job.status === 'running') {
-      warnings.push('Another reconciliation is already running for this job.');
+    if (job.status === "running") {
+      warnings.push("Another reconciliation is already running for this job.");
     }
 
     // Check data freshness - get from ReconResult since completedAt is there
@@ -197,9 +205,9 @@ export async function validateReconciliationSafety(
           sourceAdapter: job.sourceAdapter,
           targetAdapter: job.targetAdapter,
         },
-        status: 'completed',
+        status: "completed",
       },
-      orderBy: { completedAt: 'desc' },
+      orderBy: { completedAt: "desc" },
       select: {
         completedAt: true,
       },
@@ -209,7 +217,7 @@ export async function validateReconciliationSafety(
     if (lastRun && lastRun.completedAt) {
       const daysSinceLastRun = (Date.now() - lastRun.completedAt.getTime()) / (1000 * 60 * 60 * 24);
       if (daysSinceLastRun > 30) {
-        warnings.push('Last successful reconciliation was over 30 days ago. Data may be stale.');
+        warnings.push("Last successful reconciliation was over 30 days ago. Data may be stale.");
       }
     }
 
@@ -220,7 +228,9 @@ export async function validateReconciliationSafety(
   } catch (error) {
     return {
       safe: false,
-      warnings: ['Unable to validate safety: ' + (error instanceof Error ? error.message : 'Unknown error')],
+      warnings: [
+        "Unable to validate safety: " + (error instanceof Error ? error.message : "Unknown error"),
+      ],
     };
   }
 }

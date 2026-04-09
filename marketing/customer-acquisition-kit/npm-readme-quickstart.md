@@ -95,13 +95,13 @@ const webhook = await settler.webhooks.create({
 app.post("/webhooks/settler", async (req, res) => {
   const signature = req.headers["settler-signature"];
   const isValid = settler.webhooks.verify(req.body, signature, webhook.secret);
-  
+
   if (!isValid) {
     return res.status(401).json({ error: "Invalid signature" });
   }
-  
+
   const { event, data } = req.body;
-  
+
   if (event === "reconciliation.mismatch") {
     // Alert your finance team
     await notifyFinanceTeam({
@@ -110,7 +110,7 @@ app.post("/webhooks/settler", async (req, res) => {
       actual: data.actual_amount,
     });
   }
-  
+
   res.json({ received: true });
 });
 ```
@@ -142,8 +142,18 @@ Reconcile Shopify orders with Stripe payments automatically:
 ```typescript
 const job = await settler.jobs.create({
   name: "Order Payment Reconciliation",
-  source: { adapter: "shopify", config: { /* ... */ } },
-  target: { adapter: "stripe", config: { /* ... */ } },
+  source: {
+    adapter: "shopify",
+    config: {
+      /* ... */
+    },
+  },
+  target: {
+    adapter: "stripe",
+    config: {
+      /* ... */
+    },
+  },
   rules: {
     matching: [
       { field: "order_id", type: "exact" },
@@ -161,11 +171,31 @@ Reconcile payments across Stripe, PayPal, and Square:
 const job = await settler.jobs.create({
   name: "Multi-Payment Reconciliation",
   sources: [
-    { adapter: "stripe", config: { /* ... */ } },
-    { adapter: "paypal", config: { /* ... */ } },
-    { adapter: "square", config: { /* ... */ } },
+    {
+      adapter: "stripe",
+      config: {
+        /* ... */
+      },
+    },
+    {
+      adapter: "paypal",
+      config: {
+        /* ... */
+      },
+    },
+    {
+      adapter: "square",
+      config: {
+        /* ... */
+      },
+    },
   ],
-  target: { adapter: "quickbooks", config: { /* ... */ } },
+  target: {
+    adapter: "quickbooks",
+    config: {
+      /* ... */
+    },
+  },
   rules: {
     matching: [
       { field: "transaction_id", type: "fuzzy", threshold: 0.8 },
@@ -183,8 +213,18 @@ Keep QuickBooks in sync with your payment processors:
 ```typescript
 const job = await settler.jobs.create({
   name: "Payment to Accounting Sync",
-  source: { adapter: "stripe", config: { /* ... */ } },
-  target: { adapter: "quickbooks", config: { /* ... */ } },
+  source: {
+    adapter: "stripe",
+    config: {
+      /* ... */
+    },
+  },
+  target: {
+    adapter: "quickbooks",
+    config: {
+      /* ... */
+    },
+  },
   rules: {
     matching: [
       { field: "invoice_id", type: "exact" },
@@ -205,16 +245,16 @@ rules: {
   matching: [
     // Exact match on order ID
     { field: "order_id", type: "exact" },
-    
+
     // Amount match with tolerance
     { field: "amount", type: "exact", tolerance: 0.01 },
-    
+
     // Date range matching (within 1 day)
     { field: "date", type: "range", days: 1 },
-    
+
     // Fuzzy matching on customer email
     { field: "customer_email", type: "fuzzy", threshold: 0.9 },
-    
+
     // Custom JavaScript function
     {
       field: "custom",
@@ -229,13 +269,13 @@ rules: {
 
 ```typescript
 // Run daily at 2 AM UTC
-schedule: "0 2 * * *"
+schedule: "0 2 * * *";
 
 // Run every 6 hours
-schedule: "0 */6 * * *"
+schedule: "0 */6 * * *";
 
 // Run on the 1st of every month
-schedule: "0 0 1 * *"
+schedule: "0 0 1 * *";
 ```
 
 ### Multi-Currency Support

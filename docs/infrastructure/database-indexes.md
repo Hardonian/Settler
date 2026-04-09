@@ -3,6 +3,7 @@
 ## Critical Indexes for Console Performance
 
 ### Billing Accounts
+
 ```sql
 -- Already exists in schema
 CREATE INDEX IF NOT EXISTS idx_billing_accounts_user_id ON billing_accounts(user_id);
@@ -11,6 +12,7 @@ CREATE INDEX IF NOT EXISTS idx_billing_accounts_status ON billing_accounts(statu
 ```
 
 ### Receipts
+
 ```sql
 -- Optimize receipt queries by upload and billing account
 CREATE INDEX IF NOT EXISTS idx_receipts_upload_id ON receipts(upload_id);
@@ -21,6 +23,7 @@ CREATE INDEX IF NOT EXISTS idx_receipts_upload_created ON receipts(upload_id, cr
 ```
 
 ### Usage Events
+
 ```sql
 -- Optimize usage queries
 CREATE INDEX IF NOT EXISTS idx_usage_events_billing_account ON usage_events(billing_account_id);
@@ -32,6 +35,7 @@ CREATE INDEX IF NOT EXISTS idx_usage_events_account_timestamp ON usage_events(bi
 ```
 
 ### API Keys
+
 ```sql
 -- Optimize API key lookups
 CREATE INDEX IF NOT EXISTS idx_api_keys_user_id ON api_keys(user_id);
@@ -40,6 +44,7 @@ CREATE INDEX IF NOT EXISTS idx_api_keys_revoked ON api_keys(revoked_at) WHERE re
 ```
 
 ### Feature Flags
+
 ```sql
 -- Optimize feature flag queries
 CREATE INDEX IF NOT EXISTS idx_feature_flags_billing_account ON feature_flags(billing_account_id);

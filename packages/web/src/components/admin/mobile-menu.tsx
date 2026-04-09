@@ -1,15 +1,15 @@
 /**
  * Mobile Menu Component
- * 
+ *
  * Responsive mobile navigation for admin dashboard.
  */
 
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Menu, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface MobileMenuProps {
   children: React.ReactNode;
@@ -49,8 +49,8 @@ export function MobileMenu({ children, className }: MobileMenuProps) {
           <nav
             id="mobile-menu"
             className={cn(
-              'fixed top-0 left-0 h-full w-64 bg-card dark:bg-slate-950 border-r border-border dark:border-border z-50 transform transition-transform duration-200 lg:hidden',
-              isOpen ? 'translate-x-0' : '-translate-x-full',
+              "fixed top-0 left-0 h-full w-64 bg-card dark:bg-slate-950 border-r border-border dark:border-border z-50 transform transition-transform duration-200 lg:hidden",
+              isOpen ? "translate-x-0" : "-translate-x-full",
               className
             )}
             aria-label="Mobile navigation"
@@ -58,7 +58,9 @@ export function MobileMenu({ children, className }: MobileMenuProps) {
             <div className="p-4 border-b border-border dark:border-border">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 font-bold text-xl text-foreground dark:text-white">
-                  <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">S</div>
+                  <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">
+                    S
+                  </div>
                   Settler Admin
                 </div>
                 <Button
@@ -71,9 +73,7 @@ export function MobileMenu({ children, className }: MobileMenuProps) {
                 </Button>
               </div>
             </div>
-            <div className="overflow-y-auto h-[calc(100%-80px)] p-4">
-              {children}
-            </div>
+            <div className="overflow-y-auto h-[calc(100%-80px)] p-4">{children}</div>
           </nav>
         </>
       )}

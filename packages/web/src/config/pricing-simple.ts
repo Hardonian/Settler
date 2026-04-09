@@ -33,7 +33,8 @@ export const PRICING_PLANS: Record<string, PricingPlan> = {
     basePriceMonthly: 0,
     pricePerTransaction: PLAN_SPINE.starter.limits.reconcile.pricePerReconciliation,
     includedTransactions: PLAN_SPINE.starter.limits.reconcile.monthlyVolume,
-    description: "Alias of starter for legacy callers; same included reconciliation volume as Starter.",
+    description:
+      "Alias of starter for legacy callers; same included reconciliation volume as Starter.",
   },
   starter: row("starter"),
   growth: row("growth"),

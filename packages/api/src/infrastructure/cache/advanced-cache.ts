@@ -3,8 +3,8 @@
  * Implements tag-based invalidation, cache warming, and coherency checks
  */
 
-import { get, set, del } from '../../utils/cache';
-import { logInfo, logWarn } from '../../utils/logger';
+import { get, set, del } from "../../utils/cache";
+import { logInfo, logWarn } from "../../utils/logger";
 
 export interface CacheTag {
   tag: string;
@@ -16,7 +16,7 @@ const tagIndex = new Map<string, Set<string>>();
 
 /**
  * Set cache value with tags for invalidation
- * 
+ *
  * @param key - Cache key
  * @param value - Value to cache
  * @param ttlSeconds - Time to live in seconds
@@ -46,7 +46,7 @@ export async function setWithTags<T>(
 
 /**
  * Invalidate all keys with a specific tag
- * 
+ *
  * @param tag - Tag to invalidate
  */
 export async function invalidateByTag(tag: string): Promise<number> {
@@ -70,7 +70,7 @@ export async function invalidateByTag(tag: string): Promise<number> {
 
 /**
  * Invalidate multiple tags at once
- * 
+ *
  * @param tags - Tags to invalidate
  */
 export async function invalidateByTags(tags: string[]): Promise<number> {
@@ -83,7 +83,7 @@ export async function invalidateByTags(tags: string[]): Promise<number> {
 
 /**
  * Warm cache with frequently accessed data
- * 
+ *
  * @param warmupFn - Function that returns key-value pairs to cache
  * @param ttlSeconds - Time to live for warmed entries
  */
@@ -98,13 +98,13 @@ export async function warmCache(
     }
     logInfo(`Warmed cache with ${entries.length} entries`);
   } catch (error) {
-    logWarn('Cache warming failed', { error });
+    logWarn("Cache warming failed", { error });
   }
 }
 
 /**
  * Check cache coherency (verify cached data is still valid)
- * 
+ *
  * @param key - Cache key to check
  * @param validator - Function that validates cached value
  * @returns True if cache is coherent, false if invalid
@@ -122,12 +122,12 @@ export async function checkCoherency<T>(
     const isValid = await validator(cached);
     if (!isValid) {
       await del(key);
-      logWarn('Cache coherency check failed, invalidated', { key });
+      logWarn("Cache coherency check failed, invalidated", { key });
       return false;
     }
     return true;
   } catch (error) {
-    logWarn('Cache coherency check error', { key, error });
+    logWarn("Cache coherency check error", { key, error });
     return false;
   }
 }

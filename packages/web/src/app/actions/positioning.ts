@@ -1,15 +1,15 @@
 /**
  * Server Actions for Positioning Feedback
- * 
+ *
  * Community Loop Feedback: Users submit positioning clarity input,
  * which triggers a Supabase Function to calculate impact score.
  */
 
-'use server';
+"use server";
 
-import { createClient } from '@/lib/supabase/server';
-import { revalidatePath } from 'next/cache';
-import type { Database } from '@/types/database.types';
+import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
+import type { Database } from "@/types/database.types";
 
 export interface PositioningFeedbackInput {
   fiveWordVp?: string;
@@ -27,7 +27,7 @@ export interface PositioningFeedbackResult {
 
 /**
  * Server Action: Submit Positioning Feedback
- * 
+ *
  * Flow: Form Submission → Server Action → Supabase positioning_feedback table
  * → Trigger calculates impact_score → Notification created → Profile updated
  */
@@ -36,17 +36,19 @@ export async function submitPositioningFeedback(
 ): Promise<PositioningFeedbackResult> {
   try {
     const supabase = (await createClient()) as any;
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     // Validate input
     if (!input.fiveWordVp && !input.targetPersonaPain && !input.feedbackText) {
       return {
         success: false,
-        error: 'Please provide at least one piece of feedback',
+        error: "Please provide at least one piece of feedback",
       };
     }
 
-    const insertData: Database['public']['Tables']['positioning_feedback']['Insert'] = {
+    const insertData: Database["public"]["Tables"]["positioning_feedback"]["Insert"] = {
       user_id: user?.id || null,
       five_word_vp: input.fiveWordVp ?? null,
       target_persona_pain: input.targetPersonaPain ?? null,
@@ -56,7 +58,7 @@ export async function submitPositioningFeedback(
 
     // Insert feedback (trigger will calculate impact_score automatically)
     const { data, error } = await supabase
-      .from('positioning_feedback')
+      .from("positioning_feedback")
       .insert(insertData)
       .select()
       .single();
@@ -69,20 +71,19 @@ export async function submitPositioningFeedback(
     }
 
     // Revalidate dashboard to show updated metrics
-    revalidatePath('/dashboard');
-    revalidatePath('/');
+    revalidatePath("/dashboard");
+    revalidatePath("/");
 
     return {
       success: true,
       impactScore: data?.impact_score ?? undefined,
       feedbackId: data?.id ?? undefined,
     };
-             
   } catch (error) {
-    console.error('Positioning feedback error:', error);
+    console.error("Positioning feedback error:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to submit feedback',
+      error: error instanceof Error ? error.message : "Failed to submit feedback",
     };
   }
 }

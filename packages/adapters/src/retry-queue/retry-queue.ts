@@ -1,10 +1,10 @@
 /**
  * Retry Queue System
- * 
+ *
  * Dedicated retry queue for failed syncs with exponential backoff
  */
 
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
 export interface RetryJob {
   id: string;
@@ -40,11 +40,7 @@ export class RetryQueue {
   private supabase: ReturnType<typeof createClient>;
   private config: RetryConfig;
 
-  constructor(
-    supabaseUrl: string,
-    supabaseServiceKey: string,
-    config?: Partial<RetryConfig>
-  ) {
+  constructor(supabaseUrl: string, supabaseServiceKey: string, config?: Partial<RetryConfig>) {
     this.supabase = createClient(supabaseUrl, supabaseServiceKey);
     this.config = { ...DEFAULT_RETRY_CONFIG, ...config };
   }
@@ -63,7 +59,7 @@ export class RetryQueue {
     const nextRetryAt = this.calculateNextRetry(1);
 
     const { data: job, error } = await this.supabase
-      .from('retry_queue')
+      .from("retry_queue")
       .insert({
         connector_id: connectorId,
         tenant_id: tenantId,
@@ -74,9 +70,9 @@ export class RetryQueue {
         error_message: errorMessage,
         error_type: errorType,
         metadata: metadata || {},
-        status: 'pending',
+        status: "pending",
       } as never)
-      .select('id')
+      .select("id")
       .single();
 
     if (error || !job) {
@@ -93,12 +89,12 @@ export class RetryQueue {
     const now = new Date().toISOString();
 
     const { data: jobs } = await this.supabase
-      .from('retry_queue')
-      .select('*')
-      .eq('status', 'pending')
-      .lte('next_retry_at', now)
-      .lt('attempt_count', this.config.maxAttempts)
-      .order('next_retry_at', { ascending: true })
+      .from("retry_queue")
+      .select("*")
+      .eq("status", "pending")
+      .lte("next_retry_at", now)
+      .lt("attempt_count", this.config.maxAttempts)
+      .order("next_retry_at", { ascending: true })
       .limit(limit);
 
     return (jobs || []) as RetryJob[];
@@ -109,9 +105,9 @@ export class RetryQueue {
    */
   async processJob(jobId: string): Promise<{ success: boolean; retryAgain: boolean }> {
     const { data: job } = await this.supabase
-      .from('retry_queue')
-      .select('*')
-      .eq('id', jobId)
+      .from("retry_queue")
+      .select("*")
+      .eq("id", jobId)
       .single();
 
     if (!job) {
@@ -120,9 +116,9 @@ export class RetryQueue {
 
     // Mark as processing
     await this.supabase
-      .from('retry_queue')
-      .update({ status: 'processing', started_at: new Date().toISOString() } as never)
-      .eq('id', jobId);
+      .from("retry_queue")
+      .update({ status: "processing", started_at: new Date().toISOString() } as never)
+      .eq("id", jobId);
 
     // Job will be processed by sync worker
     // This function just marks it as ready
@@ -135,12 +131,12 @@ export class RetryQueue {
    */
   async markCompleted(jobId: string): Promise<void> {
     await this.supabase
-      .from('retry_queue')
+      .from("retry_queue")
       .update({
-        status: 'completed',
+        status: "completed",
         completed_at: new Date().toISOString(),
       } as never)
-      .eq('id', jobId);
+      .eq("id", jobId);
   }
 
   /**
@@ -152,9 +148,9 @@ export class RetryQueue {
     errorType: string
   ): Promise<{ retryAgain: boolean; nextRetryAt?: Date }> {
     const { data: job } = await this.supabase
-      .from('retry_queue')
-      .select('*')
-      .eq('id', jobId)
+      .from("retry_queue")
+      .select("*")
+      .eq("id", jobId)
       .single();
 
     if (!job) {
@@ -168,29 +164,29 @@ export class RetryQueue {
     if (retryAgain) {
       const nextRetryAt = this.calculateNextRetry(newAttemptCount);
       await this.supabase
-        .from('retry_queue')
+        .from("retry_queue")
         .update({
           attempt_count: newAttemptCount,
           next_retry_at: nextRetryAt.toISOString(),
           error_message: errorMessage,
           error_type: errorType,
-          status: 'pending',
+          status: "pending",
         } as never)
-        .eq('id', jobId);
+        .eq("id", jobId);
 
       return { retryAgain: true, nextRetryAt };
     } else {
       // Max attempts reached - mark as failed permanently
       await this.supabase
-        .from('retry_queue')
+        .from("retry_queue")
         .update({
           attempt_count: newAttemptCount,
-          status: 'failed',
+          status: "failed",
           error_message: errorMessage,
           error_type: errorType,
           completed_at: new Date().toISOString(),
         } as never)
-        .eq('id', jobId);
+        .eq("id", jobId);
 
       return { retryAgain: false };
     }
@@ -200,8 +196,9 @@ export class RetryQueue {
    * Calculate next retry time with exponential backoff
    */
   private calculateNextRetry(attemptCount: number): Date {
-    let delay = this.config.initialDelayMs * Math.pow(this.config.backoffMultiplier, attemptCount - 1);
-    
+    let delay =
+      this.config.initialDelayMs * Math.pow(this.config.backoffMultiplier, attemptCount - 1);
+
     // Cap at max delay
     delay = Math.min(delay, this.config.maxDelayMs);
 
@@ -219,10 +216,10 @@ export class RetryQueue {
    */
   async getDeadLetterQueue(limit: number = 100): Promise<RetryJob[]> {
     const { data: jobs } = await this.supabase
-      .from('retry_queue')
-      .select('*')
-      .eq('status', 'failed')
-      .order('completed_at', { ascending: false })
+      .from("retry_queue")
+      .select("*")
+      .eq("status", "failed")
+      .order("completed_at", { ascending: false })
       .limit(limit);
 
     return (jobs || []) as RetryJob[];
@@ -233,13 +230,13 @@ export class RetryQueue {
    */
   async retryDeadLetter(jobId: string): Promise<void> {
     await this.supabase
-      .from('retry_queue')
+      .from("retry_queue")
       .update({
-        status: 'pending',
+        status: "pending",
         attempt_count: 0,
         next_retry_at: new Date().toISOString(),
         completed_at: null,
       } as never)
-      .eq('id', jobId);
+      .eq("id", jobId);
   }
 }

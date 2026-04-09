@@ -274,7 +274,9 @@ export default function EditorClient({ initialPage, initialBlocks }: EditorClien
 
           {/* Block Toolbox */}
           <div className="border-t border-border/40 dark:border-border p-4 bg-muted/10">
-            <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-3">Add Block</h4>
+            <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-3">
+              Add Block
+            </h4>
             <div className="grid grid-cols-2 gap-2">
               {[
                 "hero",

@@ -3,6 +3,7 @@
 **Important:** BullMQ requires a **TCP connection** to Redis, not the REST API.
 
 You have:
+
 - ✅ REST URL: `https://pretty-buck-23396.upstash.io`
 - ✅ REST Token: `AVtkAAIncDJjZmUxNTlhNmMyMjI0YmNjYTk5YjY4YzI2YzEyZjUyN3AyMjMzOTY`
 
@@ -13,18 +14,22 @@ You have:
 ## How to Get TCP Connection Details
 
 ### Step 1: Go to Upstash Dashboard
+
 1. Visit [console.upstash.com](https://console.upstash.com)
 2. Log in to your account
 3. Click on your database: **pretty-buck-23396**
 
 ### Step 2: Find TCP Endpoint
+
 1. In your database dashboard, look for **"TCP Endpoint"** or **"Endpoint"** section
 2. You should see something like:
    - **Endpoint:** `pretty-buck-23396.upstash.io:6379`
    - **Password:** `Axxxxx...` (long password string)
 
 ### Step 3: Copy TCP Details
+
 Copy these values:
+
 - **TCP Host:** `pretty-buck-23396.upstash.io` (without `:6379`)
 - **TCP Port:** `6379`
 - **TCP Password:** `Axxxxx...` (this is different from REST token!)
@@ -48,6 +53,7 @@ REDIS_TLS=true
 ```
 
 **Important Notes:**
+
 - `REDIS_PASSWORD` is the **TCP password**, NOT the REST token
 - `REDIS_TLS=true` is required for Upstash
 - `REDIS_HOST` should NOT include `https://` or `:6379`
@@ -57,13 +63,16 @@ REDIS_TLS=true
 ## Testing the Connection
 
 ### Test REST API (Optional)
+
 ```bash
 curl https://pretty-buck-23396.upstash.io/get/test \
   -H "Authorization: Bearer AVtkAAIncDJjZmUxNTlhNmMyMjI0YmNjYTk5YjY4YzI2YzEyZjUyN3AyMjMzOTY"
 ```
 
 ### Test TCP Connection (Required for BullMQ)
+
 The TCP connection will be tested automatically when your app starts. Check logs for:
+
 - ✅ "Redis connected successfully"
 - ❌ "Redis connection failed" (if TCP details are wrong)
 
@@ -82,16 +91,19 @@ The TCP connection will be tested automatically when your app starts. Check logs
 ## Troubleshooting
 
 ### Error: "Connection timeout"
+
 - Check `REDIS_TLS=true` is set
 - Verify `REDIS_HOST` doesn't include `https://` or port
 - Check firewall/network settings
 
 ### Error: "Authentication failed"
+
 - Verify you're using TCP password (not REST token)
 - Check password doesn't have extra spaces
 - Regenerate password in Upstash dashboard if needed
 
 ### Error: "TLS required"
+
 - Ensure `REDIS_TLS=true` is set
 - Upstash requires TLS for all connections
 

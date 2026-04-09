@@ -1,13 +1,13 @@
 /**
  * API Standards Evolution
- * 
+ *
  * Prepare for LLM Function Calling vNext, Typed JSON, Recon DSL
  * Part 13: Long-Range Futureproofing
  */
 
 export interface FunctionCallingSpec {
   version: string;
-  format: 'json' | 'typescript' | 'dsl';
+  format: "json" | "typescript" | "dsl";
   capabilities: string[];
 }
 
@@ -31,16 +31,16 @@ export class APIEvolution {
   constructor() {
     // Register current function calling spec
     this.registerFunctionCallingSpec({
-      version: 'v1',
-      format: 'json',
-      capabilities: ['function_calling', 'streaming'],
+      version: "v1",
+      format: "json",
+      capabilities: ["function_calling", "streaming"],
     });
 
     // Register future spec
     this.registerFunctionCallingSpec({
-      version: 'vNext',
-      format: 'typescript',
-      capabilities: ['function_calling', 'streaming', 'typed_parameters', 'async_operations'],
+      version: "vNext",
+      format: "typescript",
+      capabilities: ["function_calling", "streaming", "typed_parameters", "async_operations"],
     });
   }
 
@@ -90,7 +90,7 @@ export class APIEvolution {
    */
   parseReconDSL(_code: string): Record<string, unknown> {
     if (!this.reconDSL) {
-      throw new Error('Recon DSL not defined');
+      throw new Error("Recon DSL not defined");
     }
 
     // TODO: Implement DSL parser
@@ -103,7 +103,9 @@ export class APIEvolution {
   /**
    * Execute Recon DSL
    */
-  async executeReconDSL(code: string): Promise<{ success: boolean; result: Record<string, unknown> }> {
+  async executeReconDSL(
+    code: string
+  ): Promise<{ success: boolean; result: Record<string, unknown> }> {
     const parsed = this.parseReconDSL(code);
     // TODO: Execute parsed operations
     return {

@@ -48,6 +48,7 @@ run with `completeness: complete`:
    workflow includes a Sigstore-backed attestation that cryptographically binds
    the artifact to the GitHub Actions run ID and the OIDC token issued to that
    run. External reviewers can verify this with:
+
    ```
    gh attestation verify release-evidence-bundle-<sha>.tar.gz --repo <owner>/<repo>
    ```
@@ -134,6 +135,7 @@ cross-checks against `checksums.txt` and `manifest.json`, verifies required
 fields, and reports pass/fail for each artifact.
 
 To also fail on partial completeness:
+
 ```bash
 pnpm exec tsx scripts/verify-release-bundle.ts --strict
 ```
@@ -149,6 +151,7 @@ gh attestation verify release-evidence-bundle-<commit-sha>.tar.gz \
 ```
 
 This confirms:
+
 - The archive was produced by the named repository's GitHub Actions
 - The attestation is signed by Sigstore using the OIDC identity of the CI job
 - The content has not been modified since signing
@@ -183,38 +186,38 @@ This verifies every non-checksum file using the standard GNU sha256sum format.
 
 `manifest.json` fields:
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `schemaVersion` | `"1.0"` | Schema version for forward compatibility |
-| `bundleType` | `"release-evidence"` | Always `release-evidence` |
-| `generatedAt` | ISO 8601 | When the bundle was generated |
-| `git.commitSha` | string | Full SHA of the HEAD commit |
-| `git.branch` | string | Branch name at time of generation |
-| `git.tag` | string \| null | Tag if triggered on a tag push |
-| `git.ref` | string | Full git ref |
-| `ci.runId` | string \| null | GitHub Actions run ID (`null` if local) |
-| `ci.runUrl` | string \| null | Direct URL to the Actions run |
-| `ci.workflowName` | string \| null | Workflow that produced this bundle |
-| `ci.actor` | string \| null | GitHub actor that triggered the run |
-| `ci.repository` | string \| null | `owner/repo` |
-| `environment.nodeVersion` | string | Node.js version used |
-| `environment.pnpmVersion` | string | pnpm version used |
-| `policy.auditMode` | `strict` \| `warn` \| `off` | Dependency audit policy |
-| `completeness` | `complete` \| `partial` | Whether all checks ran without degradation |
-| `overallStatus` | `pass` \| `partial` \| `fail` | Aggregate verification outcome |
-| `degradedChecks` | object | Per-check degraded flags |
-| `artifacts` | array | List of artifact files with source, presence, and SHA256 |
-| `checksumAlgorithm` | `"sha256"` | Hash algorithm used |
-| `checksums` | object | `filename → sha256` map for all bundle files |
+| Field                     | Type                          | Description                                              |
+| ------------------------- | ----------------------------- | -------------------------------------------------------- |
+| `schemaVersion`           | `"1.0"`                       | Schema version for forward compatibility                 |
+| `bundleType`              | `"release-evidence"`          | Always `release-evidence`                                |
+| `generatedAt`             | ISO 8601                      | When the bundle was generated                            |
+| `git.commitSha`           | string                        | Full SHA of the HEAD commit                              |
+| `git.branch`              | string                        | Branch name at time of generation                        |
+| `git.tag`                 | string \| null                | Tag if triggered on a tag push                           |
+| `git.ref`                 | string                        | Full git ref                                             |
+| `ci.runId`                | string \| null                | GitHub Actions run ID (`null` if local)                  |
+| `ci.runUrl`               | string \| null                | Direct URL to the Actions run                            |
+| `ci.workflowName`         | string \| null                | Workflow that produced this bundle                       |
+| `ci.actor`                | string \| null                | GitHub actor that triggered the run                      |
+| `ci.repository`           | string \| null                | `owner/repo`                                             |
+| `environment.nodeVersion` | string                        | Node.js version used                                     |
+| `environment.pnpmVersion` | string                        | pnpm version used                                        |
+| `policy.auditMode`        | `strict` \| `warn` \| `off`   | Dependency audit policy                                  |
+| `completeness`            | `complete` \| `partial`       | Whether all checks ran without degradation               |
+| `overallStatus`           | `pass` \| `partial` \| `fail` | Aggregate verification outcome                           |
+| `degradedChecks`          | object                        | Per-check degraded flags                                 |
+| `artifacts`               | array                         | List of artifact files with source, presence, and SHA256 |
+| `checksumAlgorithm`       | `"sha256"`                    | Hash algorithm used                                      |
+| `checksums`               | object                        | `filename → sha256` map for all bundle files             |
 
 ---
 
 ## Completeness States
 
-| State | Meaning |
-|-------|---------|
-| `complete` | All required artifacts present; no check ran in degraded mode |
-| `partial` | One or more checks ran in degraded mode (e.g. audit backend unavailable, header probe skipped due to missing build) |
+| State      | Meaning                                                                                                             |
+| ---------- | ------------------------------------------------------------------------------------------------------------------- |
+| `complete` | All required artifacts present; no check ran in degraded mode                                                       |
+| `partial`  | One or more checks ran in degraded mode (e.g. audit backend unavailable, header probe skipped due to missing build) |
 
 A `partial` bundle is not a failure — it is a faithful record of what was
 verifiable in the environment where the pipeline ran. The `degradedChecks` map

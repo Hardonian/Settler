@@ -5,7 +5,7 @@
 ### 1. Check Sync Run Status
 
 ```sql
-SELECT 
+SELECT
   sr.id,
   sr.connector_id,
   c.provider_id,
@@ -26,7 +26,7 @@ LIMIT 10;
 ### 2. Check Connector Health
 
 ```sql
-SELECT 
+SELECT
   c.id,
   c.provider_id,
   c.status,
@@ -44,7 +44,7 @@ ORDER BY c.consecutive_failures DESC;
 ### 3. View Recent Errors
 
 ```sql
-SELECT 
+SELECT
   c.provider_id,
   sr.error_message,
   sr.error_details,
@@ -65,7 +65,7 @@ ORDER BY occurrence_count DESC;
 1. **Check Token Expiry**:
 
 ```sql
-SELECT 
+SELECT
   c.provider_id,
   cc.token_expires_at,
   cc.updated_at
@@ -122,7 +122,7 @@ curl -X POST https://your-domain.com/api/connectors/test/{providerId} \
 
 ```sql
 -- Find failed webhooks
-SELECT 
+SELECT
   we.id,
   we.connector_id,
   c.provider_id,
@@ -146,7 +146,7 @@ curl -X POST https://your-domain.com/api/connectors/webhook/{providerId}/replay 
 
 ```sql
 -- Get sync run details
-SELECT 
+SELECT
   sr.id,
   sr.connector_id,
   c.provider_id,
@@ -172,7 +172,7 @@ curl -X POST https://your-domain.com/api/connectors/sync/{providerId} \
 ### Health Dashboard Query
 
 ```sql
-SELECT 
+SELECT
   c.provider_id,
   COUNT(*) as total_connectors,
   COUNT(*) FILTER (WHERE c.status = 'connected') as connected,
@@ -188,7 +188,7 @@ ORDER BY c.provider_id;
 ### Sync Performance Metrics
 
 ```sql
-SELECT 
+SELECT
   c.provider_id,
   COUNT(*) as sync_count,
   AVG(EXTRACT(EPOCH FROM (sr.finished_at - sr.started_at))) as avg_duration_seconds,
@@ -209,6 +209,7 @@ ORDER BY avg_duration_seconds DESC;
 **Symptoms**: Sync fails with "401 Unauthorized" or "Token expired"
 
 **Solution**:
+
 1. Check `connector_credentials.token_expires_at`
 2. If expired, refresh token via API or manually
 3. Update connector status back to 'connected'
@@ -218,6 +219,7 @@ ORDER BY avg_duration_seconds DESC;
 **Symptoms**: Sync fails with "429 Too Many Requests"
 
 **Solution**:
+
 1. Check provider rate limits
 2. Increase sync interval
 3. Implement exponential backoff (already in runtime)
@@ -227,6 +229,7 @@ ORDER BY avg_duration_seconds DESC;
 **Symptoms**: Webhooks received but not processed
 
 **Solution**:
+
 1. Check `webhook_events.processed = false`
 2. Verify webhook signature
 3. Replay failed webhooks manually
@@ -236,6 +239,7 @@ ORDER BY avg_duration_seconds DESC;
 **Symptoms**: Same transactions appearing multiple times
 
 **Solution**:
+
 1. Check idempotency keys in `financial_transactions`
 2. Verify `idempotency_key` uniqueness constraint
 3. Review sync cursor logic

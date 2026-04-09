@@ -5,6 +5,7 @@ This guide helps you quickly set up all required secrets for GitHub, Vercel, and
 ## 🎯 Overview
 
 Your application requires secrets in three places:
+
 1. **GitHub Secrets** - For CI/CD workflows
 2. **Vercel Environment Variables** - For frontend builds and deployments
 3. **Supabase Secrets** - For edge functions and database operations
@@ -19,6 +20,7 @@ Your application requires secrets in three places:
 4. Add each secret from the list below:
 
 **Minimum Required Secrets:**
+
 ```
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
@@ -39,6 +41,7 @@ VERCEL_PROJECT_ID=your-project-id
 ```
 
 **Where to Find Values:**
+
 - **Supabase**: Dashboard → Settings → API / Database
 - **Resend**: Dashboard → API Keys
 - **Stripe**: Dashboard → Developers → API keys / Webhooks
@@ -52,6 +55,7 @@ VERCEL_PROJECT_ID=your-project-id
 4. Add each variable:
 
 **Critical Variables:**
+
 ```
 SUPABASE_URL (Encrypted, Production/Preview/Development)
 SUPABASE_ANON_KEY (Encrypted, Production/Preview/Development)
@@ -71,6 +75,7 @@ NEXT_PUBLIC_APP_URL (Plain, Production/Preview) = https://settler.dev
 ```
 
 **Important Notes:**
+
 - Use **Encrypted** type for secrets
 - Use **Plain** type for `NEXT_PUBLIC_*` variables (safe to expose)
 - Set environment scoping (Production/Preview/Development)
@@ -79,6 +84,7 @@ NEXT_PUBLIC_APP_URL (Plain, Production/Preview) = https://settler.dev
 ### Step 3: Set Up Supabase Edge Function Secrets
 
 **Via CLI (Recommended):**
+
 ```bash
 # Install Supabase CLI if not already installed
 npm install -g supabase
@@ -102,6 +108,7 @@ supabase secrets set FRONTEND_URL="https://settler.dev" --project-ref your-proje
 ```
 
 **Via Dashboard:**
+
 1. Go to Supabase Dashboard → Your Project
 2. Navigate to **Edge Functions**
 3. Click on a function → **Settings** → **Secrets**
@@ -110,6 +117,7 @@ supabase secrets set FRONTEND_URL="https://settler.dev" --project-ref your-proje
 ### Step 4: Set Up Local Development
 
 1. Copy `.env.example` to `.env`:
+
    ```bash
    cp .env.example .env
    ```
@@ -137,6 +145,7 @@ openssl rand -base64 24
 ## ✅ Verification
 
 ### Test GitHub Secrets
+
 ```bash
 # Push a commit to trigger CI/CD
 git push origin main
@@ -146,6 +155,7 @@ git push origin main
 ```
 
 ### Test Vercel Variables
+
 ```bash
 # Trigger a new deployment
 # Check Vercel build logs
@@ -154,6 +164,7 @@ git push origin main
 ```
 
 ### Test Supabase Secrets
+
 ```bash
 # Deploy an edge function
 supabase functions deploy your-function --project-ref your-project-ref
@@ -163,6 +174,7 @@ supabase functions deploy your-function --project-ref your-project-ref
 ```
 
 ### Test Local Development
+
 ```bash
 # Start development server
 npm run dev
@@ -173,31 +185,35 @@ npm run dev
 
 ## 📋 Quick Reference
 
-| Platform | Location | Type | Count |
-|----------|----------|------|-------|
-| GitHub | Repository Settings → Secrets | Secrets | ~20-30 |
-| Vercel | Project Settings → Environment Variables | Encrypted/Plain | ~15-20 |
-| Supabase | Edge Functions → Secrets | Secrets | ~5-10 |
-| Local | `.env` file | Plain text | ~15-20 |
+| Platform | Location                                 | Type            | Count  |
+| -------- | ---------------------------------------- | --------------- | ------ |
+| GitHub   | Repository Settings → Secrets            | Secrets         | ~20-30 |
+| Vercel   | Project Settings → Environment Variables | Encrypted/Plain | ~15-20 |
+| Supabase | Edge Functions → Secrets                 | Secrets         | ~5-10  |
+| Local    | `.env` file                              | Plain text      | ~15-20 |
 
 ## 🚨 Common Issues
 
 ### "Secret not found" in GitHub Actions
+
 - Verify secret name matches exactly (case-sensitive)
 - Check secret is set in repository settings
 - Ensure workflow has access to secrets
 
 ### Build fails in Vercel
+
 - Check build logs for missing variable names
 - Verify variables are set for correct environment (Production/Preview)
 - Ensure `NEXT_PUBLIC_*` variables are set for client-side access
 
 ### Edge function can't access secrets
+
 - Verify secrets are set via CLI or dashboard
 - Check secret names match exactly
 - Ensure project reference is correct
 
 ### Local development errors
+
 - Verify `.env` file exists and has values
 - Check variable names match code expectations
 - Ensure `.env` is not committed to git

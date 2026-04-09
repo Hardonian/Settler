@@ -50,7 +50,7 @@ export async function testAdapterConnection(
   } catch (error: unknown) {
     const latency = Date.now() - startTime;
     const message = error instanceof Error ? error.message : "Unknown error";
-    logError('Adapter connection test failed', error, { adapter });
+    logError("Adapter connection test failed", error, { adapter });
     return {
       success: false,
       error: message,
@@ -60,7 +60,9 @@ export async function testAdapterConnection(
   }
 }
 
-async function testStripeConnection(config: Record<string, unknown>): Promise<ConnectionTestResult> {
+async function testStripeConnection(
+  config: Record<string, unknown>
+): Promise<ConnectionTestResult> {
   const startTime = Date.now();
   const apiKey = config.apiKey as string;
 
@@ -94,7 +96,9 @@ async function testStripeConnection(config: Record<string, unknown>): Promise<Co
   }
 }
 
-async function testShopifyConnection(config: Record<string, unknown>): Promise<ConnectionTestResult> {
+async function testShopifyConnection(
+  config: Record<string, unknown>
+): Promise<ConnectionTestResult> {
   const startTime = Date.now();
   const apiKey = config.apiKey as string;
   const shopDomain = config.shopDomain as string;
@@ -129,11 +133,13 @@ async function testShopifyConnection(config: Record<string, unknown>): Promise<C
   }
 }
 
-async function testPayPalConnection(config: Record<string, unknown>): Promise<ConnectionTestResult> {
+async function testPayPalConnection(
+  config: Record<string, unknown>
+): Promise<ConnectionTestResult> {
   const startTime = Date.now();
   const clientId = config.clientId as string;
   const clientSecret = config.clientSecret as string;
-  const sandbox = config.sandbox as boolean || false;
+  const sandbox = (config.sandbox as boolean) || false;
 
   try {
     // Test PayPal OAuth token
@@ -171,7 +177,9 @@ async function testPayPalConnection(config: Record<string, unknown>): Promise<Co
   }
 }
 
-async function testQuickBooksConnection(_config: Record<string, unknown>): Promise<ConnectionTestResult> {
+async function testQuickBooksConnection(
+  _config: Record<string, unknown>
+): Promise<ConnectionTestResult> {
   const startTime = Date.now();
   // QuickBooks connection testing requires OAuth flow
   // For now, just validate config
@@ -231,16 +239,19 @@ async function testXeroConnection(config: Record<string, unknown>): Promise<Conn
   }
 }
 
-async function testSquareConnection(config: Record<string, unknown>): Promise<ConnectionTestResult> {
+async function testSquareConnection(
+  config: Record<string, unknown>
+): Promise<ConnectionTestResult> {
   const startTime = Date.now();
   const accessToken = config.accessToken as string;
   const environment = (config.environment as string) || "production";
 
   try {
     // Test Square API connection
-    const baseUrl = environment === "sandbox" 
-      ? "https://connect.squareupsandbox.com" 
-      : "https://connect.squareup.com";
+    const baseUrl =
+      environment === "sandbox"
+        ? "https://connect.squareupsandbox.com"
+        : "https://connect.squareup.com";
 
     const response = await fetch(`${baseUrl}/v2/locations`, {
       headers: {

@@ -1,7 +1,7 @@
 /**
  * Zod schemas for runtime validation
  */
-import { z } from 'zod';
+import { z } from "zod";
 export declare const jobStatusSchema: z.ZodEnum<["queued", "running", "succeeded", "failed", "dead", "canceled"]>;
 export declare const jobRowSchema: z.ZodObject<{
     id: z.ZodString;

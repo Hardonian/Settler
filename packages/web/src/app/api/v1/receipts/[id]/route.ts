@@ -94,10 +94,7 @@ export const GET = withSecurity(
         });
       } catch (error) {
         appLogger.error("Error fetching receipt", error);
-        return NextResponse.json(
-          { error: "Failed to fetch receipt" },
-          { status: 500 }
-        );
+        return NextResponse.json({ error: "Failed to fetch receipt" }, { status: 500 });
       }
     },
     { feature: "GET API" }

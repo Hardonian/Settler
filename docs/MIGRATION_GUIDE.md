@@ -59,19 +59,19 @@ After applying the migration, verify it was successful:
 
 ```sql
 -- Check tables exist
-SELECT table_name 
-FROM information_schema.tables 
-WHERE table_schema = 'public' 
+SELECT table_name
+FROM information_schema.tables
+WHERE table_schema = 'public'
   AND table_name IN (
     'workspace_invites',
-    'tenant_onboarding_progress', 
+    'tenant_onboarding_progress',
     'onboarding_events'
   );
 
 -- Check functions exist
-SELECT routine_name 
-FROM information_schema.routines 
-WHERE routine_schema = 'public' 
+SELECT routine_name
+FROM information_schema.routines
+WHERE routine_schema = 'public'
   AND routine_name IN (
     'create_workspace_with_owner',
     'complete_onboarding_step',
@@ -79,8 +79,8 @@ WHERE routine_schema = 'public'
   );
 
 -- Check RLS policies
-SELECT tablename, policyname 
-FROM pg_policies 
+SELECT tablename, policyname
+FROM pg_policies
 WHERE tablename IN (
   'workspace_invites',
   'tenant_onboarding_progress',
@@ -135,7 +135,7 @@ After regenerating types, update your code:
 2. **Update imports** to use the new types:
 
 ```typescript
-import type { Database } from '@/types/database.types';
+import type { Database } from "@/types/database.types";
 
 // Use typed Supabase client
 const supabase = createClient<Database>();
@@ -145,10 +145,10 @@ const supabase = createClient<Database>();
 
 ```typescript
 // Before (with as any)
-const { data } = await (supabase.from('tenant_users') as any).select('*');
+const { data } = await (supabase.from("tenant_users") as any).select("*");
 
 // After (with proper types)
-const { data } = await supabase.from('tenant_users').select('*');
+const { data } = await supabase.from("tenant_users").select("*");
 // data is now properly typed!
 ```
 
@@ -157,6 +157,7 @@ const { data } = await supabase.from('tenant_users').select('*');
 ### Migration Fails
 
 **Error: "relation already exists"**
+
 - Some tables might already exist. The migration uses `CREATE TABLE IF NOT EXISTS`, so this should be safe.
 - If you need to recreate, drop tables first (NOT recommended in production):
   ```sql
@@ -166,10 +167,12 @@ const { data } = await supabase.from('tenant_users').select('*');
   ```
 
 **Error: "permission denied"**
+
 - Ensure database user has CREATE, ALTER, and GRANT permissions
 - For Supabase, use the service role key or ensure RLS policies allow operations
 
 **Error: "function already exists"**
+
 - Functions are created with `CREATE OR REPLACE`, so this should update existing functions
 - If issues persist, manually drop and recreate:
   ```sql
@@ -181,6 +184,7 @@ const { data } = await supabase.from('tenant_users').select('*');
 ### Type Generation Fails
 
 **Error: "Supabase CLI not found"**
+
 - Install Supabase CLI:
   ```bash
   npm install -g supabase
@@ -189,10 +193,12 @@ const { data } = await supabase.from('tenant_users').select('*');
   ```
 
 **Error: "Project reference not found"**
+
 - Set `SUPABASE_PROJECT_REF` environment variable
 - Or ensure `SUPABASE_URL` is set and contains the project reference
 
 **Error: "Generated file is empty"**
+
 - Check your Supabase project is accessible
 - Verify you have the correct project reference
 - Try generating types from the Supabase Dashboard instead
@@ -200,12 +206,14 @@ const { data } = await supabase.from('tenant_users').select('*');
 ### Types Not Updating
 
 **Types still show `never`**
+
 - Ensure migration was applied successfully
 - Regenerate types after migration
 - Clear TypeScript cache: `rm -rf node_modules/.cache`
 - Restart TypeScript server in your IDE
 
 **Type errors persist**
+
 - Check that `database.types.ts` includes the new tables
 - Verify imports are correct
 - Run `npm run typecheck` to see all errors
@@ -213,10 +221,12 @@ const { data } = await supabase.from('tenant_users').select('*');
 ## Environment Variables
 
 Required for migration:
+
 - `DATABASE_URL` - Direct PostgreSQL connection string (preferred)
 - OR `SUPABASE_URL` + `SUPABASE_DB_PASSWORD` - Supabase connection
 
 Required for type generation:
+
 - `SUPABASE_PROJECT_REF` - Project reference (or extracted from `SUPABASE_URL`)
 - `SUPABASE_URL` - Supabase project URL
 
@@ -239,6 +249,7 @@ npm run typecheck
 ## Next Steps
 
 After migration and type generation:
+
 1. ✅ Verify tables exist
 2. ✅ Verify functions exist
 3. ✅ Verify RLS policies are active

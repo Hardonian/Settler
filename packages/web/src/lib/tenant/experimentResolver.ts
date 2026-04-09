@@ -1,12 +1,12 @@
 /**
  * Experiment Resolver
- * 
+ *
  * Determines which experiment variant to show for a page.
  * Handles traffic splitting and session persistence.
  */
 
-import { prisma } from '@/shared/db/prismaClient';
-import { cookies } from 'next/headers';
+import { prisma } from "@/shared/db/prismaClient";
+import { cookies } from "next/headers";
 
 /**
  * Get active experiment for a page
@@ -16,17 +16,11 @@ export async function getActiveExperiment(tenantId: string, pageId: string) {
     where: {
       tenantId,
       targetPageId: pageId,
-      status: 'running',
-      OR: [
-        { startsAt: null },
-        { startsAt: { lte: new Date() } },
-      ],
+      status: "running",
+      OR: [{ startsAt: null }, { startsAt: { lte: new Date() } }],
       AND: [
         {
-          OR: [
-            { endsAt: null },
-            { endsAt: { gte: new Date() } },
-          ],
+          OR: [{ endsAt: null }, { endsAt: { gte: new Date() } }],
         },
       ],
     },
@@ -48,11 +42,11 @@ export function selectVariant(
 ): string {
   // Use session ID to ensure consistent assignment
   if (experiment.variants.length === 0) {
-    throw new Error('Experiment must have at least one variant');
+    throw new Error("Experiment must have at least one variant");
   }
   const hash = simpleHash(sessionId + experiment.variants[0]!.key);
   const random = hash % 100;
-  
+
   let cumulative = 0;
   for (const variant of experiment.variants) {
     const split = experiment.trafficSplit[variant.key] || 0;
@@ -61,9 +55,9 @@ export function selectVariant(
       return variant.key;
     }
   }
-  
+
   // Fallback to first variant
-  return experiment.variants[0]?.key || 'A';
+  return experiment.variants[0]?.key || "A";
 }
 
 /**
@@ -73,7 +67,7 @@ function simpleHash(str: string): number {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+    hash = (hash << 5) - hash + char;
     hash = hash & hash; // Convert to 32-bit integer
   }
   return Math.abs(hash);
@@ -84,19 +78,19 @@ function simpleHash(str: string): number {
  */
 export async function getSessionId(): Promise<string> {
   const cookieStore = await cookies();
-  const existing = cookieStore.get('experiment_session');
-  
+  const existing = cookieStore.get("experiment_session");
+
   if (existing?.value) {
     return existing.value;
   }
-  
+
   const sessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-  cookieStore.set('experiment_session', sessionId, {
+  cookieStore.set("experiment_session", sessionId, {
     maxAge: 60 * 60 * 24 * 30, // 30 days
     httpOnly: false,
-    sameSite: 'lax',
+    sameSite: "lax",
   });
-  
+
   return sessionId;
 }
 
@@ -112,7 +106,7 @@ export async function resolveExperimentVariant(
   blocksOverride: unknown[] | null;
 }> {
   const experiment = await getActiveExperiment(tenantId, pageId);
-  
+
   if (!experiment) {
     return {
       experimentId: null,
@@ -120,15 +114,15 @@ export async function resolveExperimentVariant(
       blocksOverride: null,
     };
   }
-  
+
   const sessionId = await getSessionId();
-  const trafficSplit = (experiment.trafficSplit as unknown) as Record<string, number>;
+  const trafficSplit = experiment.trafficSplit as unknown as Record<string, number>;
   const variantKey = selectVariant({ ...experiment, trafficSplit }, sessionId);
   const variant = experiment.variants.find((v: { key: string }) => v.key === variantKey);
-  
+
   return {
     experimentId: experiment.id,
     variantKey,
-    blocksOverride: variant?.blocksOverride as unknown[] || null,
+    blocksOverride: (variant?.blocksOverride as unknown[]) || null,
   };
 }

@@ -1,15 +1,15 @@
 /**
  * Correlation ID Management
- * 
+ *
  * Generates and tracks correlation IDs for request tracing across services.
  * Used for logging, monitoring, and debugging.
  */
 
-import { headers } from 'next/headers';
-import { randomUUID } from 'crypto';
+import { headers } from "next/headers";
+import { randomUUID } from "crypto";
 
-const CORRELATION_ID_HEADER = 'x-correlation-id';
-const REQUEST_ID_HEADER = 'x-request-id';
+const CORRELATION_ID_HEADER = "x-correlation-id";
+const REQUEST_ID_HEADER = "x-request-id";
 
 /**
  * Get correlation ID from request headers or generate new one
@@ -17,11 +17,9 @@ const REQUEST_ID_HEADER = 'x-request-id';
 export async function getCorrelationId(): Promise<string> {
   try {
     const headersList = await headers();
-    const correlationId = 
-      headersList.get(CORRELATION_ID_HEADER) ||
-      headersList.get(REQUEST_ID_HEADER) ||
-      randomUUID();
-    
+    const correlationId =
+      headersList.get(CORRELATION_ID_HEADER) || headersList.get(REQUEST_ID_HEADER) || randomUUID();
+
     return correlationId;
   } catch {
     // If headers() fails (e.g., during build), generate new ID
@@ -34,7 +32,7 @@ export async function getCorrelationId(): Promise<string> {
  */
 export async function createCorrelationContext(additionalData?: Record<string, unknown>) {
   const correlationId = await getCorrelationId();
-  
+
   return {
     correlationId,
     timestamp: new Date().toISOString(),
@@ -63,7 +61,7 @@ export class CorrelationLogger {
     this.context = context;
   }
 
-  log(level: 'info' | 'warn' | 'error', message: string, data?: Record<string, unknown>) {
+  log(level: "info" | "warn" | "error", message: string, data?: Record<string, unknown>) {
     const logEntry = {
       level,
       message,
@@ -75,13 +73,13 @@ export class CorrelationLogger {
 
     // Use appropriate console method
     switch (level) {
-      case 'error':
+      case "error":
         console.error(JSON.stringify(logEntry));
         break;
-      case 'warn':
+      case "warn":
         console.warn(JSON.stringify(logEntry));
         break;
-      case 'info':
+      case "info":
       default:
         // eslint-disable-next-line no-console
         console.log(JSON.stringify(logEntry));
@@ -90,15 +88,15 @@ export class CorrelationLogger {
   }
 
   info(message: string, data?: Record<string, unknown>) {
-    this.log('info', message, data);
+    this.log("info", message, data);
   }
 
   warn(message: string, data?: Record<string, unknown>) {
-    this.log('warn', message, data);
+    this.log("warn", message, data);
   }
 
   error(message: string, data?: Record<string, unknown>) {
-    this.log('error', message, data);
+    this.log("error", message, data);
   }
 }
 

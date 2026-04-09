@@ -92,64 +92,61 @@ export default function AdminAuditPage() {
         }
       />
       <div className="px-6 sm:px-8 space-y-6">
-
-      {/* Filters */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />
+        {/* Filters */}
+        <Card>
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />
+                <Input
+                  placeholder="Search..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
               <Input
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9"
+                placeholder="Rule ID"
+                value={ruleIdFilter}
+                onChange={(e) => setRuleIdFilter(e.target.value)}
+              />
+              <Input
+                placeholder="Source"
+                value={sourceFilter}
+                onChange={(e) => setSourceFilter(e.target.value)}
+              />
+              <Input
+                placeholder="Actor ID"
+                value={actorFilter}
+                onChange={(e) => setActorFilter(e.target.value)}
               />
             </div>
-            <Input
-              placeholder="Rule ID"
-              value={ruleIdFilter}
-              onChange={(e) => setRuleIdFilter(e.target.value)}
-            />
-            <Input
-              placeholder="Source"
-              value={sourceFilter}
-              onChange={(e) => setSourceFilter(e.target.value)}
-            />
-            <Input
-              placeholder="Actor ID"
-              value={actorFilter}
-              onChange={(e) => setActorFilter(e.target.value)}
-            />
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      {/* Audit List */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Audit Entries ({filteredItems.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="text-center py-8 text-muted-foreground">
-              Loading audit trail...
-            </div>
-          ) : filteredItems.length === 0 ? (
-            searchQuery || ruleIdFilter || sourceFilter || actorFilter ? (
-              <NoResultsEmptyState searchQuery={searchQuery} />
+        {/* Audit List */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Audit Entries ({filteredItems.length})</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <div className="text-center py-8 text-muted-foreground">Loading audit trail...</div>
+            ) : filteredItems.length === 0 ? (
+              searchQuery || ruleIdFilter || sourceFilter || actorFilter ? (
+                <NoResultsEmptyState searchQuery={searchQuery} />
+              ) : (
+                <NoAuditEmptyState />
+              )
             ) : (
-              <NoAuditEmptyState />
-            )
-          ) : (
-            <div className="space-y-3">
-              {filteredItems.map((item: AuditItem) => (
-                <AuditRow key={item.id} item={item} />
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+              <div className="space-y-3">
+                {filteredItems.map((item: AuditItem) => (
+                  <AuditRow key={item.id} item={item} />
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

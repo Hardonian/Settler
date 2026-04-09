@@ -75,13 +75,13 @@ Point to the "Start Free Trial" button.
 
 ## Scenario Guide
 
-| Tenant | Industry | Match Rate | Key Story |
-|--------|----------|------------|-----------|
-| Acme Commerce Inc. | E-Commerce | 95-99% | Clean, high-match Stripe↔Shopify environment |
-| Meridian Financial | Financial Services | 88-95% | Mid-maturity FinOps with recurring exceptions |
-| Atlas Global Trading | International Trade | 78-90% | Messy multi-source with currency issues |
-| Pulse Payments Corp | Payments/FinTech | 92-97% | High-volume processor settlements |
-| Sentinel Audit Corp | Audit & Compliance | 96-99.5% | Tight thresholds, manual review focus |
+| Tenant               | Industry            | Match Rate | Key Story                                     |
+| -------------------- | ------------------- | ---------- | --------------------------------------------- |
+| Acme Commerce Inc.   | E-Commerce          | 95-99%     | Clean, high-match Stripe↔Shopify environment  |
+| Meridian Financial   | Financial Services  | 88-95%     | Mid-maturity FinOps with recurring exceptions |
+| Atlas Global Trading | International Trade | 78-90%     | Messy multi-source with currency issues       |
+| Pulse Payments Corp  | Payments/FinTech    | 92-97%     | High-volume processor settlements             |
+| Sentinel Audit Corp  | Audit & Compliance  | 96-99.5%   | Tight thresholds, manual review focus         |
 
 ---
 

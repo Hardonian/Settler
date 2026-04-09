@@ -103,7 +103,7 @@ Point to: completed export with row count and file size.
 
 - **Don't open-code the UI.** Show surfaces, not implementation.
 - **Lead with outcomes.** "matched 89 of 98 automatically" > "uses fuzzy matching algorithm".
-- **Acknowledge the exceptions.** The unmatched items make the demo *more* credible, not less.
+- **Acknowledge the exceptions.** The unmatched items make the demo _more_ credible, not less.
 - **The degraded connector is a feature.** It shows Settler surfaces real operational issues — not a liability.
 - **Be honest about what's seeded.** If asked: "Yes, this is a seeded demo account with representative data. The workflows, matching logic, and audit trail are all real."
 
@@ -111,12 +111,12 @@ Point to: completed export with row count and file size.
 
 ## URL reference (demo tenant)
 
-| Surface | Path |
-|---------|------|
-| Reconciliation runs | `/app/runs` |
-| Run detail | `/app/runs/:id` |
-| Connectors / sources | `/app/sources` |
-| Audit trail | `/app/audit` |
-| Export history | `/app/exports` |
-| System health | `/app/system-health` |
-| Operator dashboard | `/console/operator` |
+| Surface              | Path                 |
+| -------------------- | -------------------- |
+| Reconciliation runs  | `/app/runs`          |
+| Run detail           | `/app/runs/:id`      |
+| Connectors / sources | `/app/sources`       |
+| Audit trail          | `/app/audit`         |
+| Export history       | `/app/exports`       |
+| System health        | `/app/system-health` |
+| Operator dashboard   | `/console/operator`  |

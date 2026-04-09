@@ -6,12 +6,7 @@ export type BrandMarkProps = Omit<ImageProps, "src" | "width" | "height" | "alt"
   alt?: string;
 };
 
-export function BrandMark({
-  alt = "",
-  className,
-  sizes = "64px",
-  ...rest
-}: BrandMarkProps) {
+export function BrandMark({ alt = "", className, sizes = "64px", ...rest }: BrandMarkProps) {
   return (
     <Image
       src={BRAND_MARK_PNG.src}

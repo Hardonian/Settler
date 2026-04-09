@@ -38,12 +38,14 @@ TX-9042,Stripe,1200.00,USD,Income,verified`;
         <div className="flex bg-neutral-20 p-1 rounded-lg">
           <button
             onClick={() => setFormat("json")}
-            className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${format === 'json' ? 'bg-card text-teal-500 shadow-sm' : 'text-muted hover:text-foreground'}`}>
+            className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${format === "json" ? "bg-card text-teal-500 shadow-sm" : "text-muted hover:text-foreground"}`}
+          >
             JSON
           </button>
           <button
             onClick={() => setFormat("csv")}
-            className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${format === 'csv' ? 'bg-card text-teal-500 shadow-sm' : 'text-muted hover:text-foreground'}`}>
+            className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${format === "csv" ? "bg-card text-teal-500 shadow-sm" : "text-muted hover:text-foreground"}`}
+          >
             CSV
           </button>
         </div>
@@ -52,7 +54,7 @@ TX-9042,Stripe,1200.00,USD,Income,verified`;
       <div className="relative group">
         <div className="p-6 overflow-x-auto max-h-[400px]">
           <pre className="text-xs font-mono text-muted leading-relaxed whitespace-pre">
-            {format === 'json' ? jsonExample : csvExample}
+            {format === "json" ? jsonExample : csvExample}
           </pre>
         </div>
 
@@ -65,11 +67,19 @@ TX-9042,Stripe,1200.00,USD,Income,verified`;
 
       <div className="p-4 border-t border-border flex items-center gap-6">
         <label className="flex items-center gap-2 cursor-pointer">
-          <input type="checkbox" defaultChecked className="w-4 h-4 rounded border-border text-teal-500 focus:ring-teal-500 bg-neutral-10" />
+          <input
+            type="checkbox"
+            defaultChecked
+            className="w-4 h-4 rounded border-border text-teal-500 focus:ring-teal-500 bg-neutral-10"
+          />
           <span className="text-xs text-muted">Include Receipt Images</span>
         </label>
         <label className="flex items-center gap-2 cursor-pointer">
-          <input type="checkbox" defaultChecked className="w-4 h-4 rounded border-border text-teal-500 focus:ring-teal-500 bg-neutral-10" />
+          <input
+            type="checkbox"
+            defaultChecked
+            className="w-4 h-4 rounded border-border text-teal-500 focus:ring-teal-500 bg-neutral-10"
+          />
           <span className="text-xs text-muted">Anonymize Sensitive Data</span>
         </label>
       </div>

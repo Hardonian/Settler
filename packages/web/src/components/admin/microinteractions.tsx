@@ -1,40 +1,36 @@
 /**
  * Microinteractions Components
- * 
+ *
  * Hover states, transitions, loading animations, and interactive feedback.
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
-import { CheckCircle2, Loader2 } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
+import { CheckCircle2, Loader2 } from "lucide-react";
 
 /**
  * Animated loading spinner
  */
-export function LoadingSpinner({ 
-  size = 'md',
+export function LoadingSpinner({
+  size = "md",
   className,
-  'aria-label': ariaLabel = 'Loading',
-}: { 
-  size?: 'sm' | 'md' | 'lg';
+  "aria-label": ariaLabel = "Loading",
+}: {
+  size?: "sm" | "md" | "lg";
   className?: string;
-  'aria-label'?: string;
+  "aria-label"?: string;
 }) {
   const sizeClasses = {
-    sm: 'w-4 h-4',
-    md: 'w-6 h-6',
-    lg: 'w-8 h-8',
+    sm: "w-4 h-4",
+    md: "w-6 h-6",
+    lg: "w-8 h-8",
   };
 
   return (
-    <Loader2 
-      className={cn(
-        'animate-spin text-muted-foreground',
-        sizeClasses[size],
-        className
-      )} 
+    <Loader2
+      className={cn("animate-spin text-muted-foreground", sizeClasses[size], className)}
       aria-label={ariaLabel}
       role="status"
     />
@@ -44,18 +40,12 @@ export function LoadingSpinner({
 /**
  * Success checkmark animation
  */
-export function SuccessCheckmark({ 
-  show,
-  className 
-}: { 
-  show: boolean;
-  className?: string;
-}) {
+export function SuccessCheckmark({ show, className }: { show: boolean; className?: string }) {
   return (
     <div
       className={cn(
-        'transition-all duration-300',
-        show ? 'opacity-100 scale-100' : 'opacity-0 scale-0',
+        "transition-all duration-300",
+        show ? "opacity-100 scale-100" : "opacity-0 scale-0",
         className
       )}
     >
@@ -67,32 +57,31 @@ export function SuccessCheckmark({
 /**
  * Pulse animation for important elements
  */
-export function PulseIndicator({ 
+export function PulseIndicator({
   active,
-  color = 'blue'
-}: { 
+  color = "blue",
+}: {
   active: boolean;
-  color?: 'blue' | 'green' | 'red' | 'yellow';
+  color?: "blue" | "green" | "red" | "yellow";
 }) {
   if (!active) return null;
 
   const colorClasses = {
-    blue: 'bg-blue-500',
-    green: 'bg-green-500',
-    red: 'bg-red-500',
-    yellow: 'bg-yellow-500',
+    blue: "bg-blue-500",
+    green: "bg-green-500",
+    red: "bg-red-500",
+    yellow: "bg-yellow-500",
   };
 
   return (
     <span className="relative flex h-2 w-2">
-      <span className={cn(
-        'animate-ping absolute inline-flex h-full w-full rounded-full opacity-75',
-        colorClasses[color]
-      )} />
-      <span className={cn(
-        'relative inline-flex rounded-full h-2 w-2',
-        colorClasses[color]
-      )} />
+      <span
+        className={cn(
+          "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
+          colorClasses[color]
+        )}
+      />
+      <span className={cn("relative inline-flex rounded-full h-2 w-2", colorClasses[color])} />
     </span>
   );
 }
@@ -100,19 +89,19 @@ export function PulseIndicator({
 /**
  * Hover card with elevation
  */
-export function HoverCard({ 
+export function HoverCard({
   children,
-  className 
-}: { 
+  className,
+}: {
   children: React.ReactNode;
   className?: string;
 }) {
   return (
     <div
       className={cn(
-        'transition-all duration-200',
-        'hover:shadow-lg hover:-translate-y-0.5',
-        'focus-within:shadow-lg focus-within:-translate-y-0.5',
+        "transition-all duration-200",
+        "hover:shadow-lg hover:-translate-y-0.5",
+        "focus-within:shadow-lg focus-within:-translate-y-0.5",
         className
       )}
     >
@@ -128,10 +117,10 @@ export function Shimmer({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        'animate-shimmer bg-gradient-to-r',
-        'from-slate-200 via-slate-100 to-slate-200',
-        'dark:from-slate-800 dark:via-slate-700 dark:to-slate-800',
-        'bg-[length:200%_100%]',
+        "animate-shimmer bg-gradient-to-r",
+        "from-slate-200 via-slate-100 to-slate-200",
+        "dark:from-slate-800 dark:via-slate-700 dark:to-slate-800",
+        "bg-[length:200%_100%]",
         className
       )}
     />
@@ -141,11 +130,11 @@ export function Shimmer({ className }: { className?: string }) {
 /**
  * Number counter animation
  */
-export function AnimatedNumber({ 
+export function AnimatedNumber({
   value,
   duration = 1000,
-  className 
-}: { 
+  className,
+}: {
   value: number;
   duration?: number;
   className?: string;
@@ -159,7 +148,7 @@ export function AnimatedNumber({
     const animate = (currentTime: number) => {
       if (!startTime) startTime = currentTime;
       const progress = Math.min((currentTime - startTime) / duration, 1);
-      
+
       setDisplayValue(Math.floor(value * progress));
 
       if (progress < 1) {
@@ -178,21 +167,17 @@ export function AnimatedNumber({
     };
   }, [value, duration]);
 
-  return (
-    <span className={className}>
-      {displayValue.toLocaleString()}
-    </span>
-  );
+  return <span className={className}>{displayValue.toLocaleString()}</span>;
 }
 
 /**
  * Ripple effect on click
  */
-export function RippleButton({ 
+export function RippleButton({
   children,
   onClick,
-  className 
-}: { 
+  className,
+}: {
   children: React.ReactNode;
   onClick?: () => void;
   className?: string;
@@ -205,29 +190,26 @@ export function RippleButton({
     const y = e.clientY - rect.top;
     const id = Date.now();
 
-    setRipples(prev => [...prev, { x, y, id }]);
+    setRipples((prev) => [...prev, { x, y, id }]);
 
     setTimeout(() => {
-      setRipples(prev => prev.filter(r => r.id !== id));
+      setRipples((prev) => prev.filter((r) => r.id !== id));
     }, 600);
 
     onClick?.();
   };
 
   return (
-    <button
-      onClick={handleClick}
-      className={cn('relative overflow-hidden', className)}
-    >
+    <button onClick={handleClick} className={cn("relative overflow-hidden", className)}>
       {children}
-      {ripples.map(ripple => (
+      {ripples.map((ripple) => (
         <span
           key={ripple.id}
           className="absolute rounded-full bg-card/30 animate-ripple pointer-events-none"
           style={{
             left: ripple.x,
             top: ripple.y,
-            transform: 'translate(-50%, -50%)',
+            transform: "translate(-50%, -50%)",
           }}
         />
       ))}

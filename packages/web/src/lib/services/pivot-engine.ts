@@ -1,14 +1,14 @@
 /**
  * Pivot Engine
- * 
+ *
  * Server-side pivot query engine for analytics datasets.
  * Validates and executes pivot queries safely.
  */
 
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from "@/lib/supabase/server";
 
-export type Aggregation = 'sum' | 'count' | 'avg' | 'min' | 'max' | 'p95';
-export type Dataset = 'usage' | 'support' | 'cost' | 'revenue' | 'efficiency';
+export type Aggregation = "sum" | "count" | "avg" | "min" | "max" | "p95";
+export type Dataset = "usage" | "support" | "cost" | "revenue" | "efficiency";
 
 export interface PivotQuery {
   dataset: Dataset;
@@ -31,29 +31,32 @@ export interface PivotResult {
 }
 
 // Dataset schemas
-const DATASET_SCHEMAS: Record<Dataset, {
-  dimensions: string[];
-  measures: string[];
-}> = {
+const DATASET_SCHEMAS: Record<
+  Dataset,
+  {
+    dimensions: string[];
+    measures: string[];
+  }
+> = {
   usage: {
-    dimensions: ['date', 'org', 'route', 'user', 'category'],
-    measures: ['requests', 'jobs', 'events', 'errors', 'response_time'],
+    dimensions: ["date", "org", "route", "user", "category"],
+    measures: ["requests", "jobs", "events", "errors", "response_time"],
   },
   support: {
-    dimensions: ['date', 'org', 'severity', 'status', 'category'],
-    measures: ['tickets', 'triage_score', 'resolution_time'],
+    dimensions: ["date", "org", "severity", "status", "category"],
+    measures: ["tickets", "triage_score", "resolution_time"],
   },
   cost: {
-    dimensions: ['date', 'source', 'org'],
-    measures: ['total_cost', 'infra_cost', 'data_cost', 'messaging_cost'],
+    dimensions: ["date", "source", "org"],
+    measures: ["total_cost", "infra_cost", "data_cost", "messaging_cost"],
   },
   revenue: {
-    dimensions: ['date', 'org', 'source'],
-    measures: ['amount', 'mrr', 'arr'],
+    dimensions: ["date", "org", "source"],
+    measures: ["amount", "mrr", "arr"],
   },
   efficiency: {
-    dimensions: ['date', 'org'],
-    measures: ['cost_per_org', 'cost_per_user', 'cost_per_request', 'tickets_per_org'],
+    dimensions: ["date", "org"],
+    measures: ["cost_per_org", "cost_per_user", "cost_per_request", "tickets_per_org"],
   },
 };
 
@@ -73,12 +76,12 @@ export function validatePivotQuery(query: PivotQuery): {
 
   // Check row dimensions (max 2)
   if (query.rows.length > 2) {
-    return { valid: false, error: 'Maximum 2 row dimensions allowed' };
+    return { valid: false, error: "Maximum 2 row dimensions allowed" };
   }
 
   // Check column dimensions (max 2)
   if (query.columns.length > 2) {
-    return { valid: false, error: 'Maximum 2 column dimensions allowed' };
+    return { valid: false, error: "Maximum 2 column dimensions allowed" };
   }
 
   // Validate dimensions exist in schema
@@ -95,7 +98,7 @@ export function validatePivotQuery(query: PivotQuery): {
   }
 
   // Validate aggregation
-  const validAggregations: Aggregation[] = ['sum', 'count', 'avg', 'min', 'max', 'p95'];
+  const validAggregations: Aggregation[] = ["sum", "count", "avg", "min", "max", "p95"];
   if (!validAggregations.includes(query.aggregation)) {
     return { valid: false, error: `Invalid aggregation: ${query.aggregation}` };
   }
@@ -116,7 +119,7 @@ export async function executePivotQuery(query: PivotQuery): Promise<PivotResult>
 
   // Build SQL query based on dataset
   buildPivotSQL(query);
-  
+
   // Execute query (using raw SQL via Supabase RPC or direct query)
   // For now, we'll use a simplified approach with Supabase queries
   const result = await executePivotSQL(supabase, query);
@@ -130,37 +133,32 @@ export async function executePivotQuery(query: PivotQuery): Promise<PivotResult>
 function buildPivotSQL(_query: PivotQuery): string {
   // This is a simplified version - in production, you'd build proper SQL
   // For now, we'll use Supabase's query builder
-  return '';
+  return "";
 }
 
 /**
  * Execute pivot using Supabase query builder (simplified)
  */
-async function executePivotSQL(
-  supabase: any,
-  query: PivotQuery
-): Promise<PivotResult> {
+async function executePivotSQL(supabase: any, query: PivotQuery): Promise<PivotResult> {
   // Get base data based on dataset
   let baseQuery: any;
 
   switch (query.dataset) {
-    case 'usage':
-      baseQuery = supabase.from('ops_usage_daily_rollups').select('*');
+    case "usage":
+      baseQuery = supabase.from("ops_usage_daily_rollups").select("*");
       break;
-    case 'support':
-      baseQuery = supabase
-        .from('ops_support_tickets')
-        .select('*, support_ticket_triage(*)');
+    case "support":
+      baseQuery = supabase.from("ops_support_tickets").select("*, support_ticket_triage(*)");
       break;
-    case 'cost':
-      baseQuery = supabase.from('ops_cost_daily_rollups').select('*');
+    case "cost":
+      baseQuery = supabase.from("ops_cost_daily_rollups").select("*");
       break;
-    case 'revenue':
-      baseQuery = supabase.from('ops_revenue_inputs').select('*');
+    case "revenue":
+      baseQuery = supabase.from("ops_revenue_inputs").select("*");
       break;
-    case 'efficiency':
+    case "efficiency":
       // Efficiency requires joins - simplified for now
-      baseQuery = supabase.from('ops_cost_daily_rollups').select('*');
+      baseQuery = supabase.from("ops_cost_daily_rollups").select("*");
       break;
     default:
       throw new Error(`Unsupported dataset: ${query.dataset}`);
@@ -168,9 +166,7 @@ async function executePivotSQL(
 
   // Apply date range filter
   if (query.dateRange) {
-    baseQuery = baseQuery
-      .gte('date', query.dateRange.start)
-      .lte('date', query.dateRange.end);
+    baseQuery = baseQuery.gte("date", query.dateRange.start).lte("date", query.dateRange.end);
   }
 
   // Apply other filters
@@ -199,10 +195,7 @@ async function executePivotSQL(
 /**
  * Pivot data in memory (simplified implementation)
  */
-function pivotDataInMemory(
-  data: any[],
-  query: PivotQuery
-): PivotResult {
+function pivotDataInMemory(data: any[], query: PivotQuery): PivotResult {
   // Group by row dimensions
   const rowGroups = new Map<string, any[]>();
   const rowLabels: string[] = [];
@@ -210,7 +203,7 @@ function pivotDataInMemory(
 
   for (const row of data) {
     // Build row key
-    const rowKey = query.rows.map((dim) => row[dim] || 'null').join('|');
+    const rowKey = query.rows.map((dim) => row[dim] || "null").join("|");
     if (!rowGroups.has(rowKey)) {
       rowGroups.set(rowKey, []);
       rowLabels.push(rowKey);
@@ -221,7 +214,7 @@ function pivotDataInMemory(
   // Build column labels from column dimensions
   const colSet = new Set<string>();
   for (const row of data) {
-    const colKey = query.columns.map((dim) => row[dim] || 'null').join('|');
+    const colKey = query.columns.map((dim) => row[dim] || "null").join("|");
     colSet.add(colKey);
   }
   columnLabels.push(...Array.from(colSet).sort());
@@ -235,18 +228,18 @@ function pivotDataInMemory(
     const rowRecord: Record<string, any> = {};
 
     // Set row dimension values
-    const rowParts = rowLabel.split('|');
+    const rowParts = rowLabel.split("|");
     query.rows.forEach((dim, idx) => {
-      rowRecord[dim] = rowParts[idx] === 'null' ? null : rowParts[idx];
+      rowRecord[dim] = rowParts[idx] === "null" ? null : rowParts[idx];
     });
 
     // Aggregate for each column
     for (const colLabel of columnLabels) {
-      const colParts = colLabel.split('|');
+      const colParts = colLabel.split("|");
       const matchingRows = rowData.filter((r) => {
         return query.columns.every((dim, idx) => {
-          const val = r[dim] || 'null';
-          return val === colParts[idx] || (val === null && colParts[idx] === 'null');
+          const val = r[dim] || "null";
+          return val === colParts[idx] || (val === null && colParts[idx] === "null");
         });
       });
 
@@ -277,22 +270,22 @@ function aggregate(rows: any[], measure: string, agg: Aggregation): number {
   const values = rows
     .map((r) => {
       const val = r[measure];
-      return typeof val === 'number' ? val : 0;
+      return typeof val === "number" ? val : 0;
     })
     .filter((v) => !isNaN(v));
 
   switch (agg) {
-    case 'sum':
+    case "sum":
       return values.reduce((a: number, b: any) => a + b, 0);
-    case 'count':
+    case "count":
       return values.length;
-    case 'avg':
+    case "avg":
       return values.length > 0 ? values.reduce((a: number, b: any) => a + b, 0) / values.length : 0;
-    case 'min':
+    case "min":
       return Math.min(...values);
-    case 'max':
+    case "max":
       return Math.max(...values);
-    case 'p95':
+    case "p95":
       const sorted = values.sort((a, b) => a - b);
       const idx = Math.floor(sorted.length * 0.95);
       return sorted[idx] || 0;

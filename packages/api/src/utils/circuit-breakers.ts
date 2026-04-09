@@ -17,10 +17,7 @@ export interface CircuitBreakerOptions {
 /**
  * Create a circuit breaker for external calls
  */
-export function createCircuitBreaker<
-  TArgs extends unknown[],
-  TReturn
->(
+export function createCircuitBreaker<TArgs extends unknown[], TReturn>(
   fn: (...args: TArgs) => Promise<TReturn>,
   options: CircuitBreakerOptions = {}
 ): CircuitBreakerType<TReturn> {
@@ -31,7 +28,6 @@ export function createCircuitBreaker<
     name = "circuit-breaker",
   } = options;
 
-   
   const breaker = new CircuitBreaker<TReturn>(fn as any, {
     timeout,
     errorThresholdPercentage,
@@ -56,7 +52,9 @@ export function createCircuitBreaker<
   });
 
   breaker.on("failure", (error: unknown) => {
-    logError("Circuit breaker failure", error instanceof Error ? error : new Error(String(error)), { name });
+    logError("Circuit breaker failure", error instanceof Error ? error : new Error(String(error)), {
+      name,
+    });
   });
 
   return breaker as CircuitBreakerType<TReturn>;
@@ -65,10 +63,7 @@ export function createCircuitBreaker<
 /**
  * Circuit breaker for adapter API calls
  */
-export function createAdapterCircuitBreaker<
-  TArgs extends unknown[],
-  TReturn
->(
+export function createAdapterCircuitBreaker<TArgs extends unknown[], TReturn>(
   adapterName: string,
   fn: (...args: TArgs) => Promise<TReturn>
 ): CircuitBreakerType<TReturn> {
@@ -83,10 +78,7 @@ export function createAdapterCircuitBreaker<
 /**
  * Circuit breaker for webhook deliveries
  */
-export function createWebhookCircuitBreaker<
-  TArgs extends unknown[],
-  TReturn
->(
+export function createWebhookCircuitBreaker<TArgs extends unknown[], TReturn>(
   fn: (...args: TArgs) => Promise<TReturn>
 ): CircuitBreakerType<TReturn> {
   return createCircuitBreaker(fn, {
@@ -100,10 +92,7 @@ export function createWebhookCircuitBreaker<
 /**
  * Circuit breaker for FX rate provider calls
  */
-export function createFXRateCircuitBreaker<
-  TArgs extends unknown[],
-  TReturn
->(
+export function createFXRateCircuitBreaker<TArgs extends unknown[], TReturn>(
   fn: (...args: TArgs) => Promise<TReturn>
 ): CircuitBreakerType<TReturn> {
   return createCircuitBreaker(fn, {

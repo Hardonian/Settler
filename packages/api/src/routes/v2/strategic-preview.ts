@@ -23,9 +23,7 @@ export function strategicPreviewEnabled(): boolean {
   return process.env[STRATEGIC_PREVIEW_ENV_VAR] === "true";
 }
 
-function buildStrategicSurfaceCapability(
-  definition: StrategicSurfaceDefinition
-): CapabilityStatus {
+function buildStrategicSurfaceCapability(definition: StrategicSurfaceDefinition): CapabilityStatus {
   if (strategicPreviewEnabled()) {
     return {
       key: definition.key,

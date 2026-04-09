@@ -1,6 +1,6 @@
 /**
  * Metrics Cache Layer
- * 
+ *
  * In-memory cache for metrics snapshots with TTL.
  * Can be extended to use Redis in production.
  */
@@ -88,12 +88,8 @@ export const metricsCache = new MetricsCache();
  * Cache key generators
  */
 export const cacheKeys = {
-  metrics: (range: string, tenantId?: string) =>
-    `metrics:${range}:${tenantId || 'all'}`,
-  exceptions: (params: Record<string, unknown>) =>
-    `exceptions:${JSON.stringify(params)}`,
-  runs: (params: Record<string, unknown>) =>
-    `runs:${JSON.stringify(params)}`,
-  audit: (params: Record<string, unknown>) =>
-    `audit:${JSON.stringify(params)}`,
+  metrics: (range: string, tenantId?: string) => `metrics:${range}:${tenantId || "all"}`,
+  exceptions: (params: Record<string, unknown>) => `exceptions:${JSON.stringify(params)}`,
+  runs: (params: Record<string, unknown>) => `runs:${JSON.stringify(params)}`,
+  audit: (params: Record<string, unknown>) => `audit:${JSON.stringify(params)}`,
 };

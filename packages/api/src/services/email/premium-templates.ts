@@ -21,9 +21,9 @@ export interface EmailTemplateVariables {
  * Base email template wrapper with Settler branding
  */
 function getBaseTemplate(content: string, variables: EmailTemplateVariables = {}): string {
-  const frontendUrl = variables.dashboardUrl?.split('/console')[0] || 'https://settler.dev';
+  const frontendUrl = variables.dashboardUrl?.split("/console")[0] || "https://settler.dev";
   const year = new Date().getFullYear();
-  
+
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -114,10 +114,10 @@ function getBaseTemplate(content: string, variables: EmailTemplateVariables = {}
  * Welcome email (Day 0)
  */
 export function getWelcomeEmailTemplate(variables: EmailTemplateVariables): string {
-  const name = variables.name || 'there';
-  const dashboardUrl = variables.dashboardUrl || 'https://settler.dev/console';
-  const trialEndDate = variables.trialEndDate || '14 days from now';
-  
+  const name = variables.name || "there";
+  const dashboardUrl = variables.dashboardUrl || "https://settler.dev/console";
+  const trialEndDate = variables.trialEndDate || "14 days from now";
+
   const content = `
     <h2 style="margin: 0 0 16px; color: #111827; font-size: 24px; font-weight: 700; line-height: 1.3;">
       Welcome to Settler, ${name}! 🎉
@@ -157,7 +157,7 @@ export function getWelcomeEmailTemplate(variables: EmailTemplateVariables): stri
       <strong style="color: #111827;">The Settler Team</strong>
     </p>
   `;
-  
+
   return getBaseTemplate(content, variables);
 }
 
@@ -165,11 +165,11 @@ export function getWelcomeEmailTemplate(variables: EmailTemplateVariables): stri
  * Day 1 onboarding email
  */
 export function getDay1OnboardingEmailTemplate(variables: EmailTemplateVariables): string {
-  const name = variables.name || 'there';
-  const dashboardUrl = variables.dashboardUrl || 'https://settler.dev/console';
-  const nextStep = variables.nextStep || 'Create your first API key';
-  const completionPercentage = variables.completionPercentage || '0';
-  
+  const name = variables.name || "there";
+  const dashboardUrl = variables.dashboardUrl || "https://settler.dev/console";
+  const nextStep = variables.nextStep || "Create your first API key";
+  const completionPercentage = variables.completionPercentage || "0";
+
   const content = `
     <h2 style="margin: 0 0 16px; color: #111827; font-size: 24px; font-weight: 700; line-height: 1.3;">
       Let's get you started, ${name}
@@ -211,7 +211,7 @@ export function getDay1OnboardingEmailTemplate(variables: EmailTemplateVariables
       <strong style="color: #111827;">The Settler Team</strong>
     </p>
   `;
-  
+
   return getBaseTemplate(content, variables);
 }
 
@@ -219,11 +219,12 @@ export function getDay1OnboardingEmailTemplate(variables: EmailTemplateVariables
  * Day 3 activation email
  */
 export function getDay3ActivationEmailTemplate(variables: EmailTemplateVariables): string {
-  const name = variables.name || 'there';
-  const dashboardUrl = variables.dashboardUrl || 'https://settler.dev/console';
-  const hasCompletedFirstJob = variables.hasCompletedFirstJob === 'true';
-  
-  const content = hasCompletedFirstJob ? `
+  const name = variables.name || "there";
+  const dashboardUrl = variables.dashboardUrl || "https://settler.dev/console";
+  const hasCompletedFirstJob = variables.hasCompletedFirstJob === "true";
+
+  const content = hasCompletedFirstJob
+    ? `
     <h2 style="margin: 0 0 16px; color: #111827; font-size: 24px; font-weight: 700; line-height: 1.3;">
       You're making great progress! 🎉
     </h2>
@@ -258,7 +259,8 @@ export function getDay3ActivationEmailTemplate(variables: EmailTemplateVariables
       Best,<br>
       <strong style="color: #111827;">The Settler Team</strong>
     </p>
-  ` : `
+  `
+    : `
     <h2 style="margin: 0 0 16px; color: #111827; font-size: 24px; font-weight: 700; line-height: 1.3;">
       Complete your setup to unlock full value
     </h2>
@@ -296,7 +298,7 @@ export function getDay3ActivationEmailTemplate(variables: EmailTemplateVariables
       <strong style="color: #111827;">The Settler Team</strong>
     </p>
   `;
-  
+
   return getBaseTemplate(content, variables);
 }
 
@@ -304,14 +306,14 @@ export function getDay3ActivationEmailTemplate(variables: EmailTemplateVariables
  * Trial expiration warning (3 days)
  */
 export function getTrialExpirationWarningTemplate(variables: EmailTemplateVariables): string {
-  const name = variables.name || 'there';
-  const upgradeUrl = variables.upgradeUrl || 'https://settler.dev/pricing';
-  const daysRemaining = variables.daysRemaining || '3';
-  const reconciliations = variables.reconciliations || '0';
-  
+  const name = variables.name || "there";
+  const upgradeUrl = variables.upgradeUrl || "https://settler.dev/pricing";
+  const daysRemaining = variables.daysRemaining || "3";
+  const reconciliations = variables.reconciliations || "0";
+
   const content = `
     <h2 style="margin: 0 0 16px; color: #111827; font-size: 24px; font-weight: 700; line-height: 1.3;">
-      ⏰ Your trial ends in ${daysRemaining} day${daysRemaining !== '1' ? 's' : ''}
+      ⏰ Your trial ends in ${daysRemaining} day${daysRemaining !== "1" ? "s" : ""}
     </h2>
     
     <p style="margin: 0 0 16px; color: #374151; font-size: 16px; line-height: 1.6;">
@@ -319,11 +321,11 @@ export function getTrialExpirationWarningTemplate(variables: EmailTemplateVariab
     </p>
     
     <p style="margin: 0 0 16px; color: #374151; font-size: 16px; line-height: 1.6;">
-      <strong style="color: #111827;">Your trial ends in ${daysRemaining} day${daysRemaining !== '1' ? 's' : ''}!</strong>
+      <strong style="color: #111827;">Your trial ends in ${daysRemaining} day${daysRemaining !== "1" ? "s" : ""}!</strong>
     </p>
     
     <p style="margin: 0 0 16px; color: #374151; font-size: 16px; line-height: 1.6;">
-      You've run <strong style="color: #111827;">${reconciliations} reconciliation${reconciliations !== '1' ? 's' : ''}</strong> so far. Don't lose access to your workflows.
+      You've run <strong style="color: #111827;">${reconciliations} reconciliation${reconciliations !== "1" ? "s" : ""}</strong> so far. Don't lose access to your workflows.
     </p>
     
     <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; margin: 24px 0; border-radius: 4px;">
@@ -352,7 +354,7 @@ export function getTrialExpirationWarningTemplate(variables: EmailTemplateVariab
       <strong style="color: #111827;">The Settler Team</strong>
     </p>
   `;
-  
+
   return getBaseTemplate(content, variables);
 }
 
@@ -360,10 +362,10 @@ export function getTrialExpirationWarningTemplate(variables: EmailTemplateVariab
  * Final trial reminder (1 day)
  */
 export function getFinalTrialReminderTemplate(variables: EmailTemplateVariables): string {
-  const name = variables.name || 'there';
-  const upgradeUrl = variables.upgradeUrl || 'https://settler.dev/pricing';
-  const reconciliations = variables.reconciliations || '0';
-  
+  const name = variables.name || "there";
+  const upgradeUrl = variables.upgradeUrl || "https://settler.dev/pricing";
+  const reconciliations = variables.reconciliations || "0";
+
   const content = `
     <h2 style="margin: 0 0 16px; color: #111827; font-size: 24px; font-weight: 700; line-height: 1.3;">
       ⚠️ Last Chance: Your Trial Ends Tomorrow
@@ -378,7 +380,7 @@ export function getFinalTrialReminderTemplate(variables: EmailTemplateVariables)
     </p>
     
     <p style="margin: 0 0 16px; color: #374151; font-size: 16px; line-height: 1.6;">
-      You've run <strong style="color: #111827;">${reconciliations} reconciliation${reconciliations !== '1' ? 's' : ''}</strong>. Upgrade now to keep everything you've built.
+      You've run <strong style="color: #111827;">${reconciliations} reconciliation${reconciliations !== "1" ? "s" : ""}</strong>. Upgrade now to keep everything you've built.
     </p>
     
     <div style="background-color: #fee2e2; border-left: 4px solid #ef4444; padding: 16px; margin: 24px 0; border-radius: 4px;">
@@ -404,7 +406,7 @@ export function getFinalTrialReminderTemplate(variables: EmailTemplateVariables)
       <strong style="color: #111827;">The Settler Team</strong>
     </p>
   `;
-  
+
   return getBaseTemplate(content, variables);
 }
 
@@ -412,10 +414,10 @@ export function getFinalTrialReminderTemplate(variables: EmailTemplateVariables)
  * Trial ended email
  */
 export function getTrialEndedTemplate(variables: EmailTemplateVariables): string {
-  const name = variables.name || 'there';
-  const upgradeUrl = variables.upgradeUrl || 'https://settler.dev/pricing';
-  const freeTierUrl = variables.freeTierUrl || 'https://settler.dev/console';
-  
+  const name = variables.name || "there";
+  const upgradeUrl = variables.upgradeUrl || "https://settler.dev/pricing";
+  const freeTierUrl = variables.freeTierUrl || "https://settler.dev/console";
+
   const content = `
     <h2 style="margin: 0 0 16px; color: #111827; font-size: 24px; font-weight: 700; line-height: 1.3;">
       Your Trial Has Ended
@@ -470,7 +472,7 @@ export function getTrialEndedTemplate(variables: EmailTemplateVariables): string
       <strong style="color: #111827;">The Settler Team</strong>
     </p>
   `;
-  
+
   return getBaseTemplate(content, variables);
 }
 
@@ -480,14 +482,14 @@ export function getTrialEndedTemplate(variables: EmailTemplateVariables): string
 export function getPlainTextVersion(html: string): string {
   // Simple HTML to text conversion
   return html
-    .replace(/<style[^>]*>.*?<\/style>/gis, '')
-    .replace(/<script[^>]*>.*?<\/script>/gis, '')
-    .replace(/<[^>]+>/g, '')
-    .replace(/\s+/g, ' ')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
+    .replace(/<style[^>]*>.*?<\/style>/gis, "")
+    .replace(/<script[^>]*>.*?<\/script>/gis, "")
+    .replace(/<[^>]+>/g, "")
+    .replace(/\s+/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
     .replace(/&quot;/g, '"')
     .trim();
 }

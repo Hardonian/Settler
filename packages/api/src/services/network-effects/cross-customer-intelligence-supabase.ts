@@ -1,12 +1,12 @@
 /**
  * Cross-Customer Intelligence - Supabase Integration
- * 
+ *
  * Persists anonymized patterns to Supabase PostgreSQL
  */
 
-import { AnonymizedPattern, PatternMatch } from './cross-customer-intelligence';
-import { supabase } from '../../infrastructure/supabase/client';
-import { EventEmitter } from 'events';
+import { AnonymizedPattern, PatternMatch } from "./cross-customer-intelligence";
+import { supabase } from "../../infrastructure/supabase/client";
+import { EventEmitter } from "events";
 
 export class CrossCustomerIntelligenceSupabase extends EventEmitter {
   /**
@@ -15,7 +15,7 @@ export class CrossCustomerIntelligenceSupabase extends EventEmitter {
   async submitPattern(
     customerId: string,
     pattern: {
-      type: AnonymizedPattern['patternType'];
+      type: AnonymizedPattern["patternType"];
       data: Record<string, unknown>;
     }
   ): Promise<string> {
@@ -24,10 +24,10 @@ export class CrossCustomerIntelligenceSupabase extends EventEmitter {
 
     // Check if pattern already exists
     const { data: existingPattern } = await supabase
-      .from('network_patterns')
-      .select('*')
-      .eq('pattern_hash', patternHash)
-      .eq('pattern_type', pattern.type)
+      .from("network_patterns")
+      .select("*")
+      .eq("pattern_hash", patternHash)
+      .eq("pattern_type", pattern.type)
       .single();
 
     let patternId: string;
@@ -35,12 +35,12 @@ export class CrossCustomerIntelligenceSupabase extends EventEmitter {
     if (existingPattern) {
       // Update existing pattern
       const { data, error } = await supabase
-        .from('network_patterns')
+        .from("network_patterns")
         .update({
           frequency: existingPattern.frequency + 1,
           last_seen_at: new Date().toISOString(),
         })
-        .eq('id', existingPattern.id)
+        .eq("id", existingPattern.id)
         .select()
         .single();
 
@@ -52,7 +52,7 @@ export class CrossCustomerIntelligenceSupabase extends EventEmitter {
     } else {
       // Create new pattern
       const { data, error } = await supabase
-        .from('network_patterns')
+        .from("network_patterns")
         .insert({
           pattern_hash: patternHash,
           pattern_type: pattern.type,
@@ -70,17 +70,18 @@ export class CrossCustomerIntelligenceSupabase extends EventEmitter {
     }
 
     // Track customer's patterns
-    await supabase
-      .from('customer_patterns')
-      .upsert({
+    await supabase.from("customer_patterns").upsert(
+      {
         customer_id: customerId,
         pattern_id: patternId,
         opted_in_at: new Date().toISOString(),
-      }, {
-        onConflict: 'customer_id,pattern_id',
-      });
+      },
+      {
+        onConflict: "customer_id,pattern_id",
+      }
+    );
 
-    this.emit('pattern_submitted', { customerId, patternId });
+    this.emit("pattern_submitted", { customerId, patternId });
     return patternId;
   }
 
@@ -88,16 +89,16 @@ export class CrossCustomerIntelligenceSupabase extends EventEmitter {
    * Check if a pattern matches known patterns
    */
   async checkPattern(pattern: {
-    type: AnonymizedPattern['patternType'];
+    type: AnonymizedPattern["patternType"];
     data: Record<string, unknown>;
   }): Promise<PatternMatch | null> {
     const patternHash = this.hashPattern(pattern.data);
 
     const { data: matchingPattern } = await supabase
-      .from('network_patterns')
-      .select('*')
-      .eq('pattern_hash', patternHash)
-      .eq('pattern_type', pattern.type)
+      .from("network_patterns")
+      .select("*")
+      .eq("pattern_hash", patternHash)
+      .eq("pattern_type", pattern.type)
       .single();
 
     if (!matchingPattern) {
@@ -128,18 +129,18 @@ export class CrossCustomerIntelligenceSupabase extends EventEmitter {
     }>;
   }> {
     const { data: allPatterns } = await supabase
-      .from('network_patterns')
-      .select('id, pattern_type, frequency')
-      .order('frequency', { ascending: false })
+      .from("network_patterns")
+      .select("id, pattern_type, frequency")
+      .order("frequency", { ascending: false })
       .limit(10);
 
     const patterns = allPatterns || [];
 
     return {
       totalPatterns: patterns.length,
-      fraudPatterns: patterns.filter(p => p.pattern_type === 'fraud').length,
-      anomalyPatterns: patterns.filter(p => p.pattern_type === 'anomaly').length,
-      topPatterns: patterns.map(p => ({
+      fraudPatterns: patterns.filter((p) => p.pattern_type === "fraud").length,
+      anomalyPatterns: patterns.filter((p) => p.pattern_type === "anomaly").length,
+      topPatterns: patterns.map((p) => ({
         id: p.id,
         type: p.pattern_type,
         frequency: p.frequency,
@@ -153,7 +154,7 @@ export class CrossCustomerIntelligenceSupabase extends EventEmitter {
   async optIn(customerId: string): Promise<void> {
     // Customer opt-in is tracked via customer_patterns table
     // No separate opt-in table needed
-    this.emit('customer_opted_in', customerId);
+    this.emit("customer_opted_in", customerId);
   }
 
   /**
@@ -161,26 +162,23 @@ export class CrossCustomerIntelligenceSupabase extends EventEmitter {
    */
   async optOut(customerId: string): Promise<void> {
     // Remove customer's pattern associations
-    await supabase
-      .from('customer_patterns')
-      .delete()
-      .eq('customer_id', customerId);
+    await supabase.from("customer_patterns").delete().eq("customer_id", customerId);
 
     // Decrement pattern frequencies
     const { data: customerPatterns } = await supabase
-      .from('customer_patterns')
-      .select('pattern_id')
-      .eq('customer_id', customerId);
+      .from("customer_patterns")
+      .select("pattern_id")
+      .eq("customer_id", customerId);
 
     if (customerPatterns) {
       for (const cp of customerPatterns) {
-        await supabase.rpc('decrement_pattern_frequency', {
+        await supabase.rpc("decrement_pattern_frequency", {
           pattern_id: cp.pattern_id,
         });
       }
     }
 
-    this.emit('customer_opted_out', customerId);
+    this.emit("customer_opted_out", customerId);
   }
 
   /**
@@ -191,7 +189,7 @@ export class CrossCustomerIntelligenceSupabase extends EventEmitter {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash;
     }
     return hash.toString(36);
@@ -202,13 +200,13 @@ export class CrossCustomerIntelligenceSupabase extends EventEmitter {
    */
   private anonymizeMetadata(data: Record<string, unknown>): Record<string, unknown> {
     const anonymized: Record<string, unknown> = {};
-    
+
     for (const [key, value] of Object.entries(data)) {
-      if (['email', 'name', 'address', 'phone', 'ssn'].includes(key.toLowerCase())) {
+      if (["email", "name", "address", "phone", "ssn"].includes(key.toLowerCase())) {
         continue;
       }
 
-      if (typeof value === 'number') {
+      if (typeof value === "number") {
         const noise = (Math.random() - 0.5) * 0.1;
         anonymized[key] = value * (1 + noise);
       } else {
@@ -224,16 +222,16 @@ export class CrossCustomerIntelligenceSupabase extends EventEmitter {
    */
   private getRecommendedAction(patternType: string): string {
     switch (patternType) {
-      case 'fraud':
-        return 'Review transaction for potential fraud. This pattern has been associated with fraudulent activity.';
-      case 'anomaly':
-        return 'Investigate anomaly. This pattern is unusual and may indicate a data quality issue.';
-      case 'performance':
-        return 'Optimize performance. This pattern suggests a performance bottleneck.';
-      case 'error':
-        return 'Review error. This pattern has been associated with errors in other customers.';
+      case "fraud":
+        return "Review transaction for potential fraud. This pattern has been associated with fraudulent activity.";
+      case "anomaly":
+        return "Investigate anomaly. This pattern is unusual and may indicate a data quality issue.";
+      case "performance":
+        return "Optimize performance. This pattern suggests a performance bottleneck.";
+      case "error":
+        return "Review error. This pattern has been associated with errors in other customers.";
       default:
-        return 'Review pattern. This pattern has been seen across multiple customers.';
+        return "Review pattern. This pattern has been seen across multiple customers.";
     }
   }
 }

@@ -122,9 +122,7 @@ function UnavailablePanel({ reasonCodes }: { reasonCodes: string[] }) {
       <AlertTriangle className="h-4 w-4 text-destructive/60" aria-hidden="true" />
       <p className="text-sm font-medium text-destructive/80">Intelligence unavailable</p>
       {reasonCodes.length > 0 && (
-        <p className="text-xs text-muted-foreground/60 font-mono">
-          {reasonCodes.join(" · ")}
-        </p>
+        <p className="text-xs text-muted-foreground/60 font-mono">{reasonCodes.join(" · ")}</p>
       )}
     </div>
   );
@@ -137,9 +135,12 @@ function UnavailablePanel({ reasonCodes }: { reasonCodes: string[] }) {
 type OverallTrend = CrossRunIntelligenceSummary["runTimeline"]["overallTrend"];
 
 function TrendIcon({ trend }: { trend: OverallTrend }) {
-  if (trend === "improving") return <TrendingUp className="h-3.5 w-3.5 text-emerald-500" aria-hidden="true" />;
-  if (trend === "regressing") return <TrendingDown className="h-3.5 w-3.5 text-rose-500" aria-hidden="true" />;
-  if (trend === "volatile") return <Activity className="h-3.5 w-3.5 text-amber-500" aria-hidden="true" />;
+  if (trend === "improving")
+    return <TrendingUp className="h-3.5 w-3.5 text-emerald-500" aria-hidden="true" />;
+  if (trend === "regressing")
+    return <TrendingDown className="h-3.5 w-3.5 text-rose-500" aria-hidden="true" />;
+  if (trend === "volatile")
+    return <Activity className="h-3.5 w-3.5 text-amber-500" aria-hidden="true" />;
   if (trend === "stable") return <Minus className="h-3.5 w-3.5 text-sky-500" aria-hidden="true" />;
   return <Minus className="h-3.5 w-3.5 text-muted-foreground/40" aria-hidden="true" />;
 }
@@ -176,11 +177,7 @@ function TrendBadge({ trend }: { trend: OverallTrend }) {
 }
 
 /** A single colored bar representing one run's match rate */
-function RunBar({
-  entry,
-}: {
-  entry: CrossRunIntelligenceSummary["runTimeline"]["runs"][number];
-}) {
+function RunBar({ entry }: { entry: CrossRunIntelligenceSummary["runTimeline"]["runs"][number] }) {
   const rate = entry.matchRate ?? 0;
   const pct = Math.round(rate * 100);
   const isFailed = entry.status === "failed";
@@ -220,7 +217,11 @@ function RunBar({
       <span
         className={cn(
           "text-[9px] font-medium tabular-nums leading-none",
-          isFailed ? "text-rose-500/80" : pct >= 95 ? "text-emerald-600/80" : "text-muted-foreground/60"
+          isFailed
+            ? "text-rose-500/80"
+            : pct >= 95
+              ? "text-emerald-600/80"
+              : "text-muted-foreground/60"
         )}
       >
         {label}
@@ -306,16 +307,10 @@ function RunQualityTimeline({
       {/* Most recent run detail */}
       {timeline.runs[0] && (
         <div className="rounded-lg border border-border/40 bg-card p-3 text-xs space-y-1.5">
-          <p className="font-medium text-foreground/80">
-            Latest: {timeline.runs[0].jobName}
-          </p>
+          <p className="font-medium text-foreground/80">Latest: {timeline.runs[0].jobName}</p>
           <div className="flex flex-wrap gap-x-4 gap-y-1 text-muted-foreground">
-            <span>
-              {timeline.runs[0].matchedCount.toLocaleString()} matched
-            </span>
-            <span>
-              {timeline.runs[0].unmatchedTotal.toLocaleString()} unmatched
-            </span>
+            <span>{timeline.runs[0].matchedCount.toLocaleString()} matched</span>
+            <span>{timeline.runs[0].unmatchedTotal.toLocaleString()} unmatched</span>
             {timeline.runs[0].conflictCount > 0 && (
               <span className="text-amber-600">
                 {timeline.runs[0].conflictCount.toLocaleString()} conflicts
@@ -338,7 +333,8 @@ function RunQualityTimeline({
 // ─────────────────────────────────────────────
 
 type FamilyTrend = CrossRunIntelligenceSummary["recurringFamilies"]["families"][number]["trend"];
-type FamilyCertainty = CrossRunIntelligenceSummary["recurringFamilies"]["families"][number]["certainty"];
+type FamilyCertainty =
+  CrossRunIntelligenceSummary["recurringFamilies"]["families"][number]["certainty"];
 type RecurrencePosture =
   CrossRunIntelligenceSummary["recurringFamilies"]["families"][number]["recurrencePosture"];
 
@@ -454,14 +450,10 @@ function RecurringFamilyRow({
             </span>
           )}
           {family.resolvedCount > 0 && (
-            <span className="text-emerald-600 tabular-nums">
-              {family.resolvedCount} resolved
-            </span>
+            <span className="text-emerald-600 tabular-nums">{family.resolvedCount} resolved</span>
           )}
           {family.avgDurationMs !== null && (
-            <span>
-              avg {(family.avgDurationMs / 1000).toFixed(1)}s to resolve
-            </span>
+            <span>avg {(family.avgDurationMs / 1000).toFixed(1)}s to resolve</span>
           )}
         </div>
 
@@ -542,11 +534,8 @@ function RecurringFamiliesPanel({
             {recurringFamilies.totalAdjudications.toLocaleString()}
           </span>{" "}
           adjudications analysed ·{" "}
-          <span className="font-semibold text-foreground">
-            {recurringFamilies.families.length}
-          </span>{" "}
-          recurring{" "}
-          {recurringFamilies.families.length === 1 ? "family" : "families"} identified
+          <span className="font-semibold text-foreground">{recurringFamilies.families.length}</span>{" "}
+          recurring {recurringFamilies.families.length === 1 ? "family" : "families"} identified
         </span>
       </div>
 
@@ -591,7 +580,10 @@ function DecisionRow({
   decision: CrossRunIntelligenceSummary["decisionMemory"]["recentDecisions"][number];
 }) {
   const displayFamily = decision.archetypeLabel ?? decision.archetypeCode ?? "Unclassified";
-  const isResolved = decision.outcome === "resolved" || decision.resolution === "matched" || decision.resolution === "manual";
+  const isResolved =
+    decision.outcome === "resolved" ||
+    decision.resolution === "matched" ||
+    decision.resolution === "manual";
 
   return (
     <div className="flex items-start gap-3 py-2.5 border-b border-border/30 last:border-0">
@@ -614,9 +606,7 @@ function DecisionRow({
           {decision.resolutionReason && (
             <span className="font-mono">{decision.resolutionReason}</span>
           )}
-          {decision.durationMs !== null && (
-            <span>{(decision.durationMs / 1000).toFixed(1)}s</span>
-          )}
+          {decision.durationMs !== null && <span>{(decision.durationMs / 1000).toFixed(1)}s</span>}
           <span>{formatDistanceToNow(new Date(decision.createdAt), { addSuffix: true })}</span>
           {decision.adjudicationType !== "initial" && (
             <Badge variant="outline" size="sm">
@@ -691,16 +681,21 @@ export default function IntelligenceTimelinePage() {
     <div className="flex flex-col gap-6 p-6">
       {/* Page header */}
       <div className="flex items-start justify-between gap-4">
-      <div>
-        <h1 className="text-xl font-semibold tracking-tight">Reconciliation Intelligence</h1>
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight">Reconciliation Intelligence</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Cross-run pattern analysis, exception family memory, and operator decision history.
             Settler learns from your reconciliation history over time.
           </p>
           <p className="mt-2 text-xs text-muted-foreground/80 border-l-2 border-primary/30 pl-3">
-            <span className="font-medium text-foreground">{PREMIUM_PACKS.exceptionIntelligence.name}.</span>{" "}
-            {PREMIUM_PACKS.exceptionIntelligence.publicDescriptor} Requires an active subscription or the{" "}
-            <span className="font-mono text-[10px]">{PREMIUM_PACKS.exceptionIntelligence.integrationId}</span>{" "}
+            <span className="font-medium text-foreground">
+              {PREMIUM_PACKS.exceptionIntelligence.name}.
+            </span>{" "}
+            {PREMIUM_PACKS.exceptionIntelligence.publicDescriptor} Requires an active subscription
+            or the{" "}
+            <span className="font-mono text-[10px]">
+              {PREMIUM_PACKS.exceptionIntelligence.integrationId}
+            </span>{" "}
             add-on when sold standalone.
           </p>
         </div>
@@ -820,9 +815,7 @@ export default function IntelligenceTimelinePage() {
           {/* Footer */}
           <p className="text-xs text-muted-foreground/40 text-right">
             Generated at{" "}
-            {data.generatedAt
-              ? format(new Date(data.generatedAt), "MMM d, yyyy HH:mm:ss")
-              : "—"}
+            {data.generatedAt ? format(new Date(data.generatedAt), "MMM d, yyyy HH:mm:ss") : "—"}
           </p>
         </>
       )}

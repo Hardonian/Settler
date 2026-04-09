@@ -1,21 +1,21 @@
 /**
  * Code Editor Component
- * 
+ *
  * A syntax-highlighted code editor for the console playground.
  * Uses a lightweight editor implementation with syntax highlighting.
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import { Button } from '@/components/ui/button';
-import { Copy, Check, Download, Play, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useState, useEffect, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { Copy, Check, Download, Play, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface CodeEditorProps {
   value: string;
   onChange?: (value: string) => void;
-  language?: 'json' | 'javascript' | 'typescript' | 'python' | 'bash' | 'yaml';
+  language?: "json" | "javascript" | "typescript" | "python" | "bash" | "yaml";
   readOnly?: boolean;
   height?: string;
   showLineNumbers?: boolean;
@@ -31,11 +31,11 @@ interface CodeEditorProps {
 export function CodeEditor({
   value,
   onChange,
-  language = 'json',
+  language = "json",
   readOnly = false,
-  height = '400px',
+  height = "400px",
   showLineNumbers = true,
-  placeholder = 'Enter code...',
+  placeholder = "Enter code...",
   onRun,
   isRunning = false,
   className,
@@ -46,7 +46,7 @@ export function CodeEditor({
 
   useEffect(() => {
     if (value) {
-      setLineCount(value.split('\n').length);
+      setLineCount(value.split("\n").length);
     }
   }, [value]);
 
@@ -56,16 +56,16 @@ export function CodeEditor({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error: unknown) {
-      console.error('Failed to copy:', error);
+      console.error("Failed to copy:", error);
     }
   };
 
   const handleDownload = () => {
-    const blob = new Blob([value], { type: 'text/plain' });
+    const blob = new Blob([value], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `code.${language === 'javascript' ? 'js' : language === 'typescript' ? 'ts' : language === 'python' ? 'py' : language === 'bash' ? 'sh' : 'json'}`;
+    a.download = `code.${language === "javascript" ? "js" : language === "typescript" ? "ts" : language === "python" ? "py" : language === "bash" ? "sh" : "json"}`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -73,13 +73,22 @@ export function CodeEditor({
   };
 
   return (
-    <div className={cn('relative border rounded-lg bg-card dark:bg-card border-border dark:border-border overflow-hidden', className)}>
+    <div
+      className={cn(
+        "relative border rounded-lg bg-card dark:bg-card border-border dark:border-border overflow-hidden",
+        className
+      )}
+    >
       {/* Toolbar */}
       <div className="flex items-center justify-between px-4 py-2 bg-card border-b border-border dark:border-border">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-mono text-muted-foreground/40 dark:text-muted-foreground/60 uppercase leading-[1.5]">{language}</span>
+          <span className="text-xs font-mono text-muted-foreground/40 dark:text-muted-foreground/60 uppercase leading-[1.5]">
+            {language}
+          </span>
           {showLineNumbers && (
-            <span className="text-xs text-muted-foreground/60 dark:text-muted-foreground leading-[1.5]">{lineCount} lines</span>
+            <span className="text-xs text-muted-foreground/60 dark:text-muted-foreground leading-[1.5]">
+              {lineCount} lines
+            </span>
           )}
         </div>
         <div className="flex items-center gap-2">
@@ -104,12 +113,7 @@ export function CodeEditor({
               )}
             </Button>
           )}
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={handleCopy}
-            className="h-7 text-xs"
-          >
+          <Button size="sm" variant="ghost" onClick={handleCopy} className="h-7 text-xs">
             {copied ? (
               <>
                 <Check className="w-3 h-3 mr-1" />
@@ -122,12 +126,7 @@ export function CodeEditor({
               </>
             )}
           </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={handleDownload}
-            className="h-7 text-xs"
-          >
+          <Button size="sm" variant="ghost" onClick={handleDownload} className="h-7 text-xs">
             <Download className="w-3 h-3" />
           </Button>
         </div>
@@ -136,7 +135,7 @@ export function CodeEditor({
       {/* Editor */}
       <div className="relative" style={{ height }}>
         {showLineNumbers && (
-          <div 
+          <div
             className="absolute left-0 top-0 bottom-0 w-12 bg-card dark:bg-black border-r border-border dark:border-border text-right text-xs text-muted-foreground/60 dark:text-muted-foreground py-3 font-mono select-none leading-[1.5]"
             aria-hidden="true"
           >
@@ -153,7 +152,7 @@ export function CodeEditor({
           onChange={(e) => {
             onChange?.(e.target.value);
             // Auto-validate JSON if language is JSON
-            if (language === 'json' && e.target.value.trim()) {
+            if (language === "json" && e.target.value.trim()) {
               try {
                 JSON.parse(e.target.value);
                 // Valid JSON - could add visual indicator
@@ -164,12 +163,12 @@ export function CodeEditor({
           }}
           onKeyDown={(e) => {
             // Handle Tab key for indentation
-            if (e.key === 'Tab' && !readOnly) {
+            if (e.key === "Tab" && !readOnly) {
               e.preventDefault();
               const textarea = e.currentTarget;
               const start = textarea.selectionStart;
               const end = textarea.selectionEnd;
-              const newValue = value.substring(0, start) + '  ' + value.substring(end);
+              const newValue = value.substring(0, start) + "  " + value.substring(end);
               onChange?.(newValue);
               // Restore cursor position
               setTimeout(() => {
@@ -180,13 +179,13 @@ export function CodeEditor({
           readOnly={readOnly}
           placeholder={placeholder}
           className={cn(
-            'w-full h-full bg-transparent text-foreground dark:text-muted-foreground/30 font-mono text-sm p-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-900 dark:focus:ring-offset-slate-950',
-            showLineNumbers && 'pl-16',
-            readOnly && 'cursor-default'
+            "w-full h-full bg-transparent text-foreground dark:text-muted-foreground/30 font-mono text-sm p-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-900 dark:focus:ring-offset-slate-950",
+            showLineNumbers && "pl-16",
+            readOnly && "cursor-default"
           )}
-          style={{ 
+          style={{
             tabSize: 2,
-            lineHeight: '1.5',
+            lineHeight: "1.5",
           }}
           spellCheck={false}
           aria-label={`Code editor for ${language}`}

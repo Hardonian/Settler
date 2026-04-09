@@ -39,6 +39,7 @@ The following components are licensed under the **MIT License** and are free to 
 ### What You Can Do with OSS Components
 
 ✅ **Allowed:**
+
 - Use in commercial products
 - Modify the source code
 - Distribute modified or unmodified versions
@@ -47,6 +48,7 @@ The following components are licensed under the **MIT License** and are free to 
 - Sell products that include OSS components
 
 ✅ **Required:**
+
 - Include the MIT License notice
 - Include copyright notice
 - Include the original license text
@@ -54,6 +56,7 @@ The following components are licensed under the **MIT License** and are free to 
 ### What You Cannot Do with OSS Components
 
 ❌ **Not Allowed:**
+
 - Remove copyright notices
 - Remove license notices
 - Claim you wrote the software
@@ -68,12 +71,14 @@ The following components are licensed under the **MIT License** and are free to 
 The **Settler Enterprise API** (`packages/api`, `packages/web`) is proprietary software licensed under a Proprietary License (see root `/LICENSE`).
 
 **What This Includes:**
+
 - Core API server
 - Developer Console
 - Managed SaaS platform
 - Enterprise features
 
 **License Terms:**
+
 - Licensed, not sold
 - Non-transferable
 - Non-exclusive
@@ -102,6 +107,7 @@ React.Settler uses a **dual-licensing model**:
 **License:** MIT License
 
 **Includes:**
+
 - Core protocol types
 - Basic React components
 - Config compiler
@@ -115,6 +121,7 @@ React.Settler uses a **dual-licensing model**:
 **License:** Commercial License Agreement (see `/LEGAL/COMMERCIAL_LICENSE.md`)
 
 **Includes:**
+
 - All OSS features
 - Platform integrations (Shopify, Stripe, MCP)
 - Virtualized tables
@@ -130,6 +137,7 @@ React.Settler uses a **dual-licensing model**:
 **License:** Enterprise License Agreement (custom contract)
 
 **Includes:**
+
 - All Commercial features
 - SSO and RBAC
 - Custom integrations
@@ -143,12 +151,12 @@ React.Settler uses a **dual-licensing model**:
 
 ## License Tiers Summary
 
-| Component | OSS Tier | Commercial Tier | Enterprise Tier |
-|-----------|----------|----------------|-----------------|
-| **@settler/protocol** | ✅ MIT (Free) | ✅ MIT (Free) | ✅ MIT (Free) |
-| **React.Settler (OSS)** | ✅ MIT (Free) | ✅ MIT (Free) | ✅ MIT (Free) |
-| **React.Settler (Commercial)** | ❌ Not Available | ✅ $99/month | ✅ Included |
-| **Settler Enterprise API** | ❌ Not Available | ✅ Subscription | ✅ Custom Contract |
+| Component                      | OSS Tier         | Commercial Tier | Enterprise Tier    |
+| ------------------------------ | ---------------- | --------------- | ------------------ |
+| **@settler/protocol**          | ✅ MIT (Free)    | ✅ MIT (Free)   | ✅ MIT (Free)      |
+| **React.Settler (OSS)**        | ✅ MIT (Free)    | ✅ MIT (Free)   | ✅ MIT (Free)      |
+| **React.Settler (Commercial)** | ❌ Not Available | ✅ $99/month    | ✅ Included        |
+| **Settler Enterprise API**     | ❌ Not Available | ✅ Subscription | ✅ Custom Contract |
 
 ---
 
@@ -159,6 +167,7 @@ React.Settler uses a **dual-licensing model**:
 ✅ **You can self-host OSS components** (MIT License allows this)
 
 **Includes:**
+
 - `@settler/protocol` - Can be self-hosted
 - React.Settler OSS components - Can be self-hosted
 
@@ -167,6 +176,7 @@ React.Settler uses a **dual-licensing model**:
 ❌ **You cannot self-host proprietary components** without an Enterprise Agreement
 
 **Includes:**
+
 - Settler Enterprise API - Managed SaaS only (unless Enterprise self-hosting agreement)
 - Commercial features of React.Settler - Require subscription
 
@@ -194,11 +204,13 @@ React.Settler uses a **dual-licensing model**:
 ### Using Settler Components in Your Project
 
 **OSS Components (MIT License):**
+
 - ✅ Compatible with any license (MIT is permissive)
 - ✅ Can be used in proprietary software
 - ✅ Can be used in GPL projects (MIT is GPL-compatible)
 
 **Proprietary Components:**
+
 - ❌ Cannot be combined with other licenses
 - ❌ Subject to Proprietary License terms only
 

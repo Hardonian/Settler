@@ -6,21 +6,21 @@ Set these in GitHub repository: `Settings > Secrets and variables > Actions`
 
 ### Staging Environment
 
-| Secret Name | Description | Example |
-|------------|-------------|---------|
-| `SUPABASE_DB_URL_STAGING` | PostgreSQL connection string | `postgresql://postgres.xxx:[PASSWORD]@aws-0-us-west-1.pooler.supabase.com:6543/postgres` |
-| `SUPABASE_DB_PASSWORD_STAGING` | Database password | `your-staging-password` |
-| `SUPABASE_PROJECT_ID_STAGING` | Supabase project ID (optional) | `abcdefghijklmnop` |
-| `SUPABASE_ACCESS_TOKEN` | Supabase API access token (optional) | `sbp_xxx...` |
+| Secret Name                    | Description                          | Example                                                                                  |
+| ------------------------------ | ------------------------------------ | ---------------------------------------------------------------------------------------- |
+| `SUPABASE_DB_URL_STAGING`      | PostgreSQL connection string         | `postgresql://postgres.xxx:[PASSWORD]@aws-0-us-west-1.pooler.supabase.com:6543/postgres` |
+| `SUPABASE_DB_PASSWORD_STAGING` | Database password                    | `your-staging-password`                                                                  |
+| `SUPABASE_PROJECT_ID_STAGING`  | Supabase project ID (optional)       | `abcdefghijklmnop`                                                                       |
+| `SUPABASE_ACCESS_TOKEN`        | Supabase API access token (optional) | `sbp_xxx...`                                                                             |
 
 ### Production Environment
 
-| Secret Name | Description | Example |
-|------------|-------------|---------|
-| `SUPABASE_DB_URL_PRODUCTION` | PostgreSQL connection string | `postgresql://postgres.xxx:[PASSWORD]@aws-0-us-west-1.pooler.supabase.com:6543/postgres` |
-| `SUPABASE_DB_PASSWORD_PRODUCTION` | Database password | `your-production-password` |
-| `SUPABASE_PROJECT_ID_PRODUCTION` | Supabase project ID (optional) | `abcdefghijklmnop` |
-| `SUPABASE_ACCESS_TOKEN` | Same token (can be shared) | `sbp_xxx...` |
+| Secret Name                       | Description                    | Example                                                                                  |
+| --------------------------------- | ------------------------------ | ---------------------------------------------------------------------------------------- |
+| `SUPABASE_DB_URL_PRODUCTION`      | PostgreSQL connection string   | `postgresql://postgres.xxx:[PASSWORD]@aws-0-us-west-1.pooler.supabase.com:6543/postgres` |
+| `SUPABASE_DB_PASSWORD_PRODUCTION` | Database password              | `your-production-password`                                                               |
+| `SUPABASE_PROJECT_ID_PRODUCTION`  | Supabase project ID (optional) | `abcdefghijklmnop`                                                                       |
+| `SUPABASE_ACCESS_TOKEN`           | Same token (can be shared)     | `sbp_xxx...`                                                                             |
 
 ## Getting Connection Strings
 
@@ -34,6 +34,7 @@ Set these in GitHub repository: `Settings > Secrets and variables > Actions`
 6. Replace `[YOUR-PASSWORD]` with your actual database password
 
 **Format**:
+
 ```
 postgresql://postgres.[PROJECT_REF]:[PASSWORD]@aws-0-us-west-1.pooler.supabase.com:6543/postgres
 ```
@@ -49,10 +50,12 @@ postgresql://postgres.[PROJECT_REF]:[PASSWORD]@aws-0-us-west-1.pooler.supabase.c
 ## Environment Protection
 
 ### Staging Environment
+
 - No protection rules needed
 - Auto-applies on push to `main`/`develop`
 
 ### Production Environment
+
 - **REQUIRED**: Set up environment protection
   1. Go to `Settings > Environments`
   2. Create `production` environment
@@ -74,6 +77,7 @@ psql "$SUPABASE_DB_URL_PRODUCTION" -c "SELECT version();"
 ### Verify Secrets in GitHub Actions
 
 The workflow will:
+
 1. Validate connection strings on workflow run
 2. Apply migrations in order
 3. Verify tables exist after migration
@@ -92,18 +96,21 @@ The workflow will:
 ## Troubleshooting
 
 ### Connection Failed
+
 - Verify connection string format
 - Check password is correct
 - Verify IP allowlist (if enabled in Supabase)
 - Check Supabase project is active
 
 ### Migration Failed
+
 - Check SQL syntax in migration file
 - Verify dependencies (tables/functions exist)
 - Check RLS policies don't block migration
 - Review GitHub Actions logs
 
 ### RLS Blocking Queries
+
 - Verify `tenant_users` table exists
 - Check user is member of tenant
 - Verify RLS policies are correct
@@ -112,6 +119,7 @@ The workflow will:
 ## Migration Workflow
 
 ### Automatic (on push)
+
 ```bash
 git add supabase/migrations/20260130000000_new_migration.sql
 git commit -m "Add new migration"
@@ -120,6 +128,7 @@ git push origin main
 ```
 
 ### Manual (production)
+
 1. Go to `Actions` tab
 2. Select "Apply Database Migrations (Safe Mode)"
 3. Click "Run workflow"
@@ -130,23 +139,26 @@ git push origin main
 ## Verification After Migration
 
 ### Check Tables
+
 ```sql
-SELECT table_name FROM information_schema.tables 
-WHERE table_schema = 'public' 
+SELECT table_name FROM information_schema.tables
+WHERE table_schema = 'public'
 AND table_name IN ('receipts', 'ai_analysis_usage', 'ai_analyses');
 ```
 
 ### Check RLS
+
 ```sql
-SELECT tablename, rowsecurity FROM pg_tables 
-WHERE schemaname = 'public' 
+SELECT tablename, rowsecurity FROM pg_tables
+WHERE schemaname = 'public'
 AND tablename IN ('receipts', 'ai_analysis_usage', 'ai_analyses');
 ```
 
 ### Check Policies
+
 ```sql
-SELECT tablename, policyname FROM pg_policies 
-WHERE schemaname = 'public' 
+SELECT tablename, policyname FROM pg_policies
+WHERE schemaname = 'public'
 AND tablename IN ('receipts', 'ai_analysis_usage', 'ai_analyses');
 ```
 
@@ -162,6 +174,7 @@ AND tablename IN ('receipts', 'ai_analysis_usage', 'ai_analyses');
 ## Support
 
 If migrations fail:
+
 1. Check GitHub Actions logs
 2. Review migration SQL syntax
 3. Verify database connection

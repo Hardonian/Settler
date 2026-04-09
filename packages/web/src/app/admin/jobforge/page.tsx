@@ -7,15 +7,15 @@
  * - View report + request bundle execution (gated)
  */
 
-'use client';
+"use client";
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from "react";
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 type JobForgeStatus = {
   enabled: boolean;
@@ -72,29 +72,29 @@ export default function JobForgeAdminPage() {
   const [status, setStatus] = useState<JobForgeStatus>(defaultStatus);
   const [statusError, setStatusError] = useState<string | null>(null);
 
-  const [tenantId, setTenantId] = useState('');
-  const [projectId, setProjectId] = useState('');
+  const [tenantId, setTenantId] = useState("");
+  const [projectId, setProjectId] = useState("");
 
-  const [eventName, setEventName] = useState('');
-  const [eventPayload, setEventPayload] = useState('{}');
+  const [eventName, setEventName] = useState("");
+  const [eventPayload, setEventPayload] = useState("{}");
   const [eventResult, setEventResult] = useState<string | null>(null);
 
-  const [moduleName, setModuleName] = useState('');
-  const [moduleInput, setModuleInput] = useState('{}');
+  const [moduleName, setModuleName] = useState("");
+  const [moduleInput, setModuleInput] = useState("{}");
   const [moduleResult, setModuleResult] = useState<string | null>(null);
 
-  const [reportJobId, setReportJobId] = useState('');
+  const [reportJobId, setReportJobId] = useState("");
   const [reportResult, setReportResult] = useState<JobForgeReport | null>(null);
   const [reportError, setReportError] = useState<string | null>(null);
 
-  const [bundleId, setBundleId] = useState('');
+  const [bundleId, setBundleId] = useState("");
   const [bundleConfirm, setBundleConfirm] = useState(false);
   const [bundleResult, setBundleResult] = useState<string | null>(null);
 
   useEffect(() => {
     const loadStatus = async () => {
       try {
-        const response = await fetch('/api/admin/jobforge');
+        const response = await fetch("/api/admin/jobforge");
         const payload = (await response.json()) as JobForgeResponse<JobForgeStatus>;
 
         if (!payload.success) {
@@ -104,17 +104,17 @@ export default function JobForgeAdminPage() {
 
         setStatus(payload.data);
       } catch {
-        setStatusError('Failed to load JobForge status.');
+        setStatusError("Failed to load JobForge status.");
       }
     };
 
     loadStatus();
   }, []);
 
-  const contextReady = useMemo(() => tenantId.length > 0 && projectId.length > 0, [
-    tenantId,
-    projectId,
-  ]);
+  const contextReady = useMemo(
+    () => tenantId.length > 0 && projectId.length > 0,
+    [tenantId, projectId]
+  );
 
   const integrationReady = status.enabled && status.ready;
 
@@ -122,16 +122,16 @@ export default function JobForgeAdminPage() {
     setEventResult(null);
     const parsedPayload = parseJson(eventPayload);
     if (!parsedPayload) {
-      setEventResult('Invalid JSON payload.');
+      setEventResult("Invalid JSON payload.");
       return;
     }
 
     try {
-      const response = await fetch('/api/admin/jobforge', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/admin/jobforge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: 'submit-event',
+          action: "submit-event",
           context: { tenantId, projectId },
           eventName,
           payload: parsedPayload,
@@ -144,7 +144,7 @@ export default function JobForgeAdminPage() {
       }
       setEventResult(`Event submitted. Job ID: ${payload.data.job.id}`);
     } catch {
-      setEventResult('Failed to submit JobForge event.');
+      setEventResult("Failed to submit JobForge event.");
     }
   };
 
@@ -152,16 +152,16 @@ export default function JobForgeAdminPage() {
     setModuleResult(null);
     const parsedPayload = parseJson(moduleInput);
     if (!parsedPayload) {
-      setModuleResult('Invalid JSON input.');
+      setModuleResult("Invalid JSON input.");
       return;
     }
 
     try {
-      const response = await fetch('/api/admin/jobforge', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/admin/jobforge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: 'run-module-dry-run',
+          action: "run-module-dry-run",
           context: { tenantId, projectId },
           moduleName,
           input: parsedPayload,
@@ -174,7 +174,7 @@ export default function JobForgeAdminPage() {
       }
       setModuleResult(`Dry-run queued. Job ID: ${payload.data.job.id}`);
     } catch {
-      setModuleResult('Failed to run JobForge module dry-run.');
+      setModuleResult("Failed to run JobForge module dry-run.");
     }
   };
 
@@ -183,11 +183,11 @@ export default function JobForgeAdminPage() {
     setReportResult(null);
 
     try {
-      const response = await fetch('/api/admin/jobforge', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/admin/jobforge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: 'view-report',
+          action: "view-report",
           context: { tenantId, projectId },
           jobId: reportJobId,
         }),
@@ -199,23 +199,23 @@ export default function JobForgeAdminPage() {
       }
       setReportResult(payload.data);
     } catch {
-      setReportError('Failed to fetch JobForge report.');
+      setReportError("Failed to fetch JobForge report.");
     }
   };
 
   const handleBundleRequest = async () => {
     setBundleResult(null);
     if (!bundleConfirm) {
-      setBundleResult('Bundle execution requires explicit confirmation.');
+      setBundleResult("Bundle execution requires explicit confirmation.");
       return;
     }
 
     try {
-      const response = await fetch('/api/admin/jobforge', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/admin/jobforge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: 'request-bundle-execution',
+          action: "request-bundle-execution",
           context: { tenantId, projectId },
           bundleId,
           reportJobId: reportJobId || undefined,
@@ -229,7 +229,7 @@ export default function JobForgeAdminPage() {
       }
       setBundleResult(`Bundle execution requested. Job ID: ${payload.data.job.id}`);
     } catch {
-      setBundleResult('Failed to request bundle execution.');
+      setBundleResult("Failed to request bundle execution.");
     }
   };
 
@@ -247,19 +247,19 @@ export default function JobForgeAdminPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             Integration Status
-            <Badge variant={integrationReady ? 'default' : 'secondary'}>
-              {integrationReady ? 'Enabled' : 'Disabled'}
+            <Badge variant={integrationReady ? "default" : "secondary"}>
+              {integrationReady ? "Enabled" : "Disabled"}
             </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm text-muted-foreground">
           {statusError && <p className="text-red-500">{statusError}</p>}
-          <p>JobForge Enabled: {status.enabled ? 'Yes' : 'No'}</p>
-          <p>Ready: {status.ready ? 'Yes' : 'No'}</p>
-          <p>Bundle Execution Gate: {status.bundleExecutionEnabled ? 'Open' : 'Closed'}</p>
+          <p>JobForge Enabled: {status.enabled ? "Yes" : "No"}</p>
+          <p>Ready: {status.ready ? "Yes" : "No"}</p>
+          <p>Bundle Execution Gate: {status.bundleExecutionEnabled ? "Open" : "Closed"}</p>
           {status.missing.length > 0 && (
             <p className="text-amber-600 dark:text-amber-300">
-              Missing env: {status.missing.join(', ')}
+              Missing env: {status.missing.join(", ")}
             </p>
           )}
         </CardContent>
@@ -271,9 +271,7 @@ export default function JobForgeAdminPage() {
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">
-              Tenant ID
-            </label>
+            <label className="text-sm font-medium text-muted-foreground">Tenant ID</label>
             <Input
               value={tenantId}
               onChange={(event) => setTenantId(event.target.value)}
@@ -281,9 +279,7 @@ export default function JobForgeAdminPage() {
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">
-              Project ID
-            </label>
+            <label className="text-sm font-medium text-muted-foreground">Project ID</label>
             <Input
               value={projectId}
               onChange={(event) => setProjectId(event.target.value)}
@@ -342,9 +338,7 @@ export default function JobForgeAdminPage() {
             >
               Run Dry-Run
             </Button>
-            {moduleResult && (
-              <p className="text-sm text-muted-foreground">{moduleResult}</p>
-            )}
+            {moduleResult && <p className="text-sm text-muted-foreground">{moduleResult}</p>}
           </CardContent>
         </Card>
       </div>
@@ -414,9 +408,7 @@ export default function JobForgeAdminPage() {
                 Bundle execution is gated by JOBFORGE_BUNDLE_EXECUTION_ENABLED.
               </p>
             )}
-            {bundleResult && (
-              <p className="text-sm text-muted-foreground">{bundleResult}</p>
-            )}
+            {bundleResult && <p className="text-sm text-muted-foreground">{bundleResult}</p>}
           </CardContent>
         </Card>
       </div>

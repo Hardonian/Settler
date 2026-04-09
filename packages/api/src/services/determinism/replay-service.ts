@@ -1,6 +1,6 @@
 /**
  * Replay Service
- * 
+ *
  * Provides replay functionality for reconciliation runs:
  * - Load original snapshot
  * - Reprocess using pinned rules/config versions
@@ -9,14 +9,17 @@
  * - Emit deterministic diff report
  */
 
-import { v4 as uuidv4 } from 'uuid';
-import { query } from '../../db';
-import { logError, logInfo } from '../../utils/logger';
-import { createHash } from 'node:crypto';
-import { stableStringify } from './canonical-input';
-import { getRunSnapshot, RunSnapshot } from './run-snapshot';
-import { DeterministicMatchingEngine, type DeterministicMatchResult } from './deterministic-matcher';
-import { logExecutionStep } from './execution-orchestrator';
+import { v4 as uuidv4 } from "uuid";
+import { query } from "../../db";
+import { logError, logInfo } from "../../utils/logger";
+import { createHash } from "node:crypto";
+import { stableStringify } from "./canonical-input";
+import { getRunSnapshot, RunSnapshot } from "./run-snapshot";
+import {
+  DeterministicMatchingEngine,
+  type DeterministicMatchResult,
+} from "./deterministic-matcher";
+import { logExecutionStep } from "./execution-orchestrator";
 
 /**
  * Replay request
@@ -38,7 +41,7 @@ export interface ReplayResult {
   replay_run_id: string;
   original_run_id: string;
   snapshot_id: string;
-  
+
   // Comparison results
   comparison: {
     matches_identical: boolean;
@@ -48,15 +51,15 @@ export interface ReplayResult {
     score_breakdown_match: boolean;
     mismatches: ReplayMismatch[];
   };
-  
+
   // Timing
   original_duration_ms: number;
   replay_duration_ms: number;
-  
+
   // Status
-  status: 'SUCCEEDED' | 'FAILED' | 'VALIDATION_FAILED';
+  status: "SUCCEEDED" | "FAILED" | "VALIDATION_FAILED";
   error?: string;
-  
+
   // Timestamps
   replayed_at: Date;
 }
@@ -65,7 +68,7 @@ export interface ReplayResult {
  * Replay mismatch
  */
 export interface ReplayMismatch {
-  type: 'missing' | 'different' | 'extra';
+  type: "missing" | "different" | "extra";
   entity_type: string;
   original_entity_id?: string;
   replay_entity_id?: string;
@@ -87,38 +90,38 @@ export interface FingerprintSummary {
 export async function executeReplay(request: ReplayRequest): Promise<ReplayResult> {
   const replayRunId = uuidv4();
   const startTime = Date.now();
-  
+
   try {
-    logInfo('Starting replay', {
+    logInfo("Starting replay", {
       originalRunId: request.original_run_id,
       replayRunId,
     });
-    
+
     // Get original snapshot
     const snapshot = await getRunSnapshot(request.original_run_id);
     if (!snapshot) {
       throw new Error(`Snapshot not found: ${request.original_run_id}`);
     }
-    
+
     // Create replay snapshot (references original)
     const replaySnapshot = await createReplaySnapshot(snapshot, replayRunId);
-    
+
     // Log start
     await logExecutionStep(
       replaySnapshot.id,
       request.tenant_id,
       0,
-      'REPLAY_START',
+      "REPLAY_START",
       `Starting replay of run ${request.original_run_id}`,
       { original_run_id: request.original_run_id, replay_run_id: replayRunId }
     );
-    
+
     // Load original data (in production, would fetch from source)
     const { sourceRecords, targetRecords } = await loadOriginalData(snapshot);
-    
+
     // Load original rules
     const rules = await loadOriginalRules(snapshot);
-    
+
     // Run matching with deterministic engine
     const engine = new DeterministicMatchingEngine({
       snapshot: replaySnapshot,
@@ -127,25 +130,21 @@ export async function executeReplay(request: ReplayRequest): Promise<ReplayResul
       rules,
       tenant_id: request.tenant_id,
     });
-    
+
     const result = await engine.execute();
-    
+
     // Compare with original
-    const comparison = await compareResults(
-      request.original_run_id,
-      replayRunId,
-      result.matches
-    );
-    
+    const comparison = await compareResults(request.original_run_id, replayRunId, result.matches);
+
     const replayDuration = Date.now() - startTime;
-    
+
     // Log completion
     await logExecutionStep(
       replaySnapshot.id,
       request.tenant_id,
       999,
-      'REPLAY_COMPLETE',
-      `Replay complete: ${comparison.matches_identical ? 'IDENTICAL' : 'DIFFERENT'}`,
+      "REPLAY_COMPLETE",
+      `Replay complete: ${comparison.matches_identical ? "IDENTICAL" : "DIFFERENT"}`,
       {
         matches_identical: comparison.matches_identical,
         match_count_match: comparison.match_count_match,
@@ -153,23 +152,24 @@ export async function executeReplay(request: ReplayRequest): Promise<ReplayResul
       },
       replayDuration
     );
-    
+
     return {
       replay_run_id: replayRunId,
       original_run_id: request.original_run_id,
       snapshot_id: snapshot.id,
       comparison,
-      original_duration_ms: snapshot.completed_at && snapshot.started_at
-        ? snapshot.completed_at.getTime() - snapshot.started_at.getTime()
-        : 0,
+      original_duration_ms:
+        snapshot.completed_at && snapshot.started_at
+          ? snapshot.completed_at.getTime() - snapshot.started_at.getTime()
+          : 0,
       replay_duration_ms: replayDuration,
-      status: comparison.matches_identical ? 'SUCCEEDED' : 'VALIDATION_FAILED',
+      status: comparison.matches_identical ? "SUCCEEDED" : "VALIDATION_FAILED",
       replayed_at: new Date(),
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    logError('Replay failed', error, { originalRunId: request.original_run_id, replayRunId });
-    
+    logError("Replay failed", error, { originalRunId: request.original_run_id, replayRunId });
+
     return {
       replay_run_id: replayRunId,
       original_run_id: request.original_run_id,
@@ -180,15 +180,17 @@ export async function executeReplay(request: ReplayRequest): Promise<ReplayResul
         fingerprint_match: false,
         ordering_match: false,
         score_breakdown_match: false,
-        mismatches: [{
-          type: 'different',
-          entity_type: 'replay',
-          difference: errorMessage,
-        }],
+        mismatches: [
+          {
+            type: "different",
+            entity_type: "replay",
+            difference: errorMessage,
+          },
+        ],
       },
       original_duration_ms: 0,
       replay_duration_ms: Date.now() - startTime,
-      status: 'FAILED',
+      status: "FAILED",
       error: errorMessage,
       replayed_at: new Date(),
     };
@@ -206,15 +208,15 @@ async function createReplaySnapshot(
   return {
     ...originalSnapshot,
     id: replayRunId,
-    status: 'RUNNING',
+    status: "RUNNING",
     status_transitions: [
       ...originalSnapshot.status_transitions,
       {
         from: originalSnapshot.status,
-        to: 'RUNNING' as const,
-        reason: 'Replay started',
+        to: "RUNNING" as const,
+        reason: "Replay started",
         timestamp: new Date(),
-        actor: 'system',
+        actor: "system",
       },
     ],
   };
@@ -255,16 +257,18 @@ async function loadOriginalData(_snapshot: RunSnapshot): Promise<{
 /**
  * Load original rules from snapshot
  */
-async function loadOriginalRules(_snapshot: RunSnapshot): Promise<Array<{
-  id: string;
-  field: string;
-  type: 'exact' | 'fuzzy' | 'range' | 'date_range';
-  weight: number;
-  threshold?: number;
-  tolerance?: number;
-  days?: number;
-  version: number;
-}>> {
+async function loadOriginalRules(_snapshot: RunSnapshot): Promise<
+  Array<{
+    id: string;
+    field: string;
+    type: "exact" | "fuzzy" | "range" | "date_range";
+    weight: number;
+    threshold?: number;
+    tolerance?: number;
+    days?: number;
+    version: number;
+  }>
+> {
   // In production, would load from ruleset stored in snapshot
   return [];
 }
@@ -289,55 +293,56 @@ async function compareResults(
     `SELECT COUNT(*) as count FROM deterministic_match_results WHERE snapshot_id = $1`,
     [originalRunId]
   );
-  
+
   const originalCount = (originalMatches[0] as { count: number })?.count || 0;
   const replayCount = replayMatches.length;
-  
+
   const matchCountMatch = originalCount === replayCount;
-  
+
   // Compute fingerprints
   const originalFingerprint = await computeMatchFingerprint(originalRunId);
   const replayFingerprint = computeMatchFingerprintFromResults(replayMatches);
-  
+
   const fingerprintMatch = originalFingerprint === replayFingerprint;
-  
+
   // Check ordering
   const originalOrdering = await getMatchOrdering(originalRunId);
-  const replayOrdering = replayMatches.map(m => m.stable_match_id);
-  
+  const replayOrdering = replayMatches.map((m) => m.stable_match_id);
+
   const orderingMatch = JSON.stringify(originalOrdering) === JSON.stringify(replayOrdering);
-  
+
   // Check score breakdown
   const scoreBreakdownMatch = await compareScoreBreakdowns(originalRunId, replayMatches);
-  
+
   const mismatches: ReplayMismatch[] = [];
-  
+
   if (!matchCountMatch) {
     mismatches.push({
-      type: 'different',
-      entity_type: 'match_count',
+      type: "different",
+      entity_type: "match_count",
       difference: `Original: ${originalCount}, Replay: ${replayCount}`,
     });
   }
-  
+
   if (!fingerprintMatch) {
     mismatches.push({
-      type: 'different',
-      entity_type: 'fingerprint',
-      difference: 'Match fingerprints do not match',
+      type: "different",
+      entity_type: "fingerprint",
+      difference: "Match fingerprints do not match",
     });
   }
-  
+
   if (!orderingMatch) {
     mismatches.push({
-      type: 'different',
-      entity_type: 'ordering',
-      difference: 'Match ordering does not match',
+      type: "different",
+      entity_type: "ordering",
+      difference: "Match ordering does not match",
     });
   }
-  
-  const matchesIdentical = matchCountMatch && fingerprintMatch && orderingMatch && scoreBreakdownMatch;
-  
+
+  const matchesIdentical =
+    matchCountMatch && fingerprintMatch && orderingMatch && scoreBreakdownMatch;
+
   return {
     matches_identical: matchesIdentical,
     match_count_match: matchCountMatch,
@@ -359,17 +364,15 @@ async function computeMatchFingerprint(runId: string): Promise<string> {
      ORDER BY stable_match_id ASC`,
     [runId]
   );
-  
+
   const fingerprintData = matches.map((m: Record<string, unknown>) => ({
     stable_match_id: m.stable_match_id,
     left_record_id: m.left_record_id,
     right_record_id: m.right_record_id,
     confidence_score: m.confidence_score,
   }));
-  
-  return createHash('sha256')
-    .update(stableStringify(fingerprintData))
-    .digest('hex');
+
+  return createHash("sha256").update(stableStringify(fingerprintData)).digest("hex");
 }
 
 /**
@@ -385,16 +388,14 @@ function computeMatchFingerprintFromResults(
 ): string {
   const fingerprintData = matches
     .sort((a, b) => a.stable_match_id.localeCompare(b.stable_match_id))
-    .map(m => ({
+    .map((m) => ({
       stable_match_id: m.stable_match_id,
       left_record_id: m.left_record_id,
       right_record_id: m.right_record_id,
       confidence_score: m.confidence_score,
     }));
-  
-  return createHash('sha256')
-    .update(stableStringify(fingerprintData))
-    .digest('hex');
+
+  return createHash("sha256").update(stableStringify(fingerprintData)).digest("hex");
 }
 
 /**
@@ -405,8 +406,8 @@ async function getMatchOrdering(runId: string): Promise<string[]> {
     `SELECT stable_match_id FROM deterministic_match_results WHERE snapshot_id = $1`,
     [runId]
   );
-  
-  return (matches as Array<{ stable_match_id: string }>).map(m => m.stable_match_id);
+
+  return (matches as Array<{ stable_match_id: string }>).map((m) => m.stable_match_id);
 }
 
 /**
@@ -433,26 +434,26 @@ export async function generateDiffReport(
 }> {
   const replayResult = await executeReplay({
     original_run_id: originalRunId,
-    tenant_id: '', // Would be extracted from context
+    tenant_id: "", // Would be extracted from context
   });
-  
+
   const recommendations: string[] = [];
-  
+
   if (!replayResult.comparison.match_count_match) {
-    recommendations.push('Review match count discrepancy - possible data version mismatch');
+    recommendations.push("Review match count discrepancy - possible data version mismatch");
   }
-  
+
   if (!replayResult.comparison.fingerprint_match) {
-    recommendations.push('Review match fingerprints - possible rule version difference');
+    recommendations.push("Review match fingerprints - possible rule version difference");
   }
-  
+
   if (!replayResult.comparison.ordering_match) {
-    recommendations.push('Review match ordering - possible iteration order dependency');
+    recommendations.push("Review match ordering - possible iteration order dependency");
   }
-  
+
   return {
     summary: replayResult.comparison.matches_identical
-      ? '✅ Replay produces IDENTICAL results to original run'
+      ? "✅ Replay produces IDENTICAL results to original run"
       : `⚠️ Replay produces DIFFERENT results (${replayResult.comparison.mismatches.length} mismatches)`,
     details: replayResult.comparison.mismatches,
     recommendations,
@@ -462,12 +463,14 @@ export async function generateDiffReport(
 /**
  * List replays for a run
  */
-export async function listReplays(_originalRunId: string): Promise<Array<{
-  replay_run_id: string;
-  status: string;
-  matches_identical: boolean;
-  replayed_at: Date;
-}>> {
+export async function listReplays(_originalRunId: string): Promise<
+  Array<{
+    replay_run_id: string;
+    status: string;
+    matches_identical: boolean;
+    replayed_at: Date;
+  }>
+> {
   // Would query a replay history table
   return [];
 }

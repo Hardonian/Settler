@@ -6,7 +6,7 @@
 export interface CursorPaginationParams {
   cursor?: string; // Base64 encoded cursor: {created_at, id}
   limit?: number; // Max items per page
-  direction?: 'next' | 'prev'; // Pagination direction
+  direction?: "next" | "prev"; // Pagination direction
 }
 
 export const DEFAULT_PAGE_LIMIT = 100;
@@ -21,10 +21,10 @@ export interface CursorPaginationResult<T> {
 
 /**
  * Decodes a base64-encoded cursor string into pagination parameters.
- * 
+ *
  * @param cursor - Base64-encoded cursor string from previous pagination response
  * @returns Decoded cursor object with `created_at` and `id`, or `null` if invalid
- * 
+ *
  * @example
  * ```typescript
  * const cursor = decodeCursor("eyJjcmVhdGVkX2F0IjoiMjAyNC0wMS0wMSIsImlkIjoiMTIzIn0=");
@@ -33,7 +33,7 @@ export interface CursorPaginationResult<T> {
  */
 export function decodeCursor(cursor: string): { created_at: string; id: string } | null {
   try {
-    const decoded = Buffer.from(cursor, 'base64').toString('utf-8');
+    const decoded = Buffer.from(cursor, "base64").toString("utf-8");
     return JSON.parse(decoded);
   } catch {
     return null;
@@ -42,11 +42,11 @@ export function decodeCursor(cursor: string): { created_at: string; id: string }
 
 /**
  * Encodes pagination parameters into a base64-encoded cursor string.
- * 
+ *
  * @param created_at - Creation timestamp (ISO string or Date)
  * @param id - Item ID
  * @returns Base64-encoded cursor string
- * 
+ *
  * @example
  * ```typescript
  * const cursor = encodeCursor(new Date(), "123");
@@ -58,7 +58,7 @@ export function encodeCursor(created_at: string | Date, id: string): string {
     created_at: created_at instanceof Date ? created_at.toISOString() : created_at,
     id,
   };
-  return Buffer.from(JSON.stringify(cursor)).toString('base64');
+  return Buffer.from(JSON.stringify(cursor)).toString("base64");
 }
 
 /**
@@ -66,21 +66,21 @@ export function encodeCursor(created_at: string | Date, id: string): string {
  */
 export function buildCursorWhereClause(
   params: CursorPaginationParams,
-  tableAlias: string = ''
+  tableAlias: string = ""
 ): { whereClause: string; params: (string | number)[]; paramIndex: number } {
-  const prefix = tableAlias ? `${tableAlias}.` : '';
+  const prefix = tableAlias ? `${tableAlias}.` : "";
   // Limit is reserved for future query building
   const _limit = Math.min(params.limit || DEFAULT_PAGE_LIMIT, MAX_PAGE_LIMIT);
   void _limit;
-  const direction = params.direction || 'next';
+  const direction = params.direction || "next";
   let paramIndex = 1;
   const queryParams: (string | number)[] = [];
-  let whereClause = '';
+  let whereClause = "";
 
   if (params.cursor) {
     const decoded = decodeCursor(params.cursor);
     if (decoded) {
-      if (direction === 'next') {
+      if (direction === "next") {
         // Get items after cursor
         whereClause = `WHERE (${prefix}created_at, ${prefix}id) < ($${paramIndex}, $${paramIndex + 1})`;
         queryParams.push(decoded.created_at, decoded.id);
@@ -105,11 +105,11 @@ export function buildCursorWhereClause(
  * Build cursor-based ORDER BY clause
  */
 export function buildCursorOrderBy(
-  direction: 'next' | 'prev' = 'next',
-  tableAlias: string = ''
+  direction: "next" | "prev" = "next",
+  tableAlias: string = ""
 ): string {
-  const prefix = tableAlias ? `${tableAlias}.` : '';
-  if (direction === 'next') {
+  const prefix = tableAlias ? `${tableAlias}.` : "";
+  if (direction === "next") {
     return `ORDER BY ${prefix}created_at DESC, ${prefix}id DESC`;
   } else {
     return `ORDER BY ${prefix}created_at ASC, ${prefix}id ASC`;
@@ -122,7 +122,7 @@ export function buildCursorOrderBy(
 export function createCursorPaginationResponse<T extends { created_at: Date | string; id: string }>(
   items: T[],
   limit: number,
-  direction: 'next' | 'prev' = 'next'
+  direction: "next" | "prev" = "next"
 ): CursorPaginationResult<T> {
   const hasMore = items.length > limit;
   const paginatedItems = hasMore ? items.slice(0, limit) : items;
@@ -134,7 +134,7 @@ export function createCursorPaginationResponse<T extends { created_at: Date | st
     const firstItem = paginatedItems[0];
     const lastItem = paginatedItems[paginatedItems.length - 1];
 
-    if (direction === 'next') {
+    if (direction === "next") {
       // For next page, use last item as cursor
       if (hasMore && lastItem) {
         nextCursor = encodeCursor(lastItem.created_at, lastItem.id);
@@ -176,22 +176,26 @@ export function createCursorPaginationResponse<T extends { created_at: Date | st
 /**
  * Parse pagination params from query string
  */
-export function parseCursorPaginationParams(req: { query: Record<string, string | undefined> }): CursorPaginationParams {
+export function parseCursorPaginationParams(req: {
+  query: Record<string, string | undefined>;
+}): CursorPaginationParams {
   const result: {
     cursor?: string;
     limit?: number;
-    direction?: 'next' | 'prev';
+    direction?: "next" | "prev";
   } = {};
   if (req.query.cursor) {
     result.cursor = req.query.cursor;
   }
   const rawLimit = req.query.limit ? Number.parseInt(req.query.limit, 10) : DEFAULT_PAGE_LIMIT;
-  result.limit = Number.isFinite(rawLimit) ? Math.min(Math.max(rawLimit, 1), MAX_PAGE_LIMIT) : DEFAULT_PAGE_LIMIT;
+  result.limit = Number.isFinite(rawLimit)
+    ? Math.min(Math.max(rawLimit, 1), MAX_PAGE_LIMIT)
+    : DEFAULT_PAGE_LIMIT;
 
   if (req.query.cursor && !decodeCursor(req.query.cursor)) {
-    throw new Error('INVALID_CURSOR');
+    throw new Error("INVALID_CURSOR");
   }
 
-  result.direction = req.query.direction === 'prev' ? 'prev' : 'next';
+  result.direction = req.query.direction === "prev" ? "prev" : "next";
   return result as CursorPaginationParams;
 }

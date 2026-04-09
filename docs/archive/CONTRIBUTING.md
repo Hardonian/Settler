@@ -77,12 +77,12 @@ npm run dev
 ### Test Structure
 
 ```typescript
-describe('FeatureName', () => {
+describe("FeatureName", () => {
   beforeEach(() => {
     // Setup
   });
 
-  it('should do something', () => {
+  it("should do something", () => {
     // Arrange
     // Act
     // Assert
@@ -115,7 +115,7 @@ cd packages/api && npm run test:coverage
 
 1. **Create feature branch**: `git checkout -b feature/your-feature-name`
 2. **Make changes**: Write code, add tests, update docs
-3. **Run checks**: 
+3. **Run checks**:
    ```bash
    npm run lint
    npm run typecheck
@@ -136,6 +136,7 @@ type(scope): description
 ```
 
 **Types:**
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -146,6 +147,7 @@ type(scope): description
 - `style`: Code style changes (formatting)
 
 **Examples:**
+
 ```
 feat(api): add webhook retry mechanism
 fix(auth): handle expired refresh tokens
@@ -167,18 +169,22 @@ refactor(repos): extract job repository interface
 
 ```markdown
 ## Description
+
 Brief description of changes
 
 ## Type of Change
+
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Breaking change
 - [ ] Documentation update
 
 ## Testing
+
 How was this tested?
 
 ## Checklist
+
 - [ ] Tests added/updated
 - [ ] Documentation updated
 - [ ] No breaking changes (or documented)

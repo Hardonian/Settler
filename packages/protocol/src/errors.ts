@@ -19,7 +19,7 @@ export class ReconciliationError extends Error {
     details?: Record<string, unknown>
   ) {
     super(message);
-    this.name = 'ReconciliationError';
+    this.name = "ReconciliationError";
     this.code = code;
     this.statusCode = statusCode;
     this.details = details;
@@ -35,14 +35,9 @@ export class ValidationError extends ReconciliationError {
   field?: string | undefined;
   value?: unknown;
 
-  constructor(
-    message: string,
-    field?: string,
-    value?: unknown,
-    details?: Record<string, unknown>
-  ) {
-    super(message, 'VALIDATION_ERROR', 400, details);
-    this.name = 'ValidationError';
+  constructor(message: string, field?: string, value?: unknown, details?: Record<string, unknown>) {
+    super(message, "VALIDATION_ERROR", 400, details);
+    this.name = "ValidationError";
     this.field = field;
     this.value = value;
   }
@@ -52,12 +47,9 @@ export class ValidationError extends ReconciliationError {
  * Security Error
  */
 export class SecurityError extends ReconciliationError {
-  constructor(
-    message: string,
-    details?: Record<string, unknown>
-  ) {
-    super(message, 'SECURITY_ERROR', 403, details);
-    this.name = 'SecurityError';
+  constructor(message: string, details?: Record<string, unknown>) {
+    super(message, "SECURITY_ERROR", 403, details);
+    this.name = "SecurityError";
   }
 }
 
@@ -76,8 +68,8 @@ export class CompilationError extends ReconciliationError {
     column?: number,
     details?: Record<string, unknown>
   ) {
-    super(message, 'COMPILATION_ERROR', 500, details);
-    this.name = 'CompilationError';
+    super(message, "COMPILATION_ERROR", 500, details);
+    this.name = "CompilationError";
     this.component = component;
     this.line = line;
     this.column = column;
@@ -90,13 +82,9 @@ export class CompilationError extends ReconciliationError {
 export class ConfigurationError extends ReconciliationError {
   configPath?: string | undefined;
 
-  constructor(
-    message: string,
-    configPath?: string,
-    details?: Record<string, unknown>
-  ) {
-    super(message, 'CONFIGURATION_ERROR', 500, details);
-    this.name = 'ConfigurationError';
+  constructor(message: string, configPath?: string, details?: Record<string, unknown>) {
+    super(message, "CONFIGURATION_ERROR", 500, details);
+    this.name = "ConfigurationError";
     this.configPath = configPath;
   }
 }

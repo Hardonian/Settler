@@ -1,4 +1,5 @@
 # Settler CLI Quickstart
+
 ## Command-Line Tool for Reconciliation Operations
 
 The Settler CLI provides a fast, scriptable way to manage reconciliation jobs, view reports, and debug issues.
@@ -244,7 +245,7 @@ rules:
       type: range
       days: 1
   conflictResolution: last-wins
-schedule: "0 2 * * *"  # Daily at 2 AM
+schedule: "0 2 * * *" # Daily at 2 AM
 ```
 
 Create the job:
@@ -291,8 +292,8 @@ The CLI supports environment variable substitution in config files:
 
 ```yaml
 config:
-  apiKey: ${STRIPE_SECRET_KEY}  # Uses STRIPE_SECRET_KEY env var
-  shopDomain: ${SHOPIFY_DOMAIN:-default.myshopify.com}  # With default
+  apiKey: ${STRIPE_SECRET_KEY} # Uses STRIPE_SECRET_KEY env var
+  shopDomain: ${SHOPIFY_DOMAIN:-default.myshopify.com} # With default
 ```
 
 ---
@@ -339,19 +340,16 @@ settler reports get "$JOB_ID" --format json | jq '.data.summary'
 ### Node.js Script
 
 ```javascript
-import { execSync } from 'child_process';
+import { execSync } from "child_process";
 
-const jobId = JSON.parse(
-  execSync('settler jobs create --config job.yaml --format json').toString()
-).data.id;
+const jobId = JSON.parse(execSync("settler jobs create --config job.yaml --format json").toString())
+  .data.id;
 
 execSync(`settler jobs run ${jobId} --wait`);
 
-const report = JSON.parse(
-  execSync(`settler reports get ${jobId} --format json`).toString()
-);
+const report = JSON.parse(execSync(`settler reports get ${jobId} --format json`).toString());
 
-console.log('Matched:', report.data.summary.matched);
+console.log("Matched:", report.data.summary.matched);
 ```
 
 ---

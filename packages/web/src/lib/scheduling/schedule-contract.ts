@@ -14,7 +14,7 @@ export function validateScheduleCron(cron: string | null | undefined): ScheduleV
   if (parts.length < 5 || parts.length > 6) {
     return {
       valid: false,
-      errors: ['Invalid cron expression. Expected 5 or 6 fields.'],
+      errors: ["Invalid cron expression. Expected 5 or 6 fields."],
     };
   }
 
@@ -29,13 +29,15 @@ export function validateScheduleCron(cron: string | null | undefined): ScheduleV
   return { valid: true, errors: [] };
 }
 
-export function validateScheduleTimezone(timezone: string | null | undefined): ScheduleValidationResult {
+export function validateScheduleTimezone(
+  timezone: string | null | undefined
+): ScheduleValidationResult {
   if (!timezone || timezone.trim().length === 0) {
-    return { valid: false, errors: ['Timezone is required when schedule is configured.'] };
+    return { valid: false, errors: ["Timezone is required when schedule is configured."] };
   }
 
   try {
-    new Intl.DateTimeFormat('en-US', { timeZone: timezone });
+    new Intl.DateTimeFormat("en-US", { timeZone: timezone });
     return { valid: true, errors: [] };
   } catch {
     return { valid: false, errors: [`Unsupported timezone: ${timezone}`] };

@@ -15,16 +15,20 @@ public/assets/images/
 ## Image Files
 
 ### Favicons
+
 - `settler-favicon-512.jpg` (512x279) - Main favicon
 
 ### Logos
+
 - `settler-logo-main.jpg` (1408x768) - Main Settler logo
 
 ### Social Media
+
 - `settler-og-image.jpg` (2816x1536) - Open Graph image for social sharing
 - `settler-twitter-card.png` (1408x768) - Twitter card image
 
 ### Thumbnails
+
 - `settler-thumbnail.jpg` (1408x768) - General purpose thumbnail
 
 ## Usage
@@ -52,6 +56,7 @@ const ogImageUrl = getImageUrl('ogImage');
 - `thumbnail` - Thumbnail image
 
 All images are automatically referenced in:
+
 - `app/layout.tsx` - Favicon and metadata
 - `public/manifest.json` - PWA icons
 - `lib/metadata.ts` - Page metadata

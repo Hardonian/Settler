@@ -11,6 +11,7 @@ This document validates the Go-To-Market (GTM) reality: pricing page, lead captu
 ### 1. Pricing Page
 
 #### Requirements
+
 - [ ] Display pricing tiers (Free, Pro, Enterprise)
 - [ ] Show feature comparisons
 - [ ] Clear CTAs (Call-to-Action) buttons
@@ -20,11 +21,13 @@ This document validates the Go-To-Market (GTM) reality: pricing page, lead captu
 **Status**: ⚠️ **NEEDS IMPLEMENTATION**
 
 **Evidence**:
+
 - Pricing configuration exists: `packages/api/src/config/pricing.ts`
 - Plan configuration: `packages/web/src/domain/billing/planConfig.ts`
 - Pricing page UI needs to be created
 
 **Next Steps**:
+
 1. Create `/pricing` page component
 2. Add pricing tier display
 3. Add feature comparison table
@@ -33,6 +36,7 @@ This document validates the Go-To-Market (GTM) reality: pricing page, lead captu
 ### 2. Lead Capture
 
 #### Requirements
+
 - [ ] Email capture form
 - [ ] Name capture (optional)
 - [ ] Company name (optional)
@@ -43,11 +47,13 @@ This document validates the Go-To-Market (GTM) reality: pricing page, lead captu
 **Status**: ⚠️ **NEEDS IMPLEMENTATION**
 
 **Evidence**:
+
 - Database schema may support leads table
 - Email service exists: `packages/api/src/services/email/`
 - Lead capture form needs to be created
 
 **Next Steps**:
+
 1. Create leads table migration (if not exists)
 2. Create lead capture API endpoint
 3. Create lead capture form component
@@ -57,6 +63,7 @@ This document validates the Go-To-Market (GTM) reality: pricing page, lead captu
 ### 3. Conversion Tracking
 
 #### Requirements
+
 - [ ] Track sign-up conversions
 - [ ] Track trial starts
 - [ ] Track paid conversions
@@ -67,11 +74,13 @@ This document validates the Go-To-Market (GTM) reality: pricing page, lead captu
 **Status**: ⚠️ **PARTIAL**
 
 **Evidence**:
+
 - User lifecycle tracking exists: `supabase/migrations/20260120000008_user_lifecycle_tracking.sql`
 - Usage tracking exists: `supabase/migrations/20260115000003_usage_tracking.sql`
 - Conversion tracking needs to be implemented
 
 **Next Steps**:
+
 1. Create conversion events table
 2. Implement conversion tracking API
 3. Add conversion tracking to sign-up flow
@@ -81,6 +90,7 @@ This document validates the Go-To-Market (GTM) reality: pricing page, lead captu
 ### 4. Cold Conversion Path Simulation
 
 #### Requirements
+
 - [ ] Simulate anonymous visitor
 - [ ] Track page views
 - [ ] Track CTA clicks
@@ -92,6 +102,7 @@ This document validates the Go-To-Market (GTM) reality: pricing page, lead captu
 **Status**: ⚠️ **NEEDS IMPLEMENTATION**
 
 **Next Steps**:
+
 1. Create conversion path simulation script
 2. Test anonymous → sign-up flow
 3. Test sign-up → trial flow
@@ -103,21 +114,25 @@ This document validates the Go-To-Market (GTM) reality: pricing page, lead captu
 ### Phase 1: Pricing Page
 
 **Files to Create**:
+
 - `packages/web/src/app/pricing/page.tsx` - Pricing page component
 - `packages/web/src/components/pricing/PricingTable.tsx` - Pricing table
 - `packages/web/src/components/pricing/PricingTier.tsx` - Individual tier component
 
 **API Endpoints**:
+
 - `GET /api/pricing/tiers` - Get pricing tiers
 - `POST /api/pricing/track-cta` - Track CTA clicks
 
 ### Phase 2: Lead Capture
 
 **Files to Create**:
+
 - `packages/web/src/components/lead-capture/LeadForm.tsx` - Lead capture form
 - `packages/api/src/routes/leads.ts` - Lead capture API
 
 **Database Migration**:
+
 ```sql
 CREATE TABLE IF NOT EXISTS leads (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -134,10 +149,12 @@ CREATE TABLE IF NOT EXISTS leads (
 ### Phase 3: Conversion Tracking
 
 **Files to Create**:
+
 - `packages/api/src/services/analytics/conversion-tracker.ts` - Conversion tracking service
 - `packages/api/src/routes/analytics/conversions.ts` - Conversion API
 
 **Database Migration**:
+
 ```sql
 CREATE TABLE IF NOT EXISTS conversions (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -154,9 +171,11 @@ CREATE TABLE IF NOT EXISTS conversions (
 ### Phase 4: Cold Conversion Simulation
 
 **Script to Create**:
+
 - `scripts/simulate-cold-conversion.ts` - Conversion path simulation
 
 **Simulation Steps**:
+
 1. Anonymous page view → `/`
 2. View pricing → `/pricing`
 3. Click CTA → Track event
@@ -172,13 +191,9 @@ CREATE TABLE IF NOT EXISTS conversions (
 
 ```typescript
 // Track CTA clicks
-async function trackCTAClick(
-  ctaId: string,
-  location: string,
-  userId?: string
-) {
-  await supabase.from('conversion_events').insert({
-    event_type: 'cta_click',
+async function trackCTAClick(ctaId: string, location: string, userId?: string) {
+  await supabase.from("conversion_events").insert({
+    event_type: "cta_click",
     cta_id: ctaId,
     location,
     user_id: userId,
@@ -195,10 +210,10 @@ async function trackCTAClick(
 // Track conversions
 async function trackConversion(
   userId: string,
-  conversionType: 'signup' | 'trial' | 'paid',
+  conversionType: "signup" | "trial" | "paid",
   source?: string
 ) {
-  await supabase.from('conversions').insert({
+  await supabase.from("conversions").insert({
     user_id: userId,
     conversion_type: conversionType,
     source,
@@ -236,12 +251,12 @@ async function trackConversion(
 
 ## Current Status
 
-| Component | Status | Evidence |
-|-----------|--------|----------|
-| Pricing Page | ⚠️ Needs Implementation | Config exists, UI needed |
-| Lead Capture | ⚠️ Needs Implementation | Schema needed, form needed |
-| Conversion Tracking | ⚠️ Partial | Lifecycle tracking exists |
-| Cold Conversion Path | ⚠️ Needs Implementation | Simulation script needed |
+| Component            | Status                  | Evidence                   |
+| -------------------- | ----------------------- | -------------------------- |
+| Pricing Page         | ⚠️ Needs Implementation | Config exists, UI needed   |
+| Lead Capture         | ⚠️ Needs Implementation | Schema needed, form needed |
+| Conversion Tracking  | ⚠️ Partial              | Lifecycle tracking exists  |
+| Cold Conversion Path | ⚠️ Needs Implementation | Simulation script needed   |
 
 ## Next Steps
 

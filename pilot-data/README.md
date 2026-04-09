@@ -17,7 +17,7 @@ These CSV files can be imported into Settler for testing reconciliation workflow
 # Import payments
 pnpm settler import --source pilot-data/payments.csv --type payments
 
-# Import refunds  
+# Import refunds
 pnpm settler import --source pilot-data/refunds.csv --type refunds
 
 # Import settlements
@@ -38,12 +38,14 @@ The pilot data complements the pre-generated test data in `test-data/exports/smo
 ## Data Format
 
 Each CSV follows the standard Settler import schema:
+
 - Required columns: `id`, `external_id`, `amount`, `currency`, `date`
 - Optional columns: `status`, `type`, `description`, `fee_amount`, `net_amount`
 
 ## Verification
 
 After importing pilot data, verify integrity:
+
 ```bash
 pnpm run doctor
 ```

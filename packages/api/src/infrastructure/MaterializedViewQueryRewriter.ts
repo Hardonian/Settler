@@ -6,10 +6,7 @@
  */
 
 import { logInfo } from "../utils/logger";
-import {
-  COMMON_VIEW_TEMPLATES,
-  MaterializedViewDefinition,
-} from "./MaterializedViewConfig";
+import { COMMON_VIEW_TEMPLATES, MaterializedViewDefinition } from "./MaterializedViewConfig";
 import { getTenantConfig, getMaterializedViewName, getViewStatus } from "./MaterializedViewManager";
 
 interface QueryAnalysis {

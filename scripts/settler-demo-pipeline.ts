@@ -149,7 +149,11 @@ async function main() {
     },
   ];
 
-  runCommand("pnpm", ["exec", "tsx", "scripts/settler-replay.ts", "examples/demo-output/evidence.json"], "Replay verification");
+  runCommand(
+    "pnpm",
+    ["exec", "tsx", "scripts/settler-replay.ts", "examples/demo-output/evidence.json"],
+    "Replay verification"
+  );
 
   await fs.writeFile(
     demoArtifactsPath,

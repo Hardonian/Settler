@@ -7,6 +7,7 @@ Quick reference checklist for setting up all required secrets across platforms.
 Set these in: **Repository Settings → Secrets and variables → Actions**
 
 ### Critical (Required)
+
 - [ ] `SUPABASE_URL`
 - [ ] `SUPABASE_ANON_KEY`
 - [ ] `SUPABASE_SERVICE_ROLE_KEY`
@@ -25,6 +26,7 @@ Set these in: **Repository Settings → Secrets and variables → Actions**
 - [ ] `VERCEL_PROJECT_ID`
 
 ### Important (Recommended)
+
 - [ ] `UPSTASH_REDIS_REST_URL`
 - [ ] `UPSTASH_REDIS_REST_TOKEN`
 - [ ] `REDIS_URL`
@@ -36,6 +38,7 @@ Set these in: **Repository Settings → Secrets and variables → Actions**
 - [ ] `E2E_BASE_URL`
 
 ### Optional (Environment-Specific)
+
 - [ ] `SUPABASE_PROJECT_REF_PREVIEW`
 - [ ] `SUPABASE_URL_PREVIEW`
 - [ ] `SUPABASE_ANON_KEY_PREVIEW`
@@ -52,6 +55,7 @@ Set these in: **Repository Settings → Secrets and variables → Actions**
 Set these in: **Vercel Dashboard → Project → Settings → Environment Variables**
 
 ### Critical (Required)
+
 - [ ] `SUPABASE_URL` (Encrypted, Production/Preview/Development)
 - [ ] `SUPABASE_ANON_KEY` (Encrypted, Production/Preview/Development)
 - [ ] `SUPABASE_SERVICE_ROLE_KEY` (Encrypted, Production/Preview/Development)
@@ -67,6 +71,7 @@ Set these in: **Vercel Dashboard → Project → Settings → Environment Variab
 - [ ] `NEXT_PUBLIC_SUPABASE_ANON_KEY` (Plain, Production/Preview/Development)
 
 ### Important (Recommended)
+
 - [ ] `UPSTASH_REDIS_REST_URL` (Encrypted, Production/Preview)
 - [ ] `UPSTASH_REDIS_REST_TOKEN` (Encrypted, Production/Preview)
 - [ ] `REDIS_URL` (Encrypted, Production/Preview)
@@ -78,6 +83,7 @@ Set these in: **Vercel Dashboard → Project → Settings → Environment Variab
 - [ ] `SECURE_COOKIES` (Plain, Production/Preview) = `true`
 
 ### Optional
+
 - [ ] `NEXT_PUBLIC_GA4_MEASUREMENT_ID` (Plain, Production)
 - [ ] `NEXT_PUBLIC_POSTHOG_KEY` (Plain, Production)
 - [ ] `SENTRY_ENVIRONMENT` (Plain, Production/Preview)
@@ -91,6 +97,7 @@ Set these in: **Vercel Dashboard → Project → Settings → Environment Variab
 Set these via: **Supabase CLI** or **Dashboard → Edge Functions → Secrets**
 
 ### Critical (Required)
+
 - [ ] `UPSTASH_REDIS_REST_URL`
 - [ ] `UPSTASH_REDIS_REST_TOKEN`
 - [ ] `IP_RPM` (e.g., `60`)
@@ -98,6 +105,7 @@ Set these via: **Supabase CLI** or **Dashboard → Edge Functions → Secrets**
 - [ ] `CACHE_MAX_AGE` (e.g., `300`)
 
 ### Important (Recommended)
+
 - [ ] `STRIPE_SECRET_KEY`
 - [ ] `STRIPE_WEBHOOK_SECRET`
 - [ ] `OPENAI_API_KEY` (if using AI features)
@@ -105,6 +113,7 @@ Set these via: **Supabase CLI** or **Dashboard → Edge Functions → Secrets**
 - [ ] `FRONTEND_URL`
 
 **CLI Command:**
+
 ```bash
 supabase secrets set UPSTASH_REDIS_REST_URL="your-url" --project-ref your-project-ref
 supabase secrets set UPSTASH_REDIS_REST_TOKEN="your-token" --project-ref your-project-ref
@@ -121,7 +130,7 @@ Copy `.env.example` to `.env` and fill in values:
 - [ ] Set `SUPABASE_URL`
 - [ ] Set `SUPABASE_ANON_KEY`
 - [ ] Set `SUPABASE_SERVICE_ROLE_KEY`
-- [ ] Set `DATABASE_URL` or individual DB_* variables
+- [ ] Set `DATABASE_URL` or individual DB\_\* variables
 - [ ] Set `JWT_SECRET` (generate: `openssl rand -base64 32`)
 - [ ] Set `ENCRYPTION_KEY` (generate: `openssl rand -hex 16`)
 - [ ] Set `RESEND_API_KEY` (if using emails)
@@ -154,21 +163,25 @@ openssl rand -base64 24
 After setting up secrets:
 
 ### GitHub
+
 - [ ] Run a test workflow to verify secrets are accessible
 - [ ] Check workflow logs for any missing secret errors
 
 ### Vercel
+
 - [ ] Trigger a new deployment
 - [ ] Check build logs for missing variables
 - [ ] Verify runtime environment variables are accessible
 - [ ] Test client-side `NEXT_PUBLIC_*` variables in browser console
 
 ### Supabase
+
 - [ ] Deploy an edge function to verify secrets are accessible
 - [ ] Check function logs for secret access
 - [ ] Test edge function execution
 
 ### Local
+
 - [ ] Start development server: `npm run dev`
 - [ ] Verify no missing environment variable errors
 - [ ] Test API endpoints that require secrets

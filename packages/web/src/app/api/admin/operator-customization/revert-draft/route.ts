@@ -31,7 +31,10 @@ export const POST = withSecurity(
 
       const rev = await revertPublishedToDraft(prisma, resolved.tenant.tenantId, userId);
       if (!rev.ok) {
-        return NextResponse.json({ error: "validation_failed", errors: rev.errors }, { status: 400 });
+        return NextResponse.json(
+          { error: "validation_failed", errors: rev.errors },
+          { status: 400 }
+        );
       }
 
       await recordCustomizationAudit(

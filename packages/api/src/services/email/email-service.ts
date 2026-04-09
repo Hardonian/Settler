@@ -43,16 +43,16 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
   }
 }
 
-async function loadResendModule(): Promise<typeof import('resend') | null> {
-  return import('resend').catch((error: unknown) => {
-    logError('Resend SDK not available', error);
+async function loadResendModule(): Promise<typeof import("resend") | null> {
+  return import("resend").catch((error: unknown) => {
+    logError("Resend SDK not available", error);
     return null;
   });
 }
 
-async function loadSendGridModule(): Promise<typeof import('@sendgrid/mail') | null> {
-  return import('@sendgrid/mail').catch((error: unknown) => {
-    logError('SendGrid SDK not available', error);
+async function loadSendGridModule(): Promise<typeof import("@sendgrid/mail") | null> {
+  return import("@sendgrid/mail").catch((error: unknown) => {
+    logError("SendGrid SDK not available", error);
     return null;
   });
 }
@@ -142,8 +142,7 @@ async function sendViaSendGrid(options: EmailOptions): Promise<boolean> {
     return false;
   }
 
-  const sgMail =
-    "default" in sgMailModule ? sgMailModule.default : sgMailModule;
+  const sgMail = "default" in sgMailModule ? sgMailModule.default : sgMailModule;
 
   try {
     sgMail.setApiKey(apiKey);

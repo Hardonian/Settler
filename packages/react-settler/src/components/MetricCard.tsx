@@ -3,44 +3,38 @@
  * Displays a key reconciliation metric
  */
 
-import { useCompilationContext } from '../context';
+import { useCompilationContext } from "../context";
 
 export interface MetricCardProps {
   title: string;
   value: string | number;
   subtitle?: string;
-  trend?: 'up' | 'down' | 'neutral';
+  trend?: "up" | "down" | "neutral";
   className?: string;
 }
 
-export function MetricCard({
-  title,
-  value,
-  subtitle,
-  trend,
-  className
-}: MetricCardProps) {
+export function MetricCard({ title, value, subtitle, trend, className }: MetricCardProps) {
   const context = useCompilationContext();
 
   // In config mode, register widget
-  if (context.mode === 'config') {
-    const widgetId = `metric-${title.toLowerCase().replace(/\s+/g, '-')}`;
+  if (context.mode === "config") {
+    const widgetId = `metric-${title.toLowerCase().replace(/\s+/g, "-")}`;
     if (!context.config.widgets) {
       context.config.widgets = {};
     }
     context.config.widgets[widgetId] = {
       id: widgetId,
-      type: 'metric-card',
+      type: "metric-card",
       title,
       props: {
         subtitle,
-        trend
-      }
+        trend,
+      },
     };
   }
 
   // In UI mode, render card
-  if (context.mode === 'ui') {
+  if (context.mode === "ui") {
     return (
       <div className={className} data-widget="metric-card">
         <div data-metric-title={title}>

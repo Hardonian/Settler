@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { AlertCircle } from 'lucide-react';
-import { EmptyState } from './empty-state';
-import { logger } from '@/lib/logging/logger';
-import { analytics } from '@/lib/analytics';
-import { diagnostics } from '@/lib/diagnostics';
+import * as React from "react";
+import { AlertCircle } from "lucide-react";
+import { EmptyState } from "./empty-state";
+import { logger } from "@/lib/logging/logger";
+import { analytics } from "@/lib/analytics";
+import { diagnostics } from "@/lib/diagnostics";
 
 export interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -59,8 +59,8 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   }
 
   override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    const componentName = this.props.componentName || 'Unknown';
-    
+    const componentName = this.props.componentName || "Unknown";
+
     // Log error
     logger.error(`ErrorBoundary caught error in ${componentName}`, error, {
       componentStack: errorInfo.componentStack,
@@ -75,7 +75,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     // Track in analytics
     analytics.trackError(error, {
       message: error.message,
-      type: 'error_boundary',
+      type: "error_boundary",
       component: componentName,
       componentStack: errorInfo.componentStack,
     });

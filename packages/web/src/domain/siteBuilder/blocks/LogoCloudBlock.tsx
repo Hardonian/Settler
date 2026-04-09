@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { LogoCloudBlock } from '../pageSchema';
+import Image from "next/image";
+import { LogoCloudBlock } from "../pageSchema";
 
 export function LogoCloudBlockComponent({ block }: { block: LogoCloudBlock }) {
   return (

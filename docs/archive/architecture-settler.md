@@ -59,6 +59,7 @@ Each domain is self-contained and can be extracted into a separate microservice 
 ## Database
 
 Settler uses:
+
 - **Supabase/PostgreSQL** - Primary database
 - **Prisma** - ORM for type-safe database access
 - Schema location: `/workspace/prisma/schema.prisma`
@@ -75,6 +76,7 @@ API routes follow a consistent error response format:
 ```
 
 HTTP status codes:
+
 - `400` - Bad request (validation errors)
 - `401` - Unauthorized (missing/invalid API key)
 - `404` - Not found
@@ -83,6 +85,7 @@ HTTP status codes:
 ## Type Safety
 
 All code is strictly typed with TypeScript:
+
 - No `any` types
 - Strict null checks enabled
 - Type-safe Prisma queries

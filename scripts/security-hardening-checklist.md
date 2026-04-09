@@ -10,21 +10,25 @@
 ## 🔒 Security Hardening
 
 ### Environment Variables
+
 - ✅ All secrets use environment variables (no hardcoded secrets in production code)
 - ✅ Example/test code uses placeholder values
 - ⚠️ **Action Required**: Ensure all environment variables are documented in `.env.example`
 
 ### Authentication & Authorization
+
 - ✅ Tenant isolation via RLS policies
 - ✅ Billing checks enforce subscription requirements
 - ✅ Admin routes protected with authentication
 
 ### Error Handling
+
 - ✅ Graceful degradation implemented
 - ✅ Error messages don't leak sensitive information
 - ⚠️ **Review**: Check for empty catch blocks (audit script will flag these)
 
 ### Dependencies
+
 - ⚠️ **Action Required**: Review and update vulnerable dependencies:
   - `jws` < 3.2.3 (high severity)
   - `next` 13.3.0 - 14.2.34 (high severity)
@@ -32,21 +36,25 @@
 ## 🚀 Performance Hardening
 
 ### Database
+
 - ✅ Indexes on foreign keys
 - ✅ Indexes on frequently queried fields (status, dates, tenantId)
 - ⚠️ **Review**: Check for N+1 query patterns in report generation
 
 ### Caching
+
 - ✅ API gateway caching middleware
 - ✅ Materialized views for common queries
 
 ## 📝 Code Quality
 
 ### Type Safety
+
 - ✅ TypeScript strict mode enabled
 - ⚠️ **Review**: Some `any` types remain (acceptable for dynamic data)
 
 ### Testing
+
 - ✅ Smoke tests (`npm run qa:smoke`)
 - ✅ Type checking (`npm run typecheck`)
 - ✅ Linting (`npm run lint`)

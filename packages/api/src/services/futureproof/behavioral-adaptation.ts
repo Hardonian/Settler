@@ -1,21 +1,26 @@
 /**
  * Behavioral Adaptation
- * 
+ *
  * Agents that continuously adjust system defaults, routing, cost thresholds, etc.
  * Part 13: Long-Range Futureproofing
  */
 
-import { logInfo } from '../../utils/logger';
+import { logInfo } from "../../utils/logger";
 
 export interface SystemDefaults {
-  routingPreference: 'cost' | 'latency' | 'accuracy' | 'balanced';
+  routingPreference: "cost" | "latency" | "accuracy" | "balanced";
   costThreshold: number;
   pipelineTemplateChoice: string;
   reconAccuracyHeuristic: number;
 }
 
 export interface AdaptationEvent {
-  type: 'default_change' | 'routing_change' | 'cost_threshold_change' | 'template_change' | 'heuristic_change';
+  type:
+    | "default_change"
+    | "routing_change"
+    | "cost_threshold_change"
+    | "template_change"
+    | "heuristic_change";
   oldValue: unknown;
   newValue: unknown;
   reason: string;
@@ -28,9 +33,9 @@ export class BehavioralAdaptation {
 
   constructor() {
     this.defaults = {
-      routingPreference: 'balanced',
+      routingPreference: "balanced",
       costThreshold: 100,
-      pipelineTemplateChoice: 'default',
+      pipelineTemplateChoice: "default",
       reconAccuracyHeuristic: 0.9,
     };
   }
@@ -46,21 +51,21 @@ export class BehavioralAdaptation {
    * Adapt routing preference
    */
   adaptRoutingPreference(
-    preference: 'cost' | 'latency' | 'accuracy' | 'balanced',
+    preference: "cost" | "latency" | "accuracy" | "balanced",
     reason: string
   ): void {
     const oldValue = this.defaults.routingPreference;
     this.defaults.routingPreference = preference;
 
     this.adaptationHistory.push({
-      type: 'routing_change',
+      type: "routing_change",
       oldValue,
       newValue: preference,
       reason,
       timestamp: new Date(),
     });
 
-    logInfo('Routing preference adapted', { oldValue, newValue: preference, reason });
+    logInfo("Routing preference adapted", { oldValue, newValue: preference, reason });
   }
 
   /**
@@ -71,14 +76,14 @@ export class BehavioralAdaptation {
     this.defaults.costThreshold = threshold;
 
     this.adaptationHistory.push({
-      type: 'cost_threshold_change',
+      type: "cost_threshold_change",
       oldValue,
       newValue: threshold,
       reason,
       timestamp: new Date(),
     });
 
-    logInfo('Cost threshold adapted', { oldValue, newValue: threshold, reason });
+    logInfo("Cost threshold adapted", { oldValue, newValue: threshold, reason });
   }
 
   /**
@@ -89,14 +94,14 @@ export class BehavioralAdaptation {
     this.defaults.pipelineTemplateChoice = template;
 
     this.adaptationHistory.push({
-      type: 'template_change',
+      type: "template_change",
       oldValue,
       newValue: template,
       reason,
       timestamp: new Date(),
     });
 
-    logInfo('Pipeline template adapted', { oldValue, newValue: template, reason });
+    logInfo("Pipeline template adapted", { oldValue, newValue: template, reason });
   }
 
   /**
@@ -107,14 +112,14 @@ export class BehavioralAdaptation {
     this.defaults.reconAccuracyHeuristic = heuristic;
 
     this.adaptationHistory.push({
-      type: 'heuristic_change',
+      type: "heuristic_change",
       oldValue,
       newValue: heuristic,
       reason,
       timestamp: new Date(),
     });
 
-    logInfo('Recon accuracy heuristic adapted', { oldValue, newValue: heuristic, reason });
+    logInfo("Recon accuracy heuristic adapted", { oldValue, newValue: heuristic, reason });
   }
 
   /**
@@ -135,33 +140,27 @@ export class BehavioralAdaptation {
   }): Promise<void> {
     // Adapt cost threshold if costs are high
     if (usageData.avgCost > this.defaults.costThreshold * 1.5) {
-      this.adaptCostThreshold(
-        usageData.avgCost * 1.2,
-        'Costs exceeding threshold - adjusting'
-      );
+      this.adaptCostThreshold(usageData.avgCost * 1.2, "Costs exceeding threshold - adjusting");
     }
 
     // Adapt routing preference based on priorities
     if (usageData.avgLatency > 5000 && usageData.avgCost < this.defaults.costThreshold) {
-      this.adaptRoutingPreference('latency', 'High latency detected - prioritizing speed');
+      this.adaptRoutingPreference("latency", "High latency detected - prioritizing speed");
     } else if (usageData.avgCost > this.defaults.costThreshold) {
-      this.adaptRoutingPreference('cost', 'High costs detected - prioritizing cost');
+      this.adaptRoutingPreference("cost", "High costs detected - prioritizing cost");
     }
 
     // Adapt template choice to most popular
     const mostPopular = usageData.popularTemplates[0];
     if (mostPopular && mostPopular !== this.defaults.pipelineTemplateChoice) {
-      this.adaptPipelineTemplate(
-        mostPopular,
-        'Most popular template - switching default'
-      );
+      this.adaptPipelineTemplate(mostPopular, "Most popular template - switching default");
     }
 
     // Adapt accuracy heuristic
     if (usageData.avgAccuracy < this.defaults.reconAccuracyHeuristic) {
       this.adaptReconAccuracy(
         usageData.avgAccuracy * 0.95,
-        'Accuracy below target - adjusting heuristic'
+        "Accuracy below target - adjusting heuristic"
       );
     }
   }

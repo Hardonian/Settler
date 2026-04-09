@@ -9,10 +9,7 @@ Industry-specific modules for specialized use cases.
 Compare contract versions to identify changes:
 
 ```javascript
-const diff = await settler.legaltech.diffContracts(
-  contract1,
-  contract2
-);
+const diff = await settler.legaltech.diffContracts(contract1, contract2);
 
 // Returns:
 // {
@@ -55,6 +52,7 @@ Map learning outcomes between syllabus and assessments.
 ### LMS Compatibility
 
 Check compatibility with:
+
 - Canvas
 - Blackboard
 - Moodle
@@ -67,10 +65,7 @@ Check compatibility with:
 Reconcile accounting ledgers:
 
 ```javascript
-const result = await settler.fintech.reconcileLedgers(
-  sourceEntries,
-  targetEntries
-);
+const result = await settler.fintech.reconcileLedgers(sourceEntries, targetEntries);
 
 // Returns:
 // {
@@ -96,10 +91,7 @@ Pre-built templates for common financial integrations.
 Compare privacy policies and detect changes:
 
 ```javascript
-const diff = await settler.compliance.comparePrivacyPolicies(
-  policy1,
-  policy2
-);
+const diff = await settler.compliance.comparePrivacyPolicies(policy1, policy2);
 
 // Returns:
 // {

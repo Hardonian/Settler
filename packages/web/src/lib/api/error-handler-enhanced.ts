@@ -1,12 +1,12 @@
 /**
  * Enhanced Error Handler
- * 
+ *
  * Provides comprehensive error handling for API routes with proper logging,
  * sanitization, and user-friendly error messages.
  */
 
-import { NextResponse } from 'next/server';
-import { sanitizeApiData } from '@/lib/privacy/pii-filter';
+import { NextResponse } from "next/server";
+import { sanitizeApiData } from "@/lib/privacy/pii-filter";
 
 export interface ApiError {
   code: string;
@@ -21,68 +21,70 @@ export interface ApiError {
  */
 export function createErrorResponse(
   error: unknown,
-  defaultMessage: string = 'An error occurred',
+  defaultMessage: string = "An error occurred",
   defaultStatusCode: number = 500
 ): NextResponse {
   let apiError: ApiError;
-  
+
   if (error instanceof Error) {
     // Determine status code from error message or type
     let statusCode = defaultStatusCode;
-    
-    if (error.message.includes('not found') || error.message.includes('does not exist')) {
+
+    if (error.message.includes("not found") || error.message.includes("does not exist")) {
       statusCode = 404;
-    } else if (error.message.includes('unauthorized') || error.message.includes('authentication')) {
+    } else if (error.message.includes("unauthorized") || error.message.includes("authentication")) {
       statusCode = 401;
-    } else if (error.message.includes('forbidden') || error.message.includes('permission')) {
+    } else if (error.message.includes("forbidden") || error.message.includes("permission")) {
       statusCode = 403;
-    } else if (error.message.includes('validation') || error.message.includes('invalid')) {
+    } else if (error.message.includes("validation") || error.message.includes("invalid")) {
       statusCode = 400;
-    } else if (error.message.includes('rate limit')) {
+    } else if (error.message.includes("rate limit")) {
       statusCode = 429;
     }
-    
+
     apiError = {
-      code: error.name || 'INTERNAL_ERROR',
+      code: error.name || "INTERNAL_ERROR",
       message: error.message || defaultMessage,
       statusCode,
-      ...(process.env.NODE_ENV === 'development' && error.stack ? { stack: error.stack } : {}),
+      ...(process.env.NODE_ENV === "development" && error.stack ? { stack: error.stack } : {}),
     };
-  } else if (typeof error === 'object' && error !== null) {
+  } else if (typeof error === "object" && error !== null) {
     const errorObj = error as Record<string, unknown>;
     apiError = {
-      code: String(errorObj.code || 'UNKNOWN_ERROR'),
+      code: String(errorObj.code || "UNKNOWN_ERROR"),
       message: String(errorObj.message || defaultMessage),
       statusCode: Number(errorObj.statusCode || defaultStatusCode),
       details: errorObj.details as Record<string, unknown> | undefined,
     };
   } else {
     apiError = {
-      code: 'UNKNOWN_ERROR',
+      code: "UNKNOWN_ERROR",
       message: defaultMessage,
       statusCode: defaultStatusCode,
     };
   }
-  
+
   // Sanitize error details
   if (apiError.details) {
     apiError.details = sanitizeApiData({ body: apiError.details }).body as Record<string, unknown>;
   }
-  
+
   // Log error (server-side only)
-  console.error('[API Error]', {
+  console.error("[API Error]", {
     code: apiError.code,
     message: apiError.message,
     statusCode: apiError.statusCode,
-    ...(process.env.NODE_ENV === 'development' && apiError.stack ? { stack: apiError.stack } : {}),
+    ...(process.env.NODE_ENV === "development" && apiError.stack ? { stack: apiError.stack } : {}),
   });
-  
+
   return NextResponse.json(
     {
       error: apiError.code,
       message: apiError.message,
       ...(apiError.details ? { details: apiError.details } : {}),
-      ...(process.env.NODE_ENV === 'development' && apiError.stack ? { stack: apiError.stack } : {}),
+      ...(process.env.NODE_ENV === "development" && apiError.stack
+        ? { stack: apiError.stack }
+        : {}),
     },
     { status: apiError.statusCode }
   );
@@ -111,8 +113,8 @@ export function withErrorHandling<T extends unknown[]>(
 export function handleValidationError(errors: string[]): NextResponse {
   return NextResponse.json(
     {
-      error: 'VALIDATION_ERROR',
-      message: 'Request validation failed',
+      error: "VALIDATION_ERROR",
+      message: "Request validation failed",
       errors,
     },
     { status: 400 }

@@ -4,10 +4,10 @@
  * Shows when a playground route is not found.
  */
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { AlertCircle } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { AlertCircle } from "lucide-react";
 
 export default function PlaygroundNotFound() {
   return (
@@ -18,9 +18,7 @@ export default function PlaygroundNotFound() {
             <AlertCircle className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
             <CardTitle>Page Not Found</CardTitle>
           </div>
-          <CardDescription>
-            The playground page you're looking for doesn't exist.
-          </CardDescription>
+          <CardDescription>The playground page you're looking for doesn't exist.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
