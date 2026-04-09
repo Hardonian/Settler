@@ -1,7 +1,10 @@
 import { logError } from "../../utils/logger";
 import { eventBus } from "../events/event-bus";
 import { prisma } from "../../infrastructure/db/prisma";
-import { buildSupportIntakeRunContext } from "@settler/reconciliation-core";
+import {
+  buildSupportIntakeExceptionContext,
+  buildSupportIntakeRunContext,
+} from "@settler/reconciliation-core";
 import {
   submitSupportIntake as submitSupportIntakeCore,
   type StoredSupportIntake,
@@ -23,6 +26,8 @@ export async function submitSupportIntake(params: {
       path: params.path,
       body: params.body,
       resolveRunContext: (tenantId, runId) => buildSupportIntakeRunContext(prisma, tenantId, runId),
+      resolveExceptionContext: (tenantId, exceptionId) =>
+        buildSupportIntakeExceptionContext(prisma, tenantId, exceptionId),
       hooks: {
         afterPersist: async ({
           submissionId,
@@ -31,6 +36,7 @@ export async function submitSupportIntake(params: {
           path: _path,
           payload,
           runContext,
+          exceptionContext,
         }) => {
           await eventBus.emitEvent(
             "support.issue.created",
@@ -39,7 +45,9 @@ export async function submitSupportIntake(params: {
               submissionId,
               category: payload.category,
               runId: payload.run_id ?? null,
+              exceptionId: payload.exception_id ?? null,
               runIntelligence: runContext,
+              exceptionIntelligence: exceptionContext,
               route: payload.route ?? null,
               module: payload.module ?? null,
             },

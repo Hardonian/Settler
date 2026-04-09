@@ -12,7 +12,10 @@ import {
   buildTenantContextErrorResponse,
   requireTenantRequestContext,
 } from "@/lib/api/tenant-context";
-import { buildSupportIntakeRunContext } from "@settler/reconciliation-core";
+import {
+  buildSupportIntakeExceptionContext,
+  buildSupportIntakeRunContext,
+} from "@settler/reconciliation-core";
 import {
   submitSupportIntake,
   SUPPORT_ISSUE_CATEGORY,
@@ -39,6 +42,8 @@ const postBodySchema = z.object({
   description: z.string().min(20).max(5000),
   category: z.enum(["technical", "billing", "feature_request", "bug", "other"]),
   priority: z.enum(["low", "medium", "high", "urgent"]),
+  runId: z.string().min(1).optional(),
+  exceptionId: z.string().min(1).optional(),
 });
 
 type IntakeChanges = {
@@ -47,10 +52,12 @@ type IntakeChanges = {
   description?: string;
   operator_triage_priority?: string | null;
   run_id?: string | null;
+  exception_id?: string | null;
   route?: string | null;
   module?: string | null;
   path?: string;
   run_context?: Record<string, unknown> | null;
+  exception_context?: Record<string, unknown> | null;
 };
 
 function mapRowsToInboxItems(rows: SupportInboxAuditRow[]) {
@@ -62,8 +69,29 @@ function mapRowsToInboxItems(rows: SupportInboxAuditRow[]) {
     const firstLine = desc.split("\n")[0] ?? "";
     const preview = firstLine.length > 100 ? `${firstLine.slice(0, 97)}…` : firstLine;
     const runCtx = c.run_context;
+    const exceptionCtx = c.exception_context;
     const runState =
       runCtx && typeof runCtx === "object" && "state" in runCtx ? String(runCtx.state) : null;
+    const exceptionState =
+      exceptionCtx && typeof exceptionCtx === "object" && "state" in exceptionCtx
+        ? String(exceptionCtx.state)
+        : null;
+    const familySummary =
+      exceptionCtx &&
+      typeof exceptionCtx === "object" &&
+      "familySummary" in exceptionCtx &&
+      exceptionCtx.familySummary &&
+      typeof exceptionCtx.familySummary === "object"
+        ? (exceptionCtx.familySummary as Record<string, unknown>)
+        : null;
+    const operatorSummary =
+      exceptionCtx &&
+      typeof exceptionCtx === "object" &&
+      "operatorSummary" in exceptionCtx &&
+      exceptionCtx.operatorSummary &&
+      typeof exceptionCtx.operatorSummary === "object"
+        ? (exceptionCtx.operatorSummary as Record<string, unknown>)
+        : null;
 
     return {
       id: row.id,
@@ -79,6 +107,16 @@ function mapRowsToInboxItems(rows: SupportInboxAuditRow[]) {
       createdAt: row.createdAt.toISOString(),
       runId: c.run_id ?? null,
       runContextState: runState,
+      exceptionId: c.exception_id ?? null,
+      exceptionContextState: exceptionState,
+      familyLabel:
+        (typeof familySummary?.familyLabel === "string" && familySummary.familyLabel) ||
+        (typeof operatorSummary?.familyLabel === "string" && operatorSummary.familyLabel) ||
+        null,
+      familyState:
+        (typeof familySummary?.state === "string" && familySummary.state) ||
+        (typeof operatorSummary?.familyState === "string" && operatorSummary.familyState) ||
+        null,
       route: c.route ?? null,
       module: c.module ?? null,
       categoryLabel: label,
@@ -203,10 +241,14 @@ export const POST = withSecurity(
         body: {
           category: categoryMap[category],
           description: `${subject.trim()}\n\n${description.trim()}`,
+          run_id: parsed.data.runId?.trim() || undefined,
+          exception_id: parsed.data.exceptionId?.trim() || undefined,
           operator_triage_priority: priority,
           module: category,
         },
         resolveRunContext: (tid, runId) => buildSupportIntakeRunContext(prisma, tid, runId),
+        resolveExceptionContext: (tid, exceptionId) =>
+          buildSupportIntakeExceptionContext(prisma, tid, exceptionId),
       });
 
       return NextResponse.json(

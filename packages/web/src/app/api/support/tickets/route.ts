@@ -31,12 +31,14 @@ type IntakeChanges = {
   submission_id?: string;
   category?: string;
   run_id?: string | null;
+  exception_id?: string | null;
   route?: string | null;
   module?: string | null;
   description?: string;
   operator_triage_priority?: string | null;
   path?: string;
   run_context?: Record<string, unknown> | null;
+  exception_context?: Record<string, unknown> | null;
 };
 
 export const GET = withSecurity(
@@ -69,8 +71,29 @@ export const GET = withSecurity(
           const desc = typeof c.description === "string" ? c.description : "";
           const preview = desc.length > 120 ? `${desc.slice(0, 117)}…` : desc;
           const runCtx = c.run_context;
+          const exceptionCtx = c.exception_context;
           const runState =
             runCtx && typeof runCtx === "object" && "state" in runCtx ? String(runCtx.state) : null;
+          const exceptionState =
+            exceptionCtx && typeof exceptionCtx === "object" && "state" in exceptionCtx
+              ? String(exceptionCtx.state)
+              : null;
+          const familySummary =
+            exceptionCtx &&
+            typeof exceptionCtx === "object" &&
+            "familySummary" in exceptionCtx &&
+            exceptionCtx.familySummary &&
+            typeof exceptionCtx.familySummary === "object"
+              ? (exceptionCtx.familySummary as Record<string, unknown>)
+              : null;
+          const operatorSummary =
+            exceptionCtx &&
+            typeof exceptionCtx === "object" &&
+            "operatorSummary" in exceptionCtx &&
+            exceptionCtx.operatorSummary &&
+            typeof exceptionCtx.operatorSummary === "object"
+              ? (exceptionCtx.operatorSummary as Record<string, unknown>)
+              : null;
 
           return {
             id: row.id,
@@ -85,6 +108,16 @@ export const GET = withSecurity(
             module: c.module ?? null,
             runId: c.run_id ?? null,
             runContextState: runState,
+            exceptionId: c.exception_id ?? null,
+            exceptionContextState: exceptionState,
+            familyLabel:
+              (typeof familySummary?.familyLabel === "string" && familySummary.familyLabel) ||
+              (typeof operatorSummary?.familyLabel === "string" && operatorSummary.familyLabel) ||
+              null,
+            familyState:
+              (typeof familySummary?.state === "string" && familySummary.state) ||
+              (typeof operatorSummary?.familyState === "string" && operatorSummary.familyState) ||
+              null,
             descriptionPreview: preview,
             fullDescription: desc,
             createdAt: row.createdAt.toISOString(),

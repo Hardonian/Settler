@@ -16,7 +16,10 @@ import {
   buildTenantContextErrorResponse,
   requireTenantRequestContext,
 } from "@/lib/api/tenant-context";
-import { buildSupportIntakeRunContext } from "@settler/reconciliation-core";
+import {
+  buildSupportIntakeExceptionContext,
+  buildSupportIntakeRunContext,
+} from "@settler/reconciliation-core";
 import { submitSupportIntake } from "@settler/support-intake";
 import { getCorrelationId, addCorrelationHeaders } from "@/lib/monitoring/correlation";
 
@@ -81,6 +84,8 @@ export const POST = withSecurity(
           path: request.nextUrl.pathname,
           body: { ...parsed.data, tenant_id: tenantId },
           resolveRunContext: (tid, runId) => buildSupportIntakeRunContext(prisma, tid, runId),
+          resolveExceptionContext: (tid, exceptionId) =>
+            buildSupportIntakeExceptionContext(prisma, tid, exceptionId),
         });
 
         const res = NextResponse.json(
