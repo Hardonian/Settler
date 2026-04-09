@@ -17,9 +17,9 @@ export const CLIENT_ENV_KEYS = [
 
 export const SERVER_ENV_KEYS = [
   "NODE_ENV",
-  "SUPABASE_URL",
-  "SUPABASE_ANON_KEY",
-  "SUPABASE_SERVICE_ROLE_KEY",
+  "DATABASE_URL",
+  "ANON_KEY",
+  "SERVICE_ROLE_KEY",
   "DATABASE_URL",
   "SUPABASE_DATABASE_URL",
   "DIRECT_URL",
@@ -65,10 +65,10 @@ export const SERVER_ENV_KEYS = [
   "AIRBYTE_WORKSPACE_ID",
 ] as const;
 
-export const BUILD_REQUIRED_SERVER_KEYS = ["SUPABASE_URL", "SUPABASE_ANON_KEY"] as const;
+export const BUILD_REQUIRED_SERVER_KEYS = ["DATABASE_URL", "ANON_KEY"] as const;
 
 export const RUNTIME_REQUIRED_SERVER_KEYS = [
-  "SUPABASE_SERVICE_ROLE_KEY",
+  "SERVICE_ROLE_KEY",
   "JWT_SECRET",
   "ENCRYPTION_KEY",
 ] as const;
@@ -89,10 +89,9 @@ const clientEnvSchema = z
 const serverEnvSchema = z
   .object({
     NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
-    SUPABASE_URL: z.string().url(),
-    SUPABASE_ANON_KEY: z.string().min(1),
-    SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
-    DATABASE_URL: z.string().url().optional(),
+    DATABASE_URL: z.string().url(),
+    ANON_KEY: z.string().min(1),
+    SERVICE_ROLE_KEY: z.string().min(1),
     SUPABASE_DATABASE_URL: z.string().url().optional(),
     DIRECT_URL: z.string().url().optional(),
     JWT_SECRET: z.string().min(32),

@@ -14,9 +14,8 @@ import { z } from "zod";
 export const serverEnvSchema = z.object({
   // Database
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
-  SUPABASE_URL: z.string().url(),
-  SUPABASE_ANON_KEY: z.string().min(1),
-  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+  ANON_KEY: z.string().min(1),
+  SERVICE_ROLE_KEY: z.string().min(1),
 
   // Security
   JWT_SECRET: z.string().min(32, "JWT_SECRET must be at least 32 characters"),

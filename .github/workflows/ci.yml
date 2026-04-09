@@ -85,9 +85,8 @@ jobs:
       NEXT_PUBLIC_APP_URL: http://localhost:3000
       NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
       NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-anon-key
-      SUPABASE_URL: https://dummy.supabase.co
-      SUPABASE_ANON_KEY: dummy-anon-key
-      SUPABASE_SERVICE_ROLE_KEY: dummy-service-role-key
+      ANON_KEY: dummy-anon-key
+      SERVICE_ROLE_KEY: dummy-service-role-key
       JWT_SECRET: test-secret-min-32-chars-long-for-testing
       ENCRYPTION_KEY: 12345678901234567890123456789012
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
@@ -157,9 +156,8 @@ jobs:
       NEXT_PUBLIC_APP_URL: http://localhost:3000
       NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
       NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-anon-key
-      SUPABASE_URL: https://dummy.supabase.co
-      SUPABASE_ANON_KEY: dummy-anon-key
-      SUPABASE_SERVICE_ROLE_KEY: dummy-service-role-key
+      ANON_KEY: dummy-anon-key
+      SERVICE_ROLE_KEY: dummy-service-role-key
       JWT_SECRET: test-secret-min-32-chars-long-for-testing
       ENCRYPTION_KEY: 12345678901234567890123456789012
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
@@ -196,9 +194,8 @@ jobs:
       NEXT_PUBLIC_APP_URL: http://localhost:3000
       NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
       NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-anon-key
-      SUPABASE_URL: https://dummy.supabase.co
-      SUPABASE_ANON_KEY: dummy-anon-key
-      SUPABASE_SERVICE_ROLE_KEY: dummy-service-role-key
+      ANON_KEY: dummy-anon-key
+      SERVICE_ROLE_KEY: dummy-service-role-key
       JWT_SECRET: test-secret-min-32-chars-long-for-testing
       ENCRYPTION_KEY: 12345678901234567890123456789012
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
@@ -232,9 +229,8 @@ jobs:
       NEXT_PUBLIC_APP_URL: http://localhost:3000
       NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
       NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-anon-key
-      SUPABASE_URL: https://dummy.supabase.co
-      SUPABASE_ANON_KEY: dummy-anon-key
-      SUPABASE_SERVICE_ROLE_KEY: dummy-service-role-key
+      ANON_KEY: dummy-anon-key
+      SERVICE_ROLE_KEY: dummy-service-role-key
       JWT_SECRET: test-secret-min-32-chars-long-for-testing
       ENCRYPTION_KEY: 12345678901234567890123456789012
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
@@ -309,9 +305,8 @@ jobs:
       REDIS_URL: redis://localhost:6379
       NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
       NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-anon-key
-      SUPABASE_URL: https://dummy.supabase.co
-      SUPABASE_ANON_KEY: dummy-anon-key
-      SUPABASE_SERVICE_ROLE_KEY: dummy-service-role-key
+      ANON_KEY: dummy-anon-key
+      SERVICE_ROLE_KEY: dummy-service-role-key
       JWT_SECRET: test-secret-min-32-chars-long-for-testing
       ENCRYPTION_KEY: 12345678901234567890123456789012
     steps:
