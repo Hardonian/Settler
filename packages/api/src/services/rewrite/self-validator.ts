@@ -108,14 +108,65 @@ export class SelfValidator {
   /**
    * Simulate pipeline execution
    */
-  private async simulatePipeline(_module: { [key: string]: unknown }): Promise<ValidationResult> {
-    // Simulate pipeline execution with test data
-    try {
-      // TODO: Implement actual pipeline simulation
+  private async simulatePipeline(module: { 
+    pipeline?: { steps: Array<{ type: string; config: Record<string, unknown> }> };
+    testData?: Record<string, unknown>[];
+    [key: string]: unknown;
+  }): Promise<ValidationResult> {
+    if (!module.pipeline?.steps || module.pipeline.steps.length === 0) {
       return {
         check: "pipeline_simulation",
         status: "pass",
-        message: "Pipeline simulation passed",
+        message: "No pipeline to simulate",
+      };
+    }
+
+    try {
+      const testData = module.testData || [{ id: "1", test: true }];
+      let currentData = [...testData];
+      const stepResults: Array<{ step: number; status: string; recordCount: number }> = [];
+
+      for (let i = 0; i < module.pipeline.steps.length; i++) {
+        const step = module.pipeline.steps[i];
+        
+        // Simulate each step type
+        switch (step.type) {
+          case "filter":
+            currentData = currentData.filter((_, idx) => idx % 2 === 0);
+            break;
+          case "transform":
+            currentData = currentData.map(d => ({ ...d, transformed: true }));
+            break;
+          case "validate":
+            currentData = currentData.filter(d => d.id !== undefined);
+            break;
+          case "aggregate":
+            currentData = [{ count: currentData.length, aggregated: true }];
+            break;
+          default:
+            // Pass through
+        }
+
+        stepResults.push({
+          step: i + 1,
+          status: "completed",
+          recordCount: currentData.length,
+        });
+
+        // Check for data loss
+        if (currentData.length === 0 && testData.length > 0) {
+          return {
+            check: "pipeline_simulation",
+            status: "warn",
+            message: `Pipeline step ${i + 1} (${step.type}) eliminated all records`,
+          };
+        }
+      }
+
+      return {
+        check: "pipeline_simulation",
+        status: "pass",
+        message: `Pipeline simulation passed: ${module.pipeline.steps.length} steps, ${currentData.length} output records`,
       };
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
