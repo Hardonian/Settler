@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import type { ExceptionFamilySummary } from "@settler/reconciliation-core";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,6 +25,7 @@ export type ExceptionMemory = {
   id: string;
   resolution: string;
   resolutionReason: string | null;
+  resolutionCode: string | null;
   adjudicationType: string;
   adjudicatorId: string;
   adjudicatorType: string;
@@ -97,6 +99,13 @@ export type OperatorSummary = {
   missingEvidenceCount: number;
   memoryCount: number;
   recurringResolutionReason: string | null;
+  familyLabel: string | null;
+  familyState: ExceptionFamilySummary["state"];
+  supportingCaseCount: number;
+  recurrencePosture: ExceptionFamilySummary["recurrencePosture"];
+  reopenedCaseCount: number;
+  reopenRate: number | null;
+  dominantResolutionCode: string | null;
   latestResolution: {
     outcome: string | null;
     reason: string | null;
@@ -193,11 +202,34 @@ export function OperatorSummaryCard({ summary }: { summary: OperatorSummary }) {
             value={`${summary.memoryCount} adjudication record${summary.memoryCount === 1 ? "" : "s"}`}
             detail={
               summary.recurringResolutionReason
-                ? `Recurring reason: ${summary.recurringResolutionReason}`
+                ? `${summary.familyLabel ? `${summary.familyLabel} family` : "Recurring memory"} · ${summary.recurringResolutionReason}`
                 : "No recurring operator pattern recorded yet"
             }
           />
         </div>
+
+        {summary.familyLabel ? (
+          <div className="rounded-lg border border-border/60 bg-muted/20 p-4 text-sm">
+            <p className="font-medium">
+              {summary.familyLabel} family · {summary.recurrencePosture}
+            </p>
+            <p className="mt-1 text-muted-foreground">
+              {summary.supportingCaseCount} prior case
+              {summary.supportingCaseCount === 1 ? "" : "s"} recorded
+              {summary.reopenedCaseCount > 0
+                ? ` · ${summary.reopenedCaseCount} reopened`
+                : " · no reopened cases recorded"}
+            </p>
+            {summary.reopenRate != null ? (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Reopen rate: {Math.round(summary.reopenRate * 100)}%
+                {summary.dominantResolutionCode
+                  ? ` · dominant code ${summary.dominantResolutionCode}`
+                  : ""}
+              </p>
+            ) : null}
+          </div>
+        ) : null}
 
         {summary.latestResolution ? (
           <div className="rounded-lg border border-border/60 bg-muted/20 p-4 text-sm">
@@ -297,6 +329,11 @@ export function MemoriesCard({ memories }: { memories: ExceptionMemory[] }) {
                 <p className="text-sm font-medium">
                   {memory.resolutionReason ?? "General adjudication outcome."}
                 </p>
+                {memory.resolutionCode ? (
+                  <p className="mt-1 text-xs font-mono text-muted-foreground">
+                    Code: {memory.resolutionCode}
+                  </p>
+                ) : null}
                 {memory.operatorNotes ? (
                   <div className="mt-2 text-sm text-muted-foreground border-l-2 border-primary/30 pl-3 italic">
                     {memory.operatorNotes}
@@ -602,12 +639,68 @@ export type SimilarCase = {
   exceptionId: string;
   resolution: string;
   resolutionReason: string | null;
+  resolutionCode: string | null;
   confidence: number | null;
   adjudicatedAt: string;
   adjudicatorId: string;
   archetypeCode: string | null;
   archetypeLabel: string | null;
 };
+
+export function FamilyIntelligenceCard({ family }: { family: ExceptionFamilySummary }) {
+  if (family.state === "unavailable") {
+    return null;
+  }
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base flex items-center gap-2">
+          <Workflow className="w-4 h-4 text-muted-foreground" />
+          Family Intelligence
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex flex-wrap items-center gap-2">
+          {family.familyLabel ? <Badge variant="secondary">{family.familyLabel}</Badge> : null}
+          <Badge variant="outline">{family.state.replace(/_/g, " ")}</Badge>
+          <Badge variant="outline">{family.recurrencePosture.replace(/_/g, " ")}</Badge>
+        </div>
+
+        <p className="text-sm text-foreground">{family.summary}</p>
+
+        <div className="grid gap-3 md:grid-cols-3">
+          <SummaryBlock label="Cases" value={String(family.totalCases)} />
+          <SummaryBlock
+            label="Supporting"
+            value={`${family.supportingCaseCount} prior case${family.supportingCaseCount === 1 ? "" : "s"}`}
+          />
+          <SummaryBlock
+            label="Reopened"
+            value={
+              family.reopenRate != null
+                ? `${family.reopenedCaseCount} (${Math.round(family.reopenRate * 100)}%)`
+                : String(family.reopenedCaseCount)
+            }
+          />
+        </div>
+
+        <div className="rounded-lg border border-border/60 bg-muted/20 p-4 text-sm">
+          <p className="font-medium">Next step</p>
+          <p className="mt-1 text-muted-foreground">{family.nextStep}</p>
+          {family.dominantResolutionReason ? (
+            <p className="mt-3 text-xs text-muted-foreground">
+              Dominant resolution: {family.dominantResolutionReason}
+              {family.lastSeenAt
+                ? ` · Last seen ${new Date(family.lastSeenAt).toLocaleDateString()}`
+                : ""}
+            </p>
+          ) : null}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 export function SimilarCasesCard({ cases }: { cases: SimilarCase[] }) {
   if (cases.length === 0) {
@@ -698,9 +791,7 @@ export function WhyFlaggedCard({ data }: { data: WhyFlaggedData }) {
               <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
               <span className="text-sm font-medium text-foreground">{r.reason}</span>
             </div>
-            {r.evidence ? (
-              <p className="text-xs text-muted-foreground pl-5">{r.evidence}</p>
-            ) : null}
+            {r.evidence ? <p className="text-xs text-muted-foreground pl-5">{r.evidence}</p> : null}
             <div className="flex items-center gap-2 pl-5">
               <div className="h-1.5 flex-1 rounded-full bg-muted overflow-hidden">
                 <div

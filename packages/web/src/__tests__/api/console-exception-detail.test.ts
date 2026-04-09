@@ -182,6 +182,57 @@ describe("GET /api/exceptions/[exceptionId]", () => {
         latestCreatedAt: null,
         items: [],
       },
+      operatorSummary: {
+        whatHappened: "HIGH exception is awaiting operator review: Amount mismatch exception",
+        whyItMatters:
+          "No supporting evidence is attached yet, so this exception still depends on operator judgment rather than reusable proof.",
+        nextStep: "Review the source and target records side by side.",
+        evidenceState: "setup_required",
+        proofState: "setup_required",
+        memoryState: "setup_required",
+        evidenceCount: 0,
+        attestedEvidenceCount: 0,
+        degradedEvidenceCount: 0,
+        proofPackageCount: 0,
+        finalizedProofPackageCount: 0,
+        bestCompletenessScore: null,
+        missingEvidenceCount: 0,
+        memoryCount: 0,
+        recurringResolutionReason: null,
+        familyLabel: "Amount Mismatch",
+        familyState: "building",
+        supportingCaseCount: 0,
+        recurrencePosture: "unavailable",
+        reopenedCaseCount: 0,
+        reopenRate: 0,
+        dominantResolutionCode: null,
+        latestResolution: null,
+      },
+      familySummary: {
+        state: "building",
+        familyCode: "AMOUNT_MISMATCH",
+        familyLabel: "Amount Mismatch",
+        familyCategory: "amount",
+        totalCases: 1,
+        totalAdjudications: 0,
+        supportingCaseCount: 0,
+        resolvedCaseCount: 0,
+        unresolvedCaseCount: 1,
+        reopenedCaseCount: 0,
+        reopenRate: 0,
+        recurrencePosture: "unavailable",
+        dominantResolutionCode: null,
+        dominantResolutionReason: null,
+        dominantResolutionShare: null,
+        firstSeenAt: null,
+        lastSeenAt: null,
+        avgConfidence: null,
+        avgSourceTrustScore: null,
+        reasonCodes: ["family_history_building"],
+        summary: "Amount Mismatch is still building family memory.",
+        nextStep:
+          "Capture a few explicit adjudications before treating this exception family as reusable operator memory.",
+      },
       auditTrail: [
         {
           timestamp: "2026-02-01T09:00:00.000Z",
@@ -220,6 +271,14 @@ describe("GET /api/exceptions/[exceptionId]", () => {
     expect(payload.exception.auditTrail).toEqual(
       expect.arrayContaining([expect.objectContaining({ action: "Detected", user: "system" })])
     );
+    expect(payload.exception.operatorSummary).toMatchObject({
+      familyLabel: "Amount Mismatch",
+      familyState: "building",
+    });
+    expect(payload.exception.familySummary).toMatchObject({
+      familyCode: "AMOUNT_MISMATCH",
+      state: "building",
+    });
     expect(payload.trace_id).toBe("trace-test-001");
   });
 

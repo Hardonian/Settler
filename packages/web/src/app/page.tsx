@@ -22,41 +22,63 @@ import {
 } from "@/components/site/infographics";
 
 export const metadata: Metadata = {
-  title: "Settler - Deterministic Reconciliation Platform",
+  title: "Settler — Reconciliation Intelligence Operating System",
   description:
-    "Settler helps teams reconcile financial data with deterministic runs, replayable evidence, and operator-grade controls.",
+    "Settler makes financial reconciliation deterministic, evidence-rich, and operationally auditable. Every matching decision can be replayed, explained, and trusted.",
 };
 
 const capabilityClusters = [
   {
-    title: "Deterministic engine",
-    description: "Rules-based matching with tolerance controls and stable outputs.",
-    bullets: ["Rules as code", "Field-level tolerance", "Replay verification"],
+    title: "Deterministic reconciliation engine",
+    description:
+      "Rules-as-code matching with field-level tolerance controls. Same inputs always produce same outputs.",
+    bullets: [
+      "Configurable match policies",
+      "Tolerance-aware comparison",
+      "Deterministic hash verification",
+    ],
   },
   {
-    title: "Evidence and auditability",
-    description: "Evidence manifests and hash-linked artifacts for each run.",
-    bullets: ["Evidence JSON", "Replay reports", "Run provenance"],
+    title: "Evidence-first output",
+    description:
+      "Every run produces hash-linked evidence manifests — not just reports, but verifiable proof artifacts.",
+    bullets: ["Structured evidence JSON", "Run provenance chains", "Export-ready audit bundles"],
   },
   {
-    title: "Operator workflows",
-    description: "Exception review, diagnostics, and control-plane style operations.",
-    bullets: ["Exception queues", "Audit trails", "Diagnostics views"],
+    title: "Exception adjudication",
+    description:
+      "Exceptions carry deterministic context. Operator decisions are auditable and become institutional memory.",
+    bullets: [
+      "State-machine triage workflow",
+      "Decision audit trail",
+      "Policy-aware exception context",
+    ],
   },
   {
-    title: "Integration layer",
-    description: "Adapters for payment, commerce, accounting, and custom systems.",
-    bullets: ["API and CLI execution", "Webhook support", "Custom adapters"],
+    title: "Replay and drift detection",
+    description:
+      "Re-execute any historical reconciliation and compare hash outcomes to detect drift.",
+    bullets: ["Full run replay", "Hash-verified determinism", "Drift detection across executions"],
   },
   {
-    title: "Deployment choices",
-    description: "Run open-source core yourself or evaluate managed enterprise delivery.",
-    bullets: ["Apache 2.0 OSS", "Self-host workflows", "Enterprise controls"],
+    title: "Verified integration adapters",
+    description:
+      "7 verified platform adapters plus a custom adapter framework for proprietary systems.",
+    bullets: [
+      "Stripe, Shopify, QuickBooks",
+      "PayPal, Square, Xero, NetSuite",
+      "Custom adapter interface",
+    ],
   },
   {
-    title: "Security posture",
-    description: "Tenant-aware boundaries and explicit control surfaces for operators.",
-    bullets: ["Scoped access", "Policy controls", "Security architecture docs"],
+    title: "Tenant-isolated security",
+    description:
+      "Row-level security, API-level tenant binding, and ledger partitioning. Cross-tenant access is mechanically prevented.",
+    bullets: [
+      "RLS on all tenant tables",
+      "Explicit degraded-state notices",
+      "Scoped API key lifecycle",
+    ],
   },
 ];
 
@@ -66,14 +88,14 @@ export default function HomePage() {
       <Navigation />
       <main id="main-content" className="pt-16">
         <PageHero
-          eyebrow="Settler platform"
-          title="Deterministic reconciliation for teams that need proof, not guesswork."
-          description="Settler is built for reconciliation workflows where correctness, auditability, and operational clarity matter. Run deterministic matching, triage exceptions, and export evidence that can be replayed and reviewed."
+          eyebrow="Reconciliation intelligence"
+          title="Every matching decision — replayable, explainable, and provably correct."
+          description="Settler is a reconciliation-intelligence operating system. Deterministic matching, evidence-first output, operator-grade exception triage, and proof chains that hold up under audit. Not a dashboard. An operating system for financial truth."
           actions={
             <>
               <Button asChild>
                 <UiLink href="/demo/console">
-                  Open showcase console <ArrowRight className="ml-1 h-4 w-4" />
+                  Explore the operator console <ArrowRight className="ml-1 h-4 w-4" />
                 </UiLink>
               </Button>
               <Button variant="outline" asChild>
@@ -107,9 +129,9 @@ export default function HomePage() {
               <div className="space-y-6 text-center lg:text-left">
                 <h3 className="text-2xl font-bold tracking-tight">Connected Ecosystem</h3>
                 <p className="text-muted-foreground leading-relaxed italic">
-                  Seamlessly ingest data from any source through our standardized adapter layer.
-                  Stripe, Adyen, and custom data warehouses map into a unified schema for
-                  deterministic matching.
+                  Ingest transaction data through verified adapters for Stripe, Shopify, QuickBooks,
+                  and more. Custom systems connect through the adapter framework. All data
+                  normalizes into a unified schema for deterministic matching.
                 </p>
               </div>
               <AdapterConnectionMap />
@@ -149,29 +171,29 @@ export default function HomePage() {
         </Section>
 
         <Section className="bg-muted/20">
-          <SectionHeader title="Navigate by intent" />
+          <SectionHeader title="Start from your role" />
           <div className="mb-12">
             <div className="grid gap-6 md:grid-cols-2">
               {[
                 {
                   role: "Developer",
                   href: "/docs/api",
-                  desc: "SDK, CLI, and deterministic run model.",
+                  desc: "SDK, CLI, and API-first integration with deterministic run semantics.",
                 },
                 {
                   role: "Operator",
                   href: "/console",
-                  desc: "Workbench, exceptions, runs, and billing in one console.",
+                  desc: "Exception triage, run inspection, evidence navigation, and control plane operations.",
                 },
                 {
                   role: "Architecture reviewer",
                   href: "/docs/architecture/platform-architecture",
-                  desc: "System boundaries, data flow, and execution model.",
+                  desc: "Rust kernel, control plane, ledger architecture, and tenant isolation boundaries.",
                 },
                 {
                   role: "Buyer / evaluator",
-                  href: "/demo/console",
-                  desc: "Interactive showcase console with realistic reconciliation scenarios.",
+                  href: "/docs/trust-packet",
+                  desc: "Trust packet, capability truth matrix, security invariants, and teardown path.",
                 },
               ].map((item) => (
                 <MarketingIntentCard key={item.role}>
@@ -192,12 +214,12 @@ export default function HomePage() {
         </Section>
 
         <CTASection
-          title="See it in action"
-          description="Explore the interactive showcase console with realistic reconciliation data. No account required."
+          title="See Settler in action"
+          description="Explore the operator console with realistic reconciliation data, evidence artifacts, and exception workflows. No account required."
           primaryHref="/demo/console"
-          primaryLabel="Open showcase console"
-          secondaryHref="/docs"
-          secondaryLabel="Read documentation"
+          primaryLabel="Explore operator console"
+          secondaryHref="/docs/trust-packet"
+          secondaryLabel="Read the trust packet"
         />
       </main>
       <Footer />

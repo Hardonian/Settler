@@ -186,7 +186,7 @@ export const POST = withUniversalBillingGate(
           undefined,
           {
             providerId,
-            reason: "SUPABASE_SERVICE_ROLE_KEY_missing_or_client_init_failed",
+            reason: "admin_database_client_unavailable",
           }
         );
         return NextResponse.json(
@@ -194,7 +194,7 @@ export const POST = withUniversalBillingGate(
             success: false,
             error: "WEBHOOK_PERSISTENCE_UNAVAILABLE",
             message:
-              "Verified webhook cannot be persisted: set SUPABASE_SERVICE_ROLE_KEY (service role) for this deployment",
+              "Verified webhook cannot be persisted: admin database access required for this deployment",
           },
           { status: 503 }
         );

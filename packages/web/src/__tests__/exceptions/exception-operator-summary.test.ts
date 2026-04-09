@@ -12,6 +12,7 @@ describe("buildExceptionOperatorSummary", () => {
           id: "memory-1",
           resolution: "resolved",
           resolutionReason: "duplicate payout imported twice",
+          resolutionCode: "DUPLICATE_RECORD_CONFIRMED",
           adjudicationType: "manual_review",
           adjudicatorId: "user-1",
           adjudicatorType: "human",
@@ -52,18 +53,45 @@ describe("buildExceptionOperatorSummary", () => {
           },
         ],
       },
+      familySummary: {
+        state: "available",
+        familyCode: "AMOUNT_MISMATCH",
+        familyLabel: "Amount Mismatch",
+        familyCategory: "amount",
+        totalCases: 3,
+        totalAdjudications: 4,
+        supportingCaseCount: 2,
+        resolvedCaseCount: 2,
+        unresolvedCaseCount: 1,
+        reopenedCaseCount: 1,
+        reopenRate: 0.3333,
+        recurrencePosture: "worsening",
+        dominantResolutionCode: "DUPLICATE_RECORD_CONFIRMED",
+        dominantResolutionReason: "duplicate record confirmed",
+        dominantResolutionShare: 0.75,
+        firstSeenAt: "2026-03-01T10:00:00.000Z",
+        lastSeenAt: "2026-04-01T10:00:00.000Z",
+        avgConfidence: 0.96,
+        avgSourceTrustScore: 0.94,
+        reasonCodes: [],
+        summary: "Amount Mismatch has prior support.",
+        nextStep:
+          "Review reopened or inconsistent cases before reusing the dominant resolution path for this family.",
+      },
     });
 
     expect(summary.evidenceState).toBe("ready");
     expect(summary.proofState).toBe("ready");
     expect(summary.memoryState).toBe("ready");
+    expect(summary.familyLabel).toBe("Amount Mismatch");
+    expect(summary.reopenedCaseCount).toBe(1);
     expect(summary.bestCompletenessScore).toBe(100);
     expect(summary.whatHappened).toContain("resolved");
   });
 
   it("keeps unresolved exceptions in setup-required or degraded states when proof is missing", () => {
     const summary = buildExceptionOperatorSummary({
-      status: "pending",
+      status: "open",
       severity: "medium",
       description: "Timing difference needs review",
       suggestedActions: ["Attach supporting evidence before resolving or ignoring the exception."],
@@ -80,6 +108,30 @@ describe("buildExceptionOperatorSummary", () => {
         finalized: 0,
         latestCreatedAt: null,
         items: [],
+      },
+      familySummary: {
+        state: "building",
+        familyCode: "DATE_DRIFT",
+        familyLabel: "Date Drift",
+        familyCategory: "timing",
+        totalCases: 1,
+        totalAdjudications: 0,
+        supportingCaseCount: 0,
+        resolvedCaseCount: 0,
+        unresolvedCaseCount: 1,
+        reopenedCaseCount: 0,
+        reopenRate: 0,
+        recurrencePosture: "unavailable",
+        dominantResolutionCode: null,
+        dominantResolutionReason: null,
+        dominantResolutionShare: null,
+        firstSeenAt: null,
+        lastSeenAt: null,
+        avgConfidence: null,
+        avgSourceTrustScore: null,
+        reasonCodes: ["family_history_building"],
+        summary: "Date Drift is still building family memory.",
+        nextStep: "Attach supporting evidence before resolving or ignoring the exception.",
       },
     });
 

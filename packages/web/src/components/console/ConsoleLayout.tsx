@@ -1,7 +1,9 @@
 /**
  * Console Layout Component
  *
- * Provides sidebar navigation for the Developer Console.
+ * Provides sidebar navigation for the Settler operator control plane.
+ * Section groups: Reconciliation core, Exception ops, Evidence + audit,
+ * Control plane, and Administration.
  */
 
 "use client";

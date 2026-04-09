@@ -2,6 +2,11 @@ import crypto from "node:crypto";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { ProvenanceService } from "../../services/recon-core/provenance-service";
 import { NotFoundError } from "../../utils/typed-errors";
+import {
+  EXCEPTION_MATCH_TYPES,
+  normalizeExceptionResolutionReason,
+  predictExceptionArchetype,
+} from "./exception-intelligence-adapter";
 
 export type ExceptionResolution = "matched" | "manual" | "ignored" | "duplicate";
 export type ExceptionStatus = "open" | "in_progress" | "resolved" | "dismissed";
@@ -84,6 +89,7 @@ interface AdjudicationMetadataEntry {
   notes: string | null;
   reason: string;
   resolutionReason: string;
+  resolutionCode: string;
   previousState: "pending_review" | "reviewed";
   resultingState: "reviewed" | "pending_review";
   previousResolution: ExceptionResolution | null;
@@ -204,17 +210,6 @@ function normalizeNotes(resolution: ExceptionResolution, notes?: string): string
   return `${resolution} resolution`;
 }
 
-function normalizeResolutionReason(
-  resolution: ExceptionResolution,
-  resolutionReason?: string
-): string {
-  const trimmed = resolutionReason?.trim();
-  if (trimmed) {
-    return trimmed;
-  }
-  return resolution;
-}
-
 function sanitizeTraceUuid(value?: string): string | null {
   if (!value) {
     return null;
@@ -312,6 +307,7 @@ function buildAdjudicationMetadata(
     notes: entry.notes,
     reason: entry.reason,
     resolutionReason: entry.resolutionReason,
+    resolutionCode: entry.resolutionCode,
     previousState: entry.previousState,
     resultingState: entry.resultingState,
     previousResolution: entry.previousResolution,
@@ -364,7 +360,7 @@ export class ExceptionReviewService {
         where: {
           id: input.exceptionId,
           tenantId: input.tenantId,
-          matchType: "unmatched",
+          matchType: { in: [...EXCEPTION_MATCH_TYPES] },
         },
         select: {
           id: true,
@@ -439,10 +435,12 @@ export class ExceptionReviewService {
     const evidenceArtifactModel = (tx as any).evidenceArtifact;
     const proofPackageModel = (tx as any).proofPackage;
     const normalizedReason = normalizeNotes(input.resolution, input.notes);
-    const normalizedResolutionReason = normalizeResolutionReason(
-      input.resolution,
-      input.resolutionReason
-    );
+    const normalizedResolution = normalizeExceptionResolutionReason({
+      resolution: input.resolution,
+      explicitReason: input.resolutionReason,
+      note: input.notes,
+    });
+    const normalizedResolutionReason = normalizedResolution.resolutionReason;
     const previousResolution = deriveStoredResolution(
       existing.reviewed,
       existing.matchReason,
@@ -514,6 +512,7 @@ export class ExceptionReviewService {
       outcome,
       resolution: input.resolution,
       resolutionReason: normalizedResolutionReason,
+      resolutionCode: normalizedResolution.resolutionCode,
       notes: input.notes?.trim() || null,
       previousStatus: existing.status,
       nextStatus: status,
@@ -606,7 +605,7 @@ export class ExceptionReviewService {
         exceptionId: existing.id,
         resolution: input.resolution,
         resolutionReason: normalizedResolutionReason,
-        resolutionCode: normalizedResolutionReason,
+        resolutionCode: normalizedResolution.resolutionCode,
         adjudicatorId: input.userId,
         adjudicatorType: "operator",
         adjudicationType: outcome === "re_adjudicated" ? "re_adjudication" : "initial",
@@ -621,6 +620,7 @@ export class ExceptionReviewService {
         annotations: {
           matchType: existing.matchType,
           previousStatus: existing.status,
+          resolutionCode: normalizedResolution.resolutionCode,
           traceId: sanitizeTraceUuid(input.traceId) ?? undefined,
           requestId: input.requestId,
         } as Prisma.InputJsonValue,
@@ -649,6 +649,7 @@ export class ExceptionReviewService {
       outcome,
       resolution: input.resolution,
       resolutionReason: normalizedResolutionReason,
+      resolutionCode: normalizedResolution.resolutionCode,
       evidenceIds,
       sourceTrustScore,
     };
@@ -678,8 +679,21 @@ export class ExceptionReviewService {
           exceptionId: existing.id,
           memoryId: memory.id,
           outcome,
+          resolutionCode: normalizedResolution.resolutionCode,
         } as Prisma.InputJsonValue,
       },
+    });
+
+    await this.ensureExceptionFamilyClassification(tx, {
+      tenantId: input.tenantId,
+      exceptionId: existing.id,
+      memoryId: memory.id,
+      matchType: existing.matchType,
+      amountDiff: existing.amountDiff != null ? Number(existing.amountDiff) : null,
+      dateDiff: existing.dateDiff,
+      confidence: Number(existing.confidence),
+      hasTargetTransaction: Boolean(existing.targetTransactionId),
+      matchReason: existing.matchReason,
     });
 
     const metadata = buildAdjudicationMetadata(existing.metadata, {
@@ -688,6 +702,7 @@ export class ExceptionReviewService {
       notes: input.notes?.trim() || null,
       reason: normalizedReason,
       resolutionReason: normalizedResolutionReason,
+      resolutionCode: normalizedResolution.resolutionCode,
       previousState: existing.reviewed ? "reviewed" : "pending_review",
       resultingState: "reviewed",
       previousResolution,
@@ -751,6 +766,7 @@ export class ExceptionReviewService {
         metadata: {
           resolution: input.resolution,
           resolutionReason: normalizedResolutionReason,
+          resolutionCode: normalizedResolution.resolutionCode,
           notes: input.notes?.trim() || null,
           reason: normalizedReason,
           outcome,
@@ -780,6 +796,119 @@ export class ExceptionReviewService {
       reviewedBy: input.userId,
       notes: input.notes?.trim() || null,
     };
+  }
+
+  private async ensureExceptionFamilyClassification(
+    tx: Prisma.TransactionClient,
+    args: {
+      tenantId: string;
+      exceptionId: string;
+      memoryId: string;
+      matchType: string;
+      amountDiff: number | null;
+      dateDiff: number | null;
+      confidence: number | null;
+      hasTargetTransaction: boolean;
+      matchReason: string | null;
+    }
+  ) {
+    const prediction = predictExceptionArchetype({
+      matchType: args.matchType,
+      amountDiff: args.amountDiff,
+      dateDiff: args.dateDiff,
+      confidence: args.confidence,
+      hasTargetTransaction: args.hasTargetTransaction,
+      matchReason: args.matchReason,
+    });
+    const exceptionArchetypeModel = (tx as any).exceptionArchetype;
+    const classificationModel = (tx as any).exceptionArchetypeClassification;
+
+    let archetype = await exceptionArchetypeModel.findFirst({
+      where: {
+        tenantId: args.tenantId,
+        code: prediction.code,
+      },
+      select: {
+        id: true,
+        occurrenceCount: true,
+      },
+    });
+
+    if (!archetype) {
+      archetype = await exceptionArchetypeModel.create({
+        data: {
+          tenantId: args.tenantId,
+          code: prediction.code,
+          label: prediction.label,
+          category: prediction.category,
+          severityDefault: prediction.severityDefault,
+          typicalResolution: prediction.typicalResolutionCode,
+          resolutionTaxonomy: prediction.resolutionTaxonomy,
+          matchFieldWeights: prediction.matchFeatures as Prisma.InputJsonValue,
+          isSystem: true,
+          occurrenceCount: 0,
+          metadata: {},
+        },
+        select: {
+          id: true,
+          occurrenceCount: true,
+        },
+      });
+    }
+
+    const existingClassification = await classificationModel.findFirst({
+      where: {
+        tenantId: args.tenantId,
+        exceptionId: args.exceptionId,
+        archetypeId: archetype.id,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (existingClassification) {
+      await classificationModel.update({
+        where: {
+          id: existingClassification.id,
+        },
+        data: {
+          confidence: prediction.confidence,
+          matchFeatures: prediction.matchFeatures as Prisma.InputJsonValue,
+          classifiedBy: "system",
+          metadata: {
+            memoryId: args.memoryId,
+            service: "ExceptionReviewService",
+          } as Prisma.InputJsonValue,
+        },
+      });
+      return;
+    }
+
+    await classificationModel.create({
+      data: {
+        tenantId: args.tenantId,
+        exceptionId: args.exceptionId,
+        archetypeId: archetype.id,
+        confidence: prediction.confidence,
+        matchFeatures: prediction.matchFeatures as Prisma.InputJsonValue,
+        classifiedBy: "system",
+        metadata: {
+          memoryId: args.memoryId,
+          service: "ExceptionReviewService",
+        } as Prisma.InputJsonValue,
+      },
+    });
+
+    await exceptionArchetypeModel.update({
+      where: {
+        id: archetype.id,
+      },
+      data: {
+        occurrenceCount: archetype.occurrenceCount + 1,
+        lastOccurrenceAt: new Date(),
+      },
+    });
   }
 
   async assignException(input: {
@@ -837,6 +966,7 @@ export class ExceptionReviewService {
         notes: input.notes?.trim() || null,
         reason: `Assigned to ${input.assignedTo}`,
         resolutionReason: `Assigned to ${input.assignedTo}`,
+        resolutionCode: "WORKFLOW_ASSIGNMENT",
         previousState: existing.reviewed ? "reviewed" : "pending_review",
         resultingState: existing.reviewed ? "reviewed" : "pending_review",
         previousResolution: extractResolutionFromMetadata(existing.metadata),
@@ -868,6 +998,7 @@ export class ExceptionReviewService {
             previousAssignedTo: existing.assignedTo,
             notes: input.notes,
             memoryId: memory.id,
+            resolutionCode: "WORKFLOW_ASSIGNMENT",
           } as Prisma.InputJsonValue,
           actorId: input.userId,
           actorType: "user",
@@ -931,6 +1062,7 @@ export class ExceptionReviewService {
         notes: input.notes?.trim() || null,
         reason: `Status: ${input.status}`,
         resolutionReason: input.resolutionReason || `Transitioned to ${input.status}`,
+        resolutionCode: "WORKFLOW_STATUS_CHANGE",
         previousState: existing.reviewed ? "reviewed" : "pending_review",
         resultingState:
           input.status === "resolved" || input.status === "dismissed"
@@ -974,6 +1106,7 @@ export class ExceptionReviewService {
             toStatus: input.status,
             notes: input.notes,
             memoryId: memory.id,
+            resolutionCode: "WORKFLOW_STATUS_CHANGE",
           } as Prisma.InputJsonValue,
           actorId: input.userId,
           actorType: "user",
@@ -1034,6 +1167,7 @@ export class ExceptionReviewService {
         notes: input.notes.trim(),
         reason: "Annotation added",
         resolutionReason: "Note added",
+        resolutionCode: "WORKFLOW_NOTE",
         previousState: "pending_review", // Placeholder
         resultingState: "pending_review",
         previousResolution: null,

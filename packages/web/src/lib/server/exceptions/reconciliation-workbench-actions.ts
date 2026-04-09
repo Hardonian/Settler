@@ -2,6 +2,8 @@ import crypto from "node:crypto";
 import type { Prisma, PrismaClient } from "@prisma/client";
 import {
   EXCEPTION_MATCH_TYPES,
+  normalizeExceptionResolutionReason,
+  predictExceptionArchetype,
   toCanonicalExceptionStatus,
   type CanonicalExceptionStatus,
 } from "@settler/reconciliation-core";
@@ -73,7 +75,6 @@ function buildAdjudicationMetadata(
 function defaultResolutionForAction(action: ReconciliationWorkbenchAction): {
   status: CanonicalExceptionStatus;
   resolution: string;
-  resolutionReason: string;
   outcome: "resolved" | "ignored" | "reopened";
 } {
   switch (action) {
@@ -81,21 +82,18 @@ function defaultResolutionForAction(action: ReconciliationWorkbenchAction): {
       return {
         status: "dismissed",
         resolution: "ignored",
-        resolutionReason: "ignored_in_workbench",
         outcome: "ignored",
       };
     case "reopen":
       return {
         status: "open",
         resolution: "manual",
-        resolutionReason: "reopened_for_investigation",
         outcome: "reopened",
       };
     default:
       return {
         status: "resolved",
         resolution: "manual",
-        resolutionReason: "resolved_in_workbench",
         outcome: "resolved",
       };
   }
@@ -168,6 +166,17 @@ export async function applyReconciliationWorkbenchAction(
     });
     const plan = defaultResolutionForAction(input.action);
     const note = normalizeNotes(input.action, input.notes);
+    const normalizedResolution = normalizeExceptionResolutionReason({
+      resolution:
+        plan.resolution === "matched" ||
+        plan.resolution === "manual" ||
+        plan.resolution === "ignored" ||
+        plan.resolution === "duplicate"
+          ? plan.resolution
+          : "manual",
+      note,
+      action: input.action,
+    });
     const now = new Date();
 
     if (canonicalStatus === plan.status && input.action !== "reopen") {
@@ -225,7 +234,8 @@ export async function applyReconciliationWorkbenchAction(
       actorId: input.userId,
       action: input.action,
       resolution: plan.resolution,
-      resolutionReason: plan.resolutionReason,
+      resolutionReason: normalizedResolution.resolutionReason,
+      resolutionCode: normalizedResolution.resolutionCode,
       previousStatus: canonicalStatus,
       status: plan.status,
       occurredAt: now.toISOString(),
@@ -239,7 +249,8 @@ export async function applyReconciliationWorkbenchAction(
       previousStatus: canonicalStatus,
       nextStatus: plan.status,
       resolution: plan.resolution,
-      resolutionReason: plan.resolutionReason,
+      resolutionReason: normalizedResolution.resolutionReason,
+      resolutionCode: normalizedResolution.resolutionCode,
       notes: note,
       sourceTransaction: exception.sourceTransaction
         ? {
@@ -332,8 +343,8 @@ export async function applyReconciliationWorkbenchAction(
         tenantId: input.tenantId,
         exceptionId: exception.id,
         resolution: plan.resolution,
-        resolutionReason: plan.resolutionReason,
-        resolutionCode: plan.resolutionReason,
+        resolutionReason: normalizedResolution.resolutionReason,
+        resolutionCode: normalizedResolution.resolutionCode,
         adjudicatorId: input.userId,
         adjudicatorType: "operator",
         adjudicationType: input.action === "reopen" ? "re_adjudication" : "initial",
@@ -350,6 +361,7 @@ export async function applyReconciliationWorkbenchAction(
           action: input.action,
           previousStatus: canonicalStatus,
           matchType: exception.matchType,
+          resolutionCode: normalizedResolution.resolutionCode,
         } as Prisma.InputJsonValue,
         operatorNotes: note,
         systemNotes:
@@ -367,71 +379,18 @@ export async function applyReconciliationWorkbenchAction(
 
     // ── Auto-classify exception into an archetype on resolve/ignore ──
     if (input.action !== "reopen") {
-      const amountDiff =
-        exception.amountDiff != null ? Number(exception.amountDiff) : null;
-      const dateDiff = exception.dateDiff;
-      const confidence = Number(exception.confidence);
-      const matchType = exception.matchType;
-
-      let archetypeCode: string;
-      let archetypeLabel: string;
-      let archetypeCategory: string;
-      let classificationConfidence: number;
-      const matchFeatures: Record<string, unknown> = {};
-
-      if (matchType === "duplicate") {
-        archetypeCode = "DUPLICATE";
-        archetypeLabel = "Duplicate Transaction";
-        archetypeCategory = "duplicate";
-        classificationConfidence = 0.95;
-        matchFeatures.matchType = matchType;
-      } else if (matchType === "conflict") {
-        archetypeCode = "CONFLICT";
-        archetypeLabel = "Conflicting Match";
-        archetypeCategory = "classification";
-        classificationConfidence = 0.9;
-        matchFeatures.matchType = matchType;
-      } else if (amountDiff != null && amountDiff !== 0) {
-        archetypeCode = "AMOUNT_MISMATCH";
-        archetypeLabel = "Amount Mismatch";
-        archetypeCategory = "amount";
-        const absDiff = Math.abs(amountDiff);
-        classificationConfidence = absDiff > 100 ? 0.95 : absDiff > 10 ? 0.85 : 0.7;
-        matchFeatures.amountDiff = amountDiff;
-      } else if (dateDiff != null && dateDiff !== 0) {
-        archetypeCode = "DATE_DRIFT";
-        archetypeLabel = "Date Drift";
-        archetypeCategory = "timing";
-        classificationConfidence = Math.abs(dateDiff) > 3 ? 0.9 : 0.75;
-        matchFeatures.dateDiff = dateDiff;
-      } else if (!exception.targetTransactionId) {
-        archetypeCode = "MISSING_IN_TARGET";
-        archetypeLabel = "Missing in Target";
-        archetypeCategory = "missing";
-        classificationConfidence = 0.9;
-        matchFeatures.targetTransactionId = null;
-      } else if (matchType?.includes("source")) {
-        archetypeCode = "MISSING_IN_SOURCE";
-        archetypeLabel = "Missing in Source";
-        archetypeCategory = "missing";
-        classificationConfidence = 0.85;
-        matchFeatures.matchType = matchType;
-      } else if (confidence < 0.8) {
-        archetypeCode = "LOW_CONFIDENCE";
-        archetypeLabel = "Low Confidence Match";
-        archetypeCategory = "classification";
-        classificationConfidence = 0.8 - confidence;
-        matchFeatures.confidence = confidence;
-      } else {
-        archetypeCode = "UNCLASSIFIED";
-        archetypeLabel = "Unclassified Exception";
-        archetypeCategory = "classification";
-        classificationConfidence = 0.5;
-      }
+      const prediction = predictExceptionArchetype({
+        matchType: exception.matchType,
+        amountDiff: exception.amountDiff != null ? Number(exception.amountDiff) : null,
+        dateDiff: exception.dateDiff,
+        confidence: Number(exception.confidence),
+        hasTargetTransaction: Boolean(exception.targetTransactionId),
+        matchReason: exception.matchReason,
+      });
 
       // Find or create the archetype for this tenant
       let archetype = await tx.exceptionArchetype.findFirst({
-        where: { tenantId: input.tenantId, code: archetypeCode },
+        where: { tenantId: input.tenantId, code: prediction.code },
         select: { id: true, occurrenceCount: true },
       });
 
@@ -439,11 +398,13 @@ export async function applyReconciliationWorkbenchAction(
         archetype = await tx.exceptionArchetype.create({
           data: {
             tenantId: input.tenantId,
-            code: archetypeCode,
-            label: archetypeLabel,
-            category: archetypeCategory,
-            severityDefault: "medium",
-            resolutionTaxonomy: [],
+            code: prediction.code,
+            label: prediction.label,
+            category: prediction.category,
+            severityDefault: prediction.severityDefault,
+            typicalResolution: prediction.typicalResolutionCode,
+            resolutionTaxonomy: prediction.resolutionTaxonomy,
+            matchFieldWeights: prediction.matchFeatures as Prisma.InputJsonValue,
             isSystem: true,
             occurrenceCount: 0,
             metadata: {},
@@ -452,30 +413,55 @@ export async function applyReconciliationWorkbenchAction(
         });
       }
 
-      // Create classification linking exception to archetype
-      await tx.exceptionArchetypeClassification.create({
-        data: {
+      const existingClassification = await tx.exceptionArchetypeClassification.findFirst({
+        where: {
           tenantId: input.tenantId,
           exceptionId: exception.id,
           archetypeId: archetype.id,
-          confidence: classificationConfidence,
-          matchFeatures: matchFeatures as Prisma.InputJsonValue,
-          classifiedBy: "system",
-          metadata: {
-            action: input.action,
-            memoryId: memory.id,
-          } as Prisma.InputJsonValue,
         },
+        select: { id: true },
       });
 
-      // Increment occurrence count and update last occurrence timestamp
-      await tx.exceptionArchetype.update({
-        where: { id: archetype.id },
-        data: {
-          occurrenceCount: archetype.occurrenceCount + 1,
-          lastOccurrenceAt: now,
-        },
-      });
+      if (existingClassification) {
+        await tx.exceptionArchetypeClassification.update({
+          where: { id: existingClassification.id },
+          data: {
+            confidence: prediction.confidence,
+            matchFeatures: prediction.matchFeatures as Prisma.InputJsonValue,
+            classifiedBy: "system",
+            metadata: {
+              action: input.action,
+              memoryId: memory.id,
+              resolutionCode: normalizedResolution.resolutionCode,
+            } as Prisma.InputJsonValue,
+          },
+        });
+      } else {
+        await tx.exceptionArchetypeClassification.create({
+          data: {
+            tenantId: input.tenantId,
+            exceptionId: exception.id,
+            archetypeId: archetype.id,
+            confidence: prediction.confidence,
+            matchFeatures: prediction.matchFeatures as Prisma.InputJsonValue,
+            classifiedBy: "system",
+            metadata: {
+              action: input.action,
+              memoryId: memory.id,
+              resolutionCode: normalizedResolution.resolutionCode,
+            } as Prisma.InputJsonValue,
+          },
+        });
+
+        // Increment occurrence count and update last occurrence timestamp on first classification.
+        await tx.exceptionArchetype.update({
+          where: { id: archetype.id },
+          data: {
+            occurrenceCount: archetype.occurrenceCount + 1,
+            lastOccurrenceAt: now,
+          },
+        });
+      }
     }
 
     if (input.action !== "reopen") {
@@ -494,6 +480,7 @@ export async function applyReconciliationWorkbenchAction(
         memoryId: memory.id,
         evidenceIds,
         sourceTrustScore,
+        resolutionCode: normalizedResolution.resolutionCode,
       };
 
       await tx.proofPackage.create({
@@ -521,6 +508,7 @@ export async function applyReconciliationWorkbenchAction(
             exceptionId: exception.id,
             memoryId: memory.id,
             action: input.action,
+            resolutionCode: normalizedResolution.resolutionCode,
           } as Prisma.InputJsonValue,
         },
       });
@@ -535,7 +523,7 @@ export async function applyReconciliationWorkbenchAction(
         reviewed: input.action === "reopen" ? false : true,
         reviewedBy: input.action === "reopen" ? null : input.userId,
         reviewedAt: input.action === "reopen" ? null : now,
-        resolutionReason: input.action === "reopen" ? null : plan.resolutionReason,
+        resolutionReason: input.action === "reopen" ? null : normalizedResolution.resolutionReason,
         notes: note,
         metadata: buildAdjudicationMetadata(exception.metadata, {
           ...metadataEntry,
@@ -563,6 +551,8 @@ export async function applyReconciliationWorkbenchAction(
             nextStatus: plan.status,
             memoryId: memory.id,
             evidenceIds,
+            resolutionReason: normalizedResolution.resolutionReason,
+            resolutionCode: normalizedResolution.resolutionCode,
           } as Prisma.InputJsonValue,
         },
       });

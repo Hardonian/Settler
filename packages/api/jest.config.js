@@ -7,6 +7,7 @@ module.exports = {
   moduleNameMapper: {
     "^@settler/support-intake$": "<rootDir>/../support-intake/src/index.ts",
     "^@settler/adapters$": "<rootDir>/../adapters/dist/index.js",
+    "^@settler/reconciliation-core$": "<rootDir>/../reconciliation-core/dist/index.js",
   },
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
   setupFilesAfterEnv: ["<rootDir>/src/__tests__/setup.ts"],

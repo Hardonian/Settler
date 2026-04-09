@@ -11,6 +11,16 @@ describe("ExceptionReviewService", () => {
   const exceptionAdjudicationMemory = {
     create: jest.fn(),
   };
+  const exceptionArchetype = {
+    findFirst: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+  };
+  const exceptionArchetypeClassification = {
+    findFirst: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+  };
   const evidenceArtifact = {
     create: jest.fn(),
   };
@@ -24,6 +34,8 @@ describe("ExceptionReviewService", () => {
     reconciliationMatch,
     normalizedTransaction,
     exceptionAdjudicationMemory,
+    exceptionArchetype,
+    exceptionArchetypeClassification,
     evidenceArtifact,
     proofPackage,
     auditLog,
@@ -42,6 +54,12 @@ describe("ExceptionReviewService", () => {
     reconciliationMatch.update.mockReset();
     normalizedTransaction.findFirst.mockReset();
     exceptionAdjudicationMemory.create.mockReset();
+    exceptionArchetype.findFirst.mockReset();
+    exceptionArchetype.create.mockReset();
+    exceptionArchetype.update.mockReset();
+    exceptionArchetypeClassification.findFirst.mockReset();
+    exceptionArchetypeClassification.create.mockReset();
+    exceptionArchetypeClassification.update.mockReset();
     evidenceArtifact.create.mockReset();
     proofPackage.create.mockReset();
     auditLog.create.mockReset();
@@ -63,6 +81,12 @@ describe("ExceptionReviewService", () => {
       .mockResolvedValueOnce({ id: "evidence-1" })
       .mockResolvedValueOnce({ id: "evidence-2" });
     exceptionAdjudicationMemory.create.mockResolvedValue({ id: "memory-1" });
+    exceptionArchetype.findFirst.mockResolvedValue(null);
+    exceptionArchetype.create.mockResolvedValue({ id: "arch-1", occurrenceCount: 0 });
+    exceptionArchetype.update.mockResolvedValue(undefined);
+    exceptionArchetypeClassification.findFirst.mockResolvedValue(null);
+    exceptionArchetypeClassification.create.mockResolvedValue({ id: "class-1" });
+    exceptionArchetypeClassification.update.mockResolvedValue(undefined);
     proofPackage.create.mockResolvedValue({ id: "proof-1" });
     auditLog.create.mockResolvedValue(undefined);
     provenanceService.recordReviewDecisionInTransaction.mockResolvedValue(undefined);
@@ -109,8 +133,25 @@ describe("ExceptionReviewService", () => {
         data: expect.objectContaining({
           exceptionId: "00000000-0000-4000-8000-000000000099",
           resolution: "manual",
-          resolutionReason: "manual",
+          resolutionReason: "manual review confirmed",
+          resolutionCode: "MANUAL_REVIEW_CONFIRMED",
           evidenceIds: ["evidence-1", "evidence-2"],
+        }),
+      })
+    );
+    expect(exceptionArchetype.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          code: "MISSING_IN_TARGET",
+          typicalResolution: "MISSING_COUNTERPART_CONFIRMED",
+        }),
+      })
+    );
+    expect(exceptionArchetypeClassification.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          exceptionId: "00000000-0000-4000-8000-000000000099",
+          archetypeId: "arch-1",
         }),
       })
     );
@@ -137,6 +178,7 @@ describe("ExceptionReviewService", () => {
               requestId: "req-123",
               traceId: "00000000-0000-4000-8000-000000000003",
               status: "resolved",
+              resolutionCode: "MANUAL_REVIEW_CONFIRMED",
               memoryId: "memory-1",
               proofPackageId: "proof-1",
               evidenceIds: ["evidence-1", "evidence-2"],
@@ -185,7 +227,7 @@ describe("ExceptionReviewService", () => {
       reviewedBy: "00000000-0000-4000-8000-000000000002",
       reviewedAt: new Date("2026-03-20T12:00:00Z"),
       matchReason: "ignored resolution",
-      resolutionReason: "ignored",
+      resolutionReason: "operator dismissed exception",
       notes: null,
     });
 

@@ -20,6 +20,16 @@ jest.mock("../../infrastructure/db/prisma", () => ({
       findMany: jest.fn(),
       create: jest.fn(),
     },
+    exceptionArchetype: {
+      findFirst: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+    },
+    exceptionArchetypeClassification: {
+      findFirst: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+    },
     evidenceArtifact: {
       findMany: jest.fn(),
       create: jest.fn(),
@@ -83,6 +93,12 @@ describe("exceptions routes", () => {
     mockedPrisma.normalizedTransaction.findFirst.mockReset();
     mockedPrisma.exceptionAdjudicationMemory.findMany.mockReset();
     mockedPrisma.exceptionAdjudicationMemory.create.mockReset();
+    mockedPrisma.exceptionArchetype.findFirst.mockReset();
+    mockedPrisma.exceptionArchetype.create.mockReset();
+    mockedPrisma.exceptionArchetype.update.mockReset();
+    mockedPrisma.exceptionArchetypeClassification.findFirst.mockReset();
+    mockedPrisma.exceptionArchetypeClassification.create.mockReset();
+    mockedPrisma.exceptionArchetypeClassification.update.mockReset();
     mockedPrisma.evidenceArtifact.findMany.mockReset();
     mockedPrisma.evidenceArtifact.create.mockReset();
     mockedPrisma.proofPackage.findMany.mockReset();
@@ -116,6 +132,12 @@ describe("exceptions routes", () => {
       .mockResolvedValueOnce({ id: "evidence-1" })
       .mockResolvedValueOnce({ id: "evidence-2" });
     mockedPrisma.exceptionAdjudicationMemory.create.mockResolvedValue({ id: "memory-1" });
+    mockedPrisma.exceptionArchetype.findFirst.mockResolvedValue(null);
+    mockedPrisma.exceptionArchetype.create.mockResolvedValue({ id: "arch-1", occurrenceCount: 0 });
+    mockedPrisma.exceptionArchetype.update.mockResolvedValue(undefined);
+    mockedPrisma.exceptionArchetypeClassification.findFirst.mockResolvedValue(null);
+    mockedPrisma.exceptionArchetypeClassification.create.mockResolvedValue({ id: "class-1" });
+    mockedPrisma.exceptionArchetypeClassification.update.mockResolvedValue(undefined);
     mockedPrisma.proofPackage.create.mockResolvedValue({ id: "proof-1" });
   });
 
@@ -134,7 +156,7 @@ describe("exceptions routes", () => {
         reviewedAt: new Date("2026-03-17T10:00:00Z"),
         reviewedBy: "user-456",
         matchReason: "ignored resolution",
-        resolutionReason: "ignored",
+        resolutionReason: "operator dismissed exception",
         notes: "False positive",
         amountDiff: null,
         dateDiff: null,
@@ -199,7 +221,8 @@ describe("exceptions routes", () => {
       {
         id: "memory-1",
         resolution: "manual",
-        resolutionReason: "resolved_in_workbench",
+        resolutionReason: "manual review confirmed",
+        resolutionCode: "MANUAL_REVIEW_CONFIRMED",
         adjudicationType: "initial",
         adjudicatorId: "user-1",
         adjudicatorType: "operator",
@@ -290,7 +313,7 @@ describe("exceptions routes", () => {
       id: "exc-1",
       status: "resolved",
       resolution: "matched",
-      resolutionReason: "matched",
+      resolutionReason: "manual match confirmed",
       outcome: "resolved",
     });
     expect(mockedPrisma.exceptionAdjudicationMemory.create).toHaveBeenCalled();
@@ -318,7 +341,7 @@ describe("exceptions routes", () => {
       reviewedBy: "user-456",
       reviewedAt: new Date("2026-03-20T12:00:00Z"),
       matchReason: "Matched after manual review",
-      resolutionReason: "matched",
+      resolutionReason: "manual match confirmed",
       notes: "Matched after manual review",
     });
 
@@ -355,7 +378,7 @@ describe("exceptions routes", () => {
         reviewedBy: "user-456",
         reviewedAt: new Date("2026-03-20T12:00:00Z"),
         matchReason: "Bulk ignore - false positives",
-        resolutionReason: "ignored",
+        resolutionReason: "false positive confirmed",
         notes: "Bulk ignore - false positives",
       })
       .mockResolvedValueOnce({

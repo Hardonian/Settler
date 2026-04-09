@@ -126,6 +126,8 @@ export const GET = withSecurity(
           suggestedActions: detail.suggestedActions,
           playbookApplied: detail.playbookApplied ?? undefined,
           auditTrail: detail.auditTrail,
+          operatorSummary: detail.operatorSummary,
+          familySummary: detail.familySummary,
           adjudicationMemories: detail.adjudicationMemories,
           evidenceSummary: detail.evidenceSummary,
           proofSummary: detail.proofSummary,

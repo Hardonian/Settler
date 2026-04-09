@@ -38,7 +38,7 @@ export default async function ConsoleOverviewPage() {
             <div className="flex items-center gap-2 mb-6">
               <Terminal className="h-4 w-4 text-muted-foreground" />
               <h2 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
-                Developer Resources
+                Infrastructure
               </h2>
             </div>
 
@@ -52,7 +52,8 @@ export default async function ConsoleOverviewPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-                    Manage secret keys and access tokens for programmatic reconciliation triggers.
+                    Manage tenant-scoped API keys for programmatic reconciliation triggers and
+                    evidence retrieval.
                   </p>
                   <Link href="/console/api-keys">
                     <Button
@@ -70,12 +71,13 @@ export default async function ConsoleOverviewPage() {
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-2">
                     <Database className="h-4 w-4 text-muted-foreground" />
-                    <CardTitle className="text-sm font-bold">Data Hub</CardTitle>
+                    <CardTitle className="text-sm font-bold">Runtime Diagnostics</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent>
                   <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-                    Inspect raw source/target data pipelines and schema mappings.
+                    Inspect runtime dependencies, database connectivity, and service health
+                    contracts.
                   </p>
                   <Link href="/console/diagnostics">
                     <Button
@@ -83,7 +85,7 @@ export default async function ConsoleOverviewPage() {
                       size="sm"
                       className="h-7 text-[10px] uppercase font-bold tracking-widest p-0 hover:bg-transparent"
                     >
-                      View Pipelines <ArrowRight className="ml-2 h-3 w-3" />
+                      View Diagnostics <ArrowRight className="ml-2 h-3 w-3" />
                     </Button>
                   </Link>
                 </CardContent>
@@ -98,7 +100,8 @@ export default async function ConsoleOverviewPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-                    Export audit-grade proof packages and evidentiary artifacts.
+                    Navigate evidence manifests, trace proof chains, and export audit-grade artifact
+                    bundles.
                   </p>
                   <Link href="/console/proof-explorer">
                     <Button
@@ -106,7 +109,7 @@ export default async function ConsoleOverviewPage() {
                       size="sm"
                       className="h-7 text-[10px] uppercase font-bold tracking-widest p-0 hover:bg-transparent"
                     >
-                      Explorer Vault <ArrowRight className="ml-2 h-3 w-3" />
+                      Open Proof Explorer <ArrowRight className="ml-2 h-3 w-3" />
                     </Button>
                   </Link>
                 </CardContent>

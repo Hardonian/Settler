@@ -274,7 +274,38 @@ describe("exceptions runtime integrity", () => {
         missingEvidenceCount: 1,
         memoryCount: 0,
         recurringResolutionReason: null,
+        familyLabel: "Amount Mismatch",
+        familyState: "building",
+        supportingCaseCount: 0,
+        recurrencePosture: "unavailable",
+        reopenedCaseCount: 0,
+        reopenRate: 0,
+        dominantResolutionCode: null,
         latestResolution: null,
+      },
+      familySummary: {
+        state: "building",
+        familyCode: "AMOUNT_MISMATCH",
+        familyLabel: "Amount Mismatch",
+        familyCategory: "amount",
+        totalCases: 1,
+        totalAdjudications: 0,
+        supportingCaseCount: 0,
+        resolvedCaseCount: 0,
+        unresolvedCaseCount: 1,
+        reopenedCaseCount: 0,
+        reopenRate: 0,
+        recurrencePosture: "unavailable",
+        dominantResolutionCode: null,
+        dominantResolutionReason: null,
+        dominantResolutionShare: null,
+        firstSeenAt: null,
+        lastSeenAt: null,
+        avgConfidence: null,
+        avgSourceTrustScore: null,
+        reasonCodes: ["family_history_building"],
+        summary: "Amount Mismatch is still building family memory.",
+        nextStep: "Attach evidence.",
       },
     });
 
@@ -365,6 +396,7 @@ describe("exceptions runtime integrity", () => {
           id: "mem-1",
           resolution: "manual",
           resolutionReason: "resolved_in_workbench",
+          resolutionCode: "MANUAL_REVIEW_CONFIRMED",
           adjudicationType: "initial",
           adjudicatorId: "user-a",
           adjudicatorType: "operator",
@@ -417,6 +449,62 @@ describe("exceptions runtime integrity", () => {
           },
         ],
       },
+      operatorSummary: {
+        whatHappened: "HIGH exception resolved: Settlement amount mismatch",
+        whyItMatters:
+          "Amount mismatch already has 2 prior cases of operator memory. Dominant path: duplicate record confirmed.",
+        nextStep:
+          "Review reopened or inconsistent cases before reusing the dominant resolution path for this family.",
+        evidenceState: "degraded",
+        proofState: "ready",
+        memoryState: "ready",
+        evidenceCount: 2,
+        attestedEvidenceCount: 1,
+        degradedEvidenceCount: 0,
+        proofPackageCount: 1,
+        finalizedProofPackageCount: 1,
+        bestCompletenessScore: 0.9,
+        missingEvidenceCount: 0,
+        memoryCount: 2,
+        recurringResolutionReason: "duplicate record confirmed",
+        familyLabel: "Amount mismatch",
+        familyState: "available",
+        supportingCaseCount: 2,
+        recurrencePosture: "stable",
+        reopenedCaseCount: 0,
+        reopenRate: 0,
+        dominantResolutionCode: "DUPLICATE_RECORD_CONFIRMED",
+        latestResolution: {
+          outcome: "resolved",
+          reason: "resolved_in_workbench",
+          completedAt: "2026-01-01T00:05:00.000Z",
+        },
+      },
+      familySummary: {
+        state: "available",
+        familyCode: "AMOUNT_MISMATCH",
+        familyLabel: "Amount mismatch",
+        familyCategory: "settlement",
+        totalCases: 3,
+        totalAdjudications: 3,
+        supportingCaseCount: 2,
+        resolvedCaseCount: 3,
+        unresolvedCaseCount: 0,
+        reopenedCaseCount: 0,
+        reopenRate: 0,
+        recurrencePosture: "stable",
+        dominantResolutionCode: "DUPLICATE_RECORD_CONFIRMED",
+        dominantResolutionReason: "duplicate record confirmed",
+        dominantResolutionShare: 0.66,
+        firstSeenAt: "2025-12-01T00:00:00.000Z",
+        lastSeenAt: "2026-01-01T00:05:00.000Z",
+        avgConfidence: 0.91,
+        avgSourceTrustScore: 0.9,
+        reasonCodes: [],
+        summary: "Amount mismatch has appeared in 3 cases with 2 prior supporting cases.",
+        nextStep:
+          "Review reopened or inconsistent cases before reusing the dominant resolution path for this family.",
+      },
       auditTrail: [
         {
           timestamp: "2026-01-01T00:00:00.000Z",
@@ -445,6 +533,14 @@ describe("exceptions runtime integrity", () => {
     expect(payload.adjudicationMemories).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: "mem-1" })])
     );
+    expect(payload.operatorSummary).toMatchObject({
+      familyLabel: "Amount mismatch",
+      supportingCaseCount: 2,
+    });
+    expect(payload.familySummary).toMatchObject({
+      familyCode: "AMOUNT_MISMATCH",
+      state: "available",
+    });
     expect(payload.evidenceSummary.total).toBe(2);
     expect(payload.proofSummary.finalized).toBe(1);
     expect(payload.trace_id).toBe("trace-test");

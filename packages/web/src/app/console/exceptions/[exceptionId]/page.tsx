@@ -10,6 +10,7 @@ import {
   type AuditTrailEntry,
   type EvidenceSummary,
   type ExceptionMemory,
+  FamilyIntelligenceCard,
   type OperatorSummary,
   type ProofSummary,
   EvidenceCard,
@@ -25,6 +26,7 @@ import {
   type SimilarCase,
   type WhyFlaggedData,
 } from "./components";
+import type { ExceptionFamilySummary } from "@settler/reconciliation-core";
 
 interface ExceptionProvenance {
   runId: string | null;
@@ -73,6 +75,7 @@ interface ExceptionDetail {
   proofSummary: ProofSummary;
   auditTrail: AuditTrailEntry[];
   operatorSummary: OperatorSummary;
+  familySummary: ExceptionFamilySummary;
   similarCases?: SimilarCase[];
   whyFlagged?: WhyFlaggedData;
 }
@@ -216,6 +219,7 @@ export default async function ExceptionDetailPage({ params }: { params: { except
       <div className="grid gap-6 xl:grid-cols-3">
         <div className="xl:col-span-2 space-y-6">
           {exception.whyFlagged ? <WhyFlaggedCard data={exception.whyFlagged} /> : null}
+          <FamilyIntelligenceCard family={exception.familySummary} />
           <ExceptionActionPanel exceptionId={exceptionId} status={exception.status} />
           {exception.similarCases && exception.similarCases.length > 0 ? (
             <SimilarCasesCard cases={exception.similarCases} />

@@ -6,9 +6,12 @@ type SimilarResolvedMemoryRow = {
   exceptionId: string;
   resolution: string;
   resolutionReason: string | null;
+  resolutionCode: string | null;
   archetypeId: string | null;
+  outcome: string | null;
   createdAt: Date;
   confidence: unknown;
+  sourceTrustScore: unknown;
   adjudicatorId: string;
   archetype: { code: string; label: string } | null;
 };
@@ -18,6 +21,7 @@ type SimilarScoredCaseRow = {
   exceptionId: string;
   resolution: string;
   resolutionReason: string | null;
+  resolutionCode: string | null;
   confidence: number | null;
   adjudicatedAt: string;
   adjudicatorId: string;
@@ -27,11 +31,15 @@ type SimilarScoredCaseRow = {
 };
 import {
   EXCEPTION_MATCH_TYPES,
+  buildExceptionFamilySummary,
+  normalizeExceptionResolutionReason,
   operatorStatusToCanonical,
+  predictExceptionArchetype,
   resolveReconciliationExceptionScope,
   toCanonicalExceptionStatus,
   toOperatorExceptionStatus,
   type CanonicalExceptionStatus,
+  type ExceptionFamilySummary,
 } from "@settler/reconciliation-core";
 
 export type ReconciliationWorkbenchListFilters = {
@@ -69,6 +77,8 @@ export type ReconciliationWorkbenchListItem = {
     recurrence: {
       memoryCount: number;
       recurringResolutionReason: string | null;
+      familyLabel: string | null;
+      recurrencePosture: "worsening" | "stable" | "improving" | "unavailable";
       state: ReadinessState;
     };
     evidence: {
@@ -119,6 +129,7 @@ export type ReconciliationWorkbenchDetail = ReconciliationWorkbenchListItem & {
     id: string;
     resolution: string;
     resolutionReason: string | null;
+    resolutionCode: string | null;
     adjudicationType: string;
     adjudicatorId: string;
     adjudicatorType: string;
@@ -173,10 +184,12 @@ export type ReconciliationWorkbenchDetail = ReconciliationWorkbenchListItem & {
     details?: string;
   }>;
   operatorSummary: ExceptionOperatorSummary;
+  familySummary: ExceptionFamilySummary;
   similarCases: Array<{
     exceptionId: string;
     resolution: string;
     resolutionReason: string | null;
+    resolutionCode: string | null;
     confidence: number | null;
     adjudicatedAt: string;
     adjudicatorId: string;
@@ -216,6 +229,13 @@ export type ExceptionOperatorSummary = {
   missingEvidenceCount: number;
   memoryCount: number;
   recurringResolutionReason: string | null;
+  familyLabel: string | null;
+  familyState: ExceptionFamilySummary["state"];
+  supportingCaseCount: number;
+  recurrencePosture: ExceptionFamilySummary["recurrencePosture"];
+  reopenedCaseCount: number;
+  reopenRate: number | null;
+  dominantResolutionCode: string | null;
   latestResolution: {
     outcome: string | null;
     reason: string | null;
@@ -445,6 +465,7 @@ function buildWhyItMatters(args: {
   proofState: ReadinessState;
   memoryCount: number;
   recurringResolutionReason: string | null;
+  familySummary?: ExceptionFamilySummary;
 }): string {
   if (args.status === "resolved" && args.proofState === "ready") {
     return args.memoryCount > 0
@@ -458,6 +479,10 @@ function buildWhyItMatters(args: {
 
   if (args.evidenceState === "setup_required") {
     return "No supporting evidence is attached yet, so this exception still depends on operator judgment rather than reusable proof.";
+  }
+
+  if (args.familySummary?.state === "available" && args.familySummary.familyLabel) {
+    return `${args.familySummary.familyLabel} already has ${args.familySummary.supportingCaseCount} prior cases of operator memory. Dominant path: ${args.familySummary.dominantResolutionReason ?? "still forming"}.`;
   }
 
   if (args.recurringResolutionReason) {
@@ -475,14 +500,21 @@ export function buildExceptionOperatorSummary(args: {
   adjudicationMemories: ReconciliationWorkbenchDetail["adjudicationMemories"];
   evidenceSummary: ReconciliationWorkbenchDetail["evidenceSummary"];
   proofSummary: ReconciliationWorkbenchDetail["proofSummary"];
+  familySummary: ExceptionFamilySummary;
 }): ExceptionOperatorSummary {
   const evidenceState = resolveEvidenceState(args.evidenceSummary);
   const proofState = resolveProofState({
     evidenceState,
     proofSummary: args.proofSummary,
   });
-  const memoryState = resolveMemoryState(args.adjudicationMemories.length);
-  const recurringResolutionReason = summarizeRecurringResolutionReason(args.adjudicationMemories);
+  const reusableMemoryCount =
+    args.familySummary.state === "available"
+      ? Math.max(args.familySummary.supportingCaseCount, args.adjudicationMemories.length)
+      : args.adjudicationMemories.length;
+  const memoryState = resolveMemoryState(reusableMemoryCount);
+  const recurringResolutionReason =
+    args.familySummary.dominantResolutionReason ??
+    summarizeRecurringResolutionReason(args.adjudicationMemories);
   const latestResolution = args.adjudicationMemories[0]
     ? {
         outcome: args.adjudicationMemories[0].outcome,
@@ -509,10 +541,12 @@ export function buildExceptionOperatorSummary(args: {
       status: args.status,
       evidenceState,
       proofState,
-      memoryCount: args.adjudicationMemories.length,
+      memoryCount: reusableMemoryCount,
       recurringResolutionReason,
+      familySummary: args.familySummary,
     }),
     nextStep:
+      args.familySummary.nextStep ||
       args.suggestedActions[0] ||
       "Review the records, record an operator decision, and attach evidence before exporting proof.",
     evidenceState,
@@ -525,8 +559,15 @@ export function buildExceptionOperatorSummary(args: {
     finalizedProofPackageCount: args.proofSummary.finalized,
     bestCompletenessScore,
     missingEvidenceCount,
-    memoryCount: args.adjudicationMemories.length,
+    memoryCount: reusableMemoryCount,
     recurringResolutionReason,
+    familyLabel: args.familySummary.familyLabel,
+    familyState: args.familySummary.state,
+    supportingCaseCount: args.familySummary.supportingCaseCount,
+    recurrencePosture: args.familySummary.recurrencePosture,
+    reopenedCaseCount: args.familySummary.reopenedCaseCount,
+    reopenRate: args.familySummary.reopenRate,
+    dominantResolutionCode: args.familySummary.dominantResolutionCode,
     latestResolution,
   };
 }
@@ -801,6 +842,7 @@ export async function listReconciliationWorkbenchExceptions(
         select: {
           exceptionId: true,
           resolutionReason: true,
+          resolutionCode: true,
           operatorNotes: true,
           completedAt: true,
           createdAt: true,
@@ -819,6 +861,7 @@ export async function listReconciliationWorkbenchExceptions(
           exceptionId: true,
           resolution: true,
           resolutionReason: true,
+          resolutionCode: true,
           adjudicationType: true,
           adjudicatorId: true,
           adjudicatorType: true,
@@ -1017,6 +1060,51 @@ export async function listReconciliationWorkbenchExceptions(
       adjudicationMemories: memories,
       evidenceSummary,
       proofSummary,
+      familySummary: buildExceptionFamilySummary({
+        currentExceptionId: row.id,
+        currentStatus: mapped.canonicalStatus,
+        familyCode:
+          topArchetypes.get(row.id)?.code ??
+          predictExceptionArchetype({
+            matchType: row.matchType,
+            amountDiff: row.amountDiff != null ? Number(row.amountDiff) : null,
+            dateDiff: row.dateDiff,
+            confidence: row.confidence != null ? Number(row.confidence) : null,
+            hasTargetTransaction: Boolean(row.targetTransactionId),
+            matchReason: row.matchReason,
+          }).code,
+        familyLabel:
+          topArchetypes.get(row.id)?.label ??
+          predictExceptionArchetype({
+            matchType: row.matchType,
+            amountDiff: row.amountDiff != null ? Number(row.amountDiff) : null,
+            dateDiff: row.dateDiff,
+            confidence: row.confidence != null ? Number(row.confidence) : null,
+            hasTargetTransaction: Boolean(row.targetTransactionId),
+            matchReason: row.matchReason,
+          }).label,
+        familyCategory:
+          topArchetypes.get(row.id)?.category ??
+          predictExceptionArchetype({
+            matchType: row.matchType,
+            amountDiff: row.amountDiff != null ? Number(row.amountDiff) : null,
+            dateDiff: row.dateDiff,
+            confidence: row.confidence != null ? Number(row.confidence) : null,
+            hasTargetTransaction: Boolean(row.targetTransactionId),
+            matchReason: row.matchReason,
+          }).category,
+        memories: memories.map((memory: (typeof memories)[number]) => ({
+          exceptionId: row.id,
+          resolution: memory.resolution,
+          resolutionReason: memory.resolutionReason,
+          resolutionCode: memory.resolutionCode ?? null,
+          outcome: memory.outcome,
+          adjudicationType: memory.adjudicationType,
+          confidence: memory.confidence,
+          sourceTrustScore: memory.sourceTrustScore,
+          createdAt: memory.createdAt,
+        })),
+      }),
     });
 
     const supportDegradedReasons: string[] = [];
@@ -1036,6 +1124,8 @@ export async function listReconciliationWorkbenchExceptions(
         recurrence: {
           memoryCount: operatorSummary.memoryCount,
           recurringResolutionReason: operatorSummary.recurringResolutionReason,
+          familyLabel: operatorSummary.familyLabel,
+          recurrencePosture: operatorSummary.recurrencePosture,
           state: operatorSummary.memoryState,
         },
         evidence: {
@@ -1146,6 +1236,7 @@ export async function getReconciliationWorkbenchExceptionDetail(
         id: true,
         resolution: true,
         resolutionReason: true,
+        resolutionCode: true,
         adjudicationType: true,
         adjudicatorId: true,
         adjudicatorType: true,
@@ -1241,6 +1332,62 @@ export async function getReconciliationWorkbenchExceptionDetail(
   ]);
 
   const topArchetype = topArchetypes.get(exceptionId) ?? null;
+  const predictedFamily = predictExceptionArchetype({
+    matchType: row.matchType,
+    amountDiff: row.amountDiff != null ? Number(row.amountDiff) : null,
+    dateDiff: row.dateDiff,
+    confidence: Number(row.confidence),
+    hasTargetTransaction: Boolean(row.targetTransactionId),
+    matchReason: row.matchReason,
+  });
+  const derivedFamilyArchetype =
+    topArchetype ??
+    (await prisma.exceptionArchetype
+      .findFirst({
+        where: {
+          tenantId,
+          code: predictedFamily.code,
+        },
+        select: {
+          id: true,
+          code: true,
+          label: true,
+          category: true,
+        },
+      })
+      .then((item: { id: string; code: string; label: string; category: string } | null) =>
+        item
+          ? {
+              id: item.id,
+              code: item.code,
+              label: item.label,
+              confidence: predictedFamily.confidence,
+              category: item.category,
+            }
+          : {
+              id: "",
+              code: predictedFamily.code,
+              label: predictedFamily.label,
+              confidence: predictedFamily.confidence,
+              category: predictedFamily.category,
+            }
+      ));
+  const familyMemories =
+    derivedFamilyArchetype.id !== ""
+      ? await prisma.exceptionAdjudicationMemory.findMany({
+          where: {
+            tenantId,
+            archetypeId: derivedFamilyArchetype.id,
+          },
+          include: {
+            archetype: {
+              select: { code: true, label: true },
+            },
+          },
+          orderBy: { createdAt: "desc" },
+          take: 200,
+        })
+      : [];
   const targetTransaction = targetTransactions[0] ?? null;
   const latestMemory = memories[0] ?? null;
 
@@ -1360,6 +1507,7 @@ export async function getReconciliationWorkbenchExceptionDetail(
     id: memory.id,
     resolution: memory.resolution,
     resolutionReason: memory.resolutionReason,
+    resolutionCode: memory.resolutionCode ?? null,
     adjudicationType: memory.adjudicationType,
     adjudicatorId: memory.adjudicatorId,
     adjudicatorType: memory.adjudicatorType,
@@ -1373,6 +1521,24 @@ export async function getReconciliationWorkbenchExceptionDetail(
     completedAt: memory.completedAt?.toISOString() ?? null,
     parentMemoryId: memory.parentMemoryId,
   }));
+  const familySummary = buildExceptionFamilySummary({
+    currentExceptionId: exceptionId,
+    currentStatus: listItem.canonicalStatus,
+    familyCode: derivedFamilyArchetype.code,
+    familyLabel: derivedFamilyArchetype.label,
+    familyCategory: derivedFamilyArchetype.category ?? null,
+    memories: familyMemories.map((memory: (typeof familyMemories)[number]) => ({
+      exceptionId: memory.exceptionId,
+      resolution: memory.resolution,
+      resolutionReason: memory.resolutionReason,
+      resolutionCode: memory.resolutionCode ?? null,
+      outcome: memory.outcome ?? null,
+      adjudicationType: memory.adjudicationType,
+      confidence: memory.confidence != null ? Number(memory.confidence) : null,
+      sourceTrustScore: memory.sourceTrustScore != null ? Number(memory.sourceTrustScore) : null,
+      createdAt: memory.createdAt,
+    })),
+  });
   const suggestedActions = buildSuggestedActions(
     listItem.canonicalStatus,
     evidenceArtifacts.length > 0
@@ -1385,33 +1551,71 @@ export async function getReconciliationWorkbenchExceptionDetail(
     adjudicationMemories,
     evidenceSummary,
     proofSummary,
+    familySummary,
   });
 
   // Compounding intelligence: score similar resolved cases by match type + resolution pattern
   const currentMatchType = row.matchType;
   const currentMatchReason = row.matchReason ?? "";
-  const scoredSimilarCases = similarMemories
+  const currentResolutionCode =
+    latestMemory?.resolutionCode ??
+    normalizeExceptionResolutionReason({
+      resolution: "manual",
+      explicitReason: latestMemory?.resolutionReason ?? null,
+      note: latestMemory?.operatorNotes ?? null,
+    }).resolutionCode;
+  const similarSource =
+    familyMemories.length > 0
+      ? familyMemories.filter(
+          (memory: (typeof familyMemories)[number]) => memory.exceptionId !== exceptionId
+        )
+      : similarMemories;
+  const scoredSimilarCases = similarSource
     .map((mem: SimilarResolvedMemoryRow): SimilarScoredCaseRow => {
       let score = 0;
-      // Same archetype as current exception's top archetype
-      if (topArchetype && mem.archetypeId === topArchetype.id) score += 0.4;
-      // Same resolution type suggests pattern
-      if (mem.resolution === latestMemory?.resolution) score += 0.2;
+      if (derivedFamilyArchetype.id && mem.archetypeId === derivedFamilyArchetype.id) {
+        score += 0.45;
+      }
+
+      const normalizedCandidateResolutionCode =
+        mem.resolutionCode ??
+        normalizeExceptionResolutionReason({
+          resolution:
+            mem.resolution === "matched" ||
+            mem.resolution === "manual" ||
+            mem.resolution === "ignored" ||
+            mem.resolution === "duplicate"
+              ? mem.resolution
+              : "manual",
+          explicitReason: mem.resolutionReason,
+        }).resolutionCode;
+      if (normalizedCandidateResolutionCode === currentResolutionCode) {
+        score += 0.25;
+      } else if (mem.resolution === latestMemory?.resolution) {
+        score += 0.15;
+      }
+
       // Shared resolution reason keywords
       const memReason = mem.resolutionReason ?? "";
       if (memReason && currentMatchReason && memReason.includes(currentMatchReason.split(" ")[0])) {
         score += 0.15;
       }
+
+      if (mem.outcome === "resolved" || mem.outcome === "confirmed_dismissed") {
+        score += 0.1;
+      }
+      if (mem.sourceTrustScore != null && Number(mem.sourceTrustScore) >= 0.8) {
+        score += 0.05;
+      }
       // Recency boost: more recent = more relevant
-      const ageDays =
-        (Date.now() - mem.createdAt.getTime()) / (1000 * 60 * 60 * 24);
-      score += Math.max(0, 0.25 * (1 - ageDays / 90));
+      const ageDays = (Date.now() - mem.createdAt.getTime()) / (1000 * 60 * 60 * 24);
+      score += Math.max(0, 0.2 * (1 - ageDays / 90));
       return {
         exceptionId: mem.exceptionId,
         resolution: mem.resolution,
         resolutionReason: mem.resolutionReason,
-        confidence:
-          mem.confidence != null && mem.confidence !== "" ? Number(mem.confidence) : null,
+        resolutionCode: normalizedCandidateResolutionCode,
+        confidence: mem.confidence != null && mem.confidence !== "" ? Number(mem.confidence) : null,
         adjudicatedAt: mem.createdAt.toISOString(),
         adjudicatorId: mem.adjudicatorId,
         archetypeCode: mem.archetype?.code ?? null,
@@ -1429,7 +1633,8 @@ export async function getReconciliationWorkbenchExceptionDetail(
     });
 
   // Why-flagged: deterministic explanation of why this exception was created
-  const primaryReasons: Array<{ reason: string; code: string; weight: number; evidence?: string }> = [];
+  const primaryReasons: Array<{ reason: string; code: string; weight: number; evidence?: string }> =
+    [];
   const secondaryReasons: Array<{ reason: string; code: string; weight: number }> = [];
 
   if (row.amountDiff != null && Number(row.amountDiff) !== 0) {
@@ -1542,7 +1747,7 @@ export async function getReconciliationWorkbenchExceptionDetail(
         ? (latestMemory?.adjudicatorId ?? row.reviewedBy ?? null)
         : null,
     suggestedActions,
-    playbookApplied: topArchetype?.label ?? null,
+    playbookApplied: derivedFamilyArchetype.label ?? null,
     operatorNotes: latestMemory?.operatorNotes ?? row.notes ?? null,
     sourceTrustScore: latestMemory?.sourceTrustScore ? Number(latestMemory.sourceTrustScore) : null,
     topArchetype,
@@ -1551,6 +1756,7 @@ export async function getReconciliationWorkbenchExceptionDetail(
     proofSummary,
     auditTrail,
     operatorSummary,
+    familySummary,
     similarCases: scoredSimilarCases,
     whyFlagged,
   };

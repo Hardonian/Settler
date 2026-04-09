@@ -35,6 +35,8 @@ interface Exception {
     recurrence: {
       memoryCount: number;
       recurringResolutionReason: string | null;
+      familyLabel: string | null;
+      recurrencePosture: "worsening" | "stable" | "improving" | "unavailable";
       state: "ready" | "degraded" | "setup_required" | "unavailable";
     };
     evidence: {
@@ -153,7 +155,13 @@ function buildColumns(_runId: string | null): DataTableColumn<Exception>[] {
           {row.statusDetail && <p className="mt-1 text-[11px] opacity-70">{row.statusDetail}</p>}
           {row.compactSummary?.recurrence.recurringResolutionReason ? (
             <p className="mt-1 text-[11px] text-muted-foreground">
-              Recurring pattern: {row.compactSummary.recurrence.recurringResolutionReason}
+              {row.compactSummary.recurrence.familyLabel
+                ? `${row.compactSummary.recurrence.familyLabel} · `
+                : "Recurring pattern: "}
+              {row.compactSummary.recurrence.recurringResolutionReason}
+              {row.compactSummary.recurrence.recurrencePosture !== "unavailable"
+                ? ` · ${row.compactSummary.recurrence.recurrencePosture}`
+                : ""}
             </p>
           ) : null}
           {row.compactSummary?.supportability.degradedReasons?.length ? (
