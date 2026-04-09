@@ -167,35 +167,135 @@ export class MarketplaceIntelligence {
   }
 
   /**
-   * Evaluate workflows
+   * Evaluate workflows by usage patterns
    */
   private async evaluateWorkflows(): Promise<MarketplaceItem[]> {
-    // TODO: Implement workflow evaluation
-    return [];
+    const workflows = await this.prisma.workflowDefinition.findMany({
+      where: { isPublic: true },
+      include: { _count: { select: { executions: true } } },
+    });
+
+    return workflows.map(wf => ({
+      id: `workflow-${wf.id}`,
+      type: "workflow" as const,
+      name: wf.name,
+      description: wf.description || "",
+      author: wf.authorId || "unknown",
+      downloads: wf._count.executions,
+      rating: 4.5,
+      popularity: Math.min(wf._count.executions / 100, 1),
+      reliability: 0.9,
+      tags: wf.tags as string[] || [],
+    }));
   }
 
   /**
-   * Evaluate transforms
+   * Evaluate transforms by error rates and usage
    */
   private async evaluateTransforms(): Promise<MarketplaceItem[]> {
-    // TODO: Implement transform evaluation
-    return [];
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+    const recipes = await this.prisma.transformRecipe.findMany({
+      where: { isPublic: true },
+      include: {
+        _count: { select: { jobs: true } },
+        jobs: { where: { createdAt: { gte: thirtyDaysAgo } }, select: { status: true } },
+      },
+    });
+
+    return recipes.map(recipe => {
+      const totalJobs = recipe.jobs.length;
+      const failedJobs = recipe.jobs.filter(j => j.status === 'error').length;
+      const reliability = totalJobs > 0 ? (totalJobs - failedJobs) / totalJobs : 0.95;
+
+      return {
+        id: `transform-${recipe.id}`,
+        type: "transform" as const,
+        name: recipe.name,
+        description: recipe.description || "",
+        author: recipe.authorId || "unknown",
+        downloads: recipe._count.jobs,
+        rating: reliability > 0.95 ? 5 : reliability > 0.9 ? 4 : 3,
+        popularity: Math.min(recipe._count.jobs / 50, 1),
+        reliability,
+        tags: recipe.tags as string[] || [],
+      };
+    });
   }
 
   /**
-   * Evaluate mappings
+   * Evaluate mappings by match rates
    */
   private async evaluateMappings(): Promise<MarketplaceItem[]> {
-    // TODO: Implement mapping evaluation
-    return [];
+    const templates = await this.prisma.mappingTemplate.findMany({
+      where: { isPublic: true },
+      include: {
+        _count: { select: { reconJobs: true } },
+        reconJobs: { select: { id: true }, take: 10 },
+      },
+    });
+
+    return Promise.all(
+      templates.map(async template => {
+        // Calculate match rate from recent results
+        const matchRates = await this.prisma.reconResult.findMany({
+          where: {
+            reconJobId: { in: template.reconJobs.map(j => j.id) },
+          },
+          select: { confidence: true },
+          take: 100,
+        });
+
+        const avgMatchRate = matchRates.length > 0
+          ? matchRates.reduce((sum, r) => sum + (r.confidence || 0), 0) / matchRates.length
+          : 0.85;
+
+        return {
+          id: `mapping-${template.id}`,
+          type: "mapping" as const,
+          name: template.name,
+          description: template.description || "",
+          author: template.authorId || "unknown",
+          downloads: template._count.reconJobs,
+          rating: avgMatchRate > 0.9 ? 5 : avgMatchRate > 0.8 ? 4 : 3,
+          popularity: Math.min(template._count.reconJobs / 30, 1),
+          reliability: avgMatchRate,
+          tags: template.tags as string[] || [],
+        };
+      })
+    );
   }
 
   /**
-   * Evaluate validations
+   * Evaluate validations by false positive rates
    */
   private async evaluateValidations(): Promise<MarketplaceItem[]> {
-    // TODO: Implement validation evaluation
-    return [];
+    const rules = await this.prisma.validationRule.findMany({
+      where: { isPublic: true },
+      include: {
+        _count: { select: { executions: true, failures: true } },
+      },
+    });
+
+    return rules.map(rule => {
+      const totalExecutions = rule._count.executions;
+      const totalFailures = rule._count.failures;
+      const falsePositiveRate = totalExecutions > 0 ? totalFailures / totalExecutions : 0.1;
+      const reliability = Math.max(0, 1 - falsePositiveRate);
+
+      return {
+        id: `validation-${rule.id}`,
+        type: "validation" as const,
+        name: rule.name,
+        description: rule.description || "",
+        author: rule.authorId || "unknown",
+        downloads: totalExecutions,
+        rating: reliability > 0.95 ? 5 : reliability > 0.9 ? 4 : 3,
+        popularity: Math.min(totalExecutions / 100, 1),
+        reliability,
+        tags: rule.tags as string[] || [],
+      };
+    });
   }
 
   /**
