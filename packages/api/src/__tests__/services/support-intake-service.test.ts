@@ -36,7 +36,7 @@ describe("support-intake-service run intelligence context", () => {
   it("embeds canonical run intelligence in audit/event payload when run_id is provided", async () => {
     const runUuid = "11111111-1111-4111-8111-111111111111";
 
-    (buildSupportIntakeRunContext as jest.Mock).mockResolvedValue({
+    (buildSupportIntakeRunContext as any).mockResolvedValue({
       state: "ok",
       runId: runUuid,
       runKind: "recon_job",
@@ -45,7 +45,7 @@ describe("support-intake-service run intelligence context", () => {
         operatorSummary: { signal: "strong" },
       },
     });
-    (buildSupportIntakeExceptionContext as jest.Mock).mockResolvedValue({
+    (buildSupportIntakeExceptionContext as any).mockResolvedValue({
       state: "ok",
       exceptionId: "22222222-2222-4222-8222-222222222222",
       runId: runUuid,
@@ -101,7 +101,7 @@ describe("support-intake-service run intelligence context", () => {
     });
 
     expect(prisma.auditLog.create).toHaveBeenCalledTimes(1);
-    const changes = (prisma.auditLog.create as jest.Mock).mock.calls[0][0].data.changes as any;
+    const changes = (prisma.auditLog.create as any).mock.calls[0][0].data.changes as any;
     expect(changes.run_context).toMatchObject({
       state: "ok",
       runId: runUuid,
@@ -141,12 +141,12 @@ describe("support-intake-service run intelligence context", () => {
   });
 
   it("records explicit unavailable semantics when run lookup fails", async () => {
-    (buildSupportIntakeRunContext as jest.Mock).mockResolvedValue({
+    (buildSupportIntakeRunContext as any).mockResolvedValue({
       state: "unavailable",
       reason: "not_found",
       runId: "missing-run",
     });
-    (buildSupportIntakeExceptionContext as jest.Mock).mockResolvedValue({
+    (buildSupportIntakeExceptionContext as any).mockResolvedValue({
       state: "unavailable",
       reason: "not_found",
       exceptionId: "33333333-3333-4333-8333-333333333333",
@@ -172,7 +172,7 @@ describe("support-intake-service run intelligence context", () => {
       },
     });
 
-    const changes = (prisma.auditLog.create as jest.Mock).mock.calls[0][0].data.changes as any;
+    const changes = (prisma.auditLog.create as any).mock.calls[0][0].data.changes as any;
     expect(changes.run_context).toMatchObject({
       state: "unavailable",
       reason: "not_found",
