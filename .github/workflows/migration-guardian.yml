@@ -1,5 +1,12 @@
 name: Migration Guardian
 
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  statuses: read
+  actions: read
+
 on:
   schedule:
     # Run every hour to check for pending migrations
