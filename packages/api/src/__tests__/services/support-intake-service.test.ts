@@ -1,4 +1,3 @@
-import { jest, describe, it, expect, beforeEach } from "@jest/globals";
 import { submitSupportIntake } from "../../services/support/support-intake-service";
 
 jest.mock("../../infrastructure/db/prisma", () => ({
