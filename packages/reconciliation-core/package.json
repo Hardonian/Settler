@@ -16,7 +16,7 @@
     "prebuild": "cd ../.. && node scripts/assert-node-version.mjs",
     "pretest": "cd ../.. && node scripts/assert-node-version.mjs",
     "pretypecheck": "cd ../.. && node scripts/assert-node-version.mjs",
-    "build": "tsc",
+    "build": "node ../../scripts/run-package-tsc-build.mjs",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
     "test": "jest --runInBand --forceExit"

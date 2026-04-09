@@ -73,7 +73,7 @@
     "pretest": "cd ../.. && node scripts/assert-node-version.mjs && pnpm run prisma:generate && pnpm --filter @settler/types run build && pnpm --filter @settler/adapters run build && pnpm --filter @settler/support-intake run build && pnpm --filter @settler/reconciliation-core run build",
     "prebuild": "cd ../.. && node scripts/assert-node-version.mjs && pnpm run prisma:generate && pnpm --filter @settler/types run build && pnpm --filter @settler/adapters run build && pnpm --filter @settler/support-intake run build && pnpm --filter @settler/reconciliation-core run build",
     "pretypecheck": "cd ../.. && node scripts/assert-node-version.mjs && pnpm run prisma:generate && pnpm --filter @settler/types run build && pnpm --filter @settler/adapters run build && pnpm --filter @settler/support-intake run build && pnpm --filter @settler/reconciliation-core run build",
-    "build": "tsc --skipLibCheck --noEmit false",
+    "build": "node ../../scripts/run-package-tsc-build.mjs --skipLibCheck --noEmit false",
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
     "migrate": "tsx src/db/migrate.ts",

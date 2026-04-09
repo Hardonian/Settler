@@ -2,14 +2,14 @@
  * Responsive Utilities
  * Mobile-first responsive design helpers
  */
-export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+export type Breakpoint = "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
 export interface BreakpointConfig {
     xs: number;
     sm: number;
     md: number;
     lg: number;
     xl: number;
-    '2xl': number;
+    "2xl": number;
 }
 /**
  * Hook to get current breakpoint

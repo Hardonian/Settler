@@ -354,7 +354,7 @@ export class ExceptionReviewService {
   ) {}
 
   async resolveException(input: ResolveExceptionInput): Promise<ResolveExceptionResult> {
-    return this.prisma.$transaction(async (tx) => {
+    return this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const exceptionMatchModel = tx.reconciliationMatch as any;
       const existing = (await exceptionMatchModel.findFirst({
         where: {
@@ -901,11 +901,9 @@ export class ExceptionReviewService {
     });
 
     await exceptionArchetypeModel.update({
-      where: {
-        id: archetype.id,
-      },
+      where: { id: archetype.id },
       data: {
-        occurrenceCount: archetype.occurrenceCount + 1,
+        occurrenceCount: { increment: 1 },
         lastOccurrenceAt: new Date(),
       },
     });
@@ -918,7 +916,7 @@ export class ExceptionReviewService {
     assignedTo: string;
     notes?: string;
   }): Promise<void> {
-    await this.prisma.$transaction(async (tx) => {
+    await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const existing = (await (tx.reconciliationMatch as any).findFirst({
         where: { id: input.exceptionId, tenantId: input.tenantId },
         select: { id: true, runId: true, metadata: true, status: true, assignedTo: true },
@@ -1015,7 +1013,7 @@ export class ExceptionReviewService {
     notes?: string;
     resolutionReason?: string;
   }): Promise<void> {
-    await this.prisma.$transaction(async (tx) => {
+    await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const existing = (await (tx.reconciliationMatch as any).findFirst({
         where: { id: input.exceptionId, tenantId: input.tenantId },
         select: { id: true, runId: true, metadata: true, status: true, reviewed: true },

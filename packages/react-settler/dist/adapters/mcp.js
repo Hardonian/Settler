@@ -17,7 +17,7 @@ class ReactSettlerMCPServer {
     config;
     workflows = new Map();
     constructor(config) {
-        (0, licensing_1.requireFeature)(licensing_1.FEATURE_FLAGS.MCP_INTEGRATION, 'MCP Server Integration');
+        (0, licensing_1.requireFeature)(licensing_1.FEATURE_FLAGS.MCP_INTEGRATION, "MCP Server Integration");
         this.config = config;
     }
     /**
@@ -42,7 +42,7 @@ class ReactSettlerMCPServer {
                 uri: `settler://workflow/${id}`,
                 name: config.metadata.name,
                 description: config.metadata.description ?? undefined,
-                mimeType: 'application/json'
+                mimeType: "application/json",
             });
         });
         return resources;
@@ -64,46 +64,46 @@ class ReactSettlerMCPServer {
     listTools() {
         return [
             {
-                name: 'compile_reconciliation_workflow',
-                description: 'Compile a React.Settler workflow to JSON configuration',
+                name: "compile_reconciliation_workflow",
+                description: "Compile a React.Settler workflow to JSON configuration",
                 inputSchema: {
-                    type: 'object',
+                    type: "object",
                     properties: {
                         workflowId: {
-                            type: 'string',
-                            description: 'ID of the workflow to compile'
-                        }
+                            type: "string",
+                            description: "ID of the workflow to compile",
+                        },
                     },
-                    required: ['workflowId']
-                }
+                    required: ["workflowId"],
+                },
             },
             {
-                name: 'validate_transaction',
-                description: 'Validate a reconciliation transaction',
+                name: "validate_transaction",
+                description: "Validate a reconciliation transaction",
                 inputSchema: {
-                    type: 'object',
+                    type: "object",
                     properties: {
                         transaction: {
-                            type: 'object',
-                            description: 'Transaction object to validate'
-                        }
+                            type: "object",
+                            description: "Transaction object to validate",
+                        },
                     },
-                    required: ['transaction']
-                }
+                    required: ["transaction"],
+                },
             },
             {
-                name: 'create_reconciliation_workflow',
-                description: 'Create a new reconciliation workflow configuration',
+                name: "create_reconciliation_workflow",
+                description: "Create a new reconciliation workflow configuration",
                 inputSchema: {
-                    type: 'object',
+                    type: "object",
                     properties: {
-                        name: { type: 'string' },
-                        description: { type: 'string' },
-                        rulesets: { type: 'array' }
+                        name: { type: "string" },
+                        description: { type: "string" },
+                        rulesets: { type: "array" },
                     },
-                    required: ['name']
-                }
-            }
+                    required: ["name"],
+                },
+            },
         ];
     }
     /**
@@ -111,11 +111,11 @@ class ReactSettlerMCPServer {
      */
     async callTool(name, args) {
         switch (name) {
-            case 'compile_reconciliation_workflow':
+            case "compile_reconciliation_workflow":
                 return this.compileWorkflow(args.workflowId);
-            case 'validate_transaction':
+            case "validate_transaction":
                 return this.validateTransaction(args.transaction);
-            case 'create_reconciliation_workflow':
+            case "create_reconciliation_workflow":
                 return this.createWorkflow(args);
             default:
                 throw new Error(`Unknown tool: ${name}`);
@@ -132,31 +132,31 @@ class ReactSettlerMCPServer {
         // Basic validation
         const errors = [];
         if (!transaction.id) {
-            errors.push('Transaction ID is required');
+            errors.push("Transaction ID is required");
         }
-        if (!transaction.amount || typeof transaction.amount.value !== 'number') {
-            errors.push('Valid amount is required');
+        if (!transaction.amount || typeof transaction.amount.value !== "number") {
+            errors.push("Valid amount is required");
         }
         if (!transaction.currency) {
-            errors.push('Currency is required');
+            errors.push("Currency is required");
         }
         return {
             valid: errors.length === 0,
-            errors
+            errors,
         };
     }
     createWorkflow(args) {
         return {
-            version: '1.0.0',
+            version: "1.0.0",
             metadata: {
                 name: args.name,
                 description: args.description,
                 createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
+                updatedAt: new Date().toISOString(),
             },
             rulesets: args.rulesets || [],
             views: [],
-            widgets: {}
+            widgets: {},
         };
     }
 }

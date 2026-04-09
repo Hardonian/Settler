@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto';
+import { randomUUID } from "crypto";
 /**
  * Generate a unique correlation ID for request tracing.
  * Uses UUID v4 for global uniqueness.
@@ -11,10 +11,10 @@ export function generateCorrelationId() {
  * Common header names: X-Correlation-ID, X-Request-ID, X-Trace-ID
  */
 export function extractCorrelationId(headers) {
-    const headerNames = ['x-correlation-id', 'x-request-id', 'x-trace-id'];
+    const headerNames = ["x-correlation-id", "x-request-id", "x-trace-id"];
     for (const name of headerNames) {
         const value = headers[name];
-        if (typeof value === 'string' && value.length > 0) {
+        if (typeof value === "string" && value.length > 0) {
             return value;
         }
         if (Array.isArray(value) && value[0]) {
@@ -30,7 +30,7 @@ export function extractCorrelationId(headers) {
 let correlationStorage = null;
 try {
     // AsyncLocalStorage is available in Node.js 12.17.0+
-    const { AsyncLocalStorage } = require('async_hooks');
+    const { AsyncLocalStorage } = require("async_hooks");
     const storage = new AsyncLocalStorage();
     correlationStorage = {
         getStore: () => storage.getStore(),

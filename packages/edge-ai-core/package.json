@@ -14,7 +14,7 @@
   },
   "scripts": {
     "prebuild": "pnpm run typecheck",
-    "build": "tsc",
+    "build": "node ../../scripts/run-package-tsc-build.mjs",
     "dev": "tsx watch src/index.ts",
     "test": "jest --passWithNoTests",
     "lint": "eslint src",

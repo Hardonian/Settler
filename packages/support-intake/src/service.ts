@@ -5,6 +5,7 @@ type JsonPrimitive = string | number | boolean | null;
 type JsonValue = JsonPrimitive | { [key: string]: JsonValue } | JsonValue[];
 // InputJsonValue excludes top-level null to match Prisma's InputJsonValue constraint.
 type InputJsonObject = { [key: string]: JsonValue | undefined };
+type SupportIntakeContextPayload = object;
 
 interface SupportIntakePrismaClient {
   $executeRaw(query: TemplateStringsArray, ...values: unknown[]): Promise<unknown>;
@@ -49,8 +50,8 @@ export async function emitSupportIntakeRuntimeSignal(
     route?: string | null;
     module?: string | null;
     descriptionLength: number;
-    runContext: Record<string, unknown> | null;
-    exceptionContext: Record<string, unknown> | null;
+    runContext: SupportIntakeContextPayload | null;
+    exceptionContext: SupportIntakeContextPayload | null;
   }
 ): Promise<void> {
   const runContextState =
@@ -123,8 +124,8 @@ export interface SubmitSupportIntakeHooks {
     userId: string;
     path: string;
     payload: SupportIntakeSubmission;
-    runContext: Record<string, unknown> | null;
-    exceptionContext: Record<string, unknown> | null;
+    runContext: SupportIntakeContextPayload | null;
+    exceptionContext: SupportIntakeContextPayload | null;
   }) => Promise<void>;
 }
 
@@ -135,8 +136,8 @@ async function persistSupportIntakeToAuditLog(params: {
   tenantId: string;
   path: string;
   payload: SupportIntakeSubmission;
-  runContext: Record<string, unknown> | null;
-  exceptionContext: Record<string, unknown> | null;
+  runContext: SupportIntakeContextPayload | null;
+  exceptionContext: SupportIntakeContextPayload | null;
 }): Promise<void> {
   const changes: InputJsonObject = {
     submission_id: params.submissionId,
@@ -180,12 +181,15 @@ export async function submitSupportIntake(params: {
   path: string;
   body: unknown;
   /** Required for run-linked intake to embed canonical run intelligence. */
-  resolveRunContext?: (tenantId: string, runId: string) => Promise<Record<string, unknown>>;
+  resolveRunContext?: (
+    tenantId: string,
+    runId: string
+  ) => Promise<SupportIntakeContextPayload>;
   /** Optional exception-linked enrichment for family-memory aware support triage. */
   resolveExceptionContext?: (
     tenantId: string,
     exceptionId: string
-  ) => Promise<Record<string, unknown>>;
+  ) => Promise<SupportIntakeContextPayload>;
   hooks?: SubmitSupportIntakeHooks;
 }): Promise<StoredSupportIntake> {
   const parsed = supportIntakeSubmissionSchema.parse({
@@ -194,8 +198,8 @@ export async function submitSupportIntake(params: {
   });
 
   const submissionId = crypto.randomUUID();
-  let runContext: Record<string, unknown> | null = null;
-  let exceptionContext: Record<string, unknown> | null = null;
+  let runContext: SupportIntakeContextPayload | null = null;
+  let exceptionContext: SupportIntakeContextPayload | null = null;
   if (parsed.run_id && parsed.run_id.trim().length > 0) {
     if (params.resolveRunContext) {
       runContext = await params.resolveRunContext(params.tenantId, parsed.run_id);

@@ -15,7 +15,7 @@ export interface WebhookHandler {
 /**
  * Webhook Event Types
  */
-export type ReconciliationWebhookEvent = 'transaction.created' | 'transaction.updated' | 'settlement.created' | 'settlement.updated' | 'exception.created' | 'exception.resolved' | 'reconciliation.completed' | 'reconciliation.failed';
+export type ReconciliationWebhookEvent = "transaction.created" | "transaction.updated" | "settlement.created" | "settlement.updated" | "exception.created" | "exception.resolved" | "reconciliation.completed" | "reconciliation.failed";
 /**
  * Webhook Manager
  * Manages webhook subscriptions and handlers

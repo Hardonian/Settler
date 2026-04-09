@@ -43,34 +43,34 @@ const react_1 = __importStar(require("react"));
 const protocol_1 = require("@settler/protocol");
 const context_1 = require("../context");
 const useTelemetry_1 = require("../hooks/useTelemetry");
-exports.ExceptionTable = react_1.default.memo(function ExceptionTable({ exceptions, onResolve, className, showSeverity = true, showCategory = true }) {
+exports.ExceptionTable = react_1.default.memo(function ExceptionTable({ exceptions, onResolve, className, showSeverity = true, showCategory = true, }) {
     const context = (0, context_1.useCompilationContext)();
-    const { track } = (0, useTelemetry_1.useTelemetry)('ExceptionTable');
+    const { track } = (0, useTelemetry_1.useTelemetry)("ExceptionTable");
     // Sanitize exception descriptions
     const sanitizedExceptions = (0, react_1.useMemo)(() => {
-        return exceptions.map(exc => ({
+        return exceptions.map((exc) => ({
             ...exc,
-            description: (0, protocol_1.sanitizeString)(exc.description)
+            description: (0, protocol_1.sanitizeString)(exc.description),
         }));
     }, [exceptions]);
     // In config mode, register widget
-    if (context.mode === 'config') {
+    if (context.mode === "config") {
         if (!context.config.widgets) {
             context.config.widgets = {};
         }
-        context.config.widgets['exception-table'] = {
-            id: 'exception-table',
-            type: 'exception-table',
+        context.config.widgets["exception-table"] = {
+            id: "exception-table",
+            type: "exception-table",
             props: {
                 showSeverity,
-                showCategory
-            }
+                showCategory,
+            },
         };
     }
     // In UI mode, render table
-    if (context.mode === 'ui') {
+    if (context.mode === "ui") {
         return ((0, jsx_runtime_1.jsx)("div", { className: className, "data-widget": "exception-table", children: (0, jsx_runtime_1.jsxs)("table", { children: [(0, jsx_runtime_1.jsx)("thead", { children: (0, jsx_runtime_1.jsxs)("tr", { children: [(0, jsx_runtime_1.jsx)("th", { children: "ID" }), showCategory && (0, jsx_runtime_1.jsx)("th", { children: "Category" }), showSeverity && (0, jsx_runtime_1.jsx)("th", { children: "Severity" }), (0, jsx_runtime_1.jsx)("th", { children: "Description" }), (0, jsx_runtime_1.jsx)("th", { children: "Status" }), onResolve && (0, jsx_runtime_1.jsx)("th", { children: "Actions" })] }) }), (0, jsx_runtime_1.jsx)("tbody", { children: sanitizedExceptions.map((exception) => ((0, jsx_runtime_1.jsxs)("tr", { children: [(0, jsx_runtime_1.jsx)("td", { children: exception.id }), showCategory && (0, jsx_runtime_1.jsx)("td", { children: exception.category }), showSeverity && ((0, jsx_runtime_1.jsx)("td", { children: (0, jsx_runtime_1.jsx)("span", { "data-severity": exception.severity, children: exception.severity }) })), (0, jsx_runtime_1.jsx)("td", { children: exception.description }), (0, jsx_runtime_1.jsx)("td", { children: exception.resolutionStatus }), onResolve && ((0, jsx_runtime_1.jsx)("td", { children: (0, jsx_runtime_1.jsx)("button", { onClick: () => {
-                                            track('exception.resolved', { exceptionId: exception.id });
+                                            track("exception.resolved", { exceptionId: exception.id });
                                             onResolve(exception);
                                         }, children: "Resolve" }) }))] }, exception.id))) })] }) }));
     }

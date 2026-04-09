@@ -2,8 +2,8 @@
  * ErrorBoundary Component
  * Enterprise-grade error boundary with telemetry
  */
-import { Component, ErrorInfo, ReactNode } from 'react';
-import { ErrorTelemetry } from '@settler/protocol';
+import { Component, ErrorInfo, ReactNode } from "react";
+import { ErrorTelemetry } from "@settler/protocol";
 export interface ErrorBoundaryProps {
     children: ReactNode;
     fallback?: ReactNode | ((error: Error, errorInfo: ErrorInfo) => ReactNode);

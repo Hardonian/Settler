@@ -147,7 +147,14 @@ describe("buildReconciliationExport historical intelligence", () => {
             changedSincePreviousRun: "changed",
             proofPosture: "stronger",
             primaryReasonCodes: ["history_window_evaluated"],
-            recurringFamilies: [],
+            recurringFamilies: [
+              {
+                family: "bank_window",
+                trend: "strengthening",
+                certainty: "high",
+                reasonCodes: ["recurring_family_signal_present"],
+              },
+            ],
             summary: "recovering",
             explainerCodes: ["signal_strong", "pattern_recovering"],
           },

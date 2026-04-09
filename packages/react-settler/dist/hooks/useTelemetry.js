@@ -20,7 +20,7 @@ let globalConfig = {
     trackPerformance: true,
     trackErrors: true,
     trackUsers: false,
-    scrubPII: true
+    scrubPII: true,
 };
 /**
  * Set global telemetry provider
@@ -39,8 +39,8 @@ function setTelemetryConfig(config) {
  */
 function useTelemetry(componentName) {
     // Check feature access (warn in dev, allow in OSS for basic usage)
-    if (process.env.NODE_ENV === 'production') {
-        (0, licensing_1.requireFeature)(licensing_1.FEATURE_FLAGS.TELEMETRY, 'Telemetry');
+    if (process.env.NODE_ENV === "production") {
+        (0, licensing_1.requireFeature)(licensing_1.FEATURE_FLAGS.TELEMETRY, "Telemetry");
     }
     const renderStartTime = (0, react_1.useRef)(Date.now());
     const interactionStartTime = (0, react_1.useRef)(null);
@@ -53,7 +53,7 @@ function useTelemetry(componentName) {
             const renderTime = Date.now() - renderStartTime.current;
             if (componentName && renderTime > 0) {
                 trackPerformance({
-                    renderTime
+                    renderTime,
                 }, componentName);
             }
         };
@@ -69,10 +69,12 @@ function useTelemetry(componentName) {
         const event = {
             id: `evt_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
             timestamp: new Date().toISOString(),
-            type: 'component.interaction',
+            type: "component.interaction",
             name: eventName,
-            ...(properties ? { properties: globalConfig.scrubPII ? scrubPII(properties) : properties } : {}),
-            ...(componentName ? { context: { component: componentName } } : {})
+            ...(properties
+                ? { properties: globalConfig.scrubPII ? scrubPII(properties) : properties }
+                : {}),
+            ...(componentName ? { context: { component: componentName } } : {}),
         };
         globalTelemetryProvider.track(event);
     }, [componentName]);
@@ -83,8 +85,10 @@ function useTelemetry(componentName) {
         const errorTelemetry = {
             error,
             ...(componentName ? { component: componentName } : {}),
-            ...(context ? { context: globalConfig.scrubPII ? scrubPII(context) : context } : {}),
-            timestamp: new Date().toISOString()
+            ...(context
+                ? { context: globalConfig.scrubPII ? scrubPII(context) : context }
+                : {}),
+            timestamp: new Date().toISOString(),
         };
         globalTelemetryProvider.trackError(errorTelemetry);
     }, [componentName]);
@@ -95,10 +99,12 @@ function useTelemetry(componentName) {
         const event = {
             id: `perf_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
             timestamp: new Date().toISOString(),
-            type: 'performance',
-            name: 'component.performance',
+            type: "performance",
+            name: "component.performance",
             measurements: metrics,
-            ...((component || componentName) ? { context: { component: component || componentName } } : {})
+            ...(component || componentName
+                ? { context: { component: component || componentName } }
+                : {}),
         };
         globalTelemetryProvider.track(event);
     }, [componentName]);
@@ -119,7 +125,7 @@ function useTelemetry(componentName) {
         trackError,
         trackPerformance,
         startInteraction,
-        endInteraction
+        endInteraction,
     };
 }
 /**
@@ -139,12 +145,12 @@ function scrubPII(properties) {
         /cvv/i,
         /password/i,
         /token/i,
-        /api.?key/i
+        /api.?key/i,
     ];
     for (const [key, value] of Object.entries(properties)) {
-        const isPII = piiPatterns.some(pattern => pattern.test(key));
-        if (isPII && typeof value === 'string') {
-            scrubbed[key] = '[REDACTED]';
+        const isPII = piiPatterns.some((pattern) => pattern.test(key));
+        if (isPII && typeof value === "string") {
+            scrubbed[key] = "[REDACTED]";
         }
         else {
             scrubbed[key] = value;

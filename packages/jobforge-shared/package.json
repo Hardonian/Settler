@@ -12,7 +12,7 @@
     }
   },
   "scripts": {
-    "build": "tsc",
+    "build": "node ../../scripts/run-package-tsc-build.mjs",
     "dev": "tsc --watch",
     "clean": "rm -rf dist *.tsbuildinfo",
     "lint": "eslint src/",

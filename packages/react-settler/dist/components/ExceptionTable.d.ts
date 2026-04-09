@@ -2,8 +2,8 @@
  * ExceptionTable
  * Displays reconciliation exceptions requiring manual review
  */
-import React from 'react';
-import { ReconciliationException } from '@settler/protocol';
+import React from "react";
+import { ReconciliationException } from "@settler/protocol";
 export interface ExceptionTableProps {
     exceptions: ReconciliationException[];
     onResolve?: (exception: ReconciliationException) => void;

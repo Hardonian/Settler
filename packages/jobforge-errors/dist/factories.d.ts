@@ -1,4 +1,4 @@
-import { AppError, ValidationErrorDetail } from './types';
+import { AppError, ValidationErrorDetail } from "./types";
 /**
  * Factory functions for creating standardized errors.
  * These ensure consistent error creation across the application.

@@ -2,8 +2,8 @@
  * JobForge TypeScript SDK - Server-only client
  * Never expose service keys on the client
  */
-import { createClient } from '@supabase/supabase-js';
-import { enqueueJobParamsSchema, completeJobParamsSchema } from '@jobforge/shared';
+import { createClient } from "@supabase/supabase-js";
+import { enqueueJobParamsSchema, completeJobParamsSchema } from "@jobforge/shared";
 export class JobForgeClient {
     supabase;
     constructor(config) {
@@ -15,7 +15,7 @@ export class JobForgeClient {
     async enqueueJob(params) {
         // Validate params
         const validated = enqueueJobParamsSchema.parse(params);
-        const { data, error } = await this.supabase.rpc('jobforge_enqueue_job', {
+        const { data, error } = await this.supabase.rpc("jobforge_enqueue_job", {
             p_tenant_id: validated.tenant_id,
             p_type: validated.type,
             p_payload: validated.payload,
@@ -32,7 +32,7 @@ export class JobForgeClient {
      * Claim jobs for processing (worker use)
      */
     async claimJobs(params) {
-        const { data, error } = await this.supabase.rpc('jobforge_claim_jobs', {
+        const { data, error } = await this.supabase.rpc("jobforge_claim_jobs", {
             p_worker_id: params.worker_id,
             p_limit: params.limit || 10,
         });
@@ -45,7 +45,7 @@ export class JobForgeClient {
      * Send heartbeat for a running job
      */
     async heartbeatJob(params) {
-        const { error } = await this.supabase.rpc('jobforge_heartbeat_job', {
+        const { error } = await this.supabase.rpc("jobforge_heartbeat_job", {
             p_job_id: params.job_id,
             p_worker_id: params.worker_id,
         });
@@ -59,7 +59,7 @@ export class JobForgeClient {
     async completeJob(params) {
         // Validate params
         const validated = completeJobParamsSchema.parse(params);
-        const { error } = await this.supabase.rpc('jobforge_complete_job', {
+        const { error } = await this.supabase.rpc("jobforge_complete_job", {
             p_job_id: validated.job_id,
             p_worker_id: validated.worker_id,
             p_status: validated.status,
@@ -75,7 +75,7 @@ export class JobForgeClient {
      * Cancel a job
      */
     async cancelJob(params) {
-        const { error } = await this.supabase.rpc('jobforge_cancel_job', {
+        const { error } = await this.supabase.rpc("jobforge_cancel_job", {
             p_job_id: params.job_id,
             p_tenant_id: params.tenant_id,
         });
@@ -87,7 +87,7 @@ export class JobForgeClient {
      * Reschedule a job
      */
     async rescheduleJob(params) {
-        const { error } = await this.supabase.rpc('jobforge_reschedule_job', {
+        const { error } = await this.supabase.rpc("jobforge_reschedule_job", {
             p_job_id: params.job_id,
             p_tenant_id: params.tenant_id,
             p_run_at: params.run_at,
@@ -106,7 +106,7 @@ export class JobForgeClient {
             limit: params.filters?.limit || 50,
             offset: params.filters?.offset || 0,
         };
-        const { data, error } = await this.supabase.rpc('jobforge_list_jobs', {
+        const { data, error } = await this.supabase.rpc("jobforge_list_jobs", {
             p_tenant_id: params.tenant_id,
             p_filters: filters,
         });
@@ -120,13 +120,13 @@ export class JobForgeClient {
      */
     async getJob(jobId, tenantId) {
         const { data, error } = await this.supabase
-            .from('jobforge_jobs')
-            .select('*')
-            .eq('id', jobId)
-            .eq('tenant_id', tenantId)
+            .from("jobforge_jobs")
+            .select("*")
+            .eq("id", jobId)
+            .eq("tenant_id", tenantId)
             .single();
         if (error) {
-            if (error.code === 'PGRST116') {
+            if (error.code === "PGRST116") {
                 // Not found
                 return null;
             }
@@ -139,13 +139,13 @@ export class JobForgeClient {
      */
     async getResult(resultId, tenantId) {
         const { data, error } = await this.supabase
-            .from('jobforge_job_results')
-            .select('*')
-            .eq('id', resultId)
-            .eq('tenant_id', tenantId)
+            .from("jobforge_job_results")
+            .select("*")
+            .eq("id", resultId)
+            .eq("tenant_id", tenantId)
             .single();
         if (error) {
-            if (error.code === 'PGRST116') {
+            if (error.code === "PGRST116") {
                 return null;
             }
             throw new Error(`Failed to get result: ${error.message}`);

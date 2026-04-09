@@ -23,5 +23,5 @@ export interface FilterState {
     } | undefined;
     search?: string | undefined;
 }
-export declare function FilterBar({ onFilterChange, className, showProviderFilter, showStatusFilter, showDateRangeFilter, showAmountRangeFilter }: FilterBarProps): import("react/jsx-runtime").JSX.Element | null;
+export declare function FilterBar({ onFilterChange, className, showProviderFilter, showStatusFilter, showDateRangeFilter, showAmountRangeFilter, }: FilterBarProps): import("react/jsx-runtime").JSX.Element | null;
 //# sourceMappingURL=FilterBar.d.ts.map

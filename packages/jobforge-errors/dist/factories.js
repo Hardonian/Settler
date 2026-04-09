@@ -1,4 +1,4 @@
-import { AppError, ErrorCode } from './types';
+import { AppError, ErrorCode } from "./types";
 /**
  * Factory functions for creating standardized errors.
  * These ensure consistent error creation across the application.
@@ -6,10 +6,10 @@ import { AppError, ErrorCode } from './types';
 export function createBadRequestError(message, options) {
     return new AppError(ErrorCode.BAD_REQUEST, message, options);
 }
-export function createUnauthorizedError(message = 'Authentication required', options) {
+export function createUnauthorizedError(message = "Authentication required", options) {
     return new AppError(ErrorCode.UNAUTHORIZED, message, options);
 }
-export function createForbiddenError(message = 'Insufficient permissions', options) {
+export function createForbiddenError(message = "Insufficient permissions", options) {
     return new AppError(ErrorCode.FORBIDDEN, message, options);
 }
 export function createNotFoundError(resource, options) {
@@ -24,16 +24,16 @@ export function createValidationError(message, validationDetails, options) {
         details: validationDetails,
     });
 }
-export function createRateLimitError(message = 'Rate limit exceeded', options) {
+export function createRateLimitError(message = "Rate limit exceeded", options) {
     return new AppError(ErrorCode.RATE_LIMIT_EXCEEDED, message, options);
 }
-export function createInternalError(message = 'An internal error occurred', options) {
+export function createInternalError(message = "An internal error occurred", options) {
     return new AppError(ErrorCode.INTERNAL_ERROR, message, {
         ...options,
         isOperational: false,
     });
 }
-export function createDatabaseError(message = 'Database operation failed', options) {
+export function createDatabaseError(message = "Database operation failed", options) {
     return new AppError(ErrorCode.DATABASE_ERROR, message, {
         ...options,
         isOperational: false,

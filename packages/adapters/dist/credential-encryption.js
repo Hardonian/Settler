@@ -88,7 +88,10 @@ async function encryptCredentials(credentials, supabaseUrl, supabaseServiceKey) 
     const key = decodeEncryptionKeyOrThrow(encryptionKey);
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipheriv(algorithm, key, iv);
-    const encrypted = Buffer.concat([cipher.update(JSON.stringify(credentials), "utf8"), cipher.final()]);
+    const encrypted = Buffer.concat([
+        cipher.update(JSON.stringify(credentials), "utf8"),
+        cipher.final(),
+    ]);
     const authTag = cipher.getAuthTag();
     // Return base64 encoded: iv:authTag:encrypted
     return Buffer.concat([iv, authTag, encrypted]).toString("base64");

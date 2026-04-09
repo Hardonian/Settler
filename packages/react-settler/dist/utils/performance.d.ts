@@ -2,7 +2,7 @@
  * Performance Utilities
  * Optimizations for reconciliation components
  */
-import { ReconciliationTransaction } from '@settler/protocol';
+import { ReconciliationTransaction } from "@settler/protocol";
 /**
  * Memoized filter function
  */
@@ -22,7 +22,7 @@ export declare function useFilteredTransactions(transactions: ReconciliationTran
 /**
  * Memoized sort function
  */
-export declare function useSortedTransactions(transactions: ReconciliationTransaction[], sortBy?: keyof ReconciliationTransaction, sortOrder?: 'asc' | 'desc'): ReconciliationTransaction[];
+export declare function useSortedTransactions(transactions: ReconciliationTransaction[], sortBy?: keyof ReconciliationTransaction, sortOrder?: "asc" | "desc"): ReconciliationTransaction[];
 /**
  * Debounce hook
  */

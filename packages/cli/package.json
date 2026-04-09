@@ -16,7 +16,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "node ../../scripts/run-package-tsc-build.mjs",
     "dev": "tsx watch src/index.ts",
     "test": "jest --passWithNoTests",
     "lint": "eslint src",

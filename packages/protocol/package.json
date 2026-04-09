@@ -17,7 +17,7 @@
     "PROTOCOL.md"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "node ../../scripts/run-package-tsc-build.mjs",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist"

@@ -5,8 +5,8 @@
  * This compiler renders components in "config mode" to extract reconciliation
  * rules, widgets, and view configurations from the React tree.
  */
-import { ReactElement } from 'react';
-import { ReconciliationConfig } from '@settler/protocol';
+import { ReactElement } from "react";
+import { ReconciliationConfig } from "@settler/protocol";
 /**
  * Compile a React component tree into a ReconciliationConfig
  *

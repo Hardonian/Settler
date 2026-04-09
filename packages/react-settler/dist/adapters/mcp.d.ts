@@ -2,7 +2,7 @@
  * MCP (Model Context Protocol) Server Integration
  * Enables React.Settler to work with MCP-compatible tools and AI assistants
  */
-import { ReconciliationConfig } from '@settler/protocol';
+import { ReconciliationConfig } from "@settler/protocol";
 export interface MCPServerConfig {
     name: string;
     version: string;
@@ -18,7 +18,7 @@ export interface MCPTool {
     name: string;
     description: string;
     inputSchema: {
-        type: 'object';
+        type: "object";
         properties: Record<string, unknown>;
         required?: string[];
     };

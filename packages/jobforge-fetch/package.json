@@ -9,7 +9,7 @@
     "typecheck": "pnpm exec tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "build": "pnpm exec tsc --noEmit"
+    "build": "node ../../scripts/run-package-tsc-build.mjs"
   },
   "dependencies": {
     "@jobforge/errors": "workspace:*"

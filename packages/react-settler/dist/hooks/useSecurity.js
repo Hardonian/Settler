@@ -27,7 +27,7 @@ function useSecurity() {
     const auditLog = (0, react_1.useCallback)((event, action, result, metadata) => {
         // Audit logging is a commercial feature
         if (!(0, licensing_1.hasFeature)(licensing_1.FEATURE_FLAGS.AUDIT_LOGGING)) {
-            console.warn('Audit logging requires Settler Commercial subscription');
+            console.warn("Audit logging requires Settler Commercial subscription");
             return;
         }
         if (!auditLogHandler) {
@@ -43,7 +43,7 @@ function useSecurity() {
             ...(securityContext?.userAgent ? { userAgent: securityContext.userAgent } : {}),
             action,
             result,
-            ...(metadata ? { metadata } : {})
+            ...(metadata ? { metadata } : {}),
         };
         auditLogHandler(entry);
     }, [securityContext]);
@@ -63,7 +63,7 @@ function useSecurity() {
         securityContext,
         auditLog,
         hasPermission,
-        hasRole
+        hasRole,
     };
 }
 //# sourceMappingURL=useSecurity.js.map

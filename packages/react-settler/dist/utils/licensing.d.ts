@@ -2,8 +2,8 @@
  * Licensing & Feature Flags
  * Manages OSS vs Commercial feature access
  */
-import React from 'react';
-export type LicenseTier = 'oss' | 'commercial' | 'enterprise';
+import React from "react";
+export type LicenseTier = "oss" | "commercial" | "enterprise";
 export interface LicenseConfig {
     tier: LicenseTier;
     features: Set<string>;

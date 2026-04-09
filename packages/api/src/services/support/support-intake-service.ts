@@ -25,9 +25,17 @@ export async function submitSupportIntake(params: {
       tenantId: params.tenantId,
       path: params.path,
       body: params.body,
-      resolveRunContext: (tenantId, runId) => buildSupportIntakeRunContext(prisma, tenantId, runId),
-      resolveExceptionContext: (tenantId, exceptionId) =>
-        buildSupportIntakeExceptionContext(prisma, tenantId, exceptionId),
+      resolveRunContext: async (tenantId, runId) =>
+        (await buildSupportIntakeRunContext(prisma, tenantId, runId)) as unknown as Record<
+          string,
+          unknown
+        >,
+      resolveExceptionContext: async (tenantId, exceptionId) =>
+        (await buildSupportIntakeExceptionContext(
+          prisma,
+          tenantId,
+          exceptionId
+        )) as unknown as Record<string, unknown>,
       hooks: {
         afterPersist: async ({
           submissionId,

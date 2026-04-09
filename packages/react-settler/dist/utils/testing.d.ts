@@ -2,8 +2,8 @@
  * Testing Utilities
  * Helpers for testing reconciliation components
  */
-import React from 'react';
-import { ReconciliationTransaction, ReconciliationSettlement, ReconciliationException, ReconciliationConfig } from '@settler/protocol';
+import React from "react";
+import { ReconciliationTransaction, ReconciliationSettlement, ReconciliationException, ReconciliationConfig } from "@settler/protocol";
 /**
  * Create mock transaction
  */
@@ -25,7 +25,7 @@ export declare function createMockTransactions(count: number): ReconciliationTra
  */
 export interface TestWrapperProps {
     children: React.ReactNode;
-    mode?: 'ui' | 'config';
+    mode?: "ui" | "config";
     config?: Partial<ReconciliationConfig>;
 }
 export declare function TestWrapper({ children, mode, config }: TestWrapperProps): import("react/jsx-runtime").JSX.Element;

@@ -45,7 +45,7 @@
     "prebuild": "cd ../.. && node scripts/assert-node-version.mjs",
     "pretest": "cd ../.. && node scripts/assert-node-version.mjs",
     "pretypecheck": "cd ../.. && node scripts/assert-node-version.mjs",
-    "build": "tsc",
+    "build": "node ../../scripts/run-package-tsc-build.mjs",
     "dev": "tsc --watch",
     "test": "jest",
     "test:watch": "jest --watch",

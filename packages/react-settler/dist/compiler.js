@@ -22,16 +22,16 @@ exports.compileToJSON = compileToJSON;
  */
 function compileToConfig(_component, options) {
     const config = {
-        version: '1.0.0',
+        version: "1.0.0",
         metadata: {
-            name: options?.name || 'Reconciliation Workflow',
+            name: options?.name || "Reconciliation Workflow",
             ...(options?.description ? { description: options.description } : {}),
             createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
+            updatedAt: new Date().toISOString(),
         },
         rulesets: [],
         views: [],
-        widgets: {}
+        widgets: {},
     };
     // Create a wrapper component that provides compilation context
     // Note: In a real implementation, we would render the component tree here
@@ -53,16 +53,16 @@ function compileToConfig(_component, options) {
     // A more robust implementation would use React Context properly
     // Build final config
     const finalConfig = {
-        version: config.version || '1.0.0',
+        version: config.version || "1.0.0",
         metadata: {
-            name: config.metadata?.name || 'Reconciliation Workflow',
+            name: config.metadata?.name || "Reconciliation Workflow",
             ...(config.metadata?.description ? { description: config.metadata.description } : {}),
             createdAt: config.metadata?.createdAt || new Date().toISOString(),
-            updatedAt: config.metadata?.updatedAt || new Date().toISOString()
+            updatedAt: config.metadata?.updatedAt || new Date().toISOString(),
         },
         rulesets: config.rulesets || [],
         views: config.views || [],
-        widgets: config.widgets || {}
+        widgets: config.widgets || {},
     };
     return finalConfig;
 }
@@ -71,8 +71,6 @@ function compileToConfig(_component, options) {
  */
 function compileToJSON(component, options) {
     const config = compileToConfig(component, options);
-    return options?.pretty
-        ? JSON.stringify(config, null, 2)
-        : JSON.stringify(config);
+    return options?.pretty ? JSON.stringify(config, null, 2) : JSON.stringify(config);
 }
 //# sourceMappingURL=compiler.js.map

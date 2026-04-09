@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "build": "tsc"
+    "build": "node ../../scripts/run-package-tsc-build.mjs"
   },
   "devDependencies": {
     "@jobforge/typescript-config": "workspace:*",

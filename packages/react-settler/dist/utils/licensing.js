@@ -12,8 +12,8 @@ exports.useFeature = useFeature;
 exports.useFeatureGate = useFeatureGate;
 const jsx_runtime_1 = require("react/jsx-runtime");
 let currentLicense = {
-    tier: 'oss',
-    features: new Set(['core', 'basic-components', 'validation', 'security-basic'])
+    tier: "oss",
+    features: new Set(["core", "basic-components", "validation", "security-basic"]),
 };
 /**
  * Feature Flags
@@ -21,32 +21,32 @@ let currentLicense = {
  */
 exports.FEATURE_FLAGS = {
     // OSS Features (always available)
-    CORE_PROTOCOL: 'core',
-    BASIC_COMPONENTS: 'basic-components',
-    VALIDATION: 'validation',
-    SECURITY_BASIC: 'security-basic',
-    MOBILE_BASIC: 'mobile-basic',
-    ACCESSIBILITY: 'accessibility',
+    CORE_PROTOCOL: "core",
+    BASIC_COMPONENTS: "basic-components",
+    VALIDATION: "validation",
+    SECURITY_BASIC: "security-basic",
+    MOBILE_BASIC: "mobile-basic",
+    ACCESSIBILITY: "accessibility",
     // Commercial Features (require subscription)
-    MCP_INTEGRATION: 'mcp-integration',
-    SHOPIFY_INTEGRATION: 'shopify-integration',
-    STRIPE_INTEGRATION: 'stripe-integration',
-    WEBHOOK_MANAGER: 'webhook-manager',
-    ADVANCED_SECURITY: 'advanced-security',
-    AUDIT_LOGGING: 'audit-logging',
-    TELEMETRY: 'telemetry',
-    EXPORT_ADVANCED: 'export-advanced',
-    VIRTUALIZATION: 'virtualization',
-    PERFORMANCE_MONITORING: 'performance-monitoring',
-    CUSTOM_THEMES: 'custom-themes',
-    WHITE_LABEL: 'white-label',
+    MCP_INTEGRATION: "mcp-integration",
+    SHOPIFY_INTEGRATION: "shopify-integration",
+    STRIPE_INTEGRATION: "stripe-integration",
+    WEBHOOK_MANAGER: "webhook-manager",
+    ADVANCED_SECURITY: "advanced-security",
+    AUDIT_LOGGING: "audit-logging",
+    TELEMETRY: "telemetry",
+    EXPORT_ADVANCED: "export-advanced",
+    VIRTUALIZATION: "virtualization",
+    PERFORMANCE_MONITORING: "performance-monitoring",
+    CUSTOM_THEMES: "custom-themes",
+    WHITE_LABEL: "white-label",
     // Enterprise Features (enterprise subscription)
-    SSO: 'sso',
-    RBAC: 'rbac',
-    CUSTOM_INTEGRATIONS: 'custom-integrations',
-    PRIORITY_SUPPORT: 'priority-support',
-    SLA: 'sla',
-    DEDICATED_INSTANCE: 'dedicated-instance'
+    SSO: "sso",
+    RBAC: "rbac",
+    CUSTOM_INTEGRATIONS: "custom-integrations",
+    PRIORITY_SUPPORT: "priority-support",
+    SLA: "sla",
+    DEDICATED_INSTANCE: "dedicated-instance",
 };
 /**
  * Set license configuration
@@ -57,10 +57,10 @@ function setLicense(config) {
     if (config.expiresAt) {
         const expiresAt = new Date(config.expiresAt);
         if (expiresAt < new Date()) {
-            console.warn('License has expired. Falling back to OSS tier.');
+            console.warn("License has expired. Falling back to OSS tier.");
             currentLicense = {
-                tier: 'oss',
-                features: new Set([exports.FEATURE_FLAGS.CORE_PROTOCOL, exports.FEATURE_FLAGS.BASIC_COMPONENTS])
+                tier: "oss",
+                features: new Set([exports.FEATURE_FLAGS.CORE_PROTOCOL, exports.FEATURE_FLAGS.BASIC_COMPONENTS]),
             };
         }
     }
@@ -82,9 +82,9 @@ function hasFeature(feature) {
  */
 function hasTier(minTier) {
     const tierOrder = {
-        'oss': 0,
-        'commercial': 1,
-        'enterprise': 2
+        oss: 0,
+        commercial: 1,
+        enterprise: 2,
     };
     return tierOrder[currentLicense.tier] >= tierOrder[minTier];
 }
@@ -104,9 +104,9 @@ function requireFeature(feature, featureName) {
 function requireTier(minTier) {
     if (!hasTier(minTier)) {
         const tierNames = {
-            'oss': 'OSS',
-            'commercial': 'Commercial',
-            'enterprise': 'Enterprise'
+            oss: "OSS",
+            commercial: "Commercial",
+            enterprise: "Enterprise",
         };
         throw new Error(`This feature requires ${tierNames[minTier]} tier. ` +
             `Visit https://settler.dev/pricing to upgrade.`);
@@ -134,24 +134,24 @@ function useFeatureGate(feature, fallback) {
             return null;
         }
         return ((0, jsx_runtime_1.jsxs)("div", { style: {
-                padding: '2rem',
-                textAlign: 'center',
-                border: '2px dashed #e5e7eb',
-                borderRadius: '8px',
-                backgroundColor: '#f9fafb'
-            }, children: [(0, jsx_runtime_1.jsx)("h3", { style: { marginTop: 0, color: '#111827' }, children: "Upgrade Required" }), (0, jsx_runtime_1.jsx)("p", { style: { color: '#6b7280', marginBottom: '1rem' }, children: getUpgradeMessage(feature) }), (0, jsx_runtime_1.jsx)("a", { href: "https://settler.dev/pricing", target: "_blank", rel: "noopener noreferrer", style: {
-                        display: 'inline-block',
-                        padding: '0.75rem 1.5rem',
-                        backgroundColor: '#3b82f6',
-                        color: 'white',
-                        textDecoration: 'none',
-                        borderRadius: '6px',
-                        fontWeight: 600
+                padding: "2rem",
+                textAlign: "center",
+                border: "2px dashed #e5e7eb",
+                borderRadius: "8px",
+                backgroundColor: "#f9fafb",
+            }, children: [(0, jsx_runtime_1.jsx)("h3", { style: { marginTop: 0, color: "#111827" }, children: "Upgrade Required" }), (0, jsx_runtime_1.jsx)("p", { style: { color: "#6b7280", marginBottom: "1rem" }, children: getUpgradeMessage(feature) }), (0, jsx_runtime_1.jsx)("a", { href: "https://settler.dev/pricing", target: "_blank", rel: "noopener noreferrer", style: {
+                        display: "inline-block",
+                        padding: "0.75rem 1.5rem",
+                        backgroundColor: "#3b82f6",
+                        color: "white",
+                        textDecoration: "none",
+                        borderRadius: "6px",
+                        fontWeight: 600,
                     }, children: "View Pricing" })] }));
     };
     return {
         hasAccess,
-        UpgradePrompt: fallback ? () => (hasAccess ? null : (0, jsx_runtime_1.jsx)(jsx_runtime_1.Fragment, { children: fallback })) : UpgradePrompt
+        UpgradePrompt: fallback ? () => (hasAccess ? null : (0, jsx_runtime_1.jsx)(jsx_runtime_1.Fragment, { children: fallback })) : UpgradePrompt,
     };
 }
 //# sourceMappingURL=licensing.js.map

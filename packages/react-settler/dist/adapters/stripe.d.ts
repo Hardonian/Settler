@@ -1,4 +1,4 @@
-import type { ReconciliationTransaction, ReconciliationException } from '@settler/protocol';
+import type { ReconciliationTransaction, ReconciliationException } from "@settler/protocol";
 export interface StripeAppProps {
     accountId: string;
     transactions?: ReconciliationTransaction[];
@@ -9,5 +9,5 @@ export interface StripeAppProps {
  * Stripe Connect App Wrapper
  * Optimized for Stripe dashboard integration
  */
-export declare function StripeApp({ accountId, transactions, exceptions, onExport }: StripeAppProps): import("react/jsx-runtime").JSX.Element;
+export declare function StripeApp({ accountId, transactions, exceptions, onExport, }: StripeAppProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=stripe.d.ts.map

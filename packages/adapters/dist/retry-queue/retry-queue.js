@@ -27,7 +27,7 @@ class RetryQueue {
     async enqueue(connectorId, tenantId, syncRunId, errorMessage, errorType, metadata) {
         const nextRetryAt = this.calculateNextRetry(1);
         const { data: job, error } = await this.supabase
-            .from('retry_queue')
+            .from("retry_queue")
             .insert({
             connector_id: connectorId,
             tenant_id: tenantId,
@@ -38,9 +38,9 @@ class RetryQueue {
             error_message: errorMessage,
             error_type: errorType,
             metadata: metadata || {},
-            status: 'pending',
+            status: "pending",
         })
-            .select('id')
+            .select("id")
             .single();
         if (error || !job) {
             throw new Error(`Failed to enqueue retry job: ${error?.message}`);
@@ -53,12 +53,12 @@ class RetryQueue {
     async getReadyJobs(limit = 100) {
         const now = new Date().toISOString();
         const { data: jobs } = await this.supabase
-            .from('retry_queue')
-            .select('*')
-            .eq('status', 'pending')
-            .lte('next_retry_at', now)
-            .lt('attempt_count', this.config.maxAttempts)
-            .order('next_retry_at', { ascending: true })
+            .from("retry_queue")
+            .select("*")
+            .eq("status", "pending")
+            .lte("next_retry_at", now)
+            .lt("attempt_count", this.config.maxAttempts)
+            .order("next_retry_at", { ascending: true })
             .limit(limit);
         return (jobs || []);
     }
@@ -67,18 +67,18 @@ class RetryQueue {
      */
     async processJob(jobId) {
         const { data: job } = await this.supabase
-            .from('retry_queue')
-            .select('*')
-            .eq('id', jobId)
+            .from("retry_queue")
+            .select("*")
+            .eq("id", jobId)
             .single();
         if (!job) {
             return { success: false, retryAgain: false };
         }
         // Mark as processing
         await this.supabase
-            .from('retry_queue')
-            .update({ status: 'processing', started_at: new Date().toISOString() })
-            .eq('id', jobId);
+            .from("retry_queue")
+            .update({ status: "processing", started_at: new Date().toISOString() })
+            .eq("id", jobId);
         // Job will be processed by sync worker
         // This function just marks it as ready
         const jobTyped = job;
@@ -89,21 +89,21 @@ class RetryQueue {
      */
     async markCompleted(jobId) {
         await this.supabase
-            .from('retry_queue')
+            .from("retry_queue")
             .update({
-            status: 'completed',
+            status: "completed",
             completed_at: new Date().toISOString(),
         })
-            .eq('id', jobId);
+            .eq("id", jobId);
     }
     /**
      * Mark job as failed (will retry if attempts remaining)
      */
     async markFailed(jobId, errorMessage, errorType) {
         const { data: job } = await this.supabase
-            .from('retry_queue')
-            .select('*')
-            .eq('id', jobId)
+            .from("retry_queue")
+            .select("*")
+            .eq("id", jobId)
             .single();
         if (!job) {
             return { retryAgain: false };
@@ -114,29 +114,29 @@ class RetryQueue {
         if (retryAgain) {
             const nextRetryAt = this.calculateNextRetry(newAttemptCount);
             await this.supabase
-                .from('retry_queue')
+                .from("retry_queue")
                 .update({
                 attempt_count: newAttemptCount,
                 next_retry_at: nextRetryAt.toISOString(),
                 error_message: errorMessage,
                 error_type: errorType,
-                status: 'pending',
+                status: "pending",
             })
-                .eq('id', jobId);
+                .eq("id", jobId);
             return { retryAgain: true, nextRetryAt };
         }
         else {
             // Max attempts reached - mark as failed permanently
             await this.supabase
-                .from('retry_queue')
+                .from("retry_queue")
                 .update({
                 attempt_count: newAttemptCount,
-                status: 'failed',
+                status: "failed",
                 error_message: errorMessage,
                 error_type: errorType,
                 completed_at: new Date().toISOString(),
             })
-                .eq('id', jobId);
+                .eq("id", jobId);
             return { retryAgain: false };
         }
     }
@@ -159,10 +159,10 @@ class RetryQueue {
      */
     async getDeadLetterQueue(limit = 100) {
         const { data: jobs } = await this.supabase
-            .from('retry_queue')
-            .select('*')
-            .eq('status', 'failed')
-            .order('completed_at', { ascending: false })
+            .from("retry_queue")
+            .select("*")
+            .eq("status", "failed")
+            .order("completed_at", { ascending: false })
             .limit(limit);
         return (jobs || []);
     }
@@ -171,14 +171,14 @@ class RetryQueue {
      */
     async retryDeadLetter(jobId) {
         await this.supabase
-            .from('retry_queue')
+            .from("retry_queue")
             .update({
-            status: 'pending',
+            status: "pending",
             attempt_count: 0,
             next_retry_at: new Date().toISOString(),
             completed_at: null,
         })
-            .eq('id', jobId);
+            .eq("id", jobId);
     }
 }
 exports.RetryQueue = RetryQueue;

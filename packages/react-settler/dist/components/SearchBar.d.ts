@@ -9,5 +9,5 @@ export interface SearchBarProps {
     debounceMs?: number;
     searchFields?: string[];
 }
-export declare function SearchBar({ onSearch, placeholder, className, debounceMs, searchFields }: SearchBarProps): import("react/jsx-runtime").JSX.Element | null;
+export declare function SearchBar({ onSearch, placeholder, className, debounceMs, searchFields, }: SearchBarProps): import("react/jsx-runtime").JSX.Element | null;
 //# sourceMappingURL=SearchBar.d.ts.map

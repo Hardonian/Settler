@@ -12,7 +12,7 @@ const DEFAULT_RATE_LIMITS = {
     plaid: { requestsPerMinute: 100, requestsPerHour: 2000, requestsPerDay: 10000 },
     truelayer: { requestsPerMinute: 60, requestsPerHour: 1000, requestsPerDay: 5000 },
     stripe: { requestsPerMinute: 100, requestsPerHour: 5000, requestsPerDay: 50000 },
-    'stripe-connect': { requestsPerMinute: 100, requestsPerHour: 5000, requestsPerDay: 50000 },
+    "stripe-connect": { requestsPerMinute: 100, requestsPerHour: 5000, requestsPerDay: 50000 },
     freshbooks: { requestsPerMinute: 60, requestsPerHour: 1000, requestsPerDay: 5000 },
     wave: { requestsPerMinute: 60, requestsPerHour: 1000, requestsPerDay: 5000 },
     chargebee: { requestsPerMinute: 100, requestsPerHour: 2000, requestsPerDay: 10000 },
@@ -40,11 +40,11 @@ async function checkRateLimit(providerId, tenantId, supabaseUrl, supabaseService
     const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     // Count requests in time windows
     const { data: recentRequests } = await supabase
-        .from('sync_runs')
-        .select('started_at')
-        .eq('provider_id', providerId)
-        .eq('tenant_id', tenantId)
-        .gte('started_at', oneDayAgo.toISOString());
+        .from("sync_runs")
+        .select("started_at")
+        .eq("provider_id", providerId)
+        .eq("tenant_id", tenantId)
+        .gte("started_at", oneDayAgo.toISOString());
     const requests = recentRequests || [];
     let requestsLastMinute = 0;
     let requestsLastHour = 0;

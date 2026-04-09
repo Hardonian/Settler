@@ -8,5 +8,5 @@ export interface UpgradePromptProps {
     compact?: boolean;
     onUpgrade?: () => void;
 }
-export declare function UpgradePrompt({ feature, featureName, compact, onUpgrade }: UpgradePromptProps): import("react/jsx-runtime").JSX.Element;
+export declare function UpgradePrompt({ feature, featureName, compact, onUpgrade, }: UpgradePromptProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=UpgradePrompt.d.ts.map

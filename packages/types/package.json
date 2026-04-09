@@ -16,10 +16,10 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "rm -f tsconfig.tsbuildinfo && tsc",
+    "build": "node ../../scripts/run-package-tsc-build.mjs",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit",
-    "clean": "rm -rf dist"
+    "clean": "node -e \"const fs=require('fs'); fs.existsSync('dist') && fs.rmSync('dist', {recursive: true, force: true})\""
   },
   "dependencies": {
     "@types/node": "^24.0.0",

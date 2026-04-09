@@ -17,8 +17,8 @@ class XeroAdapter {
         // Get access token (refresh if needed)
         const accessToken = await this.getAccessToken();
         // Fetch transactions from Xero
-        const startDate = options.dateRange.start.toISOString().split('T')[0];
-        const endDate = options.dateRange.end.toISOString().split('T')[0];
+        const startDate = options.dateRange.start.toISOString().split("T")[0];
+        const endDate = options.dateRange.end.toISOString().split("T")[0];
         const response = await fetch(`${this.baseUrl}/BankTransactions?where=Date>=DateTime(${startDate})&where=Date<=DateTime(${endDate})`, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
@@ -28,7 +28,7 @@ class XeroAdapter {
         if (!response.ok) {
             throw new Error(`Xero API error: ${response.status} ${response.statusText}`);
         }
-        const data = await response.json();
+        const data = (await response.json());
         const transactions = data.BankTransactions || [];
         return transactions.map((tx) => this.normalize(tx));
     }
@@ -97,7 +97,7 @@ class XeroAdapter {
         if (!response.ok) {
             throw new Error(`Failed to refresh Xero token: ${response.status}`);
         }
-        const data = await response.json();
+        const data = (await response.json());
         return {
             accessToken: data.access_token,
             refreshToken: data.refresh_token,
@@ -106,18 +106,16 @@ class XeroAdapter {
     async syncTransaction(transaction) {
         const accessToken = await this.getAccessToken();
         // Create bank transaction in Xero
-        const description = typeof transaction.metadata?.description === 'string'
+        const description = typeof transaction.metadata?.description === "string"
             ? transaction.metadata.description
             : "Settler Transaction";
-        const contact = typeof transaction.metadata?.contact === 'string'
-            ? transaction.metadata.contact
-            : "Settler";
+        const contact = typeof transaction.metadata?.contact === "string" ? transaction.metadata.contact : "Settler";
         const xeroTransaction = {
             Type: transaction.amount > 0 ? "RECEIVE" : "SPEND",
             Contact: {
                 Name: contact,
             },
-            Date: transaction.date.toISOString().split('T')[0],
+            Date: transaction.date.toISOString().split("T")[0],
             LineItems: [
                 {
                     Description: description,

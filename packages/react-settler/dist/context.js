@@ -9,21 +9,21 @@ const jsx_runtime_1 = require("react/jsx-runtime");
  */
 const react_1 = require("react");
 const CompilationContext = (0, react_1.createContext)(null);
-function CompilationProvider({ mode = 'ui', config = {}, children }) {
+function CompilationProvider({ mode = "ui", config = {}, children, }) {
     const contextValue = {
         mode,
         config: config,
-        widgetRegistry: new Map()
+        widgetRegistry: new Map(),
     };
-    return ((0, jsx_runtime_1.jsx)(CompilationContext.Provider, { value: contextValue, children: children }));
+    return (0, jsx_runtime_1.jsx)(CompilationContext.Provider, { value: contextValue, children: children });
 }
 function useCompilationContext() {
     const context = (0, react_1.useContext)(CompilationContext);
     if (!context) {
         return {
-            mode: 'ui',
+            mode: "ui",
             config: {},
-            widgetRegistry: new Map()
+            widgetRegistry: new Map(),
         };
     }
     return context;

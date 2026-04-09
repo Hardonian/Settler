@@ -13,7 +13,7 @@
  * FREEZE AWARE: Mutations are freeze-gated; reads are unrestricted
  */
 
-import { Router, Response } from "express";
+import { Router, Response, Request } from "express";
 import { z } from "zod";
 import { validateRequest } from "../middleware/validation";
 import { AuthRequest } from "../middleware/auth";
@@ -24,11 +24,14 @@ import { prisma } from "../infrastructure/db/prisma";
 import { Prisma } from "@prisma/client";
 import { ProvenanceService } from "../services/recon-core/provenance-service";
 import { ExceptionReviewService } from "../application/services/ExceptionReviewService";
+import { AdjudicationMemoryService } from "../services/intelligence/adjudication-memory";
 
 import { handleRouteError } from "../utils/error-handler";
 import { NotFoundError, ConflictError } from "../utils/typed-errors";
 import { trackEventAsync } from "../utils/event-tracker";
 import { logInfo } from "../utils/logger";
+
+type ExceptionRequest = AuthRequest & Request;
 
 type ExceptionForMapping = Prisma.ReconciliationMatchGetPayload<{
   include: {
@@ -52,12 +55,18 @@ type ExceptionForMapping = Prisma.ReconciliationMatchGetPayload<{
       };
     };
     adjudicationMemories: true;
+    archetypeClassifications: {
+      include: { archetype: true };
+      orderBy: { confidence: "desc" };
+      take: 5;
+    };
   };
 }>;
 
 const router: Router = Router();
 const provenanceService = new ProvenanceService(prisma);
 const exceptionReviewService = new ExceptionReviewService(prisma, provenanceService);
+const adjudicationMemoryService = new AdjudicationMemoryService(prisma);
 
 const CANONICAL_EXCEPTION_MATCH_TYPES = ["unmatched", "conflict"] as const;
 
@@ -212,6 +221,12 @@ function mapExceptionToResponse(e: ExceptionForMapping) {
     resolvedBy: e.reviewedBy || null,
     createdAt: e.createdAt.toISOString(),
     updatedAt: e.updatedAt.toISOString(),
+    archetypes:
+      e.archetypeClassifications?.map((c: any) => ({
+        code: c.archetype.code,
+        label: c.archetype.label,
+        confidence: Number(c.confidence),
+      })) || [],
   };
 }
 
@@ -238,7 +253,7 @@ router.get(
   "/exceptions",
   requirePermission(Permission.REPORTS_READ),
   validateRequest(listExceptionsSchema),
-  async (req: AuthRequest, res: Response) => {
+  async (req: ExceptionRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
       const {
@@ -307,6 +322,11 @@ router.get(
               },
             },
             adjudicationMemories: true,
+            archetypeClassifications: {
+              include: { archetype: true },
+              orderBy: { confidence: "desc" },
+              take: 5,
+            },
           },
           orderBy: orderByMap[sortBy] || { createdAt: "desc" },
           take: limit,
@@ -351,7 +371,7 @@ router.get(
 router.get(
   "/exceptions/stats",
   requirePermission(Permission.REPORTS_READ),
-  async (req: AuthRequest, res: Response) => {
+  async (req: ExceptionRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
       const { jobId } = req.query as { jobId?: string };
@@ -414,7 +434,7 @@ router.get(
 router.get(
   "/exceptions/:id",
   requirePermission(Permission.REPORTS_READ),
-  async (req: AuthRequest, res: Response) => {
+  async (req: ExceptionRequest, res: Response) => {
     try {
       const idParam = req.params["id"];
       const id = Array.isArray(idParam) ? (idParam[0] ?? "") : (idParam ?? "");
@@ -436,6 +456,11 @@ router.get(
               completedAt: true,
             },
           },
+          archetypeClassifications: {
+            include: { archetype: true },
+            orderBy: { confidence: "desc" },
+            take: 5,
+          },
         },
       });
 
@@ -443,34 +468,36 @@ router.get(
         throw new NotFoundError("Exception not found", "exception", id);
       }
 
-      const [provenance, adjudicationMemories, proofPackages] = await Promise.all([
-        prisma.reconciliationProvenance.findMany({
-          where: { tenantId, matchId: id },
-          orderBy: { createdAt: "desc" },
-          take: 10,
-        }),
-        prisma.exceptionAdjudicationMemory.findMany({
-          where: { tenantId, exceptionId: id },
-          orderBy: { createdAt: "desc" },
-          take: 5,
-        }),
-        prisma.proofPackage.findMany({
-          where: { tenantId, scope: "exception" },
-          orderBy: { createdAt: "desc" },
-          take: 50,
-        }),
-      ]);
+      const [provenance, adjudicationMemories, proofPackages, intelligenceResult] =
+        await Promise.all([
+          prisma.reconciliationProvenance.findMany({
+            where: { tenantId, matchId: id },
+            orderBy: { createdAt: "desc" },
+            take: 10,
+          }),
+          prisma.exceptionAdjudicationMemory.findMany({
+            where: { tenantId, exceptionId: id },
+            orderBy: { createdAt: "desc" },
+            take: 5,
+          }),
+          prisma.proofPackage.findMany({
+            where: { tenantId, scope: "exception" },
+            orderBy: { createdAt: "desc" },
+            take: 50,
+          }),
+          adjudicationMemoryService.explainWhyFlagged(id, tenantId).catch(() => null),
+        ]);
 
       const metadata = (exception.metadata ?? {}) as Record<string, unknown>;
       const adjudicationHistoryFromMetadata = Array.isArray(metadata.adjudicationHistory)
         ? metadata.adjudicationHistory
         : [];
-      const adjudicationHistoryFromMemory = adjudicationMemories.map((memory) => ({
+      const adjudicationHistoryFromMemory = adjudicationMemories.map((memory: any) => ({
         actorId: memory.adjudicatorId,
         action: memory.outcome,
         timestamp: memory.completedAt?.toISOString() ?? memory.createdAt.toISOString(),
       }));
-      const adjudicationHistoryFromProvenance = provenance.map((entry) => ({
+      const adjudicationHistoryFromProvenance = provenance.map((entry: any) => ({
         actorId: entry.actorUserId ?? entry.actorType,
         action: entry.eventType,
         timestamp: entry.createdAt.toISOString(),
@@ -482,13 +509,13 @@ router.get(
           : adjudicationHistoryFromMetadata.length > 0
             ? adjudicationHistoryFromMetadata
             : adjudicationHistoryFromProvenance;
-      const scopedProofPackages = proofPackages.filter((pkg) => {
+      const scopedProofPackages = proofPackages.filter((pkg: any) => {
         const scopeIds = Array.isArray(pkg.scopeIds) ? pkg.scopeIds : [];
-        return scopeIds.length === 0 || scopeIds.some((scopeId) => String(scopeId) === id);
+        return scopeIds.length === 0 || scopeIds.some((scopeId: any) => String(scopeId) === id);
       });
       const proofSummary = {
         total: scopedProofPackages.length,
-        finalized: scopedProofPackages.filter((item) => item.status === "finalized").length,
+        finalized: scopedProofPackages.filter((item: any) => item.status === "finalized").length,
       };
 
       res.json({
@@ -501,6 +528,7 @@ router.get(
           adjudicationHistory,
           adjudicationMemories,
           proofSummary,
+          intelligence: intelligenceResult || undefined,
         },
       });
     } catch (error: unknown) {
@@ -518,7 +546,7 @@ router.post(
   requirePermission(Permission.REPORTS_EXPORT),
   enforceFreezeState(),
   validateRequest(resolveExceptionSchema),
-  async (req: AuthRequest, res: Response) => {
+  async (req: ExceptionRequest, res: Response) => {
     try {
       const idParam = req.params["id"];
       const id = Array.isArray(idParam) ? (idParam[0] ?? "") : (idParam ?? "");
@@ -592,7 +620,7 @@ router.post(
   requirePermission(Permission.REPORTS_EXPORT),
   enforceFreezeState(),
   validateRequest(assignExceptionSchema),
-  async (req: AuthRequest, res: Response) => {
+  async (req: ExceptionRequest, res: Response) => {
     try {
       const idParam = req.params["id"];
       const id = Array.isArray(idParam) ? (idParam[0] ?? "") : (idParam ?? "");
@@ -629,7 +657,7 @@ router.put(
   requirePermission(Permission.REPORTS_EXPORT),
   enforceFreezeState(),
   validateRequest(updateStatusSchema),
-  async (req: AuthRequest, res: Response) => {
+  async (req: ExceptionRequest, res: Response) => {
     try {
       const idParam = req.params["id"];
       const id = Array.isArray(idParam) ? (idParam[0] ?? "") : (idParam ?? "");
@@ -737,7 +765,7 @@ router.post(
   requirePermission(Permission.REPORTS_EXPORT),
   enforceFreezeState(),
   validateRequest(addNoteSchema),
-  async (req: AuthRequest, res: Response) => {
+  async (req: ExceptionRequest, res: Response) => {
     try {
       const idParam = req.params["id"];
       const id = Array.isArray(idParam) ? (idParam[0] ?? "") : (idParam ?? "");
@@ -786,7 +814,7 @@ router.post(
   requirePermission(Permission.REPORTS_EXPORT),
   enforceFreezeState(),
   validateRequest(bulkResolveSchema),
-  async (req: AuthRequest, res: Response) => {
+  async (req: ExceptionRequest, res: Response) => {
     try {
       const { exceptionIds, resolution, resolutionReason, notes } = req.body;
       const userId = req.userId!;
@@ -894,7 +922,7 @@ router.post(
   requirePermission(Permission.REPORTS_EXPORT),
   enforceFreezeState(),
   validateRequest(bulkAssignSchema),
-  async (req: AuthRequest, res: Response) => {
+  async (req: ExceptionRequest, res: Response) => {
     try {
       const { exceptionIds, assignedTo } = req.body;
       const userId = req.userId!;
@@ -928,7 +956,7 @@ router.post(
   requirePermission(Permission.REPORTS_EXPORT),
   enforceFreezeState(),
   validateRequest(bulkStatusSchema),
-  async (req: AuthRequest, res: Response) => {
+  async (req: ExceptionRequest, res: Response) => {
     try {
       const { exceptionIds, status, notes } = req.body;
       const userId = req.userId!;

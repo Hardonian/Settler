@@ -1,4 +1,4 @@
-import { TelemetryProvider, TelemetryConfig, PerformanceMetrics } from '@settler/protocol';
+import { TelemetryProvider, TelemetryConfig, PerformanceMetrics } from "@settler/protocol";
 /**
  * Set global telemetry provider
  */

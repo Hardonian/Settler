@@ -46,7 +46,7 @@ export class AppError extends Error {
     isOperational;
     constructor(code, message, options) {
         super(message);
-        this.name = 'AppError';
+        this.name = "AppError";
         this.code = code;
         this.correlationId = options?.correlationId;
         this.details = options?.details;
