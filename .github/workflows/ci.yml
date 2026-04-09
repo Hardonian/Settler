@@ -3,6 +3,9 @@ name: CI
 on:
   push:
     branches: [main, develop]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     paths:
       - "packages/**"
       - "scripts/**"
