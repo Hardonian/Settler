@@ -32,6 +32,11 @@ export const SUPPORT_ISSUE_CATEGORY_LABELS: Record<SupportIssueCategory, string>
 export const supportIntakeSubmissionSchema = z.object({
   tenant_id: z.string().min(1),
   run_id: z.string().min(1).optional(),
+  /**
+   * Optional canonical exception reference. Non-UUID values are allowed so operators can still
+   * record the reference verbatim, but only UUIDs can be enriched with family intelligence.
+   */
+  exception_id: z.string().min(1).optional(),
   category: z.enum([
     SUPPORT_ISSUE_CATEGORY.RUN_FAILURE,
     SUPPORT_ISSUE_CATEGORY.DATA_MISMATCH,
