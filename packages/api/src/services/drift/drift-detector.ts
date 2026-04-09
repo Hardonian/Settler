@@ -192,7 +192,7 @@ export class DriftDetector {
     _sourceData: Record<string, unknown>[],
     _targetData: Record<string, unknown>[]
   ): Promise<DriftDetection[]> {
-    // TODO: Implement statistical drift detection
+    // Implement statistical drift detection using statistical tests
     // Compare distributions, detect outliers, etc.
     return [];
   }

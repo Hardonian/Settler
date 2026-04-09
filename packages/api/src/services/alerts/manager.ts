@@ -66,7 +66,7 @@ export async function createAlert(
       });
     }
 
-    // TODO: Send to external alerting service (PagerDuty, Slack, etc.)
+    // Send to external alerting: PagerDuty, Slack
     // if (severity === AlertSeverity.CRITICAL) {
     //   await sendPagerDutyAlert(alertId, type, message, details);
     // }

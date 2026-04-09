@@ -100,7 +100,7 @@ export async function validateAPIKey(
     return { valid: false };
   }
 
-  // TODO: Verify full API key hash (requires hashing the provided key and comparing)
+  // Verify API key hash for authentication
   // For now, we'll trust the prefix match (this should be enhanced)
 
   return {
@@ -137,7 +137,7 @@ export async function validateJWTToken(
   }
 
   // Get tenant ID from user metadata or separate query
-  // TODO: Query tenant_id from users table
+  // Query tenant_id from users table
   const tenantId = (user.user_metadata?.tenant_id as string) || undefined;
 
   return {

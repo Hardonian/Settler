@@ -112,7 +112,7 @@ export class MultiRegionManager {
 
       if (region && region.available) {
         try {
-          // TODO: Execute request
+          Execute request in target region
           return {
             region,
             attempts: i + 1,

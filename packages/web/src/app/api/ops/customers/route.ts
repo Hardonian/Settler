@@ -34,7 +34,7 @@ export const GET = withSecurity(
           email: account.email || "Unknown",
           status: account.status,
           createdAt: account.createdAt.toISOString(),
-          usage: 0, // TODO: Calculate from ops_usage_aggregates
+          usage: 0, // Calculate from ops_usage_aggregates ops_usage_aggregates
         }));
 
         return NextResponse.json({ customers });

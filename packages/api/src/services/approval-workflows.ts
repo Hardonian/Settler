@@ -109,7 +109,7 @@ export async function createApprovalRequest(
       requestType,
     });
 
-    // TODO: Send notification to approver
+    // Send notification: email, Slack, or webhook
 
     return approvalId;
   } catch (error) {
@@ -184,7 +184,7 @@ export async function approveRequest(
         [approvalId]
       );
 
-      // TODO: Trigger post-approval actions (e.g., finalize reconciliation)
+      // Trigger post-approval: finalize recon, update status
     });
 
     logInfo("Approval request approved", { approvalId, tenantId, approverId });

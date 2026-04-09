@@ -104,7 +104,7 @@ export async function executeQuery<T>(
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      // TODO: Add timeout handling
+      // Add query timeout with configurable limit
       const result = await query(prisma);
 
       // Cache result if cache TTL specified

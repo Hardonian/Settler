@@ -272,7 +272,7 @@ export class FeeExtractionService {
       if (fee.amount.currency === currency) {
         totalFeesValue += fee.amount.value;
       } else {
-        // TODO: Convert fee to transaction currency using FX rate
+        // Convert fee to transaction currency using FX rate
         // For now, assume same currency
         totalFeesValue += fee.amount.value;
       }

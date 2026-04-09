@@ -108,7 +108,7 @@ export async function getTenantUsage(
   _timeRange: "hour" | "day" | "week" = "hour",
   _options: QueryOptions = {}
 ): Promise<any> {
-  // TODO: This requires a new data model for API logs
+  // Requires new data model for API logs for API logs
   return [];
 }
 

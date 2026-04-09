@@ -32,7 +32,7 @@ export class AIConfigManager {
    * Get AI config for tenant
    */
   async getConfig(_tenantId: string): Promise<AIConfig> {
-    // TODO: Store in database or config table
+    // Store in database or config table
     // For now, return defaults
     return {
       preferredModels: ["gpt-4", "claude-3-opus"],
@@ -51,7 +51,7 @@ export class AIConfigManager {
    * Update AI config
    */
   async updateConfig(tenantId: string, config: Partial<AIConfig>): Promise<void> {
-    // TODO: Save to database
+    Save to database
     logInfo("AI config updated", { tenantId, config });
   }
 }

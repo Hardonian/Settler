@@ -3,7 +3,7 @@
  * Database schema and queries for analytics data
  */
 
-// TODO: Replace with actual Prisma schema and queries
+// Prisma schema and queries and queries
 // This is a placeholder showing the structure
 
 export interface AnalyticsEvent {

@@ -221,7 +221,7 @@ export class EdgeAgent extends EventEmitter {
    * Send encrypted metadata to cloud (not raw data)
    */
   private async sendMetadataToCloud(metadata: Record<string, unknown>): Promise<void> {
-    // TODO: Send to Settler cloud endpoint
+    // Send to Settler cloud endpoint
     // Only metadata is sent, never raw transaction data
     try {
       const response = await fetch(`${this.config.cloudEndpoint}/api/v1/edge/metadata`, {

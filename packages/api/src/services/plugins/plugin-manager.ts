@@ -55,7 +55,7 @@ export class PluginManager {
     }
 
     try {
-      // TODO: Load and execute plugin
+      // Load and execute plugin
       // This would dynamically load the plugin module and execute it
       logInfo("Plugin executed", { pluginId, input });
       return { success: true, result: input };

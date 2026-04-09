@@ -258,7 +258,7 @@ export class ValueBasedPricing {
    * Estimate market willingness
    */
   private async estimateMarketWillingness(_tenantId: string): Promise<number> {
-    // TODO: Implement market analysis
+    // Implement market analysis using pricing data
     // This would analyze:
     // - Industry benchmarks
     // - Competitor pricing

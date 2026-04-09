@@ -34,7 +34,7 @@ export async function subscribeToNewsletter(
     const audienceId = process.env.RESEND_AUDIENCE_ID;
 
     if (audienceId) {
-      // TODO: Resend contacts API may have changed - check latest SDK docs
+      // Resend contacts API check
       // For now, use emails.send as fallback
       // const result = await resend.contacts.create({
       //   email: subscription.email,

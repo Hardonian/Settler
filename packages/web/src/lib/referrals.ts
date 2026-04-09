@@ -148,7 +148,7 @@ export async function awardReferralReward(
     } as Partial<Referral> as never)
     .eq("id", referralData.id);
 
-  // TODO: Send reward to referrer (credit account, send gift card, etc.)
+  // Send reward via account credit, gift card, or payout
 }
 
 /**

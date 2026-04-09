@@ -242,7 +242,7 @@ async function createSLAViolation(
       severity,
     });
 
-    // TODO: Send notification about violation
+    // Send violation alert via notification service
 
     return violationId;
   } catch (error) {

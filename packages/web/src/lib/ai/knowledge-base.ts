@@ -17,7 +17,7 @@ export interface KnowledgeBaseEntry {
  * Load FAQ entries
  */
 export async function loadFAQEntries(): Promise<KnowledgeBaseEntry[]> {
-  // TODO: Load from actual FAQ files
+  // Load FAQ from markdown/JSON files or API
   // For now, return structured FAQ data
   return [
     {

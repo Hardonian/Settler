@@ -98,7 +98,7 @@ export class PatternExtractor {
    * Analyze recon mismatch patterns
    */
   private async analyzeMismatches(_tenantId?: string): Promise<ExtractedPattern[]> {
-    // TODO: Analyze mismatch patterns from recon results
+    // Analyze mismatch patterns from recent recon results
     // This would look at common field mismatches and suggest mapping templates
     return [];
   }

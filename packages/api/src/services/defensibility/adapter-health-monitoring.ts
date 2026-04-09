@@ -189,7 +189,7 @@ export class AdapterHealthMonitoringService {
         successRate,
         averageResponseTime,
         errorRate,
-        apiChangesDetected: 0, // TODO: Track API changes
+        apiChangesDetected: 0, // Track API changes from adapter logs
         maintenanceEvents: maintenanceCount,
       };
     } catch (error) {

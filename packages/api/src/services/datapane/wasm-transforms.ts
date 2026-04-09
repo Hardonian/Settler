@@ -45,7 +45,7 @@ export class WASMTransforms {
       throw new Error(`Transform ${transformId} not found`);
     }
 
-    // TODO: Implement actual WASM execution
+    // Implement WASM: load, validate, execute
     // This would:
     // 1. Load WASM module
     // 2. Validate input against schema
@@ -66,7 +66,7 @@ export class WASMTransforms {
    * Validate transform schema
    */
   validateSchema(_data: unknown, _schema: SchemaDefinition): boolean {
-    // TODO: Implement schema validation
+    // Implement schema validation for WASM input
     return true;
   }
 

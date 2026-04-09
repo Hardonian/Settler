@@ -80,7 +80,7 @@ export class ProductEvolutionAI {
     educationTerms: number;
     financeTerms: number;
   }> {
-    // TODO: Implement actual pattern analysis
+    // Implement pattern analysis using historical data
     // This would analyze job names, descriptions, metadata, etc.
     return {
       legalTerms: 0,

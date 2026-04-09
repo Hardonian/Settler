@@ -144,19 +144,37 @@ export function Chatbot({ className }: ChatbotProps) {
   };
 
   const handleFileUpload = async (file: File, type: "image" | "file") => {
-    // TODO: Implement file upload to storage (e.g., Vercel Blob)
-    // For now, read as text/data URL
-    return new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-
-      if (type === "image") {
-        reader.readAsDataURL(file);
-      } else {
-        reader.readAsText(file);
+    // Upload to Vercel Blob or API endpoint
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('type', type);
+    
+    try {
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        return data.url || data.path;
       }
-    });
+      // Fallback: read as data URL
+      return await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        type === "image" ? reader.readAsDataURL(file) : reader.readAsText(file);
+      });
+    } catch (error) {
+      console.error('Upload failed, using fallback:', error);
+      return await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        type === "image" ? reader.readAsDataURL(file) : reader.readAsText(file);
+      });
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -288,8 +306,8 @@ export function Chatbot({ className }: ChatbotProps) {
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (file) {
-                    await handleFileUpload(file, "image");
-                    // TODO: Send image in message
+                    const url = await handleFileUpload(file, "image");
+                    setMessages((prev) => [...prev, { role: "user", content: url, type: "image" }]);
                   }
                 }}
               />
@@ -300,8 +318,8 @@ export function Chatbot({ className }: ChatbotProps) {
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (file) {
-                    await handleFileUpload(file, "file");
-                    // TODO: Send file in message
+                    const url = await handleFileUpload(file, "file");
+                    setMessages((prev) => [...prev, { role: "user", content: url, type: "file", name: file.name }]);
                   }
                 }}
               />

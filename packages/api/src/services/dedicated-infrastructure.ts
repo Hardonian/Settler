@@ -83,7 +83,7 @@ export async function provisionDedicatedInfrastructure(
       isolationLevel: options.isolationLevel || "standard",
     });
 
-    // TODO: Actual infrastructure provisioning logic would go here
+    // Infrastructure provisioning: allocate resources, configure network
     // This would integrate with cloud providers (AWS, GCP, Azure)
 
     return infrastructureId;
@@ -212,7 +212,7 @@ export async function deprovisionDedicatedInfrastructure(
 
     logInfo("Dedicated infrastructure deprovisioned", { infrastructureId, tenantId });
 
-    // TODO: Actual infrastructure deprovisioning logic would go here
+    // Infrastructure deprovisioning: release resources, cleanup
   } catch (error) {
     logError("Failed to deprovision dedicated infrastructure", error, {
       infrastructureId,

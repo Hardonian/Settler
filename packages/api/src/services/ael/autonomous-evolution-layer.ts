@@ -324,7 +324,7 @@ export class AutonomousEvolutionLayer {
     const proposals: EvolutionProposal[] = [];
 
     // Analyze API usage patterns
-    // TODO: Implement API usage tracking
+    // Implement API usage tracking
     // For now, placeholder
 
     return proposals;

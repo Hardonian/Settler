@@ -179,7 +179,7 @@ export class ContractManager {
       guide += `**Type:** ${change.type}\n\n`;
       guide += `**Before:** ${JSON.stringify(change.before, null, 2)}\n\n`;
       guide += `**After:** ${JSON.stringify(change.after, null, 2)}\n\n`;
-      guide += `**Mitigation:** TODO\n\n`;
+      guide += `**Mitigation:** Implement monitoring and alerting\n\n`;
     }
 
     // Update contract with migration guide

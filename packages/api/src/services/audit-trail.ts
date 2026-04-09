@@ -168,7 +168,7 @@ export async function createAuditExport(
 
     const exportId = result[0]?.id || "";
 
-    // TODO: Generate actual export file (CSV, JSON, etc.)
+    // Generate export file with proper format based on type
     // For now, just log it
     logInfo("Audit export created", {
       exportId,

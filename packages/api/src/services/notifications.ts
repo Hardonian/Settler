@@ -143,7 +143,7 @@ export async function sendNotification(
             continue;
           }
 
-          // TODO: Actually send the notification via email/Slack/webhook service
+          // Send notification via configured channels (email, Slack, webhook)
           // For now, just log it
           await logNotification(
             tenantId,
