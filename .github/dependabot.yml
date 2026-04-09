@@ -8,6 +8,7 @@ updates:
     labels:
       - "dependencies"
       - "security"
+    rebase-strategy: "auto"
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -17,3 +18,4 @@ updates:
     labels:
       - "dependencies"
       - "github-actions"
+    rebase-strategy: "auto"
