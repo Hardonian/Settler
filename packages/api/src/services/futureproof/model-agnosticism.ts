@@ -97,9 +97,8 @@ export class ModelAgnosticism {
     // Adapt input
     const adaptedInput = adapter.adapt(input);
 
-    // Execute (would call actual API)
-    // TODO: Implement actual API call
-    const output = adaptedInput; // Placeholder
+    // Execute via adapter (makes actual API call)
+    const output = await adapter.execute(adaptedInput);
 
     // Parse output
     return adapter.parse(output);
@@ -123,10 +122,32 @@ export class ModelAgnosticism {
       throw new Error("No multimodal provider available");
     }
 
-    // TODO: Implement multimodal reconciliation
+    // Process multimodal data and perform reconciliation
+    const processedData: Record<string, unknown> = {};
+    
+    if (data.text) {
+      processedData.text = await this.processText(data.text);
+    }
+    
+    if (data.image) {
+      processedData.image = await this.processImage(data.image);
+    }
+    
+    if (data.audio) {
+      processedData.audio = await this.processAudio(data.audio);
+    }
+    
+    if (data.video) {
+      processedData.video = await this.processVideo(data.video);
+    }
+
+    // Cross-modal matching
+    const results = await this.crossModalMatch(processedData);
+
     return {
       success: true,
       provider: multimodalProvider.name,
+      results,
     };
   }
 
@@ -134,8 +155,17 @@ export class ModelAgnosticism {
    * Portable embeddings architecture
    */
   async generateEmbedding(_text: string, _provider?: string): Promise<number[]> {
-    // TODO: Implement embedding generation
-    // This would work with any embedding provider
-    return new Array(1536).fill(0).map(() => Math.random());
+    // Generate embeddings using configured provider
+    const embeddingProvider = _provider || this.config.defaultEmbeddingProvider || "openai";
+    const adapter = this.getAdapter(embeddingProvider, "embedding");
+    
+    if (!adapter) {
+      throw new Error(`No embedding adapter found for ${embeddingProvider}`);
+    }
+
+    // Generate embedding via API
+    const embedding = await adapter.generateEmbedding(_text);
+    
+    return embedding;
   }
 }
