@@ -181,10 +181,7 @@ export async function submitSupportIntake(params: {
   path: string;
   body: unknown;
   /** Required for run-linked intake to embed canonical run intelligence. */
-  resolveRunContext?: (
-    tenantId: string,
-    runId: string
-  ) => Promise<SupportIntakeContextPayload>;
+  resolveRunContext?: (tenantId: string, runId: string) => Promise<SupportIntakeContextPayload>;
   /** Optional exception-linked enrichment for family-memory aware support triage. */
   resolveExceptionContext?: (
     tenantId: string,
