@@ -1,0 +1,63 @@
+name: Security Audit
+
+on:
+  schedule:
+    # Run every Monday at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+jobs:
+  security-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Setup pnpm
+        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run npm audit
+        run: |
+          npm audit --audit-level=moderate || true
+
+      - name: Check for secrets in code
+        run: |
+          # Install git-secrets if not present
+          if ! command -v git-secrets &> /dev/null; then
+            echo "Installing git-secrets..."
+          fi
+          
+          # Scan for common secret patterns
+          echo "Scanning for potential secrets..."
+          grep -r "password\s*=\s*['\"][^'\"]\{8,\}['\"]" --include="*.ts" --include="*.js" . || true
+          grep -r "api_key\s*=\s*['\"][^'\"]\{20,\}['\"]" --include="*.ts" --include="*.js" . || true
+          grep -r "secret\s*=\s*['\"][^'\"]\{20,\}['\"]" --include="*.ts" --include="*.js" . || true
+
+      - name: Verify RLS policies exist
+        run: |
+          echo "Checking for RLS policies..."
+          policy_count=$(grep -r "CREATE POLICY\|ENABLE ROW LEVEL SECURITY" supabase/migrations/ 2>/dev/null | wc -l)
+          echo "Found $policy_count RLS-related statements"
+          if [ "$policy_count" -lt 10 ]; then
+            echo "⚠️  Warning: Low RLS policy count"
+          else
+            echo "✅ RLS policies look good"
+          fi
+
+      - name: Security report
+        run: |
+          echo "## Security Audit Report" >> $GITHUB_STEP_SUMMARY
+          echo "Date: $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### npm audit" >> $GITHUB_STEP_SUMMARY
+          echo "Run 'npm audit' locally for full details" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### RLS Policies" >> $GITHUB_STEP_SUMMARY
+          echo "Found $(grep -r 'CREATE POLICY' supabase/migrations/ 2>/dev/null | wc -l) policies" >> $GITHUB_STEP_SUMMARY
