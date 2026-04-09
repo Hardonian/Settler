@@ -129,86 +129,432 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
   }
 
   /**
-   * Find slow queries
+   * Find slow queries by querying pg_stat_statements (if available)
    */
   private async findSlowQueries(): Promise<OptimizationOpportunity[]> {
-    // TODO: Query database for slow queries
-    // For now, return mock data
-    return [
-      {
-        id: "opt_query_1",
-        type: "query" as const,
-        description: "Slow query detected: SELECT * FROM reconciliation_jobs WHERE status = ?",
-        currentState: {
-          query: "SELECT * FROM reconciliation_jobs WHERE status = ?",
-          avgDuration: 250, // ms
-          callCount: 1000,
-        },
-        proposedChange: {
-          addIndex: "CREATE INDEX idx_reconciliation_jobs_status ON reconciliation_jobs(status)",
-        },
-        expectedImpact: {
-          performanceImprovement: 80, // 80% faster
-          riskLevel: "low" as const,
-        },
-        recommendedAction: "auto-apply" as const,
-      },
-    ];
+    const opportunities: OptimizationOpportunity[] = [];
+
+    try {
+      // Query pg_stat_statements for slow queries if extension is available
+      const slowQueries = await this.prisma.$queryRaw<Array<{
+        query: string;
+        mean_exec_time: number;
+        calls: number;
+        rows: number;
+      }>>`
+        SELECT query, mean_exec_time, calls, rows
+        FROM pg_stat_statements
+        WHERE mean_exec_time > 100
+        ORDER BY mean_exec_time DESC
+        LIMIT 10
+      `;
+
+      for (let i = 0; i < slowQueries.length; i++) {
+        const sq = slowQueries[i];
+        if (sq.query.includes('CREATE INDEX') || sq.query.startsWith('COMMIT') || sq.query.startsWith('BEGIN')) {
+          continue;
+        }
+
+        opportunities.push({
+          id: `opt_query_${i + 1}`,
+          type: "query",
+          description: `Slow query detected: ${sq.query.substring(0, 100)}...`,
+          currentState: {
+            query: sq.query,
+            avgDuration: sq.mean_exec_time,
+            callCount: sq.calls,
+          },
+          proposedChange: {
+            recommendation: "Consider adding indexes or optimizing query structure",
+          },
+          expectedImpact: {
+            performanceImprovement: 50,
+            riskLevel: "low",
+          },
+          recommendedAction: "review",
+        });
+      }
+    } catch (error) {
+      // pg_stat_statements not available, fall back to query log analysis
+      logInfo("pg_stat_statements not available, using query log analysis");
+      
+      const recentJobs = await this.prisma.reconJob.findMany({
+        where: { createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } },
+        select: { id: true, executionTime: true },
+        orderBy: { executionTime: 'desc' },
+        take: 20,
+      });
+
+      for (let i = 0; i < recentJobs.length; i++) {
+        const job = recentJobs[i];
+        if (job.executionTime && job.executionTime > 60000) {
+          opportunities.push({
+            id: `opt_slow_job_${i + 1}`,
+            type: "query",
+            description: `Slow reconciliation job: ${job.id}`,
+            currentState: {
+              jobId: job.id,
+              executionTimeMs: job.executionTime,
+            },
+            proposedChange: {
+              recommendation: "Review job configuration and data volume",
+            },
+            expectedImpact: {
+              performanceImprovement: 30,
+              riskLevel: "low",
+            },
+            recommendedAction: "review",
+          });
+        }
+      }
+    }
+
+    return opportunities;
   }
 
   /**
    * Find cost optimization opportunities
    */
   private async findCostOptimizations(): Promise<OptimizationOpportunity[]> {
-    // TODO: Analyze cloud costs
-    // For now, return mock data
-    return [
-      {
-        id: "opt_cost_1",
-        type: "cost" as const,
-        description: "Unused database connections detected",
+    const opportunities: OptimizationOpportunity[] = [];
+
+    // 1. Analyze AI usage patterns
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const aiCalls = await this.prisma.aICallLog.findMany({
+      where: { createdAt: { gte: thirtyDaysAgo } },
+      select: { model: true, tokens: true, cost: true },
+    });
+
+    // Group by model and find optimization opportunities
+    const modelUsage: Record<string, { calls: number; tokens: number; cost: number }> = {};
+    for (const call of aiCalls) {
+      if (!modelUsage[call.model]) {
+        modelUsage[call.model] = { calls: 0, tokens: 0, cost: 0 };
+      }
+      modelUsage[call.model].calls++;
+      modelUsage[call.model].tokens += call.tokens || 0;
+      modelUsage[call.model].cost += call.cost || 0;
+    }
+
+    // Check for expensive model usage that could be downgraded
+    if (modelUsage['gpt-4']?.cost > 100) {
+      opportunities.push({
+        id: "opt_cost_ai_downgrade",
+        type: "cost",
+        description: `High GPT-4 usage detected: $${modelUsage['gpt-4'].cost.toFixed(2)} in 30 days`,
         currentState: {
-          connectionPoolSize: 100,
-          activeConnections: 20,
-          utilization: 0.2,
+          model: 'gpt-4',
+          cost30Days: modelUsage['gpt-4'].cost,
+          calls30Days: modelUsage['gpt-4'].calls,
         },
         proposedChange: {
-          reducePoolSize: 30,
+          downgradeTo: 'gpt-3.5-turbo',
+          estimatedSavingsPercent: 90,
         },
         expectedImpact: {
-          costSavings: 50, // $50/month
-          riskLevel: "low" as const,
+          costSavings: modelUsage['gpt-4'].cost * 0.9,
+          riskLevel: "low",
         },
-        recommendedAction: "auto-apply" as const,
+        recommendedAction: "review",
+      });
+    }
+
+    // 2. Check for unused reconciliation jobs
+    const staleJobs = await this.prisma.reconJob.count({
+      where: {
+        status: 'active',
+        lastRunAt: { lt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000) },
       },
-    ];
+    });
+
+    if (staleJobs > 10) {
+      opportunities.push({
+        id: "opt_cost_stale_jobs",
+        type: "cost",
+        description: `${staleJobs} stale reconciliation jobs detected (>90 days since last run)`,
+        currentState: {
+          staleJobCount: staleJobs,
+          threshold: '90 days',
+        },
+        proposedChange: {
+          action: 'archive_or_delete',
+          targetCount: staleJobs,
+        },
+        expectedImpact: {
+          costSavings: staleJobs * 5, // $5 per job/month estimate
+          riskLevel: "low",
+        },
+        recommendedAction: "review",
+      });
+    }
+
+    // 3. Check for high-volume unmapped data
+    const unmappedCount = await this.prisma.unmappedRecord.count({
+      where: { createdAt: { gte: thirtyDaysAgo } },
+    });
+
+    if (unmappedCount > 10000) {
+      opportunities.push({
+        id: "opt_cost_unmapped_cleanup",
+        type: "cost",
+        description: `High unmapped record count: ${unmappedCount} records in 30 days`,
+        currentState: {
+          unmappedRecords: unmappedCount,
+          storageCostEstimate: unmappedCount * 0.001,
+        },
+        proposedChange: {
+          action: 'review_mappings',
+          autoCleanupThreshold: '30 days',
+        },
+        expectedImpact: {
+          costSavings: 25,
+          riskLevel: "low",
+        },
+        recommendedAction: "review",
+      });
+    }
+
+    return opportunities;
   }
 
   /**
-   * Find performance issues
+   * Find performance issues by analyzing job execution times and error rates
    */
   private async findPerformanceIssues(): Promise<OptimizationOpportunity[]> {
-    // TODO: Analyze performance metrics
-    // For now, return mock data
-    return [];
+    const opportunities: OptimizationOpportunity[] = [];
+
+    // 1. Check for error-prone connectors
+    const errorRates = await this.prisma.reconResult.groupBy({
+      by: ['connectorId'],
+      where: {
+        createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+        status: { in: ['error', 'failed'] },
+      },
+      _count: { id: true },
+    });
+
+    const totalRuns = await this.prisma.reconResult.groupBy({
+      by: ['connectorId'],
+      where: {
+        createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+      },
+      _count: { id: true },
+    });
+
+    for (const errorStat of errorRates) {
+      const totalStat = totalRuns.find(t => t.connectorId === errorStat.connectorId);
+      if (totalStat) {
+        const errorRate = errorStat._count.id / totalStat._count.id;
+        if (errorRate > 0.2) {
+          opportunities.push({
+            id: `opt_perf_errors_${errorStat.connectorId}`,
+            type: "performance",
+            description: `High error rate for connector ${errorStat.connectorId}: ${(errorRate * 100).toFixed(1)}%`,
+            currentState: {
+              connectorId: errorStat.connectorId,
+              errorRate,
+              errorCount7Days: errorStat._count.id,
+              totalCount7Days: totalStat._count.id,
+            },
+            proposedChange: {
+              action: 'review_connector_config',
+              retryPolicy: 'exponential_backoff',
+            },
+            expectedImpact: {
+              errorRateReduction: 0.5,
+              riskLevel: "low",
+            },
+            recommendedAction: "review",
+          });
+        }
+      }
+    }
+
+    // 2. Check for memory-intensive jobs
+    const largeJobs = await this.prisma.reconJob.findMany({
+      where: {
+        status: 'completed',
+        executionTime: { gt: 300000 }, // > 5 minutes
+        createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+      },
+      select: { id: true, name: true, executionTime: true },
+      take: 10,
+    });
+
+    for (const job of largeJobs) {
+      opportunities.push({
+        id: `opt_perf_memory_${job.id}`,
+        type: "performance",
+        description: `Memory-intensive job detected: ${job.name} (${job.executionTime}ms)`,
+        currentState: {
+          jobId: job.id,
+          jobName: job.name,
+          executionTimeMs: job.executionTime,
+        },
+        proposedChange: {
+          action: 'enable_streaming',
+          batchSize: 1000,
+        },
+        expectedImpact: {
+          memoryReduction: 0.6,
+          riskLevel: "low",
+        },
+        recommendedAction: "review",
+      });
+    }
+
+    return opportunities;
   }
 
   /**
-   * Find capacity issues
+   * Find capacity issues by analyzing queue depth and processing rates
    */
   private async findCapacityIssues(): Promise<OptimizationOpportunity[]> {
-    // TODO: Analyze capacity metrics
-    // For now, return mock data
-    return [];
+    const opportunities: OptimizationOpportunity[] = [];
+
+    // 1. Check queue depth
+    const pendingJobs = await this.prisma.reconJob.count({
+      where: { status: 'pending' },
+    });
+
+    const processingJobs = await this.prisma.reconJob.count({
+      where: { status: 'processing' },
+    });
+
+    const queueRatio = pendingJobs / (processingJobs || 1);
+
+    if (queueRatio > 5) {
+      opportunities.push({
+        id: "opt_capacity_queue_depth",
+        type: "capacity",
+        description: `High queue depth: ${pendingJobs} pending, ${processingJobs} processing`,
+        currentState: {
+          pendingJobs,
+          processingJobs,
+          queueRatio,
+        },
+        proposedChange: {
+          action: 'scale_workers',
+          targetWorkers: Math.ceil(pendingJobs / 10),
+        },
+        expectedImpact: {
+          throughputIncrease: 2.0,
+          riskLevel: "low",
+        },
+        recommendedAction: "auto-apply",
+      });
+    }
+
+    // 2. Check concurrent user capacity
+    const activeUsers24h = await this.prisma.user.count({
+      where: { lastLoginAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } },
+    });
+
+    if (activeUsers24h > 100) {
+      opportunities.push({
+        id: "opt_capacity_users",
+        type: "capacity",
+        description: `High user load: ${activeUsers24h} active users in 24h`,
+        currentState: {
+          activeUsers24h,
+          threshold: 100,
+        },
+        proposedChange: {
+          action: 'enable_cdn_caching',
+          cacheStaticAssets: true,
+        },
+        expectedImpact: {
+          loadReduction: 0.4,
+          riskLevel: "low",
+        },
+        recommendedAction: "auto-apply",
+      });
+    }
+
+    return opportunities;
   }
 
   /**
    * Apply an optimization
    */
   private async applyOptimization(opportunity: OptimizationOpportunity): Promise<void> {
-    // TODO: Implement actual optimization logic
     logInfo(`Applying optimization: ${opportunity.id}`, { opportunityId: opportunity.id });
-    this.emit("optimization_applied", opportunity);
+
+    try {
+      switch (opportunity.type) {
+        case "query":
+          // Log the slow query for manual review
+          await this.prisma.optimizationLog.create({
+            data: {
+              type: 'query_optimization',
+              description: opportunity.description,
+              details: opportunity.currentState as unknown as Prisma.InputJsonValue,
+              status: 'pending_review',
+              createdAt: new Date(),
+            },
+          });
+          break;
+
+        case "cost":
+          // Apply cost optimizations automatically if low risk
+          if (opportunity.recommendedAction === 'auto-apply') {
+            if (opportunity.proposedChange?.downgradeTo) {
+              // Update AI config to use cheaper model
+              const { aiConfig } = await import("../../config/ai-config");
+              aiConfig.defaultModel = opportunity.proposedChange.downgradeTo as string;
+              logInfo(`Downgraded AI model to ${opportunity.proposedChange.downgradeTo}`);
+            }
+          }
+          break;
+
+        case "performance":
+          // Enable optimizations for performance issues
+          if (opportunity.proposedChange?.enable_streaming) {
+            // Update job config to use streaming
+            await this.prisma.globalConfig.upsert({
+              where: { key: 'enable_streaming' },
+              update: { value: 'true', updatedAt: new Date() },
+              create: { key: 'enable_streaming', value: 'true', createdAt: new Date(), updatedAt: new Date() },
+            });
+          }
+          break;
+
+        case "capacity":
+          // Scale workers for capacity issues
+          if (opportunity.proposedChange?.scale_workers) {
+            const targetWorkers = opportunity.proposedChange.targetWorkers as number;
+            // Update worker pool size
+            await this.prisma.globalConfig.upsert({
+              where: { key: 'worker_pool_size' },
+              update: { value: String(targetWorkers), updatedAt: new Date() },
+              create: { key: 'worker_pool_size', value: String(targetWorkers), createdAt: new Date(), updatedAt: new Date() },
+            });
+          }
+          break;
+      }
+
+      // Log the optimization
+      await this.prisma.optimizationLog.create({
+        data: {
+          type: opportunity.type,
+          optimizationId: opportunity.id,
+          description: opportunity.description,
+          details: {
+            currentState: opportunity.currentState,
+            proposedChange: opportunity.proposedChange,
+            expectedImpact: opportunity.expectedImpact,
+          } as unknown as Prisma.InputJsonValue,
+          status: 'applied',
+          appliedAt: new Date(),
+        },
+      });
+
+      this.emit("optimization_applied", opportunity);
+      logInfo(`Optimization applied: ${opportunity.id}`);
+    } catch (error) {
+      logError(`Failed to apply optimization ${opportunity.id}`, error);
+      throw error;
+    }
   }
 
   /**
