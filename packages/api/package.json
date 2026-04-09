@@ -110,7 +110,7 @@
     "@opentelemetry/semantic-conventions": "^1.28.0",
     "@prisma/adapter-pg": "^7.5.0",
     "@sentry/node": "^10.44.0",
-    "@sentry/profiling-node": "^7.91.0",
+    "@sentry/profiling-node": "^10.47.0",
     "@settler/adapters": "workspace:*",
     "@settler/edge-ai-core": "workspace:*",
     "@settler/proofs": "workspace:*",
