@@ -259,12 +259,32 @@ export class AlertManager {
 
   /**
    * Send notification
+   * Integrates with Email (Resend), Slack, PagerDuty, and generic webhooks
    */
   private async sendNotification(alert: Alert): Promise<void> {
-    // TODO: Integrate with notification service (email, Slack, PagerDuty, etc.)
+    // Log to console
     console.warn(`Alert: [${alert.severity.toUpperCase()}] ${alert.title} - ${alert.message}`);
 
-    // Example: Send to webhook
+    // Send to configured notification channels
+    const { notificationService } = await import("./notification-service");
+
+    if (notificationService.hasAnyConfiguration()) {
+      try {
+        await notificationService.sendNotification({
+          severity: alert.severity,
+          title: alert.title,
+          message: alert.message,
+          connectorId: alert.connectorId,
+          tenantId: alert.tenantId,
+          metadata: alert.metadata,
+          timestamp: new Date(),
+        });
+      } catch (error) {
+        console.error("Failed to send notification:", error);
+      }
+    }
+
+    // Fallback: Send to generic webhook
     const webhookUrl = process.env.ALERT_WEBHOOK_URL;
     if (webhookUrl) {
       try {

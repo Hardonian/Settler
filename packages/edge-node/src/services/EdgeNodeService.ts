@@ -50,6 +50,7 @@ export class EdgeNodeService {
   private dataDir: string;
   private nodeId?: string;
   private isRunning: boolean = false;
+  private lastHeartbeatAt?: Date;
 
   private ingestionService: IngestionService;
   private matchingService: MatchingService;
@@ -240,7 +241,8 @@ export class EdgeNodeService {
         status: "healthy",
         version: "1.0.0",
       });
-      logger.debug("Heartbeat sent");
+      this.lastHeartbeatAt = new Date();
+      logger.debug("Heartbeat sent", { timestamp: this.lastHeartbeatAt.toISOString() });
     } catch (error) {
       logger.error("Heartbeat failed", error);
     }
@@ -376,7 +378,7 @@ export class EdgeNodeService {
 
     const status: NodeStatus = {
       status: this.isRunning ? "running" : "stopped",
-      lastHeartbeat: new Date().toISOString(), // TODO: Track actual last heartbeat
+      lastHeartbeat: this.lastHeartbeatAt?.toISOString() ?? undefined,
       jobsProcessed: jobCount?.count || 0,
       localStorageUsed: this.getStorageSize(),
     };
@@ -407,15 +409,125 @@ export class EdgeNodeService {
       arch: os.arch(),
       capabilities: {
         cpu: true,
-        gpu: false, // TODO: Detect GPU availability
-        npu: false, // TODO: Detect NPU availability
-        onnx_runtime: true, // TODO: Check if ONNX Runtime is available
-        tensorrt: false,
+        gpu: this.detectGPU(),
+        npu: this.detectNPU(),
+        onnx_runtime: this.detectONNXRuntime(),
+        tensorrt: this.detectTensorRT(),
         executorch: false,
-        webgpu: false,
-        wasm: false,
+        webgpu: this.detectWebGPU(),
+        wasm: true,
       },
     };
+  }
+
+  private detectGPU(): boolean {
+    try {
+      // Check for CUDA (NVIDIA)
+      if (process.env.CUDA_PATH || process.env.CUDA_HOME) {
+        return true;
+      }
+      
+      // Check for Metal (macOS)
+      if (os.platform() === "darwin" && os.arch() === "arm64") {
+        return true; // Apple Silicon has Metal GPU
+      }
+      
+      // Check for ROCm (AMD)
+      if (process.env.ROCM_PATH) {
+        return true;
+      }
+      
+      // Try to load CUDA bindings (if available)
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        require("cuda");
+        return true;
+      } catch {
+        // CUDA not available
+      }
+      
+      return false;
+    } catch {
+      return false;
+    }
+  }
+
+  private detectNPU(): boolean {
+    try {
+      // Check for Apple Neural Engine (ANE)
+      if (os.platform() === "darwin" && os.arch() === "arm64") {
+        // Apple Silicon (M1/M2/M3) has ANE
+        return true;
+      }
+      
+      // Check for Intel NPU
+      if (process.env.INTEL_NPU) {
+        return true;
+      }
+      
+      // Check for Qualcomm NPU
+      if (os.arch() === "arm64" && process.env.QUALCOMM_NPU) {
+        return true;
+      }
+      
+      return false;
+    } catch {
+      return false;
+    }
+  }
+
+  private detectONNXRuntime(): boolean {
+    try {
+      // Try to load ONNX Runtime
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      require("onnxruntime-node");
+      return true;
+    } catch {
+      try {
+        // Try alternative package name
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        require("onnxruntime");
+        return true;
+      } catch {
+        return false;
+      }
+    }
+  }
+
+  private detectTensorRT(): boolean {
+    try {
+      // Check for TensorRT environment
+      if (process.env.TENSORRT_PATH || process.env.LD_LIBRARY_PATH?.includes("tensorrt")) {
+        return true;
+      }
+      
+      // Try to load TensorRT bindings
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        require("tensorrt");
+        return true;
+      } catch {
+        return false;
+      }
+    } catch {
+      return false;
+    }
+  }
+
+  private detectWebGPU(): boolean {
+    try {
+      // WebGPU is primarily a browser API
+      // In Node.js, check for dawn-node or similar
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        require("@webgpu/node");
+        return true;
+      } catch {
+        return false;
+      }
+    } catch {
+      return false;
+    }
   }
 
   saveNodeKey(nodeKey: string): void {
