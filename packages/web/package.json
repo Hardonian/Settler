@@ -39,7 +39,7 @@
     "@jobforge/shared": "workspace:*",
     "@mdx-js/loader": "^3.0.0",
     "@mdx-js/react": "^3.0.0",
-    "@next/mdx": "^14.0.4",
+    "@next/mdx": "^16.2.3",
     "@prisma/client": "^7.1.0",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-progress": "^1.1.0",
