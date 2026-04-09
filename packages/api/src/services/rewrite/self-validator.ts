@@ -68,41 +68,74 @@ export class SelfValidator {
   /**
    * Validate TypeScript types
    */
-  private async validateTypeScript(_module: {
+  private async validateTypeScript(module: {
     code?: string;
     [key: string]: unknown;
   }): Promise<ValidationResult> {
-    // TODO: Implement actual TypeScript validation
-    // This would use the TypeScript compiler API
-    return {
-      check: "typescript_types",
-      status: "pass",
-      message: "TypeScript types valid",
-    };
+    if (!module.code) {
+      return { check: "typescript_types", status: "pass", message: "No code to validate" };
+    }
+
+    try {
+      const ts = await import("typescript");
+      const sourceFile = ts.createSourceFile("temp.ts", module.code, ts.ScriptTarget.Latest, true);
+      const program = ts.createProgram(["temp.ts"], { noEmit: true, strict: true }, {
+        getSourceFile: (f) => f === "temp.ts" ? sourceFile : undefined,
+        writeFile: () => {},
+        getCurrentDirectory: () => "",
+        getDirectories: () => [],
+        fileExists: () => true,
+        readFile: () => module.code,
+        getCanonicalFileName: (f) => f,
+        useCaseSensitiveFileNames: () => true,
+        getNewLine: () => "\n",
+      });
+
+      const allDiagnostics = ts.getPreEmitDiagnostics(program).concat(program.emit().diagnostics);
+      if (allDiagnostics.length > 0) {
+        return { check: "typescript_types", status: "fail", message: `Errors: ${allDiagnostics.slice(0, 2).map(d => ts.flattenDiagnosticMessageText(d.messageText, " ")).join("; ")}` };
+      }
+      return { check: "typescript_types", status: "pass", message: "TypeScript types valid" };
+    } catch (error) {
+      return { check: "typescript_types", status: "fail", message: `Error: ${error instanceof Error ? error.message : "Unknown"}` };
+    }
   }
 
   /**
    * Validate schema integrity
    */
   private async validateSchemaIntegrity(module: {
-    schemaReferences?: unknown[];
+    schemaReferences?: string[];
     [key: string]: unknown;
   }): Promise<ValidationResult> {
-    // Check if module references valid database schemas
-    if (module.schemaReferences && module.schemaReferences.length > 0) {
-      // TODO: Validate against actual Prisma schema
-      return {
-        check: "schema_integrity",
-        status: "pass",
-        message: "Schema references valid",
-      };
+    if (!module.schemaReferences || module.schemaReferences.length === 0) {
+      return { check: "schema_integrity", status: "pass", message: "No schema references to validate" };
     }
 
-    return {
-      check: "schema_integrity",
-      status: "pass",
-      message: "No schema references to validate",
-    };
+    try {
+      const fs = await import("fs");
+      const path = await import("path");
+      const schemaPath = path.join(process.cwd(), "prisma", "schema.prisma");
+      
+      if (!fs.existsSync(schemaPath)) {
+        return { check: "schema_integrity", status: "warn", message: "Prisma schema not found" };
+      }
+
+      const schema = fs.readFileSync(schemaPath, "utf-8");
+      const invalidRefs: string[] = [];
+
+      for (const ref of module.schemaReferences) {
+        if (!new RegExp(`^model\\s+${ref}\\s*{|^enum\\s+${ref}\\s*{`, "m").test(schema)) {
+          invalidRefs.push(ref);
+        }
+      }
+
+      return invalidRefs.length > 0 
+        ? { check: "schema_integrity", status: "fail", message: `Invalid refs: ${invalidRefs.join(", ")}` }
+        : { check: "schema_integrity", status: "pass", message: "Schema refs valid" };
+    } catch (error) {
+      return { check: "schema_integrity", status: "fail", message: `Error: ${error instanceof Error ? error.message : "Unknown"}` };
+    }
   }
 
   /**

@@ -124,7 +124,7 @@ export class PipelineRewriter {
 
     return {
       pipelineId: workflowId,
-      currentVersion: "1.0.0", // TODO: Get from workflow
+      currentVersion: workflow?.version || "1.0.0",
       targetVersion: "2.0.0",
       changes,
       backwardCompatible: true,
@@ -220,9 +220,50 @@ export class PipelineRewriter {
   /**
    * Apply rewrite to pipeline
    */
-  async applyRewrite(rewrite: PipelineRewrite): Promise<void> {
-    // TODO: Implement actual rewrite logic
-    // This would update the workflow definition in the database
-    logInfo("Pipeline rewrite applied", { pipelineId: rewrite.pipelineId });
+  async applyRewrite(rewrite: PipelineRewrite): Promise<{ success: boolean; updatedWorkflow?: any }> {
+    try {
+      // Update workflow in database
+      const workflow = await this.prisma.workflow.findUnique({
+        where: { id: rewrite.pipelineId },
+      });
+
+      if (!workflow) {
+        throw new Error(`Workflow ${rewrite.pipelineId} not found`);
+      }
+
+      // Apply changes to workflow config
+      const updatedConfig = this.applyChangesToConfig(workflow.config, rewrite.changes);
+
+      // Update workflow
+      const updated = await this.prisma.workflow.update({
+        where: { id: rewrite.pipelineId },
+        data: {
+          config: updatedConfig,
+          version: rewrite.targetVersion,
+          updatedAt: new Date(),
+        },
+      });
+
+      logInfo("Pipeline rewrite applied", { pipelineId: rewrite.pipelineId, version: rewrite.targetVersion });
+      return { success: true, updatedWorkflow: updated };
+    } catch (error) {
+      logError("Pipeline rewrite failed", { pipelineId: rewrite.pipelineId, error });
+      return { success: false };
+    }
+  }
+
+  private applyChangesToConfig(config: any, changes: any[]): any {
+    let updated = typeof config === 'string' ? JSON.parse(config) : { ...config };
+    for (const change of changes) {
+      if (change.type === 'patch' && change.nodeId) {
+        // Apply patch to specific node
+        updated.nodes = updated.nodes || [];
+        const nodeIdx = updated.nodes.findIndex((n: any) => n.id === change.nodeId);
+        if (nodeIdx >= 0) {
+          updated.nodes[nodeIdx].logic = change.newLogic;
+        }
+      }
+    }
+    return updated;
   }
 }

@@ -222,8 +222,7 @@ export async function runMultiSourceReconciliation(
       throw new Error("Multi-source job not found");
     }
 
-    // TODO: Fetch transactions from all source adapters
-    // This would integrate with the adapter system
+    // Fetch transactions from all source adapters
     const allTransactions: Array<{
       adapter: string;
       transactionId: string;
@@ -233,8 +232,35 @@ export async function runMultiSourceReconciliation(
       externalId?: string;
     }> = [];
 
+    // Parse source adapters from job config
+    const sourceAdapters = (jobResult[0].source_adapters || []).split(',').map((s: string) => s.trim());
+
+    // Fetch from each adapter
+    for (const adapterName of sourceAdapters) {
+      try {
+        const adapter = this.adapterFactory.create(adapterName);
+        const transactions = await adapter.fetchTransactions({ startDate: new Date(Date.now() - 30*24*60*60*1000), endDate: new Date() });
+        
+        for (const tx of transactions) {
+          allTransactions.push({
+            adapter: adapterName,
+            transactionId: tx.id,
+            amount: tx.amount,
+            date: tx.date,
+            description: tx.description,
+            externalId: tx.externalId,
+          });
+        }
+      } catch (error) {
+        logError(`Failed to fetch from adapter ${adapterName}`, error);
+      }
+    }
+
     // Detect conflicts
     const conflicts = await detectConflicts(tenantId, multiSourceJobId, allTransactions);
+
+    // Calculate consolidated matches
+    const consolidatedMatches = allTransactions.length - conflicts.length;
 
     // Update job with recon_run_id
     await query(`UPDATE multi_source_jobs SET recon_run_id = $1 WHERE id = $2`, [
@@ -246,7 +272,7 @@ export async function runMultiSourceReconciliation(
       multiSourceJobId,
       conflicts,
       duplicateCount: conflicts.length,
-      consolidatedMatches: 0, // TODO: Calculate from actual reconciliation
+      consolidatedMatches,
     };
   } catch (error) {
     logError("Failed to run multi-source reconciliation", error, {
