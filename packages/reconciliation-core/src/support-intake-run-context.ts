@@ -288,9 +288,7 @@ export async function buildSupportIntakeExceptionContext(
               sourceTrustScore: true,
               createdAt: true,
             },
-            orderBy: {
-              createdAt: "desc",
-            },
+            orderBy: [{ createdAt: "desc" }, { id: "desc" }],
             take: 200,
           })
         : [];

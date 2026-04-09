@@ -35,6 +35,44 @@ function toUuidColumn(value: string | null | undefined): string | null {
   return t;
 }
 
+function stableNormalize(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map((entry) => stableNormalize(entry));
+  }
+
+  if (value && typeof value === "object") {
+    const objectValue = value as Record<string, unknown>;
+    const normalized: Record<string, unknown> = {};
+
+    for (const key of Object.keys(objectValue).sort()) {
+      normalized[key] = stableNormalize(objectValue[key]);
+    }
+
+    return normalized;
+  }
+
+  return value;
+}
+
+function stableStringify(value: unknown): string | null {
+  try {
+    return JSON.stringify(stableNormalize(value));
+  } catch {
+    return null;
+  }
+}
+
+function computeTruthPackFingerprint(ctx: {
+  runContext: unknown;
+  exceptionContext: unknown;
+}): string | null {
+  const serialized = stableStringify(ctx);
+  if (!serialized) {
+    return null;
+  }
+  return crypto.createHash("sha256").update(serialized).digest("hex");
+}
+
 /**
  * Best-effort signal for operator consoles; fails silently if the table is absent (some environments).
  */
@@ -154,6 +192,10 @@ async function persistSupportIntakeToAuditLog(params: {
     exception_context: params.exceptionContext
       ? (params.exceptionContext as unknown as JsonValue)
       : null,
+    truth_pack_fingerprint: computeTruthPackFingerprint({
+      runContext: params.runContext,
+      exceptionContext: params.exceptionContext,
+    }),
   };
 
   const metadata: InputJsonObject = {

@@ -117,7 +117,7 @@ const KEYWORD_RULES: Array<{ code: string; pattern: RegExp }> = [
   },
   {
     code: "REOPENED_FOR_INVESTIGATION",
-    pattern: /\bre-?open(?:ed)?\b|\binvestigat(?:e|ion)\b|\bfollow(?:\s|-)?up\b|\bescalat/i,
+    pattern: /\bre-?open(?:ed)?\b|\b[i]nvestigat(?:e|ion)\b|\bfollow(?:\s|-)?up\b|\b[e]scalat/i,
   },
 ];
 
@@ -397,7 +397,11 @@ export function buildExceptionFamilySummary(args: {
   const memories = [...args.memories].sort((left, right) => {
     const leftTime = new Date(left.createdAt).getTime();
     const rightTime = new Date(right.createdAt).getTime();
-    return rightTime - leftTime;
+    if (leftTime !== rightTime) {
+      return rightTime - leftTime;
+    }
+    // Tie breaker for determinism
+    return right.exceptionId.localeCompare(left.exceptionId);
   });
 
   const latestByCase = new Map<string, ExceptionFamilyMemory>();
@@ -492,7 +496,14 @@ export function buildExceptionFamilySummary(args: {
   }
 
   const dominantEntry =
-    [...resolutionCounts.entries()].sort((left, right) => right[1] - left[1])[0] ?? null;
+    [...resolutionCounts.entries()].sort((left, right) => {
+      const countDiff = right[1] - left[1];
+      if (countDiff !== 0) {
+        return countDiff;
+      }
+      // Tie breaker for determinism using the resolution code
+      return left[0].localeCompare(right[0]);
+    })[0] ?? null;
   const dominantResolutionCode = dominantEntry?.[0] ?? null;
   const dominantResolutionReason = dominantResolutionCode
     ? humanizeResolutionCode(dominantResolutionCode)
