@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,16 @@ import {
 } from "@/components/ui/select";
 import { safeFetch } from "@/lib/safe-fetch";
 import { ArrowLeft, Save, Play } from "lucide-react";
+import { WORKFLOWS_CAPABILITY_MESSAGE } from "@/lib/workflows/capability";
 import Link from "next/link";
+
+
+interface WorkflowCapabilityResponse {
+  automationCapability?: {
+    state?: string;
+    message?: string;
+  };
+}
 
 export default function NewWorkflowPage() {
   const searchParams = useSearchParams();
@@ -28,8 +37,35 @@ export default function NewWorkflowPage() {
   const [actionType, setActionType] = useState<"http_webhook" | "email" | "slack">("http_webhook");
   const [actionConfig, setActionConfig] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
+  const [capabilityUnavailable, setCapabilityUnavailable] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadCapability = async () => {
+      const result = await safeFetch<WorkflowCapabilityResponse>("/api/workflows");
+      if (cancelled) {
+        return;
+      }
+
+      if (result.success) {
+        setCapabilityUnavailable(result.data?.automationCapability?.state === "unavailable");
+      } else {
+        setCapabilityUnavailable(true);
+      }
+    };
+
+    loadCapability();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleSave = async () => {
+    if (capabilityUnavailable) {
+      return;
+    }
     if (!name.trim()) {
       alert("Please enter a workflow name");
       return;
@@ -54,7 +90,9 @@ export default function NewWorkflowPage() {
   };
 
   const handleTest = async () => {
-    alert("Dry run test would execute here");
+    if (capabilityUnavailable) {
+      return;
+    }
   };
 
   return (
@@ -72,6 +110,17 @@ export default function NewWorkflowPage() {
           </p>
         </div>
       </div>
+
+      {capabilityUnavailable && (
+        <Card className="border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-950/30">
+          <CardHeader>
+            <CardTitle className="text-amber-900 dark:text-amber-200">Limited operability</CardTitle>
+            <CardDescription className="text-amber-800 dark:text-amber-300">
+              {WORKFLOWS_CAPABILITY_MESSAGE}
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      )}
 
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Workflow Builder */}
@@ -160,11 +209,11 @@ export default function NewWorkflowPage() {
             )}
 
             <div className="flex gap-2">
-              <Button onClick={handleSave} disabled={saving} className="flex-1">
+              <Button onClick={handleSave} disabled={saving || capabilityUnavailable} className="flex-1">
                 <Save className="w-4 h-4 mr-2" />
                 {saving ? "Saving..." : "Save Workflow"}
               </Button>
-              <Button variant="outline" onClick={handleTest}>
+              <Button variant="outline" onClick={handleTest} disabled={capabilityUnavailable}>
                 <Play className="w-4 h-4 mr-2" />
                 Test
               </Button>
