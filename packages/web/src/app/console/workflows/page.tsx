@@ -10,6 +10,7 @@ import { safeFetch } from "@/lib/safe-fetch";
 import { Zap, Plus, Play, Pause, Settings, CheckCircle2, XCircle } from "lucide-react";
 import Link from "next/link";
 import { RBACGate, TruncateContent } from "@/lib/rbac-gate";
+import { WORKFLOWS_CAPABILITY_MESSAGE } from "@/lib/workflows/capability";
 
 interface Workflow {
   id: string;
@@ -28,6 +29,13 @@ interface Workflow {
     timestamp: Date;
     error?: string;
   };
+}
+
+
+interface WorkflowsResponse {
+  workflows: Workflow[];
+  capability?: { state?: string; mode?: string };
+  automationCapability?: { state?: string; message?: string };
 }
 
 const templates = [
@@ -52,6 +60,7 @@ export default function WorkflowsPage() {
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
   const [loading, setLoading] = useState(true);
   const [showTemplates, setShowTemplates] = useState(false);
+  const [capabilityUnavailable, setCapabilityUnavailable] = useState(false);
 
   useEffect(() => {
     loadWorkflows();
@@ -59,13 +68,14 @@ export default function WorkflowsPage() {
 
   const loadWorkflows = async () => {
     setLoading(true);
-    const result = await safeFetch<{ workflows: Workflow[] }>("/api/workflows");
+    const result = await safeFetch<WorkflowsResponse>("/api/workflows");
 
     if (result.success) {
       setWorkflows(result.data?.workflows || []);
+      setCapabilityUnavailable(result.data?.automationCapability?.state === "unavailable");
     } else {
-      // No mock data - show empty state if API fails
       setWorkflows([]);
+      setCapabilityUnavailable(true);
     }
     setLoading(false);
   };
@@ -78,6 +88,8 @@ export default function WorkflowsPage() {
 
     if (result.success) {
       setWorkflows(workflows.map((w) => (w.id === workflowId ? { ...w, enabled } : w)));
+    } else {
+      setCapabilityUnavailable(true);
     }
   };
 
@@ -86,10 +98,8 @@ export default function WorkflowsPage() {
       method: "POST",
     });
 
-    if (result.success) {
-      alert("Dry run completed successfully");
-    } else {
-      alert(result.error?.message || "Dry run failed");
+    if (!result.success) {
+      setCapabilityUnavailable(true);
     }
   };
 
@@ -109,20 +119,38 @@ export default function WorkflowsPage() {
           </div>
           <RBACGate requiredTier="subscribed_paid" feature="Create Workflows">
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setShowTemplates(!showTemplates)}>
+              <Button variant="outline" onClick={() => setShowTemplates(!showTemplates)} disabled={capabilityUnavailable}>
                 Templates
               </Button>
-              <Button asChild>
-                <Link href="/console/workflows/new">
+              {capabilityUnavailable ? (
+                <Button disabled>
                   <Plus className="w-4 h-4 mr-2" />
                   Create Workflow
-                </Link>
-              </Button>
+                </Button>
+              ) : (
+                <Button asChild>
+                  <Link href="/console/workflows/new">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create Workflow
+                  </Link>
+                </Button>
+              )}
             </div>
           </RBACGate>
         </div>
 
-        {showTemplates && (
+        {capabilityUnavailable && (
+          <Card className="border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-950/30">
+            <CardHeader>
+              <CardTitle className="text-amber-900 dark:text-amber-200">Limited operability</CardTitle>
+              <CardDescription className="text-amber-800 dark:text-amber-300">
+                {WORKFLOWS_CAPABILITY_MESSAGE}
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        )}
+
+        {showTemplates && !capabilityUnavailable && (
           <Card>
             <CardHeader>
               <CardTitle>Workflow Templates</CardTitle>
@@ -163,10 +191,18 @@ export default function WorkflowsPage() {
               <EmptyState
                 icon={Zap}
                 title="No workflows yet"
-                description="Create a workflow to automate actions based on events"
+                description={
+                  capabilityUnavailable
+                    ? WORKFLOWS_CAPABILITY_MESSAGE
+                    : "Create a workflow to automate actions based on events"
+                }
                 action={{
                   label: "Create Workflow",
-                  onClick: () => (window.location.href = "/console/workflows/new"),
+                  onClick: () => {
+                    if (!capabilityUnavailable) {
+                      window.location.href = "/console/workflows/new";
+                    }
+                  },
                 }}
               />
             ) : (
@@ -215,6 +251,7 @@ export default function WorkflowsPage() {
                             size="sm"
                             variant="outline"
                             onClick={() => handleTest(workflow.id)}
+                            disabled={capabilityUnavailable}
                           >
                             <Play className="w-4 h-4 mr-2" />
                             Test
@@ -223,6 +260,7 @@ export default function WorkflowsPage() {
                             size="sm"
                             variant="outline"
                             onClick={() => handleToggle(workflow.id, !workflow.enabled)}
+                            disabled={capabilityUnavailable}
                           >
                             {workflow.enabled ? (
                               <>
