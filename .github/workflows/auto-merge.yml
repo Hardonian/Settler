@@ -1,10 +1,15 @@
 name: Auto-Merge Safety Check
 
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, synchronize, reopened, ready_for_review, labeled]
   pull_request_target:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, synchronize, reopened, ready_for_review, labeled]
 
 jobs:
   pre-merge-checks:
@@ -98,3 +103,51 @@ jobs:
                 body: comment
               });
             }
+
+  auto-merge-dependabot:
+    name: Auto-merge safe Dependabot updates
+    runs-on: ubuntu-latest
+    needs: [pre-merge-checks]
+    if: |
+      github.event.pull_request.draft == false &&
+      github.event.pull_request.user.login == 'dependabot[bot]' &&
+      needs.pre-merge-checks.result == 'success'
+    steps:
+      - name: Enable auto-merge for safe dependency updates
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const title = (pr.title || '').toLowerCase();
+            const body = (pr.body || '').toLowerCase();
+
+            const isSafeBump =
+              title.includes('bump') &&
+              !title.includes('major') &&
+              !body.includes('major version') &&
+              !body.includes('breaking change');
+
+            if (!isSafeBump) {
+              core.info('Skipping auto-merge: not a clearly safe patch/minor dependency bump.');
+              return;
+            }
+
+            await github.graphql(`
+              mutation($pullRequestId: ID!) {
+                enablePullRequestAutoMerge(input: {
+                  pullRequestId: $pullRequestId,
+                  mergeMethod: SQUASH
+                }) {
+                  pullRequest { number }
+                }
+              }
+            `, { pullRequestId: pr.node_id });
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              labels: ['automerge:enabled']
+            });
+
+            core.info(`Auto-merge enabled for PR #${pr.number}`);
