@@ -132,19 +132,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: "npm"
+          cache: "pnpm"
+
+      - name: Setup pnpm
+        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Generate Prisma client
-        run: npm run prisma:generate || npx prisma generate
+        run: pnpm run prisma:generate || pnpm exec prisma generate
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Run Migration Guardian
         id: guardian
-        run: npm run migration:guardian
+        run: pnpm run migration:guardian
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
@@ -295,10 +298,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: "npm"
-      - run: npm ci
+          cache: "pnpm"
+      - name: Setup pnpm
+        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
+      - run: pnpm install --frozen-lockfile
       - name: Build application
-        run: npx turbo run build
+        run: pnpm exec turbo run build
       - name: Apply staging migrations
         env:
           DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
@@ -308,7 +313,7 @@ jobs:
         run: |
           echo "🔄 Applying migrations to staging..."
           cd packages/api
-          npm run migrate:prod
+          pnpm run migrate:prod
           echo "✅ Staging migrations completed"
       - name: Verify staging health
         env:
@@ -338,10 +343,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: "npm"
-      - run: npm ci
+          cache: "pnpm"
+      - name: Setup pnpm
+        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
+      - run: pnpm install --frozen-lockfile
       - name: Build application
-        run: npx turbo run build
+        run: pnpm exec turbo run build
       - name: Apply production migrations
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -352,7 +359,7 @@ jobs:
           echo "🔄 Applying migrations to production..."
           echo "⚠️  PRODUCTION MIGRATION - This will modify the production database"
           cd packages/api
-          npm run migrate:prod
+          pnpm run migrate:prod
           echo "✅ Production migrations completed"
       - name: Verify production health
         env:
