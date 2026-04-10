@@ -15,6 +15,7 @@ import { appLogger } from "@/lib/utils/logger";
 import { withSecurity } from "@/lib/middleware/api-security";
 import { prisma } from "@/shared/db/prismaClient";
 import { validateScheduleCron, validateScheduleTimezone } from "@/lib/scheduling/schedule-contract";
+import { logAuditEvent } from "@/lib/audit/logger";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -158,6 +159,29 @@ export const PATCH = withSecurity(
             scheduleTimezone: scheduleTimezone || existing.scheduleTimezone,
           },
         });
+        const schedulerEnabled = process.env.SCHEDULER_ENABLED !== "false";
+
+        await logAuditEvent({
+          userId: tenantContext.userId,
+          tenantId: tenantContext.tenantId,
+          action: "update",
+          resourceType: "reconciliation_job",
+          resourceId: updated.id,
+          changes: {
+            before: {
+              scheduleCron: existing.scheduleCron,
+              scheduleTimezone: existing.scheduleTimezone,
+            },
+            after: {
+              scheduleCron: updated.scheduleCron,
+              scheduleTimezone: updated.scheduleTimezone,
+            },
+          },
+          metadata: {
+            event: "reconciliation_schedule_updated",
+            schedulerEnabled,
+          },
+        });
 
         appLogger.info("[Schedules API] Schedule updated", {
           jobId,
@@ -170,7 +194,9 @@ export const PATCH = withSecurity(
           id: updated.id,
           scheduleCron: updated.scheduleCron,
           scheduleTimezone: updated.scheduleTimezone,
-          capability: { state: "available" },
+          capability: schedulerEnabled
+            ? { state: "available" }
+            : { state: "degraded", reason: "scheduler_disabled_by_env" },
         });
       } catch (error) {
         if (
