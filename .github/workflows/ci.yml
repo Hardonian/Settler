@@ -41,13 +41,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: "pnpm"
+          cache: false
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
 
       - name: Deterministic install
-        run: pnpm run pnpm:ci:install
+        run: pnpm install --frozen-lockfile
 
       - name: Detect unresolved conflict markers
         run: pnpm run verify:conflict-markers
@@ -98,13 +98,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: "pnpm"
+          cache: false
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
 
       - name: Deterministic install
-        run: pnpm run pnpm:ci:install
+        run: pnpm install --frozen-lockfile
 
       - name: Doctor
         run: pnpm run doctor
@@ -169,13 +169,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: "pnpm"
+          cache: false
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
 
       - name: Deterministic install
-        run: pnpm run pnpm:ci:install
+        run: pnpm install --frozen-lockfile
 
       - name: API tests (serial, force exit)
         run: pnpm run test:ci:verify
@@ -208,13 +208,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: "pnpm"
+          cache: false
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
 
       - name: Deterministic install
-        run: pnpm run pnpm:ci:install
+        run: pnpm install --frozen-lockfile
 
       - name: Web tests (sharded with memory cap)
         run: pnpm --filter @settler/web exec jest --maxWorkers=50% --shard=${{ matrix.shard }} --passWithNoTests
@@ -242,13 +242,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: "pnpm"
+          cache: false
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
 
       - name: Deterministic install
-        run: pnpm run pnpm:ci:install
+        run: pnpm install --frozen-lockfile
 
       - name: Build web package
         run: pnpm --filter @settler/web build
@@ -316,13 +316,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: "pnpm"
+          cache: false
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
 
       - name: Deterministic install
-        run: pnpm run pnpm:ci:install
+        run: pnpm install --frozen-lockfile
 
       - name: Build packages
         run: pnpm run build
