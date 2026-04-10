@@ -152,9 +152,6 @@ export class NotificationService {
       return;
     }
 
-    const { Resend } = await import("resend");
-    const resend = new Resend(config.resendApiKey);
-
     const severityEmoji = {
       critical: "🔴",
       warning: "🟡",
@@ -185,19 +182,28 @@ ${payload.message}
 ${payload.metadata ? JSON.stringify(payload.metadata, null, 2) : ""}
     `.trim();
 
-    const result = await resend.emails.send({
-      from: config.from,
-      to: config.to,
-      subject: `[${payload.severity.toUpperCase()}] ${payload.title}`,
-      html: htmlContent,
-      text: textContent,
+    const resendResponse = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${config.resendApiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: config.from,
+        to: config.to,
+        subject: `[${payload.severity.toUpperCase()}] ${payload.title}`,
+        html: htmlContent,
+        text: textContent,
+      }),
     });
 
-    if (result.error) {
-      throw new Error(`Resend error: ${result.error.message}`);
+    if (!resendResponse.ok) {
+      const resendError = await resendResponse.text();
+      throw new Error(`Resend API error: ${resendResponse.status} ${resendError}`);
     }
 
-    console.log(`Email notification sent: ${result.data?.id}`);
+    const resendBody = (await resendResponse.json()) as { id?: string };
+    console.info(`Email notification sent: ${resendBody.id || "unknown"}`);
   }
 
   /**
@@ -252,11 +258,14 @@ ${payload.metadata ? JSON.stringify(payload.metadata, null, 2) : ""}
     };
 
     if (payload.metadata) {
-      slackPayload.attachments[0].fields.push({
-        title: "Metadata",
-        value: "```json\n" + JSON.stringify(payload.metadata, null, 2) + "\n```",
-        short: false,
-      });
+      const primaryAttachment = slackPayload.attachments[0];
+      if (primaryAttachment) {
+        primaryAttachment.fields.push({
+          title: "Metadata",
+          value: "```json\n" + JSON.stringify(payload.metadata, null, 2) + "\n```",
+          short: false,
+        });
+      }
     }
 
     const response = await fetch(config.webhookUrl, {
@@ -269,7 +278,7 @@ ${payload.metadata ? JSON.stringify(payload.metadata, null, 2) : ""}
       throw new Error(`Slack webhook error: ${response.status} ${response.statusText}`);
     }
 
-    console.log("Slack notification sent");
+    console.info("Slack notification sent");
   }
 
   /**
@@ -323,7 +332,7 @@ ${payload.metadata ? JSON.stringify(payload.metadata, null, 2) : ""}
       throw new Error(`PagerDuty API error: ${response.status} ${error}`);
     }
 
-    console.log("PagerDuty notification sent");
+    console.info("PagerDuty notification sent");
   }
 
   /**
@@ -353,7 +362,7 @@ ${payload.metadata ? JSON.stringify(payload.metadata, null, 2) : ""}
       throw new Error(`Webhook error: ${response.status} ${response.statusText}`);
     }
 
-    console.log("Webhook notification sent");
+    console.info("Webhook notification sent");
   }
 
   /**
