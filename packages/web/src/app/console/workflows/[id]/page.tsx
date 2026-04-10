@@ -19,6 +19,7 @@ import { ArrowLeft, Save, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { ErrorState } from "@/components/ui/error-state";
 import { Skeleton } from "@/components/ui/skeleton";
+import { WORKFLOWS_CAPABILITY_MESSAGE } from "@/lib/workflows/capability";
 
 interface Workflow {
   id: string;
@@ -32,6 +33,10 @@ interface Workflow {
     config: Record<string, any>;
   }>;
   enabled: boolean;
+  automationCapability?: {
+    state?: string;
+    message?: string;
+  };
 }
 
 export default function WorkflowDetailPage() {
@@ -41,6 +46,7 @@ export default function WorkflowDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const capabilityUnavailable = workflow?.automationCapability?.state === "unavailable";
 
   useEffect(() => {
     loadWorkflow();
@@ -122,16 +128,25 @@ export default function WorkflowDetailPage() {
           <p className="text-slate-600 dark:text-slate-400 mt-1">Edit workflow configuration</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={handleDelete}>
+          <Button variant="outline" onClick={handleDelete} disabled={capabilityUnavailable}>
             <Trash2 className="w-4 h-4 mr-2" />
             Delete
           </Button>
-          <Button onClick={handleSave} disabled={saving}>
+          <Button onClick={handleSave} disabled={saving || capabilityUnavailable}>
             <Save className="w-4 h-4 mr-2" />
             {saving ? "Saving..." : "Save"}
           </Button>
         </div>
       </div>
+
+      {capabilityUnavailable && (
+        <Card className="border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-950/30">
+          <CardHeader>
+            <CardTitle className="text-amber-900 dark:text-amber-200">Limited operability</CardTitle>
+            <p className="text-sm text-amber-800 dark:text-amber-300">{WORKFLOWS_CAPABILITY_MESSAGE}</p>
+          </CardHeader>
+        </Card>
+      )}
 
       <Card>
         <CardHeader>
@@ -145,6 +160,7 @@ export default function WorkflowDetailPage() {
               value={workflow.name}
               onChange={(e) => setWorkflow({ ...workflow, name: e.target.value })}
               className="mt-1"
+              disabled={capabilityUnavailable}
             />
           </div>
 
@@ -158,6 +174,7 @@ export default function WorkflowDetailPage() {
             <Switch
               checked={workflow.enabled}
               onCheckedChange={(enabled) => setWorkflow({ ...workflow, enabled })}
+              disabled={capabilityUnavailable}
             />
           </div>
 
@@ -165,6 +182,7 @@ export default function WorkflowDetailPage() {
             <Label>Trigger</Label>
             <Select
               value={workflow.trigger.type}
+              disabled={capabilityUnavailable}
               onValueChange={(type) =>
                 setWorkflow({ ...workflow, trigger: { ...workflow.trigger, type } })
               }
