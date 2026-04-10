@@ -42,8 +42,8 @@ jobs:
     # Required permissions for artifact attestation (Sigstore OIDC signing)
     permissions:
       contents: read
-      id-token: write      # Required for OIDC token (Sigstore signing)
-      attestations: write  # Required to write attestation records
+      id-token: write # Required for OIDC token (Sigstore signing)
+      attestations: write # Required to write attestation records
 
     # Only run when triggered directly or when the upstream security workflow succeeded
     if: >
@@ -60,7 +60,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-          cache: pnpm
+          cache: false
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
