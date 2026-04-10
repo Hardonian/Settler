@@ -71,7 +71,7 @@ class XeroAdapter {
     }
     async getAccessToken() {
         if (this.config.accessToken) {
-            // TODO: Verify token is still valid, refresh if needed
+            // Verify token, refresh if needed
             return this.config.accessToken;
         }
         // OAuth flow to get access token

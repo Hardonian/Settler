@@ -10,9 +10,8 @@ import { z } from "zod";
  */
 export declare const serverEnvSchema: z.ZodObject<{
     DATABASE_URL: z.ZodString;
-    SUPABASE_URL: z.ZodString;
-    SUPABASE_ANON_KEY: z.ZodString;
-    SUPABASE_SERVICE_ROLE_KEY: z.ZodString;
+    ANON_KEY: z.ZodString;
+    SERVICE_ROLE_KEY: z.ZodString;
     JWT_SECRET: z.ZodString;
     ENCRYPTION_KEY: z.ZodString;
     REDIS_URL: z.ZodOptional<z.ZodString>;
@@ -30,9 +29,8 @@ export declare const serverEnvSchema: z.ZodObject<{
     TIGERBEETLE_MAX_RETRIES: z.ZodPipeline<z.ZodDefault<z.ZodEffects<z.ZodString, number, string>>, z.ZodNumber>;
 }, "strip", z.ZodTypeAny, {
     DATABASE_URL: string;
-    SUPABASE_URL: string;
-    SUPABASE_ANON_KEY: string;
-    SUPABASE_SERVICE_ROLE_KEY: string;
+    ANON_KEY: string;
+    SERVICE_ROLE_KEY: string;
     JWT_SECRET: string;
     ENCRYPTION_KEY: string;
     TIGERBEETLE_ENABLED: boolean;
@@ -50,9 +48,8 @@ export declare const serverEnvSchema: z.ZodObject<{
     STRIPE_WEBHOOK_SECRET?: string | undefined;
 }, {
     DATABASE_URL: string;
-    SUPABASE_URL: string;
-    SUPABASE_ANON_KEY: string;
-    SUPABASE_SERVICE_ROLE_KEY: string;
+    ANON_KEY: string;
+    SERVICE_ROLE_KEY: string;
     JWT_SECRET: string;
     ENCRYPTION_KEY: string;
     REDIS_URL?: string | undefined;
@@ -97,9 +94,8 @@ export declare const clientEnvSchema: z.ZodObject<{
  */
 export declare const fullEnvSchema: z.ZodObject<{
     DATABASE_URL: z.ZodString;
-    SUPABASE_URL: z.ZodString;
-    SUPABASE_ANON_KEY: z.ZodString;
-    SUPABASE_SERVICE_ROLE_KEY: z.ZodString;
+    ANON_KEY: z.ZodString;
+    SERVICE_ROLE_KEY: z.ZodString;
     JWT_SECRET: z.ZodString;
     ENCRYPTION_KEY: z.ZodString;
     REDIS_URL: z.ZodOptional<z.ZodString>;
@@ -123,9 +119,8 @@ export declare const fullEnvSchema: z.ZodObject<{
     NEXT_PUBLIC_APP_URL: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     DATABASE_URL: string;
-    SUPABASE_URL: string;
-    SUPABASE_ANON_KEY: string;
-    SUPABASE_SERVICE_ROLE_KEY: string;
+    ANON_KEY: string;
+    SERVICE_ROLE_KEY: string;
     JWT_SECRET: string;
     ENCRYPTION_KEY: string;
     TIGERBEETLE_ENABLED: boolean;
@@ -148,9 +143,8 @@ export declare const fullEnvSchema: z.ZodObject<{
     NEXT_PUBLIC_APP_URL?: string | undefined;
 }, {
     DATABASE_URL: string;
-    SUPABASE_URL: string;
-    SUPABASE_ANON_KEY: string;
-    SUPABASE_SERVICE_ROLE_KEY: string;
+    ANON_KEY: string;
+    SERVICE_ROLE_KEY: string;
     JWT_SECRET: string;
     ENCRYPTION_KEY: string;
     NEXT_PUBLIC_SUPABASE_URL: string;

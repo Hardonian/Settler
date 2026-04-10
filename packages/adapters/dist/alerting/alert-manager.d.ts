@@ -51,6 +51,7 @@ export declare class AlertManager {
     private createAlert;
     /**
      * Send notification
+     * Integrates with Email (Resend), Slack, PagerDuty, and generic webhooks
      */
     private sendNotification;
     /**

@@ -20,9 +20,9 @@ exports.CLIENT_ENV_KEYS = [
 ];
 exports.SERVER_ENV_KEYS = [
     "NODE_ENV",
-    "SUPABASE_URL",
-    "SUPABASE_ANON_KEY",
-    "SUPABASE_SERVICE_ROLE_KEY",
+    "DATABASE_URL",
+    "ANON_KEY",
+    "SERVICE_ROLE_KEY",
     "DATABASE_URL",
     "SUPABASE_DATABASE_URL",
     "DIRECT_URL",
@@ -67,9 +67,9 @@ exports.SERVER_ENV_KEYS = [
     "AIRBYTE_API_KEY",
     "AIRBYTE_WORKSPACE_ID",
 ];
-exports.BUILD_REQUIRED_SERVER_KEYS = ["SUPABASE_URL", "SUPABASE_ANON_KEY"];
+exports.BUILD_REQUIRED_SERVER_KEYS = ["DATABASE_URL", "ANON_KEY"];
 exports.RUNTIME_REQUIRED_SERVER_KEYS = [
-    "SUPABASE_SERVICE_ROLE_KEY",
+    "SERVICE_ROLE_KEY",
     "JWT_SECRET",
     "ENCRYPTION_KEY",
 ];
@@ -85,10 +85,9 @@ const clientEnvSchema = zod_1.z
 const serverEnvSchema = zod_1.z
     .object({
     NODE_ENV: zod_1.z.enum(["development", "production", "test"]).default("development"),
-    SUPABASE_URL: zod_1.z.string().url(),
-    SUPABASE_ANON_KEY: zod_1.z.string().min(1),
-    SUPABASE_SERVICE_ROLE_KEY: zod_1.z.string().min(1),
-    DATABASE_URL: zod_1.z.string().url().optional(),
+    DATABASE_URL: zod_1.z.string().url(),
+    ANON_KEY: zod_1.z.string().min(1),
+    SERVICE_ROLE_KEY: zod_1.z.string().min(1),
     SUPABASE_DATABASE_URL: zod_1.z.string().url().optional(),
     DIRECT_URL: zod_1.z.string().url().optional(),
     JWT_SECRET: zod_1.z.string().min(32),
