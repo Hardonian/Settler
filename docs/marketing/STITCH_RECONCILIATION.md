@@ -174,10 +174,9 @@ packages/web/src/app/
 
 ### Changes Made This Pass
 
-1. **Brand canonicalization update** — Active logo sources now resolve from `/public/brand/settler/` via the shared `SettlerLogo` component (`logo-horizontal.svg` and `logo-horizontal-dark.svg`).
+1. **Brand canonicalization update** — (Superseded) Earlier notes referenced SVG paths under `/brand/settler/`; the canonical implementation is `SettlerLogo` / `BrandLockup` with rasters under `/brand/settler/` and a text wordmark. See `docs/brand/asset-map.md`.
 
-2. **`Navigation.tsx`** — Logo now conditionally renders light (`/brand/settler/logo-horizontal.svg`, `dark:hidden`) and
-   dark (`/brand/settler/logo-horizontal-dark.svg`, `hidden dark:block`) variants. Added "Features" dropdown to desktop nav
+2. **`Navigation.tsx`** — Logo uses the shared `SettlerLogo` component. Added "Features" dropdown to desktop nav
    exposing: How It Works, Replay Lab, Proof Explorer. Added Features section to mobile sheet nav.
    Fixed `/security` nav link → now points directly at `/security-and-audit`.
 

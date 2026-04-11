@@ -2,24 +2,18 @@
 
 ## Source of truth
 
-Authoritative rasters live in `packages/web/public/brand/settler/`:
+- **In-app wordmark:** `BrandWordmark` renders **“Settler”** / **“Settler.dev”** as text (no bitmap wordmark file).
+- **Mark:** `packages/web/public/brand/settler/favicon-192x192.png` — circular mark on brand navy; this file is the **input** to `generate-brand-assets.mjs`.
 
-- `wordmark.png` — wordmark-only (Settler)
-- `favicon-192x192.png` — circular mark on brand navy (also feeds the generation pipeline)
-
-The **horizontal lockup** is **generated** as `settler-lockup-horizontal-light.png` (+ `.webp`) by composing the wordmark and scaled mark — it is not hand-maintained as a separate upload.
-
-Regenerate all derived rasters and App Router metadata images:
+The script generates: favicon sizes, maskable `app-icon.png`, `settler-lockup-horizontal-light.png` (+ `.webp`) for **SEO/structured data** (mark + vector text rasterized), `opengraph-image.png`, `twitter-image.png`, `icon.png`, `apple-icon.png`.
 
 ```bash
 cd packages/web && pnpm run generate:brand-assets
 ```
 
-This writes circular favicon sizes, maskable `app-icon.png`, `opengraph-image.png`, `twitter-image.png`, `icon.png`, `apple-icon.png`, and the horizontal lockup files.
-
 ## Active asset map
 
-See **`docs/brand/asset-map.md`** for filenames, usage, and reference locations.
+See **`docs/brand/asset-map.md`**.
 
 ## Component governance
 
@@ -29,4 +23,4 @@ See **`docs/brand/asset-map.md`** for filenames, usage, and reference locations.
 
 ## Legacy
 
-Root-level `public/logo.svg`, `public/favicon.svg`, and the removed wrong horizontal file `public/assets/images/Settler-logo.png` must not return. Requests to `/favicon.ico` and `/favicon.svg` redirect to `/icon.png` via Next.js redirects.
+Wrong files `Settler-logo.png` and `wordmark.png` (stock wordmark) must not return. `/favicon.ico` and `/favicon.svg` redirect to `/icon.png` via Next.js redirects.

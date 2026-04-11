@@ -114,14 +114,13 @@ All feature pages share:
 
 ## Brand Assets
 
-| Asset                 | Path                                      | Usage                            |
-| --------------------- | ----------------------------------------- | -------------------------------- |
-| Logo (light mode)     | `/brand/settler/logo-horizontal.svg`      | Navigation, footer — light theme |
-| Logo (dark mode)      | `/brand/settler/logo-horizontal-dark.svg` | Navigation, footer — dark theme  |
-| Favicon               | `/brand/settler/logo-icon.svg`            | Browser tab                      |
-| Favicon (PWA)         | `/brand/settler/favicon-192x192.svg`      | Metadata, PWA                    |
-| OG Image              | `/opengraph-image`                        | Social preview                   |
-| Twitter Card          | `/opengraph-image`                        | Twitter                          |
+| Asset                 | Path / implementation                                      | Usage                            |
+| --------------------- | ---------------------------------------------------------- | -------------------------------- |
+| Logo (in-app)         | `SettlerLogo` → `BrandLockup` (mark PNG + text wordmark)   | Navigation, footer — all themes  |
+| Favicon               | `/icon.png` (App Router); `/favicon.ico` → `/icon.png`     | Browser tab                      |
+| Favicon (PWA)         | `/brand/settler/favicon-192x192.png`, `manifest.json`     | Metadata, PWA                    |
+| OG Image              | `/opengraph-image`                                         | Social preview                   |
+| Twitter Card          | `/twitter-image`                                           | Twitter                          |
 | Hero Visual           | `/illustrations/hero-visual.svg`          | Homepage hero                    |
 | How it works          | `/illustrations/how-settler-works.svg`    | How it works page                |
 | Feature illustrations | `/illustrations/feature-*.svg`            | Dev workflow steps               |

@@ -225,17 +225,19 @@ test.describe("Landing page reality pass", () => {
   test("logo renders in dark mode", async ({ page }) => {
     await page.goto("/");
 
-    // Logo should render in light mode (Next/Image may optimize URL; assert alt + visibility)
-    const logo = page.getByRole("img", { name: "Settler.dev" }).first();
-    await expect(logo).toBeVisible();
+    // Lockup is mark (decorative img) + text wordmark inside the home link
+    const homeBrand = page
+      .getByRole("navigation", { name: "Main navigation" })
+      .getByRole("link", { name: "Settler.dev homepage" });
+    await expect(homeBrand).toBeVisible();
+    await expect(homeBrand.getByText("Settler.dev", { exact: true })).toBeVisible();
 
     // Switch to dark mode
     const toggle = page.getByRole("button", { name: "Toggle dark mode" });
     await toggle.click();
     await expect(page.locator("html")).toHaveClass(/dark/);
 
-    // Stacked logo should remain visible in dark mode
-    await expect(logo).toBeVisible();
+    await expect(homeBrand).toBeVisible();
 
     // Reset to light
     await toggle.click();
