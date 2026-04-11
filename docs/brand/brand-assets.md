@@ -2,32 +2,31 @@
 
 ## Source of truth
 
-The horizontal lockup PNG is the master asset:
+Authoritative rasters live in `packages/web/public/brand/settler/`:
 
-- `packages/web/public/assets/images/Settler-logo.png`
+- `wordmark.png` — wordmark-only (Settler)
+- `favicon-192x192.png` — circular mark on brand navy (also feeds the generation pipeline)
 
-Regenerate all derived rasters from it:
+The **horizontal lockup** is **generated** as `settler-lockup-horizontal-light.png` (+ `.webp`) by composing the wordmark and scaled mark — it is not hand-maintained as a separate upload.
+
+Regenerate all derived rasters and App Router metadata images:
 
 ```bash
 cd packages/web && pnpm run generate:brand-assets
 ```
 
-This writes circular mark PNGs, wordmark crop, `opengraph-image.png`, `twitter-image.png`, `icon.png`, and `apple-icon.png`.
+This writes circular favicon sizes, maskable `app-icon.png`, `opengraph-image.png`, `twitter-image.png`, `icon.png`, `apple-icon.png`, and the horizontal lockup files.
 
 ## Active asset map
 
-- **Horizontal lockup (nav, footer, marketing):** `/assets/images/Settler-logo.png` (optional WebP: `Settler-logo.webp`)
-- **Wordmark-only (derived):** `/brand/settler/wordmark.png`
-- **Mark / favicon / PWA icons (derived, circular navy backdrop):** `/brand/settler/favicon-192x192.png`, `favicon-512x512.png`, `favicon.png`, `app-icon.png`
-- **App Router metadata files:** `/icon.png`, `/apple-icon.png`, `/opengraph-image.png`, `/twitter-image.png` (served from `src/app/`)
-- **Social preview default:** `/opengraph-image.png` and `/twitter-image.png`
+See **`docs/brand/asset-map.md`** for filenames, usage, and reference locations.
 
 ## Component governance
 
 - Prefer `BrandLogo`, `BrandLockup`, `BrandMark`, and `BrandWordmark` from `packages/web/src/components/brand/`.
-- `SettlerLogo` remains as a thin compatibility wrapper over those components.
+- `SettlerLogo` remains a thin compatibility wrapper over those components.
 - Metadata and manifest paths must stay aligned with `packages/web/src/lib/images/image-config.ts`.
 
 ## Legacy
 
-Root-level `public/logo.svg`, `public/favicon.svg`, and old indigo checkmark SVGs under `public/brand/settler/` were removed. Requests to `/favicon.ico` and `/favicon.svg` redirect to `/icon.png` via Next.js redirects.
+Root-level `public/logo.svg`, `public/favicon.svg`, and the removed wrong horizontal file `public/assets/images/Settler-logo.png` must not return. Requests to `/favicon.ico` and `/favicon.svg` redirect to `/icon.png` via Next.js redirects.

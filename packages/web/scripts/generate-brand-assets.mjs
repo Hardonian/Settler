@@ -1,34 +1,77 @@
 /**
- * Derives favicons, PWA icons, and social preview art from the canonical
- * horizontal lockup: public/assets/images/Settler-logo.png
+ * Derives favicons, PWA icons, horizontal lockup, and social preview art from
+ * canonical brand rasters under public/brand/settler/.
+ *
+ * Source inputs (do not replace with placeholder stock art):
+ * - wordmark.png — wordmark only (Settler)
+ * - favicon-192x192.png — circular mark on brand navy (master for icon/maskable)
  *
  * Run: node ./scripts/generate-brand-assets.mjs
+ * Or:  pnpm run generate:brand-assets
  */
 import sharp from "sharp";
 import { mkdir, readFile, writeFile } from "fs/promises";
-import { dirname, join } from "path";
+import { join } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const webRoot = join(__dirname, "..");
-const sourcePng = join(webRoot, "public/assets/images/Settler-logo.png");
 const brandDir = join(webRoot, "public/brand/settler");
 const appDir = join(webRoot, "src/app");
+
+const wordmarkPng = join(brandDir, "wordmark.png");
+const markSourcePng = join(brandDir, "favicon-192x192.png");
 
 /** Navy from brand spec — circular icon backdrop */
 const NAVY = { r: 27, g: 63, b: 95, alpha: 1 };
 
-/**
- * Left lockup region: geometric mark only (horizontal asset is mark + wordmark).
- * Tuned for 1303×339 official horizontal PNG.
- */
-const MARK_EXTRACT = { left: 0, top: 0, width: 360, height: 339 };
-/** Wordmark-only slice of the horizontal lockup (right of the mark). */
-const WORDMARK_EXTRACT = { left: 400, top: 0, width: 903, height: 339 };
+const WORDMARK_META = { width: 903, height: 339 };
 
+/**
+ * Horizontal lockup: scaled circular mark (left) + wordmark, single raster for nav/footer.
+ * Intrinsic height matches wordmark (339px).
+ */
+async function composeHorizontalLockup() {
+  const wordmarkBuf = await readFile(wordmarkPng);
+  const markBuf = await readFile(markSourcePng);
+
+  const targetMarkSize = WORDMARK_META.height;
+  const resizedMark = await sharp(markBuf)
+    .resize(targetMarkSize, targetMarkSize, { fit: "fill" })
+    .ensureAlpha()
+    .png()
+    .toBuffer();
+
+  const gap = 40;
+  const wm = await sharp(wordmarkBuf).ensureAlpha().png().toBuffer();
+  const wmMeta = await sharp(wm).metadata();
+  const ww = wmMeta.width ?? WORDMARK_META.width;
+  const wh = wmMeta.height ?? WORDMARK_META.height;
+
+  const totalW = targetMarkSize + gap + ww;
+  const totalH = Math.max(targetMarkSize, wh);
+
+  return sharp({
+    create: {
+      width: totalW,
+      height: totalH,
+      channels: 4,
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    },
+  })
+    .composite([
+      { input: resizedMark, left: 0, top: Math.round((totalH - targetMarkSize) / 2) },
+      { input: wm, left: targetMarkSize + gap, top: Math.round((totalH - wh) / 2) },
+    ])
+    .png()
+    .toBuffer();
+}
+
+/**
+ * Build circular mark PNGs at `size` from the canonical circular mark asset (scaled).
+ */
 async function circularMarkPng(size) {
-  const raw = await sharp(sourcePng)
-    .extract(MARK_EXTRACT)
+  const raw = await sharp(await readFile(markSourcePng))
     .resize(Math.round(size * 0.58), Math.round(size * 0.58), { fit: "inside" })
     .ensureAlpha()
     .png()
@@ -65,10 +108,10 @@ async function circularMarkPng(size) {
   return sharp(square).ensureAlpha().composite([{ input: circleMask, blend: "dest-in" }]).png().toBuffer();
 }
 
-async function openGraphPng() {
+async function openGraphPng(lockupBuf) {
   const width = 1200;
   const height = 630;
-  const lockup = await sharp(sourcePng)
+  const lockup = await sharp(lockupBuf)
     .resize(Math.round(width * 0.72), null, { fit: "inside" })
     .png()
     .toBuffer();
@@ -97,10 +140,19 @@ async function openGraphPng() {
 }
 
 async function main() {
-  await readFile(sourcePng);
+  await readFile(wordmarkPng);
+  await readFile(markSourcePng);
 
   await mkdir(brandDir, { recursive: true });
   await mkdir(appDir, { recursive: true });
+
+  const horizontalLockup = await composeHorizontalLockup();
+  const lockupMeta = await sharp(horizontalLockup).metadata();
+  const lockupFile = "settler-lockup-horizontal-light.png";
+  await writeFile(join(brandDir, lockupFile), horizontalLockup);
+
+  const webpPath = join(brandDir, "settler-lockup-horizontal-light.webp");
+  await sharp(horizontalLockup).webp({ quality: 90, effort: 6 }).toFile(webpPath);
 
   for (const s of [192, 512]) {
     const buf = await circularMarkPng(s);
@@ -112,10 +164,7 @@ async function main() {
   await writeFile(join(brandDir, "favicon.png"), icon512);
   await writeFile(join(brandDir, "app-icon.png"), icon512);
 
-  const wordmarkBuf = await sharp(sourcePng).extract(WORDMARK_EXTRACT).png().toBuffer();
-  await writeFile(join(brandDir, "wordmark.png"), wordmarkBuf);
-
-  const og = await openGraphPng();
+  const og = await openGraphPng(horizontalLockup);
   await writeFile(join(appDir, "opengraph-image.png"), og);
   await writeFile(join(appDir, "twitter-image.png"), og);
 
@@ -124,7 +173,9 @@ async function main() {
   await writeFile(join(appDir, "icon.png"), appIcon32);
   await writeFile(join(appDir, "apple-icon.png"), appIcon180);
 
-  console.log("Brand assets generated from Settler-logo.png");
+  console.log(
+    `Brand assets generated (lockup ${lockupMeta.width}x${lockupMeta.height}) from wordmark + mark`
+  );
 }
 
 main().catch((err) => {

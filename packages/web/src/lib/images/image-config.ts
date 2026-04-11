@@ -23,8 +23,8 @@ export interface ImageConfig {
 /**
  * Settler brand images configuration
  *
- * Canonical horizontal lockup: /public/assets/images/Settler-logo.png
- * Derived circular mark + wordmark: regenerate with `node ./scripts/generate-brand-assets.mjs`
+ * Canonical rasters live under /public/brand/settler/; regenerate with
+ * `pnpm run generate:brand-assets` (packages/web). See docs/brand/asset-map.md.
  */
 const SETTLER_IMAGES_CONFIG = {
   favicon: {
@@ -95,40 +95,40 @@ const SETTLER_IMAGES_CONFIG = {
   },
 
   logoMain: {
-    path: "/assets/images/Settler-logo.png",
-    width: 1303,
+    path: "/brand/settler/settler-lockup-horizontal-light.png",
+    width: 1282,
     height: 339,
     alt: "Settler.dev",
     category: "logo" as const,
     mimeType: "image/png",
-    webpPath: "/assets/images/Settler-logo.webp",
+    webpPath: "/brand/settler/settler-lockup-horizontal-light.webp",
   },
   logoHorizontalLight: {
-    path: "/assets/images/Settler-logo.png",
-    width: 1303,
+    path: "/brand/settler/settler-lockup-horizontal-light.png",
+    width: 1282,
     height: 339,
     alt: "Settler.dev",
     category: "logo" as const,
     mimeType: "image/png",
-    webpPath: "/assets/images/Settler-logo.webp",
+    webpPath: "/brand/settler/settler-lockup-horizontal-light.webp",
   },
   logoHorizontalDark: {
-    path: "/assets/images/Settler-logo.png",
-    width: 1303,
+    path: "/brand/settler/settler-lockup-horizontal-light.png",
+    width: 1282,
     height: 339,
     alt: "Settler.dev",
     category: "logo" as const,
     mimeType: "image/png",
-    webpPath: "/assets/images/Settler-logo.webp",
+    webpPath: "/brand/settler/settler-lockup-horizontal-light.webp",
   },
   logoStackedLight: {
-    path: "/assets/images/Settler-logo.png",
-    width: 1303,
+    path: "/brand/settler/settler-lockup-horizontal-light.png",
+    width: 1282,
     height: 339,
     alt: "Settler.dev",
     category: "logo" as const,
     mimeType: "image/png",
-    webpPath: "/assets/images/Settler-logo.webp",
+    webpPath: "/brand/settler/settler-lockup-horizontal-light.webp",
   },
   logoSquareLight: {
     path: "/brand/settler/favicon-192x192.png",

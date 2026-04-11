@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { X, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AnimatePresence, motion } from "framer-motion";
+import { SETTLER_BRAND } from "@/lib/brand/assets";
 
 export function PwaInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -53,11 +55,21 @@ export function PwaInstallPrompt() {
         role="alertdialog"
         aria-labelledby="install-title"
       >
-        <div className="flex-1 mr-4">
+        <div className="flex-1 mr-4 flex items-start gap-3">
+          <Image
+            src={SETTLER_BRAND.markCircularLight.src}
+            width={SETTLER_BRAND.markCircularLight.width}
+            height={SETTLER_BRAND.markCircularLight.height}
+            alt=""
+            className="h-9 w-9 shrink-0 rounded-lg"
+            sizes="36px"
+          />
+          <div>
           <h3 id="install-title" className="font-semibold text-sm mb-1">
             Install Settler
           </h3>
           <p className="text-xs text-slate-300">Add to your home screen for the best experience.</p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <Button
