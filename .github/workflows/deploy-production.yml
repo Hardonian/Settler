@@ -38,7 +38,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: "npm"
+          cache: false
       - run: npm ci
       - name: Validate environment schema
         run: npx --yes tsx --check config/env.schema.ts
@@ -59,7 +59,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: "npm"
+          cache: false
       - run: npm ci
       - name: Run tests
         run: npm run test -- --coverage
@@ -89,7 +89,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: "npm"
+          cache: false
       - run: npm ci
       - name: Build all packages
         run: npx turbo run build
@@ -117,7 +117,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: "npm"
+          cache: false
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:

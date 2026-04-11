@@ -314,7 +314,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: "npm"
+          cache: false
       - run: npm ci
       - name: Build application
         run: npx turbo run build
@@ -357,7 +357,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: "npm"
+          cache: false
       - run: npm ci
       - name: Build application
         run: npx turbo run build
