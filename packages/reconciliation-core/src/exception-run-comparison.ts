@@ -21,6 +21,8 @@ export type ExceptionRunComparisonSnapshot = {
   baseline: RunProofpackIndex["comparison"]["baseline"];
   deltas: RunProofpackIndex["comparison"]["deltas"];
   changedSincePreviousRun: RunDeltaChangeState;
+  /** Bounded lookback window — same slice as run detail / proofpack delta. */
+  history: RunProofpackIndex["comparison"]["history"];
 };
 
 function snapshotFromProofpackIndex(index: RunProofpackIndex): ExceptionRunComparisonSnapshot {
@@ -34,6 +36,7 @@ function snapshotFromProofpackIndex(index: RunProofpackIndex): ExceptionRunCompa
     baseline: comparison.baseline,
     deltas: comparison.deltas,
     changedSincePreviousRun: comparison.changedSincePriorRun,
+    history: comparison.history,
   };
 }
 

@@ -9,7 +9,6 @@ import {
 import { withSecurity } from "@/lib/middleware/api-security";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { getReconciliationWorkbenchExceptionDetail } from "@/lib/server/exceptions/reconciliation-workbench";
-import { buildExceptionRunComparisonSnapshotForRunIds } from "@settler/reconciliation-core";
 
 export const runtime = "nodejs";
 
@@ -54,12 +53,7 @@ export const GET = withSecurity(
           .filter((item) => item.degraded)
           .flatMap((item) => item.degradedReasons);
 
-        const runComparisonMap = await buildExceptionRunComparisonSnapshotForRunIds(
-          prisma,
-          tenantId,
-          [detail.runId]
-        );
-        const runComparison = runComparisonMap.get(detail.runId);
+        const runComparison = detail.runComparison;
         const changeComparison = runComparison
           ? {
               available: runComparison.available,
@@ -69,6 +63,8 @@ export const GET = withSecurity(
               summary: runComparison.summary,
               baseline: runComparison.baseline,
               deltas: runComparison.deltas,
+              changedSincePreviousRun: runComparison.changedSincePreviousRun,
+              history: runComparison.history,
             }
           : {
               available: false as const,
@@ -84,6 +80,16 @@ export const GET = withSecurity(
                 conflicts: null,
                 proofCompleteness: "unavailable" as const,
                 recurringFamilyConcentration: "unavailable" as const,
+              },
+              changedSincePreviousRun: "unavailable" as const,
+              history: {
+                lookbackWindow: 0,
+                comparableWindowCount: 0,
+                certainty: "low" as const,
+                trend: "unavailable" as const,
+                pattern: "unavailable" as const,
+                reasonCodes: ["history_missing"] as const,
+                summary: "History window is unavailable.",
               },
             };
 
@@ -112,13 +118,12 @@ export const GET = withSecurity(
               detail.operatorSummary.evidenceState === "ready",
           },
           lineage: {
-            evidenceArtifactIds: detail.evidenceSummary.items.map((item) => item.id),
-            proofPackageIds: detail.proofSummary.items.map((item) => item.id),
-            adjudicationMemoryIds: detail.adjudicationMemories.map((item) => item.id),
+            ...detail.proofLineage,
             latestEvidenceCapturedAt: detail.evidenceSummary.latestCapturedAt,
             latestProofCreatedAt: detail.proofSummary.latestCreatedAt,
             latestDecisionAt: detail.operatorSummary.latestResolution?.completedAt ?? null,
           },
+          exceptionIntelligence: detail.exceptionIntelligence,
           confidence: {
             exceptionConfidence: detail.confidenceScore,
             bestProofCompleteness: detail.operatorSummary.bestCompletenessScore,

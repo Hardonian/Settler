@@ -1580,6 +1580,8 @@ model ExceptionAdjudicationMemory {
   
   // Provenance chain
   entryHash         String    // Hash for audit chain integrity
+  /// Deterministic idempotency key for the same adjudication intent (workbench: exception + action + resolution codes).
+  adjudicationFingerprint String? @map("adjudication_fingerprint")
   metadata          Json      @default("{}")
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
@@ -1597,6 +1599,7 @@ model ExceptionAdjudicationMemory {
   @@index([outcome])
   @@index([createdAt(sort: Desc)])
   @@index([tenantId, resolution, createdAt(sort: Desc)])
+  @@unique([tenantId, exceptionId, adjudicationFingerprint], map: "exception_adjudication_memory_idempotency")
   @@map("exception_adjudication_memory")
 }
 

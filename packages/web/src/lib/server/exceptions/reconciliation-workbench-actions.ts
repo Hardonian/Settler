@@ -199,6 +199,13 @@ export async function applyReconciliationWorkbenchAction(
       };
     }
 
+    const adjudicationFingerprint = buildHash({
+      v: 1,
+      action: input.action,
+      resolution: plan.resolution,
+      resolutionCode: normalizedResolution.resolutionCode,
+    });
+
     const targetTransaction = exception.targetTransactionId
       ? await tx.normalizedTransaction.findFirst({
           where: {
@@ -338,44 +345,63 @@ export async function applyReconciliationWorkbenchAction(
           ? 0.75
           : 0.6;
 
-    const memory = await tx.exceptionAdjudicationMemory.create({
-      data: {
-        tenantId: input.tenantId,
-        exceptionId: exception.id,
-        resolution: plan.resolution,
-        resolutionReason: normalizedResolution.resolutionReason,
-        resolutionCode: normalizedResolution.resolutionCode,
-        adjudicatorId: input.userId,
-        adjudicatorType: "operator",
-        adjudicationType: input.action === "reopen" ? "re_adjudication" : "initial",
-        startedAt: now,
-        completedAt: now,
-        durationMs: BigInt(0),
-        outcome: plan.outcome,
-        confidence: Number(exception.confidence),
-        reversibility: input.action === "reopen" ? "reversible" : "pending_reversal",
-        parentMemoryId: latestMemory?.id ?? null,
-        evidenceIds,
-        sourceTrustScore,
-        annotations: {
-          action: input.action,
-          previousStatus: canonicalStatus,
-          matchType: exception.matchType,
-          resolutionCode: normalizedResolution.resolutionCode,
-        } as Prisma.InputJsonValue,
-        operatorNotes: note,
-        systemNotes:
-          input.action === "reopen"
-            ? "Exception reopened from canonical operator workbench."
-            : "Decision recorded from canonical operator workbench.",
-        entryHash: buildHash({
+    let memory;
+    try {
+      memory = await tx.exceptionAdjudicationMemory.create({
+        data: {
+          tenantId: input.tenantId,
           exceptionId: exception.id,
-          action: input.action,
-          occurredAt: now.toISOString(),
-          userId: input.userId,
-        }),
-      },
-    });
+          adjudicationFingerprint,
+          resolution: plan.resolution,
+          resolutionReason: normalizedResolution.resolutionReason,
+          resolutionCode: normalizedResolution.resolutionCode,
+          adjudicatorId: input.userId,
+          adjudicatorType: "operator",
+          adjudicationType: input.action === "reopen" ? "re_adjudication" : "initial",
+          startedAt: now,
+          completedAt: now,
+          durationMs: BigInt(0),
+          outcome: plan.outcome,
+          confidence: Number(exception.confidence),
+          reversibility: input.action === "reopen" ? "reversible" : "pending_reversal",
+          parentMemoryId: latestMemory?.id ?? null,
+          evidenceIds,
+          sourceTrustScore,
+          annotations: {
+            action: input.action,
+            previousStatus: canonicalStatus,
+            matchType: exception.matchType,
+            resolutionCode: normalizedResolution.resolutionCode,
+          } as Prisma.InputJsonValue,
+          operatorNotes: note,
+          systemNotes:
+            input.action === "reopen"
+              ? "Exception reopened from canonical operator workbench."
+              : "Decision recorded from canonical operator workbench.",
+          entryHash: buildHash({
+            exceptionId: exception.id,
+            action: input.action,
+            occurredAt: now.toISOString(),
+            userId: input.userId,
+          }),
+        },
+      });
+    } catch (e: unknown) {
+      const code =
+        typeof e === "object" && e !== null && "code" in e
+          ? String((e as { code?: unknown }).code ?? "")
+          : "";
+      if (code === "P2002") {
+        return {
+          success: true,
+          exceptionId: exception.id,
+          status: plan.status,
+          outcome: plan.outcome,
+          message: "Identical adjudication already recorded (idempotent).",
+        };
+      }
+      throw e;
+    }
 
     // ── Auto-classify exception into an archetype on resolve/ignore ──
     if (input.action !== "reopen") {

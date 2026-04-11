@@ -3,6 +3,7 @@ import type { ReadinessState } from "@/lib/activation/readiness";
 
 /** Row from similar-resolved adjudication memory query (similarity scoring input). */
 type SimilarResolvedMemoryRow = {
+  id: string;
   exceptionId: string;
   resolution: string;
   resolutionReason: string | null;
@@ -18,10 +19,12 @@ type SimilarResolvedMemoryRow = {
 
 /** Scored similar case before stripping internal `_score`. */
 type SimilarScoredCaseRow = {
+  memoryId: string;
   exceptionId: string;
   resolution: string;
   resolutionReason: string | null;
   resolutionCode: string | null;
+  outcome: string | null;
   confidence: number | null;
   adjudicatedAt: string;
   adjudicatorId: string;
@@ -32,6 +35,7 @@ type SimilarScoredCaseRow = {
 import {
   EXCEPTION_MATCH_TYPES,
   buildExceptionFamilySummary,
+  buildExceptionProofLineage,
   buildExceptionRunComparisonSnapshotForRunIds,
   normalizeExceptionResolutionReason,
   operatorStatusToCanonical,
@@ -40,8 +44,12 @@ import {
   toCanonicalExceptionStatus,
   toOperatorExceptionStatus,
   type CanonicalExceptionStatus,
+  type ExceptionDetailIntelligence,
   type ExceptionFamilySummary,
+  type ExceptionRunComparisonSnapshot,
 } from "@settler/reconciliation-core";
+
+const SIMILAR_RESOLVED_CASE_SCAN_LIMIT = 50;
 
 export type ReconciliationWorkbenchListFilters = {
   tenantId: string;
@@ -186,7 +194,14 @@ export type ReconciliationWorkbenchDetail = ReconciliationWorkbenchListItem & {
   }>;
   operatorSummary: ExceptionOperatorSummary;
   familySummary: ExceptionFamilySummary;
+  /** Canonical prior-run comparison for this exception's run (same object as list compact proof slice and proofpack). */
+  runComparison: ExceptionRunComparisonSnapshot | null;
+  /** Family/adjudication memory and bounded similar cases — deterministic, stored-facts only. */
+  exceptionIntelligence: ExceptionDetailIntelligence;
+  /** Stable ids for audit/export alignment with proofpack lineage. */
+  proofLineage: ReturnType<typeof buildExceptionProofLineage>;
   similarCases: Array<{
+    memoryId: string;
     exceptionId: string;
     resolution: string;
     resolutionReason: string | null;
@@ -1228,6 +1243,7 @@ export async function getReconciliationWorkbenchExceptionDetail(
     provenance,
     topArchetypes,
     similarMemories,
+    runComparisonByRunId,
   ] = await Promise.all([
     targetIds.length > 0
       ? prisma.normalizedTransaction.findMany({
@@ -1339,15 +1355,29 @@ export async function getReconciliationWorkbenchExceptionDetail(
         exceptionId: { not: exceptionId },
         outcome: { in: ["resolved", "confirmed_dismissed"] },
       },
-      include: {
+      select: {
+        id: true,
+        exceptionId: true,
+        resolution: true,
+        resolutionReason: true,
+        resolutionCode: true,
+        archetypeId: true,
+        outcome: true,
+        createdAt: true,
+        confidence: true,
+        sourceTrustScore: true,
+        adjudicatorId: true,
         archetype: {
           select: { code: true, label: true },
         },
       },
       orderBy: { createdAt: "desc" },
-      take: 50,
+      take: SIMILAR_RESOLVED_CASE_SCAN_LIMIT,
     }),
+    buildExceptionRunComparisonSnapshotForRunIds(prisma, tenantId, [row.runId]),
   ]);
+
+  const runComparisonSnapshot = runComparisonByRunId.get(row.runId) ?? null;
 
   const topArchetype = topArchetypes.get(exceptionId) ?? null;
   const predictedFamily = predictExceptionArchetype({
@@ -1629,10 +1659,12 @@ export async function getReconciliationWorkbenchExceptionDetail(
       const ageDays = (Date.now() - mem.createdAt.getTime()) / (1000 * 60 * 60 * 24);
       score += Math.max(0, 0.2 * (1 - ageDays / 90));
       return {
+        memoryId: mem.id,
         exceptionId: mem.exceptionId,
         resolution: mem.resolution,
         resolutionReason: mem.resolutionReason,
         resolutionCode: normalizedCandidateResolutionCode,
+        outcome: mem.outcome,
         confidence: mem.confidence != null && mem.confidence !== "" ? Number(mem.confidence) : null,
         adjudicatedAt: mem.createdAt.toISOString(),
         adjudicatorId: mem.adjudicatorId,
@@ -1709,6 +1741,58 @@ export async function getReconciliationWorkbenchExceptionDetail(
     similarCaseCount: scoredSimilarCases.length,
   };
 
+  const adjudicationOutcomeCounts: Record<string, number> = {};
+  for (const m of memories) {
+    const key = m.outcome ?? "unknown";
+    adjudicationOutcomeCounts[key] = (adjudicationOutcomeCounts[key] ?? 0) + 1;
+  }
+
+  const exceptionIntelligence: ExceptionDetailIntelligence = {
+    state: familySummary.state,
+    reasonCodes: [...familySummary.reasonCodes],
+    similarCaseScanLimit: SIMILAR_RESOLVED_CASE_SCAN_LIMIT,
+    familySummary,
+    recentAdjudicationsOnException: memories.slice(0, 20).map((m: (typeof memories)[number]) => ({
+      memoryId: m.id,
+      resolution: m.resolution,
+      resolutionReason: m.resolutionReason,
+      resolutionCode: m.resolutionCode,
+      outcome: m.outcome,
+      adjudicationType: m.adjudicationType,
+      adjudicatorType: m.adjudicatorType,
+      completedAt: m.completedAt?.toISOString() ?? null,
+      createdAt: m.createdAt.toISOString(),
+    })),
+    adjudicationOutcomeCounts,
+    similarResolvedCases: scoredSimilarCases.map((c: (typeof scoredSimilarCases)[number]) => ({
+      exceptionId: c.exceptionId,
+      memoryId: c.memoryId,
+      resolution: c.resolution,
+      resolutionReason: c.resolutionReason,
+      resolutionCode: c.resolutionCode,
+      outcome: c.outcome,
+      adjudicatedAt: c.adjudicatedAt,
+      adjudicatorId: c.adjudicatorId,
+      archetypeCode: c.archetypeCode,
+      archetypeLabel: c.archetypeLabel,
+    })),
+    recurrenceReasonCodes: [...familySummary.reasonCodes],
+  };
+
+  const proofLineage = buildExceptionProofLineage({
+    runId: row.runId,
+    evidenceArtifactIds: evidenceSummary.items.map(
+      (i: ReconciliationWorkbenchDetail["evidenceSummary"]["items"][number]) => i.id
+    ),
+    proofPackageIds: proofSummary.items.map(
+      (i: ReconciliationWorkbenchDetail["proofSummary"]["items"][number]) => i.id
+    ),
+    adjudicationMemoryIds: adjudicationMemories.map(
+      (m: ReconciliationWorkbenchDetail["adjudicationMemories"][number]) => m.id
+    ),
+    runComparison: runComparisonSnapshot,
+  });
+
   return {
     ...listItem,
     notes: row.notes,
@@ -1775,6 +1859,9 @@ export async function getReconciliationWorkbenchExceptionDetail(
     auditTrail,
     operatorSummary,
     familySummary,
+    runComparison: runComparisonSnapshot,
+    exceptionIntelligence,
+    proofLineage,
     similarCases: scoredSimilarCases,
     whyFlagged,
   };

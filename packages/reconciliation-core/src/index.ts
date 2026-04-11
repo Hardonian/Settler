@@ -16,6 +16,7 @@ export * from "./exception-workbench.js";
 export * from "./exception-intelligence.js";
 export * from "./run-proofpack-index.js";
 export * from "./exception-run-comparison.js";
+export * from "./exception-detail-intelligence.js";
 export * from "./prisma-client-like.js";
 export * from "./cross-run-intelligence.js";
 export * from "./support-intake-run-context.js";

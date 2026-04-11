@@ -2,7 +2,11 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import type { ExceptionFamilySummary } from "@settler/reconciliation-core";
+import type {
+  ExceptionDetailIntelligence,
+  ExceptionFamilySummary,
+  ExceptionRunComparisonSnapshot,
+} from "@settler/reconciliation-core";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -636,6 +640,7 @@ export function ExceptionActionPanel({
 /* ─── Similar Cases (Compounding Intelligence) ──�� */
 
 export type SimilarCase = {
+  memoryId?: string;
   exceptionId: string;
   resolution: string;
   resolutionReason: string | null;
@@ -646,6 +651,213 @@ export type SimilarCase = {
   archetypeCode: string | null;
   archetypeLabel: string | null;
 };
+
+export function RunComparisonCard({
+  comparison,
+}: {
+  comparison: ExceptionRunComparisonSnapshot | null;
+}) {
+  if (!comparison) {
+    return (
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <GitCompare className="w-4 h-4 text-muted-foreground" />
+            Prior-run comparison
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">
+            Run comparison could not be loaded for this exception.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const degraded =
+    comparison.state === "unavailable" ||
+    comparison.state === "not_comparable" ||
+    !comparison.available;
+
+  return (
+    <Card className={degraded ? "border-amber-500/30" : "border-primary/20"}>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base flex items-center gap-2">
+          <GitCompare className="w-4 h-4 text-primary" />
+          Prior-run comparison
+        </CardTitle>
+        <p className="text-xs text-muted-foreground">
+          Same canonical snapshot as the exception list and proofpack export (run proofpack index).
+        </p>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex flex-wrap gap-2">
+          <Badge variant={comparison.available ? "default" : "secondary"}>
+            {comparison.state.replace(/_/g, " ")}
+          </Badge>
+          <Badge variant="outline">Certainty: {comparison.certainty}</Badge>
+          {comparison.changedSincePreviousRun !== "unavailable" ? (
+            <Badge variant="outline">
+              Delta: {comparison.changedSincePreviousRun.replace(/_/g, " ")}
+            </Badge>
+          ) : null}
+        </div>
+        <p className="text-sm text-foreground">{comparison.summary}</p>
+        {comparison.reasonCodes.length > 0 ? (
+          <p className="text-xs text-muted-foreground font-mono">
+            {comparison.reasonCodes.join(" · ")}
+          </p>
+        ) : null}
+        <div className="grid gap-2 md:grid-cols-2 text-xs">
+          <div className="rounded border border-border/60 p-3 space-y-1">
+            <span className="text-muted-foreground uppercase tracking-wide">Prior result</span>
+            <p className="font-mono break-all">
+              {comparison.baseline.priorResultId ?? "—"}
+            </p>
+          </div>
+          <div className="rounded border border-border/60 p-3 space-y-1">
+            <span className="text-muted-foreground uppercase tracking-wide">History window</span>
+            <p>
+              {comparison.history.comparableWindowCount} comparable / {comparison.history.lookbackWindow}{" "}
+              lookback · {comparison.history.pattern.replace(/_/g, " ")}
+            </p>
+            <p className="text-muted-foreground mt-1">{comparison.history.summary}</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function ExceptionIntelligenceCard({
+  intelligence,
+}: {
+  intelligence: ExceptionDetailIntelligence;
+}) {
+  const outcomes = Object.entries(intelligence.adjudicationOutcomeCounts);
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base flex items-center gap-2">
+          <History className="w-4 h-4 text-primary" />
+          Exception memory spine
+        </CardTitle>
+        <p className="text-xs text-muted-foreground">
+          Deterministic counts from stored adjudications (scan cap {intelligence.similarCaseScanLimit}{" "}
+          for similar resolved cases).
+        </p>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {outcomes.length > 0 ? (
+          <div>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+              Outcomes on this exception
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {outcomes.map(([k, v]) => (
+                <Badge key={k} variant="secondary">
+                  {k}: {v}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">No adjudication outcomes recorded yet.</p>
+        )}
+
+        {intelligence.recentAdjudicationsOnException.length > 0 ? (
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              Recent decisions (this exception)
+            </p>
+            <div className="space-y-2 max-h-48 overflow-y-auto">
+              {intelligence.recentAdjudicationsOnException.slice(0, 8).map((row) => (
+                <div
+                  key={row.memoryId}
+                  className="rounded border border-border/50 p-2 text-xs space-y-1"
+                >
+                  <div className="flex flex-wrap gap-2">
+                    <span className="font-mono">{row.resolution}</span>
+                    {row.outcome ? <Badge variant="outline">{row.outcome}</Badge> : null}
+                  </div>
+                  <p className="text-muted-foreground font-mono truncate" title={row.memoryId}>
+                    {row.memoryId}
+                  </p>
+                  <p className="text-muted-foreground">
+                    {row.completedAt
+                      ? new Date(row.completedAt).toLocaleString()
+                      : new Date(row.createdAt).toLocaleString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        {intelligence.recurrenceReasonCodes.length > 0 ? (
+          <p className="text-xs text-muted-foreground">
+            Recurrence codes: {intelligence.recurrenceReasonCodes.join(" · ")}
+          </p>
+        ) : null}
+      </CardContent>
+    </Card>
+  );
+}
+
+export function ProofLineageCard({
+  lineage,
+}: {
+  lineage: {
+    runId: string;
+    evidenceArtifactIds: string[];
+    proofPackageIds: string[];
+    adjudicationMemoryIds: string[];
+    priorRunResultId: string | null;
+  };
+}) {
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base flex items-center gap-2">
+          <ShieldCheck className="w-4 h-4 text-primary" />
+          Proof &amp; lineage references
+        </CardTitle>
+        <p className="text-xs text-muted-foreground">
+          Stable ids for audit and export alignment (same lineage block as the proofpack).
+        </p>
+      </CardHeader>
+      <CardContent className="space-y-3 text-xs font-mono break-all">
+        <div>
+          <span className="text-muted-foreground block mb-1">Run</span>
+          {lineage.runId}
+        </div>
+        <div>
+          <span className="text-muted-foreground block mb-1">Prior run result (baseline)</span>
+          {lineage.priorRunResultId ?? "—"}
+        </div>
+        <div>
+          <span className="text-muted-foreground block mb-1">
+            Evidence ({lineage.evidenceArtifactIds.length})
+          </span>
+          {lineage.evidenceArtifactIds.length ? lineage.evidenceArtifactIds.join(", ") : "—"}
+        </div>
+        <div>
+          <span className="text-muted-foreground block mb-1">
+            Proof packages ({lineage.proofPackageIds.length})
+          </span>
+          {lineage.proofPackageIds.length ? lineage.proofPackageIds.join(", ") : "—"}
+        </div>
+        <div>
+          <span className="text-muted-foreground block mb-1">
+            Adjudication memories ({lineage.adjudicationMemoryIds.length})
+          </span>
+          {lineage.adjudicationMemoryIds.length ? lineage.adjudicationMemoryIds.join(", ") : "—"}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 export function FamilyIntelligenceCard({ family }: { family: ExceptionFamilySummary }) {
   if (family.state === "unavailable") {
@@ -721,7 +933,7 @@ export function SimilarCasesCard({ cases }: { cases: SimilarCase[] }) {
         </p>
         {cases.map((c) => (
           <div
-            key={`${c.exceptionId}-${c.adjudicatedAt}`}
+            key={c.memoryId ?? `${c.exceptionId}-${c.adjudicatedAt}`}
             className="rounded-lg border border-border/60 p-3 space-y-1"
           >
             <div className="flex items-center justify-between gap-2">

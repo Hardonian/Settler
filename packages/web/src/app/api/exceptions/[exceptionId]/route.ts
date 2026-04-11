@@ -133,6 +133,9 @@ export const GET = withSecurity(
           proofSummary: detail.proofSummary,
           similarCases: detail.similarCases,
           whyFlagged: detail.whyFlagged,
+          runComparison: detail.runComparison,
+          exceptionIntelligence: detail.exceptionIntelligence,
+          proofLineage: detail.proofLineage,
           trace_id: traceId,
         };
 
