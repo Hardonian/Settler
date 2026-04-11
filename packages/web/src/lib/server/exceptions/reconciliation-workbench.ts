@@ -32,6 +32,7 @@ type SimilarScoredCaseRow = {
 import {
   EXCEPTION_MATCH_TYPES,
   buildExceptionFamilySummary,
+  buildExceptionRunComparisonSnapshotForRunIds,
   normalizeExceptionResolutionReason,
   operatorStatusToCanonical,
   predictExceptionArchetype,
@@ -830,6 +831,13 @@ export async function listReconciliationWorkbenchExceptions(
     prisma.reconciliationMatch.count({ where: where as any }),
   ]);
 
+  const runIdsOnPage = [...new Set(rows.map((row: (typeof rows)[number]) => row.runId))] as string[];
+  const runComparisonByRunId = await buildExceptionRunComparisonSnapshotForRunIds(
+    prisma,
+    filters.tenantId,
+    runIdsOnPage
+  );
+
   const exceptionIds = rows.map((row: { id: string }) => row.id);
   const [topArchetypes, latestMemories, allMemories, evidenceArtifacts, proofPackages] =
     await Promise.all([
@@ -1118,6 +1126,17 @@ export async function listReconciliationWorkbenchExceptions(
       supportDegradedReasons.push("Recurring adjudication memory has not been established.");
     }
 
+    const runComparison = runComparisonByRunId.get(row.runId);
+    const proofDeltaChanged =
+      runComparison?.changedSincePreviousRun === "changed"
+        ? "changed"
+        : runComparison?.changedSincePreviousRun === "unchanged"
+          ? "unchanged"
+          : "unavailable";
+    const proofChangeSummary = runComparison?.summary
+      ? runComparison.summary
+      : "Run-over-run proof delta is unavailable; baseline or history is missing.";
+
     return {
       ...mapped,
       compactSummary: {
@@ -1140,9 +1159,8 @@ export async function listReconciliationWorkbenchExceptions(
           bestCompletenessScore: operatorSummary.bestCompletenessScore,
           missingEvidenceCount: operatorSummary.missingEvidenceCount,
           state: operatorSummary.proofState,
-          changedSincePreviousRun: "unavailable",
-          changeSummary:
-            "Run-over-run proof delta is unavailable in list context; open detail for canonical lineage.",
+          changedSincePreviousRun: proofDeltaChanged,
+          changeSummary: proofChangeSummary,
         },
         supportability: {
           degradedReasons: supportDegradedReasons,
