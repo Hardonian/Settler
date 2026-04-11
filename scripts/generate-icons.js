@@ -6,7 +6,7 @@
 const fs = require("fs");
 const path = require("path");
 
-// Simple SVG icon template (Settler logo placeholder)
+// Simple SVG icon template (legacy helper — canonical icons ship from generate-brand-assets.mjs)
 const iconSvg = `<?xml version="1.0" encoding="UTF-8"?>
 <svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
   <defs>

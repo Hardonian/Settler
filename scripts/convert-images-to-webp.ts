@@ -2,32 +2,37 @@ import sharp from "sharp";
 import { promises as fs } from "fs";
 import path from "path";
 
-const imagesDir = path.join(__dirname, "../packages/web/public/assets/images");
+const publicRoot = path.join(__dirname, "../packages/web/public");
 const imagesToConvert = [
-  { input: "Settler-logo.png", output: "Settler-logo.webp" },
-  { input: "Settler_seo.png", output: "Settler_seo.webp" },
-  { input: "settler-favicon.png", output: "settler-favicon.webp" },
+  {
+    input: "brand/settler/settler-lockup-horizontal-light.png",
+    output: "brand/settler/settler-lockup-horizontal-light.webp",
+  },
+  {
+    input: "assets/images/Settler_seo.png",
+    output: "assets/images/Settler_seo.webp",
+  },
+  {
+    input: "assets/images/settler-favicon.png",
+    output: "assets/images/settler-favicon.webp",
+  },
 ];
 
 async function convertToWebP() {
   console.log("Converting PNG images to WebP...\n");
 
   for (const { input, output } of imagesToConvert) {
-    const inputPath = path.join(imagesDir, input);
-    const outputPath = path.join(imagesDir, output);
+    const inputPath = path.join(publicRoot, input);
+    const outputPath = path.join(publicRoot, output);
 
     try {
-      // Check if input file exists
       await fs.access(inputPath);
 
-      // Get image metadata
       const metadata = await sharp(inputPath).metadata();
       console.log(`Converting ${input} (${metadata.width}x${metadata.height})...`);
 
-      // Convert to WebP with high quality
       await sharp(inputPath).webp({ quality: 90, effort: 6 }).toFile(outputPath);
 
-      // Get output file size
       const stats = await fs.stat(outputPath);
       const inputStats = await fs.stat(inputPath);
       const savings = ((1 - stats.size / inputStats.size) * 100).toFixed(1);

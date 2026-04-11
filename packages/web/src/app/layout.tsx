@@ -16,6 +16,7 @@ import { GlobalClientShell } from "@/components/GlobalClientShell";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://settler.dev"),
+  applicationName: "Settler.dev",
   title: {
     default: "Settler.dev — Deterministic Reconciliation",
     template: "%s | Settler",
@@ -139,7 +140,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="apple-touch-icon" href="/brand/settler/favicon-192x192.png" />
+        <link rel="apple-touch-icon" href={SETTLER_IMAGES.appleTouchIcon.path} />
         <link rel="manifest" href="/manifest.json" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />

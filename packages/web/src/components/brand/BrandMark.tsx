@@ -1,4 +1,5 @@
 import Image, { type ImageProps } from "next/image";
+import { cn } from "@/lib/utils";
 import { BRAND_MARK_PNG } from "./brand-assets";
 
 export type BrandMarkProps = Omit<ImageProps, "src" | "width" | "height" | "alt"> & {
@@ -13,7 +14,7 @@ export function BrandMark({ alt = "", className, sizes = "64px", ...rest }: Bran
       width={BRAND_MARK_PNG.width}
       height={BRAND_MARK_PNG.height}
       alt={alt}
-      className={className}
+      className={cn("dark:invert", className)}
       sizes={sizes}
       {...rest}
     />

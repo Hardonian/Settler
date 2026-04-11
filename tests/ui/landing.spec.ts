@@ -225,8 +225,8 @@ test.describe("Landing page reality pass", () => {
   test("logo renders in dark mode", async ({ page }) => {
     await page.goto("/");
 
-    // Logo should render in light mode
-    const logo = page.locator('img[src="/assets/images/Settler-logo.png"]').first();
+    // Logo should render in light mode (Next/Image may optimize URL; assert alt + visibility)
+    const logo = page.getByRole("img", { name: "Settler.dev" }).first();
     await expect(logo).toBeVisible();
 
     // Switch to dark mode

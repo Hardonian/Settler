@@ -56,11 +56,11 @@ export function BrandLockup(props: BrandLockupProps) {
 
   return (
     <Image
-      src={BRAND_LOCKUP_PNG.src}
+      src={BRAND_LOCKUP_PNG.webpSrc ?? BRAND_LOCKUP_PNG.src}
       width={BRAND_LOCKUP_PNG.width}
       height={BRAND_LOCKUP_PNG.height}
       alt={alt}
-      className={className}
+      className={cn("max-h-full w-auto max-w-full object-contain object-left dark:invert", className)}
       priority={priority}
       sizes={sizes}
       {...imageRest}
