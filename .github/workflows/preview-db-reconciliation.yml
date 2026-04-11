@@ -5,16 +5,16 @@ on:
     branches-ignore:
       - main
     paths:
-      - 'supabase/migrations/**'
-      - 'scripts/supabase-schema-reality-audit.ts'
-      - 'scripts/run-preview-reconciliation.sh'
-      - '.github/workflows/preview-db-reconciliation.yml'
+      - "supabase/migrations/**"
+      - "scripts/supabase-schema-reality-audit.ts"
+      - "scripts/run-preview-reconciliation.sh"
+      - ".github/workflows/preview-db-reconciliation.yml"
   workflow_dispatch:
     inputs:
       apply:
-        description: 'Apply reconciliation SQL (false = dry-run only)'
+        description: "Apply reconciliation SQL (false = dry-run only)"
         required: false
-        default: 'false'
+        default: "false"
 
 jobs:
   audit-and-reconcile:
@@ -24,7 +24,7 @@ jobs:
       DATABASE_URL: ${{ secrets.PREVIEW_DATABASE_URL }}
       DIRECT_URL: ${{ secrets.PREVIEW_DIRECT_URL }}
       SUPABASE_DB_URL: ${{ secrets.PREVIEW_SUPABASE_DB_URL }}
-      ALLOW_PRODUCTION_RECONCILIATION: 'false'
+      ALLOW_PRODUCTION_RECONCILIATION: "false"
 
     steps:
       - name: Checkout
@@ -33,11 +33,14 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: npm
+          node-version-file: ".nvmrc"
+          cache: false
+
+      - name: Setup pnpm
+        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
 
       - name: Install deps
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Install psql
         run: |

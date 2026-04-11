@@ -29,7 +29,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: false
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Fast verification
@@ -51,7 +50,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: false
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Internal link integrity (route registry + dead links)
@@ -70,7 +68,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: false
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Dependency CVE scan + SBOM generation
@@ -101,7 +98,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: false
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Download supply-chain evidence
