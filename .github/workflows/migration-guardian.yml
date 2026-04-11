@@ -1,5 +1,9 @@
 name: Migration Guardian
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
   issues: write
@@ -48,6 +52,10 @@ env:
   UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+  NPM_CONFIG_FETCH_RETRIES: "5"
+  NPM_CONFIG_FETCH_RETRY_FACTOR: "2"
+  NPM_CONFIG_FETCH_RETRY_MINTIMEOUT: "20000"
+  NPM_CONFIG_FETCH_RETRY_MAXTIMEOUT: "120000"
 
 jobs:
   detect-migrations:
@@ -118,6 +126,7 @@ jobs:
   migration-guardian:
     name: Run Migration Guardian
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     needs: [detect-migrations]
     if: |
       github.event_name == 'schedule' ||
@@ -136,8 +145,17 @@ jobs:
           node-version-file: ".nvmrc"
           cache: false
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install dependencies (retry on transient failures)
+        run: |
+          for i in 1 2 3; do
+            npm ci && break
+            echo "npm ci failed on attempt $i, retrying..."
+            sleep 10
+            if [ "$i" -eq 3 ]; then
+              echo "npm ci failed after 3 attempts"
+              exit 1
+            fi
+          done
 
       - name: Generate Prisma client
         run: npm run prisma:generate || npx prisma generate
