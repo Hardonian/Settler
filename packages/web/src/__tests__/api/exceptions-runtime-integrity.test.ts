@@ -40,8 +40,21 @@ jest.mock("@/lib/observability/trace", () => ({
 }));
 
 jest.mock("@/shared/db/prismaClient", () => ({
-  prisma: {},
+  prisma: {
+    reconJob: { findMany: jest.fn().mockResolvedValue([]) },
+    reconciliationRun: { findMany: jest.fn().mockResolvedValue([]) },
+  },
 }));
+
+jest.mock("@settler/reconciliation-core", () => {
+  const actual = jest.requireActual<typeof import("@settler/reconciliation-core")>(
+    "@settler/reconciliation-core"
+  );
+  return {
+    ...actual,
+    buildExceptionRunComparisonSnapshotForRunIds: jest.fn(),
+  };
+});
 
 jest.mock("@/lib/server/exceptions/reconciliation-workbench", () => ({
   listReconciliationWorkbenchExceptions: (...args: unknown[]) =>
@@ -66,6 +79,7 @@ jest.mock("@/lib/utils/logger", () => ({
 import { GET as getExceptions } from "@/app/api/exceptions/route";
 import { GET as getExceptionDetail } from "@/app/api/exceptions/[exceptionId]/route";
 import { GET as getExceptionProofpack } from "@/app/api/exceptions/[exceptionId]/proofpack/route";
+import { buildExceptionRunComparisonSnapshotForRunIds } from "@settler/reconciliation-core";
 
 function req(url: string) {
   return {
@@ -86,6 +100,49 @@ describe("exceptions runtime integrity", () => {
     getReconciliationWorkbenchExceptionDetailMock.mockReset();
     resolveExceptionProvenanceRunMock.mockReset();
     applyReconciliationWorkbenchActionMock.mockReset();
+    (buildExceptionRunComparisonSnapshotForRunIds as jest.Mock).mockReset();
+    (buildExceptionRunComparisonSnapshotForRunIds as jest.Mock).mockImplementation(
+      async (_prisma: unknown, _tenantId: string, runIds: string[]) => {
+        const m = new Map<
+          string,
+          {
+            available: boolean;
+            state: string;
+            certainty: string;
+            reasonCodes: string[];
+            summary: string;
+            baseline: { priorResultId: string | null; priorResultStartedAt: string | null };
+            deltas: {
+              matched: number | null;
+              unmatched: number | null;
+              conflicts: number | null;
+              proofCompleteness: string;
+              recurringFamilyConcentration: string;
+            };
+            changedSincePreviousRun: string;
+          }
+        >();
+        for (const id of runIds) {
+          m.set(id, {
+            available: false,
+            state: "unavailable",
+            certainty: "low",
+            reasonCodes: ["baseline_missing"],
+            summary: "Run has no persisted result, so prior-run comparison is unavailable.",
+            baseline: { priorResultId: null, priorResultStartedAt: null },
+            deltas: {
+              matched: null,
+              unmatched: null,
+              conflicts: null,
+              proofCompleteness: "unavailable",
+              recurringFamilyConcentration: "unavailable",
+            },
+            changedSincePreviousRun: "unavailable",
+          });
+        }
+        return m;
+      }
+    );
 
     resolveTenantMembershipScopeMock.mockResolvedValue({
       tenantIds: ["tenant-a"],

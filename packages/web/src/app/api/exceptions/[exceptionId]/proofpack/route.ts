@@ -9,6 +9,7 @@ import {
 import { withSecurity } from "@/lib/middleware/api-security";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { getReconciliationWorkbenchExceptionDetail } from "@/lib/server/exceptions/reconciliation-workbench";
+import { buildExceptionRunComparisonSnapshotForRunIds } from "@settler/reconciliation-core";
 
 export const runtime = "nodejs";
 
@@ -53,12 +54,38 @@ export const GET = withSecurity(
           .filter((item) => item.degraded)
           .flatMap((item) => item.degradedReasons);
 
-        const changeComparison = {
-          available: false,
-          state: "unavailable" as const,
-          summary:
-            "Prior-run proof comparison is not available from exception list context. Use run detail lineage for deterministic baseline diff.",
-        };
+        const runComparisonMap = await buildExceptionRunComparisonSnapshotForRunIds(
+          prisma,
+          tenantId,
+          [detail.runId]
+        );
+        const runComparison = runComparisonMap.get(detail.runId);
+        const changeComparison = runComparison
+          ? {
+              available: runComparison.available,
+              state: runComparison.state,
+              certainty: runComparison.certainty,
+              reasonCodes: runComparison.reasonCodes,
+              summary: runComparison.summary,
+              baseline: runComparison.baseline,
+              deltas: runComparison.deltas,
+            }
+          : {
+              available: false as const,
+              state: "unavailable" as const,
+              certainty: "low" as const,
+              reasonCodes: ["proofpack_index_unavailable"] as const,
+              summary:
+                "Prior-run comparison could not be resolved for this exception's run identifier.",
+              baseline: { priorResultId: null, priorResultStartedAt: null },
+              deltas: {
+                matched: null,
+                unmatched: null,
+                conflicts: null,
+                proofCompleteness: "unavailable" as const,
+                recurringFamilyConcentration: "unavailable" as const,
+              },
+            };
 
         const artifact = {
           schemaVersion: "proofpack.exception.v3",
@@ -115,6 +142,9 @@ export const GET = withSecurity(
               ...new Set([
                 ...detail.suggestedActions,
                 changeComparison.summary,
+                ...(runComparison && !runComparison.available
+                  ? runComparison.reasonCodes.map((code) => `comparison:${code}`)
+                  : []),
                 ...(detail.operatorSummary.proofState !== "ready"
                   ? ["Proof package is not yet fully complete or finalized."]
                   : []),
