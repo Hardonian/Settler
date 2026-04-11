@@ -96,7 +96,7 @@ const SETTLER_IMAGES_CONFIG = {
 
   logoMain: {
     path: "/brand/settler/settler-lockup-horizontal-light.png",
-    width: 1282,
+    width: 1099,
     height: 339,
     alt: "Settler.dev",
     category: "logo" as const,
@@ -105,7 +105,7 @@ const SETTLER_IMAGES_CONFIG = {
   },
   logoHorizontalLight: {
     path: "/brand/settler/settler-lockup-horizontal-light.png",
-    width: 1282,
+    width: 1099,
     height: 339,
     alt: "Settler.dev",
     category: "logo" as const,
@@ -114,7 +114,7 @@ const SETTLER_IMAGES_CONFIG = {
   },
   logoHorizontalDark: {
     path: "/brand/settler/settler-lockup-horizontal-light.png",
-    width: 1282,
+    width: 1099,
     height: 339,
     alt: "Settler.dev",
     category: "logo" as const,
@@ -123,7 +123,7 @@ const SETTLER_IMAGES_CONFIG = {
   },
   logoStackedLight: {
     path: "/brand/settler/settler-lockup-horizontal-light.png",
-    width: 1282,
+    width: 1099,
     height: 339,
     alt: "Settler.dev",
     category: "logo" as const,
@@ -147,12 +147,13 @@ const SETTLER_IMAGES_CONFIG = {
     mimeType: "image/png",
   },
   logoWordmarkLight: {
-    path: "/brand/settler/wordmark.png",
-    width: 903,
+    path: "/brand/settler/settler-lockup-horizontal-light.png",
+    width: 1099,
     height: 339,
     alt: "Settler.dev",
     category: "logo" as const,
     mimeType: "image/png",
+    webpPath: "/brand/settler/settler-lockup-horizontal-light.webp",
   },
   logoSEO: {
     path: "/opengraph-image.png",

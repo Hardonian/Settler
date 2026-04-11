@@ -2,6 +2,11 @@ import { SETTLER_BRAND } from "../assets";
 import { SETTLER_IMAGES } from "@/lib/images/image-config";
 
 describe("canonical brand assets", () => {
+  it("horizontal lockup dimensions match generated raster (1099×339)", () => {
+    expect(SETTLER_BRAND.lockupHorizontalLight.width).toBe(1099);
+    expect(SETTLER_BRAND.lockupHorizontalLight.height).toBe(339);
+  });
+
   it("horizontal lockup points at generated brand folder files", () => {
     expect(SETTLER_BRAND.lockupHorizontalLight.src).toBe(
       "/brand/settler/settler-lockup-horizontal-light.png"

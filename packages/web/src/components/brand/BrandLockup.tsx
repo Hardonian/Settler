@@ -1,6 +1,4 @@
-import Image, { type ImageProps } from "next/image";
 import { cn } from "@/lib/utils";
-import { BRAND_LOCKUP_PNG } from "./brand-assets";
 import { BrandMark } from "./BrandMark";
 import { BrandWordmark } from "./BrandWordmark";
 
@@ -11,8 +9,9 @@ type HorizontalLockupProps = {
   alt?: string;
   className?: string;
   priority?: boolean;
-  sizes?: string;
-} & Omit<ImageProps, "src" | "width" | "height" | "alt">;
+  /** Horizontal: mark + text wordmark (default). Stacked uses format="word". */
+  wordmarkFormat?: "product" | "word";
+};
 
 type StackedLockupProps = {
   orientation: "stacked";
@@ -22,6 +21,7 @@ type StackedLockupProps = {
   markClassName?: string;
   wordmarkClassName?: string;
   priority?: boolean;
+  wordmarkFormat?: "product" | "word";
 };
 
 export type BrandLockupProps = HorizontalLockupProps | StackedLockupProps;
@@ -35,6 +35,7 @@ export function BrandLockup(props: BrandLockupProps) {
       markClassName,
       wordmarkClassName,
       priority,
+      wordmarkFormat = "word",
     } = props;
     return (
       <div className={cn("flex flex-col items-center", stackedGapClassName, className)}>
@@ -43,27 +44,27 @@ export function BrandLockup(props: BrandLockupProps) {
           className={cn("h-14 w-14 sm:h-16 sm:w-16", markClassName)}
           priority={priority}
         />
-        <BrandWordmark
-          alt={alt}
-          className={cn("h-8 w-auto max-w-[min(100%,280px)] sm:h-9", wordmarkClassName)}
-          priority={priority}
-        />
+        <BrandWordmark alt={alt} format={wordmarkFormat} className={wordmarkClassName} />
       </div>
     );
   }
 
-  const { alt = "Settler.dev", className, priority, sizes, ...imageRest } = props;
+  const { alt = "Settler.dev", className, priority, wordmarkFormat = "product" } = props;
 
   return (
-    <Image
-      src={BRAND_LOCKUP_PNG.webpSrc ?? BRAND_LOCKUP_PNG.src}
-      width={BRAND_LOCKUP_PNG.width}
-      height={BRAND_LOCKUP_PNG.height}
-      alt={alt}
-      className={cn("max-h-full w-auto max-w-full object-contain object-left dark:invert", className)}
-      priority={priority}
-      sizes={sizes}
-      {...imageRest}
-    />
+    <div
+      className={cn(
+        "inline-flex max-h-full min-h-8 w-auto max-w-full flex-nowrap items-center gap-2 sm:gap-3",
+        className
+      )}
+    >
+      <BrandMark
+        alt=""
+        className="h-7 w-7 shrink-0 sm:h-8 sm:w-8"
+        priority={priority}
+        sizes="(max-width: 640px) 28px, 32px"
+      />
+      <BrandWordmark alt={alt} format={wordmarkFormat} />
+    </div>
   );
 }
