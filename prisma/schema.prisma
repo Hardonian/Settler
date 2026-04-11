@@ -1949,12 +1949,39 @@ model RunDelta {
   metadata           Json      @default("{}")
   createdAt         DateTime  @default(now())
 
+  workerRuns        WorkerRun[]
+
   @@unique([currentRunId])
   @@index([tenantId])
   @@index([jobId])
   @@index([previousRunId])
   @@index([createdAt(sort: Desc)])
   @@map("run_deltas")
+}
+
+// Bounded workforce runs: audited, deterministic worker outputs tied to canonical truth (e.g. RunDelta)
+model WorkerRun {
+  id                String    @id @default(uuid())
+  tenantId          String    @db.Uuid
+  workerKey         String    // e.g. prior_run_delta_analyst
+  workerVersion     String    @default("1")
+  trigger           String    @default("run_delta_computed") // run_delta_computed | api_refresh
+
+  runDeltaId        String    @db.Uuid
+  runDelta          RunDelta    @relation(fields: [runDeltaId], references: [id], onDelete: Cascade)
+
+  status            String    // succeeded | failed | insufficient_data
+  output            Json      @default("{}")
+  evidence          Json      @default("[]")
+  degradedReasons   Json      @default("[]")
+  errorMessage      String?   @db.Text
+
+  createdAt         DateTime  @default(now())
+  completedAt       DateTime  @default(now())
+
+  @@index([tenantId, workerKey, createdAt(sort: Desc)])
+  @@index([runDeltaId])
+  @@map("worker_runs")
 }
 
 model PolicyOutcomeLedger {

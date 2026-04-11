@@ -11,6 +11,7 @@ export { PatternExtractor } from "./pattern-extractor";
 export { PredictiveRouter } from "./predictive-router";
 export { AdjudicationMemoryService } from "./adjudication-memory";
 export { RunDeltaService } from "./run-delta";
+export { PriorRunDeltaAnalystService, PRIOR_RUN_DELTA_ANALYST_KEY } from "./prior-run-delta-analyst";
 
 export type { ExtractedPattern } from "./pattern-extractor";
 export type { RoutingDecision } from "./predictive-router";

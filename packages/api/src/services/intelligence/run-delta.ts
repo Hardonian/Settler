@@ -7,6 +7,7 @@
 
 import { PrismaClient, Prisma } from "@prisma/client";
 import { logError } from "../../utils/logger";
+import { PriorRunDeltaAnalystService } from "./prior-run-delta-analyst";
 
 export interface RunDeltaInput {
   tenantId: string;
@@ -95,9 +96,11 @@ interface ExceptionArchetypeForDelta {
 
 export class RunDeltaService {
   private prisma: PrismaClient;
+  private analyst: PriorRunDeltaAnalystService;
 
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;
+    this.analyst = new PriorRunDeltaAnalystService(prisma);
   }
 
   /**
@@ -176,7 +179,7 @@ export class RunDeltaService {
       },
     });
 
-    return this.mapToResult(delta, {
+    const mapped = this.mapToResult(delta, {
       currentSnapshot,
       previousSnapshot,
       newPatterns,
@@ -189,6 +192,15 @@ export class RunDeltaService {
       currentResult,
       previousResult,
     });
+
+    await this.analyst.recordAnalysis({
+      tenantId: input.tenantId,
+      runDeltaId: delta.id,
+      delta: mapped,
+      trigger: "run_delta_computed",
+    });
+
+    return mapped;
   }
 
   /**

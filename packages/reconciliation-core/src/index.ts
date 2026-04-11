@@ -18,3 +18,4 @@ export * from "./run-proofpack-index.js";
 export * from "./prisma-client-like.js";
 export * from "./cross-run-intelligence.js";
 export * from "./support-intake-run-context.js";
+export * from "./prior-run-delta-analyst.js";

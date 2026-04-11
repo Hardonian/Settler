@@ -7,7 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorState } from "@/components/ui/error-state";
 import { safeFetch } from "@/lib/safe-fetch";
-import { Brain, AlertTriangle, CheckCircle, Clock, TrendingUp } from "lucide-react";
+import { Brain, AlertTriangle, CheckCircle, Clock, TrendingUp, Cpu } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface SystemHealthSnapshot {
   total_runs: number;
@@ -44,6 +46,43 @@ interface RunExplorerResponse {
     status: string;
     degraded_reasons?: string[];
   };
+}
+
+interface WorkforceRegistryBody {
+  data: {
+    workers: Array<{
+      key: string;
+      version: string;
+      displayName: string;
+      description: string;
+      riskLevel: string;
+      requiresApproval: boolean;
+      degradedWhen: string[];
+    }>;
+  };
+  capability?: { state?: string };
+}
+
+interface WorkerRunRow {
+  id: string;
+  runDeltaId: string;
+  trigger: string;
+  status: string;
+  output: {
+    headline?: string;
+    posture?: string;
+    contentHash?: string;
+  };
+  degradedReasons: string[];
+  createdAt: string;
+}
+
+interface AnalysisResponse {
+  data: WorkerRunRow & {
+    output: Record<string, unknown>;
+    evidence: unknown;
+  };
+  capability?: { source?: string };
 }
 
 function CapabilityBadge({
@@ -119,6 +158,14 @@ export default function IntelligencePage() {
     null
   );
 
+  const [workforceError, setWorkforceError] = useState<string | null>(null);
+  const [registry, setRegistry] = useState<WorkforceRegistryBody["data"] | null>(null);
+  const [workerRuns, setWorkerRuns] = useState<WorkerRunRow[]>([]);
+  const [runDeltaInput, setRunDeltaInput] = useState("");
+  const [analysisLoading, setAnalysisLoading] = useState(false);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
+  const [analysisData, setAnalysisData] = useState<AnalysisResponse["data"] | null>(null);
+
   const loadHealth = useCallback(async () => {
     setHealthLoading(true);
     const result = await safeFetch<SystemHealthResponse>(
@@ -149,13 +196,31 @@ export default function IntelligencePage() {
     setRunsLoading(false);
   }, []);
 
+  const loadWorkforce = useCallback(async () => {
+    const reg = await safeFetch<WorkforceRegistryBody>("/api/console/workforce/registry");
+    const runs = await safeFetch<{ data: WorkerRunRow[] }>("/api/console/workforce/runs?limit=15");
+    if (reg.success && reg.data?.data) {
+      setRegistry(reg.data.data);
+      setWorkforceError(null);
+    } else {
+      setWorkforceError(reg.error?.message || "Failed to load workforce registry");
+    }
+    if (runs.success && runs.data?.data) {
+      setWorkerRuns(runs.data.data);
+    } else if (!runs.success) {
+      setWorkforceError((prev) => prev ?? runs.error?.message ?? "Failed to load worker runs");
+    }
+  }, []);
+
   useEffect(() => {
     void loadHealth();
     void loadRuns();
-  }, [loadHealth, loadRuns]);
+    void loadWorkforce();
+  }, [loadHealth, loadRuns, loadWorkforce]);
 
   const isLoading = healthLoading && runsLoading;
-  const hasError = healthError || runsError;
+  const hasBlockingError =
+    (healthError || runsError || workforceError) && !healthData && !runsData.length && !registry;
 
   if (isLoading) {
     return (
@@ -181,7 +246,7 @@ export default function IntelligencePage() {
     );
   }
 
-  if (hasError && !healthData && !runsData.length) {
+  if (hasBlockingError) {
     return (
       <div className="space-y-6">
         <ConsolePageHeader
@@ -195,6 +260,7 @@ export default function IntelligencePage() {
           onRetry={() => {
             void loadHealth();
             void loadRuns();
+            void loadWorkforce();
           }}
         />
       </div>
@@ -281,6 +347,155 @@ export default function IntelligencePage() {
           />
         </div>
       )}
+
+      <Card className="border-border/40">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Cpu className="h-4 w-4" />
+            Workforce
+          </CardTitle>
+          <CardDescription>
+            Bounded, evidence-backed workers with audit rows. Prior Run Delta Analyst uses only
+            canonical RunDelta fields (deterministic; no generative inference).
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {workforceError && (
+            <p className="text-sm text-amber-700 dark:text-amber-300">{workforceError}</p>
+          )}
+          {registry && (
+            <div className="space-y-3">
+              <h4 className="text-xs font-semibold uppercase text-muted-foreground">
+                Registered capabilities
+              </h4>
+              <ul className="space-y-2">
+                {registry.workers.map((w) => (
+                  <li
+                    key={w.key}
+                    className="rounded-lg border border-border/60 bg-card/40 p-3 text-sm"
+                  >
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-medium">{w.displayName}</span>
+                      <Badge variant="outline" className="text-[10px] font-mono">
+                        {w.key}@{w.version}
+                      </Badge>
+                      <Badge variant="secondary" className="text-[10px]">
+                        risk: {w.riskLevel}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">{w.description}</p>
+                    <p className="text-[10px] text-muted-foreground mt-2">
+                      Degraded when: {w.degradedWhen.join("; ")}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <h4 className="text-xs font-semibold uppercase text-muted-foreground">
+              Recent analyst runs
+            </h4>
+            {workerRuns.length === 0 ? (
+              <p className="text-xs text-muted-foreground">
+                No persisted worker runs yet. Run a reconciliation with a prior run so RunDelta is
+                computed, or load a briefing by Run Delta id below.
+              </p>
+            ) : (
+              <ul className="space-y-2 max-h-48 overflow-y-auto">
+                {workerRuns.map((wr) => (
+                  <li
+                    key={wr.id}
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 rounded border border-border/50 p-2 text-xs"
+                  >
+                    <span className="font-mono text-[10px] break-all">{wr.runDeltaId}</span>
+                    <span className="text-muted-foreground shrink-0">
+                      {wr.output?.posture ?? wr.status} · {new Date(wr.createdAt).toLocaleString()}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          <div className="space-y-3 border-t border-border/40 pt-4">
+            <h4 className="text-xs font-semibold uppercase text-muted-foreground">
+              Load briefing by Run Delta id
+            </h4>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Input
+                placeholder="Run Delta UUID"
+                value={runDeltaInput}
+                onChange={(e) => setRunDeltaInput(e.target.value)}
+                className="font-mono text-xs"
+              />
+              <Button
+                type="button"
+                disabled={analysisLoading || runDeltaInput.trim().length < 8}
+                onClick={async () => {
+                  const id = runDeltaInput.trim();
+                  if (!id) return;
+                  setAnalysisLoading(true);
+                  setAnalysisError(null);
+                  const res = await safeFetch<AnalysisResponse>(
+                    `/api/console/workforce/run-deltas/${encodeURIComponent(id)}/analysis`
+                  );
+                  if (res.success && res.data?.data) {
+                    setAnalysisData(res.data.data);
+                  } else {
+                    setAnalysisData(null);
+                    setAnalysisError(res.error?.message || "Failed to load analysis");
+                  }
+                  setAnalysisLoading(false);
+                }}
+              >
+                {analysisLoading ? "Loading…" : "Load briefing"}
+              </Button>
+            </div>
+            {analysisError && (
+              <p className="text-sm text-destructive">{analysisError}</p>
+            )}
+            {analysisData && (
+              <div className="rounded-lg border border-border/60 bg-muted/20 p-4 space-y-3 text-sm">
+                <div>
+                  <p className="font-medium">{String(analysisData.output?.headline ?? "")}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Posture: {String(analysisData.output?.posture ?? "—")} · Hash:{" "}
+                    <span className="font-mono text-[10px]">
+                      {String(analysisData.output?.contentHash ?? "—")}
+                    </span>
+                  </p>
+                </div>
+                {Array.isArray(analysisData.output?.summaryBullets) && (
+                  <ul className="list-disc pl-5 space-y-1 text-xs text-muted-foreground">
+                    {(analysisData.output.summaryBullets as string[]).map((b, i) => (
+                      <li key={i}>{b}</li>
+                    ))}
+                  </ul>
+                )}
+                {Array.isArray(analysisData.output?.recommendedNextSteps) && (
+                  <div>
+                    <p className="text-xs font-semibold uppercase text-muted-foreground mb-1">
+                      Next steps
+                    </p>
+                    <ul className="list-disc pl-5 space-y-1 text-xs">
+                      {(analysisData.output.recommendedNextSteps as string[]).map((b, i) => (
+                        <li key={i}>{b}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {analysisData.degradedReasons?.length > 0 && (
+                  <p className="text-xs text-amber-700 dark:text-amber-300">
+                    Degraded signals: {analysisData.degradedReasons.join(", ")}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       {runsData.length > 0 && (
         <Card>

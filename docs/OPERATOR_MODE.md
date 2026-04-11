@@ -377,6 +377,22 @@ Operator mode metrics are exposed via Prometheus:
 3. Check database credentials are correct
 4. Review backup records: `GET /api/v1/operator/backups`
 
+## Bounded workforce — Prior Run Delta Analyst
+
+The **Prior Run Delta Analyst** is a deterministic worker over canonical `RunDelta` rows: it produces a structured briefing (headline, posture, bullets, next steps) and a SHA-256 **content hash** for audit comparison. It does not call external models; degraded signals (for example, no prior run on the delta, or config drift flagged) are explicit in the stored output.
+
+**When it runs**
+
+- Automatically when `RunDeltaService.computeDelta` completes (API / engine path): a `worker_runs` row is written with trigger `run_delta_computed`.
+- On demand from the Developer Console: `GET /api/console/workforce/run-deltas/:runDeltaId/analysis` (persists a row with trigger `api_on_demand` if none exists).
+
+**Operator surfaces**
+
+- `GET /api/console/workforce/registry` — capability disclosure (worker identity, inputs, outputs, risk, degraded conditions).
+- `GET /api/console/workforce/runs` — recent audit rows for the tenant.
+
+The Console **Intelligence** page lists registered workers, recent runs, and a field to load a briefing by Run Delta id.
+
 ## Best Practices
 
 1. **Set Alert Thresholds Early**: Configure alerts before issues occur
