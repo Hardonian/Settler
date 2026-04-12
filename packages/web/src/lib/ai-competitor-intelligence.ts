@@ -96,7 +96,7 @@ export function getCompetitivePositioning(): {
   return {
     advantages: [
       "Specialized for reconciliation (competitors are general-purpose)",
-      "99.7% accuracy (higher than general automation tools)",
+      "target high-confidence matching (benchmarks in progress)",
       "Edge AI for local processing (unique capability)",
       "Pre-built adapters for financial platforms",
       "Developer-first API design",
