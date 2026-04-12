@@ -5,7 +5,9 @@
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "security:scan": "node dist/security-agent.js --scan=all"
+    "start": "node dist/security-agent.js --scan=all",
+    "security:scan": "node dist/security-agent.js --scan=all",
+    "test": "node --test dist/__tests__/legacy-agents.test.js dist/__tests__/security-agent.test.js"
   },
   "dependencies": {
     "@settler/logger": "workspace:*"

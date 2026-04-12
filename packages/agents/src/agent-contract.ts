@@ -55,22 +55,22 @@ export function exitCodeForVerdict(verdict: AgentVerdict): number {
 }
 
 export function printAgentReport(report: AgentReport): void {
-  console.log(`${report.agent} report`);
-  console.log(`verdict=${report.verdict}`);
-  console.log(report.summary);
+  console.info(`${report.agent} report`);
+  console.info(`verdict=${report.verdict}`);
+  console.info(report.summary);
 
   for (const check of report.checks) {
-    console.log(`- ${check.name}: ${check.status} — ${check.summary}`);
+    console.info(`- ${check.name}: ${check.status} — ${check.summary}`);
     if (check.reason) {
-      console.log(`  reason=${check.reason}`);
+      console.info(`  reason=${check.reason}`);
     }
   }
 
   if (report.claimBoundary) {
-    console.log(`claimBoundary=${report.claimBoundary}`);
+    console.info(`claimBoundary=${report.claimBoundary}`);
   }
 
-  console.log(JSON.stringify(report));
+  console.info(JSON.stringify(report));
 }
 
 export function createUnsupportedActionReport(params: {

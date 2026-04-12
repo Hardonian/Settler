@@ -43,7 +43,7 @@ class Logger {
   private output(entry: LogEntry): void {
     // In production, send to structured logging (DataDog, etc.)
     if (process.env.LOG_JSON === "true") {
-      console.log(JSON.stringify(entry));
+      console.info(JSON.stringify(entry));
       return;
     }
 
@@ -56,14 +56,14 @@ class Logger {
     };
 
     const levelColor = colors[entry.level] || colors.info;
-    console.log(`${levelColor}[${entry.level.toUpperCase()}]${colors.reset} ${entry.message}`);
+    console.info(`${levelColor}[${entry.level.toUpperCase()}]${colors.reset} ${entry.message}`);
 
     if (entry.context && Object.keys(entry.context).length > 0) {
-      console.log("  ", entry.context);
+      console.info("  ", entry.context);
     }
 
     if (entry.error) {
-      console.log("  Error:", entry.error);
+      console.info("  Error:", entry.error);
     }
   }
 

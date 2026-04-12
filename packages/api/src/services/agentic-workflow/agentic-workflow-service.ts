@@ -26,10 +26,9 @@
  * - Bulk action execution (requires operator confirmation)
  */
 
-import { Prisma, PrismaClient } from "@prisma/client";
-import crypto from "node:crypto";
-
-const prisma = new PrismaClient();
+import { Prisma } from "@prisma/client";
+import { createHash } from "node:crypto";
+import { prisma } from "../../infrastructure/db/prisma";
 
 export interface TriageSuggestion {
   exceptionId: string;
@@ -113,7 +112,7 @@ const PRIORITY_WEIGHTS = {
 };
 
 function computeDeterministicDigest(data: unknown): string {
-  return crypto.createHash("sha256").update(JSON.stringify(data)).digest("hex").slice(0, 16);
+  return createHash("sha256").update(JSON.stringify(data)).digest("hex").slice(0, 16);
 }
 
 function signatureFromMatch(match: {
@@ -127,11 +126,7 @@ function signatureFromMatch(match: {
     rationaleCodes:
       ((match.metadata as Record<string, unknown>)?.rationale_codes as string[]) ?? [],
   };
-  return crypto
-    .createHash("sha256")
-    .update(JSON.stringify(construction))
-    .digest("hex")
-    .slice(0, 20);
+  return createHash("sha256").update(JSON.stringify(construction)).digest("hex").slice(0, 20);
 }
 
 export class AgenticWorkflowService {
@@ -403,7 +398,7 @@ export class AgenticWorkflowService {
 
     const toEscalate = staleExceptions.filter((e) => e.status === "open" || e.status === null);
 
-    if (staleExceptions.length === 0) {
+    if (toEscalate.length === 0) {
       return {
         escalatedCount: 0,
         escalatedIds: [],
@@ -412,7 +407,7 @@ export class AgenticWorkflowService {
       };
     }
 
-    const staleIds = staleExceptions.map((e) => e.id);
+    const staleIds = toEscalate.map((e) => e.id);
 
     await prisma.reconciliationMatch.updateMany({
       where: { id: { in: staleIds }, tenantId },
