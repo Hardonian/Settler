@@ -5,12 +5,10 @@
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "start": "node dist/security-agent.js --scan=all",
-    "test": "node --test dist/__tests__"
+    "security:scan": "node dist/security-agent.js --scan=all"
   },
   "dependencies": {
-    "@settler/logger": "workspace:*",
-    "@supabase/supabase-js": "^2.39.0"
+    "@settler/logger": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.3.3"

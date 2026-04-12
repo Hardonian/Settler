@@ -291,7 +291,6 @@ export class AgenticWorkflowService {
   ): Promise<QueuePriorityScore[]> {
     const where: Prisma.ReconciliationMatchWhereInput = {
       tenantId,
-      OR: [{ status: "open" }, { status: "in_progress" }, { status: null }],
     };
 
     if (exceptionIds?.length) {
@@ -306,6 +305,10 @@ export class AgenticWorkflowService {
       },
       take: 500,
     });
+
+    const activeExceptions = exceptions.filter(
+      (e) => !e.reviewed && (e.status === "open" || e.status === "in_progress" || e.status === null)
+    );
 
     const now = Date.now();
     const priorityScores: QueuePriorityScore[] = [];
@@ -392,7 +395,7 @@ export class AgenticWorkflowService {
       where: {
         tenantId,
         createdAt: { lt: cutoff },
-        status: { in: [null, "open"] },
+        OR: [{ status: "open" }, { status: null }],
         assignedTo: null,
       },
       select: { id: true },
