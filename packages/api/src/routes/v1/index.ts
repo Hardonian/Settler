@@ -40,6 +40,7 @@ import capabilitiesRouter from "./capabilities";
 import supportRouter from "./support";
 import toleranceSettingsRouter from "../tolerance-settings";
 import ventureInvoiceNudgerRouter from "./venture-invoice-nudger";
+import agenticWorkflowRouter from "./agentic-workflow";
 
 export const v1Router: Router = Router();
 
@@ -89,6 +90,7 @@ v1Router.use("/", operatorModeRouter);
 v1Router.use("/", operatorIntelligenceRouter);
 v1Router.use("/", workforceRouter);
 v1Router.use("/", exceptionIntelligenceRouter);
+v1Router.use("/", agenticWorkflowRouter);
 v1Router.use("/", systemHealthRouter);
 v1Router.use("/", runsRouter);
 v1Router.use("/", governanceRouter);

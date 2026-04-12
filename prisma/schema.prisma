@@ -2367,3 +2367,50 @@ model OperatorSuggestionDismissal {
   @@index([tenantId, userId, surface])
   @@map("operator_suggestion_dismissals")
 }
+
+// ============================================================================
+// AUTONOMOUS AGENT MODELS
+// ============================================================================
+
+model AgentStatus {
+  id        BigInt   @id @default(autoincrement())
+  timestamp DateTime @default(now())
+  agents    Json     // Array of agent status objects
+  metadata  Json     @default("{}")
+
+  @@map("agent_status")
+}
+
+model MonitoringAlert {
+  id         BigInt   @id @default(autoincrement())
+  message    String   @db.Text
+  status     Json?
+  metadata   Json     @default("{}")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("monitoring_alerts")
+}
+
+model AgentDeploy {
+  id         BigInt   @id @default(autoincrement())
+  env        String
+  commit     String
+  status     String
+  url        String?
+  error      String?  @db.Text
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("deploys")
+}
+
+model SecurityAudit {
+  id        BigInt   @id @default(autoincrement())
+  scanTime  DateTime? @map("scan_time")
+  issues    Json?
+  summary   Json?
+  metadata  Json     @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("security_audits")
+}
+

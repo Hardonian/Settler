@@ -5,7 +5,8 @@
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "start": "node dist/orchestrator-agent.js"
+    "start": "node dist/security-agent.js --scan=all",
+    "test": "node --test dist/__tests__"
   },
   "dependencies": {
     "@settler/logger": "workspace:*",

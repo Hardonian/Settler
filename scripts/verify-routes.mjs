@@ -12,7 +12,6 @@ const non500Routes = [
   "/api/v1/ready",
   "/api/v1/meta",
   "/app",
-  "/app/assistant",
   "/app/pipelines",
   "/app/runs",
   "/app/review",
