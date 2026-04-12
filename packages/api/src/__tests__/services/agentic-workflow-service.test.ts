@@ -56,7 +56,7 @@ describe("AgenticWorkflowService", () => {
     it("returns custom settings when tenant has them", async () => {
       mockPrisma.tenant.findUnique.mockResolvedValue({
         id: tenantId,
-        settings: {
+        metadata: {
           agenticAutomationEnabled: false,
           staleEscalationEnabled: false,
           staleThresholdHours: 48,
@@ -77,7 +77,7 @@ describe("AgenticWorkflowService", () => {
     it("updates automation settings", async () => {
       mockPrisma.tenant.findUnique.mockResolvedValue({
         id: tenantId,
-        settings: {},
+        metadata: {},
       });
       mockPrisma.tenant.update.mockResolvedValue(true);
 
