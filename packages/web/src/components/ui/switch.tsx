@@ -20,9 +20,9 @@ export const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
   ({ checked = false, onCheckedChange, disabled, className, ...props }, ref) => {
     return (
       <button
+        aria-checked="true"
         type="button"
         role="switch"
-        aria-checked={checked}
         ref={ref}
         disabled={disabled}
         onClick={() => onCheckedChange?.(!checked)}
@@ -37,7 +37,7 @@ export const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
       >
         <span
           className={cn(
-            "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
+            "inline-block h-4 w-4 transform rounded-full bg-background transition-transform",
             checked ? "translate-x-6" : "translate-x-1"
           )}
         />

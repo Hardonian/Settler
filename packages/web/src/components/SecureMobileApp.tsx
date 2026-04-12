@@ -187,17 +187,17 @@ export default function SecureMobileApp({
 
   if (!client) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Initializing secure connection...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Initializing secure connection...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 safe-area-inset">
+    <div className="min-h-screen bg-background safe-area-inset">
       {/* Security Headers (meta tags) */}
       {securityHeaders && (
         <>
@@ -216,7 +216,7 @@ export default function SecureMobileApp({
       )}
 
       {/* Status Bar */}
-      <div className="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between">
+      <div className="bg-card border-b border-border/60 px-4 py-2 flex items-center justify-between">
         <div className="flex items-center space-x-2">
           {!isOnline && (
             <div className="flex items-center text-orange-600">
@@ -247,7 +247,7 @@ export default function SecureMobileApp({
         {installPrompt && !isPWAInstalled && (
           <button
             onClick={handleInstallPWA}
-            className="px-3 py-1 text-xs bg-blue-600 text-white rounded-full hover:bg-blue-700 active:bg-blue-800 touch-manipulation"
+            className="px-3 py-1 text-xs bg-primary text-primary-foreground rounded-full hover:bg-primary/90 active:bg-primary/80 touch-manipulation transition-colors"
           >
             Install App
           </button>
@@ -255,13 +255,15 @@ export default function SecureMobileApp({
       </div>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-6 max-w-md mx-auto">
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h1 className="text-2xl font-bold mb-2">Settler</h1>
-          <p className="text-gray-600 mb-6">Secure reconciliation platform optimized for mobile</p>
+      <main className="container mx-auto px-4 py-6 max-w-md">
+        <div className="bg-card rounded-lg border border-border/60 shadow-sm p-6">
+          <h1 className="text-2xl font-bold mb-2 text-foreground">Settler</h1>
+          <p className="text-muted-foreground mb-6">
+            Secure reconciliation platform optimized for mobile
+          </p>
 
           {/* Security Badge */}
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4 mb-6">
             <div className="flex items-center">
               <svg className="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path
@@ -271,8 +273,10 @@ export default function SecureMobileApp({
                 />
               </svg>
               <div>
-                <p className="text-sm font-medium text-green-800">Secure Connection</p>
-                <p className="text-xs text-green-600">
+                <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                  Secure Connection
+                </p>
+                <p className="text-xs text-emerald-600/80 dark:text-emerald-400/80">
                   End-to-end encrypted • CSP enabled • Security headers active
                 </p>
               </div>
@@ -281,22 +285,13 @@ export default function SecureMobileApp({
 
           {/* Mobile-Optimized Actions */}
           <div className="space-y-3">
-            <button
-              className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 active:bg-blue-800 touch-manipulation transition-colors"
-              style={{ WebkitTapHighlightColor: "transparent" }}
-            >
+            <button className="w-full px-4 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 active:bg-primary/80 touch-manipulation transition-colors">
               Create Reconciliation Job
             </button>
-            <button
-              className="w-full px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 active:bg-gray-300 touch-manipulation transition-colors"
-              style={{ WebkitTapHighlightColor: "transparent" }}
-            >
+            <button className="w-full px-4 py-3 bg-muted/60 text-foreground rounded-lg font-medium hover:bg-muted active:bg-muted/80 touch-manipulation transition-colors">
               View Dashboard
             </button>
-            <button
-              className="w-full px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 active:bg-gray-300 touch-manipulation transition-colors"
-              style={{ WebkitTapHighlightColor: "transparent" }}
-            >
+            <button className="w-full px-4 py-3 bg-muted/60 text-foreground rounded-lg font-medium hover:bg-muted active:bg-muted/80 touch-manipulation transition-colors">
               View Reports
             </button>
           </div>
@@ -304,7 +299,7 @@ export default function SecureMobileApp({
       </main>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-inset-bottom">
+      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border/60 safe-area-inset-bottom">
         <div className="flex justify-around items-center h-16">
           <button className="flex flex-col items-center justify-center flex-1 touch-manipulation">
             <svg
@@ -356,7 +351,7 @@ export default function SecureMobileApp({
           </button>
           <button className="flex flex-col items-center justify-center flex-1 touch-manipulation">
             <svg
-              className="w-6 h-6 text-gray-600"
+              className="w-6 h-6 text-muted-foreground"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -368,7 +363,9 @@ export default function SecureMobileApp({
                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
               />
             </svg>
-            <span className="text-xs text-gray-600 mt-1">Profile</span>
+            <span className="text-[10px] text-muted-foreground mt-1 uppercase tracking-wider font-bold">
+              Profile
+            </span>
           </button>
         </div>
       </nav>
@@ -388,10 +385,11 @@ export default function SecureMobileApp({
           padding-bottom: env(safe-area-inset-bottom);
         }
 
-        /* Prevent text selection on buttons */
+        /* Prevent text selection and tap highlight on buttons */
         button {
           -webkit-user-select: none;
           user-select: none;
+          -webkit-tap-highlight-color: transparent;
         }
 
         /* Optimize scrolling on mobile */

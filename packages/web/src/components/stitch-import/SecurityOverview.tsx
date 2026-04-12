@@ -10,21 +10,21 @@ const pillars = [
     title: "Tenant Isolation",
     description:
       "Strict logical and physical separation ensures your data remains yours alone. Each tenant operates in an isolated execution context with no cross-contamination.",
-    color: "text-primary bg-blue-50",
+    color: "text-primary bg-primary/10",
   },
   {
     icon: BadgeCheck,
     title: "Auditability",
     description:
       "Immutable logs provide complete transparency into every action taken. Every reconciliation run produces a verifiable evidence bundle.",
-    color: "text-emerald-600 bg-emerald-50",
+    color: "text-success bg-success/10",
   },
   {
     icon: Clock,
     title: "Traceability",
     description:
       "Full data lineage tracking shows how data flows and changes across every run. Deterministic fingerprints allow exact output verification.",
-    color: "text-purple-600 bg-purple-50",
+    color: "text-secondary bg-secondary/10",
   },
 ];
 

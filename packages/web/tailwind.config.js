@@ -8,9 +8,6 @@
  * All new tokens should be added to css-tokens.css first.
  */
 
-const path = require("path");
-const fs = require("fs");
-
 module.exports = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
