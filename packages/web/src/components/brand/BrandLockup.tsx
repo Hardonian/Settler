@@ -1,6 +1,4 @@
-import Image, { type ImageProps } from "next/image";
 import { cn } from "@/lib/utils";
-import { BRAND_LOCKUP_PNG } from "./brand-assets";
 import { BrandMark } from "./BrandMark";
 import { BrandWordmark } from "./BrandWordmark";
 
@@ -12,8 +10,9 @@ type HorizontalLockupProps = {
   theme?: "auto" | "light" | "dark";
   className?: string;
   priority?: boolean;
-  sizes?: string;
-} & Omit<ImageProps, "src" | "width" | "height" | "alt">;
+  /** Horizontal: mark + text wordmark (default). Stacked uses format="word". */
+  wordmarkFormat?: "product" | "word";
+};
 
 type StackedLockupProps = {
   orientation: "stacked";
@@ -23,6 +22,7 @@ type StackedLockupProps = {
   markClassName?: string;
   wordmarkClassName?: string;
   priority?: boolean;
+  wordmarkFormat?: "product" | "word";
 };
 
 export type BrandLockupProps = HorizontalLockupProps | StackedLockupProps;
@@ -36,6 +36,7 @@ export function BrandLockup(props: BrandLockupProps) {
       markClassName,
       wordmarkClassName,
       priority,
+      wordmarkFormat = "word",
     } = props;
     return (
       <div className={cn("flex flex-col items-center", stackedGapClassName, className)}>
@@ -44,11 +45,7 @@ export function BrandLockup(props: BrandLockupProps) {
           className={cn("h-14 w-14 sm:h-16 sm:w-16", markClassName)}
           priority={priority}
         />
-        <BrandWordmark
-          alt={alt}
-          className={cn("h-8 w-auto max-w-[min(100%,280px)] sm:h-9", wordmarkClassName)}
-          priority={priority}
-        />
+        <BrandWordmark alt={alt} format={wordmarkFormat} className={wordmarkClassName} />
       </div>
     );
   }

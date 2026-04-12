@@ -1,12 +1,13 @@
-import Image, { type ImageProps } from "next/image";
 import { cn } from "@/lib/utils";
-import { BRAND_WORDMARK_PNG } from "./brand-assets";
 
-export type BrandWordmarkProps = Omit<ImageProps, "src" | "width" | "height" | "alt"> & {
+export type BrandWordmarkProps = {
   alt?: string;
   theme?: "auto" | "light" | "dark";
 };
 
+/**
+ * Text wordmark — avoids shipping a wrong raster wordmark; pairs with `BrandMark`.
+ */
 export function BrandWordmark({
   alt = "Settler.dev",
   className,
