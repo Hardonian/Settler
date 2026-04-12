@@ -10,7 +10,7 @@
  */
 import sharp from "sharp";
 import { mkdir, readFile, writeFile } from "fs/promises";
-import { join } from "path";
+import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
@@ -24,7 +24,47 @@ const markSourcePng = join(brandDir, "favicon-192x192.png");
 /** Navy from brand spec — circular icon backdrop */
 const NAVY = { r: 27, g: 63, b: 95, alpha: 1 };
 
-const TEXT_HEX = "#0f172a";
+const WORDMARK_META = { width: 903, height: 339 };
+
+/**
+ * Horizontal lockup: scaled circular mark (left) + wordmark, single raster for nav/footer.
+ * Intrinsic height matches wordmark (339px).
+ */
+async function composeHorizontalLockup(options = {}) {
+  const wordmarkBuf = options.wordmarkBuffer ?? (await readFile(wordmarkPng));
+  const markBuf = await readFile(markSourcePng);
+
+  const targetMarkSize = WORDMARK_META.height;
+  const resizedMark = await sharp(markBuf)
+    .resize(targetMarkSize, targetMarkSize, { fit: "fill" })
+    .ensureAlpha()
+    .png()
+    .toBuffer();
+
+  const gap = 40;
+  const wm = await sharp(wordmarkBuf).ensureAlpha().png().toBuffer();
+  const wmMeta = await sharp(wm).metadata();
+  const ww = wmMeta.width ?? WORDMARK_META.width;
+  const wh = wmMeta.height ?? WORDMARK_META.height;
+
+  const totalW = targetMarkSize + gap + ww;
+  const totalH = Math.max(targetMarkSize, wh);
+
+  return sharp({
+    create: {
+      width: totalW,
+      height: totalH,
+      channels: 4,
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    },
+  })
+    .composite([
+      { input: resizedMark, left: 0, top: Math.round((totalH - targetMarkSize) / 2) },
+      { input: wm, left: targetMarkSize + gap, top: Math.round((totalH - wh) / 2) },
+    ])
+    .png()
+    .toBuffer();
+}
 
 /**
  * Build circular mark PNGs at `size` from the canonical circular mark asset (scaled).
@@ -64,7 +104,11 @@ async function circularMarkPng(size) {
     </svg>`
   );
 
-  return sharp(square).ensureAlpha().composite([{ input: circleMask, blend: "dest-in" }]).png().toBuffer();
+  return sharp(square)
+    .ensureAlpha()
+    .composite([{ input: circleMask, blend: "dest-in" }])
+    .png()
+    .toBuffer();
 }
 
 /**

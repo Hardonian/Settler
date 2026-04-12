@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { SETTLER_IMAGES } from "@/lib/images/image-config";
+import { BRAND_STRINGS } from "@/lib/brand/strings";
 
 const getDefaultSiteUrl = () =>
   process.env.NEXT_PUBLIC_SITE_URL || process.env.OSS_SITE_URL || "https://settler.dev";
@@ -26,7 +27,9 @@ export function generateMetadata({
   noindex = false,
 }: PageMetadata): Metadata {
   const siteUrl = getDefaultSiteUrl();
-  const fullTitle = title.includes("Settler") ? title : `${title} | Settler`;
+  const fullTitle = title.includes(BRAND_STRINGS.productName)
+    ? title
+    : `${title} | ${BRAND_STRINGS.productName}`;
   // canonical should always be provided by the caller for server components
   const canonicalUrl = canonical || siteUrl;
 
@@ -45,13 +48,13 @@ export function generateMetadata({
   return {
     title: {
       default: fullTitle,
-      template: "%s | Settler",
+      template: `%s | ${BRAND_STRINGS.productName}`,
     },
     description,
     keywords: [...defaultKeywords, ...keywords],
-    authors: [{ name: "Settler" }],
-    creator: "Settler",
-    publisher: "Settler",
+    authors: [{ name: BRAND_STRINGS.productName }],
+    creator: BRAND_STRINGS.productName,
+    publisher: BRAND_STRINGS.productName,
     robots: noindex
       ? {
           index: false,
@@ -72,7 +75,7 @@ export function generateMetadata({
       type: "website",
       locale: "en_US",
       url: canonicalUrl,
-      siteName: "Settler.dev",
+      siteName: BRAND_STRINGS.productSiteName,
       title: fullTitle,
       description,
       images: [

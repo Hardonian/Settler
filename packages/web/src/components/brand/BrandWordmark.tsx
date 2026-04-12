@@ -2,9 +2,7 @@ import { cn } from "@/lib/utils";
 
 export type BrandWordmarkProps = {
   alt?: string;
-  className?: string;
-  /** Word-only (stacked auth) vs product URL */
-  format?: "product" | "word";
+  theme?: "auto" | "light" | "dark";
 };
 
 /**
@@ -13,21 +11,21 @@ export type BrandWordmarkProps = {
 export function BrandWordmark({
   alt = "Settler.dev",
   className,
-  format = "product",
+  sizes,
+  theme = "auto",
+  ...rest
 }: BrandWordmarkProps) {
-  const text = format === "word" ? "Settler" : "Settler.dev";
+  const themeClass = theme === "dark" ? "invert" : theme === "auto" ? "dark:invert" : "";
+
   return (
-    <span
-      title={alt}
-      className={cn(
-        "inline-block font-sans font-semibold tracking-tight text-foreground antialiased select-none",
-        format === "product"
-          ? "text-[clamp(1.125rem,5vw,1.75rem)] leading-none"
-          : "text-[clamp(1.25rem,6vw,2rem)] leading-none",
-        className
-      )}
-    >
-      {text}
-    </span>
+    <Image
+      src={BRAND_WORDMARK_PNG.src}
+      width={BRAND_WORDMARK_PNG.width}
+      height={BRAND_WORDMARK_PNG.height}
+      alt={alt}
+      className={cn(themeClass, className)}
+      sizes={sizes}
+      {...rest}
+    />
   );
 }

@@ -7,6 +7,7 @@ export type BrandLockupOrientation = "horizontal" | "stacked";
 type HorizontalLockupProps = {
   orientation?: "horizontal";
   alt?: string;
+  theme?: "auto" | "light" | "dark";
   className?: string;
   priority?: boolean;
   /** Horizontal: mark + text wordmark (default). Stacked uses format="word". */
@@ -49,22 +50,24 @@ export function BrandLockup(props: BrandLockupProps) {
     );
   }
 
-  const { alt = "Settler.dev", className, priority, wordmarkFormat = "product" } = props;
+  const { alt = "Settler.dev", className, priority, sizes, theme = "auto", ...imageRest } = props;
+
+  const themeClass = theme === "dark" ? "invert" : theme === "auto" ? "dark:invert" : "";
 
   return (
-    <div
+    <Image
+      src={BRAND_LOCKUP_PNG.webpSrc ?? BRAND_LOCKUP_PNG.src}
+      width={BRAND_LOCKUP_PNG.width}
+      height={BRAND_LOCKUP_PNG.height}
+      alt={alt}
       className={cn(
-        "inline-flex max-h-full min-h-8 w-auto max-w-full flex-nowrap items-center gap-2 sm:gap-3",
+        "max-h-full w-auto max-w-full object-contain object-left",
+        themeClass,
         className
       )}
-    >
-      <BrandMark
-        alt=""
-        className="h-7 w-7 shrink-0 sm:h-8 sm:w-8"
-        priority={priority}
-        sizes="(max-width: 640px) 28px, 32px"
-      />
-      <BrandWordmark alt={alt} format={wordmarkFormat} />
-    </div>
+      priority={priority}
+      sizes={sizes}
+      {...imageRest}
+    />
   );
 }

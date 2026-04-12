@@ -16,7 +16,7 @@ export type SettlerLogoProps = {
 /** Compatibility alias for the canonical `BrandLogo` / `BrandLockup` components. */
 export function SettlerLogo({
   variant = "horizontal",
-  theme: _theme = "auto",
+  theme = "auto",
   className,
   priority = false,
   alt = "Settler.dev",
@@ -25,12 +25,12 @@ export function SettlerLogo({
     return <BrandMark alt="" className={className} priority={priority} />;
   }
   if (variant === "wordmark") {
-    return <BrandWordmark alt={alt} className={className} priority={priority} />;
+    return <BrandWordmark alt={alt} theme={theme} className={className} priority={priority} />;
   }
   if (variant === "stacked") {
     return (
       <BrandLockup orientation="stacked" alt={alt} className={className} priority={priority} />
     );
   }
-  return <BrandLockup alt={alt} className={className} priority={priority} />;
+  return <BrandLockup alt={alt} theme={theme} className={className} priority={priority} />;
 }

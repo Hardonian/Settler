@@ -13,13 +13,14 @@ import { initSentry } from "@/lib/monitoring/sentry";
 import { getImageUrl, SETTLER_IMAGES } from "@/lib/images/image-config";
 import { RuntimeUiConfigProvider } from "@/lib/runtime-ui-config/client";
 import { GlobalClientShell } from "@/components/GlobalClientShell";
+import { BRAND_STRINGS } from "@/lib/brand/strings";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://settler.dev"),
-  applicationName: "Settler.dev",
+  applicationName: BRAND_STRINGS.productSiteName,
   title: {
     default: "Settler.dev — Deterministic Reconciliation",
-    template: "%s | Settler",
+    template: `%s | ${BRAND_STRINGS.productName}`,
   },
   description:
     "Settler is an open source reconciliation engine that runs deterministic workflows, explains mismatches, and exports verifiable evidence.",
@@ -33,14 +34,14 @@ export const metadata: Metadata = {
     "rules-based reconciliation",
     "audit evidence",
   ],
-  authors: [{ name: "Settler.dev" }],
-  creator: "Settler.dev",
-  publisher: "Settler.dev",
+  authors: [{ name: BRAND_STRINGS.productSiteName }],
+  creator: BRAND_STRINGS.productSiteName,
+  publisher: BRAND_STRINGS.productSiteName,
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Settler.dev",
+    title: BRAND_STRINGS.productSiteName,
   },
   formatDetection: {
     telephone: false,
@@ -82,7 +83,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://settler.dev",
-    siteName: "Settler.dev",
+    siteName: BRAND_STRINGS.productSiteName,
     title: "Settler.dev — Deterministic Reconciliation",
     description:
       "Settler is an open source reconciliation engine that runs deterministic workflows, explains mismatches, and exports verifiable evidence.",
@@ -145,7 +146,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="Settler.dev" />
+        <meta name="apple-mobile-web-app-title" content={BRAND_STRINGS.productSiteName} />
         <OrganizationSchema />
         <WebSiteSchema />
         <SoftwareApplicationSchema />

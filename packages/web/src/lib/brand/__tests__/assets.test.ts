@@ -1,5 +1,6 @@
 import { SETTLER_BRAND } from "../assets";
 import { SETTLER_IMAGES } from "@/lib/images/image-config";
+import { BRAND_STRINGS } from "../strings";
 
 describe("canonical brand assets", () => {
   it("horizontal lockup dimensions match generated raster (1099×339)", () => {
@@ -16,6 +17,11 @@ describe("canonical brand assets", () => {
     );
     expect(SETTLER_IMAGES.logoMain.path).toBe(SETTLER_BRAND.lockupHorizontalLight.src);
     expect(SETTLER_IMAGES.logoMain.webpPath).toBe(SETTLER_BRAND.lockupHorizontalLight.webpSrc);
+    expect(SETTLER_IMAGES.logoHorizontalDark.path).toBe(SETTLER_BRAND.lockupHorizontalLight.src);
+    expect(SETTLER_IMAGES.logoHorizontalDark.webpPath).toBe(
+      SETTLER_BRAND.lockupHorizontalLight.webpSrc
+    );
+    expect(SETTLER_IMAGES.logoMain.alt).toBe(BRAND_STRINGS.productSiteName);
   });
 
   it("does not reference removed wrong horizontal asset path", () => {
