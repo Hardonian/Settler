@@ -78,10 +78,7 @@ const SecurityOverview: React.FC = () => {
       {/* Security pillars */}
       <div className="grid gap-4 md:grid-cols-3">
         {pillars.map(({ icon: Icon, title, description, color }) => (
-          <div
-            key={title}
-            className="rounded-xl border border-border/30 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
-          >
+          <div key={title} className="panel p-4 transition-shadow hover:shadow-md">
             <div className={`mb-3 inline-flex rounded-lg p-2.5 ${color}`}>
               <Icon className="h-5 w-5" aria-hidden="true" />
             </div>
@@ -100,7 +97,7 @@ const SecurityOverview: React.FC = () => {
           {technicalDetails.map(({ icon: Icon, title, body }) => (
             <details
               key={title}
-              className="group rounded-xl border border-border/40 bg-white open:bg-muted/10 transition-colors"
+              className="group rounded-xl border border-border/40 bg-card open:bg-muted/10 transition-colors"
             >
               <summary className="flex cursor-pointer list-none items-center justify-between p-4">
                 <div className="flex items-center gap-3">

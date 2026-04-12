@@ -32,7 +32,7 @@ const FreezeToggle: React.FC = () => {
 
   return (
     <>
-      <div className="rounded-xl border border-border/40 bg-white p-4 shadow-sm">
+      <div className="panel p-4">
         <div className="flex items-start justify-between gap-4">
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
@@ -65,7 +65,7 @@ const FreezeToggle: React.FC = () => {
             />
             <div
               className={[
-                "absolute left-[2px] top-[2px] h-5 w-5 rounded-full border border-border/60 bg-white shadow transition-transform duration-200",
+                "absolute left-[2px] top-[2px] h-5 w-5 rounded-full border border-border/60 bg-background shadow transition-transform duration-200",
                 frozen ? "translate-x-5 border-red-300" : "",
               ].join(" ")}
             />
@@ -74,14 +74,16 @@ const FreezeToggle: React.FC = () => {
         <div
           className={[
             "mt-3 flex items-center gap-2 rounded-lg border px-3 py-2 transition-colors",
-            frozen ? "border-red-200 bg-red-50" : "border-emerald-200 bg-emerald-50",
+            frozen ? "border-red-500/20 bg-red-500/10" : "border-emerald-500/20 bg-emerald-500/10",
           ].join(" ")}
         >
           <CheckCircle
             className={`h-4 w-4 ${frozen ? "text-red-500" : "text-emerald-500"}`}
             aria-hidden="true"
           />
-          <span className={`text-xs font-medium ${frozen ? "text-red-700" : "text-emerald-700"}`}>
+          <span
+            className={`text-xs font-medium ${frozen ? "text-red-600 dark:text-red-400" : "text-emerald-600 dark:text-emerald-400"}`}
+          >
             {frozen ? "System is frozen — writes are blocked" : "System is currently Operational"}
           </span>
         </div>

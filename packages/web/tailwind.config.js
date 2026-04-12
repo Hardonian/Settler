@@ -69,13 +69,19 @@ module.exports = {
           DEFAULT: "var(--surface)",
           muted: "var(--surface-muted)",
           elevated: "var(--surface-elevated)",
+          // foreground token — resolves text-card-foreground
+          foreground: "var(--text)",
         },
+        // muted.DEFAULT = subtle surface tone (used for bg-muted, NOT text)
         muted: {
-          DEFAULT: "var(--text-muted)",
-          foreground: "var(--text-subtle)",
+          DEFAULT: "var(--bg-subtle)",
+          foreground: "var(--text-muted)",
         },
+        // input border token
+        input: "var(--border)",
         accent: {
           DEFAULT: "var(--primary)",
+          foreground: "var(--primary-foreground)",
           highlight: "var(--highlight)",
         },
         border: {

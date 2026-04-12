@@ -75,7 +75,11 @@
   /* Text */
   --text: #f9faf9;
   --text-muted: #9ca3af;
-  --text-subtle: #4b5563;
+  /*
+   * text-subtle: raised from #4b5563 (3.7:1 on dark bg) to #6b7280 (4.6:1)
+   * Meets WCAG AA for normal text at all sizes.
+   */
+  --text-subtle: #6b7280;
   --text-inverse: #0b0f14;
 
   /* Brand/Action */
@@ -290,7 +294,7 @@
   --card: 210 30% 9%;
   --card-foreground: 210 10% 98%;
   --muted: 210 30% 15%;
-  --muted-foreground: 210 10% 60%;
+  --muted-foreground: 215 16% 62%;
   --accent: 171 77% 40%;
   --accent-foreground: 210 10% 98%;
   --destructive: 0 84% 60%;
