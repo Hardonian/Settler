@@ -16,14 +16,86 @@ jest.mock("../../infrastructure/db/prisma", () => ({
 }));
 
 jest.mock("@settler/reconciliation-core", () => ({
+  buildRunInstitutionalMemorySummary: ({ runKind, summaryResolution }: any) => ({
+    state: runKind === "unknown" ? "unavailable" : "ready",
+    summary: "Institutional memory summary",
+    reasonCodes: summaryResolution.compactProofSummary.delta.reasonCodes,
+    provenance: {
+      runKind,
+      source: summaryResolution.source,
+      fallbackReasonCode: summaryResolution.fallbackReasonCode,
+      memorySource: "exception_adjudication_memory",
+      proofSource: "proof_packages",
+      deltaSource: runKind === "recon_job" ? "recon_results" : "unavailable",
+    },
+    memory: {
+      source: "exception_adjudication_memory",
+      state: summaryResolution.compactProofSummary.recurrence.state,
+      exceptionsWithMemories:
+        summaryResolution.compactProofSummary.recurrence.exceptionsWithMemories,
+      repeatedResolutionReasons:
+        summaryResolution.compactProofSummary.recurrence.repeatedResolutionReasons,
+      recurringFamilies: summaryResolution.compactProofSummary.operatorSummary.recurringFamilies,
+    },
+    proof: {
+      source: "proof_packages",
+      ...summaryResolution.compactProofSummary.proofPackages,
+    },
+    deltaBasis: {
+      source: runKind === "recon_job" ? "recon_results" : "unavailable",
+      ...summaryResolution.compactProofSummary.delta,
+    },
+  }),
   canonicalMissingProofpackReasonForRunKind: (runKind: string) =>
     runKind === "ingestion_run" ? "ingestion_run_history_not_comparable" : "run_proofpack_missing",
   resolveOperatorRunDetailForTenants: (...args: unknown[]) =>
     resolveOperatorRunDetailForTenantsMock(...args),
   toRunCompactProofSummary: (index: any) => ({
+    proofPackages: {
+      total: 1,
+      finalized: 1,
+      bestCompletenessScore: 0.95,
+      missingEvidenceCount: 0,
+      latestCreatedAt: "2026-01-01T00:05:00.000Z",
+      state: "ready",
+      degradedEvidenceReasons: [],
+    },
+    recurrence: {
+      exceptionsWithMemories: 2,
+      repeatedResolutionReasons: ["bank_window"],
+      state: "ready",
+      topRecurringFamilies: [
+        {
+          family: "bank_window",
+          trend: "strengthening",
+          certainty: "high",
+          reasonCodes: ["recurring_family_signal_present"],
+        },
+      ],
+    },
     delta: {
       state: index.comparison.state,
       reasonCodes: index.comparison.reasonCodes,
+      baseline: {
+        priorResultId: index.comparison.priorResultId ?? "result-1",
+        priorResultStartedAt: index.comparison.priorResultStartedAt ?? "2025-12-31T00:00:00.000Z",
+      },
+      history: {
+        lookbackWindow: 2,
+        comparableWindowCount: 2,
+        certainty: "high",
+        trend: "improving",
+        pattern: "recovering_pattern",
+        reasonCodes: ["history_window_evaluated"],
+        summary: "Recovering",
+      },
+      deltas: {
+        matched: 2,
+        unmatched: -1,
+        conflicts: 0,
+        proofCompleteness: "improved",
+        recurringFamilyConcentration: "stronger",
+      },
     },
     operatorSummary: {
       signal: "strong",
@@ -58,9 +130,51 @@ jest.mock("@settler/reconciliation-core", () => ({
     if (input.proofpackIndex) {
       return {
         compactProofSummary: {
+          proofPackages: {
+            total: 1,
+            finalized: 1,
+            bestCompletenessScore: 0.95,
+            missingEvidenceCount: 0,
+            latestCreatedAt: "2026-01-01T00:05:00.000Z",
+            state: "ready",
+            degradedEvidenceReasons: [],
+          },
+          recurrence: {
+            exceptionsWithMemories: 2,
+            repeatedResolutionReasons: ["bank_window"],
+            state: "ready",
+            topRecurringFamilies: [
+              {
+                family: "bank_window",
+                trend: "strengthening",
+                certainty: "high",
+                reasonCodes: ["recurring_family_signal_present"],
+              },
+            ],
+          },
           delta: {
             state: input.proofpackIndex.comparison.state,
             reasonCodes: input.proofpackIndex.comparison.reasonCodes,
+            baseline: {
+              priorResultId: "result-1",
+              priorResultStartedAt: "2025-12-31T00:00:00.000Z",
+            },
+            history: {
+              lookbackWindow: 2,
+              comparableWindowCount: 2,
+              certainty: "high",
+              trend: "improving",
+              pattern: "recovering_pattern",
+              reasonCodes: ["history_window_evaluated"],
+              summary: "Recovering",
+            },
+            deltas: {
+              matched: 2,
+              unmatched: -1,
+              conflicts: 0,
+              proofCompleteness: "improved",
+              recurringFamilyConcentration: "stronger",
+            },
           },
           operatorSummary: {
             signal: "strong",
@@ -86,7 +200,45 @@ jest.mock("@settler/reconciliation-core", () => ({
     }
     return {
       compactProofSummary: {
-        delta: { state: "unavailable", reasonCodes: [reasonCode] },
+        proofPackages: {
+          total: 0,
+          finalized: 0,
+          bestCompletenessScore: null,
+          missingEvidenceCount: 0,
+          latestCreatedAt: null,
+          state: "unavailable",
+          degradedEvidenceReasons: [reasonCode],
+        },
+        recurrence: {
+          exceptionsWithMemories: 0,
+          repeatedResolutionReasons: [],
+          state: "unavailable",
+          topRecurringFamilies: [],
+        },
+        delta: {
+          state: "unavailable",
+          reasonCodes: [reasonCode],
+          baseline: {
+            priorResultId: null,
+            priorResultStartedAt: null,
+          },
+          history: {
+            lookbackWindow: 0,
+            comparableWindowCount: 0,
+            certainty: "low",
+            trend: "unavailable",
+            pattern: "unavailable",
+            reasonCodes: [reasonCode],
+            summary: "Unavailable",
+          },
+          deltas: {
+            matched: null,
+            unmatched: null,
+            conflicts: null,
+            proofCompleteness: "unavailable",
+            recurringFamilyConcentration: "unavailable",
+          },
+        },
         operatorSummary: {
           signal: "unavailable",
           pattern: "unavailable",
@@ -140,7 +292,52 @@ describe("buildReconciliationExport historical intelligence", () => {
         id: "run-1",
         runKind: "recon_job",
         compactProofSummary: {
-          delta: { state: "available", reasonCodes: ["history_window_evaluated"] },
+          proofPackages: {
+            total: 1,
+            finalized: 1,
+            bestCompletenessScore: 1,
+            missingEvidenceCount: 0,
+            latestCreatedAt: "2026-01-01T00:05:00.000Z",
+            state: "ready",
+            degradedEvidenceReasons: [],
+          },
+          recurrence: {
+            exceptionsWithMemories: 2,
+            repeatedResolutionReasons: ["bank_window"],
+            state: "ready",
+            topRecurringFamilies: [
+              {
+                family: "bank_window",
+                trend: "strengthening",
+                certainty: "high",
+                reasonCodes: ["recurring_family_signal_present"],
+              },
+            ],
+          },
+          delta: {
+            state: "available",
+            reasonCodes: ["history_window_evaluated"],
+            baseline: {
+              priorResultId: "result-1",
+              priorResultStartedAt: "2025-12-31T00:00:00.000Z",
+            },
+            history: {
+              lookbackWindow: 2,
+              comparableWindowCount: 2,
+              certainty: "high",
+              trend: "improving",
+              pattern: "recovering_pattern",
+              reasonCodes: ["history_window_evaluated"],
+              summary: "Recovering",
+            },
+            deltas: {
+              matched: 2,
+              unmatched: -1,
+              conflicts: 0,
+              proofCompleteness: "improved",
+              recurringFamilyConcentration: "stronger",
+            },
+          },
           operatorSummary: {
             signal: "strong",
             pattern: "recovering_pattern",
@@ -169,11 +366,29 @@ describe("buildReconciliationExport historical intelligence", () => {
     );
 
     expect(document).not.toBeNull();
+    expect(document?.schemaVersion).toBe("1.2.0");
     expect(document?.historicalIntelligenceContext).toEqual({
       runId: "run-1",
       runKind: "recon_job",
       source: "operator_run_detail",
       reason: null,
+    });
+    expect(document?.institutionalMemory).toMatchObject({
+      state: "ready",
+      provenance: {
+        runKind: "recon_job",
+        memorySource: "exception_adjudication_memory",
+        proofSource: "proof_packages",
+        deltaSource: "recon_results",
+      },
+      memory: {
+        exceptionsWithMemories: 2,
+        repeatedResolutionReasons: ["bank_window"],
+      },
+      deltaBasis: {
+        state: "available",
+        reasonCodes: ["history_window_evaluated"],
+      },
     });
     expect(document?.historicalIntelligence.operatorSummary.pattern).toBe("recovering_pattern");
     expect(document?.historicalIntelligence.operatorSummary.explainerCodes).toEqual([
@@ -201,6 +416,16 @@ describe("buildReconciliationExport historical intelligence", () => {
       runKind: "unknown",
       source: "fallback",
       reason: "not_found",
+    });
+    expect(document?.institutionalMemory).toMatchObject({
+      state: "unavailable",
+      provenance: {
+        runKind: "unknown",
+        source: "fallback_unavailable",
+      },
+      deltaBasis: {
+        reasonCodes: ["export_run_detail_not_found"],
+      },
     });
     expect(document?.historicalIntelligence.delta.reasonCodes).toContain(
       "export_run_detail_not_found"
