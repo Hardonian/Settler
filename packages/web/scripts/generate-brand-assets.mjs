@@ -11,7 +11,7 @@
  */
 import sharp from "sharp";
 import { mkdir, readFile, writeFile } from "fs/promises";
-import { join } from "path";
+import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -31,8 +31,8 @@ const WORDMARK_META = { width: 903, height: 339 };
  * Horizontal lockup: scaled circular mark (left) + wordmark, single raster for nav/footer.
  * Intrinsic height matches wordmark (339px).
  */
-async function composeHorizontalLockup() {
-  const wordmarkBuf = await readFile(wordmarkPng);
+async function composeHorizontalLockup(options = {}) {
+  const wordmarkBuf = options.wordmarkBuffer ?? (await readFile(wordmarkPng));
   const markBuf = await readFile(markSourcePng);
 
   const targetMarkSize = WORDMARK_META.height;
@@ -105,7 +105,11 @@ async function circularMarkPng(size) {
     </svg>`
   );
 
-  return sharp(square).ensureAlpha().composite([{ input: circleMask, blend: "dest-in" }]).png().toBuffer();
+  return sharp(square)
+    .ensureAlpha()
+    .composite([{ input: circleMask, blend: "dest-in" }])
+    .png()
+    .toBuffer();
 }
 
 async function openGraphPng(lockupBuf) {

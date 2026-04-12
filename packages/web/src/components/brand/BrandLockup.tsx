@@ -9,6 +9,7 @@ export type BrandLockupOrientation = "horizontal" | "stacked";
 type HorizontalLockupProps = {
   orientation?: "horizontal";
   alt?: string;
+  theme?: "auto" | "light" | "dark";
   className?: string;
   priority?: boolean;
   sizes?: string;
@@ -52,7 +53,9 @@ export function BrandLockup(props: BrandLockupProps) {
     );
   }
 
-  const { alt = "Settler.dev", className, priority, sizes, ...imageRest } = props;
+  const { alt = "Settler.dev", className, priority, sizes, theme = "auto", ...imageRest } = props;
+
+  const themeClass = theme === "dark" ? "invert" : theme === "auto" ? "dark:invert" : "";
 
   return (
     <Image
@@ -60,7 +63,11 @@ export function BrandLockup(props: BrandLockupProps) {
       width={BRAND_LOCKUP_PNG.width}
       height={BRAND_LOCKUP_PNG.height}
       alt={alt}
-      className={cn("max-h-full w-auto max-w-full object-contain object-left dark:invert", className)}
+      className={cn(
+        "max-h-full w-auto max-w-full object-contain object-left",
+        themeClass,
+        className
+      )}
       priority={priority}
       sizes={sizes}
       {...imageRest}
