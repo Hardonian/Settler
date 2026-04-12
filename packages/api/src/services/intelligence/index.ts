@@ -11,7 +11,13 @@ export { PatternExtractor } from "./pattern-extractor";
 export { PredictiveRouter } from "./predictive-router";
 export { AdjudicationMemoryService } from "./adjudication-memory";
 export { RunDeltaService } from "./run-delta";
-export { PriorRunDeltaAnalystService, PRIOR_RUN_DELTA_ANALYST_KEY } from "./prior-run-delta-analyst";
+export {
+  PriorRunDeltaAnalystService,
+  PRIOR_RUN_DELTA_ANALYST_KEY,
+} from "./prior-run-delta-analyst";
+export { SourceReliabilityService } from "./source-reliability";
+export { ProofPackageOrchestrator } from "./proof-package-orchestrator";
+export { TruthPackRegistry } from "./truth-pack-registry";
 
 export type { ExtractedPattern } from "./pattern-extractor";
 export type { RoutingDecision } from "./predictive-router";
@@ -24,3 +30,6 @@ export type {
   AdjudicationMemoryRecord,
 } from "./adjudication-memory";
 export type { RunDeltaInput, RunDeltaResult, ConfigDrift, RunComparisonMetrics } from "./run-delta";
+export type { SourceReliabilityScore, ReliabilityFactor } from "./source-reliability";
+export type { ProofPackageRequest, ProofPackageResult } from "./proof-package-orchestrator";
+export type { TruthPack } from "./truth-pack-registry";
