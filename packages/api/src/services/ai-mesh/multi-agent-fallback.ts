@@ -1,11 +1,13 @@
 /**
  * Multi-Agent Fallback System
  *
- * Handles failures with intelligent fallback to alternative agents
- * Part of Phase III: Self-Healing AI Mesh
+ * This service no longer simulates AI execution. Until Settler has a real,
+ * tenant-safe executor, all calls fail closed with an explicit unavailable
+ * contract so callers cannot mistake planning metadata for completed work.
  */
 
-import { logError, logInfo } from "../../utils/logger";
+import crypto from "node:crypto";
+import { logInfo, logWarn } from "../../utils/logger";
 import { AIRouter, AIModel } from "./ai-router";
 
 export interface AgentTask {
@@ -17,10 +19,14 @@ export interface AgentTask {
 
 export interface AgentResponse {
   success: boolean;
+  status: "completed" | "unavailable" | "failed";
   result?: Record<string, unknown>;
   error?: string;
   model?: AIModel;
   cost?: number;
+  reasonCode?: string;
+  attemptedModels?: AIModel[];
+  degraded?: boolean;
 }
 
 export class MultiAgentFallback {
@@ -40,72 +46,33 @@ export class MultiAgentFallback {
   }
 
   /**
-   * Execute task with automatic fallback
+   * Execute task with automatic fallback.
+   *
+   * Settler does not currently ship a production-safe multi-agent executor in
+   * the API runtime, so this method returns an explicit unavailable contract.
    */
   async executeWithFallback(task: AgentTask, primaryModel?: AIModel): Promise<AgentResponse> {
     const models = primaryModel
       ? [primaryModel, ...this.fallbackChain.filter((m) => m !== primaryModel)]
       : this.fallbackChain;
 
-    let lastError: Error | null = null;
-
-    for (const model of models) {
-      try {
-        logInfo("Attempting task with model", { taskId: task.id, model, type: task.type });
-
-        const result = await this.executeTask(task, model);
-
-        if (result.success) {
-          logInfo("Task succeeded", { taskId: task.id, model });
-          return result;
-        }
-
-        lastError = new Error(result.error || "Unknown error");
-      } catch (error) {
-        lastError = error instanceof Error ? error : new Error("Unknown error");
-        logError("Task execution failed", { taskId: task.id, model, error: lastError });
-      }
-
-      // Don't retry if we've exceeded max retries
-      if ((task.retryCount || 0) >= 3) {
-        break;
-      }
-    }
+    logWarn("multi_agent_executor_unavailable", {
+      taskId: task.id,
+      type: task.type,
+      attemptedModels: models,
+      retryCount: task.retryCount ?? 0,
+      reasonCode: "ai_mesh_executor_unavailable",
+    });
 
     return {
       success: false,
-      error: lastError?.message || "All fallback attempts failed",
-    };
-  }
-
-  /**
-   * Execute task with specific model
-   */
-  private async executeTask(_task: AgentTask, model: AIModel): Promise<AgentResponse> {
-    // Implement AI agent calls
-    // This is a placeholder that would call the actual AI service
-
-    const _config = this.router.getModelConfig(model);
-    // Reserved for future use
-    void _config;
-
-    // Simulate task execution
-    // In production, this would call the appropriate AI service
-    const shouldFail = Math.random() < 0.1; // 10% failure rate for demo
-
-    if (shouldFail) {
-      return {
-        success: false,
-        error: "Simulated failure",
-        model,
-      };
-    }
-
-    return {
-      success: true,
-      result: { processed: true, model },
-      model,
-      cost: this.router.estimateCost(model, 1000),
+      status: "unavailable",
+      error:
+        "AI mesh execution is unavailable in this runtime. Settler will not simulate multi-agent fallback without a real executor.",
+      model: models[0],
+      reasonCode: "ai_mesh_executor_unavailable",
+      attemptedModels: models,
+      degraded: true,
     };
   }
 
@@ -116,10 +83,11 @@ export class MultiAgentFallback {
     error: Error,
     context: Record<string, unknown>
   ): Promise<AgentResponse> {
+    const input = { error: error.message, context };
     return this.executeWithFallback({
-      id: `ingestion-${Date.now()}`,
+      id: buildDeterministicTaskId("ingestion", input),
       type: "ingestion",
-      input: { error: error.message, context },
+      input,
       retryCount: 0,
     });
   }
@@ -131,11 +99,12 @@ export class MultiAgentFallback {
     uncertainFields: string[],
     data: Record<string, unknown>
   ): Promise<AgentResponse> {
+    const input = { uncertainFields, data };
     return this.executeWithFallback(
       {
-        id: `mapping-${Date.now()}`,
+        id: buildDeterministicTaskId("mapping", input),
         type: "mapping",
-        input: { uncertainFields, data },
+        input,
         retryCount: 0,
       },
       "gpt-4"
@@ -149,11 +118,42 @@ export class MultiAgentFallback {
     expected: Record<string, unknown>,
     actual: Record<string, unknown>
   ): Promise<AgentResponse> {
+    const input = { expected, actual };
     return this.executeWithFallback({
-      id: `schema-${Date.now()}`,
+      id: buildDeterministicTaskId("schema", input),
       type: "drift_detection",
-      input: { expected, actual },
+      input,
       retryCount: 0,
     });
   }
+}
+
+function buildDeterministicTaskId(
+  prefix: "ingestion" | "mapping" | "schema",
+  payload: Record<string, unknown>
+): string {
+  const digest = crypto
+    .createHash("sha256")
+    .update(`${prefix}:${stableSerialize(payload)}`)
+    .digest("hex")
+    .slice(0, 16);
+
+  return `${prefix}-${digest}`;
+}
+
+function stableSerialize(value: unknown): string {
+  if (Array.isArray(value)) {
+    return `[${value.map((item) => stableSerialize(item)).join(",")}]`;
+  }
+
+  if (value && typeof value === "object") {
+    const entries = Object.entries(value as Record<string, unknown>).sort(([left], [right]) =>
+      left.localeCompare(right)
+    );
+    return `{${entries
+      .map(([key, item]) => `${JSON.stringify(key)}:${stableSerialize(item)}`)
+      .join(",")}}`;
+  }
+
+  return JSON.stringify(value);
 }

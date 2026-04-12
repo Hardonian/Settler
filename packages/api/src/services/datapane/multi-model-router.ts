@@ -24,6 +24,17 @@ export interface MMRDecision {
   reasoning: string;
 }
 
+export interface MMRExecutionResult {
+  status: "completed" | "unavailable" | "failed";
+  result: unknown;
+  model: AIModel;
+  attempts: number;
+  reasonCode?: string;
+  attemptedModels: AIModel[];
+  degraded: boolean;
+  message?: string;
+}
+
 export class MultiModelRouter {
   private router: AIRouter;
   private config: MMRConfig;
@@ -87,43 +98,30 @@ export class MultiModelRouter {
 
   /**
    * Execute with fallback
-   * Note: This is a placeholder - actual AI execution should be implemented by the caller
+   *
+   * This router only plans model selection. It does not execute LLM requests in
+   * the Settler API runtime, and therefore returns an explicit unavailable
+   * contract instead of simulating success.
    */
-  async executeWithFallback(
-    request: unknown,
-    decision: MMRDecision
-  ): Promise<{
-    result: unknown;
-    model: AIModel;
-    attempts: number;
-  }> {
+  async executeWithFallback(_request: unknown, decision: MMRDecision): Promise<MMRExecutionResult> {
     const models = [decision.selectedModel, ...decision.fallbackChain];
-    let lastError: Error | null = null;
+    logWarn("multi_model_execution_unavailable", {
+      selectedModel: decision.selectedModel,
+      attemptedModels: models,
+      reasonCode: "multi_model_executor_unavailable",
+    });
 
-    for (let i = 0; i < models.length; i++) {
-      const model = models[i];
-      try {
-        // Implement AI model execution
-        // This should call the actual AI service with the selected model
-        // For now, we return a placeholder result
-        const result = { model: model!, request, executed: true };
-        return {
-          result,
-          model: model!,
-          attempts: i + 1,
-        };
-      } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        lastError = error instanceof Error ? error : new Error(errorMessage);
-        logWarn("Model execution failed, trying fallback", {
-          model,
-          error: errorMessage,
-          attempt: i + 1,
-        });
-      }
-    }
-
-    throw new Error(`All models failed. Last error: ${lastError?.message ?? "Unknown error"}`);
+    return {
+      status: "unavailable",
+      result: null,
+      model: decision.selectedModel,
+      attempts: 0,
+      reasonCode: "multi_model_executor_unavailable",
+      attemptedModels: models,
+      degraded: true,
+      message:
+        "Multi-model execution is unavailable in this runtime. Settler will not synthesize a successful model result without a real executor.",
+    };
   }
 
   /**

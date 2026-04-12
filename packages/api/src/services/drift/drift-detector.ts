@@ -6,7 +6,7 @@
  */
 
 import { PrismaClient, Prisma } from "@prisma/client";
-import { logInfo, logError } from "../../utils/logger";
+import { logInfo, logError, logWarn } from "../../utils/logger";
 import { MultiAgentFallback } from "../ai-mesh/multi-agent-fallback";
 import { AIRouter } from "../ai-mesh/ai-router";
 
@@ -78,7 +78,7 @@ export class DriftDetector {
    */
   async autoRepair(tenantId: string, reconJobId: string, drift: DriftDetection): Promise<boolean> {
     try {
-      // Use AI agent to suggest repair
+      // Drift repair is fail-closed until a real executor exists.
       const repair = await this.agentFallback.handleSchemaDeviation(
         { type: drift.expectedType, value: drift.expectedValue },
         { type: drift.actualType, value: drift.actualValue }
@@ -105,6 +105,33 @@ export class DriftDetector {
         logInfo("Drift auto-repaired", { tenantId, reconJobId, fieldPath: drift.fieldPath });
         return true;
       }
+
+      await this.prisma.driftEvent.updateMany({
+        where: {
+          tenantId,
+          reconJobId,
+          fieldPath: drift.fieldPath,
+          acknowledged: false,
+        },
+        data: {
+          autoRepaired: false,
+          repairAction: {
+            status: repair.status,
+            reasonCode: repair.reasonCode ?? "drift_auto_repair_unavailable",
+            attemptedModels: repair.attemptedModels ?? [],
+            degraded: repair.degraded ?? false,
+            message: repair.error ?? "Drift auto-repair is unavailable in this runtime.",
+          } as Prisma.InputJsonValue,
+        },
+      });
+
+      logWarn("drift_auto_repair_unavailable", {
+        tenantId,
+        reconJobId,
+        fieldPath: drift.fieldPath,
+        reasonCode: repair.reasonCode ?? "drift_auto_repair_unavailable",
+        attemptedModels: repair.attemptedModels ?? [],
+      });
     } catch (error) {
       logError("Failed to auto-repair drift", { error, tenantId, reconJobId, drift });
     }
