@@ -147,9 +147,6 @@ importers:
       '@settler/logger':
         specifier: workspace:*
         version: link:../logger
-      '@supabase/supabase-js':
-        specifier: ^2.39.0
-        version: 2.99.2
     devDependencies:
       typescript:
         specifier: ^5.3.3

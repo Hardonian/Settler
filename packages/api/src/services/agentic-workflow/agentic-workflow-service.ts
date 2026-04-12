@@ -313,7 +313,7 @@ export class AgenticWorkflowService {
     const now = Date.now();
     const priorityScores: QueuePriorityScore[] = [];
 
-    for (const exception of exceptions) {
+    for (const exception of activeExceptions) {
       const createdAtMs = exception.createdAt.getTime();
       const ageHours = (now - createdAtMs) / (1000 * 60 * 60);
 
@@ -395,11 +395,13 @@ export class AgenticWorkflowService {
       where: {
         tenantId,
         createdAt: { lt: cutoff },
-        OR: [{ status: "open" }, { status: null }],
         assignedTo: null,
+        reviewed: false,
       },
-      select: { id: true },
+      select: { id: true, status: true },
     });
+
+    const toEscalate = staleExceptions.filter((e) => e.status === "open" || e.status === null);
 
     if (staleExceptions.length === 0) {
       return {

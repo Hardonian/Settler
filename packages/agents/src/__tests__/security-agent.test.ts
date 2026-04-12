@@ -1,12 +1,11 @@
 import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { tmpdir } from "node:os";
 import test from "node:test";
 import { SecurityAgent } from "../security-agent";
 
 function createTempRepo(): string {
-  return mkdtempSync(join(tmpdir(), "settler-agents-"));
+  return mkdtempSync("/tmp/settler-agents-");
 }
 
 function ensureDir(root: string, relativePath: string): string {
