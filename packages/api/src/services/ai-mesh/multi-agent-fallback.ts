@@ -7,8 +7,8 @@
  */
 
 import crypto from "node:crypto";
-import { logInfo, logWarn } from "../../utils/logger";
-import { AIRouter, AIModel } from "./ai-router";
+import { logWarn } from "../../utils/logger";
+import { type AIRouter, type AIModel } from "./ai-router";
 
 export interface AgentTask {
   id: string;
@@ -30,11 +30,10 @@ export interface AgentResponse {
 }
 
 export class MultiAgentFallback {
-  private router: AIRouter;
   private fallbackChain: AIModel[];
 
   constructor(router: AIRouter) {
-    this.router = router;
+    void router;
     this.fallbackChain = [
       "gpt-4",
       "claude-3-opus",

@@ -176,7 +176,14 @@
     "turbo.json",
     "ui",
     "vercel.json",
-    "verify_patch.py"
+    "verify_patch.py",
+    ".codex",
+    "COMPLETE_MARKETING_SYSTEM.md",
+    "DOPPLER_MIGRATION_GUIDE.md",
+    "ENV_MIGRATION.md",
+    "QUALITY_FIRST_MARKETING.md",
+    "TODO_PAYOFF_SPRINT.md",
+    "triage_pass_report.md"
   ],
   "blockedExtensions": [".tar", ".tgz", ".bak", ".tmp", ".old"],
   "localClutterPatterns": [
