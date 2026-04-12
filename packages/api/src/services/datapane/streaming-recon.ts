@@ -6,7 +6,7 @@
  */
 
 import { EventEmitter } from "events";
-import { logInfo } from "../../utils/logger";
+import { logInfo, logError } from "../../utils/logger";
 
 export interface StreamingReconConfig {
   batchSize: number;
