@@ -1,6 +1,6 @@
 /**
  * Maintenance Agent - Automated System Maintenance
- * 
+ *
  * Handles:
  * - Database cleanup (old logs, expired sessions)
  * - Package updates
@@ -10,9 +10,9 @@
  */
 
 import { createClient } from "@supabase/supabase-js";
-import { createLogger } from "../../logger/src";
+import { createLogger } from "@settler/logger";
 
-const log = createLogger('maintenance-agent');
+const log = createLogger("maintenance-agent");
 
 interface MaintenanceConfig {
   supabaseUrl: string;
@@ -40,13 +40,13 @@ class MaintenanceAgent {
 
     try {
       switch (task) {
-        case 'cleanup':
+        case "cleanup":
           return await this.cleanupOldData();
-        case 'update':
+        case "update":
           return await this.checkForUpdates();
-        case 'optimize':
+        case "optimize":
           return await this.optimizeDatabase();
-        case 'cache':
+        case "cache":
           return await this.clearExpiredCache();
         default:
           return {
@@ -56,7 +56,7 @@ class MaintenanceAgent {
           };
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
+      const message = error instanceof Error ? error.message : "Unknown error";
       log.error(`Task ${task} failed: ${message}`);
       return {
         task,
@@ -74,7 +74,7 @@ class MaintenanceAgent {
       results.push(result);
     }
 
-    const failures = results.filter(r => !r.success);
+    const failures = results.filter((r) => !r.success);
     if (failures.length > 0) {
       await this.notify(`⚠️ Maintenance completed with ${failures.length} failures`);
     }
@@ -91,41 +91,41 @@ class MaintenanceAgent {
 
     try {
       const { count: errorCount } = await supabase
-        .from('error_logs')
+        .from("error_logs")
         .delete()
-        .lt('created_at', thirtyDaysAgo)
-        .select('*', { count: 'exact' });
+        .lt("created_at", thirtyDaysAgo)
+        .select("*", { count: "exact" });
       deletedCount += errorCount || 0;
     } catch {
-      log.warn('Failed to clean error_logs table');
+      log.warn("Failed to clean error_logs table");
     }
 
     try {
       const { count: auditCount } = await supabase
-        .from('audit_logs')
+        .from("audit_logs")
         .delete()
-        .lt('created_at', ninetyDaysAgo)
-        .select('*', { count: 'exact' });
+        .lt("created_at", ninetyDaysAgo)
+        .select("*", { count: "exact" });
       deletedCount += auditCount || 0;
     } catch {
-      log.warn('Failed to clean audit_logs table');
+      log.warn("Failed to clean audit_logs table");
     }
 
     try {
       const { count: chatbotCount } = await supabase
-        .from('chatbot_interactions')
+        .from("chatbot_interactions")
         .delete()
-        .lt('created_at', thirtyDaysAgo)
-        .select('*', { count: 'exact' });
+        .lt("created_at", thirtyDaysAgo)
+        .select("*", { count: "exact" });
       deletedCount += chatbotCount || 0;
     } catch {
-      log.warn('Failed to clean chatbot_interactions table');
+      log.warn("Failed to clean chatbot_interactions table");
     }
 
     log.info(`Cleanup complete: ${deletedCount} records deleted`);
 
     return {
-      task: 'cleanup',
+      task: "cleanup",
       success: true,
       message: `Deleted ${deletedCount} old records`,
       details: { deletedCount },
@@ -134,12 +134,13 @@ class MaintenanceAgent {
 
   async checkForUpdates(): Promise<MaintenanceResult> {
     const outdated: string[] = [];
-    log.info('Checking for package updates...');
+    log.info("Checking for package updates...");
 
     return {
-      task: 'update',
+      task: "update",
       success: true,
-      message: outdated.length > 0 ? `${outdated.length} updates available` : 'All packages up to date',
+      message:
+        outdated.length > 0 ? `${outdated.length} updates available` : "All packages up to date",
       details: { outdated },
     };
   }
@@ -148,11 +149,11 @@ class MaintenanceAgent {
     const supabase = createClient(this.config.supabaseUrl, this.config.supabaseKey);
 
     try {
-      const tables = ['users', 'transactions', 'reconciliations', 'audit_logs'];
+      const tables = ["users", "transactions", "reconciliations", "audit_logs"];
 
       for (const table of tables) {
         try {
-          await supabase.rpc('vacuum_analyze', { table_name: table });
+          await supabase.rpc("vacuum_analyze", { table_name: table });
           log.info(`Optimized table: ${table}`);
         } catch {
           log.warn(`Failed to optimize table: ${table}`);
@@ -160,34 +161,34 @@ class MaintenanceAgent {
       }
 
       return {
-        task: 'optimize',
+        task: "optimize",
         success: true,
-        message: 'Database optimization complete',
+        message: "Database optimization complete",
       };
     } catch (e) {
       return {
-        task: 'optimize',
+        task: "optimize",
         success: false,
-        message: 'Database optimization failed',
+        message: "Database optimization failed",
       };
     }
   }
 
   async clearExpiredCache(): Promise<MaintenanceResult> {
-    log.info('Clearing expired cache entries...');
+    log.info("Clearing expired cache entries...");
 
     return {
-      task: 'cache',
+      task: "cache",
       success: true,
-      message: 'Expired cache cleared',
+      message: "Expired cache cleared",
     };
   }
 
   async notify(message: string): Promise<void> {
     if (this.config.slackWebhook) {
       await fetch(this.config.slackWebhook, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: message }),
       }).catch(log.error);
     }
@@ -196,30 +197,30 @@ class MaintenanceAgent {
 
 // CLI
 const args = process.argv.slice(2);
-const taskArg = args.find(a => a.startsWith('--task='))?.split('=')[1];
+const taskArg = args.find((a) => a.startsWith("--task="))?.split("=")[1];
 
 const config: MaintenanceConfig = {
-  supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
-  tasks: ['cleanup', 'update', 'optimize', 'cache'],
+  supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || "",
+  supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY || "",
+  tasks: ["cleanup", "update", "optimize", "cache"],
   slackWebhook: process.env.SLACK_WEBHOOK_URL,
 };
 
 const agent = new MaintenanceAgent(config);
 
 if (taskArg) {
-  agent.runTask(taskArg).then(result => {
-    console.log(result.success ? '✅' : '❌', result.message);
+  agent.runTask(taskArg).then((result) => {
+    console.log(result.success ? "✅" : "❌", result.message);
     process.exit(result.success ? 0 : 1);
   });
 } else {
-  agent.runAll().then(results => {
-    const failures = results.filter(r => !r.success);
+  agent.runAll().then((results) => {
+    const failures = results.filter((r) => !r.success);
     if (failures.length > 0) {
       console.log(`❌ ${failures.length} tasks failed`);
       process.exit(1);
     }
-    console.log('✅ All maintenance tasks complete');
+    console.log("✅ All maintenance tasks complete");
   });
 }
 

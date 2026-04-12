@@ -1,19 +1,19 @@
 /**
  * Deploy Agent - Automated Deployment Management
- * 
+ *
  * Handles:
  * - Deploy preview builds
  * - Deploy production
  * - Rollback failed deploys
  * - Notify on status
- * 
+ *
  * Usage: node agents/deploy-agent.js --env production
  */
 
 import { createClient } from "@supabase/supabase-js";
-import { createLogger } from "../../logger/src";
+import { createLogger } from "@settler/logger";
 
-const log = createLogger('deploy-agent');
+const log = createLogger("deploy-agent");
 
 interface DeployConfig {
   supabaseUrl: string;
@@ -25,7 +25,7 @@ interface DeployConfig {
 }
 
 interface DeployRequest {
-  env: 'preview' | 'production' | 'staging';
+  env: "preview" | "production" | "staging";
   ref?: string;
   prNumber?: number;
 }
@@ -52,8 +52,8 @@ class DeployAgent {
     log.info(`Starting ${env} deploy...`, { ref, prNumber });
 
     try {
-      const commit = ref || 'main';
-      
+      const commit = ref || "main";
+
       if (this.config.vercelToken) {
         const result = await this.triggerVercelDeploy(env, commit);
         if (!result.success) return result;
@@ -63,14 +63,14 @@ class DeployAgent {
         env,
         commit,
         prNumber,
-        status: 'started',
+        status: "started",
         url: `https://${env}.settler.dev`,
       });
 
       await this.notify(`Deploying ${env} (${commit})`);
 
       const duration = Date.now() - start;
-      
+
       return {
         success: true,
         url: `https://${env}.settler.dev`,
@@ -78,13 +78,13 @@ class DeployAgent {
         duration,
       };
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
+      const message = error instanceof Error ? error.message : "Unknown error";
       log.error(`Deploy failed: ${message}`);
-      
+
       await this.logDeploy({
         env,
-        commit: ref || 'main',
-        status: 'failed',
+        commit: ref || "main",
+        status: "failed",
         error: message,
       });
 
@@ -105,14 +105,14 @@ class DeployAgent {
 
     const supabase = createClient(this.config.supabaseUrl, this.config.supabaseKey);
     const { data: deploys } = await supabase
-      .from('deploys')
-      .select('*')
-      .eq('id', deployId)
-      .order('created_at', { ascending: false })
+      .from("deploys")
+      .select("*")
+      .eq("id", deployId)
+      .order("created_at", { ascending: false })
       .limit(2);
 
     if (!deploys || deploys.length < 2) {
-      return { success: false, error: 'No previous deploy to rollback to' };
+      return { success: false, error: "No previous deploy to rollback to" };
     }
 
     const previousDeploy = deploys[1];
@@ -124,7 +124,7 @@ class DeployAgent {
     await this.logDeploy({
       env: previousDeploy.env,
       commit: previousDeploy.commit,
-      status: 'rolled_back',
+      status: "rolled_back",
       rolledBackFrom: deployId,
     });
 
@@ -142,20 +142,20 @@ class DeployAgent {
   }): Promise<void> {
     try {
       const supabase = createClient(this.config.supabaseUrl, this.config.supabaseKey);
-      await supabase.from('deploys').insert({
+      await supabase.from("deploys").insert({
         ...deploy,
         created_at: new Date().toISOString(),
       });
     } catch (e) {
-      log.error('Failed to log deploy', e);
+      log.error("Failed to log deploy", e);
     }
   }
 
   async notify(message: string): Promise<void> {
     if (this.config.slackWebhook) {
       await fetch(this.config.slackWebhook, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: `🚀 ${message}` }),
       }).catch(log.error);
     }
@@ -164,24 +164,28 @@ class DeployAgent {
 
 // CLI
 const args = process.argv.slice(2);
-const envArg = args.find(a => a.startsWith('--env='))?.split('=')[1];
+const envArg = args.find((a) => a.startsWith("--env="))?.split("=")[1];
 
 if (!envArg) {
-  console.log('Usage: node deploy-agent.js --env=[preview|production|staging] [--ref=commit]');
+  console.log("Usage: node deploy-agent.js --env=[preview|production|staging] [--ref=commit]");
   process.exit(1);
 }
 
 const agent = new DeployAgent({
-  supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
-  githubToken: process.env.GITHUB_TOKEN || '',
-  repo: 'Hardonian/Settler',
+  supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || "",
+  supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY || "",
+  githubToken: process.env.GITHUB_TOKEN || "",
+  repo: "Hardonian/Settler",
   vercelToken: process.env.VERCEL_TOKEN,
   slackWebhook: process.env.SLACK_WEBHOOK_URL,
 });
 
-agent.deploy({ env: envArg as 'preview' | 'production' | 'staging', ref: args.find(a => a.startsWith('--ref='))?.split('=')[1] })
-  .then(result => {
+agent
+  .deploy({
+    env: envArg as "preview" | "production" | "staging",
+    ref: args.find((a) => a.startsWith("--ref="))?.split("=")[1],
+  })
+  .then((result) => {
     if (result.success) {
       console.log(`✅ Deploy complete: ${result.url}`);
     } else {

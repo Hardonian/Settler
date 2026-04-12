@@ -306,7 +306,11 @@ function checkScriptReferences(): void {
               resolvedPath = join(packagesDir, dir, filePath);
             }
 
-            if (!existsSync(resolvedPath)) {
+            const isBuildOutput =
+              filePath.startsWith("dist/") ||
+              filePath.startsWith("build/") ||
+              filePath.startsWith(".next/");
+            if (!isBuildOutput && !existsSync(resolvedPath)) {
               invalidScripts.push({
                 package: dir,
                 script: scriptName,

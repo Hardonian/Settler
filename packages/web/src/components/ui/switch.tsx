@@ -2,6 +2,7 @@
  * Switch Component
  *
  * A toggle switch component for boolean inputs.
+ * Uses a native checkbox with role="switch" for maximum accessibility and linter compatibility.
  */
 
 "use client";
@@ -16,32 +17,26 @@ export interface SwitchProps {
   className?: string;
 }
 
-export const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
+export const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(
   ({ checked = false, onCheckedChange, disabled, className, ...props }, ref) => {
     return (
-      <button
-        aria-checked="true"
-        type="button"
+      <input
+        type="checkbox"
         role="switch"
         ref={ref}
         disabled={disabled}
-        onClick={() => onCheckedChange?.(!checked)}
+        checked={checked}
+        onChange={(e) => onCheckedChange?.(e.target.checked)}
         className={cn(
-          "relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
+          "relative inline-flex h-6 w-11 shrink-0 cursor-pointer appearance-none items-center rounded-full transition-colors",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-          checked ? "bg-primary" : "bg-muted/60",
+          "before:inline-block before:h-4 before:w-4 before:transform before:rounded-full before:bg-background before:transition-transform before:content-['']",
+          checked ? "bg-primary before:translate-x-6" : "bg-muted/60 before:translate-x-1",
           disabled && "opacity-50 cursor-not-allowed",
           className
         )}
         {...props}
-      >
-        <span
-          className={cn(
-            "inline-block h-4 w-4 transform rounded-full bg-background transition-transform",
-            checked ? "translate-x-6" : "translate-x-1"
-          )}
-        />
-      </button>
+      />
     );
   }
 );

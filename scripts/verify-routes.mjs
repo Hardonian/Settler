@@ -11,13 +11,11 @@ const non500Routes = [
   "/api/v1/health",
   "/api/v1/ready",
   "/api/v1/meta",
-  "/openapi.json",
   "/app",
   "/app/assistant",
   "/app/pipelines",
   "/app/runs",
-  "/app/review-queue",
-  "/app/pipelines/demo-pipeline",
+  "/app/review",
 ];
 
 async function waitForServer(timeoutMs = 90000) {

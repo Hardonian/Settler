@@ -1,0 +1,17 @@
+{
+  "name": "@settler/agents",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "start": "node dist/orchestrator-agent.js"
+  },
+  "dependencies": {
+    "@settler/logger": "workspace:*",
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
