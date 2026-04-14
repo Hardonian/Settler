@@ -56,7 +56,7 @@ const features: ComparisonFeature[] = [
     highlight: true,
   },
   {
-    feature: "SOC 2 Ready",
+    feature: "SOC 2 roadmap (target)",
     settler: true,
     competitor: "Planned",
   },

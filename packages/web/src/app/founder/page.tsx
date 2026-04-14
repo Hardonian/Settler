@@ -61,7 +61,7 @@ export default function FounderPage() {
           <h2>Why Now</h2>
           <p>
             The explosion of multi-platform commerce has created a reconciliation nightmare. Settler
-            solves this with Edge AI, real-time processing, and 99.7% accuracy—all accessible
+            solves this with Edge AI and real-time processing, with target high-confidence matching—all accessible
             through a simple API.
           </p>
 

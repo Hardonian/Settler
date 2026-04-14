@@ -189,7 +189,7 @@ export default function Support() {
     {
       question: "What platforms does Settler support?",
       answer:
-        "Settler supports 50+ platforms including Stripe, Shopify, QuickBooks, PayPal, Square, Amazon Pay, and many more. We have pre-built integrations for the most popular platforms, and you can easily build custom integrations for any platform with our integration SDK.",
+        "Settler supports multiple platforms including Stripe, Shopify, QuickBooks, PayPal, Square, Amazon Pay, and more. We have pre-built integrations for popular platforms, and you can build custom integrations with our SDK.",
     },
     {
       question: "Is there a free trial?",
@@ -199,7 +199,7 @@ export default function Support() {
     {
       question: "How accurate is the reconciliation?",
       answer:
-        "Settler achieves 99.7% accuracy with our advanced matching algorithms, confidence scoring, and fuzzy matching capabilities. We use multiple matching strategies including exact matching, fuzzy matching, and date range matching to ensure high accuracy even with imperfect data.",
+        "Settler uses advanced matching algorithms, confidence scoring, and fuzzy matching capabilities. We use multiple matching strategies including exact matching, fuzzy matching, and date range matching to improve reliability even with imperfect data.",
     },
     {
       question: "Can I use Settler on-premise?",

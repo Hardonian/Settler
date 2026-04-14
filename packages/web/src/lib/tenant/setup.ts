@@ -101,7 +101,7 @@ export async function migrateHomepageToTenantPage(tenantId: string) {
           visible: true,
           title: "Automate Payment Reconciliation in Minutes",
           description:
-            "Connect Shopify, Stripe, PayPal, and 50+ platforms. Automatically match transactions, orders, and payments with 99.7% accuracy.",
+            "Connect Shopify, Stripe, PayPal, and many platforms. Automatically match transactions, orders, and payments with high-confidence matching.",
           primaryCta: {
             label: "Start Free Trial",
             href: "/signup",
