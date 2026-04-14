@@ -98,3 +98,11 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution workflow and quality
 ## License
 
 Settler is licensed under the terms found in [LICENSE](LICENSE).
+
+
+## Repository Operations Standards
+
+- Squash-only merges
+- Auto-delete merged branches
+- Weekly dependency update windows
+- Security scanning in CI
