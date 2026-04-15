@@ -342,21 +342,21 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",
-    "@playwright/test": "^1.40.0",
-    "@prisma/client": "^7.1.0",
+    "@playwright/test": "^1.59.1",
+    "@prisma/client": "^7.7.0",
     "@types/node": "^24.0.0",
-    "@types/pg": "8.18.0",
+    "@types/pg": "8.20.0",
     "@typescript-eslint/eslint-plugin": "^8.54.0",
-    "@typescript-eslint/parser": "^8.57.1",
+    "@typescript-eslint/parser": "^8.58.2",
     "cross-env": "^10.1.0",
-    "dotenv": "^17.3.1",
+    "dotenv": "^17.4.2",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "glob": "^10.5.0",
     "husky": "^8.0.3",
     "lint-staged": "^15.5.2",
     "pg": "^8.16.3",
-    "prettier": "^3.1.1",
+    "prettier": "^3.8.2",
     "prisma": "^7.7.0",
     "sharp": "^0.34.5",
     "tsx": "^4.21.0",
@@ -389,7 +389,7 @@
       "glob": "^10.5.0",
       "minimatch": ">=10.2.1",
       "eslint": "^9.26.0",
-      "@types/pg": "8.18.0",
+      "@types/pg": "8.20.0",
       "handlebars": "^4.7.9",
       "picomatch": "^4.0.4",
       "yaml": "^2.8.3",
@@ -416,6 +416,6 @@
     ]
   },
   "dependencies": {
-    "turbo": "^2.8.20"
+    "turbo": "^2.9.6"
   }
 }
