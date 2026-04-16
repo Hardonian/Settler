@@ -10,6 +10,7 @@ import Link from "next/link";
 import { VisualGrid } from "@/components/site/infographics";
 import { COMMERCIAL_OFFERS, OfferCode } from "@/domain/billing/commercialModel";
 import { PREMIUM_PACKS } from "@/domain/billing/premiumPacks";
+import { calculateMonthlyCost, planConfigs } from "@/domain/billing/planConfig";
 
 export const metadata = {
   title: "Pricing | Settler",
@@ -24,6 +25,21 @@ const iconByOffer: Record<OfferCode, LucideIcon> = {
 };
 
 export default function PricingPage() {
+  const pricingScenarios = [
+    {
+      label: "Cloud API baseline",
+      plan: "growth" as const,
+      volume: 100_000,
+      exceptions: 1_000,
+    },
+    {
+      label: "Managed close operations",
+      plan: "scale" as const,
+      volume: 350_000,
+      exceptions: 6_000,
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -110,6 +126,52 @@ export default function PricingPage() {
       {/* Feature Comparison */}
       <FeatureComparison />
 
+      <Section className="border-t border-border/40 py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl">
+          <SectionHeader
+            title="Metering truth (deterministic billing inputs)"
+            description="Settler bills by reconciliation volume and exception load using canonical plan limits. The estimator below uses the same plan config contract used by the product."
+          />
+          <div className="mt-8 grid gap-6 md:grid-cols-2">
+            {pricingScenarios.map((scenario) =>
+              (() => {
+                const plan = planConfigs[scenario.plan];
+                if (!plan) return null;
+
+                return (
+                  <Card key={scenario.label} className="border-border/50">
+                    <CardHeader>
+                      <CardTitle className="text-lg">{scenario.label}</CardTitle>
+                      <CardDescription>
+                        Plan: {plan.name} · {scenario.volume.toLocaleString()} reconciliations ·{" "}
+                        {scenario.exceptions.toLocaleString()} exceptions
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <p className="text-sm text-muted-foreground">
+                        Estimated monthly bill:
+                        <span className="ml-2 text-base font-semibold text-foreground">
+                          $
+                          {calculateMonthlyCost(
+                            scenario.plan,
+                            scenario.volume,
+                            scenario.exceptions
+                          ).toLocaleString()}
+                        </span>
+                      </p>
+                      <p className="mt-2 text-xs text-muted-foreground">
+                        Includes base fee plus usage under the canonical spine. Enterprise contracts
+                        can override limits, retention, and support terms.
+                      </p>
+                    </CardContent>
+                  </Card>
+                );
+              })()
+            )}
+          </div>
+        </div>
+      </Section>
+
       <Section className="border-t border-border/40 py-16 sm:py-20 bg-muted/10">
         <div className="mx-auto max-w-7xl">
           <SectionHeader
@@ -190,6 +252,26 @@ export default function PricingPage() {
 
       <Section className="bg-muted/10">
         <VisualGrid />
+      </Section>
+
+      <Section className="border-y border-border/40 py-16 sm:py-20">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center">
+          <SectionHeader
+            title="API onboarding in under 30 minutes"
+            description="Start with run creation, evidence retrieval, and replay routes. Promote to Managed / Enterprise when you need contractual reliability and named operator support."
+          />
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Button asChild>
+              <Link href="/docs/api">Review API contracts</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/openapi.json">Download OpenAPI</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/contact">Talk to solutions engineering</Link>
+            </Button>
+          </div>
+        </div>
       </Section>
 
       <CTASection
