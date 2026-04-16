@@ -105,11 +105,16 @@ export function generateMetadata({
  */
 export function generatePricingMetadata(): Metadata {
   return generateMetadata({
-    title: "Enterprise - Hosted Infrastructure",
+    title: "Pricing - Plans for OSS, Cloud API, and Enterprise",
     description:
-      "Optional hosted infrastructure for organizations that want managed deployment and scale without changing core reconciliation logic.",
-    keywords: ["enterprise hosting", "managed reconciliation", "infrastructure scale"],
-    canonical: `${getDefaultSiteUrl()}/enterprise`,
+      "Transparent Settler pricing for deterministic reconciliation: OSS, Cloud API, Managed Operations, and Enterprise deployment tiers.",
+    keywords: [
+      "reconciliation pricing",
+      "api pricing",
+      "managed reconciliation",
+      "enterprise reconciliation platform",
+    ],
+    canonical: `${getDefaultSiteUrl()}/pricing`,
   });
 }
 
