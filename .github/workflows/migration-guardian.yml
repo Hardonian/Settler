@@ -144,26 +144,29 @@ jobs:
         with:
           node-version-file: ".nvmrc"
 
+      - name: Setup pnpm
+        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
+
       - name: Install dependencies (retry on transient failures)
         run: |
           for i in 1 2 3; do
-            npm ci && break
-            echo "npm ci failed on attempt $i, retrying..."
+            pnpm install --frozen-lockfile && break
+            echo "pnpm install failed on attempt $i, retrying..."
             sleep 10
             if [ "$i" -eq 3 ]; then
-              echo "npm ci failed after 3 attempts"
+              echo "pnpm install failed after 3 attempts"
               exit 1
             fi
           done
 
       - name: Generate Prisma client
-        run: npm run prisma:generate || npx prisma generate
+        run: pnpm run prisma:generate || pnpm exec prisma generate
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Run Migration Guardian
         id: guardian
-        run: npm run migration:guardian
+        run: pnpm run migration:guardian
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
