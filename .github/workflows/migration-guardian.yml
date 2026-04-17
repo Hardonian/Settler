@@ -126,7 +126,7 @@ jobs:
   migration-guardian:
     name: Run Migration Guardian
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 45
     needs: [detect-migrations]
     if: |
       github.event_name == 'schedule' ||
@@ -152,7 +152,7 @@ jobs:
           for i in 1 2 3; do
             pnpm install --frozen-lockfile && break
             echo "pnpm install failed on attempt $i, retrying..."
-            sleep 10
+            sleep 30
             if [ "$i" -eq 3 ]; then
               echo "pnpm install failed after 3 attempts"
               exit 1
@@ -381,7 +381,7 @@ jobs:
           PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
         run: |
           echo "🔍 Verifying production health..."
-          sleep 10
+          sleep 30
           for i in {1..10}; do
             if curl -f ${PRODUCTION_URL}/health && curl -f ${PRODUCTION_URL}/health/detailed; then
               echo "✅ Production health check passed"
