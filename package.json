@@ -49,6 +49,7 @@
     "verify:edge-functions": "tsx scripts/verify-edge-functions.ts",
     "verify:pipe-dreams": "tsx scripts/find-pipe-dream-signals.ts",
     "migrations:consolidate": "tsx scripts/consolidate-migrations.ts",
+    "migration:guardian": "tsx scripts/migration-guardian.ts",
     "monitor:errors": "tsx scripts/monitor-api-errors.ts",
     "check:production": "tsx scripts/check-production-readiness.ts",
     "repo-integrity": "tsx scripts/repo-integrity.ts",
