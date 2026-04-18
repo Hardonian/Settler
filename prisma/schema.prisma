@@ -1041,6 +1041,11 @@ model Tenant {
   operatorCustomizationAudits OperatorCustomizationAudit[]
   operatorInteractionSignals OperatorInteractionSignal[]
   operatorSuggestionDismissals OperatorSuggestionDismissal[]
+  workflowDefinitions WorkflowDefinition[]
+  scheduledWorkflows ScheduledWorkflow[]
+  workflowExecutionLogs WorkflowExecutionLog[]
+  detectionRules     DetectionRule[]
+  anomalies          Anomaly[]
 
   @@index([slug])
   @@index([primaryDomain])
@@ -2417,4 +2422,92 @@ model SecurityAudit {
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("security_audits")
+}
+
+model WorkflowDefinition {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  steps       Json     @default("[]")
+  trigger     Json     @default("{}")
+  enabled     Boolean  @default(true)
+  tenantId    String   @db.Uuid
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("workflow_definitions")
+}
+
+model ScheduledWorkflow {
+  id             String   @id @default(uuid())
+  workflowId     String
+  nextRun        DateTime
+  cronExpression String?
+  tenantId       String   @db.Uuid
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([workflowId])
+  @@map("scheduled_workflows")
+}
+
+model WorkflowExecutionLog {
+  id         String    @id @default(uuid())
+  workflowId String
+  runId      String
+  stepId     String
+  status     String
+  startTime  DateTime  @default(now())
+  endTime    DateTime?
+  error      String?
+  tenantId   String    @db.Uuid
+
+  tenant     Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([workflowId])
+  @@index([runId])
+  @@map("workflow_execution_logs")
+}
+
+model DetectionRule {
+  id          String   @id @default(uuid())
+  name        String
+  type        String
+  condition   String
+  severity    String   @default("medium")
+  enabled     Boolean  @default(true)
+  tenantId    String   @db.Uuid
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("detection_rules")
+}
+
+model Anomaly {
+  id         String   @id @default(uuid())
+  tenantId   String   @db.Uuid
+  type       String
+  severity   String
+  message    String
+  detectedAt DateTime @default(now())
+  metadata   Json     @default("{}")
+  resolved   Boolean  @default(false)
+  resolvedAt DateTime?
+
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([type])
+  @@index([severity])
+  @@map("anomalies")
 }
