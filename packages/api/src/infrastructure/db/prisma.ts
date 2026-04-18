@@ -16,15 +16,6 @@ const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 function buildPrismaOptions(): ConstructorParameters<typeof PrismaClient>[0] {
   const logLevel = config.nodeEnv === "development" ? ["query", "error", "warn"] : ["error"];
 
-  if (config.nodeEnv === "test") {
-    // If not using Prisma Accelerate in tests, consider using a direct connection or the adapter
-    return {
-      log: logLevel,
-      // Example: fallback to direct connection for local tests if needed
-      // datasourceUrl: process.env.TEST_DATABASE_URL
-    } as ConstructorParameters<typeof PrismaClient>[0];
-  }
-
   const pool = new Pool({
     host: config.database.host,
     port: config.database.port,
