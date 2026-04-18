@@ -1,10 +1,15 @@
 import express from "express";
 import request from "supertest";
+import { apiGatewayCache } from "../../middleware/api-gateway-cache";
 import { idempotencyMiddleware } from "../../middleware/idempotency";
 import { checkRateLimit } from "../../utils/rate-limiter";
 import { MAX_PAGE_LIMIT, parseCursorPaginationParams, encodeCursor } from "../../utils/pagination";
 import webhookReceiveRouter from "../../routes/v1/webhooks/receive";
 import { WebhookIngestionService } from "../../application/webhooks/WebhookIngestionService";
+
+const mockCacheGet = jest.fn();
+const mockCacheSet = jest.fn();
+const mockCacheDel = jest.fn();
 
 jest.mock("../../db", () => ({
   query: jest.fn(),
@@ -12,6 +17,9 @@ jest.mock("../../db", () => ({
 
 jest.mock("../../utils/cache", () => ({
   getRedisClient: jest.fn(() => null),
+  get: (...args: unknown[]) => mockCacheGet(...args),
+  set: (...args: unknown[]) => mockCacheSet(...args),
+  del: (...args: unknown[]) => mockCacheDel(...args),
 }));
 
 const { query } = jest.requireMock("../../db") as { query: jest.Mock };
@@ -19,6 +27,9 @@ const { query } = jest.requireMock("../../db") as { query: jest.Mock };
 describe("API resilience primitives", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockCacheGet.mockReset();
+    mockCacheSet.mockReset();
+    mockCacheDel.mockReset();
   });
 
   it("returns cached response for duplicated idempotency key", async () => {
@@ -36,6 +47,7 @@ describe("API resilience primitives", () => {
     app.use(express.json());
     app.use((req, _res, next) => {
       (req as { userId?: string }).userId = "user-1";
+      (req as { tenantId?: string }).tenantId = "tenant-1";
       next();
     });
     app.use(idempotencyMiddleware());
@@ -51,6 +63,63 @@ describe("API resilience primitives", () => {
     expect(response.status).toBe(201);
     expect(response.body).toEqual({ jobId: "j_1", ok: true });
     expect(response.headers["x-idempotent-replay"]).toBe("true");
+    expect(query).toHaveBeenCalledWith(expect.stringContaining("tenant_id = $2"), [
+      "user-1",
+      "tenant-1",
+      "idem-1",
+    ]);
+  });
+
+  it("fails closed when idempotent mutation lacks tenant context", async () => {
+    const app = express();
+    app.use(express.json());
+    app.use((req, _res, next) => {
+      (req as { userId?: string }).userId = "user-1";
+      next();
+    });
+    app.use(idempotencyMiddleware());
+    app.post("/jobs", (_req, res) => {
+      res.status(201).json({ jobId: "new" });
+    });
+
+    const response = await request(app)
+      .post("/jobs")
+      .set("idempotency-key", "idem-1")
+      .send({ amount: 10 });
+
+    expect(response.status).toBe(403);
+    expect(response.body.error).toBe("TENANT_CONTEXT_REQUIRED");
+    expect(query).not.toHaveBeenCalled();
+  });
+
+  it("partitions API gateway cache keys by tenant by default", async () => {
+    mockCacheGet.mockResolvedValueOnce({ tenant: "tenant-a" }).mockResolvedValueOnce({
+      tenant: "tenant-b",
+    });
+
+    const app = express();
+    app.use((req, _res, next) => {
+      (req as { userId?: string }).userId = "user-1";
+      (req as { tenantId?: string }).tenantId = req.get("x-tenant-id") || undefined;
+      next();
+    });
+    app.use(
+      apiGatewayCache({
+        includeUserId: true,
+        includeQueryParams: true,
+      })
+    );
+    app.get("/reports", (_req, res) => {
+      res.json({ tenant: "handler" });
+    });
+
+    const tenantA = await request(app).get("/reports?status=open").set("x-tenant-id", "tenant-a");
+    const tenantB = await request(app).get("/reports?status=open").set("x-tenant-id", "tenant-b");
+
+    expect(tenantA.body).toEqual({ tenant: "tenant-a" });
+    expect(tenantB.body).toEqual({ tenant: "tenant-b" });
+    expect(mockCacheGet).toHaveBeenNthCalledWith(1, expect.stringContaining("tenant:tenant-a"));
+    expect(mockCacheGet).toHaveBeenNthCalledWith(2, expect.stringContaining("tenant:tenant-b"));
   });
 
   it("enforces tenant-scoped rate limiting and isolation", async () => {
