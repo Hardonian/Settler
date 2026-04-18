@@ -135,7 +135,7 @@ export class GovernanceLayer {
       }
 
       if (guardrail.requireApproval) {
-        Check for approval
+        // TODO: check for approval
         return {
           allowed: false,
           reason: "Approval required",
