@@ -1,4 +1,5 @@
 import { Router, Request, Response } from "express";
+import { config } from "../config";
 import { query } from "../db";
 import { pool } from "../db";
 import { HealthCheckService } from "../infrastructure/observability/health";
@@ -70,8 +71,16 @@ router.get("/", async (_req: Request, res: Response) => {
   });
 });
 
-// Detailed health check with dependency checks
-router.get("/detailed", async (_req: Request, res: Response) => {
+// Detailed health check with dependency checks (SEC-06: restricted in production)
+router.get("/detailed", async (req: Request, res: Response) => {
+  if (config.nodeEnv === "production" || config.nodeEnv === "preview") {
+    const ip = req.ip || req.socket.remoteAddress || "";
+    const isLocal = ip === "127.0.0.1" || ip === "::1" || ip === "::ffff:127.0.0.1";
+    if (!isLocal) {
+      res.status(403).json({ error: "Forbidden", message: "Detailed health is internal only" });
+      return;
+    }
+  }
   const [health, distributedGuarantees] = await Promise.all([
     healthCheckService.checkAll(),
     getDistributedGuarantees(),
@@ -103,8 +112,16 @@ router.get("/ready", async (_req: Request, res: Response) => {
   res.status(health.status === "ready" ? 200 : 503).json(health);
 });
 
-// Database health check endpoint (for monitoring/debugging)
-router.get("/db", async (_req: Request, res: Response) => {
+// Database health check endpoint (SEC-06: restricted in production)
+router.get("/db", async (req: Request, res: Response) => {
+  if (config.nodeEnv === "production" || config.nodeEnv === "preview") {
+    const ip = req.ip || req.socket.remoteAddress || "";
+    const isLocal = ip === "127.0.0.1" || ip === "::1" || ip === "::ffff:127.0.0.1";
+    if (!isLocal) {
+      res.status(403).json({ error: "Forbidden", message: "Database health is internal only" });
+      return;
+    }
+  }
   try {
     const dbCheck = await healthCheckService.checkDatabase();
     const statusCode =

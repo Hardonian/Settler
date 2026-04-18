@@ -13,14 +13,14 @@ const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
  * Prisma 7 "client" engine requires a driver adapter or accelerateUrl.
  * We use @prisma/adapter-pg for direct PostgreSQL connections.
  */
-function buildPrismaOptions(): any {
+function buildPrismaOptions(): ConstructorParameters<typeof PrismaClient>[0] {
   const logLevel = config.nodeEnv === "development" ? ["query", "error", "warn"] : ["error"];
 
   if (config.nodeEnv === "test") {
     return {
       log: logLevel,
       accelerateUrl: "prisma://localhost/?api_key=test",
-    };
+    } as ConstructorParameters<typeof PrismaClient>[0];
   }
 
   const pool = new Pool({
@@ -29,7 +29,9 @@ function buildPrismaOptions(): any {
     database: config.database.name,
     user: config.database.user,
     password: config.database.password,
-    ssl: config.database.ssl ? { rejectUnauthorized: false } : false,
+    ssl: config.database.ssl
+      ? { rejectUnauthorized: config.nodeEnv === "production" || config.nodeEnv === "preview" }
+      : false,
     min: config.database.poolMin,
     max: config.database.poolMax,
     connectionTimeoutMillis: config.database.connectionTimeout,
@@ -37,7 +39,7 @@ function buildPrismaOptions(): any {
   });
   const adapter = new PrismaPg(pool);
 
-  return { log: logLevel, adapter };
+  return { log: logLevel, adapter } as ConstructorParameters<typeof PrismaClient>[0];
 }
 
 export const prisma = globalForPrisma.prisma || new PrismaClient(buildPrismaOptions());

@@ -168,9 +168,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   res.setHeader("X-Trace-Id", traceId);
   res.setHeader("X-Request-Id", requestId);
   res.setHeader("X-Execution-Id", executionId);
-  if (authReq.tenantId) {
-    res.setHeader("X-Tenant-Id", authReq.tenantId);
-  }
+  // SEC-10: Tenant ID is set on the request for internal use but NOT
+  // reflected in response headers to prevent identifier enumeration.
   next();
 });
 
@@ -261,8 +260,22 @@ if (config.nodeEnv === "production" || config.nodeEnv === "preview") {
 // Health check (no auth required)
 app.use("/health", healthRouter);
 
-// Metrics endpoint (no auth required, but should be protected in production)
-app.use("/metrics", metricsRouter);
+// Metrics endpoint — restricted to localhost in production (SEC-05)
+app.use(
+  "/metrics",
+  (req: Request, res: Response, next: NextFunction) => {
+    if (config.nodeEnv === "production" || config.nodeEnv === "preview") {
+      const ip = req.ip || req.socket.remoteAddress || "";
+      const isLocal = ip === "127.0.0.1" || ip === "::1" || ip === "::ffff:127.0.0.1";
+      if (!isLocal) {
+        res.status(403).json({ error: "Forbidden", message: "Metrics endpoint is internal only" });
+        return;
+      }
+    }
+    next();
+  },
+  metricsRouter
+);
 
 // API Documentation (no auth required)
 app.use("/api/v1", openApiRouter);
@@ -339,12 +352,28 @@ configureProtectedRouter(v2ProtectedRouter, {
 });
 
 // Auth routes (no auth required for login/refresh)
-app.use("/api/v1/auth", authRouter);
-app.use("/api/v2/auth", authRouter);
+// SEC-04: Strict brute-force rate limiter for auth endpoints
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // 10 attempts per window per IP
+  message: "Too many authentication attempts, please try again later.",
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.ip || "unknown",
+});
+app.use("/api/v1/auth", authLimiter, authRouter);
+app.use("/api/v2/auth", authLimiter, authRouter);
 
-// Playground routes (no auth, rate-limited)
-app.use("/api/v1/playground", playgroundRouter);
-app.use("/api/v2/playground", playgroundRouter);
+// Playground routes (no auth, strict rate-limited)
+const playgroundLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30, // 30 requests per 15 minutes per IP
+  message: "Too many playground requests, please try again later.",
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use("/api/v1/playground", playgroundLimiter, playgroundRouter);
+app.use("/api/v2/playground", playgroundLimiter, playgroundRouter);
 
 // CSRF token endpoint (for web UI)
 app.get("/api/csrf-token", getCsrfToken);
