@@ -168,10 +168,10 @@ export class WorkflowEngine {
         stepResults[step.id] = result;
 
         // Update step results in database
-        await this.prisma.workflowRun.update({
-          where: { id: workflowRun.id },
+        await (this.prisma as any).workflowRuns.update({
+          where: { id: (workflowRun as any).id },
           data: {
-            stepResults: stepResults as Prisma.InputJsonValue,
+            stepResults: (stepResults as unknown) as Prisma.InputJsonValue,
           },
         });
 
@@ -189,12 +189,12 @@ export class WorkflowEngine {
       const hasFailures = Object.values(stepResults).some(r => r.status === "failed");
       const finalStatus = hasFailures ? "failed" : "completed";
 
-      await this.prisma.workflowRun.update({
-        where: { id: workflowRun.id },
+      await (this.prisma as any).workflowRuns.update({
+        where: { id: (workflowRun as any).id },
         data: {
           status: finalStatus,
           completedAt: new Date(),
-          durationMs: BigInt(Date.now() - workflowRun.startedAt.getTime()),
+          durationMs: BigInt(Date.now() - (workflowRun as any).startedAt.getTime()),
         },
       });
 
@@ -397,7 +397,7 @@ export class WorkflowEngine {
     }
 
     // Create scheduled workflow entry
-    await this.prisma.scheduledWorkflow.create({
+    await (this.prisma as any).scheduledWorkflows.create({
       data: {
         tenantId,
         workflowId,

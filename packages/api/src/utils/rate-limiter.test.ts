@@ -82,4 +82,15 @@ describe("RedisRateLimiter Unit Tests", () => {
     const override = rateLimiter.getLimitForRequest("admin", "/api/v1/heavy-op");
     expect(override.limit).toBe(10); // Endpoint override takes precedence over role
   });
+
+  it("should block all traffic when the global kill switch is active", async () => {
+    const key = "test-user";
+
+    // Activate kill switch
+    await rateLimiter.setGlobalKillSwitch(true);
+
+    const result = await rateLimiter.checkLimit(key, 100, 60);
+    expect(result.success).toBe(false);
+    expect(result.remaining).toBe(0);
+  });
 });
