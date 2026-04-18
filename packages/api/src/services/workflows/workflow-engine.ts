@@ -87,7 +87,7 @@ export class WorkflowEngine {
    * Load workflow definition from database
    */
   private async loadWorkflowDefinition(workflowId: string): Promise<WorkflowDefinition | null> {
-    const workflow = await this.prisma.workflowDefinition.findUnique({
+    const workflow = await (this.prisma as any).workflowDefinitions.findUnique({
       where: { id: workflowId },
     });
     
@@ -124,7 +124,7 @@ export class WorkflowEngine {
     }
 
     // Create workflow run
-    const workflowRun = await this.prisma.workflowRun.create({
+    const workflowRun = await (this.prisma as any).workflowRuns.create({
       data: {
         tenantId,
         workflowId,

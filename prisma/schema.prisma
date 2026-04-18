@@ -2429,8 +2429,10 @@ model WorkflowDefinition {
   name        String
   description String?
   steps       Json     @default("[]")
-  trigger     Json     @default("{}")
+  triggers    Json     @default("[]")
   enabled     Boolean  @default(true)
+  status      String   @default("active")
+  version     Int      @default(1)
   tenantId    String   @db.Uuid
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -2444,13 +2446,17 @@ model WorkflowDefinition {
 model ScheduledWorkflow {
   id             String   @id @default(uuid())
   workflowId     String
-  nextRun        DateTime
+  nextRunAt      DateTime
+  lastRunAt      DateTime?
   cronExpression String?
-  tenantId       String   @db.Uuid
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  scheduleType   String?
+  scheduleConfig Json      @default("{}")
+  enabled        Boolean   @default(true)
+  tenantId       String    @db.Uuid
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
-  tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant         Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([workflowId])

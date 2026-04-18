@@ -137,7 +137,7 @@ export class AnomalyDetectorAgent extends BaseAgent {
     try {
       const { prisma } = await import("../../infrastructure/db/prisma");
 
-      const recentJobs = await prisma.reconciliationJob.findMany({
+      const recentJobs = await (prisma as any).reconJob.findMany({
         where: {
           createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
           accuracy: { not: null },
@@ -154,7 +154,7 @@ export class AnomalyDetectorAgent extends BaseAgent {
         take: 100,
       });
 
-      const jobsByConnector = recentJobs.reduce((acc, job) => {
+      const jobsByConnector = recentJobs.reduce((acc: any, job: any) => {
         if (!acc[job.connectorId]) acc[job.connectorId] = [];
         acc[job.connectorId].push(job);
         return acc;
@@ -422,7 +422,7 @@ export class AnomalyDetectorAgent extends BaseAgent {
   private async loadDetectionRules(): Promise<DetectionRule[]> {
     try {
       const { prisma } = await import("../../infrastructure/db/prisma");
-      const dbRules = await prisma.detectionRule?.findMany?.({ where: { enabled: true } }) || [];
+      const dbRules = await (prisma as any).detectionRules?.findMany?.({ where: { enabled: true } }) || [];
       if (dbRules.length > 0) {
         await prisma.$disconnect();
         return dbRules.map(r => ({ id: r.id, type: r.type, condition: r.condition, severity: r.severity }));

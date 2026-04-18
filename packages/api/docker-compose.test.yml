@@ -14,6 +14,7 @@ services:
     image: redis:7-alpine
     ports:
       - "6380:6379"
+    command: redis-server --maxmemory 100mb --maxmemory-policy allkeys-lru
 
 volumes:
   postgres_test_data:
