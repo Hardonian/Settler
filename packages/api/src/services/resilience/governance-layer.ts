@@ -135,10 +135,13 @@ export class GovernanceLayer {
       }
 
       if (guardrail.requireApproval) {
-        // TODO: check for approval
+        // Approval gate: When requireApproval is set, changes are blocked until
+        // an explicit approval record exists. Approval integration (e.g., via
+        // an approvals table or external workflow) should be wired here when
+        // the approval subsystem is production-ready.
         return {
           allowed: false,
-          reason: "Approval required",
+          reason: "Change requires explicit approval before proceeding",
         };
       }
 

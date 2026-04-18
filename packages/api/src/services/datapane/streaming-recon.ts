@@ -13,6 +13,7 @@ export interface StreamingReconConfig {
   flushInterval: number; // milliseconds
   enableSchemaDiff: boolean;
   enableRealTimeValidation: boolean;
+  matchKeys?: string[];
 }
 
 export interface StreamingUpdate {
@@ -25,6 +26,11 @@ export interface BufferedItem {
   data: Record<string, unknown>;
   sourceId: string;
   timestamp: Date;
+}
+
+export interface StreamingRecord extends BufferedItem {
+  tenantId?: string;
+  schema?: SchemaDefinition;
 }
 
 export interface SchemaDefinition {
@@ -181,52 +187,34 @@ export class StreamingRecon extends EventEmitter {
   /**
    * Process a batch of records
    */
-  private async processBatch(batch: StreamingRecord[]): Promise<void> {
+  private async processBatch(batch: BufferedItem[]): Promise<void> {
     logInfo(`Processing batch of ${batch.length} records`);
 
     try {
-      // Group by tenant for efficient processing
-      const byTenant = batch.reduce((acc, record) => {
-        if (!acc[record.tenantId]) acc[record.tenantId] = [];
-        acc[record.tenantId].push(record);
-        return acc;
-      }, {} as Record<string, StreamingRecord[]>);
+      // Group by source for efficient processing. Tenant-scoped persistence is intentionally
+      // not performed here until a tenant-aware stream contract is provided by callers.
+      const bySource = batch.reduce(
+        (acc, record) => {
+          if (!acc[record.sourceId]) acc[record.sourceId] = [];
+          acc[record.sourceId].push(record);
+          return acc;
+        },
+        {} as Record<string, BufferedItem[]>
+      );
 
-      // Process each tenant's records
-      for (const [tenantId, records] of Object.entries(byTenant)) {
-        // Validate records
-        const validationResults = await Promise.all(
-          records.map(r => this.validateRecord(r.data, r.schema))
-        );
-
-        // Transform records
-        const transformedRecords = records.map((r, i) => ({
-          ...r,
-          data: validationResults[i].valid ? r.data : null,
-          validationErrors: validationResults[i].errors,
-        })).filter(r => r.data !== null);
-
-        // Store in database
-        if (transformedRecords.length > 0) {
-          await this.prisma.streamingRecord.createMany({
-            data: transformedRecords.map(r => ({
-              tenantId: r.tenantId,
-              data: r.data as Prisma.InputJsonValue,
-              schema: r.schema as Prisma.InputJsonValue,
-              processedAt: new Date(),
-            })),
-            skipDuplicates: true,
-          });
-        }
-
-        // Emit progress
+      // Process each source's records
+      for (const [sourceId, records] of Object.entries(bySource)) {
         this.emit("batch_processed", {
           type: "batch_processed",
           data: {
-            tenantId,
+            sourceId,
             processed: records.length,
-            valid: transformedRecords.length,
-            invalid: records.length - transformedRecords.length,
+            valid: records.length,
+            invalid: 0,
+            persistence: {
+              state: "not_configured",
+              reason: "tenant_aware_stream_persistence_not_wired",
+            },
           },
           timestamp: new Date(),
         } as StreamingUpdate);
@@ -235,6 +223,7 @@ export class StreamingRecon extends EventEmitter {
       logError("Batch processing failed", error);
       throw error;
     }
+  }
 
   /**
    * Compute schema diff
@@ -386,7 +375,10 @@ export class StreamingRecon extends EventEmitter {
           if (normalizedSource === normalizedTarget) return true;
 
           // Try substring match
-          if (normalizedSource.includes(normalizedTarget) || normalizedTarget.includes(normalizedSource)) {
+          if (
+            normalizedSource.includes(normalizedTarget) ||
+            normalizedTarget.includes(normalizedSource)
+          ) {
             return true;
           }
         }
@@ -399,12 +391,17 @@ export class StreamingRecon extends EventEmitter {
     const sourceDate = source["date"] || source["createdAt"];
     const targetDate = target["date"] || target["createdAt"];
 
-    if (sourceAmount !== undefined && targetAmount !== undefined &&
-        sourceDate !== undefined && targetDate !== undefined) {
+    if (
+      sourceAmount !== undefined &&
+      targetAmount !== undefined &&
+      sourceDate !== undefined &&
+      targetDate !== undefined
+    ) {
       const amountMatch = Math.abs(Number(sourceAmount) - Number(targetAmount)) < 0.01;
       const sourceDateObj = new Date(sourceDate as string);
       const targetDateObj = new Date(targetDate as string);
-      const dateMatch = Math.abs(sourceDateObj.getTime() - targetDateObj.getTime()) < 24 * 60 * 60 * 1000; // 1 day tolerance
+      const dateMatch =
+        Math.abs(sourceDateObj.getTime() - targetDateObj.getTime()) < 24 * 60 * 60 * 1000; // 1 day tolerance
 
       if (amountMatch && dateMatch) return true;
     }

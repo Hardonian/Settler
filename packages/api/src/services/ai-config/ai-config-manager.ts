@@ -51,7 +51,7 @@ export class AIConfigManager {
    * Update AI config
    */
   async updateConfig(tenantId: string, config: Partial<AIConfig>): Promise<void> {
-    Save to database
+    // Database-backed persistence is intentionally not wired yet.
     logInfo("AI config updated", { tenantId, config });
   }
 }

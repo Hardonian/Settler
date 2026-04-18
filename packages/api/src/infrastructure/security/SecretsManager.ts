@@ -103,7 +103,10 @@ export class SecretsManager {
   /**
    * Mask sensitive data in objects
    */
-  static maskSensitiveFields(obj: any, fields: string[]): any {
+  static maskSensitiveFields(
+    obj: Record<string, unknown>,
+    fields: string[]
+  ): Record<string, unknown> {
     const masked = { ...obj };
     for (const field of fields) {
       if (masked[field]) {

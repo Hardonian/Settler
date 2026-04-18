@@ -24,11 +24,16 @@ const getRandomBytes = (size: number): Uint8Array => {
     return bytes;
   }
 
-  const fallback = new Uint8Array(size);
-  for (let index = 0; index < size; index += 1) {
-    fallback[index] = Math.floor(Math.random() * 256);
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    const hex = crypto.randomUUID().replace(/-/g, "");
+    const bytes = new Uint8Array(size);
+    for (let index = 0; index < size; index += 1) {
+      bytes[index] = Number.parseInt(hex.slice(index * 2, index * 2 + 2) || "00", 16);
+    }
+    return bytes;
   }
-  return fallback;
+
+  throw new Error("Secure random source unavailable for trace ID generation");
 };
 
 export function generateTraceId(): string {

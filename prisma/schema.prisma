@@ -1223,13 +1223,18 @@ model WebhookDelivery {
 
 model IdempotencyKey {
   id                String    @id @default(uuid())
-  key               String    @unique // The idempotency key
+  userId            String?   @map("user_id") @db.Uuid
+  tenantId          String    @map("tenant_id") @db.Uuid
+  key               String    // The idempotency key
   status            String    @default("pending") // pending, completed, failed
   response          Json?     // Cached response for completed requests
   createdAt         DateTime  @default(now())
   completedAt       DateTime?
   expiresAt         DateTime  // Auto-cleanup after 24 hours
 
+  @@unique([tenantId, key], map: "idempotency_keys_tenant_key_unique")
+  @@index([tenantId, userId])
+  @@index([tenantId, key])
   @@index([key])
   @@index([status])
   @@index([createdAt])
@@ -2413,4 +2418,3 @@ model SecurityAudit {
 
   @@map("security_audits")
 }
-

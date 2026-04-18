@@ -82,7 +82,7 @@ if (mode !== "off") {
     completeness = "degraded";
     degradedReasons.push("pnpm-audit-timeout");
     finalOutcome = mode === "strict" ? "failed-backend-unavailable" : "warn-backend-unavailable";
-  } else if (audit.status === 0 && findings) {
+  } else if (findings) {
     backend = { available: true, reason: null };
     if ((findings.high || 0) + (findings.critical || 0) > 0) {
       finalOutcome = "failed-findings";

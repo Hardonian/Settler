@@ -34,6 +34,16 @@ export function idempotencyMiddleware() {
       return next();
     }
 
+    if (!req.tenantId) {
+      sendError(
+        res,
+        403,
+        "TENANT_CONTEXT_REQUIRED",
+        "Tenant context is required for idempotent mutations"
+      );
+      return;
+    }
+
     if (idempotencyKey.length > MAX_KEY_LENGTH) {
       sendError(
         res,
@@ -50,8 +60,8 @@ export function idempotencyMiddleware() {
       const cached = await query<{ response: CachedIdempotencyResponse }>(
         `SELECT response
          FROM idempotency_keys
-         WHERE user_id = $1 AND key = $2 AND expires_at > NOW()`,
-        [req.userId, idempotencyKey]
+         WHERE user_id = $1 AND tenant_id = $2 AND key = $3 AND expires_at > NOW()`,
+        [req.userId, req.tenantId, idempotencyKey]
       );
 
       if (cached[0]?.response) {
@@ -102,11 +112,17 @@ export function idempotencyMiddleware() {
       };
 
       void query(
-        `INSERT INTO idempotency_keys (user_id, key, response, expires_at)
-         VALUES ($1, $2, $3::jsonb, NOW() + ($4 || ' hours')::interval)
-         ON CONFLICT (user_id, key)
+        `INSERT INTO idempotency_keys (user_id, tenant_id, key, response, expires_at)
+         VALUES ($1, $2, $3, $4::jsonb, NOW() + ($5 || ' hours')::interval)
+         ON CONFLICT (tenant_id, key)
          DO UPDATE SET response = EXCLUDED.response, expires_at = EXCLUDED.expires_at`,
-        [req.userId as string, idempotencyKey, JSON.stringify(payload), IDEMPOTENCY_TTL_HOURS]
+        [
+          req.userId as string,
+          req.tenantId as string,
+          idempotencyKey,
+          JSON.stringify(payload),
+          IDEMPOTENCY_TTL_HOURS,
+        ]
       ).catch((error: unknown) => {
         logError("Failed to persist idempotency response", error);
       });

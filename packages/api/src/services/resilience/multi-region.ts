@@ -112,7 +112,7 @@ export class MultiRegionManager {
 
       if (region && region.available) {
         try {
-          Execute request in target region
+          // Request execution will be delegated to the target region client when enabled.
           return {
             region,
             attempts: i + 1,

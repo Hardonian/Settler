@@ -48,7 +48,9 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       const { persistTraceCookie = true } = options;
       nextResponse.headers.set("x-trace-id", traceId);
       nextResponse.headers.set("x-request-id", traceId);
-      nextResponse.headers.set("x-csp-nonce", nonce);
+      if (nonce) {
+        nextResponse.headers.set("x-csp-nonce", nonce);
+      }
       if (persistTraceCookie) {
         nextResponse.cookies.set("trace-id", traceId, traceCookieOptions);
       }
@@ -91,7 +93,9 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
         const redirectResponse = NextResponse.redirect(redirectUrl);
         redirectResponse.headers.set("x-trace-id", traceId);
         redirectResponse.headers.set("x-request-id", traceId);
-        redirectResponse.headers.set("x-csp-nonce", nonce);
+        if (nonce) {
+          redirectResponse.headers.set("x-csp-nonce", nonce);
+        }
         return addSecurityHeaders(redirectResponse, { nonce });
       }
       return addSecurityHeaders(response, { nonce });
@@ -158,7 +162,9 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
           const redirectResponse = NextResponse.redirect(redirectUrl);
           redirectResponse.headers.set("x-trace-id", traceId);
           redirectResponse.headers.set("x-request-id", traceId);
-          redirectResponse.headers.set("x-csp-nonce", nonce);
+          if (nonce) {
+            redirectResponse.headers.set("x-csp-nonce", nonce);
+          }
           return addSecurityHeaders(redirectResponse, { nonce });
         }
       } catch (authError) {
@@ -174,7 +180,9 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
           const redirectResponse = NextResponse.redirect(redirectUrl);
           redirectResponse.headers.set("x-trace-id", traceId);
           redirectResponse.headers.set("x-request-id", traceId);
-          redirectResponse.headers.set("x-csp-nonce", nonce);
+          if (nonce) {
+            redirectResponse.headers.set("x-csp-nonce", nonce);
+          }
           return addSecurityHeaders(redirectResponse, { nonce });
         }
       }
@@ -192,7 +200,9 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
         const redirectResponse = NextResponse.redirect(redirectUrl);
         redirectResponse.headers.set("x-trace-id", traceId);
         redirectResponse.headers.set("x-request-id", traceId);
-        redirectResponse.headers.set("x-csp-nonce", nonce);
+        if (nonce) {
+          redirectResponse.headers.set("x-csp-nonce", nonce);
+        }
         return addSecurityHeaders(redirectResponse, { nonce });
       }
     }
@@ -227,20 +237,22 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     fallbackResponse.headers.set("x-trace-id", traceId);
     fallbackResponse.headers.set("x-request-id", traceId);
 
-    fallbackResponse.headers.set("x-csp-nonce", traceId);
-    return addSecurityHeaders(fallbackResponse, { nonce: traceId });
+    return addSecurityHeaders(fallbackResponse);
   }
 }
 
-function createCspNonce(): string {
+function createCspNonce(): string | undefined {
   const bytes = new Uint8Array(16);
 
   if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
     crypto.getRandomValues(bytes);
-  } else {
+  } else if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    const hex = crypto.randomUUID().replace(/-/g, "");
     for (let index = 0; index < bytes.length; index += 1) {
-      bytes[index] = Math.floor(Math.random() * 256);
+      bytes[index] = Number.parseInt(hex.slice(index * 2, index * 2 + 2) || "00", 16);
     }
+  } else {
+    return undefined;
   }
 
   let binary = "";

@@ -20,6 +20,8 @@ export interface CacheConfig {
   includeQueryParams?: boolean;
   /** Whether to include user ID in cache key (for user-specific data) */
   includeUserId?: boolean;
+  /** Whether to include tenant ID in cache key. Defaults to true for tenant safety. */
+  includeTenantId?: boolean;
   /** Cache tags for invalidation */
   tags?: string[];
 }
@@ -30,8 +32,12 @@ const DEFAULT_TTL = 300; // 5 minutes
  * Generate cache key for request
  */
 function generateRequestCacheKey(req: Request, config: CacheConfig): string {
+  const tenantId = (req as AuthRequest).tenantId || req.get("X-Tenant-ID");
+  const shouldIncludeTenant = config.includeTenantId !== false;
+
   if (config.keyGenerator) {
-    return config.keyGenerator(req);
+    const customKey = config.keyGenerator(req);
+    return shouldIncludeTenant ? `${customKey}:tenant:${tenantId || "unscoped"}` : customKey;
   }
 
   const parts: string[] = ["api", req.method.toLowerCase(), req.path];
@@ -48,6 +54,10 @@ function generateRequestCacheKey(req: Request, config: CacheConfig): string {
   // Include user ID if specified
   if (config.includeUserId && (req as AuthRequest).userId) {
     parts.push(`user:${(req as AuthRequest).userId}`);
+  }
+
+  if (shouldIncludeTenant) {
+    parts.push(`tenant:${tenantId || "unscoped"}`);
   }
 
   return parts.join(":");
