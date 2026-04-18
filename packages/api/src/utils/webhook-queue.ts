@@ -130,13 +130,31 @@ export async function storeIdempotencyKey(
   }
 
   const expiresAt = new Date(Date.now() + IDEMPOTENCY_WINDOW_MS);
+  const tenantRows = await query<{ tenant_id: string }>(
+    `SELECT w.tenant_id
+       FROM webhook_deliveries wd
+       JOIN webhooks w ON w.id = wd.webhook_id
+      WHERE wd.id = $1
+      LIMIT 1`,
+    [deliveryId]
+  );
+  const tenantId = tenantRows[0]?.tenant_id;
+
+  if (!tenantId) {
+    logWarn("Skipping webhook idempotency persistence without tenant context", {
+      deliveryId,
+      idempotencyKey,
+    });
+    return;
+  }
 
   await query(
-    `INSERT INTO idempotency_keys (key, status, response, expires_at, completed_at)
-     VALUES ($1, $2, $3, $4, $5)
-     ON CONFLICT (key) DO UPDATE
-     SET status = $2, response = $3, expires_at = $4, completed_at = $5`,
+    `INSERT INTO idempotency_keys (tenant_id, key, status, response, expires_at, completed_at)
+     VALUES ($1, $2, $3, $4, $5, $6)
+     ON CONFLICT (tenant_id, key) DO UPDATE
+     SET status = $3, response = $4, expires_at = $5, completed_at = $6`,
     [
+      tenantId,
       idempotencyKey,
       status,
       JSON.stringify({ deliveryId, timestamp: new Date().toISOString() }),

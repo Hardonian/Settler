@@ -106,10 +106,11 @@ export class WebhookService {
    */
   private async checkIdempotency(
     idempotencyKey: string,
-    webhookId: string
+    webhookId: string,
+    tenantId: string
   ): Promise<IdempotencyCheck> {
-    const existing = await this.prisma.idempotencyKey.findUnique({
-      where: { key: idempotencyKey },
+    const existing = await this.prisma.idempotencyKey.findFirst({
+      where: { key: idempotencyKey, tenantId },
     });
 
     if (!existing) {
@@ -157,15 +158,17 @@ export class WebhookService {
    */
   private async storeIdempotencyKey(
     idempotencyKey: string,
+    tenantId: string,
     status: "pending" | "completed" | "failed" = "pending",
     response?: unknown
   ): Promise<void> {
     const expiresAt = new Date(Date.now() + IDEMPOTENCY_WINDOW_MS);
 
     await this.prisma.idempotencyKey.upsert({
-      where: { key: idempotencyKey },
+      where: { tenantId_key: { tenantId, key: idempotencyKey } },
       create: {
         key: idempotencyKey,
+        tenantId,
         status,
         response: response ? (response as Prisma.InputJsonValue) : Prisma.JsonNull,
         expiresAt,
@@ -196,10 +199,11 @@ export class WebhookService {
       attempts = 1,
       timeout = 30000,
     } = delivery;
+    const tenantId = event.tenantId;
 
     // Check idempotency if key provided and not skipping
     if (idempotencyKey && !options?.skipIdempotencyCheck) {
-      const idempotencyCheck = await this.checkIdempotency(idempotencyKey, webhookId);
+      const idempotencyCheck = await this.checkIdempotency(idempotencyKey, webhookId, tenantId);
 
       if (!idempotencyCheck.shouldProcess) {
         logInfo("Skipping duplicate webhook delivery", {
@@ -213,7 +217,7 @@ export class WebhookService {
 
     // Store idempotency key as pending
     if (idempotencyKey) {
-      await this.storeIdempotencyKey(idempotencyKey, "pending");
+      await this.storeIdempotencyKey(idempotencyKey, tenantId, "pending");
     }
 
     const payload = JSON.stringify(event);
@@ -271,10 +275,15 @@ export class WebhookService {
 
       // Update idempotency key status
       if (idempotencyKey) {
-        await this.storeIdempotencyKey(idempotencyKey, isSuccess ? "completed" : "failed", {
-          deliveryId: deliveryRecord.id,
-          status: isSuccess ? "delivered" : "failed",
-        });
+        await this.storeIdempotencyKey(
+          idempotencyKey,
+          tenantId,
+          isSuccess ? "completed" : "failed",
+          {
+            deliveryId: deliveryRecord.id,
+            status: isSuccess ? "delivered" : "failed",
+          }
+        );
       }
 
       if (!isSuccess) {
@@ -338,7 +347,7 @@ export class WebhookService {
 
       // Update idempotency key as failed
       if (idempotencyKey) {
-        await this.storeIdempotencyKey(idempotencyKey, "failed", {
+        await this.storeIdempotencyKey(idempotencyKey, tenantId, "failed", {
           deliveryId: failedDelivery.id,
           error: errorMessage,
         });
@@ -722,7 +731,10 @@ export class WebhookService {
    * @param idempotencyKey - The idempotency key to check
    * @returns Delivery information if found
    */
-  async getDeliveryByIdempotencyKey(idempotencyKey: string): Promise<{
+  async getDeliveryByIdempotencyKey(
+    idempotencyKey: string,
+    tenantId: string
+  ): Promise<{
     id: string;
     status: string;
     createdAt: Date;
@@ -730,8 +742,8 @@ export class WebhookService {
     url: string;
     statusCode: number | null;
   } | null> {
-    const idempotencyRecord = await this.prisma.idempotencyKey.findUnique({
-      where: { key: idempotencyKey },
+    const idempotencyRecord = await this.prisma.idempotencyKey.findFirst({
+      where: { key: idempotencyKey, tenantId },
     });
 
     if (!idempotencyRecord) {

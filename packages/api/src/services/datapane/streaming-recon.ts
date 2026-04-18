@@ -17,7 +17,7 @@ export interface StreamingReconConfig {
 }
 
 export interface StreamingUpdate {
-  type: "ingestion" | "schema_diff" | "validation" | "recon";
+  type: "ingestion" | "schema_diff" | "validation" | "recon" | "batch_processed";
   data: Record<string, unknown>;
   timestamp: Date;
 }
@@ -195,8 +195,9 @@ export class StreamingRecon extends EventEmitter {
       // not performed here until a tenant-aware stream contract is provided by callers.
       const bySource = batch.reduce(
         (acc, record) => {
-          if (!acc[record.sourceId]) acc[record.sourceId] = [];
-          acc[record.sourceId].push(record);
+          const records = acc[record.sourceId] ?? [];
+          records.push(record);
+          acc[record.sourceId] = records;
           return acc;
         },
         {} as Record<string, BufferedItem[]>
