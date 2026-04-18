@@ -33,13 +33,20 @@ export const errorHandler = (
   const statusCode = apiError.statusCode;
   if (statusCode >= 500) {
     const error = err instanceof Error ? err : new Error(String(err));
+    // SEC-13: Scrub sensitive data before sending to Sentry
+    const safeHeaders = { ...req.headers };
+    const sensitiveHeaders = ["authorization", "cookie", "x-api-key", "x-csrf-token"];
+    for (const h of sensitiveHeaders) {
+      if (safeHeaders[h]) {
+        safeHeaders[h] = "[REDACTED]";
+      }
+    }
     captureException(error, {
       request: {
         method: req.method,
         url: req.url,
-        headers: req.headers,
+        headers: safeHeaders,
         query: req.query,
-        body: req.body,
       },
       user: {
         id: authReq.userId,

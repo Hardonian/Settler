@@ -9,7 +9,7 @@
  */
 
 import { Request, Response, NextFunction } from "express";
-import { v4 as uuidv4 } from "uuid";
+import crypto from "node:crypto";
 import { logWarn } from "../utils/logger";
 import { config } from "../config";
 
@@ -26,7 +26,7 @@ const CSRF_TOKEN_HEADER = "x-csrf-token";
  * Generate CSRF token
  */
 function generateCsrfToken(): string {
-  return uuidv4();
+  return crypto.randomBytes(32).toString("hex");
 }
 
 /**
