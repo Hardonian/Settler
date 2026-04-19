@@ -93,4 +93,12 @@ describe("RedisRateLimiter Unit Tests", () => {
     expect(result.success).toBe(false);
     expect(result.remaining).toBe(0);
   });
+
+  it("should report correctly via isKillSwitchActive for UI consumption", async () => {
+    await rateLimiter.setGlobalKillSwitch(true);
+    expect(await rateLimiter.isKillSwitchActive()).toBe(true);
+
+    await rateLimiter.setGlobalKillSwitch(false);
+    expect(await rateLimiter.isKillSwitchActive()).toBe(false);
+  });
 });

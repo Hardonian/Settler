@@ -44,13 +44,7 @@ export class RedisRateLimiter {
   private redis: Redis;
 
   constructor(redisClient?: Redis) {
-    if (redisClient) {
-      this.redis = redisClient;
-    } else if (config.redis.url) {
-      this.redis = new Redis(config.redis.url);
-    } else {
-      this.redis = new Redis({ host: config.redis.host, port: config.redis.port });
-    }
+    this.redis = redisClient || new Redis(config.redisUrl);
   }
 
   /**
@@ -105,6 +99,7 @@ export class RedisRateLimiter {
     // 1. Check Global Kill Switch
     const killSwitch = await this.redis.get(KILL_SWITCH_KEY);
     if (killSwitch === "true") {
+      killSwitchGauge.set(1);
       rateLimitCounter.inc({ event_type: "kill_switch", ...labels });
       return {
         success: false,
@@ -113,6 +108,8 @@ export class RedisRateLimiter {
         reset: Math.floor(Date.now() / 1000) + 60,
       };
     }
+
+    killSwitchGauge.set(0);
 
     const now = Math.floor(Date.now() / 1000);
     const windowKey = `ratelimit:${key}:${Math.floor(now / windowSeconds)}`;
@@ -124,7 +121,7 @@ export class RedisRateLimiter {
     const results = await multi.exec();
     if (!results) throw new Error("Rate limit execution failed");
 
-    const count = results[0]?.[1] as number;
+    const count = results[0][1] as number;
     const remaining = Math.max(0, limit - count);
     const reset = (Math.floor(now / windowSeconds) + 1) * windowSeconds;
     const success = count <= limit;
