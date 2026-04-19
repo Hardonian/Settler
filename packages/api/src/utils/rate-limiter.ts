@@ -44,7 +44,7 @@ export class RedisRateLimiter {
   private redis: Redis;
 
   constructor(redisClient?: Redis) {
-    this.redis = redisClient || new Redis(config.redisUrl);
+    this.redis = redisClient || new Redis(config.redis.url);
   }
 
   /**
