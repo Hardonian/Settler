@@ -1046,6 +1046,8 @@ model Tenant {
   workflowExecutionLogs WorkflowExecutionLog[]
   detectionRules     DetectionRule[]
   anomalies          Anomaly[]
+  policyComparisons  PolicyComparison[]
+  dpias              DPIA[]
 
   @@index([slug])
   @@index([primaryDomain])
