@@ -12,6 +12,7 @@
     "conname",
     "conrelid",
     "cuid",
+    "defu",
     "dryrun",
     "envalid",
     "ERRCODE",
