@@ -15,6 +15,7 @@
     "hardonian",
     "infographics",
     "inspectable",
+    "killswitch",
     "kilocode",
     "launchkit",
     "lintstagedrc",
@@ -28,6 +29,7 @@
     "pnpm",
     "prisma",
     "reconciliation",
+    "scim",
     "shadcn",
     "stax",
     "tailwindcss",
@@ -36,5 +38,9 @@
     "Vercel",
     "vercelignore"
   ],
-  "ignorePaths": ["node_modules", ".next", "dist"]
+  "ignorePaths": [
+    "node_modules",
+    ".next",
+    "dist"
+  ]
 }

@@ -44,7 +44,8 @@ export class RedisRateLimiter {
   private redis: Redis;
 
   constructor(redisClient?: Redis) {
-    this.redis = redisClient || new Redis(config.redisUrl);
+    const redisUrl = config.redis.url || "redis://localhost:6379";
+    this.redis = redisClient || new Redis(redisUrl);
   }
 
   /**
@@ -119,7 +120,7 @@ export class RedisRateLimiter {
     multi.expire(windowKey, windowSeconds + 1);
 
     const results = await multi.exec();
-    if (!results) throw new Error("Rate limit execution failed");
+    if (!results || !results[0]) throw new Error("Rate limit execution failed");
 
     const count = results[0][1] as number;
     const remaining = Math.max(0, limit - count);
