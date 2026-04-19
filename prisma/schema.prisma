@@ -2517,3 +2517,34 @@ model Anomaly {
   @@index([severity])
   @@map("anomalies")
 }
+
+model PolicyComparison {
+  id                String    @id @default(uuid())
+  tenantId          String    @db.Uuid
+  sectionsAdded     Int
+  sectionsRemoved   Int
+  sectionsModified  Int
+  complianceScore   Float
+  violationCount    Int
+  createdAt         DateTime  @default(now())
+
+  tenant            Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("policy_comparisons")
+}
+
+model DPIA {
+  id                String    @id @default(uuid())
+  tenantId          String    @db.Uuid
+  activityName      String
+  overallRisk       String
+  riskCount         Int
+  recommendations   Json      @default("[]")
+  createdAt         DateTime  @default(now())
+
+  tenant            Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("dpias")
+}
