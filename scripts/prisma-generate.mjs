@@ -7,7 +7,7 @@ const env = {
   PRISMA_ENGINES_MIRROR: process.env.PRISMA_ENGINES_MIRROR || "",
 };
 
-const result = spawnSync("npx", ["prisma", "generate"], {
+const result = spawnSync("pnpm", ["exec", "prisma", "generate"], {
   env,
   stdio: "pipe",
   encoding: "utf8",
