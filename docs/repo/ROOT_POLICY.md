@@ -99,6 +99,7 @@
 | `OPS_IMPLEMENTATION_SUMMARY.md`          | docs-file (file)    | Y                 | Y              | allowlisted | Historical or canonical documentation retained at root.               |
 | `package.json`                           | tooling-file (file) | Y                 | Y              | allowlisted | Build/tooling/runtime file required from root.                        |
 | `packages`                               | core-dir (dir)      | Y                 | Y              | allowlisted | Canonical project root directory.                                     |
+| `patches`                                | project-dir (dir)   | Y                 | Y              | allowlisted | Intentional directory for dependency patches (e.g. pnpm patch).       |
 | `pdk`                                    | project-dir (dir)   | Y                 | Y              | allowlisted | Intentional top-level project area in monorepo layout.                |
 | `platform`                               | project-dir (dir)   | Y                 | Y              | allowlisted | Intentional top-level project area in monorepo layout.                |
 | `playwright.config.ts`                   | tooling-file (file) | Y                 | Y              | allowlisted | Build/tooling/runtime file required from root.                        |

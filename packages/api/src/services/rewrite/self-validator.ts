@@ -79,25 +79,40 @@ export class SelfValidator {
     try {
       const ts = await import("typescript");
       const sourceFile = ts.createSourceFile("temp.ts", module.code, ts.ScriptTarget.Latest, true);
-      const program = ts.createProgram(["temp.ts"], { noEmit: true, strict: true }, {
-        getSourceFile: (f) => f === "temp.ts" ? sourceFile : undefined,
-        writeFile: () => {},
-        getCurrentDirectory: () => "",
-        getDirectories: () => [],
-        fileExists: () => true,
-        readFile: () => module.code,
-        getCanonicalFileName: (f) => f,
-        useCaseSensitiveFileNames: () => true,
-        getNewLine: () => "\n",
-      });
+      const program = ts.createProgram(
+        ["temp.ts"],
+        { noEmit: true, strict: true },
+        {
+          getSourceFile: (f) => (f === "temp.ts" ? sourceFile : undefined),
+          writeFile: () => {},
+          getCurrentDirectory: () => "",
+          getDirectories: () => [],
+          fileExists: () => true,
+          readFile: () => module.code,
+          getCanonicalFileName: (f) => f,
+          useCaseSensitiveFileNames: () => true,
+          getNewLine: () => "\n",
+        }
+      );
 
       const allDiagnostics = ts.getPreEmitDiagnostics(program).concat(program.emit().diagnostics);
       if (allDiagnostics.length > 0) {
-        return { check: "typescript_types", status: "fail", message: `Errors: ${allDiagnostics.slice(0, 2).map(d => ts.flattenDiagnosticMessageText(d.messageText, " ")).join("; ")}` };
+        return {
+          check: "typescript_types",
+          status: "fail",
+          message: `Errors: ${allDiagnostics
+            .slice(0, 2)
+            .map((d) => ts.flattenDiagnosticMessageText(d.messageText, " "))
+            .join("; ")}`,
+        };
       }
       return { check: "typescript_types", status: "pass", message: "TypeScript types valid" };
     } catch (error) {
-      return { check: "typescript_types", status: "fail", message: `Error: ${error instanceof Error ? error.message : "Unknown"}` };
+      return {
+        check: "typescript_types",
+        status: "fail",
+        message: `Error: ${error instanceof Error ? error.message : "Unknown"}`,
+      };
     }
   }
 
@@ -109,16 +124,20 @@ export class SelfValidator {
     [key: string]: unknown;
   }): Promise<ValidationResult> {
     if (!module.schemaReferences || module.schemaReferences.length === 0) {
-      return { check: "schema_integrity", status: "pass", message: "No schema references to validate" };
+      return {
+        check: "schema_integrity",
+        status: "pass",
+        message: "No schema references to validate",
+      };
     }
 
     try {
       const fs = await import("fs");
       const path = await import("path");
       const schemaPath = path.join(process.cwd(), "prisma", "schema.prisma");
-      
+
       if (!fs.existsSync(schemaPath)) {
-        return { check: "schema_integrity", status: "warn", message: "Prisma schema not found" };
+        return { check: "schema_integrity", status: "warning", message: "Prisma schema not found" };
       }
 
       const schema = fs.readFileSync(schemaPath, "utf-8");
@@ -130,18 +149,26 @@ export class SelfValidator {
         }
       }
 
-      return invalidRefs.length > 0 
-        ? { check: "schema_integrity", status: "fail", message: `Invalid refs: ${invalidRefs.join(", ")}` }
+      return invalidRefs.length > 0
+        ? {
+            check: "schema_integrity",
+            status: "fail",
+            message: `Invalid refs: ${invalidRefs.join(", ")}`,
+          }
         : { check: "schema_integrity", status: "pass", message: "Schema refs valid" };
     } catch (error) {
-      return { check: "schema_integrity", status: "fail", message: `Error: ${error instanceof Error ? error.message : "Unknown"}` };
+      return {
+        check: "schema_integrity",
+        status: "fail",
+        message: `Error: ${error instanceof Error ? error.message : "Unknown"}`,
+      };
     }
   }
 
   /**
    * Simulate pipeline execution
    */
-  private async simulatePipeline(module: { 
+  private async simulatePipeline(module: {
     pipeline?: { steps: Array<{ type: string; config: Record<string, unknown> }> };
     testData?: Record<string, unknown>[];
     [key: string]: unknown;
@@ -161,23 +188,23 @@ export class SelfValidator {
 
       for (let i = 0; i < module.pipeline.steps.length; i++) {
         const step = module.pipeline.steps[i];
-        
+
         // Simulate each step type
         switch (step.type) {
           case "filter":
             currentData = currentData.filter((_, idx) => idx % 2 === 0);
             break;
           case "transform":
-            currentData = currentData.map(d => ({ ...d, transformed: true }));
+            currentData = currentData.map((d) => ({ ...d, transformed: true }));
             break;
           case "validate":
-            currentData = currentData.filter(d => d.id !== undefined);
+            currentData = currentData.filter((d) => d.id !== undefined);
             break;
           case "aggregate":
             currentData = [{ count: currentData.length, aggregated: true }];
             break;
           default:
-            // Pass through
+          // Pass through
         }
 
         stepResults.push({
@@ -190,8 +217,8 @@ export class SelfValidator {
         if (currentData.length === 0 && testData.length > 0) {
           return {
             check: "pipeline_simulation",
-            status: "warn",
-            message: `Pipeline step ${i + 1} (${step.type}) eliminated all records`,
+            status: "warning",
+            message: `Pipeline step ${i + 1} (${step?.type || "unknown"}) eliminated all records`,
           };
         }
       }

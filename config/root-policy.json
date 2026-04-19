@@ -131,6 +131,7 @@
     "ops",
     "package.json",
     "packages",
+    "patches",
     "page.tsx",
     "pdk",
     "pilot-data",
