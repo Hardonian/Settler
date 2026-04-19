@@ -108,7 +108,7 @@
     "@opentelemetry/resources": "^2.6.1",
     "@opentelemetry/sdk-node": "^0.214.0",
     "@opentelemetry/semantic-conventions": "^1.28.0",
-    "@prisma/adapter-pg": "^7.7.0",
+    "@prisma/adapter-pg": "7.6.0",
     "@sentry/node": "^10.48.0",
     "@sentry/profiling-node": "^10.48.0",
     "@settler/adapters": "workspace:*",

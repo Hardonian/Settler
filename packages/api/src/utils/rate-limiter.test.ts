@@ -1,5 +1,5 @@
 import RedisMock from "ioredis-mock";
-import { RedisRateLimiter } from "../rate-limiter";
+import { RedisRateLimiter } from "./rate-limiter";
 
 describe("RedisRateLimiter Unit Tests", () => {
   let rateLimiter: RedisRateLimiter;

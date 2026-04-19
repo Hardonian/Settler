@@ -139,7 +139,7 @@ export class ContractDiffService {
    */
   private extractClauseHeading(clause: string): string {
     const match = clause.match(/^([A-Z][^:]+):?/);
-    return match ? match[1].trim() : clause.substring(0, 50);
+    return match && match[1] ? match[1].trim() : clause.substring(0, 50);
   }
 
   /**
@@ -160,9 +160,7 @@ export class ContractDiffService {
       }
     }
 
-    for (const clause of removed) {
-      score += 10; // Removing protections is risky
-    }
+    score += removed.length * 10; // Removing protections is risky
 
     for (const mod of modified) {
       if (riskPatterns.some(p => p.test(mod.after))) {
@@ -201,7 +199,7 @@ export class ContractDiffService {
         let match;
         regex.lastIndex = 0;
         while ((match = regex.exec(line)) !== null) {
-          const obligation = match[1].trim();
+          const obligation = (match[1] || "").trim();
           
           // Extract deadline
           const deadlineMatch = line.match(deadlinePattern);
@@ -209,7 +207,7 @@ export class ContractDiffService {
 
           // Extract penalty
           const penaltyMatch = line.match(penaltyPattern);
-          const penalty = penaltyMatch ? `$${penaltyMatch[1]}` : undefined;
+          const penalty = penaltyMatch && penaltyMatch[1] ? `$${penaltyMatch[1]}` : undefined;
 
           if (obligation.length > 10) {
             obligations.push({

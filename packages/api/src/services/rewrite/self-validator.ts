@@ -26,7 +26,7 @@ export class SelfValidator {
    * Validate a code module
    */
   async validateModule(
-    module: { id?: string; schemaReferences?: unknown[]; [key: string]: unknown },
+    module: { id?: string; schemaReferences?: string[]; [key: string]: unknown },
     moduleType: string
   ): Promise<ModuleValidation> {
     const results: ValidationResult[] = [];
@@ -92,6 +92,7 @@ export class SelfValidator {
           getCanonicalFileName: (f) => f,
           useCaseSensitiveFileNames: () => true,
           getNewLine: () => "\n",
+          getDefaultLibFileName: (options) => ts.getDefaultLibFileName(options),
         }
       );
 
@@ -188,6 +189,7 @@ export class SelfValidator {
 
       for (let i = 0; i < module.pipeline.steps.length; i++) {
         const step = module.pipeline.steps[i];
+        if (!step) continue;
 
         // Simulate each step type
         switch (step.type) {
