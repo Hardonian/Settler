@@ -1,0 +1,53 @@
+import { Router, Request, Response } from "express";
+import { rateLimiter } from "../../utils/rate-limiter";
+
+const router = Router();
+
+/**
+ * GET /api/v1/admin/kill-switch/status
+ * Returns the current state of the global kill switch.
+ */
+router.get("/kill-switch/status", async (_req: Request, res: Response) => {
+  try {
+    const active = await rateLimiter.isKillSwitchActive();
+    return res.json({ active });
+  } catch (error) {
+    return res.status(500).json({ error: "Failed to fetch kill switch status" });
+  }
+});
+
+/**
+ * POST /api/v1/admin/kill-switch
+ * Toggles the global kill switch to block/unblock all traffic.
+ * Requires administrative privileges.
+ */
+router.post("/kill-switch", async (req: Request, res: Response) => {
+  const { active } = req.body;
+
+  if (typeof active !== "boolean") {
+    return res.status(400).json({
+      error: "INVALID_INPUT",
+      message: "The 'active' field must be a boolean.",
+    });
+  }
+
+  try {
+    await rateLimiter.setGlobalKillSwitch(active);
+
+    // Audit logging is essential for emergency actions
+    console.log(`[OPERATOR_MODE] Global kill switch ${active ? "ENABLED" : "DISABLED"}`);
+
+    return res.json({
+      success: true,
+      killSwitchActive: active,
+    });
+  } catch (error) {
+    console.error("[OPERATOR_MODE] Failed to toggle kill switch:", error);
+    return res.status(500).json({
+      error: "INTERNAL_ERROR",
+      message: "Failed to update the global kill switch.",
+    });
+  }
+});
+
+export default router;

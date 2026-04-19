@@ -1,5 +1,19 @@
 import Redis from "ioredis";
 import { config } from "../config";
+import { Counter, Gauge } from "prom-client";
+
+const rateLimitCounter = new Counter({
+  name: "api_rate_limit_events_total",
+  help: "Total number of rate limit events",
+  labelNames: ["event_type", "role", "path"],
+});
+
+const killSwitchGauge = new Gauge({
+  name: "api_kill_switch_active",
+  help: "Indicates if the global kill switch is active (1) or inactive (0)",
+});
+
+const KILL_SWITCH_KEY = "ratelimit:killswitch";
 
 export interface RateLimitResult {
   success: boolean;
@@ -29,22 +43,37 @@ const ENDPOINT_OVERRIDES: Record<string, RateLimitConfig> = {
 export class RedisRateLimiter {
   private redis: Redis;
 
-  private readonly KILL_SWITCH_KEY = "ratelimit:global_kill_switch";
-
   constructor(redisClient?: Redis) {
-    this.redis = redisClient || new Redis(config.redisUrl);
+    if (redisClient) {
+      this.redis = redisClient;
+    } else if (config.redis.url) {
+      this.redis = new Redis(config.redis.url);
+    } else {
+      this.redis = new Redis({ host: config.redis.host, port: config.redis.port });
+    }
   }
 
   /**
-   * Sets the state of the global kill switch.
-   * @param active True to block all traffic, false to allow normally.
+   * Toggles the global kill switch to block all traffic.
    */
   async setGlobalKillSwitch(active: boolean): Promise<void> {
     if (active) {
-      await this.redis.set(this.KILL_SWITCH_KEY, "true");
+      await this.redis.set(KILL_SWITCH_KEY, "true");
+      killSwitchGauge.set(1);
     } else {
-      await this.redis.del(this.KILL_SWITCH_KEY);
+      await this.redis.del(KILL_SWITCH_KEY);
+      killSwitchGauge.set(0);
     }
+  }
+
+  /**
+   * Returns the current status of the global kill switch.
+   */
+  async isKillSwitchActive(): Promise<boolean> {
+    const status = await this.redis.get(KILL_SWITCH_KEY);
+    const active = status === "true";
+    killSwitchGauge.set(active ? 1 : 0);
+    return active;
   }
 
   /**
@@ -65,38 +94,46 @@ export class RedisRateLimiter {
    * @param key The unique identifier (IP, API Key, etc.)
    * @param limit Maximum requests allowed in the window
    * @param windowSeconds Window size in seconds
+   * @param labels Optional labels for Prometheus metrics
    */
-  async checkLimit(key: string, limit: number, windowSeconds: number): Promise<RateLimitResult> {
+  async checkLimit(
+    key: string,
+    limit: number,
+    windowSeconds: number,
+    labels: { path: string; role: string } = { path: "unknown", role: "unknown" }
+  ): Promise<RateLimitResult> {
+    // 1. Check Global Kill Switch
+    const killSwitch = await this.redis.get(KILL_SWITCH_KEY);
+    if (killSwitch === "true") {
+      rateLimitCounter.inc({ event_type: "kill_switch", ...labels });
+      return {
+        success: false,
+        limit,
+        remaining: 0,
+        reset: Math.floor(Date.now() / 1000) + 60,
+      };
+    }
+
     const now = Math.floor(Date.now() / 1000);
     const windowKey = `ratelimit:${key}:${Math.floor(now / windowSeconds)}`;
 
     const multi = this.redis.multi();
-    multi.get(this.KILL_SWITCH_KEY);
     multi.incr(windowKey);
     multi.expire(windowKey, windowSeconds + 1);
 
     const results = await multi.exec();
     if (!results) throw new Error("Rate limit execution failed");
 
-    // results[0][1] is the result of GET KILL_SWITCH_KEY
-    // results[1][1] is the result of INCR windowKey
-    const killSwitchActive = results[0][1] === "true";
-    const count = results[1][1] as number;
-    
-    if (killSwitchActive) {
-      return {
-        success: false,
-        limit,
-        remaining: 0,
-        reset: (Math.floor(now / windowSeconds) + 1) * windowSeconds,
-      };
-    }
-
+    const count = results[0]?.[1] as number;
     const remaining = Math.max(0, limit - count);
     const reset = (Math.floor(now / windowSeconds) + 1) * windowSeconds;
+    const success = count <= limit;
+
+    // 2. Track Metrics
+    rateLimitCounter.inc({ event_type: success ? "allowed" : "blocked", ...labels });
 
     return {
-      success: count <= limit,
+      success,
       limit,
       remaining,
       reset,
