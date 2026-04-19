@@ -38,6 +38,11 @@ overrides:
   dompurify: ^3.4.0
   protobufjs: ^7.5.5
 
+patchedDependencies:
+  proper-lockfile@4.1.2:
+    hash: 4980fb9f3412fb2afd3f87670d35f7905b34ecc7f12bd60a7039f8f89b954f1e
+    path: patches/proper-lockfile@4.1.2.patch
+
 importers:
 
   .:
@@ -13999,7 +14004,7 @@ snapshots:
       hono: 4.12.14
       http-status-codes: 2.3.0
       pathe: 2.0.3
-      proper-lockfile: 4.1.2
+      proper-lockfile: 4.1.2(patch_hash=4980fb9f3412fb2afd3f87670d35f7905b34ecc7f12bd60a7039f8f89b954f1e)
       remeda: 2.33.4
       std-env: 3.10.0
       valibot: 1.2.0(typescript@5.9.3)
@@ -14048,7 +14053,7 @@ snapshots:
       ajv: 8.18.0
       better-result: 2.8.1
       env-paths: 3.0.0
-      proper-lockfile: 4.1.2
+      proper-lockfile: 4.1.2(patch_hash=4980fb9f3412fb2afd3f87670d35f7905b34ecc7f12bd60a7039f8f89b954f1e)
 
   '@prisma/studio-core@0.27.3(@types/react-dom@18.3.7(@types/react@18.3.28))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
@@ -21036,7 +21041,7 @@ snapshots:
       object-assign: 4.1.1
       react-is: 16.13.1
 
-  proper-lockfile@4.1.2:
+  proper-lockfile@4.1.2(patch_hash=4980fb9f3412fb2afd3f87670d35f7905b34ecc7f12bd60a7039f8f89b954f1e):
     dependencies:
       graceful-fs: 4.2.11
       retry: 0.12.0

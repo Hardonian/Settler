@@ -417,7 +417,10 @@
       "isolated-vm",
       "msgpackr-extract",
       "unrs-resolver"
-    ]
+    ],
+    "patchedDependencies": {
+      "proper-lockfile@4.1.2": "patches/proper-lockfile@4.1.2.patch"
+    }
   },
   "dependencies": {
     "turbo": "^2.9.6"

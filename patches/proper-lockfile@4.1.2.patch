@@ -1,0 +1,17 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+deleted file mode 100644
+index e44d95310199281bc852ffe95b331fb512a86ec4..0000000000000000000000000000000000000000
+diff --git a/lib/lockfile.js b/lib/lockfile.js
+index 97b66373d5c5057de38884bb870ee68134e5a7ee..5ea90731b7d40d0b9f851fa256628e0a22a5f295 100644
+--- a/lib/lockfile.js
++++ b/lib/lockfile.js
+@@ -328,7 +328,8 @@ function getLocks() {
+ 
+ // Remove acquired locks on exit
+ /* istanbul ignore next */
+-onExit(() => {
++const _onExit = typeof onExit === 'function' ? onExit : onExit.onExit || (() => {});
++_onExit(() => {
+     for (const file in locks) {
+         const options = locks[file].options;
+ 
