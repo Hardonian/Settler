@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@jobforge/shared": "workspace:*",
-    "@supabase/supabase-js": "^2.103.0",
+    "@supabase/supabase-js": "^2.103.3",
     "zod": "^3.22.4"
   },
   "devDependencies": {
