@@ -134,7 +134,7 @@
     "envalid": "^8.0.0",
     "exceljs": "^4.4.0",
     "express": "^5.2.1",
-    "express-rate-limit": "^7.1.5",
+    "express-rate-limit": "^8.3.2",
     "helmet": "^7.1.0",
     "ioredis": "^5.10.1",
     "isomorphic-dompurify": "^2.9.0",
