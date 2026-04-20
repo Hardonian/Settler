@@ -6,7 +6,7 @@
  */
 
 import { PrismaClient, Prisma } from "@prisma/client";
-import { logInfo, logError, logWarn } from "../../utils/logger";
+import { logInfo, logWarn } from "../../utils/logger";
 
 export type WorkflowStepType =
   | "ingestion"
@@ -58,7 +58,10 @@ interface StepResult {
 
 export class WorkflowEngine {
   private prisma: PrismaClient;
-  private stepHandlers: Map<WorkflowStepType, (step: WorkflowStep, context: Record<string, unknown>) => Promise<Record<string, unknown>>>;
+  private stepHandlers: Map<
+    WorkflowStepType,
+    (step: WorkflowStep, context: Record<string, unknown>) => Promise<Record<string, unknown>>
+  >;
 
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;
@@ -90,7 +93,7 @@ export class WorkflowEngine {
     const workflow = await (this.prisma as any).workflowDefinitions.findUnique({
       where: { id: workflowId },
     });
-    
+
     if (!workflow) {
       logWarn(`Workflow definition not found: ${workflowId}`);
       return null;
@@ -132,7 +135,7 @@ export class WorkflowEngine {
         status: "running",
         triggeredBy: "api",
         triggerEvent: (input || {}) as Prisma.InputJsonValue,
-        executionGraph: { steps: definition.steps.map(s => s.id) },
+        executionGraph: { steps: definition.steps.map((s) => s.id) },
         stepResults: {},
       },
     });
@@ -158,7 +161,7 @@ export class WorkflowEngine {
         }
         executedSteps.add(currentStepId);
 
-        const step = definition.steps.find(s => s.id === currentStepId);
+        const step = definition.steps.find((s) => s.id === currentStepId);
         if (!step) {
           throw new Error(`Step not found: ${currentStepId}`);
         }
@@ -171,7 +174,7 @@ export class WorkflowEngine {
         await (this.prisma as any).workflowRuns.update({
           where: { id: (workflowRun as any).id },
           data: {
-            stepResults: (stepResults as unknown) as Prisma.InputJsonValue,
+            stepResults: stepResults as unknown as Prisma.InputJsonValue,
           },
         });
 
@@ -186,7 +189,7 @@ export class WorkflowEngine {
       }
 
       // Check overall status
-      const hasFailures = Object.values(stepResults).some(r => r.status === "failed");
+      const hasFailures = Object.values(stepResults).some((r) => r.status === "failed");
       const finalStatus = hasFailures ? "failed" : "completed";
 
       await (this.prisma as any).workflowRuns.update({
@@ -223,12 +226,12 @@ export class WorkflowEngine {
   private async executeStep(
     step: WorkflowStep,
     context: Record<string, unknown>,
-    workflowRunId: string,
-    stepResults: Record<string, StepResult>
+    _workflowRunId: string,
+    _stepResults: Record<string, StepResult>
   ): Promise<StepResult> {
     const maxAttempts = step.retry?.maxAttempts || 1;
     const backoff = step.retry?.backoff || "linear";
-    
+
     let lastError: Error | undefined;
 
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -246,7 +249,7 @@ export class WorkflowEngine {
         }
 
         const output = await handler(step, context);
-        
+
         return {
           ...result,
           status: "completed",
@@ -255,15 +258,16 @@ export class WorkflowEngine {
         };
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
-        
+
         if (attempt < maxAttempts) {
           // Calculate backoff delay
-          const delay = backoff === "exponential" 
-            ? Math.pow(2, attempt - 1) * 1000 
-            : attempt * 1000;
-          
-          logWarn(`Step ${step.id} failed (attempt ${attempt}), retrying in ${delay}ms`, { error: lastError.message });
-          await new Promise(resolve => setTimeout(resolve, delay));
+          const delay =
+            backoff === "exponential" ? Math.pow(2, attempt - 1) * 1000 : attempt * 1000;
+
+          logWarn(`Step ${step.id} failed (attempt ${attempt}), retrying in ${delay}ms`, {
+            error: lastError.message,
+          });
+          await new Promise((resolve) => setTimeout(resolve, delay));
         }
       }
     }
@@ -279,44 +283,68 @@ export class WorkflowEngine {
 
   // Step Handlers
 
-  private async handleIngestion(step: WorkflowStep, context: Record<string, unknown>): Promise<Record<string, unknown>> {
+  private async handleIngestion(
+    step: WorkflowStep,
+    _context: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     logInfo("Executing ingestion step", { stepId: step.id, config: step.config });
     return { status: "ingested", timestamp: new Date().toISOString() };
   }
 
-  private async handleTransform(step: WorkflowStep, context: Record<string, unknown>): Promise<Record<string, unknown>> {
+  private async handleTransform(
+    step: WorkflowStep,
+    _context: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     logInfo("Executing transform step", { stepId: step.id });
     return { status: "transformed" };
   }
 
-  private async handleValidate(step: WorkflowStep, context: Record<string, unknown>): Promise<Record<string, unknown>> {
+  private async handleValidate(
+    step: WorkflowStep,
+    _context: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     logInfo("Executing validate step", { stepId: step.id });
     return { status: "validated", valid: true };
   }
 
-  private async handleMap(step: WorkflowStep, context: Record<string, unknown>): Promise<Record<string, unknown>> {
+  private async handleMap(
+    step: WorkflowStep,
+    _context: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     logInfo("Executing map step", { stepId: step.id });
     return { status: "mapped" };
   }
 
-  private async handleRecon(step: WorkflowStep, context: Record<string, unknown>): Promise<Record<string, unknown>> {
+  private async handleRecon(
+    step: WorkflowStep,
+    _context: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     logInfo("Executing recon step", { stepId: step.id });
     return { status: "reconciled" };
   }
 
-  private async handleDriftDetection(step: WorkflowStep, context: Record<string, unknown>): Promise<Record<string, unknown>> {
+  private async handleDriftDetection(
+    step: WorkflowStep,
+    _context: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     logInfo("Executing drift detection step", { stepId: step.id });
     return { status: "drift_checked", driftDetected: false };
   }
 
-  private async handleAudit(step: WorkflowStep, context: Record<string, unknown>): Promise<Record<string, unknown>> {
+  private async handleAudit(
+    step: WorkflowStep,
+    _context: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     logInfo("Executing audit step", { stepId: step.id });
     return { status: "audited" };
   }
 
-  private async handleWebhook(step: WorkflowStep, context: Record<string, unknown>): Promise<Record<string, unknown>> {
+  private async handleWebhook(
+    step: WorkflowStep,
+    _context: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     const { url, method = "POST", headers = {}, body } = step.config;
-    
+
     if (!url || typeof url !== "string") {
       throw new Error("Webhook URL required");
     }
@@ -334,29 +362,38 @@ export class WorkflowEngine {
     return { status: "webhook_sent", statusCode: response.status };
   }
 
-  private async handleConditional(step: WorkflowStep, context: Record<string, unknown>): Promise<Record<string, unknown>> {
+  private async handleConditional(
+    step: WorkflowStep,
+    _context: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     const { condition } = step.config;
-    
+
     // Simple condition evaluation (could be expanded)
     const conditionMet = this.evaluateCondition(condition, context);
-    
+
     return { status: "condition_evaluated", conditionMet };
   }
 
-  private async handleLoop(step: WorkflowStep, context: Record<string, unknown>): Promise<Record<string, unknown>> {
+  private async handleLoop(
+    step: WorkflowStep,
+    _context: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     const { iterations = 1 } = step.config;
-    
+
     logInfo("Executing loop step", { stepId: step.id, iterations });
-    
+
     return { status: "loop_completed", iterations };
   }
 
-  private async handleTimer(step: WorkflowStep, context: Record<string, unknown>): Promise<Record<string, unknown>> {
+  private async handleTimer(
+    step: WorkflowStep,
+    _context: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     const { duration = 1000 } = step.config;
-    
+
     logInfo("Executing timer step", { stepId: step.id, duration });
-    await new Promise(resolve => setTimeout(resolve, Number(duration)));
-    
+    await new Promise((resolve) => setTimeout(resolve, Number(duration)));
+
     return { status: "timer_completed", duration };
   }
 
@@ -365,7 +402,7 @@ export class WorkflowEngine {
    */
   private evaluateCondition(condition: unknown, context: Record<string, unknown>): boolean {
     if (!condition) return true;
-    
+
     // Simple condition: { key: "value" } checks context[key] === value
     if (typeof condition === "object" && condition !== null) {
       for (const [key, expectedValue] of Object.entries(condition)) {
@@ -375,7 +412,7 @@ export class WorkflowEngine {
       }
       return true;
     }
-    
+
     return Boolean(condition);
   }
 
@@ -416,10 +453,10 @@ export class WorkflowEngine {
    */
   private calculateNextRun(schedule: { type: string; config: Record<string, unknown> }): Date {
     const now = new Date();
-    
+
     switch (schedule.type) {
       case "once":
-        return new Date(schedule.config.date as string || now);
+        return new Date((schedule.config.date as string) || now);
       case "interval":
         const minutes = (schedule.config.minutes as number) || 60;
         return new Date(now.getTime() + minutes * 60 * 1000);

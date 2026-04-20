@@ -136,12 +136,14 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
 
     try {
       // Query pg_stat_statements for slow queries if extension is available
-      const slowQueries = await this.prisma.$queryRaw<Array<{
-        query: string;
-        mean_exec_time: number;
-        calls: number;
-        rows: number;
-      }>>`
+      const slowQueries = await this.prisma.$queryRaw<
+        Array<{
+          query: string;
+          mean_exec_time: number;
+          calls: number;
+          rows: number;
+        }>
+      >`
         SELECT query, mean_exec_time, calls, rows
         FROM pg_stat_statements
         WHERE mean_exec_time > 100
@@ -151,7 +153,11 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
 
       for (let i = 0; i < slowQueries.length; i++) {
         const sq = slowQueries[i];
-        if (sq.query.includes('CREATE INDEX') || sq.query.startsWith('COMMIT') || sq.query.startsWith('BEGIN')) {
+        if (
+          sq.query.includes("CREATE INDEX") ||
+          sq.query.startsWith("COMMIT") ||
+          sq.query.startsWith("BEGIN")
+        ) {
           continue;
         }
 
@@ -174,14 +180,14 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
           recommendedAction: "review",
         });
       }
-    } catch (error) {
+    } catch {
       // pg_stat_statements not available, fall back to query log analysis
       logInfo("pg_stat_statements not available, using query log analysis");
-      
+
       const recentJobs = await this.prisma.reconJob.findMany({
         where: { createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } },
         select: { id: true, executionTime: true },
-        orderBy: { executionTime: 'desc' },
+        orderBy: { executionTime: "desc" },
         take: 20,
       });
 
@@ -237,22 +243,22 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
     }
 
     // Check for expensive model usage that could be downgraded
-    if (modelUsage['gpt-4']?.cost > 100) {
+    if (modelUsage["gpt-4"]?.cost > 100) {
       opportunities.push({
         id: "opt_cost_ai_downgrade",
         type: "cost",
-        description: `High GPT-4 usage detected: $${modelUsage['gpt-4'].cost.toFixed(2)} in 30 days`,
+        description: `High GPT-4 usage detected: $${modelUsage["gpt-4"].cost.toFixed(2)} in 30 days`,
         currentState: {
-          model: 'gpt-4',
-          cost30Days: modelUsage['gpt-4'].cost,
-          calls30Days: modelUsage['gpt-4'].calls,
+          model: "gpt-4",
+          cost30Days: modelUsage["gpt-4"].cost,
+          calls30Days: modelUsage["gpt-4"].calls,
         },
         proposedChange: {
-          downgradeTo: 'gpt-3.5-turbo',
+          downgradeTo: "gpt-3.5-turbo",
           estimatedSavingsPercent: 90,
         },
         expectedImpact: {
-          costSavings: modelUsage['gpt-4'].cost * 0.9,
+          costSavings: modelUsage["gpt-4"].cost * 0.9,
           riskLevel: "low",
         },
         recommendedAction: "review",
@@ -262,7 +268,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
     // 2. Check for unused reconciliation jobs
     const staleJobs = await this.prisma.reconJob.count({
       where: {
-        status: 'active',
+        status: "active",
         lastRunAt: { lt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000) },
       },
     });
@@ -274,10 +280,10 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
         description: `${staleJobs} stale reconciliation jobs detected (>90 days since last run)`,
         currentState: {
           staleJobCount: staleJobs,
-          threshold: '90 days',
+          threshold: "90 days",
         },
         proposedChange: {
-          action: 'archive_or_delete',
+          action: "archive_or_delete",
           targetCount: staleJobs,
         },
         expectedImpact: {
@@ -303,8 +309,8 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
           storageCostEstimate: unmappedCount * 0.001,
         },
         proposedChange: {
-          action: 'review_mappings',
-          autoCleanupThreshold: '30 days',
+          action: "review_mappings",
+          autoCleanupThreshold: "30 days",
         },
         expectedImpact: {
           costSavings: 25,
@@ -325,16 +331,16 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
 
     // 1. Check for error-prone connectors
     const errorRates = await this.prisma.reconResult.groupBy({
-      by: ['connectorId'],
+      by: ["connectorId"],
       where: {
         createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
-        status: { in: ['error', 'failed'] },
+        status: { in: ["error", "failed"] },
       },
       _count: { id: true },
     });
 
     const totalRuns = await this.prisma.reconResult.groupBy({
-      by: ['connectorId'],
+      by: ["connectorId"],
       where: {
         createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
       },
@@ -342,7 +348,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
     });
 
     for (const errorStat of errorRates) {
-      const totalStat = totalRuns.find(t => t.connectorId === errorStat.connectorId);
+      const totalStat = totalRuns.find((t) => t.connectorId === errorStat.connectorId);
       if (totalStat) {
         const errorRate = errorStat._count.id / totalStat._count.id;
         if (errorRate > 0.2) {
@@ -357,8 +363,8 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
               totalCount7Days: totalStat._count.id,
             },
             proposedChange: {
-              action: 'review_connector_config',
-              retryPolicy: 'exponential_backoff',
+              action: "review_connector_config",
+              retryPolicy: "exponential_backoff",
             },
             expectedImpact: {
               errorRateReduction: 0.5,
@@ -373,7 +379,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
     // 2. Check for memory-intensive jobs
     const largeJobs = await this.prisma.reconJob.findMany({
       where: {
-        status: 'completed',
+        status: "completed",
         executionTime: { gt: 300000 }, // > 5 minutes
         createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
       },
@@ -392,7 +398,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
           executionTimeMs: job.executionTime,
         },
         proposedChange: {
-          action: 'enable_streaming',
+          action: "enable_streaming",
           batchSize: 1000,
         },
         expectedImpact: {
@@ -414,11 +420,11 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
 
     // 1. Check queue depth
     const pendingJobs = await this.prisma.reconJob.count({
-      where: { status: 'pending' },
+      where: { status: "pending" },
     });
 
     const processingJobs = await this.prisma.reconJob.count({
-      where: { status: 'processing' },
+      where: { status: "processing" },
     });
 
     const queueRatio = pendingJobs / (processingJobs || 1);
@@ -434,7 +440,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
           queueRatio,
         },
         proposedChange: {
-          action: 'scale_workers',
+          action: "scale_workers",
           targetWorkers: Math.ceil(pendingJobs / 10),
         },
         expectedImpact: {
@@ -460,7 +466,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
           threshold: 100,
         },
         proposedChange: {
-          action: 'enable_cdn_caching',
+          action: "enable_cdn_caching",
           cacheStaticAssets: true,
         },
         expectedImpact: {
@@ -486,10 +492,10 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
           // Log the slow query for manual review
           await this.prisma.optimizationLog.create({
             data: {
-              type: 'query_optimization',
+              type: "query_optimization",
               description: opportunity.description,
               details: opportunity.currentState as unknown as Prisma.InputJsonValue,
-              status: 'pending_review',
+              status: "pending_review",
               createdAt: new Date(),
             },
           });
@@ -497,7 +503,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
 
         case "cost":
           // Apply cost optimizations automatically if low risk
-          if (opportunity.recommendedAction === 'auto-apply') {
+          if (opportunity.recommendedAction === "auto-apply") {
             if (opportunity.proposedChange?.downgradeTo) {
               // Update AI config to use cheaper model
               const { aiConfig } = await import("../../config/ai-config");
@@ -512,9 +518,14 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
           if (opportunity.proposedChange?.enable_streaming) {
             // Update job config to use streaming
             await this.prisma.globalConfig.upsert({
-              where: { key: 'enable_streaming' },
-              update: { value: 'true', updatedAt: new Date() },
-              create: { key: 'enable_streaming', value: 'true', createdAt: new Date(), updatedAt: new Date() },
+              where: { key: "enable_streaming" },
+              update: { value: "true", updatedAt: new Date() },
+              create: {
+                key: "enable_streaming",
+                value: "true",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              },
             });
           }
           break;
@@ -525,9 +536,14 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
             const targetWorkers = opportunity.proposedChange.targetWorkers as number;
             // Update worker pool size
             await this.prisma.globalConfig.upsert({
-              where: { key: 'worker_pool_size' },
+              where: { key: "worker_pool_size" },
               update: { value: String(targetWorkers), updatedAt: new Date() },
-              create: { key: 'worker_pool_size', value: String(targetWorkers), createdAt: new Date(), updatedAt: new Date() },
+              create: {
+                key: "worker_pool_size",
+                value: String(targetWorkers),
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              },
             });
           }
           break;
@@ -544,7 +560,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
             proposedChange: opportunity.proposedChange,
             expectedImpact: opportunity.expectedImpact,
           } as unknown as Prisma.InputJsonValue,
-          status: 'applied',
+          status: "applied",
           appliedAt: new Date(),
         },
       });

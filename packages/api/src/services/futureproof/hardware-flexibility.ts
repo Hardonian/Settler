@@ -107,13 +107,13 @@ export class HardwareFlexibility {
       // Check if SAFE runtime is available
       const safeRuntime = process.env.SAFE_RUNTIME_ENDPOINT;
       if (!safeRuntime) {
-        throw new Error('SAFE runtime not configured');
+        throw new Error("SAFE runtime not configured");
       }
 
       // Execute in secure enclave via SAFE runtime
       const response = await fetch(`${safeRuntime}/execute`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           enclaveId,
           code,
@@ -128,7 +128,7 @@ export class HardwareFlexibility {
 
       const result = await response.json();
 
-      logInfo('SAFE execution completed', { enclaveId, inputKeys: Object.keys(input) });
+      logInfo("SAFE execution completed", { enclaveId, inputKeys: Object.keys(input) });
 
       return {
         success: true,
@@ -136,10 +136,10 @@ export class HardwareFlexibility {
         enclaveId,
       };
     } catch (error) {
-      logError('SAFE execution failed', { enclaveId, error });
+      logError("SAFE execution failed", { enclaveId, error });
       return {
         success: false,
-        result: { error: error instanceof Error ? error.message : 'Unknown error', input },
+        result: { error: error instanceof Error ? error.message : "Unknown error", input },
         enclaveId,
       };
     }
@@ -151,8 +151,8 @@ export class HardwareFlexibility {
   private async generateAttestation(enclaveId: string): Promise<string> {
     // Simplified attestation - in production would use actual TEE attestation
     const timestamp = Date.now();
-    const data = `${enclaveId}:${timestamp}:${process.env.SAFE_SIGNING_KEY || 'dev-key'}`;
-    return Buffer.from(data).toString('base64');
+    const data = `${enclaveId}:${timestamp}:${process.env.SAFE_SIGNING_KEY || "dev-key"}`;
+    return Buffer.from(data).toString("base64");
   }
 
   /**
@@ -161,13 +161,18 @@ export class HardwareFlexibility {
   async executeLocalInference(
     model: string,
     input: Record<string, unknown>
-  ): Promise<{ success: boolean; result: Record<string, unknown>; model: string; inferenceTimeMs: number }> {
+  ): Promise<{
+    success: boolean;
+    result: Record<string, unknown>;
+    model: string;
+    inferenceTimeMs: number;
+  }> {
     const startTime = Date.now();
 
     try {
       // Check for ONNX Runtime
       if (this.capabilities.onnx) {
-        const { InferenceSession } = await import('onnxruntime-node');
+        const { InferenceSession } = await import("onnxruntime-node");
         const session = await InferenceSession.create(model);
         const feeds: Record<string, any> = {};
 
@@ -192,7 +197,7 @@ export class HardwareFlexibility {
 
       // Check for TensorFlow.js
       if (this.capabilities.tensorflow) {
-        const tf = await import('@tensorflow/tfjs-node');
+        const tf = await import("@tensorflow/tfjs-node");
         const loadedModel = await tf.loadLayersModel(`file://${model}`);
 
         const inputTensor = tf.tensor(Object.values(input).flat() as number[]);
@@ -207,12 +212,12 @@ export class HardwareFlexibility {
         };
       }
 
-      throw new Error('No local inference runtime available');
+      throw new Error("No local inference runtime available");
     } catch (error) {
-      logError('Local inference failed', { model, error });
+      logError("Local inference failed", { model, error });
       return {
         success: false,
-        result: { error: error instanceof Error ? error.message : 'Unknown error' },
+        result: { error: error instanceof Error ? error.message : "Unknown error" },
         model,
         inferenceTimeMs: Date.now() - startTime,
       };
@@ -227,7 +232,14 @@ export class HardwareFlexibility {
       type: "gpu" | "cpu";
       task: Record<string, unknown>;
     }>
-  ): Promise<Array<{ success: boolean; result: Record<string, unknown>; device: string; executionTimeMs: number }>> {
+  ): Promise<
+    Array<{
+      success: boolean;
+      result: Record<string, unknown>;
+      device: string;
+      executionTimeMs: number;
+    }>
+  > {
     const results = await Promise.all(
       tasks.map(async (t) => {
         const startTime = Date.now();
@@ -235,7 +247,7 @@ export class HardwareFlexibility {
         try {
           let result: Record<string, unknown>;
 
-          if (t.type === 'gpu' && this.capabilities.webgpu) {
+          if (t.type === "gpu" && this.capabilities.webgpu) {
             // Route to GPU
             result = await this.executeOnGPU(t.task);
           } else {
@@ -252,7 +264,7 @@ export class HardwareFlexibility {
         } catch (error) {
           return {
             success: false,
-            result: { error: error instanceof Error ? error.message : 'Unknown error' },
+            result: { error: error instanceof Error ? error.message : "Unknown error" },
             device: t.type,
             executionTimeMs: Date.now() - startTime,
           };
@@ -268,16 +280,16 @@ export class HardwareFlexibility {
    */
   private async executeOnGPU(task: Record<string, unknown>): Promise<Record<string, unknown>> {
     // WebGPU execution - simplified for now
-    logInfo('Executing on GPU', { taskType: task.type });
-    return { executedOn: 'gpu', ...task };
+    logInfo("Executing on GPU", { taskType: task.type });
+    return { executedOn: "gpu", ...task };
   }
 
   /**
    * Execute task on CPU
    */
   private async executeOnCPU(task: Record<string, unknown>): Promise<Record<string, unknown>> {
-    logInfo('Executing on CPU', { taskType: task.type });
-    return { executedOn: 'cpu', ...task };
+    logInfo("Executing on CPU", { taskType: task.type });
+    return { executedOn: "cpu", ...task };
   }
 
   /**
@@ -294,34 +306,38 @@ export class HardwareFlexibility {
       let url: string;
 
       switch (config.provider) {
-        case 'aws':
-          url = await this.deployToAWS(config.region, config.service || 'lambda');
+        case "aws":
+          url = await this.deployToAWS(config.region, config.service || "lambda");
           break;
-        case 'gcp':
-          url = await this.deployToGCP(config.region, config.service || 'cloud-functions');
+        case "gcp":
+          url = await this.deployToGCP(config.region, config.service || "cloud-functions");
           break;
-        case 'azure':
-          url = await this.deployToAzure(config.region, config.service || 'functions');
+        case "azure":
+          url = await this.deployToAzure(config.region, config.service || "functions");
           break;
-        case 'vercel':
+        case "vercel":
           url = await this.deployToVercel();
           break;
-        case 'supabase':
+        case "supabase":
           url = await this.deployToSupabase(config.region);
           break;
         default:
           throw new Error(`Unsupported provider: ${config.provider}`);
       }
 
-      logInfo('Cloud deployment successful', { deploymentId, provider: config.provider, region: config.region });
+      logInfo("Cloud deployment successful", {
+        deploymentId,
+        provider: config.provider,
+        region: config.region,
+      });
 
       return {
         deploymentId,
         url,
-        status: 'active',
+        status: "active",
       };
     } catch (error) {
-      logError('Cloud deployment failed', { deploymentId, error });
+      logError("Cloud deployment failed", { deploymentId, error });
       throw error;
     }
   }
@@ -333,7 +349,7 @@ export class HardwareFlexibility {
     // AWS deployment via SDK or API
     const awsEndpoint = process.env.AWS_DEPLOYMENT_ENDPOINT;
     if (!awsEndpoint) {
-      throw new Error('AWS deployment endpoint not configured');
+      throw new Error("AWS deployment endpoint not configured");
     }
     return `${awsEndpoint}/${region}/${service}`;
   }
@@ -344,7 +360,7 @@ export class HardwareFlexibility {
   private async deployToGCP(region: string, service: string): Promise<string> {
     const gcpEndpoint = process.env.GCP_DEPLOYMENT_ENDPOINT;
     if (!gcpEndpoint) {
-      throw new Error('GCP deployment endpoint not configured');
+      throw new Error("GCP deployment endpoint not configured");
     }
     return `${gcpEndpoint}/${region}/${service}`;
   }
@@ -355,7 +371,7 @@ export class HardwareFlexibility {
   private async deployToAzure(region: string, service: string): Promise<string> {
     const azureEndpoint = process.env.AZURE_DEPLOYMENT_ENDPOINT;
     if (!azureEndpoint) {
-      throw new Error('Azure deployment endpoint not configured');
+      throw new Error("Azure deployment endpoint not configured");
     }
     return `${azureEndpoint}/${region}/${service}`;
   }
@@ -366,7 +382,7 @@ export class HardwareFlexibility {
   private async deployToVercel(): Promise<string> {
     const vercelToken = process.env.VERCEL_TOKEN;
     if (!vercelToken) {
-      throw new Error('Vercel token not configured');
+      throw new Error("Vercel token not configured");
     }
     // Vercel deployment via API
     return `https://${process.env.VERCEL_PROJECT_ID}.vercel.app`;
@@ -375,10 +391,10 @@ export class HardwareFlexibility {
   /**
    * Deploy to Supabase
    */
-  private async deployToSupabase(region: string): Promise<string> {
+  private async deployToSupabase(_region: string): Promise<string> {
     const supabaseUrl = process.env.SUPABASE_URL;
     if (!supabaseUrl) {
-      throw new Error('Supabase URL not configured');
+      throw new Error("Supabase URL not configured");
     }
     return `${supabaseUrl}/functions/v1`;
   }

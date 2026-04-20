@@ -206,7 +206,6 @@ export class AgenticWorkflowService {
     });
 
     for (const exception of exceptions) {
-      const sig = signatureFromMatch(exception);
       const archetypeId = exception.archetypeClassifications[0]?.archetypeId;
 
       const similarMemories = await prisma.exceptionAdjudicationMemory.findMany({
@@ -323,7 +322,6 @@ export class AgenticWorkflowService {
       const ageScore = Math.min(1, ageHours / 168);
       const unassignedScore = exception.assignedTo ? 0 : 1;
 
-      const sig = signatureFromMatch(exception);
       const signatureCount = await prisma.reconciliationMatch.count({
         where: {
           tenantId,
