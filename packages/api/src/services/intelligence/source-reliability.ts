@@ -8,7 +8,7 @@
  */
 
 import { PrismaClient, IngestionSource } from "@prisma/client";
-import { logInfo, logError } from "../../utils/logger";
+import { logInfo } from "../../utils/logger";
 
 export interface SourceReliabilityScore {
   sourceId: string;

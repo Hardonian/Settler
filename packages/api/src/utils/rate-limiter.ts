@@ -141,3 +141,87 @@ export class RedisRateLimiter {
 
 // Singleton instance for the application
 export const rateLimiter = new RedisRateLimiter();
+
+export interface RateLimitCheckRequest {
+  method: string;
+  path: string;
+  headers: Record<string, string | undefined>;
+  ip: string;
+  userId?: string;
+  tenantId?: string;
+  apiKeyId?: string;
+}
+
+export interface RateLimitDecision {
+  allowed: boolean;
+  limit: number;
+  remaining: number;
+  reset: number;
+  scope: "tenant" | "user" | "ip";
+}
+
+export async function checkRateLimit(req: RateLimitCheckRequest): Promise<RateLimitDecision> {
+  const path = req.path.startsWith("/api") ? req.path : `/api${req.path}`;
+  const scope: RateLimitDecision["scope"] = req.tenantId ? "tenant" : req.userId ? "user" : "ip";
+  const role: UserRole =
+    req.headers["x-admin"] === "true" ? "admin" : req.userId ? "standard" : "anonymous";
+  const { limit, windowSeconds } = rateLimiter.getLimitForRequest(role, path);
+  const identity = req.tenantId || req.userId || req.apiKeyId || req.ip;
+  const result = await rateLimiter.checkLimit(identity, limit, windowSeconds, { path, role });
+  return {
+    allowed: result.success,
+    limit: result.limit,
+    remaining: result.remaining,
+    reset: result.reset,
+    scope,
+  };
+}
+
+export function rateLimitMiddleware() {
+  return async (
+    req: {
+      method: string;
+      path: string;
+      headers: Record<string, unknown>;
+      ip?: string;
+      userId?: string;
+      tenantId?: string;
+      apiKeyId?: string;
+    },
+    res: {
+      status: (code: number) => { json: (payload: unknown) => unknown };
+      setHeader: (k: string, v: string) => void;
+    },
+    next: () => void
+  ) => {
+    const decision = await checkRateLimit({
+      method: req.method,
+      path: req.path,
+      headers: Object.fromEntries(
+        Object.entries(req.headers || {}).map(([k, v]) => [
+          k,
+          typeof v === "string" ? v : undefined,
+        ])
+      ),
+      ip: req.ip || "unknown",
+      userId: req.userId,
+      tenantId: req.tenantId,
+      apiKeyId: req.apiKeyId,
+    });
+
+    res.setHeader("X-RateLimit-Limit", String(decision.limit));
+    res.setHeader("X-RateLimit-Remaining", String(decision.remaining));
+    res.setHeader("X-RateLimit-Reset", String(decision.reset));
+
+    if (!decision.allowed) {
+      res.status(429).json({
+        error: "RATE_LIMITED",
+        message: "Rate limit exceeded",
+        scope: decision.scope,
+        reset: decision.reset,
+      });
+      return;
+    }
+    next();
+  };
+}

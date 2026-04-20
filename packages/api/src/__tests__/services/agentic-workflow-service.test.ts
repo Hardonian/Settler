@@ -261,7 +261,6 @@ describe("AgenticWorkflowService", () => {
         settings: { staleEscalationEnabled: true, staleThresholdHours: 72 },
       });
 
-      const staleDate = new Date(Date.now() - 100 * 60 * 60 * 1000);
       mockPrisma.reconciliationMatch.findMany.mockResolvedValue([
         { id: "stale-1" },
         { id: "stale-2" },

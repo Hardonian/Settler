@@ -11,8 +11,6 @@ import { cn } from "@/lib/utils";
 import { Menu, ChevronDown } from "lucide-react";
 
 // Primary navigation items (always visible on desktop)
-const siteMode = process.env.NEXT_PUBLIC_SITE_MODE || "oss";
-
 const primaryNavigationItems = [
   { href: "/platform", label: "Platform" },
   { href: "/capabilities", label: "Capabilities" },

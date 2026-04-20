@@ -26,7 +26,6 @@ async function insertAnalyticsEvent(
     });
     if (error) throw error;
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.error("[analytics] Failed to insert analytics_event:", err);
   }
 }
@@ -44,7 +43,6 @@ async function insertActivityLog(
     });
     if (error) throw error;
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.error("[analytics] Failed to insert activity_log:", err);
   }
 }

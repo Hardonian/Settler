@@ -90,17 +90,22 @@ export class PolicyComparisonService {
       }
 
       // Calculate compliance score
-      const totalSections = Object.keys(sections2).length;
-      const requiredSections = ["data collection", "data use", "data sharing", "user rights", "contact"];
-      const hasRequiredSections = requiredSections.every(rs => 
-        Object.keys(sections2).some(s => s.toLowerCase().includes(rs))
+      const requiredSections = [
+        "data collection",
+        "data use",
+        "data sharing",
+        "user rights",
+        "contact",
+      ];
+      const hasRequiredSections = requiredSections.every((rs) =>
+        Object.keys(sections2).some((s) => s.toLowerCase().includes(rs))
       );
 
       let complianceScore = 100;
       if (!hasRequiredSections) complianceScore -= 20;
-      complianceScore -= violations.filter(v => v.severity === "critical").length * 15;
-      complianceScore -= violations.filter(v => v.severity === "high").length * 10;
-      complianceScore -= violations.filter(v => v.severity === "medium").length * 5;
+      complianceScore -= violations.filter((v) => v.severity === "critical").length * 15;
+      complianceScore -= violations.filter((v) => v.severity === "high").length * 10;
+      complianceScore -= violations.filter((v) => v.severity === "medium").length * 5;
       complianceScore = Math.max(0, complianceScore);
 
       // Log comparison
@@ -116,12 +121,12 @@ export class PolicyComparisonService {
         },
       });
 
-      logInfo("Privacy policy comparison completed", { 
-        tenantId, 
-        added: added.length, 
-        removed: removed.length, 
+      logInfo("Privacy policy comparison completed", {
+        tenantId,
+        added: added.length,
+        removed: removed.length,
         modified: modified.length,
-        complianceScore 
+        complianceScore,
       });
 
       return {
@@ -142,21 +147,24 @@ export class PolicyComparisonService {
    */
   private extractSections(policy: string): Record<string, string> {
     const sections: Record<string, string> = {};
-    
+
     // Split by common section headers
-    const lines = policy.split('\n');
+    const lines = policy.split("\n");
     let currentSection = "general";
     let currentContent: string[] = [];
 
     for (const line of lines) {
       const trimmed = line.trim();
-      
+
       // Detect section headers (numbered, capitalized, or followed by colon)
       if (/^\d+\.|^[A-Z][A-Z\s]+$|.+:$/.test(trimmed) && trimmed.length < 100) {
         if (currentContent.length > 0) {
-          sections[currentSection] = currentContent.join('\n').trim();
+          sections[currentSection] = currentContent.join("\n").trim();
         }
-        currentSection = trimmed.replace(/[:\d\.]+$/, '').trim().toLowerCase();
+        currentSection = trimmed
+          .replace(/[:\d\.]+$/, "")
+          .trim()
+          .toLowerCase();
         currentContent = [];
       } else {
         currentContent.push(line);
@@ -165,7 +173,7 @@ export class PolicyComparisonService {
 
     // Don't forget the last section
     if (currentContent.length > 0) {
-      sections[currentSection] = currentContent.join('\n').trim();
+      sections[currentSection] = currentContent.join("\n").trim();
     }
 
     return sections;
@@ -176,7 +184,7 @@ export class PolicyComparisonService {
    */
   private isRequiredSection(section: string): boolean {
     const required = ["data collection", "data use", "privacy", "rights", "contact"];
-    return required.some(r => section.toLowerCase().includes(r));
+    return required.some((r) => section.toLowerCase().includes(r));
   }
 
   /**
@@ -188,7 +196,10 @@ export class PolicyComparisonService {
     const lowerSection = section.toLowerCase();
 
     // Check for concerning clauses
-    if (lowerContent.includes("sell your data") || lowerContent.includes("third party advertisers")) {
+    if (
+      lowerContent.includes("sell your data") ||
+      lowerContent.includes("third party advertisers")
+    ) {
       violations.push({
         section,
         violation: "Data selling practices detected",
@@ -212,7 +223,11 @@ export class PolicyComparisonService {
       });
     }
 
-    if (lowerSection.includes("rights") && !lowerContent.includes("delete") && !lowerContent.includes("erase")) {
+    if (
+      lowerSection.includes("rights") &&
+      !lowerContent.includes("delete") &&
+      !lowerContent.includes("erase")
+    ) {
       violations.push({
         section,
         violation: "User rights section missing deletion/erasure rights",
@@ -236,21 +251,24 @@ export class PolicyComparisonService {
     riskLevel: "low" | "medium" | "high";
   }> {
     const comparison = await this.comparePrivacyPolicies(tenantId, baselinePolicy, currentPolicy);
-    
+
     const changes: string[] = [
-      ...comparison.added.map(s => `Added: ${s}`),
-      ...comparison.removed.map(s => `Removed: ${s}`),
-      ...comparison.modified.map(m => `Modified: ${m.section}`),
-      ...comparison.violations.map(v => `Violation: ${v.violation} (${v.severity})`),
+      ...comparison.added.map((s) => `Added: ${s}`),
+      ...comparison.removed.map((s) => `Removed: ${s}`),
+      ...comparison.modified.map((m) => `Modified: ${m.section}`),
+      ...comparison.violations.map((v) => `Violation: ${v.violation} (${v.severity})`),
     ];
 
     const driftDetected = changes.length > 0;
-    
+
     // Determine risk level
     let riskLevel: "low" | "medium" | "high" = "low";
-    if (comparison.violations.some(v => v.severity === "critical")) {
+    if (comparison.violations.some((v) => v.severity === "critical")) {
       riskLevel = "high";
-    } else if (comparison.violations.some(v => v.severity === "high") || comparison.added.length > 2) {
+    } else if (
+      comparison.violations.some((v) => v.severity === "high") ||
+      comparison.added.length > 2
+    ) {
       riskLevel = "medium";
     }
 
@@ -286,7 +304,9 @@ export class PolicyComparisonService {
       const retentionDays = retentionPolicy[data.type];
       if (!retentionDays) continue;
 
-      const ageDays = Math.floor((now.getTime() - data.createdAt.getTime()) / (1000 * 60 * 60 * 24));
+      const ageDays = Math.floor(
+        (now.getTime() - data.createdAt.getTime()) / (1000 * 60 * 60 * 24)
+      );
 
       if (ageDays > retentionDays) {
         violations.push({
@@ -299,10 +319,12 @@ export class PolicyComparisonService {
     }
 
     // Also check database for expired data
-    const dbViolations = await this._prisma.$queryRaw<Array<{
-      data_type: string;
-      max_age: number;
-    }>>`
+    const dbViolations = await this._prisma.$queryRaw<
+      Array<{
+        data_type: string;
+        max_age: number;
+      }>
+    >`
       SELECT 
         data_type,
         EXTRACT(DAY FROM NOW() - MIN(created_at)) as max_age
@@ -363,7 +385,10 @@ export class PolicyComparisonService {
     }> = [];
 
     // Assess risks based on processing activity
-    if (processingActivity.dataTypes.includes("health") || processingActivity.dataTypes.includes("biometric")) {
+    if (
+      processingActivity.dataTypes.includes("health") ||
+      processingActivity.dataTypes.includes("biometric")
+    ) {
       risks.push({
         category: "Sensitive Data",
         likelihood: "medium",
@@ -390,7 +415,8 @@ export class PolicyComparisonService {
       });
     }
 
-    if (processingActivity.retentionPeriod > 2555) { // > 7 years
+    if (processingActivity.retentionPeriod > 2555) {
+      // > 7 years
       risks.push({
         category: "Data Retention",
         likelihood: "low",
@@ -400,9 +426,11 @@ export class PolicyComparisonService {
     }
 
     // Calculate overall risk
-    const criticalRisks = risks.filter(r => r.impact === "high" && r.likelihood === "high").length;
-    const highRisks = risks.filter(r => r.impact === "high" || r.likelihood === "high").length;
-    
+    const criticalRisks = risks.filter(
+      (r) => r.impact === "high" && r.likelihood === "high"
+    ).length;
+    const highRisks = risks.filter((r) => r.impact === "high" || r.likelihood === "high").length;
+
     let overallRisk: "low" | "medium" | "high" | "critical" = "low";
     if (criticalRisks > 0) overallRisk = "critical";
     else if (highRisks > 1) overallRisk = "high";
@@ -410,15 +438,15 @@ export class PolicyComparisonService {
 
     // Generate recommendations
     const recommendations: string[] = [];
-    if (risks.some(r => r.category === "Sensitive Data")) {
+    if (risks.some((r) => r.category === "Sensitive Data")) {
       recommendations.push("Implement encryption at rest and in transit for sensitive data");
       recommendations.push("Conduct Data Protection Officer consultation");
     }
-    if (risks.some(r => r.category === "Vulnerable Subjects")) {
+    if (risks.some((r) => r.category === "Vulnerable Subjects")) {
       recommendations.push("Implement age verification mechanisms");
       recommendations.push("Provide simplified privacy notices for children");
     }
-    if (risks.some(r => r.category === "Data Sharing")) {
+    if (risks.some((r) => r.category === "Data Sharing")) {
       recommendations.push("Establish data processing agreements with all third parties");
       recommendations.push("Implement data minimization for shared data");
     }

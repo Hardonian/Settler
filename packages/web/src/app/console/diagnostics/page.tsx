@@ -140,8 +140,6 @@ export default async function DiagnosticsPage() {
   const ts = health?.connectivity?.timestamp ?? null;
 
   const envOk = checks.env?.status === "ok";
-  const dbOk = connChecks.database?.ok === true || checks.database?.status === "ok";
-  const supabaseOk = connChecks.supabase?.ok === true || checks.supabase?.status === "ok";
 
   return (
     <div className="space-y-6 pb-12">

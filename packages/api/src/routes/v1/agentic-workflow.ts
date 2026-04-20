@@ -23,7 +23,7 @@ import { requirePermission } from "../../middleware/authorization";
 import { Permission } from "../../infrastructure/security/Permissions";
 import { validateRequest } from "../../middleware/validation";
 import { handleRouteError } from "../../utils/error-handler";
-import { agenticWorkflowService } from "./agentic-workflow-service";
+import { agenticWorkflowService } from "../../services/agentic-workflow/agentic-workflow-service";
 
 const router = Router();
 

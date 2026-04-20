@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
 import { rateLimiter } from "../../utils/rate-limiter";
+import { logInfo } from "../../utils/logger";
 
 const router = Router();
 
@@ -11,7 +12,7 @@ router.get("/kill-switch/status", async (_req: Request, res: Response) => {
   try {
     const active = await rateLimiter.isKillSwitchActive();
     return res.json({ active });
-  } catch (error) {
+  } catch {
     return res.status(500).json({ error: "Failed to fetch kill switch status" });
   }
 });
@@ -35,14 +36,13 @@ router.post("/kill-switch", async (req: Request, res: Response) => {
     await rateLimiter.setGlobalKillSwitch(active);
 
     // Audit logging is essential for emergency actions
-    console.log(`[OPERATOR_MODE] Global kill switch ${active ? "ENABLED" : "DISABLED"}`);
+    logInfo("[OPERATOR_MODE] Global kill switch toggled", { active });
 
     return res.json({
       success: true,
       killSwitchActive: active,
     });
-  } catch (error) {
-    console.error("[OPERATOR_MODE] Failed to toggle kill switch:", error);
+  } catch {
     return res.status(500).json({
       error: "INTERNAL_ERROR",
       message: "Failed to update the global kill switch.",

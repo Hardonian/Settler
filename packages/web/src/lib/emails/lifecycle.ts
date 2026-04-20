@@ -165,7 +165,6 @@ export async function sendLifecycleEmail(emailData: EmailData): Promise<void> {
     });
 
     if (!result.success) {
-      // eslint-disable-next-line no-console
       console.warn(
         "[Lifecycle Email] Resend unavailable, logging to activity_log:",
         emailData.event
