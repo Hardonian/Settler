@@ -1,0 +1,145 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`canonical surface consistency snapshots deterministic proofpack artifact shape for export parity 1`] = `
+{
+  "compactProofSummary": {
+    "delta": {
+      "baseline": {
+        "priorResultId": null,
+        "priorResultStartedAt": null,
+      },
+      "certainty": "low",
+      "changedSincePreviousRun": "unavailable",
+      "deltas": {
+        "conflicts": null,
+        "matched": null,
+        "proofCompleteness": "unavailable",
+        "recurringFamilyConcentration": "unavailable",
+        "unmatched": null,
+      },
+      "history": {
+        "certainty": "low",
+        "comparableWindowCount": 0,
+        "lookbackWindow": 0,
+        "pattern": "unavailable",
+        "reasonCodes": [
+          "run_proofpack_missing",
+        ],
+        "summary": "Run history intelligence is unavailable for this run type.",
+        "trend": "unavailable",
+      },
+      "reasonCodes": [
+        "run_proofpack_missing",
+      ],
+      "state": "unavailable",
+      "summary": "Run-level proofpack index is unavailable for this run type.",
+    },
+    "operatorSummary": {
+      "changedSincePreviousRun": "unavailable",
+      "explainerCodes": [
+        "signal_unavailable",
+        "comparison_state_unavailable",
+        "comparison_trust_low",
+        "pattern_unavailable",
+        "proof_posture_unavailable",
+        "proof_posture_change_absent",
+        "comparison_change_unavailable",
+        "history_unavailable",
+        "proofpack_missing",
+        "recurring_family_signal_absent",
+      ],
+      "pattern": "unavailable",
+      "primaryReasonCodes": [
+        "run_proofpack_missing",
+      ],
+      "proofPosture": "unavailable",
+      "recurringFamilies": [],
+      "signal": "unavailable",
+      "summary": "Historical signal is unavailable for this run.",
+    },
+    "proofPackages": {
+      "bestCompletenessScore": null,
+      "degradedEvidenceReasons": [
+        "run_proofpack_missing",
+      ],
+      "finalized": 0,
+      "latestCreatedAt": null,
+      "missingEvidenceCount": 0,
+      "state": "unavailable",
+      "total": 0,
+    },
+    "recurrence": {
+      "exceptionsWithMemories": 0,
+      "repeatedResolutionReasons": [],
+      "state": "unavailable",
+      "topRecurringFamilies": [],
+    },
+  },
+  "contentHash": "5b2e7d0a45cd7c798d961e469b7966287a50e8ebcb2574a71e757c9ce1b28cb7",
+  "proofpackIndex": {
+    "comparison": {
+      "baseline": {
+        "priorResultId": null,
+        "priorResultStartedAt": null,
+      },
+      "certainty": "low",
+      "changedSincePriorRun": "unavailable",
+      "deltas": {
+        "conflicts": null,
+        "matched": null,
+        "proofCompleteness": "unavailable",
+        "recurringFamilyConcentration": "unavailable",
+        "unmatched": null,
+      },
+      "history": {
+        "certainty": "low",
+        "comparableWindowCount": 0,
+        "lookbackWindow": 0,
+        "pattern": "unavailable",
+        "reasonCodes": [
+          "run_proofpack_missing",
+        ],
+        "summary": "Run history intelligence is unavailable for this run type.",
+        "trend": "unavailable",
+      },
+      "reasonCodes": [
+        "run_proofpack_missing",
+      ],
+      "state": "unavailable",
+      "summary": "Run-level proofpack index is unavailable for this run type.",
+    },
+    "proofPackages": {
+      "bestCompletenessScore": null,
+      "degradedEvidenceReasons": [
+        "run_proofpack_missing",
+      ],
+      "finalized": 0,
+      "latestCreatedAt": null,
+      "missingEvidenceCount": 0,
+      "state": "unavailable",
+      "total": 0,
+    },
+    "recurrence": {
+      "exceptionsWithMemories": 0,
+      "repeatedResolutionReasons": [],
+      "state": "unavailable",
+      "topRecurringFamilies": [],
+    },
+  },
+  "run": {
+    "completedAt": "2026-01-01T00:02:00.000Z",
+    "detailHref": "/console/runs/run-consistency-1",
+    "id": "run-consistency-1",
+    "runKind": "recon_job",
+    "startedAt": "2026-01-01T00:01:00.000Z",
+    "status": "completed",
+  },
+  "schemaVersion": "proofpack.run.v1",
+  "supportability": {
+    "notes": [
+      "run_proofpack_missing",
+    ],
+    "shareable": false,
+  },
+}
+`;

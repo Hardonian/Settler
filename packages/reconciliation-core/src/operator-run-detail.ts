@@ -10,21 +10,18 @@
 
 import type { RunStatus } from "@settler/types";
 import type { CanonicalReconciliationRunDetail } from "./canonical-reconciliation.js";
-import type { AdapterDriftSignal } from "./canonical-run-result.js";
 import {
   resolveRunCompactProofSummary,
   type RunCompactProofSummary,
   type RunProofpackIndex,
 } from "./run-proofpack-index.js";
-
-function legacyAdapterDriftLabel(
-  signal: AdapterDriftSignal
-): "source" | "target" | "both" | "none" {
-  if (signal.sourceChanged && signal.targetChanged) return "both";
-  if (signal.sourceChanged) return "source";
-  if (signal.targetChanged) return "target";
-  return "none";
-}
+import type { ApiRunsListLegacyItem } from "./api-runs-list-adapter.js";
+import {
+  buildRunProvenanceProjection,
+  buildRunSummaryProjection,
+  buildRunSummarySemanticsProjection,
+  legacyAdapterDriftLabel,
+} from "./run-surface-shaping.js";
 
 type OperatorSummary = {
   total: number;
@@ -185,6 +182,35 @@ export interface OperatorRunDetailBase {
 
 export type OperatorRunDetail = OperatorRunDetailBase;
 
+/**
+ * Same legacy list row contract as {@link mapCanonicalListItemToApiRunsLegacyRow} — use with
+ * {@link assertCanonicalConsistency} to prove list vs detail alignment for a run id.
+ */
+export function operatorRunDetailToApiRunsLegacyRow(d: OperatorRunDetail): ApiRunsListLegacyItem {
+  return {
+    runKind: d.runKind,
+    sourceModel: d.sourceModel,
+    id: d.id,
+    detailHref: d.detailHref,
+    name: d.name,
+    status: d.status,
+    statusLabel: d.statusLabel,
+    startedAt: d.startedAt,
+    completedAt: d.completedAt,
+    summary: d.summary,
+    summarySemantics: d.summarySemantics,
+    summaryState: d.summaryState,
+    progress: d.progress,
+    progressState: d.progressState,
+    isTerminal: d.isTerminal,
+    provenance: d.provenance,
+    configDrift: d.configDrift,
+    ingestionId: d.provenance.ingestionId,
+    sourceAdapter: d.provenance.sourceAdapter,
+    targetAdapter: d.provenance.targetAdapter,
+  };
+}
+
 function buildCompactProofSummaryForRunDetail(
   runKind: OperatorRunDetail["runKind"],
   proofpackIndex?: RunProofpackIndex
@@ -197,7 +223,6 @@ function baseFromCanonical(
   startedAt: string,
   completedAt: string | null
 ) {
-  const s = detail.summary;
   return {
     runKind: detail.runKind,
     sourceModel: detail.provenance.sourceModel,
@@ -211,35 +236,10 @@ function baseFromCanonical(
     progressState: detail.lifecycle.progressState,
     startedAt,
     completedAt,
-    summary: {
-      total: s.total,
-      sourceCount: s.sourceCount,
-      targetCount: s.targetCount,
-      matched: s.matched,
-      unmatched: s.unmatched,
-      unmatchedSourceCount: s.unmatchedSourceCount,
-      unmatchedTargetCount: s.unmatchedTargetCount,
-      conflicts: s.conflicts,
-    },
-    summarySemantics: {
-      processed: s.processed,
-      matchedWithTolerance: s.matchedWithTolerance,
-      exceptioned: s.exceptioned,
-      unresolved: s.unresolved,
-      ignored: s.ignored,
-      resolved: s.resolved,
-    },
+    summary: buildRunSummaryProjection(detail.summary),
+    summarySemantics: buildRunSummarySemanticsProjection(detail.summary),
     summaryState: detail.summaryState,
-    provenance: {
-      sourceModel: detail.provenance.sourceModel,
-      runKind: detail.provenance.runKind,
-      ingestionId: detail.provenance.ingestionId,
-      reconJobId: detail.provenance.reconJobId,
-      executedAt: startedAt,
-      completedAt,
-      sourceAdapter: detail.adapters.sourceAdapter,
-      targetAdapter: detail.adapters.targetAdapter,
-    },
+    provenance: buildRunProvenanceProjection(detail, startedAt, completedAt),
     configDrift: {
       status: detail.configDrift.status,
       adapter: legacyAdapterDriftLabel(detail.configDrift.adapter),

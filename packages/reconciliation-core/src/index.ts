@@ -21,3 +21,6 @@ export * from "./cross-run-intelligence.js";
 export * from "./support-intake-run-context.js";
 export * from "./prior-run-delta-analyst.js";
 export * from "./run-institutional-memory.js";
+export * from "./run-surface-shaping.js";
+export * from "./canonical-consistency.js";
+export * from "./run-proofpack-artifact.js";

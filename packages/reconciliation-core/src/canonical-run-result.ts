@@ -495,10 +495,11 @@ function runtimeRowToCanonicalRow(
     confidence: asNumber(runtimeMatch.confidence),
   });
 
+  const stableSourceId = String(runtimeMatch.source_record_id || "unknown");
   return {
     rowId:
       firstDefinedString(runtimeMatch.transaction_id, runtimeMatch.source_record_id) ||
-      `${runId}:${Math.random().toString(36).slice(2)}`,
+      `row:${runId}:${stableSourceId}`,
     sourceRecordId: String(runtimeMatch.source_record_id || "unknown"),
     targetRecordId: firstDefinedString(runtimeMatch.target_record_id) || null,
     classification,
