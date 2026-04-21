@@ -299,6 +299,9 @@ describe("GET /api/runs", () => {
     expect(body.items[0].detailHref).toBe("/console/runs/job-1");
     expect(body.next_cursor).toBe("next");
     expect(body.response_meta.pagination_mode).toBe("merged_cursor");
+    expect(body.response_meta.apiSchemaVersion).toBe("operator.v1");
+    expect(body.response_meta.route).toBe("GET /api/runs");
+    expect(body.response_meta.state).toBe("available");
     expect(fetchMergedReconciliationRunsPageMock).toHaveBeenCalled();
   });
 

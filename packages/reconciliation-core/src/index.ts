@@ -28,3 +28,6 @@ export * from "./policy-engine.js";
 export * from "./source-reliability.js";
 export * from "./run-delta-classification.js";
 export * from "./run-operator-intelligence.js";
+export * from "./adjudication-policy-load.js";
+export * from "./policy-tolerance-merge.js";
+export * from "./operator-api-envelope.js";

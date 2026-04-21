@@ -27,6 +27,7 @@ import {
   MergedRunsCursorError,
   buildRunProofpackIndexByRunId,
   resolveRunCompactProofSummary,
+  metaForRunList,
   type MergedRunsCursorV1,
 } from "@settler/reconciliation-core";
 import {
@@ -180,6 +181,7 @@ export const GET = withSecurity(
               },
               pagination_mode: "merged_cursor",
               legacy_page_param_ignored: legacyPage ? true : false,
+              ...metaForRunList({ route: "GET /api/runs", items }),
             },
           });
         }
@@ -280,6 +282,7 @@ export const GET = withSecurity(
             },
             pagination_mode: "filter_scan_first_page",
             legacy_page_param_ignored: legacyPage ? true : false,
+            ...metaForRunList({ route: "GET /api/runs", items }),
           },
         });
       } catch (error) {

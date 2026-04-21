@@ -16,6 +16,11 @@ import path from "path";
 import { createObjectCsvStringifier } from "csv-writer";
 import { logError, logWarn, logInfo } from "../../utils/logger";
 import {
+  applyPolicyHintsToTolerances,
+  fetchPolicyWeightHintsForReconJob,
+  type ReconciliationCorePrismaClient,
+} from "@settler/reconciliation-core";
+import {
   getMatchingRulesForJob,
   serializeConfigForProvenance,
   DEFAULT_TOLERANCES,
@@ -180,22 +185,46 @@ export class ReconCoreEngine {
         message: `Matching ${mappedSource.length} source transactions against ${mappedTarget.length} target transactions...`,
       });
 
-      // Step 5: Load matching rules and perform reconciliation
-      const matchingConfig = await getMatchingRulesForJob(
+      // Step 5: Load matching rules and merge adjudication-derived tolerance hints (deterministic caps)
+      const baseMatchingConfig = await getMatchingRulesForJob(
         tenantId,
         reconJob.id,
         reconJob.templateId
       );
 
+      const policyHintsLoad = await fetchPolicyWeightHintsForReconJob(
+        this.prisma as ReconciliationCorePrismaClient,
+        tenantId,
+        reconJobId
+      );
+
+      const mergedTol = applyPolicyHintsToTolerances(
+        {
+          amountTolerance: baseMatchingConfig.amountTolerance,
+          dateToleranceDays: baseMatchingConfig.dateToleranceDays,
+        },
+        policyHintsLoad.policyWeightHints
+      );
+
+      const matchingConfig: ReconciliationConfig = {
+        ...baseMatchingConfig,
+        amountTolerance: mergedTol.amountTolerance,
+        dateToleranceDays: mergedTol.dateToleranceDays,
+      };
+
       logInfo("Loaded matching config for job", {
         jobId: reconJob.id,
         templateId: reconJob.templateId,
         amountTolerance: matchingConfig.amountTolerance,
+        dateToleranceDays: matchingConfig.dateToleranceDays,
         ruleCount: matchingConfig.matchingRules.length,
         configSource: matchingConfig.configSource,
+        policyHintsState: policyHintsLoad.state,
+        policyHintsSampleCount: policyHintsLoad.sampleCount,
+        policyAppliedReasonCodes: mergedTol.appliedReasonCodes,
       });
 
-      // Perform reconciliation with loaded config
+      // Perform reconciliation with adjudication-adjusted config
       const reconMatches = await this.performReconciliation(
         mappedSource,
         mappedTarget,
@@ -220,10 +249,20 @@ export class ReconCoreEngine {
       // Build provenance data to track which config was used
       const provenanceData = serializeConfigForProvenance(matchingConfig);
 
-      // Extend summary with provenance
+      // Extend summary with provenance + explicit adjudication policy merge (audit-visible)
       const enrichedSummary = {
         ...results.summary,
         _provenance: provenanceData,
+        policyAdjudication: {
+          hintsState: policyHintsLoad.state,
+          hintsReasonCodes: policyHintsLoad.reasonCodes,
+          hintsSampleCount: policyHintsLoad.sampleCount,
+          appliedToleranceReasonCodes: mergedTol.appliedReasonCodes,
+          amountToleranceBefore: baseMatchingConfig.amountTolerance,
+          dateToleranceDaysBefore: baseMatchingConfig.dateToleranceDays,
+          amountToleranceAfter: matchingConfig.amountTolerance,
+          dateToleranceDaysAfter: matchingConfig.dateToleranceDays,
+        },
       };
 
       const updatedResult = await this.prisma.reconResult.update({
@@ -350,6 +389,12 @@ export class ReconCoreEngine {
         reconResultId: updatedResult.id,
         status: "completed",
         summary: results.summary,
+        policyAdjudication: {
+          state: policyHintsLoad.state,
+          reasonCodes: policyHintsLoad.reasonCodes,
+          sampleCount: policyHintsLoad.sampleCount,
+          appliedToleranceReasonCodes: mergedTol.appliedReasonCodes,
+        },
       });
 
       // Step 11: Emit event
@@ -508,7 +553,10 @@ export class ReconCoreEngine {
       // Call actual adapter
       try {
         const { AdapterFactory } = await import("../../adapters/adapter-factory");
-        const adapter = AdapterFactory.create(reconJob.sourceAdapter, reconJob.sourceConfigEncrypted);
+        const adapter = AdapterFactory.create(
+          reconJob.sourceAdapter,
+          reconJob.sourceConfigEncrypted
+        );
         const rawData = await adapter.fetchTransactions({
           startDate: reconJob.config?.startDate as string,
           endDate: reconJob.config?.endDate as string,
@@ -587,13 +635,19 @@ export class ReconCoreEngine {
     for (const step of steps) {
       switch (step.type) {
         case "filter":
-          transformedData = transformedData.filter(record => {
-            const conditions = step.config.conditions as Array<{ field: string; operator: string; value: unknown }>;
-            return conditions.every(cond => this.evaluateCondition(record[cond.field], cond.operator, cond.value));
+          transformedData = transformedData.filter((record) => {
+            const conditions = step.config.conditions as Array<{
+              field: string;
+              operator: string;
+              value: unknown;
+            }>;
+            return conditions.every((cond) =>
+              this.evaluateCondition(record[cond.field], cond.operator, cond.value)
+            );
           });
           break;
         case "map":
-          transformedData = transformedData.map(record => {
+          transformedData = transformedData.map((record) => {
             const mappings = step.config.mappings as Record<string, string>;
             const newRecord = { ...record };
             for (const [sourceField, targetField] of Object.entries(mappings)) {
@@ -606,12 +660,18 @@ export class ReconCoreEngine {
           });
           break;
         case "compute":
-          transformedData = transformedData.map(record => {
-            const computedFields = step.config.fields as Record<string, { formula: string; dependencies: string[] }>;
+          transformedData = transformedData.map((record) => {
+            const computedFields = step.config.fields as Record<
+              string,
+              { formula: string; dependencies: string[] }
+            >;
             const newRecord = { ...record };
             for (const [fieldName, { formula, dependencies }] of Object.entries(computedFields)) {
               try {
-                const values = dependencies.reduce((acc, dep) => ({ ...acc, [dep]: record[dep] }), {});
+                const values = dependencies.reduce(
+                  (acc, dep) => ({ ...acc, [dep]: record[dep] }),
+                  {}
+                );
                 newRecord[fieldName] = this.evaluateFormula(formula, values);
               } catch (error) {
                 logWarn(`Failed to compute field ${fieldName}`, error);
@@ -645,24 +705,40 @@ export class ReconCoreEngine {
         const value = record[rule.field];
 
         // Required check
-        if (rule.required && (value === undefined || value === null || value === '')) {
-          errors.push({ record: record.id || 'unknown', field: rule.field, message: `${rule.field} is required` });
+        if (rule.required && (value === undefined || value === null || value === "")) {
+          errors.push({
+            record: record.id || "unknown",
+            field: rule.field,
+            message: `${rule.field} is required`,
+          });
         }
 
         if (value === undefined || value === null) continue;
 
         // Type validation
-        if (rule.type === 'number' && typeof value !== 'number') {
-          errors.push({ record: record.id || 'unknown', field: rule.field, message: `${rule.field} must be a number` });
+        if (rule.type === "number" && typeof value !== "number") {
+          errors.push({
+            record: record.id || "unknown",
+            field: rule.field,
+            message: `${rule.field} must be a number`,
+          });
         }
 
-        if (rule.type === 'date' && isNaN(Date.parse(String(value)))) {
-          errors.push({ record: record.id || 'unknown', field: rule.field, message: `${rule.field} must be a valid date` });
+        if (rule.type === "date" && isNaN(Date.parse(String(value)))) {
+          errors.push({
+            record: record.id || "unknown",
+            field: rule.field,
+            message: `${rule.field} must be a valid date`,
+          });
         }
 
         // Pattern validation
         if (rule.pattern && !new RegExp(rule.pattern).test(String(value))) {
-          errors.push({ record: record.id || 'unknown', field: rule.field, message: `${rule.field} does not match pattern` });
+          errors.push({
+            record: record.id || "unknown",
+            field: rule.field,
+            message: `${rule.field} does not match pattern`,
+          });
         }
       }
     }
@@ -697,7 +773,7 @@ export class ReconCoreEngine {
     const fieldMappings = (template.fieldMappings || {}) as Record<string, string>;
     const calculatedFields = (template.calculatedFields || {}) as Record<string, string>;
 
-    return data.map(record => {
+    return data.map((record) => {
       const mappedRecord: ReconDataRecord = { ...record };
 
       // Apply field mappings (source field -> target field)
@@ -1179,25 +1255,45 @@ export class ReconCoreEngine {
    */
   private evaluateCondition(value: unknown, operator: string, expectedValue: unknown): boolean {
     switch (operator) {
-      case 'eq':
+      case "eq":
         return value === expectedValue;
-      case 'ne':
+      case "ne":
         return value !== expectedValue;
-      case 'gt':
-        return typeof value === 'number' && typeof expectedValue === 'number' && value > expectedValue;
-      case 'gte':
-        return typeof value === 'number' && typeof expectedValue === 'number' && value >= expectedValue;
-      case 'lt':
-        return typeof value === 'number' && typeof expectedValue === 'number' && value < expectedValue;
-      case 'lte':
-        return typeof value === 'number' && typeof expectedValue === 'number' && value <= expectedValue;
-      case 'contains':
-        return typeof value === 'string' && typeof expectedValue === 'string' && value.includes(expectedValue);
-      case 'startsWith':
-        return typeof value === 'string' && typeof expectedValue === 'string' && value.startsWith(expectedValue);
-      case 'endsWith':
-        return typeof value === 'string' && typeof expectedValue === 'string' && value.endsWith(expectedValue);
-      case 'in':
+      case "gt":
+        return (
+          typeof value === "number" && typeof expectedValue === "number" && value > expectedValue
+        );
+      case "gte":
+        return (
+          typeof value === "number" && typeof expectedValue === "number" && value >= expectedValue
+        );
+      case "lt":
+        return (
+          typeof value === "number" && typeof expectedValue === "number" && value < expectedValue
+        );
+      case "lte":
+        return (
+          typeof value === "number" && typeof expectedValue === "number" && value <= expectedValue
+        );
+      case "contains":
+        return (
+          typeof value === "string" &&
+          typeof expectedValue === "string" &&
+          value.includes(expectedValue)
+        );
+      case "startsWith":
+        return (
+          typeof value === "string" &&
+          typeof expectedValue === "string" &&
+          value.startsWith(expectedValue)
+        );
+      case "endsWith":
+        return (
+          typeof value === "string" &&
+          typeof expectedValue === "string" &&
+          value.endsWith(expectedValue)
+        );
+      case "in":
         return Array.isArray(expectedValue) && expectedValue.includes(value);
       default:
         logWarn(`Unknown operator: ${operator}`);
@@ -1211,17 +1307,17 @@ export class ReconCoreEngine {
   private evaluateFormula(formula: string, record: Record<string, unknown>): unknown {
     // Simple formula evaluation: supports +, -, *, /, and field references
     // Example: "{{amount}} * {{taxRate}}" or "{{quantity}} + 10"
-    
+
     const sanitizedFormula = formula.replace(/\{\{(\w+)\}\}/g, (match, field) => {
       const value = record[field];
-      if (value === undefined || value === null) return '0';
-      if (typeof value === 'string') return `"${value.replace(/"/g, '\\"')}"`;
+      if (value === undefined || value === null) return "0";
+      if (typeof value === "string") return `"${value.replace(/"/g, '\\"')}"`;
       return String(value);
     });
 
     try {
       // Use Function constructor for safe evaluation (no access to global scope)
-      const fn = new Function('return ' + sanitizedFormula);
+      const fn = new Function("return " + sanitizedFormula);
       return fn();
     } catch (error) {
       logError(`Failed to evaluate formula: ${formula}`, error);
