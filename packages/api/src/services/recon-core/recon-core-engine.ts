@@ -18,6 +18,7 @@ import { logError, logWarn, logInfo } from "../../utils/logger";
 import {
   applyPolicyHintsToTolerances,
   fetchPolicyWeightHintsForReconJob,
+  type ReconciliationCorePrismaClient,
 } from "@settler/reconciliation-core";
 import {
   getMatchingRulesForJob,
@@ -192,7 +193,7 @@ export class ReconCoreEngine {
       );
 
       const policyHintsLoad = await fetchPolicyWeightHintsForReconJob(
-        this.prisma as Parameters<typeof fetchPolicyWeightHintsForReconJob>[0],
+        this.prisma as ReconciliationCorePrismaClient,
         tenantId,
         reconJobId
       );

@@ -3,7 +3,7 @@
  *
  * GET /api/runs/[id]
  *
- * Returns canonical run detail for the same entity used by /api/runs.
+ * Returns `{ data: OperatorRunDetail, response_meta }` (operator.v1 envelope) for the same entity used by /api/runs.
  * Resolution, enrichment, and serialization live in @settler/reconciliation-core;
  * this route handles auth, tenant scope, and HTTP mapping only.
  */
@@ -17,7 +17,10 @@ import {
   TenantMembershipError,
 } from "@/lib/supabase/tenant-membership";
 import { prisma } from "@/shared/db/prismaClient";
-import { resolveOperatorRunDetailForTenants } from "@settler/reconciliation-core";
+import {
+  envelopeOperatorRunDetail,
+  resolveOperatorRunDetailForTenants,
+} from "@settler/reconciliation-core";
 
 export const runtime = "nodejs";
 
@@ -58,7 +61,7 @@ export const GET = withSecurity(
           return NextResponse.json({ error: "Failed to load run result" }, { status: 500 });
         }
 
-        return NextResponse.json(outcome.detail);
+        return NextResponse.json(envelopeOperatorRunDetail("GET /api/runs/:id", outcome.detail));
       } catch (error) {
         if (error instanceof TenantMembershipError) {
           return NextResponse.json(
