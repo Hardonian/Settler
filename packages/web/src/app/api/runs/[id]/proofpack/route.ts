@@ -7,10 +7,8 @@ import {
 } from "@/lib/supabase/tenant-membership";
 import { prisma } from "@/shared/db/prismaClient";
 import {
-  canonicalMissingProofpackReasonForRunKind,
-  resolveRunCompactProofSummary,
+  buildDeterministicRunProofpackArtifact,
   resolveOperatorRunDetailForTenants,
-  unavailableRunProofpackIndex,
 } from "@settler/reconciliation-core";
 
 export const runtime = "nodejs";
@@ -41,35 +39,10 @@ export const GET = withSecurity(
       }
 
       const detail = outcome.detail;
-      const proofpackIndex =
-        detail.proofpackIndex ??
-        unavailableRunProofpackIndex(canonicalMissingProofpackReasonForRunKind(detail.runKind));
-      const compactProofSummary = resolveRunCompactProofSummary({
-        runKind: detail.runKind,
-        compactProofSummary: detail.compactProofSummary,
-        proofpackIndex,
-      }).compactProofSummary;
-      const artifact = {
-        schemaVersion: "proofpack.run.v1",
-        generatedAt: new Date().toISOString(),
-        run: {
-          id: detail.id,
-          runKind: detail.runKind,
-          status: detail.status,
-          startedAt: detail.startedAt,
-          completedAt: detail.completedAt,
-          detailHref: detail.detailHref,
-        },
-        proofpackIndex,
-        compactProofSummary,
-        supportability: {
-          shareable: Boolean(
-            proofpackIndex.proofPackages.state === "ready" &&
-            proofpackIndex.comparison.state === "available"
-          ),
-          notes: compactProofSummary.operatorSummary.primaryReasonCodes,
-        },
-      };
+      const artifact = buildDeterministicRunProofpackArtifact({
+        detail,
+        generatedAtIso: new Date().toISOString(),
+      });
 
       return NextResponse.json({ artifact });
     } catch (error) {

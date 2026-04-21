@@ -1,8 +1,14 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { BRAND_WORDMARK_PNG } from "./brand-assets";
 
 export type BrandWordmarkProps = {
   alt?: string;
   theme?: "auto" | "light" | "dark";
+  className?: string;
+  sizes?: string;
+  priority?: boolean;
+  format?: "product" | "word";
 };
 
 /**

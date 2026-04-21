@@ -224,6 +224,10 @@
     "settler demo": "node scripts/settler-demo.mjs",
     "verify:root": "node scripts/verify-root-cleanliness.mjs",
     "verify:reconciliation-core-dist": "node scripts/assert-reconciliation-core-dist-root.mjs",
+    "verify:canonical": "pnpm --filter @settler/reconciliation-core test -- canonical-surface-consistency.test.ts",
+    "verify:proofpack": "pnpm --filter @settler/reconciliation-core test -- run-proofpack-index.test.ts canonical-surface-consistency.test.ts",
+    "verify:degraded-states": "pnpm --filter @settler/reconciliation-core test -- run-proofpack-index.test.ts",
+    "verify:moat-readiness": "pnpm run verify:canonical && pnpm run verify:proofpack && pnpm run verify:degraded-states && pnpm run verify:tenant-isolation && pnpm run security:routes && pnpm run verify:tenant && pnpm run verify:claims && pnpm run verify:routes",
     "verify:reconciliation-topology": "node --test scripts/__tests__/reconciliation-topology-contract.test.mjs",
     "demo": "tsx scripts/settler-demo.ts",
     "settler:replay": "tsx scripts/settler-replay.ts",
@@ -371,6 +375,8 @@
   "packageManager": "pnpm@10.13.1",
   "pnpm": {
     "overrides": {
+      "prisma": "7.6.0",
+      "@prisma/client": "7.6.0",
       "@types/react": "18.3.28",
       "@types/react-dom": "18.3.7",
       "rimraf": "^5.0.0",

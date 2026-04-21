@@ -148,6 +148,24 @@ export const doctorCommand = new Command("doctor")
     }
   });
 
+export const firstRunCommand = new Command("first-run")
+  .description("Print a deterministic first-run checklist (no network; no secrets)")
+  .action(() => {
+    console.log("Settler first-run checklist (operator-truth oriented)");
+    const lines = [
+      "1. Install Node.js 24.x (see repo engines / scripts/assert-node-version.mjs).",
+      "2. pnpm install (from repo root).",
+      "3. Copy and fill .env.local for API + web (see SETUP.md / docs/getting-started).",
+      "4. Start Postgres locally (see AGENTS.md dev stack).",
+      "5. pnpm run verify:setup && pnpm run doctor",
+      "6. pnpm run verify:moat-readiness (canonical + proofpack + tenant scripts you have wired).",
+      "7. Open the operator console and complete one guided run; download proofpack from run detail.",
+    ];
+    for (const line of lines) {
+      console.log(line);
+    }
+  });
+
 export const demoCommand = new Command("demo")
   .description("Run deterministic local demo in an isolated temp directory")
   .option("--output-dir <path>", "Directory for demo artifacts")

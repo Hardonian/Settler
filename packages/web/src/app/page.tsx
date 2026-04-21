@@ -22,9 +22,9 @@ import {
 } from "@/components/site/infographics";
 
 export const metadata: Metadata = {
-  title: "Settler — Reconciliation Intelligence Operating System",
+  title: "Settler — Reconciliation intelligence + audit OS",
   description:
-    "Settler makes financial reconciliation deterministic, evidence-rich, and operationally auditable. Every matching decision can be replayed, explained, and trusted.",
+    "Settler is reconciliation intelligence with audit-grade trust: deterministic runs, hash-linked proofpacks, explicit degraded states, and tenant-scoped operator truth.",
 };
 
 const capabilityClusters = [

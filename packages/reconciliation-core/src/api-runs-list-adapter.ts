@@ -4,8 +4,13 @@
  */
 
 import type { CanonicalReconciliationListItem } from "./canonical-reconciliation.js";
-import type { AdapterDriftSignal } from "./canonical-run-result.js";
 import type { ReconciliationCorePrismaClient } from "./prisma-client-like.js";
+import {
+  buildRunProvenanceProjection,
+  buildRunSummaryProjection,
+  buildRunSummarySemanticsProjection,
+  legacyAdapterDriftLabel,
+} from "./run-surface-shaping.js";
 import {
   decodeMergedRunsCursor,
   encodeMergedRunsCursor,
@@ -16,15 +21,6 @@ import {
   fetchMergedReconciliationRunsPage,
   type ReconciliationRunKindFilter,
 } from "./merged-runs-query.js";
-
-function legacyAdapterDriftLabel(
-  signal: AdapterDriftSignal
-): "source" | "target" | "both" | "none" {
-  if (signal.sourceChanged && signal.targetChanged) return "both";
-  if (signal.sourceChanged) return "source";
-  if (signal.targetChanged) return "target";
-  return "none";
-}
 
 export type ApiRunsListLegacyItem = {
   runKind: "recon_job" | "ingestion_run";
@@ -117,6 +113,7 @@ export function mapCanonicalListItemToApiRunsLegacyRow(
   r: CanonicalReconciliationListItem
 ): ApiRunsListLegacyItem {
   const startedAt = r.timestamps.startedAt ?? r.timestamps.createdAt ?? new Date().toISOString();
+  const completedAt = r.timestamps.completedAt;
   return {
     runKind: r.runKind,
     sourceModel: r.provenance.sourceModel,
@@ -126,39 +123,14 @@ export function mapCanonicalListItemToApiRunsLegacyRow(
     status: r.lifecycle.status,
     statusLabel: r.lifecycle.statusLabel,
     startedAt,
-    completedAt: r.timestamps.completedAt,
-    summary: {
-      total: r.summary.total,
-      sourceCount: r.summary.sourceCount,
-      targetCount: r.summary.targetCount,
-      matched: r.summary.matched,
-      unmatched: r.summary.unmatched,
-      unmatchedSourceCount: r.summary.unmatchedSourceCount,
-      unmatchedTargetCount: r.summary.unmatchedTargetCount,
-      conflicts: r.summary.conflicts,
-    },
-    summarySemantics: {
-      processed: r.summary.processed,
-      matchedWithTolerance: r.summary.matchedWithTolerance,
-      exceptioned: r.summary.exceptioned,
-      unresolved: r.summary.unresolved,
-      ignored: r.summary.ignored,
-      resolved: r.summary.resolved,
-    },
+    completedAt,
+    summary: buildRunSummaryProjection(r.summary),
+    summarySemantics: buildRunSummarySemanticsProjection(r.summary),
     summaryState: r.summaryState,
     progress: r.lifecycle.progressPercent,
     progressState: r.lifecycle.progressState,
     isTerminal: r.lifecycle.isTerminal,
-    provenance: {
-      sourceModel: r.provenance.sourceModel,
-      runKind: r.provenance.runKind,
-      ingestionId: r.provenance.ingestionId,
-      reconJobId: r.provenance.reconJobId,
-      executedAt: startedAt,
-      completedAt: r.timestamps.completedAt,
-      sourceAdapter: r.adapters.sourceAdapter,
-      targetAdapter: r.adapters.targetAdapter,
-    },
+    provenance: buildRunProvenanceProjection(r, startedAt, completedAt),
     configDrift: {
       status: r.configDrift.status,
       adapter: legacyAdapterDriftLabel(r.configDrift.adapter),

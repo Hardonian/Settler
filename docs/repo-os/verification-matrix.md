@@ -47,6 +47,15 @@ Run for any auth/tenant/security/data-path change:
 - `pnpm run verify:security:fast` (or stricter profile as needed)
 - `pnpm run verify:security:runtime` for runtime probe evidence when behavior changed
 
+### Canonical reconciliation / proofpack / claims bundle
+
+For changes touching `@settler/reconciliation-core` run shaping, operator detail, or proofpack exports:
+
+- `pnpm run verify:canonical` — list vs detail overlap + proofpack snapshot contract
+- `pnpm run verify:proofpack` — proofpack index + canonical surface tests
+- `pnpm run verify:degraded-states` — explicit degraded semantics on proofpack index paths
+- `pnpm run verify:moat-readiness` — runs the above plus `verify:tenant-isolation`, `verify:tenant`, `verify:claims`, and `verify:routes` (longer; use before merge when multiple surfaces move)
+
 ## 5. Determinism and reconciliation truth
 
 Run for reconciliation/policy/outcome changes:

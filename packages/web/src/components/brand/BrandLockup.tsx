@@ -1,4 +1,6 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { BRAND_LOCKUP_PNG } from "./brand-assets";
 import { BrandMark } from "./BrandMark";
 import { BrandWordmark } from "./BrandWordmark";
 
@@ -10,6 +12,7 @@ type HorizontalLockupProps = {
   theme?: "auto" | "light" | "dark";
   className?: string;
   priority?: boolean;
+  sizes?: string;
   /** Horizontal: mark + text wordmark (default). Stacked uses format="word". */
   wordmarkFormat?: "product" | "word";
 };
@@ -50,7 +53,7 @@ export function BrandLockup(props: BrandLockupProps) {
     );
   }
 
-  const { alt = "Settler.dev", className, priority, sizes, theme = "auto", ...imageRest } = props;
+  const { alt = "Settler.dev", className, priority, sizes, theme = "auto" } = props;
 
   const themeClass = theme === "dark" ? "invert" : theme === "auto" ? "dark:invert" : "";
 
@@ -67,7 +70,6 @@ export function BrandLockup(props: BrandLockupProps) {
       )}
       priority={priority}
       sizes={sizes}
-      {...imageRest}
     />
   );
 }

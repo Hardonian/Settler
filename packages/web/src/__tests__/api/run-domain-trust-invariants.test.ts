@@ -33,10 +33,14 @@ jest.mock("@/middleware/billing-gate-universal", () => ({
   withUniversalBillingGate: (handler: unknown) => handler,
 }));
 
-jest.mock("@settler/reconciliation-core", () => ({
-  resolveOperatorRunDetailForTenants: (...args: unknown[]) =>
-    resolveOperatorRunDetailForTenantsMock(...args),
-}));
+jest.mock("@settler/reconciliation-core", () => {
+  const actual = jest.requireActual("@settler/reconciliation-core") as Record<string, unknown>;
+  return {
+    ...actual,
+    resolveOperatorRunDetailForTenants: (...args: unknown[]) =>
+      resolveOperatorRunDetailForTenantsMock(...args),
+  };
+});
 jest.mock("@/lib/logger", () => ({
   createLogger: () => ({
     info: jest.fn(),
@@ -217,12 +221,12 @@ describe("run domain trust invariants", () => {
 
     expect(response.status).toBe(200);
     const payload = await response.json();
-    expect(payload.data).toBeUndefined();
-    expect(payload.runKind).toBe("recon_job");
-    expect(payload.sourceModel).toBe("recon_jobs");
-    expect(payload.detailHref).toBe("/console/runs/run-a-1");
-    expect(payload.traceId).toBeNull();
-    expect(payload.config).toEqual(
+    expect(payload.data).toBeDefined();
+    expect(payload.data.runKind).toBe("recon_job");
+    expect(payload.data.sourceModel).toBe("recon_jobs");
+    expect(payload.data.detailHref).toBe("/console/runs/run-a-1");
+    expect(payload.data.traceId).toBeNull();
+    expect(payload.data.config).toEqual(
       expect.objectContaining({
         sourceAdapter: "stripe",
         targetAdapter: "netsuite",
@@ -231,10 +235,12 @@ describe("run domain trust invariants", () => {
         validationRuleCount: 2,
       })
     );
-    expect(payload.config.validationRuleLabels).toEqual(
+    expect(payload.data.config.validationRuleLabels).toEqual(
       expect.arrayContaining(["amount • ±0.01", "date • 24h"])
     );
-    expect(payload.kindDetail?.kind).toBe("recon_job");
+    expect(payload.data.kindDetail?.kind).toBe("recon_job");
+    expect(payload.response_meta.apiSchemaVersion).toBe("operator.v1");
+    expect(payload.response_meta.route).toBe("GET /api/runs/:id");
   });
 
   test("run detail uses canonical serializer boundary for ingestion_run responses", async () => {
@@ -291,20 +297,20 @@ describe("run domain trust invariants", () => {
 
     expect(response.status).toBe(200);
     const payload = await response.json();
-    expect(payload.runKind).toBe("ingestion_run");
-    expect(payload.sourceModel).toBe("reconciliation_runs");
-    expect(payload.kindDetail?.kind).toBe("ingestion_run");
-    expect(payload.traceId).toBe("trace-ing-1");
-    expect(payload.config.inputHash).toBeNull();
-    expect(payload.summarySemantics).toEqual(
+    expect(payload.data.runKind).toBe("ingestion_run");
+    expect(payload.data.sourceModel).toBe("reconciliation_runs");
+    expect(payload.data.kindDetail?.kind).toBe("ingestion_run");
+    expect(payload.data.traceId).toBe("trace-ing-1");
+    expect(payload.data.config.inputHash).toBeNull();
+    expect(payload.data.summarySemantics).toEqual(
       expect.objectContaining({
         processed: 24,
         exceptioned: 0,
         unresolved: 0,
       })
     );
-    expect(payload.resultContext.latestResultId).toBeNull();
-    expect(payload.exceptions.reviewRequired).toBe(0);
+    expect(payload.data.resultContext.latestResultId).toBeNull();
+    expect(payload.data.exceptions.reviewRequired).toBe(0);
   });
 
   test("run create mutation denies tenant outside authenticated membership", async () => {

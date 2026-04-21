@@ -14,6 +14,7 @@ npm install -g @settler/cli
 
 ```bash
 settler doctor
+settler first-run
 settler demo
 settler replay --help
 settler verify --help

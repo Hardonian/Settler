@@ -10,21 +10,21 @@
 
 import type { RunStatus } from "@settler/types";
 import type { CanonicalReconciliationRunDetail } from "./canonical-reconciliation.js";
-import type { AdapterDriftSignal } from "./canonical-run-result.js";
 import {
   resolveRunCompactProofSummary,
   type RunCompactProofSummary,
   type RunProofpackIndex,
 } from "./run-proofpack-index.js";
-
-function legacyAdapterDriftLabel(
-  signal: AdapterDriftSignal
-): "source" | "target" | "both" | "none" {
-  if (signal.sourceChanged && signal.targetChanged) return "both";
-  if (signal.sourceChanged) return "source";
-  if (signal.targetChanged) return "target";
-  return "none";
-}
+import { computeSourceReliabilityProjection } from "./source-reliability.js";
+import type { ApiRunsListLegacyItem } from "./api-runs-list-adapter.js";
+import type { OperatorRunIntelligence } from "./run-operator-intelligence.js";
+import type { RunDeltaClassification } from "./run-delta-classification.js";
+import {
+  buildRunProvenanceProjection,
+  buildRunSummaryProjection,
+  buildRunSummarySemanticsProjection,
+  legacyAdapterDriftLabel,
+} from "./run-surface-shaping.js";
 
 type OperatorSummary = {
   total: number;
@@ -169,6 +169,8 @@ export interface OperatorRunDetailBase {
   traceId?: string | null;
   exceptionWorkflowNote?: string;
   runDelta?: {
+    recordId: string | null;
+    previousRunId: string | null;
     inputChanged: boolean;
     matchedDelta: number;
     unmatchedDelta: number;
@@ -177,13 +179,60 @@ export interface OperatorRunDetailBase {
     newExceptionPatterns: string[];
     resolvedPatterns: string[];
     confidenceDelta: number | null;
+    classification: RunDeltaClassification;
   } | null;
+  /** Adjudication rows scoped to this run's exceptions (evidence-backed institutional memory). */
+  institutionalMemory?: {
+    state: "available" | "degraded" | "unavailable";
+    reasonCodes: string[];
+    operatorMessage: string;
+    adjudications: Array<{
+      id: string;
+      exceptionId: string;
+      resolution: string;
+      resolutionReason: string | null;
+      adjudicationType: string;
+      adjudicatorId: string;
+      createdAt: string;
+    }>;
+  };
+  /** Operator-truth intelligence: reliability, learning aggregation, workforce hints — all deterministic. */
+  intelligence?: OperatorRunIntelligence;
   proofpackIndex?: RunProofpackIndex;
   compactProofSummary: RunCompactProofSummary;
   kindDetail: OperatorKindDetail;
 }
 
 export type OperatorRunDetail = OperatorRunDetailBase;
+
+/**
+ * Same legacy list row contract as {@link mapCanonicalListItemToApiRunsLegacyRow} — use with
+ * {@link assertCanonicalConsistency} to prove list vs detail alignment for a run id.
+ */
+export function operatorRunDetailToApiRunsLegacyRow(d: OperatorRunDetail): ApiRunsListLegacyItem {
+  return {
+    runKind: d.runKind,
+    sourceModel: d.sourceModel,
+    id: d.id,
+    detailHref: d.detailHref,
+    name: d.name,
+    status: d.status,
+    statusLabel: d.statusLabel,
+    startedAt: d.startedAt,
+    completedAt: d.completedAt,
+    summary: d.summary,
+    summarySemantics: d.summarySemantics,
+    summaryState: d.summaryState,
+    progress: d.progress,
+    progressState: d.progressState,
+    isTerminal: d.isTerminal,
+    provenance: d.provenance,
+    configDrift: d.configDrift,
+    ingestionId: d.provenance.ingestionId,
+    sourceAdapter: d.provenance.sourceAdapter,
+    targetAdapter: d.provenance.targetAdapter,
+  };
+}
 
 function buildCompactProofSummaryForRunDetail(
   runKind: OperatorRunDetail["runKind"],
@@ -197,7 +246,6 @@ function baseFromCanonical(
   startedAt: string,
   completedAt: string | null
 ) {
-  const s = detail.summary;
   return {
     runKind: detail.runKind,
     sourceModel: detail.provenance.sourceModel,
@@ -211,35 +259,10 @@ function baseFromCanonical(
     progressState: detail.lifecycle.progressState,
     startedAt,
     completedAt,
-    summary: {
-      total: s.total,
-      sourceCount: s.sourceCount,
-      targetCount: s.targetCount,
-      matched: s.matched,
-      unmatched: s.unmatched,
-      unmatchedSourceCount: s.unmatchedSourceCount,
-      unmatchedTargetCount: s.unmatchedTargetCount,
-      conflicts: s.conflicts,
-    },
-    summarySemantics: {
-      processed: s.processed,
-      matchedWithTolerance: s.matchedWithTolerance,
-      exceptioned: s.exceptioned,
-      unresolved: s.unresolved,
-      ignored: s.ignored,
-      resolved: s.resolved,
-    },
+    summary: buildRunSummaryProjection(detail.summary),
+    summarySemantics: buildRunSummarySemanticsProjection(detail.summary),
     summaryState: detail.summaryState,
-    provenance: {
-      sourceModel: detail.provenance.sourceModel,
-      runKind: detail.provenance.runKind,
-      ingestionId: detail.provenance.ingestionId,
-      reconJobId: detail.provenance.reconJobId,
-      executedAt: startedAt,
-      completedAt,
-      sourceAdapter: detail.adapters.sourceAdapter,
-      targetAdapter: detail.adapters.targetAdapter,
-    },
+    provenance: buildRunProvenanceProjection(detail, startedAt, completedAt),
     configDrift: {
       status: detail.configDrift.status,
       adapter: legacyAdapterDriftLabel(detail.configDrift.adapter),
@@ -255,6 +278,16 @@ export function buildOperatorIngestionRunDetailJson(input: {
   const startedAt = input.detail.timestamps.startedAt ?? input.detail.timestamps.createdAt;
   const completedAt = input.detail.timestamps.completedAt;
   const base = baseFromCanonical(input.detail, startedAt, completedAt);
+  const proofSummary = resolveRunCompactProofSummary({
+    runKind: input.detail.runKind,
+    proofpackIndex: input.proofpackIndex,
+  });
+  const sourceReliability = computeSourceReliabilityProjection({
+    configDriftStatus: input.detail.configDrift.status,
+    proofPackagesState: proofSummary.compactProofSummary.proofPackages.state,
+    inputHashPresent: false,
+    comparisonState: proofSummary.compactProofSummary.delta.state,
+  });
 
   const payload: OperatorRunDetail = {
     ...base,
@@ -321,6 +354,30 @@ export function buildOperatorIngestionRunDetailJson(input: {
           "Drift events are keyed to recon_job_id today; ingestion-backed runs may not appear in exception lists filtered by this run id.",
       },
     },
+    institutionalMemory: {
+      state: "unavailable",
+      reasonCodes: ["ingestion_run_exception_scope_not_aligned_to_recon_job"],
+      operatorMessage:
+        "Adjudication memory is keyed to reconciliation_matches for ingestion runs; recon-job scoped memory is not attached on this path.",
+      adjudications: [],
+    },
+    intelligence: {
+      state: "degraded",
+      reasonCodes: [
+        "ingestion_run_operator_intelligence_partial",
+        ...sourceReliability.reasonCodes,
+      ],
+      operatorMessage:
+        "Operator intelligence is partially available for ingestion runs (no recon_results / deterministic row contract). Reliability reflects proof and drift signals only.",
+      sourceReliability,
+      adjudicationLearning: {
+        sampleCount: 0,
+        reasoningCodes: [],
+        policyWeightHints: {},
+      },
+      runDelta: null,
+      workforce: { triggerRunDeltaAnalysis: false, reasonCodes: [] },
+    },
   };
 
   return payload;
@@ -341,6 +398,8 @@ export function buildOperatorReconRunDetailJson(input: {
   stages: OperatorRunStageRow[];
   proofpackIndex?: RunProofpackIndex;
   runDelta?: OperatorRunDetail["runDelta"];
+  institutionalMemory?: OperatorRunDetail["institutionalMemory"];
+  intelligence?: OperatorRunDetail["intelligence"];
 }): OperatorRunDetail {
   const base = baseFromCanonical(input.detail, input.startedAt, input.completedAt);
 
@@ -375,6 +434,8 @@ export function buildOperatorReconRunDetailJson(input: {
       input.proofpackIndex
     ),
     runDelta: input.runDelta,
+    ...(input.institutionalMemory ? { institutionalMemory: input.institutionalMemory } : {}),
+    ...(input.intelligence ? { intelligence: input.intelligence } : {}),
     kindDetail: {
       kind: "recon_job",
       reconJob: {
