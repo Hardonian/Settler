@@ -29,7 +29,18 @@ import {
   type RunConfigurationSummary,
 } from "./run-configuration-summary.js";
 import { toStageRows, type ReconAuditRow } from "./recon-audit-stages.js";
-import { buildRunProofpackIndexByRunId } from "./run-proofpack-index.js";
+import {
+  buildRunProofpackIndexByRunId,
+  resolveRunCompactProofSummary,
+} from "./run-proofpack-index.js";
+import { classifyRunDelta } from "./run-delta-classification.js";
+import { computeSourceReliabilityProjection } from "./source-reliability.js";
+import {
+  aggregateAdjudicationLearning,
+  buildWorkforceHints,
+  type OperatorRunIntelligence,
+} from "./run-operator-intelligence.js";
+import { resolveReconciliationExceptionScope } from "./exception-workbench.js";
 import type { ReconciliationCorePrismaClient } from "./prisma-client-like.js";
 
 export type OperatorRunDetailResolution =
@@ -150,44 +161,56 @@ export async function resolveOperatorRunDetailForTenants(
     const latestResult = resolved.latestResultRecord;
     const snapshotId = latestResult?.snapshot_id ?? null;
 
-    const [audits, exceptionCountResult, runDeltaRecord, snapshotRecord, deterministicRowsRaw] =
-      await Promise.all([
-        prisma.reconAudit.findMany({
-          where: { reconJobId: runId, tenantId: job.tenantId },
-          orderBy: { createdAt: "desc" },
-          take: 50,
-          select: {
-            id: true,
-            auditType: true,
-            action: true,
-            metadata: true,
-            createdAt: true,
-          },
-        }),
-        countReconciliationExceptionsForScope({
-          prisma,
-          tenantId: job.tenantId,
-          runId,
-          runKind: "recon_job",
-        }),
-        prisma.runDelta.findFirst({
-          where: { currentRunId: runId, tenantId: job.tenantId },
-        }),
-        snapshotId
-          ? prisma.runSnapshot.findFirst({
-              where: { id: snapshotId, tenantId: job.tenantId },
-              select: {
-                id: true,
-                inputHash: true,
-                adapterConfigHashes: true,
-                jobConfig: true,
-                ruleVersions: true,
-                createdAt: true,
-              },
-            })
-          : Promise.resolve(null),
-        latestResult?.id
-          ? prisma.$queryRaw<DeterministicMatchRowLike[]>`
+    const [
+      audits,
+      exceptionCountResult,
+      exceptionScope,
+      runDeltaRecord,
+      snapshotRecord,
+      deterministicRowsRaw,
+    ] = await Promise.all([
+      prisma.reconAudit.findMany({
+        where: { reconJobId: runId, tenantId: job.tenantId },
+        orderBy: { createdAt: "desc" },
+        take: 50,
+        select: {
+          id: true,
+          auditType: true,
+          action: true,
+          metadata: true,
+          createdAt: true,
+        },
+      }),
+      countReconciliationExceptionsForScope({
+        prisma,
+        tenantId: job.tenantId,
+        runId,
+        runKind: "recon_job",
+      }),
+      resolveReconciliationExceptionScope({
+        prisma,
+        tenantId: job.tenantId,
+        runId,
+        runKind: "recon_job",
+      }),
+      prisma.runDelta.findFirst({
+        where: { currentRunId: runId, tenantId: job.tenantId },
+      }),
+      snapshotId
+        ? prisma.runSnapshot.findFirst({
+            where: { id: snapshotId, tenantId: job.tenantId },
+            select: {
+              id: true,
+              inputHash: true,
+              adapterConfigHashes: true,
+              jobConfig: true,
+              ruleVersions: true,
+              createdAt: true,
+            },
+          })
+        : Promise.resolve(null),
+      latestResult?.id
+        ? prisma.$queryRaw<DeterministicMatchRowLike[]>`
           SELECT
             stable_match_id,
             left_record_id,
@@ -203,15 +226,15 @@ export async function resolveOperatorRunDetailForTenants(
           ORDER BY matched_at DESC
           LIMIT 250
         `.catch((err: unknown) => {
-              console.warn(
-                "[settler] deterministic_match_results query failed for run",
-                latestResult?.id,
-                err instanceof Error ? err.message : String(err)
-              );
-              return [] as DeterministicMatchRowLike[];
-            })
-          : Promise.resolve([]),
-      ]);
+            console.warn(
+              "[settler] deterministic_match_results query failed for run",
+              latestResult?.id,
+              err instanceof Error ? err.message : String(err)
+            );
+            return [] as DeterministicMatchRowLike[];
+          })
+        : Promise.resolve([]),
+    ]);
 
     const deterministicRows = deterministicRowsRaw as DeterministicMatchRowLike[];
 
@@ -327,6 +350,180 @@ export async function resolveOperatorRunDetailForTenants(
       runs: [resolved.detail],
     });
 
+    const proofpackIndex = proofpackIndexByRun.get(resolved.detail.id);
+    const compactResolution = resolveRunCompactProofSummary({
+      runKind: resolved.detail.runKind,
+      proofpackIndex,
+    });
+
+    const deltaClassification = runDeltaRecord
+      ? classifyRunDelta({
+          matchedDelta: runDeltaRecord.matchedDelta,
+          unmatchedDelta: runDeltaRecord.unmatchedDelta,
+          exceptionDelta: runDeltaRecord.exceptionDelta,
+          inputChanged: runDeltaRecord.inputChanged,
+          configDriftDetected: runDeltaRecord.configDriftDetected,
+          criticalDelta:
+            runDeltaRecord.criticalDelta != null ? Number(runDeltaRecord.criticalDelta) : 0,
+          highDelta: runDeltaRecord.highDelta != null ? Number(runDeltaRecord.highDelta) : 0,
+        })
+      : null;
+
+    const sourceReliability = computeSourceReliabilityProjection({
+      configDriftStatus: resolved.detail.configDrift.status,
+      proofPackagesState: compactResolution.compactProofSummary.proofPackages.state,
+      inputHashPresent: Boolean(latestRecord?.input_hash),
+      comparisonState: compactResolution.compactProofSummary.delta.state,
+    });
+
+    let institutionalMemory: NonNullable<OperatorRunDetail["institutionalMemory"]> = {
+      state: "unavailable",
+      reasonCodes: ["ADJ_MEMORY_SCOPE_UNAVAILABLE"],
+      operatorMessage:
+        "Adjudication memory could not be scoped to reconciliation_matches for this run.",
+      adjudications: [],
+    };
+
+    if (exceptionScope.kind === "not_found") {
+      institutionalMemory = {
+        state: "unavailable",
+        reasonCodes: ["ADJ_MEMORY_EXCEPTION_SCOPE_NOT_FOUND"],
+        operatorMessage:
+          "Exception scope for this run id was not found; adjudication memory is not attached.",
+        adjudications: [],
+      };
+    } else if (exceptionScope.kind === "ambiguous_uuid_collision") {
+      institutionalMemory = {
+        state: "unavailable",
+        reasonCodes: ["ADJ_MEMORY_EXCEPTION_SCOPE_AMBIGUOUS"],
+        operatorMessage:
+          "Exception scope is ambiguous (UUID collision); adjudication memory is not attached until the run is disambiguated.",
+        adjudications: [],
+      };
+    } else if (exceptionScope.kind === "scoped" && exceptionScope.runIds.length === 0) {
+      institutionalMemory = {
+        state: "unavailable",
+        reasonCodes: ["ADJ_MEMORY_NO_LINKED_RECONCILIATION_RUNS"],
+        operatorMessage:
+          "No reconciliation_runs rows are linked to this recon job in metadata; adjudication memory cannot be scoped.",
+        adjudications: [],
+      };
+    }
+
+    const learningRows: Array<{
+      resolutionReason: string | null;
+      adjudicationType: string;
+      matchType?: string | null;
+    }> = [];
+
+    if (exceptionScope.kind === "scoped" && exceptionScope.runIds.length > 0) {
+      try {
+        const memories = await prisma.exceptionAdjudicationMemory.findMany({
+          where: {
+            tenantId: job.tenantId,
+            exception: { runId: { in: exceptionScope.runIds } },
+          },
+          orderBy: { createdAt: "desc" },
+          take: 100,
+          select: {
+            id: true,
+            exceptionId: true,
+            resolution: true,
+            resolutionReason: true,
+            adjudicationType: true,
+            adjudicatorId: true,
+            createdAt: true,
+            exception: { select: { matchType: true } },
+          },
+        });
+
+        institutionalMemory = {
+          state: "available",
+          reasonCodes: [],
+          operatorMessage:
+            "Adjudication rows below are tenant-scoped and limited to exceptions on runs linked to this recon job.",
+          adjudications: memories.map(
+            (m: {
+              id: string;
+              exceptionId: string;
+              resolution: string;
+              resolutionReason: string | null;
+              adjudicationType: string;
+              adjudicatorId: string;
+              createdAt: Date;
+              exception: { matchType: string } | null;
+            }) => ({
+              id: m.id,
+              exceptionId: m.exceptionId,
+              resolution: m.resolution,
+              resolutionReason: m.resolutionReason,
+              adjudicationType: m.adjudicationType,
+              adjudicatorId: m.adjudicatorId,
+              createdAt: m.createdAt.toISOString(),
+            })
+          ),
+        };
+
+        for (const m of memories as Array<{
+          resolutionReason: string | null;
+          adjudicationType: string;
+          exception: { matchType: string } | null;
+        }>) {
+          learningRows.push({
+            resolutionReason: m.resolutionReason,
+            adjudicationType: m.adjudicationType,
+            matchType: m.exception?.matchType ?? null,
+          });
+        }
+      } catch {
+        institutionalMemory = {
+          state: "degraded",
+          reasonCodes: ["ADJ_MEMORY_QUERY_FAILED"],
+          operatorMessage:
+            "Adjudication memory query failed; operator truth excludes adjudication rows until the query succeeds.",
+          adjudications: [],
+        };
+      }
+    }
+
+    const adjudicationLearning = aggregateAdjudicationLearning(learningRows);
+    const workforce = deltaClassification
+      ? buildWorkforceHints(deltaClassification)
+      : { triggerRunDeltaAnalysis: false, reasonCodes: [] as string[] };
+
+    const intelligenceReasonCodes: string[] = [
+      ...sourceReliability.reasonCodes,
+      ...(institutionalMemory.state === "degraded" ? institutionalMemory.reasonCodes : []),
+      ...(deltaClassification?.reasoningCodes ?? []),
+      ...workforce.reasonCodes,
+    ].filter((c, i, a) => a.indexOf(c) === i);
+
+    const intelligenceState: OperatorRunIntelligence["state"] =
+      institutionalMemory.state === "degraded" ? "degraded" : "available";
+
+    if (compactResolution.source === "fallback_unavailable") {
+      intelligenceReasonCodes.push("INTEL_PROOF_SUMMARY_FALLBACK");
+    }
+
+    const intelligence: OperatorRunDetail["intelligence"] = {
+      state: intelligenceState,
+      reasonCodes: [...new Set(intelligenceReasonCodes)].sort(),
+      operatorMessage:
+        intelligenceState === "degraded"
+          ? "Partial operator intelligence: adjudication memory or upstream signals are degraded. Reliability and delta signals remain evidence-backed."
+          : "Operator intelligence available from proof posture, drift, adjudication sample, and persisted run delta when present.",
+      sourceReliability,
+      adjudicationLearning,
+      runDelta: runDeltaRecord
+        ? {
+            recordId: runDeltaRecord.id,
+            previousRunId: runDeltaRecord.previousRunId ?? null,
+            classification: deltaClassification!,
+          }
+        : null,
+      workforce,
+    };
+
     const detailJson = buildOperatorReconRunDetailJson({
       detail: resolved.detail,
       status: truth.status,
@@ -355,9 +552,11 @@ export async function resolveOperatorRunDetailForTenants(
       rowRationaleCodes,
       rowResultsPreview: contract.rowResults.slice(0, 100),
       stages: toStageRows(auditRows),
-      proofpackIndex: proofpackIndexByRun.get(resolved.detail.id),
+      proofpackIndex,
       runDelta: runDeltaRecord
         ? {
+            recordId: runDeltaRecord.id,
+            previousRunId: runDeltaRecord.previousRunId ?? null,
             inputChanged: runDeltaRecord.inputChanged,
             matchedDelta: runDeltaRecord.matchedDelta,
             unmatchedDelta: runDeltaRecord.unmatchedDelta,
@@ -368,8 +567,11 @@ export async function resolveOperatorRunDetailForTenants(
             confidenceDelta: runDeltaRecord.confidenceDelta
               ? Number(runDeltaRecord.confidenceDelta)
               : null,
+            classification: deltaClassification!,
           }
         : null,
+      institutionalMemory,
+      intelligence,
     });
 
     return { kind: "ok", detail: detailJson };

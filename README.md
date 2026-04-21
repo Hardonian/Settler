@@ -1,10 +1,10 @@
 # Settler
 
-Settler is a deterministic reconciliation platform for teams that need reproducible runs, replayable outcomes, and operator-visible evidence.
+Settler is **reconciliation intelligence plus an audit-grade operating system**: deterministic runs, hash-linked proofpacks, explicit degraded states, and tenant-scoped operator truth (not UI-invented summaries).
 
 ## What is Settler?
 
-Settler is an open-source reconciliation engine that matches financial transactions across data sources (e.g., Stripe payments vs. bank deposits) with full audit trails and evidence generation.
+Settler matches financial transactions across data sources (e.g., Stripe payments vs. bank deposits) with **replayable outcomes**, **adjudication-backed institutional memory**, and **evidence exports** operators and auditors can verify.
 
 ## Who is this for?
 
@@ -50,11 +50,23 @@ For persistence, the platform uses a hybrid model:
 
 For the complete local setup guide, see **[Canonical Local Setup](SETUP.md)**.
 
+After install, run a **deterministic onboarding checklist** (no network, no secrets):
+
+```bash
+pnpm exec tsx packages/cli/src/index.ts first-run
+```
+
 The canonical verification command to ensure your environment is correctly configured and the codebase is healthy is:
 
 ```bash
 # Run the full linting, typechecking, and testing suite
 pnpm verify
+```
+
+For **canonical run surface + proofpack + tenant posture** checks without the full `verify` wall clock:
+
+```bash
+pnpm run verify:moat-readiness
 ```
 
 ## TigerBeetle Management
@@ -98,7 +110,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution workflow and quality
 ## License
 
 Settler is licensed under the terms found in [LICENSE](LICENSE).
-
 
 ## Repository Operations Standards
 

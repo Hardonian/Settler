@@ -26,6 +26,34 @@ export type RunProofpackArtifactV1 = {
   };
   proofpackIndex: RunProofpackIndex;
   compactProofSummary: OperatorRunDetail["compactProofSummary"];
+  /** Same blocks as operator GET /api/runs/[id] — proofpack is an export of operator truth */
+  institutionalMemory?: OperatorRunDetail["institutionalMemory"];
+  intelligence?: OperatorRunDetail["intelligence"];
+  inputs: {
+    summary: OperatorRunDetail["summary"];
+    summarySemantics: OperatorRunDetail["summarySemantics"];
+    configDrift: OperatorRunDetail["configDrift"];
+    config: Pick<
+      OperatorRunDetail["config"],
+      | "snapshotId"
+      | "inputHash"
+      | "sourceAdapter"
+      | "targetAdapter"
+      | "reconStrategy"
+      | "templateId"
+    >;
+  };
+  outputs: {
+    summaryState: string;
+    exceptions: OperatorRunDetail["exceptions"];
+    resultContext: OperatorRunDetail["resultContext"];
+  };
+  deltas: {
+    runDelta: OperatorRunDetail["runDelta"];
+  };
+  adjudications: NonNullable<OperatorRunDetail["institutionalMemory"]>["adjudications"];
+  operatorSummary: OperatorRunDetail["compactProofSummary"]["operatorSummary"];
+  provenance: OperatorRunDetail["provenance"];
   supportability: {
     shareable: boolean;
     notes: readonly string[];
@@ -51,7 +79,9 @@ function stableJsonStringify(value: unknown): string {
   return JSON.stringify(stableNormalize(value));
 }
 
-export function computeProofpackContentHash(payload: Omit<RunProofpackArtifactV1, "generatedAt" | "contentHash">): string {
+export function computeProofpackContentHash(
+  payload: Omit<RunProofpackArtifactV1, "generatedAt" | "contentHash">
+): string {
   const canonical = stableJsonStringify(payload);
   return createHash("sha256").update(canonical).digest("hex");
 }
@@ -90,9 +120,34 @@ export function buildDeterministicRunProofpackArtifact(input: {
     },
     proofpackIndex,
     compactProofSummary,
+    institutionalMemory: detail.institutionalMemory,
+    intelligence: detail.intelligence,
+    inputs: {
+      summary: detail.summary,
+      summarySemantics: detail.summarySemantics,
+      configDrift: detail.configDrift,
+      config: {
+        snapshotId: detail.config.snapshotId,
+        inputHash: detail.config.inputHash,
+        sourceAdapter: detail.config.sourceAdapter,
+        targetAdapter: detail.config.targetAdapter,
+        reconStrategy: detail.config.reconStrategy,
+        templateId: detail.config.templateId,
+      },
+    },
+    outputs: {
+      summaryState: detail.summaryState,
+      exceptions: detail.exceptions,
+      resultContext: detail.resultContext,
+    },
+    deltas: { runDelta: detail.runDelta ?? null },
+    adjudications: detail.institutionalMemory?.adjudications ?? [],
+    operatorSummary: compactProofSummary.operatorSummary,
+    provenance: detail.provenance,
     supportability: {
       shareable: Boolean(
-        proofpackIndex.proofPackages.state === "ready" && proofpackIndex.comparison.state === "available"
+        proofpackIndex.proofPackages.state === "ready" &&
+        proofpackIndex.comparison.state === "available"
       ),
       notes: compactProofSummary.operatorSummary.primaryReasonCodes,
     },

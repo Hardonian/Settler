@@ -2,6 +2,7 @@
 
 exports[`canonical surface consistency snapshots deterministic proofpack artifact shape for export parity 1`] = `
 {
+  "adjudications": [],
   "compactProofSummary": {
     "delta": {
       "baseline": {
@@ -75,7 +76,86 @@ exports[`canonical surface consistency snapshots deterministic proofpack artifac
       "topRecurringFamilies": [],
     },
   },
-  "contentHash": "5b2e7d0a45cd7c798d961e469b7966287a50e8ebcb2574a71e757c9ce1b28cb7",
+  "contentHash": "e552180c8cd2e3a23d72b0990f6f7a3ebf13233aeaea44546793e46553804c16",
+  "deltas": {
+    "runDelta": null,
+  },
+  "inputs": {
+    "config": {
+      "inputHash": null,
+      "reconStrategy": "deterministic",
+      "snapshotId": null,
+      "sourceAdapter": "stripe",
+      "targetAdapter": "netsuite",
+      "templateId": "tpl-1",
+    },
+    "configDrift": {
+      "adapter": "none",
+      "status": "none",
+    },
+    "summary": {
+      "conflicts": 0,
+      "matched": 8,
+      "sourceCount": 5,
+      "targetCount": 5,
+      "total": 10,
+      "unmatched": 2,
+      "unmatchedSourceCount": 1,
+      "unmatchedTargetCount": 1,
+    },
+    "summarySemantics": {
+      "exceptioned": 0,
+      "ignored": 0,
+      "matchedWithTolerance": 1,
+      "processed": 10,
+      "resolved": 0,
+      "unresolved": 0,
+    },
+  },
+  "institutionalMemory": undefined,
+  "intelligence": undefined,
+  "operatorSummary": {
+    "changedSincePreviousRun": "unavailable",
+    "explainerCodes": [
+      "signal_unavailable",
+      "comparison_state_unavailable",
+      "comparison_trust_low",
+      "pattern_unavailable",
+      "proof_posture_unavailable",
+      "proof_posture_change_absent",
+      "comparison_change_unavailable",
+      "history_unavailable",
+      "proofpack_missing",
+      "recurring_family_signal_absent",
+    ],
+    "pattern": "unavailable",
+    "primaryReasonCodes": [
+      "run_proofpack_missing",
+    ],
+    "proofPosture": "unavailable",
+    "recurringFamilies": [],
+    "signal": "unavailable",
+    "summary": "Historical signal is unavailable for this run.",
+  },
+  "outputs": {
+    "exceptions": {
+      "ignored": 0,
+      "investigating": 0,
+      "pending": 0,
+      "resolved": 0,
+      "reviewRequired": 0,
+      "total": 0,
+    },
+    "resultContext": {
+      "comparison": null,
+      "latestResultCompletedAt": "2026-01-01T00:02:00.000Z",
+      "latestResultId": "res-1",
+      "latestResultStartedAt": "2026-01-01T00:01:00.000Z",
+      "latestResultStatus": "completed",
+      "persistedResultCount": 1,
+    },
+    "summaryState": "success",
+  },
   "proofpackIndex": {
     "comparison": {
       "baseline": {
@@ -125,6 +205,16 @@ exports[`canonical surface consistency snapshots deterministic proofpack artifac
       "state": "unavailable",
       "topRecurringFamilies": [],
     },
+  },
+  "provenance": {
+    "completedAt": "2026-01-01T00:02:00.000Z",
+    "executedAt": "2026-01-01T00:01:00.000Z",
+    "ingestionId": null,
+    "reconJobId": "run-consistency-1",
+    "runKind": "recon_job",
+    "sourceAdapter": "stripe",
+    "sourceModel": "recon_jobs",
+    "targetAdapter": "netsuite",
   },
   "run": {
     "completedAt": "2026-01-01T00:02:00.000Z",

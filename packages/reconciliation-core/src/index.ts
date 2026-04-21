@@ -24,3 +24,7 @@ export * from "./run-institutional-memory.js";
 export * from "./run-surface-shaping.js";
 export * from "./canonical-consistency.js";
 export * from "./run-proofpack-artifact.js";
+export * from "./policy-engine.js";
+export * from "./source-reliability.js";
+export * from "./run-delta-classification.js";
+export * from "./run-operator-intelligence.js";

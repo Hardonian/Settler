@@ -9,3 +9,16 @@ export const BRAND_MARK_PNG = {
   width: SETTLER_BRAND.markCircularLight.width,
   height: SETTLER_BRAND.markCircularLight.height,
 } as const;
+
+export const BRAND_LOCKUP_PNG = {
+  src: SETTLER_BRAND.lockupHorizontalLight.src,
+  webpSrc: SETTLER_BRAND.lockupHorizontalLight.webpSrc,
+  width: SETTLER_BRAND.lockupHorizontalLight.width,
+  height: SETTLER_BRAND.lockupHorizontalLight.height,
+} as const;
+
+export const BRAND_WORDMARK_PNG = {
+  src: SETTLER_BRAND.wordmarkLight.src,
+  width: SETTLER_BRAND.wordmarkLight.width,
+  height: SETTLER_BRAND.wordmarkLight.height,
+} as const;

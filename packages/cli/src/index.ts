@@ -203,6 +203,13 @@ const commandRegistry: Record<
       return { command: doctorCommand };
     },
   },
+  "first-run": {
+    description: "Print deterministic onboarding checklist (no side effects)",
+    load: async () => {
+      const { firstRunCommand } = await import("./commands/runtime");
+      return { command: firstRunCommand };
+    },
+  },
   dev: {
     description: "Local development stack management (settler dev stack)",
     load: async () => {

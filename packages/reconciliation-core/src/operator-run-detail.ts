@@ -15,7 +15,10 @@ import {
   type RunCompactProofSummary,
   type RunProofpackIndex,
 } from "./run-proofpack-index.js";
+import { computeSourceReliabilityProjection } from "./source-reliability.js";
 import type { ApiRunsListLegacyItem } from "./api-runs-list-adapter.js";
+import type { OperatorRunIntelligence } from "./run-operator-intelligence.js";
+import type { RunDeltaClassification } from "./run-delta-classification.js";
 import {
   buildRunProvenanceProjection,
   buildRunSummaryProjection,
@@ -166,6 +169,8 @@ export interface OperatorRunDetailBase {
   traceId?: string | null;
   exceptionWorkflowNote?: string;
   runDelta?: {
+    recordId: string | null;
+    previousRunId: string | null;
     inputChanged: boolean;
     matchedDelta: number;
     unmatchedDelta: number;
@@ -174,7 +179,25 @@ export interface OperatorRunDetailBase {
     newExceptionPatterns: string[];
     resolvedPatterns: string[];
     confidenceDelta: number | null;
+    classification: RunDeltaClassification;
   } | null;
+  /** Adjudication rows scoped to this run's exceptions (evidence-backed institutional memory). */
+  institutionalMemory?: {
+    state: "available" | "degraded" | "unavailable";
+    reasonCodes: string[];
+    operatorMessage: string;
+    adjudications: Array<{
+      id: string;
+      exceptionId: string;
+      resolution: string;
+      resolutionReason: string | null;
+      adjudicationType: string;
+      adjudicatorId: string;
+      createdAt: string;
+    }>;
+  };
+  /** Operator-truth intelligence: reliability, learning aggregation, workforce hints — all deterministic. */
+  intelligence?: OperatorRunIntelligence;
   proofpackIndex?: RunProofpackIndex;
   compactProofSummary: RunCompactProofSummary;
   kindDetail: OperatorKindDetail;
@@ -255,6 +278,16 @@ export function buildOperatorIngestionRunDetailJson(input: {
   const startedAt = input.detail.timestamps.startedAt ?? input.detail.timestamps.createdAt;
   const completedAt = input.detail.timestamps.completedAt;
   const base = baseFromCanonical(input.detail, startedAt, completedAt);
+  const proofSummary = resolveRunCompactProofSummary({
+    runKind: input.detail.runKind,
+    proofpackIndex: input.proofpackIndex,
+  });
+  const sourceReliability = computeSourceReliabilityProjection({
+    configDriftStatus: input.detail.configDrift.status,
+    proofPackagesState: proofSummary.compactProofSummary.proofPackages.state,
+    inputHashPresent: false,
+    comparisonState: proofSummary.compactProofSummary.delta.state,
+  });
 
   const payload: OperatorRunDetail = {
     ...base,
@@ -321,6 +354,30 @@ export function buildOperatorIngestionRunDetailJson(input: {
           "Drift events are keyed to recon_job_id today; ingestion-backed runs may not appear in exception lists filtered by this run id.",
       },
     },
+    institutionalMemory: {
+      state: "unavailable",
+      reasonCodes: ["ingestion_run_exception_scope_not_aligned_to_recon_job"],
+      operatorMessage:
+        "Adjudication memory is keyed to reconciliation_matches for ingestion runs; recon-job scoped memory is not attached on this path.",
+      adjudications: [],
+    },
+    intelligence: {
+      state: "degraded",
+      reasonCodes: [
+        "ingestion_run_operator_intelligence_partial",
+        ...sourceReliability.reasonCodes,
+      ],
+      operatorMessage:
+        "Operator intelligence is partially available for ingestion runs (no recon_results / deterministic row contract). Reliability reflects proof and drift signals only.",
+      sourceReliability,
+      adjudicationLearning: {
+        sampleCount: 0,
+        reasoningCodes: [],
+        policyWeightHints: {},
+      },
+      runDelta: null,
+      workforce: { triggerRunDeltaAnalysis: false, reasonCodes: [] },
+    },
   };
 
   return payload;
@@ -341,6 +398,8 @@ export function buildOperatorReconRunDetailJson(input: {
   stages: OperatorRunStageRow[];
   proofpackIndex?: RunProofpackIndex;
   runDelta?: OperatorRunDetail["runDelta"];
+  institutionalMemory?: OperatorRunDetail["institutionalMemory"];
+  intelligence?: OperatorRunDetail["intelligence"];
 }): OperatorRunDetail {
   const base = baseFromCanonical(input.detail, input.startedAt, input.completedAt);
 
@@ -375,6 +434,8 @@ export function buildOperatorReconRunDetailJson(input: {
       input.proofpackIndex
     ),
     runDelta: input.runDelta,
+    ...(input.institutionalMemory ? { institutionalMemory: input.institutionalMemory } : {}),
+    ...(input.intelligence ? { intelligence: input.intelligence } : {}),
     kindDetail: {
       kind: "recon_job",
       reconJob: {
