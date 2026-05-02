@@ -249,21 +249,21 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
 
     // Check for expensive model usage that could be downgraded
     if (modelUsage["gpt-4"]?.cost > 100) {
+      const gpt4Usage = modelUsage["gpt-4"]!;
       opportunities.push({
         id: "opt_cost_ai_downgrade",
         type: "cost",
-        description: `High GPT-4 usage detected: $${modelUsage["gpt-4"].cost.toFixed(2)} in 30 days`,
+        description: `High GPT-4 usage detected: $${gpt4Usage.cost.toFixed(2)} in 30 days`,
         currentState: {
           model: "gpt-4",
-          cost30Days: modelUsage["gpt-4"].cost,
-          calls30Days: modelUsage["gpt-4"].calls,
+          cost30Days: gpt4Usage.cost,
+          calls30Days: gpt4Usage.calls,
         },
         proposedChange: {
-          downgradeTo: "gpt-3.5-turbo",
-          estimatedSavingsPercent: 90,
+          downgradeTo: "gpt-4o-mini",
         },
         expectedImpact: {
-          costSavings: modelUsage["gpt-4"].cost * 0.9,
+          costSavings: gpt4Usage.cost * 0.9,
           riskLevel: "low",
         },
         recommendedAction: "human-review",
