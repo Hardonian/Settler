@@ -8,11 +8,9 @@
  * 4. Verifies RLS blocks cross-tenant access
  */
 
+import "./env-loader";
 import { createClient } from "@supabase/supabase-js";
 import { PrismaClient } from "@prisma/client";
-import * as dotenv from "dotenv";
-
-dotenv.config({ path: ".env.local" });
 
 const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
@@ -27,7 +25,7 @@ interface TestResult {
 const results: TestResult[] = [];
 
 async function testTenantIsolation() {
-  console.log("🔒 Testing Tenant Isolation...\n");
+  console.info("=".repeat(60));
 
   if (!supabaseUrl || !supabaseServiceRoleKey) {
     console.error("❌ Missing Supabase credentials");
@@ -49,7 +47,7 @@ async function testTenantIsolation() {
     ];
 
     for (const table of tables) {
-      const { data, error } = await supabaseAdmin.rpc("get_table_rls_status", {
+      const { error } = await supabaseAdmin.rpc("get_table_rls_status", {
         table_name: table,
       });
       if (error && !error.message.includes("does not exist")) {
@@ -193,8 +191,8 @@ async function testTenantIsolation() {
   }
 
   // Test 3: Create data for tenant 1
-  console.log("\nTest 3: Creating data for tenant 1...");
-  let transaction1Id: string;
+  console.info("\nTest 3: Creating data for tenant 1...");
+  let transaction1Id = "";
   try {
     const source1 = await prisma.ingestionSource.create({
       data: {
@@ -305,7 +303,7 @@ async function testTenantIsolation() {
       }
     );
 
-    const { data: crossTenantTransactions, error: crossTenantError } = await supabaseUser2
+    const { data: crossTenantTransactions } = await supabaseUser2
       .from("normalized_transactions")
       .select("*")
       .eq("id", transaction1Id);
@@ -358,24 +356,24 @@ async function testTenantIsolation() {
 
   // Print results
   console.log("\n" + "=".repeat(60));
-  console.log("TENANT ISOLATION TEST RESULTS");
+  console.info("TENANT ISOLATION TEST RESULTS");
   console.log("=".repeat(60));
 
   let allPassed = true;
   for (const result of results) {
     const icon = result.passed ? "✅" : "❌";
-    console.log(`${icon} ${result.test}`);
+    console.info(`${icon} ${result.test}`);
     if (!result.passed && result.error) {
-      console.log(`   Error: ${result.error}`);
+      console.info(`   Error: ${result.error}`);
       allPassed = false;
     }
   }
 
   console.log("\n" + "=".repeat(60));
   if (allPassed) {
-    console.log("✅ ALL TESTS PASSED - Tenant isolation is working correctly");
+    console.info("✅ ALL TESTS PASSED - Tenant isolation is working correctly");
   } else {
-    console.log("❌ SOME TESTS FAILED - Tenant isolation needs attention");
+    console.info("❌ SOME TESTS FAILED - Tenant isolation needs attention");
     process.exit(1);
   }
 }

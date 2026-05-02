@@ -1,13 +1,13 @@
 import { Router, Response } from "express";
-import { AuthRequest, requirePermission } from "../../middleware/auth";
-import { Permission } from "../../security/permissions";
-import { logError } from "../../utils/logger";
+import { AuthRequest } from "../../middleware/auth";
+import { requirePermission } from "../../middleware/authorization";
+import { Permission } from "../../infrastructure/security/Permissions";
 
 const router = Router();
 
 router.get(
   "/usage",
-  requirePermission(Permission.BILLING_READ),
+  requirePermission(Permission.TENANT_BILLING),
   async (req: AuthRequest, res: Response) => {
     res.status(200).json({
       runsCreated: 0,
@@ -65,7 +65,7 @@ router.get("/status", async (req: AuthRequest, res: Response) => {
 
 router.get(
   "/audit-exports",
-  requirePermission(Permission.AUDIT_READ),
+  requirePermission(Permission.ADMIN_AUDIT),
   async (req: AuthRequest, res: Response) => {
     res.status(200).json({ exports: [] });
   }

@@ -17,6 +17,7 @@ import { Permission } from "../../infrastructure/security/Permissions";
 import { handleRouteError } from "../../utils/error-handler";
 import { validateRequest } from "../../middleware/validation";
 import { query } from "../../db";
+import { logError } from "../../utils/logger";
 import { enforceFreezeState } from "../../middleware/governance";
 import {
   decodeCursor,

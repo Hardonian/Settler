@@ -9,8 +9,9 @@
  * - User can see prior work
  */
 
-import { supabase } from "../packages/api/src/infrastructure/supabase/client";
-import { logInfo, logError } from "../packages/api/src/utils/logger";
+import "./env-loader";
+import { supabase } from "@settler/api/infrastructure/supabase/client";
+import { logInfo } from "@settler/api/utils/logger";
 
 interface OnboardingTest {
   test: string;
@@ -229,9 +230,9 @@ async function testZeroTouchOnboarding(): Promise<void> {
  * Main execution
  */
 async function main() {
-  console.log("=".repeat(80));
+  console.info("=".repeat(80));
   console.log("PHASE 2: USER REALITY VALIDATION");
-  console.log("=".repeat(80));
+  console.info("=".repeat(80));
   console.log("");
 
   try {
@@ -243,9 +244,9 @@ async function main() {
     await testZeroTouchOnboarding();
 
     console.log("");
-    console.log("=".repeat(80));
+    console.info("=".repeat(80));
     console.log("ONBOARDING VALIDATION RESULTS");
-    console.log("=".repeat(80));
+    console.info("=".repeat(80));
     console.log("");
 
     const passed = results.filter((r) => r.passed).length;
@@ -266,7 +267,7 @@ async function main() {
       console.log("");
     });
 
-    console.log("=".repeat(80));
+    console.info("=".repeat(80));
     console.log(`Summary:`);
     console.log(`  - Total Tests: ${results.length}`);
     console.log(`  - Passed: ${passed}`);
@@ -274,7 +275,7 @@ async function main() {
     if (avgTime > 0) {
       console.log(`  - Average Time: ${avgTime.toFixed(2)}s`);
     }
-    console.log("=".repeat(80));
+    console.info("=".repeat(80));
 
     // Write results to file
     const fs = await import("fs");
@@ -303,7 +304,7 @@ async function main() {
     });
 
     fs.writeFileSync(outputPath, markdown);
-    console.log(`\n📄 Results written to: ${outputPath}`);
+    console.info(`\n📄 Results written to: ${outputPath}`);
 
     process.exit(failed > 0 ? 1 : 0);
   } catch (error) {

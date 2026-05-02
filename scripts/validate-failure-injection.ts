@@ -15,8 +15,9 @@
  * - SAFE_MODE works
  */
 
-import { supabase } from "../packages/api/src/infrastructure/supabase/client";
-import { logInfo, logError } from "../packages/api/src/utils/logger";
+import "./env-loader";
+import { supabase } from "@settler/api/infrastructure/supabase/client";
+import { logInfo } from "@settler/api/utils/logger";
 
 interface FailureTest {
   test: string;
@@ -316,9 +317,9 @@ async function testSafeMode(): Promise<void> {
  * Main execution
  */
 async function main() {
-  console.log("=".repeat(80));
+  console.info("=".repeat(80));
   console.log("PHASE 4: FAILURE INJECTION TEST");
-  console.log("=".repeat(80));
+  console.info("=".repeat(80));
   console.log("");
 
   try {
@@ -330,9 +331,9 @@ async function main() {
     await testSafeMode();
 
     console.log("");
-    console.log("=".repeat(80));
+    console.info("=".repeat(80));
     console.log("FAILURE INJECTION RESULTS");
-    console.log("=".repeat(80));
+    console.info("=".repeat(80));
     console.log("");
 
     const passed = results.filter((r) => r.passed).length;
@@ -350,7 +351,7 @@ async function main() {
       console.log("");
     });
 
-    console.log("=".repeat(80));
+    console.info("=".repeat(80));
     console.log(`Summary:`);
     console.log(`  - Total Tests: ${results.length}`);
     console.log(`  - Passed: ${passed}`);
@@ -385,7 +386,7 @@ async function main() {
     });
 
     fs.writeFileSync(outputPath, markdown);
-    console.log(`\n📄 Results written to: ${outputPath}`);
+    console.info(`\n📄 Results written to: ${outputPath}`);
 
     process.exit(failed > 0 ? 1 : 0);
   } catch (error) {

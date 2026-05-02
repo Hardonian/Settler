@@ -13,9 +13,10 @@
  * - Logs all billing state changes
  */
 
+import "./env-loader";
 import Stripe from "stripe";
-import { supabase } from "../packages/api/src/infrastructure/supabase/client";
-import { logInfo, logError } from "../packages/api/src/utils/logger";
+import { supabase } from "@settler/api/infrastructure/supabase/client";
+import { logInfo } from "@settler/api/utils/logger";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
   apiVersion: "2023-10-16",
@@ -287,7 +288,7 @@ async function testInvoiceGeneration(): Promise<void> {
     recordResult(
       "Generate Receipt",
       paidInvoice.status === "paid",
-      `Invoice ID: ${paidInvoice.id}, Status: ${paidInvoice.status}, Receipt URL: ${paidInvoice.receipt_url || "N/A"}`
+      `Invoice ID: ${paidInvoice.id}, Status: ${paidInvoice.status}, Hosted URL: ${paidInvoice.hosted_invoice_url || "N/A"}`
     );
   } catch (error) {
     recordResult(
@@ -398,9 +399,9 @@ async function testAuditLogging(): Promise<void> {
  * Main execution
  */
 async function main() {
-  console.log("=".repeat(80));
+  console.info("=".repeat(80));
   console.log("PHASE 1: MONEY REALITY VALIDATION");
-  console.log("=".repeat(80));
+  console.info("=".repeat(80));
   console.log("");
 
   if (!process.env.STRIPE_SECRET_KEY) {
@@ -419,28 +420,28 @@ async function main() {
     await testGracefulDegradation();
     await testAuditLogging();
 
-    console.log("");
-    console.log("=".repeat(80));
+    console.info("");
+    console.info("=".repeat(80));
     console.log("VALIDATION RESULTS");
-    console.log("=".repeat(80));
-    console.log("");
+    console.info("=".repeat(80));
+    console.info("");
 
     const passed = results.filter((r) => r.passed).length;
     const failed = results.filter((r) => !r.passed).length;
 
     results.forEach((result) => {
       const icon = result.passed ? "✅" : "❌";
-      console.log(`${icon} ${result.test}`);
-      console.log(`   Evidence: ${result.evidence}`);
+      console.info(`${icon} ${result.test}`);
+      console.info(`   Evidence: ${result.evidence}`);
       if (result.error) {
-        console.log(`   Error: ${result.error}`);
+        console.info(`   Error: ${result.error}`);
       }
-      console.log("");
+      console.info("");
     });
 
-    console.log("=".repeat(80));
-    console.log(`Summary: ${passed} passed, ${failed} failed out of ${results.length} tests`);
-    console.log("=".repeat(80));
+    console.info("=".repeat(80));
+    console.info(`Summary: ${passed} passed, ${failed} failed out of ${results.length} tests`);
+    console.info("=".repeat(80));
 
     // Write results to file
     const fs = await import("fs");
@@ -467,7 +468,7 @@ async function main() {
     });
 
     fs.writeFileSync(outputPath, markdown);
-    console.log(`\n📄 Results written to: ${outputPath}`);
+    console.info(`\n📄 Results written to: ${outputPath}`);
 
     process.exit(failed > 0 ? 1 : 0);
   } catch (error) {

@@ -6,10 +6,13 @@
 
 import { BaseAgent } from "./orchestrator";
 import { logInfo, logError, logWarn } from "../../utils/logger";
+import { Transaction } from "@settler/types";
+import { prisma } from "../../infrastructure/db/prisma";
+import { Prisma } from "@prisma/client";
 
 export interface Anomaly {
   id: string;
-  type: "reconciliation" | "security" | "data_quality" | "business_logic";
+  type: "reconciliation" | "security" | "data_quality" | "business_logic" | "optimization";
   severity: "critical" | "high" | "medium" | "low";
   title?: string;
   description: string;
@@ -135,9 +138,7 @@ export class AnomalyDetectorAgent extends BaseAgent {
     const anomalies: Anomaly[] = [];
 
     try {
-      const { prisma } = await import("../../infrastructure/db/prisma");
-
-      const recentJobs = await (prisma as any).reconJob.findMany({
+      const recentJobs = await prisma.reconJob.findMany({
         where: {
           createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
           accuracy: { not: null },
@@ -154,11 +155,14 @@ export class AnomalyDetectorAgent extends BaseAgent {
         take: 100,
       });
 
-      const jobsByConnector = recentJobs.reduce((acc: any, job: any) => {
-        if (!acc[job.connectorId]) acc[job.connectorId] = [];
-        acc[job.connectorId].push(job);
-        return acc;
-      }, {} as Record<string, typeof recentJobs>);
+      const jobsByConnector = recentJobs.reduce(
+        (acc: any, job: any) => {
+          if (!acc[job.connectorId]) acc[job.connectorId] = [];
+          acc[job.connectorId].push(job);
+          return acc;
+        },
+        {} as Record<string, typeof recentJobs>
+      );
 
       for (const [connectorId, jobs] of Object.entries(jobsByConnector)) {
         if (jobs.length < 2) continue;
@@ -175,7 +179,13 @@ export class AnomalyDetectorAgent extends BaseAgent {
               title: "Reconciliation Accuracy Drop",
               description: `Accuracy dropped ${pct.toFixed(1)}% for ${connectorId}`,
               detectedAt: new Date(),
-              evidence: { previousAccuracy: previous.accuracy, currentAccuracy: latest.accuracy, dropPercentage: pct, connectorId, jobId: latest.id },
+              evidence: {
+                previousAccuracy: previous.accuracy,
+                currentAccuracy: latest.accuracy,
+                dropPercentage: pct,
+                connectorId,
+                jobId: latest.id,
+              },
               confidence: Math.min(95, 70 + pct * 2),
               recommendedAction: "Review matching rules and data quality",
             });
@@ -186,16 +196,20 @@ export class AnomalyDetectorAgent extends BaseAgent {
     } catch (error) {
       logError("Failed to detect reconciliation anomalies", error);
     }
-    return anomalies.length > 0 ? anomalies : [{
-      id: "anom_recon_demo",
-      type: "reconciliation" as const,
-      severity: "high" as const,
-      description: "Demo: Accuracy drop pattern",
-      detectedAt: new Date(),
-      evidence: { previousAccuracy: 0.98, currentAccuracy: 0.85, dropPercentage: 13.3 },
-      confidence: 85,
-      recommendedAction: "Review matching rules",
-    }];
+    return anomalies.length > 0
+      ? anomalies
+      : [
+          {
+            id: "anom_recon_demo",
+            type: "reconciliation" as const,
+            severity: "high" as const,
+            description: "Demo: Accuracy drop pattern",
+            detectedAt: new Date(),
+            evidence: { previousAccuracy: 0.98, currentAccuracy: 0.85, dropPercentage: 13.3 },
+            confidence: 85,
+            recommendedAction: "Review matching rules",
+          },
+        ];
   }
 
   /**
@@ -207,11 +221,6 @@ export class AnomalyDetectorAgent extends BaseAgent {
     try {
       // Analyze API logs for security threats
       // Check for API abuse, credential leaks, DDoS attacks, etc.
-
-      // Query recent API logs for suspicious patterns
-      // Note: UsageEvent table may not have all API logs - this is a simplified check
-      // Use the shared prisma singleton
-      const { prisma } = await import("../../infrastructure/db/prisma");
 
       const recentLogs = await prisma.usageEvent.findMany({
         where: {
@@ -325,10 +334,13 @@ export class AnomalyDetectorAgent extends BaseAgent {
   private async detectDataQualityIssues(): Promise<Anomaly[]> {
     const issues: Anomaly[] = [];
     try {
-      const { prisma } = await import("../../infrastructure/db/prisma");
-      const missingDataCount = await prisma.transaction.count({
+      const missingDataCount = await prisma.normalizedTransaction.count({
         where: {
-          OR: [{ amount: null }, { date: null }, { description: null }],
+          OR: [
+            { amount: { equals: Prisma.Decimal.from(0) } }, // Decimal check
+            { date: null },
+            { description: null },
+          ],
           createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
         },
       });
@@ -345,7 +357,9 @@ export class AnomalyDetectorAgent extends BaseAgent {
           recommendedAction: "Review data import pipeline",
         });
       }
-      const duplicates = await prisma.$queryRaw<Array<{ count: bigint }>>`SELECT COUNT(*) as count FROM "Transaction" WHERE "createdAt" >= ${new Date(Date.now() - 24 * 60 * 60 * 1000)} GROUP BY amount, date, description HAVING COUNT(*) > 1 LIMIT 10`;
+      const duplicates = await prisma.$queryRaw<
+        Array<{ count: bigint }>
+      >`SELECT COUNT(*) as count FROM "normalized_transactions" WHERE "createdAt" >= ${new Date(Date.now() - 24 * 60 * 60 * 1000)} GROUP BY amount, date, description HAVING COUNT(*) > 1 LIMIT 10`;
       if (duplicates.length > 0) {
         issues.push({
           id: `dq-dup-${Date.now()}`,
@@ -372,12 +386,16 @@ export class AnomalyDetectorAgent extends BaseAgent {
   private async detectBusinessLogicAnomalies(): Promise<Anomaly[]> {
     const anomalies: Anomaly[] = [];
     try {
-      const { prisma } = await import("../../infrastructure/db/prisma");
-      const stats = await prisma.$queryRaw<Array<{ avg: number; std: number }>>`SELECT AVG(ABS(amount)) as avg, STDDEV(ABS(amount)) as std FROM "Transaction" WHERE "createdAt" >= ${new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)}`;
+      const stats = await prisma.$queryRaw<
+        Array<{ avg: number; std: number }>
+      >`SELECT AVG(ABS(amount::numeric)) as avg, STDDEV(ABS(amount::numeric)) as std FROM "normalized_transactions" WHERE "createdAt" >= ${new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)}`;
       if (stats[0]?.avg && stats[0]?.std) {
-        const threshold = stats[0].avg + (3 * Number(stats[0].std));
-        const outliers = await prisma.transaction.findMany({
-          where: { amount: { gt: threshold }, createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } },
+        const threshold = stats[0].avg + 3 * Number(stats[0].std);
+        const outliers = await prisma.normalizedTransaction.findMany({
+          where: {
+            amount: { gt: threshold },
+            createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+          },
           select: { id: true, amount: true, description: true, tenantId: true },
           take: 10,
         });
@@ -389,13 +407,19 @@ export class AnomalyDetectorAgent extends BaseAgent {
             title: "Unusual Transaction Amounts",
             description: `${outliers.length} transactions > 3σ from mean`,
             detectedAt: new Date(),
-            evidence: { outliers: outliers.map(o => ({ id: o.id, amount: o.amount })), threshold, mean: stats[0].avg },
+            evidence: {
+              outliers: outliers.map((o) => ({ id: o.id, amount: o.amount })),
+              threshold,
+              mean: stats[0].avg,
+            },
             confidence: 85,
             recommendedAction: "Review large/unusual transactions",
           });
         }
       }
-      const rapid = await prisma.$queryRaw<Array<{ tenantId: string; count: bigint }>>`SELECT "tenantId", COUNT(*) as count FROM "Transaction" WHERE "createdAt" >= ${new Date(Date.now() - 1 * 60 * 60 * 1000)} GROUP BY "tenantId", amount HAVING COUNT(*) > 5 LIMIT 5`;
+      const rapid = await prisma.$queryRaw<
+        Array<{ tenantId: string; count: bigint }>
+      >`SELECT "tenantId", COUNT(*) as count FROM "normalized_transactions" WHERE "createdAt" >= ${new Date(Date.now() - 1 * 60 * 60 * 1000)} GROUP BY "tenantId", amount HAVING COUNT(*) > 5 LIMIT 5`;
       if (rapid.length > 0) {
         anomalies.push({
           id: `biz-fraud-${Date.now()}`,
@@ -421,13 +445,15 @@ export class AnomalyDetectorAgent extends BaseAgent {
    */
   private async loadDetectionRules(): Promise<DetectionRule[]> {
     try {
-      const { prisma } = await import("../../infrastructure/db/prisma");
-      const dbRules = await (prisma as any).detectionRules?.findMany?.({ where: { enabled: true } }) || [];
+      const dbRules = await prisma.detectionRule.findMany({ where: { enabled: true } });
       if (dbRules.length > 0) {
-        await prisma.$disconnect();
-        return dbRules.map(r => ({ id: r.id, type: r.type, condition: r.condition, severity: r.severity }));
+        return dbRules.map((r) => ({
+          id: r.id,
+          type: r.type,
+          condition: r.condition,
+          severity: r.severity as any,
+        }));
       }
-      await prisma.$disconnect();
     } catch {
       // Table may not exist, use defaults
     }
@@ -451,20 +477,25 @@ export class AnomalyDetectorAgent extends BaseAgent {
    * Send alert for anomaly
    */
   private async sendAlert(anomaly: Anomaly): Promise<void> {
-    logWarn(`ALERT: ${anomaly.severity.toUpperCase()} - ${anomaly.description}`, { severity: anomaly.severity, description: anomaly.description, anomalyId: anomaly.id });
+    logWarn(`ALERT: ${anomaly.severity.toUpperCase()} - ${anomaly.description}`, {
+      severity: anomaly.severity,
+      description: anomaly.description,
+      anomalyId: anomaly.id,
+    });
     try {
       const { notificationService } = await import("../notifications/notification-service");
-      if (notificationService?.hasAnyConfiguration?.()) {
-        await notificationService.sendNotification({
+      await notificationService.notify(
+        (anomaly.metadata?.tenantId as string) || "00000000-0000-0000-0000-000000000000",
+        `anomaly_${anomaly.type}`,
+        anomaly.description,
+        undefined,
+        {
           severity: anomaly.severity,
-          title: `Anomaly: ${anomaly.title || anomaly.type}`,
-          message: anomaly.description,
-          connectorId: anomaly.metadata?.connectorId || "system",
-          tenantId: anomaly.metadata?.tenantId || "system",
-          metadata: { anomalyId: anomaly.id, type: anomaly.type, confidence: anomaly.confidence, ...anomaly.metadata },
-          timestamp: new Date(),
-        });
-      }
+          anomalyId: anomaly.id,
+          confidence: anomaly.confidence,
+          ...anomaly.metadata,
+        }
+      );
     } catch (error) {
       logError("Failed to send notification", error);
     }
@@ -476,7 +507,9 @@ export class AnomalyDetectorAgent extends BaseAgent {
    */
   private calculateFalsePositiveRate(): number {
     if (this.detectedAnomalies.length === 0) return 0;
-    const falsePositives = this.detectedAnomalies.filter(a => a.metadata?.falsePositive === true).length;
+    const falsePositives = this.detectedAnomalies.filter(
+      (a) => a.metadata?.falsePositive === true
+    ).length;
     return Number((falsePositives / this.detectedAnomalies.length).toFixed(3));
   }
 }
