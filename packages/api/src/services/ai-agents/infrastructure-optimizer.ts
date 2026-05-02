@@ -142,18 +142,13 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
 
     try {
       // Query pg_stat_statements for slow queries if extension is available
-      const slowQueries = (await prisma.$queryRaw`
+      const slowQueries = (await prisma.$queryRaw(Prisma.sql`
         SELECT query, mean_exec_time, calls, rows
         FROM pg_stat_statements
         WHERE mean_exec_time > 100
         ORDER BY mean_exec_time DESC
         LIMIT 10
-      `) as Array<{
-        query: string;
-        mean_exec_time: number;
-        calls: number;
-        rows: number;
-      }>;
+      `)) as any[];
 
       for (let i = 0; i < slowQueries.length; i++) {
         const sq = slowQueries[i];

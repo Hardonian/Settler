@@ -40,7 +40,7 @@ async function testOnboardingInfrastructure(): Promise<void> {
   try {
     logInfo("[Onboarding] Testing infrastructure...");
 
-    const { data, error } = await supabase.from("onboarding_progress").select("*").limit(1);
+    const { error } = await supabase.from("onboarding_progress").select("*").limit(1);
 
     const exists = error === null || error.code !== "42P01"; // Table doesn't exist
 
@@ -71,11 +71,11 @@ async function testOnboardingSteps(): Promise<void> {
       .select("current_step, completed_steps")
       .limit(1);
 
-    const hasSteps = error === null || (data && data.length > 0);
+    const hasSteps = error === null || (data && (data as any).length > 0);
 
     recordResult(
       "Onboarding Steps Defined",
-      hasSteps,
+      !!hasSteps,
       `Steps tracking: ${hasSteps ? "Available" : "Missing"}`
     );
   } catch (error) {
@@ -165,8 +165,8 @@ async function testPriorWorkVisibility(): Promise<void> {
     // Check if users can access their previous work
     const { data: users } = await supabase.from("users").select("id, email").limit(1);
 
-    if (users && users.length > 0) {
-      const userId = users[0].id;
+    if (users && (users as any[]).length > 0) {
+      const userId = (users as any[])[0].id;
 
       // Check if user can see their projects/work
       const { data: projects } = await supabase
@@ -207,7 +207,13 @@ async function testZeroTouchOnboarding(): Promise<void> {
 
     // Check if onboarding can be automated
     // Look for automated onboarding functions/triggers
-    const { data: functions } = await supabase.rpc("get_functions").catch(() => ({ data: null }));
+    let functions = null;
+    try {
+      const { data } = await supabase.rpc("get_functions");
+      functions = data;
+    } catch {
+      // Ignore if RPC doesn't exist
+    }
 
     // Check if tenant creation automatically creates onboarding progress
     const { data: tenants } = await supabase.from("tenants").select("id").limit(1);
@@ -231,7 +237,7 @@ async function testZeroTouchOnboarding(): Promise<void> {
  */
 async function main() {
   console.info("=".repeat(80));
-  console.log("PHASE 2: USER REALITY VALIDATION");
+  console.info("PHASE 2: USER REALITY VALIDATION");
   console.info("=".repeat(80));
   console.log("");
 
@@ -243,11 +249,11 @@ async function main() {
     await testPriorWorkVisibility();
     await testZeroTouchOnboarding();
 
-    console.log("");
+    console.info("");
     console.info("=".repeat(80));
-    console.log("ONBOARDING VALIDATION RESULTS");
+    console.info("ONBOARDING VALIDATION RESULTS");
     console.info("=".repeat(80));
-    console.log("");
+    console.info("");
 
     const passed = results.filter((r) => r.passed).length;
     const failed = results.filter((r) => !r.passed).length;
@@ -264,16 +270,16 @@ async function main() {
       if (result.timeToComplete !== undefined) {
         console.log(`   Time: ${result.timeToComplete.toFixed(2)}s`);
       }
-      console.log("");
+      console.info("");
     });
 
     console.info("=".repeat(80));
-    console.log(`Summary:`);
-    console.log(`  - Total Tests: ${results.length}`);
-    console.log(`  - Passed: ${passed}`);
-    console.log(`  - Failed: ${failed}`);
+    console.info(`Summary:`);
+    console.info(`  - Total Tests: ${results.length}`);
+    console.info(`  - Passed: ${passed}`);
+    console.info(`  - Failed: ${failed}`);
     if (avgTime > 0) {
-      console.log(`  - Average Time: ${avgTime.toFixed(2)}s`);
+      console.info(`  - Average Time: ${avgTime.toFixed(2)}s`);
     }
     console.info("=".repeat(80));
 
