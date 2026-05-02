@@ -8,6 +8,7 @@ import { Permission } from "../infrastructure/security/Permissions";
 import { enforceFreezeState } from "../middleware/governance";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
+import { query } from "../db";
 import { verifyWebhookSignature } from "../utils/webhook-signature";
 import { validateExternalUrl } from "../infrastructure/security/SSRFProtection";
 import { logInfo, logError, logWarn } from "../utils/logger";
@@ -210,7 +211,7 @@ router.get(
       const total = parseInt(totalResult[0].count);
 
       res.json({
-        data: webhooks.map((w) => ({
+        data: webhooks.map((w: any) => ({
           id: w.id,
           userId,
           url: w.url,
