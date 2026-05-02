@@ -22,6 +22,10 @@ export interface OptimizationOpportunity {
   expectedImpact: {
     costSavings?: number;
     performanceImprovement?: number;
+    errorRateReduction?: number;
+    memoryReduction?: number;
+    throughputIncrease?: number;
+    loadReduction?: number;
     riskLevel: "low" | "medium" | "high";
   };
   recommendedAction: "auto-apply" | "human-review";
@@ -138,20 +142,18 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
 
     try {
       // Query pg_stat_statements for slow queries if extension is available
-      const slowQueries = await prisma.$queryRaw<
-        Array<{
-          query: string;
-          mean_exec_time: number;
-          calls: number;
-          rows: number;
-        }>
-      >`
+      const slowQueries = (await prisma.$queryRaw`
         SELECT query, mean_exec_time, calls, rows
         FROM pg_stat_statements
         WHERE mean_exec_time > 100
         ORDER BY mean_exec_time DESC
         LIMIT 10
-      `;
+      `) as Array<{
+        query: string;
+        mean_exec_time: number;
+        calls: number;
+        rows: number;
+      }>;
 
       for (let i = 0; i < slowQueries.length; i++) {
         const sq = slowQueries[i];
@@ -179,7 +181,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
             performanceImprovement: 50,
             riskLevel: "low",
           },
-          recommendedAction: "review",
+          recommendedAction: "human-review",
         });
       }
     } catch {
@@ -211,7 +213,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
               performanceImprovement: 30,
               riskLevel: "low",
             },
-            recommendedAction: "review",
+            recommendedAction: "human-review",
           });
         }
       }
@@ -263,7 +265,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
           costSavings: modelUsage["gpt-4"].cost * 0.9,
           riskLevel: "low",
         },
-        recommendedAction: "review",
+        recommendedAction: "human-review",
       });
     }
 
@@ -292,7 +294,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
           costSavings: staleJobs * 5, // $5 per job/month estimate
           riskLevel: "low",
         },
-        recommendedAction: "review",
+        recommendedAction: "human-review",
       });
     }
 
@@ -318,7 +320,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
           costSavings: 25,
           riskLevel: "low",
         },
-        recommendedAction: "review",
+        recommendedAction: "human-review",
       });
     }
 
