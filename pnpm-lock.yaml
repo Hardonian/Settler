@@ -62,6 +62,9 @@ importers:
       '@prisma/client':
         specifier: 7.6.0
         version: 7.6.0(prisma@7.6.0(@types/react-dom@18.3.7(@types/react@18.3.28))(@types/react@18.3.28)(better-sqlite3@12.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3))(typescript@5.9.3)
+      '@supabase/supabase-js':
+        specifier: ^2.45.0
+        version: 2.103.0
       '@types/node':
         specifier: ^24.0.0
         version: 24.12.0
@@ -774,6 +777,12 @@ importers:
   packages/sdk-csharp: {}
 
   packages/sdk-java: {}
+
+  packages/sdk-js:
+    devDependencies:
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
 
   packages/support-intake:
     dependencies:
@@ -10185,6 +10194,7 @@ packages:
 
   uuid@10.0.0:
     resolution: {integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==}
+    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
   uuid@11.1.0:
@@ -10197,6 +10207,7 @@ packages:
 
   uuid@8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
+    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
   v8-to-istanbul@9.3.0:

@@ -11,7 +11,6 @@
 import { BaseAgent } from "./orchestrator";
 import { logError, logInfo } from "../../utils/logger";
 import { prisma } from "../../infrastructure/db/prisma";
-import { Prisma } from "@prisma/client";
 
 export interface OptimizationOpportunity {
   id: string;
@@ -141,14 +140,13 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
     const opportunities: OptimizationOpportunity[] = [];
 
     try {
-      // Query pg_stat_statements for slow queries if extension is available
-      const slowQueries = (await prisma.$queryRaw(Prisma.sql`
+      const slowQueries = (await prisma.$queryRaw`
         SELECT query, mean_exec_time, calls, rows
         FROM pg_stat_statements
         WHERE mean_exec_time > 100
         ORDER BY mean_exec_time DESC
         LIMIT 10
-      `)) as any[];
+      `) as any[];
 
       for (let i = 0; i < slowQueries.length; i++) {
         const sq = slowQueries[i];
@@ -175,9 +173,9 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
           },
           expectedImpact: {
             performanceImprovement: 50,
-            riskLevel: "low",
+            riskLevel: "low" as const,
           },
-          recommendedAction: "human-review",
+          recommendedAction: "human-review" as const,
         });
       }
     } catch {
@@ -207,9 +205,9 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
             },
             expectedImpact: {
               performanceImprovement: 30,
-              riskLevel: "low",
+              riskLevel: "low" as const,
             },
-            recommendedAction: "human-review",
+            recommendedAction: "human-review" as const,
           });
         }
       }
@@ -252,8 +250,8 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
     }
 
     // Check for expensive model usage that could be downgraded
-    if (modelUsage["gpt-4"]?.cost > 100) {
-      const gpt4Usage = modelUsage["gpt-4"]!;
+    const gpt4Usage = modelUsage["gpt-4"];
+    if (gpt4Usage && gpt4Usage.cost > 100) {
       opportunities.push({
         id: "opt_cost_ai_downgrade",
         type: "cost",
@@ -268,9 +266,9 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
         },
         expectedImpact: {
           costSavings: gpt4Usage.cost * 0.9,
-          riskLevel: "low",
+          riskLevel: "low" as const,
         },
-        recommendedAction: "human-review",
+        recommendedAction: "human-review" as const,
       });
     }
 
@@ -297,9 +295,9 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
         },
         expectedImpact: {
           costSavings: staleJobs * 5, // $5 per job/month estimate
-          riskLevel: "low",
+          riskLevel: "low" as const,
         },
-        recommendedAction: "human-review",
+        recommendedAction: "human-review" as const,
       });
     }
 
@@ -326,9 +324,9 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
         },
         expectedImpact: {
           costSavings: 25,
-          riskLevel: "low",
+          riskLevel: "low" as const,
         },
-        recommendedAction: "human-review",
+        recommendedAction: "human-review" as const,
       });
     }
 
@@ -380,9 +378,9 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
             },
             expectedImpact: {
               errorRateReduction: 0.5,
-              riskLevel: "low",
+              riskLevel: "low" as const,
             },
-            recommendedAction: "human-review",
+            recommendedAction: "human-review" as const,
           });
         }
       }
@@ -415,9 +413,9 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
         },
         expectedImpact: {
           memoryReduction: 0.6,
-          riskLevel: "low",
+          riskLevel: "low" as const,
         },
-        recommendedAction: "human-review",
+        recommendedAction: "human-review" as const,
       });
     }
 
@@ -457,9 +455,9 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
         },
         expectedImpact: {
           throughputIncrease: 2.0,
-          riskLevel: "low",
+          riskLevel: "low" as const,
         },
-        recommendedAction: "auto-apply",
+        recommendedAction: "auto-apply" as const,
       });
     }
 
@@ -483,9 +481,9 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
         },
         expectedImpact: {
           loadReduction: 0.4,
-          riskLevel: "low",
+          riskLevel: "low" as const,
         },
-        recommendedAction: "auto-apply",
+        recommendedAction: "auto-apply" as const,
       });
     }
 

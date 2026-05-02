@@ -35,7 +35,7 @@ async function testTenantIsolation() {
   const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey);
 
   // Test 1: Verify RLS is enabled on critical tables
-  console.log("Test 1: Verifying RLS is enabled...");
+  console.info("Test 1: Verifying RLS is enabled...");
   try {
     const tables = [
       "billing_accounts",
@@ -86,7 +86,7 @@ async function testTenantIsolation() {
   }
 
   // Test 2: Create test users and tenants
-  console.log("\nTest 2: Creating test users...");
+  console.info("\nTest 2: Creating test users...");
   const testUser1Email = `test-tenant-isolation-1-${Date.now()}@settler.dev`;
   const testUser2Email = `test-tenant-isolation-2-${Date.now()}@settler.dev`;
 
@@ -230,7 +230,7 @@ async function testTenantIsolation() {
   }
 
   // Test 4: User 1 can access their own data
-  console.log("\nTest 4: User 1 accessing their own data...");
+  console.info("\nTest 4: User 1 accessing their own data...");
   try {
     // Get session for user 1
     const { data: session1 } = await supabaseAdmin.auth.signInWithPassword({
@@ -280,7 +280,7 @@ async function testTenantIsolation() {
   }
 
   // Test 5: User 2 CANNOT access tenant 1's data (RLS blocks it)
-  console.log("\nTest 5: User 2 attempting to access tenant 1 data (should be blocked)...");
+  console.info("\nTest 5: User 2 attempting to access tenant 1 data (should be blocked)...");
   try {
     const { data: session2 } = await supabaseAdmin.auth.signInWithPassword({
       email: testUser2Email,
@@ -335,7 +335,7 @@ async function testTenantIsolation() {
   }
 
   // Cleanup
-  console.log("\nCleaning up test data...");
+  console.info("\nCleaning up test data...");
   try {
     await prisma.normalizedTransaction.deleteMany({
       where: { tenantId: { in: [tenant1Id, tenant2Id] } },
@@ -349,15 +349,15 @@ async function testTenantIsolation() {
     });
     await supabaseAdmin.auth.admin.deleteUser(user1Id);
     await supabaseAdmin.auth.admin.deleteUser(user2Id);
-    console.log("✅ Cleanup complete");
+    console.info("✅ Cleanup complete");
   } catch (error) {
     console.error("⚠️  Cleanup failed:", error);
   }
 
   // Print results
-  console.log("\n" + "=".repeat(60));
+  console.info("\n" + "=".repeat(60));
   console.info("TENANT ISOLATION TEST RESULTS");
-  console.log("=".repeat(60));
+  console.info("=".repeat(60));
 
   let allPassed = true;
   for (const result of results) {
