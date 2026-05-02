@@ -10,6 +10,7 @@
     "beforeinstallprompt",
     "brightspace",
     "classifyignore",
+    "conv",
     "cursorrules",
     "determinism",
     "fintech",
@@ -42,9 +43,5 @@
     "Vercel",
     "vercelignore"
   ],
-  "ignorePaths": [
-    "node_modules",
-    ".next",
-    "dist"
-  ]
+  "ignorePaths": ["node_modules", ".next", "dist"]
 }
