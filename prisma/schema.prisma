@@ -15,7 +15,7 @@ datasource db {
 // ============================================================================
 
 model BillingAccount {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   userId            String    @db.Uuid
   tenantId          String?   @db.Uuid // Legacy field, consider migrating to Tenant.billingAccountId
   stripeCustomerId  String?   @unique
@@ -46,7 +46,7 @@ model BillingAccount {
 }
 
 model Subscription {
-  id                    String    @id @default(uuid())
+  id                    String    @id @default(uuid()) @db.Uuid
   billingAccountId      String    @db.Uuid
   stripeSubscriptionId  String?   @unique
   stripePriceId         String?
@@ -73,7 +73,7 @@ model Subscription {
 }
 
 model StripeEvent {
-  id            String    @id @default(uuid())
+  id            String    @id @default(uuid()) @db.Uuid
   eventId       String    @unique // Stripe event.id
   type          String    // Event type (e.g., checkout.session.completed)
   status        String    @default("received") // received, processed, failed
@@ -98,7 +98,7 @@ model StripeEvent {
 }
 
 model AddOn {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   integrationId     String    @unique // tiktok, wix, ga4, paypal-payouts, whatsapp-telegram
   name              String    // "TikTok Shop + TikTok Ads"
   description       String?
@@ -123,7 +123,7 @@ model AddOn {
 }
 
 model AddOnPurchase {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   billingAccountId  String    @db.Uuid
   addOnId           String    @db.Uuid
   stripeSubscriptionItemId String? @unique
@@ -144,7 +144,7 @@ model AddOnPurchase {
 }
 
 model UsageEvent {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   billingAccountId  String    @db.Uuid
   projectId         String?   @db.Uuid
   userId            String?   @db.Uuid
@@ -173,7 +173,7 @@ model UsageEvent {
 }
 
 model UsageAggregateDaily {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   billingAccountId  String    @db.Uuid
   projectId         String?   @db.Uuid
   tenantId          String?   @db.Uuid
@@ -200,7 +200,7 @@ model UsageAggregateDaily {
 }
 
 model UsageCounter {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   billingAccountId  String    @db.Uuid
   service           String    // 'reconcile', 'receipts', 'featureFlags', 'playground'
   period            String    // 'daily', 'monthly'
@@ -224,7 +224,7 @@ model UsageCounter {
 // ============================================================================
 
 model ReconJob {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId           String    @map("tenant_id") @db.Uuid
   userId             String    @map("user_id") @db.Uuid
   name               String
@@ -261,7 +261,7 @@ model ReconJob {
 }
 
 model ReconResult {
-  id                    String    @id @default(uuid())
+  id                    String    @id @default(uuid()) @db.Uuid
   reconJobId            String    @map("recon_job_id") @db.Uuid
   tenantId              String    @map("tenant_id") @db.Uuid
   executionId           String?   @map("execution_id") @db.Uuid
@@ -309,7 +309,7 @@ model ReconResult {
 }
 
 model RunSnapshot {
-  id                    String    @id @default(uuid())
+  id                    String    @id @default(uuid()) @db.Uuid
   tenantId              String    @db.Uuid
   reconJobId            String    @db.Uuid
   inputHash             String    @unique
@@ -332,7 +332,7 @@ model RunSnapshot {
 }
 
 model ExecutionProvenance {
-  id                    String    @id @default(uuid())
+  id                    String    @id @default(uuid()) @db.Uuid
   tenantId              String    @db.Uuid
   runResultId           String    @db.Uuid
   snapshotId            String    @db.Uuid
@@ -362,7 +362,7 @@ model ExecutionProvenance {
 }
 
 model ReconTemplate {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String?   @db.Uuid
   name              String
   description       String?
@@ -390,7 +390,7 @@ model ReconTemplate {
 }
 
 model ReconAudit {
-  id            String    @id @default(uuid())
+  id            String    @id @default(uuid()) @db.Uuid
   reconJobId    String?   @db.Uuid
   reconResultId String?   @db.Uuid
   tenantId      String    @db.Uuid
@@ -419,7 +419,7 @@ model ReconAudit {
 }
 
 model MappingTemplate {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId           String?   @db.Uuid
   name               String
   description        String?
@@ -445,7 +445,7 @@ model MappingTemplate {
 }
 
 model ValidationRule {
-  id          String    @id @default(uuid())
+  id          String    @id @default(uuid()) @db.Uuid
   tenantId    String?   @db.Uuid
   name        String
   description String?
@@ -469,7 +469,7 @@ model ValidationRule {
 }
 
 model CustomMatchingRule {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String?   @db.Uuid
   name              String
   description       String?
@@ -496,7 +496,7 @@ model CustomMatchingRule {
 }
 
 model TransformRecipe {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String?   @db.Uuid
   name              String
   description       String?
@@ -523,7 +523,7 @@ model TransformRecipe {
 }
 
 model ContractVersion {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String    @db.Uuid
   contractName      String
   version           String
@@ -550,7 +550,7 @@ model ContractVersion {
 // (ingestion execution) or ReconJob.id (recon job definition). There is no single FK target,
 // so integrity is enforced in application code (tenant-scoped resolution).
 model DriftEvent {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String    @db.Uuid
   reconJobId        String?   @db.Uuid
   contractVersionId String?   @db.Uuid
@@ -580,7 +580,7 @@ model DriftEvent {
 }
 
 model WorkflowRun {
-  id            String    @id @default(uuid())
+  id            String    @id @default(uuid()) @db.Uuid
   tenantId      String    @db.Uuid
   workflowId    String
   workflowName  String?
@@ -718,7 +718,7 @@ model NewsletterSubscription {
 }
 
 model TenantBranding {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String    @db.Uuid @unique
   logoUrl           String?
   faviconUrl        String?
@@ -740,7 +740,7 @@ model TenantBranding {
 }
 
 model TenantNavigation {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String    @db.Uuid @unique
   navItems          Json      @default("[]")
   footerItems       Json      @default("[]")
@@ -755,7 +755,7 @@ model TenantNavigation {
 }
 
 model TenantPage {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String    @db.Uuid
   slug              String
   pageType          String
@@ -782,7 +782,7 @@ model TenantPage {
 }
 
 model TenantPageRevision {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantPageId      String    @db.Uuid
   editorUserId      String?   @db.Uuid
   snapshot          Json
@@ -801,7 +801,7 @@ model TenantPageRevision {
 }
 
 model Experiment {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String    @db.Uuid
   targetPageId      String    @db.Uuid
   name              String
@@ -830,7 +830,7 @@ model Experiment {
 }
 
 model ExperimentVariant {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   experimentId      String    @db.Uuid
   key               String
   label             String
@@ -848,7 +848,7 @@ model ExperimentVariant {
 }
 
 model ExperimentMetricEvent {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   experimentId      String    @db.Uuid
   variantKey        String
   tenantId          String    @db.Uuid
@@ -874,7 +874,7 @@ model ExperimentMetricEvent {
 
 
 model ReceiptUpload {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String    @db.Uuid
   userId            String    @db.Uuid
   fileUrl           String    @db.Text
@@ -897,7 +897,7 @@ model ReceiptUpload {
 }
 
 model Receipt {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   uploadId           String    @db.Uuid @unique
   vendor             String?
   date               DateTime?
@@ -923,7 +923,7 @@ model Receipt {
 }
 
 model ReceiptItem {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   receiptId         String    @db.Uuid
   name              String
   quantity          Decimal?  @db.Decimal(10, 3)
@@ -947,7 +947,7 @@ model ReceiptItem {
 // ============================================================================
 
 model FeatureFlag {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   billingAccountId  String?   @db.Uuid // Optional: for usage tracking
   projectId         String?   @db.Uuid // Optional: for project-scoped flags
   key               String    // e.g., "new-dashboard", "enable-beta-feature"
@@ -974,7 +974,7 @@ model FeatureFlag {
 }
 
 model FeatureFlagEnvironment {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   flagId            String    @db.Uuid
   environment       String    // e.g., "production", "staging", "development"
   enabled           Boolean   @default(false)
@@ -993,7 +993,7 @@ model FeatureFlagEnvironment {
 }
 
 model FeatureFlagOverride {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   flagId            String    @db.Uuid
   environment       String
   targetKey         String    // userId, tenantId, or other identifier
@@ -1020,7 +1020,7 @@ model FeatureFlagOverride {
 // ============================================================================
 
 model Tenant {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   billingAccountId  String?   @unique @db.Uuid // Optional: link to billing account
   slug               String    @unique // e.g., "default", "partner-x"
   primaryDomain      String?   // e.g., "settler.dev"
@@ -1058,7 +1058,7 @@ model Tenant {
 }
 
 model OnboardingProgress {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   userId            String    @db.Uuid @unique
   currentStep       String    @default("welcome")
   completedSteps    String[]  @default([])
@@ -1076,7 +1076,7 @@ model OnboardingProgress {
 }
 
 model TenantOnboardingProgress {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String    @db.Uuid
   userId            String    @db.Uuid
   currentStep       String    @default("create_workspace")
@@ -1096,7 +1096,7 @@ model TenantOnboardingProgress {
 }
 
 model WorkspaceInvite {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String    @db.Uuid
   invitedBy         String    @db.Uuid
   email              String
@@ -1119,7 +1119,7 @@ model WorkspaceInvite {
 }
 
 model OnboardingEvent {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String?   @db.Uuid
   userId            String    @db.Uuid
   eventType         String    // onboarding_started, step_completed, activation_complete
@@ -1137,7 +1137,7 @@ model OnboardingEvent {
 }
 
 model AuditLog {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   userId            String?   @db.Uuid
   billingAccountId  String?   @db.Uuid
   tenantId          String?   @db.Uuid
@@ -1178,7 +1178,7 @@ model AuditLog {
 // ============================================================================
 
 model Webhook {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   userId            String    @db.Uuid
   tenantId          String    @db.Uuid
   url               String    @db.Text
@@ -1200,7 +1200,7 @@ model Webhook {
 }
 
 model WebhookDelivery {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   webhookId         String    @db.Uuid
   url               String    @db.Text
   payload           Json      // The webhook event payload
@@ -1229,7 +1229,7 @@ model WebhookDelivery {
 // ============================================================================
 
 model IdempotencyKey {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   userId            String?   @map("user_id") @db.Uuid
   tenantId          String    @map("tenant_id") @db.Uuid
   key               String    // The idempotency key
@@ -1255,7 +1255,7 @@ model IdempotencyKey {
 // ============================================================================
 
 model IngestionSource {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String    @db.Uuid
   userId            String    @db.Uuid
   name              String
@@ -1287,7 +1287,7 @@ model IngestionSource {
 }
 
 model Ingestion {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   sourceId          String    @db.Uuid
   tenantId          String    @db.Uuid
   userId            String    @db.Uuid
@@ -1321,7 +1321,7 @@ model Ingestion {
 }
 
 model RawRecord {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   ingestionId       String    @db.Uuid
   sourceId          String    @db.Uuid
   tenantId          String    @db.Uuid
@@ -1347,7 +1347,7 @@ model RawRecord {
 }
 
 model NormalizedTransaction {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   ingestionId       String    @db.Uuid
   rawRecordId       String?   @db.Uuid @unique
   tenantId          String    @db.Uuid
@@ -1383,7 +1383,7 @@ model NormalizedTransaction {
 }
 
 model ReconciliationRun {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   ingestionId       String?   @map("ingestion_id") @db.Uuid
   tenantId          String    @map("tenant_id") @db.Uuid
   userId            String    @map("user_id") @db.Uuid
@@ -1416,7 +1416,7 @@ model ReconciliationRun {
 }
 
 model ReconciliationMatch {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   runId             String    @db.Uuid
   sourceTransactionId String  @db.Uuid
   targetTransactionId String?  @db.Uuid
@@ -1461,7 +1461,7 @@ model ReconciliationMatch {
 
 
 model ReconciliationProvenance {
-  id                String   @id @default(uuid())
+  id                String   @id @default(uuid()) @db.Uuid
   tenantId          String   @map("tenant_id") @db.Uuid
   runId             String   @map("run_id") @db.Uuid
   matchId           String?  @map("match_id") @db.Uuid
@@ -1491,7 +1491,7 @@ model ReconciliationProvenance {
 // ============================================================================
 
 model ExceptionArchetype {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String    @db.Uuid
   code              String    // e.g., "AMOUNT_MISMATCH", "DATE_DRIFT", "MISSING_IN_SOURCE"
   label             String    // Human-readable label
@@ -1524,7 +1524,7 @@ model ExceptionArchetype {
 }
 
 model ExceptionArchetypeClassification {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   exceptionId       String    @db.Uuid // FK to ReconciliationMatch.id
   archetypeId       String    @db.Uuid // FK to ExceptionArchetype.id
   tenantId          String    @db.Uuid
@@ -1547,7 +1547,7 @@ model ExceptionArchetypeClassification {
 }
 
 model ExceptionAdjudicationMemory {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String    @db.Uuid
   exceptionId       String    @db.Uuid // FK to ReconciliationMatch.id
   archetypeId       String?   @db.Uuid // FK to ExceptionArchetype.id (optional - can be classified later)
@@ -1618,7 +1618,7 @@ model ExceptionAdjudicationMemory {
 // ============================================================================
 
 model QueueWorkbenchView {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String    @db.Uuid
   userId            String?   @db.Uuid // Null for shared tenant views
   name              String    // e.g., "Critical Exceptions", "My Queue"
@@ -1659,7 +1659,7 @@ model QueueWorkbenchView {
 }
 
 model QueueSlaConfig {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String    @db.Uuid
   name              String    // e.g., "Standard SLA", "Critical Path SLA"
   description        String?   @db.Text
@@ -1696,7 +1696,7 @@ model QueueSlaConfig {
 }
 
 model QueueSlaBreach {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String    @db.Uuid
   exceptionId       String    @db.Uuid
   slaConfigId       String    @db.Uuid
@@ -1731,7 +1731,7 @@ model QueueSlaBreach {
 }
 
 model QueueMetrics {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String    @db.Uuid
   jobId             String?   @db.Uuid // Optional - null for tenant-wide
   
@@ -1790,7 +1790,7 @@ model QueueMetrics {
 // ============================================================================
 
 model EvidenceArtifact {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String    @db.Uuid
   artifactType      String    // "source_snapshot", "target_snapshot", "match_comparison", "operator_annotation", "system_analysis"
   
@@ -1852,7 +1852,7 @@ model EvidenceArtifact {
 }
 
 model ProofPackage {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String    @db.Uuid
   
   // Package identity
@@ -1914,7 +1914,7 @@ model ProofPackage {
 // ============================================================================
 
 model RunDelta {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String    @db.Uuid
   currentRunId      String    @db.Uuid
   previousRunId     String?   @db.Uuid
@@ -1973,7 +1973,7 @@ model RunDelta {
 
 // Bounded workforce runs: audited, deterministic worker outputs tied to canonical truth (e.g. RunDelta)
 model WorkerRun {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String    @db.Uuid
   workerKey         String    // e.g. prior_run_delta_analyst
   workerVersion     String    @default("1")
@@ -1997,7 +1997,7 @@ model WorkerRun {
 }
 
 model PolicyOutcomeLedger {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String    @db.Uuid
   
   // Accumulated policy fingerprints
@@ -2038,7 +2038,7 @@ model PolicyOutcomeLedger {
 }
 
 model PolicyMemoryArtifact {
-  id             String   @id @default(uuid())
+  id             String   @id @default(uuid()) @db.Uuid
   tenantId       String   @map("tenant_id") @db.Uuid
   artifactType   String   @map("artifact_type")
   artifactKey    String   @map("artifact_key")
@@ -2058,7 +2058,7 @@ model PolicyMemoryArtifact {
 }
 
 model PolicyEvolutionProposal {
-  id                String   @id @default(uuid())
+  id                String   @id @default(uuid()) @db.Uuid
   tenantId          String   @map("tenant_id") @db.Uuid
   proposalKey       String   @map("proposal_key")
   proposalType      String   @map("proposal_type")
@@ -2082,7 +2082,7 @@ model PolicyEvolutionProposal {
 }
 
 model PolicyEvolutionProposalReview {
-  id              String   @id @default(uuid())
+  id              String   @id @default(uuid()) @db.Uuid
   tenantId        String   @map("tenant_id") @db.Uuid
   proposalId      String   @map("proposal_id") @db.Uuid
   action          String
@@ -2101,7 +2101,7 @@ model PolicyEvolutionProposalReview {
 }
 
 model Export {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String    @db.Uuid
   userId            String    @db.Uuid
   type              String    // "csv", "json", "excel"
@@ -2137,7 +2137,7 @@ model Export {
 // ============================================================================
 
 model RetentionMetric {
-  id              String    @id @default(uuid())
+  id              String    @id @default(uuid()) @db.Uuid
   tenantId        String?   @db.Uuid
   prunedCount     Int       @default(0)
   storageBytes    BigInt    @default(0)
@@ -2158,7 +2158,7 @@ model RetentionMetric {
 // ============================================================================
 
 model ApprovalRequest {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String    @db.Uuid
   requestedBy       String    @db.Uuid
   approverId        String?   @db.Uuid
@@ -2212,7 +2212,7 @@ model ApprovalRequest {
 }
 
 model Approver {
-  id                  String    @id @default(uuid())
+  id                  String    @id @default(uuid()) @db.Uuid
   tenantId            String    @db.Uuid
   userId              String    @db.Uuid
   role                String    // e.g., "supervisor", "finance_admin", "compliance_officer"
@@ -2248,7 +2248,7 @@ model Approver {
 }
 
 model ApprovalDelegation {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String    @db.Uuid
   delegatorId       String    @db.Uuid // Original approver
   delegateId        String    @db.Uuid // Person delegated to
@@ -2285,7 +2285,7 @@ model ApprovalDelegation {
 // ============================================================================
 
 model OperatorCustomizationState {
-  id               String    @id @default(uuid())
+  id               String    @id @default(uuid()) @db.Uuid
   tenantId         String    @db.Uuid
   userId           String    @db.Uuid
   surface          String // e.g. admin_dashboard
@@ -2307,7 +2307,7 @@ model OperatorCustomizationState {
 }
 
 model OperatorCustomizationProposal {
-  id                     String    @id @default(uuid())
+  id                     String    @id @default(uuid()) @db.Uuid
   tenantId               String    @db.Uuid
   userId                 String    @db.Uuid
   surface                String
@@ -2331,7 +2331,7 @@ model OperatorCustomizationProposal {
 }
 
 model OperatorCustomizationAudit {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid()) @db.Uuid
   tenantId  String   @db.Uuid
   userId    String?  @db.Uuid
   action    String
@@ -2346,7 +2346,7 @@ model OperatorCustomizationAudit {
 }
 
 model OperatorInteractionSignal {
-  id         String   @id @default(uuid())
+  id         String   @id @default(uuid()) @db.Uuid
   tenantId   String   @db.Uuid
   userId     String?  @db.Uuid
   signalType String // module_view, layout_reorder, etc.
@@ -2363,7 +2363,7 @@ model OperatorInteractionSignal {
 
 /** Durable dismissal of a suggestion (tenant + user); not reconciliation truth. */
 model OperatorSuggestionDismissal {
-  id              String   @id @default(uuid())
+  id              String   @id @default(uuid()) @db.Uuid
   tenantId        String   @db.Uuid
   userId          String   @db.Uuid // actor who dismissed (same scope as customization draft)
   surface         String
@@ -2427,7 +2427,7 @@ model SecurityAudit {
 }
 
 model WorkflowDefinition {
-  id          String   @id @default(uuid())
+  id          String   @id @default(uuid()) @db.Uuid
   name        String
   description String?
   steps       Json     @default("[]")
@@ -2446,7 +2446,7 @@ model WorkflowDefinition {
 }
 
 model ScheduledWorkflow {
-  id             String   @id @default(uuid())
+  id             String   @id @default(uuid()) @db.Uuid
   workflowId     String
   nextRunAt      DateTime
   lastRunAt      DateTime?
@@ -2466,7 +2466,7 @@ model ScheduledWorkflow {
 }
 
 model WorkflowExecutionLog {
-  id         String    @id @default(uuid())
+  id         String    @id @default(uuid()) @db.Uuid
   workflowId String
   runId      String
   stepId     String
@@ -2485,7 +2485,7 @@ model WorkflowExecutionLog {
 }
 
 model DetectionRule {
-  id          String   @id @default(uuid())
+  id          String   @id @default(uuid()) @db.Uuid
   name        String
   type        String
   condition   String
@@ -2502,7 +2502,7 @@ model DetectionRule {
 }
 
 model Anomaly {
-  id         String   @id @default(uuid())
+  id         String   @id @default(uuid()) @db.Uuid
   tenantId   String   @db.Uuid
   type       String
   severity   String
@@ -2521,7 +2521,7 @@ model Anomaly {
 }
 
 model PolicyComparison {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String    @db.Uuid
   sectionsAdded     Int
   sectionsRemoved   Int
@@ -2537,7 +2537,7 @@ model PolicyComparison {
 }
 
 model DPIA {
-  id                String    @id @default(uuid())
+  id                String    @id @default(uuid()) @db.Uuid
   tenantId          String    @db.Uuid
   activityName      String
   overallRisk       String
