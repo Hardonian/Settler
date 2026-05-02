@@ -535,7 +535,7 @@ export default function RunsPage() {
           title={
             filters.status || filters.search || (filters.runKind && filters.runKind !== "all")
               ? "No runs match your filters"
-              : "Ready for your first run?"
+              : "No reconciliation runs yet"
           }
           description={
             filters.status || filters.search || (filters.runKind && filters.runKind !== "all")

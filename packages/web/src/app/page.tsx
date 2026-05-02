@@ -22,7 +22,7 @@ import {
 } from "@/components/site/infographics";
 
 export const metadata: Metadata = {
-  title: "Settler — The Reconciliation Intelligence & Audit Evidence OS",
+  title: "Settler — Reconciliation intelligence + audit OS",
   description:
     "Settler turns messy reconciliation into deterministic audit evidence. Built for finance teams that need replayable runs, hash-linked proofpacks, and immutable operator truth.",
 };
