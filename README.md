@@ -1,4 +1,16 @@
-# Settler
+# Settler: Reconciliation API Service
+
+> Reconciliation infrastructure for finance teams that need explainable matching, audit-ready evidence, and reusable decision memory.
+
+Replace spreadsheet reconciliation drift. Reduce manual exception review. Generate audit-ready proofpacks. Preserve institutional memory. Expose reconciliation as an API, and embed workflows into finance ops.
+
+**Use cases:**
+
+- Payments reconciliation
+- Marketplace seller payouts
+- Chargeback evidence
+- Supplier invoice reconciliation
+- Ledger vs processor matching
 
 Settler is **reconciliation intelligence plus an audit-grade operating system**: deterministic runs, hash-linked proofpacks, explicit degraded states, and tenant-scoped operator truth (not UI-invented summaries).
 

@@ -241,9 +241,10 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
       if (!modelUsage[call.model]) {
         modelUsage[call.model] = { calls: 0, tokens: 0, cost: 0 };
       }
-      modelUsage[call.model].calls++;
-      modelUsage[call.model].tokens += call.tokens || 0;
-      modelUsage[call.model].cost += call.cost || 0;
+      const usage = modelUsage[call.model]!;
+      usage.calls++;
+      usage.tokens += call.tokens || 0;
+      usage.cost += call.cost || 0;
     }
 
     // Check for expensive model usage that could be downgraded
@@ -352,7 +353,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
     });
 
     for (const errorStat of errorRates) {
-      const totalStat = totalRuns.find((t) => t.connectorId === errorStat.connectorId);
+      const totalStat = totalRuns.find((t: any) => t.connectorId === errorStat.connectorId);
       if (totalStat) {
         const errorRate = errorStat._count.id / totalStat._count.id;
         if (errorRate > 0.2) {
@@ -374,7 +375,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
               errorRateReduction: 0.5,
               riskLevel: "low",
             },
-            recommendedAction: "review",
+            recommendedAction: "human-review",
           });
         }
       }
@@ -409,7 +410,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
           memoryReduction: 0.6,
           riskLevel: "low",
         },
-        recommendedAction: "review",
+        recommendedAction: "human-review",
       });
     }
 

@@ -651,4 +651,135 @@ router.post(
   }
 );
 
+// ---- Added for 2026 API Product Spine ----
+
+import { idempotencyMiddleware } from "../../middleware/idempotency";
+
+/**
+ * Creates a new reconciliation run
+ */
+router.post(
+  "/runs",
+  requirePermission(Permission.JOBS_WRITE),
+  idempotencyMiddleware,
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = req.tenantId;
+      if (!tenantId) {
+        res.status(400).json({
+          error: "TENANT_ACCESS_DENIED",
+          message: "Tenant context is required",
+        });
+        return;
+      }
+
+      // Stub implementation for creating run
+      res.status(201).json({
+        id: `run_${Date.now()}`,
+        status: "pending",
+        message: "Run created successfully",
+      });
+    } catch (error) {
+      logError("Error creating run", { error });
+      res.status(500).json({
+        error: "INTERNAL_SERVER_ERROR",
+        message: "An unexpected error occurred",
+      });
+    }
+  }
+);
+
+/**
+ * Gets the proofpack for a run
+ */
+router.get(
+  "/runs/:id/proofpack",
+  requirePermission(Permission.JOBS_READ),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = req.tenantId;
+      if (!tenantId) {
+        res.status(400).json({
+          error: "TENANT_ACCESS_DENIED",
+          message: "Tenant context is required",
+        });
+        return;
+      }
+
+      // Stub implementation for proofpack
+      res.status(200).json({
+        runId: req.params.id,
+        auditTrail: [],
+        evidence: [],
+      });
+    } catch (error) {
+      logError("Error fetching proofpack", { error });
+      res.status(500).json({
+        error: "INTERNAL_SERVER_ERROR",
+        message: "An unexpected error occurred",
+      });
+    }
+  }
+);
+
+/**
+ * Gets the deltas for a run
+ */
+router.get(
+  "/runs/:id/delta",
+  requirePermission(Permission.JOBS_READ),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = req.tenantId;
+      if (!tenantId) {
+        res.status(400).json({
+          error: "TENANT_ACCESS_DENIED",
+          message: "Tenant context is required",
+        });
+        return;
+      }
+
+      res.status(200).json({
+        runId: req.params.id,
+        deltas: [],
+      });
+    } catch (error) {
+      res.status(500).json({
+        error: "INTERNAL_SERVER_ERROR",
+        message: "An unexpected error occurred",
+      });
+    }
+  }
+);
+
+/**
+ * Records an adjudication decision
+ */
+router.post(
+  "/runs/:id/adjudications",
+  requirePermission(Permission.JOBS_WRITE),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = req.tenantId;
+      if (!tenantId) {
+        res.status(400).json({
+          error: "TENANT_ACCESS_DENIED",
+          message: "Tenant context is required",
+        });
+        return;
+      }
+
+      res.status(201).json({
+        id: `adj_${Date.now()}`,
+        status: "recorded",
+      });
+    } catch (error) {
+      res.status(500).json({
+        error: "INTERNAL_SERVER_ERROR",
+        message: "An unexpected error occurred",
+      });
+    }
+  }
+);
+
 export { router as runsRouter };

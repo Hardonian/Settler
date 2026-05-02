@@ -1,3 +1,4 @@
+import { enterpriseRouter } from "./enterprise";
 /**
  * API v1 Routes
  * Version 1 of the Settler API
@@ -97,6 +98,7 @@ v1Router.use("/", governanceRouter);
 
 v1Router.use("/", capabilitiesRouter);
 
+v1Router.use("/", enterpriseRouter);
 // Health check
 v1Router.get("/health", (_req, res) => {
   res.json({
