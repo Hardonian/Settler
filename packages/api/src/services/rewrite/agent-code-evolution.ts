@@ -5,7 +5,7 @@
  * Part 8: Self-Rewriting OS & Meta-Orchestration
  */
 
-import { logInfo } from "../../utils/logger";
+import { logInfo, logError } from "../../utils/logger";
 import { SelfValidator } from "./self-validator";
 
 export interface CodeEvolution {
@@ -247,7 +247,14 @@ export class AgentCodeEvolution {
       const path = await import("path");
 
       // Resolve module path
-      const modulePath = path.join(process.cwd(), "packages", "api", "src", "services", evolution.moduleId);
+      const modulePath = path.join(
+        process.cwd(),
+        "packages",
+        "api",
+        "src",
+        "services",
+        evolution.moduleId
+      );
 
       if (!fs.existsSync(modulePath)) {
         throw new Error(`Module path not found: ${modulePath}`);

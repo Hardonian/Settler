@@ -1,16 +1,7 @@
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { CTASection, PageHero, Section, SectionHeader } from "@/components/site/primitives";
-import {
-  ShieldCheck,
-  Zap,
-  Wrench,
-  Lock,
-  ScrollText,
-  BadgeCheck,
-  Eye,
-  ArrowRight,
-} from "lucide-react";
+import { ShieldCheck, Zap, Wrench, Lock, ScrollText, BadgeCheck, Eye } from "lucide-react";
 
 export default function TransparencyDashboard() {
   return (

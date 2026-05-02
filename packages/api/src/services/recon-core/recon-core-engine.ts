@@ -558,8 +558,8 @@ export class ReconCoreEngine {
           reconJob.sourceConfigEncrypted
         );
         const rawData = await adapter.fetchTransactions({
-          startDate: reconJob.config?.startDate as string,
-          endDate: reconJob.config?.endDate as string,
+          startDate: (reconJob as any).config?.startDate as string,
+          endDate: (reconJob as any).config?.endDate as string,
         });
         return { sourceData: rawData as ReconDataRecord[], targetData: [] };
       } catch (error) {
@@ -586,7 +586,7 @@ export class ReconCoreEngine {
       `;
     } catch (error) {
       // Table doesn't exist, try alternative query or return empty
-      logWarn("ReconMatch table not found, returning empty results", error);
+      logWarn("ReconMatch table not found, returning empty results", { error });
       matches = [];
     }
 
@@ -629,7 +629,10 @@ export class ReconCoreEngine {
     }
 
     // Apply transformation steps from recipe
-    const steps = (recipe.steps || []) as Array<{ type: string; config: Record<string, unknown> }>;
+    const steps = ((recipe as any).steps || []) as Array<{
+      type: string;
+      config: Record<string, unknown>;
+    }>;
     let transformedData = [...data];
 
     for (const step of steps) {
@@ -672,9 +675,12 @@ export class ReconCoreEngine {
                   (acc, dep) => ({ ...acc, [dep]: record[dep] }),
                   {}
                 );
-                newRecord[fieldName] = this.evaluateFormula(formula, values);
+                newRecord[fieldName] = this.evaluateFormula(
+                  formula,
+                  values as Record<string, unknown>
+                );
               } catch (error) {
-                logWarn(`Failed to compute field ${fieldName}`, error);
+                logWarn(`Failed to compute field ${fieldName}`, { error });
               }
             }
             return newRecord;
@@ -726,7 +732,7 @@ export class ReconCoreEngine {
 
         if (rule.type === "date" && isNaN(Date.parse(String(value)))) {
           errors.push({
-            record: record.id || "unknown",
+            record: String(record.id ?? "unknown"),
             field: rule.field,
             message: `${rule.field} must be a valid date`,
           });
@@ -735,7 +741,7 @@ export class ReconCoreEngine {
         // Pattern validation
         if (rule.pattern && !new RegExp(rule.pattern).test(String(value))) {
           errors.push({
-            record: record.id || "unknown",
+            record: String(record.id ?? "unknown"),
             field: rule.field,
             message: `${rule.field} does not match pattern`,
           });
@@ -792,7 +798,7 @@ export class ReconCoreEngine {
         try {
           mappedRecord[fieldName] = this.evaluateFormula(formula, mappedRecord);
         } catch (error) {
-          logWarn(`Failed to calculate field ${fieldName}`, error);
+          logWarn(`Failed to calculate field ${fieldName}`, { error });
         }
       }
 
