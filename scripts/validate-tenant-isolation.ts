@@ -11,10 +11,16 @@
 import "./env-loader";
 import { createClient } from "@supabase/supabase-js";
 import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "./packages/api/node_modules/@prisma/adapter-pg";
+import { Pool } from "pg";
 
 const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
-const prisma = new PrismaClient();
+
+// Manual Prisma initialization for Prisma 7 compatibility in scripts
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
 interface TestResult {
   test: string;
