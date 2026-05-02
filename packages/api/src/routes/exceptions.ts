@@ -25,6 +25,7 @@ import { Prisma } from "@prisma/client";
 import { ProvenanceService } from "../services/recon-core/provenance-service";
 import { ExceptionReviewService } from "../application/services/ExceptionReviewService";
 import { AdjudicationMemoryService } from "../services/intelligence/adjudication-memory";
+import { ExceptionQueryService } from "../services/exceptions/exception-query-service";
 
 import { handleRouteError } from "../utils/error-handler";
 import { NotFoundError, ConflictError } from "../utils/typed-errors";
@@ -67,6 +68,7 @@ const router: Router = Router();
 const provenanceService = new ProvenanceService(prisma);
 const exceptionReviewService = new ExceptionReviewService(prisma, provenanceService);
 const adjudicationMemoryService = new AdjudicationMemoryService(prisma);
+const exceptionQueryService = new ExceptionQueryService();
 
 const CANONICAL_EXCEPTION_MATCH_TYPES = ["unmatched", "conflict"] as const;
 
@@ -788,7 +790,7 @@ router.post(
       const userId = req.userId!;
       const tenantId = req.tenantId!;
 
-      const result = await exceptionReviewService.bulkResolveExceptions({
+      const result = await exceptionReviewService.resolveExceptions({
         tenantId,
         userId,
         exceptionIds,
