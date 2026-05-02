@@ -16,13 +16,9 @@ export default function TransparencyDashboard() {
             description="Settler is built on the principle of absolute operational truth. Every matching decision is replayable, every exception is auditable, and every run produces verifiable evidence. Zero guessing, zero drift."
             visual={
               <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-primary/20 shadow-2xl bg-slate-950 flex items-center justify-center p-8">
-                <div className="grid grid-cols-3 gap-4 w-full h-full opacity-50">
+                <div className="grid grid-cols-3 gap-4 w-full h-full opacity-50 staggered-pulse">
                   {Array.from({ length: 9 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className="rounded-lg border border-primary/20 bg-primary/5 animate-pulse"
-                      style={{ animationDelay: `${i * 100}ms` }}
-                    />
+                    <div key={i} className="rounded-lg border border-primary/20 bg-primary/5" />
                   ))}
                 </div>
                 <div className="absolute inset-0 flex items-center justify-center">
