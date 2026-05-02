@@ -146,15 +146,15 @@ export function Chatbot({ className }: ChatbotProps) {
   const handleFileUpload = async (file: File, type: "image" | "file") => {
     // Upload to Vercel Blob or API endpoint
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('type', type);
-    
+    formData.append("file", file);
+    formData.append("type", type);
+
     try {
-      const response = await fetch('/api/upload', {
-        method: 'POST',
+      const response = await fetch("/api/upload", {
+        method: "POST",
         body: formData,
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         return data.url || data.path;
@@ -167,7 +167,7 @@ export function Chatbot({ className }: ChatbotProps) {
         type === "image" ? reader.readAsDataURL(file) : reader.readAsText(file);
       });
     } catch (error) {
-      console.error('Upload failed, using fallback:', error);
+      console.error("Upload failed, using fallback:", error);
       return await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result as string);
@@ -302,6 +302,8 @@ export function Chatbot({ className }: ChatbotProps) {
                 ref={imageInputRef}
                 type="file"
                 accept="image/*"
+                title="Upload image"
+                aria-label="Upload image"
                 className="hidden"
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
@@ -323,6 +325,8 @@ export function Chatbot({ className }: ChatbotProps) {
               <input
                 ref={fileInputRef}
                 type="file"
+                title="Upload file"
+                aria-label="Upload file"
                 className="hidden"
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
