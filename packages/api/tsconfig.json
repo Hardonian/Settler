@@ -22,6 +22,7 @@
     "src/services/predictive",
     "src/services/economic",
     "src/services/futureproof",
-    "src/services/pricing"
+    "src/services/pricing",
+    "src/routes/v2/ai-agents.ts"
   ]
 }

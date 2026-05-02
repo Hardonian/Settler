@@ -39,9 +39,11 @@ export function checkEntitlement() {
         });
       }
 
-      next();
+      return next();
     } catch (error) {
-      return res.status(500).json({ error: "Internal Server Error", message: "Failed to verify entitlements" });
+      return res
+        .status(500)
+        .json({ error: "Internal Server Error", message: "Failed to verify entitlements" });
     }
   };
 }
