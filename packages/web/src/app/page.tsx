@@ -88,31 +88,31 @@ export default function HomePage() {
       <Navigation />
       <main id="main-content" className="pt-16">
         <PageHero
-          eyebrow="Reconciliation intelligence"
-          title="Turn reconciliation into deterministic audit evidence."
-          description="Settler is the operating system for financial truth. Every matching decision is replayable, explainable, and provably correct. From ingestion to evidence, we ensure your reconciliation holds up under the most rigorous audit."
+          eyebrow="Reconciliation Intelligence Platform"
+          title="Deterministic reconciliation. Verifiable audit evidence."
+          description="Settler is the operating system for financial integrity. We turn fragmented transaction flows into replayable, hash-linked proof artifacts. Built for teams that require absolute precision and audit-ready certainty."
           actions={
             <>
-              <Button asChild>
+              <Button asChild size="lg">
                 <UiLink href="/demo/console">
-                  Explore the operator console <ArrowRight className="ml-1 h-4 w-4" />
+                  Explore operator console <ArrowRight className="ml-2 h-4 w-4" />
                 </UiLink>
               </Button>
-              <Button variant="outline" asChild>
-                <UiLink href="/signup">Start free — no card required</UiLink>
+              <Button variant="outline" size="lg" asChild>
+                <UiLink href="/signup">Start evaluating today</UiLink>
               </Button>
             </>
           }
           visual={
-            <div className="relative aspect-square w-full max-w-[500px] overflow-hidden rounded-3xl border border-primary/20 shadow-2xl">
+            <div className="relative aspect-square w-full max-w-[500px] overflow-hidden rounded-3xl border border-primary/20 shadow-2xl bg-slate-950/50 backdrop-blur-sm">
               <Image
                 src="/hero_abstract_reconciliation.png"
-                alt="Abstract reconciliation visualization"
+                alt="Deterministic reconciliation visualization"
                 fill
-                className="object-cover"
+                className="object-cover opacity-90 transition-opacity hover:opacity-100"
                 priority
               />
-              <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-transparent" />
             </div>
           }
         />
