@@ -317,7 +317,6 @@
     word-wrap: break-word;
     white-space: pre-wrap;
     /* Smooth scrolling on mobile */
-    -webkit-overflow-scrolling: touch;
     /* Prevent horizontal scroll on mobile */
     max-width: 100%;
   }
