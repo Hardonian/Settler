@@ -11,7 +11,7 @@
 import "./env-loader";
 import { createClient } from "@supabase/supabase-js";
 import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "./packages/api/node_modules/@prisma/adapter-pg";
+import { PrismaPg } from "C:/Users/scott/GitHub/Settler/packages/api/node_modules/@prisma/adapter-pg";
 import { Pool } from "pg";
 
 const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
