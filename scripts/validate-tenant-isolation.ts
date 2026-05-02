@@ -369,7 +369,7 @@ async function testTenantIsolation() {
     }
   }
 
-  console.log("\n" + "=".repeat(60));
+  console.info("\n" + "=".repeat(60));
   if (allPassed) {
     console.info("✅ ALL TESTS PASSED - Tenant isolation is working correctly");
   } else {
