@@ -298,42 +298,13 @@ router.get(
         proofCompleteness: { confidence: sortOrder }, // Proxied to confidence for now
       };
 
-      const [exceptions, total] = await Promise.all([
-        prisma.reconciliationMatch.findMany({
-          where,
-          include: {
-            run: {
-              select: {
-                id: true,
-                status: true,
-                startedAt: true,
-                completedAt: true,
-              },
-            },
-            sourceTransaction: true,
-            targetTransaction: {
-              select: {
-                id: true,
-                category: true,
-                description: true,
-                amount: true,
-                currency: true,
-                date: true,
-              },
-            },
-            adjudicationMemories: true,
-            archetypeClassifications: {
-              include: { archetype: true },
-              orderBy: { confidence: "desc" },
-              take: 5,
-            },
-          },
-          orderBy: orderByMap[sortBy] || { createdAt: "desc" },
-          take: limit,
-          skip: offset,
-        }),
-        prisma.reconciliationMatch.count({ where }),
-      ]);
+      const { exceptions, total } = await exceptionQueryService.listExceptions(
+        tenantId,
+        where,
+        orderByMap[sortBy] || { createdAt: "desc" },
+        limit,
+        offset
+      );
 
       logInfo("Exceptions listed", {
         tenantId,
@@ -684,29 +655,26 @@ router.put(
         });
       }
 
-      const updateResult = await prisma.reconciliationMatch.updateMany({
-        where: { id, tenantId, matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] } },
-        data: {
-          status,
-          reviewed: status === "resolved" || status === "dismissed",
-          reviewedBy: status === "resolved" || status === "dismissed" ? userId : undefined,
-          reviewedAt: status === "resolved" || status === "dismissed" ? new Date() : undefined,
-          resolutionReason: resolutionReason || undefined,
-          notes: notes || undefined,
-          metadata: appendAdjudicationHistory(existing.metadata, {
-            actorId: userId,
-            action: "status_change",
-            details: {
-              fromStatus: existing.status,
-              toStatus: status,
-              notes: notes || null,
-              resolutionReason: resolutionReason || null,
-            },
-          }) as Prisma.JsonObject,
-        },
-      });
+      const count = await exceptionQueryService.updateExceptionStatus(
+        id,
+        tenantId,
+        status,
+        userId,
+        resolutionReason,
+        notes,
+        appendAdjudicationHistory(existing.metadata, {
+          actorId: userId,
+          action: "status_change",
+          details: {
+            fromStatus: existing.status,
+            toStatus: status,
+            notes: notes || null,
+            resolutionReason: resolutionReason || null,
+          },
+        }) as Prisma.JsonObject
+      );
 
-      if (updateResult.count !== 1) {
+      if (count !== 1) {
         throw new NotFoundError("Exception not found", "exception", id);
       }
 
@@ -788,10 +756,14 @@ router.post(
       });
 
       if (updateResult.count !== 1) {
-        throw new NotFoundError("Exception not found", "exception", id);
-      }
+        throw new NotFoundErrod,
+      });
+    }
+  }
+);
 
-      logInfo("Exception note added", { tenantId, exceptionId: id, addedBy: userId });
+/**
+ * POST /api/exceptions/bulk-resoo("Exception note added", { tenantId, exceptionId: id, addedBy: userId });
 
       return res.json({
         data: { id, notes },
@@ -815,19 +787,7 @@ router.post(
   enforceFreezeState(),
   validateRequest(bulkResolveSchema),
   async (req: ExceptionRequest, res: Response) => {
-    try {
-      const { exceptionIds, resolution, resolutionReason, notes } = req.body;
-      const userId = req.userId!;
-      const tenantId = req.tenantId!;
-      const result = await exceptionReviewService.resolveExceptions({
-        tenantId,
-        userId,
-        exceptionIds,
-        resolution,
-        resolutionReason,
-        notes,
-        traceId: req.traceId,
-        requestId: req.requestId,
+    try {  requestId: req.requestId,
         ipAddress: req.ip,
         userAgent:
           typeof req.headers["user-agent"] === "string" ? req.headers["user-agent"] : undefined,
@@ -972,6 +932,68 @@ router.post(
 
       return res.json({
         data: { updated: updatedCount },
+        message: `Updated ${updatedCount} exceptions to ${status} successfully`,
+      });
+    } catch (error: unknown) {
+      return handleRouteError(res, error, "Failed to bulk update exception status", 500, {
+        userId: req.userId,
+      });
+    }
+  }
+);
+
+export { router as exceptionsRouter };
+});
+
+      return res.json({
+        data: { updated: updatedCount },
+        message: `Updated ${updatedCount} exceptions to ${status} successfully`,
+      });
+    } catch (error: unknown) {
+      return handleRouteError(res, error, "Failed to bulk update exception status", 500, {
+        userId: req.userId,
+      });
+    }
+  }
+);
+
+export { router as exceptionsRouter };
+-status
+ * Bulk update exception status
+ */
+router.post(
+  "/exceptions/bulk-status",
+  requirePermission(Permission.REPORTS_EXPORT),
+  enforceFreezeState(),
+  validateRequest(bulkStatusSchema),
+  async (req: ExceptionRequest, res: Response) => {
+    try {
+      const { exceptionIds, status, notes } = req.body;
+      const userId = req.userId!;
+      const tenantId = req.tenantId!;
+
+      const updatedCount = await exceptionReviewService.bulkUpdateExceptionStatus({
+        tenantId,
+        userId,
+        exceptionIds,
+        status,
+        notes,
+      });
+
+      return res.json({
+        data: { updated: updatedCount },
+        message: `Updated ${updatedCount} exceptions to ${status} successfully`,
+      });
+    } catch (error: unknown) {
+      return handleRouteError(res, error, "Failed to bulk update exception status", 500, {
+        userId: req.userId,
+      });
+    }
+  }
+);
+
+export { router as exceptionsRouter };
+ updated: updatedCount },
         message: `Updated ${updatedCount} exceptions to ${status} successfully`,
       });
     } catch (error: unknown) {

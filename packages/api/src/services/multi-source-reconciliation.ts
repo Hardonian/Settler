@@ -233,26 +233,27 @@ export async function runMultiSourceReconciliation(
     }> = [];
 
     // Parse source adapters from job config
-    const sourceAdapters = (jobResult[0].source_adapters || []).split(',').map((s: string) => s.trim());
+    const sourceAdapters = jobResult[0]!.source_adapters || [];
 
     // Fetch from each adapter
-    for (const adapterName of sourceAdapters) {
+    for (const adapterEntry of sourceAdapters) {
       try {
-        const adapter = this.adapterFactory.create(adapterName);
-        const transactions = await adapter.fetchTransactions({ startDate: new Date(Date.now() - 30*24*60*60*1000), endDate: new Date() });
+        const { AdapterFactory } = await import("../adapters/adapter-factory");
+        const adapter = AdapterFactory.create(adapterEntry.adapter, JSON.stringify(adapterEntry.config));
+        const transactions = await adapter.fetchTransactions({ startDate: new Date(Date.now() - 30*24*60*60*1000).toISOString(), endDate: new Date().toISOString() });
         
         for (const tx of transactions) {
           allTransactions.push({
-            adapter: adapterName,
-            transactionId: tx.id,
-            amount: tx.amount,
-            date: tx.date,
-            description: tx.description,
-            externalId: tx.externalId,
+            adapter: adapterEntry.adapter,
+            transactionId: (tx as any).id,
+            amount: (tx as any).amount,
+            date: (tx as any).date,
+            description: (tx as any).description,
+            externalId: (tx as any).externalId,
           });
         }
       } catch (error) {
-        logError(`Failed to fetch from adapter ${adapterName}`, error);
+        logError(`Failed to fetch from adapter ${adapterEntry.adapter}`, error);
       }
     }
 
