@@ -33,6 +33,8 @@ export class FaultTolerantRecon {
   // Note: prisma not currently used but may be needed for future persistence
   private _prisma: PrismaClient; // Prefix with _ to indicate intentionally unused
   private checkpoints: Map<string, CheckpointState> = new Map();
+  private transforms: Map<string, (input: Record<string, unknown>) => Record<string, unknown>> =
+    new Map();
 
   constructor(prisma: PrismaClient) {
     this._prisma = prisma;
@@ -78,11 +80,6 @@ export class FaultTolerantRecon {
       logError("Transform failed", { transformId, error });
       throw error;
     }
-
-    // Note: Cannot store transform results in ReconResult as it doesn't have the required fields
-    // This would need a separate transform cache table
-    // For now, we'll just return the result without storing
-    return result;
   }
 
   /**

@@ -36,7 +36,7 @@ export async function GET() {
 
   // Check database
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     const dbStart = Date.now();
     const { error } = await supabase.from('_pg_table').select('tablename').limit(1).single();
     health.checks.database.latency = Date.now() - dbStart;

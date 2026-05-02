@@ -18,7 +18,8 @@ const TRACE_ID_COOKIE = "trace-id";
 const toHex = (value: number): string => value.toString(16).padStart(2, "0");
 
 const getRandomBytes = (size: number): Uint8Array => {
-  const c = typeof crypto !== "undefined" ? crypto : undefined;
+const getRandomBytes = (size: number): Uint8Array => {
+  const c = typeof globalThis.crypto !== "undefined" ? globalThis.crypto : undefined;
 
   if (c && "getRandomValues" in c) {
     const bytes = new Uint8Array(size);
@@ -26,8 +27,8 @@ const getRandomBytes = (size: number): Uint8Array => {
     return bytes;
   }
 
-  if (c && "randomUUID" in c && typeof c.randomUUID === "function") {
-    const hex = c.randomUUID().replace(/-/g, "");
+  if (c && "randomUUID" in c && typeof (c as Crypto).randomUUID === "function") {
+    const hex = (c as Crypto).randomUUID().replace(/-/g, "");
     const bytes = new Uint8Array(size);
     for (let index = 0; index < size; index += 1) {
       bytes[index] = Number.parseInt(hex.slice(index * 2, index * 2 + 2) || "00", 16);

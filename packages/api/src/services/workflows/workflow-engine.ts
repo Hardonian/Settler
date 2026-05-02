@@ -369,7 +369,7 @@ export class WorkflowEngine {
     const { condition } = step.config;
 
     // Simple condition evaluation (could be expanded)
-    const conditionMet = this.evaluateCondition(condition, context);
+    const conditionMet = this.evaluateCondition(condition, _context);
 
     return { status: "condition_evaluated", conditionMet };
   }

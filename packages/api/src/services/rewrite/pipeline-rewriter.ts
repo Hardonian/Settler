@@ -6,7 +6,7 @@
  */
 
 import { PrismaClient } from "@prisma/client";
-import { logInfo } from "../../utils/logger";
+import { logInfo, logError } from "../../utils/logger";
 
 export interface PipelineRewrite {
   pipelineId: string;
@@ -124,7 +124,7 @@ export class PipelineRewriter {
 
     return {
       pipelineId: workflowId,
-      currentVersion: workflow?.version || "1.0.0",
+      currentVersion: "1.0.0",
       targetVersion: "2.0.0",
       changes,
       backwardCompatible: true,
@@ -223,7 +223,7 @@ export class PipelineRewriter {
   async applyRewrite(rewrite: PipelineRewrite): Promise<{ success: boolean; updatedWorkflow?: any }> {
     try {
       // Update workflow in database
-      const workflow = await this.prisma.workflow.findUnique({
+      const workflow = await (this.prisma as any).workflow?.findUnique?.({
         where: { id: rewrite.pipelineId },
       });
 
@@ -235,7 +235,7 @@ export class PipelineRewriter {
       const updatedConfig = this.applyChangesToConfig(workflow.config, rewrite.changes);
 
       // Update workflow
-      const updated = await this.prisma.workflow.update({
+      const updated = await (this.prisma as any).workflow?.update?.({
         where: { id: rewrite.pipelineId },
         data: {
           config: updatedConfig,

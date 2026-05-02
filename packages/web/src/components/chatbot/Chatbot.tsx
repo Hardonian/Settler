@@ -307,7 +307,16 @@ export function Chatbot({ className }: ChatbotProps) {
                   const file = e.target.files?.[0];
                   if (file) {
                     const url = await handleFileUpload(file, "image");
-                    setMessages((prev) => [...prev, { role: "user", content: url, type: "image" }]);
+                    setMessages((prev) => [
+                      ...prev,
+                      {
+                        id: `user_img_${Date.now()}`,
+                        role: "user",
+                        content: url,
+                        timestamp: new Date(),
+                        attachments: [{ type: "image", content: url }],
+                      },
+                    ]);
                   }
                 }}
               />
@@ -319,7 +328,16 @@ export function Chatbot({ className }: ChatbotProps) {
                   const file = e.target.files?.[0];
                   if (file) {
                     const url = await handleFileUpload(file, "file");
-                    setMessages((prev) => [...prev, { role: "user", content: url, type: "file", name: file.name }]);
+                    setMessages((prev) => [
+                      ...prev,
+                      {
+                        id: `user_file_${Date.now()}`,
+                        role: "user",
+                        content: url,
+                        timestamp: new Date(),
+                        attachments: [{ type: "file", content: url, name: file.name }],
+                      },
+                    ]);
                   }
                 }}
               />
