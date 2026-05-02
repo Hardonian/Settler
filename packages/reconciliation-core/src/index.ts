@@ -31,3 +31,5 @@ export * from "./run-operator-intelligence.js";
 export * from "./adjudication-policy-load.js";
 export * from "./policy-tolerance-merge.js";
 export * from "./operator-api-envelope.js";
+export * from "./billing-entitlements.js";
+export * from "./structured-run-delta.js";

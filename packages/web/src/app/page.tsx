@@ -22,9 +22,9 @@ import {
 } from "@/components/site/infographics";
 
 export const metadata: Metadata = {
-  title: "Settler — Reconciliation intelligence + audit OS",
+  title: "Settler — The Reconciliation Intelligence & Audit Evidence OS",
   description:
-    "Settler is reconciliation intelligence with audit-grade trust: deterministic runs, hash-linked proofpacks, explicit degraded states, and tenant-scoped operator truth.",
+    "Settler turns messy reconciliation into deterministic audit evidence. Built for finance teams that need replayable runs, hash-linked proofpacks, and immutable operator truth.",
 };
 
 const capabilityClusters = [
@@ -89,8 +89,8 @@ export default function HomePage() {
       <main id="main-content" className="pt-16">
         <PageHero
           eyebrow="Reconciliation intelligence"
-          title="Every matching decision — replayable, explainable, and provably correct."
-          description="Settler is a reconciliation-intelligence operating system. Deterministic matching, evidence-first output, operator-grade exception triage, and proof chains that hold up under audit. Not a dashboard. An operating system for financial truth."
+          title="Turn reconciliation into deterministic audit evidence."
+          description="Settler is the operating system for financial truth. Every matching decision is replayable, explainable, and provably correct. From ingestion to evidence, we ensure your reconciliation holds up under the most rigorous audit."
           actions={
             <>
               <Button asChild>

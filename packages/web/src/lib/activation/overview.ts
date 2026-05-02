@@ -91,13 +91,13 @@ export function formatActivationTimestamp(value: string | null): string {
 export function getActivationHeadline(overview: ConsoleActivationOverview): string {
   switch (overview.overallState) {
     case "ready":
-      return "First-customer workflow is materially in place";
+      return "Operational readiness achieved: workflow is materially in place";
     case "degraded":
-      return "Value path is active, but still depends on explicit recovery steps";
+      return "Operational friction detected: system depends on explicit recovery";
     case "setup_required":
-      return "Core onboarding steps are still blocking first value";
+      return "Activation required: core onboarding steps are blocking first value";
     default:
-      return "Activation truth is unavailable until runtime issues are resolved";
+      return "Activation truth unavailable: resolve runtime issues to resume monitoring";
   }
 }
 

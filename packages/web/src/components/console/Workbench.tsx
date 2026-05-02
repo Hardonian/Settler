@@ -102,11 +102,12 @@ export function Workbench() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
               <p className="text-sm font-semibold text-foreground">
-                Welcome — run your first reconciliation
+                Activation: Reconciliation Engine Idle
               </p>
               <p className="text-xs text-muted-foreground leading-relaxed max-w-xl">
-                No runs yet. Follow the pilot guide to connect a data source, trigger a run, and
-                download your first proofpack artifact — takes about 30 minutes.
+                Connect your financial sources and witness the power of deterministic matching.
+                Follow the pilot guide to trigger your first run and generate your initial
+                audit-grade proofpack.
               </p>
             </div>
             <div className="flex flex-wrap gap-2 shrink-0">

@@ -126,7 +126,7 @@ export default function ReconciliationsPage() {
     <div className="space-y-6">
       <ConsolePageHeader
         title="Reconciliations"
-        description="Inspect completed reconciliation runs. This workspace reports outcomes from real runs; it does not fabricate a run from demo defaults."
+        description="Inspect the outcomes of your reconciliation intelligence. Every matching decision is replayable, explainable, and linked to deterministic evidence."
       />
 
       <Card>
@@ -198,8 +198,9 @@ export default function ReconciliationsPage() {
             />
           ) : runs.length === 0 ? (
             <EmptyState
-              title="No runs available yet"
-              description="Once a reconciliation run completes for this tenant, you can inspect the result set here."
+              title="No reconciliation outcomes yet"
+              description="This surface visualizes matching rationale and evidence impact. To begin, initiate a new reconciliation run or verify your ingestion jobs."
+              hint="Reconciliation runs transform raw transactions into deterministic matches. Once a run completes, you can inspect the 'why' behind every decision here."
               action={{
                 label: "Open Runs",
                 onClick: () => {

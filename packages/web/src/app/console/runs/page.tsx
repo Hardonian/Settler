@@ -535,17 +535,17 @@ export default function RunsPage() {
           title={
             filters.status || filters.search || (filters.runKind && filters.runKind !== "all")
               ? "No runs match your filters"
-              : "No reconciliation runs yet"
+              : "Ready for your first run?"
           }
           description={
             filters.status || filters.search || (filters.runKind && filters.runKind !== "all")
               ? "Try widening filters: clear run kind, lifecycle status, or search to see the full merged tenant history."
-              : "Reconciliation runs appear here from recon jobs and from ingestion-triggered reconciliation. Each row shows execution state and summary counts for that run kind."
+              : "Runs are the heart of the Settler OS. Each run executes your reconciliation policy, matches data across sources, and generates audit-ready evidence."
           }
           hint={
             filters.status || filters.search || (filters.runKind && filters.runKind !== "all")
               ? undefined
-              : "Next: connect Stripe (or another source) under Integrations, then trigger a recon job — or explore the Playground with sample data."
+              : "Start with a Stripe integration or import a CSV to witness the deterministic matching engine in action. Use the Playground for risk-free policy testing."
           }
           action={
             filters.status || filters.search || (filters.runKind && filters.runKind !== "all")

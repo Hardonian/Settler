@@ -26,7 +26,8 @@ export const COMMERCIAL_OFFERS: CommercialOffer[] = [
     code: "oss",
     name: "Open Source",
     headlinePrice: "$0",
-    description: "Self-hosted engine for teams validating deterministic reconciliation flows.",
+    description:
+      "Self-hosted engine for developers building verifiable financial matching pipelines.",
     ctaLabel: "Run OSS",
     ctaHref: "/docs/getting-started",
     evidencePosture: "Local evidence artifacts and replay traces",
@@ -40,7 +41,7 @@ export const COMMERCIAL_OFFERS: CommercialOffer[] = [
     headlinePrice: `$${planConfigs.growth.monthlyPrice.toLocaleString()}`,
     period: "/mo",
     description:
-      "Usage-based control plane with metered reconciliation volume and exception supervision.",
+      "The scalable control plane for modern finance. Metered volume, hosted evidence, and exception triage.",
     ctaLabel: "Start Cloud",
     ctaHref: "/signup",
     evidencePosture: "Hosted run evidence, replay detail, and usage telemetry",
@@ -54,7 +55,7 @@ export const COMMERCIAL_OFFERS: CommercialOffer[] = [
     headlinePrice: `$${planConfigs.scale.monthlyPrice.toLocaleString()}+`,
     period: "/mo",
     description:
-      "Operator-assisted reconciliation operations: onboarding, exception triage, monthly close, and audit packet prep.",
+      "White-glove reconciliation operations. We handle the runs, exceptions, and audit packet preparation.",
     ctaLabel: "See what's included",
     ctaHref: "/managed",
     evidencePosture: "Shared operator proofpacks, escalation ledger, and monthly close evidence",
@@ -67,7 +68,7 @@ export const COMMERCIAL_OFFERS: CommercialOffer[] = [
     name: "Enterprise Dedicated",
     headlinePrice: "Custom",
     description:
-      "Dedicated/VPC/on-prem deployment with contractual controls and custom policy envelope.",
+      "The ultimate governance layer. Dedicated VPC deployment, custom retention, and audit-ready evidence controls.",
     ctaLabel: "Contact Enterprise",
     ctaHref: "/contact",
     evidencePosture: "Audit export controls, retention controls, and architecture review",

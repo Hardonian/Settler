@@ -339,8 +339,8 @@ export default function ExceptionsPage() {
           }
           hint={
             runId
-              ? "If this is your first run, that can mean the workflow completed cleanly. Open run detail or proof surfaces next to confirm what was reconciled and why."
-              : "Exceptions appear when reconciliation runs detect mismatches, timing differences, or missing transactions. If you have not completed a first run yet, use onboarding to connect data or open the run workspace."
+              ? "A clean run is the goal. Use the Proof Explorer or Audit Trail to verify the deterministic matching logic and ensure 100% evidence coverage."
+              : "Settler flags mismatches, timing gaps, and missing transactions as exceptions. If your queue is empty, verify your adapter connections or initiate a new reconciliation run."
           }
           action={
             filters.status || filters.severity || filters.type || filters.search
