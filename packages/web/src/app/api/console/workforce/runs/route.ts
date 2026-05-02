@@ -5,7 +5,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withSecurity } from "@/lib/middleware/api-security";
 import { prisma } from "@/shared/db/prismaClient";
-import type { WorkerRun } from "@prisma/client";
 import { gateConsoleTenant } from "../_shared";
 
 export const dynamic = "force-dynamic";
@@ -27,7 +26,7 @@ export const GET = withSecurity(
       take: limit,
     });
 
-    const data = rows.map((row: WorkerRun) => ({
+    const data = rows.map((row: any) => ({
       id: row.id,
       tenantId: row.tenantId,
       workerKey: row.workerKey,

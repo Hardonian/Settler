@@ -10,9 +10,15 @@ export type ReconStrategy = "deterministic" | "fuzzy" | "ml_based" | "hybrid";
 
 export interface ValidationRule {
   field: string;
-  operator: "equals" | "not_equals" | "greater_than" | "less_than" | "contains" | "regex";
-  value: unknown;
+  operator?: "equals" | "not_equals" | "greater_than" | "less_than" | "contains" | "regex";
+  value?: unknown;
   severity?: "warning" | "error";
+  /** Whether the field is required to be present and non-empty */
+  required?: boolean;
+  /** Expected data type for the field value */
+  type?: "string" | "number" | "date" | "boolean";
+  /** Regex pattern to validate field value against */
+  pattern?: string;
 }
 
 export interface ReconJobInput {
