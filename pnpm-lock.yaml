@@ -775,6 +775,12 @@ importers:
 
   packages/sdk-java: {}
 
+  packages/sdk-js:
+    devDependencies:
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
   packages/support-intake:
     dependencies:
       '@prisma/client':
@@ -912,7 +918,7 @@ importers:
         version: 6.1.0(@types/react@18.3.28)(react@18.3.1)(xstate@5.30.0)
       autoprefixer:
         specifier: ^10.5.0
-        version: 10.5.0(postcss@8.5.9)
+        version: 10.5.0(postcss@8.5.13)
       bcrypt:
         specifier: ^6.0.0
         version: 6.0.0
@@ -950,8 +956,8 @@ importers:
         specifier: ^4.28.0
         version: 4.104.0(ws@8.20.0)(zod@4.3.6)
       postcss:
-        specifier: ^8.5.9
-        version: 8.5.9
+        specifier: ^8.5.10
+        version: 8.5.13
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -8361,6 +8367,11 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
+  nanoid@3.3.12:
+    resolution: {integrity: sha512-ZB9RH/39qpq5Vu6Y+NmUaFhQR6pp+M2Xt76XBnEwDaGcVAqhlvxrl3B2bKS5D3NH3QR76v3aSrKaF/Kiy7lEtQ==}
+    engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
+    hasBin: true
+
   nanotimer@0.3.14:
     resolution: {integrity: sha512-NpKXdP6ZLwZcODvDeyfoDBVoncbrgvC12txO3F4l9BxMycQjZD29AnasGAy7uSi3dcsTGnGn6/zzvQRwbjS4uw==}
 
@@ -8887,8 +8898,8 @@ packages:
     resolution: {integrity: sha512-PS08Iboia9mts/2ygV3eLpY5ghnUcfLV/EXTOW1E2qYxJKGGBUtNjN76FYHnMs36RmARn41bC0AZmn+rR0OVpQ==}
     engines: {node: ^10 || ^12 || >=14}
 
-  postcss@8.5.9:
-    resolution: {integrity: sha512-7a70Nsot+EMX9fFU3064K/kdHWZqGVY+BADLyXc8Dfv+mTLLVl6JzJpPaCZ2kQL9gIJvKXSLMHhqdRRjwQeFtw==}
+  postcss@8.5.13:
+    resolution: {integrity: sha512-qif0+jGGZoLWdHey3UFHHWP0H7Gbmsk8T5VEqyYFbWqPr1XqvLGBbk/sl8V5exGmcYJklJOhOQq1pV9IcsiFag==}
     engines: {node: ^10 || ^12 || >=14}
 
   postgres-array@2.0.0:
@@ -10185,6 +10196,7 @@ packages:
 
   uuid@10.0.0:
     resolution: {integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==}
+    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
   uuid@11.1.0:
@@ -10197,6 +10209,7 @@ packages:
 
   uuid@8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
+    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
   v8-to-istanbul@9.3.0:
@@ -16040,7 +16053,7 @@ snapshots:
       '@vue/shared': 3.5.30
       estree-walker: 2.0.2
       magic-string: 0.30.21
-      postcss: 8.5.9
+      postcss: 8.5.13
       source-map-js: 1.2.1
 
   '@vue/compiler-ssr@3.5.30':
@@ -16467,13 +16480,13 @@ snapshots:
 
   asynckit@0.4.0: {}
 
-  autoprefixer@10.5.0(postcss@8.5.9):
+  autoprefixer@10.5.0(postcss@8.5.13):
     dependencies:
       browserslist: 4.28.2
       caniuse-lite: 1.0.30001788
       fraction.js: 5.3.4
       picocolors: 1.1.1
-      postcss: 8.5.9
+      postcss: 8.5.13
       postcss-value-parser: 4.2.0
 
   available-typed-arrays@1.0.7:
@@ -17117,7 +17130,7 @@ snapshots:
       dom-serializer: 2.0.0
       domhandler: 5.0.3
       htmlparser2: 8.0.2
-      postcss: 8.5.9
+      postcss: 8.5.13
       postcss-media-query-parser: 0.2.3
 
   cron-parser@4.9.0:
@@ -17377,11 +17390,11 @@ snapshots:
     dependencies:
       node-source-walk: 7.0.1
 
-  detective-postcss@7.0.1(postcss@8.5.9):
+  detective-postcss@7.0.1(postcss@8.5.13):
     dependencies:
       is-url: 1.2.4
-      postcss: 8.5.9
-      postcss-values-parser: 6.0.2(postcss@8.5.9)
+      postcss: 8.5.13
+      postcss-values-parser: 6.0.2(postcss@8.5.13)
 
   detective-sass@6.0.1:
     dependencies:
@@ -20469,6 +20482,8 @@ snapshots:
 
   nanoid@3.3.11: {}
 
+  nanoid@3.3.12: {}
+
   nanotimer@0.3.14: {}
 
   napi-build-utils@2.0.0: {}
@@ -20937,32 +20952,32 @@ snapshots:
 
   postal-mime@2.7.4: {}
 
-  postcss-import@15.1.0(postcss@8.5.9):
+  postcss-import@15.1.0(postcss@8.5.13):
     dependencies:
-      postcss: 8.5.9
+      postcss: 8.5.13
       postcss-value-parser: 4.2.0
       read-cache: 1.0.0
       resolve: 1.22.11
 
-  postcss-js@4.1.0(postcss@8.5.9):
+  postcss-js@4.1.0(postcss@8.5.13):
     dependencies:
       camelcase-css: 2.0.1
-      postcss: 8.5.9
+      postcss: 8.5.13
 
-  postcss-load-config@6.0.1(jiti@1.21.7)(postcss@8.5.9)(tsx@4.21.0)(yaml@2.8.3):
+  postcss-load-config@6.0.1(jiti@1.21.7)(postcss@8.5.13)(tsx@4.21.0)(yaml@2.8.3):
     dependencies:
       lilconfig: 3.1.3
     optionalDependencies:
       jiti: 1.21.7
-      postcss: 8.5.9
+      postcss: 8.5.13
       tsx: 4.21.0
       yaml: 2.8.3
 
   postcss-media-query-parser@0.2.3: {}
 
-  postcss-nested@6.2.0(postcss@8.5.9):
+  postcss-nested@6.2.0(postcss@8.5.13):
     dependencies:
-      postcss: 8.5.9
+      postcss: 8.5.13
       postcss-selector-parser: 6.1.2
 
   postcss-selector-parser@6.1.2:
@@ -20972,22 +20987,22 @@ snapshots:
 
   postcss-value-parser@4.2.0: {}
 
-  postcss-values-parser@6.0.2(postcss@8.5.9):
+  postcss-values-parser@6.0.2(postcss@8.5.13):
     dependencies:
       color-name: 1.1.4
       is-url-superb: 4.0.0
-      postcss: 8.5.9
+      postcss: 8.5.13
       quote-unquote: 1.0.0
 
   postcss@8.4.31:
     dependencies:
-      nanoid: 3.3.11
+      nanoid: 3.3.12
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  postcss@8.5.9:
+  postcss@8.5.13:
     dependencies:
-      nanoid: 3.3.11
+      nanoid: 3.3.12
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
@@ -21029,7 +21044,7 @@ snapshots:
       detective-amd: 6.0.1
       detective-cjs: 6.1.0
       detective-es6: 5.0.1
-      detective-postcss: 7.0.1(postcss@8.5.9)
+      detective-postcss: 7.0.1(postcss@8.5.13)
       detective-sass: 6.0.1
       detective-scss: 5.0.1
       detective-stylus: 5.0.1
@@ -21037,7 +21052,7 @@ snapshots:
       detective-vue2: 2.2.0(typescript@5.9.3)
       module-definition: 6.0.1
       node-source-walk: 7.0.1
-      postcss: 8.5.9
+      postcss: 8.5.13
       typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
@@ -22053,11 +22068,11 @@ snapshots:
       normalize-path: 3.0.0
       object-hash: 3.0.0
       picocolors: 1.1.1
-      postcss: 8.5.9
-      postcss-import: 15.1.0(postcss@8.5.9)
-      postcss-js: 4.1.0(postcss@8.5.9)
-      postcss-load-config: 6.0.1(jiti@1.21.7)(postcss@8.5.9)(tsx@4.21.0)(yaml@2.8.3)
-      postcss-nested: 6.2.0(postcss@8.5.9)
+      postcss: 8.5.13
+      postcss-import: 15.1.0(postcss@8.5.13)
+      postcss-js: 4.1.0(postcss@8.5.13)
+      postcss-load-config: 6.0.1(jiti@1.21.7)(postcss@8.5.13)(tsx@4.21.0)(yaml@2.8.3)
+      postcss-nested: 6.2.0(postcss@8.5.13)
       postcss-selector-parser: 6.1.2
       resolve: 1.22.11
       sucrase: 3.35.1
@@ -22583,7 +22598,7 @@ snapshots:
   vite@5.4.21(@types/node@20.19.37):
     dependencies:
       esbuild: 0.25.12
-      postcss: 8.5.9
+      postcss: 8.5.13
       rollup: 4.59.0
     optionalDependencies:
       '@types/node': 20.19.37
@@ -22592,7 +22607,7 @@ snapshots:
   vite@5.4.21(@types/node@24.12.2):
     dependencies:
       esbuild: 0.25.12
-      postcss: 8.5.9
+      postcss: 8.5.13
       rollup: 4.59.0
     optionalDependencies:
       '@types/node': 24.12.2
