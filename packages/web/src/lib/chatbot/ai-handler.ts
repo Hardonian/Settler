@@ -202,34 +202,46 @@ function generateRuleBasedResponse(
 
   // Common patterns
   const patterns: Array<{ regex: RegExp; response: string; confidence: number }> = [
-    [
-      /api\s*key|authentication|auth/,
-      "API keys are in Console → API Keys. Use in Authorization header.",
-      0.9,
-    ],
-    [
-      /billing|pay|price|pricing|plan/,
-      "Check /pricing for plans. Starter $99/mo, Growth $299/mo.",
-      0.8,
-    ],
-    [
-      /reconcil|transform|match/,
-      "Reconciliation has 3 steps: Load → Transform → Match. Check /docs.",
-      0.8,
-    ],
-    [
-      /stripe|xero|amazon|integration/,
-      "We support 50+ integrations. Add in Console → Connectors.",
-      0.7,
-    ],
-    [
-      /error|problem|issue|bug|broken/,
-      "Check /status for outages. Common errors in /docs/troubleshooting.",
-      0.7,
-    ],
-    [/trial|free|start/i, "Free trial: 14 days, 1000 reconciliations. No credit card.", 0.8],
-    [/help|support|contact/i, "Reply here or email support@settler.dev for help.", 0.5],
-    [/refund|cancel|terminate/i, "I can help with that. Let me connect you to billing.", 0.3],
+    {
+      regex: /api\s*key|authentication|auth/,
+      response: "API keys are in Console → API Keys. Use in Authorization header.",
+      confidence: 0.9,
+    },
+    {
+      regex: /billing|pay|price|pricing|plan/,
+      response: "Check /pricing for plans. Starter $99/mo, Growth $299/mo.",
+      confidence: 0.8,
+    },
+    {
+      regex: /reconcil|transform|match/,
+      response: "Reconciliation has 3 steps: Load → Transform → Match. Check /docs.",
+      confidence: 0.8,
+    },
+    {
+      regex: /stripe|xero|amazon|integration/,
+      response: "We support 50+ integrations. Add in Console → Connectors.",
+      confidence: 0.7,
+    },
+    {
+      regex: /error|problem|issue|bug|broken/,
+      response: "Check /status for outages. Common errors in /docs/troubleshooting.",
+      confidence: 0.7,
+    },
+    {
+      regex: /trial|free|start/i,
+      response: "Free trial: 14 days, 1000 reconciliations. No credit card.",
+      confidence: 0.8,
+    },
+    {
+      regex: /help|support|contact/i,
+      response: "Reply here or email support@settler.dev for help.",
+      confidence: 0.5,
+    },
+    {
+      regex: /refund|cancel|terminate/i,
+      response: "I can help with that. Let me connect you to billing.",
+      confidence: 0.3,
+    },
   ];
 
   for (const { regex, response, confidence } of patterns) {
@@ -292,7 +304,7 @@ function generateSuggestions(message: string, response: string): string[] {
  * Database helpers
  */
 async function getConversationHistory(conversationId: string): Promise<ChatMessage[]> {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data } = await supabase
     .from("chatbot_messages")
@@ -301,7 +313,10 @@ async function getConversationHistory(conversationId: string): Promise<ChatMessa
     .order("created_at", { ascending: true })
     .limit(10);
 
-  return (data || []).map((d) => ({ role: d.role as "user" | "assistant", content: d.content }));
+  return (data || []).map((d: any) => ({
+    role: d.role as "user" | "assistant",
+    content: d.content,
+  }));
 }
 
 async function saveMessage(
@@ -309,7 +324,7 @@ async function saveMessage(
   role: "user" | "assistant",
   content: string
 ): Promise<void> {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   await supabase.from("chatbot_messages").insert({
     conversation_id: conversationId,
