@@ -756,14 +756,10 @@ router.post(
       });
 
       if (updateResult.count !== 1) {
-        throw new NotFoundErrod,
-      });
-    }
-  }
-);
+        throw new NotFoundError("Exception not found", "exception", id);
+      }
 
-/**
- * POST /api/exceptions/bulk-resoo("Exception note added", { tenantId, exceptionId: id, addedBy: userId });
+      logInfo("Exception note added", { tenantId, exceptionId: id, addedBy: userId });
 
       return res.json({
         data: { id, notes },
@@ -787,7 +783,20 @@ router.post(
   enforceFreezeState(),
   validateRequest(bulkResolveSchema),
   async (req: ExceptionRequest, res: Response) => {
-    try {  requestId: req.requestId,
+    try {
+      const { exceptionIds, resolution, resolutionReason, notes } = req.body;
+      const userId = req.userId!;
+      const tenantId = req.tenantId!;
+
+      const result = await exceptionReviewService.bulkResolveExceptions({
+        tenantId,
+        userId,
+        exceptionIds,
+        resolution,
+        resolutionReason,
+        notes,
+        traceId: req.traceId,
+        requestId: req.requestId,
         ipAddress: req.ip,
         userAgent:
           typeof req.headers["user-agent"] === "string" ? req.headers["user-agent"] : undefined,
@@ -932,68 +941,6 @@ router.post(
 
       return res.json({
         data: { updated: updatedCount },
-        message: `Updated ${updatedCount} exceptions to ${status} successfully`,
-      });
-    } catch (error: unknown) {
-      return handleRouteError(res, error, "Failed to bulk update exception status", 500, {
-        userId: req.userId,
-      });
-    }
-  }
-);
-
-export { router as exceptionsRouter };
-});
-
-      return res.json({
-        data: { updated: updatedCount },
-        message: `Updated ${updatedCount} exceptions to ${status} successfully`,
-      });
-    } catch (error: unknown) {
-      return handleRouteError(res, error, "Failed to bulk update exception status", 500, {
-        userId: req.userId,
-      });
-    }
-  }
-);
-
-export { router as exceptionsRouter };
--status
- * Bulk update exception status
- */
-router.post(
-  "/exceptions/bulk-status",
-  requirePermission(Permission.REPORTS_EXPORT),
-  enforceFreezeState(),
-  validateRequest(bulkStatusSchema),
-  async (req: ExceptionRequest, res: Response) => {
-    try {
-      const { exceptionIds, status, notes } = req.body;
-      const userId = req.userId!;
-      const tenantId = req.tenantId!;
-
-      const updatedCount = await exceptionReviewService.bulkUpdateExceptionStatus({
-        tenantId,
-        userId,
-        exceptionIds,
-        status,
-        notes,
-      });
-
-      return res.json({
-        data: { updated: updatedCount },
-        message: `Updated ${updatedCount} exceptions to ${status} successfully`,
-      });
-    } catch (error: unknown) {
-      return handleRouteError(res, error, "Failed to bulk update exception status", 500, {
-        userId: req.userId,
-      });
-    }
-  }
-);
-
-export { router as exceptionsRouter };
- updated: updatedCount },
         message: `Updated ${updatedCount} exceptions to ${status} successfully`,
       });
     } catch (error: unknown) {
