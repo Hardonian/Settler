@@ -6,9 +6,7 @@
 
 import { BaseAgent } from "./orchestrator";
 import { logInfo, logError, logWarn } from "../../utils/logger";
-import { Transaction } from "@settler/types";
 import { prisma } from "../../infrastructure/db/prisma";
-import { Prisma } from "@prisma/client";
 
 export interface Anomaly {
   id: string;
@@ -156,17 +154,20 @@ export class AnomalyDetectorAgent extends BaseAgent {
       });
 
       const jobsByConnector = recentJobs.reduce(
-        (acc: any, job: any) => {
-          if (!acc[job.connectorId]) acc[job.connectorId] = [];
-          acc[job.connectorId].push(job);
+        (acc: Record<string, typeof recentJobs>, job: any) => {
+          const connectorId = job.connectorId || "unknown";
+          if (!acc[connectorId]) acc[connectorId] = [];
+          acc[connectorId]!.push(job);
           return acc;
         },
         {} as Record<string, typeof recentJobs>
       );
 
-      for (const [connectorId, jobs] of Object.entries(jobsByConnector)) {
-        if (jobs.length < 2) continue;
-        jobs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      for (const [connectorId, jobs] of Object.entries(jobsByConnector) as [string, any[]][]) {
+        if (!jobs || jobs.length < 2) continue;
+        jobs.sort(
+          (a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
         const [latest, previous] = jobs;
         if (latest.accuracy && previous.accuracy) {
           const drop = previous.accuracy - latest.accuracy;
@@ -337,7 +338,7 @@ export class AnomalyDetectorAgent extends BaseAgent {
       const missingDataCount = await prisma.normalizedTransaction.count({
         where: {
           OR: [
-            { amount: { equals: Prisma.Decimal.from(0) } }, // Decimal check
+            { amount: { equals: 0 } }, // Decimal check
             { date: null },
             { description: null },
           ],
@@ -357,9 +358,12 @@ export class AnomalyDetectorAgent extends BaseAgent {
           recommendedAction: "Review data import pipeline",
         });
       }
-      const duplicates = await prisma.$queryRaw<
-        Array<{ count: bigint }>
-      >`SELECT COUNT(*) as count FROM "normalized_transactions" WHERE "createdAt" >= ${new Date(Date.now() - 24 * 60 * 60 * 1000)} GROUP BY amount, date, description HAVING COUNT(*) > 1 LIMIT 10`;
+      const duplicates =
+        (await prisma.$queryRaw`SELECT COUNT(*) as count FROM "normalized_transactions" WHERE "createdAt" >= ${new Date(
+          Date.now() - 24 * 60 * 60 * 1000
+        )} GROUP BY amount, date, description HAVING COUNT(*) > 1 LIMIT 10`) as Array<{
+          count: bigint;
+        }>;
       if (duplicates.length > 0) {
         issues.push({
           id: `dq-dup-${Date.now()}`,
@@ -386,9 +390,10 @@ export class AnomalyDetectorAgent extends BaseAgent {
   private async detectBusinessLogicAnomalies(): Promise<Anomaly[]> {
     const anomalies: Anomaly[] = [];
     try {
-      const stats = await prisma.$queryRaw<
-        Array<{ avg: number; std: number }>
-      >`SELECT AVG(ABS(amount::numeric)) as avg, STDDEV(ABS(amount::numeric)) as std FROM "normalized_transactions" WHERE "createdAt" >= ${new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)}`;
+      const stats =
+        (await prisma.$queryRaw`SELECT AVG(ABS(amount::numeric)) as avg, STDDEV(ABS(amount::numeric)) as std FROM "normalized_transactions" WHERE "createdAt" >= ${new Date(
+          Date.now() - 30 * 24 * 60 * 60 * 1000
+        )}`) as Array<{ avg: number; std: number }>;
       if (stats[0]?.avg && stats[0]?.std) {
         const threshold = stats[0].avg + 3 * Number(stats[0].std);
         const outliers = await prisma.normalizedTransaction.findMany({
@@ -408,7 +413,10 @@ export class AnomalyDetectorAgent extends BaseAgent {
             description: `${outliers.length} transactions > 3σ from mean`,
             detectedAt: new Date(),
             evidence: {
-              outliers: outliers.map((o) => ({ id: o.id, amount: o.amount })),
+              outliers: outliers.map((o: any) => ({
+                id: o.id,
+                amount: o.amount,
+              })),
               threshold,
               mean: stats[0].avg,
             },
@@ -417,9 +425,13 @@ export class AnomalyDetectorAgent extends BaseAgent {
           });
         }
       }
-      const rapid = await prisma.$queryRaw<
-        Array<{ tenantId: string; count: bigint }>
-      >`SELECT "tenantId", COUNT(*) as count FROM "normalized_transactions" WHERE "createdAt" >= ${new Date(Date.now() - 1 * 60 * 60 * 1000)} GROUP BY "tenantId", amount HAVING COUNT(*) > 5 LIMIT 5`;
+      const rapid =
+        (await prisma.$queryRaw`SELECT "tenantId", COUNT(*) as count FROM "normalized_transactions" WHERE "createdAt" >= ${new Date(
+          Date.now() - 1 * 60 * 60 * 1000
+        )} GROUP BY "tenantId", amount HAVING COUNT(*) > 5 LIMIT 5`) as Array<{
+          tenantId: string;
+          count: bigint;
+        }>;
       if (rapid.length > 0) {
         anomalies.push({
           id: `biz-fraud-${Date.now()}`,
@@ -447,7 +459,7 @@ export class AnomalyDetectorAgent extends BaseAgent {
     try {
       const dbRules = await prisma.detectionRule.findMany({ where: { enabled: true } });
       if (dbRules.length > 0) {
-        return dbRules.map((r) => ({
+        return dbRules.map((r: any) => ({
           id: r.id,
           type: r.type,
           condition: r.condition,
