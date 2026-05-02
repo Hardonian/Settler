@@ -27,7 +27,7 @@ test("secret scan ignores allowlisted docs but fails on inline source leaks", as
   );
   writeFileSync(
     join(repoRoot, "src", "leak.ts"),
-    'export const apiKey = "mock_secret_for_testing_only_no_sk";\n'
+    'export const stripeKey = "sk_live_live_21_AAAAAAAAAAAAAAAA1234";\n'
   );
 
   const report = await new SecurityAgent({ repoRoot }).scan("secrets");

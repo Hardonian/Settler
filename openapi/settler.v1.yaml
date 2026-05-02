@@ -1,0 +1,106 @@
+openapi: 3.1.0
+info:
+  title: Settler Reconciliation API
+  description: Enterprise-grade API for automated reconciliation, exception management, and proofpack generation.
+  version: 1.0.0
+servers:
+  - url: https://api.settler.dev/api/v1
+    description: Production API
+security:
+  - bearerAuth: []
+paths:
+  /runs:
+    post:
+      summary: Create a new reconciliation run
+      responses:
+        "201":
+          description: Run created
+  /runs/{id}:
+    get:
+      summary: Get a run by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Run details
+  /runs/{id}/exceptions:
+    get:
+      summary: Get exceptions for a run
+      responses:
+        "200":
+          description: List of exceptions
+  /runs/{id}/adjudications:
+    post:
+      summary: Record an adjudication decision
+      responses:
+        "201":
+          description: Adjudication recorded
+  /runs/{id}/proofpack:
+    get:
+      summary: Get audit-ready proofpack
+      responses:
+        "200":
+          description: Proofpack data
+  /runs/{id}/delta:
+    get:
+      summary: Get changes/deltas
+      responses:
+        "200":
+          description: Delta details
+  /webhooks/test:
+    post:
+      summary: Test a webhook endpoint
+      responses:
+        "200":
+          description: Webhook test successful
+  /usage:
+    get:
+      summary: Get usage metering data
+      responses:
+        "200":
+          description: Usage details
+  /templates:
+    get:
+      summary: List managed reconciliation templates
+      responses:
+        "200":
+          description: Templates list
+  /templates/{id}/run:
+    post:
+      summary: Run a specific template
+      responses:
+        "201":
+          description: Template run started
+  /webhooks/events:
+    get:
+      summary: List webhook events
+      responses:
+        "200":
+          description: List of events
+  /webhooks/events/{id}/replay:
+    post:
+      summary: Replay a webhook event
+      responses:
+        "200":
+          description: Event replayed
+  /status:
+    get:
+      summary: API health and status
+      responses:
+        "200":
+          description: Status information
+  /audit-exports:
+    get:
+      summary: List audit exports
+      responses:
+        "200":
+          description: Audit exports list
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
