@@ -29,7 +29,7 @@ interface ChatRequest {
   };
 }
 
-interface ChatResponse {
+export interface ChatResponse {
   response: string;
   conversationId: string;
   shouldEscalate?: boolean;

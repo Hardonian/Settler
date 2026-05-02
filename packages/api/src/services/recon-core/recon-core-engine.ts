@@ -707,7 +707,7 @@ export class ReconCoreEngine {
         // Required check
         if (rule.required && (value === undefined || value === null || value === "")) {
           errors.push({
-            record: record.id || "unknown",
+            record: String(record.id ?? "unknown"),
             field: rule.field,
             message: `${rule.field} is required`,
           });
@@ -718,7 +718,7 @@ export class ReconCoreEngine {
         // Type validation
         if (rule.type === "number" && typeof value !== "number") {
           errors.push({
-            record: record.id || "unknown",
+            record: String(record.id ?? "unknown"),
             field: rule.field,
             message: `${rule.field} must be a number`,
           });
@@ -744,7 +744,7 @@ export class ReconCoreEngine {
     }
 
     if (errors.length > 0) {
-      logWarn(`Validation failed with ${errors.length} errors`, errors);
+      logWarn(`Validation failed with ${errors.length} errors`, { errors });
     }
 
     return allData;
@@ -771,7 +771,7 @@ export class ReconCoreEngine {
 
     // Apply field mappings from template
     const fieldMappings = (template.fieldMappings || {}) as Record<string, string>;
-    const calculatedFields = (template.calculatedFields || {}) as Record<string, string>;
+    const calculatedFields = ((template as any).calculatedFields || {}) as Record<string, string>;
 
     return data.map((record) => {
       const mappedRecord: ReconDataRecord = { ...record };
