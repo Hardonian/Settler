@@ -10,6 +10,8 @@
 
 import { BaseAgent } from "./orchestrator";
 import { logError, logInfo } from "../../utils/logger";
+import { prisma } from "../../infrastructure/db/prisma";
+import { Prisma } from "@prisma/client";
 
 export interface OptimizationOpportunity {
   id: string;
@@ -136,7 +138,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
 
     try {
       // Query pg_stat_statements for slow queries if extension is available
-      const slowQueries = await this.prisma.$queryRaw<
+      const slowQueries = await prisma.$queryRaw<
         Array<{
           query: string;
           mean_exec_time: number;
@@ -184,7 +186,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
       // pg_stat_statements not available, fall back to query log analysis
       logInfo("pg_stat_statements not available, using query log analysis");
 
-      const recentJobs = await this.prisma.reconJob.findMany({
+      const recentJobs = await prisma.reconJob.findMany({
         where: { createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } },
         select: { id: true, executionTime: true },
         orderBy: { executionTime: "desc" },
@@ -226,7 +228,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
 
     // 1. Analyze AI usage patterns
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const aiCalls = await this.prisma.aICallLog.findMany({
+    const aiCalls = await prisma.aICallLog.findMany({
       where: { createdAt: { gte: thirtyDaysAgo } },
       select: { model: true, tokens: true, cost: true },
     });
@@ -266,7 +268,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
     }
 
     // 2. Check for unused reconciliation jobs
-    const staleJobs = await this.prisma.reconJob.count({
+    const staleJobs = await prisma.reconJob.count({
       where: {
         status: "active",
         lastRunAt: { lt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000) },
@@ -295,7 +297,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
     }
 
     // 3. Check for high-volume unmapped data
-    const unmappedCount = await this.prisma.unmappedRecord.count({
+    const unmappedCount = await prisma.unmappedRecord.count({
       where: { createdAt: { gte: thirtyDaysAgo } },
     });
 
@@ -330,7 +332,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
     const opportunities: OptimizationOpportunity[] = [];
 
     // 1. Check for error-prone connectors
-    const errorRates = await this.prisma.reconResult.groupBy({
+    const errorRates = await prisma.reconResult.groupBy({
       by: ["connectorId"],
       where: {
         createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
@@ -339,7 +341,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
       _count: { id: true },
     });
 
-    const totalRuns = await this.prisma.reconResult.groupBy({
+    const totalRuns = await prisma.reconResult.groupBy({
       by: ["connectorId"],
       where: {
         createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
@@ -377,7 +379,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
     }
 
     // 2. Check for memory-intensive jobs
-    const largeJobs = await this.prisma.reconJob.findMany({
+    const largeJobs = await prisma.reconJob.findMany({
       where: {
         status: "completed",
         executionTime: { gt: 300000 }, // > 5 minutes
@@ -419,11 +421,11 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
     const opportunities: OptimizationOpportunity[] = [];
 
     // 1. Check queue depth
-    const pendingJobs = await this.prisma.reconJob.count({
+    const pendingJobs = await prisma.reconJob.count({
       where: { status: "pending" },
     });
 
-    const processingJobs = await this.prisma.reconJob.count({
+    const processingJobs = await prisma.reconJob.count({
       where: { status: "processing" },
     });
 
@@ -452,7 +454,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
     }
 
     // 2. Check concurrent user capacity
-    const activeUsers24h = await this.prisma.user.count({
+    const activeUsers24h = await prisma.user.count({
       where: { lastLoginAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } },
     });
 
@@ -490,7 +492,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
       switch (opportunity.type) {
         case "query":
           // Log the slow query for manual review
-          await this.prisma.optimizationLog.create({
+          await prisma.optimizationLog.create({
             data: {
               type: "query_optimization",
               description: opportunity.description,
@@ -517,7 +519,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
           // Enable optimizations for performance issues
           if (opportunity.proposedChange?.enable_streaming) {
             // Update job config to use streaming
-            await this.prisma.globalConfig.upsert({
+            await prisma.globalConfig.upsert({
               where: { key: "enable_streaming" },
               update: { value: "true", updatedAt: new Date() },
               create: {
@@ -535,7 +537,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
           if (opportunity.proposedChange?.scale_workers) {
             const targetWorkers = opportunity.proposedChange.targetWorkers as number;
             // Update worker pool size
-            await this.prisma.globalConfig.upsert({
+            await prisma.globalConfig.upsert({
               where: { key: "worker_pool_size" },
               update: { value: String(targetWorkers), updatedAt: new Date() },
               create: {
@@ -550,7 +552,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
       }
 
       // Log the optimization
-      await this.prisma.optimizationLog.create({
+      await prisma.optimizationLog.create({
         data: {
           type: opportunity.type,
           optimizationId: opportunity.id,
