@@ -27,7 +27,7 @@
   "dependencies": {
     "@types/node": "^24.0.0",
     "typescript": "^5.3.3",
-    "uuid": "^13.0.0"
+    "uuid": "^14.0.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.11",
