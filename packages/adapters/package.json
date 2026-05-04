@@ -25,10 +25,10 @@
   },
   "dependencies": {
     "@settler/types": "workspace:*",
-    "@supabase/supabase-js": "^2.103.0",
+    "@supabase/supabase-js": "^2.105.1",
     "zod": "^3.22.4",
     "stripe": "^14.21.0",
-    "resend": "^6.11.0"
+    "resend": "^6.12.2"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
