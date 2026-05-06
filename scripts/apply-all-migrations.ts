@@ -174,19 +174,19 @@ async function verifyDatabaseState(client: Client): Promise<void> {
   ];
 
   console.log("\n📊 Tables:");
-  for (const table of criticalTables) {
-    const result = await client.query(
-      `
-      SELECT EXISTS (
-        SELECT FROM information_schema.tables 
-        WHERE table_schema = 'public' 
-        AND table_name = $1
-      );
+  const tableResult = await client.query(
+    `
+    SELECT table_name
+    FROM information_schema.tables
+    WHERE table_schema = 'public'
+    AND table_name = ANY($1)
     `,
-      [table]
-    );
+    [criticalTables]
+  );
 
-    const exists = result.rows[0].exists;
+  const existingTables = new Set(tableResult.rows.map((row) => row.table_name));
+  for (const table of criticalTables) {
+    const exists = existingTables.has(table);
     console.log(`  ${exists ? "✅" : "❌"} ${table}`);
   }
 
@@ -200,19 +200,19 @@ async function verifyDatabaseState(client: Client): Promise<void> {
   ];
 
   console.log("\n⚙️  Functions:");
-  for (const func of criticalFunctions) {
-    const result = await client.query(
-      `
-      SELECT EXISTS (
-        SELECT FROM information_schema.routines 
-        WHERE routine_schema = 'public' 
-        AND routine_name = $1
-      );
+  const funcResult = await client.query(
+    `
+    SELECT routine_name
+    FROM information_schema.routines
+    WHERE routine_schema = 'public'
+    AND routine_name = ANY($1)
     `,
-      [func]
-    );
+    [criticalFunctions]
+  );
 
-    const exists = result.rows[0].exists;
+  const existingFunctions = new Set(funcResult.rows.map((row) => row.routine_name));
+  for (const func of criticalFunctions) {
+    const exists = existingFunctions.has(func);
     console.log(`  ${exists ? "✅" : "❌"} ${func}()`);
   }
 
