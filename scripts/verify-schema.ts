@@ -117,56 +117,60 @@ async function verifySchema(): Promise<SchemaIssue[]> {
     }
 
     // Verify tables exist
-    for (const table of EXPECTED_TABLES) {
-      try {
-        // Try to query the table (this will fail if table doesn't exist)
-        const { error } = await supabase.from(table).select("*").limit(0);
+    await Promise.all(
+      EXPECTED_TABLES.map(async (table) => {
+        try {
+          // Try to query the table (this will fail if table doesn't exist)
+          const { error } = await supabase.from(table).select("*").limit(0);
 
-        if (error) {
-          if (error.code === "42P01" || error.message.includes("does not exist")) {
-            issues.push({
-              type: "missing_table",
-              severity: "error",
-              message: `Table "${table}" does not exist in database`,
-              table,
-            });
-          } else if (error.code === "42501") {
-            // RLS might be blocking - this is ok for verification
-            // Table exists but we can't access it without proper auth
+          if (error) {
+            if (error.code === "42P01" || error.message.includes("does not exist")) {
+              issues.push({
+                type: "missing_table",
+                severity: "error",
+                message: `Table "${table}" does not exist in database`,
+                table,
+              });
+            } else if (error.code === "42501") {
+              // RLS might be blocking - this is ok for verification
+              // Table exists but we can't access it without proper auth
+            }
           }
+        } catch (error) {
+          issues.push({
+            type: "missing_table",
+            severity: "error",
+            message: `Failed to verify table "${table}": ${error instanceof Error ? error.message : "Unknown error"}`,
+            table,
+          });
         }
-      } catch (error) {
-        issues.push({
-          type: "missing_table",
-          severity: "error",
-          message: `Failed to verify table "${table}": ${error instanceof Error ? error.message : "Unknown error"}`,
-          table,
-        });
-      }
-    }
+      })
+    );
 
     // Verify critical indexes (using Prisma introspection)
     try {
       // Note: Prisma doesn't expose index information directly
       // We'll check by attempting queries that should use indexes
-      for (const index of CRITICAL_INDEXES) {
-        try {
-          // This is a simplified check - in production you'd query pg_indexes
-          // For now, we'll just verify the table exists
-          const { error } = await supabase.from(index.table).select("*").limit(0);
-          if (error && error.code === "42P01") {
-            issues.push({
-              type: "missing_index",
-              severity: "warning",
-              message: `Table "${index.table}" missing - cannot verify index on ${index.columns.join(", ")}`,
-              table: index.table,
-              index: index.columns.join(", "),
-            });
+      await Promise.all(
+        CRITICAL_INDEXES.map(async (index) => {
+          try {
+            // This is a simplified check - in production you'd query pg_indexes
+            // For now, we'll just verify the table exists
+            const { error } = await supabase.from(index.table).select("*").limit(0);
+            if (error && error.code === "42P01") {
+              issues.push({
+                type: "missing_index",
+                severity: "warning",
+                message: `Table "${index.table}" missing - cannot verify index on ${index.columns.join(", ")}`,
+                table: index.table,
+                index: index.columns.join(", "),
+              });
+            }
+          } catch (error) {
+            // Index check failed - might be RLS or other issue
           }
-        } catch (error) {
-          // Index check failed - might be RLS or other issue
-        }
-      }
+        })
+      );
     } catch (error) {
       issues.push({
         type: "migration_drift",
