@@ -57,12 +57,17 @@ export class TemplateImprover {
       take: 100,
     });
 
-    for (const template of templates) {
+    if (templates.length === 0) return improvements;
+
+    // Execute jobs fetching concurrently, but keeping the take limit
+    const promises = templates.map(async (template) => {
       // Analyze usage patterns
       const jobs = await this.prisma.reconJob.findMany({
         where: { mappingTemplateId: template.id },
         take: 100,
       });
+
+      if (jobs.length === 0) return null;
 
       // If template has high failure rate, propose improvement
       const failures = await this.prisma.reconResult.findMany({
@@ -75,9 +80,9 @@ export class TemplateImprover {
 
       if (failures.length > 5) {
         const currentVersion = template.version ? String(template.version) : "1.0.0";
-        improvements.push({
+        return {
           templateId: template.id,
-          templateType: "mapping",
+          templateType: "mapping" as const,
           currentVersion,
           proposedVersion: this.incrementVersion(currentVersion),
           improvements: [
@@ -87,7 +92,15 @@ export class TemplateImprover {
           ],
           backwardCompatible: true,
           confidence: 0.8,
-        });
+        };
+      }
+      return null;
+    });
+
+    const results = await Promise.all(promises);
+    for (const result of results) {
+      if (result) {
+        improvements.push(result);
       }
     }
 
@@ -105,12 +118,16 @@ export class TemplateImprover {
       take: 100,
     });
 
-    for (const recipe of recipes) {
+    if (recipes.length === 0) return improvements;
+
+    const promises = recipes.map(async (recipe) => {
       // Analyze performance
       const jobs = await this.prisma.reconJob.findMany({
         where: { transformRecipeId: recipe.id },
         take: 100,
       });
+
+      if (jobs.length === 0) return null;
 
       // Check execution times
       const results = await this.prisma.reconResult.findMany({
@@ -137,9 +154,9 @@ export class TemplateImprover {
       if (avgDuration > 10000) {
         // > 10 seconds
         const currentVersion = recipe.version ? String(recipe.version) : "1.0.0";
-        improvements.push({
+        return {
           templateId: recipe.id,
-          templateType: "transform",
+          templateType: "transform" as const,
           currentVersion,
           proposedVersion: this.incrementVersion(currentVersion),
           improvements: [
@@ -149,8 +166,14 @@ export class TemplateImprover {
           ],
           backwardCompatible: true,
           confidence: 0.7,
-        });
+        };
       }
+      return null;
+    });
+
+    const results = await Promise.all(promises);
+    for (const result of results) {
+      if (result) improvements.push(result);
     }
 
     return improvements;
@@ -167,13 +190,14 @@ export class TemplateImprover {
       take: 100,
     });
 
-    for (const rule of rules) {
-      // Check if rule catches issues effectively
-      // Note: validationRules is a Json array field, so we check if rule.id is in the array
-      const allJobs = await this.prisma.reconJob.findMany({
-        select: { id: true, validationRules: true },
-      });
+    if (rules.length === 0) return improvements;
 
+    // Fetch all jobs once to avoid querying inside the loop
+    const allJobs = await this.prisma.reconJob.findMany({
+      select: { id: true, validationRules: true },
+    });
+
+    const promises = rules.map(async (rule) => {
       const jobs = allJobs.filter((job: { id: string; validationRules: unknown }) => {
         const rules = job.validationRules;
         if (Array.isArray(rules)) {
@@ -189,6 +213,8 @@ export class TemplateImprover {
         return false;
       });
 
+      if (jobs.length === 0) return null;
+
       // If rule never fails, it might be too lenient
       const results = await this.prisma.reconResult.findMany({
         where: {
@@ -200,9 +226,9 @@ export class TemplateImprover {
 
       if (results.length === 0 && jobs.length > 10) {
         // ValidationRule doesn't have a version field, use '1.0.0' as default
-        improvements.push({
+        return {
           templateId: rule.id,
-          templateType: "validation",
+          templateType: "validation" as const,
           currentVersion: "1.0.0",
           proposedVersion: this.incrementVersion("1.0.0"),
           improvements: [
@@ -212,8 +238,14 @@ export class TemplateImprover {
           ],
           backwardCompatible: true,
           confidence: 0.6,
-        });
+        };
       }
+      return null;
+    });
+
+    const results = await Promise.all(promises);
+    for (const result of results) {
+      if (result) improvements.push(result);
     }
 
     return improvements;
