@@ -72,6 +72,10 @@ const { PrismaClient } = require("@prisma/client") as {
 type PrismaQueryRaw = {
   $queryRaw<T = unknown>(query: TemplateStringsArray, ...values: unknown[]): Promise<T>;
   $queryRaw<T = unknown>(query: string, ...values: unknown[]): Promise<T>;
+  $executeRaw(
+    query: TemplateStringsArray | import("@prisma/client").Prisma.Sql,
+    ...values: unknown[]
+  ): Promise<number>;
 };
 
 // Prevent multiple instances in development
