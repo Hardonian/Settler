@@ -1,0 +1,3 @@
+## 2026-05-06 - N+1 Supabase Query in Loops
+**Learning:** In the ops-intelligence analytics (`generateCostInsights`), using `await supabase.from("subscriptions").select(...)` inside a tight loop over a large Map significantly degrades performance. Furthermore, failing to handle Supabase URL length limits (HTTP 414) when rewriting such loops using `.in(...)` array queries can cause unhandled silent fallbacks.
+**Action:** When extracting N+1 queries from loops using Supabase `.in(...)` operations, always chunk the candidate IDs array to avoid URL length constraints, and ensure failure states explicitly track the error to avoid processing regressions.
