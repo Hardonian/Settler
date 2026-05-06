@@ -88,11 +88,17 @@ export async function reconcileBillingAccount(
       where: { billingAccountId },
     });
 
+    // Create a map for O(1) lookups
+    const dbSubscriptionsMap = new Map<string, (typeof dbSubscriptions)[0]>();
+    for (const sub of dbSubscriptions) {
+      if (sub.stripeSubscriptionId) {
+        dbSubscriptionsMap.set(sub.stripeSubscriptionId, sub);
+      }
+    }
+
     // Sync each Stripe subscription
     for (const stripeSub of subscriptions.data) {
-      const dbSub = dbSubscriptions.find(
-        (s: (typeof dbSubscriptions)[0]) => s.stripeSubscriptionId === stripeSub.id
-      );
+      const dbSub = dbSubscriptionsMap.get(stripeSub.id);
 
       if (!dbSub) {
         // Subscription exists in Stripe but not in DB - create it
