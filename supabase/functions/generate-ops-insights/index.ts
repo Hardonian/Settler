@@ -37,7 +37,7 @@ serve(async (req) => {
     const insights = await generateInsightsInline(supabase, timeWindow);
 
     // Save insights to database
-    const savedInsights: Array<{ id: string }> = [];
+    const savedInsights: Array<{ id: string; insight: any }> = [];
 
     for (const insight of insights) {
       // Check if similar insight already exists (avoid duplicates)
@@ -65,7 +65,7 @@ serve(async (req) => {
           .single();
 
         if (updated) {
-          savedInsights.push({ id: updated.id });
+          savedInsights.push({ id: updated.id, insight });
         }
       } else {
         // Create new insight
@@ -88,15 +88,14 @@ serve(async (req) => {
           .single();
 
         if (inserted) {
-          savedInsights.push({ id: inserted.id });
+          savedInsights.push({ id: inserted.id, insight });
         }
       }
     }
 
     // Generate and save recommendations for each insight
     let recommendationsCount = 0;
-    for (const { id: insightId } of savedInsights) {
-      const insight = insights.find((i) => savedInsights.some((s) => s.id === insightId));
+    for (const { id: insightId, insight } of savedInsights) {
       if (!insight) continue;
 
       const recommendations = generateRecommendationsInline(insight);
