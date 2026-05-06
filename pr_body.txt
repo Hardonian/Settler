@@ -1,0 +1,10 @@
+🎯 **What:**
+Added a test suite for `verifyPlaidWebhook` in `packages/adapters/src/webhook-verification.ts` to ensure signature verification logic is solid and error handling is robust.
+
+📊 **Coverage:**
+- Happy path for valid signature.
+- Negative path for an invalid signature.
+- Error path for crypto module execution failures (e.g., when an invalid type is passed).
+
+✨ **Result:**
+`verifyPlaidWebhook` is now fully tested, preventing silent failures or regressions in webhook verification for Plaid interactions.
