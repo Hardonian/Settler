@@ -72,21 +72,28 @@ async function verifyRLS() {
   try {
     await pool.query("SELECT 1");
 
-    for (const table of criticalTables) {
-      const rlsCheck = await pool.query(
-        `SELECT tablename, rowsecurity FROM pg_tables WHERE schemaname = 'public' AND tablename = $1`,
-        [table]
-      );
-      if (rlsCheck.rows.length === 0) continue;
+    const rlsCheck = await pool.query(
+      `SELECT tablename, rowsecurity FROM pg_tables WHERE schemaname = 'public' AND tablename = ANY($1)`,
+      [criticalTables]
+    );
 
-      const policyCheck = await pool.query(
-        `SELECT COUNT(*)::int AS count FROM pg_policies WHERE schemaname = 'public' AND tablename = $1`,
-        [table]
-      );
+    const policyCheck = await pool.query(
+      `SELECT tablename, COUNT(*)::int AS count FROM pg_policies WHERE schemaname = 'public' AND tablename = ANY($1) GROUP BY tablename`,
+      [criticalTables]
+    );
+
+    const policiesByTable = new Map(
+      policyCheck.rows.map((row: any) => [row.tablename, Number(row.count)])
+    );
+
+    for (const table of criticalTables) {
+      const rlsRow = rlsCheck.rows.find((r: any) => r.tablename === table);
+      if (!rlsRow) continue;
+
       const row = {
         table,
-        rlsEnabled: Boolean(rlsCheck.rows[0].rowsecurity),
-        policies: Number(policyCheck.rows[0].count),
+        rlsEnabled: Boolean(rlsRow.rowsecurity),
+        policies: policiesByTable.get(table) || 0,
       };
       report.criticalTables.push(row);
       report.policyPresence.totalChecked += 1;
@@ -155,8 +162,8 @@ async function verifyRLS() {
       process.exit(1);
     }
 
-    console.log("✅ RLS verification passed.");
-    console.log(`Report: ${path.relative(repoRoot, outputPath)}`);
+    console.info("✅ RLS verification passed.");
+    console.info(`Report: ${path.relative(repoRoot, outputPath)}`);
   } catch (error) {
     report.status = "failed";
     report.runtimeHarness.errors.push(error instanceof Error ? error.message : String(error));
