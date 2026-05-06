@@ -7,6 +7,8 @@ Safe no-op if no datasets provided.
 from datetime import datetime
 from typing import Any
 
+from dateutil import parser as date_parser
+
 from settler_workhorse.models import Job, JobResult, JobType
 from settler_workhorse.utils.logging import get_logger
 from settler_workhorse.worker import register_handler
@@ -201,7 +203,27 @@ def _records_match(
         date_tolerance_days = opts.get("date_tolerance_days", 0)
         if date_tolerance_days == 0:
             return False
-        # TODO: Implement date tolerance comparison
+
+        try:
+            # Parse dates if they are strings
+            d1 = (
+                date_parser.parse(str(src_date))
+                if not isinstance(src_date, datetime)
+                else src_date
+            )
+            d2 = (
+                date_parser.parse(str(tgt_date))
+                if not isinstance(tgt_date, datetime)
+                else tgt_date
+            )
+
+            # Compare difference in days
+            diff = abs((d1 - d2).total_seconds()) / 86400
+            if diff > date_tolerance_days:
+                return False
+        except (ValueError, TypeError, OverflowError):
+            # If dates can't be parsed and they aren't string-equal, they don't match
+            return False
 
     return True
 
