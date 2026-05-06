@@ -680,8 +680,8 @@ router.post(
         status: "pending",
         message: "Run created successfully",
       });
-    } catch (error) {
-      logError("Error creating run", { error });
+    } catch {
+      logError("Error creating run");
       res.status(500).json({
         error: "INTERNAL_SERVER_ERROR",
         message: "An unexpected error occurred",
@@ -713,8 +713,8 @@ router.get(
         auditTrail: [],
         evidence: [],
       });
-    } catch (error) {
-      logError("Error fetching proofpack", { error });
+    } catch {
+      logError("Error fetching proofpack");
       res.status(500).json({
         error: "INTERNAL_SERVER_ERROR",
         message: "An unexpected error occurred",
@@ -744,7 +744,7 @@ router.get(
         runId: req.params.id,
         deltas: [],
       });
-    } catch (error) {
+    } catch {
       res.status(500).json({
         error: "INTERNAL_SERVER_ERROR",
         message: "An unexpected error occurred",
@@ -774,7 +774,7 @@ router.post(
         id: `adj_${Date.now()}`,
         status: "recorded",
       });
-    } catch (error) {
+    } catch {
       res.status(500).json({
         error: "INTERNAL_SERVER_ERROR",
         message: "An unexpected error occurred",
