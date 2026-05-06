@@ -22,13 +22,13 @@ jobs:
       - name: Run classification
         run: npm run classify:strict
       - name: Upload classification report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: classification-report
           path: artifacts/classification-report.json
       - name: Upload classification summary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: classification-summary
