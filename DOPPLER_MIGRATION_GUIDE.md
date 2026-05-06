@@ -1,18 +1,21 @@
 # Doppler Secret Migration Guide
 
 ## Problem
+
 Supabase platform rejects custom environment variables that start with `SUPABASE_`. Since you're syncing secrets from Doppler to Supabase (via GitHub, Vercel, and Supabase), these variables get rejected.
 
 ## Solution Applied
+
 Renamed server-side environment variables to avoid the reserved `SUPABASE_` prefix:
 
-| Old Doppler Name | New Doppler Name | Value Example |
-|------------------|------------------|---------------|
-| `SUPABASE_URL` | `DATABASE_URL` | `postgresql://...` or `https://xyz.supabase.co` |
-| `SUPABASE_ANON_KEY` | `ANON_KEY` | `eyJhbG...` |
-| `SUPABASE_SERVICE_ROLE_KEY` | `SERVICE_ROLE_KEY` | `eyJhbG...` |
+| Old Doppler Name            | New Doppler Name   | Value Example                                   |
+| --------------------------- | ------------------ | ----------------------------------------------- |
+| `SUPABASE_URL`              | `DATABASE_URL`     | `postgresql://...` or `https://xyz.supabase.co` |
+| `SUPABASE_ANON_KEY`         | `ANON_KEY`         | `eyJhbG...`                                     |
+| `SUPABASE_SERVICE_ROLE_KEY` | `SERVICE_ROLE_KEY` | `eyJhbG...`                                     |
 
 **Keep unchanged:**
+
 - `NEXT_PUBLIC_SUPABASE_URL` (browser needs this)
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` (browser needs this)
 
@@ -25,13 +28,14 @@ Renamed server-side environment variables to avoid the reserved `SUPABASE_` pref
    - Rename `SUPABASE_URL` → `DATABASE_URL` (or just use existing DATABASE_URL)
    - Rename `SUPABASE_ANON_KEY` → `ANON_KEY`
    - Rename `SUPABASE_SERVICE_ROLE_KEY` → `SERVICE_ROLE_KEY`
-   - Delete the old `SUPABASE_*` keys (keep NEXT_PUBLIC_*)
+   - Delete the old `SUPABASE_*` keys (keep NEXT*PUBLIC*\*)
 
 ### 2. Let Doppler Sync
 
 Doppler will automatically sync to:
+
 - ✅ GitHub Actions (via integration)
-- ✅ Vercel (via integration)  
+- ✅ Vercel (via integration)
 - ✅ Supabase (via integration)
 
 ### 3. Verify in Supabase Dashboard
@@ -39,6 +43,7 @@ Doppler will automatically sync to:
 Go to Supabase dashboard → Project Settings → Environment Variables
 
 You should see:
+
 - ✅ `DATABASE_URL`
 - ✅ `ANON_KEY`
 - ✅ `SERVICE_ROLE_KEY`
@@ -47,17 +52,20 @@ You should see:
 ### 4. Redeploy
 
 Trigger a new deployment to pick up the new env vars:
+
 - Vercel: Redeploy from dashboard or push new commit
 - Supabase Edge Functions: Redeploy functions
 
 ## What Was Changed in Code
 
 ### Files Modified:
+
 1. `packages/types/src/typed-env.ts` - Updated env validation schemas
 2. `packages/types/src/env-validation.ts` - Updated validation
 3. `.github/workflows/ci.yml` - Updated CI env vars
 
 ### Commit:
+
 ```
 bb41c53b2 refactor(env): rename SUPABASE_* env vars to avoid reserved prefix
 ```
@@ -65,6 +73,7 @@ bb41c53b2 refactor(env): rename SUPABASE_* env vars to avoid reserved prefix
 ## Rollback Plan
 
 If issues arise:
+
 1. Revert commit: `git revert bb41c53b2`
 2. Restore old Doppler secret names
 3. Contact Supabase support about reserved prefix restrictions

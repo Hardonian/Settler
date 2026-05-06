@@ -57,21 +57,66 @@ export class TemplateImprover {
       take: 100,
     });
 
-    for (const template of templates) {
-      // Analyze usage patterns
-      const jobs = await this.prisma.reconJob.findMany({
-        where: { mappingTemplateId: template.id },
-        take: 100,
-      });
+    // Fetch all jobs for these templates at once
+    const templateIds = templates.map((t: { id: string }) => t.id);
+    const allJobs = await this.prisma.reconJob.findMany({
+      where: { mappingTemplateId: { in: templateIds } },
+      // Note: we can't easily limit 100 per template here, but we can fetch a reasonable total
+      take: 10000,
+    });
 
-      // If template has high failure rate, propose improvement
-      const failures = await this.prisma.reconResult.findMany({
+    // Group jobs by template ID
+    const jobsByTemplate = new Map<string, any[]>();
+    for (const job of allJobs) {
+      if (!job.mappingTemplateId) continue;
+      if (!jobsByTemplate.has(job.mappingTemplateId)) {
+        jobsByTemplate.set(job.mappingTemplateId, []);
+      }
+      // Keep only up to 100 jobs per template
+      if (jobsByTemplate.get(job.mappingTemplateId)!.length < 100) {
+        jobsByTemplate.get(job.mappingTemplateId)!.push(job);
+      }
+    }
+
+    // Fetch all failures for these jobs at once
+    const allJobIds = Array.from(jobsByTemplate.values())
+      .flat()
+      .map((j: { id: string }) => j.id);
+
+    // Chunk job IDs if there are too many to avoid query size limits
+    const CHUNK_SIZE = 1000;
+    let allFailures: any[] = [];
+
+    for (let i = 0; i < allJobIds.length; i += CHUNK_SIZE) {
+      const chunkIds = allJobIds.slice(i, i + CHUNK_SIZE);
+      const failuresChunk = await this.prisma.reconResult.findMany({
         where: {
-          reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
+          reconJobId: { in: chunkIds },
           status: "failed",
         },
-        take: 10,
       });
+      allFailures.push(...failuresChunk);
+    }
+
+    // Group failures by job ID
+    const failuresByJob = new Map<string, any[]>();
+    for (const failure of allFailures) {
+      if (!failure.reconJobId) continue;
+      if (!failuresByJob.has(failure.reconJobId)) {
+        failuresByJob.set(failure.reconJobId, []);
+      }
+      failuresByJob.get(failure.reconJobId)!.push(failure);
+    }
+
+    for (const template of templates) {
+      // Analyze usage patterns
+      const jobs = jobsByTemplate.get(template.id) || [];
+
+      // If template has high failure rate, propose improvement
+      // Get failures for these jobs
+      const failures = jobs
+        .flatMap((j: { id: string }) => failuresByJob.get(j.id) || [])
+        .slice(0, 10);
 
       if (failures.length > 5) {
         const currentVersion = template.version ? String(template.version) : "1.0.0";
@@ -105,20 +150,63 @@ export class TemplateImprover {
       take: 100,
     });
 
+    // Fetch all jobs for these recipes at once
+    const recipeIds = recipes.map((r: { id: string }) => r.id);
+    const allJobs = await this.prisma.reconJob.findMany({
+      where: { transformRecipeId: { in: recipeIds } },
+      take: 10000,
+    });
+
+    // Group jobs by recipe ID
+    const jobsByRecipe = new Map<string, any[]>();
+    for (const job of allJobs) {
+      if (!job.transformRecipeId) continue;
+      if (!jobsByRecipe.has(job.transformRecipeId)) {
+        jobsByRecipe.set(job.transformRecipeId, []);
+      }
+      // Keep only up to 100 jobs per recipe
+      if (jobsByRecipe.get(job.transformRecipeId)!.length < 100) {
+        jobsByRecipe.get(job.transformRecipeId)!.push(job);
+      }
+    }
+
+    // Fetch all results for these jobs at once
+    const allJobIds = Array.from(jobsByRecipe.values())
+      .flat()
+      .map((j: { id: string }) => j.id);
+
+    // Chunk job IDs if there are too many
+    const CHUNK_SIZE = 1000;
+    let allResults: any[] = [];
+
+    for (let i = 0; i < allJobIds.length; i += CHUNK_SIZE) {
+      const chunkIds = allJobIds.slice(i, i + CHUNK_SIZE);
+      const resultsChunk = await this.prisma.reconResult.findMany({
+        where: {
+          reconJobId: { in: chunkIds },
+        },
+      });
+      allResults.push(...resultsChunk);
+    }
+
+    // Group results by job ID
+    const resultsByJob = new Map<string, any[]>();
+    for (const result of allResults) {
+      if (!result.reconJobId) continue;
+      if (!resultsByJob.has(result.reconJobId)) {
+        resultsByJob.set(result.reconJobId, []);
+      }
+      resultsByJob.get(result.reconJobId)!.push(result);
+    }
+
     for (const recipe of recipes) {
       // Analyze performance
-      const jobs = await this.prisma.reconJob.findMany({
-        where: { transformRecipeId: recipe.id },
-        take: 100,
-      });
+      const jobs = jobsByRecipe.get(recipe.id) || [];
 
       // Check execution times
-      const results = await this.prisma.reconResult.findMany({
-        where: {
-          reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
-        },
-        take: 50,
-      });
+      const results = jobs
+        .flatMap((j: { id: string }) => resultsByJob.get(j.id) || [])
+        .slice(0, 50);
 
       const durations = results
         .filter(
@@ -167,36 +255,64 @@ export class TemplateImprover {
       take: 100,
     });
 
-    for (const rule of rules) {
-      // Check if rule catches issues effectively
-      // Note: validationRules is a Json array field, so we check if rule.id is in the array
-      const allJobs = await this.prisma.reconJob.findMany({
-        select: { id: true, validationRules: true },
-      });
+    // Fetch all jobs first to analyze usage
+    const allJobs = await this.prisma.reconJob.findMany({
+      select: { id: true, validationRules: true },
+    });
 
-      const jobs = allJobs.filter((job: { id: string; validationRules: unknown }) => {
-        const rules = job.validationRules;
-        if (Array.isArray(rules)) {
-          return rules.some(
-            (r: unknown) =>
-              (typeof r === "object" &&
-                r !== null &&
-                "id" in r &&
-                (r as { id: string }).id === rule.id) ||
-              r === rule.id
-          );
+    // Group jobs by rule ID to avoid recalculating
+    const jobsByRule = new Map<string, any[]>();
+    for (const job of allJobs) {
+      const jobRules = job.validationRules;
+      if (Array.isArray(jobRules)) {
+        for (const r of jobRules) {
+          let ruleId = null;
+          if (typeof r === "object" && r !== null && "id" in r) {
+            ruleId = (r as { id: string }).id;
+          } else if (typeof r === "string") {
+            ruleId = r;
+          }
+
+          if (ruleId) {
+            if (!jobsByRule.has(ruleId)) {
+              jobsByRule.set(ruleId, []);
+            }
+            jobsByRule.get(ruleId)!.push(job);
+          }
         }
-        return false;
-      });
+      }
+    }
 
-      // If rule never fails, it might be too lenient
-      const results = await this.prisma.reconResult.findMany({
+    // Fetch all failed results for these jobs
+    const allJobIds = allJobs.map((j: { id: string }) => j.id);
+    const CHUNK_SIZE = 1000;
+    let allFailedResults: any[] = [];
+
+    for (let i = 0; i < allJobIds.length; i += CHUNK_SIZE) {
+      const chunkIds = allJobIds.slice(i, i + CHUNK_SIZE);
+      const resultsChunk = await this.prisma.reconResult.findMany({
         where: {
-          reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
+          reconJobId: { in: chunkIds },
           status: "failed",
         },
-        take: 1,
+        select: { reconJobId: true },
       });
+      allFailedResults.push(...resultsChunk);
+    }
+
+    // Create a Set of failed job IDs for O(1) lookup
+    const failedJobIds = new Set(allFailedResults.map((r) => r.reconJobId));
+
+    for (const rule of rules) {
+      // Get jobs using this rule
+      const jobs = jobsByRule.get(rule.id) || [];
+
+      // If rule never fails, it might be too lenient
+      // Check if any job using this rule has failed
+      const hasFailedJobs = jobs.some((j: { id: string }) => failedJobIds.has(j.id));
+
+      // Mimic original behavior: check if results.length === 0
+      const results = hasFailedJobs ? [{}] : [];
 
       if (results.length === 0 && jobs.length > 10) {
         // ValidationRule doesn't have a version field, use '1.0.0' as default

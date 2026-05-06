@@ -3,6 +3,7 @@
 ## Reporting a Vulnerability
 
 Please open a GitHub Security Advisory or private issue with:
+
 - impacted component/path
 - reproduction steps
 - severity and potential blast radius

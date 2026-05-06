@@ -40,7 +40,10 @@ export class QTIValidator {
 
     try {
       // Parse XML using xml2js
-      const result = await parseStringPromise(qtiContent, { explicitChildren: true, preserveChildrenOrder: true });
+      const result = await parseStringPromise(qtiContent, {
+        explicitChildren: true,
+        preserveChildrenOrder: true,
+      });
       if (!result) {
         errors.push({ line: 0, message: "Invalid XML structure", severity: "error" });
         return { valid: false, errors, warnings };
@@ -50,7 +53,7 @@ export class QTIValidator {
       const findElements = (obj: any, tags: string[]): any[] => {
         let found: any[] = [];
         if (typeof obj !== "object") return found;
-        
+
         if (Array.isArray(obj)) {
           for (const item of obj) {
             found = found.concat(findElements(item, tags));
@@ -70,11 +73,20 @@ export class QTIValidator {
       const rootTag = Object.keys(result)[0] || "unknown";
 
       if (!rootTag.includes("assessment") && !rootTag.includes("item")) {
-        errors.push({ line: 1, message: "Root element must be assessment or item", severity: "error" });
+        errors.push({
+          line: 1,
+          message: "Root element must be assessment or item",
+          severity: "error",
+        });
       }
 
       // Check for questions
-      const interactionTags = ["choiceInteraction", "matchInteraction", "orderInteraction", "textEntryInteraction"];
+      const interactionTags = [
+        "choiceInteraction",
+        "matchInteraction",
+        "orderInteraction",
+        "textEntryInteraction",
+      ];
       const questions = findElements(result, interactionTags);
 
       if (questions.length === 0) {
@@ -99,10 +111,10 @@ export class QTIValidator {
         }
       });
 
-      logInfo("QTI validation completed", { 
-        valid: errors.length === 0, 
-        errorCount: errors.length, 
-        warningCount: warnings.length 
+      logInfo("QTI validation completed", {
+        valid: errors.length === 0,
+        errorCount: errors.length,
+        warningCount: warnings.length,
       });
 
       return {
@@ -134,14 +146,14 @@ export class QTIValidator {
   }> {
     const syllabusOutcomes = new Set(syllabus.outcomes || []);
     const syllabusStandards = new Set(syllabus.standards || []);
-    
-    const outcomeIds = new Set(outcomes.map(o => o.id));
-    const outcomeStandards = new Set(outcomes.map(o => o.standard).filter(Boolean) as string[]);
+
+    const outcomeIds = new Set(outcomes.map((o) => o.id));
+    const outcomeStandards = new Set(outcomes.map((o) => o.standard).filter(Boolean) as string[]);
 
     // Find missing outcomes (in syllabus but not in outcomes)
     const missing: string[] = [];
     for (const so of syllabusOutcomes) {
-      if (!outcomeIds.has(so) && !Array.from(outcomeStandards).some(s => s.includes(so))) {
+      if (!outcomeIds.has(so) && !Array.from(outcomeStandards).some((s) => s.includes(so))) {
         missing.push(so);
       }
     }
@@ -149,17 +161,20 @@ export class QTIValidator {
     // Find extra outcomes (in outcomes but not in syllabus)
     const extra: string[] = [];
     for (const oid of outcomeIds) {
-      if (!syllabusOutcomes.has(oid) && !Array.from(syllabusStandards).some(s => oid.includes(s))) {
+      if (
+        !syllabusOutcomes.has(oid) &&
+        !Array.from(syllabusStandards).some((s) => oid.includes(s))
+      ) {
         extra.push(oid);
       }
     }
 
     const valid = missing.length === 0;
 
-    logInfo("Learning outcome validation completed", { 
-      valid, 
-      missingCount: missing.length, 
-      extraCount: extra.length 
+    logInfo("Learning outcome validation completed", {
+      valid,
+      missingCount: missing.length,
+      extraCount: extra.length,
     });
 
     return { valid, missing, extra };
@@ -179,7 +194,7 @@ export class QTIValidator {
 
     try {
       const result = await parseStringPromise(qtiContent);
-      
+
       const findElements = (obj: any, tags: string[]): any[] => {
         let found: any[] = [];
         if (typeof obj !== "object") return found;
@@ -187,7 +202,8 @@ export class QTIValidator {
           for (const item of obj) found = found.concat(findElements(item, tags));
         } else {
           for (const key in obj) {
-            if (tags.includes(key)) found = found.concat(Array.isArray(obj[key]) ? obj[key] : [obj[key]]);
+            if (tags.includes(key))
+              found = found.concat(Array.isArray(obj[key]) ? obj[key] : [obj[key]]);
             found = found.concat(findElements(obj[key], tags));
           }
         }

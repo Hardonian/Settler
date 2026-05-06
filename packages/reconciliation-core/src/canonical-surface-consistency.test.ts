@@ -1,6 +1,9 @@
 import { mapCanonicalListItemToApiRunsLegacyRow } from "./api-runs-list-adapter.js";
 import { assertCanonicalConsistency } from "./canonical-consistency.js";
-import type { CanonicalReconciliationListItem, CanonicalReconciliationRunDetail } from "./canonical-reconciliation.js";
+import type {
+  CanonicalReconciliationListItem,
+  CanonicalReconciliationRunDetail,
+} from "./canonical-reconciliation.js";
 import {
   buildOperatorReconRunDetailJson,
   operatorRunDetailToApiRunsLegacyRow,

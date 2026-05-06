@@ -114,16 +114,16 @@ All feature pages share:
 
 ## Brand Assets
 
-| Asset                 | Path / implementation                                      | Usage                            |
-| --------------------- | ---------------------------------------------------------- | -------------------------------- |
-| Logo (in-app)         | `SettlerLogo` → `BrandLockup` (mark PNG + text wordmark)   | Navigation, footer — all themes  |
-| Favicon               | `/icon.png` (App Router); `/favicon.ico` → `/icon.png`     | Browser tab                      |
-| Favicon (PWA)         | `/brand/settler/favicon-192x192.png`, `manifest.json`     | Metadata, PWA                    |
-| OG Image              | `/opengraph-image`                                         | Social preview                   |
-| Twitter Card          | `/twitter-image`                                           | Twitter                          |
-| Hero Visual           | `/illustrations/hero-visual.svg`          | Homepage hero                    |
-| How it works          | `/illustrations/how-settler-works.svg`    | How it works page                |
-| Feature illustrations | `/illustrations/feature-*.svg`            | Dev workflow steps               |
+| Asset                 | Path / implementation                                    | Usage                           |
+| --------------------- | -------------------------------------------------------- | ------------------------------- |
+| Logo (in-app)         | `SettlerLogo` → `BrandLockup` (mark PNG + text wordmark) | Navigation, footer — all themes |
+| Favicon               | `/icon.png` (App Router); `/favicon.ico` → `/icon.png`   | Browser tab                     |
+| Favicon (PWA)         | `/brand/settler/favicon-192x192.png`, `manifest.json`    | Metadata, PWA                   |
+| OG Image              | `/opengraph-image`                                       | Social preview                  |
+| Twitter Card          | `/twitter-image`                                         | Twitter                         |
+| Hero Visual           | `/illustrations/hero-visual.svg`                         | Homepage hero                   |
+| How it works          | `/illustrations/how-settler-works.svg`                   | How it works page               |
+| Feature illustrations | `/illustrations/feature-*.svg`                           | Dev workflow steps              |
 
 ## Design System Conventions
 

@@ -78,7 +78,10 @@ export function assertCanonicalConsistency(input: {
 
   if (violations.length > 0) {
     const detail = violations
-      .map((v) => `${v.path}: list=${stableStringify(v.listValue)} detail=${stableStringify(v.detailValue)}`)
+      .map(
+        (v) =>
+          `${v.path}: list=${stableStringify(v.listValue)} detail=${stableStringify(v.detailValue)}`
+      )
       .join("; ");
     throw new Error(`assertCanonicalConsistency failed for run ${runId}: ${detail}`);
   }
