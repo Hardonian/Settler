@@ -17,17 +17,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: "pnpm"
+          cache: false
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Detect unresolved conflict markers
-        run: npm run verify:conflict-markers
+        run: pnpm run verify:conflict-markers
 
   verify:
     needs: conflict-markers
@@ -36,14 +40,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: "pnpm"
+          cache: false
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Check for committed node_modules
         run: |
@@ -55,33 +63,35 @@ jobs:
           echo "✅ No node_modules files are tracked in git"
 
       - name: Lint
-        run: npm run lint
+        run: pnpm run lint
 
       - name: Type check
-        run: npm run typecheck
+        run: pnpm run typecheck
 
       - name: Build
         run: npx turbo run build
 
       - name: Test
-        run: npm test -- --passWithNoTests
+        run: pnpm test -- --passWithNoTests
 
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 
       - name: Marketing crawl regression guard
-        run: npm run test:e2e -- --project=chromium tests/e2e/marketing-crawl.spec.ts
+        run: pnpm run test:e2e -- --project=chromium tests/e2e/marketing-crawl.spec.ts
 
       - name: Verify content routes in production mode
-        run: npm run test --workspace=packages/web -- src/__tests__/integration/content-pages.production.test.ts
+        run: pnpm run test --workspace=packages/web -- src/__tests__/integration/content-pages.production.test.ts
 
       - name: Validate
-        run: npm run validate
+        run: pnpm run validate
 
       - name: Set up Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: actions-rs/toolchain@v1
         with:
-          targets: wasm32-unknown-unknown
+          toolchain: stable
+          profile: minimal
+          override: true
 
       - name: Rust fmt
         run: cargo fmt --all -- --check

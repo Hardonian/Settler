@@ -12,10 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: "pnpm"
+          cache: false
       - run: corepack enable && corepack prepare pnpm@10.13.1 --activate
       - run: pnpm install --frozen-lockfile
       - run: pnpm run lint
@@ -32,10 +36,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: "pnpm"
+          cache: false
       - run: corepack enable && corepack prepare pnpm@10.13.1 --activate
       - run: pnpm install --frozen-lockfile
       - run: pnpm run typecheck
@@ -45,10 +53,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: "pnpm"
+          cache: false
       - run: corepack enable && corepack prepare pnpm@10.13.1 --activate
       - run: pnpm install --frozen-lockfile
       - run: pnpm audit --audit-level=moderate || true
@@ -63,10 +75,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: "pnpm"
+          cache: false
       - run: corepack enable && corepack prepare pnpm@10.13.1 --activate
       - run: pnpm install --frozen-lockfile
       - run: pnpm run test -- --coverage
@@ -83,10 +99,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: "pnpm"
+          cache: false
       - run: corepack enable && corepack prepare pnpm@10.13.1 --activate
       - run: pnpm install --frozen-lockfile
       - name: Check for unused exports

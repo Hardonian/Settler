@@ -3,7 +3,7 @@ name: Security Audit
 on:
   schedule:
     # Run every Monday at 9 AM UTC
-    - cron: '0 9 * * 1'
+    - cron: "0 9 * * 1"
   workflow_dispatch:
 
 jobs:
@@ -12,6 +12,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -33,7 +37,7 @@ jobs:
           if ! command -v git-secrets &> /dev/null; then
             echo "Installing git-secrets..."
           fi
-          
+
           # Scan for common secret patterns
           echo "Scanning for potential secrets..."
           grep -r "password\s*=\s*['\"][^'\"]\{8,\}['\"]" --include="*.ts" --include="*.js" . || true

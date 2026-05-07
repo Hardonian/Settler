@@ -4,14 +4,14 @@ on:
   workflow_dispatch:
   schedule:
     # Run daily at 2 AM UTC
-    - cron: '0 2 * * *'
+    - cron: "0 2 * * *"
 
 jobs:
   verify-routes:
     name: Verify Production Routes
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -31,19 +31,23 @@ jobs:
     name: Verify Environment Variables
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
-          cache: "pnpm"
+          node-version: "24"
+          cache: false
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Verify Environment Variables Schema
         run: |

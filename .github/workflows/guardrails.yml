@@ -74,7 +74,7 @@ jobs:
           HARD_500S=0
           for route in $ROUTES; do
             # Check for patterns that indicate hard 500s (no try-catch, direct 500 returns)
-            if grep -q "status: 500" "$route" && ! grep -q "try" "$route" || ! grep -q "catch" "$route"; then
+            if grep -q "status: 500" "$route" && ! grep -q "try.*catch" "$route"; then
               echo "⚠️  Potential hard 500 in $route"
               HARD_500S=$((HARD_500S + 1))
             fi
@@ -179,11 +179,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
       - name: Setup Node.js & pnpm
         uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-          cache: "pnpm"
+          cache: false
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate

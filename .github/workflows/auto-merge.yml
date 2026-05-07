@@ -21,28 +21,32 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
-      
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: "pnpm"
-      
-      - run: npm ci
-      
+          node-version-file: ".nvmrc"
+          cache: false
+
+      - run: pnpm install --frozen-lockfile
+
       - name: Run Classification Check
         id: classify
         run: |
           npm run classify:strict
           echo "classification_passed=true" >> $GITHUB_OUTPUT
         continue-on-error: true
-      
+
       - name: Check Classification Status
         if: steps.classify.outcome == 'failure'
         run: |
           echo "❌ Classification check failed!"
           echo "Review artifacts/classification-report.json for details"
           exit 1
-      
+
       - name: Upload Classification Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -50,7 +54,7 @@ jobs:
           name: classification-report-pr-${{ github.event.pull_request.number }}
           path: artifacts/
           retention-days: 7
-      
+
       - name: Comment PR with Classification Status
         if: always()
         uses: actions/github-script@v7
@@ -58,9 +62,9 @@ jobs:
           script: |
             const fs = require('fs');
             const path = require('path');
-            
+
             let comment = '## 🔍 Classification Check Results\n\n';
-            
+
             try {
               const reportPath = path.join('artifacts', 'classification-report.json');
               if (fs.existsSync(reportPath)) {
@@ -93,7 +97,7 @@ jobs:
             } catch (error) {
               comment += `❌ Error reading classification report: ${error.message}\n`;
             }
-            
+
             // Only comment if this is a PR
             if (context.eventName === 'pull_request') {
               github.rest.issues.createComment({

@@ -28,7 +28,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload SARIF results
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: semgrep.sarif
@@ -42,10 +42,14 @@ jobs:
       - uses: pnpm/action-setup@v4
         with:
           version: 10.13.1
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: "pnpm"
+          cache: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -88,10 +92,14 @@ jobs:
       - uses: pnpm/action-setup@v4
         with:
           version: 10.13.1
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: "pnpm"
+          cache: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

@@ -59,6 +59,10 @@ jobs:
           psql -h localhost -U postgres -d settler_test -v ON_ERROR_STOP=1 \
             -f scripts/ci/reconciliation-merged-list-schema.sql
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
