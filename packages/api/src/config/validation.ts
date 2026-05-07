@@ -90,13 +90,12 @@ export const env = cleanEnv(process.env, {
   // Runtime-only: provide default during build, will be validated at runtime
   JWT_SECRET: str({
     ...(isBuild ? { default: BUILD_PLACEHOLDER } : {}),
-    devDefault: "dev-secret-change-in-production",
     desc: "Secret key for JWT token signing",
   }),
   JWT_ACCESS_EXPIRY: str({ default: "15m" }),
   JWT_REFRESH_EXPIRY: str({ default: "7d" }),
   JWT_REFRESH_SECRET: str({
-    devDefault: "dev-refresh-secret-change-in-production",
+    ...(isBuild ? { default: BUILD_PLACEHOLDER } : {}),
     desc: "Optional separate secret for refresh tokens",
   }),
 
@@ -104,7 +103,6 @@ export const env = cleanEnv(process.env, {
   // Runtime-only: provide default during build, will be validated at runtime
   ENCRYPTION_KEY: str({
     ...(isBuild ? { default: BUILD_PLACEHOLDER } : {}),
-    devDefault: "dev-encryption-key-32-chars-long!!",
     desc: "32-byte key for AES-256-GCM encryption",
   }),
 
@@ -177,13 +175,9 @@ if (!isBuild && (env.NODE_ENV === "production" || env.NODE_ENV === "preview")) {
     );
   }
 
-  if (
-    env.JWT_SECRET === BUILD_PLACEHOLDER ||
-    !env.JWT_SECRET ||
-    env.JWT_SECRET === "dev-secret-change-in-production"
-  ) {
+  if (env.JWT_SECRET === BUILD_PLACEHOLDER || !env.JWT_SECRET) {
     throw new Error(
-      `JWT_SECRET must be set to a secure random value in ${env.NODE_ENV}. Current value: ${env.JWT_SECRET === BUILD_PLACEHOLDER ? "build placeholder (not set)" : "dev secret"}`
+      `JWT_SECRET must be set to a secure random value in ${env.NODE_ENV}. Current value: ${env.JWT_SECRET === BUILD_PLACEHOLDER ? "build placeholder (not set)" : "not set"}`
     );
   }
 
