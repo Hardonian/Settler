@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: false
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -30,6 +30,7 @@ jobs:
       - name: Setup Stripe Products
         run: npx tsx scripts/setup-stripe-products.ts
         env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
 
       - name: Output Product IDs

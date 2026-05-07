@@ -22,6 +22,7 @@ on:
       - "supabase/migrations/**receipt*"
 
 env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   NODE_VERSION: "24"
   # Database password injected from GitHub secrets
   DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -47,7 +48,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: false
+          cache: "pnpm"
 
       - name: Install dependencies
         run: npm ci
@@ -55,18 +56,21 @@ jobs:
       - name: Generate Prisma client
         run: npm run prisma:generate
         env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           # Database password auto-injected from GitHub secrets
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Verify database connection
         run: npm run db:check
         env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           # Database password auto-injected from GitHub secrets
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Run database migrations
         run: npm run db:migrate:prod
         env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           # Database password auto-injected from GitHub secrets
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -93,12 +97,14 @@ jobs:
             }
           "
         env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
 
       - name: Build application
         run: npx turbo run build
         env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           # Database password auto-injected from GitHub secrets
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -109,6 +115,7 @@ jobs:
       - name: Run smoke tests
         run: npx tsx scripts/smoke-receipts.ts
         env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           # Database password auto-injected from GitHub secrets
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -123,6 +130,7 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: "--prod"
         env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           # Database password auto-injected from GitHub secrets
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}

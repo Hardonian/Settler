@@ -19,7 +19,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: false
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -32,29 +32,34 @@ jobs:
       - name: Generate Prisma Client
         run: npm run prisma:generate
         env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Run Prisma Migrations
         run: npm run prisma:migrate
         env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         continue-on-error: true
 
       - name: Link Supabase
         run: supabase link --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
         env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
 
       - name: Deploy Database Migrations
         run: supabase db push
         env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
 
       - name: Seed Add-Ons
         run: npx tsx scripts/post-migration-seed.ts
         env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         continue-on-error: true
@@ -63,6 +68,7 @@ jobs:
         if: env.STRIPE_SECRET_KEY != ''
         run: npx tsx scripts/auto-setup-stripe.ts
         env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
         continue-on-error: true
 
@@ -73,6 +79,7 @@ jobs:
             supabase functions deploy $func --project-ref ${{ secrets.SUPABASE_PROJECT_REF }} || echo "$func deployment skipped"
           done
         env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -82,6 +89,7 @@ jobs:
       - name: Initialize Billing
         run: npx tsx scripts/init-billing-system.ts
         env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}

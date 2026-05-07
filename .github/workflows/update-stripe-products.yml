@@ -31,6 +31,7 @@ jobs:
 
       - name: Update Stripe Products
         env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
         run: |
           npx tsx scripts/update-stripe-products.ts

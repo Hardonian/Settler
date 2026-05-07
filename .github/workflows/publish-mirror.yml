@@ -25,7 +25,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: false
+          cache: "pnpm"
       
       - run: npm ci
       
@@ -72,6 +72,7 @@ jobs:
           git push public main --force || git push public main
           git push public ${{ steps.tag.outputs.tag }} || true
         env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           GIT_ASKPASS: echo
           GIT_USERNAME: ${{ secrets.PUBLIC_MIRROR_GIT_USERNAME }}
           GIT_PASSWORD: ${{ secrets.PUBLIC_MIRROR_GIT_TOKEN }}

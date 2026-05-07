@@ -35,7 +35,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: false
+          cache: "pnpm"
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
@@ -49,6 +49,7 @@ jobs:
       - name: Run Python smoke tests (mocked)
         run: pnpm workhorse:smoke
         env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           # Mock database URL - tests don't need real DB
           DATABASE_URL: postgresql://mock:mock@localhost:5432/mock
 
@@ -60,6 +61,7 @@ jobs:
       postgres:
         image: postgres:15-alpine
         env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           POSTGRES_DB: settler_test
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -83,7 +85,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: false
+          cache: "pnpm"
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
@@ -110,6 +112,7 @@ jobs:
       - name: Run full smoke test suite
         run: pnpm jobs:smoke && pnpm jobs:verify-consequence && pnpm jobs:test-reaper
         env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
           NODE_ENV: test
 
@@ -129,7 +132,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: false
+          cache: "pnpm"
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate

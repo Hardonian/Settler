@@ -33,6 +33,7 @@ jobs:
       postgres:
         image: postgres:16
         env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: settler_test
@@ -54,6 +55,7 @@ jobs:
 
       - name: Apply minimal Prisma-aligned schema
         env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           PGPASSWORD: postgres
         run: |
           psql -h localhost -U postgres -d settler_test -v ON_ERROR_STOP=1 \
@@ -72,6 +74,7 @@ jobs:
 
       - name: Run DB integration tests
         env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           NODE_ENV: test
           RUN_DB_TESTS: "true"
           RUN_RECON_MERGED_LIST_DB: "1"

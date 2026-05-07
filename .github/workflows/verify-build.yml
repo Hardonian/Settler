@@ -7,6 +7,7 @@ on:
   workflow_dispatch:
 
 env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
@@ -21,7 +22,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: false
+          cache: "pnpm"
 
       - name: Install dependencies
         run: npm ci
@@ -40,7 +41,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: false
+          cache: "pnpm"
 
       - name: Install dependencies
         run: npm ci
