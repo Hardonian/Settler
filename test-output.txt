@@ -1,0 +1,539 @@
+
+> settler-monorepo@1.0.0 pretest /app
+> pnpm run check:node
+
+
+> settler-monorepo@1.0.0 check:node /app
+> node scripts/assert-node-version.mjs
+
+✅ Node runtime OK (v24.12.0; required 24.12.0, >=24.0.0 <25.0.0)
+
+> settler-monorepo@1.0.0 test /app
+> turbo run test
+
+• turbo 2.9.6
+
+   • Packages in scope: @jobforge/adapter-settler, @jobforge/errors, @jobforge/fetch, @jobforge/sdk-ts, @jobforge/shared, @jobforge/typescript-config, @requiem/hash, @settler/adapters, @settler/agents, @settler/api, @settler/cli, @settler/edge-ai-core, @settler/edge-node, @settler/logger, @settler/proofs, @settler/protocol, @settler/react-settler, @settler/reconciliation-core, @settler/sdk, @settler/sdk-csharp, @settler/sdk-java, @settler/sdk-js, @settler/support-intake, @settler/types, @settler/web
+   • Running test in 25 packages
+   • Remote caching disabled
+
+@settler/sdk:build: cache hit, replaying logs 17b49762704d992d
+@settler/sdk:build:
+@settler/sdk:build: > @settler/sdk@1.0.0 prebuild /app/packages/sdk
+@settler/sdk:build: > cd ../.. && node scripts/assert-node-version.mjs
+@settler/sdk:build:
+@settler/sdk:build: ✅ Node runtime OK (v24.12.0; required 24.12.0, >=24.0.0 <25.0.0)
+@settler/sdk:build:
+@settler/sdk:build: > @settler/sdk@1.0.0 build /app/packages/sdk
+@settler/sdk:build: > node ../../scripts/run-package-tsc-build.mjs
+@settler/sdk:build:
+@settler/edge-ai-core:build: cache hit, replaying logs f4f8adb794e559be
+@settler/edge-ai-core:build:
+@settler/edge-ai-core:build: > @settler/edge-ai-core@1.0.0 prebuild /app/packages/edge-ai-core
+@settler/edge-ai-core:build: > pnpm run typecheck
+@settler/edge-ai-core:build:
+@settler/edge-ai-core:build:
+@settler/edge-ai-core:build: > @settler/edge-ai-core@1.0.0 typecheck /app/packages/edge-ai-core
+@settler/edge-ai-core:build: > tsc --noEmit
+@settler/edge-ai-core:build:
+@settler/edge-ai-core:build:
+@settler/edge-ai-core:build: > @settler/edge-ai-core@1.0.0 build /app/packages/edge-ai-core
+@settler/edge-ai-core:build: > node ../../scripts/run-package-tsc-build.mjs
+@settler/edge-ai-core:build:
+@settler/logger:build: cache hit, replaying logs fcd5f3820e24cc6a
+@settler/logger:build:
+@settler/logger:build: > @settler/logger@1.0.0 build /app/packages/logger
+@settler/logger:build: > tsc
+@settler/logger:build:
+@settler/sdk-js:build: cache hit, replaying logs 454ef0f57c63132a
+@settler/sdk-js:build:
+@settler/sdk-js:build: > @settler/sdk-js@1.0.0 build /app/packages/sdk-js
+@settler/sdk-js:build: > tsc
+@settler/sdk-js:build:
+@settler/protocol:build: cache hit, replaying logs 93ae28a41f350b03
+@settler/protocol:build:
+@settler/protocol:build: > @settler/protocol@0.1.0 build /app/packages/protocol
+@settler/protocol:build: > node ../../scripts/run-package-tsc-build.mjs
+@settler/protocol:build:
+@jobforge/errors:build: cache hit, replaying logs 21e0f0d43244c3c1
+@jobforge/errors:build:
+@jobforge/errors:build: > @jobforge/errors@0.1.0 build /app/packages/jobforge-errors
+@jobforge/errors:build: > node ../../scripts/run-package-tsc-build.mjs
+@jobforge/errors:build:
+@jobforge/shared:build: cache hit, replaying logs 899a60803fc35776
+@jobforge/shared:build:
+@jobforge/shared:build: > @jobforge/shared@0.1.0 build /app/packages/jobforge-shared
+@jobforge/shared:build: > node ../../scripts/run-package-tsc-build.mjs
+@jobforge/shared:build:
+@settler/sdk:test: cache hit, replaying logs 7a636c0eff88327f
+@settler/sdk:test:
+@settler/sdk:test: > @settler/sdk@1.0.0 pretest /app/packages/sdk
+@settler/sdk:test: > cd ../.. && node scripts/assert-node-version.mjs
+@settler/sdk:test:
+@settler/sdk:test: ✅ Node runtime OK (v24.12.0; required 24.12.0, >=24.0.0 <25.0.0)
+@settler/sdk:test:
+@settler/sdk:test: > @settler/sdk@1.0.0 test /app/packages/sdk
+@settler/sdk:test: > jest
+@settler/sdk:test:
+@settler/sdk:test: PASS src/__tests__/webhook-signature.test.ts (10.396 s)
+@settler/sdk:test: PASS src/__tests__/deduplication.test.ts
+@settler/sdk:test: PASS src/__tests__/integration.test.ts (12.275 s)
+@settler/sdk:test: PASS src/__tests__/client.test.ts (12.217 s)
+@settler/sdk:test:
+@settler/sdk:test: Test Suites: 4 passed, 4 total
+@settler/sdk:test: Tests:       25 passed, 25 total
+@settler/sdk:test: Snapshots:   0 total
+@settler/sdk:test: Time:        16.759 s
+@settler/sdk:test: Ran all test suites.
+@settler/agents:build: cache hit, replaying logs 97e081cc5591823c
+@settler/agents:build:
+@settler/agents:build: > @settler/agents@1.0.0 build /app/packages/agents
+@settler/agents:build: > tsc
+@settler/agents:build:
+@settler/edge-ai-core:test: cache hit, replaying logs f142a8ff36d575fc
+@settler/edge-ai-core:test:
+@settler/edge-ai-core:test: > @settler/edge-ai-core@1.0.0 test /app/packages/edge-ai-core
+@settler/edge-ai-core:test: > jest --passWithNoTests
+@settler/edge-ai-core:test:
+@settler/edge-ai-core:test: No tests found, exiting with code 0
+@settler/sdk-js:test: cache hit, replaying logs 9b012433c10390ac
+@settler/sdk-js:test:
+@settler/sdk-js:test: > @settler/sdk-js@1.0.0 test /app/packages/sdk-js
+@settler/sdk-js:test: > echo 'No tests yet'
+@settler/sdk-js:test:
+@settler/sdk-js:test: No tests yet
+@settler/types:build: cache hit, replaying logs 9046205a067e620b
+@settler/types:build:
+@settler/types:build: > @settler/types@1.0.0 build /app/packages/types
+@settler/types:build: > node ../../scripts/run-package-tsc-build.mjs
+@settler/types:build:
+@settler/agents:test: cache hit, replaying logs 8a983fbb3720b0f6
+@settler/agents:test:
+@settler/agents:test: > @settler/agents@1.0.0 test /app/packages/agents
+@settler/agents:test: > node --test dist/__tests__/legacy-agents.test.js dist/__tests__/security-agent.test.js
+@settler/agents:test:
+@settler/agents:test: ✔ legacy deploy agent stays fail-closed (2.097383ms)
+@settler/agents:test: ✔ legacy orchestrator stays fail-closed (1.586799ms)
+@settler/agents:test: [32m[INFO][0m [security-agent] Starting secrets security scan
+@settler/agents:test:    { repoRoot: '/tmp/settler-agents-vAelg0' }
+@settler/agents:test: [32m[INFO][0m [security-agent] Security scan complete
+@settler/agents:test:    { verdict: 'failed', issues: 1 }
+@settler/agents:test: [32m[INFO][0m [security-agent] Starting vulnerabilities security scan
+@settler/agents:test:    { repoRoot: '/tmp/settler-agents-lNo15k' }
+@settler/agents:test: [32m[INFO][0m [security-agent] Security scan complete
+@settler/agents:test:    { verdict: 'verified_degraded', issues: 0 }
+@settler/agents:test: [32m[INFO][0m [security-agent] Starting rls security scan
+@settler/agents:test:    { repoRoot: '/tmp/settler-agents-InyunX' }
+@settler/agents:test: [32m[INFO][0m [security-agent] Security scan complete
+@settler/agents:test:    { verdict: 'failed', issues: 1 }
+@settler/agents:test: ✔ secret scan ignores allowlisted docs but fails on inline source leaks (43.081556ms)
+@settler/agents:test: ✔ dependency scan reports degraded evidence instead of silent success (55.931408ms)
+@settler/agents:test: ✔ rls scan fails closed when tenant isolation command fails (15.128087ms)
+@settler/agents:test: ℹ tests 5
+@jobforge/errors:test: cache hit, replaying logs b27be6689aaeac25
+@jobforge/fetch:build: cache hit, replaying logs 1b74af8d1343f94a
+@settler/agents:test: ℹ suites 0
+@settler/agents:test: ℹ pass 5
+@settler/agents:test: ℹ fail 0
+@settler/agents:test: ℹ cancelled 0
+@settler/agents:test: ℹ skipped 0
+@settler/agents:test: ℹ todo 0
+@settler/agents:test: ℹ duration_ms 1063.064757
+@settler/react-settler:build: cache hit, replaying logs dbd675cd40dc14b9
+@settler/react-settler:build:
+@settler/react-settler:build: > @settler/react-settler@0.1.0 build /app/packages/react-settler
+@settler/react-settler:build: > node ../../scripts/run-package-tsc-build.mjs
+@settler/react-settler:build:
+@jobforge/errors:test:
+@jobforge/errors:test: > @jobforge/errors@0.1.0 test /app/packages/jobforge-errors
+@jobforge/errors:test: > vitest run
+@jobforge/errors:test:
+@jobforge/errors:test: [33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+@jobforge/errors:test:
+@jobforge/errors:test:  RUN  v1.6.1 /app/packages/jobforge-errors
+@jobforge/errors:test:
+@jobforge/errors:test:  ✓ test/correlation.test.ts  (9 tests) 38ms
+@jobforge/errors:test:  ✓ test/error-envelope.test.ts  (11 tests) 67ms
+@jobforge/errors:test:
+@jobforge/errors:test:  Test Files  2 passed (2)
+@jobforge/errors:test:       Tests  20 passed (20)
+@jobforge/errors:test:    Start at  22:38:40
+@jobforge/errors:test:    Duration  2.14s (transform 434ms, setup 0ms, collect 840ms, tests 105ms, environment 0ms, prepare 1.13s)
+@jobforge/errors:test:
+@jobforge/fetch:build:
+@jobforge/fetch:build: > @jobforge/fetch@0.1.0 build /app/packages/jobforge-fetch
+@jobforge/fetch:build: > node ../../scripts/run-package-tsc-build.mjs
+@jobforge/fetch:build:
+@settler/support-intake:build: cache hit, replaying logs f8caf3b95b7c48c6
+@settler/support-intake:build:
+@settler/support-intake:build: > @settler/support-intake@0.1.0 build /app/packages/support-intake
+@settler/support-intake:build: > node ../../scripts/run-package-tsc-build.mjs
+@settler/support-intake:build:
+@jobforge/sdk-ts:build: cache hit, replaying logs 6a4869babdcf89be
+@jobforge/sdk-ts:build:
+@jobforge/sdk-ts:build: > @jobforge/sdk-ts@0.1.0 build /app/packages/jobforge-sdk-ts
+@jobforge/sdk-ts:build: > node ../../scripts/run-package-tsc-build.mjs
+@jobforge/sdk-ts:build:
+@settler/proofs:build: cache hit, replaying logs f4fe2655362e586a
+@settler/proofs:build:
+@settler/proofs:build: > @settler/proofs@0.1.0 build /app/packages/proofs
+@settler/proofs:build: > node ../../scripts/run-package-tsc-build.mjs
+@settler/proofs:build:
+@settler/edge-node:build: cache hit, replaying logs 48c6df5f2128dfc7
+@settler/edge-node:build:
+@settler/edge-node:build: > @settler/edge-node@1.0.0 prebuild /app/packages/edge-node
+@settler/edge-node:build: > pnpm run typecheck
+@settler/edge-node:build:
+@settler/edge-node:build:
+@settler/edge-node:build: > @settler/edge-node@1.0.0 typecheck /app/packages/edge-node
+@settler/edge-node:build: > tsc --noEmit
+@settler/edge-node:build:
+@settler/edge-node:build:
+@settler/edge-node:build: > @settler/edge-node@1.0.0 build /app/packages/edge-node
+@settler/edge-node:build: > node ../../scripts/run-package-tsc-build.mjs
+@settler/edge-node:build:
+@jobforge/fetch:test: cache hit, replaying logs 6fc26f198c18d063
+@jobforge/fetch:test:
+@jobforge/fetch:test: > @jobforge/fetch@0.1.0 test /app/packages/jobforge-fetch
+@jobforge/fetch:test: > vitest run
+@jobforge/fetch:test:
+@jobforge/fetch:test: [33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+@jobforge/fetch:test:
+@jobforge/fetch:test:  RUN  v1.6.1 /app/packages/jobforge-fetch
+@jobforge/fetch:test:
+@jobforge/fetch:test:  ✓ test/retry.test.ts  (8 tests) 29ms
+@jobforge/fetch:test:
+@jobforge/fetch:test:  Test Files  1 passed (1)
+@jobforge/fetch:test:       Tests  8 passed (8)
+@jobforge/fetch:test:    Start at  22:38:50
+@jobforge/fetch:test:    Duration  2.47s (transform 376ms, setup 0ms, collect 473ms, tests 29ms, environment 0ms, prepare 616ms)
+@jobforge/fetch:test:
+@jobforge/sdk-ts:test: cache hit, replaying logs b21175446ee8a637
+@jobforge/sdk-ts:test:
+@jobforge/sdk-ts:test: > @jobforge/sdk-ts@0.1.0 test /app/packages/jobforge-sdk-ts
+@jobforge/sdk-ts:test: > vitest run
+@jobforge/sdk-ts:test:
+@jobforge/sdk-ts:test: ▲ [WARNING] The conditions "types" and "default" here will never be used as they come after both "import" and "require" [package.json]
+@jobforge/sdk-ts:test:
+@jobforge/sdk-ts:test:     package.json:12:6:
+@jobforge/sdk-ts:test:       12 │       "types": "./dist/index.d.ts",
+@jobforge/sdk-ts:test:          ╵       ~~~~~~~
+@jobforge/sdk-ts:test:
+@jobforge/sdk-ts:test:   The "import" condition comes earlier and will be used for all "import" statements:
+@jobforge/sdk-ts:test:
+@jobforge/sdk-ts:test:     package.json:11:6:
+@jobforge/sdk-ts:test:       11 │       "import": "./dist/index.js",
+@jobforge/sdk-ts:test:          ╵       ~~~~~~~~
+@jobforge/sdk-ts:test:
+@jobforge/sdk-ts:test:   The "require" condition comes earlier and will be used for all "require" calls:
+@jobforge/sdk-ts:test:
+@jobforge/sdk-ts:test:     package.json:10:6:
+@jobforge/sdk-ts:test:       10 │       "require": "./dist/index.js",
+@jobforge/sdk-ts:test:          ╵       ~~~~~~~~~
+@jobforge/sdk-ts:test:
+@jobforge/sdk-ts:test: [33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+@jobforge/sdk-ts:test:
+@jobforge/sdk-ts:test:  RUN  v1.6.1 /app/packages/jobforge-sdk-ts
+@jobforge/sdk-ts:test:
+@jobforge/sdk-ts:test:  ✓ test/client.test.ts  (2 tests) 22ms
+@jobforge/sdk-ts:test:
+@jobforge/sdk-ts:test:  Test Files  1 passed (1)
+@jobforge/sdk-ts:test:       Tests  2 passed (2)
+@jobforge/sdk-ts:test:    Start at  22:38:57
+@jobforge/sdk-ts:test:    Duration  2.90s (transform 461ms, setup 0ms, collect 590ms, tests 22ms, environment 0ms, prepare 950ms)
+@jobforge/sdk-ts:test:
+@jobforge/adapter-settler:build: cache hit, replaying logs 2704cd73c907f639
+@jobforge/adapter-settler:build:
+@jobforge/adapter-settler:build: > @jobforge/adapter-settler@0.1.0 build /app/packages/jobforge-adapter-settler
+@jobforge/adapter-settler:build: > node ../../scripts/run-package-tsc-build.mjs
+@jobforge/adapter-settler:build:
+@settler/proofs:test: cache hit, replaying logs d97090975a8b2f99
+@settler/proofs:test:
+@settler/proofs:test: > @settler/proofs@0.1.0 test /app/packages/proofs
+@settler/proofs:test: > vitest run
+@settler/proofs:test:
+@settler/proofs:test:
+@settler/proofs:test:  RUN  v2.1.9 /app/packages/proofs
+@settler/proofs:test:
+@settler/proofs:test:  ✓ src/proofpack/proofpack.test.ts (4 tests) 11ms
+@settler/proofs:test:
+@settler/proofs:test:  Test Files  1 passed (1)
+@settler/proofs:test:       Tests  4 passed (4)
+@settler/proofs:test:    Start at  23:49:55
+@settler/proofs:test:    Duration  883ms (transform 190ms, setup 0ms, collect 180ms, tests 11ms, environment 0ms, prepare 165ms)
+@settler/proofs:test:
+@settler/edge-node:test: cache hit, replaying logs f604f0105996b803
+@settler/edge-node:test:
+@settler/edge-node:test: > @settler/edge-node@1.0.0 test /app/packages/edge-node
+@settler/edge-node:test: > jest --passWithNoTests
+@settler/edge-node:test:
+@settler/edge-node:test: No tests found, exiting with code 0
+@settler/cli:build: cache hit, replaying logs 4f57c86d82d6e718
+@settler/cli:build:
+@settler/cli:build: > @settler/cli@1.0.0 build /app/packages/cli
+@settler/cli:build: > node ../../scripts/run-package-tsc-build.mjs
+@settler/cli:build:
+@settler/cli:test: cache hit, replaying logs a4547dded2583270
+@settler/cli:test:
+@settler/cli:test: > @settler/cli@1.0.0 test /app/packages/cli
+@settler/cli:test: > jest --passWithNoTests
+@settler/cli:test:
+@settler/cli:test: PASS src/__tests__/command-unsafe-ack.test.ts
+@settler/cli:test: PASS src/__tests__/platform-extension.test.ts
+@settler/cli:test: PASS src/__tests__/reconciliation-foundry.test.ts (5.983 s)
+@settler/cli:test: PASS src/__tests__/replay-verification.test.ts
+@settler/cli:test: PASS src/__tests__/foundry.test.ts
+@settler/cli:test: PASS src/__tests__/execution-ledger.test.ts
+@settler/cli:test: PASS src/__tests__/safety.test.ts
+@settler/cli:test: PASS src/__tests__/kernel-client.test.ts (9.618 s)
+@settler/cli:test:
+@settler/cli:test: Test Suites: 8 passed, 8 total
+@settler/cli:test: Tests:       40 passed, 40 total
+@settler/cli:test: Snapshots:   0 total
+@settler/cli:test: Time:        10.952 s
+@settler/cli:test: Ran all test suites.
+@settler/adapters:build: cache hit, replaying logs 0629753de8d4cd68
+@settler/adapters:build:
+@settler/adapters:build: > @settler/adapters@1.0.0 build /app/packages/adapters
+@settler/adapters:build: > node ../../scripts/run-package-tsc-build.mjs
+@settler/adapters:build:
+@settler/reconciliation-core:build: cache hit, replaying logs 3329b0e05659dcb5
+@settler/reconciliation-core:build:
+@settler/reconciliation-core:build: > @settler/reconciliation-core@1.0.0 prebuild /app/packages/reconciliation-core
+@settler/reconciliation-core:build: > cd ../.. && node scripts/assert-node-version.mjs
+@settler/reconciliation-core:build:
+@settler/reconciliation-core:build: ✅ Node runtime OK (v24.12.0; required 24.12.0, >=24.0.0 <25.0.0)
+@settler/reconciliation-core:build:
+@settler/reconciliation-core:build: > @settler/reconciliation-core@1.0.0 build /app/packages/reconciliation-core
+@settler/reconciliation-core:build: > node ../../scripts/run-package-tsc-build.mjs
+@settler/reconciliation-core:build:
+@settler/reconciliation-core:test: cache hit, replaying logs c86b9f4fb4b35ddd
+@settler/reconciliation-core:test:
+@settler/reconciliation-core:test: > @settler/reconciliation-core@1.0.0 pretest /app/packages/reconciliation-core
+@settler/reconciliation-core:test: > cd ../.. && node scripts/assert-node-version.mjs
+@settler/reconciliation-core:test:
+@settler/reconciliation-core:test: ✅ Node runtime OK (v24.12.0; required 24.12.0, >=24.0.0 <25.0.0)
+@settler/reconciliation-core:test:
+@settler/reconciliation-core:test: > @settler/reconciliation-core@1.0.0 test /app/packages/reconciliation-core
+@settler/reconciliation-core:test: > jest --runInBand --forceExit
+@settler/reconciliation-core:test:
+@settler/reconciliation-core:test: PASS src/cross-run-intelligence.test.ts
+@settler/reconciliation-core:test: PASS src/api-runs-legacy-page-scan.test.ts
+@settler/reconciliation-core:test: PASS src/operator-run-detail.test.ts
+@settler/reconciliation-core:test: PASS src/run-proofpack-index.test.ts
+@settler/reconciliation-core:test: PASS src/console-reconciliation-list.test.ts
+@settler/reconciliation-core:test: PASS src/canonical-surface-consistency.test.ts
+@settler/reconciliation-core:test: PASS src/api-runs-list-adapter.test.ts
+@settler/reconciliation-core:test: PASS src/pre-go-live-simulation.test.ts
+@settler/reconciliation-core:test: PASS src/merged-list-pagination.test.ts
+@settler/reconciliation-core:test: PASS src/operator-run-detail-resolve.test.ts
+@settler/reconciliation-core:test: PASS src/exception-intelligence.test.ts
+@settler/reconciliation-core:test: PASS src/support-intake-run-context.test.ts
+@settler/reconciliation-core:test: PASS src/structured-run-delta.test.ts
+@settler/reconciliation-core:test: PASS src/billing-entitlements.test.ts
+@settler/reconciliation-core:test: PASS src/__tests__/prior-run-delta-analyst.test.ts
+@settler/reconciliation-core:test: PASS src/run-capabilities.test.ts
+@settler/reconciliation-core:test: PASS src/policy-engine.test.ts
+@settler/reconciliation-core:test: PASS src/exception-run-comparison.test.ts
+@settler/reconciliation-core:test: PASS src/run-delta-classification.test.ts
+@settler/reconciliation-core:test: PASS src/policy-tolerance-merge.test.ts
+@settler/reconciliation-core:test: PASS src/source-reliability.test.ts
+@settler/reconciliation-core:test:
+@settler/reconciliation-core:test: Test Suites: 21 passed, 21 total
+@settler/reconciliation-core:test: Tests:       74 passed, 74 total
+@settler/reconciliation-core:test: Snapshots:   1 passed, 1 total
+@settler/adapters:test: cache hit, replaying logs d22cdb56e94ce1f6
+@settler/reconciliation-core:test: Time:        4.665 s, estimated 5 s
+@settler/adapters:test:
+@settler/reconciliation-core:test: Ran all test suites.
+@settler/reconciliation-core:test: Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?
+@settler/adapters:test: > @settler/adapters@1.0.0 test /app/packages/adapters
+@settler/adapters:test: > jest --config jest.config.cjs
+@settler/adapters:test:
+@settler/adapters:test: ts-jest[config] (WARN)
+@settler/adapters:test:     The "ts-jest" config option "isolatedModules" is deprecated and will be removed in v30.0.0. Please use "isolatedModules: true" in /app/packages/adapters/tsconfig.json instead, see https://www.typescriptlang.org/tsconfig/#isolatedModules
+@settler/adapters:test:
+@settler/adapters:test: PASS src/__tests__/connector-runtime.persistence.test.ts
+@settler/adapters:test: PASS src/__tests__/credential-encryption.test.ts
+@settler/adapters:test:   ● Console
+@settler/adapters:test:
+@settler/adapters:test:     console.warn
+@settler/adapters:test:       [credential-encryption] INSECURE legacy base64 credential fallback is active (dev/test only)
+@settler/adapters:test:
+@settler/adapters:test:       141 |
+@settler/adapters:test:       142 |   if (insecureAllowed) {
+@settler/adapters:test:     > 143 |     console.warn(
+@settler/adapters:test:           |             ^
+@settler/adapters:test:       144 |       "[credential-encryption] INSECURE legacy base64 credential fallback is active (dev/test only)"
+@settler/adapters:test:       145 |     );
+@settler/adapters:test:       146 |     try {
+@settler/adapters:test:
+@settler/adapters:test:       at decryptCredentials (src/credential-encryption.ts:143:13)
+@settler/adapters:test:       at Object.<anonymous> (src/__tests__/credential-encryption.test.ts:35:5)
+@settler/adapters:test:
+@settler/adapters:test:     console.error
+@settler/adapters:test:       [credential-encryption] ALLOW_INSECURE_CREDENTIAL_FALLBACK is set but rejected: requires NODE_ENV=development|test and ALLOW_INSECURE_CREDENTIAL_FALLBACK_IN_DEV=true (production must never use plaintext credential fallback)
+@settler/adapters:test:
+@settler/adapters:test:       135 |
+@settler/adapters:test:       136 |   if (process.env.ALLOW_INSECURE_CREDENTIAL_FALLBACK === "true" && !insecureAllowed) {
+@settler/adapters:test:     > 137 |     console.error(
+@settler/adapters:test:           |             ^
+@settler/adapters:test:       138 |       "[credential-encryption] ALLOW_INSECURE_CREDENTIAL_FALLBACK is set but rejected: requires NODE_ENV=development|test and ALLOW_INSECURE_CREDENTIAL_FALLBACK_IN_DEV=true (production must never use plaintext credential fallback)"
+@settler/adapters:test:       139 |     );
+@settler/adapters:test:       140 |   }
+@settler/adapters:test:
+@settler/adapters:test:       at decryptCredentials (src/credential-encryption.ts:137:13)
+@settler/adapters:test:       at Object.<anonymous> (src/__tests__/credential-encryption.test.ts:50:5)
+@settler/adapters:test:
+@settler/adapters:test: PASS src/__tests__/batch-processor-guards.test.ts
+@settler/adapters:test: PASS src/__tests__/rate-limiting-window-count.test.ts
+@settler/adapters:test:
+@settler/adapters:test: Test Suites: 4 passed, 4 total
+@settler/adapters:test: Tests:       10 passed, 10 total
+@settler/adapters:test: Snapshots:   0 total
+@settler/adapters:test: Time:        0.866 s, estimated 1 s
+@settler/adapters:test: Ran all test suites.
+@settler/api:build: cache hit, replaying logs 9802817751fc2f8c
+@settler/api:build:
+@settler/api:build: > @settler/api@1.0.0 prebuild /app/packages/api
+@settler/api:build: > cd ../.. && node scripts/assert-node-version.mjs && pnpm run prisma:generate && pnpm --filter @settler/types run build && pnpm --filter @settler/adapters run build && pnpm --filter @settler/support-intake run build && pnpm --filter @settler/reconciliation-core run build
+@settler/api:build:
+@settler/api:build: ✅ Node runtime OK (v24.12.0; required 24.12.0, >=24.0.0 <25.0.0)
+@settler/api:build:
+@settler/api:build: > settler-monorepo@1.0.0 prisma:generate /app
+@settler/api:build: > node scripts/prisma-generate.mjs
+@settler/api:build:
+@settler/api:build: ◇ injected env (0) from .env.local // tip: ⌁ auth for agents [www.vestauth.com]
+@settler/api:build:
+@settler/api:build: ✔ Generated Prisma Client (v7.6.0) to ./node_modules/.pnpm/@prisma+client@7.6.0_prisma@7.6.0_@types+react-dom@18.3.7_@types+react@18.3.28__@types+_eecaa3bb0a9281ef04726703c9c67e78/node_modules/@prisma/client in 1.15s
+@settler/api:build:
+@settler/api:build: Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+@settler/api:build:
+@settler/api:build:
+@settler/api:build: Loaded Prisma config from prisma.config.ts.
+@settler/api:build:
+@settler/api:build: Prisma schema loaded from prisma/schema.prisma.
+@settler/api:build: ┌─────────────────────────────────────────────────────────┐
+@settler/api:build: │  Update available 7.6.0 -> 7.8.0                        │
+@settler/api:build: │  Run the following to update                            │
+@settler/api:build: │    npm i --save-dev prisma@latest                       │
+@settler/api:build: │    npm i @prisma/client@latest                          │
+@settler/api:build: └─────────────────────────────────────────────────────────┘
+@settler/api:build:
+@settler/api:build: > @settler/types@1.0.0 build /app/packages/types
+@settler/api:build: > node ../../scripts/run-package-tsc-build.mjs
+@settler/api:build:
+@settler/api:build:
+@settler/api:build: > @settler/adapters@1.0.0 build /app/packages/adapters
+@settler/api:build: > node ../../scripts/run-package-tsc-build.mjs
+@settler/api:build:
+@settler/api:build:
+@settler/api:build: > @settler/support-intake@0.1.0 build /app/packages/support-intake
+@settler/api:build: > node ../../scripts/run-package-tsc-build.mjs
+@settler/api:build:
+@settler/api:build:
+@settler/api:build: > @settler/reconciliation-core@1.0.0 prebuild /app/packages/reconciliation-core
+@settler/api:build: > cd ../.. && node scripts/assert-node-version.mjs
+@settler/api:build:
+@settler/api:build: ✅ Node runtime OK (v24.12.0; required 24.12.0, >=24.0.0 <25.0.0)
+@settler/api:build:
+@settler/api:build: > @settler/reconciliation-core@1.0.0 build /app/packages/reconciliation-core
+@settler/api:build: > node ../../scripts/run-package-tsc-build.mjs
+@settler/api:build:
+@settler/api:build:
+@settler/api:build: > @settler/api@1.0.0 build /app/packages/api
+@settler/api:build: > node ../../scripts/run-package-tsc-build.mjs --skipLibCheck --noEmit false
+@settler/api:build:
+@settler/api:test: cache miss, executing 910a6800492e8850
+@settler/web:build: cache miss, executing 9433b88fca0a7e49
+@settler/api:test:
+@settler/api:test: > @settler/api@1.0.0 pretest /app/packages/api
+@settler/api:test: > cd ../.. && node scripts/assert-node-version.mjs && pnpm run prisma:generate && pnpm --filter @settler/types run build && pnpm --filter @settler/adapters run build && pnpm --filter @settler/support-intake run build && pnpm --filter @settler/reconciliation-core run build
+@settler/api:test:
+@settler/web:build:
+@settler/web:build: > @settler/web@1.0.0 prebuild /app/packages/web
+@settler/web:build: > cd ../.. && node scripts/assert-node-version.mjs && pnpm run prisma:generate && pnpm --filter @settler/types run build && pnpm --filter @settler/support-intake run build && pnpm --filter @settler/reconciliation-core run build
+@settler/web:build:
+@settler/api:test: ✅ Node runtime OK (v24.12.0; required 24.12.0, >=24.0.0 <25.0.0)
+@settler/web:build: ✅ Node runtime OK (v24.12.0; required 24.12.0, >=24.0.0 <25.0.0)
+@settler/web:build:
+@settler/web:build: > settler-monorepo@1.0.0 prisma:generate /app
+@settler/web:build: > node scripts/prisma-generate.mjs
+@settler/web:build:
+@settler/api:test:
+@settler/api:test: > settler-monorepo@1.0.0 prisma:generate /app
+@settler/api:test: > node scripts/prisma-generate.mjs
+@settler/api:test:
+@settler/web:build: ◇ injected env (0) from .env.local // tip: ◈ encrypted .env [www.dotenvx.com]
+@settler/web:build:
+@settler/web:build: ✔ Generated Prisma Client (v7.6.0) to ./node_modules/.pnpm/@prisma+client@7.6.0_prisma@7.6.0_@types+react-dom@18.3.7_@types+react@18.3.28__@types+_eecaa3bb0a9281ef04726703c9c67e78/node_modules/@prisma/client in 1.23s
+@settler/web:build:
+@settler/web:build: Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+@settler/web:build:
+@settler/web:build:
+@settler/web:build: Loaded Prisma config from prisma.config.ts.
+@settler/web:build:
+@settler/web:build: Prisma schema loaded from prisma/schema.prisma.
+@settler/api:test: ◇ injected env (0) from .env.local // tip: ⌁ auth for agents [www.vestauth.com]
+@settler/api:test:
+@settler/api:test: ✔ Generated Prisma Client (v7.6.0) to ./node_modules/.pnpm/@prisma+client@7.6.0_prisma@7.6.0_@types+react-dom@18.3.7_@types+react@18.3.28__@types+_eecaa3bb0a9281ef04726703c9c67e78/node_modules/@prisma/client in 1.25s
+@settler/api:test:
+@settler/api:test: Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+@settler/api:test:
+@settler/api:test:
+@settler/api:test: Loaded Prisma config from prisma.config.ts.
+@settler/api:test:
+@settler/api:test: Prisma schema loaded from prisma/schema.prisma.
+@settler/web:build:
+@settler/web:build: > @settler/types@1.0.0 build /app/packages/types
+@settler/web:build: > node ../../scripts/run-package-tsc-build.mjs
+@settler/web:build:
+@settler/api:test:
+@settler/api:test: > @settler/types@1.0.0 build /app/packages/types
+@settler/api:test: > node ../../scripts/run-package-tsc-build.mjs
+@settler/api:test:
+@settler/web:build:
+@settler/web:build: > @settler/support-intake@0.1.0 build /app/packages/support-intake
+@settler/web:build: > node ../../scripts/run-package-tsc-build.mjs
+@settler/web:build:
+@settler/api:test:
+@settler/api:test: > @settler/adapters@1.0.0 build /app/packages/adapters
+@settler/api:test: > node ../../scripts/run-package-tsc-build.mjs
+@settler/api:test:
+@settler/web:build:
+@settler/web:build: > @settler/reconciliation-core@1.0.0 prebuild /app/packages/reconciliation-core
+@settler/web:build: > cd ../.. && node scripts/assert-node-version.mjs
+@settler/web:build:
+@settler/web:build: ✅ Node runtime OK (v24.12.0; required 24.12.0, >=24.0.0 <25.0.0)
+@settler/web:build:
+@settler/web:build: > @settler/reconciliation-core@1.0.0 build /app/packages/reconciliation-core
+@settler/web:build: > node ../../scripts/run-package-tsc-build.mjs
+@settler/web:build:
+@settler/api:test:
+@settler/api:test: > @settler/support-intake@0.1.0 build /app/packages/support-intake
+@settler/api:test: > node ../../scripts/run-package-tsc-build.mjs
+@settler/api:test:
+@settler/web:build:
+@settler/web:build: > @settler/web@1.0.0 build /app/packages/web
+@settler/web:build: > node ./scripts/assert-build-env.mjs && node ./scripts/assert-reconciliation-core-dist.mjs && next build --webpack
+@settler/web:build:
+@settler/web:build: ❌ Build-time environment validation failed.
+@settler/web:build: Missing required environment key groups:
+@settler/web:build:   - supabase-url: NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL
+@settler/web:build:   - supabase-anon: NEXT_PUBLIC_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY
+@settler/web:build:   - database-url: DATABASE_URL or SUPABASE_DATABASE_URL or DIRECT_URL or SUPABASE_DB_URL
+@settler/web:build: Set required keys in Vercel environment settings for hosted builds/runs.
+@settler/web:build:  ELIFECYCLE  Command failed with exit code 1.
+@settler/api:test:
+@settler/api:test: > @settler/api@1.0.0 test /app/packages/api
+@settler/api:test: > jest --runInBand --forceExit
+@settler/api:test:
+ ERROR  @settler/web#build: command (/app/packages/web) /home/jules/.local/share/pnpm/.tools/pnpm/10.13.1/bin/pnpm run build exited (1)
+
+ Tasks:    32 successful, 34 total
+Cached:    32 cached, 34 total
+  Time:    14.314s
+Failed:    @settler/web#build
+
+ ERROR  run failed: command  exited (1)
+ ELIFECYCLE  Test failed. See above for more details.
