@@ -2,13 +2,17 @@ module.exports = {
   preset: "ts-jest",
   testEnvironment: "node",
   transform: {
-    "^.+.tsx?$": "ts-jest",
+    "^.+.tsx?$": ["ts-jest", { isolatedModules: true }],
   },
   moduleNameMapper: {
+    "^uuid$": require.resolve("uuid"),
     "^@settler/support-intake$": "<rootDir>/../support-intake/src/index.ts",
     "^@settler/adapters$": "<rootDir>/../adapters/dist/index.js",
     "^@settler/reconciliation-core$": "<rootDir>/../reconciliation-core/dist/index.js",
   },
+  transformIgnorePatterns: [
+    "/node_modules/(?!uuid)"
+  ],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
   setupFilesAfterEnv: ["<rootDir>/src/__tests__/setup.ts"],
   testPathIgnorePatterns: [
