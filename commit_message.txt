@@ -1,0 +1,5 @@
+🧪 Add TaxJar Driver Error Path Tests
+
+🎯 What: Added tests for the TaxJar driver focusing on the missing error paths for both `testConnection` and `sync` methods when the network/API requests fail.
+📊 Coverage: Added full coverage for `testConnection` (success, missing API key, API failure, and network error) and `sync` (success mapping, fetch failure throwing `ConnectorError`, and rethrowing existing `ConnectorError`s).
+✨ Result: Ensured that network failure scenarios are correctly mapped and handled via `ConnectorError`, improving confidence and stability of the platform adapters.
