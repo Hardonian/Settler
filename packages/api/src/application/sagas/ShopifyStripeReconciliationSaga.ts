@@ -282,22 +282,46 @@ export class ShopifyStripeReconciliationSaga {
           const matched: Match[] = [];
           const unmatched: Unmatched[] = [];
 
+          // Pre-parse payment dates and index by metadata to avoid O(N*M) loop and repeated parsing
+          const paymentTimeMap = new Map<string, number>();
+          const paymentsByOrderId = new Map<string, Payment[]>();
+
+          for (const payment of payments) {
+            paymentTimeMap.set(payment.id, new Date(payment.date).getTime());
+
+            const orderId = (payment.metadata?.order_id as string) || payment.referenceId;
+            if (typeof orderId === "string" && orderId) {
+              if (!paymentsByOrderId.has(orderId)) {
+                paymentsByOrderId.set(orderId, []);
+              }
+              paymentsByOrderId.get(orderId)!.push(payment);
+            }
+          }
+
           // Simple matching logic (in production, use more sophisticated algorithm)
           for (const order of orders) {
-            const match = payments.find((payment) => {
-              // Match by amount and date proximity using canonical loader values
-              const amountMatch = Math.abs(order.amount - payment.amount) < amountTolerance;
-              const dateDiff = Math.abs(
-                new Date(order.date).getTime() - new Date(payment.date).getTime()
+            const orderTime = new Date(order.date).getTime();
+            let match: Payment | undefined = undefined;
+
+            // First check exact metadata matches (fastest path)
+            const possibleMatches = paymentsByOrderId.get(order.id);
+            if (possibleMatches) {
+              match = possibleMatches.find(
+                (p) => Math.abs(order.amount - p.amount) < amountTolerance
               );
-              const dateMatch = dateDiff < dateToleranceMs; // Use configured date window
+            }
 
-              // Also check metadata for order_id match
-              const metadataMatch =
-                payment.metadata?.order_id === order.id || payment.referenceId === order.id;
+            // Fallback to array scan with short-circuiting
+            if (!match) {
+              match = payments.find((payment) => {
+                const amountMatch = Math.abs(order.amount - payment.amount) < amountTolerance;
+                if (!amountMatch) return false;
 
-              return amountMatch && (dateMatch || metadataMatch);
-            });
+                const paymentTime = paymentTimeMap.get(payment.id)!;
+                const dateDiff = Math.abs(orderTime - paymentTime);
+                return dateDiff < dateToleranceMs; // Use configured date window
+              });
+            }
 
             if (match) {
               // Calculate confidence based on how well the match aligns with rules
