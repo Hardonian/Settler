@@ -287,8 +287,7 @@ export class DeterministicMatchingEngine {
     const exactRules = this.rules.filter((r) => r.type === "exact");
 
     for (const rule of exactRules) {
-      // Sort rules deterministically by ID
-      const sortedRule = this.rules.find((r) => r.id === rule.id);
+      const sortedRule = rule;
       if (!sortedRule) continue;
 
       for (const source of this.sortedSourceRecords) {
