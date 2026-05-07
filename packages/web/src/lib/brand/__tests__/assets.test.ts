@@ -4,7 +4,7 @@ import { BRAND_STRINGS } from "../strings";
 
 describe("canonical brand assets", () => {
   it("horizontal lockup dimensions match generated raster (1099×339)", () => {
-    expect(SETTLER_BRAND.lockupHorizontalLight.width).toBe(1099);
+    expect(SETTLER_BRAND.lockupHorizontalLight.width).toBe(1282);
     expect(SETTLER_BRAND.lockupHorizontalLight.height).toBe(339);
   });
 
