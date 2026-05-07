@@ -21,8 +21,8 @@ describe("webhook runtime invariants", () => {
       "utf-8"
     );
 
-    expect(source).toContain("export const runtime = 'nodejs'");
+    expect(source).toContain(`export const runtime = "nodejs"`);
     expect(source).toContain("const rawBody = await request.text();");
-    expect(source).toContain("createHmac('sha256'");
+    expect(source).toContain(`createHmac("sha256"`);
   });
 });
