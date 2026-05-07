@@ -320,10 +320,10 @@ export async function matchTransaction(
   // Try ML matching engine (proprietary, creates data moat)
   // This uses historical match data and cross-customer intelligence
   try {
-    const sourceAdapter = await getSourceAdapter(sourceTransactionId, tenantId);
-    const targetAdapters = await Promise.all(
-      targetTransactionIds.map((id) => getSourceAdapter(id, tenantId))
-    );
+    const allIds = [sourceTransactionId, ...targetTransactionIds];
+    const adapterMap = await getSourceAdaptersBatch(allIds, tenantId);
+    const sourceAdapter = adapterMap.get(sourceTransactionId) || null;
+    const targetAdapters = targetTransactionIds.map((id) => adapterMap.get(id) || null);
 
     // Use ML engine for first target adapter (most common case)
     if (targetAdapters.length > 0) {
@@ -805,12 +805,25 @@ export async function runReconciliation(
       }).catch(() => {});
     }
 
+    // Pre-fetch all adapters for cross-customer intelligence
+    const allCrossCustomerIds = new Set<string>();
+    for (const match of matches) {
+      if (match.targetTransactionId && match.matchType !== "unmatched") {
+        allCrossCustomerIds.add(match.sourceTransactionId);
+        allCrossCustomerIds.add(match.targetTransactionId);
+      }
+    }
+    const crossCustomerAdaptersMap = await getSourceAdaptersBatch(
+      Array.from(allCrossCustomerIds),
+      tenantId
+    );
+
     // Record patterns for cross-customer intelligence (creates data moat)
     for (const match of matches) {
       if (match.targetTransactionId && match.matchType !== "unmatched") {
         try {
-          const sourceAdapter = await getSourceAdapter(match.sourceTransactionId, tenantId);
-          const targetAdapter = await getSourceAdapter(match.targetTransactionId, tenantId);
+          const sourceAdapter = crossCustomerAdaptersMap.get(match.sourceTransactionId) || null;
+          const targetAdapter = crossCustomerAdaptersMap.get(match.targetTransactionId) || null;
 
           if (sourceAdapter && targetAdapter) {
             await enhancedCrossCustomerIntelligence.recordPattern(tenantId, {
@@ -854,25 +867,32 @@ export async function runReconciliation(
 }
 
 /**
- * Get source adapter for transaction — scoped by tenant_id
+ * Get multiple source adapters at once — scoped by tenant_id
  */
-async function getSourceAdapter(transactionId: string, tenantId: string): Promise<string | null> {
+async function getSourceAdaptersBatch(
+  transactionIds: string[],
+  tenantId: string
+): Promise<Map<string, string>> {
+  if (transactionIds.length === 0) return new Map();
+
   try {
     const result = await query(
-      `SELECT si.connector_type
+      `SELECT nt.id, si.connector_type
       FROM normalized_transactions nt
       JOIN ingestion_sources si ON si.id = nt.source_id
-      WHERE nt.id = $1 AND nt.tenant_id = $2
-      LIMIT 1`,
-      [transactionId, tenantId]
+      WHERE nt.id = ANY($1::uuid[]) AND nt.tenant_id = $2`,
+      [transactionIds, tenantId]
     );
 
-    if (result.length > 0) {
-      return (result[0] as { connector_type: string | null }).connector_type;
+    const adapterMap = new Map<string, string>();
+    for (const row of result) {
+      if (row.connector_type) {
+        adapterMap.set(row.id as string, row.connector_type as string);
+      }
     }
-    return null;
+    return adapterMap;
   } catch (error) {
-    logError("Failed to get source adapter", error, { transactionId });
-    return null;
+    logError("Failed to get source adapters batch", error);
+    return new Map();
   }
 }
