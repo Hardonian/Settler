@@ -14,7 +14,7 @@ jobs:
       SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
@@ -31,7 +31,7 @@ jobs:
         # Fails if any table in public schema has RLS disabled
         run: |
           supabase db push --dry-run # Ensure sync state
-          
+
           # This query checks for tables without RLS
           MISSING_RLS=$(psql -h aws-0-us-east-1.pooler.supabase.com -p 5432 -U postgres.$SUPABASE_PROJECT_ID -d postgres -t -c "
             SELECT tablename 
@@ -41,13 +41,13 @@ jobs:
               AND tablename NOT LIKE 'pg_%' 
               AND tablename NOT IN ('_prisma_migrations', 'schema_migrations');
           ")
-          
+
           if [ ! -z "$MISSING_RLS" ]; then
             echo "CRITICAL SECURITY FAILURE: The following tables do not have RLS enabled:"
             echo "$MISSING_RLS"
             exit 1
           fi
-          
+
           echo "PASS: All public tables have RLS enabled."
         env:
           PGPASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
@@ -58,12 +58,12 @@ jobs:
           HAS_FUNC=$(psql -h aws-0-us-east-1.pooler.supabase.com -p 5432 -U postgres.$SUPABASE_PROJECT_ID -d postgres -t -c "
             SELECT 1 FROM pg_proc WHERE proname = 'get_user_tenant_ids';
           ")
-          
+
           if [ -z "$HAS_FUNC" ]; then
              echo "CRITICAL FAILURE: get_user_tenant_ids() function missing!"
              exit 1
           fi
-          
+
           echo "PASS: Critical tenant isolation function exists."
         env:
           PGPASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
