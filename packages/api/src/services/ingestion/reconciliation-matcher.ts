@@ -673,14 +673,17 @@ export async function runReconciliation(
 
     // Store matches
     await transaction(async (client) => {
-      for (const match of matches) {
-        await client.query(
-          `INSERT INTO reconciliation_matches (
-            id, run_id, source_transaction_id, target_transaction_id,
-            tenant_id, match_type, confidence, match_reason,
-            amount_diff, date_diff, reviewed, metadata, created_at, updated_at
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW(), NOW())`,
-          [
+      const BATCH_SIZE = 500;
+      for (let i = 0; i < matches.length; i += BATCH_SIZE) {
+        const chunk = matches.slice(i, i + BATCH_SIZE);
+        const values: any[] = [];
+        const placeholders: string[] = [];
+        let paramIndex = 1;
+
+        for (const match of chunk) {
+          const params = Array.from({ length: 12 }, () => "$" + paramIndex++);
+          placeholders.push(`(${params.join(", ")}, NOW(), NOW())`);
+          values.push(
             uuidv4(),
             runId,
             match.sourceTransactionId,
@@ -692,9 +695,20 @@ export async function runReconciliation(
             match.amountDiff || null,
             match.dateDiff || null,
             false,
-            JSON.stringify({}),
-          ]
-        );
+            JSON.stringify({})
+          );
+        }
+
+        if (placeholders.length > 0) {
+          await client.query(
+            `INSERT INTO reconciliation_matches (
+              id, run_id, source_transaction_id, target_transaction_id,
+              tenant_id, match_type, confidence, match_reason,
+              amount_diff, date_diff, reviewed, metadata, created_at, updated_at
+            ) VALUES ${placeholders.join(", ")}`,
+            values
+          );
+        }
       }
     });
 
