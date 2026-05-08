@@ -1,7 +1,5 @@
 name: Publish Mirror
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 on:
   push:
     tags:
@@ -27,6 +25,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
+          cache: false
       
       - run: npm ci
       

@@ -289,7 +289,7 @@ export {
   supportIntakeSubmissionSchema,
   type SupportIntakeSubmission,
   type SupportIssueCategory,
-} from "./support-intake-contract.js";
+} from "./support-intake-contract";
 
 // Run types (for reconciliation runs/executions)
 export {

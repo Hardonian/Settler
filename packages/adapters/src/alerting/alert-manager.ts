@@ -5,7 +5,6 @@
  */
 
 import { createClient } from "@supabase/supabase-js";
-import { notificationService } from "./notification-service";
 
 export type AlertSeverity = "critical" | "warning" | "info";
 
@@ -267,7 +266,7 @@ export class AlertManager {
     console.warn(`Alert: [${alert.severity.toUpperCase()}] ${alert.title} - ${alert.message}`);
 
     // Send to configured notification channels
-
+    const { notificationService } = await import("./notification-service.js");
 
     if (notificationService.hasAnyConfiguration()) {
       try {

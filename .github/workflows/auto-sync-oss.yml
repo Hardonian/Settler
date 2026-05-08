@@ -18,7 +18,6 @@ on:
         type: boolean
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   ENABLE_AUTO_SYNC: ${{ vars.ENABLE_AUTO_SYNC || 'true' }}
   OSS_REPO_URL: ${{ secrets.PUBLIC_MIRROR_REPO_URL || 'https://github.com/shardie-github/settler-oss.git' }}
   OSS_REPO_TOKEN: ${{ secrets.PUBLIC_MIRROR_GIT_TOKEN }}
@@ -42,6 +41,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
+          cache: false
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate

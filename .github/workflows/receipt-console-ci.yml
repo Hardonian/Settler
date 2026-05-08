@@ -23,7 +23,6 @@ on:
       - ".github/workflows/receipt-console-ci.yml"
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   NODE_VERSION: "24"
   DATABASE_URL: ${{ secrets.DATABASE_URL }}
   SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -45,6 +44,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: false
 
       - name: Install dependencies
         run: npm ci
@@ -64,6 +64,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: false
 
       - name: Install dependencies
         run: npm ci
@@ -81,6 +82,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: false
 
       - name: Install dependencies
         run: npm ci
@@ -102,6 +104,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: false
 
       - name: Install dependencies
         run: npm ci
@@ -138,6 +141,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: false
 
       - name: Install dependencies
         run: npm ci
@@ -160,6 +164,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: false
 
       - name: Install dependencies
         run: npm ci
@@ -190,6 +195,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: false
 
       - name: Install dependencies
         run: npm ci

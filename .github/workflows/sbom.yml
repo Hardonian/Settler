@@ -5,8 +5,6 @@ name: SBOM Generation
 # inventory of all dependencies for enterprise procurement and supply
 # chain security review.
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 on:
   push:
     tags:

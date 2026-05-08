@@ -10,7 +10,6 @@ on:
       - ".github/workflows/deploy-preview.yml"
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
@@ -23,6 +22,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
+          cache: false
       - run: npm ci
       - name: Build application
         run: npx turbo run build

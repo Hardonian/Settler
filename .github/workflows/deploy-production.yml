@@ -25,7 +25,6 @@ on:
         type: boolean
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   NODE_ENV: production
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
@@ -39,6 +38,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
+          cache: false
       - run: npm ci
       - name: Validate environment schema
         run: npx --yes tsx --check config/env.schema.ts
@@ -59,6 +59,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
+          cache: false
       - run: npm ci
       - name: Run tests
         run: npm run test -- --coverage
@@ -88,6 +89,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
+          cache: false
       - run: npm ci
       - name: Build all packages
         run: npx turbo run build
@@ -115,6 +117,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
+          cache: false
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:

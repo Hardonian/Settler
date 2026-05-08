@@ -10,7 +10,6 @@ on:
   workflow_dispatch:
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
   SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
   DATABASE_URL: ${{ secrets.DATABASE_URL }}

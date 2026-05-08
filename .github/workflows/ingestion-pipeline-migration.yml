@@ -1,7 +1,5 @@
 name: Ingestion Pipeline Migration
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 on:
   pull_request:
     paths:
@@ -34,6 +32,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
+          cache: false
 
       - name: Install dependencies
         run: npm ci

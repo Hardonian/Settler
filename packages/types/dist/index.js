@@ -31,10 +31,10 @@ Object.defineProperty(exports, "RequestCorrelation", { enumerable: true, get: fu
 Object.defineProperty(exports, "AppError", { enumerable: true, get: function () { return logging_1.AppError; } });
 Object.defineProperty(exports, "safeAsync", { enumerable: true, get: function () { return logging_1.safeAsync; } });
 // Support intake (canonical operator/evidence-aligned categories)
-var support_intake_contract_js_1 = require("./support-intake-contract.js");
-Object.defineProperty(exports, "SUPPORT_ISSUE_CATEGORY", { enumerable: true, get: function () { return support_intake_contract_js_1.SUPPORT_ISSUE_CATEGORY; } });
-Object.defineProperty(exports, "SUPPORT_ISSUE_CATEGORY_LABELS", { enumerable: true, get: function () { return support_intake_contract_js_1.SUPPORT_ISSUE_CATEGORY_LABELS; } });
-Object.defineProperty(exports, "supportIntakeSubmissionSchema", { enumerable: true, get: function () { return support_intake_contract_js_1.supportIntakeSubmissionSchema; } });
+var support_intake_contract_1 = require("./support-intake-contract");
+Object.defineProperty(exports, "SUPPORT_ISSUE_CATEGORY", { enumerable: true, get: function () { return support_intake_contract_1.SUPPORT_ISSUE_CATEGORY; } });
+Object.defineProperty(exports, "SUPPORT_ISSUE_CATEGORY_LABELS", { enumerable: true, get: function () { return support_intake_contract_1.SUPPORT_ISSUE_CATEGORY_LABELS; } });
+Object.defineProperty(exports, "supportIntakeSubmissionSchema", { enumerable: true, get: function () { return support_intake_contract_1.supportIntakeSubmissionSchema; } });
 // Commercial spine (plans, meters, premium packs, legacy mappings)
 var commercial_spine_1 = require("./commercial-spine");
 Object.defineProperty(exports, "USAGE_METERS", { enumerable: true, get: function () { return commercial_spine_1.USAGE_METERS; } });
