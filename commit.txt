@@ -1,0 +1,6 @@
+🧹 [code health improvement] Refactor console.go by splitting into multiple domain files
+
+🎯 What: Refactored the large console.go file into separate domain-specific files (console_api_keys.go, console_activities.go, console_feature_flags.go, console_health.go, console_receipts.go, console_usage.go). Also extracted shared parsing utility functions like getString, getInt, getSlice, etc., from console.go and settlements.go into a central utils.go file.
+💡 Why: The console.go file had over 500 lines of code, serving multiple domains and having multiple responsibilities. Extracting each domain's parsing logic, structs, and SDK methods into separate files improves maintainability, modularity, and code readability. Extracting the common utility functions to utils.go eliminates duplication.
+✅ Verification: Ran Go compiler (`go build ./...`) and Go test suite (`go test ./...`) to ensure that everything compiles and works correctly as expected, effectively validating no functionality is broken.
+✨ Result: `console.go` is now much smaller and solely focuses on defining the `ConsoleClient` struct. All domain logic is neatly encapsulated in dedicated files, and utility methods are deduplicated across the SDK package.

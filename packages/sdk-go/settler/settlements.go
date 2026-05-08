@@ -152,14 +152,6 @@ func parseSettlement(data map[string]interface{}) Settlement {
 	return s
 }
 
-// getString safely extracts a string value from a map
-func getString(data map[string]interface{}, key string) string {
-	if val, ok := data[key].(string); ok {
-		return val
-	}
-	return ""
-}
-
 // parseMoney converts a map to a Money struct
 func parseMoney(data map[string]interface{}) Money {
 	m := Money{
@@ -180,19 +172,4 @@ func parsePagination(data map[string]interface{}) Pagination {
 		TotalPages: getInt(data, "totalPages"),
 	}
 	return p
-}
-
-// getInt safely extracts an int value from a map
-func getInt(data map[string]interface{}, key string) int {
-	if value, ok := data[key]; ok {
-		switch typed := value.(type) {
-		case float64:
-			return int(typed)
-		case int:
-			return typed
-		case int64:
-			return int(typed)
-		}
-	}
-	return 0
 }
