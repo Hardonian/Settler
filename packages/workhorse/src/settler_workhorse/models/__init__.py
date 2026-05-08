@@ -1,14 +1,14 @@
 """Job models and schemas for the workhorse subsystem."""
 
 from datetime import datetime
-from enum import Enum
+from enum import Enum, StrEnum
 from typing import Any
 from uuid import UUID
 
 from pydantic import BaseModel, Field, field_validator
 
 
-class JobStatus(str, Enum):
+class JobStatus(StrEnum):
     """Job execution status states."""
 
     QUEUED = "queued"
@@ -19,7 +19,7 @@ class JobStatus(str, Enum):
     CANCELLED = "cancelled"
 
 
-class JobType(str, Enum):
+class JobType(StrEnum):
     """Supported job types for Python workhorse."""
 
     CSV_INGESTION = "csv_ingestion"

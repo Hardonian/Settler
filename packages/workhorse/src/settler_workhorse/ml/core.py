@@ -13,7 +13,7 @@ import json
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 from typing import Any, Generic, TypeVar
 
 import numpy as np
@@ -75,7 +75,7 @@ class VectorEmbedding(BaseModel):
         )
 
 
-class MLOperationType(str, Enum):
+class MLOperationType(StrEnum):
     """Types of ML operations."""
 
     EMBEDDING_GENERATION = "embedding_generation"

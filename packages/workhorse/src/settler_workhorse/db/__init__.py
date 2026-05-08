@@ -70,8 +70,7 @@ class JobRepository:
         """
         lock_cutoff = datetime.utcnow() - timedelta(seconds=lock_timeout_seconds)
 
-        query = sql.SQL(
-            """
+        query = sql.SQL("""
             WITH next_job AS (
                 SELECT id, tenant_id
                 FROM python_jobs
@@ -99,8 +98,7 @@ class JobRepository:
                 RETURNING python_jobs.*
             )
             SELECT * FROM claimed;
-            """
-        )
+            """)
 
         # Build job type filter if specified
         job_type_filter = sql.SQL("")
