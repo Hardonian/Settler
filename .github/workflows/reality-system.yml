@@ -1,5 +1,7 @@
 name: Reality System Automation
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 on:
   schedule:
     # Collect metrics every hour

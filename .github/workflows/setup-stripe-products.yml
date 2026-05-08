@@ -1,5 +1,7 @@
 name: Setup Stripe Products
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 on:
   workflow_dispatch:
   push:
@@ -22,7 +24,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

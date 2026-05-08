@@ -1,5 +1,7 @@
 name: verify
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 on:
   pull_request:
   push:
@@ -29,7 +31,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: false
       - name: Install
         run: pnpm install --frozen-lockfile
       - name: Verify gate

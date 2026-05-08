@@ -1,5 +1,7 @@
 name: Founder Weekly Report
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 on:
   schedule:
     # Run weekly on Monday at 07:40 America/Toronto (11:40 UTC)
@@ -20,7 +22,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: false
 
       - name: Install dependencies
         run: npm ci

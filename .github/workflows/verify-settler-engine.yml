@@ -1,5 +1,7 @@
 name: Verify Settler Engine
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 on:
   pull_request:
     paths:

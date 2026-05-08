@@ -1,5 +1,7 @@
 name: Code Quality Checks
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 on:
   pull_request:
     branches: [main, develop]
@@ -15,7 +17,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: false
       - run: corepack enable && corepack prepare pnpm@10.13.1 --activate
       - run: pnpm install --frozen-lockfile
       - run: pnpm run lint
@@ -35,7 +36,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: false
       - run: corepack enable && corepack prepare pnpm@10.13.1 --activate
       - run: pnpm install --frozen-lockfile
       - run: pnpm run typecheck
@@ -48,7 +48,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: false
       - run: corepack enable && corepack prepare pnpm@10.13.1 --activate
       - run: pnpm install --frozen-lockfile
       - run: pnpm audit --audit-level=moderate || true
@@ -66,7 +65,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: false
       - run: corepack enable && corepack prepare pnpm@10.13.1 --activate
       - run: pnpm install --frozen-lockfile
       - run: pnpm run test -- --coverage
@@ -86,7 +84,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: false
       - run: corepack enable && corepack prepare pnpm@10.13.1 --activate
       - run: pnpm install --frozen-lockfile
       - name: Check for unused exports

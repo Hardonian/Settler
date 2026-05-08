@@ -1,5 +1,7 @@
 name: Migration Safety Check
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 on:
   pull_request:
     paths:
@@ -30,7 +32,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: false
       - run: npm ci
       - name: Check migration files syntax
         run: |

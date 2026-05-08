@@ -44,6 +44,7 @@ on:
       - main
 
 env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   DATABASE_URL: ${{ secrets.DATABASE_URL }}
   SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
   SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -317,7 +318,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: false
       - run: npm ci
       - name: Build application
         run: npx turbo run build
@@ -360,7 +360,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: false
       - run: npm ci
       - name: Build application
         run: npx turbo run build

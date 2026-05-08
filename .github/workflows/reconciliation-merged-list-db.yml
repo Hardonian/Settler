@@ -1,5 +1,7 @@
 name: Reconciliation merged list (DB)
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 on:
   pull_request:
     paths:

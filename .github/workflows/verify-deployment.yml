@@ -1,5 +1,7 @@
 name: Verify Deployment
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 on:
   workflow_dispatch:
   schedule:
@@ -40,7 +42,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-          cache: false
 
       - name: Install dependencies
         run: npm ci
