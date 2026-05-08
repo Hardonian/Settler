@@ -17,7 +17,12 @@ function runCommand(command: string, args: string[], cwd: string): Promise<void>
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
       cwd,
-      env: { ...process.env },
+      env: {
+        ...process.env,
+        DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy?schema=public",
+        SUPABASE_URL: "https://dummy.supabase.co",
+        SUPABASE_ANON_KEY: "dummy",
+      },
       stdio: "pipe",
     });
 
