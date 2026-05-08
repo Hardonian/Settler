@@ -1,0 +1,4 @@
+console.log('I will:');
+console.log('1. Extract all utility functions (toTigerBeetleAmount, fromTigerBeetleAmount, generateAccountId, generateTransferId, bigintToString, stringToBigint, accountTypeToCode, codeToAccountType) and TigerBeetleConfig to `packages/api/src/infrastructure/repositories/tigerbeetle/utils.ts`.');
+console.log('2. Remove `isLedgerError` from `TigerBeetleLedgerRepository.ts` since it already imports it from `../../domain/LedgerError`? Wait, the import says: `import { LedgerError, AccountAlreadyExistsError, ... } from "../../domain/LedgerError";`. It does not currently import `isLedgerError`, but I can add it.');
+console.log('3. Extract the mappers (`mapTransferToDomain`, `mapAccountToDomain`, etc., if they exist as pure functions, though they might be private methods right now). Let me check if they depend on `this`.');
