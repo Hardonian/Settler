@@ -21,7 +21,7 @@ if (shouldLoadLocalEnv) {
 
 const manifest = JSON.parse(readFileSync(resolve(repoRoot, "config", "env.required.json"), "utf8"));
 
-const BUILD_REQUIRED_GROUP_LABELS = new Set(["supabase-url", "supabase-anon", "database-url"]);
+const BUILD_REQUIRED_GROUP_LABELS = new Set(["database-url"]);
 const REQUIRED_GROUPS = manifest.requirements.groups.filter((group) =>
   BUILD_REQUIRED_GROUP_LABELS.has(group.label)
 );
