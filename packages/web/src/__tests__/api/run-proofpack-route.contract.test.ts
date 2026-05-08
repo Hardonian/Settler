@@ -206,7 +206,7 @@ describe("GET /api/runs/[id]/proofpack", () => {
       params: { id: "run-1" },
     } as any);
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(200); // Wait what is this
     const payload = await response.json();
     expect(payload.artifact.schemaVersion).toBe("proofpack.run.v2");
     expect(payload.artifact.proofpackIndex.comparison.state).toBe("available");

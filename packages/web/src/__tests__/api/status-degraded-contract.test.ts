@@ -18,9 +18,9 @@ describe("status API degraded-mode contract", () => {
       "utf-8"
     );
 
-    expect(source).toContain("status: 'degraded'");
-    expect(source).toContain("healthy: false");
-    expect(source).toContain("error: 'Unable to complete health probe'");
+    expect(source).toMatch(/status:\s*['"]degraded['"]/);
+    expect(source).toMatch(/healthy:\s*false/);
+    expect(source).toMatch(/error:\s*['"]Unable to complete health probe['"]/);
     expect(source).toContain("{ status: 200 }");
   });
 });
