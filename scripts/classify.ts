@@ -177,6 +177,7 @@ const EXCLUDED_FROM_SECRET_CHECK = [
   "**/*.spec.ts",
   "**/*.spec.js",
   "**/examples/**",
+  "design/tokens.json",
   "**/docs/**",
   "**/scripts/**",
   "**/design-system/**",

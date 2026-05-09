@@ -266,7 +266,7 @@ export class AlertManager {
     console.warn(`Alert: [${alert.severity.toUpperCase()}] ${alert.title} - ${alert.message}`);
 
     // Send to configured notification channels
-    const { notificationService } = await import("./notification-service.js");
+    const { notificationService } = await import("./notification-service");
 
     if (notificationService.hasAnyConfiguration()) {
       try {

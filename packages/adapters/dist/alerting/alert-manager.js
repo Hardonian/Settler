@@ -229,7 +229,7 @@ class AlertManager {
         // Log to console
         console.warn(`Alert: [${alert.severity.toUpperCase()}] ${alert.title} - ${alert.message}`);
         // Send to configured notification channels
-        const { notificationService } = await Promise.resolve().then(() => __importStar(require("./notification-service.js")));
+        const { notificationService } = await Promise.resolve().then(() => __importStar(require("./notification-service")));
         if (notificationService.hasAnyConfiguration()) {
             try {
                 await notificationService.sendNotification({

@@ -744,7 +744,7 @@ router.get(
         runId: req.params.id,
         deltas: [],
       });
-    } catch (_error) {
+    } catch (error) {
       res.status(500).json({
         error: "INTERNAL_SERVER_ERROR",
         message: "An unexpected error occurred",
@@ -774,7 +774,7 @@ router.post(
         id: `adj_${Date.now()}`,
         status: "recorded",
       });
-    } catch (_error) {
+    } catch (error) {
       res.status(500).json({
         error: "INTERNAL_SERVER_ERROR",
         message: "An unexpected error occurred",

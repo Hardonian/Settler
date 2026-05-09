@@ -40,7 +40,7 @@ export function checkEntitlement() {
       }
 
       return next();
-    } catch (_error) {
+    } catch (error) {
       return res
         .status(500)
         .json({ error: "Internal Server Error", message: "Failed to verify entitlements" });
