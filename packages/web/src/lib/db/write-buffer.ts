@@ -13,10 +13,9 @@
  * - Write queue with periodic flush
  */
 
-import { prisma } from "@/shared/db/prismaClient";
+import { prisma, Prisma } from "@/shared/db/prismaClient";
 import { appLogger } from "@/lib/utils/logger";
 import { Redis } from "@upstash/redis";
-import { Prisma } from "@prisma/client";
 
 // ============================================================================
 // CONFIGURATION
@@ -105,7 +104,7 @@ export interface AuditLogBuffer {
 // IN-MEMORY BUFFERS (FALLBACK)
 // ============================================================================
 
-const inMemoryBuffers = {
+export const inMemoryBuffers = {
   usageEvents: [] as UsageEventBuffer[],
   apiCallLogs: [] as ApiCallLogBuffer[],
   auditLogs: [] as AuditLogBuffer[],
