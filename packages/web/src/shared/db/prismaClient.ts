@@ -66,7 +66,7 @@ if (typeof process !== "undefined" && process.env) {
 // Use require after env setup so Prisma reads the correct runtime configuration.
 
 const { PrismaClient } = require("@prisma/client") as {
-  PrismaClient: typeof import("@prisma/client").PrismaClient;
+  PrismaClient: { new(): PrismaClientType };
 };
 
 type PrismaQueryRaw = {
