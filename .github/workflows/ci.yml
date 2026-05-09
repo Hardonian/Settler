@@ -27,7 +27,6 @@ on:
       - "vercel.json"
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 
 jobs:
@@ -60,7 +59,6 @@ jobs:
       postgres:
         image: postgres:16
         env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: settler_test
@@ -81,7 +79,6 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       NODE_ENV: production
       NEXT_PUBLIC_SITE_URL: http://localhost:3000
       NEXT_PUBLIC_APP_URL: http://localhost:3000
@@ -132,7 +129,6 @@ jobs:
       postgres:
         image: postgres:16
         env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: settler_test
@@ -153,7 +149,6 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       NODE_ENV: test
       NEXT_PUBLIC_SITE_URL: http://localhost:3000
       NEXT_PUBLIC_APP_URL: http://localhost:3000
@@ -191,7 +186,6 @@ jobs:
       matrix:
         shard: ["1/2", "2/2"]
     env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       NODE_ENV: test
       NEXT_PUBLIC_SITE_URL: http://localhost:3000
       NEXT_PUBLIC_APP_URL: http://localhost:3000
@@ -226,7 +220,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       NODE_ENV: test
       NEXT_PUBLIC_SITE_URL: http://localhost:3000
       NEXT_PUBLIC_APP_URL: http://localhost:3000
@@ -282,7 +275,6 @@ jobs:
       postgres:
         image: postgres:16
         env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: settler_test
@@ -303,7 +295,6 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       NODE_ENV: test
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
       REDIS_URL: redis://localhost:6379

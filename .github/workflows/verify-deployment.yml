@@ -28,7 +28,6 @@ jobs:
           echo "Route verification completed. Check logs above for details."
 
   verify-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     name: Verify Environment Variables
     runs-on: ubuntu-latest
     timeout-minutes: 5

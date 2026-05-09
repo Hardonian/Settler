@@ -10,7 +10,6 @@ on:
   workflow_dispatch: # Allow manual trigger
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
@@ -31,7 +30,6 @@ jobs:
         run: npx turbo run build
       - name: Run production migrations
         env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           NODE_ENV: production
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
@@ -43,7 +41,6 @@ jobs:
           echo "✅ Production migrations completed"
       - name: Verify migration success
         env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           echo "🔍 Verifying migration success..."
@@ -53,7 +50,6 @@ jobs:
           echo "✅ Migration verification complete"
       - name: Health check after migration
         env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           REDIS_URL: ${{ secrets.REDIS_URL }}
           NODE_ENV: production

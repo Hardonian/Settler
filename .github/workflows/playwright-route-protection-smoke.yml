@@ -35,7 +35,6 @@ jobs:
       - name: Run route-protection smoke suite
         run: pnpm exec playwright test tests/e2e/route-protection-smoke.spec.ts --project=chromium
         env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           NEXT_PUBLIC_SITE_URL: http://localhost:3000
           NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: anon-key-for-ci
@@ -43,7 +42,6 @@ jobs:
       - name: Run security headers smoke check
         run: pnpm exec playwright test tests/e2e/security-headers-smoke.spec.ts --project=chromium
         env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           NEXT_PUBLIC_SITE_URL: http://localhost:3000
           NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: anon-key-for-ci
