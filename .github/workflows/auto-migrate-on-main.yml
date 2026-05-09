@@ -5,8 +5,8 @@ on:
     branches:
       - main
     paths:
-      - 'supabase/migrations/**'
-      - '.github/workflows/auto-migrate-on-main.yml'
+      - "supabase/migrations/**"
+      - ".github/workflows/auto-migrate-on-main.yml"
   workflow_dispatch:
 
 env:
@@ -25,7 +25,7 @@ jobs:
     name: Auto-Migrate Database
     runs-on: ubuntu-latest
     environment: production
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -42,12 +42,12 @@ jobs:
             echo "has_migrations=false" >> $GITHUB_OUTPUT
             exit 0
           fi
-          
+
           MIGRATION_COUNT=$(echo "$MIGRATIONS" | wc -l)
           echo "Found $MIGRATION_COUNT migration file(s)"
           echo "has_migrations=true" >> $GITHUB_OUTPUT
           echo "migration_count=$MIGRATION_COUNT" >> $GITHUB_OUTPUT
-          
+
           echo ""
           echo "Migration files to apply:"
           echo "$MIGRATIONS" | while read -r file; do
@@ -66,28 +66,28 @@ jobs:
         run: |
           echo "🔄 Applying migrations to production database..."
           echo "⚠️  This will apply ALL pending migrations automatically"
-          
+
           export PGPASSWORD="${{ env.SUPABASE_DB_PASSWORD }}"
-          
+
           # Get list of migration files sorted by name
           MIGRATIONS=$(ls -1 supabase/migrations/*.sql 2>/dev/null | sort)
-          
+
           if [ -z "$MIGRATIONS" ]; then
             echo "⚠️  No migration files found"
             exit 0
           fi
-          
+
           echo ""
           echo "Applying migrations in order:"
           echo "$MIGRATIONS" | while read -r file; do
             echo "  - $(basename $file)"
           done
           echo ""
-          
+
           # Track applied migrations
           APPLIED_COUNT=0
           FAILED_COUNT=0
-          
+
           # Apply each migration
           for migration in $MIGRATIONS; do
             migration_name=$(basename $migration)
@@ -116,17 +116,17 @@ jobs:
               fi
             fi
           done
-          
+
           echo ""
           echo "✅ Migration Summary:"
           echo "   Applied: $APPLIED_COUNT"
           echo "   Failed: $FAILED_COUNT"
-          
+
           if [ $FAILED_COUNT -gt 0 ]; then
             echo "❌ Some migrations failed"
             exit 1
           fi
-          
+
           echo "✅ All migrations completed successfully"
 
       - name: Verify migrations
@@ -134,7 +134,7 @@ jobs:
         run: |
           echo "🔍 Verifying migrations..."
           export PGPASSWORD="${{ env.SUPABASE_DB_PASSWORD }}"
-          
+
           # Verify key tables exist
           psql "${{ env.DATABASE_URL }}" -c "
             SELECT 
@@ -158,7 +158,7 @@ jobs:
             ) AS t(table_name)
             ORDER BY table_name;
           " || echo "⚠️  Could not verify tables (non-critical)"
-          
+
           # Verify functions exist
           echo ""
           echo "Verifying functions..."
@@ -179,7 +179,7 @@ jobs:
             ) AS f(function_name)
             ORDER BY function_name;
           " || echo "⚠️  Could not verify functions (non-critical)"
-          
+
           # Check RLS policies
           echo ""
           echo "Checking RLS policies for support_tickets..."
@@ -203,7 +203,7 @@ jobs:
           echo "**Migrations Found:** ${{ steps.detect-migrations.outputs.migration_count || 0 }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Completed At:** $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
-          
+
           if [ "${{ job.status }}" == "success" ]; then
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "✅ All migrations applied successfully!" >> $GITHUB_STEP_SUMMARY
@@ -220,24 +220,24 @@ jobs:
             const title = `🚨 Auto-Migration Failed: ${context.sha.substring(0, 7)}`
             const body = `
             ## Auto-Migration Failure Report
-            
+
             **Commit:** ${context.sha}
             **Branch:** ${context.ref}
             **Workflow:** ${context.workflow}
             **Run ID:** ${context.runId}
-            
+
             ### Details
             The automatic migration workflow failed when merging to main.
-            
+
             **Action Required:**
             1. Check the workflow logs for error details
             2. Verify migration files are valid SQL
             3. Check database connection and permissions
             4. Manually apply migrations if needed
-            
+
             [View Workflow Run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
             `
-            
+
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,

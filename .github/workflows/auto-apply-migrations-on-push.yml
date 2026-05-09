@@ -6,7 +6,7 @@ on:
       - main
       - develop
     paths:
-      - 'supabase/migrations/**'
+      - "supabase/migrations/**"
   workflow_dispatch:
 
 env:
@@ -33,14 +33,14 @@ jobs:
         id: detect
         run: |
           echo "🔍 Detecting new migration files..."
-          
+
           # Get list of all migration files
           MIGRATION_FILES=$(find supabase/migrations -name "*.sql" -type f | sort)
           MIGRATION_COUNT=$(echo "$MIGRATION_FILES" | wc -l)
-          
+
           echo "Found $MIGRATION_COUNT migration file(s)"
           echo "migration_count=$MIGRATION_COUNT" >> $GITHUB_OUTPUT
-          
+
           if [ "$MIGRATION_COUNT" -eq 0 ]; then
             echo "⚠️  No migration files found"
             echo "has_migrations=false" >> $GITHUB_OUTPUT
@@ -68,7 +68,7 @@ jobs:
         run: |
           echo "🔄 Applying migrations to Supabase database..."
           echo "Project: ${{ env.SUPABASE_PROJECT_REF }}"
-          
+
           # Try using Supabase CLI first
           supabase db push --include-all || {
             echo "⚠️  Supabase CLI push failed, trying direct psql connection..."
@@ -84,7 +84,7 @@ jobs:
               fi
             done
           }
-          
+
           echo "✅ All migrations applied successfully"
         env:
           SUPABASE_ACCESS_TOKEN: ${{ env.SUPABASE_ACCESS_TOKEN }}
@@ -94,12 +94,12 @@ jobs:
         if: steps.detect.outputs.has_migrations == 'true'
         run: |
           echo "🔍 Verifying migration status..."
-          
+
           # Check migration status
           if command -v supabase > /dev/null; then
             supabase migration list || echo "⚠️  Could not list migrations"
           fi
-          
+
           # Verify key tables exist
           echo "Checking database schema..."
           psql "${{ env.DATABASE_URL }}" -c "\dt" | head -30 || echo "⚠️  Could not verify schema"

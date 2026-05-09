@@ -3,13 +3,13 @@ name: Reality System Automation
 on:
   schedule:
     # Collect metrics every hour
-    - cron: '0 * * * *'
+    - cron: "0 * * * *"
     # Weekly loop every Monday at 9 AM UTC
-    - cron: '0 9 * * 1'
+    - cron: "0 9 * * 1"
   workflow_dispatch:
     inputs:
       job_type:
-        description: 'Job type to run'
+        description: "Job type to run"
         required: true
         type: choice
         options:
@@ -24,7 +24,7 @@ jobs:
     if: |
       github.event_name == 'schedule' && github.event.schedule == '0 * * * *' ||
       github.event_name == 'workflow_dispatch' && (github.event.inputs.job_type == 'collect-metrics' || github.event.inputs.job_type == 'both')
-    
+
     steps:
       - name: Collect Metrics
         env:
@@ -43,7 +43,7 @@ jobs:
     if: |
       github.event_name == 'schedule' && github.event.schedule == '0 9 * * 1' ||
       github.event_name == 'workflow_dispatch' && (github.event.inputs.job_type == 'weekly-loop' || github.event.inputs.job_type == 'both')
-    
+
     steps:
       - name: Run Weekly Loop
         env:
