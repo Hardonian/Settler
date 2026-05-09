@@ -15,8 +15,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Test Production Routes
         run: |
@@ -30,6 +28,7 @@ jobs:
           echo "Route verification completed. Check logs above for details."
 
   verify-env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     name: Verify Environment Variables
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -37,8 +36,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

@@ -44,6 +44,7 @@ on:
       - main
 
 env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   DATABASE_URL: ${{ secrets.DATABASE_URL }}
   SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
   SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -68,8 +69,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
         with:
           fetch-depth: 0
 
@@ -138,8 +137,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
         with:
           fetch-depth: 0
 
@@ -166,12 +163,14 @@ jobs:
       - name: Generate Prisma client
         run: pnpm run prisma:generate || pnpm exec prisma generate
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Run Migration Guardian
         id: guardian
         run: pnpm run migration:guardian
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -318,8 +317,6 @@ jobs:
     environment: staging
     steps:
       - uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
@@ -329,6 +326,7 @@ jobs:
         run: npx turbo run build
       - name: Apply staging migrations
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
           NODE_ENV: staging
           JWT_SECRET: ${{ secrets.STAGING_JWT_SECRET }}
@@ -340,6 +338,7 @@ jobs:
           echo "✅ Staging migrations completed"
       - name: Verify staging health
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           STAGING_URL: ${{ secrets.STAGING_URL }}
         run: |
           echo "🔍 Verifying staging health..."
@@ -363,8 +362,6 @@ jobs:
     environment: production # Requires approval
     steps:
       - uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
@@ -374,6 +371,7 @@ jobs:
         run: npx turbo run build
       - name: Apply production migrations
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           NODE_ENV: production
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
@@ -386,6 +384,7 @@ jobs:
           echo "✅ Production migrations completed"
       - name: Verify production health
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
         run: |
           echo "🔍 Verifying production health..."

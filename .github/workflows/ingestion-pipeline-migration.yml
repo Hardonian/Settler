@@ -27,8 +27,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -41,6 +39,7 @@ jobs:
 
       - name: Check Prisma migration status (before)
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           echo "🔍 Checking Prisma migration status (before)..."
@@ -51,6 +50,7 @@ jobs:
 
       - name: Run ingestion pipeline migration
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           echo "🔄 Running ingestion pipeline migration..."
@@ -62,6 +62,7 @@ jobs:
 
       - name: Verify migration status (after)
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           echo "🔍 Verifying migration status (after)..."
@@ -72,6 +73,7 @@ jobs:
 
       - name: Verify ingestion tables exist
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           echo "🔍 Verifying ingestion tables..."
@@ -110,6 +112,7 @@ jobs:
 
       - name: Generate Prisma Client
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           echo "📦 Generating Prisma Client..."

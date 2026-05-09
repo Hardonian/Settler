@@ -25,8 +25,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -40,6 +38,7 @@ jobs:
 
       - name: Validate migration syntax
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           SUPABASE_DB_URL: ${{ github.event.inputs.environment == 'production' && secrets.SUPABASE_DB_URL_PRODUCTION || secrets.SUPABASE_DB_URL_STAGING }}
           SUPABASE_DB_PASSWORD: ${{ github.event.inputs.environment == 'production' && secrets.SUPABASE_DB_PASSWORD_PRODUCTION || secrets.SUPABASE_DB_PASSWORD_STAGING }}
         run: |
@@ -71,8 +70,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -86,6 +83,7 @@ jobs:
 
       - name: Apply migrations
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           SUPABASE_DB_URL: ${{ github.event.inputs.environment == 'production' && secrets.SUPABASE_DB_URL_PRODUCTION || secrets.SUPABASE_DB_URL_STAGING }}
           SUPABASE_DB_PASSWORD: ${{ github.event.inputs.environment == 'production' && secrets.SUPABASE_DB_PASSWORD_PRODUCTION || secrets.SUPABASE_DB_PASSWORD_STAGING }}
         run: |
@@ -113,6 +111,7 @@ jobs:
 
       - name: Verify migrations
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           SUPABASE_DB_URL: ${{ github.event.inputs.environment == 'production' && secrets.SUPABASE_DB_URL_PRODUCTION || secrets.SUPABASE_DB_URL_STAGING }}
           SUPABASE_DB_PASSWORD: ${{ github.event.inputs.environment == 'production' && secrets.SUPABASE_DB_PASSWORD_PRODUCTION || secrets.SUPABASE_DB_PASSWORD_STAGING }}
         run: |

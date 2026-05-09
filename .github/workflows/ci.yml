@@ -29,6 +29,7 @@ on:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
+
 jobs:
   conflict-markers:
     runs-on: ubuntu-latest
@@ -36,8 +37,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -61,6 +60,7 @@ jobs:
       postgres:
         image: postgres:16
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: settler_test
@@ -81,6 +81,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       NODE_ENV: production
       NEXT_PUBLIC_SITE_URL: http://localhost:3000
       NEXT_PUBLIC_APP_URL: http://localhost:3000
@@ -94,8 +95,6 @@ jobs:
       REDIS_URL: redis://localhost:6379
     steps:
       - uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -133,6 +132,7 @@ jobs:
       postgres:
         image: postgres:16
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: settler_test
@@ -153,6 +153,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       NODE_ENV: test
       NEXT_PUBLIC_SITE_URL: http://localhost:3000
       NEXT_PUBLIC_APP_URL: http://localhost:3000
@@ -166,8 +167,6 @@ jobs:
       REDIS_URL: redis://localhost:6379
     steps:
       - uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -192,6 +191,7 @@ jobs:
       matrix:
         shard: ["1/2", "2/2"]
     env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       NODE_ENV: test
       NEXT_PUBLIC_SITE_URL: http://localhost:3000
       NEXT_PUBLIC_APP_URL: http://localhost:3000
@@ -206,8 +206,6 @@ jobs:
       NODE_OPTIONS: --max-old-space-size=4096
     steps:
       - uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -228,6 +226,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       NODE_ENV: test
       NEXT_PUBLIC_SITE_URL: http://localhost:3000
       NEXT_PUBLIC_APP_URL: http://localhost:3000
@@ -241,8 +240,6 @@ jobs:
       REDIS_URL: redis://localhost:6379
     steps:
       - uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -285,6 +282,7 @@ jobs:
       postgres:
         image: postgres:16
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: settler_test
@@ -305,6 +303,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       NODE_ENV: test
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
       REDIS_URL: redis://localhost:6379
@@ -316,8 +315,6 @@ jobs:
       ENCRYPTION_KEY: 12345678901234567890123456789012
     steps:
       - uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Setup Node
         uses: actions/setup-node@v4

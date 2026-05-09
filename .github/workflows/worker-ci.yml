@@ -25,8 +25,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -51,6 +49,7 @@ jobs:
       - name: Run Python smoke tests (mocked)
         run: pnpm workhorse:smoke
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           # Mock database URL - tests don't need real DB
           DATABASE_URL: postgresql://mock:mock@localhost:5432/mock
 
@@ -62,6 +61,7 @@ jobs:
       postgres:
         image: postgres:15-alpine
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           POSTGRES_DB: settler_test
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -75,8 +75,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -114,6 +112,7 @@ jobs:
       - name: Run full smoke test suite
         run: pnpm jobs:smoke && pnpm jobs:verify-consequence && pnpm jobs:test-reaper
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
           NODE_ENV: test
 
@@ -123,8 +122,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Setup Python
         uses: actions/setup-python@v5

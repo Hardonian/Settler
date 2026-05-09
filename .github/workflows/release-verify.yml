@@ -23,8 +23,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       - uses: pnpm/action-setup@v4
         with:
           version: 10.13.1
@@ -46,8 +44,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       - uses: pnpm/action-setup@v4
         with:
           version: 10.13.1
@@ -66,8 +62,6 @@ jobs:
       - verify-internal-links
     steps:
       - uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       - uses: pnpm/action-setup@v4
         with:
           version: 10.13.1
@@ -78,6 +72,7 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Dependency CVE scan + SBOM generation
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           SECURITY_AUDIT_FAIL_LEVEL: high
           SECURITY_AUDIT_CONTEXT: release
           SECURITY_AUDIT_ALLOW_UNAVAILABLE: ${{ github.event.inputs.allow_audit_soft_skip == 'true' && '1' || '0' }}
@@ -98,8 +93,6 @@ jobs:
       - security-supply-chain
     steps:
       - uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       - uses: pnpm/action-setup@v4
         with:
           version: 10.13.1
@@ -117,6 +110,7 @@ jobs:
         run: npx playwright install chromium --with-deps
       - name: Run release verification
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           RELEASE_REQUIRE_SECURITY_EVIDENCE: "1"
           RELEASE_ALLOW_AUDIT_UNAVAILABLE: ${{ github.event.inputs.allow_audit_soft_skip == 'true' && '1' || '0' }}
           LAUNCH_CAPTURE_BASE_URL: ${{ github.event.inputs.capture_base_url || 'http://127.0.0.1:3000' }}

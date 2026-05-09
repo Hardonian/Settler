@@ -16,8 +16,6 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - uses: actions/setup-node@v4
         with:
@@ -54,8 +52,6 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - uses: actions/setup-node@v4
         with:
@@ -72,6 +68,7 @@ jobs:
 
       - name: Run dependency audit gate (strict mode)
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           SECURITY_AUDIT_MODE: strict
         run: pnpm run audit:deps
 
@@ -86,6 +83,7 @@ jobs:
 
       - name: Generate layered security evidence (full mode)
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           SECURITY_AUDIT_MODE: strict
           SECURITY_HEADER_PROBE_STRICT: "1"
           SECURITY_DEPENDENCY_EVIDENCE_MODE: standard
@@ -96,6 +94,7 @@ jobs:
       - name: Enterprise gate (strict evidence when secrets exist)
         if: ${{ secrets.DEPENDABOT_ALERTS_EXPORT_B64 != '' && (secrets.DATABASE_URL != '' || secrets.DIRECT_URL != '' || secrets.SUPABASE_DB_URL != '') }}
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           SECURITY_AUDIT_MODE: strict
           SECURITY_HEADER_PROBE_STRICT: "1"
           SECURITY_DEPENDENCY_EVIDENCE_MODE: strict
@@ -122,14 +121,13 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
         with:
           fetch-depth: 0
 
       - name: Run Gitleaks
         uses: gitleaks/gitleaks-action@v2
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           config-path: .gitleaks.toml
@@ -146,8 +144,6 @@ jobs:
       security-events: write
     steps:
       - uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3

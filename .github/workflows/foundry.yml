@@ -17,8 +17,6 @@ jobs:
         seed: [42, 7, 99]
     steps:
       - uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       - uses: pnpm/action-setup@v4
         with:
           version: 10.13.1
@@ -43,8 +41,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       - uses: pnpm/action-setup@v4
         with:
           version: 10.13.1

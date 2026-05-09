@@ -10,6 +10,7 @@ on:
   workflow_dispatch:
 
 env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
   SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
   DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -23,8 +24,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
@@ -62,6 +61,7 @@ jobs:
             echo "⚠️  Failed to link project, will use direct connection"
           }
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           SUPABASE_ACCESS_TOKEN: ${{ env.SUPABASE_ACCESS_TOKEN }}
         continue-on-error: true
 
@@ -89,6 +89,7 @@ jobs:
           
           echo "✅ All migrations applied successfully"
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           SUPABASE_ACCESS_TOKEN: ${{ env.SUPABASE_ACCESS_TOKEN }}
           PGPASSWORD: ${{ env.SUPABASE_DB_PASSWORD }}
 
@@ -106,6 +107,7 @@ jobs:
           echo "Checking database schema..."
           psql "${{ env.DATABASE_URL }}" -c "\dt" | head -30 || echo "⚠️  Could not verify schema"
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           SUPABASE_ACCESS_TOKEN: ${{ env.SUPABASE_ACCESS_TOKEN }}
           PGPASSWORD: ${{ env.SUPABASE_DB_PASSWORD }}
         continue-on-error: true

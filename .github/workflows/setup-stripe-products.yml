@@ -17,8 +17,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -32,6 +30,7 @@ jobs:
       - name: Setup Stripe Products
         run: npx tsx scripts/setup-stripe-products.ts
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
 
       - name: Output Product IDs
