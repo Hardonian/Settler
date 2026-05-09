@@ -27,10 +27,12 @@ jobs:
           - 5432:5432
     steps:
       - uses: actions/checkout@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: false
+
       - run: npm ci
       - name: Check migration files syntax
         run: |

@@ -35,10 +35,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: false
+
       - run: npm ci
       - name: Validate environment schema
         run: npx --yes tsx --check config/env.schema.ts
@@ -56,10 +58,12 @@ jobs:
     if: github.event.inputs.skip_tests != 'true'
     steps:
       - uses: actions/checkout@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: false
+
       - run: npm ci
       - name: Run tests
         run: npm run test -- --coverage
@@ -86,10 +90,12 @@ jobs:
     needs: [test]
     steps:
       - uses: actions/checkout@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: false
+
       - run: npm ci
       - name: Build all packages
         run: npx turbo run build
@@ -114,10 +120,12 @@ jobs:
     environment: production
     steps:
       - uses: actions/checkout@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: false
+
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:

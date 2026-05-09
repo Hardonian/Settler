@@ -55,11 +55,13 @@ jobs:
           - 6379:6379
     steps:
       - uses: actions/checkout@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: false
+
 
       - name: Install dependencies
         run: npm ci
@@ -129,11 +131,13 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: false
+
 
       - name: Install dependencies
         run: npm ci
@@ -198,11 +202,13 @@ jobs:
           - 6379:6379
     steps:
       - uses: actions/checkout@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: false
+
 
       - name: Install dependencies
         run: npm ci

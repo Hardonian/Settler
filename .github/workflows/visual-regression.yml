@@ -30,11 +30,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: false
+
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
@@ -77,11 +79,13 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: false
+
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
@@ -156,6 +160,8 @@ jobs:
           - visual-tablet
     steps:
       - uses: actions/checkout@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
         with:
           # Fetch all history for proper baseline comparison
           fetch-depth: 0
@@ -163,7 +169,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: false
+
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
@@ -237,11 +243,13 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: false
+
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
@@ -302,11 +310,13 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: false
+
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
@@ -348,13 +358,15 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: false
+
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate

@@ -18,6 +18,8 @@ jobs:
     if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
@@ -25,7 +27,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: false
+
       
       - run: npm ci
       

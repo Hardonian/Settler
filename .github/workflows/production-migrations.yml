@@ -21,10 +21,12 @@ jobs:
     environment: production # Requires production environment secrets
     steps:
       - uses: actions/checkout@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: false
+
       - run: npm ci
       - name: Build application
         run: npx turbo run build

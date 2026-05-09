@@ -25,6 +25,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -35,7 +37,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: false
+
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
@@ -73,6 +75,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -83,7 +87,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: false
+
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
@@ -119,6 +123,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -129,7 +135,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: false
+
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
