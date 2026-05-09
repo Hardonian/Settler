@@ -11,9 +11,45 @@
  * - does not fabricate green status when evidence capture degrades
  */
 
-import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
-import { dirname, extname, join, relative, resolve } from "node:path";
+import {
+  SOURCE_FILE_EXTENSIONS,
+  SKIPPED_DIRECTORIES,
+  SKIPPED_FILE_SUFFIXES,
+  SECRET_PATTERNS,
+} from "./security/constants";
+import {
+  defaultCommandRunner,
+  findRepoRoot,
+  statusFromArtifact,
+  summarizeCounts,
+  buildOverallSummary,
+  lineLooksExample,
+  shouldScanFile,
+  listFilesRecursively,
+} from "./security/utils";
+export type {
+  SecurityScanType,
+  SecurityConfig,
+  SecurityIssue,
+  SecurityCheck,
+  SecurityReport,
+} from "./security/types";
+import type {
+  SecurityScanType,
+  SecurityConfig,
+  SecurityIssue,
+  SecurityCheck,
+  SecurityReport,
+  CommandResult,
+  CommandRunner,
+  SecurityAgentDependencies,
+  DependencyEvidenceArtifact,
+  RlsEvidenceArtifact,
+  CrossTenantArtifact,
+  CheckExecution,
+} from "./security/types";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join, relative, resolve } from "node:path";
 import { createLogger } from "@settler/logger";
 import {
   deriveVerdict,
@@ -24,329 +60,6 @@ import {
 } from "./agent-contract";
 
 const log = createLogger("security-agent");
-
-export type SecurityScanType = "vulnerabilities" | "secrets" | "rls" | "compliance" | "all";
-
-export interface SecurityConfig {
-  repoRoot?: string;
-  slackWebhook?: string;
-  reportOutputPath?: string;
-  securityAuditMode?: "strict" | "warn" | "off";
-  dependencyEvidenceMode?: "standard" | "strict";
-  rlsEvidenceMode?: "static-only" | "runtime-rls" | "runtime-rls-required";
-  githubToken?: string;
-  githubRepository?: string;
-  dependabotAlertsExportPath?: string;
-}
-
-export interface SecurityIssue {
-  type: "vulnerability" | "secret" | "rls" | "compliance";
-  severity: "low" | "medium" | "high" | "critical";
-  message: string;
-  file?: string;
-  line?: number;
-  source?: string;
-}
-
-export interface SecurityCheck extends AgentCheck {
-  name: "vulnerabilities" | "secrets" | "rls" | "compliance" | "notification";
-}
-
-export interface SecurityReport extends AgentReport {
-  agent: "security-agent";
-  scanType: SecurityScanType;
-  scanTime: string;
-  repoRoot: string;
-  issues: SecurityIssue[];
-  summaryCounts: {
-    critical: number;
-    high: number;
-    medium: number;
-    low: number;
-  };
-  checks: SecurityCheck[];
-}
-
-type CommandResult = {
-  command: string;
-  args: string[];
-  status: number;
-  stdout: string;
-  stderr: string;
-  error?: string;
-};
-
-type CommandRunner = (
-  command: string,
-  args: string[],
-  options: { cwd: string; env: NodeJS.ProcessEnv; timeoutMs?: number }
-) => CommandResult;
-
-interface SecurityAgentDependencies {
-  fetchImpl?: typeof fetch;
-  runCommand?: CommandRunner;
-}
-
-interface DependencyEvidenceArtifact {
-  status?: string;
-  reason?: string;
-  evidenceState?: string;
-  evidenceCompleteness?: string;
-  environmentConstraints?: string[];
-  nextOperatorAction?: string[];
-  localAudit?: {
-    summary?: {
-      high?: number;
-      critical?: number;
-      moderate?: number;
-      low?: number;
-      info?: number;
-    } | null;
-    outcome?: string;
-  };
-  advisoryCompleteness?: {
-    status?: string;
-    reason?: string;
-  };
-}
-
-interface RlsEvidenceArtifact {
-  status?: string;
-  reason?: string;
-  evidenceState?: string;
-  evidenceLevel?: string;
-  environmentConstraints?: string[];
-  nextOperatorAction?: string[];
-  runtimeExecuted?: boolean;
-}
-
-interface CrossTenantArtifact {
-  status?: string;
-  exitCode?: number;
-  suiteFiles?: string[];
-}
-
-type CheckExecution = {
-  check: SecurityCheck;
-  issues: SecurityIssue[];
-};
-
-const SOURCE_FILE_EXTENSIONS = new Set([
-  ".cjs",
-  ".cts",
-  ".env",
-  ".js",
-  ".jsx",
-  ".mjs",
-  ".mts",
-  ".sh",
-  ".sql",
-  ".ts",
-  ".tsx",
-  ".yaml",
-  ".yml",
-]);
-
-const SKIPPED_DIRECTORIES = new Set([
-  ".git",
-  ".next",
-  "archive",
-  "build",
-  "coverage",
-  "dist",
-  "docs",
-  "node_modules",
-  "qa-artifacts",
-  "test",
-  "tests",
-  "__tests__",
-]);
-
-const SKIPPED_FILE_SUFFIXES = [".example", ".sample", ".template", ".test", ".spec"];
-
-const SECRET_PATTERNS: Array<{
-  pattern: RegExp;
-  reason: string;
-  severity: SecurityIssue["severity"];
-}> = [
-  {
-    pattern: /-----BEGIN [A-Z ]*PRIVATE KEY-----/,
-    reason: "private_key_material",
-    severity: "critical",
-  },
-  {
-    pattern: /sk_live_[A-Za-z0-9]{16,}/,
-    reason: "stripe_live_key",
-    severity: "critical",
-  },
-  {
-    pattern: /gh[pousr]_[A-Za-z0-9_]{20,}/,
-    reason: "github_token",
-    severity: "high",
-  },
-  {
-    pattern: /AKIA[0-9A-Z]{16}/,
-    reason: "aws_access_key",
-    severity: "high",
-  },
-  {
-    pattern: /xox[baprs]-[A-Za-z0-9-]{10,}/,
-    reason: "slack_token",
-    severity: "high",
-  },
-  {
-    pattern: /\b(api[_-]?key|secret|password|token)\b\s*[:=]\s*['"][^'"\n]{8,}['"]/i,
-    reason: "inline_secret_assignment",
-    severity: "medium",
-  },
-];
-
-function defaultCommandRunner(
-  command: string,
-  args: string[],
-  options: { cwd: string; env: NodeJS.ProcessEnv; timeoutMs?: number }
-): CommandResult {
-  const result = spawnSync(command, args, {
-    cwd: options.cwd,
-    env: options.env,
-    encoding: "utf8",
-    timeout: options.timeoutMs ?? 120_000,
-  });
-
-  return {
-    command,
-    args,
-    status: result.status ?? (result.error ? 1 : 0),
-    stdout: result.stdout || "",
-    stderr: result.stderr || "",
-    error: result.error instanceof Error ? result.error.message : undefined,
-  };
-}
-
-function findRepoRoot(startDir: string): string {
-  let current = resolve(startDir);
-
-  while (true) {
-    const hasAgents = existsSync(join(current, "packages", "agents"));
-    const hasRootPackage = existsSync(join(current, "package.json"));
-    const hasAgentsContract = existsSync(join(current, "AGENTS.md"));
-
-    if (hasAgents && hasRootPackage && hasAgentsContract) {
-      return current;
-    }
-
-    const parent = dirname(current);
-    if (parent === current) {
-      return resolve(startDir);
-    }
-    current = parent;
-  }
-}
-
-function statusFromArtifact(status?: string): SecurityCheck["status"] {
-  switch (status) {
-    case "PASS":
-      return "verified";
-    case "PASS_WITH_DEGRADED_EVIDENCE":
-    case "UNAVAILABLE":
-      return "degraded";
-    case "FAIL":
-      return "failed";
-    default:
-      return "degraded";
-  }
-}
-
-function summarizeCounts(issues: SecurityIssue[]) {
-  return {
-    critical: issues.filter((issue) => issue.severity === "critical").length,
-    high: issues.filter((issue) => issue.severity === "high").length,
-    medium: issues.filter((issue) => issue.severity === "medium").length,
-    low: issues.filter((issue) => issue.severity === "low").length,
-  };
-}
-
-function buildOverallSummary(
-  verdict: SecurityReport["verdict"],
-  counts: SecurityReport["summaryCounts"]
-) {
-  const countSummary = `${counts.critical} critical, ${counts.high} high, ${counts.medium} medium, ${counts.low} low`;
-
-  switch (verdict) {
-    case "verified_pass":
-      return `Security verification passed with no blocking findings (${countSummary}).`;
-    case "verified_degraded":
-      return `Security verification completed with degraded evidence or notification coverage (${countSummary}).`;
-    case "failed":
-      return `Security verification found blocking findings or failed control checks (${countSummary}).`;
-    case "not_applicable":
-    default:
-      return `Security verification had no applicable checks (${countSummary}).`;
-  }
-}
-
-function lineLooksExample(line: string): boolean {
-  return /\b(example|sample|placeholder|dummy|mock|fake|test)\b/i.test(line);
-}
-
-function shouldScanFile(relativePath: string): boolean {
-  const normalized = relativePath.replace(/\\/g, "/");
-  const segments = normalized.split("/");
-
-  if (segments.some((segment) => SKIPPED_DIRECTORIES.has(segment))) {
-    return false;
-  }
-
-  if (SKIPPED_FILE_SUFFIXES.some((suffix) => normalized.includes(suffix))) {
-    return false;
-  }
-
-  if (normalized.endsWith(".md") || normalized.endsWith(".json") || normalized.endsWith(".lock")) {
-    return false;
-  }
-
-  const extension = extname(normalized);
-  if (!SOURCE_FILE_EXTENSIONS.has(extension)) {
-    return false;
-  }
-
-  return true;
-}
-
-function listFilesRecursively(rootDir: string, currentDir = rootDir): string[] {
-  const files: string[] = [];
-  const entries = readdirSync(currentDir, { withFileTypes: true });
-
-  for (const entry of entries) {
-    const fullPath = join(currentDir, entry.name);
-    const relativePath = relative(rootDir, fullPath);
-
-    if (entry.isDirectory()) {
-      if (SKIPPED_DIRECTORIES.has(entry.name)) {
-        continue;
-      }
-      files.push(...listFilesRecursively(rootDir, fullPath));
-      continue;
-    }
-
-    if (!entry.isFile()) {
-      continue;
-    }
-
-    if (!shouldScanFile(relativePath)) {
-      continue;
-    }
-
-    const stats = statSync(fullPath);
-    if (stats.size > 512_000) {
-      continue;
-    }
-
-    files.push(fullPath);
-  }
-
-  return files;
-}
 
 export class SecurityAgent {
   private readonly config: Required<Pick<SecurityConfig, "repoRoot">> & SecurityConfig;
