@@ -13,7 +13,7 @@
  * - Write queue with periodic flush
  */
 
-import { prisma } from "@/shared/db/prismaClient";
+import { prisma, Prisma } from "@/shared/db/prismaClient";
 import { appLogger } from "@/lib/utils/logger";
 import { Redis } from "@upstash/redis";
 
@@ -104,7 +104,7 @@ export interface AuditLogBuffer {
 // IN-MEMORY BUFFERS (FALLBACK)
 // ============================================================================
 
-const inMemoryBuffers = {
+export const inMemoryBuffers = {
   usageEvents: [] as UsageEventBuffer[],
   apiCallLogs: [] as ApiCallLogBuffer[],
   auditLogs: [] as AuditLogBuffer[],
@@ -302,18 +302,16 @@ export async function flushApiCallLogs(): Promise<void> {
 
     // Batch insert (using raw SQL for api_call_logs table)
     // Note: Adjust column names based on actual schema
-    const values = logs
-      .map(
-        (log) =>
-          `(${log.tenantId ? `'${log.tenantId}'` : "NULL"}, ${log.userId ? `'${log.userId}'` : "NULL"}, '${log.method}', '${log.path}', ${log.statusCode}, ${log.responseTime}, ${log.userAgent ? `'${log.userAgent.replace(/'/g, "''")}'` : "NULL"}, ${log.ipAddress ? `'${log.ipAddress}'` : "NULL"}, ${log.error ? `'${log.error.replace(/'/g, "''")}'` : "NULL"}, '${log.createdAt.toISOString()}')`
-      )
-      .join(",");
+    const valueRows = logs.map(
+      (log) =>
+        Prisma.sql`(${log.tenantId ?? null}, ${log.userId ?? null}, ${log.method}, ${log.path}, ${log.statusCode}, ${log.responseTime}, ${log.userAgent ?? null}, ${log.ipAddress ?? null}, ${log.error ?? null}, ${log.createdAt})`
+    );
 
-    await prisma.$executeRawUnsafe(`
+    await prisma.$executeRaw`
       INSERT INTO api_call_logs (tenant_id, user_id, method, path, status_code, response_time, user_agent, ip_address, error, created_at)
-      VALUES ${values}
+      VALUES ${Prisma.join(valueRows)}
       ON CONFLICT DO NOTHING
-    `);
+    `;
 
     const duration = Date.now() - startTime;
     appLogger.info("[Write Buffer] Flushed API call logs", {
@@ -404,10 +402,10 @@ async function syncWriteUsageEvent(event: UsageEventBuffer): Promise<void> {
 
 async function syncWriteApiCallLog(log: ApiCallLogBuffer): Promise<void> {
   try {
-    await prisma.$executeRawUnsafe(`
+    await prisma.$executeRaw`
       INSERT INTO api_call_logs (tenant_id, user_id, method, path, status_code, response_time, user_agent, ip_address, error, created_at)
-      VALUES (${log.tenantId ? `'${log.tenantId}'` : "NULL"}, ${log.userId ? `'${log.userId}'` : "NULL"}, '${log.method}', '${log.path}', ${log.statusCode}, ${log.responseTime}, ${log.userAgent ? `'${log.userAgent.replace(/'/g, "''")}'` : "NULL"}, ${log.ipAddress ? `'${log.ipAddress}'` : "NULL"}, ${log.error ? `'${log.error.replace(/'/g, "''")}'` : "NULL"}, '${log.createdAt.toISOString()}')
-    `);
+      VALUES (${log.tenantId ?? null}, ${log.userId ?? null}, ${log.method}, ${log.path}, ${log.statusCode}, ${log.responseTime}, ${log.userAgent ?? null}, ${log.ipAddress ?? null}, ${log.error ?? null}, ${log.createdAt})
+    `;
   } catch (error) {
     appLogger.error("[Write Buffer] Sync write API call log failed", { error, log });
   }
