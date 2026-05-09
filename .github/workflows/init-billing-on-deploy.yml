@@ -29,6 +29,7 @@ jobs:
       - name: Initialize Billing System
         run: npx tsx scripts/init-billing-system.ts
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
@@ -37,5 +38,6 @@ jobs:
         if: env.STRIPE_SECRET_KEY != ''
         run: npx tsx scripts/setup-stripe-products.ts
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
         continue-on-error: true

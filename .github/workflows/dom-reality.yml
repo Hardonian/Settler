@@ -23,6 +23,7 @@ jobs:
     
     # Environment variables from GitHub secrets (same as preview/production)
     env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -53,6 +54,7 @@ jobs:
           npm run dev --workspace=packages/web &
           echo $! > server.pid
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           # Pass through all environment variables to dev server
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -80,6 +82,7 @@ jobs:
       - name: Run DOM reality tests
         run: npm run qa:dom-reality
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           E2E_BASE_URL: http://localhost:3000
           CI: true
           # Pass through environment variables to test process

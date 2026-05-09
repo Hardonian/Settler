@@ -25,6 +25,7 @@ on:
         type: boolean
 
 env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   NODE_ENV: production
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
@@ -126,6 +127,7 @@ jobs:
       - name: Deploy to Vercel
         if: env.VERCEL_TOKEN != ''
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -144,6 +146,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [deploy]
     env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
     steps:
       - name: Health check

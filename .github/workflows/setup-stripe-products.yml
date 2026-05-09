@@ -30,6 +30,7 @@ jobs:
       - name: Setup Stripe Products
         run: npx tsx scripts/setup-stripe-products.ts
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
 
       - name: Output Product IDs

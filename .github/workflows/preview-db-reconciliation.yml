@@ -21,6 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: preview
     env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       DATABASE_URL: ${{ secrets.PREVIEW_DATABASE_URL }}
       DIRECT_URL: ${{ secrets.PREVIEW_DIRECT_URL }}
       SUPABASE_DB_URL: ${{ secrets.PREVIEW_SUPABASE_DB_URL }}

@@ -54,6 +54,7 @@ jobs:
       - name: Build web application
         run: npx turbo run build --filter @settler/web...
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
           NEXT_PUBLIC_SITE_URL: http://localhost:3000
@@ -122,6 +123,7 @@ jobs:
           kill $SERVER_PID
           wait $SERVER_PID 2>/dev/null || true
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           PORT: 3000
           NODE_ENV: production
           NEXT_PUBLIC_SITE_URL: http://localhost:3000
@@ -198,6 +200,7 @@ jobs:
           sleep 10
           curl -f http://localhost:3000 || (sleep 5 && curl -f http://localhost:3000)
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           PORT: 3000
           NODE_ENV: production
           SAFE_MODE: "1"
@@ -208,6 +211,7 @@ jobs:
             --project=${{ matrix.project }} \
             ${{ github.event.inputs.update_baselines == 'true' && '--update-snapshots' || '' }}
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           BASE_URL: http://localhost:3000
           E2E_BASE_URL: http://localhost:3000
 
@@ -274,6 +278,7 @@ jobs:
           sleep 10
           curl -f http://localhost:3000 || (sleep 5 && curl -f http://localhost:3000)
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           PORT: 3000
           NODE_ENV: production
           SAFE_MODE: "1"
@@ -281,6 +286,7 @@ jobs:
       - name: Run UI Consistency Audit
         run: npx playwright test tests/e2e/ui-consistency.audit.spec.ts --project=ui-audit
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           BASE_URL: http://localhost:3000
           E2E_BASE_URL: http://localhost:3000
 
@@ -330,6 +336,7 @@ jobs:
           sleep 10
           curl -f http://localhost:3000 || (sleep 5 && curl -f http://localhost:3000)
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           PORT: 3000
           NODE_ENV: production
           SAFE_MODE: "1"
@@ -337,6 +344,7 @@ jobs:
       - name: Run Accessibility Audit
         run: npx playwright test tests/e2e/accessibility.audit.spec.ts
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           BASE_URL: http://localhost:3000
 
   # Update baselines workflow (manual trigger only, restricted to main)
@@ -387,6 +395,7 @@ jobs:
           sleep 10
           curl -f http://localhost:3000 || (sleep 5 && curl -f http://localhost:3000)
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           PORT: 3000
           NODE_ENV: production
           SAFE_MODE: "1"
@@ -394,6 +403,7 @@ jobs:
       - name: Update all baseline snapshots
         run: npx playwright test tests/e2e/visual.spec.ts --update-snapshots
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           BASE_URL: http://localhost:3000
           E2E_BASE_URL: http://localhost:3000
 

@@ -30,6 +30,7 @@ on:
         default: false
 
 env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   SECURITY_AUDIT_MODE: strict
   SECURITY_HEADER_PROBE_STRICT: "1"
   SECURITY_HEADER_PROBE_ALLOW_DEGRADED: "1"
@@ -83,16 +84,19 @@ jobs:
 
       - name: Run dependency audit
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           SECURITY_AUDIT_MODE: strict
         run: pnpm run audit:deps
 
       - name: Verify security headers (degraded allowed — no build in this job)
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           SECURITY_HEADER_PROBE_ALLOW_DEGRADED: "1"
         run: node scripts/security/header-probe.mjs || true
 
       - name: Generate security evidence artifacts
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           SECURITY_AUDIT_MODE: strict
           SECURITY_HEADER_PROBE_STRICT: "1"
           SECURITY_HEADER_PROBE_ALLOW_DEGRADED: "1"
@@ -104,6 +108,7 @@ jobs:
 
       - name: Generate release evidence bundle
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           SECURITY_AUDIT_MODE: strict
           BUNDLE_REQUIRE_COMPLETE: ${{ inputs.require_complete == true && '1' || '0' }}
         run: pnpm run generate-release-bundle

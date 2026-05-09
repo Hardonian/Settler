@@ -112,6 +112,7 @@ jobs:
           $artifact = Get-ChildItem -Path downloaded -Recurse -Filter "settler-*-windows-x64.zip" | Select-Object -First 1
           if (-not $artifact) { throw "Missing windows artifact" }
           $dir = Join-Path $env:TEMP ("settler-smoke-" + [guid]::NewGuid().ToString("N"))
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           New-Item -Path $dir -ItemType Directory | Out-Null
           Expand-Archive -Path $artifact.FullName -DestinationPath $dir -Force
           & (Join-Path $dir "settler.cmd") version
@@ -135,4 +136,5 @@ jobs:
         with:
           files: final/*
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

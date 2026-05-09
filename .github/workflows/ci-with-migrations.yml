@@ -11,6 +11,7 @@ on:
       - ".github/workflows/**"
 
 env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
@@ -30,6 +31,7 @@ jobs:
 
       - name: Validate migration syntax
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL_STAGING }}
           SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD_STAGING }}
         continue-on-error: true

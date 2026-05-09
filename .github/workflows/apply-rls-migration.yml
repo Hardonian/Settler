@@ -31,12 +31,14 @@ jobs:
 
       - name: Apply RLS Migration
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           bash scripts/apply-rls-migration-github-actions.sh
 
       - name: Verify RLS Status
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           npx tsx scripts/verify-rls-status.ts

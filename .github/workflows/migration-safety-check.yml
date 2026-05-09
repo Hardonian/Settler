@@ -15,6 +15,7 @@ jobs:
       postgres:
         image: postgres:15-alpine
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           POSTGRES_DB: settler_test
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -46,6 +47,7 @@ jobs:
           echo "✅ Migration syntax check complete"
       - name: Test migrations on clean database
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
           NODE_ENV: test
           JWT_SECRET: test-secret-min-32-chars-long-for-testing

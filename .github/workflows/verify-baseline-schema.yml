@@ -18,6 +18,7 @@ jobs:
       postgres:
         image: postgres:15
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: testpassword
           POSTGRES_DB: settler_test
@@ -40,6 +41,7 @@ jobs:
 
       - name: Apply Consolidated Baseline Schema
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           PGPASSWORD: testpassword
         # -v ON_ERROR_STOP=1 ensures the script fails if any SQL command fails
         run: |
@@ -47,6 +49,7 @@ jobs:
 
       - name: Run Dynamic RLS Verification
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           DATABASE_URL: postgres://postgres:testpassword@localhost:5432/settler_test
         # Using npx tsx as it is already being used in schema-parity-check.yml
         run: npx tsx scripts/verify-rls.ts

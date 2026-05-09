@@ -64,6 +64,7 @@ jobs:
       - name: Apply migrations to staging
         if: github.event_name != 'workflow_dispatch' || github.event.inputs.environment == 'staging'
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL_STAGING }}
           SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD_STAGING }}
           SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID_STAGING }}
@@ -99,6 +100,7 @@ jobs:
       - name: Apply migrations to production
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL_PRODUCTION }}
           SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD_PRODUCTION }}
           SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID_PRODUCTION }}
@@ -134,6 +136,7 @@ jobs:
 
       - name: Verify migrations
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           SUPABASE_DB_URL: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production' && secrets.SUPABASE_DB_URL_PRODUCTION || secrets.SUPABASE_DB_URL_STAGING }}
           SUPABASE_DB_PASSWORD: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production' && secrets.SUPABASE_DB_PASSWORD_PRODUCTION || secrets.SUPABASE_DB_PASSWORD_STAGING }}
         run: |

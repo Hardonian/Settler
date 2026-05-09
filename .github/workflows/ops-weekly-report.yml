@@ -27,6 +27,7 @@ jobs:
 
       - name: Generate Weekly Report
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           NODE_ENV: production
         run: |

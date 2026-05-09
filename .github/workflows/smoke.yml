@@ -9,6 +9,7 @@ on:
   workflow_dispatch:
 
 env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
@@ -26,6 +27,7 @@ jobs:
       - name: Build application
         run: npx turbo run build
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           # Use dummy values for build (smoke tests will use actual deployment URL)
           NEXT_PUBLIC_SITE_URL: http://localhost:3000
           NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
@@ -35,6 +37,7 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: npm run qa:smoke
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           BASE_URL: ${{ secrets.E2E_BASE_URL || 'https://settler.dev' }}
         continue-on-error: true
       - name: Verify GitHub CLI availability
@@ -61,6 +64,7 @@ jobs:
             echo "⚠️  No Vercel preview URL found (will skip smoke tests)"
           fi
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
 
@@ -68,6 +72,7 @@ jobs:
         if: github.event_name == 'pull_request' && steps.vercel-preview.outputs.preview_url != ''
         run: npm run qa:smoke
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           BASE_URL: ${{ steps.vercel-preview.outputs.preview_url }}
         continue-on-error: true
 

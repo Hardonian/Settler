@@ -25,6 +25,7 @@ on:
       - ".github/workflows/operator-mode-verification.yml"
 
 env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
@@ -59,6 +60,7 @@ jobs:
 
       - name: Run Operator Mode Verification Tests
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           NODE_ENV: test
         run: |
@@ -76,6 +78,7 @@ jobs:
 
       - name: Test Daily Intelligence
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           NODE_ENV: test
         run: |
@@ -98,6 +101,7 @@ jobs:
 
       - name: Test Kill Switches
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           NODE_ENV: test
         run: |
@@ -125,6 +129,7 @@ jobs:
 
       - name: Test Alert Thresholds
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           OPERATOR_USER_ID: ${{ secrets.OPERATOR_USER_ID || '00000000-0000-0000-0000-000000000000' }}
           NODE_ENV: test
@@ -145,6 +150,7 @@ jobs:
 
       - name: Verify End-to-End Operational Lifecycle
         env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           OPERATOR_USER_ID: ${{ secrets.OPERATOR_USER_ID || '00000000-0000-0000-0000-000000000000' }}
           NODE_ENV: test

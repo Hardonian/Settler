@@ -9,6 +9,7 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       NODE_ENV: test
       NEXT_PUBLIC_SITE_URL: http://localhost:3000
       NEXT_PUBLIC_APP_URL: http://localhost:3000
