@@ -41,13 +41,13 @@ jobs:
     environment: ${{ github.event.inputs.environment || 'staging' }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: false
+          cache: 'false'
 
       - name: Install dependencies
         run: npm ci

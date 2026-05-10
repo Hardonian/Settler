@@ -13,22 +13,22 @@ jobs:
     name: Classify Files
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version-file: '.nvmrc'
-          cache: false
+          cache: 'false'
       - run: npm ci
       - name: Run classification
         run: npm run classify:strict
       - name: Upload classification report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: classification-report
           path: artifacts/classification-report.json
       - name: Upload classification summary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: classification-summary
@@ -61,7 +61,7 @@ jobs:
       
       - name: Comment PR with fix suggestions
         if: failure() && github.event_name == 'pull_request'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const { execSync } = require('child_process');

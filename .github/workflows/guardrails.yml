@@ -11,7 +11,7 @@ jobs:
     name: Check Pricing Links
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Check for broken pricing links
         run: |
@@ -39,7 +39,7 @@ jobs:
     name: Check Required Env Vars
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Check .env.example exists
         run: |
@@ -61,7 +61,7 @@ jobs:
     name: Check for Hard 500 Routes
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Check API routes for hard 500s
         run: |
@@ -110,7 +110,7 @@ jobs:
     name: Check for Unverified Claims
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Check for unverified claims
         run: |
@@ -147,7 +147,7 @@ jobs:
     name: Check Documentation Alignment
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Check investor docs exist
         run: |
@@ -177,13 +177,13 @@ jobs:
     name: Lint & Type Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup Node.js & pnpm
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
-          cache: false
+          cache: 'false'
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate

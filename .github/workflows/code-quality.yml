@@ -11,11 +11,11 @@ jobs:
     name: Lint & Format Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version-file: ".nvmrc"
-          cache: false
+          cache: 'false'
       - run: corepack enable && corepack prepare pnpm@10.13.1 --activate
       - run: pnpm install --frozen-lockfile
       - run: pnpm run lint
@@ -31,11 +31,11 @@ jobs:
     name: TypeScript Type Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version-file: ".nvmrc"
-          cache: false
+          cache: 'false'
       - run: corepack enable && corepack prepare pnpm@10.13.1 --activate
       - run: pnpm install --frozen-lockfile
       - run: pnpm run typecheck
@@ -44,11 +44,11 @@ jobs:
     name: Security Scan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version-file: ".nvmrc"
-          cache: false
+          cache: 'false'
       - run: corepack enable && corepack prepare pnpm@10.13.1 --activate
       - run: pnpm install --frozen-lockfile
       - run: pnpm audit --audit-level=moderate || true
@@ -62,11 +62,11 @@ jobs:
     name: Run Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version-file: ".nvmrc"
-          cache: false
+          cache: 'false'
       - run: corepack enable && corepack prepare pnpm@10.13.1 --activate
       - run: pnpm install --frozen-lockfile
       - run: pnpm run test -- --coverage
@@ -82,11 +82,11 @@ jobs:
     name: Dead Code Detection
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version-file: ".nvmrc"
-          cache: false
+          cache: 'false'
       - run: corepack enable && corepack prepare pnpm@10.13.1 --activate
       - run: pnpm install --frozen-lockfile
       - name: Check for unused exports

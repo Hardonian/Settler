@@ -20,11 +20,11 @@ jobs:
     if: github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch'
     environment: production # Requires production environment secrets
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version-file: ".nvmrc"
-          cache: false
+          cache: 'false'
       - run: npm ci
       - name: Build application
         run: npx turbo run build

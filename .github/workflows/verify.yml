@@ -22,14 +22,14 @@ jobs:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
       REDIS_URL: redis://localhost:6379
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v5
         with:
           version: 10.13.1
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version-file: ".nvmrc"
-          cache: false
+          cache: 'false'
       - name: Install
         run: pnpm install --frozen-lockfile
       - name: Verify gate
