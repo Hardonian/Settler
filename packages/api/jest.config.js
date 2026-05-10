@@ -6,8 +6,10 @@ module.exports = {
   },
   moduleNameMapper: {
     "^@settler/support-intake$": "<rootDir>/../support-intake/src/index.ts",
-    "^@settler/adapters$": "<rootDir>/../adapters/dist/index.js",
-    "^@settler/reconciliation-core$": "<rootDir>/../reconciliation-core/dist/index.js",
+    "^@settler/adapters$": "<rootDir>/../adapters/src/index.ts",
+    "^@settler/reconciliation-core$": "<rootDir>/../reconciliation-core/src/index.ts",
+    "^@settler/types$": "<rootDir>/../types/src/index.ts",
+    "^uuid$": require.resolve("uuid"),
   },
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
   setupFilesAfterEnv: ["<rootDir>/src/__tests__/setup.ts"],

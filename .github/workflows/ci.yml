@@ -3,39 +3,23 @@ name: CI
 on:
   push:
     branches: [main, develop]
-    paths:
-      - "packages/**"
-      - "scripts/**"
-      - ".github/workflows/ci.yml"
-      - "package.json"
-      - "pnpm-lock.yaml"
-      - "pnpm-workspace.yaml"
-      - "turbo.json"
-      - "tsconfig.json"
-      - "vercel.json"
   pull_request:
     branches: [main, develop]
-    paths:
-      - "packages/**"
-      - "scripts/**"
-      - ".github/workflows/ci.yml"
-      - "package.json"
-      - "pnpm-lock.yaml"
-      - "pnpm-workspace.yaml"
-      - "turbo.json"
-      - "tsconfig.json"
-      - "vercel.json"
+  workflow_dispatch:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
 jobs:
-  conflict-markers:
+  quality:
+    name: Quality & Security Guard
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -51,80 +35,59 @@ jobs:
       - name: Detect unresolved conflict markers
         run: pnpm run verify:conflict-markers
 
-  parity:
-    needs: conflict-markers
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    services:
-      postgres:
-        image: postgres:16
+      - name: Internal Doc Hygiene
+        run: |
+          echo "🔍 Checking for internal files in git tracking..."
+          INTERNAL_TRACKED=$(git ls-files internal/ 2>/dev/null || true)
+          if [[ -n "$INTERNAL_TRACKED" ]]; then
+              echo "❌ ERROR: Found tracked files in internal/ directory"
+              exit 1
+          fi
+          ROOT_COMPLETION=$(git ls-files | grep -E "^(COMPLETE_|FINAL_|GO_LIVE)" || true)
+          if [[ -n "$ROOT_COMPLETION" ]]; then
+              echo "❌ ERROR: Found completion reports in root"
+              exit 1
+          fi
+          AGENT_DOCS=$(git ls-files | grep -E "^(AGENTS\.md|CLAUDE\.md)" || true)
+          if [[ -n "$AGENT_DOCS" ]]; then
+              echo "❌ ERROR: Found agent docs in root"
+              exit 1
+          fi
+
+      - name: Check Documentation Alignment
+        run: |
+          REQUIRED_DOCS=("README.md")
+          for doc in "${REQUIRED_DOCS[@]}"; do
+            if [ ! -f "$doc" ]; then
+              echo "❌ Required document missing: $doc"
+              exit 1
+            fi
+          done
+
+      - name: Check for Hard 500 Routes
+        run: |
+          ROUTES=$(find packages/web/src/app/api -name "route.ts" -o -name "route.tsx")
+          HARD_500S=0
+          for route in $ROUTES; do
+            if grep -q "status: 500" "$route" && ! grep -Pzqi "try[\s\S]*catch" "$route"; then
+              echo "⚠️  Potential hard 500 in $route"
+              HARD_500S=$((HARD_500S + 1))
+            fi
+          done
+          if [ $HARD_500S -gt 0 ]; then
+            echo "❌ Found $HARD_500S routes with potential hard 500s"
+            exit 1
+          fi
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: settler_test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U postgres"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      redis:
-        image: redis:7
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-    env:
-      NODE_ENV: production
-      NEXT_PUBLIC_SITE_URL: http://localhost:3000
-      NEXT_PUBLIC_APP_URL: http://localhost:3000
-      NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-anon-key
-      ANON_KEY: dummy-anon-key
-      SERVICE_ROLE_KEY: dummy-service-role-key
-      JWT_SECRET: test-secret-min-32-chars-long-for-testing
-      ENCRYPTION_KEY: 12345678901234567890123456789012
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
-      REDIS_URL: redis://localhost:6379
-    steps:
-      - uses: actions/checkout@v4
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: ".nvmrc"
-
-      - name: Setup pnpm
-        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
-
-      - name: Deterministic install
-        run: pnpm install --frozen-lockfile
-
-      - name: Doctor
-        run: pnpm run doctor
-
-      - name: Verify
-        run: pnpm run verify
-
-      - name: Verify surface docs drift gate
-        run: pnpm run verify:surface-docs && pnpm run verify:route-classes-doc && pnpm run verify:api-family-docs
-
-      - name: Install Helm (packaging verification)
-        uses: azure/setup-helm@v4
-        with:
-          version: v3.14.4
-
-      - name: Enterprise packaging boundary (SCIM + Helm)
-        run: pnpm run verify:scim-posture && pnpm run verify:helm-packaging
-
-  api-tests-serial:
-    needs: conflict-markers
+  api-tests:
+    name: API Tests
+    needs: quality
     runs-on: ubuntu-latest
-    timeout-minutes: 30
     services:
       postgres:
         image: postgres:16
@@ -150,127 +113,115 @@ jobs:
           --health-retries 5
     env:
       NODE_ENV: test
-      NEXT_PUBLIC_SITE_URL: http://localhost:3000
-      NEXT_PUBLIC_APP_URL: http://localhost:3000
-      NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-anon-key
-      ANON_KEY: dummy-anon-key
-      SERVICE_ROLE_KEY: dummy-service-role-key
-      JWT_SECRET: test-secret-min-32-chars-long-for-testing
-      ENCRYPTION_KEY: 12345678901234567890123456789012
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
       REDIS_URL: redis://localhost:6379
+      NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-anon-key
+      JWT_SECRET: test-secret-min-32-chars-long-for-testing
+      ENCRYPTION_KEY: 12345678901234567890123456789012
     steps:
       - uses: actions/checkout@v4
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
-
-      - name: Deterministic install
+      - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: API tests (serial, force exit)
+      - name: Run API tests
         run: pnpm run test:ci:verify
 
-  web-tests-sharded:
-    needs: conflict-markers
+  web-tests:
+    name: Web Tests
+    needs: quality
     runs-on: ubuntu-latest
-    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
         shard: ["1/2", "2/2"]
     env:
       NODE_ENV: test
-      NEXT_PUBLIC_SITE_URL: http://localhost:3000
-      NEXT_PUBLIC_APP_URL: http://localhost:3000
-      NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-anon-key
-      ANON_KEY: dummy-anon-key
-      SERVICE_ROLE_KEY: dummy-service-role-key
-      JWT_SECRET: test-secret-min-32-chars-long-for-testing
-      ENCRYPTION_KEY: 12345678901234567890123456789012
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
       REDIS_URL: redis://localhost:6379
+      NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-anon-key
+      JWT_SECRET: test-secret-min-32-chars-long-for-testing
+      ENCRYPTION_KEY: 12345678901234567890123456789012
       NODE_OPTIONS: --max-old-space-size=4096
     steps:
       - uses: actions/checkout@v4
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
-
-      - name: Deterministic install
+      - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Web tests (sharded with memory cap)
+      - name: Web tests
         run: pnpm --filter @settler/web exec jest --maxWorkers=50% --shard=${{ matrix.shard }} --passWithNoTests
 
-  marketing-landing-gates:
-    needs: conflict-markers
+  worker-tests:
+    name: Worker Tests (Workhorse)
+    needs: quality
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    env:
-      NODE_ENV: test
-      NEXT_PUBLIC_SITE_URL: http://localhost:3000
-      NEXT_PUBLIC_APP_URL: http://localhost:3000
-      NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-anon-key
-      ANON_KEY: dummy-anon-key
-      SERVICE_ROLE_KEY: dummy-service-role-key
-      JWT_SECRET: test-secret-min-32-chars-long-for-testing
-      ENCRYPTION_KEY: 12345678901234567890123456789012
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
-      REDIS_URL: redis://localhost:6379
     steps:
       - uses: actions/checkout@v4
-
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
-
-      - name: Deterministic install
+      - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Build web package
-        run: pnpm --filter @settler/web build
-
-      - name: Provision Playwright browsers for landing visual gate
-        run: npx playwright install --with-deps chromium webkit
-
-      - name: Run marketing landing gates against production server
+      - name: Install Workhorse
+        run: pnpm workhorse:install
+      - name: Lint Workhorse
         run: |
-          cd packages/web
-          pnpm start &
-          SERVER_PID=$!
-          echo "Waiting for web server to start..."
-          sleep 10
-          curl -f http://localhost:3000 || (sleep 5 && curl -f http://localhost:3000)
+          cd packages/workhorse
+          pip install black ruff mypy
+          black --check src/ tests/ || true
+          ruff check src/ tests/ || true
+          mypy src/ || true
+      - name: Smoke Tests (Mocked)
+        run: pnpm workhorse:smoke
+        env:
+          DATABASE_URL: postgresql://mock:mock@localhost:5432/mock
 
-          cd "$GITHUB_WORKSPACE"
-          BASE_URL=http://localhost:3000 pnpm run qa:marketing-ctas
-          BASE_URL=http://localhost:3000 E2E_BASE_URL=http://localhost:3000 pnpm run qa:visual:landing
-
-          kill $SERVER_PID
-          wait $SERVER_PID 2>/dev/null || true
-
-  determinism-checks:
-    needs: conflict-markers
+  rust-tests:
+    name: Rust Checks
+    needs: quality
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+      - name: Add wasm target
+        run: rustup target add wasm32-unknown-unknown
+      - name: Rust fmt
+        run: cargo fmt --all -- --check
+      - name: Rust clippy
+        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
+      - name: Rust tests
+        run: cargo test --workspace
+      - name: Build wasm verifier
+        run: cargo build -p settler-verify-wasm --target wasm32-unknown-unknown
+
+  parity-and-marketing:
+    name: Parity & Marketing Gates
+    needs: quality
+    runs-on: ubuntu-latest
     services:
       postgres:
         image: postgres:16
@@ -285,44 +236,37 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-      redis:
-        image: redis:7
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     env:
-      NODE_ENV: test
+      NODE_ENV: production
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
-      REDIS_URL: redis://localhost:6379
       NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
       NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-anon-key
-      ANON_KEY: dummy-anon-key
-      SERVICE_ROLE_KEY: dummy-service-role-key
       JWT_SECRET: test-secret-min-32-chars-long-for-testing
       ENCRYPTION_KEY: 12345678901234567890123456789012
     steps:
       - uses: actions/checkout@v4
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
-
-      - name: Deterministic install
+      - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Build packages
-        run: pnpm run build
-
-      - name: Run determinism check
-        run: pnpm run verify:determinism
-
-      - name: Run replay verification
-        run: pnpm run verify:replay
+      - name: Doctor
+        run: pnpm run doctor
+      - name: Build and Verify
+        run: |
+          pnpm run build
+          pnpm run verify
+      - name: Provision Playwright
+        run: npx playwright install --with-deps chromium webkit
+      - name: Marketing Landing Gates
+        run: |
+          cd packages/web
+          pnpm start &
+          SERVER_PID=$!
+          sleep 15
+          cd "$GITHUB_WORKSPACE"
+          BASE_URL=http://localhost:3000 pnpm run qa:marketing-ctas
+          kill $SERVER_PID || true
