@@ -37,7 +37,6 @@ if (typeof process !== "undefined" && process.env) {
 
   // Force binary engine - this must be set before PrismaClient is imported
   // This is critical for Prisma 7 to use binary engine instead of client engine
-  env["PRISMA_CLIENT_ENGINE_TYPE"] = "binary";
 
   // Ensure Node.js runtime is detected (not edge)
   // Prisma 7 uses client engine in edge/serverless environments
@@ -56,17 +55,16 @@ if (typeof process !== "undefined" && process.env) {
   if (!env["DATABASE_URL"] && isBuildPhase) {
     env["DATABASE_URL"] =
       "postgresql://dummy:dummy@localhost:5432/dummy?schema=public&connection_limit=1";
-    if (!env["PRISMA_CLIENT_ENGINE_TYPE"]) {
-      env["PRISMA_CLIENT_ENGINE_TYPE"] = "binary";
-    }
   }
+
   prismaGlobals.__PRISMA_BUILD_PHASE__ = isBuildPhase;
 }
 
 // Use require after env setup so Prisma reads the correct runtime configuration.
 
-const { PrismaClient } = require("@prisma/client") as {
+const { PrismaClient, Prisma } = require("@prisma/client") as {
   PrismaClient: typeof import("@prisma/client").PrismaClient;
+  Prisma: any;
 };
 
 type PrismaQueryRaw = {
@@ -91,7 +89,17 @@ let prismaInstance: PrismaClientType;
 try {
   // Pass datasourceUrl explicitly to satisfy Prisma wasm/client engine validation.
   // The build phase sets a dummy DATABASE_URL to prevent build-time failures.
-  prismaInstance = globalForPrisma.prisma ?? new PrismaClient();
+  if (isBuildPhase) {
+    prismaInstance =
+      globalForPrisma.prisma ??
+      new PrismaClient({
+        log: ["warn", "error"],
+        datasourceUrl:
+          "postgresql://dummy:dummy@localhost:5432/dummy?schema=public&connection_limit=1",
+      });
+  } else {
+    prismaInstance = globalForPrisma.prisma ?? new PrismaClient();
+  }
 } catch (error) {
   console.error("[Prisma] Failed to initialize Prisma client:", error);
   // Create a stub client for graceful failure during builds or when DB is unavailable.
@@ -151,7 +159,6 @@ if (typeof setInterval !== "undefined" && nodeEnv === "production" && !isBuildPh
 }
 
 export const prisma = prismaInstance as PrismaClientType & PrismaQueryRaw;
-
 if (nodeEnv !== "production") {
   globalForPrisma.prisma = prisma;
 }
@@ -159,3 +166,4 @@ if (nodeEnv !== "production") {
 export async function checkDatabaseHealth(): Promise<boolean> {
   return checkConnectionHealth();
 }
+export { Prisma };

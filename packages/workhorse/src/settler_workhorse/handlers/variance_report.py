@@ -303,9 +303,7 @@ def handle_variance_report(job: Job) -> JobResult:
                 "severity": (
                     "high"
                     if metrics["variance_rate"] > 0.1
-                    else "medium"
-                    if metrics["variance_rate"] > 0.05
-                    else "low"
+                    else "medium" if metrics["variance_rate"] > 0.05 else "low"
                 ),
             },
         }
