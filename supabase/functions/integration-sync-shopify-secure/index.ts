@@ -114,7 +114,44 @@ serve(async (req) => {
       }
 
       // Webhook validated, process it
-      // TODO: Process Shopify webhook
+      const supabaseAdmin = createClient(
+        Deno.env.get("SUPABASE_URL") ?? "",
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+      );
+
+      let payloadJson: Record<string, any> = {};
+      try {
+        payloadJson = JSON.parse(body);
+      } catch (e) {
+        payloadJson = { raw_body: body };
+      }
+
+      // Attempt to extract tenant_id from payload, or query string
+      const url = new URL(req.url);
+      const tenantId = payloadJson.tenant_id || url.searchParams.get("tenant_id");
+
+      if (tenantId) {
+        const { error: insertError } = await supabaseAdmin.from("webhook_payloads").insert({
+          adapter: "shopify",
+          tenant_id: tenantId,
+          payload: payloadJson,
+          signature: shopifyHmac,
+        });
+
+        if (insertError) {
+          console.error("Failed to store webhook payload:", insertError);
+          return new Response(JSON.stringify({ error: "Failed to store webhook" }), {
+            status: 500,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      } else {
+        console.warn(
+          "Could not determine tenant_id for Shopify webhook from payload or URL params for shop domain:",
+          shopDomain
+        );
+      }
+
       return new Response(JSON.stringify({ success: true, message: "Webhook processed" }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
