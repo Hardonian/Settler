@@ -83,7 +83,7 @@ def _fetch_transactions(
             metadata,
             created_at
         FROM normalized_transactions
-        WHERE {' AND '.join(conditions)}
+        WHERE {" AND ".join(conditions)}
         ORDER BY date DESC, amount DESC
         LIMIT %(limit)s;
     """

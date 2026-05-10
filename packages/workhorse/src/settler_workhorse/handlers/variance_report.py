@@ -82,7 +82,7 @@ def _fetch_recon_results(
             created_at,
             updated_at
         FROM recon_results
-        WHERE {' AND '.join(conditions)}
+        WHERE {" AND ".join(conditions)}
         ORDER BY created_at DESC
         LIMIT 1000;
     """
@@ -303,7 +303,9 @@ def handle_variance_report(job: Job) -> JobResult:
                 "severity": (
                     "high"
                     if metrics["variance_rate"] > 0.1
-                    else "medium" if metrics["variance_rate"] > 0.05 else "low"
+                    else "medium"
+                    if metrics["variance_rate"] > 0.05
+                    else "low"
                 ),
             },
         }

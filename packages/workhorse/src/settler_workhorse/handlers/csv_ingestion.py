@@ -325,16 +325,17 @@ def handle_csv_ingestion(job: Job) -> JobResult:
     file_url = payload.get("file_url")
     file_content_b64 = payload.get("file_content_base64")
 
+    from settler_workhorse.storage.client import get_storage_client
+    from settler_workhorse.utils.http import download_from_url
+
     if file_content_b64:
         import base64
 
         content = base64.b64decode(file_content_b64)
     elif file_path:
-        # TODO: Implement storage service integration
-        raise NotImplementedError("File path storage not yet implemented")
+        content = get_storage_client().download_file(file_path)
     elif file_url:
-        # TODO: Implement URL download
-        raise NotImplementedError("File URL download not yet implemented")
+        content = download_from_url(file_url)
     else:
         return JobResult(
             success=False,
