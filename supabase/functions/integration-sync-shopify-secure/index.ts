@@ -114,7 +114,51 @@ serve(async (req) => {
       }
 
       // Webhook validated, process it
-      // TODO: Process Shopify webhook
+
+      const supabaseService = createClient(
+        Deno.env.get("SUPABASE_URL") ?? "",
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+      );
+
+      const { data: integrations, error: integrationError } = await supabaseService
+        .from("service_integrations")
+        .select("tenant_id")
+        .eq("type", "shopify")
+        .contains("config", { shopDomain });
+
+      if (integrationError || !integrations || integrations.length === 0) {
+        console.error("No integration found for shop domain:", shopDomain);
+        return new Response(JSON.stringify({ error: "Integration not found" }), {
+          status: 404,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      let payloadJson;
+      try {
+        payloadJson = JSON.parse(body);
+      } catch (e) {
+        return new Response(JSON.stringify({ error: "Invalid JSON payload" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const { error: insertError } = await supabaseService.from("webhook_payloads").insert({
+        adapter: "shopify",
+        tenant_id: integrations[0].tenant_id,
+        payload: payloadJson,
+        signature: shopifyHmac,
+        processed: false,
+      });
+
+      if (insertError) {
+        console.error("Error storing webhook:", insertError);
+        return new Response(JSON.stringify({ error: "Failed to store webhook" }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
       return new Response(JSON.stringify({ success: true, message: "Webhook processed" }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
