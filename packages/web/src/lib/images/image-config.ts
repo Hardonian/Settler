@@ -98,7 +98,7 @@ const SETTLER_IMAGES_CONFIG = {
 
   logoMain: {
     path: "/brand/settler/settler-lockup-horizontal-light.png",
-    width: 1099,
+    width: 1282,
     height: 339,
     alt: BRAND_STRINGS.productSiteName,
     category: "logo" as const,
@@ -107,7 +107,7 @@ const SETTLER_IMAGES_CONFIG = {
   },
   logoHorizontalLight: {
     path: "/brand/settler/settler-lockup-horizontal-light.png",
-    width: 1099,
+    width: 1282,
     height: 339,
     alt: BRAND_STRINGS.productSiteName,
     category: "logo" as const,
@@ -116,7 +116,7 @@ const SETTLER_IMAGES_CONFIG = {
   },
   logoHorizontalDark: {
     path: "/brand/settler/settler-lockup-horizontal-light.png",
-    width: 1099,
+    width: 1282,
     height: 339,
     alt: BRAND_STRINGS.productSiteName,
     category: "logo" as const,
@@ -125,7 +125,7 @@ const SETTLER_IMAGES_CONFIG = {
   },
   logoStackedLight: {
     path: "/brand/settler/settler-lockup-horizontal-light.png",
-    width: 1099,
+    width: 1282,
     height: 339,
     alt: BRAND_STRINGS.productSiteName,
     category: "logo" as const,
@@ -150,7 +150,7 @@ const SETTLER_IMAGES_CONFIG = {
   },
   logoWordmarkLight: {
     path: "/brand/settler/settler-lockup-horizontal-light.png",
-    width: 1099,
+    width: 1282,
     height: 339,
     alt: BRAND_STRINGS.productSiteName,
     category: "logo" as const,

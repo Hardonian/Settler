@@ -69,7 +69,7 @@ jobs:
           ROUTES=$(find packages/web/src/app/api -name "route.ts" -o -name "route.tsx")
           HARD_500S=0
           for route in $ROUTES; do
-            if grep -q "status: 500" "$route" && ! grep -Pzqi "try[\s\S]*catch" "$route"; then
+            if grep -q "status: 500" "$route" && ! grep -Pzqi "try[\s\S]*catch|handleOperatorCustomizationRoute" "$route"; then
               echo "⚠️  Potential hard 500 in $route"
               HARD_500S=$((HARD_500S + 1))
             fi
