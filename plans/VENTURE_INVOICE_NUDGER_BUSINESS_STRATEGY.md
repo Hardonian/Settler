@@ -30,7 +30,6 @@ This feature compounds Settler’s core reconciliation moat by extending from pa
 Most nudgers are rules-only and context-blind.
 
 Settler differentiates with:
-
 - Reconciliation-aware suppression
 - Tenant-safe audit evidence for every action
 - Unified transaction + invoice + recon model already in platform
@@ -38,18 +37,15 @@ Settler differentiates with:
 ## Execution Roadmap
 
 ### Phase 1 (now)
-
 - Decision engine + persistence + run analytics
 - Dry-run + execute-mode action tagging
 
 ### Phase 2
-
 - Delivery integrations (email/SMS/CRM tasks)
 - Human approval gating and escalation chains
 - Retry and cadence policies
 
 ### Phase 3
-
 - Outcome feedback loop
 - Segment-level policy optimization
 - ML-assisted prediction of best contact time + channel

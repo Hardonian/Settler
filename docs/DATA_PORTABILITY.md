@@ -15,12 +15,12 @@ Settler is committed to customer data ownership and portability. Customers can e
 
 ### Available Export Methods
 
-| Method      | Format          | Latency   | Cost                |
-| ----------- | --------------- | --------- | ------------------- |
-| API         | JSON            | Real-time | Free (within quota) |
-| CSV Export  | CSV             | Real-time | Free                |
-| Bulk Export | JSON/CSV        | 24 hours  | Free                |
-| DB Snapshot | PostgreSQL dump | 48 hours  | $100                |
+| Method | Format | Latency | Cost |
+|--------|--------|---------|------|
+| API | JSON | Real-time | Free (within quota) |
+| CSV Export | CSV | Real-time | Free |
+| Bulk Export | JSON/CSV | 24 hours | Free |
+| DB Snapshot | PostgreSQL dump | 48 hours | $100 |
 
 ### Export via API
 
@@ -82,7 +82,14 @@ Response:
 {
   "format": "json",
   "compressed": "gzip",
-  "fields": ["timestamp", "user_id", "action", "target_type", "target_id", "ip_address"]
+  "fields": [
+    "timestamp",
+    "user_id",
+    "action",
+    "target_type",
+    "target_id",
+    "ip_address"
+  ]
 }
 ```
 
@@ -92,10 +99,10 @@ Response:
 
 ### Version Commitment
 
-| Schema Version | Status  | Support Until |
-| -------------- | ------- | ------------- |
-| 1.0            | Current | +12 months    |
-| 0.9            | Legacy  | +6 months     |
+| Schema Version | Status | Support Until |
+|---------------|--------|---------------|
+| 1.0 | Current | +12 months |
+| 0.9 | Legacy | +6 months |
 
 ### Version Export
 
@@ -115,21 +122,21 @@ GET /api/v1/organizations/{id}/export?version=1.0
 
 ## 5. Portability SLAs
 
-| Tier       | Export Frequency | Priority | Retention |
-| ---------- | ---------------- | -------- | --------- |
-| Free       | 1/month          | Standard | 30 days   |
-| Starter    | 10/month         | Standard | 30 days   |
-| Growth     | Unlimited        | Priority | 90 days   |
-| Enterprise | Unlimited        | Priority | 12 months |
+| Tier | Export Frequency | Priority | Retention |
+|------|-------------------|----------|-----------|
+| Free | 1/month | Standard | 30 days |
+| Starter | 10/month | Standard | 30 days |
+| Growth | Unlimited | Priority | 90 days |
+| Enterprise | Unlimited | Priority | 12 months |
 
 ### SLA Definitions
 
-| Metric                | Commitment  | Measurement |
-| --------------------- | ----------- | ----------- |
-| Export API latency    | < 5 seconds | p95         |
-| CSV generation        | < 1 minute  | p95         |
-| Bulk export           | < 24 hours  | Scheduled   |
-| Download availability | 7 days      | URL expiry  |
+| Metric | Commitment | Measurement |
+|--------|------------|--------------|
+| Export API latency | < 5 seconds | p95 |
+| CSV generation | < 1 minute | p95 |
+| Bulk export | < 24 hours | Scheduled |
+| Download availability | 7 days | URL expiry |
 
 ---
 
@@ -137,12 +144,12 @@ GET /api/v1/organizations/{id}/export?version=1.0
 
 ### Retention Policy
 
-| Data Type           | Export Retention | Deletion After |
-| ------------------- | ---------------- | -------------- |
-| Reconciliation runs | Permanent        | Per request    |
-| Audit logs          | 12 months        | Automatic      |
-| User sessions       | 30 days          | Automatic      |
-| API logs            | 90 days          | Automatic      |
+| Data Type | Export Retention | Deletion After |
+|-----------|-------------------|----------------|
+| Reconciliation runs | Permanent | Per request |
+| Audit logs | 12 months | Automatic |
+| User sessions | 30 days | Automatic |
+| API logs | 90 days | Automatic |
 
 ### Deletion on Export
 
@@ -158,13 +165,13 @@ Body: { "confirm": true, "export_id": "exp_xxx" }
 
 ### Import Capabilities
 
-| Format     | Status       | Validation        |
-| ---------- | ------------ | ----------------- |
-| CSV        | ✅ Supported | Schema validation |
-| JSON       | ✅ Supported | Schema validation |
-| Stripe     | ✅ Supported | API sync          |
-| QuickBooks | ✅ Supported | OAuth             |
-| Xero       | ✅ Supported | OAuth             |
+| Format | Status | Validation |
+|--------|--------|------------|
+| CSV | ✅ Supported | Schema validation |
+| JSON | ✅ Supported | Schema validation |
+| Stripe | ✅ Supported | API sync |
+| QuickBooks | ✅ Supported | OAuth |
+| Xero | ✅ Supported | OAuth |
 
 ### Import Documentation
 
@@ -184,11 +191,11 @@ Fields:
 
 ### Offboarding Assistance
 
-| Tier       | Support                    |
-| ---------- | -------------------------- |
-| Free       | Self-service export        |
-| Starter    | Export + email support     |
-| Growth     | Export + migration guide   |
+| Tier | Support |
+|------|----------|
+| Free | Self-service export |
+| Starter | Export + email support |
+| Growth | Export + migration guide |
 | Enterprise | Export + dedicated support |
 
 ### Migration Export Package
@@ -206,13 +213,13 @@ On request, Settler provides:
 
 ### Supported Integrations
 
-| Platform   | Export            | Import  |
-| ---------- | ----------------- | ------- |
-| Stripe     | ✅ Full           | ✅ Full |
-| QuickBooks | ✅ Full           | ✅ Full |
-| Xero       | ✅ Full           | ✅ Full |
-| Plaid      | ✅ Statement only | ❌      |
-| CSV        | ✅ Full           | ✅ Full |
+| Platform | Export | Import |
+|----------|--------|--------|
+| Stripe | ✅ Full | ✅ Full |
+| QuickBooks | ✅ Full | ✅ Full |
+| Xero | ✅ Full | ✅ Full |
+| Plaid | ✅ Statement only | ❌ |
+| CSV | ✅ Full | ✅ Full |
 
 ---
 
@@ -236,6 +243,6 @@ On request, Settler provides:
 
 ---
 
-_Document Version: 1.0_
-_Effective: 2026-04-10_
-_Review: Annual_
+*Document Version: 1.0*
+*Effective: 2026-04-10*
+*Review: Annual*

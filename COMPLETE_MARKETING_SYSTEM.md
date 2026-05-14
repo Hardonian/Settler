@@ -11,13 +11,10 @@ Fully autonomous, self-improving marketing engine for Settler.
 ## 📅 CRON SCHEDULE (Brain OS)
 
 ### Daily (6:00 AM)
-
 ```bash
 node /root/.openclaw/workspace/Settler/marketing/orchestrator.js
 ```
-
 **What it does:**
-
 - Generates blog posts (3)
 - Generates social content (24+ posts)
 - Researches prospects (5+)
@@ -28,142 +25,109 @@ node /root/.openclaw/workspace/Settler/marketing/orchestrator.js
 - Publishes approved content
 
 ### Every 15 Minutes
-
 ```bash
 node /root/.openclaw/workspace/Settler/marketing/integrations/social-publisher.js process
 ```
-
 **What it does:**
-
 - Checks for scheduled posts
 - Publishes due content to Twitter/LinkedIn
 - Handles rate limiting
 
 ### Every 4 Hours
-
 ```bash
 node /root/.openclaw/workspace/Settler/marketing/lead-gen/community-miner.js --platform=all
 ```
-
 **What it does:**
-
 - Monitors Reddit for reconciliation questions
 - Monitors Hacker News for relevant threads
 - Generates suggested responses
 - Queues for approval
 
 ### Every 8 Hours
-
 ```bash
 node /root/.openclaw/workspace/brain/scripts/marketing-health-check.js
 ```
-
 **What it does:**
-
 - Validates all marketing systems
 - Checks disk space
 - Verifies output directories
 - Reports system health
 
 ### Daily (9:00 AM)
-
 ```bash
 node /root/.openclaw/workspace/Settler/marketing/intelligence/competitor-monitor.js
 ```
-
 **What it does:**
-
 - Tracks competitor pricing changes
 - Monitors feature announcements
 - Generates battle cards
 - Alerts on significant changes
 
 ### Weekdays (8:00 AM)
-
 ```bash
 node /root/.openclaw/workspace/Settler/marketing/lead-gen/prospect-researcher.ts --source=linkedin
 ```
-
 **What it does:**
-
 - Researches LinkedIn for ideal prospects
 - Scores prospects (high/medium/low signal)
 - Generates cold emails
 - Exports to JSON
 
 ### Daily (7:00 AM)
-
 ```bash
 node /root/.openclaw/workspace/Settler/marketing/lead-gen/job-monitor.ts --keywords="reconciliation,finance automation"
 ```
-
 **What it does:**
-
 - Monitors job boards for reconciliation roles
 - Identifies high-intent companies
 - Generates outreach messages
 - Alerts on new postings
 
 ### Weekly (Monday 11:00 AM)
-
 ```bash
 node /root/.openclaw/workspace/Settler/marketing/partnerships/partnership-finder.ts --type=all
 ```
-
 **What it does:**
-
 - Identifies integration partners
 - Finds co-marketing opportunities
 - Discovers podcast/speaking gigs
 - Generates outreach emails
 
 ### Weekly (Sunday 12:00 PM)
-
 ```bash
 node /root/.openclaw/workspace/brain/scripts/content-performance-analyzer.js
 ```
-
 **What it does:**
-
 - Analyzes content performance
 - Identifies top-performing topics
 - Recommends strategy adjustments
 - Generates optimization report
 
 ### Daily (2:00 AM)
-
 ```bash
 node /root/.openclaw/workspace/brain/scripts/marketing-optimizer.js
 ```
-
 **What it does:**
-
 - Reviews performance data
 - Auto-optimizes content mix
 - Adjusts posting schedules
 - Expands auto-approve criteria
 
 ### Weekly (Monday 9:00 AM)
-
 ```bash
 node /root/.openclaw/workspace/brain/scripts/weekly-marketing-report.js
 ```
-
 **What it does:**
-
 - Generates weekly metrics report
 - Highlights top achievements
 - Sets next week priorities
 - Sends to Slack/email
 
 ### Monthly (1st, 10:00 AM)
-
 ```bash
 node /root/.openclaw/workspace/brain/scripts/monthly-strategy-review.js
 ```
-
 **What it does:**
-
 - Deep performance analysis
 - Strategic insights
 - Executive recommendations
@@ -176,7 +140,6 @@ node /root/.openclaw/workspace/brain/scripts/monthly-strategy-review.js
 ### App Introduction Posts
 
 #### Twitter Thread (6 tweets)
-
 ```
 Tweet 1: Hook - Personal pain story
 Tweet 2: Problem - Why existing solutions fail
@@ -187,7 +150,6 @@ Tweet 6: CTA - Free trial link
 ```
 
 #### LinkedIn Story Post
-
 - Personal journey narrative
 - Problem identification
 - Solution building
@@ -195,7 +157,6 @@ Tweet 6: CTA - Free trial link
 - Call to action
 
 #### Reddit (r/SaaS)
-
 - Showoff Saturday format
 - Honest problem discussion
 - Technical details
@@ -203,7 +164,6 @@ Tweet 6: CTA - Free trial link
 - Community engagement
 
 #### Hacker News (Show HN)
-
 - Technical architecture
 - Problem + solution
 - Usage stats
@@ -211,7 +171,6 @@ Tweet 6: CTA - Free trial link
 - GitHub integration
 
 #### IndieHackers
-
 - Revenue metrics
 - Building story
 - What worked/failed
@@ -219,7 +178,6 @@ Tweet 6: CTA - Free trial link
 - Community engagement
 
 #### Product Hunt
-
 - Tagline + description
 - Problem statement
 - Feature list
@@ -228,7 +186,6 @@ Tweet 6: CTA - Free trial link
 - Maker comment
 
 ### Feature Launch
-
 - Announcement post
 - Demo video script
 - Changelog entry
@@ -236,7 +193,6 @@ Tweet 6: CTA - Free trial link
 - Email newsletter
 
 ### Case Studies
-
 - Customer story format
 - Before/after metrics
 - Implementation timeline
@@ -244,7 +200,6 @@ Tweet 6: CTA - Free trial link
 - ROI calculations
 
 ### Educational Content
-
 - Complete guides
 - Comparison pages
 - Best practices
@@ -256,7 +211,6 @@ Tweet 6: CTA - Free trial link
 ## 🎛️ WEBHOOK ENDPOINTS
 
 ### Slack Integration
-
 ```
 POST /webhook/slack
 Commands:
@@ -267,7 +221,6 @@ Commands:
 ```
 
 ### Approval Webhook
-
 ```
 POST /webhook/approval
 Body: { action, id, approver }
@@ -275,7 +228,6 @@ Result: Updates approval queue
 ```
 
 ### GitHub Integration
-
 ```
 POST /webhook/github
 Events:
@@ -284,7 +236,6 @@ Events:
 ```
 
 ### Custom Triggers
-
 ```
 POST /webhook/trigger
 Types:
@@ -347,7 +298,6 @@ Types:
 ## 📈 EXPECTED OUTPUT
 
 ### Daily
-
 - 3 blog posts
 - 24+ social posts
 - 5+ prospects researched
@@ -356,7 +306,6 @@ Types:
 - 5+ partnership targets
 
 ### Weekly
-
 - 21 blog posts
 - 168 social posts
 - 35 prospects
@@ -367,7 +316,6 @@ Types:
 - 1 optimization cycle
 
 ### Monthly
-
 - 90 blog posts
 - 720 social posts
 - 150 prospects
@@ -382,7 +330,6 @@ Types:
 ## 🚀 QUICK COMMANDS
 
 ### Install All Cron Jobs
-
 ```bash
 brain cron add "0 6 * * *" "node /root/.openclaw/workspace/Settler/marketing/orchestrator.js"
 brain cron add "*/15 * * * *" "node /root/.openclaw/workspace/Settler/marketing/integrations/social-publisher.js process"
@@ -399,13 +346,11 @@ brain cron add "0 10 1 * *" "node /root/.openclaw/workspace/brain/scripts/monthl
 ```
 
 ### Or Use Config File
-
 ```bash
 brain cron add --file=/root/.openclaw/workspace/brain/crons/complete-marketing-suite.js
 ```
 
 ### Launch Campaign
-
 ```bash
 # App introduction
 node launch-campaign.js --type=app-introduction
@@ -418,14 +363,12 @@ node launch-campaign.js --type=case-study
 ```
 
 ### View Dashboard
-
 ```bash
 ./launch-dashboard.sh
 # Open http://localhost:8080
 ```
 
 ### Start Webhook Server
-
 ```bash
 node webhook-server.js
 # Server runs on port 3456
@@ -481,14 +424,14 @@ marketing/
 
 ## 🎯 SUCCESS METRICS
 
-| Metric                | Daily | Weekly | Monthly | Yearly |
-| --------------------- | ----- | ------ | ------- | ------ |
-| Blog Posts            | 3     | 21     | 90      | 1,080  |
-| Social Posts          | 24    | 168    | 720     | 8,640  |
-| Prospects             | 5     | 35     | 150     | 1,800  |
-| Meetings Booked       | 1     | 7      | 30      | 360    |
-| Community Engagements | 4     | 28     | 120     | 1,440  |
-| Partnerships          | 5     | 35     | 150     | 1,800  |
+| Metric | Daily | Weekly | Monthly | Yearly |
+|--------|-------|--------|---------|--------|
+| Blog Posts | 3 | 21 | 90 | 1,080 |
+| Social Posts | 24 | 168 | 720 | 8,640 |
+| Prospects | 5 | 35 | 150 | 1,800 |
+| Meetings Booked | 1 | 7 | 30 | 360 |
+| Community Engagements | 4 | 28 | 120 | 1,440 |
+| Partnerships | 5 | 35 | 150 | 1,800 |
 
 ---
 

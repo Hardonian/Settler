@@ -56,11 +56,11 @@ export function createRateLimiter(options: RateLimitOptions) {
   const {
     windowMs = 60000,
     maxRequests = 100,
-    keyGenerator = (req) => req.ip || "unknown",
+    keyGenerator = (req) => req.ip || 'unknown',
     handler = (req, res) => {
       res.status(429).json({
-        error: "RATE_LIMITED",
-        message: "Too many requests, please try again later",
+        error: 'RATE_LIMITED',
+        message: 'Too many requests, please try again later',
         retryAfter: Math.ceil(windowMs / 1000),
       });
     },
@@ -75,18 +75,18 @@ export function createRateLimiter(options: RateLimitOptions) {
       const { count, resetTime } = await store.increment(key);
 
       // Set rate limit headers
-      res.setHeader("X-RateLimit-Limit", maxRequests);
-      res.setHeader("X-RateLimit-Remaining", Math.max(0, maxRequests - count));
-      res.setHeader("X-RateLimit-Reset", Math.ceil(resetTime / 1000));
+      res.setHeader('X-RateLimit-Limit', maxRequests);
+      res.setHeader('X-RateLimit-Remaining', Math.max(0, maxRequests - count));
+      res.setHeader('X-RateLimit-Reset', Math.ceil(resetTime / 1000));
 
       if (count > maxRequests) {
-        res.setHeader("Retry-After", windowSeconds);
+        res.setHeader('Retry-After', windowSeconds);
         handler(req, res);
         return;
       }
 
       // Cleanup on request end
-      res.on("finish", () => {
+      res.on('finish', () => {
         if (res.statusCode >= 400) {
           store.decrement(key);
         }
@@ -95,7 +95,7 @@ export function createRateLimiter(options: RateLimitOptions) {
       next();
     } catch (error) {
       // If rate limiting fails, allow request (fail open)
-      console.error("Rate limit error:", error);
+      console.error('Rate limit error:', error);
       next();
     }
   };

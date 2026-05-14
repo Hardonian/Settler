@@ -290,10 +290,7 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
       const results = await client.createAccounts([account]);
       const error = results[0];
       if (error) {
-        throw new LedgerOperationError(
-          "createAccount",
-          `TigerBeetle error code: ${(error as any).result ?? error}`
-        );
+        throw new LedgerOperationError("createAccount", `TigerBeetle error code: ${(error as any).result ?? error}`);
       }
 
       return {
@@ -444,10 +441,7 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
       const results = await client.createTransfers([transfer]);
       const error = results[0];
       if (error) {
-        throw new LedgerOperationError(
-          "createTransfer",
-          `TigerBeetle error code: ${(error as any).result ?? error}`
-        );
+        throw new LedgerOperationError("createTransfer", `TigerBeetle error code: ${(error as any).result ?? error}`);
       }
 
       return {
@@ -793,10 +787,7 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
       const results = await client.createTransfers([postTransfer]);
       const error = results[0];
       if (error) {
-        throw new LedgerOperationError(
-          "postPendingTransfer",
-          `TB Error: ${(error as any).result ?? error}`
-        );
+        throw new LedgerOperationError("postPendingTransfer", `TB Error: ${(error as any).result ?? error}`);
       }
 
       return {

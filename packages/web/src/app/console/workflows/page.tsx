@@ -31,6 +31,7 @@ interface Workflow {
   };
 }
 
+
 interface WorkflowsResponse {
   workflows: Workflow[];
   capability?: { state?: string; mode?: string };
@@ -118,11 +119,7 @@ export default function WorkflowsPage() {
           </div>
           <RBACGate requiredTier="subscribed_paid" feature="Create Workflows">
             <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setShowTemplates(!showTemplates)}
-                disabled={capabilityUnavailable}
-              >
+              <Button variant="outline" onClick={() => setShowTemplates(!showTemplates)} disabled={capabilityUnavailable}>
                 Templates
               </Button>
               {capabilityUnavailable ? (
@@ -145,9 +142,7 @@ export default function WorkflowsPage() {
         {capabilityUnavailable && (
           <Card className="border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-950/30">
             <CardHeader>
-              <CardTitle className="text-amber-900 dark:text-amber-200">
-                Limited operability
-              </CardTitle>
+              <CardTitle className="text-amber-900 dark:text-amber-200">Limited operability</CardTitle>
               <CardDescription className="text-amber-800 dark:text-amber-300">
                 {WORKFLOWS_CAPABILITY_MESSAGE}
               </CardDescription>

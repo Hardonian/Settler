@@ -175,7 +175,7 @@ export class MarketplaceIntelligence {
       include: { _count: { select: { executions: true } } },
     });
 
-    return workflows.map((wf) => ({
+    return workflows.map(wf => ({
       id: `workflow-${wf.id}`,
       type: "workflow" as const,
       name: wf.name,
@@ -185,7 +185,7 @@ export class MarketplaceIntelligence {
       rating: 4.5,
       popularity: Math.min(wf._count.executions / 100, 1),
       reliability: 0.9,
-      tags: (wf.tags as string[]) || [],
+      tags: wf.tags as string[] || [],
     }));
   }
 
@@ -203,9 +203,9 @@ export class MarketplaceIntelligence {
       },
     });
 
-    return recipes.map((recipe) => {
+    return recipes.map(recipe => {
       const totalJobs = recipe.jobs.length;
-      const failedJobs = recipe.jobs.filter((j) => j.status === "error").length;
+      const failedJobs = recipe.jobs.filter(j => j.status === 'error').length;
       const reliability = totalJobs > 0 ? (totalJobs - failedJobs) / totalJobs : 0.95;
 
       return {
@@ -218,7 +218,7 @@ export class MarketplaceIntelligence {
         rating: reliability > 0.95 ? 5 : reliability > 0.9 ? 4 : 3,
         popularity: Math.min(recipe._count.jobs / 50, 1),
         reliability,
-        tags: (recipe.tags as string[]) || [],
+        tags: recipe.tags as string[] || [],
       };
     });
   }
@@ -236,20 +236,19 @@ export class MarketplaceIntelligence {
     });
 
     return Promise.all(
-      templates.map(async (template) => {
+      templates.map(async template => {
         // Calculate match rate from recent results
         const matchRates = await this.prisma.reconResult.findMany({
           where: {
-            reconJobId: { in: template.reconJobs.map((j) => j.id) },
+            reconJobId: { in: template.reconJobs.map(j => j.id) },
           },
           select: { confidence: true },
           take: 100,
         });
 
-        const avgMatchRate =
-          matchRates.length > 0
-            ? matchRates.reduce((sum, r) => sum + (r.confidence || 0), 0) / matchRates.length
-            : 0.85;
+        const avgMatchRate = matchRates.length > 0
+          ? matchRates.reduce((sum, r) => sum + (r.confidence || 0), 0) / matchRates.length
+          : 0.85;
 
         return {
           id: `mapping-${template.id}`,
@@ -261,7 +260,7 @@ export class MarketplaceIntelligence {
           rating: avgMatchRate > 0.9 ? 5 : avgMatchRate > 0.8 ? 4 : 3,
           popularity: Math.min(template._count.reconJobs / 30, 1),
           reliability: avgMatchRate,
-          tags: (template.tags as string[]) || [],
+          tags: template.tags as string[] || [],
         };
       })
     );
@@ -278,7 +277,7 @@ export class MarketplaceIntelligence {
       },
     });
 
-    return rules.map((rule) => {
+    return rules.map(rule => {
       const totalExecutions = rule._count.executions;
       const totalFailures = rule._count.failures;
       const falsePositiveRate = totalExecutions > 0 ? totalFailures / totalExecutions : 0.1;
@@ -294,7 +293,7 @@ export class MarketplaceIntelligence {
         rating: reliability > 0.95 ? 5 : reliability > 0.9 ? 4 : 3,
         popularity: Math.min(totalExecutions / 100, 1),
         reliability,
-        tags: (rule.tags as string[]) || [],
+        tags: rule.tags as string[] || [],
       };
     });
   }

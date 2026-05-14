@@ -220,9 +220,7 @@ export class PipelineRewriter {
   /**
    * Apply rewrite to pipeline
    */
-  async applyRewrite(
-    rewrite: PipelineRewrite
-  ): Promise<{ success: boolean; updatedWorkflow?: any }> {
+  async applyRewrite(rewrite: PipelineRewrite): Promise<{ success: boolean; updatedWorkflow?: any }> {
     try {
       // Update workflow in database
       const workflow = await (this.prisma as any).workflow?.findUnique?.({
@@ -246,10 +244,7 @@ export class PipelineRewriter {
         },
       });
 
-      logInfo("Pipeline rewrite applied", {
-        pipelineId: rewrite.pipelineId,
-        version: rewrite.targetVersion,
-      });
+      logInfo("Pipeline rewrite applied", { pipelineId: rewrite.pipelineId, version: rewrite.targetVersion });
       return { success: true, updatedWorkflow: updated };
     } catch (error) {
       logError("Pipeline rewrite failed", { pipelineId: rewrite.pipelineId, error });
@@ -258,9 +253,9 @@ export class PipelineRewriter {
   }
 
   private applyChangesToConfig(config: any, changes: any[]): any {
-    let updated = typeof config === "string" ? JSON.parse(config) : { ...config };
+    let updated = typeof config === 'string' ? JSON.parse(config) : { ...config };
     for (const change of changes) {
-      if (change.type === "patch" && change.nodeId) {
+      if (change.type === 'patch' && change.nodeId) {
         // Apply patch to specific node
         updated.nodes = updated.nodes || [];
         const nodeIdx = updated.nodes.findIndex((n: any) => n.id === change.nodeId);

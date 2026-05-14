@@ -93,49 +93,33 @@ export function buildPriorRunDeltaBriefing(delta: PriorRunDeltaSource): PriorRun
     );
   }
   if (delta.newExceptionPatterns.length > 0) {
-    bullets.push(
-      `New exception patterns vs prior: ${delta.newExceptionPatterns.length} (archetype labels).`
-    );
+    bullets.push(`New exception patterns vs prior: ${delta.newExceptionPatterns.length} (archetype labels).`);
   }
   if (delta.resolvedPatterns.length > 0) {
     bullets.push(`Patterns no longer present vs prior: ${delta.resolvedPatterns.length}.`);
   }
   if (delta.configDriftDetected) {
-    bullets.push(
-      "Configuration drift was flagged between snapshots — treat like-for-like comparisons cautiously."
-    );
+    bullets.push("Configuration drift was flagged between snapshots — treat like-for-like comparisons cautiously.");
   }
   if (delta.inputChanged) {
-    bullets.push(
-      "Input hash changed vs prior run — volume and exception shifts may reflect input change, not quality."
-    );
+    bullets.push("Input hash changed vs prior run — volume and exception shifts may reflect input change, not quality.");
   }
 
   const nextSteps: string[] = [];
   if (delta.configDriftDetected) {
-    nextSteps.push(
-      "Reconcile job or adapter configuration with the prior period before interpreting exception trends."
-    );
+    nextSteps.push("Reconcile job or adapter configuration with the prior period before interpreting exception trends.");
   }
   if (delta.newExceptionPatterns.length > 0) {
-    nextSteps.push(
-      "Triage new archetype labels first; capture adjudications to grow institutional memory."
-    );
+    nextSteps.push("Triage new archetype labels first; capture adjudications to grow institutional memory.");
   }
   if (delta.exceptionDelta > 0 && priorPresent) {
-    nextSteps.push(
-      "Drill into conflicts and open exceptions for this run; prioritize by severity net and materiality."
-    );
+    nextSteps.push("Drill into conflicts and open exceptions for this run; prioritize by severity net and materiality.");
   }
   if (nextSteps.length === 0 && priorPresent) {
-    nextSteps.push(
-      "Spot-check open exceptions and source trust signals; no automatic action required from delta alone."
-    );
+    nextSteps.push("Spot-check open exceptions and source trust signals; no automatic action required from delta alone.");
   }
   if (!priorPresent) {
-    nextSteps.push(
-      "After the next run, re-open this briefing — prior-run comparison will be available."
-    );
+    nextSteps.push("After the next run, re-open this briefing — prior-run comparison will be available.");
   }
 
   const headline =

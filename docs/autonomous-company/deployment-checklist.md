@@ -172,6 +172,6 @@ After deployment, you should see:
 
 ---
 
-**Deployment Date:** **\*\***\_\_\_**\*\***
-**Deployed By:** **\*\***\_\_\_**\*\***
-**Notes:** **\*\***\_\_\_**\*\***
+**Deployment Date:** ******\_\_\_******
+**Deployed By:** ******\_\_\_******
+**Notes:** ******\_\_\_******

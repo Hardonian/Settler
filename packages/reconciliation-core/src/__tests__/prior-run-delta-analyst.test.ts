@@ -1,4 +1,7 @@
-import { buildPriorRunDeltaBriefing, buildEvidenceRefs } from "../prior-run-delta-analyst.js";
+import {
+  buildPriorRunDeltaBriefing,
+  buildEvidenceRefs,
+} from "../prior-run-delta-analyst.js";
 
 describe("buildPriorRunDeltaBriefing", () => {
   const base = {

@@ -284,10 +284,7 @@ ${payload.metadata ? JSON.stringify(payload.metadata, null, 2) : ""}
   /**
    * Send PagerDuty notification via Events API
    */
-  private async sendPagerDuty(
-    payload: NotificationPayload,
-    config: PagerDutyConfig
-  ): Promise<void> {
+  private async sendPagerDuty(payload: NotificationPayload, config: PagerDutyConfig): Promise<void> {
     if (!config.integrationKey) {
       console.warn("PagerDuty integration key not configured");
       return;
@@ -341,10 +338,7 @@ ${payload.metadata ? JSON.stringify(payload.metadata, null, 2) : ""}
   /**
    * Send generic webhook notification
    */
-  private async sendWebhook(
-    payload: NotificationPayload,
-    config: Record<string, string>
-  ): Promise<void> {
+  private async sendWebhook(payload: NotificationPayload, config: Record<string, string>): Promise<void> {
     if (!config.url) {
       console.warn("Webhook URL not configured");
       return;

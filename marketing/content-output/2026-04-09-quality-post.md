@@ -22,22 +22,18 @@ Everyone focuses on the "happy path" - payments flow through, everything matches
 ## Our Architecture Evolution
 
 **Phase 1: Simple Matching**
-
 ```
 Transaction ID == Reference Number
 ```
-
 Worked for 100 transactions. Failed at 10,000.
 
 **Phase 2: Fuzzy Matching**
-
 - Amount within tolerance
 - Date within window
 - Multiple identifier attempts
 - Manual review queue
 
 **Phase 3: Multi-Source Reconciliation**
-
 - Normalize all sources first
 - Track lineage
 - Handle partial matches
@@ -60,7 +56,6 @@ Same transaction, three formats. Build normalization pipelines.
 
 **4. Confidence Scoring**
 Instead of binary match/no-match, calculate confidence:
-
 - Exact ID match: 100%
 - Amount + date match: 85%
 - Amount only match: 60%
@@ -69,7 +64,6 @@ Instead of binary match/no-match, calculate confidence:
 ## The Real Complexity
 
 **Multi-Currency Hell**
-
 - Transaction: $100 USD
 - Stripe converts: €92.50
 - Your system records: €92.50
@@ -79,7 +73,6 @@ Instead of binary match/no-match, calculate confidence:
 Four different amounts, all "correct."
 
 **Our Solution:**
-
 - Store original + converted amounts
 - Track FX rates at transaction time
 - Separate fee accounting
@@ -88,20 +81,17 @@ Four different amounts, all "correct."
 ## Performance at Scale
 
 **What Slows Down:**
-
 - O(n²) matching algorithms
 - Database JOINs without indexes
 - Processing everything in real-time
 
 **What Works:**
-
 - Batch processing (hourly, not per-transaction)
 - Incremental reconciliation (only new/changed)
 - Pre-computed match candidates
 - Read replicas for heavy queries
 
 **Numbers:**
-
 - 10K transactions: ~30 seconds
 - 1M transactions: ~5 minutes
 - 10M transactions: ~45 minutes (with optimization)
@@ -135,6 +125,6 @@ We're open-sourcing some of our reconciliation patterns. If you're dealing with 
 
 ---
 
-_This is based on real experience building [Settler](https://settler.dev) - reconciliation infrastructure for fintech. Not a pitch, just lessons learned._
+*This is based on real experience building [Settler](https://settler.dev) - reconciliation infrastructure for fintech. Not a pitch, just lessons learned.*
 
 **What's your biggest reconciliation headache?** I've probably seen it.

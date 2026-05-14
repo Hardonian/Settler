@@ -7,7 +7,7 @@
  */
 
 interface CommunityPost {
-  platform: "reddit" | "hn" | "stackoverflow";
+  platform: 'reddit' | 'hn' | 'stackoverflow';
   title: string;
   content: string;
   author: string;
@@ -15,77 +15,73 @@ interface CommunityPost {
   score: number;
   comments: number;
   postedAt: string;
-  relevance: "high" | "medium" | "low";
+  relevance: 'high' | 'medium' | 'low';
   suggestedResponse?: string;
 }
 
 const reconciliationTriggers = [
-  "reconcil",
-  "transaction matching",
-  "payment operations",
-  "stripe data",
-  "financial data",
-  "accounting automation",
-  "bookkeeping",
-  "month-end close",
-  "finance automation",
-  "data matching",
+  'reconcil',
+  'transaction matching',
+  'payment operations',
+  'stripe data',
+  'financial data',
+  'accounting automation',
+  'bookkeeping',
+  'month-end close',
+  'finance automation',
+  'data matching'
 ];
 
 // Simulated posts - would integrate with APIs in production
 const monitoredPosts: CommunityPost[] = [
   {
-    platform: "reddit",
-    title: "How do you handle Stripe reconciliation at scale?",
-    content:
-      "We process 50k+ transactions/month and currently do everything manually in Excel. It takes 3 days every month. Looking for better solutions.",
-    author: "StartupCFO",
-    url: "https://reddit.com/r/SaaS/comments/...",
+    platform: 'reddit',
+    title: 'How do you handle Stripe reconciliation at scale?',
+    content: 'We process 50k+ transactions/month and currently do everything manually in Excel. It takes 3 days every month. Looking for better solutions.',
+    author: 'StartupCFO',
+    url: 'https://reddit.com/r/SaaS/comments/...',
     score: 45,
     comments: 23,
-    postedAt: "2 hours ago",
-    relevance: "high",
+    postedAt: '2 hours ago',
+    relevance: 'high'
   },
   {
-    platform: "hn",
-    title: "Ask HN: How do you automate financial reconciliation?",
-    content:
-      "Built a SaaS doing $500k MRR. Reconciliation is killing us. Currently using a mix of Stripe exports and manual work. What tools/workflows work for you?",
-    author: "founder123",
-    url: "https://news.ycombinator.com/item?id=...",
+    platform: 'hn',
+    title: 'Ask HN: How do you automate financial reconciliation?',
+    content: 'Built a SaaS doing $500k MRR. Reconciliation is killing us. Currently using a mix of Stripe exports and manual work. What tools/workflows work for you?',
+    author: 'founder123',
+    url: 'https://news.ycombinator.com/item?id=...',
     score: 127,
     comments: 56,
-    postedAt: "5 hours ago",
-    relevance: "high",
+    postedAt: '5 hours ago',
+    relevance: 'high'
   },
   {
-    platform: "stackoverflow",
-    title: "Best way to match transactions from Stripe to internal database?",
-    content:
-      "Need to reconcile Stripe payments with our Postgres database. Looking for efficient approaches or libraries.",
-    author: "devops_eng",
-    url: "https://stackoverflow.com/questions/...",
+    platform: 'stackoverflow',
+    title: 'Best way to match transactions from Stripe to internal database?',
+    content: 'Need to reconcile Stripe payments with our Postgres database. Looking for efficient approaches or libraries.',
+    author: 'devops_eng',
+    url: 'https://stackoverflow.com/questions/...',
     score: 12,
     comments: 4,
-    postedAt: "1 day ago",
-    relevance: "medium",
+    postedAt: '1 day ago',
+    relevance: 'medium'
   },
   {
-    platform: "reddit",
-    title: "Multi-currency reconciliation nightmare",
-    content:
-      "Dealing with USD, EUR, GBP payments. Exchange rates change constantly. How do you handle this?",
-    author: "FinanceOps",
-    url: "https://reddit.com/r/fintech/comments/...",
+    platform: 'reddit',
+    title: 'Multi-currency reconciliation nightmare',
+    content: 'Dealing with USD, EUR, GBP payments. Exchange rates change constantly. How do you handle this?',
+    author: 'FinanceOps',
+    url: 'https://reddit.com/r/fintech/comments/...',
     score: 28,
     comments: 15,
-    postedAt: "8 hours ago",
-    relevance: "high",
-  },
+    postedAt: '8 hours ago',
+    relevance: 'high'
+  }
 ];
 
 function scoreRelevance(post: CommunityPost): CommunityPost {
-  const content = (post.title + " " + post.content).toLowerCase();
+  const content = (post.title + ' ' + post.content).toLowerCase();
   let score = 0;
 
   for (const trigger of reconciliationTriggers) {
@@ -93,12 +89,12 @@ function scoreRelevance(post: CommunityPost): CommunityPost {
   }
 
   // Pain indicators
-  if (content.includes("manual") || content.includes("excel")) score += 2;
-  if (content.includes("scale") || content.includes("volume")) score += 1;
-  if (content.includes("automate") || content.includes("tool")) score += 2;
-  if (content.includes("killing us") || content.includes("nightmare")) score += 3;
+  if (content.includes('manual') || content.includes('excel')) score += 2;
+  if (content.includes('scale') || content.includes('volume')) score += 1;
+  if (content.includes('automate') || content.includes('tool')) score += 2;
+  if (content.includes('killing us') || content.includes('nightmare')) score += 3;
 
-  post.relevance = score >= 6 ? "high" : score >= 3 ? "medium" : "low";
+  post.relevance = score >= 6 ? 'high' : score >= 3 ? 'medium' : 'low';
 
   return post;
 }
@@ -164,7 +160,7 @@ If you want to build the matching logic yourself but need the infrastructure, ch
 
 For the matching algorithm specifically, we found that fuzzy matching on amount + date + last4 digits catches 95%+ of cases. The edge cases are where the complexity lives.
 
-If you go the build route, happy to share our matching logic pseudocode.`,
+If you go the build route, happy to share our matching logic pseudocode.`
     },
 
     medium: {
@@ -199,8 +195,8 @@ Libraries:
 - fuzzyset.js for fuzzy matching
 - date-fns for date handling
 
-Or use a service like Settler that handles this out of the box.`,
-    },
+Or use a service like Settler that handles this out of the box.`
+    }
   };
 
   return responses[post.relevance]?.[post.platform] || responses.medium[post.platform];
@@ -217,16 +213,16 @@ function formatPost(post: CommunityPost): string {
 🔗 ${post.url}
 
 💬 Content:
-${post.content.slice(0, 200)}${post.content.length > 200 ? "..." : ""}
+${post.content.slice(0, 200)}${post.content.length > 200 ? '...' : ''}
 `;
 }
 
 // CLI
 const args = process.argv.slice(2);
-const platformArg = args.find((a) => a.startsWith("--platform="))?.split("=")[1];
-const monitorArg = args.find((a) => a.startsWith("--monitor="))?.split("=")[1] === "true";
+const platformArg = args.find(a => a.startsWith('--platform='))?.split('=')[1];
+const monitorArg = args.find(a => a.startsWith('--monitor='))?.split('=')[1] === 'true';
 
-console.log("⛏️ Mining communities for reconciliation discussions...\n");
+console.log('⛏️ Mining communities for reconciliation discussions...\n');
 
 // Score all posts
 const scoredPosts = monitoredPosts.map(scoreRelevance);
@@ -234,11 +230,11 @@ const scoredPosts = monitoredPosts.map(scoreRelevance);
 // Filter by platform if specified
 let filteredPosts = scoredPosts;
 if (platformArg) {
-  filteredPosts = scoredPosts.filter((p) => p.platform === platformArg);
+  filteredPosts = scoredPosts.filter(p => p.platform === platformArg);
 }
 
 // Filter for high/medium relevance
-filteredPosts = filteredPosts.filter((p) => p.relevance !== "low");
+filteredPosts = filteredPosts.filter(p => p.relevance !== 'low');
 
 // Sort by relevance then score
 filteredPosts.sort((a, b) => {
@@ -252,28 +248,31 @@ filteredPosts.sort((a, b) => {
 console.log(`Found ${filteredPosts.length} relevant posts:\n`);
 
 filteredPosts.forEach((post, i) => {
-  console.log(`\n${"=".repeat(60)}`);
+  console.log(`\n${'='.repeat(60)}`);
   console.log(`POST #${i + 1}`);
-  console.log("=".repeat(60));
+  console.log('='.repeat(60));
   console.log(formatPost(post));
-  console.log("\n📝 SUGGESTED RESPONSE:");
+  console.log('\n📝 SUGGESTED RESPONSE:');
   console.log(generateResponse(post));
 });
 
 if (monitorArg) {
-  console.log("\n\n👀 Starting continuous monitoring...");
-  console.log("(Would poll APIs every 15 minutes in production)");
+  console.log('\n\n👀 Starting continuous monitoring...');
+  console.log('(Would poll APIs every 15 minutes in production)');
 }
 
 // Save to file
-const fs = require("fs");
-const outputDir = "./community";
+const fs = require('fs');
+const outputDir = './community';
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir, { recursive: true });
 }
 
 const timestamp = Date.now();
-fs.writeFileSync(`${outputDir}/posts-${timestamp}.json`, JSON.stringify(filteredPosts, null, 2));
+fs.writeFileSync(
+  `${outputDir}/posts-${timestamp}.json`,
+  JSON.stringify(filteredPosts, null, 2)
+);
 
 console.log(`\n✅ Saved ${filteredPosts.length} posts to ${outputDir}/posts-${timestamp}.json`);
 

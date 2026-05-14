@@ -160,15 +160,15 @@ export class EcosystemAnalytics {
     // Analyze usage patterns to find opportunities
     const jobs = await this.prisma.reconJob.findMany({
       take: 1000,
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
     });
 
     // Pattern detection: Analyze job configurations
     const configPatterns = new Map<string, number>();
     for (const job of jobs) {
       if (job.config) {
-        const config = typeof job.config === "string" ? JSON.parse(job.config) : job.config;
-        const key = Object.keys(config).slice(0, 3).join("+");
+        const config = typeof job.config === 'string' ? JSON.parse(job.config) : job.config;
+        const key = Object.keys(config).slice(0, 3).join('+');
         configPatterns.set(key, (configPatterns.get(key) || 0) + 1);
       }
     }

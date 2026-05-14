@@ -7,12 +7,12 @@
 
 ## Pricing Tiers
 
-| Tier       | Price  | Transactions |
-| ---------- | ------ | ------------ |
-| Free       | $0/mo  | 100/mo       |
-| Starter    | $29/mo | 1,000/mo     |
-| Growth     | $99/mo | 10,000/mo    |
-| Enterprise | Custom | Unlimited    |
+| Tier | Price | Transactions |
+|------|-------|-------------|
+| Free | $0/mo | 100/mo |
+| Starter | $29/mo | 1,000/mo |
+| Growth | $99/mo | 10,000/mo |
+| Enterprise | Custom | Unlimited |
 
 ---
 
@@ -22,7 +22,7 @@
 
 ```typescript
 // Package: @settler/billing
-import { stripe } from "./stripe";
+import { stripe } from './stripe';
 
 async function createSubscription(customerId: string, planId: string) {
   const plan = PLANS[planId];
@@ -34,7 +34,7 @@ async function createSubscription(customerId: string, planId: string) {
       org_id: customerId,
       plan: planId,
     },
-    expand: ["latest_invoice.payment_intent"],
+    expand: ['latest_invoice.payment_intent'],
   });
 
   return subscription;
@@ -76,16 +76,16 @@ async function handleWebhook(payload: string, signature: string) {
   );
 
   switch (event.type) {
-    case "invoice.paid":
+    case 'invoice.paid':
       await handleInvoicePaid(event.data.object);
       break;
-    case "invoice.payment_failed":
+    case 'invoice.payment_failed':
       await handlePaymentFailed(event.data.object);
       break;
-    case "customer.subscription.updated":
+    case 'customer.subscription.updated':
       await handleSubscriptionUpdated(event.data.object);
       break;
-    case "customer.subscription.deleted":
+    case 'customer.subscription.deleted':
       await handleSubscriptionDeleted(event.data.object);
       break;
   }
@@ -97,7 +97,7 @@ async function handleWebhook(payload: string, signature: string) {
 ```typescript
 // Calculate monthly cost
 async function calculateMonthlyCost(orgId: string): Promise<number> {
-  const org = await db.organizations.findUnique({ where: { id: orgId } });
+  const org = await db.organizations.findUnique({ where: { id: orgId }});
   const plan = PLANS[org.plan];
 
   const usage = await stripe.usageRecords.list(plan.priceId, {
@@ -123,15 +123,12 @@ async function calculateMonthlyCost(orgId: string): Promise<number> {
 ```typescript
 // Revenue dashboard queries
 async function getRevenueMetrics() {
-  const mrr = await stripe.subscriptions
-    .list({
-      status: "active",
-      limit: 100,
-    })
-    .then(
-      (subs) =>
-        subs.data.reduce((sum, sub) => sum + (sub.items.data[0].price.unit_amount || 0), 0) / 100
-    );
+  const mrr = await stripe.subscriptions.list({
+    status: 'active',
+    limit: 100,
+  }).then(subs =>
+    subs.data.reduce((sum, sub) => sum + (sub.items.data[0].price.unit_amount || 0), 0) / 100
+  );
 
   const arr = mrr * 12;
   const churn = await getChurnRate(); // Calculate from cancelled subs
@@ -169,4 +166,4 @@ STRIPE_PRICE_GROWTH=price_...
 
 ---
 
-_Status: Ready for production_
+*Status: Ready for production*

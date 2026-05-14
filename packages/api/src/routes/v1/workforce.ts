@@ -114,9 +114,7 @@ router.get(
         where: { id: runDeltaId, tenantId },
       });
       if (!deltaRow) {
-        return res
-          .status(404)
-          .json({ error: "RUN_DELTA_NOT_FOUND", message: "Run delta not found" });
+        return res.status(404).json({ error: "RUN_DELTA_NOT_FOUND", message: "Run delta not found" });
       }
 
       let record = await analyst.getLatestForRunDelta(tenantId, runDeltaId);

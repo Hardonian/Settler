@@ -112,10 +112,7 @@ export class PriorRunDeltaAnalystService {
     }
   }
 
-  async getLatestForRunDelta(
-    tenantId: string,
-    runDeltaId: string
-  ): Promise<WorkerRunPublic | null> {
+  async getLatestForRunDelta(tenantId: string, runDeltaId: string): Promise<WorkerRunPublic | null> {
     const row = await this.prisma.workerRun.findFirst({
       where: { tenantId, runDeltaId, workerKey: PRIOR_RUN_DELTA_ANALYST_KEY },
       orderBy: { createdAt: "desc" },
@@ -157,7 +154,9 @@ export class PriorRunDeltaAnalystService {
       status: row.status,
       output,
       evidence: Array.isArray(row.evidence) ? (row.evidence as WorkerRunPublic["evidence"]) : [],
-      degradedReasons: Array.isArray(row.degradedReasons) ? (row.degradedReasons as string[]) : [],
+      degradedReasons: Array.isArray(row.degradedReasons)
+        ? (row.degradedReasons as string[])
+        : [],
       createdAt: row.createdAt,
       completedAt: row.completedAt,
     };

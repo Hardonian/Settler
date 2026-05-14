@@ -10,7 +10,7 @@ const CONTENT_TEMPLATES = {
   appIntroduction: {
     twitter: [
       {
-        type: "thread",
+        type: 'thread',
         hook: "I spent 2 years drowning in spreadsheets trying to reconcile $10M+ in transactions.\n\nThen I built something that changed everything:\n\n🧵",
         tweets: [
           "1/ Reconciliation is the invisible tax on every finance team.\n\n3 days every month.\n1000s of transactions.\nEndless CSV exports.\n\nSound familiar?",
@@ -18,19 +18,18 @@ const CONTENT_TEMPLATES = {
           "3/ That's why I built @SettlerDev.\n\nModern reconciliation that actually works:\n✅ 5-minute setup (not 6 months)\n✅ 50+ integrations\n✅ Real-time processing\n✅ Starts at $99/mo",
           "4/ But here's what really matters:\n\nOur customers save 15-20 hours per week on reconciliation.\n\nThat's 800+ hours per year back in their lives.",
           "5/ We've processed $1B+ transactions across 500+ companies.\n\nFrom seed-stage startups to Series C giants.\n\nSame result every time: reconciliation goes from nightmare to non-issue.",
-          "6/ If you're still reconciling manually (or suffering through legacy tools), we should talk.\n\n14-day free trial. No credit card.\n\n→ settler.dev/demo\n\n(End thread)",
-        ],
+          "6/ If you're still reconciling manually (or suffering through legacy tools), we should talk.\n\n14-day free trial. No credit card.\n\n→ settler.dev/demo\n\n(End thread)"
+        ]
       },
       {
-        type: "single",
-        content:
-          "🚀 Just shipped: Settler 2.0\n\nThe reconciliation platform that actually works:\n\n⚡ 5-min setup\n🔌 50+ integrations\n📊 Real-time processing\n💰 Starts at $99/mo\n\nJoin 500+ companies saving 20 hours/week:\n\n→ settler.dev/demo",
-      },
+        type: 'single',
+        content: "🚀 Just shipped: Settler 2.0\n\nThe reconciliation platform that actually works:\n\n⚡ 5-min setup\n🔌 50+ integrations\n📊 Real-time processing\n💰 Starts at $99/mo\n\nJoin 500+ companies saving 20 hours/week:\n\n→ settler.dev/demo"
+      }
     ],
 
     linkedin: [
       {
-        type: "story",
+        type: 'story',
         content: `Three years ago, I was drowning.
 
 Not in water—in spreadsheets.
@@ -67,10 +66,10 @@ If you're still reconciling manually, or suffering through legacy tools that req
 
 → settler.dev/demo
 
-#FinTech #Automation #SaaS #FinanceOps #StartupLife`,
+#FinTech #Automation #SaaS #FinanceOps #StartupLife`
       },
       {
-        type: "announcement",
+        type: 'announcement',
         content: `🚀 Introducing Settler 2.0: Reconciliation That Actually Works
 
 After 3 years and $1B+ in transactions processed, we're launching the most significant update to Settler yet.
@@ -100,13 +99,12 @@ Ready to join them?
 
 → settler.dev/demo
 
-#ProductLaunch #FinTech #SaaS #Reconciliation #Automation`,
-      },
+#ProductLaunch #FinTech #SaaS #Reconciliation #Automation`
+      }
     ],
 
     reddit: {
-      title:
-        "[Showoff Saturday] I built a reconciliation platform that saves finance teams 20 hours/week",
+      title: '[Showoff Saturday] I built a reconciliation platform that saves finance teams 20 hours/week',
       content: `Hey r/SaaS,
 
 Long-time lurker, first-time poster. Wanted to share something I've been building for the past 3 years.
@@ -140,11 +138,11 @@ Happy to answer questions about building in fintech, reconciliation challenges, 
 • Yes, we support Xero, QuickBooks, NetSuite
 • Yes, multi-currency (USD, EUR, GBP, etc.)
 • Yes, API access
-• 14-day free trial, no credit card`,
+• 14-day free trial, no credit card`
     },
 
     hackernews: {
-      title: "Show HN: Settler – Reconciliation automation that takes 5 minutes to set up",
+      title: 'Show HN: Settler – Reconciliation automation that takes 5 minutes to set up',
       content: `I spent 3 years building reconciliation software after experiencing the pain firsthand at a fintech startup.
 
 **The problem:** Most reconciliation tools require 6-month implementations and cost $50K+. So finance teams either suffer through spreadsheets or simply don't reconcile properly.
@@ -170,11 +168,11 @@ Happy to answer questions about building in fintech, reconciliation challenges, 
 • 500+ companies using it
 • Average time saved: 20 hours/week per customer
 
-Happy to discuss the technical architecture, fintech challenges, or reconciliation strategies. AMA!`,
+Happy to discuss the technical architecture, fintech challenges, or reconciliation strategies. AMA!`
     },
 
     indiehackers: {
-      title: "I built a $50K/year reconciliation SaaS in my spare time",
+      title: 'I built a $50K/year reconciliation SaaS in my spare time',
       content: `**Background**
 
 I work full-time as a finance ops consultant. Saw the same problem at every client: teams spending days every month on reconciliation, suffering through terrible legacy software.
@@ -217,12 +215,12 @@ Built Settler (settler.dev) over evenings and weekends:
 • Content > ads for B2B SaaS
 • Integration partnerships > direct sales
 
-Happy to answer questions about building, marketing, or fintech SaaS!`,
+Happy to answer questions about building, marketing, or fintech SaaS!`
     },
 
     producthunt: {
-      title: "Settler 2.0 – Reconciliation that takes 5 minutes to set up",
-      tagline: "Save 20 hours/week on financial reconciliation",
+      title: 'Settler 2.0 – Reconciliation that takes 5 minutes to set up',
+      tagline: 'Save 20 hours/week on financial reconciliation',
       description: `**What is Settler?**
 
 Reconciliation automation for modern finance teams. Connect Stripe (or PayPal, Adyen, etc.) and Settler automatically matches transactions, identifies discrepancies, and generates reports.
@@ -273,8 +271,8 @@ Enterprise reconciliation tools exist, but they require 6-month implementations 
 
 ---
 
-**Maker note:** I built Settler after experiencing this pain firsthand at a fintech startup. We were spending 3 days/month on reconciliation using spreadsheets. Now it takes 15 minutes. Happy to answer any questions!`,
-    },
+**Maker note:** I built Settler after experiencing this pain firsthand at a fintech startup. We were spending 3 days/month on reconciliation using spreadsheets. Now it takes 15 minutes. Happy to answer any questions!`
+    }
   },
 
   // Feature Launch Posts
@@ -282,7 +280,7 @@ Enterprise reconciliation tools exist, but they require 6-month implementations 
     twitter: [
       "🚀 NEW: Multi-currency reconciliation\n\nHandle USD, EUR, GBP, and 20+ currencies with automatic FX rate conversion.\n\nOne customer just reconciled $2M across 5 currencies in 10 minutes.\n\n→ settler.dev/multi-currency",
 
-      "⚡ NEW: Real-time Slack alerts\n\nGet notified instantly when:\n✅ Reconciliation completes\n⚠️ Discrepancies detected\n📊 Month-end ready\n\nNever miss an issue again.\n\n→ settler.dev/integrations",
+      "⚡ NEW: Real-time Slack alerts\n\nGet notified instantly when:\n✅ Reconciliation completes\n⚠️ Discrepancies detected\n📊 Month-end ready\n\nNever miss an issue again.\n\n→ settler.dev/integrations"
     ],
 
     linkedin: `🚀 Feature Launch: AI-Powered Reconciliation
@@ -317,13 +315,13 @@ Available today for all Growth and Enterprise plans.
 
 → settler.dev/ai-matching
 
-#ProductUpdate #AI #FinTech #Automation`,
+#ProductUpdate #AI #FinTech #Automation`
   },
 
   // Case Study Templates
   caseStudy: {
     twitter: [
-      "📈 Case Study: How @FintechCo reduced reconciliation time by 90%\n\nBefore: 3 days/month, 2 FTEs\nAfter: 2 hours/month, 0.5 FTE\n\nThe full story:\n\n→ settler.dev/case-studies/fintechco",
+      "📈 Case Study: How @FintechCo reduced reconciliation time by 90%\n\nBefore: 3 days/month, 2 FTEs\nAfter: 2 hours/month, 0.5 FTE\n\nThe full story:\n\n→ settler.dev/case-studies/fintechco"
     ],
 
     linkedin: `📊 Customer Story: 90% Reduction in Reconciliation Time
@@ -383,37 +381,37 @@ Want similar results for your team?
 
 → settler.dev/demo
 
-#CaseStudy #FinTech #Automation #CustomerSuccess`,
+#CaseStudy #FinTech #Automation #CustomerSuccess`
   },
 
   // Educational Content
   educational: {
     reconciliationGuide: {
-      title: "The Complete Guide to Payment Reconciliation (2026 Edition)",
+      title: 'The Complete Guide to Payment Reconciliation (2026 Edition)',
       sections: [
-        "What is payment reconciliation?",
-        "Why reconciliation matters",
-        "Common reconciliation challenges",
-        "Manual vs automated reconciliation",
-        "How to choose reconciliation software",
-        "Implementation best practices",
-        "Measuring reconciliation success",
-      ],
+        'What is payment reconciliation?',
+        'Why reconciliation matters',
+        'Common reconciliation challenges',
+        'Manual vs automated reconciliation',
+        'How to choose reconciliation software',
+        'Implementation best practices',
+        'Measuring reconciliation success'
+      ]
     },
 
     comparison: {
-      title: "Settler vs [Competitor]: 2026 Comparison",
+      title: 'Settler vs [Competitor]: 2026 Comparison',
       criteria: [
-        "Setup time",
-        "Pricing",
-        "Integrations",
-        "Matching accuracy",
-        "Support quality",
-        "Implementation cost",
-        "Time to value",
-      ],
-    },
-  },
+        'Setup time',
+        'Pricing',
+        'Integrations',
+        'Matching accuracy',
+        'Support quality',
+        'Implementation cost',
+        'Time to value'
+      ]
+    }
+  }
 };
 
 // Export templates
@@ -422,8 +420,8 @@ module.exports = { CONTENT_TEMPLATES };
 // CLI to generate specific content
 if (require.main === module) {
   const args = process.argv.slice(2);
-  const type = args.find((a) => a.startsWith("--type="))?.split("=")[1];
-  const platform = args.find((a) => a.startsWith("--platform="))?.split("=")[1];
+  const type = args.find(a => a.startsWith('--type='))?.split('=')[1];
+  const platform = args.find(a => a.startsWith('--platform='))?.split('=')[1];
 
   if (type && platform) {
     const template = CONTENT_TEMPLATES[type]?.[platform];
@@ -431,12 +429,12 @@ if (require.main === module) {
       console.log(JSON.stringify(template, null, 2));
     } else {
       console.log(`Template not found: ${type} / ${platform}`);
-      console.log("Available types:", Object.keys(CONTENT_TEMPLATES));
+      console.log('Available types:', Object.keys(CONTENT_TEMPLATES));
     }
   } else {
-    console.log("Usage: node expanded-templates.js --type=appIntroduction --platform=twitter");
-    console.log("");
-    console.log("Available types:");
-    Object.keys(CONTENT_TEMPLATES).forEach((t) => console.log(`  - ${t}`));
+    console.log('Usage: node expanded-templates.js --type=appIntroduction --platform=twitter');
+    console.log('');
+    console.log('Available types:');
+    Object.keys(CONTENT_TEMPLATES).forEach(t => console.log(`  - ${t}`));
   }
 }

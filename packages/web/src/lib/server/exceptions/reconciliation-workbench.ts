@@ -831,9 +831,7 @@ export async function listReconciliationWorkbenchExceptions(
     prisma.reconciliationMatch.count({ where: where as any }),
   ]);
 
-  const runIdsOnPage = [
-    ...new Set(rows.map((row: (typeof rows)[number]) => row.runId)),
-  ] as string[];
+  const runIdsOnPage = [...new Set(rows.map((row: (typeof rows)[number]) => row.runId))] as string[];
   const runComparisonByRunId = await buildExceptionRunComparisonSnapshotForRunIds(
     prisma,
     filters.tenantId,

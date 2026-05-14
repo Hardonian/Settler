@@ -362,7 +362,7 @@ export class PredictiveOps {
         data: {
           title: `Auto-proposed: ${prediction.description}`,
           description: prediction.recommendedAction || "Improvement based on failure prediction",
-          predictedImpact: (prediction.metadata?.impact as string) || "medium",
+          predictedImpact: prediction.metadata?.impact as string || "medium",
           confidence: prediction.probability,
           status: "proposed",
           createdAt: new Date(),

@@ -6,7 +6,7 @@ strategy: help-first-no-pitch
 
 ## Reply 1: r/SaaS - "How do you handle reconciliation at scale?"
 
-**Original Post:** _"We spend 3 days every month on reconciliation. Looking for solutions."_
+**Original Post:** *"We spend 3 days every month on reconciliation. Looking for solutions."*
 
 **Draft Reply:**
 
@@ -30,14 +30,13 @@ What specific part is eating most of your time? Happy to go deeper on whatever's
 
 ## Reply 2: Hacker News - "Ask HN: Automating financial reconciliation?"
 
-**Original Post:** _"Built a SaaS doing $500k MRR. Reconciliation is killing us."_
+**Original Post:** *"Built a SaaS doing $500k MRR. Reconciliation is killing us."*
 
 **Draft Reply:**
 
 Been there. At $500k MRR you're probably processing enough volume that manual reconciliation is genuinely unsustainable.
 
 The thing that surprised us: most reconciliation "errors" aren't actually errors. They're:
-
 - Timing differences (charge today, payout tomorrow)
 - FX fluctuations (transaction in USD, settlement in EUR)
 - Fee timing (gross amount vs net amount)
@@ -46,7 +45,6 @@ The thing that surprised us: most reconciliation "errors" aren't actually errors
 We built an internal tool that handles 95% automatically and queues 5% for human review. The key insight was confidence scoring rather than binary match/no-match.
 
 Architecture that worked for us:
-
 - Normalize all sources first ( Stripe, bank, internal DB)
 - Fuzzy matching with tolerances
 - Confidence scoring (exact ID = 100%, amount+date = 85%, etc.)
@@ -61,14 +59,13 @@ What payment providers are you working with? The specific integration patterns v
 
 ## Reply 3: IndieHackers - "Manual reconciliation nightmare"
 
-**Original Post:** _"Still doing everything in Excel. Need to automate."_
+**Original Post:** *"Still doing everything in Excel. Need to automate."*
 
 **Draft Reply:**
 
 Excel is actually the right place to start - it helps you understand your data patterns before automating.
 
 Before you build anything, map out:
-
 1. What are your data sources? (Stripe, bank CSV, internal DB, etc.)
 2. What's your matching criteria? (Order ID? Amount + date? Customer email?)
 3. What are common mismatches? (Timing, fees, refunds, chargebacks?)
@@ -76,7 +73,6 @@ Before you build anything, map out:
 We stayed in Excel/spreadsheets until we had ~500 transactions/month. The automation only made sense once the manual work was clearly unsustainable.
 
 When you're ready to automate, start with the easiest 80%:
-
 - Exact matches on order ID
 - Amount + date within 24 hours
 - Simple one-to-one transactions
@@ -89,28 +85,25 @@ What's your transaction volume and what are your biggest sources of mismatch? Th
 
 ## Reply 4: r/fintech - "The state of payment infrastructure in 2026"
 
-**Original Post:** _"Stripe vs Adyen vs others. What are you using?"_
+**Original Post:** *"Stripe vs Adyen vs others. What are you using?"*
 
 **Draft Reply:**
 
 We've integrated with most major providers at this point. Here's the real trade-offs:
 
 **Stripe:**
-
 - Best developer experience
 - Excellent webhooks/reliability
 - Higher fees
 - Limited payment methods outside US/EU
 
 **Adyen:**
-
 - Lower fees at scale
 - Massive global coverage
 - More complex integration
 - Better for enterprise
 
 **Checkout.com:**
-
 - Competitive pricing
 - Good middle ground
 - Growing feature set
@@ -128,7 +121,7 @@ What markets are you operating in? That's usually the deciding factor.
 
 ## Reply 5: r/devops - "Best practices for financial data processing"
 
-**Original Post:** _"Looking for patterns in handling transaction data."_
+**Original Post:** *"Looking for patterns in handling transaction data."*
 
 **Draft Reply:**
 
@@ -158,7 +151,7 @@ What's your current data volume? The patterns change significantly between 1K, 1
 
 ## Reply 6: IndieHackers - "Crossed $100K MRR - here's what worked"
 
-**Original Post:** _"Finance ops was our biggest bottleneck."_
+**Original Post:** *"Finance ops was our biggest bottleneck."*
 
 **Draft Reply:**
 
@@ -169,17 +162,16 @@ Finance ops becoming the bottleneck at this stage is super common. You're proces
 Three things that helped us at that stage:
 
 1. **Separate accounting from operations**
-   Accounting = monthly close, taxes, reporting
-   Operations = daily reconciliation, exception handling, customer refunds
+Accounting = monthly close, taxes, reporting
+Operations = daily reconciliation, exception handling, customer refunds
 
 Don't mix these. Your bookkeeper shouldn't be chasing down missing transactions.
 
 2. **Automate the easy 80%**
-   Whatever reconciliation you're doing manually, look for the patterns that are always the same. Automate those first. Leave the weird edge cases for humans.
+Whatever reconciliation you're doing manually, look for the patterns that are always the same. Automate those first. Leave the weird edge cases for humans.
 
 3. **Build visibility early**
-   Dashboard showing:
-
+Dashboard showing:
 - Unreconciled transaction count
 - Age of oldest unreconciled item
 - Exception rate (% needing manual review)
@@ -193,7 +185,6 @@ What specific finance ops work is eating most of your time right now? Might be a
 ## Usage Notes
 
 **Posting Guidelines:**
-
 - Space these out over 2-3 days
 - Don't post all at once (looks automated)
 - Customize based on actual thread responses
@@ -201,7 +192,6 @@ What specific finance ops work is eating most of your time right now? Might be a
 - Focus on being helpful first
 
 **Tracking:**
-
 - Log which generate responses
 - Note which lead to profile views
 - Track long-term relationship development

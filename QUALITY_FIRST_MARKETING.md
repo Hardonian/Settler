@@ -12,27 +12,22 @@
 ## 📅 Daily Routine
 
 ### Morning (8:00 AM)
-
 ```bash
 node quality-daily-run.js
 ```
-
 **Output:**
-
 - 1 high-value post (if scheduled)
 - 5-10 community reply drafts
 - 2-3 relationship outreach targets
 - Opportunity tracking
 
 ### Throughout Day
-
 - Monitor Reddit, HN, IndieHackers for opportunities
 - Reply helpfully (no pitch)
 - Build relationships via DMs
 - Celebrate others' wins
 
 ### Weekly Focus
-
 - 4 posts maximum (Mon, Tue, Thu, Sun)
 - 3 days of pure community engagement
 - 15+ meaningful conversations
@@ -42,15 +37,15 @@ node quality-daily-run.js
 
 ## 📝 Content Calendar
 
-| Day           | Post Type           | Focus                                       |
-| ------------- | ------------------- | ------------------------------------------- |
-| **Monday**    | Building in Public  | Metrics, lessons learned, failures          |
-| **Tuesday**   | Expert Insight      | Technical deep-dives, industry observations |
-| **Wednesday** | _No post_           | Community focus day                         |
-| **Thursday**  | Founder Journey     | Personal stories, challenges, growth        |
-| **Friday**    | _No post_           | Community focus day                         |
-| **Saturday**  | _No post_           | Monitor r/SaaS Showoff Saturday             |
-| **Sunday**    | Industry Commentary | Trends, predictions, analysis               |
+| Day | Post Type | Focus |
+|-----|-----------|-------|
+| **Monday** | Building in Public | Metrics, lessons learned, failures |
+| **Tuesday** | Expert Insight | Technical deep-dives, industry observations |
+| **Wednesday** | *No post* | Community focus day |
+| **Thursday** | Founder Journey | Personal stories, challenges, growth |
+| **Friday** | *No post* | Community focus day |
+| **Saturday** | *No post* | Monitor r/SaaS Showoff Saturday |
+| **Sunday** | Industry Commentary | Trends, predictions, analysis |
 
 **Total: 4 posts per week maximum**
 
@@ -61,7 +56,6 @@ node quality-daily-run.js
 ### Reddit (r/SaaS, r/fintech, r/startups)
 
 **The Rules:**
-
 1. Never mention Settler in first 10 comments
 2. Solve the actual problem asked
 3. Share specific, actionable advice
@@ -71,7 +65,6 @@ node quality-daily-run.js
 **Daily Target:** 2-3 helpful replies
 
 **Example Approach:**
-
 ```
 User: "How do you handle reconciliation at scale?"
 
@@ -97,7 +90,6 @@ Either way, hope this helps!"
 **Focus:** Technical expertise, Show HN feedback
 
 **Approach:**
-
 - Add genuine technical insight
 - Share experience, not opinions
 - Help debug or architect
@@ -110,7 +102,6 @@ Either way, hope this helps!"
 **Focus:** Fellow builder, revenue milestones
 
 **Approach:**
-
 - Celebrate others' wins genuinely
 - Share hard-earned lessons
 - Offer specific, actionable help
@@ -123,33 +114,25 @@ Either way, hope this helps!"
 ## 🏆 Content Pillars
 
 ### 1. Building in Public (2x/week)
-
 Share real metrics, lessons, failures:
-
 - "What we learned from $1B in transactions"
 - "Our biggest mistake (and how we fixed it)"
 - "The metrics that actually matter"
 
 ### 2. Expert Insights (2x/week)
-
 Share deep knowledge:
-
 - "Why most reconciliation fails"
 - "The psychology of financial accuracy"
 - "API design lessons from payment processing"
 
 ### 3. Founder Journey (1x/week)
-
 Personal stories:
-
 - "From consultant to founder: Month 12"
 - "The rejection that changed everything"
 - "What I wish I knew about B2B sales"
 
 ### 4. Industry Commentary (1x/week)
-
 Thought leadership:
-
 - "The Stripe/Adyen landscape in 2026"
 - "Where fintech infrastructure is heading"
 - "Why traditional accounting is broken"
@@ -159,13 +142,11 @@ Thought leadership:
 ## 🤝 Relationship Building
 
 ### Targets per Week
-
 - 3 new meaningful connections
 - 5 existing relationship touchpoints
 - 1-2 collaboration conversations
 
 ### The Approach
-
 1. **Find:** People building interesting things
 2. **Help:** Offer specific value (no pitch)
 3. **Connect:** Introduce to relevant people
@@ -173,7 +154,6 @@ Thought leadership:
 5. **Collaborate:** Work on content/projects
 
 ### Example Outreach
-
 ```
 Hi [Name],
 
@@ -200,14 +180,12 @@ Scott
 ## 📊 Success Metrics (Quality Focused)
 
 ### IGNORE These
-
 - ❌ Follower count
 - ❌ Post volume
 - ❌ Impressions
 - ❌ Likes on posts
 
 ### FOCUS On These
-
 - ✅ Meaningful conversations per week (target: 5+)
 - ✅ Relationships built (can DM comfortably) (target: 3+/week)
 - ✅ Inbound opportunities (partnerships, speaking) (target: 2+/month)
@@ -264,25 +242,21 @@ marketing/
 ## 🎯 Quick Commands
 
 ### Daily Run
-
 ```bash
 node quality-daily-run.js
 ```
 
 ### View Dashboard
-
 ```bash
 open marketing/dashboard/quality-index.html
 ```
 
 ### Generate Post
-
 ```bash
 node content-engine/quality-templates.js --type=building-in-public
 ```
 
 ### Check Opportunities
-
 ```bash
 node lead-gen/community-miner.js --platform=reddit
 ```
@@ -292,27 +266,23 @@ node lead-gen/community-miner.js --platform=reddit
 ## ✅ Daily Checklist
 
 ### Morning
-
 - [ ] Run quality-daily-run.js
 - [ ] Review generated reply drafts
 - [ ] Identify 3-5 community opportunities
 
 ### Throughout Day
-
 - [ ] Reply helpfully to 5-10 discussions
 - [ ] No pitch in first 10 comments
 - [ ] DM 2-3 people to offer help
 - [ ] Celebrate 1-2 people's wins
 
 ### If Post Day
-
 - [ ] Review generated post draft
 - [ ] Ensure it adds genuine insight
 - [ ] Schedule for optimal time
 - [ ] Engage with all replies
 
 ### Weekly
-
 - [ ] 4 posts published maximum
 - [ ] 15+ meaningful conversations
 - [ ] 3+ new relationships started
@@ -323,7 +293,6 @@ node lead-gen/community-miner.js --platform=reddit
 ## 🚀 Expected Results
 
 ### Monthly (Quality Focus)
-
 - **Posts:** 16 (not 720)
 - **Community Replies:** 150+ helpful answers
 - **Meaningful Conversations:** 20+
@@ -331,7 +300,6 @@ node lead-gen/community-miner.js --platform=reddit
 - **Inbound Opportunities:** 2-4
 
 ### vs High-Volume Approach
-
 - Fewer posts, but much higher engagement per post
 - Smaller follower growth, but better network quality
 - Less time broadcasting, more time building relationships

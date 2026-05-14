@@ -18,6 +18,7 @@ import { ArrowLeft, Save, Play } from "lucide-react";
 import { WORKFLOWS_CAPABILITY_MESSAGE } from "@/lib/workflows/capability";
 import Link from "next/link";
 
+
 interface WorkflowCapabilityResponse {
   automationCapability?: {
     state?: string;
@@ -113,9 +114,7 @@ export default function NewWorkflowPage() {
       {capabilityUnavailable && (
         <Card className="border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-950/30">
           <CardHeader>
-            <CardTitle className="text-amber-900 dark:text-amber-200">
-              Limited operability
-            </CardTitle>
+            <CardTitle className="text-amber-900 dark:text-amber-200">Limited operability</CardTitle>
             <CardDescription className="text-amber-800 dark:text-amber-300">
               {WORKFLOWS_CAPABILITY_MESSAGE}
             </CardDescription>
@@ -210,11 +209,7 @@ export default function NewWorkflowPage() {
             )}
 
             <div className="flex gap-2">
-              <Button
-                onClick={handleSave}
-                disabled={saving || capabilityUnavailable}
-                className="flex-1"
-              >
+              <Button onClick={handleSave} disabled={saving || capabilityUnavailable} className="flex-1">
                 <Save className="w-4 h-4 mr-2" />
                 {saving ? "Saving..." : "Save Workflow"}
               </Button>
