@@ -111,7 +111,7 @@ export class FaultTolerantRecon {
   }
 
   /**
-   * Fix-forward logic
+   * Applies fix-forward logic
    */
   async fixForward(
     jobId: string,
@@ -196,7 +196,7 @@ export class FaultTolerantRecon {
         logInfo("Error could not be auto-fixed", { jobId, error: errorMessage });
       }
     } catch (fixError) {
-      logError("Fix-forward logic failed", fixError, { jobId });
+      logError("Fix-forward strategy application failed", fixError, { jobId });
       fixed = false;
     }
 
