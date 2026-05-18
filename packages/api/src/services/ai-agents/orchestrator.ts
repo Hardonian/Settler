@@ -182,16 +182,20 @@ export class AgentOrchestrator extends EventEmitter {
 
     this.isProcessing = true;
 
+    const batchSize = 10;
     while (this.requestQueue.length > 0) {
-      const request = this.requestQueue.shift();
-      if (request) {
-        try {
-          const response = await this.execute(request);
-          this.emit("request_completed", response);
-        } catch (error) {
-          this.emit("request_failed", { request, error });
-        }
-      }
+      const batch = this.requestQueue.splice(0, batchSize);
+
+      await Promise.all(
+        batch.map(async (request) => {
+          try {
+            const response = await this.execute(request);
+            this.emit("request_completed", response);
+          } catch (error) {
+            this.emit("request_failed", { request, error });
+          }
+        })
+      );
     }
 
     this.isProcessing = false;
