@@ -27,7 +27,7 @@ async function test(name: string, fn: () => Promise<void>): Promise<void> {
   try {
     await fn();
     results.push({ name, passed: true });
-    console.log(`✅ ${name}`);
+    console.info(`✅ ${name}`);
   } catch (error) {
     results.push({
       name,
@@ -38,11 +38,7 @@ async function test(name: string, fn: () => Promise<void>): Promise<void> {
   }
 }
 
-async function main() {
-  console.log("🧪 Running Smoke Tests...\n");
-  console.log(`API Base: ${API_BASE}\n`);
-
-  // Test 1: Public API endpoint
+async function testPublicApiEndpoint() {
   await test("Public API endpoint accessible", async () => {
     const response = await fetch(`${API_BASE}/api/v1`);
     if (!response.ok) {
@@ -53,16 +49,18 @@ async function main() {
       throw new Error("Missing version in response");
     }
   });
+}
 
-  // Test 2: Health check
+async function testHealthCheck() {
   await test("Health check endpoint", async () => {
     const response = await fetch(`${API_BASE}/api/status/health`);
     if (!response.ok) {
       throw new Error(`Expected 200, got ${response.status}`);
     }
   });
+}
 
-  // Test 3: Billing enforcement on paid routes
+async function testBillingEnforcement() {
   await test("Billing enforcement on /api/v1/recon/jobs (unauthenticated)", async () => {
     const response = await fetch(`${API_BASE}/api/v1/recon/jobs`, {
       method: "POST",
@@ -81,8 +79,9 @@ async function main() {
       throw new Error("Unexpected response - billing may not be enforced");
     }
   });
+}
 
-  // Test 4: Free route accessible
+async function testFreeRoute() {
   await test("Free route /api/v1/convert accessible", async () => {
     const response = await fetch(`${API_BASE}/api/v1/convert`, {
       method: "POST",
@@ -99,8 +98,9 @@ async function main() {
       throw new Error(`Expected 200, got ${response.status}`);
     }
   });
+}
 
-  // Test 5: Database connection (if Supabase configured)
+async function testDatabaseConnection() {
   if (SUPABASE_URL && SUPABASE_ANON_KEY) {
     await test("Database connection", async () => {
       const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -110,31 +110,45 @@ async function main() {
       }
     });
   }
+}
 
-  // Print summary
-  console.log("\n═══════════════════════════════════════════════════════════");
-  console.log("TEST SUMMARY");
-  console.log("═══════════════════════════════════════════════════════════\n");
+function printSummary() {
+  console.info("\n═══════════════════════════════════════════════════════════");
+  console.info("TEST SUMMARY");
+  console.info("═══════════════════════════════════════════════════════════\n");
 
   const passed = results.filter((r) => r.passed).length;
   const failed = results.filter((r) => !r.passed).length;
 
-  console.log(`Total: ${results.length}`);
-  console.log(`✅ Passed: ${passed}`);
-  console.log(`❌ Failed: ${failed}\n`);
+  console.info(`Total: ${results.length}`);
+  console.info(`✅ Passed: ${passed}`);
+  console.info(`❌ Failed: ${failed}\n`);
 
   if (failed > 0) {
-    console.log("Failed Tests:");
+    console.info("Failed Tests:");
     results
       .filter((r) => !r.passed)
       .forEach((r) => {
-        console.log(`  ❌ ${r.name}: ${r.error}`);
+        console.info(`  ❌ ${r.name}: ${r.error}`);
       });
     process.exit(1);
   } else {
-    console.log("✅ All tests passed!");
+    console.info("✅ All tests passed!");
     process.exit(0);
   }
+}
+
+async function main() {
+  console.info("🧪 Running Smoke Tests...\n");
+  console.info(`API Base: ${API_BASE}\n`);
+
+  await testPublicApiEndpoint();
+  await testHealthCheck();
+  await testBillingEnforcement();
+  await testFreeRoute();
+  await testDatabaseConnection();
+
+  printSummary();
 }
 
 main().catch((error) => {
