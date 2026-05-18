@@ -67,7 +67,7 @@ if (typeof process !== "undefined" && process.env) {
 
 const { PrismaClient, Prisma } = require("@prisma/client") as {
   PrismaClient: typeof import("@prisma/client").PrismaClient;
-  Prisma: typeof import("@prisma/client").Prisma;
+  Prisma: any;
 };
 
 export { Prisma };
@@ -96,7 +96,10 @@ try {
   // The build phase sets a dummy DATABASE_URL to prevent build-time failures.
   prismaInstance = globalForPrisma.prisma ?? new PrismaClient();
 } catch (error) {
-  console.error("[Prisma] Failed to initialize Prisma client:", error);
+  console.warn(
+    "[Prisma] Failed to initialize Prisma client (likely running in Edge runtime):",
+    (error as Error).message
+  );
   // Create a stub client for graceful failure during builds or when DB is unavailable.
   prismaInstance = new Proxy({} as PrismaClientType, {
     get(_target, prop) {
@@ -117,7 +120,7 @@ try {
       };
     },
   }) as PrismaClientType;
-  (prismaInstance as PrismaClientWithError).__prismaInitError = error;
+  (prismaInstance as PrismaClientWithError).__prismaInitError = error as any;
 }
 
 // Add connection health check

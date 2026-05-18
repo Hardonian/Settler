@@ -11,6 +11,7 @@ const customJestConfig = {
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
   testEnvironment: "jest-environment-jsdom",
   moduleNameMapper: {
+    '^uncrypto$': require.resolve('crypto'),
     "^@settler/reconciliation-core$": "<rootDir>/../reconciliation-core/src/index.ts",
     "^@settler/reconciliation-core/dist$": "<rootDir>/../reconciliation-core/src/index.ts",
     "^@settler/reconciliation-core/dist/(.*)$": "<rootDir>/../reconciliation-core/src/$1",

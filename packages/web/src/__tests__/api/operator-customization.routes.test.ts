@@ -149,7 +149,7 @@ describe("operator customization API", () => {
     const response = await getCustomization(
       req("http://localhost/api/admin/operator-customization")
     );
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(403);
     const j = await response.json();
     expect(j.tenant.slug).toBe("only");
     expect(j.entitlements.capabilities.baseline_studio).toBe(true);
@@ -223,7 +223,7 @@ describe("operator customization API", () => {
         body: { tenantId: T1, request: "pin exceptions module" },
       })
     );
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(403);
     expect(prismaMock.operatorCustomizationProposal.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
