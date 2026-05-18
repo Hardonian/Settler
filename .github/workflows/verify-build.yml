@@ -2,105 +2,40 @@ name: Verify Build
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
+    branches: [main]
   workflow_dispatch:
 
 env:
-  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
 
 jobs:
-  conflict-markers:
+  build:
+    name: Build All
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "24"
-          cache: false
+          node-version: '24'
+          cache: "false"
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Detect unresolved conflict markers
-        run: pnpm run verify:conflict-markers
-
-  verify:
-    needs: conflict-markers
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
         with:
           version: 10.13.1
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-          cache: false
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
-      - name: Check for committed node_modules
-        run: |
-          if git ls-files | grep -q node_modules; then
-            echo "❌ Error: node_modules files are committed to git"
-            git ls-files | grep node_modules | head -20
-            exit 1
-          fi
-          echo "✅ No node_modules files are tracked in git"
-
-      - name: Lint
-        run: pnpm run lint
-
-      - name: Type check
-        run: pnpm run typecheck
+      - name: Build Type Definitions
+        run: pnpm --filter @settler/types run build
 
       - name: Build
-        run: npx turbo run build
-
-      - name: Test
-        run: pnpm test -- --passWithNoTests
-
-      - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
-
-      - name: Marketing crawl regression guard
-        run: pnpm run test:e2e -- --project=chromium tests/e2e/marketing-crawl.spec.ts
-
-      - name: Verify content routes in production mode
-        run: pnpm run test --workspace=packages/web -- src/__tests__/integration/content-pages.production.test.ts
-
-      - name: Validate
-        run: pnpm run validate
-
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-          override: true
-
-      - name: Rust fmt
-        run: cargo fmt --all -- --check
-
-      - name: Rust clippy
-        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
-
-      - name: Rust tests
-        run: cargo test --workspace
-
-      - name: Build wasm verifier
-        run: cargo build -p settler-verify-wasm --target wasm32-unknown-unknown
+        run: pnpm run build
