@@ -235,8 +235,8 @@ router.get(
       };
 
       res.json(response);
-    } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to retrieve runs", 500, {
+    } catch (_error: unknown) {
+      handleRouteError(res, _error, "Failed to retrieve runs", 500, {
         userId: req.userId,
         tenantId: req.tenantId,
       });
@@ -404,8 +404,8 @@ router.get(
         },
         timestamp: new Date().toISOString(),
       });
-    } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to retrieve run details", 500, {
+    } catch (_error: unknown) {
+      handleRouteError(res, _error, "Failed to retrieve run details", 500, {
         userId: req.userId,
         tenantId: req.tenantId,
         runId: req.params.id,
@@ -500,8 +500,8 @@ router.get(
         },
         timestamp: new Date().toISOString(),
       });
-    } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to retrieve run exceptions", 500, {
+    } catch (_error: unknown) {
+      handleRouteError(res, _error, "Failed to retrieve run exceptions", 500, {
         userId: req.userId,
         tenantId: req.tenantId,
         runId: req.params.id,
@@ -573,8 +573,8 @@ router.post(
         data: { run_id: runId, status: "pending" },
         timestamp: new Date().toISOString(),
       });
-    } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to retry run", 500, {
+    } catch (_error: unknown) {
+      handleRouteError(res, _error, "Failed to retry run", 500, {
         userId: req.userId,
         tenantId: req.tenantId,
         runId: req.params.id,
@@ -642,8 +642,8 @@ router.post(
         message: `Exception marked as ${status}`,
         data: { exception_id: exceptionId, status, resolved_at: new Date().toISOString() },
       });
-    } catch (error: unknown) {
-      handleRouteError(res, error, "Failed to resolve exception", 500, {
+    } catch (_error: unknown) {
+      handleRouteError(res, _error, "Failed to resolve exception", 500, {
         userId: req.userId,
         tenantId: req.tenantId,
         exceptionId: req.params.exceptionId,
@@ -680,8 +680,8 @@ router.post(
         status: "pending",
         message: "Run created successfully",
       });
-    } catch (error) {
-      logError("Error creating run", { error });
+    } catch (_error: unknown) {
+      logError("Error creating run", { _error });
       res.status(500).json({
         error: "INTERNAL_SERVER_ERROR",
         message: "An unexpected error occurred",
@@ -713,8 +713,8 @@ router.get(
         auditTrail: [],
         evidence: [],
       });
-    } catch (error) {
-      logError("Error fetching proofpack", { error });
+    } catch (_error: unknown) {
+      logError("Error fetching proofpack", { _error });
       res.status(500).json({
         error: "INTERNAL_SERVER_ERROR",
         message: "An unexpected error occurred",
@@ -744,7 +744,7 @@ router.get(
         runId: req.params.id,
         deltas: [],
       });
-    } catch (error) {
+    } catch (_error: unknown) {
       res.status(500).json({
         error: "INTERNAL_SERVER_ERROR",
         message: "An unexpected error occurred",
@@ -774,7 +774,7 @@ router.post(
         id: `adj_${Date.now()}`,
         status: "recorded",
       });
-    } catch (error) {
+    } catch (_error: unknown) {
       res.status(500).json({
         error: "INTERNAL_SERVER_ERROR",
         message: "An unexpected error occurred",

@@ -65,10 +65,10 @@ if (typeof process !== "undefined" && process.env) {
 
 // Use require after env setup so Prisma reads the correct runtime configuration.
 
-const { PrismaClient, Prisma } = require("@prisma/client") as {
+const { PrismaClient } = require("@prisma/client") as {
   PrismaClient: typeof import("@prisma/client").PrismaClient;
-  Prisma: typeof import("@prisma/client").Prisma;
 };
+const Prisma = require("@prisma/client").Prisma as any;
 
 export { Prisma };
 
