@@ -62,21 +62,27 @@ export class EcosystemAnalytics {
       "ecommerce",
     ];
 
+    let total = 0;
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    try {
+      total = await this.prisma.reconJob.count({
+        where: { createdAt: { gte: thirtyDaysAgo } },
+      });
+    } catch {
+      // Ignore, will use fallback
+    }
+
     for (const pack of domainPacks) {
       // Query actual usage from database
       try {
         const count = await this.prisma.reconJob.count({
           where: {
             domainPack: pack,
-            createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
+            createdAt: { gte: thirtyDaysAgo },
           },
         });
         
         // Calculate adoption as percentage of total
-        const total = await this.prisma.reconJob.count({
-          where: { createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } },
-        });
-        
         adoption.set(pack, total > 0 ? (count / total) * 100 : 0);
       } catch {
         // Fallback if column doesn't exist
