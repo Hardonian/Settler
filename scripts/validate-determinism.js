@@ -13,11 +13,7 @@
 const path = require("path");
 
 // Simple mock for the verification gates
-async function runGoldenTests() {
-  console.log("\n🧪 Running Golden Determinism Tests...\n");
-
-  // Test fixtures
-  const fixtures = [
+const GOLDEN_FIXTURES = [
     {
       name: "simple_exact_match",
       source_records: [
@@ -193,6 +189,11 @@ async function runGoldenTests() {
       expected_match_count: 3,
     },
   ];
+
+async function runGoldenTests() {
+  console.log("\n🧪 Running Golden Determinism Tests...\n");
+
+  const fixtures = GOLDEN_FIXTURES;
 
   let passed = 0;
   let failed = 0;
