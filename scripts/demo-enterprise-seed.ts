@@ -305,7 +305,7 @@ interface DemoExport {
 
 function generateDemoDataset() {
   const sources = buildSources();
-  const [stripeSourceId, bankSourceId, shopifySourceId, qbSourceId] = sources.map((s) => s.id) as [
+  const [stripeSourceId, bankSourceId, shopifySourceId] = sources.map((s) => s.id) as [
     string,
     string,
     string,
@@ -859,6 +859,245 @@ function generateDemoDataset() {
 
 // ─── DB Seed via Prisma ───────────────────────────────────────────────────────
 
+async function resetDemoTenantData(prisma: import("@prisma/client").PrismaClient) {
+  console.info("🗑️  Resetting demo tenant data...");
+  // Delete in reverse dependency order
+  await prisma.reconciliationMatch
+    .deleteMany({ where: { tenantId: DEMO_TENANT_ID } })
+    .catch(() => {});
+  await prisma.reconciliationRun
+    .deleteMany({ where: { tenantId: DEMO_TENANT_ID } })
+    .catch(() => {});
+  await prisma.normalizedTransaction
+    .deleteMany({ where: { tenantId: DEMO_TENANT_ID } })
+    .catch(() => {});
+  await prisma.rawRecord.deleteMany({ where: { tenantId: DEMO_TENANT_ID } }).catch(() => {});
+  await prisma.ingestion.deleteMany({ where: { tenantId: DEMO_TENANT_ID } }).catch(() => {});
+  await prisma.ingestionSource.deleteMany({ where: { tenantId: DEMO_TENANT_ID } }).catch(() => {});
+  await prisma.auditLog.deleteMany({ where: { tenantId: DEMO_TENANT_ID } }).catch(() => {});
+  await prisma.export.deleteMany({ where: { tenantId: DEMO_TENANT_ID } }).catch(() => {});
+  await prisma.tenant.deleteMany({ where: { slug: DEMO_TENANT_SLUG } }).catch(() => {});
+  console.info("   ✓ Demo tenant data cleared");
+}
+
+async function seedTenant(
+  prisma: import("@prisma/client").PrismaClient,
+  dataset: ReturnType<typeof generateDemoDataset>
+) {
+  await prisma.tenant.upsert({
+    where: { slug: DEMO_TENANT_SLUG },
+    update: { metadata: dataset.tenant.metadata as object, updatedAt: new Date() },
+    create: {
+      id: dataset.tenant.id,
+      slug: dataset.tenant.slug,
+      name: dataset.tenant.name,
+      isActive: dataset.tenant.isActive,
+      metadata: dataset.tenant.metadata as object,
+    },
+  });
+  console.info(`   ✓ Tenant: ${DEMO_TENANT_NAME} (${DEMO_TENANT_SLUG})`);
+}
+
+async function seedIngestionSources(
+  prisma: import("@prisma/client").PrismaClient,
+  dataset: ReturnType<typeof generateDemoDataset>
+) {
+  for (const source of dataset.sources) {
+    await prisma.ingestionSource.upsert({
+      where: { id: source.id },
+      update: {
+        status: source.status,
+        lastSyncAt: source.lastSyncAt,
+        lastSyncStatus: source.lastSyncStatus,
+        lastSyncError: source.lastSyncError,
+        configMetadata: source.configMetadata as object,
+        metadata: source.metadata as object,
+        updatedAt: source.updatedAt,
+      },
+      create: {
+        id: source.id,
+        tenantId: source.tenantId,
+        userId: source.userId,
+        name: source.name,
+        type: source.type,
+        connectorType: source.connectorType,
+        status: source.status,
+        lastSyncAt: source.lastSyncAt,
+        lastSyncStatus: source.lastSyncStatus,
+        lastSyncError: source.lastSyncError,
+        syncSchedule: source.syncSchedule,
+        configMetadata: source.configMetadata as object,
+        metadata: source.metadata as object,
+        createdAt: source.createdAt,
+        updatedAt: source.updatedAt,
+      },
+    });
+  }
+  console.info(`   ✓ Sources: ${dataset.sources.length} connectors`);
+}
+
+async function seedIngestions(
+  prisma: import("@prisma/client").PrismaClient,
+  dataset: ReturnType<typeof generateDemoDataset>
+) {
+  for (const ingestion of dataset.ingestions) {
+    await prisma.ingestion
+      .upsert({
+        where: { idempotencyKey: `demo-${ingestion.id}` },
+        update: {},
+        create: {
+          id: ingestion.id,
+          sourceId: ingestion.sourceId,
+          tenantId: ingestion.tenantId,
+          userId: ingestion.userId,
+          idempotencyKey: `demo-${ingestion.id}`,
+          status: ingestion.status,
+          startedAt: ingestion.startedAt,
+          completedAt: ingestion.completedAt,
+          rawRecordCount: ingestion.rawRecordCount,
+          normalizedCount: ingestion.normalizedCount,
+          failedCount: ingestion.failedCount,
+          metadata: ingestion.metadata as object,
+          createdAt: ingestion.createdAt,
+          updatedAt: ingestion.updatedAt,
+        },
+      })
+      .catch(() => {});
+  }
+  console.info(`   ✓ Ingestions: ${dataset.ingestions.length}`);
+}
+
+async function seedTransactions(
+  prisma: import("@prisma/client").PrismaClient,
+  dataset: ReturnType<typeof generateDemoDataset>
+) {
+  const allTxns = [...dataset.transactions.stripe, ...dataset.transactions.bank];
+  let txnCount = 0;
+  for (const txn of allTxns) {
+    try {
+      await prisma.normalizedTransaction.upsert({
+        where: { id: txn.id },
+        update: {},
+        create: {
+          id: txn.id,
+          ingestionId: txn.ingestionId,
+          tenantId: txn.tenantId,
+          sourceId: txn.sourceId,
+          externalId: txn.externalId,
+          amount: txn.amount,
+          currency: txn.currency,
+          date: txn.date,
+          description: txn.description,
+          category: txn.category,
+          paymentMethod: txn.paymentMethod,
+          reference: txn.reference,
+          metadata: txn.metadata as object,
+          createdAt: txn.createdAt,
+          updatedAt: txn.updatedAt,
+        },
+      });
+      txnCount++;
+    } catch {
+      // skip duplicates
+    }
+  }
+  console.info(`   ✓ Transactions: ${txnCount} (Stripe + Bank)`);
+}
+
+async function seedReconciliationRuns(
+  prisma: import("@prisma/client").PrismaClient,
+  dataset: ReturnType<typeof generateDemoDataset>
+) {
+  for (const run of dataset.runs) {
+    await prisma.reconciliationRun
+      .upsert({
+        where: { id: run.id },
+        update: {},
+        create: {
+          id: run.id,
+          tenantId: run.tenantId,
+          userId: run.userId,
+          name: run.name,
+          status: run.status,
+          startedAt: run.startedAt,
+          completedAt: run.completedAt,
+          sourceCount: run.sourceCount,
+          targetCount: run.targetCount,
+          matchedCount: run.matchedCount,
+          unmatchedSourceCount: run.unmatchedSourceCount,
+          unmatchedTargetCount: run.unmatchedTargetCount,
+          confidenceAvg: run.confidenceAvg,
+          errorMessage: run.errorMessage,
+          metadata: run.metadata as object,
+          createdAt: run.createdAt,
+          updatedAt: run.updatedAt,
+        },
+      })
+      .catch(() => {});
+  }
+  console.info(`   ✓ Reconciliation runs: ${dataset.runs.length}`);
+}
+
+async function seedMatches(
+  prisma: import("@prisma/client").PrismaClient,
+  dataset: ReturnType<typeof generateDemoDataset>
+) {
+  let matchCount = 0;
+  for (const match of dataset.matches) {
+    try {
+      await prisma.reconciliationMatch.upsert({
+        where: { id: match.id },
+        update: {},
+        create: {
+          id: match.id,
+          runId: match.runId,
+          tenantId: match.tenantId,
+          sourceTransactionId: match.sourceTransactionId,
+          targetTransactionId: match.targetTransactionId,
+          matchType: match.matchType,
+          confidence: match.confidence,
+          matchReason: match.matchReason,
+          amountDiff: match.amountDiff,
+          dateDiff: match.dateDiff,
+          reviewed: match.reviewed,
+          metadata: match.metadata as object,
+          createdAt: match.createdAt,
+          updatedAt: match.updatedAt,
+        },
+      });
+      matchCount++;
+    } catch {
+      // skip duplicates
+    }
+  }
+  console.info(`   ✓ Matches: ${matchCount} (exact + fuzzy + unmatched)`);
+}
+
+async function seedAuditLogs(
+  prisma: import("@prisma/client").PrismaClient,
+  dataset: ReturnType<typeof generateDemoDataset>
+) {
+  for (const log of dataset.auditLogs) {
+    await prisma.auditLog
+      .create({
+        data: {
+          id: log.id,
+          userId: log.userId,
+          tenantId: log.tenantId,
+          action: log.action,
+          resourceType: log.resourceType,
+          resourceId: log.resourceId,
+          changes: log.changes as object,
+          ipAddress: log.ipAddress,
+          metadata: log.metadata as object,
+          createdAt: log.createdAt,
+        },
+      })
+      .catch(() => {});
+  }
+  console.info(`   ✓ Audit logs: ${dataset.auditLogs.length}`);
+}
+
 async function seedDatabase(dataset: ReturnType<typeof generateDemoDataset>, reset: boolean) {
   let prisma: import("@prisma/client").PrismaClient;
   try {
@@ -875,219 +1114,16 @@ async function seedDatabase(dataset: ReturnType<typeof generateDemoDataset>, res
     await prisma.$connect();
 
     if (reset) {
-      console.log("🗑️  Resetting demo tenant data...");
-      // Delete in reverse dependency order
-      await prisma.reconciliationMatch
-        .deleteMany({ where: { tenantId: DEMO_TENANT_ID } })
-        .catch(() => {});
-      await prisma.reconciliationRun
-        .deleteMany({ where: { tenantId: DEMO_TENANT_ID } })
-        .catch(() => {});
-      await prisma.normalizedTransaction
-        .deleteMany({ where: { tenantId: DEMO_TENANT_ID } })
-        .catch(() => {});
-      await prisma.rawRecord.deleteMany({ where: { tenantId: DEMO_TENANT_ID } }).catch(() => {});
-      await prisma.ingestion.deleteMany({ where: { tenantId: DEMO_TENANT_ID } }).catch(() => {});
-      await prisma.ingestionSource
-        .deleteMany({ where: { tenantId: DEMO_TENANT_ID } })
-        .catch(() => {});
-      await prisma.auditLog.deleteMany({ where: { tenantId: DEMO_TENANT_ID } }).catch(() => {});
-      await prisma.export.deleteMany({ where: { tenantId: DEMO_TENANT_ID } }).catch(() => {});
-      await prisma.tenant.deleteMany({ where: { slug: DEMO_TENANT_SLUG } }).catch(() => {});
-      console.log("   ✓ Demo tenant data cleared");
+      await resetDemoTenantData(prisma);
     }
 
-    // Upsert tenant
-    await prisma.tenant.upsert({
-      where: { slug: DEMO_TENANT_SLUG },
-      update: { metadata: dataset.tenant.metadata as object, updatedAt: new Date() },
-      create: {
-        id: dataset.tenant.id,
-        slug: dataset.tenant.slug,
-        name: dataset.tenant.name,
-        isActive: dataset.tenant.isActive,
-        metadata: dataset.tenant.metadata as object,
-      },
-    });
-    console.log(`   ✓ Tenant: ${DEMO_TENANT_NAME} (${DEMO_TENANT_SLUG})`);
-
-    // Upsert ingestion sources
-    for (const source of dataset.sources) {
-      await prisma.ingestionSource.upsert({
-        where: { id: source.id },
-        update: {
-          status: source.status,
-          lastSyncAt: source.lastSyncAt,
-          lastSyncStatus: source.lastSyncStatus,
-          lastSyncError: source.lastSyncError,
-          configMetadata: source.configMetadata as object,
-          metadata: source.metadata as object,
-          updatedAt: source.updatedAt,
-        },
-        create: {
-          id: source.id,
-          tenantId: source.tenantId,
-          userId: source.userId,
-          name: source.name,
-          type: source.type,
-          connectorType: source.connectorType,
-          status: source.status,
-          lastSyncAt: source.lastSyncAt,
-          lastSyncStatus: source.lastSyncStatus,
-          lastSyncError: source.lastSyncError,
-          syncSchedule: source.syncSchedule,
-          configMetadata: source.configMetadata as object,
-          metadata: source.metadata as object,
-          createdAt: source.createdAt,
-          updatedAt: source.updatedAt,
-        },
-      });
-    }
-    console.log(`   ✓ Sources: ${dataset.sources.length} connectors`);
-
-    // Insert ingestions
-    for (const ingestion of dataset.ingestions) {
-      await prisma.ingestion
-        .upsert({
-          where: { idempotencyKey: `demo-${ingestion.id}` },
-          update: {},
-          create: {
-            id: ingestion.id,
-            sourceId: ingestion.sourceId,
-            tenantId: ingestion.tenantId,
-            userId: ingestion.userId,
-            idempotencyKey: `demo-${ingestion.id}`,
-            status: ingestion.status,
-            startedAt: ingestion.startedAt,
-            completedAt: ingestion.completedAt,
-            rawRecordCount: ingestion.rawRecordCount,
-            normalizedCount: ingestion.normalizedCount,
-            failedCount: ingestion.failedCount,
-            metadata: ingestion.metadata as object,
-            createdAt: ingestion.createdAt,
-            updatedAt: ingestion.updatedAt,
-          },
-        })
-        .catch(() => {
-          // If ingestion already exists, skip
-        });
-    }
-    console.log(`   ✓ Ingestions: ${dataset.ingestions.length}`);
-
-    // Insert normalized transactions
-    const allTxns = [...dataset.transactions.stripe, ...dataset.transactions.bank];
-    let txnCount = 0;
-    for (const txn of allTxns) {
-      try {
-        await prisma.normalizedTransaction.upsert({
-          where: { id: txn.id },
-          update: {},
-          create: {
-            id: txn.id,
-            ingestionId: txn.ingestionId,
-            tenantId: txn.tenantId,
-            sourceId: txn.sourceId,
-            externalId: txn.externalId,
-            amount: txn.amount,
-            currency: txn.currency,
-            date: txn.date,
-            description: txn.description,
-            category: txn.category,
-            paymentMethod: txn.paymentMethod,
-            reference: txn.reference,
-            metadata: txn.metadata as object,
-            createdAt: txn.createdAt,
-            updatedAt: txn.updatedAt,
-          },
-        });
-        txnCount++;
-      } catch {
-        // skip duplicates
-      }
-    }
-    console.log(`   ✓ Transactions: ${txnCount} (Stripe + Bank)`);
-
-    // Insert reconciliation runs
-    for (const run of dataset.runs) {
-      await prisma.reconciliationRun
-        .upsert({
-          where: { id: run.id },
-          update: {},
-          create: {
-            id: run.id,
-            tenantId: run.tenantId,
-            userId: run.userId,
-            name: run.name,
-            status: run.status,
-            startedAt: run.startedAt,
-            completedAt: run.completedAt,
-            sourceCount: run.sourceCount,
-            targetCount: run.targetCount,
-            matchedCount: run.matchedCount,
-            unmatchedSourceCount: run.unmatchedSourceCount,
-            unmatchedTargetCount: run.unmatchedTargetCount,
-            confidenceAvg: run.confidenceAvg,
-            errorMessage: run.errorMessage,
-            metadata: run.metadata as object,
-            createdAt: run.createdAt,
-            updatedAt: run.updatedAt,
-          },
-        })
-        .catch(() => {});
-    }
-    console.log(`   ✓ Reconciliation runs: ${dataset.runs.length}`);
-
-    // Insert matches
-    let matchCount = 0;
-    for (const match of dataset.matches) {
-      try {
-        await prisma.reconciliationMatch.upsert({
-          where: { id: match.id },
-          update: {},
-          create: {
-            id: match.id,
-            runId: match.runId,
-            tenantId: match.tenantId,
-            sourceTransactionId: match.sourceTransactionId,
-            targetTransactionId: match.targetTransactionId,
-            matchType: match.matchType,
-            confidence: match.confidence,
-            matchReason: match.matchReason,
-            amountDiff: match.amountDiff,
-            dateDiff: match.dateDiff,
-            reviewed: match.reviewed,
-            metadata: match.metadata as object,
-            createdAt: match.createdAt,
-            updatedAt: match.updatedAt,
-          },
-        });
-        matchCount++;
-      } catch {
-        // skip duplicates
-      }
-    }
-    console.log(`   ✓ Matches: ${matchCount} (exact + fuzzy + unmatched)`);
-
-    // Insert audit logs
-    for (const log of dataset.auditLogs) {
-      await prisma.auditLog
-        .create({
-          data: {
-            id: log.id,
-            userId: log.userId,
-            tenantId: log.tenantId,
-            action: log.action,
-            resourceType: log.resourceType,
-            resourceId: log.resourceId,
-            changes: log.changes as object,
-            ipAddress: log.ipAddress,
-            metadata: log.metadata as object,
-            createdAt: log.createdAt,
-          },
-        })
-        .catch(() => {});
-    }
-    console.log(`   ✓ Audit logs: ${dataset.auditLogs.length}`);
+    await seedTenant(prisma, dataset);
+    await seedIngestionSources(prisma, dataset);
+    await seedIngestions(prisma, dataset);
+    await seedTransactions(prisma, dataset);
+    await seedReconciliationRuns(prisma, dataset);
+    await seedMatches(prisma, dataset);
+    await seedAuditLogs(prisma, dataset);
 
     await prisma.$disconnect();
     return true;
@@ -1122,7 +1158,7 @@ function writeJsonFiles(dataset: ReturnType<typeof generateDemoDataset>) {
     fs.writeFileSync(path.join(outputDir, filename), JSON.stringify(data, null, 2));
   }
 
-  console.log(`   ✓ JSON files written to demo/data/ (${Object.keys(files).length} files)`);
+  console.info(`   ✓ JSON files written to demo/data/ (${Object.keys(files).length} files)`);
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
@@ -1131,64 +1167,66 @@ async function main() {
   const args = process.argv.slice(2);
   const reset = args.includes("--reset") || args.includes("-r");
 
-  console.log("\n╔══════════════════════════════════════════════════╗");
-  console.log("║   Settler Enterprise Demo Tenant Seed            ║");
-  console.log("╚══════════════════════════════════════════════════╝\n");
-  console.log(`   Tenant:  ${DEMO_TENANT_NAME} (${DEMO_TENANT_SLUG})`);
-  console.log(`   Seed:    ${DEMO_SEED}`);
-  console.log(`   Mode:    ${reset ? "RESET + RE-SEED" : "SEED (idempotent)"}\n`);
+  console.info("\n╔══════════════════════════════════════════════════╗");
+  console.info("║   Settler Enterprise Demo Tenant Seed            ║");
+  console.info("╚══════════════════════════════════════════════════╝\n");
+  console.info(`   Tenant:  ${DEMO_TENANT_NAME} (${DEMO_TENANT_SLUG})`);
+  console.info(`   Seed:    ${DEMO_SEED}`);
+  console.info(`   Mode:    ${reset ? "RESET + RE-SEED" : "SEED (idempotent)"}\n`);
 
   const dataset = generateDemoDataset();
 
-  console.log("📊 Generated demo dataset:");
-  console.log(`   Sources:               ${dataset.summary.sources}`);
-  console.log(`   Stripe transactions:   ${dataset.summary.stripeTransactions}`);
-  console.log(`   Bank transactions:     ${dataset.summary.bankTransactions}`);
-  console.log(`   Reconciliation runs:   ${dataset.summary.reconciliationRuns}`);
-  console.log(`   Exact matches:         ${dataset.summary.exactMatches}`);
-  console.log(`   Fuzzy matches:         ${dataset.summary.fuzzyMatches}`);
-  console.log(`   Unmatched (Stripe):    ${dataset.summary.unmatchedSourceTransactions}`);
-  console.log(`   Unmatched (Bank):      ${dataset.summary.unmatchedBankTransactions}`);
-  console.log(`   Audit log entries:     ${dataset.summary.auditLogs}`);
-  console.log(`   Exports:               ${dataset.summary.exports}`);
-  console.log();
+  console.info("📊 Generated demo dataset:");
+  console.info(`   Sources:               ${dataset.summary.sources}`);
+  console.info(`   Stripe transactions:   ${dataset.summary.stripeTransactions}`);
+  console.info(`   Bank transactions:     ${dataset.summary.bankTransactions}`);
+  console.info(`   Reconciliation runs:   ${dataset.summary.reconciliationRuns}`);
+  console.info(`   Exact matches:         ${dataset.summary.exactMatches}`);
+  console.info(`   Fuzzy matches:         ${dataset.summary.fuzzyMatches}`);
+  console.info(`   Unmatched (Stripe):    ${dataset.summary.unmatchedSourceTransactions}`);
+  console.info(`   Unmatched (Bank):      ${dataset.summary.unmatchedBankTransactions}`);
+  console.info(`   Audit log entries:     ${dataset.summary.auditLogs}`);
+  console.info(`   Exports:               ${dataset.summary.exports}`);
+  console.info();
 
   // Always write JSON (useful even with DB)
-  console.log("📁 Writing JSON data files...");
+  console.info("📁 Writing JSON data files...");
   writeJsonFiles(dataset);
 
   // Attempt DB seed if DATABASE_URL is available
   if (process.env.DATABASE_URL) {
-    console.log("\n🗄️  Seeding database...");
+    console.info("\n🗄️  Seeding database...");
     const dbSuccess = await seedDatabase(dataset, reset);
     if (dbSuccess) {
-      console.log("\n✅ Database seeded successfully.");
+      console.info("\n✅ Database seeded successfully.");
     } else {
-      console.log("\n⚠️  Database seed skipped — see JSON files in demo/data/");
+      console.info("\n⚠️  Database seed skipped — see JSON files in demo/data/");
     }
   } else {
-    console.log("\n⚠️  DATABASE_URL not set — JSON files written to demo/data/ for manual import.");
+    console.info(
+      "\n⚠️  DATABASE_URL not set — JSON files written to demo/data/ for manual import."
+    );
   }
 
-  console.log("\n" + "═".repeat(52));
-  console.log("🎉 Demo tenant ready!");
-  console.log("═".repeat(52));
-  console.log();
-  console.log("   Demo accounts:");
-  console.log(`   Admin:  ${DEMO_ADMIN_EMAIL}`);
-  console.log(`   Viewer: ${DEMO_VIEWER_EMAIL}`);
-  console.log();
-  console.log("   Key surfaces to demo:");
-  console.log("   /app/runs           → Reconciliation run history");
-  console.log("   /app/runs/<run1>    → Run details + match explorer");
-  console.log("   /app/sources        → Connectors (healthy + degraded)");
-  console.log("   /app/audit          → Audit trail");
-  console.log("   /app/exports        → Export history");
-  console.log();
-  console.log("   Commands:");
-  console.log("   pnpm demo:seed      → Re-seed (idempotent)");
-  console.log("   pnpm demo:reset     → Wipe + re-seed");
-  console.log();
+  console.info("\n" + "═".repeat(52));
+  console.info("🎉 Demo tenant ready!");
+  console.info("═".repeat(52));
+  console.info();
+  console.info("   Demo accounts:");
+  console.info(`   Admin:  ${DEMO_ADMIN_EMAIL}`);
+  console.info(`   Viewer: ${DEMO_VIEWER_EMAIL}`);
+  console.info();
+  console.info("   Key surfaces to demo:");
+  console.info("   /app/runs           → Reconciliation run history");
+  console.info("   /app/runs/<run1>    → Run details + match explorer");
+  console.info("   /app/sources        → Connectors (healthy + degraded)");
+  console.info("   /app/audit          → Audit trail");
+  console.info("   /app/exports        → Export history");
+  console.info();
+  console.info("   Commands:");
+  console.info("   pnpm demo:seed      → Re-seed (idempotent)");
+  console.info("   pnpm demo:reset     → Wipe + re-seed");
+  console.info();
 }
 
 main().catch((err) => {
