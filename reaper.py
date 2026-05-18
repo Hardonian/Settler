@@ -11,6 +11,88 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def _enforce_operator_timeout(cur):
+    # Control Plane Enforcement: Fetch and apply dynamic operator timeouts
+    cur.execute(
+        "SELECT max_statement_timeout_ms FROM public.operator_infrastructure_settings WHERE id = 'global'"
+    )
+    infra_settings = cur.fetchone()
+    if infra_settings:
+        timeout_ms = infra_settings[0]
+        # Explicitly constrain this session to the operator's threshold
+        cur.execute(f"SET statement_timeout = {timeout_ms}")
+        logger.info(
+            f"Enforcing operator control plane statement timeout: {timeout_ms}ms"
+        )
+
+
+def _fetch_stale_runs(cur, timeout_minutes):
+    # Highly optimized query using the idx_runs_stale_reaper partial index
+    cur.execute(
+        """
+        SELECT id, tenant_id
+        FROM public.runs
+        WHERE status = 'Processing'
+          AND created_at < NOW() - INTERVAL '%s minutes'
+        FOR UPDATE SKIP LOCKED;
+    """,
+        (timeout_minutes,),
+    )
+    return cur.fetchall()
+
+
+def _process_stale_runs(cur, stale_runs, failure_reason):
+    run_ids = [r[0] for r in stale_runs]
+
+    # 1. Update the orphaned runs safely
+    cur.execute(
+        """
+        UPDATE public.runs
+        SET
+            status = 'Failed - Timed Out',
+            error_details = %s,
+            updated_at = NOW()
+        WHERE id = ANY(%s)
+    """,
+        (failure_reason, run_ids),
+    )
+
+    # 2. Bulk insert audit logs using the provenance schema
+    audit_records = [
+        (r[1], r[0], "SYSTEM_RECOVERY", failure_reason) for r in stale_runs
+    ]
+    execute_values(
+        cur,
+        """
+        INSERT INTO public.audit_logs (tenant_id, trace_id, action, details, created_at)
+        VALUES %s
+    """,
+        audit_records,
+    )
+
+
+def _dispatch_slack_alert(stale_runs, run_ids):
+    # Dispatch Critical Operations Alert
+    slack_url = os.environ.get("SLACK_WEBHOOK_URL") or os.environ.get(
+        "OPS_ALERT_WEBHOOK_URL"
+    )
+    if slack_url:
+        try:
+            alert_payload = {
+                "text": f"*🚨 [CRITICAL] SYSTEM_RECOVERY*\nStale Run Reaper caught and forced timeout on {len(stale_runs)} zombie processing runs.\n```Trace IDs: {run_ids}```"
+            }
+            req = urllib.request.Request(
+                slack_url,
+                data=json.dumps(alert_payload).encode("utf-8"),
+                headers={"Content-Type": "application/json"},
+            )
+            # Fire and forget with 5s timeout
+            urllib.request.urlopen(req, timeout=5)
+            logger.info("Successfully dispatched Slack alert for system recovery.")
+        except Exception as e:
+            logger.error(f"Failed to dispatch external alert: {e}")
+
+
 def run_stale_run_reaper():
     """
     Sweeps for 'Processing' runs that have exceeded the safe execution timeout window.
@@ -26,32 +108,9 @@ def run_stale_run_reaper():
 
     with psycopg2.connect(db_url) as conn:
         with conn.cursor() as cur:
-            # Control Plane Enforcement: Fetch and apply dynamic operator timeouts
-            cur.execute(
-                "SELECT max_statement_timeout_ms FROM public.operator_infrastructure_settings WHERE id = 'global'"
-            )
-            infra_settings = cur.fetchone()
-            if infra_settings:
-                timeout_ms = infra_settings[0]
-                # Explicitly constrain this session to the operator's threshold
-                cur.execute(f"SET statement_timeout = {timeout_ms}")
-                logger.info(
-                    f"Enforcing operator control plane statement timeout: {timeout_ms}ms"
-                )
+            _enforce_operator_timeout(cur)
 
-            # Highly optimized query using the idx_runs_stale_reaper partial index
-            cur.execute(
-                """
-                SELECT id, tenant_id
-                FROM public.runs
-                WHERE status = 'Processing'
-                  AND created_at < NOW() - INTERVAL '%s minutes'
-                FOR UPDATE SKIP LOCKED;
-            """,
-                (timeout_minutes,),
-            )
-
-            stale_runs = cur.fetchall()
+            stale_runs = _fetch_stale_runs(cur, timeout_minutes)
 
             if not stale_runs:
                 logger.info("No stale runs found.")
@@ -61,59 +120,14 @@ def run_stale_run_reaper():
                 f"Found {len(stale_runs)} stale runs. Transitioning to Failed - Timed Out..."
             )
 
-            run_ids = [r[0] for r in stale_runs]
             failure_reason = "System recovered orphaned run after worker timeout."
-
-            # 1. Update the orphaned runs safely
-            cur.execute(
-                """
-                UPDATE public.runs
-                SET
-                    status = 'Failed - Timed Out',
-                    error_details = %s,
-                    updated_at = NOW()
-                WHERE id = ANY(%s)
-            """,
-                (failure_reason, run_ids),
-            )
-
-            # 2. Bulk insert audit logs using the provenance schema
-            audit_records = [
-                (r[1], r[0], "SYSTEM_RECOVERY", failure_reason) for r in stale_runs
-            ]
-            execute_values(
-                cur,
-                """
-                INSERT INTO public.audit_logs (tenant_id, trace_id, action, details, created_at)
-                VALUES %s
-            """,
-                audit_records,
-            )
+            _process_stale_runs(cur, stale_runs, failure_reason)
 
             conn.commit()
             logger.info(f"Successfully recovered {len(stale_runs)} orphaned runs.")
 
-            # Dispatch Critical Operations Alert
-            slack_url = os.environ.get("SLACK_WEBHOOK_URL") or os.environ.get(
-                "OPS_ALERT_WEBHOOK_URL"
-            )
-            if slack_url:
-                try:
-                    alert_payload = {
-                        "text": f"*🚨 [CRITICAL] SYSTEM_RECOVERY*\nStale Run Reaper caught and forced timeout on {len(stale_runs)} zombie processing runs.\n```Trace IDs: {run_ids}```"
-                    }
-                    req = urllib.request.Request(
-                        slack_url,
-                        data=json.dumps(alert_payload).encode("utf-8"),
-                        headers={"Content-Type": "application/json"},
-                    )
-                    # Fire and forget with 5s timeout
-                    urllib.request.urlopen(req, timeout=5)
-                    logger.info(
-                        "Successfully dispatched Slack alert for system recovery."
-                    )
-                except Exception as e:
-                    logger.error(f"Failed to dispatch external alert: {e}")
+            run_ids = [r[0] for r in stale_runs]
+            _dispatch_slack_alert(stale_runs, run_ids)
 
 
 if __name__ == "__main__":
