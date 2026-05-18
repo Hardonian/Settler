@@ -346,15 +346,15 @@
     "verify:scim-surface": "node scripts/verify-scim-surface.mjs"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.11.0",
-    "@playwright/test": "^1.59.1",
-    "@prisma/adapter-pg": "7.6.0",
-    "@prisma/client": "7.6.0",
-    "@supabase/supabase-js": "^2.45.0",
+    "@axe-core/playwright": "^4.11.3",
+    "@playwright/test": "^1.60.0",
+    "@prisma/adapter-pg": "7.8.0",
+    "@prisma/client": "7.8.0",
+    "@supabase/supabase-js": "^2.105.4",
     "@types/node": "^24.0.0",
     "@types/pg": "8.20.0",
     "@typescript-eslint/eslint-plugin": "^8.54.0",
-    "@typescript-eslint/parser": "^8.58.2",
+    "@typescript-eslint/parser": "^8.59.3",
     "cross-env": "^10.1.0",
     "dotenv": "^17.4.2",
     "eslint": "^9.39.2",
@@ -363,10 +363,10 @@
     "husky": "^8.0.3",
     "lint-staged": "^15.5.2",
     "pg": "^8.16.3",
-    "prettier": "^3.8.2",
-    "prisma": "7.6.0",
+    "prettier": "^3.8.3",
+    "prisma": "7.8.0",
     "sharp": "^0.34.5",
-    "tsx": "^4.21.0",
+    "tsx": "^4.22.1",
     "typescript": "^5.3.3"
   },
   "engines": {
@@ -377,8 +377,8 @@
   "packageManager": "pnpm@10.13.1",
   "pnpm": {
     "overrides": {
-      "prisma": "7.6.0",
-      "@prisma/client": "7.6.0",
+      "prisma": "7.8.0",
+      "@prisma/client": "7.8.0",
       "@types/react": "18.3.28",
       "@types/react-dom": "18.3.7",
       "rimraf": "^5.0.0",
@@ -430,6 +430,6 @@
     }
   },
   "dependencies": {
-    "turbo": "^2.9.6"
+    "turbo": "^2.9.14"
   }
 }
