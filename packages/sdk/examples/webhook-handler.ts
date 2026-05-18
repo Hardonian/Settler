@@ -51,8 +51,14 @@ app.post("/webhooks/settler", (req, res) => {
       return res.status(401).send("Invalid signature");
     }
 
-    // Parse event payload
-    const event = JSON.parse(payload);
+    // Parse event payload safely
+    let event;
+    try {
+      event = JSON.parse(payload);
+    } catch (err) {
+      console.error("Invalid JSON payload");
+      return res.status(400).send("Invalid JSON payload");
+    }
 
     console.log("Webhook received:", {
       eventId,
