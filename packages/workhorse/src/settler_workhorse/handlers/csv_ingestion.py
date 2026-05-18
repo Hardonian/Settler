@@ -333,8 +333,22 @@ def handle_csv_ingestion(job: Job) -> JobResult:
         # TODO: Implement storage service integration
         raise NotImplementedError("File path storage not yet implemented")
     elif file_url:
-        # TODO: Implement URL download
-        raise NotImplementedError("File URL download not yet implemented")
+        import httpx
+
+        try:
+            response = httpx.get(file_url, timeout=30.0)
+            response.raise_for_status()
+            content = response.content
+        except httpx.RequestError as e:
+            return JobResult(
+                success=False,
+                error=f"Failed to download file from URL: {e}",
+            )
+        except httpx.HTTPStatusError as e:
+            return JobResult(
+                success=False,
+                error=f"HTTP error downloading file: {e.response.status_code}",
+            )
     else:
         return JobResult(
             success=False,
