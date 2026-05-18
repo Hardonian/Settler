@@ -453,9 +453,7 @@ export default function IntelligencePage() {
                 {analysisLoading ? "Loading…" : "Load briefing"}
               </Button>
             </div>
-            {analysisError && (
-              <p className="text-sm text-destructive">{analysisError}</p>
-            )}
+            {analysisError && <p className="text-sm text-destructive">{analysisError}</p>}
             {analysisData && (
               <div className="rounded-lg border border-border/60 bg-muted/20 p-4 space-y-3 text-sm">
                 <div>

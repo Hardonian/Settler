@@ -135,7 +135,12 @@
   /**
    * Ensure all headings fit on mobile
    */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     overflow-wrap: break-word;
     word-break: break-word;
   }
@@ -150,7 +155,8 @@
   /**
    * Fix for long URLs and code blocks
    */
-  code, pre {
+  code,
+  pre {
     word-break: break-all;
     white-space: pre-wrap;
   }
