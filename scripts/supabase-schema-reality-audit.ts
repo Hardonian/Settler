@@ -101,12 +101,28 @@ async function exists(client: Client, obj: ExpectedObject): Promise<boolean> {
   }
 }
 
-async function main() {
-  const dbUrl = process.env.DATABASE_URL || process.env.DIRECT_URL || process.env.SUPABASE_DB_URL;
-  if (!dbUrl) {
-    throw new Error("Missing DATABASE_URL, DIRECT_URL, or SUPABASE_DB_URL");
+async function getDatabaseIdentityAndMigrations(client: Client) {
+  const id = await client.query(
+    `select current_database() as database, current_user as user, inet_server_addr()::text as server_addr, inet_server_port() as server_port, version()`
+  );
+  const migrationsTable = await client.query(`
+    select exists (
+      select 1 from information_schema.tables where table_schema = 'supabase_migrations' and table_name = 'schema_migrations'
+    ) as exists
+  `);
+
+  let appliedVersions: string[] = [];
+  if (migrationsTable.rows[0]?.exists) {
+    const versions = await client.query(
+      `select version from supabase_migrations.schema_migrations order by version`
+    );
+    appliedVersions = versions.rows.map((r) => String(r.version));
   }
 
+  return { idRow: id.rows[0], appliedVersions };
+}
+
+function getExpectedObjectsFromMigrations(): { expectedUnique: ExpectedObject[]; files: string[] } {
   const files = fs
     .readdirSync(MIGRATIONS_DIR)
     .filter(
@@ -132,48 +148,29 @@ async function main() {
   for (const item of expected) {
     dedup.set(`${item.kind}:${item.schema}:${item.name}`, item);
   }
-  const expectedUnique = [...dedup.values()];
+  return { expectedUnique: [...dedup.values()], files };
+}
 
-  const client = new Client({
-    connectionString: dbUrl,
-    ssl: dbUrl.includes("supabase.co") ? { rejectUnauthorized: false } : undefined,
-  });
-  await client.connect();
-
-  const id = await client.query(
-    `select current_database() as database, current_user as user, inet_server_addr()::text as server_addr, inet_server_port() as server_port, version()`
-  );
-  const migrationsTable = await client.query(`
-    select exists (
-      select 1 from information_schema.tables where table_schema = 'supabase_migrations' and table_name = 'schema_migrations'
-    ) as exists
-  `);
-
-  let appliedVersions: string[] = [];
-  if (migrationsTable.rows[0]?.exists) {
-    const versions = await client.query(
-      `select version from supabase_migrations.schema_migrations order by version`
-    );
-    appliedVersions = versions.rows.map((r) => String(r.version));
-  }
-
-  const findings: Finding[] = [];
-  for (const obj of expectedUnique) {
-    const present = await exists(client, obj);
-    findings.push({ ...obj, status: present ? "present" : "missing" });
-  }
-
-  await client.end();
-
-  const missing = findings.filter((f) => f.status === "missing");
-
+function writeReports({
+  idRow,
+  files,
+  appliedVersions,
+  findings,
+  missing,
+}: {
+  idRow: { database: string; user: string; server_addr: string | null; server_port: number | null };
+  files: string[];
+  appliedVersions: string[];
+  findings: Finding[];
+  missing: Finding[];
+}) {
   fs.mkdirSync(path.dirname(REPORT_JSON), { recursive: true });
   fs.writeFileSync(
     REPORT_JSON,
     JSON.stringify(
       {
         generatedAt: new Date().toISOString(),
-        databaseIdentity: id.rows[0],
+        databaseIdentity: idRow,
         migrationFiles: files.map((f) => path.relative(process.cwd(), f)),
         appliedMigrationVersions: appliedVersions,
         summary: {
@@ -198,11 +195,9 @@ async function main() {
   lines.push(`Generated: ${new Date().toISOString()}`);
   lines.push("");
   lines.push("## Connected Database");
-  lines.push(`- Database: ${id.rows[0].database}`);
-  lines.push(`- User: ${id.rows[0].user}`);
-  lines.push(
-    `- Server: ${id.rows[0].server_addr ?? "unknown"}:${id.rows[0].server_port ?? "unknown"}`
-  );
+  lines.push(`- Database: ${idRow.database}`);
+  lines.push(`- User: ${idRow.user}`);
+  lines.push(`- Server: ${idRow.server_addr ?? "unknown"}:${idRow.server_port ?? "unknown"}`);
   lines.push("");
   lines.push("## Summary");
   lines.push(`- Expected objects parsed from repo migrations: ${findings.length}`);
@@ -227,11 +222,39 @@ async function main() {
 
   fs.writeFileSync(REPORT_MD, lines.join("\n"));
 
-  console.log(`Wrote ${path.relative(process.cwd(), REPORT_JSON)}`);
-  console.log(`Wrote ${path.relative(process.cwd(), REPORT_MD)}`);
-  console.log(`Missing objects: ${missing.length}`);
+  console.info(`Wrote ${path.relative(process.cwd(), REPORT_JSON)}`);
+  console.info(`Wrote ${path.relative(process.cwd(), REPORT_MD)}`);
+  console.info(`Missing objects: ${missing.length}`);
 }
 
+async function main() {
+  const dbUrl = process.env.DATABASE_URL || process.env.DIRECT_URL || process.env.SUPABASE_DB_URL;
+  if (!dbUrl) {
+    throw new Error("Missing DATABASE_URL, DIRECT_URL, or SUPABASE_DB_URL");
+  }
+
+  const { expectedUnique, files } = getExpectedObjectsFromMigrations();
+
+  const client = new Client({
+    connectionString: dbUrl,
+    ssl: dbUrl.includes("supabase.co") ? { rejectUnauthorized: false } : undefined,
+  });
+  await client.connect();
+
+  const { idRow, appliedVersions } = await getDatabaseIdentityAndMigrations(client);
+
+  const findings: Finding[] = [];
+  for (const obj of expectedUnique) {
+    const present = await exists(client, obj);
+    findings.push({ ...obj, status: present ? "present" : "missing" });
+  }
+
+  await client.end();
+
+  const missing = findings.filter((f) => f.status === "missing");
+
+  writeReports({ idRow, files, appliedVersions, findings, missing });
+}
 main().catch((error) => {
   console.error("supabase-schema-reality-audit failed");
   console.error(error instanceof Error ? error.message : error);
