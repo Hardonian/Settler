@@ -15,6 +15,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -30,12 +34,12 @@ jobs:
           version: latest
 
       - name: Generate Prisma Client
-        run: npm run prisma:generate
+        run: pnpm run prisma:generate
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Run Prisma Migrations
-        run: npm run prisma:migrate
+        run: pnpm run prisma:migrate
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         continue-on-error: true

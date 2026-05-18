@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       branch:
-        description: 'Branch to protect (default: main)'
+        description: "Branch to protect (default: main)"
         required: false
-        default: 'main'
+        default: "main"
       github_token:
-        description: 'GitHub token with repo admin permissions'
+        description: "GitHub token with repo admin permissions"
         required: true
         type: string
 
@@ -18,18 +18,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Branch Protection
         run: |
           BRANCH="${{ github.event.inputs.branch }}"
           TOKEN="${{ github.event.inputs.github_token }}"
-          
+
           if [ -z "$BRANCH" ]; then
             BRANCH="main"
           fi
-          
+
           echo "🔒 Setting up branch protection for: $BRANCH"
-          
+
           # Create branch protection rule via GitHub API
           curl -X PUT \
             -H "Accept: application/vnd.github+json" \
@@ -57,5 +57,5 @@ jobs:
               "allow_force_pushes": false,
               "allow_deletions": false
             }' || echo "⚠️  Failed to set branch protection (may need manual setup)"
-          
+
           echo "✅ Branch protection configured"

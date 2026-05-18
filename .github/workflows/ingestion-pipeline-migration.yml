@@ -3,39 +3,43 @@ name: Ingestion Pipeline Migration
 on:
   pull_request:
     paths:
-      - 'prisma/schema.prisma'
-      - 'supabase/migrations/**/ingestion*.sql'
-      - 'supabase/migrations/**/*ingestion*.sql'
-      - 'packages/api/src/services/ingestion/**'
-      - '.github/workflows/ingestion-pipeline-migration.yml'
+      - "prisma/schema.prisma"
+      - "supabase/migrations/**/ingestion*.sql"
+      - "supabase/migrations/**/*ingestion*.sql"
+      - "packages/api/src/services/ingestion/**"
+      - ".github/workflows/ingestion-pipeline-migration.yml"
   push:
     branches:
       - main
     paths:
-      - 'prisma/schema.prisma'
-      - 'supabase/migrations/**/ingestion*.sql'
-      - 'supabase/migrations/**/*ingestion*.sql'
-      - 'packages/api/src/services/ingestion/**'
-      - '.github/workflows/ingestion-pipeline-migration.yml'
+      - "prisma/schema.prisma"
+      - "supabase/migrations/**/ingestion*.sql"
+      - "supabase/migrations/**/*ingestion*.sql"
+      - "packages/api/src/services/ingestion/**"
+      - ".github/workflows/ingestion-pipeline-migration.yml"
 
 jobs:
   run-ingestion-migration:
     name: Run Ingestion Pipeline Migration
     runs-on: ubuntu-latest
     environment: production # Uses production environment secrets (DATABASE_URL)
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
           cache: false
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Check Prisma migration status (before)
         env:

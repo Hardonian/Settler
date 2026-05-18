@@ -21,11 +21,15 @@ jobs:
     environment: production # Requires production environment secrets
     steps:
       - uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
           cache: false
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
       - name: Build application
         run: npx turbo run build
       - name: Run production migrations

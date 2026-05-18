@@ -43,6 +43,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -50,22 +54,22 @@ jobs:
           cache: false
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Generate Prisma client
-        run: npm run prisma:generate
+        run: pnpm run prisma:generate
         env:
           # Database password auto-injected from GitHub secrets
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Verify database connection
-        run: npm run db:check
+        run: pnpm run db:check
         env:
           # Database password auto-injected from GitHub secrets
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Run database migrations
-        run: npm run db:migrate:prod
+        run: pnpm run db:migrate:prod
         env:
           # Database password auto-injected from GitHub secrets
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
