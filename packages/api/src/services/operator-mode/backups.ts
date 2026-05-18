@@ -3,7 +3,7 @@
  * Automated backups with restore verification
  */
 
-import { execFile } from "child_process";
+import { exec } from "child_process";
 import { promisify } from "util";
 import { query } from "../../db";
 import { logInfo, logError } from "../../utils/logger";
@@ -11,7 +11,7 @@ import { config } from "../../config";
 import * as fs from "fs";
 import * as path from "path";
 
-const execFileAsync = promisify(execFile);
+const execAsync = promisify(exec);
 
 export interface BackupRecord {
   id: string;
@@ -64,8 +64,9 @@ export async function createBackup(): Promise<BackupRecord> {
       throw new Error("Database configuration incomplete");
     }
 
-    // Create pg_dump args
-    const pgDumpArgs = [
+    // Create pg_dump command
+    const pgDumpCmd = [
+      "pg_dump",
       `--host=${String(config.database.host)}`,
       `--port=${String(config.database.port || 5432)}`,
       `--username=${String(config.database.user)}`,
@@ -74,7 +75,7 @@ export async function createBackup(): Promise<BackupRecord> {
       "--no-owner",
       "--no-acl",
       `--file=${backupPath}`,
-    ];
+    ].join(" ");
 
     // Set PGPASSWORD environment variable
     const env = {
@@ -85,7 +86,7 @@ export async function createBackup(): Promise<BackupRecord> {
     // Execute backup with timeout
     try {
       await Promise.race([
-        execFileAsync("pg_dump", pgDumpArgs, { env }),
+        execAsync(pgDumpCmd, { env }),
         new Promise((_, reject) =>
           setTimeout(() => reject(new Error("Backup timeout after 30 minutes")), 30 * 60 * 1000)
         ),
@@ -195,13 +196,14 @@ export async function verifyBackup(backupId: string): Promise<boolean> {
         throw new Error("Database configuration incomplete for restore");
       }
 
-      const restoreArgs = [
+      const restoreCmd = [
+        "psql",
         `--host=${String(config.database.host)}`,
         `--port=${String(config.database.port || 5432)}`,
         `--username=${String(config.database.user)}`,
         `--dbname=${testDbName}`,
         `--file=${backupPath}`,
-      ];
+      ].join(" ");
 
       const env = {
         ...process.env,
@@ -210,7 +212,7 @@ export async function verifyBackup(backupId: string): Promise<boolean> {
 
       try {
         await Promise.race([
-          execFileAsync("psql", restoreArgs, { env }),
+          execAsync(restoreCmd, { env }),
           new Promise((_, reject) =>
             setTimeout(() => reject(new Error("Restore timeout after 30 minutes")), 30 * 60 * 1000)
           ),

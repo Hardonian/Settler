@@ -6,9 +6,9 @@ on:
     branches:
       - main
     paths:
-      - "prisma/migrations/**"
-      - "prisma/schema.prisma"
-      - "prisma.config.ts"
+      - 'prisma/migrations/**'
+      - 'prisma/schema.prisma'
+      - 'prisma.config.ts'
 
 jobs:
   run-prisma-migrations:
@@ -19,18 +19,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
+          node-version-file: '.nvmrc'
           cache: false
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Check Prisma migrations status (before)
         env:

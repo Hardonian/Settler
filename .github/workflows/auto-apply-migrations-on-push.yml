@@ -6,7 +6,7 @@ on:
       - main
       - develop
     paths:
-      - "supabase/migrations/**"
+      - 'supabase/migrations/**'
   workflow_dispatch:
 
 env:

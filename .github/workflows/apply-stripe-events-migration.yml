@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: "Target environment"
+        description: 'Target environment'
         required: true
-        default: "production"
+        default: 'production'
         type: choice
         options:
           - production
@@ -15,8 +15,8 @@ on:
     branches:
       - main
     paths:
-      - "supabase/migrations/20250121000000_add_stripe_events_table.sql"
-      - "prisma/migrations/20250121000000_add_stripe_events_table/**"
+      - 'supabase/migrations/20250121000000_add_stripe_events_table.sql'
+      - 'prisma/migrations/20250121000000_add_stripe_events_table/**'
 
 env:
   SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
@@ -34,17 +34,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
+          node-version-file: '.nvmrc'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1

@@ -32,10 +32,6 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
@@ -60,26 +56,22 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
           cache: false
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Run doctor
-        run: pnpm run doctor
+        run: npm run doctor
 
       - name: Run tests
-        run: pnpm test
+        run: npm test
 
       - name: Verify content routes in production mode
-        run: pnpm run test --workspace=packages/web -- src/__tests__/integration/content-pages.production.test.ts
+        run: npm run test --workspace=packages/web -- src/__tests__/integration/content-pages.production.test.ts
 
       - name: Run build
         run: npx turbo run build
@@ -163,10 +155,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"

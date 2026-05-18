@@ -3,7 +3,7 @@ name: Founder Weekly Report
 on:
   schedule:
     # Run weekly on Monday at 07:40 America/Toronto (11:40 UTC)
-    - cron: "40 11 * * 1"
+    - cron: '40 11 * * 1'
   workflow_dispatch:
 
 jobs:
@@ -16,18 +16,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
+          node-version-file: '.nvmrc'
           cache: false
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Generate Weekly Report
         env:

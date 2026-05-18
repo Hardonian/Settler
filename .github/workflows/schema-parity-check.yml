@@ -27,10 +27,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -38,7 +34,7 @@ jobs:
           cache: false
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Install PostgreSQL client
         run: |
@@ -223,7 +219,7 @@ EOF
         continue-on-error: true
 
       - name: Upload schema artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: always()
         with:
           name: schema-introspection

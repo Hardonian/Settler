@@ -14,25 +14,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
+          node-version-file: '.nvmrc'
           cache: false
-      - run: pnpm install --frozen-lockfile
+      - run: npm ci
       - name: Run classification
-        run: pnpm run classify:strict
+        run: npm run classify:strict
       - name: Upload classification report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: always()
         with:
           name: classification-report
           path: artifacts/classification-report.json
       - name: Upload classification summary
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: always()
         with:
           name: classification-summary

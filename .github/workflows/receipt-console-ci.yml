@@ -40,10 +40,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -51,10 +47,10 @@ jobs:
           cache: false
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Run typecheck
-        run: pnpm run typecheck
+        run: npm run typecheck
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
@@ -64,10 +60,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -75,10 +67,10 @@ jobs:
           cache: false
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Run lint
-        run: pnpm run lint
+        run: npm run lint
 
   test-smoke:
     name: Smoke Test
@@ -86,10 +78,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -97,7 +85,7 @@ jobs:
           cache: false
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Run receipt smoke test
         run: npx tsx scripts/smoke-receipts.ts
@@ -112,10 +100,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -123,13 +107,13 @@ jobs:
           cache: false
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
       - name: Run E2E tests
-        run: pnpm run test:e2e -- tests/e2e/receipt-console.spec.ts
+        run: npm run test:e2e -- tests/e2e/receipt-console.spec.ts
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -153,10 +137,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -164,10 +144,10 @@ jobs:
           cache: false
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Verify Supabase migrations
-        run: pnpm run db:verify
+        run: npm run db:verify
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -180,10 +160,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -191,10 +167,10 @@ jobs:
           cache: false
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Generate Prisma client
-        run: pnpm run prisma:generate
+        run: npm run prisma:generate
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
@@ -215,10 +191,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -226,10 +198,10 @@ jobs:
           cache: false
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Deploy Supabase migrations
-        run: pnpm run db:push
+        run: npm run db:push
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}

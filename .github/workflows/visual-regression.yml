@@ -31,10 +31,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
@@ -82,10 +78,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
@@ -168,10 +160,6 @@ jobs:
           # Fetch all history for proper baseline comparison
           fetch-depth: 0
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
@@ -250,10 +238,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
@@ -319,10 +303,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
@@ -371,10 +351,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version: "24"

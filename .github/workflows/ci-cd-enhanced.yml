@@ -15,10 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
@@ -32,10 +28,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
@@ -53,10 +45,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
@@ -70,10 +58,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
@@ -93,10 +77,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
@@ -115,10 +95,6 @@ jobs:
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"

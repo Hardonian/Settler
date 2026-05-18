@@ -5,8 +5,8 @@ on:
     branches:
       - main
     paths:
-      - "supabase/migrations/**"
-      - ".github/workflows/auto-migrate-on-main.yml"
+      - 'supabase/migrations/**'
+      - '.github/workflows/auto-migrate-on-main.yml'
   workflow_dispatch:
 
 env:

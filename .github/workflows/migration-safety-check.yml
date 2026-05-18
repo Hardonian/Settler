@@ -3,7 +3,7 @@ name: Migration Safety Check
 on:
   pull_request:
     paths:
-      - "packages/api/src/db/migrations/**"
+      - 'packages/api/src/db/migrations/**'
     branches:
       - main
 
@@ -27,15 +27,11 @@ jobs:
           - 5432:5432
     steps:
       - uses: actions/checkout@v4
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
+          node-version-file: '.nvmrc'
           cache: false
-      - run: pnpm install --frozen-lockfile
+      - run: npm ci
       - name: Check migration files syntax
         run: |
           echo "🔍 Checking migration file syntax..."

@@ -139,10 +139,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -318,15 +314,11 @@ jobs:
     environment: staging
     steps:
       - uses: actions/checkout@v4
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
           cache: false
-      - run: pnpm install --frozen-lockfile
+      - run: npm ci
       - name: Build application
         run: npx turbo run build
       - name: Apply staging migrations
@@ -365,15 +357,11 @@ jobs:
     environment: production # Requires approval
     steps:
       - uses: actions/checkout@v4
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
           cache: false
-      - run: pnpm install --frozen-lockfile
+      - run: npm ci
       - name: Build application
         run: npx turbo run build
       - name: Apply production migrations

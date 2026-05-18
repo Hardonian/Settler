@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       branch:
-        description: "Branch to protect (default: main)"
+        description: 'Branch to protect (default: main)'
         required: false
-        default: "main"
+        default: 'main'
       github_token:
-        description: "GitHub token with repo admin permissions"
+        description: 'GitHub token with repo admin permissions'
         required: true
         type: string
 

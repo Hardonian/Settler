@@ -56,17 +56,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
           cache: false
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
@@ -112,7 +108,7 @@ jobs:
           ENCRYPTION_KEY: test-encryption-key-32-chars-long!!
 
       - name: Run E2E tests
-        run: pnpm run test:e2e
+        run: npm run test:e2e
         env:
           E2E_API_KEY: test-api-key
           E2E_BASE_URL: http://localhost:3000
@@ -134,17 +130,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
           cache: false
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
@@ -159,7 +151,7 @@ jobs:
           DEMO_SEED: 42
 
       - name: Run demo mode E2E tests
-        run: pnpm run test:e2e -- --project=chromium --grep="Demo Mode"
+        run: npm run test:e2e -- --project=chromium --grep="Demo Mode"
         env:
           DEMO_MODE: true
           E2E_API_KEY: demo-key-for-testing-only
@@ -207,17 +199,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
           cache: false
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
@@ -279,7 +267,7 @@ jobs:
           PORT: 3001
 
       - name: Run visual regression tests
-        run: pnpm run test:visual || echo "⚠️  Visual tests not configured yet"
+        run: npm run test:visual || echo "⚠️  Visual tests not configured yet"
         continue-on-error: true
         env:
           E2E_API_KEY: test-api-key

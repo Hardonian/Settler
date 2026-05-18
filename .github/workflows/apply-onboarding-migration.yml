@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: "Environment to apply migration to"
+        description: 'Environment to apply migration to'
         required: true
-        default: "production"
+        default: 'production'
         type: choice
         options:
           - production
@@ -15,9 +15,9 @@ on:
     branches:
       - main
     paths:
-      - "supabase/migrations/20260131000000_workspace_onboarding_activation.sql"
-      - "scripts/apply-onboarding-migration.ts"
-      - "scripts/regenerate-supabase-types.ts"
+      - 'supabase/migrations/20260131000000_workspace_onboarding_activation.sql'
+      - 'scripts/apply-onboarding-migration.ts'
+      - 'scripts/regenerate-supabase-types.ts'
 
 jobs:
   apply-migration:
@@ -29,18 +29,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
+          node-version-file: '.nvmrc'
           cache: false
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Install PostgreSQL client
         run: |

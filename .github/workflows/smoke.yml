@@ -18,15 +18,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
           cache: false
-      - run: pnpm install --frozen-lockfile
+      - run: npm ci
       - name: Build application
         run: npx turbo run build
         env:
@@ -37,7 +33,7 @@ jobs:
           SKIP_ENV_VALIDATION: true
       - name: Run smoke tests against deployment
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: pnpm run qa:smoke
+        run: npm run qa:smoke
         env:
           BASE_URL: ${{ secrets.E2E_BASE_URL || 'https://settler.dev' }}
         continue-on-error: true
@@ -70,7 +66,7 @@ jobs:
 
       - name: Run smoke tests against preview
         if: github.event_name == 'pull_request' && steps.vercel-preview.outputs.preview_url != ''
-        run: pnpm run qa:smoke
+        run: npm run qa:smoke
         env:
           BASE_URL: ${{ steps.vercel-preview.outputs.preview_url }}
         continue-on-error: true

@@ -4,8 +4,8 @@ on:
   push:
     branches: [main]
     paths:
-      - "supabase/migrations/**"
-      - "prisma/schema.prisma"
+      - 'supabase/migrations/**'
+      - 'prisma/schema.prisma'
   workflow_dispatch:
 
 jobs:
@@ -28,20 +28,16 @@ jobs:
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
+          node-version-file: '.nvmrc'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Generate Prisma client
-        run: pnpm run prisma:generate || npx prisma generate || echo "Prisma generation skipped - no schema found"
+        run: npm run prisma:generate || npx prisma generate || echo "Prisma generation skipped - no schema found"
         continue-on-error: true
 
       - name: Commit type changes

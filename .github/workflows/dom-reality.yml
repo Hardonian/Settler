@@ -3,16 +3,16 @@ name: DOM Reality Enforcement
 on:
   pull_request:
     paths:
-      - "packages/web/**"
-      - "tests/e2e/dom-reality-enforcement.spec.ts"
-      - "tests/utils/dom-reality-utils.ts"
+      - 'packages/web/**'
+      - 'tests/e2e/dom-reality-enforcement.spec.ts'
+      - 'tests/utils/dom-reality-utils.ts'
   push:
     branches:
       - main
       - develop
     paths:
-      - "packages/web/**"
-      - "tests/e2e/dom-reality-enforcement.spec.ts"
+      - 'packages/web/**'
+      - 'tests/e2e/dom-reality-enforcement.spec.ts'
   workflow_dispatch:
 
 jobs:
@@ -36,18 +36,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "24"
+          node-version: '24'
           cache: false
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
@@ -82,7 +78,7 @@ jobs:
           echo "Server is ready"
 
       - name: Run DOM reality tests
-        run: pnpm run qa:dom-reality
+        run: npm run qa:dom-reality
         env:
           E2E_BASE_URL: http://localhost:3000
           CI: true
@@ -97,7 +93,7 @@ jobs:
 
       - name: Generate report
         if: always()
-        run: pnpm run qa:dom-reality:report
+        run: npm run qa:dom-reality:report
         continue-on-error: true
 
       - name: Upload test results
