@@ -9,6 +9,7 @@ import pandas as pd
 from dateutil import parser as date_parser
 
 from settler_workhorse.models import Job, JobResult, JobType
+from settler_workhorse.storage import get_file_content
 from settler_workhorse.utils.logging import get_logger
 from settler_workhorse.worker import register_handler
 
@@ -321,24 +322,13 @@ def handle_csv_ingestion(job: Job) -> JobResult:
     payload = job.payload
 
     # Get file content from storage
-    file_path = payload.get("file_path")
-    file_url = payload.get("file_url")
-    file_content_b64 = payload.get("file_content_base64")
-
-    if file_content_b64:
-        import base64
-
-        content = base64.b64decode(file_content_b64)
-    elif file_path:
-        # TODO: Implement storage service integration
-        raise NotImplementedError("File path storage not yet implemented")
-    elif file_url:
-        # TODO: Implement URL download
-        raise NotImplementedError("File URL download not yet implemented")
-    else:
+    try:
+        content = get_file_content(payload)
+    except Exception as e:
+        logger.error(f"Failed to get file content: {e}", exc_info=True)
         return JobResult(
             success=False,
-            error="No file content provided (file_path, file_url, or file_content_base64 required)",
+            error=str(e),
         )
 
     try:
