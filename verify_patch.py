@@ -5,7 +5,7 @@ Verify that the patch was applied successfully
 import os
 import psycopg2
 
-def verify_patch():
+def get_db_connection():
     conn_params = {
         'host': os.getenv('SUPABASE_DB_HOST', 'localhost'),
         'port': int(os.getenv('SUPABASE_DB_PORT', '5432')),
@@ -17,14 +17,9 @@ def verify_patch():
     if not conn_params['user'] or not conn_params['password']:
         raise RuntimeError('Missing SUPABASE_DB_USER or SUPABASE_DB_PASSWORD environment variables')
     
-    conn = psycopg2.connect(**conn_params)
-    cursor = conn.cursor()
-    
-    print("\n" + "="*70)
-    print("VERIFICATION REPORT")
-    print("="*70 + "\n")
-    
-    # 1. Check critical tables exist
+    return psycopg2.connect(**conn_params)
+
+def check_critical_tables(cursor):
     print("1. CRITICAL TABLES")
     print("-" * 70)
     cursor.execute("""
@@ -40,8 +35,9 @@ def verify_patch():
     if len(tables) < 2:
         print(f"  ✗ Missing {2 - len(tables)} critical table(s)")
     print()
-    
-    # 2. Check RLS is enabled
+    return tables
+
+def check_rls_status(cursor):
     print("2. ROW LEVEL SECURITY STATUS")
     print("-" * 70)
     cursor.execute("""
@@ -57,8 +53,9 @@ def verify_patch():
         status = "✓ ENABLED" if rls_enabled else "✗ DISABLED"
         print(f"  {status}: {table_name}")
     print()
-    
-    # 3. Check RLS policies exist
+    return rls_status
+
+def check_rls_policies(cursor):
     print("3. RLS POLICIES")
     print("-" * 70)
     cursor.execute("""
@@ -76,8 +73,9 @@ def verify_patch():
         print("  ✗ No policies found")
     print(f"  Total policies: {len(policies)}")
     print()
-    
-    # 4. Check helper functions exist
+    return policies
+
+def check_helper_functions(cursor):
     print("4. HELPER FUNCTIONS")
     print("-" * 70)
     cursor.execute("""
@@ -94,8 +92,9 @@ def verify_patch():
     if len(functions) < 2:
         print(f"  ✗ Missing {2 - len(functions)} critical function(s)")
     print()
-    
-    # 5. Check critical indexes
+    return functions
+
+def check_critical_indexes(cursor):
     print("5. CRITICAL INDEXES")
     print("-" * 70)
     cursor.execute("""
@@ -117,8 +116,9 @@ def verify_patch():
         print(f"  ✓ {table_name}.{index_name}")
     print(f"  Total indexes: {len(indexes)}")
     print()
-    
-    # 6. Check grants
+    return indexes
+
+def check_table_permissions(cursor):
     print("6. TABLE PERMISSIONS")
     print("-" * 70)
     cursor.execute("""
@@ -135,8 +135,9 @@ def verify_patch():
         status = "⚠️ PUBLIC" if grantee == 'public' else "✓"
         print(f"  {status} {grantee} on {table_name}: {privileges}")
     print()
-    
-    # Summary
+    return grants
+
+def print_summary(tables, rls_status, policies, functions, indexes):
     print("="*70)
     print("VALIDATION SUMMARY")
     print("="*70)
@@ -177,6 +178,24 @@ def verify_patch():
         print("❌ SOME VALIDATIONS FAILED - Review output above")
     
     print("="*70 + "\n")
+    return all_ok
+
+def verify_patch():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    print("\n" + "="*70)
+    print("VERIFICATION REPORT")
+    print("="*70 + "\n")
+
+    tables = check_critical_tables(cursor)
+    rls_status = check_rls_status(cursor)
+    policies = check_rls_policies(cursor)
+    functions = check_helper_functions(cursor)
+    indexes = check_critical_indexes(cursor)
+    check_table_permissions(cursor)
+
+    all_ok = print_summary(tables, rls_status, policies, functions, indexes)
     
     cursor.close()
     conn.close()
