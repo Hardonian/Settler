@@ -1,3 +1,5 @@
+import asyncio
+
 import pytest
 
 from settler_workhorse.async_pool import batch_process
@@ -5,48 +7,46 @@ from settler_workhorse.async_pool import batch_process
 
 @pytest.mark.asyncio
 async def test_batch_process_basic():
-    """Test basic functionality of batch_process."""
-    items = list(range(10))
+    """Test batch processing happy path."""
+    items = [1, 2, 3, 4, 5]
 
     async def process_fn(batch):
-        return [x * 2 for x in batch]
+        await asyncio.sleep(0.01)
+        return [i * 2 for i in batch]
 
-    results = await batch_process(items, process_fn, batch_size=3)
+    result = await batch_process(items, process_fn, batch_size=2, max_concurrent=2)
 
-    # Check results (parallel_map returns results in order)
-    assert results == [[0, 2, 4], [6, 8, 10], [12, 14, 16], [18]]
+    # We should get a list of results (list of lists) which we can flatten or check
+    assert len(result) == 3
+    assert result == [[2, 4], [6, 8], [10]]
 
 
 @pytest.mark.asyncio
 async def test_batch_process_empty():
-    """Test batch_process with empty items list."""
+    """Test batch processing with empty list."""
     items = []
 
     async def process_fn(batch):
-        return [x * 2 for x in batch]
+        return batch
 
-    results = await batch_process(items, process_fn, batch_size=3)
-
-    assert results == []
+    result = await batch_process(items, process_fn, batch_size=2, max_concurrent=2)
+    assert result == []
 
 
 @pytest.mark.asyncio
 async def test_batch_process_exception():
-    """Test batch_process when process_fn raises an exception."""
-    items = list(range(5))
+    """Test batch processing when an exception occurs."""
+    items = [1, 2, 3]
 
     async def process_fn(batch):
-        if 3 in batch:
+        if 2 in batch:
             raise ValueError("Test error")
-        return [x * 2 for x in batch]
+        return [i * 2 for i in batch]
 
-    results = await batch_process(items, process_fn, batch_size=2)
-
-    # Since parallel_map uses return_exceptions=True by default in asyncio.gather
-    assert isinstance(results[1], ValueError)
-    assert results[1].args[0] == "Test error"
-
-    # First batch was successful
-    assert results[0] == [0, 2]
-    # Third batch was successful
-    assert results[2] == [8]
+    # With return_exceptions=True (which is the default in parallel_map),
+    # an exception in the process_fn should be returned as the result for that batch
+    result = await batch_process(items, process_fn, batch_size=2, max_concurrent=2)
+    assert len(result) == 2
+    assert isinstance(result[0], ValueError)
+    assert str(result[0]) == "Test error"
+    assert result[1] == [6]
