@@ -120,20 +120,20 @@ export class FaultTolerantRecon {
     fixed: boolean;
     newState: Record<string, unknown> | null;
   }> {
-    // Attempt to fix error and continue
+    // Executes error resolution to continue execution
     const checkpoint = this.checkpoints.get(jobId);
     if (!checkpoint) {
       return { fixed: false, newState: null };
     }
 
-    // Try to fix the error using fix-forward logic
+    // Execute fix-forward logic to resolve the error
     let fixed = false;
     let newState = { ...checkpoint.state };
 
     try {
       const errorMessage = error.message || String(error);
 
-      // Fix-forward strategies based on error type
+      // Evaluates fix-forward strategies based on error type
       if (errorMessage.includes("timeout") || errorMessage.includes("ETIMEDOUT")) {
         // Retry with exponential backoff
         logInfo("Applying timeout fix-forward strategy", { jobId });
@@ -163,7 +163,7 @@ export class FaultTolerantRecon {
         logInfo("Authentication error cannot be auto-fixed", { jobId });
         fixed = false;
       } else if (errorMessage.includes("validation") || errorMessage.includes("400")) {
-        // Try to sanitize and retry
+        // Executes sanitization and retries
         logInfo("Applying validation error fix-forward strategy", { jobId });
         fixed = true;
         const existingErrors = Array.isArray(checkpoint.state.validationErrors)
