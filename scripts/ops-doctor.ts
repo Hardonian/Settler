@@ -36,7 +36,7 @@ async function runCheck(
   const startTime = Date.now();
 
   try {
-    console.log(`\n🔍 Running: ${name}...`);
+    console.info(`\n🔍 Running: ${name}...`);
     const output = execSync(command, {
       encoding: "utf-8",
       stdio: "pipe",
@@ -44,7 +44,7 @@ async function runCheck(
     });
 
     const duration = Date.now() - startTime;
-    console.log(`✅ ${name} passed (${duration}ms)`);
+    console.info(`✅ ${name} passed (${duration}ms)`);
 
     return {
       name,
@@ -58,8 +58,8 @@ async function runCheck(
     const errorMessage = error.message || String(error);
     const status = required ? "fail" : "warning";
 
-    console.log(`❌ ${name} ${status === "fail" ? "failed" : "warned"} (${duration}ms)`);
-    console.log(`   ${errorMessage.substring(0, 200)}`);
+    console.info(`❌ ${name} ${status === "fail" ? "failed" : "warned"} (${duration}ms)`);
+    console.info(`   ${errorMessage.substring(0, 200)}`);
 
     return {
       name,
@@ -71,83 +71,74 @@ async function runCheck(
   }
 }
 
-async function main() {
-  console.log("🏥 Ops Doctor - Comprehensive Health Check\n");
-  console.log("=".repeat(60));
-
-  const startTime = Date.now();
-
-  // 1. Fast checks: lint / typecheck
-  results.push(await runCheck("Lint", "npm run lint", { required: true }));
-  results.push(await runCheck("Typecheck", "npm run typecheck", { required: true }));
-
-  // 2. Route crawl / dead link QA
+function checkRouteRegistry(): CheckResult {
   try {
-    console.log("\n🔍 Running: Route Registry Generation...");
+    console.info("\n🔍 Running: Route Registry Generation...");
     execSync("npm run qa:routes", { stdio: "pipe", timeout: 60000 });
-    results.push({
+    return {
       name: "Route Registry",
       status: "pass",
       message: "Route registry generated",
-    });
+    };
   } catch (error: any) {
-    results.push({
+    return {
       name: "Route Registry",
       status: "warning",
       message: error.message?.substring(0, 200) || "Failed to generate route registry",
-    });
+    };
   }
+}
 
-  results.push(await runCheck("Dead Link Check", "npm run qa:links", { required: false }));
-
-  // 3. SLA violations scan
+function checkSLAViolations(): CheckResult {
   try {
-    console.log("\n🔍 Running: SLA Violations Check...");
+    console.info("\n🔍 Running: SLA Violations Check...");
     execSync("tsx scripts/check-sla-violations.ts", { stdio: "pipe", timeout: 120000 });
-    results.push({
+    return {
       name: "SLA Violations",
       status: "pass",
       message: "No SLA violations detected",
-    });
+    };
   } catch (error: any) {
     const exitCode = (error as any).status || (error as any).code;
     if (exitCode === 1) {
       // Exit code 1 means violations found, not a script error
-      results.push({
+      return {
         name: "SLA Violations",
         status: "warning",
         message: "SLA violations detected - check logs for details",
         logs: error.stdout || error.message,
-      });
+      };
     } else {
-      results.push({
+      return {
         name: "SLA Violations",
         status: "skip",
         message: "SLA check script not available or failed",
-      });
+      };
     }
   }
+}
 
-  // 4. SOC2 readiness scan (if present)
+function checkSOC2Readiness(): CheckResult {
   try {
-    console.log("\n🔍 Running: SOC2 Readiness Check...");
+    console.info("\n🔍 Running: SOC2 Readiness Check...");
     execSync("tsx scripts/check-soc2-readiness.ts", { stdio: "pipe", timeout: 120000 });
-    results.push({
+    return {
       name: "SOC2 Readiness",
       status: "pass",
       message: "SOC2 checks passed",
-    });
-  } catch (error: any) {
-    results.push({
+    };
+  } catch {
+    return {
       name: "SOC2 Readiness",
       status: "skip",
       message: "SOC2 check script not available",
-    });
+    };
   }
+}
 
-  // 5. DB migration sanity
+function checkDBMigration(): CheckResult {
   try {
-    console.log("\n🔍 Running: Database Migration Status...");
+    console.info("\n🔍 Running: Database Migration Status...");
     const migrationStatus = execSync("npm run prisma:status", {
       encoding: "utf-8",
       stdio: "pipe",
@@ -155,70 +146,74 @@ async function main() {
     });
 
     if (migrationStatus.includes("Database schema is up to date")) {
-      results.push({
+      return {
         name: "DB Migration Status",
         status: "pass",
         message: "Database schema is up to date",
-      });
+      };
     } else if (migrationStatus.includes("migrations pending")) {
-      results.push({
+      return {
         name: "DB Migration Status",
         status: "warning",
         message: "Pending migrations detected",
         logs: migrationStatus,
-      });
+      };
     } else {
-      results.push({
+      return {
         name: "DB Migration Status",
         status: "warning",
         message: "Migration status unclear",
         logs: migrationStatus.substring(0, 500),
-      });
+      };
     }
   } catch (error: any) {
-    results.push({
+    return {
       name: "DB Migration Status",
       status: "skip",
       message: "Could not check migration status",
       logs: error.message?.substring(0, 200),
-    });
+    };
   }
+}
 
-  // 6. Basic health endpoints check
+function checkHealthEndpoints(): CheckResult {
   try {
-    console.log("\n🔍 Running: Health Endpoints Check...");
+    console.info("\n🔍 Running: Health Endpoints Check...");
     // Try to check if health endpoint exists (this is a placeholder - would need actual endpoint)
-    results.push({
+    return {
       name: "Health Endpoints",
       status: "skip",
       message: "Health endpoint check requires running server - skipped in CI",
-    });
-  } catch (error: any) {
-    results.push({
+    };
+  } catch {
+    return {
       name: "Health Endpoints",
       status: "skip",
       message: "Health check skipped",
-    });
+    };
   }
+}
 
-  // 7. Build check (optional but recommended)
+function checkBuild(): CheckResult {
   try {
-    console.log("\n🔍 Running: Build Check...");
+    console.info("\n🔍 Running: Build Check...");
     execSync("npm run build", { stdio: "pipe", timeout: 300000 });
-    results.push({
+    return {
       name: "Build",
       status: "pass",
       message: "Build successful",
-    });
+    };
   } catch (error: any) {
-    results.push({
+    return {
       name: "Build",
       status: "fail",
       message: "Build failed",
       logs: error.message?.substring(0, 500),
-    });
+    };
   }
+}
 
+async function saveAndPrintSummary(results: CheckResult[], startTime: number) {
   const totalDuration = Date.now() - startTime;
   const passed = results.filter((r) => r.status === "pass").length;
   const failed = results.filter((r) => r.status === "fail").length;
@@ -241,25 +236,57 @@ async function main() {
   await writeFile(reportPath, summary, "utf-8");
 
   // Print summary
-  console.log("\n" + "=".repeat(60));
-  console.log("🏥 Ops Doctor Summary\n");
-  console.log(`✅ Passed: ${passed}`);
-  console.log(`❌ Failed: ${failed}`);
-  console.log(`⚠️  Warnings: ${warnings}`);
-  console.log(`⏭️  Skipped: ${skipped}`);
-  console.log(`⏱️  Total Duration: ${(totalDuration / 1000).toFixed(1)}s`);
-  console.log(`\n📄 Full report saved to: ${reportPath}`);
+  console.info("\n" + "=".repeat(60));
+  console.info("🏥 Ops Doctor Summary\n");
+  console.info(`✅ Passed: ${passed}`);
+  console.info(`❌ Failed: ${failed}`);
+  console.info(`⚠️  Warnings: ${warnings}`);
+  console.info(`⏭️  Skipped: ${skipped}`);
+  console.info(`⏱️  Total Duration: ${(totalDuration / 1000).toFixed(1)}s`);
+  console.info(`\n📄 Full report saved to: ${reportPath}`);
 
   if (failed > 0) {
-    console.log("\n❌ Some checks failed. Review the report for details.");
+    console.info("\n❌ Some checks failed. Review the report for details.");
     process.exit(1);
   } else if (warnings > 0) {
-    console.log("\n⚠️  Some checks produced warnings. Review the report.");
+    console.info("\n⚠️  Some checks produced warnings. Review the report.");
     process.exit(0);
   } else {
-    console.log("\n✅ All checks passed!");
+    console.info("\n✅ All checks passed!");
     process.exit(0);
   }
+}
+
+async function main() {
+  console.info("🏥 Ops Doctor - Comprehensive Health Check\n");
+  console.info("=".repeat(60));
+
+  const startTime = Date.now();
+
+  // 1. Fast checks: lint / typecheck
+  results.push(await runCheck("Lint", "npm run lint", { required: true }));
+  results.push(await runCheck("Typecheck", "npm run typecheck", { required: true }));
+
+  // 2. Route crawl / dead link QA
+  results.push(checkRouteRegistry());
+  results.push(await runCheck("Dead Link Check", "npm run qa:links", { required: false }));
+
+  // 3. SLA violations scan
+  results.push(checkSLAViolations());
+
+  // 4. SOC2 readiness scan (if present)
+  results.push(checkSOC2Readiness());
+
+  // 5. DB migration sanity
+  results.push(checkDBMigration());
+
+  // 6. Basic health endpoints check
+  results.push(checkHealthEndpoints());
+
+  // 7. Build check (optional but recommended)
+  results.push(checkBuild());
+
+  await saveAndPrintSummary(results, startTime);
 }
 
 function generateSummaryMarkdown(
