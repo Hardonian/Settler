@@ -120,13 +120,13 @@ export class FaultTolerantRecon {
     fixed: boolean;
     newState: Record<string, unknown> | null;
   }> {
-    // Attempt to fix error and continue
+    // Verify checkpoint availability for error recovery
     const checkpoint = this.checkpoints.get(jobId);
     if (!checkpoint) {
       return { fixed: false, newState: null };
     }
 
-    // Try to fix the error using fix-forward logic
+    // Execute fix-forward logic to attempt error resolution
     let fixed = false;
     let newState = { ...checkpoint.state };
 
