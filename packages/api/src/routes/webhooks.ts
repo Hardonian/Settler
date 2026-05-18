@@ -7,7 +7,7 @@ import { requirePermission, requireResourceOwnership } from "../middleware/autho
 import { Permission } from "../infrastructure/security/Permissions";
 import { enforceFreezeState } from "../middleware/governance";
 import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+const _prisma = new PrismaClient();
 import { query } from "../db";
 import { verifyWebhookSignature } from "../utils/webhook-signature";
 import { validateExternalUrl } from "../infrastructure/security/SSRFProtection";
