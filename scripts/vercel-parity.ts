@@ -14,7 +14,6 @@
 
 import { existsSync, readFileSync } from "fs";
 import { join } from "path";
-import { execSync } from "child_process";
 
 interface VercelConfig {
   buildCommand?: string;
@@ -87,43 +86,36 @@ function getInstallCommand(config: VercelConfig): string {
 /**
  * Verify Vercel build parity
  */
-async function verifyVercelParity(): Promise<void> {
-  console.log("🔍 Verifying Vercel build parity...\n");
 
-  const config = readVercelConfig();
-  if (!config) {
-    console.error("❌ No vercel.json found");
-    console.error("   Create vercel.json in root or packages/web/");
-    process.exit(1);
-  }
-
-  console.log("📋 Vercel Configuration:");
-  console.log(`   Framework: ${config.framework || "not specified"}`);
-  console.log(`   Install: ${getInstallCommand(config)}`);
-  console.log(`   Build: ${getBuildCommand(config)}`);
-  console.log(`   Output: ${config.outputDirectory || "default"}`);
-  console.log("");
-
+/**
+ * Test install command works
+ */
+function testInstallCommand(config: VercelConfig): void {
   // Step 1: Verify install command works
-  console.log("1️⃣  Testing install command...");
+  console.info("1️⃣  Testing install command...");
   try {
     const installCmd = getInstallCommand(config);
     // Use dry-run mode to avoid actually installing
     if (installCmd.includes("npm ci")) {
-      console.log("   ✓ Install command: npm ci (will run in CI)");
+      console.info("   ✓ Install command: npm ci (will run in CI)");
     } else {
-      console.log(`   ⚠️  Custom install command: ${installCmd}`);
-      console.log("   ⚠️  CI must use exact same command");
+      console.info(`   ⚠️  Custom install command: ${installCmd}`);
+      console.info("   ⚠️  CI must use exact same command");
     }
   } catch (error) {
     console.error(`   ❌ Install command validation failed: ${error}`);
     process.exit(1);
   }
+}
 
+/**
+ * Validate build command exists and is valid
+ */
+function validateBuildCommand(config: VercelConfig): void {
   // Step 2: Verify build command exists and is valid
-  console.log("\n2️⃣  Validating build command...");
+  console.info("\n2️⃣  Validating build command...");
   const buildCmd = getBuildCommand(config);
-  console.log(`   Build command: ${buildCmd}`);
+  console.info(`   Build command: ${buildCmd}`);
 
   // Parse build command to check if scripts exist
   if (buildCmd.includes("npm run")) {
@@ -138,7 +130,7 @@ async function verifyVercelParity(): Promise<void> {
             console.error(`   ❌ Script "${scriptName}" not found in packages/web/package.json`);
             process.exit(1);
           }
-          console.log(`   ✓ Script "${scriptName}" exists`);
+          console.info(`   ✓ Script "${scriptName}" exists`);
         } catch (error) {
           console.error(`   ❌ Failed to parse packages/web/package.json: ${error}`);
           process.exit(1);
@@ -146,33 +138,47 @@ async function verifyVercelParity(): Promise<void> {
       }
     }
   }
+}
 
+/**
+ * Validate output directory structure
+ */
+function validateOutputDirectory(config: VercelConfig): void {
   // Step 3: Verify output directory structure
-  console.log("\n3️⃣  Validating output directory...");
+  console.info("\n3️⃣  Validating output directory...");
   if (config.outputDirectory) {
-    const outputPath = join(workspaceRoot, config.outputDirectory);
-    console.log(`   Expected output: ${config.outputDirectory}`);
+    console.info(`   Expected output: ${config.outputDirectory}`);
     // Don't check if it exists (it won't until build), just validate path
-    console.log("   ✓ Output directory path is valid");
+    console.info("   ✓ Output directory path is valid");
   } else {
-    console.log("   ⚠️  No output directory specified (using framework default)");
+    console.info("   ⚠️  No output directory specified (using framework default)");
   }
+}
 
+/**
+ * Check for conflicting configurations
+ */
+function checkConfigurationConflicts(): void {
   // Step 4: Check for conflicting configurations
-  console.log("\n4️⃣  Checking for configuration conflicts...");
+  console.info("\n4️⃣  Checking for configuration conflicts...");
   const rootVercelJson = join(workspaceRoot, "vercel.json");
   const webVercelJson = join(workspaceRoot, "packages/web/vercel.json");
 
   if (existsSync(rootVercelJson) && existsSync(webVercelJson)) {
-    console.log("   ⚠️  Both root and package-level vercel.json exist");
-    console.log("   ⚠️  Root vercel.json takes precedence");
-    console.log("   ⚠️  Consider consolidating to avoid confusion");
+    console.info("   ⚠️  Both root and package-level vercel.json exist");
+    console.info("   ⚠️  Root vercel.json takes precedence");
+    console.info("   ⚠️  Consider consolidating to avoid confusion");
   } else {
-    console.log("   ✓ No configuration conflicts");
+    console.info("   ✓ No configuration conflicts");
   }
+}
 
+/**
+ * Verify build dependencies are available
+ */
+function verifyBuildDependencies(): void {
   // Step 5: Verify build dependencies are available
-  console.log("\n5️⃣  Verifying build dependencies...");
+  console.info("\n5️⃣  Verifying build dependencies...");
   const webPackageJson = join(workspaceRoot, "packages/web/package.json");
   if (existsSync(webPackageJson)) {
     try {
@@ -182,18 +188,42 @@ async function verifyVercelParity(): Promise<void> {
         console.error("   ❌ Next.js not found in dependencies");
         process.exit(1);
       }
-      console.log("   ✓ Next.js dependency found");
+      console.info("   ✓ Next.js dependency found");
     } catch (error) {
       console.error(`   ❌ Failed to verify dependencies: ${error}`);
       process.exit(1);
     }
   }
+}
 
-  console.log("\n✅ Vercel parity check passed");
-  console.log("\n📝 CI will run:");
-  console.log(`   1. ${getInstallCommand(config)}`);
-  console.log(`   2. ${getBuildCommand(config)}`);
-  console.log("\n   Vercel will run the same commands.\n");
+async function verifyVercelParity(): Promise<void> {
+  console.info("🔍 Verifying Vercel build parity...\n");
+
+  const config = readVercelConfig();
+  if (!config) {
+    console.error("❌ No vercel.json found");
+    console.error("   Create vercel.json in root or packages/web/");
+    process.exit(1);
+  }
+
+  console.info("📋 Vercel Configuration:");
+  console.info(`   Framework: ${config.framework || "not specified"}`);
+  console.info(`   Install: ${getInstallCommand(config)}`);
+  console.info(`   Build: ${getBuildCommand(config)}`);
+  console.info(`   Output: ${config.outputDirectory || "default"}`);
+  console.info("");
+
+  testInstallCommand(config);
+  validateBuildCommand(config);
+  validateOutputDirectory(config);
+  checkConfigurationConflicts();
+  verifyBuildDependencies();
+
+  console.info("\n✅ Vercel parity check passed");
+  console.info("\n📝 CI will run:");
+  console.info(`   1. ${getInstallCommand(config)}`);
+  console.info(`   2. ${getBuildCommand(config)}`);
+  console.info("\n   Vercel will run the same commands.\n");
 }
 
 /**
