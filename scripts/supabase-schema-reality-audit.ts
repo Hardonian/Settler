@@ -55,59 +55,55 @@ async function exists(client: Client, obj: ExpectedObject): Promise<boolean> {
         `select 1 from information_schema.tables where table_schema = $1 and table_name = $2`,
         [obj.schema, obj.name]
       );
-      return r.rowCount > 0;
+      return (r.rowCount ?? 0) > 0;
     }
     case "type": {
       const r = await client.query(
         `select 1 from pg_type t join pg_namespace n on n.oid = t.typnamespace where n.nspname = $1 and t.typname = $2`,
         [obj.schema, obj.name]
       );
-      return r.rowCount > 0;
+      return (r.rowCount ?? 0) > 0;
     }
     case "function": {
       const r = await client.query(
         `select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = $1 and p.proname = $2`,
         [obj.schema, obj.name]
       );
-      return r.rowCount > 0;
+      return (r.rowCount ?? 0) > 0;
     }
     case "index": {
       const r = await client.query(
         `select 1 from pg_indexes where schemaname = $1 and indexname = $2`,
         [obj.schema, obj.name]
       );
-      return r.rowCount > 0;
+      return (r.rowCount ?? 0) > 0;
     }
     case "trigger": {
       const r = await client.query(
         `select 1 from pg_trigger where tgname = $1 and not tgisinternal`,
         [obj.name]
       );
-      return r.rowCount > 0;
+      return (r.rowCount ?? 0) > 0;
     }
     case "view": {
       const r = await client.query(
         `select 1 from information_schema.views where table_schema = $1 and table_name = $2`,
         [obj.schema, obj.name]
       );
-      return r.rowCount > 0;
+      return (r.rowCount ?? 0) > 0;
     }
     case "policy": {
       const r = await client.query(`select 1 from pg_policies where policyname = $1`, [obj.name]);
-      return r.rowCount > 0;
+      return (r.rowCount ?? 0) > 0;
     }
     default:
       return false;
   }
 }
 
-async function main() {
-  const dbUrl = process.env.DATABASE_URL || process.env.DIRECT_URL || process.env.SUPABASE_DB_URL;
-  if (!dbUrl) {
-    throw new Error("Missing DATABASE_URL, DIRECT_URL, or SUPABASE_DB_URL");
-  }
 
-  const files = fs
+function getMigrationFiles(): string[] {
+  return fs
     .readdirSync(MIGRATIONS_DIR)
     .filter(
       (f) =>
@@ -122,7 +118,9 @@ async function main() {
     )
     .sort()
     .map((f) => path.join(MIGRATIONS_DIR, f));
+}
 
+function getExpectedObjects(files: string[]): ExpectedObject[] {
   const expected: ExpectedObject[] = [];
   for (const file of files) {
     expected.push(...parseExpectedObjects(file, fs.readFileSync(file, "utf8")));
@@ -132,17 +130,17 @@ async function main() {
   for (const item of expected) {
     dedup.set(`${item.kind}:${item.schema}:${item.name}`, item);
   }
-  const expectedUnique = [...dedup.values()];
+  return [...dedup.values()];
+}
 
-  const client = new Client({
-    connectionString: dbUrl,
-    ssl: dbUrl.includes("supabase.co") ? { rejectUnauthorized: false } : undefined,
-  });
-  await client.connect();
-
+async function getDatabaseIdentity(client: Client) {
   const id = await client.query(
     `select current_database() as database, current_user as user, inet_server_addr()::text as server_addr, inet_server_port() as server_port, version()`
   );
+  return id.rows[0];
+}
+
+async function getAppliedMigrationVersions(client: Client): Promise<string[]> {
   const migrationsTable = await client.query(`
     select exists (
       select 1 from information_schema.tables where table_schema = 'supabase_migrations' and table_name = 'schema_migrations'
@@ -156,24 +154,32 @@ async function main() {
     );
     appliedVersions = versions.rows.map((r) => String(r.version));
   }
+  return appliedVersions;
+}
 
+async function findFindings(client: Client, expectedUnique: ExpectedObject[]): Promise<Finding[]> {
   const findings: Finding[] = [];
   for (const obj of expectedUnique) {
     const present = await exists(client, obj);
     findings.push({ ...obj, status: present ? "present" : "missing" });
   }
+  return findings;
+}
 
-  await client.end();
-
-  const missing = findings.filter((f) => f.status === "missing");
-
+function writeReports(
+  databaseIdentity: any,
+  files: string[],
+  appliedVersions: string[],
+  findings: Finding[],
+  missing: Finding[]
+) {
   fs.mkdirSync(path.dirname(REPORT_JSON), { recursive: true });
   fs.writeFileSync(
     REPORT_JSON,
     JSON.stringify(
       {
         generatedAt: new Date().toISOString(),
-        databaseIdentity: id.rows[0],
+        databaseIdentity,
         migrationFiles: files.map((f) => path.relative(process.cwd(), f)),
         appliedMigrationVersions: appliedVersions,
         summary: {
@@ -198,10 +204,10 @@ async function main() {
   lines.push(`Generated: ${new Date().toISOString()}`);
   lines.push("");
   lines.push("## Connected Database");
-  lines.push(`- Database: ${id.rows[0].database}`);
-  lines.push(`- User: ${id.rows[0].user}`);
+  lines.push(`- Database: ${databaseIdentity.database}`);
+  lines.push(`- User: ${databaseIdentity.user}`);
   lines.push(
-    `- Server: ${id.rows[0].server_addr ?? "unknown"}:${id.rows[0].server_port ?? "unknown"}`
+    `- Server: ${databaseIdentity.server_addr ?? "unknown"}:${databaseIdentity.server_port ?? "unknown"}`
   );
   lines.push("");
   lines.push("## Summary");
@@ -230,6 +236,32 @@ async function main() {
   console.log(`Wrote ${path.relative(process.cwd(), REPORT_JSON)}`);
   console.log(`Wrote ${path.relative(process.cwd(), REPORT_MD)}`);
   console.log(`Missing objects: ${missing.length}`);
+}
+
+async function main() {
+  const dbUrl = process.env.DATABASE_URL || process.env.DIRECT_URL || process.env.SUPABASE_DB_URL;
+  if (!dbUrl) {
+    throw new Error("Missing DATABASE_URL, DIRECT_URL, or SUPABASE_DB_URL");
+  }
+
+  const files = getMigrationFiles();
+  const expectedUnique = getExpectedObjects(files);
+
+  const client = new Client({
+    connectionString: dbUrl,
+    ssl: dbUrl.includes("supabase.co") ? { rejectUnauthorized: false } : undefined,
+  });
+  await client.connect();
+
+  const databaseIdentity = await getDatabaseIdentity(client);
+  const appliedVersions = await getAppliedMigrationVersions(client);
+  const findings = await findFindings(client, expectedUnique);
+
+  await client.end();
+
+  const missing = findings.filter((f) => f.status === "missing");
+
+  writeReports(databaseIdentity, files, appliedVersions, findings, missing);
 }
 
 main().catch((error) => {
