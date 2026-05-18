@@ -11,6 +11,95 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def enforce_statement_timeout(cur):
+    """Fetches and applies dynamic operator timeouts from control plane infrastructure settings."""
+    cur.execute(
+        "SELECT max_statement_timeout_ms FROM public.operator_infrastructure_settings WHERE id = 'global'"
+    )
+    infra_settings = cur.fetchone()
+    if infra_settings:
+        timeout_ms = infra_settings[0]
+        cur.execute(f"SET statement_timeout = {timeout_ms}")
+        logger.info(
+            f"Enforcing operator control plane statement timeout: {timeout_ms}ms"
+        )
+
+
+def fetch_runs_to_archive(cur, archive_days, limit):
+    """Locks and fetches a small chunk of runs to prevent massive WAL bloat and long-held locks."""
+    cur.execute(
+        """
+        SELECT id, tenant_id, created_at
+        FROM public.runs
+        WHERE status IN ('Completed', 'Completed with Exceptions', 'Failed', 'Failed - Timed Out')
+          AND created_at < NOW() - INTERVAL '%s days'
+        LIMIT %s
+        FOR UPDATE SKIP LOCKED;
+    """,
+        (archive_days, limit),
+    )
+    return cur.fetchall()
+
+
+def archive_runs_to_s3(cur, s3_client, s3_bucket, runs_to_archive):
+    """Packages run data with exceptions and uploads to S3, returning the archived run IDs."""
+    archived_run_ids = []
+
+    for run_id, tenant_id, created_at in runs_to_archive:
+        # Fetch the full run JSON and aggregate its exceptions into a single payload
+        cur.execute(
+            "SELECT row_to_json(r) FROM public.runs r WHERE id = %s",
+            (run_id,),
+        )
+        run_data = cur.fetchone()[0]
+
+        cur.execute(
+            "SELECT COALESCE(json_agg(e), '[]'::json) FROM public.exceptions e WHERE run_id = %s",
+            (run_id,),
+        )
+        exceptions_data = cur.fetchone()[0]
+
+        archive_payload = {
+            "archived_at": datetime.now(timezone.utc).isoformat(),
+            "run": run_data,
+            "exceptions": exceptions_data,
+        }
+
+        # Construct the tenant-isolated S3 object key
+        object_key = (
+            f"tenants/{tenant_id}/runs/{created_at.strftime('%Y/%m')}/{run_id}.json"
+        )
+
+        # Network I/O - executing this inside a much smaller locked transaction chunk
+        s3_client.put_object(
+            Bucket=s3_bucket,
+            Key=object_key,
+            Body=json.dumps(archive_payload, default=str),
+            ContentType="application/json",
+        )
+
+        archived_run_ids.append(run_id)
+
+    return archived_run_ids
+
+
+def purge_archived_runs_and_audit(cur, archived_run_ids):
+    """Prunes archived runs and exceptions from the hot database and mints an audit log."""
+    cur.execute(
+        "DELETE FROM public.exceptions WHERE run_id = ANY(%s)",
+        (archived_run_ids,),
+    )
+    cur.execute("DELETE FROM public.runs WHERE id = ANY(%s)", (archived_run_ids,))
+
+    cur.execute(
+        """
+        INSERT INTO public.audit_logs (tenant_id, action, details, batch_entity_ids, created_at)
+        VALUES ('system', 'RUNS_ARCHIVED_TO_COLD_STORAGE', 'Automated archival chunk sweep completed', %s, NOW())
+    """,
+        (archived_run_ids,),
+    )
+
+
 def run_archival_sweeper():
     """
     Sweeps for terminal runs older than 30 days.
@@ -42,32 +131,11 @@ def run_archival_sweeper():
 
         with psycopg2.connect(db_url) as conn:
             with conn.cursor() as cur:
-                # Control Plane Enforcement: Fetch and apply dynamic operator timeouts
-                cur.execute(
-                    "SELECT max_statement_timeout_ms FROM public.operator_infrastructure_settings WHERE id = 'global'"
-                )
-                infra_settings = cur.fetchone()
-                if infra_settings:
-                    timeout_ms = infra_settings[0]
-                    cur.execute(f"SET statement_timeout = {timeout_ms}")
-                    logger.info(
-                        f"Enforcing operator control plane statement timeout: {timeout_ms}ms"
-                    )
+                enforce_statement_timeout(cur)
 
-                # Lock only a small chunk to prevent massive WAL bloat and long-held locks during S3 uploads
-                cur.execute(
-                    """
-                    SELECT id, tenant_id, created_at
-                    FROM public.runs
-                    WHERE status IN ('Completed', 'Completed with Exceptions', 'Failed', 'Failed - Timed Out')
-                      AND created_at < NOW() - INTERVAL '%s days'
-                    LIMIT %s
-                    FOR UPDATE SKIP LOCKED;
-                """,
-                    (archive_days, current_chunk_limit),
+                runs_to_archive = fetch_runs_to_archive(
+                    cur, archive_days, current_chunk_limit
                 )
-
-                runs_to_archive = cur.fetchall()
 
                 if not runs_to_archive:
                     if total_archived == 0:
@@ -77,58 +145,12 @@ def run_archival_sweeper():
                 logger.info(
                     f"Archiving chunk of {len(runs_to_archive)} runs to S3 bucket: {s3_bucket}..."
                 )
-                archived_run_ids = []
 
-                for run_id, tenant_id, created_at in runs_to_archive:
-                    # Fetch the full run JSON and aggregate its exceptions into a single payload
-                    cur.execute(
-                        "SELECT row_to_json(r) FROM public.runs r WHERE id = %s",
-                        (run_id,),
-                    )
-                    run_data = cur.fetchone()[0]
-
-                    cur.execute(
-                        "SELECT COALESCE(json_agg(e), '[]'::json) FROM public.exceptions e WHERE run_id = %s",
-                        (run_id,),
-                    )
-                    exceptions_data = cur.fetchone()[0]
-
-                    archive_payload = {
-                        "archived_at": datetime.now(timezone.utc).isoformat(),
-                        "run": run_data,
-                        "exceptions": exceptions_data,
-                    }
-
-                    # Construct the tenant-isolated S3 object key
-                    object_key = f"tenants/{tenant_id}/runs/{created_at.strftime('%Y/%m')}/{run_id}.json"
-
-                    # Network I/O - executing this inside a much smaller locked transaction chunk
-                    s3_client.put_object(
-                        Bucket=s3_bucket,
-                        Key=object_key,
-                        Body=json.dumps(archive_payload, default=str),
-                        ContentType="application/json",
-                    )
-
-                    archived_run_ids.append(run_id)
-
-                # 1. Prune the hot database tables
-                cur.execute(
-                    "DELETE FROM public.exceptions WHERE run_id = ANY(%s)",
-                    (archived_run_ids,),
-                )
-                cur.execute(
-                    "DELETE FROM public.runs WHERE id = ANY(%s)", (archived_run_ids,)
+                archived_run_ids = archive_runs_to_s3(
+                    cur, s3_client, s3_bucket, runs_to_archive
                 )
 
-                # 2. Mint a chunked bulk audit record using the newly added batch_entity_ids array
-                cur.execute(
-                    """
-                    INSERT INTO public.audit_logs (tenant_id, action, details, batch_entity_ids, created_at)
-                    VALUES ('system', 'RUNS_ARCHIVED_TO_COLD_STORAGE', 'Automated archival chunk sweep completed', %s, NOW())
-                """,
-                    (archived_run_ids,),
-                )
+                purge_archived_runs_and_audit(cur, archived_run_ids)
 
                 conn.commit()
                 total_archived += len(archived_run_ids)
