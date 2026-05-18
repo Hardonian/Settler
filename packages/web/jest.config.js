@@ -11,6 +11,8 @@ const customJestConfig = {
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
   testEnvironment: "jest-environment-jsdom",
   moduleNameMapper: {
+    "^@settler/types$": "<rootDir>/../types/src/index.ts",
+    "^uuid$": require.resolve("uuid"),
     "^@settler/reconciliation-core$": "<rootDir>/../reconciliation-core/src/index.ts",
     "^@settler/reconciliation-core/dist$": "<rootDir>/../reconciliation-core/src/index.ts",
     "^@settler/reconciliation-core/dist/(.*)$": "<rootDir>/../reconciliation-core/src/$1",
