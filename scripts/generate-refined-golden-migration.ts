@@ -57,6 +57,55 @@ interface ProductionSchema {
   }>;
 }
 
+const CHECK_QUERIES: Record<string, string> = {
+  table: `
+    SELECT EXISTS (
+      SELECT FROM information_schema.tables
+      WHERE table_schema = $1 AND table_name = $2
+    )
+  `,
+  index: `
+    SELECT EXISTS (
+      SELECT FROM pg_indexes
+      WHERE schemaname = $1 AND tablename = $2 AND indexname = $3
+    )
+  `,
+  function: `
+    SELECT EXISTS (
+      SELECT FROM pg_proc p
+      JOIN pg_namespace n ON n.oid = p.pronamespace
+      WHERE n.nspname = $1 AND p.proname = $2
+    )
+  `,
+  policy: `
+    SELECT EXISTS (
+      SELECT FROM pg_policies
+      WHERE schemaname = $1 AND tablename = $2 AND policyname = $3
+    )
+  `,
+  trigger: `
+    SELECT EXISTS (
+      SELECT FROM pg_trigger t
+      JOIN pg_class c ON c.oid = t.tgrelid
+      JOIN pg_namespace n ON n.oid = c.relnamespace
+      WHERE n.nspname = $1 AND c.relname = $2 AND t.tgname = $3
+    )
+  `,
+  view: `
+    SELECT EXISTS (
+      SELECT FROM information_schema.views
+      WHERE table_schema = $1 AND table_name = $2
+    )
+  `,
+  enum: `
+    SELECT EXISTS (
+      SELECT FROM pg_type t
+      JOIN pg_namespace n ON n.oid = t.typnamespace
+      WHERE n.nspname = $1 AND t.typname = $2
+    )
+  `,
+};
+
 async function checkExists(
   pool: Pool,
   type: "table" | "index" | "function" | "policy" | "trigger" | "view" | "enum",
@@ -65,102 +114,15 @@ async function checkExists(
   tableName?: string
 ): Promise<boolean> {
   try {
-    if (type === "table") {
-      const result = await pool.query(
-        `
-        SELECT EXISTS (
-          SELECT FROM information_schema.tables 
-          WHERE table_schema = $1 AND table_name = $2
-        )
-      `,
-        [schema, name]
-      );
-      return result.rows[0].exists;
-    }
+    const query = CHECK_QUERIES[type];
+    if (!query) return false;
 
-    if (type === "index") {
-      const result = await pool.query(
-        `
-        SELECT EXISTS (
-          SELECT FROM pg_indexes 
-          WHERE schemaname = $1 AND tablename = $2 AND indexname = $3
-        )
-      `,
-        [schema, tableName, name]
-      );
-      return result.rows[0].exists;
-    }
+    const params = ["index", "policy", "trigger"].includes(type)
+      ? [schema, tableName, name]
+      : [schema, name];
 
-    if (type === "function") {
-      const result = await pool.query(
-        `
-        SELECT EXISTS (
-          SELECT FROM pg_proc p
-          JOIN pg_namespace n ON n.oid = p.pronamespace
-          WHERE n.nspname = $1 AND p.proname = $2
-        )
-      `,
-        [schema, name]
-      );
-      return result.rows[0].exists;
-    }
-
-    if (type === "policy") {
-      const result = await pool.query(
-        `
-        SELECT EXISTS (
-          SELECT FROM pg_policies 
-          WHERE schemaname = $1 AND tablename = $2 AND policyname = $3
-        )
-      `,
-        [schema, tableName, name]
-      );
-      return result.rows[0].exists;
-    }
-
-    if (type === "trigger") {
-      const result = await pool.query(
-        `
-        SELECT EXISTS (
-          SELECT FROM pg_trigger t
-          JOIN pg_class c ON c.oid = t.tgrelid
-          JOIN pg_namespace n ON n.oid = c.relnamespace
-          WHERE n.nspname = $1 AND c.relname = $2 AND t.tgname = $3
-        )
-      `,
-        [schema, tableName, name]
-      );
-      return result.rows[0].exists;
-    }
-
-    if (type === "view") {
-      const result = await pool.query(
-        `
-        SELECT EXISTS (
-          SELECT FROM information_schema.views 
-          WHERE table_schema = $1 AND table_name = $2
-        )
-      `,
-        [schema, name]
-      );
-      return result.rows[0].exists;
-    }
-
-    if (type === "enum") {
-      const result = await pool.query(
-        `
-        SELECT EXISTS (
-          SELECT FROM pg_type t
-          JOIN pg_namespace n ON n.oid = t.typnamespace
-          WHERE n.nspname = $1 AND t.typname = $2
-        )
-      `,
-        [schema, name]
-      );
-      return result.rows[0].exists;
-    }
-
-    return false;
+    const result = await pool.query(query, params);
+    return result.rows[0].exists;
   } catch (err) {
     console.warn(`⚠️  Error checking ${type} ${name}:`, err);
     return false;
@@ -174,7 +136,7 @@ async function generateRefinedMigration() {
     throw new Error("DATABASE_URL environment variable is required");
   }
 
-  console.log("🔍 Connecting to production database...");
+  console.info("🔍 Connecting to production database...");
   const pool = new Pool({ connectionString: databaseUrl });
 
   try {
@@ -185,7 +147,7 @@ async function generateRefinedMigration() {
     }
 
     const productionSchema: ProductionSchema = JSON.parse(fs.readFileSync(schemaPath, "utf-8"));
-    console.log(
+    console.info(
       `✅ Loaded production schema: ${productionSchema.tables.length} tables, ${productionSchema.functions.length} functions`
     );
 
@@ -494,14 +456,14 @@ COMMIT;
     );
     fs.writeFileSync(outputPath, output);
 
-    console.log("\n📊 Refined Migration Summary:");
-    console.log(`  Tables to create: ${tablesCreated}`);
-    console.log(`  Indexes to create: ${indexesCreated}`);
-    console.log(`  Policies to create: ${policiesCreated}`);
-    console.log(`  Functions to create: ${functionsCreated}`);
-    console.log(`  Triggers to create: ${triggersCreated}`);
-    console.log(`  Total size: ${(output.length / 1024).toFixed(2)} KB`);
-    console.log(`\n✅ Refined golden migration written to: ${outputPath}`);
+    console.info("\n📊 Refined Migration Summary:");
+    console.info(`  Tables to create: ${tablesCreated}`);
+    console.info(`  Indexes to create: ${indexesCreated}`);
+    console.info(`  Policies to create: ${policiesCreated}`);
+    console.info(`  Functions to create: ${functionsCreated}`);
+    console.info(`  Triggers to create: ${triggersCreated}`);
+    console.info(`  Total size: ${(output.length / 1024).toFixed(2)} KB`);
+    console.info(`\n✅ Refined golden migration written to: ${outputPath}`);
   } finally {
     await pool.end();
   }
