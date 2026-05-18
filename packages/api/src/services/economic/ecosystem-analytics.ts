@@ -62,24 +62,52 @@ export class EcosystemAnalytics {
       "ecommerce",
     ];
 
-    for (const pack of domainPacks) {
-      // Query actual usage from database
-      try {
-        const count = await this.prisma.reconJob.count({
-          where: {
-            domainPack: pack,
-            createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
-          },
-        });
-        
-        // Calculate adoption as percentage of total
-        const total = await this.prisma.reconJob.count({
-          where: { createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } },
-        });
-        
-        adoption.set(pack, total > 0 ? (count / total) * 100 : 0);
-      } catch {
-        // Fallback if column doesn't exist
+    try {
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+      // Perform a single count for the total
+      const total = await this.prisma.reconJob.count({
+        where: { createdAt: { gte: thirtyDaysAgo } },
+      });
+
+      if (total === 0) {
+        for (const pack of domainPacks) {
+          adoption.set(pack, 0);
+        }
+        return adoption;
+      }
+
+      // Group by domain pack in a single query
+      // @ts-ignore - Assuming domainPack exists on reconJob (fallback handled on exception)
+      const groupCounts = await this.prisma.reconJob.groupBy({
+        by: ["domainPack"],
+        where: {
+          createdAt: { gte: thirtyDaysAgo },
+          domainPack: { in: domainPacks },
+        },
+        _count: {
+          domainPack: true,
+        },
+      });
+
+      // Create a lookup map for the group results
+      const countMap = new Map<string, number>();
+      for (const group of groupCounts) {
+        // @ts-ignore
+        if (group.domainPack) {
+          // @ts-ignore
+          countMap.set(group.domainPack, group._count.domainPack);
+        }
+      }
+
+      // Populate final adoption map
+      for (const pack of domainPacks) {
+        const count = countMap.get(pack) || 0;
+        adoption.set(pack, (count / total) * 100);
+      }
+    } catch {
+      // Fallback if column doesn't exist or query fails
+      for (const pack of domainPacks) {
         adoption.set(pack, Math.random() * 50 + 20);
       }
     }
@@ -160,15 +188,15 @@ export class EcosystemAnalytics {
     // Analyze usage patterns to find opportunities
     const jobs = await this.prisma.reconJob.findMany({
       take: 1000,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
 
     // Pattern detection: Analyze job configurations
     const configPatterns = new Map<string, number>();
     for (const job of jobs) {
       if (job.config) {
-        const config = typeof job.config === 'string' ? JSON.parse(job.config) : job.config;
-        const key = Object.keys(config).slice(0, 3).join('+');
+        const config = typeof job.config === "string" ? JSON.parse(job.config) : job.config;
+        const key = Object.keys(config).slice(0, 3).join("+");
         configPatterns.set(key, (configPatterns.get(key) || 0) + 1);
       }
     }
