@@ -49,7 +49,10 @@ def run_archival_sweeper():
                 infra_settings = cur.fetchone()
                 if infra_settings:
                     timeout_ms = infra_settings[0]
-                    cur.execute(f"SET statement_timeout = {timeout_ms}")
+                    cur.execute(
+                        "SELECT set_config(%s, %s, false)",
+                        ("statement_timeout", str(timeout_ms)),
+                    )
                     logger.info(
                         f"Enforcing operator control plane statement timeout: {timeout_ms}ms"
                     )
