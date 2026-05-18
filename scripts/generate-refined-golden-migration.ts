@@ -57,110 +57,107 @@ interface ProductionSchema {
   }>;
 }
 
+type DbObjectType = "table" | "index" | "function" | "policy" | "trigger" | "view" | "enum";
+
+function getExistenceQuery(
+  type: DbObjectType,
+  name: string,
+  schema: string,
+  tableName?: string
+): { query: string; params: any[] } | null {
+  switch (type) {
+    case "table":
+      return {
+        query: `
+          SELECT EXISTS (
+            SELECT FROM information_schema.tables
+            WHERE table_schema = $1 AND table_name = $2
+          )
+        `,
+        params: [schema, name],
+      };
+    case "index":
+      return {
+        query: `
+          SELECT EXISTS (
+            SELECT FROM pg_indexes
+            WHERE schemaname = $1 AND tablename = $2 AND indexname = $3
+          )
+        `,
+        params: [schema, tableName, name],
+      };
+    case "function":
+      return {
+        query: `
+          SELECT EXISTS (
+            SELECT FROM pg_proc p
+            JOIN pg_namespace n ON n.oid = p.pronamespace
+            WHERE n.nspname = $1 AND p.proname = $2
+          )
+        `,
+        params: [schema, name],
+      };
+    case "policy":
+      return {
+        query: `
+          SELECT EXISTS (
+            SELECT FROM pg_policies
+            WHERE schemaname = $1 AND tablename = $2 AND policyname = $3
+          )
+        `,
+        params: [schema, tableName, name],
+      };
+    case "trigger":
+      return {
+        query: `
+          SELECT EXISTS (
+            SELECT FROM pg_trigger t
+            JOIN pg_class c ON c.oid = t.tgrelid
+            JOIN pg_namespace n ON n.oid = c.relnamespace
+            WHERE n.nspname = $1 AND c.relname = $2 AND t.tgname = $3
+          )
+        `,
+        params: [schema, tableName, name],
+      };
+    case "view":
+      return {
+        query: `
+          SELECT EXISTS (
+            SELECT FROM information_schema.views
+            WHERE table_schema = $1 AND table_name = $2
+          )
+        `,
+        params: [schema, name],
+      };
+    case "enum":
+      return {
+        query: `
+          SELECT EXISTS (
+            SELECT FROM pg_type t
+            JOIN pg_namespace n ON n.oid = t.typnamespace
+            WHERE n.nspname = $1 AND t.typname = $2
+          )
+        `,
+        params: [schema, name],
+      };
+    default:
+      return null;
+  }
+}
+
 async function checkExists(
   pool: Pool,
-  type: "table" | "index" | "function" | "policy" | "trigger" | "view" | "enum",
+  type: DbObjectType,
   name: string,
   schema: string = "public",
   tableName?: string
 ): Promise<boolean> {
   try {
-    if (type === "table") {
-      const result = await pool.query(
-        `
-        SELECT EXISTS (
-          SELECT FROM information_schema.tables 
-          WHERE table_schema = $1 AND table_name = $2
-        )
-      `,
-        [schema, name]
-      );
-      return result.rows[0].exists;
-    }
+    const queryData = getExistenceQuery(type, name, schema, tableName);
+    if (!queryData) return false;
 
-    if (type === "index") {
-      const result = await pool.query(
-        `
-        SELECT EXISTS (
-          SELECT FROM pg_indexes 
-          WHERE schemaname = $1 AND tablename = $2 AND indexname = $3
-        )
-      `,
-        [schema, tableName, name]
-      );
-      return result.rows[0].exists;
-    }
-
-    if (type === "function") {
-      const result = await pool.query(
-        `
-        SELECT EXISTS (
-          SELECT FROM pg_proc p
-          JOIN pg_namespace n ON n.oid = p.pronamespace
-          WHERE n.nspname = $1 AND p.proname = $2
-        )
-      `,
-        [schema, name]
-      );
-      return result.rows[0].exists;
-    }
-
-    if (type === "policy") {
-      const result = await pool.query(
-        `
-        SELECT EXISTS (
-          SELECT FROM pg_policies 
-          WHERE schemaname = $1 AND tablename = $2 AND policyname = $3
-        )
-      `,
-        [schema, tableName, name]
-      );
-      return result.rows[0].exists;
-    }
-
-    if (type === "trigger") {
-      const result = await pool.query(
-        `
-        SELECT EXISTS (
-          SELECT FROM pg_trigger t
-          JOIN pg_class c ON c.oid = t.tgrelid
-          JOIN pg_namespace n ON n.oid = c.relnamespace
-          WHERE n.nspname = $1 AND c.relname = $2 AND t.tgname = $3
-        )
-      `,
-        [schema, tableName, name]
-      );
-      return result.rows[0].exists;
-    }
-
-    if (type === "view") {
-      const result = await pool.query(
-        `
-        SELECT EXISTS (
-          SELECT FROM information_schema.views 
-          WHERE table_schema = $1 AND table_name = $2
-        )
-      `,
-        [schema, name]
-      );
-      return result.rows[0].exists;
-    }
-
-    if (type === "enum") {
-      const result = await pool.query(
-        `
-        SELECT EXISTS (
-          SELECT FROM pg_type t
-          JOIN pg_namespace n ON n.oid = t.typnamespace
-          WHERE n.nspname = $1 AND t.typname = $2
-        )
-      `,
-        [schema, name]
-      );
-      return result.rows[0].exists;
-    }
-
-    return false;
+    const result = await pool.query(queryData.query, queryData.params);
+    return result.rows[0].exists;
   } catch (err) {
     console.warn(`⚠️  Error checking ${type} ${name}:`, err);
     return false;
