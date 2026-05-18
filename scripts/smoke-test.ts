@@ -38,80 +38,69 @@ async function test(name: string, fn: () => Promise<void>): Promise<void> {
   }
 }
 
-async function main() {
-  console.log("🧪 Running Smoke Tests...\n");
-  console.log(`API Base: ${API_BASE}\n`);
+async function checkPublicApiEndpoint() {
+  const response = await fetch(`${API_BASE}/api/v1`);
+  if (!response.ok) {
+    throw new Error(`Expected 200, got ${response.status}`);
+  }
+  const data = await response.json();
+  if (!data.version) {
+    throw new Error("Missing version in response");
+  }
+}
 
-  // Test 1: Public API endpoint
-  await test("Public API endpoint accessible", async () => {
-    const response = await fetch(`${API_BASE}/api/v1`);
-    if (!response.ok) {
-      throw new Error(`Expected 200, got ${response.status}`);
-    }
-    const data = await response.json();
-    if (!data.version) {
-      throw new Error("Missing version in response");
-    }
+async function checkHealthEndpoint() {
+  const response = await fetch(`${API_BASE}/api/status/health`);
+  if (!response.ok) {
+    throw new Error(`Expected 200, got ${response.status}`);
+  }
+}
+
+async function checkBillingEnforcement() {
+  const response = await fetch(`${API_BASE}/api/v1/recon/jobs`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name: "Test Job" }),
   });
 
-  // Test 2: Health check
-  await test("Health check endpoint", async () => {
-    const response = await fetch(`${API_BASE}/api/status/health`);
-    if (!response.ok) {
-      throw new Error(`Expected 200, got ${response.status}`);
-    }
-  });
-
-  // Test 3: Billing enforcement on paid routes
-  await test("Billing enforcement on /api/v1/recon/jobs (unauthenticated)", async () => {
-    const response = await fetch(`${API_BASE}/api/v1/recon/jobs`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: "Test Job" }),
-    });
-
-    // Should return demo response or 403, not 500
-    if (response.status === 500) {
-      throw new Error("Route returned 500 - billing enforcement may be broken");
-    }
-
-    const data = await response.json();
-    // Should either be demo response or error about subscription
-    if (!data.demo && !data.error && !data.message?.includes("subscription")) {
-      throw new Error("Unexpected response - billing may not be enforced");
-    }
-  });
-
-  // Test 4: Free route accessible
-  await test("Free route /api/v1/convert accessible", async () => {
-    const response = await fetch(`${API_BASE}/api/v1/convert`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        type: "unit",
-        from: "m",
-        to: "ft",
-        value: 1,
-      }),
-    });
-
-    if (!response.ok && response.status !== 200) {
-      throw new Error(`Expected 200, got ${response.status}`);
-    }
-  });
-
-  // Test 5: Database connection (if Supabase configured)
-  if (SUPABASE_URL && SUPABASE_ANON_KEY) {
-    await test("Database connection", async () => {
-      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      const { error } = await supabase.from("billing_accounts").select("id").limit(1);
-      if (error && error.code !== "PGRST116") {
-        throw new Error(`Database error: ${error.message}`);
-      }
-    });
+  // Should return demo response or 403, not 500
+  if (response.status === 500) {
+    throw new Error("Route returned 500 - billing enforcement may be broken");
   }
 
-  // Print summary
+  const data = await response.json();
+  // Should either be demo response or error about subscription
+  if (!data.demo && !data.error && !data.message?.includes("subscription")) {
+    throw new Error("Unexpected response - billing may not be enforced");
+  }
+}
+
+async function checkFreeRouteAccessible() {
+  const response = await fetch(`${API_BASE}/api/v1/convert`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      type: "unit",
+      from: "m",
+      to: "ft",
+      value: 1,
+    }),
+  });
+
+  if (!response.ok && response.status !== 200) {
+    throw new Error(`Expected 200, got ${response.status}`);
+  }
+}
+
+async function checkDatabaseConnection() {
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const { error } = await supabase.from("billing_accounts").select("id").limit(1);
+  if (error && error.code !== "PGRST116") {
+    throw new Error(`Database error: ${error.message}`);
+  }
+}
+
+function printSummaryAndExit() {
   console.log("\n═══════════════════════════════════════════════════════════");
   console.log("TEST SUMMARY");
   console.log("═══════════════════════════════════════════════════════════\n");
@@ -135,6 +124,34 @@ async function main() {
     console.log("✅ All tests passed!");
     process.exit(0);
   }
+}
+
+async function main() {
+  console.log("🧪 Running Smoke Tests...\n");
+  console.log(`API Base: ${API_BASE}\n`);
+
+  // Test 1: Public API endpoint
+  await test("Public API endpoint accessible", checkPublicApiEndpoint);
+
+  // Test 2: Health check
+  await test("Health check endpoint", checkHealthEndpoint);
+
+  // Test 3: Billing enforcement on paid routes
+  await test(
+    "Billing enforcement on /api/v1/recon/jobs (unauthenticated)",
+    checkBillingEnforcement
+  );
+
+  // Test 4: Free route accessible
+  await test("Free route /api/v1/convert accessible", checkFreeRouteAccessible);
+
+  // Test 5: Database connection (if Supabase configured)
+  if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+    await test("Database connection", checkDatabaseConnection);
+  }
+
+  // Print summary
+  printSummaryAndExit();
 }
 
 main().catch((error) => {
