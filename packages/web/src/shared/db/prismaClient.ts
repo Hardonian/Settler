@@ -67,10 +67,11 @@ if (typeof process !== "undefined" && process.env) {
 
 const { PrismaClient, Prisma } = require("@prisma/client") as {
   PrismaClient: typeof import("@prisma/client").PrismaClient;
-  Prisma: typeof import("@prisma/client").Prisma;
+  Prisma: any;
 };
 
-export { Prisma };
+const PrismaExport = Prisma;
+export { PrismaExport as Prisma };
 
 type PrismaQueryRaw = {
   $queryRaw<T = unknown>(query: TemplateStringsArray, ...values: unknown[]): Promise<T>;
