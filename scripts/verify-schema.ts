@@ -84,111 +84,135 @@ const CRITICAL_INDEXES = [
   { table: "tenants", columns: ["slug"] },
 ];
 
+function getSupabaseEnv(): { supabaseUrl: string; supabaseAnonKey: string } | SchemaIssue {
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return {
+      type: "migration_drift",
+      severity: "error",
+      message: "Missing Supabase environment variables (SUPABASE_URL, SUPABASE_ANON_KEY)",
+    };
+  }
+
+  return { supabaseUrl, supabaseAnonKey };
+}
+
+async function checkDatabaseConnection(): Promise<SchemaIssue | null> {
+  try {
+    await prisma.$connect();
+    return null;
+  } catch (error) {
+    return {
+      type: "migration_drift",
+      severity: "error",
+      message: `Failed to connect to database: ${error instanceof Error ? error.message : "Unknown error"}`,
+    };
+  }
+}
+
+async function verifyTablesExist(supabase: any): Promise<SchemaIssue[]> {
+  const issues: SchemaIssue[] = [];
+  for (const table of EXPECTED_TABLES) {
+    try {
+      const { error } = await supabase.from(table).select("*").limit(0);
+
+      if (error) {
+        if (error.code === "42P01" || error.message.includes("does not exist")) {
+          issues.push({
+            type: "missing_table",
+            severity: "error",
+            message: `Table "${table}" does not exist in database`,
+            table,
+          });
+        } else if (error.code === "42501") {
+          // RLS might be blocking - this is ok for verification
+        }
+      }
+    } catch (error) {
+      issues.push({
+        type: "missing_table",
+        severity: "error",
+        message: `Failed to verify table "${table}": ${error instanceof Error ? error.message : "Unknown error"}`,
+        table,
+      });
+    }
+  }
+  return issues;
+}
+
+async function verifyIndexesExist(supabase: any): Promise<SchemaIssue[]> {
+  const issues: SchemaIssue[] = [];
+  try {
+    for (const index of CRITICAL_INDEXES) {
+      try {
+        const { error } = await supabase.from(index.table).select("*").limit(0);
+        if (error && error.code === "42P01") {
+          issues.push({
+            type: "missing_index",
+            severity: "warning",
+            message: `Table "${index.table}" missing - cannot verify index on ${index.columns.join(", ")}`,
+            table: index.table,
+            index: index.columns.join(", "),
+          });
+        }
+      } catch {
+        // Index check failed
+      }
+    }
+  } catch (error) {
+    issues.push({
+      type: "migration_drift",
+      severity: "warning",
+      message: `Failed to verify indexes: ${error instanceof Error ? error.message : "Unknown error"}`,
+    });
+  }
+  return issues;
+}
+
+async function verifyRlsPolicies(supabase: any): Promise<SchemaIssue | null> {
+  try {
+    const { error } = await supabase.from("pg_policies").select("*").limit(1);
+
+    if (error && error.code !== "42P01") {
+      return {
+        type: "missing_rls",
+        severity: "warning",
+        message: "Could not verify RLS policies (may require admin access)",
+      };
+    }
+  } catch {
+    // RLS check failed
+  }
+  return null;
+}
+
 async function verifySchema(): Promise<SchemaIssue[]> {
   const issues: SchemaIssue[] = [];
 
   try {
-    // Check Supabase connection
-    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseAnonKey =
-      process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-    if (!supabaseUrl || !supabaseAnonKey) {
-      issues.push({
-        type: "migration_drift",
-        severity: "error",
-        message: "Missing Supabase environment variables (SUPABASE_URL, SUPABASE_ANON_KEY)",
-      });
+    const envResult = getSupabaseEnv();
+    if ("type" in envResult) {
+      issues.push(envResult as SchemaIssue);
       return issues;
     }
 
+    const { supabaseUrl, supabaseAnonKey } = envResult;
     const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-    // Check database connection
-    try {
-      await prisma.$connect();
-    } catch (error) {
-      issues.push({
-        type: "migration_drift",
-        severity: "error",
-        message: `Failed to connect to database: ${error instanceof Error ? error.message : "Unknown error"}`,
-      });
+    const dbConnectionIssue = await checkDatabaseConnection();
+    if (dbConnectionIssue) {
+      issues.push(dbConnectionIssue);
       return issues;
     }
 
-    // Verify tables exist
-    for (const table of EXPECTED_TABLES) {
-      try {
-        // Try to query the table (this will fail if table doesn't exist)
-        const { error } = await supabase.from(table).select("*").limit(0);
+    issues.push(...(await verifyTablesExist(supabase)));
+    issues.push(...(await verifyIndexesExist(supabase)));
 
-        if (error) {
-          if (error.code === "42P01" || error.message.includes("does not exist")) {
-            issues.push({
-              type: "missing_table",
-              severity: "error",
-              message: `Table "${table}" does not exist in database`,
-              table,
-            });
-          } else if (error.code === "42501") {
-            // RLS might be blocking - this is ok for verification
-            // Table exists but we can't access it without proper auth
-          }
-        }
-      } catch (error) {
-        issues.push({
-          type: "missing_table",
-          severity: "error",
-          message: `Failed to verify table "${table}": ${error instanceof Error ? error.message : "Unknown error"}`,
-          table,
-        });
-      }
-    }
-
-    // Verify critical indexes (using Prisma introspection)
-    try {
-      // Note: Prisma doesn't expose index information directly
-      // We'll check by attempting queries that should use indexes
-      for (const index of CRITICAL_INDEXES) {
-        try {
-          // This is a simplified check - in production you'd query pg_indexes
-          // For now, we'll just verify the table exists
-          const { error } = await supabase.from(index.table).select("*").limit(0);
-          if (error && error.code === "42P01") {
-            issues.push({
-              type: "missing_index",
-              severity: "warning",
-              message: `Table "${index.table}" missing - cannot verify index on ${index.columns.join(", ")}`,
-              table: index.table,
-              index: index.columns.join(", "),
-            });
-          }
-        } catch (error) {
-          // Index check failed - might be RLS or other issue
-        }
-      }
-    } catch (error) {
-      issues.push({
-        type: "migration_drift",
-        severity: "warning",
-        message: `Failed to verify indexes: ${error instanceof Error ? error.message : "Unknown error"}`,
-      });
-    }
-
-    // Check for RLS policies (simplified check)
-    try {
-      const { data: policies, error } = await supabase.from("pg_policies").select("*").limit(1);
-
-      if (error && error.code !== "42P01") {
-        // pg_policies might not be accessible, that's ok
-        issues.push({
-          type: "missing_rls",
-          severity: "warning",
-          message: "Could not verify RLS policies (may require admin access)",
-        });
-      }
-    } catch (error) {
-      // RLS check failed - not critical
+    const rlsIssue = await verifyRlsPolicies(supabase);
+    if (rlsIssue) {
+      issues.push(rlsIssue);
     }
   } catch (error) {
     issues.push({

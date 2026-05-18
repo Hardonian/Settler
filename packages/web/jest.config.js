@@ -20,6 +20,7 @@ const customJestConfig = {
     // Strip .js extensions from relative imports so ts-jest can resolve .ts sources
     // in workspace packages (e.g. @settler/reconciliation-core uses ESM-style .js refs)
     "^(\\.{1,2}/.*)\\.js$": "$1",
+    "^uuid$": require.resolve("uuid"),
   },
   modulePathIgnorePatterns: ["<rootDir>/.next/"],
   testPathIgnorePatterns: ["<rootDir>/src/__tests__/e2e/"],
