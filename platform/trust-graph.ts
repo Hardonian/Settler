@@ -30,10 +30,24 @@ function stableHash(input: string): string {
 }
 
 function sortedJson(obj: unknown): string {
-  if (obj === null || typeof obj !== "object") return JSON.stringify(obj);
-  if (Array.isArray(obj)) return `[${obj.map(sortedJson).join(",")}]`;
-  const sorted = Object.keys(obj as Record<string, unknown>).sort();
-  return `{${sorted.map((k) => `${JSON.stringify(k)}:${sortedJson((obj as Record<string, unknown>)[k])}`).join(",")}}`;
+  if (obj === null || typeof obj !== "object") {
+    return JSON.stringify(obj);
+  }
+
+  if (Array.isArray(obj)) {
+    const elements = obj.map((item) => sortedJson(item));
+    return `[${elements.join(",")}]`;
+  }
+
+  const record = obj as Record<string, unknown>;
+  const sortedKeys = Object.keys(record).sort();
+  const keyValues = sortedKeys.map((key) => {
+    const jsonKey = JSON.stringify(key);
+    const jsonValue = sortedJson(record[key]);
+    return `${jsonKey}:${jsonValue}`;
+  });
+
+  return `{${keyValues.join(",")}}`;
 }
 
 export class TrustGraph {
