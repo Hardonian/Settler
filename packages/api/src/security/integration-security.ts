@@ -11,6 +11,24 @@ import { createClient } from "@supabase/supabase-js";
 import * as crypto from "crypto";
 import { logError } from "../utils/logger";
 
+const HEX_64_CHAR_PATTERN = /^[0-9a-f]{64}$/i;
+const HEX_PATTERN = /^[0-9a-f]+$/i;
+
+function assertValidEncryptionKey(encryptionKey: string): void {
+  if (!HEX_64_CHAR_PATTERN.test(encryptionKey)) {
+    throw new Error("Invalid encryption key: expected 32-byte hex string");
+  }
+}
+
+function normalizeSignature(signature: string, algorithm: "sha256" | "sha512"): string {
+  const normalized = signature.trim().toLowerCase();
+  const expectedPrefix = `${algorithm}=`;
+  if (normalized.startsWith(expectedPrefix)) {
+    return normalized.slice(expectedPrefix.length);
+  }
+  return normalized;
+}
+
 export interface IntegrationCredential {
   id: string;
   tenantId: string;
@@ -30,6 +48,7 @@ export function encryptCredential(
   credential: string,
   encryptionKey: string
 ): { encrypted: string; iv: string; tag: string } {
+  assertValidEncryptionKey(encryptionKey);
   const algorithm = "aes-256-gcm";
   const iv = crypto.randomBytes(16);
   const cipher = crypto.createCipheriv(algorithm, Buffer.from(encryptionKey, "hex"), iv);
@@ -55,6 +74,10 @@ export function decryptCredential(
   tag: string,
   encryptionKey: string
 ): string {
+  assertValidEncryptionKey(encryptionKey);
+  if (!HEX_PATTERN.test(iv) || !HEX_PATTERN.test(tag) || !HEX_PATTERN.test(encrypted)) {
+    throw new Error("Invalid encrypted payload: expected hex-encoded cipher data");
+  }
   const algorithm = "aes-256-gcm";
   const decipher = crypto.createDecipheriv(
     algorithm,
@@ -79,18 +102,23 @@ export function validateWebhookSignature(
   secret: string,
   algorithm: "sha256" | "sha512" = "sha256"
 ): boolean {
+  const normalizedSignature = normalizeSignature(signature, algorithm);
+  if (!HEX_PATTERN.test(normalizedSignature)) {
+    return false;
+  }
+
   const hmac = crypto.createHmac(algorithm, secret);
   hmac.update(payload);
   const computedSignature = hmac.digest("hex");
 
   // Constant-time comparison
-  if (computedSignature.length !== signature.length) {
+  if (computedSignature.length !== normalizedSignature.length) {
     return false;
   }
 
   let result = 0;
   for (let i = 0; i < computedSignature.length; i++) {
-    result |= computedSignature.charCodeAt(i) ^ signature.charCodeAt(i);
+    result |= computedSignature.charCodeAt(i) ^ normalizedSignature.charCodeAt(i);
   }
 
   return result === 0;
@@ -100,6 +128,10 @@ export function validateWebhookSignature(
  * Validate webhook timestamp (prevent replay attacks)
  */
 export function validateWebhookTimestamp(timestamp: number, maxAgeSeconds: number = 300): boolean {
+  if (!Number.isFinite(timestamp) || timestamp <= 0 || !Number.isFinite(maxAgeSeconds)) {
+    return false;
+  }
+
   const now = Math.floor(Date.now() / 1000);
   const age = now - timestamp;
 
