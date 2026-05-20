@@ -67,7 +67,7 @@ if (typeof process !== "undefined" && process.env) {
 
 const { PrismaClient, Prisma } = require("@prisma/client") as {
   PrismaClient: typeof import("@prisma/client").PrismaClient;
-  Prisma: typeof import("@prisma/client").Prisma;
+  Prisma: any;
 };
 
 export { Prisma };
