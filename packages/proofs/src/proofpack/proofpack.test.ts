@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { computePackageHash } from "./index";
+import { computePackageHash, generatePackageKey } from "./index";
 
 describe("computePackageHash", () => {
   it("produces identical hashes regardless of when called (no timestamp dependency)", () => {
@@ -63,5 +63,18 @@ describe("computePackageHash", () => {
     // Hash of {"evidenceIds":[],"packageType":"run_summary","scopeIds":[]}
     // 7bfb31d04bd7e8dd83ba796eebbc3f3e1ec34a06019318a0bc7f66a2b0c1696f
     expect(hash).toBe("f481a2496c98e538c0f38ca475eb0446f5bc195653353a8ab8390979aed6a9b6");
+  });
+});
+
+
+describe("generatePackageKey", () => {
+  it("generates a key with the provided timestamp", () => {
+    const key = generatePackageKey("run_summary", "tenant", "123", "2023-01-01T00-00-00-000Z");
+    expect(key).toBe("run_summary::tenant::123::2023-01-01T00-00-00-000Z");
+  });
+
+  it("generates a key using the current timestamp if not provided", () => {
+    const key = generatePackageKey("run_summary", "tenant", "123");
+    expect(key).toMatch(/^run_summary::tenant::123::\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z$/);
   });
 });
