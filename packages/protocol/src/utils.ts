@@ -137,7 +137,9 @@ export function maskPII(input: string, maskChar: string = "*"): string {
   input = input.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, (email) => {
     const [local, domain] = email.split("@");
     if (!local || !domain) return email;
-    return `${local[0]}${maskChar.repeat(Math.max(0, local.length - 2))}@${domain}`;
+    return local.length <= 2
+      ? `${local[0]}@${domain}`
+      : `${local[0]}${maskChar.repeat(local.length - 1)}@${domain}`;
   });
 
   // Mask credit card numbers (basic)
