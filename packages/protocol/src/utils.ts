@@ -172,30 +172,33 @@ export function generateSecureId(prefix: string = "id"): string {
 /**
  * Deep clone object (for immutable updates)
  */
-export function deepClone<T>(obj: T): T {
+export function deepClone<T>(obj: T, seen = new WeakSet()): T {
   if (obj === null || typeof obj !== "object") {
     return obj;
   }
 
+  if (seen.has(obj as any)) {
+    throw new RangeError("Circular reference detected in deepClone");
+  }
+  seen.add(obj as any);
+
+  let result: any;
+
   if (obj instanceof Date) {
-    return new Date(obj.getTime()) as unknown as T;
-  }
-
-  if (obj instanceof Array) {
-    return obj.map((item) => deepClone(item)) as unknown as T;
-  }
-
-  if (typeof obj === "object") {
-    const cloned = {} as T;
+    result = new Date(obj.getTime());
+  } else if (obj instanceof Array) {
+    result = obj.map((item) => deepClone(item, seen));
+  } else {
+    result = {};
     for (const key in obj) {
       if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        cloned[key] = deepClone(obj[key]);
+        result[key] = deepClone(obj[key], seen);
       }
     }
-    return cloned;
   }
 
-  return obj;
+  seen.delete(obj as any);
+  return result as T;
 }
 
 /**
