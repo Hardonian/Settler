@@ -10,7 +10,9 @@ const createJestConfig = nextJest({
 const customJestConfig = {
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
   testEnvironment: "jest-environment-jsdom",
+  transformIgnorePatterns: ["/node_modules/(?!(uncrypto|@upstash/redis)/)"],
   moduleNameMapper: {
+    "^uncrypto$": require.resolve("uncrypto"),
     "^@settler/reconciliation-core$": "<rootDir>/../reconciliation-core/src/index.ts",
     "^@settler/reconciliation-core/dist$": "<rootDir>/../reconciliation-core/src/index.ts",
     "^@settler/reconciliation-core/dist/(.*)$": "<rootDir>/../reconciliation-core/src/$1",
