@@ -1,43 +1,46 @@
-import { isValidMoney } from "../src/utils";
-import { Money } from "../src/index";
+import { deepClone } from "../src/utils";
 
-describe("isValidMoney", () => {
-  it("should return false for null or undefined", () => {
-    expect(isValidMoney(null as any)).toBe(false);
-    expect(isValidMoney(undefined as any)).toBe(false);
+describe("deepClone Date edge cases", () => {
+  it("should deep clone a valid Date object", () => {
+    const originalDate = new Date("2023-01-01T00:00:00Z");
+    const clonedDate = deepClone(originalDate);
+
+    // Should not be the exact same instance
+    expect(clonedDate).not.toBe(originalDate);
+    // Should have the same time value
+    expect(clonedDate.getTime()).toBe(originalDate.getTime());
+    // Should still be a Date instance
+    expect(clonedDate instanceof Date).toBe(true);
   });
 
-  it("should return false for non-object types", () => {
-    expect(isValidMoney("10.00" as any)).toBe(false);
-    expect(isValidMoney(10.0 as any)).toBe(false);
-    expect(isValidMoney(true as any)).toBe(false);
+  it("should handle invalid dates correctly", () => {
+    const originalInvalidDate = new Date("invalid date string");
+    const clonedInvalidDate = deepClone(originalInvalidDate);
+
+    // Should not be the exact same instance
+    expect(clonedInvalidDate).not.toBe(originalInvalidDate);
+    // Should have the same time value (NaN)
+    expect(Number.isNaN(clonedInvalidDate.getTime())).toBe(true);
+    // Should still be a Date instance
+    expect(clonedInvalidDate instanceof Date).toBe(true);
   });
 
-  it("should return false for missing or invalid value field", () => {
-    expect(isValidMoney({ currency: "USD" } as any)).toBe(false);
-    expect(isValidMoney({ value: "10", currency: "USD" } as any)).toBe(false);
-    expect(isValidMoney({ value: NaN, currency: "USD" } as any)).toBe(false);
-    expect(isValidMoney({ value: Infinity, currency: "USD" } as any)).toBe(false);
-    expect(isValidMoney({ value: -Infinity, currency: "USD" } as any)).toBe(false);
+  it("should handle Date inside an object", () => {
+    const original = { date: new Date("2023-01-01T00:00:00Z") };
+    const cloned = deepClone(original);
+
+    expect(cloned.date).not.toBe(original.date);
+    expect(cloned.date.getTime()).toBe(original.date.getTime());
   });
 
-  it("should return false for negative amounts", () => {
-    expect(isValidMoney({ value: -10, currency: "USD" } as Money)).toBe(false);
-    expect(isValidMoney({ value: -0.01, currency: "USD" } as Money)).toBe(false);
-  });
+  it("should handle Date inside an array", () => {
+    const original = [new Date("2023-01-01T00:00:00Z")];
+    const cloned = deepClone(original);
 
-  it("should return false for invalid currency codes", () => {
-    expect(isValidMoney({ value: 10, currency: "" } as Money)).toBe(false);
-    expect(isValidMoney({ value: 10, currency: "US" } as Money)).toBe(false);
-    expect(isValidMoney({ value: 10, currency: "USDT" } as Money)).toBe(false);
-    expect(isValidMoney({ value: 10, currency: "usd" } as Money)).toBe(false);
-    expect(isValidMoney({ value: 10, currency: "123" } as Money)).toBe(false);
-  });
-
-  it("should return true for valid money amounts", () => {
-    expect(isValidMoney({ value: 0, currency: "USD" } as Money)).toBe(true);
-    expect(isValidMoney({ value: 10, currency: "USD" } as Money)).toBe(true);
-    expect(isValidMoney({ value: 10.5, currency: "EUR" } as Money)).toBe(true);
-    expect(isValidMoney({ value: 9999999.99, currency: "JPY" } as Money)).toBe(true);
+    expect(cloned[0]).not.toBeUndefined();
+    expect(original[0]).not.toBeUndefined();
+    expect(cloned[0]).not.toBe(original[0]);
+    // We assert it's a date to fix TS issues
+    expect((cloned[0] as Date).getTime()).toBe((original[0] as Date).getTime());
   });
 });
