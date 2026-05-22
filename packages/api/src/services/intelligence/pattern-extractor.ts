@@ -7,7 +7,6 @@
 
 import { PrismaClient } from "@prisma/client";
 
-
 export interface ExtractedPattern {
   type: "workflow" | "template" | "validation_rule" | "transform_recipe" | "mapping_template";
   pattern: Record<string, unknown>;

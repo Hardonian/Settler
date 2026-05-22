@@ -7,7 +7,6 @@
 
 import { PrismaClient } from "@prisma/client";
 
-
 export interface UsageSimulation {
   period: "daily" | "weekly" | "monthly";
   reconComparisons: number;
