@@ -164,26 +164,31 @@ function generateSecureId(prefix = "id") {
 /**
  * Deep clone object (for immutable updates)
  */
-function deepClone(obj) {
+function deepClone(obj, seen = new WeakSet()) {
     if (obj === null || typeof obj !== "object") {
         return obj;
     }
+    if (seen.has(obj)) {
+        throw new RangeError("Circular reference detected in deepClone");
+    }
+    seen.add(obj);
+    let result;
     if (obj instanceof Date) {
-        return new Date(obj.getTime());
+        result = new Date(obj.getTime());
     }
-    if (obj instanceof Array) {
-        return obj.map((item) => deepClone(item));
+    else if (obj instanceof Array) {
+        result = obj.map((item) => deepClone(item, seen));
     }
-    if (typeof obj === "object") {
-        const cloned = {};
+    else {
+        result = {};
         for (const key in obj) {
             if (Object.prototype.hasOwnProperty.call(obj, key)) {
-                cloned[key] = deepClone(obj[key]);
+                result[key] = deepClone(obj[key], seen);
             }
         }
-        return cloned;
     }
-    return obj;
+    seen.delete(obj);
+    return result;
 }
 /**
  * Deterministically normalize data for hashing
