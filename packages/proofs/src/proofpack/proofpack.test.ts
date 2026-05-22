@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { computePackageHash } from "./index";
+import { computePackageHash, generatePackageKey } from "./index";
 
 describe("computePackageHash", () => {
   it("produces identical hashes regardless of when called (no timestamp dependency)", () => {
