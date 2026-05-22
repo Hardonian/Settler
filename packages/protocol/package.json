@@ -17,6 +17,7 @@
     "PROTOCOL.md"
   ],
   "scripts": {
+    "test": "jest",
     "build": "node ../../scripts/run-package-tsc-build.mjs",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit",
@@ -39,5 +40,9 @@
     "url": "https://github.com/settler/react-settler.git",
     "directory": "packages/protocol"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.4.9"
+  }
 }
