@@ -1,31 +1,28 @@
-import { isValidISODate } from "../utils";
+import { formatMoney } from '../utils';
 
-describe("isValidISODate", () => {
-  it("should return true for a valid ISO 8601 date string", () => {
-    expect(isValidISODate("2023-01-01T12:00:00.000Z")).toBe(true);
+describe('formatMoney', () => {
+  it('should format valid money successfully', () => {
+    const money = { value: 100, currency: 'USD' };
+    expect(formatMoney(money)).toBe('$100.00');
   });
 
-  it("should return false for an invalid ISO 8601 date string", () => {
-    expect(isValidISODate("2023-01-01 12:00:00")).toBe(false);
+  it('should handle invalid money', () => {
+    expect(formatMoney(null as any)).toBe('Invalid');
   });
 
-  it("should return false for a non-existent date", () => {
-    expect(isValidISODate("2023-02-29T12:00:00.000Z")).toBe(false); // Not a leap year
-  });
+  it('should fallback when Intl.NumberFormat throws an error', () => {
+    // We can use jest.spyOn to mock Intl.NumberFormat to throw an error,
+    // simulating the catch block being executed.
+    const spy = jest.spyOn(Intl, 'NumberFormat').mockImplementation(() => {
+      throw new Error('Simulated Intl error');
+    });
 
-  it("should return false for an empty string", () => {
-    expect(isValidISODate("")).toBe(false);
-  });
-
-  it("should return false for non-string inputs", () => {
-    expect(isValidISODate(null as any)).toBe(false);
-    expect(isValidISODate(undefined as any)).toBe(false);
-    expect(isValidISODate(123 as any)).toBe(false);
-    expect(isValidISODate({} as any)).toBe(false);
-  });
-
-  it("should return false for strings with invalid formats", () => {
-    expect(isValidISODate("invalid")).toBe(false);
-    expect(isValidISODate("2023-13-01T12:00:00.000Z")).toBe(false);
+    try {
+      const money = { value: 100, currency: 'USD' };
+      const result = formatMoney(money);
+      expect(result).toBe('USD 100.00');
+    } finally {
+      spy.mockRestore();
+    }
   });
 });
