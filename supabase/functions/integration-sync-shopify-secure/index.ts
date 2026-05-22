@@ -114,7 +114,91 @@ serve(async (req) => {
       }
 
       // Webhook validated, process it
-      // TODO: Process Shopify webhook
+      try {
+        JSON.parse(body);
+      } catch (e) {
+        // Acknowledge receipt even if invalid json
+        return new Response(JSON.stringify({ success: true, message: "Webhook processed" }), {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Initialize admin client to query ingestion_sources and billing_accounts since webhooks are unauthenticated
+      const supabaseAdmin = createClient(
+        Deno.env.get("SUPABASE_URL") ?? "",
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+      );
+
+      // Find tenant associated with the shop domain
+      const { data: source, error: sourceError } = await supabaseAdmin
+        .from("ingestion_sources")
+        .select("tenant_id, user_id, id")
+        .eq("type", "shopify")
+        .filter("config_metadata->>shopDomain", "eq", shopDomain)
+        .maybeSingle();
+
+      if (sourceError || !source) {
+        console.error("Could not find tenant for shop domain:", shopDomain);
+        return new Response(JSON.stringify({ success: true, message: "Webhook ignored - shop not found" }), {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const tenantId = source.tenant_id;
+      const userId = source.user_id;
+
+      // Get billing account ID
+      const { data: billingAccount, error: billingError } = await supabaseAdmin
+        .from("billing_accounts")
+        .select("id")
+        .eq("tenant_id", tenantId)
+        .maybeSingle();
+
+      if (billingError || !billingAccount) {
+        console.error("Could not find billing account for tenant:", tenantId);
+        return new Response(JSON.stringify({ success: true, message: "Webhook ignored - billing account not found" }), {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const billingAccountId = billingAccount.id;
+      const topic = req.headers.get("x-shopify-topic") || "unknown";
+      const webhookId = req.headers.get("x-shopify-webhook-id");
+
+      // Log usage event
+      const { error: logError } = await supabaseAdmin.rpc("log_usage_event", {
+        p_billing_account_id: billingAccountId,
+        p_event_type: "integration_sync",
+        p_quantity: 1,
+        p_user_id: userId,
+        p_tenant_id: tenantId,
+        p_integration_id: "shopify",
+        p_unit: "sync",
+        p_metadata: { integration: "shopify", sync_type: "webhook", topic: topic, webhook_id: webhookId },
+      });
+
+      if (logError) {
+        console.error("Error logging usage for webhook:", logError);
+      } else {
+        // Update integration health (success)
+        await supabaseAdmin.rpc("update_integration_health", {
+          p_tenant_id: tenantId,
+          p_integration_id: "shopify",
+          p_success: true,
+        });
+
+        // Record quota usage
+        await supabaseAdmin.rpc("record_integration_quota_usage", {
+          p_tenant_id: tenantId,
+          p_integration_id: "shopify",
+          p_quota_type: "api_calls",
+          p_amount: 1,
+        });
+      }
+
       return new Response(JSON.stringify({ success: true, message: "Webhook processed" }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
