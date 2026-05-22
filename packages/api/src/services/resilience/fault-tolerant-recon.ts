@@ -126,7 +126,7 @@ export class FaultTolerantRecon {
       return { fixed: false, newState: null };
     }
 
-    // Try to fix the error using fix-forward logic
+    // Execute fix-forward logic to recover from the error
     let fixed = false;
     let newState = { ...checkpoint.state };
 
@@ -163,7 +163,7 @@ export class FaultTolerantRecon {
         logInfo("Authentication error cannot be auto-fixed", { jobId });
         fixed = false;
       } else if (errorMessage.includes("validation") || errorMessage.includes("400")) {
-        // Try to sanitize and retry
+        // Attempt to sanitize and retry
         logInfo("Applying validation error fix-forward strategy", { jobId });
         fixed = true;
         const existingErrors = Array.isArray(checkpoint.state.validationErrors)
