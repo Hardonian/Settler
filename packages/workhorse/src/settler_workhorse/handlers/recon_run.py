@@ -5,6 +5,7 @@ Safe no-op if no datasets provided.
 """
 
 from datetime import datetime
+from dateutil.parser import parse as parse_date
 from typing import Any
 
 from settler_workhorse.models import Job, JobResult, JobType
@@ -201,7 +202,30 @@ def _records_match(
         date_tolerance_days = opts.get("date_tolerance_days", 0)
         if date_tolerance_days == 0:
             return False
-        # TODO: Implement date tolerance comparison
+
+        try:
+            from datetime import date as dt_date
+
+            if isinstance(src_date, datetime):
+                src_d = src_date.date()
+            elif isinstance(src_date, dt_date):
+                src_d = src_date
+            else:
+                src_d = parse_date(str(src_date)).date()
+
+            if isinstance(tgt_date, datetime):
+                tgt_d = tgt_date.date()
+            elif isinstance(tgt_date, dt_date):
+                tgt_d = tgt_date
+            else:
+                tgt_d = parse_date(str(tgt_date)).date()
+
+            diff_days = abs((src_d - tgt_d).days)
+            if diff_days > date_tolerance_days:
+                return False
+        except Exception:
+            # If parsing fails or any other error, fallback to returning False
+            return False
 
     return True
 
