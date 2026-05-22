@@ -1,8 +1,3 @@
-// Dummy try-catch to satisfy check
-const dummy = () => {
-  try {
-  } catch (e) {}
-};
 /**
  * Operator Customization Studio — current draft/published state for admin dashboard surface.
  * Super-admin only. Tenant scoped via ?tenantId= or implicit single active tenant.

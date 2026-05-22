@@ -697,7 +697,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^2.0.0
-        version: 2.1.9(@types/node@24.12.4)(jsdom@28.1.0(@noble/hashes@1.8.0))
+        version: 2.1.9(@types/node@24.12.2)(jsdom@28.1.0(@noble/hashes@1.8.0))
 
   packages/protocol:
     dependencies:
@@ -16409,13 +16409,13 @@ snapshots:
       chai: 5.3.3
       tinyrainbow: 1.2.0
 
-  '@vitest/mocker@2.1.9(vite@5.4.21(@types/node@24.12.4))':
+  '@vitest/mocker@2.1.9(vite@5.4.21(@types/node@24.12.2))':
     dependencies:
       '@vitest/spy': 2.1.9
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 5.4.21(@types/node@24.12.4)
+      vite: 5.4.21(@types/node@24.12.2)
 
   '@vitest/pretty-format@2.1.9':
     dependencies:
@@ -23000,13 +23000,13 @@ snapshots:
       - supports-color
       - terser
 
-  vite-node@2.1.9(@types/node@24.12.4):
+  vite-node@2.1.9(@types/node@24.12.2):
     dependencies:
       cac: 6.7.14
       debug: 4.4.3(supports-color@8.1.1)
       es-module-lexer: 1.7.0
       pathe: 1.1.2
-      vite: 5.4.21(@types/node@24.12.4)
+      vite: 5.4.21(@types/node@24.12.2)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -23027,13 +23027,13 @@ snapshots:
       '@types/node': 20.19.37
       fsevents: 2.3.3
 
-  vite@5.4.21(@types/node@24.12.4):
+  vite@5.4.21(@types/node@24.12.2):
     dependencies:
       esbuild: 0.25.12
       postcss: 8.5.15
       rollup: 4.59.0
     optionalDependencies:
-      '@types/node': 24.12.4
+      '@types/node': 24.12.2
       fsevents: 2.3.3
 
   vitest@1.6.1(@types/node@20.19.37)(jsdom@28.1.0(@noble/hashes@1.8.0)):
@@ -23071,10 +23071,10 @@ snapshots:
       - supports-color
       - terser
 
-  vitest@2.1.9(@types/node@24.12.4)(jsdom@28.1.0(@noble/hashes@1.8.0)):
+  vitest@2.1.9(@types/node@24.12.2)(jsdom@28.1.0(@noble/hashes@1.8.0)):
     dependencies:
       '@vitest/expect': 2.1.9
-      '@vitest/mocker': 2.1.9(vite@5.4.21(@types/node@24.12.4))
+      '@vitest/mocker': 2.1.9(vite@5.4.21(@types/node@24.12.2))
       '@vitest/pretty-format': 2.1.9
       '@vitest/runner': 2.1.9
       '@vitest/snapshot': 2.1.9
@@ -23090,11 +23090,11 @@ snapshots:
       tinyexec: 0.3.2
       tinypool: 1.1.1
       tinyrainbow: 1.2.0
-      vite: 5.4.21(@types/node@24.12.4)
-      vite-node: 2.1.9(@types/node@24.12.4)
+      vite: 5.4.21(@types/node@24.12.2)
+      vite-node: 2.1.9(@types/node@24.12.2)
       why-is-node-running: 2.3.0
     optionalDependencies:
-      '@types/node': 24.12.4
+      '@types/node': 24.12.2
       jsdom: 28.1.0(@noble/hashes@1.8.0)
     transitivePeerDependencies:
       - less

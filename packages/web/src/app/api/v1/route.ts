@@ -1,8 +1,3 @@
-// Dummy try-catch to satisfy check
-const dummy = () => {
-  try {
-  } catch (e) {}
-};
 /**
  * API v1 Base Route
  *

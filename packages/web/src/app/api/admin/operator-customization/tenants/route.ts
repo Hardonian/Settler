@@ -1,8 +1,3 @@
-// Dummy try-catch to satisfy check
-const dummy = () => {
-  try {
-  } catch (e) {}
-};
 /**
  * Active tenants for super-admin customization targeting (explicit tenant selection in multi-tenant envs).
  */

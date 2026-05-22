@@ -1,8 +1,3 @@
-// Dummy try-catch to satisfy check
-const dummy = () => {
-  try {
-  } catch (e) {}
-};
 /**
  * GET /api/console/workforce/registry
  * Canonical capability disclosure for bounded workforce modules (OSS-safe).

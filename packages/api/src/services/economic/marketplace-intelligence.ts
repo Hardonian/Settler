@@ -123,100 +123,32 @@ export class MarketplaceIntelligence {
 
     const items: MarketplaceItem[] = [];
 
-    if (templates.length === 0) {
-      return items;
-    }
-
-    const templateIds = templates.map((t) => t.id);
-
-    // Fetch all jobs for these templates at once
-    const allJobs = await this.prisma.reconJob.findMany({
-      where: { templateId: { in: templateIds } },
-      select: { id: true, templateId: true },
-    });
-
-    // Group jobs by templateId
-    const jobsByTemplate = new Map<string, typeof allJobs>();
-    for (const job of allJobs) {
-      if (job.templateId) {
-        if (!jobsByTemplate.has(job.templateId)) {
-          jobsByTemplate.set(job.templateId, []);
-        }
-        jobsByTemplate.get(job.templateId)!.push(job);
-      }
-    }
-
-    // Prepare job arrays limited to 1000 per template as in original code
-    const limitedJobsByTemplate = new Map<string, typeof allJobs>();
-    const limitedJobIds: string[] = [];
-
-    for (const templateId of templateIds) {
-      const jobs = jobsByTemplate.get(templateId) || [];
-      const limitedJobs = jobs.slice(0, 1000);
-      limitedJobsByTemplate.set(templateId, limitedJobs);
-      limitedJobIds.push(...limitedJobs.map((j) => j.id));
-    }
-
-    // Fetch all drift events for all limited jobs
-    const allDrifts =
-      limitedJobIds.length > 0
-        ? await this.prisma.driftEvent.findMany({
-            where: { reconJobId: { in: limitedJobIds } },
-            select: { reconJobId: true },
-          })
-        : [];
-
-    // Group drifts by reconJobId
-    const driftsByJob = new Map<string, typeof allDrifts>();
-    for (const drift of allDrifts) {
-      if (drift.reconJobId) {
-        if (!driftsByJob.has(drift.reconJobId)) {
-          driftsByJob.set(drift.reconJobId, []);
-        }
-        driftsByJob.get(drift.reconJobId)!.push(drift);
-      }
-    }
-
-    // Fetch all results for all limited jobs
-    const allResults =
-      limitedJobIds.length > 0
-        ? await this.prisma.reconResult.findMany({
-            where: { reconJobId: { in: limitedJobIds } },
-            select: { reconJobId: true, status: true },
-          })
-        : [];
-
-    // Group results by reconJobId
-    const resultsByJob = new Map<string, typeof allResults>();
-    for (const result of allResults) {
-      if (result.reconJobId) {
-        if (!resultsByJob.has(result.reconJobId)) {
-          resultsByJob.set(result.reconJobId, []);
-        }
-        resultsByJob.get(result.reconJobId)!.push(result);
-      }
-    }
-
     for (const template of templates) {
-      const jobs = limitedJobsByTemplate.get(template.id) || [];
+      const jobs = await this.prisma.reconJob.findMany({
+        where: { templateId: template.id },
+        take: 1000,
+      });
+
       const popularity = Math.min(jobs.length / 1000, 1.0);
 
-      let driftsCount = 0;
-      for (const job of jobs) {
-        driftsCount += (driftsByJob.get(job.id) || []).length;
-      }
-      driftsCount = Math.min(driftsCount, 100);
+      const drifts = await this.prisma.driftEvent.findMany({
+        where: {
+          reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
+        },
+        take: 100,
+      });
 
-      const driftRate = driftsCount / Math.max(jobs.length, 1);
+      const driftRate = drifts.length / Math.max(jobs.length, 1);
 
-      let resultsForJobs = [];
-      for (const job of jobs) {
-        resultsForJobs.push(...(resultsByJob.get(job.id) || []));
-      }
-      resultsForJobs = resultsForJobs.slice(0, 1000);
+      const results = await this.prisma.reconResult.findMany({
+        where: {
+          reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
+        },
+        take: 1000,
+      });
 
-      const failures = resultsForJobs.filter((r) => r.status === "failed").length;
-      const reliability = 1 - failures / Math.max(resultsForJobs.length, 1);
+      const failures = results.filter((r: { status: string }) => r.status === "failed").length;
+      const reliability = 1 - failures / Math.max(results.length, 1);
 
       const revenuePotential = popularity * reliability * 1000; // Placeholder
 
@@ -243,7 +175,7 @@ export class MarketplaceIntelligence {
       include: { _count: { select: { executions: true } } },
     });
 
-    return workflows.map((wf) => ({
+    return workflows.map(wf => ({
       id: `workflow-${wf.id}`,
       type: "workflow" as const,
       name: wf.name,
@@ -253,7 +185,7 @@ export class MarketplaceIntelligence {
       rating: 4.5,
       popularity: Math.min(wf._count.executions / 100, 1),
       reliability: 0.9,
-      tags: (wf.tags as string[]) || [],
+      tags: wf.tags as string[] || [],
     }));
   }
 
@@ -271,9 +203,9 @@ export class MarketplaceIntelligence {
       },
     });
 
-    return recipes.map((recipe) => {
+    return recipes.map(recipe => {
       const totalJobs = recipe.jobs.length;
-      const failedJobs = recipe.jobs.filter((j) => j.status === "error").length;
+      const failedJobs = recipe.jobs.filter(j => j.status === 'error').length;
       const reliability = totalJobs > 0 ? (totalJobs - failedJobs) / totalJobs : 0.95;
 
       return {
@@ -286,7 +218,7 @@ export class MarketplaceIntelligence {
         rating: reliability > 0.95 ? 5 : reliability > 0.9 ? 4 : 3,
         popularity: Math.min(recipe._count.jobs / 50, 1),
         reliability,
-        tags: (recipe.tags as string[]) || [],
+        tags: recipe.tags as string[] || [],
       };
     });
   }
@@ -304,20 +236,19 @@ export class MarketplaceIntelligence {
     });
 
     return Promise.all(
-      templates.map(async (template) => {
+      templates.map(async template => {
         // Calculate match rate from recent results
         const matchRates = await this.prisma.reconResult.findMany({
           where: {
-            reconJobId: { in: template.reconJobs.map((j) => j.id) },
+            reconJobId: { in: template.reconJobs.map(j => j.id) },
           },
           select: { confidence: true },
           take: 100,
         });
 
-        const avgMatchRate =
-          matchRates.length > 0
-            ? matchRates.reduce((sum, r) => sum + (r.confidence || 0), 0) / matchRates.length
-            : 0.85;
+        const avgMatchRate = matchRates.length > 0
+          ? matchRates.reduce((sum, r) => sum + (r.confidence || 0), 0) / matchRates.length
+          : 0.85;
 
         return {
           id: `mapping-${template.id}`,
@@ -329,7 +260,7 @@ export class MarketplaceIntelligence {
           rating: avgMatchRate > 0.9 ? 5 : avgMatchRate > 0.8 ? 4 : 3,
           popularity: Math.min(template._count.reconJobs / 30, 1),
           reliability: avgMatchRate,
-          tags: (template.tags as string[]) || [],
+          tags: template.tags as string[] || [],
         };
       })
     );
@@ -346,7 +277,7 @@ export class MarketplaceIntelligence {
       },
     });
 
-    return rules.map((rule) => {
+    return rules.map(rule => {
       const totalExecutions = rule._count.executions;
       const totalFailures = rule._count.failures;
       const falsePositiveRate = totalExecutions > 0 ? totalFailures / totalExecutions : 0.1;
@@ -362,7 +293,7 @@ export class MarketplaceIntelligence {
         rating: reliability > 0.95 ? 5 : reliability > 0.9 ? 4 : 3,
         popularity: Math.min(totalExecutions / 100, 1),
         reliability,
-        tags: (rule.tags as string[]) || [],
+        tags: rule.tags as string[] || [],
       };
     });
   }

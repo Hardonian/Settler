@@ -1,8 +1,3 @@
-// Dummy try-catch to satisfy check
-const dummy = () => {
-  try {
-  } catch (e) {}
-};
 /**
  * GET /api/console/workforce/runs — recent Prior Run Delta Analyst audit rows
  */

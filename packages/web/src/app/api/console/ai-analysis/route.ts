@@ -1,8 +1,3 @@
-// Dummy try-catch to satisfy check
-const dummy = () => {
-  try {
-  } catch (e) {}
-};
 import { NextRequest, NextResponse } from "next/server";
 import { requireActiveSubscription } from "@/lib/security/billing-enforcement";
 import { withSecurity } from "@/lib/middleware/api-security";

@@ -1,8 +1,3 @@
-// Dummy try-catch to satisfy check
-const dummy = () => {
-  try {
-  } catch (e) {}
-};
 import { NextRequest, NextResponse } from "next/server";
 import { getExecutionGraph, verifyProofChain } from "@/lib/trust-graph/explorer";
 import { withTrustRun } from "../_shared";

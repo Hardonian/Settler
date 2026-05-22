@@ -1,8 +1,3 @@
-// Dummy try-catch to satisfy check
-const dummy = () => {
-  try {
-  } catch (e) {}
-};
 // ROUTE_CLASS: admin-internal
 // AUTH: API key + adminRole
 import { NextResponse } from "next/server";
