@@ -42,7 +42,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: false
+          cache: "pnpm"
       - run: pnpm install --frozen-lockfile
       - name: Validate environment schema
         run: npx --yes tsx --check config/env.schema.ts
@@ -67,7 +67,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: false
+          cache: "pnpm"
       - run: pnpm install --frozen-lockfile
       - name: Run tests
         run: pnpm run test -- --coverage
@@ -101,7 +101,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: false
+          cache: "pnpm"
       - run: pnpm install --frozen-lockfile
       - name: Build all packages
         run: npx turbo run build
@@ -133,7 +133,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: false
+          cache: "pnpm"
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
