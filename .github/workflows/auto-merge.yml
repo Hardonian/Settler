@@ -15,6 +15,8 @@ jobs:
   pre-merge-checks:
     name: Pre-Merge Safety Checks
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v4
@@ -29,13 +31,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: false
 
       - run: pnpm install --frozen-lockfile
 
       - name: Run Classification Check
         id: classify
         run: |
+          mkdir -p artifacts
           npm run classify:strict
           echo "classification_passed=true" >> $GITHUB_OUTPUT
         continue-on-error: true
@@ -49,6 +51,7 @@ jobs:
 
       - name: Upload Classification Report
         if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: classification-report-pr-${{ github.event.pull_request.number }}
@@ -57,6 +60,7 @@ jobs:
 
       - name: Comment PR with Classification Status
         if: always()
+        continue-on-error: true
         uses: actions/github-script@v7
         with:
           script: |
@@ -111,6 +115,8 @@ jobs:
   auto-merge-dependabot:
     name: Auto-merge safe Dependabot updates
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     needs: [pre-merge-checks]
     if: |
       github.event.pull_request.draft == false &&
