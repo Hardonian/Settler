@@ -18,7 +18,9 @@
   ],
   "scripts": {
     "build": "node ../../scripts/run-package-tsc-build.mjs",
+    "test": "jest",
     "dev": "tsc --watch",
+    "test": "jest",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
     "test": "jest"
