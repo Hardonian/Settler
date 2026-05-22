@@ -9,7 +9,7 @@ describe("isValidMoney", () => {
 
   it("should return false for non-object types", () => {
     expect(isValidMoney("10.00" as any)).toBe(false);
-    expect(isValidMoney(10.00 as any)).toBe(false);
+    expect(isValidMoney(10.0 as any)).toBe(false);
     expect(isValidMoney(true as any)).toBe(false);
   });
 
