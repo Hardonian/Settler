@@ -17,6 +17,10 @@ from settler_workhorse.handlers.variance_report import (
     _calculate_variance_metrics,
     handle_variance_report,
 )
+from settler_workhorse.handlers.recon_run import (
+    reconcile_datasets,
+    handle_recon_run,
+)
 from settler_workhorse.models import JobType
 
 
@@ -161,6 +165,35 @@ def test_job_types_exist():
     print("OK: New job types are registered in handler registry")
 
 
+
+
+def test_recon_run_date_tolerance():
+    """Test reconciliation datasets with date tolerance."""
+    sources = [
+        {"id": "src1", "amount": 100.00, "date": "2024-01-15T12:00:00Z"},
+        {"id": "src2", "amount": 50.00, "date": "2024-01-15"},
+    ]
+
+    # tgt1 is 1 day after src1
+    # tgt2 is unparseable date
+    targets = [
+        {"id": "tgt1", "amount": 100.00, "date": "2024-01-16T12:00:00Z"},
+        {"id": "tgt2", "amount": 50.00, "date": "invalid-date"},
+    ]
+
+    # For reconcile_datasets to match, the key built by _build_match_key must be the same
+    # The default match_keys are ["external_id"] but here we'll use "amount" since date is tested in _records_match
+
+    # Match tgt1 with 1 day tolerance
+    results = reconcile_datasets(sources, targets, match_keys=["amount"], options={"date_tolerance_days": 1})
+    assert results["matched"] == 1
+
+    # Fail to match tgt1 with 0 day tolerance
+    results_strict = reconcile_datasets(sources, targets, match_keys=["amount"], options={"date_tolerance_days": 0})
+    assert results_strict["matched"] == 0
+
+    print("OK: Date tolerance matching works")
+
 def main():
     """Run all Phase 4 handler tests."""
     print("=" * 60)
@@ -174,6 +207,7 @@ def main():
         test_transaction_matching,
         test_transaction_matching_tolerance,
         test_transaction_matching_tolerance_with_same_key,
+        test_recon_run_date_tolerance,
         test_variance_report_handler_exists,
         test_transaction_match_handler_exists,
         test_job_types_exist,
