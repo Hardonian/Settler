@@ -6,7 +6,7 @@
  */
 
 import { PrismaClient } from "@prisma/client";
-// logInfo imported but unused - may be used in future
+
 import { MetaModels } from "../predictive/meta-models";
 
 export interface PricingAnalysis {

@@ -6,7 +6,7 @@
  */
 
 import { PrismaClient } from "@prisma/client";
-// logInfo imported but unused - may be used in future
+
 
 export interface MarketplaceItem {
   id: string;

@@ -6,7 +6,7 @@
  */
 
 import { PrismaClient } from "@prisma/client";
-// logInfo imported but unused - may be used in future
+
 
 export interface PricingRecommendation {
   type: "tier_adjustment" | "usage_threshold" | "overage_pricing" | "enterprise_deal";

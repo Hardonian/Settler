@@ -6,7 +6,7 @@
  */
 
 import { PrismaClient } from "@prisma/client";
-// logInfo imported but unused - may be used in future
+
 
 export interface ExtractedPattern {
   type: "workflow" | "template" | "validation_rule" | "transform_recipe" | "mapping_template";
