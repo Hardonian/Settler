@@ -7,7 +7,6 @@
 
 import { PrismaClient } from "@prisma/client";
 import { logInfo } from "../../utils/logger";
-// Removed unused imports: AIRouter, AIModel
 
 export interface UsageOptimization {
   recommendation: string;
