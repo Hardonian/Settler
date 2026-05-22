@@ -7,9 +7,7 @@ interface StructuredDataProps {
 }
 
 export function StructuredData({ data, id }: StructuredDataProps) {
-  const safeJson = JSON.stringify(data, null, 0)
-    .replace(/</g, "\\u003c")
-    .replace(/>/g, "\\u003e");
+  const safeJson = JSON.stringify(data, null, 0).replace(/</g, "\\u003c").replace(/>/g, "\\u003e");
 
   return (
     <script
