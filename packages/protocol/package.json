@@ -21,7 +21,8 @@
     "dev": "tsc --watch",
     "test": "jest",
     "typecheck": "tsc --noEmit",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "test": "jest"
   },
   "dependencies": {
     "@types/node": "^24.0.0",
