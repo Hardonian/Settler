@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { computePackageHash } from "./index";
+import { computePackageHash, generatePackageKey } from "./index";
 
 describe("computePackageHash", () => {
   it("produces identical hashes regardless of when called (no timestamp dependency)", () => {
@@ -41,5 +41,18 @@ describe("computePackageHash", () => {
     ]);
 
     expect(hash1).toBe(hash2);
+  });
+});
+
+
+describe("generatePackageKey", () => {
+  it("generates a key with the provided timestamp", () => {
+    const key = generatePackageKey("run_summary", "tenant", "123", "2023-01-01T00-00-00-000Z");
+    expect(key).toBe("run_summary::tenant::123::2023-01-01T00-00-00-000Z");
+  });
+
+  it("generates a key using the current timestamp if not provided", () => {
+    const key = generatePackageKey("run_summary", "tenant", "123");
+    expect(key).toMatch(/^run_summary::tenant::123::\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z$/);
   });
 });
