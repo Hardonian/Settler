@@ -16,7 +16,9 @@ describe("StructuredData", () => {
 
     // Should contain unicode escapes instead of raw brackets
     expect(content).toContain("\\u003cscript\\u003ealert(1)\\u003c/script\\u003e");
-    expect(content).toContain("\\u003c/script\\u003e\\u003cscript\\u003ealert('xss')\\u003c/script\\u003e");
+    expect(content).toContain(
+      "\\u003c/script\\u003e\\u003cscript\\u003ealert('xss')\\u003c/script\\u003e"
+    );
 
     // Should NOT contain raw brackets
     expect(content).not.toContain("<script>");
