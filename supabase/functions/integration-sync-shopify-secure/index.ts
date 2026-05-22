@@ -114,7 +114,55 @@ serve(async (req) => {
       }
 
       // Webhook validated, process it
-      // TODO: Process Shopify webhook
+      const supabaseServiceClient = createClient(
+        Deno.env.get("SUPABASE_URL") ?? "",
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+      );
+
+      // Find tenant ID from service_integrations table using the shop domain
+      const { data: integrationData, error: integrationError } = await supabaseServiceClient
+        .from('service_integrations')
+        .select('tenant_id')
+        .eq('type', 'shopify')
+        .eq('status', 'active')
+        .filter('config->>shopDomain', 'eq', shopDomain)
+        .maybeSingle();
+
+      if (integrationError || !integrationData) {
+        console.error("No active Shopify integration found for domain:", shopDomain);
+        return new Response(JSON.stringify({ error: "Integration not found" }), {
+          status: 404,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      let parsedPayload;
+      try {
+        parsedPayload = JSON.parse(body);
+      } catch (e) {
+        return new Response(JSON.stringify({ error: "Invalid JSON payload" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const { error: insertError } = await supabaseServiceClient
+        .from('webhook_payloads')
+        .insert({
+          adapter: 'shopify',
+          tenant_id: integrationData.tenant_id,
+          payload: parsedPayload,
+          signature: shopifyHmac
+        });
+
+      if (insertError) {
+        console.error("Failed to insert webhook payload:", insertError);
+        return new Response(JSON.stringify({ error: "Failed to process webhook" }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       return new Response(JSON.stringify({ success: true, message: "Webhook processed" }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -161,7 +209,7 @@ serve(async (req) => {
     }
 
     // Parse request body
-    const body = await req.json();
+    const body = await req.json() as any;
     const { billing_account_id, project_id, tenant_id: bodyTenantId, sync_count } = body;
 
     if (!billing_account_id) {
@@ -280,7 +328,7 @@ serve(async (req) => {
     console.error("Unexpected error:", error);
 
     // Update integration health (failure)
-    const body = await req.json().catch(() => ({}));
+    const body = await req.json().catch(() => ({})) as any;
     const tenantId = body.tenant_id;
 
     if (tenantId) {
