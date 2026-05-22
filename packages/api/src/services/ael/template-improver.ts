@@ -167,27 +167,37 @@ export class TemplateImprover {
       take: 100,
     });
 
+    // Fetch all jobs once, outside the loop, to avoid N+1 and O(N*M) inefficient fetching
+    const allJobs = await this.prisma.reconJob.findMany({
+      select: { id: true, validationRules: true },
+    });
+
+    // Pre-calculate job mappings by rule ID for O(1) lookups
+    const jobsByRuleId = new Map<string, { id: string }[]>();
+    for (const job of allJobs) {
+      if (Array.isArray(job.validationRules)) {
+        for (const r of job.validationRules) {
+          let ruleId: string | null = null;
+          if (typeof r === "object" && r !== null && "id" in r) {
+            ruleId = (r as { id: string }).id;
+          } else if (typeof r === "string") {
+            ruleId = r;
+          }
+
+          if (ruleId) {
+            if (!jobsByRuleId.has(ruleId)) {
+              jobsByRuleId.set(ruleId, []);
+            }
+            jobsByRuleId.get(ruleId)!.push(job);
+          }
+        }
+      }
+    }
+
     for (const rule of rules) {
       // Check if rule catches issues effectively
       // Note: validationRules is a Json array field, so we check if rule.id is in the array
-      const allJobs = await this.prisma.reconJob.findMany({
-        select: { id: true, validationRules: true },
-      });
-
-      const jobs = allJobs.filter((job: { id: string; validationRules: unknown }) => {
-        const rules = job.validationRules;
-        if (Array.isArray(rules)) {
-          return rules.some(
-            (r: unknown) =>
-              (typeof r === "object" &&
-                r !== null &&
-                "id" in r &&
-                (r as { id: string }).id === rule.id) ||
-              r === rule.id
-          );
-        }
-        return false;
-      });
+      const jobs = jobsByRuleId.get(rule.id) || [];
 
       // If rule never fails, it might be too lenient
       const results = await this.prisma.reconResult.findMany({
