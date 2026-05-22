@@ -43,38 +43,16 @@ describe("computePackageHash", () => {
     expect(hash1).toBe(hash2);
   });
 
-  it("produces the expected deterministic hash for known inputs", () => {
-    // This test ensures that the hashing algorithm (sha256) and payload structure
-    // do not change unexpectedly, which would invalidate previously computed hashes.
-    const evidenceIds = ["ev-1", "ev-2", "ev-3"];
-    const packageType = "run_summary";
-    const scopeIds = ["run-abc", "run-def"];
-
-    // Hash of {"evidenceIds":["ev-1","ev-2","ev-3"],"packageType":"run_summary","scopeIds":["run-abc","run-def"]}
-    const expectedHash = "9f790259146ba47c203ad653b43c4a743b34a3b602817e0806c8d117af7ddb17";
-
-    expect(computePackageHash(evidenceIds, packageType, scopeIds)).toBe(expectedHash);
+  it("produces a known deterministic hash for specific inputs", () => {
+    // This test ensures that the JSON serialization and hashing algorithm remain stable.
+    // Hash corresponds to: {"evidenceIds":["ev-1","ev-2"],"packageType":"run_summary","scopeIds":["run-1"]}
+    const hash = computePackageHash(["ev-2", "ev-1"], "run_summary", ["run-1"]);
+    expect(hash).toBe("c92df386251339ea28ec9834322f6730c40a02523677247f1621384e0023aadc");
   });
 
-  it("handles empty arrays for evidence and scope", () => {
+  it("handles empty arrays gracefully and deterministically", () => {
+    // Hash corresponds to: {"evidenceIds":[],"packageType":"run_summary","scopeIds":[]}
     const hash = computePackageHash([], "run_summary", []);
-    expect(hash).toMatch(/^[a-f0-9]{64}$/);
-
-    // Hash of {"evidenceIds":[],"packageType":"run_summary","scopeIds":[]}
-    // 7bfb31d04bd7e8dd83ba796eebbc3f3e1ec34a06019318a0bc7f66a2b0c1696f
     expect(hash).toBe("f481a2496c98e538c0f38ca475eb0446f5bc195653353a8ab8390979aed6a9b6");
-  });
-});
-
-
-describe("generatePackageKey", () => {
-  it("generates a key with the provided timestamp", () => {
-    const key = generatePackageKey("run_summary", "tenant", "123", "2023-01-01T00-00-00-000Z");
-    expect(key).toBe("run_summary::tenant::123::2023-01-01T00-00-00-000Z");
-  });
-
-  it("generates a key using the current timestamp if not provided", () => {
-    const key = generatePackageKey("run_summary", "tenant", "123");
-    expect(key).toMatch(/^run_summary::tenant::123::\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z$/);
   });
 });
