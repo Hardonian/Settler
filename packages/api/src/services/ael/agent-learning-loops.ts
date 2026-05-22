@@ -204,11 +204,11 @@ export class AgentLearningLoops {
 
     // Find rules that are never used
     // Note: validationRules is a Json array field, so we check if rule.id is in the array
-    for (const rule of rules) {
-      const allJobs = await this.prisma.reconJob.findMany({
-        select: { id: true, validationRules: true },
-      });
+    const allJobs = await this.prisma.reconJob.findMany({
+      select: { id: true, validationRules: true },
+    });
 
+    for (const rule of rules) {
       const usage = allJobs.filter((job: { id: string; validationRules: unknown }) => {
         const rules = job.validationRules;
         if (Array.isArray(rules)) {
