@@ -42,4 +42,20 @@ describe("computePackageHash", () => {
 
     expect(hash1).toBe(hash2);
   });
+
+  it("produces deterministic hash for known inputs to prevent accidental algorithm changes", () => {
+    // These specific inputs should ALWAYS produce this specific hash.
+    // If this test fails, it means the hash algorithm or payload structure changed,
+    // which would break verification of all previously generated proof packages.
+    const hash = computePackageHash(["ev-1", "ev-2"], "run_summary", ["run-1"]);
+    expect(hash).toBe("c92df386251339ea28ec9834322f6730c40a02523677247f1621384e0023aadc");
+  });
+
+  it("handles empty arrays successfully and deterministically", () => {
+    const hash1 = computePackageHash([], "run_summary", []);
+    const hash2 = computePackageHash([], "exception_resolution", []);
+
+    expect(hash1).toMatch(/^[a-f0-9]{64}$/);
+    expect(hash1).not.toBe(hash2);
+  });
 });
