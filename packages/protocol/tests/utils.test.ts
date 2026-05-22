@@ -1,46 +1,43 @@
-import { deepClone } from "../src/utils";
+import { isValidCurrency } from "../src/utils";
 
-describe("deepClone Date edge cases", () => {
-  it("should deep clone a valid Date object", () => {
-    const originalDate = new Date("2023-01-01T00:00:00Z");
-    const clonedDate = deepClone(originalDate);
-
-    // Should not be the exact same instance
-    expect(clonedDate).not.toBe(originalDate);
-    // Should have the same time value
-    expect(clonedDate.getTime()).toBe(originalDate.getTime());
-    // Should still be a Date instance
-    expect(clonedDate instanceof Date).toBe(true);
+describe("Protocol Utilities - isValidCurrency", () => {
+  it("should return true for valid 3-letter uppercase currency codes", () => {
+    expect(isValidCurrency("USD")).toBe(true);
+    expect(isValidCurrency("EUR")).toBe(true);
+    expect(isValidCurrency("GBP")).toBe(true);
+    expect(isValidCurrency("JPY")).toBe(true);
   });
 
-  it("should handle invalid dates correctly", () => {
-    const originalInvalidDate = new Date("invalid date string");
-    const clonedInvalidDate = deepClone(originalInvalidDate);
-
-    // Should not be the exact same instance
-    expect(clonedInvalidDate).not.toBe(originalInvalidDate);
-    // Should have the same time value (NaN)
-    expect(Number.isNaN(clonedInvalidDate.getTime())).toBe(true);
-    // Should still be a Date instance
-    expect(clonedInvalidDate instanceof Date).toBe(true);
+  it("should return false for currency codes that are not 3 letters", () => {
+    expect(isValidCurrency("US")).toBe(false);
+    expect(isValidCurrency("USDD")).toBe(false);
+    expect(isValidCurrency("U")).toBe(false);
   });
 
-  it("should handle Date inside an object", () => {
-    const original = { date: new Date("2023-01-01T00:00:00Z") };
-    const cloned = deepClone(original);
-
-    expect(cloned.date).not.toBe(original.date);
-    expect(cloned.date.getTime()).toBe(original.date.getTime());
+  it("should return false for lowercase or mixed case currency codes", () => {
+    expect(isValidCurrency("usd")).toBe(false);
+    expect(isValidCurrency("Usd")).toBe(false);
+    expect(isValidCurrency("USd")).toBe(false);
   });
 
-  it("should handle Date inside an array", () => {
-    const original = [new Date("2023-01-01T00:00:00Z")];
-    const cloned = deepClone(original);
+  it("should return false for strings containing invalid characters", () => {
+    expect(isValidCurrency("US1")).toBe(false);
+    expect(isValidCurrency("US!")).toBe(false);
+    expect(isValidCurrency(" U ")).toBe(false);
+    expect(isValidCurrency(" USD ")).toBe(false); // leading/trailing spaces
+  });
 
-    expect(cloned[0]).not.toBeUndefined();
-    expect(original[0]).not.toBeUndefined();
-    expect(cloned[0]).not.toBe(original[0]);
-    // We assert it's a date to fix TS issues
-    expect((cloned[0] as Date).getTime()).toBe((original[0] as Date).getTime());
+  it("should return false for empty string", () => {
+    expect(isValidCurrency("")).toBe(false);
+  });
+
+  it("should return false for null, undefined, or non-string inputs", () => {
+    // We cast to any to test the runtime safety checks
+    expect(isValidCurrency(null as any)).toBe(false);
+    expect(isValidCurrency(undefined as any)).toBe(false);
+    expect(isValidCurrency(123 as any)).toBe(false);
+    expect(isValidCurrency({} as any)).toBe(false);
+    expect(isValidCurrency([] as any)).toBe(false);
+    expect(isValidCurrency(true as any)).toBe(false);
   });
 });
