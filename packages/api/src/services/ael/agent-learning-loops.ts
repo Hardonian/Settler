@@ -67,19 +67,38 @@ export class AgentLearningLoops {
       take: 100,
     });
 
+    if (transforms.length === 0) return insights;
+
+    const transformIds = transforms.map((t) => t.id);
+
+    // Batch query all jobs for the transforms
+    const allJobs = await this.prisma.reconJob.findMany({
+      where: {
+        transformRecipeId: { in: transformIds },
+      },
+      select: { id: true, transformRecipeId: true },
+    });
+
+    // Group jobs by transformRecipeId
+    const jobsByTransform = new Map<string, { id: string }[]>();
+    for (const job of allJobs) {
+      if (job.transformRecipeId) {
+        if (!jobsByTransform.has(job.transformRecipeId)) {
+          jobsByTransform.set(job.transformRecipeId, []);
+        }
+        jobsByTransform.get(job.transformRecipeId)!.push({ id: job.id });
+      }
+    }
+
     // Find transforms with high error rates
     for (const transform of transforms) {
-      // Get jobs using this transform
-      const jobs = await this.prisma.reconJob.findMany({
-        where: {
-          transformRecipeId: transform.id,
-        },
-        select: { id: true },
-      });
+      const jobs = jobsByTransform.get(transform.id) || [];
+
+      if (jobs.length === 0) continue;
 
       const results = await this.prisma.reconResult.findMany({
         where: {
-          reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
+          reconJobId: { in: jobs.map((j) => j.id) },
           status: "failed",
         },
         take: 10,
