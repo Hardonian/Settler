@@ -66,12 +66,15 @@ export class PricingOptimizer {
         take: 1000,
       });
 
-      let lowUsage = 0, mediumUsage = 0, highUsage = 0, enterprise = 0;
+      let lowUsage = 0,
+        mediumUsage = 0,
+        highUsage = 0,
+        enterprise = 0;
 
       for (const customer of customers) {
         // Check tenant usage if available
         const usage = (customer as any).usage || (customer as any).monthlyCalls || 0;
-        
+
         if (usage < 1000) lowUsage++;
         else if (usage < 10000) mediumUsage++;
         else if (usage < 100000) highUsage++;
@@ -152,7 +155,15 @@ export class PricingOptimizer {
       });
 
       if (!customer) {
-        return [{ type: "enterprise_deal", recommendation: "Customer not found", rationale: "No data", impact: "low", estimatedRevenueChange: 0 }];
+        return [
+          {
+            type: "enterprise_deal",
+            recommendation: "Customer not found",
+            rationale: "No data",
+            impact: "low",
+            estimatedRevenueChange: 0,
+          },
+        ];
       }
 
       // Analyze usage for custom pricing
@@ -160,13 +171,15 @@ export class PricingOptimizer {
       const basePrice = usage > 100000 ? 5000 : usage > 50000 ? 2500 : 1000;
       const perUnitRate = usage > 100000 ? 0.001 : 0.002;
 
-      return [{
-        type: "enterprise_deal",
-        recommendation: `Custom pricing: $${basePrice}/month base + $${perUnitRate} per unit`,
-        rationale: `High-volume customer (${usage.toLocaleString()} units), custom pricing appropriate`,
-        impact: "high",
-        estimatedRevenueChange: basePrice,
-      }];
+      return [
+        {
+          type: "enterprise_deal",
+          recommendation: `Custom pricing: $${basePrice}/month base + $${perUnitRate} per unit`,
+          rationale: `High-volume customer (${usage.toLocaleString()} units), custom pricing appropriate`,
+          impact: "high",
+          estimatedRevenueChange: basePrice,
+        },
+      ];
     } catch {
       // Fallback
       return [
