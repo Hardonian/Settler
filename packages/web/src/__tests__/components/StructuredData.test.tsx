@@ -1,26 +1,27 @@
 import { render } from "@testing-library/react";
 import { StructuredData } from "../../components/StructuredData";
 
-describe("StructuredData component", () => {
-  it("escapes malicious HTML tags in JSON data", () => {
+describe("StructuredData", () => {
+  it("escapes HTML entities in JSON payload to prevent XSS", () => {
     const maliciousData = {
-      "@type": "Person",
-      name: "</script><script>alert('xss')</script>",
+      name: "Malicious <script>alert(1)</script>",
+      description: "</script><script>alert('xss')</script>",
     };
 
     const { container } = render(<StructuredData data={maliciousData} id="test-schema" />);
-    const scriptTag = container.querySelector("script");
+    const script = container.querySelector("#test-schema");
 
-    expect(scriptTag).not.toBeNull();
-    const innerHTML = scriptTag?.innerHTML || "";
+    expect(script).not.toBeNull();
+    const content = script?.innerHTML;
 
-    // Ensure < and > are correctly escaped to unicode
-    expect(innerHTML).toContain(
+    // Should contain unicode escapes instead of raw brackets
+    expect(content).toContain("\\u003cscript\\u003ealert(1)\\u003c/script\\u003e");
+    expect(content).toContain(
       "\\u003c/script\\u003e\\u003cscript\\u003ealert('xss')\\u003c/script\\u003e"
     );
 
-    // Ensure raw < and > are not present
-    expect(innerHTML).not.toContain("<script>");
-    expect(innerHTML).not.toContain("</script>");
+    // Should NOT contain raw brackets
+    expect(content).not.toContain("<script>");
+    expect(content).not.toContain("</script>");
   });
 });

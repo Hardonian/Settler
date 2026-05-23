@@ -140,3 +140,5 @@ async function checkDatabaseHealth(): Promise<"operational" | "degraded" | "down
     return "degraded";
   }
 }
+
+// try catch
