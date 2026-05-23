@@ -113,8 +113,11 @@ jobs:
   auto-merge-dependabot:
     name: Auto-merge safe Dependabot updates
     runs-on: ubuntu-latest
+<<<<<<< HEAD
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+=======
+>>>>>>> origin/pr-833
     needs: [pre-merge-checks]
     if: |
       github.event.pull_request.draft == false &&

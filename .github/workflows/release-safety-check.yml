@@ -51,7 +51,11 @@ jobs:
           echo "body<<EOF" >> $GITHUB_OUTPUT
           echo "$BODY" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
+<<<<<<< HEAD
 
+=======
+          
+>>>>>>> origin/pr-833
           if [ "$HTTP_CODE" = "400" ] || [ "$BLOCKS_DEPLOYMENT" = "true" ]; then
             echo "❌ Deployment blocked by Release Gatekeeper"
             echo "$BODY"
@@ -64,7 +68,8 @@ jobs:
           fi
 
       - name: Comment PR with Safety Check Results
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        continue-on-error: true
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -85,9 +90,22 @@ jobs:
             ${rollback ? '**Consider rolling back this deployment.**' : ''}
             `;
 
+<<<<<<< HEAD
             await github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: comment
             });
+=======
+            try {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            } catch (error) {
+              core.warning(`Could not post PR comment (non-blocking): ${error.message}`);
+            }
+>>>>>>> origin/pr-833
