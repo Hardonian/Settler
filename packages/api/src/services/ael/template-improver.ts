@@ -170,14 +170,33 @@ export class TemplateImprover {
       },
     });
 
-    if (recipes.length > 0) {
-      const recipeIds = recipes.map((r: { id: string }) => r.id);
+    const recipeIds = recipes.map((r) => r.id);
+    const allJobs = await this.prisma.reconJob.findMany({
+      where: { transformRecipeId: { in: recipeIds } },
+    });
 
-      // Fetch all jobs for these recipes at once
-      const jobs = await this.prisma.reconJob.findMany({
-        where: { transformRecipeId: { in: recipeIds } },
-        take: 1000,
-      });
+    // Group jobs by recipe id, taking up to 100 per recipe
+    const jobsByRecipeId = allJobs.reduce(
+      (acc, job) => {
+        const recipeId = job.transformRecipeId;
+        if (!recipeId) return acc;
+
+        if (!acc[recipeId]) {
+          acc[recipeId] = [];
+        }
+
+        if (acc[recipeId].length < 100) {
+          acc[recipeId].push(job);
+        }
+
+        return acc;
+      },
+      {} as Record<string, typeof allJobs>
+    );
+
+    for (const recipe of recipes) {
+      // Analyze performance
+      const jobs = jobsByRecipeId[recipe.id] || [];
 
       // Group jobs by recipe ID
       const jobsByRecipeId = new Map<string, { id: string }[]>();
