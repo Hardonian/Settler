@@ -193,3 +193,5 @@ export const GET = withSecurity(
     requireAuth: false, // Allow playground access
   }
 );
+
+// try catch

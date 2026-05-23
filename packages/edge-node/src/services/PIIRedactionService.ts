@@ -3,7 +3,7 @@
  * Redacts or tokenizes PII data before sending to cloud
  */
 
-import crypto from "crypto";
+import crypto from "node:crypto";
 import { logger } from "../utils/logger";
 
 export class PIIRedactionService {
