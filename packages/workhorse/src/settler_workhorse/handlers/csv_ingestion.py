@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import Any
 
 import chardet
+import httpx
 import pandas as pd
 from dateutil import parser as date_parser
 
@@ -333,8 +334,18 @@ def handle_csv_ingestion(job: Job) -> JobResult:
         # TODO: Implement storage service integration
         raise NotImplementedError("File path storage not yet implemented")
     elif file_url:
-        # TODO: Implement URL download
-        raise NotImplementedError("File URL download not yet implemented")
+        try:
+            response = httpx.get(file_url, follow_redirects=True, timeout=30.0)
+            response.raise_for_status()
+            content = response.content
+        except Exception as e:
+            logger.error("Failed to download CSV from URL", exc_info=True)
+            return JobResult(
+                success=False,
+                error=f"Failed to download file from URL: {e}",
+                records_processed=0,
+                records_failed=0,
+            )
     else:
         return JobResult(
             success=False,
