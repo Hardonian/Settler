@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import Any
 
 import chardet
+import httpx
 import pandas as pd
 from dateutil import parser as date_parser
 

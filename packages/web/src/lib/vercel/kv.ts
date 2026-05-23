@@ -1,7 +1,7 @@
 /**
- * Vercel KV (Redis) Integration
+ * Redis Integration
  *
- * Provides a unified interface for Redis/KV operations using @vercel/kv
+ * Provides a unified interface for Redis/KV operations using @upstash/redis
  * Falls back gracefully if KV is not configured
  *
  * Usage:
@@ -10,16 +10,32 @@
  *   const value = await kv.get('key');
  */
 
-import { kv as vercelKv } from "@vercel/kv";
+import { Redis } from "@upstash/redis";
+
+let redisClient: Redis | null = null;
+
+function getRedisClient(): Redis | null {
+  if (!isKvConfigured()) {
+    return null;
+  }
+
+  if (!redisClient) {
+    redisClient = new Redis({
+      url: process.env.KV_REST_API_URL ?? process.env.UPSTASH_REDIS_REST_URL ?? "",
+      token: process.env.KV_REST_API_TOKEN ?? process.env.UPSTASH_REDIS_REST_TOKEN ?? "",
+    });
+  }
+
+  return redisClient;
+}
 
 /**
  * Check if Vercel KV is configured
  */
 export function isKvConfigured(): boolean {
-  return !!(
-    process.env.KV_REST_API_URL &&
-    process.env.KV_REST_API_TOKEN &&
-    process.env.KV_REST_API_READ_ONLY_TOKEN
+  return Boolean(
+    (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) ||
+    (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN)
   );
 }
 
@@ -37,7 +53,8 @@ export const kv = {
     }
 
     try {
-      return await vercelKv.get<T>(key);
+      const client = getRedisClient();
+      return client ? await client.get<T>(key) : null;
     } catch (error) {
       console.error(`[KV] Error getting key "${key}":`, error);
       return null;
@@ -54,10 +71,15 @@ export const kv = {
     }
 
     try {
+      const client = getRedisClient();
+      if (!client) {
+        return false;
+      }
+
       if (options?.ex) {
-        await vercelKv.set(key, value, { ex: options.ex });
+        await client.set(key, value, { ex: options.ex });
       } else {
-        await vercelKv.set(key, value);
+        await client.set(key, value);
       }
       return true;
     } catch (error) {
@@ -76,7 +98,12 @@ export const kv = {
     }
 
     try {
-      await vercelKv.del(key);
+      const client = getRedisClient();
+      if (!client) {
+        return false;
+      }
+
+      await client.del(key);
       return true;
     } catch (error) {
       console.error(`[KV] Error deleting key "${key}":`, error);
@@ -93,7 +120,8 @@ export const kv = {
     }
 
     try {
-      const value = await vercelKv.get(key);
+      const client = getRedisClient();
+      const value = client ? await client.get(key) : null;
       return value !== null;
     } catch (error) {
       console.error(`[KV] Error checking existence of key "${key}":`, error);
@@ -110,7 +138,12 @@ export const kv = {
     }
 
     try {
-      const values = await Promise.all(keys.map((key) => vercelKv.get<T>(key)));
+      const client = getRedisClient();
+      if (!client) {
+        return keys.map(() => null);
+      }
+
+      const values = await Promise.all(keys.map((key) => client.get<T>(key)));
       return values;
     } catch (error) {
       console.error(`[KV] Error getting multiple keys:`, error);
@@ -131,9 +164,14 @@ export const kv = {
     }
 
     try {
+      const client = getRedisClient();
+      if (!client) {
+        return false;
+      }
+
       await Promise.all(
         entries.map(({ key, value }) =>
-          options?.ex ? vercelKv.set(key, value, { ex: options.ex }) : vercelKv.set(key, value)
+          options?.ex ? client.set(key, value, { ex: options.ex }) : client.set(key, value)
         )
       );
       return true;
@@ -152,9 +190,14 @@ export const kv = {
     }
 
     try {
-      const current = (await vercelKv.get<number>(key)) || 0;
+      const client = getRedisClient();
+      if (!client) {
+        return null;
+      }
+
+      const current = (await client.get<number>(key)) || 0;
       const newValue = current + by;
-      await vercelKv.set(key, newValue);
+      await client.set(key, newValue);
       return newValue;
     } catch (error) {
       console.error(`[KV] Error incrementing key "${key}":`, error);
@@ -171,9 +214,14 @@ export const kv = {
     }
 
     try {
-      const current = (await vercelKv.get<number>(key)) || 0;
+      const client = getRedisClient();
+      if (!client) {
+        return null;
+      }
+
+      const current = (await client.get<number>(key)) || 0;
       const newValue = Math.max(0, current - by);
-      await vercelKv.set(key, newValue);
+      await client.set(key, newValue);
       return newValue;
     } catch (error) {
       console.error(`[KV] Error decrementing key "${key}":`, error);
@@ -190,10 +238,16 @@ export const kv = {
     }
 
     try {
-      // Vercel KV doesn't have a direct expire method, so we use set with ex option
-      const value = await vercelKv.get(key);
+      const client = getRedisClient();
+      if (!client) {
+        return false;
+      }
+
+      // Upstash REST does not expose a typed expire helper here, so preserve the
+      // current value with a fresh TTL.
+      const value = await client.get(key);
       if (value !== null) {
-        await vercelKv.set(key, value, { ex: seconds });
+        await client.set(key, value, { ex: seconds });
         return true;
       }
       return false;
