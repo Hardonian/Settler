@@ -24,14 +24,14 @@
   },
   "dependencies": {
     "@jobforge/shared": "workspace:*",
-    "@supabase/supabase-js": "^2.103.0",
-    "zod": "^3.22.4"
+    "@supabase/supabase-js": "^2.106.1",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@jobforge/typescript-config": "workspace:*",
-    "@types/node": "^20.11.0",
-    "eslint": "^8.56.0",
-    "typescript": "^5.3.3",
-    "vitest": "^1.2.0"
+    "@types/node": "^20.19.41",
+    "eslint": "^9.39.4",
+    "typescript": "^5.9.3",
+    "vitest": "^1.6.1"
   }
 }

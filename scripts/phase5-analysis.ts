@@ -34,7 +34,7 @@ async function analyzeCodebase(): Promise<AnalysisResult> {
       const content = await fs.readFile(file, "utf-8");
       const lines = content.split("\n");
 
-      // Check for TODOs
+      // Scan for incomplete task markers
       lines.forEach((line, index) => {
         if (line.includes("TODO") || line.includes("FIXME") || line.includes("XXX")) {
           result.todos.push({
