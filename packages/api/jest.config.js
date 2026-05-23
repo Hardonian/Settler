@@ -2,7 +2,7 @@ module.exports = {
   preset: "ts-jest",
   testEnvironment: "node",
   transform: {
-    "^.+.tsx?$": "ts-jest",
+    "^.+\\.tsx?$": "ts-jest",
   },
   moduleNameMapper: {
     "^uuid$": require.resolve("uuid"),
