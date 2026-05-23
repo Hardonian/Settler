@@ -4,8 +4,7 @@ Executes reconciliation batches between source and target datasets.
 Safe no-op if no datasets provided.
 """
 
-from datetime import datetime
-from dateutil.parser import parse as parse_date
+from datetime import date, datetime
 from typing import Any
 
 from dateutil import parser as date_parser
@@ -133,6 +132,30 @@ def reconcile_datasets(
     }
 
 
+
+def _parse_date(d: Any) -> date | None:
+    """Parse a date string or object into a date object.
+
+    Args:
+        d: Date string, datetime, or date object
+
+    Returns:
+        Parsed date object, or None if parsing fails
+    """
+    if d is None:
+        return None
+    if isinstance(d, datetime):
+        return d.date()
+    if isinstance(d, date):
+        return d
+    try:
+        # Handle ISO formats including timezone suffix 'Z'
+        d_str = str(d).replace("Z", "+00:00")
+        return datetime.fromisoformat(d_str).date()
+    except (ValueError, TypeError):
+        return None
+
+
 def _build_match_key(
     record: dict[str, Any],
     keys: list[str],
@@ -205,14 +228,15 @@ def _records_match(
         if date_tolerance_days == 0:
             return False
 
-        try:
-            src_dt = date_parser.parse(str(src_date), fuzzy=True)
-            tgt_dt = date_parser.parse(str(tgt_date), fuzzy=True)
-            diff_days = abs((src_dt - tgt_dt).days)
-            if diff_days > date_tolerance_days:
+        src_d = _parse_date(src_date)
+        tgt_d = _parse_date(tgt_date)
+
+        if src_d and tgt_d:
+            diff = abs((src_d - tgt_d).days)
+            if diff > date_tolerance_days:
                 return False
-        except (ValueError, TypeError):
-            # If dates are unparseable and string comparison failed, they don't match
+        else:
+            # If dates are present but unparseable, strict string matching failed above
             return False
 
     return True
