@@ -44,10 +44,10 @@ on:
       - main
 
 env:
-  DATABASE_URL: ${{ secrets.DATABASE_URL }}
-  SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
-  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-  SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+  DATABASE_URL: ${{ secrets.DATABASE_URL || secrets.STAGING_DATABASE_URL || secrets.SUPABASE_DB_URL || secrets.SUPABASE_DB_URL_STAGING }}
+  SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL || secrets.SUPABASE_DB_URL_STAGING || secrets.DATABASE_URL || secrets.STAGING_DATABASE_URL }}
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL || secrets.SUPABASE_URL_STAGING }}
+  SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD || secrets.SUPABASE_DB_PASSWORD_STAGING }}
   UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
   UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -167,16 +167,23 @@ jobs:
       - name: Generate Prisma client
         run: pnpm run prisma:generate || pnpm exec prisma generate
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL || secrets.STAGING_DATABASE_URL || secrets.SUPABASE_DB_URL || secrets.SUPABASE_DB_URL_STAGING }}
+
+      - name: Validate DB secret availability
+        run: |
+          if [ -z "${DATABASE_URL}" ] && [ -z "${SUPABASE_DB_URL}" ] && { [ -z "${SUPABASE_URL}" ] || [ -z "${SUPABASE_DB_PASSWORD}" ]; }; then
+            echo "❌ Missing DB secrets. Configure one of: DATABASE_URL, STAGING_DATABASE_URL, SUPABASE_DB_URL, SUPABASE_DB_URL_STAGING, or SUPABASE_URL(+SUPABASE_DB_PASSWORD)."
+            exit 1
+          fi
 
       - name: Run Migration Guardian
         id: guardian
         run: pnpm run migration:guardian
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL || secrets.STAGING_DATABASE_URL || secrets.SUPABASE_DB_URL || secrets.SUPABASE_DB_URL_STAGING }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL || secrets.SUPABASE_DB_URL_STAGING || secrets.DATABASE_URL || secrets.STAGING_DATABASE_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || secrets.SUPABASE_URL_STAGING }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD || secrets.SUPABASE_DB_PASSWORD_STAGING }}
           UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
           UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
           MIGRATION_TYPE: ${{ needs.detect-migrations.outputs.migration_type }}
@@ -383,7 +390,7 @@ jobs:
         run: pnpm exec turbo run build
       - name: Apply production migrations
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL || secrets.STAGING_DATABASE_URL || secrets.SUPABASE_DB_URL || secrets.SUPABASE_DB_URL_STAGING }}
           NODE_ENV: production
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
