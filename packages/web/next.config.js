@@ -1,11 +1,3 @@
-const withMDX = require("@next/mdx")({
-  extension: /\.mdx?$/,
-  options: {
-    remarkPlugins: [],
-    rehypePlugins: [],
-  },
-});
-
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",
 });
@@ -25,7 +17,7 @@ const shouldUseStandalone = !isWindows || process.env.CI === "true";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  pageExtensions: ["ts", "tsx", "js", "jsx", "md", "mdx"],
+  pageExtensions: ["ts", "tsx", "js", "jsx"],
   reactStrictMode: true,
   // Optimize build output
   // Note: On Windows, standalone mode is disabled to avoid symlink permission issues
@@ -36,8 +28,6 @@ const nextConfig = {
   // Reduce memory footprint during build
   compress: true,
   experimental: {
-    // Optimize memory usage
-    optimizeCss: true,
     // Scale-Readiness: Tree-shake heavy packages to reduce bundle size
     // Each package here gets modular imports (import { Icon } from 'lucide-react')
     // instead of full bundle imports, saving ~50-200KB per package
@@ -507,7 +497,7 @@ const nextConfig = {
 
 // Sentry Webpack Plugin Configuration
 // Only apply Sentry config if the package is available
-let finalConfig = withBundleAnalyzer(withMDX(nextConfig));
+let finalConfig = withBundleAnalyzer(nextConfig);
 
 try {
   const { withSentryConfig } = require("@sentry/nextjs");

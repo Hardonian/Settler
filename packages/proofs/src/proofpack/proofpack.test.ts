@@ -42,6 +42,19 @@ describe("computePackageHash", () => {
 
     expect(hash1).toBe(hash2);
   });
+
+  it("produces a known deterministic hash for specific inputs", () => {
+    // This test ensures that the JSON serialization and hashing algorithm remain stable.
+    // Hash corresponds to: {"evidenceIds":["ev-1","ev-2"],"packageType":"run_summary","scopeIds":["run-1"]}
+    const hash = computePackageHash(["ev-2", "ev-1"], "run_summary", ["run-1"]);
+    expect(hash).toBe("c92df386251339ea28ec9834322f6730c40a02523677247f1621384e0023aadc");
+  });
+
+  it("handles empty arrays gracefully and deterministically", () => {
+    // Hash corresponds to: {"evidenceIds":[],"packageType":"run_summary","scopeIds":[]}
+    const hash = computePackageHash([], "run_summary", []);
+    expect(hash).toBe("f481a2496c98e538c0f38ca475eb0446f5bc195653353a8ab8390979aed6a9b6");
+  });
 });
 
 
