@@ -201,7 +201,23 @@ def _records_match(
         date_tolerance_days = opts.get("date_tolerance_days", 0)
         if date_tolerance_days == 0:
             return False
-        # TODO: Implement date tolerance comparison
+
+        try:
+            from datetime import datetime
+
+            src_dt = datetime.fromisoformat(str(src_date).replace("Z", "+00:00")).replace(
+                tzinfo=None
+            )
+            tgt_dt = datetime.fromisoformat(str(tgt_date).replace("Z", "+00:00")).replace(
+                tzinfo=None
+            )
+
+            diff_days = abs((src_dt.date() - tgt_dt.date()).days)
+            if diff_days > date_tolerance_days:
+                return False
+        except (ValueError, TypeError):
+            # If dates can't be parsed, fallback to strict equality
+            return False
 
     return True
 
