@@ -1,7 +1,7 @@
 // Prisma 7 configuration file
 import * as dotenv from "dotenv";
 import * as path from "path";
-dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
+dotenv.config({ path: path.resolve(process.cwd(), ".env.local"), quiet: true });
 import { defineConfig } from "prisma/config";
 
 // DATABASE_URL is optional during prisma generate
