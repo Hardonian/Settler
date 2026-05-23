@@ -285,41 +285,37 @@ export class TemplateImprover {
       take: 100,
     });
 
-    if (rules.length > 0) {
-      // Fetch all jobs once outside the loop
-      // We limit to 1000 to avoid loading the entire table.
-      const allJobs = await this.prisma.reconJob.findMany({
-        select: { id: true, validationRules: true },
-        take: 1000,
-      });
+    // Fetch all jobs once, outside the loop, to avoid N+1 and O(N*M) inefficient fetching
+    const allJobs = await this.prisma.reconJob.findMany({
+      select: { id: true, validationRules: true },
+    });
 
-      const jobsByRuleId = new Map<string, { id: string }[]>();
-
-      for (const rule of rules) {
-        const matchingJobs = allJobs.filter((job: { id: string; validationRules: unknown }) => {
-          const jobRules = job.validationRules;
-          if (Array.isArray(jobRules)) {
-            return jobRules.some(
-              (r: unknown) =>
-                (typeof r === "object" &&
-                  r !== null &&
-                  "id" in r &&
-                  (r as { id: string }).id === rule.id) ||
-                r === rule.id
-            );
+    // Pre-calculate job mappings by rule ID for O(1) lookups
+    const jobsByRuleId = new Map<string, { id: string }[]>();
+    for (const job of allJobs) {
+      if (Array.isArray(job.validationRules)) {
+        for (const r of job.validationRules) {
+          let ruleId: string | null = null;
+          if (typeof r === "object" && r !== null && "id" in r) {
+            ruleId = (r as { id: string }).id;
+          } else if (typeof r === "string") {
+            ruleId = r;
           }
-          return false;
-        });
-        jobsByRuleId.set(rule.id, matchingJobs);
-      }
 
-      // Extract all unique job IDs across all rules
-      const allJobIds = new Set<string>();
-      for (const ruleJobs of jobsByRuleId.values()) {
-        for (const job of ruleJobs) {
-          allJobIds.add(job.id);
+          if (ruleId) {
+            if (!jobsByRuleId.has(ruleId)) {
+              jobsByRuleId.set(ruleId, []);
+            }
+            jobsByRuleId.get(ruleId)!.push(job);
+          }
         }
       }
+    }
+
+    for (const rule of rules) {
+      // Check if rule catches issues effectively
+      // Note: validationRules is a Json array field, so we check if rule.id is in the array
+      const jobs = jobsByRuleId.get(rule.id) || [];
 
       const jobIdsArray = Array.from(allJobIds);
 
