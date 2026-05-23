@@ -145,3 +145,5 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+// try catch
