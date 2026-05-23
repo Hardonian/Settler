@@ -55,25 +55,30 @@ export class TemplateImprover {
     const templates = await this.prisma.mappingTemplate.findMany({
       where: { deletedAt: null },
       take: 100,
+      include: {
+        jobs: {
+          take: 100,
+          select: {
+            id: true,
+            results: {
+              where: { status: "failed" },
+              take: 10,
+              select: { id: true },
+            },
+          },
+        },
+      },
     });
 
     for (const template of templates) {
-      // Analyze usage patterns
-      const jobs = await this.prisma.reconJob.findMany({
-        where: { mappingTemplateId: template.id },
-        take: 100,
-      });
+      // Extract jobs and failures from the loaded relations
+      const jobs = template.jobs || [];
+      let failureCount = 0;
+      for (const job of jobs) {
+        failureCount += job.results.length;
+      }
 
-      // If template has high failure rate, propose improvement
-      const failures = await this.prisma.reconResult.findMany({
-        where: {
-          reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
-          status: "failed",
-        },
-        take: 10,
-      });
-
-      if (failures.length > 5) {
+      if (failureCount > 5) {
         const currentVersion = template.version ? String(template.version) : "1.0.0";
         improvements.push({
           templateId: template.id,
@@ -103,22 +108,26 @@ export class TemplateImprover {
     const recipes = await this.prisma.transformRecipe.findMany({
       where: { deletedAt: null },
       take: 100,
+      include: {
+        jobs: {
+          take: 100,
+          select: {
+            id: true,
+            results: {
+              take: 50,
+              select: { startedAt: true, completedAt: true },
+            },
+          },
+        },
+      },
     });
 
     for (const recipe of recipes) {
       // Analyze performance
-      const jobs = await this.prisma.reconJob.findMany({
-        where: { transformRecipeId: recipe.id },
-        take: 100,
-      });
+      const jobs = recipe.jobs || [];
 
       // Check execution times
-      const results = await this.prisma.reconResult.findMany({
-        where: {
-          reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
-        },
-        take: 50,
-      });
+      const results = jobs.flatMap((j: { results: any }) => j.results).slice(0, 50);
 
       const durations = results
         .filter(
@@ -167,17 +176,27 @@ export class TemplateImprover {
       take: 100,
     });
 
+    if (rules.length === 0) return improvements;
+
+    const allJobs = await this.prisma.reconJob.findMany({
+      select: {
+        id: true,
+        validationRules: true,
+        results: {
+          where: { status: "failed" },
+          take: 1,
+          select: { id: true },
+        },
+      },
+    });
+
     for (const rule of rules) {
       // Check if rule catches issues effectively
       // Note: validationRules is a Json array field, so we check if rule.id is in the array
-      const allJobs = await this.prisma.reconJob.findMany({
-        select: { id: true, validationRules: true },
-      });
-
       const jobs = allJobs.filter((job: { id: string; validationRules: unknown }) => {
-        const rules = job.validationRules;
-        if (Array.isArray(rules)) {
-          return rules.some(
+        const jobRules = job.validationRules;
+        if (Array.isArray(jobRules)) {
+          return jobRules.some(
             (r: unknown) =>
               (typeof r === "object" &&
                 r !== null &&
@@ -189,16 +208,15 @@ export class TemplateImprover {
         return false;
       });
 
-      // If rule never fails, it might be too lenient
-      const results = await this.prisma.reconResult.findMany({
-        where: {
-          reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
-          status: "failed",
-        },
-        take: 1,
-      });
+      let hasFailures = false;
+      for (const job of jobs) {
+        if (job.results && job.results.length > 0) {
+          hasFailures = true;
+          break;
+        }
+      }
 
-      if (results.length === 0 && jobs.length > 10) {
+      if (!hasFailures && jobs.length > 10) {
         // ValidationRule doesn't have a version field, use '1.0.0' as default
         improvements.push({
           templateId: rule.id,

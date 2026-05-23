@@ -15,6 +15,8 @@ jobs:
   pre-merge-checks:
     name: Pre-Merge Safety Checks
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v4
@@ -29,7 +31,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: false
+          cache: "pnpm"
 
       - run: pnpm install --frozen-lockfile
 
@@ -52,7 +54,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: classification-report-pr-${{ github.event.pull_request.number }}
-          path: artifacts/
+          path: artifacts/classification-report.json
           retention-days: 7
 
       - name: Comment PR with Classification Status
@@ -111,6 +113,8 @@ jobs:
   auto-merge-dependabot:
     name: Auto-merge safe Dependabot updates
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     needs: [pre-merge-checks]
     if: |
       github.event.pull_request.draft == false &&
