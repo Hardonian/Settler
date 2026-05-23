@@ -5,8 +5,6 @@
 
 import { Pool } from "pg";
 import { pool } from "../../db";
-import { IEventStore } from "../../infrastructure/eventsourcing/EventStore";
-import { IEventBus } from "../../infrastructure/events/IEventBus";
 import { logError } from "../../utils/logger";
 
 export enum SagaStatus {
@@ -64,14 +62,8 @@ export class SagaOrchestrator {
   private sagas: Map<string, SagaDefinition> = new Map();
 
   constructor(
-    private db: Pool = pool,
-    // Event store and bus are reserved for future event sourcing implementation
-    private _eventStore: IEventStore,
-    private _eventBus: IEventBus
+    private db: Pool = pool
   ) {
-    // Reference unused properties to satisfy TypeScript
-    void this._eventStore;
-    void this._eventBus;
   }
 
   /**

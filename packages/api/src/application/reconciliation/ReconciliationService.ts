@@ -32,9 +32,7 @@ export class ReconciliationService {
     this.commandHandlers = new ReconciliationCommandHandlers(eventStore, eventBus);
 
     this.sagaOrchestrator = new SagaOrchestrator(
-      undefined, // Will use default pool
-      eventStore,
-      eventBus
+      undefined // Will use default pool
     );
 
     // Register Shopify-Stripe reconciliation saga
