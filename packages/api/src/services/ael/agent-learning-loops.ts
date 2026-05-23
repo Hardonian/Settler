@@ -204,6 +204,8 @@ export class AgentLearningLoops {
 
     // Find rules that are never used
     // Note: validationRules is a Json array field, so we check if rule.id is in the array
+
+    // Fetch all jobs once to avoid querying inside the loop (N+1 query problem)
     const allJobs = await this.prisma.reconJob.findMany({
       select: { id: true, validationRules: true },
     });
