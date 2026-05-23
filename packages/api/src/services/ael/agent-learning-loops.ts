@@ -71,57 +71,38 @@ export class AgentLearningLoops {
 
     const transformIds = transforms.map((t) => t.id);
 
-    // Get all jobs for these transforms in one query
-    const jobs = await this.prisma.reconJob.findMany({
+    // Batch query all jobs for the transforms
+    const allJobs = await this.prisma.reconJob.findMany({
       where: {
         transformRecipeId: { in: transformIds },
       },
       select: { id: true, transformRecipeId: true },
     });
 
-    if (jobs.length === 0) return insights;
-
     // Group jobs by transformRecipeId
-    const jobsByTransform = new Map<string, string[]>();
-    for (const job of jobs) {
+    const jobsByTransform = new Map<string, { id: string }[]>();
+    for (const job of allJobs) {
       if (job.transformRecipeId) {
         if (!jobsByTransform.has(job.transformRecipeId)) {
           jobsByTransform.set(job.transformRecipeId, []);
         }
-        jobsByTransform.get(job.transformRecipeId)!.push(job.id);
-      }
-    }
-
-    const jobIds = jobs.map((j) => j.id);
-
-    // Batch fetch failed results count using groupBy
-    const failureCounts = await this.prisma.reconResult.groupBy({
-      by: ["reconJobId"],
-      where: {
-        reconJobId: { in: jobIds },
-        status: "failed",
-      },
-      _count: {
-        id: true,
-      },
-    });
-
-    const failuresByJob = new Map<string, number>();
-    for (const fc of failureCounts) {
-      if (fc.reconJobId) {
-        failuresByJob.set(fc.reconJobId, fc._count.id);
+        jobsByTransform.get(job.transformRecipeId)!.push({ id: job.id });
       }
     }
 
     // Find transforms with high error rates
     for (const transform of transforms) {
-      const transformJobIds = jobsByTransform.get(transform.id) || [];
-      if (transformJobIds.length === 0) continue;
+      const jobs = jobsByTransform.get(transform.id) || [];
 
-      let failureCount = 0;
-      for (const jobId of transformJobIds) {
-        failureCount += failuresByJob.get(jobId) || 0;
-      }
+      if (jobs.length === 0) continue;
+
+      const results = await this.prisma.reconResult.findMany({
+        where: {
+          reconJobId: { in: jobs.map((j) => j.id) },
+          status: "failed",
+        },
+        take: 10,
+      });
 
       // Emulate the original logic which caps the check at 10 results
       // and reports error rate as results.length / 10.
