@@ -88,3 +88,5 @@ export const POST = withUniversalBillingGate(
   },
   { feature: "POST API" }
 );
+
+// try catch

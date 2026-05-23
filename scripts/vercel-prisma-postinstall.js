@@ -61,13 +61,15 @@ function shouldRunPrismaGenerate() {
 function runPrismaGenerate() {
   try {
     console.log("🔧 Running Prisma generate...");
-    execSync("npx prisma generate", {
+    execSync("pnpm exec prisma generate", {
       stdio: "inherit",
       cwd: path.join(__dirname, ".."),
       env: {
         ...process.env,
         // Prevent Prisma from trying to download platform-specific binaries
         PRISMA_SKIP_POSTINSTALL_GENERATE: "false",
+        PRISMA_HIDE_UPDATE_MESSAGE: "true",
+        CHECKPOINT_DISABLE: "1",
       },
     });
     console.log("✅ Prisma generate completed successfully");
