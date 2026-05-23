@@ -147,7 +147,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-<<<<<<< HEAD
+          cache: "pnpm"
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
@@ -163,15 +163,6 @@ jobs:
               exit 1
             fi
           done
-=======
-          cache: "pnpm"
-
-      - name: Setup pnpm
-        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
->>>>>>> origin/pr-833
 
       - name: Generate Prisma client
         run: pnpm run prisma:generate || pnpm exec prisma generate
@@ -335,13 +326,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-<<<<<<< HEAD
-
-=======
           cache: "pnpm"
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
->>>>>>> origin/pr-833
       - run: pnpm install --frozen-lockfile
       - name: Build application
         run: pnpm exec turbo run build
@@ -388,13 +375,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-<<<<<<< HEAD
-
-=======
           cache: "pnpm"
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
->>>>>>> origin/pr-833
       - run: pnpm install --frozen-lockfile
       - name: Build application
         run: pnpm exec turbo run build

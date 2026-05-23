@@ -3,11 +3,7 @@ name: Security Audit
 on:
   schedule:
     # Run every Monday at 9 AM UTC
-<<<<<<< HEAD
     - cron: "0 9 * * 1"
-=======
-    - cron: '0 9 * * 1'
->>>>>>> origin/pr-833
   workflow_dispatch:
 
 jobs:
@@ -16,27 +12,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-<<<<<<< HEAD
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10.13.1
-=======
->>>>>>> origin/pr-833
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
+          cache: "pnpm"
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
-      - name: Run npm audit
-        run: |
-          npm audit --audit-level=moderate || true
+      - name: Run dependency audit
+        run: pnpm audit --audit-level=high
 
       - name: Check for secrets in code
         run: |
@@ -44,11 +37,7 @@ jobs:
           if ! command -v git-secrets &> /dev/null; then
             echo "Installing git-secrets..."
           fi
-<<<<<<< HEAD
 
-=======
-          
->>>>>>> origin/pr-833
           # Scan for common secret patterns
           echo "Scanning for potential secrets..."
           grep -r "password\s*=\s*['\"][^'\"]\{8,\}['\"]" --include="*.ts" --include="*.js" . || true

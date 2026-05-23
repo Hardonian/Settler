@@ -134,7 +134,9 @@ function maskPII(input, maskChar = "*") {
         const [local, domain] = email.split("@");
         if (!local || !domain)
             return email;
-        return `${local[0]}${maskChar.repeat(Math.max(0, local.length - 2))}@${domain}`;
+        return local.length <= 2
+            ? `${local[0]}@${domain}`
+            : `${local[0]}${maskChar.repeat(local.length - 1)}@${domain}`;
     });
     // Mask credit card numbers (basic)
     input = input.replace(/\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b/g, (card) => {

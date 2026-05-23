@@ -43,16 +43,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-<<<<<<< HEAD
-          node-version: "24"
-
-=======
-          node-version: '24'
-          cache: 'pnpm'
+          node-version-file: ".nvmrc"
+          cache: "pnpm"
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
->>>>>>> origin/pr-833
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

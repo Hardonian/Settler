@@ -2,7 +2,7 @@
  * Vercel SDK Integration Examples
  *
  * This route demonstrates how to use the integrated Vercel SDKs:
- * - @vercel/kv for caching
+ * - Upstash Redis/Vercel Redis integration for caching
  * - @vercel/edge-config for configuration
  * - @vercel/blob for file storage
  *
