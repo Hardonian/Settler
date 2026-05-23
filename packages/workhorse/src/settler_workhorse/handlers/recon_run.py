@@ -5,6 +5,7 @@ Safe no-op if no datasets provided.
 """
 
 from datetime import datetime
+from dateutil.parser import parse as parse_date
 from typing import Any
 
 from settler_workhorse.models import Job, JobResult, JobType
@@ -203,20 +204,27 @@ def _records_match(
             return False
 
         try:
-            from datetime import datetime
+            from datetime import date as dt_date
 
-            src_dt = datetime.fromisoformat(str(src_date).replace("Z", "+00:00")).replace(
-                tzinfo=None
-            )
-            tgt_dt = datetime.fromisoformat(str(tgt_date).replace("Z", "+00:00")).replace(
-                tzinfo=None
-            )
+            if isinstance(src_date, datetime):
+                src_d = src_date.date()
+            elif isinstance(src_date, dt_date):
+                src_d = src_date
+            else:
+                src_d = parse_date(str(src_date)).date()
 
-            diff_days = abs((src_dt.date() - tgt_dt.date()).days)
+            if isinstance(tgt_date, datetime):
+                tgt_d = tgt_date.date()
+            elif isinstance(tgt_date, dt_date):
+                tgt_d = tgt_date
+            else:
+                tgt_d = parse_date(str(tgt_date)).date()
+
+            diff_days = abs((src_d - tgt_d).days)
             if diff_days > date_tolerance_days:
                 return False
-        except (ValueError, TypeError):
-            # If dates can't be parsed, fallback to strict equality
+        except Exception:
+            # If parsing fails or any other error, fallback to returning False
             return False
 
     return True
