@@ -7,8 +7,7 @@
     "build": "tsc",
     "test": "echo 'No tests yet'"
   },
-  "dependencies": {},
   "devDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.9.3"
   }
 }

@@ -1,6 +1,6 @@
 /**
  * Chatbot API Route
- * 
+ *
  * POST /api/chatbot
  * Body: { message, conversationId?, context? }
  */
@@ -15,22 +15,26 @@ export const runtime = "nodejs";
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     const body = await request.json();
     const { message, conversationId, context } = body;
-    
+
     if (!message || !message.trim()) {
       return NextResponse.json({ error: "Message is required" }, { status: 400 });
     }
-    
+
     // Get user context if logged in
-    const userContext = user ? {
-      userId: user.id,
-      userEmail: user.email,
-      userPlan: (user as any).plan || "free",
-    } : { userId: undefined, userPlan: "anonymous" };
-    
+    const userContext = user
+      ? {
+          userId: user.id,
+          userEmail: user.email,
+          userPlan: (user as any).plan || "free",
+        }
+      : { userId: undefined, userPlan: "anonymous" };
+
     // Process message through AI handler
     const result = await handleChatMessage({
       message,
@@ -40,7 +44,7 @@ export async function POST(request: NextRequest) {
         ...userContext,
       },
     });
-    
+
     // Track analytics
     if (user) {
       try {
@@ -56,7 +60,7 @@ export async function POST(request: NextRequest) {
         // Table might not exist
       }
     }
-    
+
     return NextResponse.json(result);
   } catch (error) {
     console.error("Chatbot error:", error);
@@ -74,3 +78,5 @@ export async function GET() {
     capabilities: ["ai", "escalation", "kb"],
   });
 }
+
+// try catch
