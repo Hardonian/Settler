@@ -5,6 +5,7 @@ Safe no-op if no datasets provided.
 """
 
 from datetime import datetime
+from dateutil.parser import parse as parse_date
 from typing import Any
 
 from dateutil import parser as date_parser

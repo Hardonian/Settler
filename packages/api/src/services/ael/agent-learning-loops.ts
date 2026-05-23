@@ -115,19 +115,35 @@ export class AgentLearningLoops {
       orderBy: { createdAt: "desc" },
     });
 
-    // Group by mapping template (through reconJob)
+    // Extract unique job IDs
+    const jobIds = drifts
+      .map((drift) => drift.reconJobId)
+      .filter((id): id is string => id !== null);
+
     const mappingGroups = new Map<string, number>();
-    for (const drift of drifts) {
-      if (drift.reconJobId) {
-        const job = await this.prisma.reconJob.findUnique({
-          where: { id: drift.reconJobId },
-          select: { mappingTemplateId: true },
-        });
-        if (job?.mappingTemplateId) {
-          mappingGroups.set(
-            job.mappingTemplateId,
-            (mappingGroups.get(job.mappingTemplateId) || 0) + 1
-          );
+
+    if (jobIds.length > 0) {
+      const uniqueJobIds = [...new Set(jobIds)];
+
+      // Fetch all related jobs in one query
+      const jobs = await this.prisma.reconJob.findMany({
+        where: { id: { in: uniqueJobIds } },
+        select: { id: true, mappingTemplateId: true },
+      });
+
+      // Group by mapping template
+      const jobToTemplate = new Map(
+        jobs
+          .filter((job) => job.mappingTemplateId)
+          .map((job) => [job.id, job.mappingTemplateId as string])
+      );
+
+      for (const drift of drifts) {
+        if (drift.reconJobId) {
+          const mappingTemplateId = jobToTemplate.get(drift.reconJobId);
+          if (mappingTemplateId) {
+            mappingGroups.set(mappingTemplateId, (mappingGroups.get(mappingTemplateId) || 0) + 1);
+          }
         }
       }
     }
@@ -204,11 +220,13 @@ export class AgentLearningLoops {
 
     // Find rules that are never used
     // Note: validationRules is a Json array field, so we check if rule.id is in the array
-    for (const rule of rules) {
-      const allJobs = await this.prisma.reconJob.findMany({
-        select: { id: true, validationRules: true },
-      });
 
+    // Fetch all jobs once to avoid querying inside the loop (N+1 query problem)
+    const allJobs = await this.prisma.reconJob.findMany({
+      select: { id: true, validationRules: true },
+    });
+
+    for (const rule of rules) {
       const usage = allJobs.filter((job: { id: string; validationRules: unknown }) => {
         const rules = job.validationRules;
         if (Array.isArray(rules)) {
