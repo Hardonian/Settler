@@ -203,14 +203,20 @@ def _records_match(
             return False
 
         try:
-            from dateutil import parser
+            from datetime import datetime
 
-            src_dt = parser.parse(str(src_date))
-            tgt_dt = parser.parse(str(tgt_date))
-            if abs((src_dt - tgt_dt).days) > date_tolerance_days:
+            src_dt = datetime.fromisoformat(str(src_date).replace("Z", "+00:00")).replace(
+                tzinfo=None
+            )
+            tgt_dt = datetime.fromisoformat(str(tgt_date).replace("Z", "+00:00")).replace(
+                tzinfo=None
+            )
+
+            diff_days = abs((src_dt.date() - tgt_dt.date()).days)
+            if diff_days > date_tolerance_days:
                 return False
-        except (ValueError, TypeError, ImportError):
-            # Fall back to strict equality if parsing fails
+        except (ValueError, TypeError):
+            # If dates can't be parsed, fallback to strict equality
             return False
 
     return True
