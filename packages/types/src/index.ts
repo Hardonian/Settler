@@ -305,8 +305,6 @@ export {
   RunListItem,
   RunDetail,
   RunListResponse,
-  RunListResponseV1,
-  RunV1Item,
 } from "./run";
 
 // Commercial spine (plans, meters, premium packs, legacy mappings)
