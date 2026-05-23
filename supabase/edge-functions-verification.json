@@ -1,12 +1,14 @@
 {
-  "total": 30,
-  "valid": 1,
-  "invalid": 29,
+  "total": 33,
+  "valid": 23,
+  "invalid": 10,
   "functions": [
     {
       "name": "agent-monitor",
-      "path": "/workspace/supabase/functions/agent-monitor/index.ts",
-      "tables": ["agent_runs"],
+      "path": "/app/supabase/functions/agent-monitor/index.ts",
+      "tables": [
+        "agent_runs"
+      ],
       "functions": [
         "serve",
         "now",
@@ -29,12 +31,14 @@
       ],
       "rpcCalls": [],
       "hasDeployConfig": false,
-      "errors": ["Table 'agent_runs' does not exist"]
+      "errors": []
     },
     {
       "name": "agent-orchestrator",
-      "path": "/workspace/supabase/functions/agent-orchestrator/index.ts",
-      "tables": ["agent_runs"],
+      "path": "/app/supabase/functions/agent-orchestrator/index.ts",
+      "tables": [
+        "agent_runs"
+      ],
       "functions": [
         "serve",
         "get",
@@ -56,11 +60,11 @@
       ],
       "rpcCalls": [],
       "hasDeployConfig": false,
-      "errors": ["Table 'agent_runs' does not exist"]
+      "errors": []
     },
     {
       "name": "architecture-sentinel-agent",
-      "path": "/workspace/supabase/functions/architecture-sentinel-agent/index.ts",
+      "path": "/app/supabase/functions/architecture-sentinel-agent/index.ts",
       "tables": [
         "agent_runs",
         "schema_migrations",
@@ -96,22 +100,19 @@
         "filter",
         "stringify"
       ],
-      "rpcCalls": ["get_slow_queries"],
+      "rpcCalls": [
+        "check_rls_policies",
+        "get_slow_queries"
+      ],
       "hasDeployConfig": false,
       "errors": [
-        "Table 'agent_runs' does not exist",
-        "Table 'schema_migrations' does not exist",
-        "Table 'error_logs' does not exist",
-        "Table 'usage_events' does not exist",
-        "Table 'monitoring_metrics' does not exist",
-        "Table 'architecture_violations' does not exist",
-        "Table 'alerts' does not exist",
+        "Function/RPC 'check_rls_policies' does not exist",
         "Function/RPC 'get_slow_queries' does not exist"
       ]
     },
     {
       "name": "auth_edge_guard",
-      "path": "/workspace/supabase/functions/auth_edge_guard/index.ts",
+      "path": "/app/supabase/functions/auth_edge_guard/index.ts",
       "tables": [],
       "functions": [
         "get",
@@ -136,8 +137,13 @@
     },
     {
       "name": "automated-alerting",
-      "path": "/workspace/supabase/functions/automated-alerting/index.ts",
-      "tables": ["alerts", "users", "subscriptions", "agent_runs"],
+      "path": "/app/supabase/functions/automated-alerting/index.ts",
+      "tables": [
+        "alerts",
+        "users",
+        "subscriptions",
+        "agent_runs"
+      ],
       "functions": [
         "serve",
         "get",
@@ -171,17 +177,18 @@
       ],
       "rpcCalls": [],
       "hasDeployConfig": false,
-      "errors": [
-        "Table 'alerts' does not exist",
-        "Table 'users' does not exist",
-        "Table 'subscriptions' does not exist",
-        "Table 'agent_runs' does not exist"
-      ]
+      "errors": []
     },
     {
       "name": "automated-diagnostics",
-      "path": "/workspace/supabase/functions/automated-diagnostics/index.ts",
-      "tables": ["stripe_event_log", "subscriptions", "usage_events", "email_sends", "diagnostics"],
+      "path": "/app/supabase/functions/automated-diagnostics/index.ts",
+      "tables": [
+        "stripe_event_log",
+        "subscriptions",
+        "usage_events",
+        "email_sends",
+        "diagnostics"
+      ],
       "functions": [
         "serve",
         "get",
@@ -206,20 +213,17 @@
         "sort",
         "error"
       ],
-      "rpcCalls": ["get_slow_queries"],
+      "rpcCalls": [
+        "get_slow_queries"
+      ],
       "hasDeployConfig": false,
       "errors": [
-        "Table 'stripe_event_log' does not exist",
-        "Table 'subscriptions' does not exist",
-        "Table 'usage_events' does not exist",
-        "Table 'email_sends' does not exist",
-        "Table 'diagnostics' does not exist",
         "Function/RPC 'get_slow_queries' does not exist"
       ]
     },
     {
       "name": "automated-health-checks",
-      "path": "/workspace/supabase/functions/automated-health-checks/index.ts",
+      "path": "/app/supabase/functions/automated-health-checks/index.ts",
       "tables": [
         "profiles",
         "stripe_event_log",
@@ -250,19 +254,16 @@
       ],
       "rpcCalls": [],
       "hasDeployConfig": false,
-      "errors": [
-        "Table 'profiles' does not exist",
-        "Table 'stripe_event_log' does not exist",
-        "Table 'subscriptions' does not exist",
-        "Table 'usage_events' does not exist",
-        "Table 'email_sends' does not exist",
-        "Table 'health_checks' does not exist"
-      ]
+      "errors": []
     },
     {
       "name": "automated-onboarding-emails",
-      "path": "/workspace/supabase/functions/automated-onboarding-emails/index.ts",
-      "tables": ["profiles", "onboarding_progress", "email_sends"],
+      "path": "/app/supabase/functions/automated-onboarding-emails/index.ts",
+      "tables": [
+        "profiles",
+        "onboarding_progress",
+        "email_sends"
+      ],
       "functions": [
         "serve",
         "get",
@@ -288,19 +289,48 @@
         "insert",
         "substring"
       ],
-      "rpcCalls": ["get_trials_expiring_soon", "handle_trial_expiration"],
+      "rpcCalls": [
+        "handle_trial_expiration"
+      ],
+      "hasDeployConfig": false,
+      "errors": []
+    },
+    {
+      "name": "automated-reconciliation-review",
+      "path": "/app/supabase/functions/automated-reconciliation-review/index.ts",
+      "tables": [
+        "reconciliation_matches",
+        "recon_audits",
+        "reconciliation_runs"
+      ],
+      "functions": [
+        "serve",
+        "get",
+        "json",
+        "catch",
+        "stringify",
+        "error",
+        "from",
+        "select",
+        "eq",
+        "order",
+        "update",
+        "insert",
+        "warn",
+        "not",
+        "limit",
+        "abs"
+      ],
+      "rpcCalls": [],
       "hasDeployConfig": false,
       "errors": [
-        "Table 'profiles' does not exist",
-        "Table 'onboarding_progress' does not exist",
-        "Table 'email_sends' does not exist",
-        "Function/RPC 'get_trials_expiring_soon' does not exist",
-        "Function/RPC 'handle_trial_expiration' does not exist"
+        "Table 'reconciliation_matches' does not exist",
+        "Table 'reconciliation_runs' does not exist"
       ]
     },
     {
       "name": "autonomous-cfo-agent",
-      "path": "/workspace/supabase/functions/autonomous-cfo-agent/index.ts",
+      "path": "/app/supabase/functions/autonomous-cfo-agent/index.ts",
       "tables": [
         "agent_runs",
         "subscriptions",
@@ -338,18 +368,11 @@
       ],
       "rpcCalls": [],
       "hasDeployConfig": false,
-      "errors": [
-        "Table 'agent_runs' does not exist",
-        "Table 'subscriptions' does not exist",
-        "Table 'usage_events' does not exist",
-        "Table 'usage_counters' does not exist",
-        "Table 'financial_insights' does not exist",
-        "Table 'alerts' does not exist"
-      ]
+      "errors": []
     },
     {
       "name": "collect-reality-metrics",
-      "path": "/workspace/supabase/functions/collect-reality-metrics/index.ts",
+      "path": "/app/supabase/functions/collect-reality-metrics/index.ts",
       "tables": [
         "subscriptions",
         "stripe_events",
@@ -375,22 +398,21 @@
         "stringify",
         "error"
       ],
-      "rpcCalls": ["upsert_reality_metric"],
+      "rpcCalls": [
+        "upsert_reality_metric"
+      ],
       "hasDeployConfig": false,
       "errors": [
-        "Table 'subscriptions' does not exist",
-        "Table 'stripe_events' does not exist",
-        "Table 'audit_logs' does not exist",
-        "Table 'onboarding_events' does not exist",
-        "Table 'onboarding_progress' does not exist",
-        "Table 'reality_events' does not exist",
-        "Function/RPC 'upsert_reality_metric' does not exist"
+        "Table 'onboarding_events' does not exist"
       ]
     },
     {
       "name": "compute-bill",
-      "path": "/workspace/supabase/functions/compute-bill/index.ts",
-      "tables": ["billing_accounts", "subscriptions"],
+      "path": "/app/supabase/functions/compute-bill/index.ts",
+      "tables": [
+        "billing_accounts",
+        "subscriptions"
+      ],
       "functions": [
         "serve",
         "get",
@@ -405,18 +427,21 @@
         "rpc",
         "error"
       ],
-      "rpcCalls": ["compute_estimated_bill"],
+      "rpcCalls": [
+        "compute_estimated_bill"
+      ],
       "hasDeployConfig": false,
-      "errors": [
-        "Table 'billing_accounts' does not exist",
-        "Table 'subscriptions' does not exist",
-        "Function/RPC 'compute_estimated_bill' does not exist"
-      ]
+      "errors": []
     },
     {
       "name": "generate-founder-digest",
-      "path": "/workspace/supabase/functions/generate-founder-digest/index.ts",
-      "tables": ["users", "subscriptions", "reconciliation_jobs", "user_lifecycle"],
+      "path": "/app/supabase/functions/generate-founder-digest/index.ts",
+      "tables": [
+        "users",
+        "subscriptions",
+        "reconciliation_jobs",
+        "user_lifecycle"
+      ],
       "functions": [
         "serve",
         "get",
@@ -435,16 +460,18 @@
       "rpcCalls": [],
       "hasDeployConfig": false,
       "errors": [
-        "Table 'users' does not exist",
-        "Table 'subscriptions' does not exist",
-        "Table 'reconciliation_jobs' does not exist",
-        "Table 'user_lifecycle' does not exist"
+        "Table 'reconciliation_jobs' does not exist"
       ]
     },
     {
       "name": "generate-monthly-export",
-      "path": "/workspace/supabase/functions/generate-monthly-export/index.ts",
-      "tables": ["users", "user_lifecycle", "subscriptions", "reconciliation_jobs"],
+      "path": "/app/supabase/functions/generate-monthly-export/index.ts",
+      "tables": [
+        "users",
+        "user_lifecycle",
+        "subscriptions",
+        "reconciliation_jobs"
+      ],
       "functions": [
         "serve",
         "get",
@@ -460,15 +487,12 @@
       "rpcCalls": [],
       "hasDeployConfig": false,
       "errors": [
-        "Table 'users' does not exist",
-        "Table 'user_lifecycle' does not exist",
-        "Table 'subscriptions' does not exist",
         "Table 'reconciliation_jobs' does not exist"
       ]
     },
     {
       "name": "generate-ops-insights",
-      "path": "/workspace/supabase/functions/generate-ops-insights/index.ts",
+      "path": "/app/supabase/functions/generate-ops-insights/index.ts",
       "tables": [
         "ops_insights",
         "ops_recommendations",
@@ -500,20 +524,15 @@
         "abs",
         "includes"
       ],
-      "rpcCalls": ["expire_insights"],
+      "rpcCalls": [
+        "expire_insights"
+      ],
       "hasDeployConfig": false,
-      "errors": [
-        "Table 'ops_insights' does not exist",
-        "Table 'ops_recommendations' does not exist",
-        "Table 'usage_aggregate_daily' does not exist",
-        "Table 'ops_support_tickets' does not exist",
-        "Table 'error_logs' does not exist",
-        "Function/RPC 'expire_insights' does not exist"
-      ]
+      "errors": []
     },
     {
       "name": "generate-weekly-briefing",
-      "path": "/workspace/supabase/functions/generate-weekly-briefing/index.ts",
+      "path": "/app/supabase/functions/generate-weekly-briefing/index.ts",
       "tables": [
         "ops_briefings",
         "ops_insights",
@@ -546,37 +565,78 @@
       ],
       "rpcCalls": [],
       "hasDeployConfig": false,
-      "errors": [
-        "Table 'ops_briefings' does not exist",
-        "Table 'ops_insights' does not exist",
-        "Table 'ops_recommendations' does not exist",
-        "Table 'ops_actions' does not exist",
-        "Table 'usage_aggregate_daily' does not exist",
-        "Table 'ops_support_tickets' does not exist"
-      ]
+      "errors": []
     },
     {
       "name": "integration-sync-paypal",
-      "path": "/workspace/supabase/functions/integration-sync-paypal/index.ts",
+      "path": "/app/supabase/functions/integration-sync-paypal/index.ts",
       "tables": [],
-      "functions": ["serve", "get", "stringify", "json", "rpc", "error"],
-      "rpcCalls": ["log_usage_event"],
+      "functions": [
+        "serve",
+        "get",
+        "stringify",
+        "json",
+        "rpc",
+        "error"
+      ],
+      "rpcCalls": [
+        "log_usage_event"
+      ],
       "hasDeployConfig": false,
-      "errors": ["Function/RPC 'log_usage_event' does not exist"]
+      "errors": []
+    },
+    {
+      "name": "integration-sync-scheduler",
+      "path": "/app/supabase/functions/integration-sync-scheduler/index.ts",
+      "tables": [
+        "connectors"
+      ],
+      "functions": [
+        "serve",
+        "get",
+        "from",
+        "select",
+        "eq",
+        "now",
+        "fetch",
+        "stringify",
+        "push",
+        "text",
+        "filter",
+        "error"
+      ],
+      "rpcCalls": [],
+      "hasDeployConfig": false,
+      "errors": [
+        "Table 'connectors' does not exist"
+      ]
     },
     {
       "name": "integration-sync-shopify",
-      "path": "/workspace/supabase/functions/integration-sync-shopify/index.ts",
+      "path": "/app/supabase/functions/integration-sync-shopify/index.ts",
       "tables": [],
-      "functions": ["serve", "get", "stringify", "json", "rpc", "error"],
-      "rpcCalls": ["log_usage_event"],
+      "functions": [
+        "serve",
+        "get",
+        "stringify",
+        "json",
+        "rpc",
+        "error"
+      ],
+      "rpcCalls": [
+        "log_usage_event"
+      ],
       "hasDeployConfig": false,
-      "errors": ["Function/RPC 'log_usage_event' does not exist"]
+      "errors": []
     },
     {
       "name": "integration-sync-shopify-secure",
-      "path": "/workspace/supabase/functions/integration-sync-shopify-secure/index.ts",
-      "tables": ["integration_health"],
+      "path": "/app/supabase/functions/integration-sync-shopify-secure/index.ts",
+      "tables": [
+        "service_integrations",
+        "webhook_payloads",
+        "integration_health"
+      ],
       "functions": [
         "now",
         "get",
@@ -590,12 +650,15 @@
         "split",
         "stringify",
         "text",
-        "json",
-        "rpc",
         "select",
         "eq",
-        "single",
+        "filter",
         "error",
+        "parse",
+        "insert",
+        "json",
+        "rpc",
+        "single",
         "catch"
       ],
       "rpcCalls": [
@@ -605,34 +668,52 @@
       ],
       "hasDeployConfig": false,
       "errors": [
-        "Table 'integration_health' does not exist",
-        "Function/RPC 'log_usage_event' does not exist",
         "Function/RPC 'update_integration_health' does not exist",
         "Function/RPC 'record_integration_quota_usage' does not exist"
       ]
     },
     {
       "name": "integration-sync-stripe",
-      "path": "/workspace/supabase/functions/integration-sync-stripe/index.ts",
+      "path": "/app/supabase/functions/integration-sync-stripe/index.ts",
       "tables": [],
-      "functions": ["serve", "get", "stringify", "json", "rpc", "error"],
-      "rpcCalls": ["log_usage_event"],
+      "functions": [
+        "serve",
+        "get",
+        "stringify",
+        "json",
+        "rpc",
+        "error"
+      ],
+      "rpcCalls": [
+        "log_usage_event"
+      ],
       "hasDeployConfig": false,
-      "errors": ["Function/RPC 'log_usage_event' does not exist"]
+      "errors": []
     },
     {
       "name": "integration-sync-tiktok",
-      "path": "/workspace/supabase/functions/integration-sync-tiktok/index.ts",
+      "path": "/app/supabase/functions/integration-sync-tiktok/index.ts",
       "tables": [],
-      "functions": ["serve", "get", "stringify", "json", "rpc", "error"],
-      "rpcCalls": ["log_usage_event"],
+      "functions": [
+        "serve",
+        "get",
+        "stringify",
+        "json",
+        "rpc",
+        "error"
+      ],
+      "rpcCalls": [
+        "log_usage_event"
+      ],
       "hasDeployConfig": false,
-      "errors": ["Function/RPC 'log_usage_event' does not exist"]
+      "errors": []
     },
     {
       "name": "log-usage",
-      "path": "/workspace/supabase/functions/log-usage/index.ts",
-      "tables": ["billing_accounts"],
+      "path": "/app/supabase/functions/log-usage/index.ts",
+      "tables": [
+        "billing_accounts"
+      ],
       "functions": [
         "serve",
         "get",
@@ -645,17 +726,18 @@
         "rpc",
         "error"
       ],
-      "rpcCalls": ["log_usage_event"],
+      "rpcCalls": [
+        "log_usage_event"
+      ],
       "hasDeployConfig": false,
-      "errors": [
-        "Table 'billing_accounts' does not exist",
-        "Function/RPC 'log_usage_event' does not exist"
-      ]
+      "errors": []
     },
     {
       "name": "log-usage-secure",
-      "path": "/workspace/supabase/functions/log-usage-secure/index.ts",
-      "tables": ["billing_accounts"],
+      "path": "/app/supabase/functions/log-usage-secure/index.ts",
+      "tables": [
+        "billing_accounts"
+      ],
       "functions": [
         "now",
         "get",
@@ -671,17 +753,22 @@
         "rpc",
         "error"
       ],
-      "rpcCalls": ["log_usage_event"],
+      "rpcCalls": [
+        "log_usage_event"
+      ],
       "hasDeployConfig": false,
-      "errors": [
-        "Table 'billing_accounts' does not exist",
-        "Function/RPC 'log_usage_event' does not exist"
-      ]
+      "errors": []
     },
     {
       "name": "organic-growth-agent",
-      "path": "/workspace/supabase/functions/organic-growth-agent/index.ts",
-      "tables": ["agent_runs", "feature_flags", "usage_events", "error_logs", "growth_content"],
+      "path": "/app/supabase/functions/organic-growth-agent/index.ts",
+      "tables": [
+        "agent_runs",
+        "feature_flags",
+        "usage_events",
+        "error_logs",
+        "growth_content"
+      ],
       "functions": [
         "get",
         "stringify",
@@ -711,18 +798,17 @@
       ],
       "rpcCalls": [],
       "hasDeployConfig": false,
-      "errors": [
-        "Table 'agent_runs' does not exist",
-        "Table 'feature_flags' does not exist",
-        "Table 'usage_events' does not exist",
-        "Table 'error_logs' does not exist",
-        "Table 'growth_content' does not exist"
-      ]
+      "errors": []
     },
     {
       "name": "preemptive-support-agent",
-      "path": "/workspace/supabase/functions/preemptive-support-agent/index.ts",
-      "tables": ["agent_runs", "error_logs", "analytics_events", "preemptive_support_actions"],
+      "path": "/app/supabase/functions/preemptive-support-agent/index.ts",
+      "tables": [
+        "agent_runs",
+        "error_logs",
+        "analytics_events",
+        "preemptive_support_actions"
+      ],
       "functions": [
         "get",
         "fetch",
@@ -753,16 +839,11 @@
       ],
       "rpcCalls": [],
       "hasDeployConfig": false,
-      "errors": [
-        "Table 'agent_runs' does not exist",
-        "Table 'error_logs' does not exist",
-        "Table 'analytics_events' does not exist",
-        "Table 'preemptive_support_actions' does not exist"
-      ]
+      "errors": []
     },
     {
       "name": "release-gatekeeper-agent",
-      "path": "/workspace/supabase/functions/release-gatekeeper-agent/index.ts",
+      "path": "/app/supabase/functions/release-gatekeeper-agent/index.ts",
       "tables": [
         "agent_runs",
         "error_logs",
@@ -797,23 +878,54 @@
         "map",
         "stringify"
       ],
-      "rpcCalls": ["check_rls_policies", "get_slow_queries"],
+      "rpcCalls": [
+        "check_rls_policies",
+        "get_slow_queries"
+      ],
       "hasDeployConfig": false,
       "errors": [
-        "Table 'agent_runs' does not exist",
-        "Table 'error_logs' does not exist",
-        "Table 'receipt_uploads' does not exist",
-        "Table 'api_keys' does not exist",
-        "Table 'health_checks' does not exist",
-        "Table 'release_safety_checks' does not exist",
-        "Table 'alerts' does not exist",
         "Function/RPC 'check_rls_policies' does not exist",
         "Function/RPC 'get_slow_queries' does not exist"
       ]
     },
     {
+      "name": "retry-queue-processor",
+      "path": "/app/supabase/functions/retry-queue-processor/index.ts",
+      "tables": [
+        "retry_queue",
+        "connectors"
+      ],
+      "functions": [
+        "serve",
+        "get",
+        "from",
+        "select",
+        "eq",
+        "lte",
+        "lt",
+        "raw",
+        "order",
+        "limit",
+        "stringify",
+        "map",
+        "single",
+        "update",
+        "fetch",
+        "replace",
+        "now",
+        "pow",
+        "error"
+      ],
+      "rpcCalls": [],
+      "hasDeployConfig": false,
+      "errors": [
+        "Table 'retry_queue' does not exist",
+        "Table 'connectors' does not exist"
+      ]
+    },
+    {
       "name": "strategic-governor-agent",
-      "path": "/workspace/supabase/functions/strategic-governor-agent/index.ts",
+      "path": "/app/supabase/functions/strategic-governor-agent/index.ts",
       "tables": [
         "agent_runs",
         "users",
@@ -861,21 +973,16 @@
       ],
       "rpcCalls": [],
       "hasDeployConfig": false,
-      "errors": [
-        "Table 'agent_runs' does not exist",
-        "Table 'users' does not exist",
-        "Table 'subscriptions' does not exist",
-        "Table 'user_lifecycle' does not exist",
-        "Table 'usage_events' does not exist",
-        "Table 'error_logs' does not exist",
-        "Table 'support_tickets' does not exist",
-        "Table 'strategic_backlog' does not exist"
-      ]
+      "errors": []
     },
     {
       "name": "sync-usage-to-stripe",
-      "path": "/workspace/supabase/functions/sync-usage-to-stripe/index.ts",
-      "tables": ["billing_accounts", "subscriptions", "usage_aggregate_daily"],
+      "path": "/app/supabase/functions/sync-usage-to-stripe/index.ts",
+      "tables": [
+        "billing_accounts",
+        "subscriptions",
+        "usage_aggregate_daily"
+      ],
       "functions": [
         "serve",
         "get",
@@ -896,16 +1003,14 @@
       ],
       "rpcCalls": [],
       "hasDeployConfig": false,
-      "errors": [
-        "Table 'billing_accounts' does not exist",
-        "Table 'subscriptions' does not exist",
-        "Table 'usage_aggregate_daily' does not exist"
-      ]
+      "errors": []
     },
     {
       "name": "trigger-upgrade-alert",
-      "path": "/workspace/supabase/functions/trigger-upgrade-alert/index.ts",
-      "tables": ["billing_accounts"],
+      "path": "/app/supabase/functions/trigger-upgrade-alert/index.ts",
+      "tables": [
+        "billing_accounts"
+      ],
       "functions": [
         "serve",
         "get",
@@ -920,11 +1025,11 @@
       ],
       "rpcCalls": [],
       "hasDeployConfig": false,
-      "errors": ["Table 'billing_accounts' does not exist"]
+      "errors": []
     },
     {
       "name": "user-intent-synthesizer-agent",
-      "path": "/workspace/supabase/functions/user-intent-synthesizer-agent/index.ts",
+      "path": "/app/supabase/functions/user-intent-synthesizer-agent/index.ts",
       "tables": [
         "agent_runs",
         "receipt_uploads",
@@ -967,20 +1072,16 @@
       ],
       "rpcCalls": [],
       "hasDeployConfig": false,
-      "errors": [
-        "Table 'agent_runs' does not exist",
-        "Table 'receipt_uploads' does not exist",
-        "Table 'analytics_events' does not exist",
-        "Table 'receipts' does not exist",
-        "Table 'usage_events' does not exist",
-        "Table 'error_logs' does not exist",
-        "Table 'user_intent_insights' does not exist"
-      ]
+      "errors": []
     },
     {
       "name": "weekly-reality-loop",
-      "path": "/workspace/supabase/functions/weekly-reality-loop/index.ts",
-      "tables": ["weekly_snapshots", "reality_metrics", "reality_events"],
+      "path": "/app/supabase/functions/weekly-reality-loop/index.ts",
+      "tables": [
+        "weekly_snapshots",
+        "reality_metrics",
+        "reality_events"
+      ],
       "functions": [
         "serve",
         "get",
@@ -1008,14 +1109,11 @@
         "slice",
         "entries"
       ],
-      "rpcCalls": ["record_reality_event"],
+      "rpcCalls": [
+        "record_reality_event"
+      ],
       "hasDeployConfig": false,
-      "errors": [
-        "Table 'weekly_snapshots' does not exist",
-        "Table 'reality_metrics' does not exist",
-        "Table 'reality_events' does not exist",
-        "Function/RPC 'record_reality_event' does not exist"
-      ]
+      "errors": []
     }
   ]
 }
