@@ -132,3 +132,5 @@ export const PATCH = withSecurity(
   ),
   { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
 );
+
+// try catch

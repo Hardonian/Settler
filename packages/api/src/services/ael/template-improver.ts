@@ -55,6 +55,19 @@ export class TemplateImprover {
     const templates = await this.prisma.mappingTemplate.findMany({
       where: { deletedAt: null },
       take: 100,
+      include: {
+        jobs: {
+          take: 100,
+          select: {
+            id: true,
+            results: {
+              where: { status: "failed" },
+              take: 10,
+              select: { id: true },
+            },
+          },
+        },
+      },
     });
 
     if (templates.length > 0) {
@@ -143,6 +156,18 @@ export class TemplateImprover {
     const recipes = await this.prisma.transformRecipe.findMany({
       where: { deletedAt: null },
       take: 100,
+      include: {
+        jobs: {
+          take: 100,
+          select: {
+            id: true,
+            results: {
+              take: 50,
+              select: { startedAt: true, completedAt: true },
+            },
+          },
+        },
+      },
     });
 
     if (recipes.length > 0) {
