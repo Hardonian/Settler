@@ -7,13 +7,13 @@ interface StructuredDataProps {
 }
 
 export function StructuredData({ data, id }: StructuredDataProps) {
+  const safeJson = JSON.stringify(data, null, 0).replace(/</g, "\\u003c").replace(/>/g, "\\u003e");
+
   return (
     <script
       id={id || "structured-data"}
       type="application/ld+json"
-      dangerouslySetInnerHTML={{
-        __html: JSON.stringify(data, null, 0).replace(/</g, "\\u003c").replace(/>/g, "\\u003e"),
-      }}
+      dangerouslySetInnerHTML={{ __html: safeJson }}
     />
   );
 }
