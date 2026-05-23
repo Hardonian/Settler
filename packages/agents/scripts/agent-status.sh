@@ -1,17 +1,4 @@
 #!/bin/bash
-<<<<<<< HEAD
-set -euo pipefail
-
-echo "Settler agents status boundary"
-echo
-echo "No daemonized local agents are supported from packages/agents."
-echo "This package now exposes one-shot verification only."
-echo
-echo "Supported command:"
-echo "  pnpm --filter @settler/agents start"
-
-exit 0
-=======
 # Check Sub-Agent Status
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -85,4 +72,3 @@ echo "Summary:"
 running=$(find "$AGENTS_DIR/pids" -name "*.pid" -exec sh -c 'kill -0 $(cat "$1") 2>/dev/null' _ {} \; -print 2>/dev/null | wc -l)
 total=$(ls "$AGENTS_DIR/pids"/*.pid 2>/dev/null | wc -l)
 echo "  Running: $running / $total agents"
->>>>>>> origin/pr-833
