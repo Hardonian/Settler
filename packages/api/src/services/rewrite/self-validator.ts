@@ -174,7 +174,8 @@ export class SelfValidator {
     testData?: Record<string, unknown>[];
     [key: string]: unknown;
   }): Promise<ValidationResult> {
-    if (!module.pipeline?.steps || module.pipeline.steps.length === 0) {
+    const steps = module.pipeline?.steps;
+    if (!steps || steps.length === 0) {
       return {
         check: "pipeline_simulation",
         status: "pass",
@@ -187,8 +188,8 @@ export class SelfValidator {
       let currentData = [...testData];
       const stepResults: Array<{ step: number; status: string; recordCount: number }> = [];
 
-      for (let i = 0; i < module.pipeline.steps.length; i++) {
-        const step = module.pipeline.steps[i];
+      for (let i = 0; i < steps.length; i++) {
+        const step = steps[i];
         if (!step) continue;
 
         // Simulate each step type
@@ -228,7 +229,7 @@ export class SelfValidator {
       return {
         check: "pipeline_simulation",
         status: "pass",
-        message: `Pipeline simulation passed: ${module.pipeline.steps.length} steps, ${currentData.length} output records`,
+        message: `Pipeline simulation passed: ${steps.length} steps, ${currentData.length} output records`,
       };
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error";

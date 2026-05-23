@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import Any
 
 import chardet
+import httpx
 import pandas as pd
 from dateutil import parser as date_parser
 
@@ -327,14 +328,30 @@ def handle_csv_ingestion(job: Job) -> JobResult:
 
     if file_content_b64:
         import base64
+        import httpx
 
         content = base64.b64decode(file_content_b64)
     elif file_path:
-        # TODO: Implement storage service integration
-        raise NotImplementedError("File path storage not yet implemented")
+        from settler_workhorse.utils.storage import fetch_file_content
+
+        content = fetch_file_content(file_path)
     elif file_url:
-        # TODO: Implement URL download
-        raise NotImplementedError("File URL download not yet implemented")
+        import httpx
+        try:
+            logger.info(f"Downloading CSV from URL: {file_url}")
+            response = httpx.get(file_url, timeout=30.0)
+            response.raise_for_status()
+            content = response.content
+        except httpx.HTTPStatusError as e:
+            return JobResult(
+                success=False,
+                error=f"Failed to download CSV: HTTP {e.response.status_code}",
+            )
+        except httpx.RequestError as e:
+            return JobResult(
+                success=False,
+                error=f"Failed to download CSV: {str(e)}",
+            )
     else:
         return JobResult(
             success=False,

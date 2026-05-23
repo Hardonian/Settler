@@ -445,3 +445,5 @@ export async function POST(request: NextRequest) {
     return addCorrelationHeaders(response, correlationId);
   }
 }
+
+// try catch

@@ -189,33 +189,3 @@ export interface RunListResponse {
     total: number;
   };
 }
-
-/**
- * v1 API run response format
- * @deprecated Use RunListResponse instead
- */
-export interface RunListResponseV1 {
-  rows: RunV1Item[];
-  pagination: {
-    limit: number;
-    offset: number;
-    total: number;
-  };
-  timestamp: string;
-}
-
-/**
- * Individual run item in v1 format
- * @deprecated
- */
-export interface RunV1Item {
-  run_id: string;
-  created_at: string;
-  status: string;
-  policy: string;
-  total_records: number;
-  matched: number;
-  unmatched: number;
-  unmatchedSourceCount?: number;
-  unmatchedTargetCount?: number;
-}

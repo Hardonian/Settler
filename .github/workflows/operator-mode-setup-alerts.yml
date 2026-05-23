@@ -40,7 +40,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: false
+          cache: "pnpm"
+
+      - name: Setup pnpm
+        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -48,7 +51,7 @@ jobs:
       - name: Build API package
         run: |
           cd packages/api
-          npx turbo run build
+          pnpm exec turbo run build
 
       - name: Setup Default Alert Rules
         env:
@@ -57,7 +60,7 @@ jobs:
           NODE_ENV: production
         run: |
           echo "🔄 Setting up default alert rules..."
-          npx tsx scripts/setup-operator-mode-alerts.ts
+          pnpm exec tsx scripts/setup-operator-mode-alerts.ts
           echo "✅ Alert rules setup completed"
 
       - name: Verify Alert Rules
