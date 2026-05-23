@@ -23,7 +23,7 @@ const outputDir = path.join(repoRoot, "artifacts", "security", "dependency-audit
 mkdirSync(outputDir, { recursive: true });
 
 function run(command, args, timeout = 90_000) {
-  const result = spawnSync(command, args, { encoding: "utf8", timeout });
+  const result = spawnSync(command, args, { encoding: "utf8", timeout, shell: process.platform === "win32" });
   return {
     timedOut: result.error && result.error.code === "ETIMEDOUT",
     command: [command, ...args].join(" "),
@@ -101,7 +101,8 @@ if (mode !== "off") {
     finalOutcome = mode === "strict" ? "failed-audit-error" : "warn-audit-error";
   }
 
-  const osvCheck = run("bash", ["-lc", "command -v osv-scanner >/dev/null 2>&1"]);
+  const commandExists = process.platform === "win32" ? "where.exe" : "which";
+  const osvCheck = run(commandExists, ["osv-scanner"]);
   const osvPresent = osvCheck.status === 0;
   attempts.push({ tool: "osv-check", ...osvCheck });
 

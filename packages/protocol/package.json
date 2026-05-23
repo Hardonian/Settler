@@ -18,13 +18,14 @@
   ],
   "scripts": {
     "build": "node ../../scripts/run-package-tsc-build.mjs",
+    "test": "jest",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@types/node": "^24.0.0",
-    "typescript": "^5.3.3"
+    "@types/node": "^24.12.4",
+    "typescript": "^5.9.3"
   },
   "keywords": [
     "reconciliation",
@@ -39,5 +40,9 @@
     "url": "https://github.com/settler/react-settler.git",
     "directory": "packages/protocol"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "jest": "^30.4.2",
+    "ts-jest": "^29.4.11"
+  }
 }

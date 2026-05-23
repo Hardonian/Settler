@@ -201,7 +201,17 @@ def _records_match(
         date_tolerance_days = opts.get("date_tolerance_days", 0)
         if date_tolerance_days == 0:
             return False
-        # TODO: Implement date tolerance comparison
+
+        try:
+            from dateutil import parser
+
+            src_dt = parser.parse(str(src_date))
+            tgt_dt = parser.parse(str(tgt_date))
+            if abs((src_dt - tgt_dt).days) > date_tolerance_days:
+                return False
+        except (ValueError, TypeError, ImportError):
+            # Fall back to strict equality if parsing fails
+            return False
 
     return True
 

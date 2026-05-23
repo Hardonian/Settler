@@ -245,7 +245,7 @@ serve(async (req) => {
     }
 
     // Parse request body
-    const body = await req.json();
+    const body = await req.json() as any;
     const { billing_account_id, project_id, tenant_id: bodyTenantId, sync_count } = body;
 
     if (!billing_account_id) {
@@ -364,7 +364,7 @@ serve(async (req) => {
     console.error("Unexpected error:", error);
 
     // Update integration health (failure)
-    const body = await req.json().catch(() => ({}));
+    const body = await req.json().catch(() => ({})) as any;
     const tenantId = body.tenant_id;
 
     if (tenantId) {

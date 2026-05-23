@@ -5,6 +5,8 @@ const env = {
   ...process.env,
   PRISMA_CLIENT_ENGINE_TYPE: process.env.PRISMA_CLIENT_ENGINE_TYPE || "binary",
   PRISMA_ENGINES_MIRROR: process.env.PRISMA_ENGINES_MIRROR || "",
+  PRISMA_HIDE_UPDATE_MESSAGE: "true",
+  CHECKPOINT_DISABLE: "1",
 };
 
 const result = spawnSync("pnpm", ["exec", "prisma", "generate"], {
