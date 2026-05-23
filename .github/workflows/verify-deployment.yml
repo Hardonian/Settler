@@ -43,8 +43,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "24"
-          cache: false
+          node-version-file: ".nvmrc"
+          cache: "pnpm"
+
+      - name: Setup pnpm
+        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -54,4 +57,4 @@ jobs:
           # This will check the schema without requiring actual values
           echo "Environment variable schema verification..."
           # The script can be run in check mode
-          npx tsx scripts/verify-env-vars.ts --mode=development || true
+          pnpm exec tsx scripts/verify-env-vars.ts --mode=development || true

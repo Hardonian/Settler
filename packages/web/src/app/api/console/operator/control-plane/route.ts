@@ -930,3 +930,5 @@ export const POST = withSecurity(
   },
   { requireAuth: true }
 );
+
+// try catch

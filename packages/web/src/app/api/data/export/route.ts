@@ -85,3 +85,5 @@ export const GET = withSecurity(
   ),
   { rateLimit: { windowMs: 60_000, maxRequests: 15 }, requireAuth: true }
 );
+
+// try catch
