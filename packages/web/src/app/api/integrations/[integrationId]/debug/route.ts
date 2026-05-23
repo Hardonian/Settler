@@ -55,3 +55,5 @@ export const POST = withSecurity(
   ),
   { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: true }
 );
+
+// try catch

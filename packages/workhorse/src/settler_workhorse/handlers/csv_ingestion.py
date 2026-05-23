@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import Any
 
 import chardet
+import httpx
 import pandas as pd
 from dateutil import parser as date_parser
 
@@ -331,8 +332,9 @@ def handle_csv_ingestion(job: Job) -> JobResult:
 
         content = base64.b64decode(file_content_b64)
     elif file_path:
-        # TODO: Implement storage service integration
-        raise NotImplementedError("File path storage not yet implemented")
+        from settler_workhorse.utils.storage import fetch_file_content
+
+        content = fetch_file_content(file_path)
     elif file_url:
         import httpx
         try:
