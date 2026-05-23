@@ -70,29 +70,77 @@ export class TemplateImprover {
       },
     });
 
-    for (const template of templates) {
-      // Extract jobs and failures from the loaded relations
-      const jobs = template.jobs || [];
-      let failureCount = 0;
+    if (templates.length > 0) {
+      const templateIds = templates.map((t: { id: string }) => t.id);
+
+      // Fetch all jobs for these templates at once, up to a reasonable limit to prevent OOM
+      // Using a larger take since we're batching 100 templates worth of jobs
+      const jobs = await this.prisma.reconJob.findMany({
+        where: { mappingTemplateId: { in: templateIds } },
+        take: 1000,
+      });
+
+      // Group jobs by template ID
+      const jobsByTemplateId = new Map<string, { id: string }[]>();
       for (const job of jobs) {
-        failureCount += job.results.length;
+        if (job.mappingTemplateId) {
+          if (!jobsByTemplateId.has(job.mappingTemplateId)) {
+            jobsByTemplateId.set(job.mappingTemplateId, []);
+          }
+          jobsByTemplateId.get(job.mappingTemplateId)!.push(job);
+        }
       }
 
-      if (failureCount > 5) {
-        const currentVersion = template.version ? String(template.version) : "1.0.0";
-        improvements.push({
-          templateId: template.id,
-          templateType: "mapping",
-          currentVersion,
-          proposedVersion: this.incrementVersion(currentVersion),
-          improvements: [
-            "Add error handling for missing fields",
-            "Improve field matching logic",
-            "Add fallback mappings",
-          ],
-          backwardCompatible: true,
-          confidence: 0.8,
-        });
+      const jobIds = jobs.map((j: { id: string }) => j.id);
+
+      // Fetch all failures for these jobs at once, bounded by take
+      const failures =
+        jobIds.length > 0
+          ? await this.prisma.reconResult.findMany({
+              where: {
+                reconJobId: { in: jobIds },
+                status: "failed",
+              },
+              take: 1000,
+            })
+          : [];
+
+      // Group failures by job ID
+      const failuresByJobId = new Map<string, any[]>();
+      for (const failure of failures) {
+        if (!failuresByJobId.has(failure.reconJobId)) {
+          failuresByJobId.set(failure.reconJobId, []);
+        }
+        failuresByJobId.get(failure.reconJobId)!.push(failure);
+      }
+
+      for (const template of templates) {
+        // Enforce the original logic's 100 jobs per template limit in memory
+        const templateJobs = (jobsByTemplateId.get(template.id) || []).slice(0, 100);
+
+        let failureCount = 0;
+        for (const job of templateJobs) {
+          // Enforce the original logic's 10 failures per job limit in memory
+          const jobFailures = (failuresByJobId.get(job.id) || []).slice(0, 10);
+          failureCount += jobFailures.length;
+        }
+
+        if (failureCount > 5) {
+          const currentVersion = template.version ? String(template.version) : "1.0.0";
+          improvements.push({
+            templateId: template.id,
+            templateType: "mapping",
+            currentVersion,
+            proposedVersion: this.incrementVersion(currentVersion),
+            improvements: [
+              "Add error handling for missing fields",
+              "Improve field matching logic",
+              "Add fallback mappings",
+            ],
+            backwardCompatible: true,
+            confidence: 0.8,
+          });
+        }
       }
     }
 
@@ -122,43 +170,85 @@ export class TemplateImprover {
       },
     });
 
-    for (const recipe of recipes) {
-      // Analyze performance
-      const jobs = recipe.jobs || [];
+    if (recipes.length > 0) {
+      const recipeIds = recipes.map((r: { id: string }) => r.id);
 
-      // Check execution times
-      const results = jobs.flatMap((j: { results: any }) => j.results).slice(0, 50);
+      // Fetch all jobs for these recipes at once
+      const jobs = await this.prisma.reconJob.findMany({
+        where: { transformRecipeId: { in: recipeIds } },
+        take: 1000,
+      });
 
-      const durations = results
-        .filter(
-          (r: { completedAt: Date | null; startedAt: Date | null }) => r.completedAt && r.startedAt
-        )
-        .map((r: { completedAt: Date | null; startedAt: Date | null }) => {
-          if (!r.completedAt || !r.startedAt) return 0;
-          return r.completedAt.getTime() - r.startedAt.getTime();
-        });
+      // Group jobs by recipe ID
+      const jobsByRecipeId = new Map<string, { id: string }[]>();
+      for (const job of jobs) {
+        if (job.transformRecipeId) {
+          if (!jobsByRecipeId.has(job.transformRecipeId)) {
+            jobsByRecipeId.set(job.transformRecipeId, []);
+          }
+          jobsByRecipeId.get(job.transformRecipeId)!.push(job);
+        }
+      }
 
-      const avgDuration =
-        durations.length > 0
-          ? durations.reduce((a: number, b: number) => a + b, 0) / durations.length
-          : 0;
+      const jobIds = jobs.map((j: { id: string }) => j.id);
 
-      if (avgDuration > 10000) {
-        // > 10 seconds
-        const currentVersion = recipe.version ? String(recipe.version) : "1.0.0";
-        improvements.push({
-          templateId: recipe.id,
-          templateType: "transform",
-          currentVersion,
-          proposedVersion: this.incrementVersion(currentVersion),
-          improvements: [
-            "Optimize transformation logic",
-            "Add caching for repeated operations",
-            "Parallelize independent transforms",
-          ],
-          backwardCompatible: true,
-          confidence: 0.7,
-        });
+      // Fetch all results for these jobs at once
+      const results =
+        jobIds.length > 0
+          ? await this.prisma.reconResult.findMany({
+              where: {
+                reconJobId: { in: jobIds },
+              },
+              take: 5000, // 100 recipes * 100 jobs * 50 results
+            })
+          : [];
+
+      // Group results by job ID
+      const resultsByJobId = new Map<string, any[]>();
+      for (const result of results) {
+        if (!resultsByJobId.has(result.reconJobId)) {
+          resultsByJobId.set(result.reconJobId, []);
+        }
+        resultsByJobId.get(result.reconJobId)!.push(result);
+      }
+
+      for (const recipe of recipes) {
+        // Enforce the original logic's 100 jobs per recipe limit in memory
+        const recipeJobs = (jobsByRecipeId.get(recipe.id) || []).slice(0, 100);
+
+        const durations: number[] = [];
+        for (const job of recipeJobs) {
+          // Enforce the original logic's 50 results per job limit in memory
+          const jobResults = (resultsByJobId.get(job.id) || []).slice(0, 50);
+          for (const r of jobResults) {
+            if (r.completedAt && r.startedAt) {
+              durations.push(r.completedAt.getTime() - r.startedAt.getTime());
+            }
+          }
+        }
+
+        const avgDuration =
+          durations.length > 0
+            ? durations.reduce((a: number, b: number) => a + b, 0) / durations.length
+            : 0;
+
+        if (avgDuration > 10000) {
+          // > 10 seconds
+          const currentVersion = recipe.version ? String(recipe.version) : "1.0.0";
+          improvements.push({
+            templateId: recipe.id,
+            templateType: "transform",
+            currentVersion,
+            proposedVersion: this.incrementVersion(currentVersion),
+            improvements: [
+              "Optimize transformation logic",
+              "Add caching for repeated operations",
+              "Parallelize independent transforms",
+            ],
+            backwardCompatible: true,
+            confidence: 0.7,
+          });
+        }
       }
     }
 
@@ -176,61 +266,90 @@ export class TemplateImprover {
       take: 100,
     });
 
-    if (rules.length === 0) return improvements;
-
-    const allJobs = await this.prisma.reconJob.findMany({
-      select: {
-        id: true,
-        validationRules: true,
-        results: {
-          where: { status: "failed" },
-          take: 1,
-          select: { id: true },
-        },
-      },
-    });
-
-    for (const rule of rules) {
-      // Check if rule catches issues effectively
-      // Note: validationRules is a Json array field, so we check if rule.id is in the array
-      const jobs = allJobs.filter((job: { id: string; validationRules: unknown }) => {
-        const jobRules = job.validationRules;
-        if (Array.isArray(jobRules)) {
-          return jobRules.some(
-            (r: unknown) =>
-              (typeof r === "object" &&
-                r !== null &&
-                "id" in r &&
-                (r as { id: string }).id === rule.id) ||
-              r === rule.id
-          );
-        }
-        return false;
+    if (rules.length > 0) {
+      // Fetch all jobs once outside the loop
+      // We limit to 1000 to avoid loading the entire table.
+      const allJobs = await this.prisma.reconJob.findMany({
+        select: { id: true, validationRules: true },
+        take: 1000,
       });
 
-      let hasFailures = false;
-      for (const job of jobs) {
-        if (job.results && job.results.length > 0) {
-          hasFailures = true;
-          break;
+      const jobsByRuleId = new Map<string, { id: string }[]>();
+
+      for (const rule of rules) {
+        const matchingJobs = allJobs.filter((job: { id: string; validationRules: unknown }) => {
+          const jobRules = job.validationRules;
+          if (Array.isArray(jobRules)) {
+            return jobRules.some(
+              (r: unknown) =>
+                (typeof r === "object" &&
+                  r !== null &&
+                  "id" in r &&
+                  (r as { id: string }).id === rule.id) ||
+                r === rule.id
+            );
+          }
+          return false;
+        });
+        jobsByRuleId.set(rule.id, matchingJobs);
+      }
+
+      // Extract all unique job IDs across all rules
+      const allJobIds = new Set<string>();
+      for (const ruleJobs of jobsByRuleId.values()) {
+        for (const job of ruleJobs) {
+          allJobIds.add(job.id);
         }
       }
 
-      if (!hasFailures && jobs.length > 10) {
-        // ValidationRule doesn't have a version field, use '1.0.0' as default
-        improvements.push({
-          templateId: rule.id,
-          templateType: "validation",
-          currentVersion: "1.0.0",
-          proposedVersion: this.incrementVersion("1.0.0"),
-          improvements: [
-            "Tighten validation criteria",
-            "Add additional checks",
-            "Improve error messages",
-          ],
-          backwardCompatible: true,
-          confidence: 0.6,
-        });
+      const jobIdsArray = Array.from(allJobIds);
+
+      // Fetch all failed results for these jobs at once
+      const failedResults =
+        jobIdsArray.length > 0
+          ? await this.prisma.reconResult.findMany({
+              where: {
+                reconJobId: { in: jobIdsArray },
+                status: "failed",
+              },
+              take: 1000,
+            })
+          : [];
+
+      // Group failed results by job ID
+      const failuresByJobId = new Map<string, any[]>();
+      for (const failure of failedResults) {
+        if (!failuresByJobId.has(failure.reconJobId)) {
+          failuresByJobId.set(failure.reconJobId, []);
+        }
+        failuresByJobId.get(failure.reconJobId)!.push(failure);
+      }
+
+      for (const rule of rules) {
+        const jobs = jobsByRuleId.get(rule.id) || [];
+
+        let failureCount = 0;
+        for (const job of jobs) {
+          // Apply original limit of 1 failure (since take was 1 in original loop)
+          failureCount += (failuresByJobId.get(job.id) || []).slice(0, 1).length;
+        }
+
+        if (failureCount === 0 && jobs.length > 10) {
+          // ValidationRule doesn't have a version field, use '1.0.0' as default
+          improvements.push({
+            templateId: rule.id,
+            templateType: "validation",
+            currentVersion: "1.0.0",
+            proposedVersion: this.incrementVersion("1.0.0"),
+            improvements: [
+              "Tighten validation criteria",
+              "Add additional checks",
+              "Improve error messages",
+            ],
+            backwardCompatible: true,
+            confidence: 0.6,
+          });
+        }
       }
     }
 
