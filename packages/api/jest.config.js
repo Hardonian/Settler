@@ -9,7 +9,7 @@ module.exports = {
   },
 
   moduleNameMapper: {
-    "^uuid$": "<rootDir>/src/__tests__/utils/uuid-mock.ts",
+    "^uuid$": require.resolve("uuid"),
     "^@settler/support-intake$": "<rootDir>/../support-intake/src/index.ts",
     "^@settler/adapters$": "<rootDir>/../adapters/dist/index.js",
     "^@settler/reconciliation-core$": "<rootDir>/../reconciliation-core/dist/index.js"

@@ -96,3 +96,106 @@ describe("verifyProofIntegrity", () => {
     expect(result.errors).toContain("Package hash mismatch - evidence may have been tampered with");
   });
 });
+
+
+describe("verifyProofIntegrity", () => {
+  const baseExport: ProofPackageExport = {
+    version: "1.0",
+    exportedAt: "2023-01-01T00:00:00Z",
+    package: {
+      id: "pkg-1",
+      type: "run_summary",
+      key: "run_summary::run::run-1::2023-01-01T00-00-00Z",
+      status: "final",
+      scope: "run",
+      scopeIds: ["run-1"],
+      summary: {
+        artifactCount: 1,
+        artifactTypes: { evidence: 1 },
+        reliabilityRange: { min: 1, max: 1, avg: 1 },
+        degradationSummary: { total: 0, byReason: {} },
+        attestationSummary: { total: 0, byMethod: {} },
+      },
+      packageHash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", // will be replaced
+      attestations: [],
+    },
+    evidence: [
+      {
+        id: "ev-1",
+        tenantId: "tenant-1",
+        runId: "run-1",
+        sourceId: "source-1",
+        artifactType: "evidence",
+        createdAt: "2023-01-01T00:00:00Z",
+        payload: { key: "value" },
+        payloadHash: "c0c99aeb69502b4d4dc9de2004de07d5b12da61bb08e70390a8819543df5e955", // will be replaced
+        degraded: false,
+        degradedReasons: [],
+        attested: false,
+      }
+    ],
+    completeness: {
+      modelId: "model-1",
+      expectedArtifacts: [],
+      score: 1,
+      isComplete: true,
+      assessedAt: "2023-01-01T00:00:00Z",
+    },
+    integrity: {
+      packageHash: "",
+      evidenceHashes: {},
+      algorithm: "sha256",
+    }
+  };
+
+  it("returns invalid result with errors when package hash does not match", () => {
+    // We compute a valid hash just so the evidence hash passes. Wait, evidence hash is checked later.
+    // Actually verifyProofIntegrity verifies packageHash first, then evidence hash.
+    // Let's create an invalid package hash.
+
+    // Compute the evidence payload hash properly for our dummy payload
+    const crypto = require("crypto");
+    const payload = baseExport.evidence[0].payload;
+    const sortedKeys = Object.keys(payload).sort();
+    const evidenceHash = crypto.createHash("sha256").update(JSON.stringify(payload, sortedKeys)).digest("hex");
+
+    const invalidExport = JSON.parse(JSON.stringify(baseExport));
+    invalidExport.evidence[0].payloadHash = evidenceHash;
+    invalidExport.package.packageHash = "invalid-hash-12345";
+
+    const result = verifyProofIntegrity(invalidExport);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("Package hash mismatch - evidence may have been tampered with");
+  });
+
+  it("returns valid result when package hash and evidence hashes match", () => {
+    const crypto = require("crypto");
+
+    // Compute evidence hash
+    const payload = baseExport.evidence[0].payload;
+    const sortedKeys = Object.keys(payload).sort();
+    const evidenceHash = crypto.createHash("sha256").update(JSON.stringify(payload, sortedKeys)).digest("hex");
+
+    // Compute package hash
+    const computedHash = crypto
+      .createHash("sha256")
+      .update(
+        JSON.stringify({
+          evidenceIds: ["ev-1"],
+          packageType: "run_summary",
+          scopeIds: ["run-1"],
+        })
+      )
+      .digest("hex");
+
+    const validExport = JSON.parse(JSON.stringify(baseExport));
+    validExport.evidence[0].payloadHash = evidenceHash;
+    validExport.package.packageHash = computedHash;
+
+    const result = verifyProofIntegrity(validExport);
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+});

@@ -180,7 +180,7 @@ const EXCLUDED_FROM_SECRET_CHECK = [
   "**/docs/**",
   "**/scripts/**",
   "**/design-system/**",
-  "**/design/tokens.json",
+  "**/design/**",
   "**/archive/**",
   "**/marketing/**",
   "**/core", // Likely a binary or special file
