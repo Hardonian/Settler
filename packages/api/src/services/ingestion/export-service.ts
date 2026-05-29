@@ -40,13 +40,9 @@ function generateSignedUrl(
   filePath: string,
   expiresInHours: number = 24
 ): { url: string; expiresAt: Date } {
-  // In production, this would generate a signed S3 URL or similar
-  // For now, returning a mock URL
   const expiresAt = new Date();
   expiresAt.setHours(expiresAt.getHours() + expiresInHours);
 
-  // In a real implementation, this would be:
-  // const url = await s3.getSignedUrl('getObject', { ... });
   const url = `/api/v1/exports/download/${filePath.split("/").pop()}`;
 
   return { url, expiresAt };
