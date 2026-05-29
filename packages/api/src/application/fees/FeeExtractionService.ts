@@ -6,6 +6,7 @@
  */
 
 import { Transaction, Fee, Money } from "@settler/types";
+import * as crypto from "node:crypto";
 
 export interface FeeExtractionResult {
   fees: Fee[];
@@ -298,6 +299,6 @@ export class FeeExtractionService {
    * Generate ID
    */
   private generateId(): string {
-    return `fee_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `fee_${Date.now()}_${crypto.randomBytes(8).toString("hex")}`;
   }
 }

@@ -9,6 +9,7 @@ import { FXConversion, Money } from "@settler/types";
 import { query } from "../../db";
 import { fxRateProviderManager } from "../../services/currency/fx-rate-provider";
 import { logInfo, logError } from "../../utils/logger";
+import * as crypto from "node:crypto";
 
 export interface FXRate {
   fromCurrency: string;
@@ -265,6 +266,6 @@ export class FXService {
    * Generate ID
    */
   private generateId(): string {
-    return `fx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `fx_${Date.now()}_${crypto.randomBytes(8).toString("hex")}`;
   }
 }
