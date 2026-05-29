@@ -42,6 +42,7 @@ class WhatsAppTelegramAdapter {
         // WhatsApp Business API doesn't have a direct payments endpoint
         // Payments are typically handled through payment links or external processors
         // This would integrate with payment link reconciliation
+        // const url = `https://graph.facebook.com/v18.0/me/messages`;
         // In production, this would query payment link transactions
         // For now, return empty array as WhatsApp payments are typically processed externally
         return [];
