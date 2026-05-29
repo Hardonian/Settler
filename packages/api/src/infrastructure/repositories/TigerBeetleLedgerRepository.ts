@@ -290,7 +290,10 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
       const results = await client.createAccounts([account]);
       const error = results[0];
       if (error) {
-        throw new LedgerOperationError("createAccount", `TigerBeetle error code: ${(error as any).result ?? error}`);
+        throw new LedgerOperationError(
+          "createAccount",
+          `TigerBeetle error code: ${(error as any).result ?? error}`
+        );
       }
 
       return {
@@ -441,7 +444,10 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
       const results = await client.createTransfers([transfer]);
       const error = results[0];
       if (error) {
-        throw new LedgerOperationError("createTransfer", `TigerBeetle error code: ${(error as any).result ?? error}`);
+        throw new LedgerOperationError(
+          "createTransfer",
+          `TigerBeetle error code: ${(error as any).result ?? error}`
+        );
       }
 
       return {
@@ -642,8 +648,13 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
 
       const balances: LedgerBalance[] = [];
 
+      const accountMap = new Map<string, (typeof accounts)[0]>();
+      for (const account of accounts) {
+        accountMap.set(bigintToString(account.id), account);
+      }
+
       for (const accountId of accountIds) {
-        const account = accounts.find((a) => bigintToString(a.id) === accountId);
+        const account = accountMap.get(accountId);
 
         if (account) {
           const type = codeToAccountType(account.code);
@@ -787,7 +798,10 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
       const results = await client.createTransfers([postTransfer]);
       const error = results[0];
       if (error) {
-        throw new LedgerOperationError("postPendingTransfer", `TB Error: ${(error as any).result ?? error}`);
+        throw new LedgerOperationError(
+          "postPendingTransfer",
+          `TB Error: ${(error as any).result ?? error}`
+        );
       }
 
       return {
