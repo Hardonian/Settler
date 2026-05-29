@@ -13,10 +13,6 @@ export class ShopifyAdapter implements Adapter {
       throw new Error("Shopify API key and shop domain are required");
     }
 
-    // In production, use Shopify Admin API
-    // const client = new Shopify.Clients.Rest(shopDomain, apiKey);
-    // const orders = await client.get({ path: "orders", query: { created_at_min: dateRange.start.toISOString() } });
-
     // Mock implementation
     return [
       {
