@@ -5,6 +5,7 @@
  * fraud and anomalies. One customer's anomaly detection improves detection for all.
  */
 
+import * as crypto from "crypto";
 import { EventEmitter } from "events";
 
 export interface AnonymizedPattern {
@@ -88,7 +89,7 @@ export class CrossCustomerIntelligence extends EventEmitter {
     } else {
       // Create new pattern
       existingPattern = {
-        id: `pattern_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        id: `pattern_${Date.now()}_${crypto.randomUUID()}`,
         patternHash,
         patternType: pattern.type,
         frequency: 1,

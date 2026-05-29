@@ -4,6 +4,7 @@
  * REST API for graph-based reconciliation
  */
 
+import * as crypto from "crypto";
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
 import { requirePermission } from "../../middleware/authorization";
@@ -65,7 +66,7 @@ router.post(
         return res.status(400).json({ error: "Job ID is required" });
       }
       const node: ReconciliationNode = {
-        id: req.body.id || `node_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        id: req.body.id || `node_${Date.now()}_${crypto.randomUUID()}`,
         type: req.body.type || "transaction",
         jobId,
         sourceId: req.body.sourceId || undefined,
@@ -151,7 +152,7 @@ router.post(
         return res.status(400).json({ error: "Job ID is required" });
       }
       const edge: ReconciliationEdge = {
-        id: req.body.id || `edge_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        id: req.body.id || `edge_${Date.now()}_${crypto.randomUUID()}`,
         source: req.body.source || "",
         target: req.body.target || "",
         type: req.body.type || "matches",

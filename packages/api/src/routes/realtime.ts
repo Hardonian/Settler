@@ -3,6 +3,7 @@
  * WebSocket/SSE endpoint for reconciliation status updates
  */
 
+import * as crypto from "crypto";
 import { Router, Response } from "express";
 import { query } from "../db";
 import { AuthRequest } from "../middleware/auth";
@@ -116,7 +117,7 @@ router.get("/reconciliations/:jobId", async (req: AuthRequest, res: Response): P
   res.setHeader("Connection", "keep-alive");
   res.setHeader("X-Accel-Buffering", "no");
 
-  const connectionId = `${tenantId}-${jobId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const connectionId = `${tenantId}-${jobId}-${Date.now()}-${crypto.randomUUID()}`;
   sseConnections.set(connectionId, {
     id: connectionId,
     tenantId,
@@ -208,7 +209,7 @@ router.get("/workbench", async (req: AuthRequest, res: Response): Promise<void> 
   res.setHeader("Connection", "keep-alive");
   res.setHeader("X-Accel-Buffering", "no");
 
-  const connectionId = `workbench-${tenantId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const connectionId = `workbench-${tenantId}-${Date.now()}-${crypto.randomUUID()}`;
 
   logInfo("SSE Workbench connection established", { connectionId, tenantId });
 

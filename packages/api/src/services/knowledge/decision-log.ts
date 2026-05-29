@@ -1,3 +1,4 @@
+import * as crypto from "crypto";
 import { EventEmitter } from "events";
 import * as fs from "fs/promises";
 import * as path from "path";
@@ -92,7 +93,7 @@ export class DecisionLog extends EventEmitter {
   async createDecision(decision: CreateDecisionInput): Promise<Decision> {
     const fullDecision: Decision = {
       ...decision,
-      id: `dec_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+      id: `dec_${Date.now()}_${crypto.randomUUID()}`,
       date: new Date(),
     };
 

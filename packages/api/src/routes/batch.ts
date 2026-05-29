@@ -8,6 +8,7 @@
  * - Batch result retrieval
  */
 
+import * as crypto from "crypto";
 import { Router, Response } from "express";
 import { authMiddleware, AuthRequest } from "../middleware/auth";
 import { requirePermission } from "../middleware/authorization";
@@ -48,7 +49,7 @@ router.post(
       // 3. Queue jobs for processing
       // 4. Return batch ID
 
-      const batchId = `batch_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const batchId = `batch_${Date.now()}_${crypto.randomUUID()}`;
 
       logInfo("Batch jobs created", {
         batchId,

@@ -5,6 +5,7 @@
  * as specified in the Product & Technical Specification.
  */
 
+import * as crypto from "crypto";
 import { Transaction, Fee, Money } from "@settler/types";
 
 export interface FeeExtractionResult {
@@ -298,6 +299,6 @@ export class FeeExtractionService {
    * Generate ID
    */
   private generateId(): string {
-    return `fee_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `fee_${Date.now()}_${crypto.randomUUID()}`;
   }
 }

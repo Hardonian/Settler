@@ -5,6 +5,7 @@
  * and currency-aware matching as specified in the Product & Technical Specification.
  */
 
+import * as crypto from "crypto";
 import { FXConversion, Money } from "@settler/types";
 import { query } from "../../db";
 import { fxRateProviderManager } from "../../services/currency/fx-rate-provider";
@@ -265,6 +266,6 @@ export class FXService {
    * Generate ID
    */
   private generateId(): string {
-    return `fx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `fx_${Date.now()}_${crypto.randomUUID()}`;
   }
 }
