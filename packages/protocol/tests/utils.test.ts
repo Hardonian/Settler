@@ -1,71 +1,93 @@
-import { deepClone } from "../src/utils";
+import { sanitizeTransactionMetadata } from "../src/utils";
 
-describe("deepClone", () => {
-  it("should deep clone a simple object", () => {
-    const obj = { a: 1, b: "two", c: true };
-    const cloned = deepClone(obj);
-    expect(cloned).toEqual(obj);
-    expect(cloned).not.toBe(obj);
+describe("sanitizeTransactionMetadata", () => {
+  it("should return undefined if metadata is falsy or not an object", () => {
+    expect(sanitizeTransactionMetadata()).toBeUndefined();
+    expect(sanitizeTransactionMetadata(null as any)).toBeUndefined();
+    expect(sanitizeTransactionMetadata("string" as any)).toBeUndefined();
+    expect(sanitizeTransactionMetadata(123 as any)).toBeUndefined();
   });
 
-  it("should deep clone nested objects", () => {
-    const obj = { a: { b: { c: 1 } } };
-    const cloned = deepClone(obj);
-    expect(cloned).toEqual(obj);
-    expect(cloned.a).not.toBe(obj.a);
-    expect(cloned.a.b).not.toBe(obj.a.b);
+  it("should sanitize keys by removing dangerous characters", () => {
+    const input = {
+      "<script>alert(1)</script>": "value",
+      "javascript:alert(1)": "value",
+      "onclick=alert(1)": "value",
+      normal_key: "value",
+    };
+
+    const result = sanitizeTransactionMetadata(input);
+
+    expect(result).toBeDefined();
+    if (result) {
+      expect(result).toHaveProperty("scriptalert(1)/script", "value");
+      expect(result).toHaveProperty("alert(1)", "value");
+      expect(result).toHaveProperty("normal_key", "value");
+    }
   });
 
-  it("should deep clone arrays", () => {
-    const arr = [1, [2, 3], { a: 4 }];
-    const cloned = deepClone(arr);
-    expect(cloned).toEqual(arr);
-    expect(cloned).not.toBe(arr);
-    expect(cloned[1]).not.toBe(arr[1]);
-    expect(cloned[2]).not.toBe(arr[2]);
+  it("should skip empty sanitized keys", () => {
+    const input = {
+      "<>": "value1", // Sanitizes to empty string
+      normal: "value2",
+    };
+
+    const result = sanitizeTransactionMetadata(input);
+
+    expect(result).toEqual({ normal: "value2" });
   });
 
-  it("should deep clone dates", () => {
-    const date = new Date();
-    const cloned = deepClone(date);
-    expect(cloned).toEqual(date);
-    expect(cloned).not.toBe(date);
+  it("should sanitize string values", () => {
+    const input = {
+      key1: "<script>alert('xss')</script>",
+      key2: "javascript:void(0)",
+      key3: "onclick=doSomething()",
+      key4: "safe value",
+    };
+
+    const result = sanitizeTransactionMetadata(input);
+
+    expect(result).toEqual({
+      key1: "scriptalert('xss')/script",
+      key2: "void(0)",
+      key3: "doSomething()",
+      key4: "safe value",
+    });
   });
 
-  it("should return primitive values as is", () => {
-    expect(deepClone(1)).toBe(1);
-    expect(deepClone("string")).toBe("string");
-    expect(deepClone(true)).toBe(true);
-    expect(deepClone(null)).toBe(null);
-    expect(deepClone(undefined)).toBe(undefined);
+  it("should preserve numbers and booleans", () => {
+    const input = {
+      number: 123,
+      float: 123.45,
+      zero: 0,
+      boolTrue: true,
+      boolFalse: false,
+    };
+
+    const result = sanitizeTransactionMetadata(input);
+
+    expect(result).toEqual(input);
   });
 
-  it("should properly deep clone a DAG (Directed Acyclic Graph) without throwing", () => {
-    const child = { value: 42 };
-    const obj = { a: child, b: child };
+  it("should preserve null values", () => {
+    const input = {
+      nullKey: null,
+    };
 
-    const cloned = deepClone(obj);
-    expect(cloned).toEqual(obj);
-    expect(cloned.a).toEqual(child);
-    expect(cloned.b).toEqual(child);
-    expect(cloned.a).not.toBe(child);
-    // In a WeakSet delete-based approach, it will create two different copies of child
-    expect(cloned.a).not.toBe(cloned.b);
+    const result = sanitizeTransactionMetadata(input);
+
+    expect(result).toEqual(input);
   });
 
-  it("should properly deep clone an array with repeating references", () => {
-    const child = { value: 42 };
-    const arr = [child, child, child];
+  it("should skip objects and arrays for security", () => {
+    const input = {
+      nestedObject: { a: 1 },
+      array: [1, 2, 3],
+      normalKey: "value",
+    };
 
-    const cloned = deepClone(arr);
-    expect(cloned).toEqual(arr);
-    expect(cloned[0]).not.toBe(child);
-  });
+    const result = sanitizeTransactionMetadata(input);
 
-  it("should throw a RangeError when encountering circular references", () => {
-    const obj: any = { a: 1 };
-    obj.b = obj; // Create circular reference
-
-    expect(() => deepClone(obj)).toThrow(RangeError);
+    expect(result).toEqual({ normalKey: "value" });
   });
 });
