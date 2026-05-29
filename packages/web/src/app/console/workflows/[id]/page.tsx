@@ -142,8 +142,12 @@ export default function WorkflowDetailPage() {
       {capabilityUnavailable && (
         <Card className="border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-950/30">
           <CardHeader>
-            <CardTitle className="text-amber-900 dark:text-amber-200">Limited operability</CardTitle>
-            <p className="text-sm text-amber-800 dark:text-amber-300">{WORKFLOWS_CAPABILITY_MESSAGE}</p>
+            <CardTitle className="text-amber-900 dark:text-amber-200">
+              Limited operability
+            </CardTitle>
+            <p className="text-sm text-amber-800 dark:text-amber-300">
+              {WORKFLOWS_CAPABILITY_MESSAGE}
+            </p>
           </CardHeader>
         </Card>
       )}

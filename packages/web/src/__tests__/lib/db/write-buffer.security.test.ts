@@ -88,7 +88,7 @@ describe("Write Buffer Security", () => {
         ipAddress: "127.0.0.2",
         error: "injection'); --",
         createdAt: new Date(),
-      }
+      },
     ];
 
     // We need to put logs into the in-memory buffer first

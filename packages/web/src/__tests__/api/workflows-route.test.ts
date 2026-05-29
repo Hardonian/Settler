@@ -110,7 +110,9 @@ describe("workflow automation thin-surface API contract", () => {
     const createResponse = await createWorkflow(makeRequest("http://localhost/api/workflows"));
     const patchResponse = await updateWorkflow(makeRequest("http://localhost/api/workflows/wf_1"));
     const deleteResponse = await deleteWorkflow(makeRequest("http://localhost/api/workflows/wf_1"));
-    const testResponse = await testWorkflow(makeRequest("http://localhost/api/workflows/wf_1/test"));
+    const testResponse = await testWorkflow(
+      makeRequest("http://localhost/api/workflows/wf_1/test")
+    );
 
     for (const response of [createResponse, patchResponse, deleteResponse, testResponse]) {
       const body = await response.json();
