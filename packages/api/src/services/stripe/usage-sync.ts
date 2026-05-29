@@ -73,11 +73,16 @@ export class StripeUsageSync {
           subscription: subscription.stripeSubscriptionId,
         });
 
+        const itemsByEventType = new Map<string, Stripe.SubscriptionItem>();
+        for (const item of subscriptionItems.data) {
+          if (item.metadata?.eventType) {
+            itemsByEventType.set(item.metadata.eventType, item);
+          }
+        }
+
         for (const [eventType, usage] of usageByType.entries()) {
           // Find matching subscription item by metadata or event type
-          const matchingItem = subscriptionItems.data.find(
-            (item) => item.metadata?.eventType === eventType
-          );
+          const matchingItem = itemsByEventType.get(eventType);
 
           if (matchingItem && usage.quantity > 0) {
             await this.stripe.subscriptionItems.createUsageRecord(matchingItem.id, {
