@@ -9,6 +9,7 @@ module.exports = {
   },
 
   moduleNameMapper: {
+    "^uuid$": require.resolve("uuid").replace("dist-node/index.js", "dist/index.js"),
     "^uuid$": require.resolve("uuid"),
     "^@settler/support-intake$": "<rootDir>/../support-intake/src/index.ts",
     "^@settler/adapters$": "<rootDir>/../adapters/dist/index.js",
