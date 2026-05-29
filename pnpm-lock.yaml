@@ -910,11 +910,11 @@ importers:
         specifier: ^2.106.1
         version: 2.106.1
       '@tanstack/react-query':
-        specifier: ^5.100.13
-        version: 5.100.13(react@19.2.6)
+        specifier: ^5.100.14
+        version: 5.100.14(react@19.2.6)
       '@tanstack/react-query-devtools':
-        specifier: ^5.100.13
-        version: 5.100.13(@tanstack/react-query@5.100.13(react@19.2.6))(react@19.2.6)
+        specifier: ^5.100.14
+        version: 5.100.14(@tanstack/react-query@5.100.14(react@19.2.6))(react@19.2.6)
       '@types/bcrypt':
         specifier: ^6.0.0
         version: 6.0.0
@@ -13278,15 +13278,15 @@ snapshots:
 
   '@tanstack/query-devtools@5.100.14': {}
 
-  '@tanstack/react-query-devtools@5.100.13(@tanstack/react-query@5.100.13(react@19.2.6))(react@19.2.6)':
+  '@tanstack/react-query-devtools@5.100.14(@tanstack/react-query@5.100.14(react@19.2.6))(react@19.2.6)':
     dependencies:
-      '@tanstack/query-devtools': 5.100.13
-      '@tanstack/react-query': 5.100.13(react@19.2.6)
+      '@tanstack/query-devtools': 5.100.14
+      '@tanstack/react-query': 5.100.14(react@19.2.6)
       react: 19.2.6
 
-  '@tanstack/react-query@5.100.13(react@19.2.6)':
+  '@tanstack/react-query@5.100.14(react@19.2.6)':
     dependencies:
-      '@tanstack/query-core': 5.100.13
+      '@tanstack/query-core': 5.100.14
       react: 19.2.6
 
   '@testing-library/dom@9.3.4':
