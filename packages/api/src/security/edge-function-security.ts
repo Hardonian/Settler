@@ -355,13 +355,15 @@ export function getCORSHeaders(origin?: string): Record<string, string> {
     typeof process !== "undefined" ? process.env.ALLOWED_ORIGINS : undefined;
   const allowedOrigins = allowedOriginsEnv?.split(",") || ["*"];
 
-  let corsOrigin: string;
+  let corsOrigin: string | undefined;
   if (origin && allowedOrigins.includes(origin)) {
     corsOrigin = origin;
   } else if (allowedOrigins.includes("*")) {
     corsOrigin = "*";
-  } else {
-    corsOrigin = allowedOrigins[0] || "*";
+  }
+
+  if (!corsOrigin) {
+    return {};
   }
 
   return {
