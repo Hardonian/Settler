@@ -66,11 +66,6 @@ export async function createAlert(
       });
     }
 
-    // Send to external alerting: PagerDuty, Slack
-    // if (severity === AlertSeverity.CRITICAL) {
-    //   await sendPagerDutyAlert(alertId, type, message, details);
-    // }
-
     const tenantId =
       typeof details?.tenantId === "string" && details.tenantId.length > 0
         ? details.tenantId
