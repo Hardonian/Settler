@@ -357,8 +357,9 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
       _count: { id: true },
     });
 
+    const totalRunsMap = new Map(totalRuns.map((t: any) => [t.connectorId, t]));
     for (const errorStat of errorRates) {
-      const totalStat = totalRuns.find((t: any) => t.connectorId === errorStat.connectorId);
+      const totalStat = totalRunsMap.get(errorStat.connectorId);
       if (totalStat) {
         const errorRate = errorStat._count.id / totalStat._count.id;
         if (errorRate > 0.2) {
