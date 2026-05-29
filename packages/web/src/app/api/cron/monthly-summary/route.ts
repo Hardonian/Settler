@@ -75,11 +75,6 @@ export async function GET(request: NextRequest) {
       emails: [] as string[],
     };
 
-    // Calculate last month's date range (unused but kept for future use)
-    // const now = new Date();
-    // const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    // const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
-
     for (const user of (Array.isArray(users) ? users : []) || []) {
       try {
         // In production, calculate actual metrics from reconciliation jobs
