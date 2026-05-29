@@ -5,6 +5,7 @@ import { requireAdmin } from "@/lib/api/auth-gate";
 import { withSecurity } from "@/lib/middleware/api-security";
 import { PLAN_DEFAULT_MRR_USD } from "@settler/types";
 import { prisma } from "@/shared/db/prismaClient";
+import { Prisma } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -230,68 +231,76 @@ function computeIncidentCandidates(
 }
 
 async function persistAlerts(anomalies: AlertCandidate[]): Promise<void> {
-  for (const alert of anomalies) {
-    await prisma.$executeRaw`
-      INSERT INTO operator_anomaly_alerts (
-        dedupe_key, metric, severity, status, triggered_count,
-        first_triggered_at, last_triggered_at,
-        last_value, baseline_value, message, payload, created_at, updated_at
-      )
-      VALUES (
-        ${alert.dedupeKey}, ${alert.metric}, ${alert.severity}, 'open', 1,
-        NOW(), NOW(),
-        ${alert.observed}, ${alert.baseline}, ${alert.message},
-        ${JSON.stringify({ metric: alert.metric })}::jsonb,
-        NOW(), NOW()
-      )
-      ON CONFLICT (dedupe_key)
-      DO UPDATE SET
-        severity = EXCLUDED.severity,
-        status = 'open',
-        triggered_count = operator_anomaly_alerts.triggered_count + 1,
-        last_triggered_at = NOW(),
-        last_value = EXCLUDED.last_value,
-        baseline_value = EXCLUDED.baseline_value,
-        message = EXCLUDED.message,
-        payload = EXCLUDED.payload,
-        updated_at = NOW();
-    `;
-  }
+  if (anomalies.length === 0) return;
+
+  const valueRows = anomalies.map(
+    (alert) =>
+      Prisma.sql`(${alert.dedupeKey}, ${alert.metric}, ${alert.severity}, 'open', 1, NOW(), NOW(), ${alert.observed}, ${alert.baseline}, ${alert.message}, ${JSON.stringify({ metric: alert.metric })}::jsonb, NOW(), NOW())`
+  );
+
+  await prisma.$executeRaw`
+    INSERT INTO operator_anomaly_alerts (
+      dedupe_key, metric, severity, status, triggered_count,
+      first_triggered_at, last_triggered_at,
+      last_value, baseline_value, message, payload, created_at, updated_at
+    )
+    VALUES ${Prisma.join(valueRows)}
+    ON CONFLICT (dedupe_key)
+    DO UPDATE SET
+      severity = EXCLUDED.severity,
+      status = 'open',
+      triggered_count = operator_anomaly_alerts.triggered_count + 1,
+      last_triggered_at = NOW(),
+      last_value = EXCLUDED.last_value,
+      baseline_value = EXCLUDED.baseline_value,
+      message = EXCLUDED.message,
+      payload = EXCLUDED.payload,
+      updated_at = NOW();
+  `;
 }
 
 async function persistIncidents(candidates: IncidentCandidate[]): Promise<void> {
-  for (const incident of candidates) {
-    await prisma.$executeRaw`
-      INSERT INTO system_incidents (
-        incident_type,
-        severity,
-        tenant_id,
-        run_id,
-        status,
-        summary,
-        evidence,
-        created_at,
-        updated_at
-      )
-      SELECT
-        ${incident.incidentType},
-        ${incident.severity},
-        ${incident.tenantId}::uuid,
-        ${incident.runId}::uuid,
-        ${incident.status},
-        ${incident.summary},
-        ${JSON.stringify(incident.evidence)}::jsonb,
-        NOW(),
-        NOW()
-      WHERE NOT EXISTS (
-        SELECT 1
-        FROM system_incidents si
-        WHERE si.incident_type = ${incident.incidentType}
-          AND si.status = 'open'
-          AND si.created_at >= NOW() - interval '6 hours'
-      );
-    `;
-  }
+  if (candidates.length === 0) return;
+
+  const valueRows = candidates.map(
+    (incident) =>
+      Prisma.sql`(${incident.incidentType}, ${incident.severity}, ${incident.tenantId ? Prisma.sql`${incident.tenantId}::uuid` : Prisma.sql`NULL::uuid`}, ${incident.runId ? Prisma.sql`${incident.runId}::uuid` : Prisma.sql`NULL::uuid`}, ${incident.status}, ${incident.summary}, ${JSON.stringify(incident.evidence)}::jsonb)`
+  );
+
+  await prisma.$executeRaw`
+    WITH new_incidents (incident_type, severity, tenant_id, run_id, status, summary, evidence) AS (
+      VALUES ${Prisma.join(valueRows)}
+    )
+    INSERT INTO system_incidents (
+      incident_type,
+      severity,
+      tenant_id,
+      run_id,
+      status,
+      summary,
+      evidence,
+      created_at,
+      updated_at
+    )
+    SELECT
+      ni.incident_type,
+      ni.severity,
+      ni.tenant_id,
+      ni.run_id,
+      ni.status,
+      ni.summary,
+      ni.evidence,
+      NOW(),
+      NOW()
+    FROM new_incidents ni
+    WHERE NOT EXISTS (
+      SELECT 1
+      FROM system_incidents si
+      WHERE si.incident_type = ni.incident_type::text
+        AND si.status = 'open'
+        AND si.created_at >= NOW() - interval '6 hours'
+    );
+  `;
 }
 
 function parseGithubRepo(): { owner: string; repo: string } | null {
