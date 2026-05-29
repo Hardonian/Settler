@@ -16314,6 +16314,7 @@ DECLARE
   v_current_usage DECIMAL(15, 6);
   v_usage_spike_percentage DECIMAL(10, 2);
   v_fraud_signal_id UUID;
+  v_tenant_id UUID;
 BEGIN
   -- Generate idempotency key if not provided
   IF p_idempotency_key IS NULL THEN
@@ -16334,20 +16335,25 @@ BEGIN
   END IF;
 
   -- Validate billing account exists and is active
-  IF NOT EXISTS (
-    SELECT 1 FROM billing_accounts
-    WHERE id = p_billing_account_id
-      AND status = 'active'
-      AND deleted_at IS NULL
-  ) THEN
+  SELECT tenant_id INTO v_tenant_id
+  FROM billing_accounts
+  WHERE id = p_billing_account_id
+    AND status = 'active'
+    AND deleted_at IS NULL;
+
+  IF v_tenant_id IS NULL THEN
     RAISE EXCEPTION 'Billing account not found or inactive';
   END IF;
 
   -- Server-side validation: Check if integration is configured (if integration_id provided)
   IF p_integration_id IS NOT NULL THEN
-    -- TODO: Add integration_credentials table check when implemented
-    -- For now, we'll allow but log a warning
-    NULL;
+    IF NOT EXISTS (
+      SELECT 1 FROM integration_credentials
+      WHERE tenant_id = v_tenant_id
+        AND adapter = p_integration_id
+    ) THEN
+      RAISE EXCEPTION 'Integration % not configured for this account', p_integration_id;
+    END IF;
   END IF;
 
   -- Insert usage event
@@ -18749,8 +18755,15 @@ BEGIN
   END IF;
 
   -- If integration is specified, validate it's configured
-  -- TODO: Add integration_credentials table check when implemented
-  -- For now, we'll allow but this should be enhanced
+  IF p_integration_id IS NOT NULL THEN
+    IF NOT EXISTS (
+      SELECT 1 FROM integration_credentials
+      WHERE tenant_id = v_billing_account.tenant_id
+        AND adapter = p_integration_id
+    ) THEN
+      RETURN false;
+    END IF;
+  END IF;
 
   RETURN true;
 END;
