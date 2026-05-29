@@ -251,8 +251,50 @@ BEGIN
     RETURN;
   END IF;
 
-  -- TODO: Query actual rate limit violations from logs/metrics
-  -- For now, return empty result
+  -- Query actual rate limit violations from logs/metrics
+  FOR v_record IN
+    -- Check rate_limits table (using max_per_minute to indicate it's a rate limit record, assuming blocked limits are managed via check_rate_limit)
+    -- We can also check monitoring_metrics for high rate limit counts if we track it there
+    SELECT DISTINCT tenant_id
+    FROM monitoring_metrics
+    WHERE metric_name = 'rate_limit_exceeded'
+      AND timestamp >= NOW() - INTERVAL '5 minutes'
+  LOOP
+    -- Check if we already have a recent alert for this tenant
+    SELECT id INTO v_alert_id
+    FROM alerts
+    WHERE tenant_id = v_record.tenant_id
+      AND alert_type = 'rate_limit_exceeded'
+      AND status = 'new'
+      AND created_at >= NOW() - INTERVAL '1 hour';
+
+    IF v_alert_id IS NULL THEN
+      -- Create the alert
+      INSERT INTO alerts (
+        alert_type,
+        severity,
+        title,
+        message,
+        tenant_id,
+        status,
+        metadata
+      ) VALUES (
+        'rate_limit_exceeded',
+        v_rule.severity,
+        'Rate Limit Exceeded',
+        'Multiple rate limit violations detected for this tenant in the last 5 minutes.',
+        v_record.tenant_id,
+        'new',
+        jsonb_build_object('rule_id', v_rule.id)
+      ) RETURNING id INTO v_alert_id;
+
+      -- Add to return set
+      alert_id := v_alert_id;
+      tenant_id := v_record.tenant_id;
+      rate_limit_exceeded := true;
+      RETURN NEXT;
+    END IF;
+  END LOOP;
   
   RETURN;
 END;
