@@ -1,6 +1,6 @@
 /**
  * Competitor Intelligence Monitor
- * 
+ *
  * Tracks competitor activities, pricing, announcements
  * Usage: ts-node competitor-monitor.ts --competitor=blackline
  */
@@ -8,79 +8,79 @@
 interface Competitor {
   name: string;
   website: string;
-  category: 'direct' | 'indirect' | 'enterprise';
+  category: "direct" | "indirect" | "enterprise";
   lastUpdate: string;
   changes: Change[];
 }
 
 interface Change {
-  type: 'pricing' | 'feature' | 'announcement' | 'hiring' | 'funding';
+  type: "pricing" | "feature" | "announcement" | "hiring" | "funding";
   description: string;
   date: string;
-  impact: 'high' | 'medium' | 'low';
+  impact: "high" | "medium" | "low";
   recommendedAction?: string;
 }
 
 const competitors: Competitor[] = [
   {
-    name: 'BlackLine',
-    website: 'blackline.com',
-    category: 'enterprise',
-    lastUpdate: '2026-04-08',
+    name: "BlackLine",
+    website: "blackline.com",
+    category: "enterprise",
+    lastUpdate: "2026-04-08",
     changes: [
       {
-        type: 'pricing',
-        description: 'Increased enterprise pricing by 15%',
-        date: '2026-03-15',
-        impact: 'high',
-        recommendedAction: 'Target enterprise customers with "Switch and Save" campaign'
+        type: "pricing",
+        description: "Increased enterprise pricing by 15%",
+        date: "2026-03-15",
+        impact: "high",
+        recommendedAction: 'Target enterprise customers with "Switch and Save" campaign',
       },
       {
-        type: 'feature',
-        description: 'Launched AI-powered matching',
-        date: '2026-02-20',
-        impact: 'medium',
-        recommendedAction: 'Develop competitive comparison content'
-      }
-    ]
+        type: "feature",
+        description: "Launched AI-powered matching",
+        date: "2026-02-20",
+        impact: "medium",
+        recommendedAction: "Develop competitive comparison content",
+      },
+    ],
   },
   {
-    name: 'FloQast',
-    website: 'floqast.com',
-    category: 'direct',
-    lastUpdate: '2026-04-09',
+    name: "FloQast",
+    website: "floqast.com",
+    category: "direct",
+    lastUpdate: "2026-04-09",
     changes: [
       {
-        type: 'announcement',
-        description: 'Partnership with Workiva announced',
-        date: '2026-04-05',
-        impact: 'medium',
-        recommendedAction: 'Monitor partnership traction, prepare counter-messaging'
+        type: "announcement",
+        description: "Partnership with Workiva announced",
+        date: "2026-04-05",
+        impact: "medium",
+        recommendedAction: "Monitor partnership traction, prepare counter-messaging",
       },
       {
-        type: 'hiring',
-        description: 'Hiring 50+ sales reps',
-        date: '2026-03-28',
-        impact: 'high',
-        recommendedAction: 'Accelerate partnership and channel strategy'
-      }
-    ]
+        type: "hiring",
+        description: "Hiring 50+ sales reps",
+        date: "2026-03-28",
+        impact: "high",
+        recommendedAction: "Accelerate partnership and channel strategy",
+      },
+    ],
   },
   {
-    name: 'AutoRek',
-    website: 'autorek.com',
-    category: 'direct',
-    lastUpdate: '2026-04-07',
+    name: "AutoRek",
+    website: "autorek.com",
+    category: "direct",
+    lastUpdate: "2026-04-07",
     changes: [
       {
-        type: 'funding',
-        description: 'Raised $12M Series B',
-        date: '2026-03-10',
-        impact: 'high',
-        recommendedAction: 'Prepare competitive battle cards for sales team'
-      }
-    ]
-  }
+        type: "funding",
+        description: "Raised $12M Series B",
+        date: "2026-03-10",
+        impact: "high",
+        recommendedAction: "Prepare competitive battle cards for sales team",
+      },
+    ],
+  },
 ];
 
 function analyzeCompetitor(competitor: Competitor): string {
@@ -93,7 +93,7 @@ function analyzeCompetitor(competitor: Competitor): string {
    Recent Changes:
 `;
 
-  competitor.changes.forEach(change => {
+  competitor.changes.forEach((change) => {
     output += `
    📌 ${change.type.toUpperCase()} (${change.impact})
       ${change.description}
@@ -107,7 +107,7 @@ function analyzeCompetitor(competitor: Competitor): string {
 
 function generateBattleCard(competitor: Competitor): string {
   const cards: Record<string, string> = {
-    'BlackLine': `
+    BlackLine: `
 # BlackLine Competitive Battle Card
 
 ## Overview
@@ -137,7 +137,7 @@ Enterprise reconciliation, heavy implementation, high cost
 "We need all those features"
 → "80% of BlackLine features go unused. We focused on the 20% that matter."
     `,
-    'FloQast': `
+    FloQast: `
 # FloQast Competitive Battle Card
 
 ## Overview
@@ -161,7 +161,7 @@ Close management + reconciliation, mid-market focus
 ## Positioning
 "FloQast helps you manage the close. Settler eliminates the reconciliation work before close even starts."
     `,
-    'AutoRek': `
+    AutoRek: `
 # AutoRek Competitive Battle Card
 
 ## Overview
@@ -184,16 +184,19 @@ UK-based reconciliation, growing fast with fresh funding
 
 ## Positioning
 "AutoRek is a good option for UK-only companies. For global businesses, Settler offers broader coverage."
-    `
+    `,
   };
 
-  return cards[competitor.name] || `# ${competitor.name} Battle Card\n\n[Add detailed competitive analysis]`;
+  return (
+    cards[competitor.name] ||
+    `# ${competitor.name} Battle Card\n\n[Add detailed competitive analysis]`
+  );
 }
 
 function generateMarketIntel(): string {
-  const allChanges = competitors.flatMap(c => c.changes);
-  const highImpactChanges = allChanges.filter(c => c.impact === 'high');
-  
+  const allChanges = competitors.flatMap((c) => c.changes);
+  const highImpactChanges = allChanges.filter((c) => c.impact === "high");
+
   return `
 📊 MARKET INTELLIGENCE SUMMARY
 ==============================
@@ -203,10 +206,10 @@ Total Changes (30 days): ${allChanges.length}
 High-Impact Changes: ${highImpactChanges.length}
 
 Key Trends:
-${highImpactChanges.map(c => `- ${c.type}: ${c.description}`).join('\n')}
+${highImpactChanges.map((c) => `- ${c.type}: ${c.description}`).join("\n")}
 
 Recommended Actions This Week:
-1. ${highImpactChanges[0]?.recommendedAction || 'Monitor competitive landscape'}
+1. ${highImpactChanges[0]?.recommendedAction || "Monitor competitive landscape"}
 2. Update sales battle cards
 3. Brief customer success on competitive positioning
 
@@ -219,28 +222,28 @@ Next Week:
 
 // CLI
 const args = process.argv.slice(2);
-const competitorArg = args.find(a => a.startsWith('--competitor='))?.split('=')[1];
+const competitorArg = args.find((a) => a.startsWith("--competitor="))?.split("=")[1];
 
-console.log('🔍 Competitor Intelligence Report\n');
+console.log("🔍 Competitor Intelligence Report\n");
 
 if (competitorArg) {
-  const competitor = competitors.find(c => c.name.toLowerCase() === competitorArg.toLowerCase());
+  const competitor = competitors.find((c) => c.name.toLowerCase() === competitorArg.toLowerCase());
   if (competitor) {
     console.log(analyzeCompetitor(competitor));
-    console.log('\n--- BATTLE CARD ---\n');
+    console.log("\n--- BATTLE CARD ---\n");
     console.log(generateBattleCard(competitor));
   } else {
     console.log(`Competitor "${competitorArg}" not found.`);
   }
 } else {
   console.log(generateMarketIntel());
-  console.log('\n--- DETAILED COMPETITOR ANALYSIS ---\n');
-  competitors.forEach(c => console.log(analyzeCompetitor(c)));
+  console.log("\n--- DETAILED COMPETITOR ANALYSIS ---\n");
+  competitors.forEach((c) => console.log(analyzeCompetitor(c)));
 }
 
 // Save reports
-const fs = require('fs');
-const outputDir = './intelligence';
+const fs = require("fs");
+const outputDir = "./intelligence";
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir, { recursive: true });
 }

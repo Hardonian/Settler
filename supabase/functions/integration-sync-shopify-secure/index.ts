@@ -140,10 +140,13 @@ serve(async (req) => {
 
       if (sourceError || !source) {
         console.error("Could not find tenant for shop domain:", shopDomain);
-        return new Response(JSON.stringify({ success: true, message: "Webhook ignored - shop not found" }), {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return new Response(
+          JSON.stringify({ success: true, message: "Webhook ignored - shop not found" }),
+          {
+            status: 200,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }
+        );
       }
 
       const tenantId = source.tenant_id;
@@ -158,10 +161,13 @@ serve(async (req) => {
 
       if (billingError || !billingAccount) {
         console.error("Could not find billing account for tenant:", tenantId);
-        return new Response(JSON.stringify({ success: true, message: "Webhook ignored - billing account not found" }), {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return new Response(
+          JSON.stringify({ success: true, message: "Webhook ignored - billing account not found" }),
+          {
+            status: 200,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }
+        );
       }
 
       const billingAccountId = billingAccount.id;
@@ -177,7 +183,12 @@ serve(async (req) => {
         p_tenant_id: tenantId,
         p_integration_id: "shopify",
         p_unit: "sync",
-        p_metadata: { integration: "shopify", sync_type: "webhook", topic: topic, webhook_id: webhookId },
+        p_metadata: {
+          integration: "shopify",
+          sync_type: "webhook",
+          topic: topic,
+          webhook_id: webhookId,
+        },
       });
 
       if (logError) {
@@ -245,7 +256,7 @@ serve(async (req) => {
     }
 
     // Parse request body
-    const body = await req.json() as any;
+    const body = (await req.json()) as any;
     const { billing_account_id, project_id, tenant_id: bodyTenantId, sync_count } = body;
 
     if (!billing_account_id) {
@@ -364,7 +375,7 @@ serve(async (req) => {
     console.error("Unexpected error:", error);
 
     // Update integration health (failure)
-    const body = await req.json().catch(() => ({})) as any;
+    const body = (await req.json().catch(() => ({}))) as any;
     const tenantId = body.tenant_id;
 
     if (tenantId) {

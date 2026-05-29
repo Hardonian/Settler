@@ -31,8 +31,11 @@ def extract_prisma_models() -> Dict[str, Dict]:
             content = f.read()
             
         # Find all model definitions
-        model_pattern = r'model\s+(\w+)\s*\{([^}]+)\}'
-        for match in re.finditer(model_pattern, content, re.DOTALL):
+        # Find all model definitions carefully, handling nested braces in strings
+        # A simpler way since Prisma schema is mostly well-behaved:
+        # Match from 'model Name {' until the closing '}' that is at the start of a line.
+        model_pattern = r'^model\s+(\w+)\s*\{(.*?)^}'
+        for match in re.finditer(model_pattern, content, re.MULTILINE | re.DOTALL):
             model_name = match.group(1)
             model_body = match.group(2)
             
@@ -43,12 +46,15 @@ def extract_prisma_models() -> Dict[str, Dict]:
             # Extract fields
             fields = {}
             field_pattern = r'(\w+)\s+(\w+[?]?)\s*(@[^@\n]+)?'
-            for field_match in re.finditer(r'(\w+)\s+([^\n]+)', model_body):
+            for field_match in re.finditer(r'^\s*(\w+)\s+([^\n]+?)\s*$', model_body, re.MULTILINE):
                 field_name = field_match.group(1)
                 field_def = field_match.group(2).strip()
+                # Remove comments
+                if '//' in field_def:
+                    field_def = field_def.split('//')[0].strip()
                 
                 # Skip relation fields and special directives
-                if field_name.startswith('@@') or 'relation(' in field_def or '@relation' in field_def:
+                if field_name.startswith('@@') or is_relation(field_def):
                     continue
                     
                 fields[field_name] = field_def
@@ -76,17 +82,135 @@ def check_table_exists_in_migrations(table_name: str) -> bool:
                 return True
     return False
 
+def is_relation(field_def: str) -> bool:
+    if 'relation(' in field_def or '@relation' in field_def:
+        return True
+
+    parts = field_def.split()
+    if not parts:
+        return True
+
+    base_type_str = parts[0]
+
+    is_optional = base_type_str.endswith('?')
+    if is_optional:
+        base_type_str = base_type_str[:-1]
+
+    is_array = base_type_str.endswith('[]')
+    if is_array:
+        base_type_str = base_type_str[:-2]
+
+    primitive_types = {'String', 'Int', 'BigInt', 'Float', 'Boolean', 'DateTime', 'Json', 'Decimal', 'Bytes'}
+
+    if base_type_str not in primitive_types:
+        return True
+
+    return False
+
+def get_sql_type(field_def: str, base_type_str: str) -> str:
+    if '@db.Uuid' in field_def:
+        return 'UUID'
+    if '@db.Text' in field_def:
+        return 'TEXT'
+    if '@db.JSONB' in field_def:
+        return 'JSONB'
+
+    type_mapping = {
+        'String': 'TEXT',
+        'Int': 'INTEGER',
+        'BigInt': 'BIGINT',
+        'Float': 'DOUBLE PRECISION',
+        'Boolean': 'BOOLEAN',
+        'DateTime': 'TIMESTAMPTZ',
+        'Json': 'JSONB',
+        'Decimal': 'DECIMAL',
+        'Bytes': 'BYTEA'
+    }
+    return type_mapping.get(base_type_str, 'TEXT')
+
 def generate_table_sql(table_name: str, model_info: Dict) -> str:
     """Generate SQL CREATE TABLE statement from Prisma model."""
-    # This is a simplified version - in production, you'd use Prisma's schema parser
-    # For now, we'll generate a basic structure
     sql = f"-- Table: {table_name} (from Prisma model {model_info['model_name']})\n"
     sql += f"CREATE TABLE IF NOT EXISTS {table_name} (\n"
-    sql += "  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n"
-    sql += "  -- TODO: Add columns based on Prisma schema\n"
-    sql += "  created_at TIMESTAMPTZ DEFAULT NOW(),\n"
-    sql += "  updated_at TIMESTAMPTZ DEFAULT NOW()\n"
-    sql += ");\n\n"
+
+    column_defs = []
+    has_id = False
+
+    for field_name, field_def in model_info.get('fields', {}).items():
+        if field_name.startswith('@@') or is_relation(field_def):
+            continue
+
+        map_match = re.search(r'@map\("([^"]+)"\)', field_def)
+        db_col_name = map_match.group(1) if map_match else camel_to_snake(field_name)
+
+        if db_col_name == 'id':
+            has_id = True
+
+        parts = field_def.split()
+        if not parts:
+            continue
+
+        base_type_str = parts[0]
+
+        is_optional = base_type_str.endswith('?')
+        if is_optional:
+            base_type_str = base_type_str[:-1]
+
+        is_array = base_type_str.endswith('[]')
+        if is_array:
+            base_type_str = base_type_str[:-2]
+
+        sql_type = get_sql_type(field_def, base_type_str)
+
+        if is_array:
+            sql_type += '[]'
+
+        constraints = []
+
+        if '@id' in field_def:
+            constraints.append('PRIMARY KEY')
+
+        if '@unique' in field_def:
+            constraints.append('UNIQUE')
+
+        def_match = re.search(r'@default\((.*?)\)(?:\s|$|@)', field_def)
+        if def_match:
+            default_val = def_match.group(1)
+            if default_val == 'now()':
+                constraints.append('DEFAULT NOW()')
+            elif default_val == 'uuid()':
+                constraints.append('DEFAULT gen_random_uuid()')
+            elif default_val == 'autoincrement()':
+                if base_type_str == 'Int':
+                    sql_type = 'SERIAL'
+                elif base_type_str == 'BigInt':
+                    sql_type = 'BIGSERIAL'
+            elif default_val.lower() in ('true', 'false'):
+                constraints.append(f'DEFAULT {default_val.lower()}')
+            else:
+                if default_val.startswith('"') and default_val.endswith('"'):
+                    inner_str = default_val[1:-1].replace("'", "''")
+                    if sql_type == 'JSONB':
+                        constraints.append(f"DEFAULT '{inner_str}'::jsonb")
+                    else:
+                        constraints.append(f"DEFAULT '{inner_str}'")
+                else:
+                    constraints.append(f'DEFAULT {default_val}')
+
+        if not is_optional and '@id' not in field_def and 'autoincrement()' not in field_def:
+            constraints.append('NOT NULL')
+
+        sql_def = f"{sql_type}"
+        if constraints:
+            sql_def += f" {' '.join(constraints)}"
+
+        column_defs.append(f"  {db_col_name} {sql_def}")
+
+    if not has_id:
+        column_defs.insert(0, "  id UUID PRIMARY KEY DEFAULT gen_random_uuid()")
+
+    sql += ",\n".join(column_defs)
+    sql += "\n);\n\n"
     return sql
 
 def main():

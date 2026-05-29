@@ -55,6 +55,7 @@ marketing/
 ## Content Engine
 
 ### Blog Generator
+
 Generates SEO-optimized blog posts targeting reconciliation keywords.
 
 ```bash
@@ -62,12 +63,14 @@ ts-node content-engine/blog-generator.ts --topic="stripe reconciliation"
 ```
 
 **Outputs:**
+
 - Markdown files with frontmatter
 - Meta descriptions
 - Keyword targeting
 - Reading time estimates
 
 ### Social Multiplier
+
 Takes 1 core idea and turns it into 10+ platform-specific posts.
 
 ```bash
@@ -75,6 +78,7 @@ ts-node content-engine/social-multiplier.ts --idea="Your core idea"
 ```
 
 **Outputs:**
+
 - Twitter threads
 - LinkedIn posts
 - Reddit posts
@@ -84,6 +88,7 @@ ts-node content-engine/social-multiplier.ts --idea="Your core idea"
 ## Lead Generation
 
 ### Prospect Researcher
+
 Identifies ideal customers from LinkedIn, AngelList, G2.
 
 ```bash
@@ -91,12 +96,14 @@ ts-node lead-gen/prospect-researcher.ts --source=linkedin --criteria="fintech,se
 ```
 
 **Outputs:**
+
 - Scored prospect list
 - Decision maker contacts
 - Personalized cold emails
 - Export to JSON
 
 ### Job Monitor
+
 Monitors job boards for high-intent signals (hiring for reconciliation).
 
 ```bash
@@ -104,11 +111,13 @@ ts-node lead-gen/job-monitor.ts --keywords="reconciliation,finance automation"
 ```
 
 **Outputs:**
+
 - Scored job postings
 - Outreach messages
 - Intent analysis
 
 ### Community Miner
+
 Mines Reddit, HN, Stack Overflow for reconciliation questions.
 
 ```bash
@@ -116,6 +125,7 @@ ts-node lead-gen/community-miner.ts --platform=reddit --monitor=true
 ```
 
 **Outputs:**
+
 - Relevant discussions
 - Suggested responses
 - Engagement opportunities
@@ -123,6 +133,7 @@ ts-node lead-gen/community-miner.ts --platform=reddit --monitor=true
 ## Partnerships & PR
 
 ### Partnership Finder
+
 Identifies integration partners and co-marketing opportunities.
 
 ```bash
@@ -130,11 +141,13 @@ ts-node partnerships/partnership-finder.ts --type=integration
 ```
 
 **Types:**
+
 - `integration` - Technical integrations (QuickBooks, Xero, etc.)
 - `co-marketing` - Co-marketing partners (Mercury, Pilot, etc.)
 - `media` - Podcasts and publications
 
 ### HARO Responder
+
 Generates responses to journalist queries.
 
 ```bash
@@ -144,6 +157,7 @@ ts-node partnerships/haro-responder.ts --query="Looking for fintech founders"
 ## Market Intelligence
 
 ### Competitor Monitor
+
 Tracks competitor pricing, features, announcements.
 
 ```bash
@@ -151,11 +165,13 @@ ts-node intelligence/competitor-monitor.ts --competitor=blackline
 ```
 
 **Outputs:**
+
 - Change alerts
 - Battle cards
 - Recommended actions
 
 ### Customer Voice Miner
+
 Mines reviews and social for customer insights.
 
 ```bash
@@ -163,6 +179,7 @@ ts-node intelligence/customer-voice-miner.ts --source=g2
 ```
 
 **Outputs:**
+
 - Pain point analysis
 - Content ideas
 - Sentiment tracking
@@ -170,6 +187,7 @@ ts-node intelligence/customer-voice-miner.ts --source=g2
 ## Automation Workflows
 
 ### Daily
+
 ```bash
 # Morning: Check for new prospects
 npm run prospects
@@ -182,6 +200,7 @@ npm run jobs
 ```
 
 ### Weekly
+
 ```bash
 # Generate content
 npm run content:blog -- --count=3
@@ -193,6 +212,7 @@ npm run intel:voice
 ```
 
 ### Monthly
+
 ```bash
 # Partnership outreach
 npm run partnerships
@@ -235,6 +255,7 @@ marketing/
 ## Success Metrics
 
 Track these KPIs:
+
 - **Content:** Blog posts/week, social engagement
 - **Leads:** Prospects identified, meetings booked
 - **Community:** Helpful answers, brand mentions

@@ -1,7 +1,3 @@
 {
-  "recommendations": [
-    "saoudrizwan.claude-dev",
-    "anthropic.claude-code",
-    "openai.chatgpt"
-  ]
+  "recommendations": ["saoudrizwan.claude-dev", "anthropic.claude-code", "openai.chatgpt"]
 }

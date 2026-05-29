@@ -1,7 +1,7 @@
-const fs = require('fs');
+const fs = require("fs");
 
-const path = 'scripts/verify-backend-contract.ts';
-let content = fs.readFileSync(path, 'utf8');
+const path = "scripts/verify-backend-contract.ts";
+let content = fs.readFileSync(path, "utf8");
 
 // Add import
 const importStr = 'import { execSync } from "child_process";\n';
@@ -20,7 +20,7 @@ const replaceStr = `// TODO: Generate reconciliation migration
         console.error("Failed to generate migration:", e instanceof Error ? e.message : String(e));
       }`;
 
-content = content.replace('// TODO: Generate reconciliation migration', replaceStr);
+content = content.replace("// TODO: Generate reconciliation migration", replaceStr);
 
 fs.writeFileSync(path, content);
-console.log('Fixed verify-backend-contract.ts');
+console.log("Fixed verify-backend-contract.ts");

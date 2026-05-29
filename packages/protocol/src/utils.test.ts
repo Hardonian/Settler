@@ -36,6 +36,8 @@ describe("sanitizeString", () => {
 
   it("handles complex XSS payloads", () => {
     expect(sanitizeString("<img src=x onerror=alert(1)>")).toBe("img src=x alert(1)");
-    expect(sanitizeString("<a href='javascript:alert(1)'>click me</a>")).toBe("a href='alert(1)'click me/a");
+    expect(sanitizeString("<a href='javascript:alert(1)'>click me</a>")).toBe(
+      "a href='alert(1)'click me/a"
+    );
   });
 });

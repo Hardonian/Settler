@@ -1,8 +1,8 @@
-const fs = require('fs');
-const content = fs.readFileSync('scripts/verify-backend-contract.ts', 'utf8');
+const fs = require("fs");
+const content = fs.readFileSync("scripts/verify-backend-contract.ts", "utf8");
 
 const updated = content.replace(
-  '// TODO: Generate reconciliation migration',
+  "// TODO: Generate reconciliation migration",
   `// TODO: Generate reconciliation migration
       console.log("Calling generation script...");
       const { execSync } = require("child_process");
@@ -13,5 +13,5 @@ const updated = content.replace(
       }`
 );
 
-fs.writeFileSync('scripts/verify-backend-contract.ts', updated);
-console.log('updated');
+fs.writeFileSync("scripts/verify-backend-contract.ts", updated);
+console.log("updated");

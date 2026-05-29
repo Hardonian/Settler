@@ -332,7 +332,7 @@ export class PredictiveOps {
    */
   private async adjustAIRouting(mode: "economy" | "balanced" | "performance"): Promise<void> {
     const { aiConfig } = await import("../../config/ai-config");
-    
+
     switch (mode) {
       case "economy":
         aiConfig.modelTier = "basic";
@@ -357,18 +357,18 @@ export class PredictiveOps {
   private async proposeWorkflowImprovement(prediction: FailurePrediction): Promise<void> {
     try {
       const { prisma } = await import("../../infrastructure/db/prisma");
-      
+
       await prisma.workflowImprovement.create({
         data: {
           title: `Auto-proposed: ${prediction.description}`,
           description: prediction.recommendedAction || "Improvement based on failure prediction",
-          predictedImpact: prediction.metadata?.impact as string || "medium",
+          predictedImpact: (prediction.metadata?.impact as string) || "medium",
           confidence: prediction.probability,
           status: "proposed",
           createdAt: new Date(),
         },
       });
-      
+
       logInfo("Workflow improvement proposed", { predictionId: prediction.id });
     } catch (error) {
       logError("Failed to propose workflow improvement", error);
@@ -381,7 +381,7 @@ export class PredictiveOps {
   private async sendPredictionAlert(prediction: FailurePrediction): Promise<void> {
     try {
       const { notificationService } = await import("../notifications/notification-service");
-      
+
       if (notificationService?.hasAnyConfiguration?.()) {
         await notificationService.sendNotification({
           severity: prediction.severity === "critical" ? "critical" : "warning",
@@ -409,18 +409,18 @@ export class PredictiveOps {
   private async enableWorkloadSplitting(operationId: string): Promise<void> {
     try {
       const { prisma } = await import("../../infrastructure/db/prisma");
-      
+
       await prisma.operationConfig.upsert({
         where: { operationId },
         update: { enableSplitting: true, updatedAt: new Date() },
-        create: { 
-          operationId, 
+        create: {
+          operationId,
           enableSplitting: true,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
       });
-      
+
       logInfo("Workload splitting enabled", { operationId });
     } catch (error) {
       logError("Failed to enable workload splitting", error);
@@ -433,12 +433,12 @@ export class PredictiveOps {
   private async enableCaching(cacheKey: string): Promise<void> {
     try {
       const { cacheManager } = await import("../../infrastructure/cache/cache-manager");
-      
+
       await cacheManager.enableCache(cacheKey, {
         ttl: 3600, // 1 hour default
         tags: ["predictive-ops", "heavy-ops"],
       });
-      
+
       logInfo("Caching enabled", { cacheKey });
     } catch (error) {
       logError("Failed to enable caching", error);

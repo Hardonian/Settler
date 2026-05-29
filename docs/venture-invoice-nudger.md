@@ -7,6 +7,7 @@ The Venture Invoice Nudger is a reconciliation-aware workflow that identifies ov
 ## API Endpoints
 
 ### 1) Run nudger
+
 `POST /api/v1/venture/invoice-nudger/run`
 
 Request body:
@@ -24,9 +25,11 @@ Request body:
 - `execute=true`: execution mode (`queue_nudge` decisions are persisted)
 
 ### 2) List runs
+
 `GET /api/v1/venture/invoice-nudger/runs?limit=20`
 
 ### 3) Get run details
+
 `GET /api/v1/venture/invoice-nudger/runs/:runId`
 
 ## Decision Logic

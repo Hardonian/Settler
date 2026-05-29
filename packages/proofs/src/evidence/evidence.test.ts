@@ -4,7 +4,11 @@ import { assessEvidenceCompleteness, EvidenceArtifactType } from "./index";
 describe("assessEvidenceCompleteness", () => {
   it("returns a 1.0 completeness score when all required types are present", () => {
     const requiredTypes: EvidenceArtifactType[] = ["run_summary", "source_snapshot"];
-    const presentTypes: EvidenceArtifactType[] = ["run_summary", "source_snapshot", "target_snapshot"];
+    const presentTypes: EvidenceArtifactType[] = [
+      "run_summary",
+      "source_snapshot",
+      "target_snapshot",
+    ];
 
     const result = assessEvidenceCompleteness(presentTypes, requiredTypes);
 
@@ -27,7 +31,11 @@ describe("assessEvidenceCompleteness", () => {
   });
 
   it("calculates partial completeness scores accurately", () => {
-    const requiredTypes: EvidenceArtifactType[] = ["run_summary", "source_snapshot", "target_snapshot"];
+    const requiredTypes: EvidenceArtifactType[] = [
+      "run_summary",
+      "source_snapshot",
+      "target_snapshot",
+    ];
     const presentTypes: EvidenceArtifactType[] = ["run_summary"];
 
     const result = assessEvidenceCompleteness(presentTypes, requiredTypes);

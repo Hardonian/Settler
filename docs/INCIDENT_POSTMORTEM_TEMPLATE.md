@@ -98,7 +98,7 @@ Use this template for documenting incidents and their resolution.
 - Daily intelligence report
 - Customer report
 - Monitoring dashboard
-- Other: ******\_\_\_******
+- Other: **\*\***\_\_\_**\*\***
 
 **Could it have been detected earlier?**
 

@@ -49,7 +49,7 @@ describe("computePayloadHash", () => {
     // This test just documents current behavior to prevent regressions
     const payload = {
       user: { id: "u1" },
-      amount: 100
+      amount: 100,
     };
 
     const hash = computePayloadHash(payload);
