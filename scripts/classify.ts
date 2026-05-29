@@ -184,6 +184,7 @@ const EXCLUDED_FROM_SECRET_CHECK = [
   "**/marketing/**",
   "**/core", // Likely a binary or special file
   "packages/api/src/__tests__/**",
+  "**/design/**",
 ];
 
 const PROPRIETARY_LICENSE_PATTERNS = [

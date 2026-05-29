@@ -17,21 +17,20 @@ describe("generateSecureId", () => {
 
     try {
       // Temporarily remove crypto from the global object
-      Object.defineProperty(global, 'crypto', {
+      Object.defineProperty(global, "crypto", {
         value: undefined,
         writable: true,
-        configurable: true
+        configurable: true,
       });
 
       const id = generateSecureId("fallback");
       expect(id).toMatch(/^fallback_[a-f0-9]{32}$/);
-
     } finally {
       // Restore the original crypto object
-      Object.defineProperty(global, 'crypto', {
+      Object.defineProperty(global, "crypto", {
         value: originalCrypto,
         writable: true,
-        configurable: true
+        configurable: true,
       });
     }
   });
@@ -42,21 +41,20 @@ describe("generateSecureId", () => {
 
     try {
       // Temporarily mock crypto without getRandomValues
-      Object.defineProperty(global, 'crypto', {
+      Object.defineProperty(global, "crypto", {
         value: {}, // Empty object, no getRandomValues
         writable: true,
-        configurable: true
+        configurable: true,
       });
 
       const id = generateSecureId("fallback_no_get_random");
       expect(id).toMatch(/^fallback_no_get_random_[a-f0-9]{32}$/);
-
     } finally {
       // Restore the original crypto object
-      Object.defineProperty(global, 'crypto', {
+      Object.defineProperty(global, "crypto", {
         value: originalCrypto,
         writable: true,
-        configurable: true
+        configurable: true,
       });
     }
   });
