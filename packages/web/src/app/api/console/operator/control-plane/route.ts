@@ -260,38 +260,62 @@ async function persistAlerts(anomalies: AlertCandidate[]): Promise<void> {
 }
 
 async function persistIncidents(candidates: IncidentCandidate[]): Promise<void> {
-  for (const incident of candidates) {
-    await prisma.$executeRaw`
-      INSERT INTO system_incidents (
-        incident_type,
-        severity,
-        tenant_id,
-        run_id,
-        status,
-        summary,
-        evidence,
-        created_at,
-        updated_at
+  if (candidates.length === 0) return;
+
+  const payload = JSON.stringify(
+    candidates.map((c) => ({
+      incidentType: c.incidentType,
+      severity: c.severity,
+      tenantId: c.tenantId,
+      runId: c.runId,
+      status: c.status,
+      summary: c.summary,
+      evidence: c.evidence,
+    }))
+  );
+
+  await prisma.$executeRaw`
+    WITH new_incidents AS (
+      SELECT * FROM jsonb_to_recordset(${payload}::jsonb) AS x(
+        "incidentType" TEXT,
+        "severity" TEXT,
+        "tenantId" UUID,
+        "runId" UUID,
+        "status" TEXT,
+        "summary" TEXT,
+        "evidence" JSONB
       )
-      SELECT
-        ${incident.incidentType},
-        ${incident.severity},
-        ${incident.tenantId}::uuid,
-        ${incident.runId}::uuid,
-        ${incident.status},
-        ${incident.summary},
-        ${JSON.stringify(incident.evidence)}::jsonb,
-        NOW(),
-        NOW()
-      WHERE NOT EXISTS (
-        SELECT 1
-        FROM system_incidents si
-        WHERE si.incident_type = ${incident.incidentType}
-          AND si.status = 'open'
-          AND si.created_at >= NOW() - interval '6 hours'
-      );
-    `;
-  }
+    )
+    INSERT INTO system_incidents (
+      incident_type,
+      severity,
+      tenant_id,
+      run_id,
+      status,
+      summary,
+      evidence,
+      created_at,
+      updated_at
+    )
+    SELECT
+      ni."incidentType",
+      ni."severity",
+      ni."tenantId",
+      ni."runId",
+      ni."status",
+      ni."summary",
+      ni."evidence",
+      NOW(),
+      NOW()
+    FROM new_incidents ni
+    WHERE NOT EXISTS (
+      SELECT 1
+      FROM system_incidents si
+      WHERE si.incident_type = ni."incidentType"
+        AND si.status = 'open'
+        AND si.created_at >= NOW() - interval '6 hours'
+    );
+  `;
 }
 
 function parseGithubRepo(): { owner: string; repo: string } | null {
