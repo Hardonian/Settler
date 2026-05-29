@@ -5,7 +5,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "test": "echo 'No tests yet'"
+    "test": "echo 'No tests yet'",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "typescript": "^5.9.3"
