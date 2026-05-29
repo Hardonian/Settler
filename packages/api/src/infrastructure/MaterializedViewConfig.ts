@@ -321,7 +321,7 @@ export const DEFAULT_REFRESH_CONFIGS: Record<RefreshStrategy, RefreshConfig> = {
 export function isValidCronExpression(expression: string): boolean {
   // Basic cron validation - 5 fields: minute hour day month weekday
   const cronRegex =
-    /^(\*|(\d+(-\d+)?)(,\d+(-\d+)?)*)\s+(\*|(\d+(-\d+)?)(,\d+(-\d+)?)*)\s+(\*|(\d+(-\d+)?)(,\d+(-\d+)?)*)\s+(\*|(\d+(-\d+)?)(,\d+(-\d+)?)*)\s+(\*|(\d+(-\d+)?)(,\d+(-\d+)?)*)$/;
+    /^(\*(\/\d+)?|(\d+(-\d+)?)(,\d+(-\d+)?)*)\s+(\*(\/\d+)?|(\d+(-\d+)?)(,\d+(-\d+)?)*)\s+(\*(\/\d+)?|(\d+(-\d+)?)(,\d+(-\d+)?)*)\s+(\*(\/\d+)?|(\d+(-\d+)?)(,\d+(-\d+)?)*)\s+(\*(\/\d+)?|(\d+(-\d+)?)(,\d+(-\d+)?)*)$/;
   return cronRegex.test(expression);
 }
 
