@@ -49,9 +49,6 @@ export const POST = withSecurity(
           return NextResponse.json({ error: "Subscription not found" }, { status: 404 });
         }
 
-        // In production, retry payment with Stripe
-        // const paymentIntent = await stripe.paymentIntents.create({...});
-
         // Update payment recovery
         const { data: recovery } = await supabase
           .from("payment_recovery")
@@ -89,5 +86,3 @@ export const POST = withSecurity(
   ),
   { rateLimit: { windowMs: 60000, maxRequests: 10 }, requireAuth: true }
 );
-
-// try catch
