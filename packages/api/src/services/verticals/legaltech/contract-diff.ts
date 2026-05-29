@@ -51,14 +51,32 @@ export class ContractDiffService {
     const removed: string[] = [];
     const modified: Array<{ clause: string; before: string; after: string }> = [];
 
+    // Pre-compute normalized clauses for clauses1
+    const normalizedMap1 = new Map<string, string>();
+    const clauses1WithWords: Array<{ original: string; words: Set<string> }> = [];
+
+    for (const c1 of clauses1) {
+      const normalized = this.normalizeClause(c1);
+      normalizedMap1.set(normalized, c1);
+      clauses1WithWords.push({
+        original: c1,
+        words: new Set(normalized.split(" ")),
+      });
+    }
+
+    // Pre-compute normalized clauses for clauses2 to speed up "Find removed clauses"
+    const normalizedSet2 = new Set<string>();
+
     // Find added and modified clauses
     for (const clause2 of clauses2) {
       const normalizedClause2 = this.normalizeClause(clause2);
-      const match = clauses1.find(c => this.normalizeClause(c) === normalizedClause2);
-      
+      normalizedSet2.add(normalizedClause2);
+
+      const match = normalizedMap1.get(normalizedClause2);
+
       if (!match) {
         // Check if it's a modification of an existing clause
-        const similar = this.findSimilarClause(normalizedClause2, clauses1);
+        const similar = this.findSimilarClause(normalizedClause2, clauses1WithWords);
         if (similar) {
           modified.push({
             clause: this.extractClauseHeading(clause2) || normalizedClause2.substring(0, 50),
@@ -74,8 +92,7 @@ export class ContractDiffService {
     // Find removed clauses
     for (const clause1 of clauses1) {
       const normalizedClause1 = this.normalizeClause(clause1);
-      const exists = clauses2.some(c => this.normalizeClause(c) === normalizedClause1);
-      if (!exists) {
+      if (!normalizedSet2.has(normalizedClause1)) {
         removed.push(clause1);
       }
     }
@@ -83,7 +100,13 @@ export class ContractDiffService {
     // Calculate risk score based on changes
     const riskScore = this.calculateRiskScore(added, removed, modified);
 
-    logInfo("Contract diff generated", { tenantId, added: added.length, removed: removed.length, modified: modified.length, riskScore });
+    logInfo("Contract diff generated", {
+      tenantId,
+      added: added.length,
+      removed: removed.length,
+      modified: modified.length,
+      riskScore,
+    });
 
     return { added, removed, modified, riskScore };
   }
@@ -95,8 +118,8 @@ export class ContractDiffService {
     // Split by numbered sections, paragraphs, or sentence boundaries
     const clauses = contract
       .split(/(?:\d+\.)|(?:\n\n)|(?:;[\s])/)
-      .map(c => c.trim())
-      .filter(c => c.length > 20); // Filter out short fragments
+      .map((c) => c.trim())
+      .filter((c) => c.length > 20); // Filter out short fragments
     return clauses;
   }
 
@@ -106,28 +129,31 @@ export class ContractDiffService {
   private normalizeClause(clause: string): string {
     return clause
       .toLowerCase()
-      .replace(/\s+/g, ' ')
-      .replace(/[^\w\s]/g, '')
+      .replace(/\s+/g, " ")
+      .replace(/[^\w\s]/g, "")
       .trim();
   }
 
   /**
    * Find similar clause using simple matching
    */
-  private findSimilarClause(clause: string, clauses: string[]): string | null {
-    const clauseWords = new Set(clause.split(' '));
-    
+  private findSimilarClause(
+    clause: string,
+    clauses: Array<{ original: string; words: Set<string> }>
+  ): string | null {
+    const clauseWords = new Set(clause.split(" "));
+
     let bestMatch: string | null = null;
     let bestScore = 0;
 
     for (const c of clauses) {
-      const cWords = new Set(this.normalizeClause(c).split(' '));
-      const intersection = [...clauseWords].filter(w => cWords.has(w));
+      const cWords = c.words;
+      const intersection = [...clauseWords].filter((w) => cWords.has(w));
       const score = intersection.length / Math.max(clauseWords.size, cWords.size);
-      
+
       if (score > 0.6 && score > bestScore) {
         bestScore = score;
-        bestMatch = c;
+        bestMatch = c.original;
       }
     }
 
@@ -145,15 +171,27 @@ export class ContractDiffService {
   /**
    * Calculate risk score based on changes
    */
-  private calculateRiskScore(added: string[], removed: string[], modified: Array<{ before: string; after: string }>): number {
+  private calculateRiskScore(
+    added: string[],
+    removed: string[],
+    modified: Array<{ before: string; after: string }>
+  ): number {
     let score = 0;
 
     // High-risk keywords that increase risk
-    const riskKeywords = ['indemnif', 'liability', 'penalty', 'terminate', 'breach', 'warrant', 'guarantee'];
-    const riskPatterns = riskKeywords.map(k => new RegExp(k, 'i'));
+    const riskKeywords = [
+      "indemnif",
+      "liability",
+      "penalty",
+      "terminate",
+      "breach",
+      "warrant",
+      "guarantee",
+    ];
+    const riskPatterns = riskKeywords.map((k) => new RegExp(k, "i"));
 
     for (const clause of added) {
-      if (riskPatterns.some(p => p.test(clause))) {
+      if (riskPatterns.some((p) => p.test(clause))) {
         score += 15;
       } else {
         score += 5;
@@ -163,7 +201,7 @@ export class ContractDiffService {
     score += removed.length * 10; // Removing protections is risky
 
     for (const mod of modified) {
-      if (riskPatterns.some(p => p.test(mod.after))) {
+      if (riskPatterns.some((p) => p.test(mod.after))) {
         score += 20; // Modifications to risk clauses are high risk
       } else {
         score += 8;
@@ -178,18 +216,23 @@ export class ContractDiffService {
    */
   async extractObligations(contract: string): Promise<Obligation[]> {
     const obligations: Obligation[] = [];
-    const lines = contract.split('\n').filter(l => l.trim());
+    const lines = contract.split("\n").filter((l) => l.trim());
 
     // Patterns for identifying obligations
     const obligationPatterns = [
-      { regex: /shall\s+(.+?)(?:\.|$)/gi, party: 'Party A' },
-      { regex: /must\s+(.+?)(?:\.|$)/gi, party: 'Party A' },
-      { regex: /agrees?\s+to\s+(.+?)(?:\.|$)/gi, party: 'Party A' },
-      { regex: /(?:party\s+b|the\s+(?:provider|vendor|contractor))\s+(?:shall|must|agrees?)\s+(.+?)(?:\.|$)/gi, party: 'Party B' },
+      { regex: /shall\s+(.+?)(?:\.|$)/gi, party: "Party A" },
+      { regex: /must\s+(.+?)(?:\.|$)/gi, party: "Party A" },
+      { regex: /agrees?\s+to\s+(.+?)(?:\.|$)/gi, party: "Party A" },
+      {
+        regex:
+          /(?:party\s+b|the\s+(?:provider|vendor|contractor))\s+(?:shall|must|agrees?)\s+(.+?)(?:\.|$)/gi,
+        party: "Party B",
+      },
     ];
 
     // Patterns for deadlines
-    const deadlinePattern = /(?:within|by|on|before)\s+(\d+\s+(?:days?|weeks?|months?)|\d{4}-\d{2}-\d{2})/gi;
+    const deadlinePattern =
+      /(?:within|by|on|before)\s+(\d+\s+(?:days?|weeks?|months?)|\d{4}-\d{2}-\d{2})/gi;
 
     // Patterns for penalties
     const penaltyPattern = /(?:penalty|fine|damages?|indemnify)\s+(?:of|up\s+to)?\s*\$?([\d,]+)/gi;
@@ -200,7 +243,7 @@ export class ContractDiffService {
         regex.lastIndex = 0;
         while ((match = regex.exec(line)) !== null) {
           const obligation = (match[1] || "").trim();
-          
+
           // Extract deadline
           const deadlineMatch = line.match(deadlinePattern);
           const deadline = deadlineMatch ? deadlineMatch[1] : undefined;
