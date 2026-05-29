@@ -95,35 +95,6 @@ export function ActivationChecklist({
     }
   };
 
-  // const _markItemComplete = async (itemId: string) => {
-  //   if (!userId) return;
-
-  //   try {
-  //     const response = await fetch("/api/user/checklist", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ userId, itemId }),
-  //     });
-
-  //     if (response.ok) {
-  //       setCompletedItems((prev) => new Set([...prev, itemId]));
-  //       onItemComplete?.(itemId);
-
-  //       // Check if all required items are complete
-  //       const requiredItems = items.filter((item: any) => item.required);
-  //       const allRequiredComplete = requiredItems.every((item) =>
-  //         [...completedItems, itemId].includes(item.id)
-  //       );
-
-  //       if (allRequiredComplete) {
-  //         onAllComplete?.();
-  //       }
-  //     }
-  //   } catch (error: unknown) {
-  //     console.error("Failed to mark item complete:", error);
-  //   }
-  // };
-
   const completedCount = completedItems.size;
   const totalCount = items.length;
   const requiredCount = items.filter((item: any) => item.required).length;
@@ -131,7 +102,6 @@ export function ActivationChecklist({
     (item) => item.required && completedItems.has(item.id)
   ).length;
   const progress = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
-  // const _requiredProgress = requiredCount > 0 ? (completedRequiredCount / requiredCount) * 100 : 0;
   const allRequiredComplete = requiredCount === completedRequiredCount;
 
   if (loading) {
