@@ -40,7 +40,6 @@ jobs:
         with:
           node-version: "24"
 
-
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
 
@@ -68,7 +67,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U postgres"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -91,7 +90,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
-
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate
@@ -141,7 +139,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
-
 
       - name: Setup pnpm
         run: corepack enable && corepack prepare pnpm@10.13.1 --activate

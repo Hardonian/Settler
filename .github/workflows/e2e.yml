@@ -38,7 +38,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U postgres"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -63,7 +63,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -142,7 +141,6 @@ jobs:
         with:
           node-version-file: ".nvmrc"
 
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -189,7 +187,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U postgres"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -214,7 +212,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
