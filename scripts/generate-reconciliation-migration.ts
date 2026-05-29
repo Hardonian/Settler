@@ -71,6 +71,52 @@ class ReconciliationMigrationGenerator {
     return this.migrationSQL.join("\n");
   }
 
+  private getTableDefinitionFromGoldenSchema(tableName: string): string | null {
+    const goldenSchemaPath = path.join(
+      __dirname,
+      "../supabase/migrations/20240101000000_settler_golden_schema.sql"
+    );
+
+    if (!fs.existsSync(goldenSchemaPath)) {
+      return null;
+    }
+
+    const content = fs.readFileSync(goldenSchemaPath, "utf-8");
+    const schemaAndTable = tableName.includes(".") ? tableName : `public.${tableName}`;
+    const [schema, name] = schemaAndTable.split(".");
+
+    const startRegex = new RegExp(
+      `CREATE\\s+TABLE\\s+(IF\\s+NOT\\s+EXISTS\\s+)?(${schema}\\.)?${name}\\s*\\(`,
+      "i"
+    );
+    const match = content.match(startRegex);
+
+    if (match) {
+      const startIndex = match.index!;
+      let openParens = 0;
+      let i = startIndex + match[0].length - 1; // start at '('
+
+      let inString = false;
+      for (; i < content.length; i++) {
+        const char = content[i];
+        if (char === "'" && content[i - 1] !== "\\") inString = !inString;
+
+        if (!inString) {
+          if (char === "(") openParens++;
+          else if (char === ")") {
+            openParens--;
+            if (openParens === 0) {
+              const semiColonIndex = content.indexOf(";", i);
+              return content.substring(startIndex, semiColonIndex + 1);
+            }
+          }
+        }
+      }
+    }
+
+    return null;
+  }
+
   private generateExtensionSQL(issues: VerificationResult[]) {
     if (issues.length === 0) return;
 
@@ -100,17 +146,19 @@ class ReconciliationMigrationGenerator {
     this.migrationSQL.push(
       "-- ============================================================================"
     );
-    this.migrationSQL.push("-- NOTE: Table creation requires manual review.");
-    this.migrationSQL.push("-- Tables should be created from the golden schema migration.");
-    this.migrationSQL.push("-- This section is a placeholder - review and implement manually.\n");
 
     for (const issue of issues) {
       const tableName = issue.component.replace("table.", "");
       this.migrationSQL.push(`-- Missing table: ${tableName}`);
-      this.migrationSQL.push(`-- TODO: Create table ${tableName} from golden schema`);
-    }
 
-    this.migrationSQL.push("");
+      const definition = this.getTableDefinitionFromGoldenSchema(tableName);
+      if (definition) {
+        this.migrationSQL.push(definition);
+      } else {
+        this.migrationSQL.push(`-- TODO: Create table ${tableName} from golden schema`);
+      }
+      this.migrationSQL.push("");
+    }
   }
 
   private generateIndexSQL(issues: VerificationResult[]) {
