@@ -121,9 +121,13 @@ BEGIN
 
   -- Server-side validation: Check if integration is configured (if integration_id provided)
   IF p_integration_id IS NOT NULL THEN
-    -- TODO: Add integration_credentials table check when implemented
-    -- For now, we'll allow but log a warning
-    NULL;
+        IF NOT EXISTS (
+      SELECT 1 FROM integration_credentials
+      WHERE adapter = p_integration_id
+        AND tenant_id = p_tenant_id
+    ) THEN
+      RAISE EXCEPTION 'Integration credentials not found for integration_id: %', p_integration_id;
+    END IF;
   END IF;
 
   -- Insert usage event
@@ -352,8 +356,16 @@ BEGIN
   END IF;
 
   -- If integration is specified, validate it's configured
-  -- TODO: Add integration_credentials table check when implemented
-  -- For now, we'll allow but this should be enhanced
+    IF p_integration_id IS NOT NULL THEN
+    IF NOT EXISTS (
+      SELECT 1 FROM integration_credentials ic
+      JOIN billing_accounts ba ON ic.tenant_id = ba.tenant_id
+      WHERE ic.adapter = p_integration_id
+        AND ba.id = p_billing_account_id
+    ) THEN
+      RETURN false;
+    END IF;
+  END IF;
 
   RETURN true;
 END;
