@@ -76,17 +76,101 @@ def check_table_exists_in_migrations(table_name: str) -> bool:
                 return True
     return False
 
+def map_prisma_type_to_sql(field_name: str, field_def: str) -> str:
+    """Map Prisma scalar type to PostgreSQL type."""
+    # Remove comments
+    field_def = re.sub(r'//.*$', '', field_def).strip()
+
+    parts = field_def.split()
+    type_modifier = parts[0]
+
+    is_optional = '?' in type_modifier
+    is_array = '[]' in type_modifier
+
+    base_type = type_modifier.replace('?', '').replace('[]', '')
+
+    # Map types
+    if '@db.Uuid' in field_def:
+        sql_type = 'UUID'
+    elif base_type == 'String':
+        sql_type = 'TEXT'
+    elif base_type == 'Int':
+        sql_type = 'INTEGER'
+    elif base_type == 'BigInt':
+        sql_type = 'BIGINT'
+    elif base_type == 'Float':
+        sql_type = 'DOUBLE PRECISION'
+    elif base_type == 'Decimal':
+        sql_type = 'DECIMAL'
+    elif base_type == 'Boolean':
+        sql_type = 'BOOLEAN'
+    elif base_type == 'DateTime':
+        sql_type = 'TIMESTAMPTZ'
+    elif base_type == 'Json':
+        sql_type = 'JSONB'
+    else:
+        # Enums or other models
+        sql_type = 'TEXT'
+
+    if is_array:
+        sql_type += '[]'
+
+    constraints = []
+
+    # Handle autoincrement properly
+    if '@default(autoincrement())' in field_def:
+        if base_type == 'Int':
+            sql_type = 'SERIAL'
+        elif base_type == 'BigInt':
+            sql_type = 'BIGSERIAL'
+
+    if '@id' in field_def:
+        constraints.append('PRIMARY KEY')
+    elif '@unique' in field_def:
+        constraints.append('UNIQUE')
+
+    if not is_optional and '@id' not in field_def:
+        constraints.append('NOT NULL')
+
+    # Handle defaults (ignoring autoincrement here because it's handled via SERIAL type)
+    if '@default' in field_def and 'autoincrement()' not in field_def:
+        default_match = re.search(r'@default\((.*?)\)', field_def)
+        if default_match:
+            default_val = default_match.group(1)
+            if default_val == 'uuid()':
+                constraints.append('DEFAULT gen_random_uuid()')
+            elif default_val == 'now()':
+                constraints.append('DEFAULT NOW()')
+            elif default_val.startswith('"') or default_val.startswith("'"):
+                # Remove both types of quotes safely
+                clean_val = default_val[1:-1] if len(default_val) >= 2 else default_val
+                constraints.append(f"DEFAULT '{clean_val}'")
+            elif default_val in ('true', 'false'):
+                constraints.append(f"DEFAULT {default_val}")
+            elif default_val.isdigit():
+                constraints.append(f"DEFAULT {default_val}")
+            elif default_val == '{}' or default_val == '[]':
+                # For Json
+                constraints.append(f"DEFAULT '{default_val}'::jsonb")
+
+    constraint_str = " ".join(constraints)
+    if constraint_str:
+        return f"{sql_type} {constraint_str}"
+    return sql_type
+
 def generate_table_sql(table_name: str, model_info: Dict) -> str:
     """Generate SQL CREATE TABLE statement from Prisma model."""
-    # This is a simplified version - in production, you'd use Prisma's schema parser
-    # For now, we'll generate a basic structure
     sql = f"-- Table: {table_name} (from Prisma model {model_info['model_name']})\n"
     sql += f"CREATE TABLE IF NOT EXISTS {table_name} (\n"
-    sql += "  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n"
-    sql += "  -- TODO: Add columns based on Prisma schema\n"
-    sql += "  created_at TIMESTAMPTZ DEFAULT NOW(),\n"
-    sql += "  updated_at TIMESTAMPTZ DEFAULT NOW()\n"
-    sql += ");\n\n"
+
+    columns = []
+    for field_name, field_def in model_info['fields'].items():
+        col_name = camel_to_snake(field_name)
+        col_def = map_prisma_type_to_sql(field_name, field_def)
+        columns.append(f"  {col_name} {col_def}")
+
+    sql += ",\n".join(columns)
+    sql += "\n);\n\n"
     return sql
 
 def main():
