@@ -176,7 +176,7 @@ export class TemplateImprover {
     });
 
     // Group jobs by recipe id, taking up to 100 per recipe
-    const jobsByRecipeId = allJobs.reduce(
+    const jobsByRecipeIdMap = allJobs.reduce(
       (acc, job) => {
         const recipeId = job.transformRecipeId;
         if (!recipeId) return acc;
@@ -196,7 +196,7 @@ export class TemplateImprover {
 
     for (const recipe of recipes) {
       // Analyze performance
-      const jobs = jobsByRecipeId[recipe.id] || [];
+      const jobs = jobsByRecipeIdMap[recipe.id] || [];
 
       // Group jobs by recipe ID
       const jobsByRecipeId = new Map<string, { id: string }[]>();
@@ -317,7 +317,7 @@ export class TemplateImprover {
       // Note: validationRules is a Json array field, so we check if rule.id is in the array
       const jobs = jobsByRuleId.get(rule.id) || [];
 
-      const jobIdsArray = Array.from(allJobIds);
+      const jobIdsArray = Array.from(allJobs).map((j) => j.id);
 
       // Fetch all failed results for these jobs at once
       const failedResults =

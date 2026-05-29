@@ -106,6 +106,7 @@ export class AgentLearningLoops {
 
       // Emulate the original logic which caps the check at 10 results
       // and reports error rate as results.length / 10.
+      const failureCount = results.length;
       if (failureCount > 5) {
         insights.push({
           type: "transform",
