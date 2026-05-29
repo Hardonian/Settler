@@ -128,19 +128,6 @@ export class SquareEnhancedAdapter implements EnhancedAdapter {
       throw new Error("Square access token is required");
     }
 
-    // In production, use Square SDK
-    // const { Client, Environment } = require('squareup');
-    // const client = new Client({
-    //   accessToken: accessToken,
-    //   environment: Environment.Sandbox, // or Production
-    // });
-    //
-    // const paymentsApi = client.paymentsApi;
-    // const response = await paymentsApi.listPayments({
-    //   beginTime: dateRange.start.toISOString(),
-    //   endTime: dateRange.end.toISOString(),
-    // });
-
     // Mock implementation for now
     return [];
   }
@@ -154,19 +141,6 @@ export class SquareEnhancedAdapter implements EnhancedAdapter {
     if (!accessToken) {
       throw new Error("Square access token is required");
     }
-
-    // In production, use Square SDK
-    // const { Client, Environment } = require('squareup');
-    // const client = new Client({
-    //   accessToken: accessToken,
-    //   environment: Environment.Sandbox,
-    // });
-    //
-    // const settlementsApi = client.settlementsApi;
-    // const response = await settlementsApi.listSettlements({
-    //   beginTime: dateRange.start.toISOString(),
-    //   endTime: dateRange.end.toISOString(),
-    // });
 
     // Mock implementation for now
     return [];
