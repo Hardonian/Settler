@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settler — Pricing</title>
+  <meta name="description" content="Transparent pricing for multi-rail reconciliation intelligence. Start at $299/mo.">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0f172a; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+    header { padding: 48px 0 24px; }
+    h1 { font-size: 2.5rem; font-weight: 700; letter-spacing: -0.02em; }
+    .subtitle { color: #94a3b8; margin-top: 8px; font-size: 1.1rem; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin: 40px 0; }
+    .card { border: 1px solid #1e293b; background: #1e293b; padding: 32px; border-radius: 8px; }
+    .card.featured { border: 2px solid #38bdf8; position: relative; }
+    .card.featured::before { content: 'POPULAR'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #38bdf8; color: #0f172a; padding: 4px 16px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; border-radius: 4px; }
+    .card h3 { font-size: 1.3rem; font-weight: 600; }
+    .card .price { font-size: 2.5rem; font-weight: 700; margin: 16px 0 4px; }
+    .card .price span { font-size: 1rem; font-weight: 400; color: #64748b; }
+    .card .description { color: #94a3b8; font-size: 0.9rem; min-height: 48px; }
+    .card ul { list-style: none; margin: 24px 0; }
+    .card li { padding: 8px 0; border-bottom: 1px solid #334155; font-size: 0.9rem; }
+    .card li::before { content: '✓ '; color: #38bdf8; font-weight: 700; }
+    .btn { display: block; width: 100%; padding: 14px; text-align: center; font-size: 1rem; font-weight: 600; border-radius: 6px; cursor: pointer; text-decoration: none; }
+    .btn-primary { background: #38bdf8; color: #0f172a; border: none; }
+    .btn-primary:hover { background: #7dd3fc; }
+    .btn-outline { background: transparent; color: #e2e8f0; border: 1px solid #334155; }
+    .btn-outline:hover { background: #1e293b; }
+    .faq { margin: 48px 0 80px; }
+    .faq h2 { margin-bottom: 24px; color: #e2e8f0; }
+    .faq-item { border-bottom: 1px solid #1e293b; padding: 20px 0; }
+    .faq-item h4 { font-weight: 600; margin-bottom: 4px; }
+    .faq-item p { color: #94a3b8; font-size: 0.9rem; }
+    footer { border-top: 1px solid #1e293b; padding: 24px 0; text-align: center; color: #64748b; font-size: 0.85rem; }
+    a { color: #38bdf8; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <p style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.12em;color:#64748b;font-weight:600;">Settler</p>
+      <h1>Enterprise-grade reconciliation, fair pricing</h1>
+      <p class="subtitle">Multi-rail transaction matching with deterministic proofs. Scales with your transaction volume.</p>
+    </header>
+
+    <div class="pricing-grid">
+      <div class="card">
+        <h3>Starter</h3>
+        <div class="price">$299<span>/month</span></div>
+        <p class="description">For teams getting started with automated reconciliation.</p>
+        <ul>
+          <li>Up to 2 payment rails</li>
+          <li>Up to 10K matches/month</li>
+          <li>CSV + manual entry ingestion</li>
+          <li>Exception review queue</li>
+          <li>Tamper-evident proofpacks</li>
+          <li>Email support</li>
+        </ul>
+        <a href="https://buy.stripe.com/cNi8wOgQ8fSs48GgP7b3q03" class="btn btn-primary" target="_blank">Subscribe — $299/mo</a>
+      </div>
+
+      <div class="card featured">
+        <h3>Growth</h3>
+        <div class="price">$799<span>/month</span></div>
+        <p class="description">For growing operations with multiple payment processors.</p>
+        <ul>
+          <li>Up to 5 payment rails</li>
+          <li>Up to 100K matches/month</li>
+          <li>API ingestion (Stripe, PayPal, banks)</li>
+          <li>Manual review queue with audit trails</li>
+          <li>Multi-workspace tenancy</li>
+          <li>Priority support + onboarding</li>
+        </ul>
+        <a href="https://buy.stripe.com/fZueVc0Ra5dO34C6atb3q04" class="btn btn-primary" target="_blank">Subscribe — $799/mo</a>
+      </div>
+
+      <div class="card">
+        <h3>Scale</h3>
+        <div class="price">$1,999<span>/month</span></div>
+        <p class="description">For high-volume operations requiring maximum throughput.</p>
+        <ul>
+          <li>Unlimited payment rails</li>
+          <li>Unlimited matches/month</li>
+          <li>TigerBeetle deterministic ledger core</li>
+          <li>Real-time matching at 10K+ matches/min</li>
+          <li>Custom integration support</li>
+          <li>Dedicated support + SLA</li>
+          <li>Self-hosted option</li>
+        </ul>
+        <a href="https://buy.stripe.com/eVqaEWfM45dO34CgP7b3q05" class="btn btn-primary" target="_blank">Subscribe — $1,999/mo</a>
+      </div>
+    </div>
+
+    <div class="faq">
+      <h2>Frequently asked questions</h2>
+      <div class="faq-item">
+        <h4>Can I try before buying?</h4>
+        <p>Yes — contact us for a 14-day free trial or a structured pilot program. We'll help you get set up with your data.</p>
+      </div>
+      <div class="faq-item">
+        <h4>What payment rails do you support?</h4>
+        <p>Stripe, PayPal, bank transfers (CSV), and custom API integrations. Contact us for specific rail requests.</p>
+      </div>
+      <div class="faq-item">
+        <h4>Is there a setup fee?</h4>
+        <p>No setup fee. For Scale tier we do require a 30-day minimum commitment for dedicated support and onboarding.</p>
+      </div>
+      <div class="faq-item">
+        <h4>Can I self-host?</h4>
+        <p>Yes — Scale tier includes self-hosting with TigerBeetle ledger core. Your data stays in your infrastructure.</p>
+      </div>
+    </div>
+
+    <footer>
+      <p><a href="index.html">← Settler Home</a> &middot; Questions? <a href="mailto:scott@hardonian.com">scott@hardonian.com</a></p>
+    </footer>
+  </div>
+</body>
+</html>
