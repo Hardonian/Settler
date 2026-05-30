@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Settler — Reconciliation Intelligence. Close in Hours, Not Days.</title>
+    <meta name="description" content="Automate multi-rail payment reconciliation with a deterministic TigerBeetle ledger. Match transactions across Stripe, PayPal, banks, and more — starting at $299/mo." />
+    <meta name="keywords" content="reconciliation, payment reconciliation, finance ops, multi-rail matching, TigerBeetle, ledger, proofpack, settlement" />
+    <meta property="og:title" content="Settler — Reconciliation Intelligence. Close in Hours, Not Days." />
+    <meta property="og:description" content="Match transactions across payment rails in minutes, not days. Deterministic ledger, evidence-grade proofpacks." />
+    <meta property="og:type" content="website" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        * { font-family: 'Inter', system-ui, sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #0a0f1e 0%, #1a1a2e 50%, #0a0f1e 100%); }
+        .gradient-accent { background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); }
+        .gradient-text { background: linear-gradient(135deg, #22d3ee 0%, #60a5fa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .feature-card:hover { transform: translateY(-2px); box-shadow: 0 20px 40px -12px rgba(6,182,212,0.15); }
+        .comparison-check { color: #22c55e; }
+        .comparison-x { color: #ef4444; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-300 antialiased">
+
+<!-- Navigation -->
+<nav class="border-b border-slate-800 bg-slate-950/80 backdrop-blur-sm sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg gradient-accent flex items-center justify-center text-white font-bold text-sm">S</div>
+                <span class="text-white font-bold text-lg">Settler</span>
+            </div>
+            <div class="hidden md:flex items-center gap-6 text-sm">
+                <a href="#problem" class="hover:text-white transition">Problem</a>
+                <a href="#how-it-works" class="hover:text-white transition">How It Works</a>
+                <a href="#features" class="hover:text-white transition">Features</a>
+                <a href="#pricing" class="hover:text-white transition">Pricing</a>
+                <a href="#faq" class="hover:text-white transition">FAQ</a>
+            </div>
+            <a href="#cta" class="bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-medium px-5 py-2 rounded-lg transition">Book a Pilot</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="gradient-bg border-b border-slate-800">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
+        <div class="max-w-3xl mx-auto text-center">
+            <div class="inline-flex items-center gap-1.5 bg-cyan-900/30 border border-cyan-800/40 rounded-full px-4 py-1.5 text-sm text-cyan-300 mb-8">
+                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                Now in pilot — 6-week program with setup, training, and customization
+            </div>
+            <h1 class="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-6">
+                Reconciliation Intelligence.<br/>
+                <span class="gradient-text">Close in Hours, Not Days.</span>
+            </h1>
+            <p class="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+                Automate multi-rail payment reconciliation with a deterministic TigerBeetle ledger. 
+                Match transactions across Stripe, PayPal, banks, and marketplaces — 
+                then export evidence-grade proofpacks your auditors can verify.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="#cta" class="bg-cyan-600 hover:bg-cyan-500 text-white font-semibold px-8 py-3.5 rounded-lg text-lg transition shadow-lg shadow-cyan-600/25">Book a Pilot</a>
+                <a href="#how-it-works" class="border border-slate-700 hover:border-cyan-600/50 text-slate-300 font-medium px-8 py-3.5 rounded-lg text-lg transition">See How It Works →</a>
+            </div>
+            <div class="mt-10 flex items-center justify-center gap-8 text-sm text-slate-500">
+                <span>⚡ Match 10K+ transactions/min</span>
+                <span class="hidden sm:inline">·</span>
+                <span>🔐 Deterministic TigerBeetle ledger</span>
+                <span class="hidden sm:inline">·</span>
+                <span>📦 Evidence-grade proofpacks</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Problem -->
+<section id="problem" class="bg-slate-900/50 py-20">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-white text-center mb-6">The Monthly Close Dread</h2>
+            <p class="text-lg text-slate-400 text-center mb-12">You have transactions flowing through Stripe, PayPal, and your bank account. Somewhere in that mess is the truth. You just need 3-5 business days to find it.</p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="bg-slate-900 rounded-xl p-8 border border-slate-800 feature-card transition">
+                <div class="text-4xl mb-4">📊</div>
+                <h3 class="text-lg font-semibold text-white mb-3">5 Payment Rails, 1 Spreadsheet</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">Your marketplace takes payments via Stripe, PayPal, bank transfers, local PSPs, and installments. Your finance team reconciles each one manually — 3-5 days every month.</p>
+            </div>
+            <div class="bg-slate-900 rounded-xl p-8 border border-slate-800 feature-card transition">
+                <div class="text-4xl mb-4">💰</div>
+                <h3 class="text-lg font-semibold text-white mb-3">Hidden Working Capital Friction</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">Every hour reconciliation takes is an hour sellers wait for payouts. For a growing marketplace, that's $150K+ in delayed working capital per month — invisible until you model it.</p>
+            </div>
+            <div class="bg-slate-900 rounded-xl p-8 border border-slate-800 feature-card transition">
+                <div class="text-4xl mb-4">🔍</div>
+                <h3 class="text-lg font-semibold text-white mb-3">No Audit Trail</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">When your auditor asks "can you prove every payout was correct?" — your spreadsheet can't answer. Exceptions get buried in email threads. Manual overrides leave no trace.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section id="how-it-works" class="py-20">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl md:text-4xl font-bold text-white text-center mb-4">How It Works</h2>
+        <p class="text-slate-400 text-center mb-16 max-w-2xl mx-auto">Four steps from setup to audit-ready proofpack. No training required for your finance team.</p>
+        <div class="grid md:grid-cols-4 gap-6 relative">
+            <div class="hidden md:block absolute top-16 left-[12.5%] right-[12.5%] h-0.5 bg-gradient-to-r from-cyan-500/40 via-blue-500/40 to-cyan-500/40"></div>
+            <div class="text-center relative">
+                <div class="w-16 h-16 rounded-full gradient-accent flex items-center justify-center text-white font-bold text-xl mx-auto mb-6 relative z-10">1</div>
+                <h3 class="text-lg font-semibold text-white mb-3">Connect Rails</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">Upload CSV exports or connect via API. Stripe, PayPal, bank statements, custom PSPs — Settler ingests any tabular transaction data.</p>
+            </div>
+            <div class="text-center relative">
+                <div class="w-16 h-16 rounded-full gradient-accent flex items-center justify-center text-white font-bold text-xl mx-auto mb-6 relative z-10">2</div>
+                <h3 class="text-lg font-semibold text-white mb-3">Configure Rules</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">Set matching rules: amount ± tolerance, date windows, reference IDs. Rule-based matching catches 95%+ automatically on first run.</p>
+            </div>
+            <div class="text-center relative">
+                <div class="w-16 h-16 rounded-full gradient-accent flex items-center justify-center text-white font-bold text-xl mx-auto mb-6 relative z-10">3</div>
+                <h3 class="text-lg font-semibold text-white mb-3">Match & Review</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">Settler's deterministic engine matches transactions across all rails. Exceptions surface for review. Every match has a hash-linked audit trail.</p>
+            </div>
+            <div class="text-center relative">
+                <div class="w-16 h-16 rounded-full gradient-accent flex items-center justify-center text-white font-bold text-xl mx-auto mb-6 relative z-10">4</div>
+                <h3 class="text-lg font-semibold text-white mb-3">Export Proofpack</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">One-click export with verification hashes. Matched, unmatched, and exception transactions with full audit trail. Your month is closed.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features -->
+<section id="features" class="bg-slate-900/50 py-20">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl md:text-4xl font-bold text-white text-center mb-4">Everything You Need to Close the Books</h2>
+        <p class="text-slate-400 text-center mb-16 max-w-2xl mx-auto">Built for finance ops teams who need speed without sacrificing auditability.</p>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="bg-slate-900 rounded-xl p-6 border border-slate-800 feature-card transition">
+                <div class="text-3xl mb-3">🔀</div>
+                <h3 class="text-white font-semibold mb-2">Multi-Rail Matching</h3>
+                <p class="text-slate-400 text-sm">Match transactions across Stripe, PayPal, bank accounts, and custom PSPs in a single workspace. Rule-based matching catches 95%+ automatically.</p>
+            </div>
+            <div class="bg-slate-900 rounded-xl p-6 border border-slate-800 feature-card transition">
+                <div class="text-3xl mb-3">📒</div>
+                <h3 class="text-white font-semibold mb-2">TigerBeetle Ledger</h3>
+                <p class="text-slate-400 text-sm">Deterministic accounting ledger built on TigerBeetle. Every transaction is recorded with cryptographic integrity — tamper-evident by design.</p>
+            </div>
+            <div class="bg-slate-900 rounded-xl p-6 border border-slate-800 feature-card transition">
+                <div class="text-3xl mb-3">📦</div>
+                <h3 class="text-white font-semibold mb-2">Proofpack Export</h3>
+                <p class="text-slate-400 text-sm">One-click PDF or XLSX export with verification hashes. Auditors verify independently. Evidence-grade documents for every close.</p>
+            </div>
+            <div class="bg-slate-900 rounded-xl p-6 border border-slate-800 feature-card transition">
+                <div class="text-3xl mb-3">⚡</div>
+                <h3 class="text-white font-semibold mb-2">Batch Processing</h3>
+                <p class="text-slate-400 text-sm">10K+ matching runs per minute. Process an entire month's transactions in under 60 seconds — even across multiple payment rails.</p>
+            </div>
+            <div class="bg-slate-900 rounded-xl p-6 border border-slate-800 feature-card transition">
+                <div class="text-3xl mb-3">🔍</div>
+                <h3 class="text-white font-semibold mb-2">Exception Review</h3>
+                <p class="text-slate-400 text-sm">Unmatched transactions, partial matches, and amount discrepancies surface in a dedicated review queue. Resolve with notes or overrides — both tracked.</p>
+            </div>
+            <div class="bg-slate-900 rounded-xl p-6 border border-slate-800 feature-card transition">
+                <div class="text-3xl mb-3">🔌</div>
+                <h3 class="text-white font-semibold mb-2">API Access</h3>
+                <p class="text-slate-400 text-sm">Ingest transactions, trigger matching runs, and export results programmatically. REST API with language SDKs. Growth tier and up.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Comparison -->
+<section class="py-20">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl md:text-4xl font-bold text-white text-center mb-4">Settler vs. The Alternatives</h2>
+        <p class="text-slate-400 text-center mb-12 max-w-2xl mx-auto">Spreadsheets don't scale past 1,000 transactions. Enterprise tools cost more than your finance team.</p>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-slate-700">
+                        <th class="text-left py-4 px-4 text-slate-400 font-medium"></th>
+                        <th class="text-center py-4 px-4 text-white font-semibold bg-cyan-600/10 rounded-t-xl">Settler</th>
+                        <th class="text-center py-4 px-4 text-slate-400 font-medium">Manual / Spreadsheets</th>
+                        <th class="text-center py-4 px-4 text-slate-400 font-medium">ERP / Enterprise Finance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-slate-800">
+                        <td class="py-4 px-4 text-slate-300">Starting Price</td>
+                        <td class="text-center py-4 px-4 text-white font-semibold">$299/mo</td>
+                        <td class="text-center py-4 px-4 text-slate-500">"Free" (3-5 days labor)</td>
+                        <td class="text-center py-4 px-4 text-slate-500">$5,000+/mo</td>
+                    </tr>
+                    <tr class="border-b border-slate-800">
+                        <td class="py-4 px-4 text-slate-300">Multi-Rail Matching</td>
+                        <td class="text-center py-4 px-4"><span class="comparison-check text-lg">✓</span> <span class="text-slate-300">10K/min</span></td>
+                        <td class="text-center py-4 px-4"><span class="comparison-x text-lg">✗</span> <span class="text-slate-500">VLOOKUP</span></td>
+                        <td class="text-center py-4 px-4"><span class="comparison-check text-lg">✓</span> <span class="text-slate-500">Config-heavy</span></td>
+                    </tr>
+                    <tr class="border-b border-slate-800">
+                        <td class="py-4 px-4 text-slate-300">Deterministic Ledger</td>
+                        <td class="text-center py-4 px-4"><span class="comparison-check text-lg">✓</span> <span class="text-slate-300">TigerBeetle</span></td>
+                        <td class="text-center py-4 px-4"><span class="comparison-x text-lg">✗</span> <span class="text-slate-500">No integrity</span></td>
+                        <td class="text-center py-4 px-4"><span class="comparison-check text-lg">✓</span> <span class="text-slate-500">ERP-native</span></td>
+                    </tr>
+                    <tr class="border-b border-slate-800">
+                        <td class="py-4 px-4 text-slate-300">Proofpack Export</td>
+                        <td class="text-center py-4 px-4"><span class="comparison-check text-lg">✓</span> <span class="text-slate-300">One-click</span></td>
+                        <td class="text-center py-4 px-4"><span class="comparison-x text-lg">✗</span> <span class="text-slate-500">Manual</span></td>
+                        <td class="text-center py-4 px-4"><span class="comparison-check text-lg">✓</span> <span class="text-slate-500">Export</span></td>
+                    </tr>
+                    <tr class="border-b border-slate-800">
+                        <td class="py-4 px-4 text-slate-300">Time to First Match</td>
+                        <td class="text-center py-4 px-4 text-slate-300 font-medium">30 minutes</td>
+                        <td class="text-center py-4 px-4 text-slate-500">3-5 days</td>
+                        <td class="text-center py-4 px-4 text-slate-500">2-6 months</td>
+                    </tr>
+                    <tr>
+                        <td class="py-4 px-4 text-slate-300">Exception Review</td>
+                        <td class="text-center py-4 px-4"><span class="comparison-check text-lg">✓</span> <span class="text-slate-300">Dedicated queue</span></td>
+                        <td class="text-center py-4 px-4"><span class="comparison-x text-lg">✗</span> <span class="text-slate-500">Email threads</span></td>
+                        <td class="text-center py-4 px-4"><span class="comparison-check text-lg">✓</span> <span class="text-slate-500">Built-in</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing -->
+<section id="pricing" class="bg-slate-900/50 py-20">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl md:text-4xl font-bold text-white text-center mb-4">Predictable Pricing</h2>
+        <p class="text-slate-400 text-center mb-12 max-w-xl mx-auto">Start with a pilot. Scale as your transaction volume grows. No surprise fees.</p>
+        <div class="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <!-- Starter -->
+            <div class="bg-slate-900 rounded-2xl border border-slate-800 p-8 flex flex-col">
+                <h3 class="text-lg font-semibold text-white mb-1">Starter</h3>
+                <p class="text-sm text-slate-400 mb-6">For small finance teams getting started.</p>
+                <div class="mb-6">
+                    <span class="text-4xl font-extrabold text-white">$299</span>
+                    <span class="text-slate-400">/month</span>
+                </div>
+                <ul class="space-y-3 mb-8 flex-1">
+                    <li class="flex items-center gap-2 text-sm text-slate-300"><span class="text-green-400">✓</span> 1 workspace</li>
+                    <li class="flex items-center gap-2 text-sm text-slate-300"><span class="text-green-400">✓</span> 10K matching runs/month</li>
+                    <li class="flex items-center gap-2 text-sm text-slate-300"><span class="text-green-400">✓</span> Core matching engine</li>
+                    <li class="flex items-center gap-2 text-sm text-slate-300"><span class="text-green-400">✓</span> Basic proofpack export</li>
+                    <li class="flex items-center gap-2 text-sm text-slate-300"><span class="text-green-400">✓</span> CSV ingestion</li>
+                    <li class="flex items-center gap-2 text-sm text-slate-300"><span class="text-green-400">✓</span> Email support</li>
+                </ul>
+                <a href="#cta" class="block text-center border border-slate-700 hover:border-cyan-600/50 text-white font-medium rounded-lg py-3 transition">Book a Pilot</a>
+            </div>
+            <!-- Growth (Popular) -->
+            <div class="bg-slate-900 rounded-2xl border-2 border-cyan-500 p-8 flex flex-col relative">
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-cyan-600 text-white text-xs font-semibold px-4 py-1 rounded-full">Most Popular</div>
+                <h3 class="text-lg font-semibold text-white mb-1">Growth</h3>
+                <p class="text-sm text-slate-400 mb-6">For growing finance ops teams.</p>
+                <div class="mb-6">
+                    <span class="text-4xl font-extrabold text-white">$799</span>
+                    <span class="text-slate-400">/month</span>
+                </div>
+                <ul class="space-y-3 mb-8 flex-1">
+                    <li class="flex items-center gap-2 text-sm text-slate-300"><span class="text-green-400">✓</span> 3 workspaces</li>
+                    <li class="flex items-center gap-2 text-sm text-slate-300"><span class="text-green-400">✓</span> 50K matching runs/month</li>
+                    <li class="flex items-center gap-2 text-sm text-slate-300"><span class="text-green-400">✓</span> Advanced matching engine</li>
+                    <li class="flex items-center gap-2 text-sm text-slate-300"><span class="text-green-400">✓</span> Full proofpack with hashes</li>
+                    <li class="flex items-center gap-2 text-sm text-slate-300"><span class="text-green-400">✓</span> API access + SDKs</li>
+                    <li class="flex items-center gap-2 text-sm text-slate-300"><span class="text-green-400">✓</span> Priority support</li>
+                </ul>
+                <a href="#cta" class="block text-center bg-cyan-600 hover:bg-cyan-500 text-white font-medium rounded-lg py-3 transition shadow-lg shadow-cyan-600/25">Book a Pilot</a>
+            </div>
+            <!-- Scale -->
+            <div class="bg-slate-900 rounded-2xl border border-slate-800 p-8 flex flex-col">
+                <h3 class="text-lg font-semibold text-white mb-1">Scale</h3>
+                <p class="text-sm text-slate-400 mb-6">For organizations with dedicated finance ops.</p>
+                <div class="mb-6">
+                    <span class="text-4xl font-extrabold text-white">$1,999</span>
+                    <span class="text-slate-400">/month</span>
+                </div>
+                <ul class="space-y-3 mb-8 flex-1">
+                    <li class="flex items-center gap-2 text-sm text-slate-300"><span class="text-green-400">✓</span> 10 workspaces</li>
+                    <li class="flex items-center gap-2 text-sm text-slate-300"><span class="text-green-400">✓</span> 250K matching runs/month</li>
+                    <li class="flex items-center gap-2 text-sm text-slate-300"><span class="text-green-400">✓</span> TigerBeetle ledger</li>
+                    <li class="flex items-center gap-2 text-sm text-slate-300"><span class="text-green-400">✓</span> SLA commitment</li>
+                    <li class="flex items-center gap-2 text-sm text-slate-300"><span class="text-green-400">✓</span> SSO / SAML</li>
+                    <li class="flex items-center gap-2 text-sm text-slate-300"><span class="text-green-400">✓</span> Dedicated support</li>
+                </ul>
+                <a href="#cta" class="block text-center border border-slate-700 hover:border-slate-600 text-white font-medium rounded-lg py-3 transition">Contact Sales</a>
+            </div>
+        </div>
+        <p class="text-center text-sm text-slate-500 mt-8">6-week pilot available. Includes setup, training, and customization.</p>
+    </div>
+</section>
+
+<!-- Pilot -->
+<section class="py-16 bg-gradient-to-br from-cyan-900/20 via-slate-950 to-blue-900/20 border-y border-slate-800">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <span class="text-xs font-semibold text-cyan-400 uppercase tracking-widest">PILOT PROGRAM</span>
+        <h2 class="text-2xl md:text-3xl font-bold text-white mt-2 mb-4">Try Settler Before You Commit</h2>
+        <p class="text-slate-400 mb-8">Our 6-week pilot includes setup assistance, rule configuration, weekly check-ins, and a final scorecard showing exactly how much time you saved. You'll know before you buy.</p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-slate-400">
+            <div class="flex items-center gap-2"><span class="text-cyan-400">✓</span> Dedicated setup call</div>
+            <div class="flex items-center gap-2"><span class="text-cyan-400">✓</span> Custom rule configuration</div>
+            <div class="flex items-center gap-2"><span class="text-cyan-400">✓</span> Multi-rail ingestion</div>
+            <div class="flex items-center gap-2"><span class="text-cyan-400">✓</span> ROI scorecard</div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="py-20">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold text-white text-center mb-12">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+            <details class="bg-slate-900 rounded-xl border border-slate-800 open:border-cyan-500/50 transition group">
+                <summary class="px-6 py-4 text-white font-medium cursor-pointer flex items-center justify-between group-open:text-cyan-400">What payment rails do you support?</summary>
+                <div class="px-6 pb-4 text-sm text-slate-400 leading-relaxed">Stripe, PayPal, bank transfers (CSV/OFX), local PSPs, and any custom format you can export as structured data. If it has transaction ID, amount, and date — Settler can match it. Custom rail support included in Growth and Scale tiers.</div>
+            </details>
+            <details class="bg-slate-900 rounded-xl border border-slate-800 open:border-cyan-500/50 transition group">
+                <summary class="px-6 py-4 text-white font-medium cursor-pointer flex items-center justify-between group-open:text-cyan-400">How does TigerBeetle make reconciliation better?</summary>
+                <div class="px-6 pb-4 text-sm text-slate-400 leading-relaxed">TigerBeetle is a deterministic accounting ledger designed for financial transactions. Every transfer is recorded with cryptographic integrity — you can verify that no transaction was altered after the fact. This gives your auditors tamper-evident proof of every match, exception, and override.</div>
+            </details>
+            <details class="bg-slate-900 rounded-xl border border-slate-800 open:border-cyan-500/50 transition group">
+                <summary class="px-6 py-4 text-white font-medium cursor-pointer flex items-center justify-between group-open:text-cyan-400">How long does setup take?</summary>
+                <div class="px-6 pb-4 text-sm text-slate-400 leading-relaxed">Upload your first CSV and configure matching rules in under 30 minutes. Most teams see their first match results in the same session. Our pilot program includes a 45-minute setup call to configure custom rules for your specific payment rails and exception handling needs.</div>
+            </details>
+            <details class="bg-slate-900 rounded-xl border border-slate-800 open:border-cyan-500/50 transition group">
+                <summary class="px-6 py-4 text-white font-medium cursor-pointer flex items-center justify-between group-open:text-cyan-400">Can Settler replace our ERP?</summary>
+                <div class="px-6 pb-4 text-sm text-slate-400 leading-relaxed">No — and it's not designed to. Settler is a specialized reconciliation engine that sits alongside your ERP. You export transaction data, run matching in Settler, and export proofpacks back to your accounting system. No integration required, no data migration risk.</div>
+            </details>
+            <details class="bg-slate-900 rounded-xl border border-slate-800 open:border-cyan-500/50 transition group">
+                <summary class="px-6 py-4 text-white font-medium cursor-pointer flex items-center justify-between group-open:text-cyan-400">What if we need more than 250K matching runs?</summary>
+                <div class="px-6 pb-4 text-sm text-slate-400 leading-relaxed">The Scale tier supports up to 250K runs/month. If you need more, we offer custom enterprise plans with unlimited runs, dedicated infrastructure, and SLA commitments. Contact our sales team to discuss your volume.</div>
+            </details>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section id="cta" class="gradient-bg py-20 border-t border-slate-800">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Close This Month in Hours, Not Days</h2>
+        <p class="text-lg text-slate-400 mb-10 max-w-xl mx-auto">Stop cobbling spreadsheets together every close. Settler automates the matching so your team can focus on exceptions.</p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="#" onclick="alert('Settler pilot inquiry. Email scott@hardonian.com or DM to schedule a 15-minute intro call.')" class="bg-cyan-600 hover:bg-cyan-500 text-white font-semibold px-8 py-3.5 rounded-lg text-lg transition shadow-lg shadow-cyan-600/25">Book a Pilot</a>
+            <a href="#" onclick="alert('Settler discovery. Email scott@hardonian.com to schedule a 30-minute call about your reconciliation workflow.')" class="border border-slate-700 hover:border-cyan-600/50 text-slate-300 font-medium px-8 py-3.5 rounded-lg text-lg transition">Schedule Discovery →</a>
+        </div>
+        <p class="text-sm text-slate-500 mt-6">6-week pilot. No commitment. No risk.</p>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="border-t border-slate-800 py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-slate-500">
+            <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded gradient-accent flex items-center justify-center text-white font-bold text-xs">S</div>
+                <span>Settler</span>
+            </div>
+            <div class="flex items-center gap-6">
+                <a href="#problem" class="hover:text-slate-300 transition">Problem</a>
+                <a href="#features" class="hover:text-slate-300 transition">Features</a>
+                <a href="#pricing" class="hover:text-slate-300 transition">Pricing</a>
+                <a href="#faq" class="hover:text-slate-300 transition">FAQ</a>
+            </div>
+            <p>© 2026 Hardonian. Built with reality mode.</p>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
