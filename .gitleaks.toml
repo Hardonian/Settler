@@ -39,6 +39,11 @@ regexes = [
   '''test.*secret''',
   '''sample.*token''',
   '''placeholder.*password''',
+  '''sk_test_12345678901234567890123456789012''',
+  '''rk_test_12345678901234567890123456789012''',
+  '''sk_test_placeholder''',
+  '''eyJhbGciOiJIUzI1NiJ9\.test''',
+  '''api_latency_p95'''
 ]
 
 [[rules]]

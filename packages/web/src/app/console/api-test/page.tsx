@@ -21,7 +21,7 @@ const API_EXAMPLES = {
         method: "POST",
         endpoint: "/api/v1/receipts",
         code: `curl -X POST https://api.settler.dev/v1/receipts \\
-  -H "Authorization: Bearer YOUR_API_KEY" \\
+  -H "Authorization: Bearer sk_test_12345678901234567890123456789012" \\
   -F "file=@receipt.pdf"`,
       },
       {
@@ -29,7 +29,7 @@ const API_EXAMPLES = {
         method: "GET",
         endpoint: "/api/v1/receipts/{id}",
         code: `curl https://api.settler.dev/v1/receipts/{id} \\
-  -H "Authorization: Bearer YOUR_API_KEY"`,
+  -H "Authorization: Bearer sk_test_12345678901234567890123456789012"`,
       },
     ],
   },
@@ -41,7 +41,7 @@ const API_EXAMPLES = {
         method: "POST",
         endpoint: "/api/v1/recon/jobs",
         code: `curl -X POST https://api.settler.dev/v1/recon/jobs \\
-  -H "Authorization: Bearer YOUR_API_KEY" \\
+  -H "Authorization: Bearer sk_test_12345678901234567890123456789012" \\
   -H "Content-Type: application/json" \\
   -d '{
     "name": "Stripe vs QuickBooks",
@@ -54,7 +54,7 @@ const API_EXAMPLES = {
         method: "GET",
         endpoint: "/api/v1/recon/jobs/{id}/results",
         code: `curl https://api.settler.dev/v1/recon/jobs/{id}/results \\
-  -H "Authorization: Bearer YOUR_API_KEY"`,
+  -H "Authorization: Bearer sk_test_12345678901234567890123456789012"`,
       },
     ],
   },
@@ -66,7 +66,7 @@ const API_EXAMPLES = {
         method: "POST",
         endpoint: "/api/v1/feature-flags/evaluate",
         code: `curl -X POST https://api.settler.dev/v1/feature-flags/evaluate \\
-  -H "Authorization: Bearer YOUR_API_KEY" \\
+  -H "Authorization: Bearer sk_test_12345678901234567890123456789012" \\
   -H "Content-Type: application/json" \\
   -d '{
     "key": "new-dashboard",
@@ -78,7 +78,7 @@ const API_EXAMPLES = {
         method: "GET",
         endpoint: "/api/v1/feature-flags",
         code: `curl https://api.settler.dev/v1/feature-flags \\
-  -H "Authorization: Bearer YOUR_API_KEY"`,
+  -H "Authorization: Bearer sk_test_12345678901234567890123456789012"`,
       },
     ],
   },
@@ -90,7 +90,7 @@ const API_EXAMPLES = {
         method: "POST",
         endpoint: "/api/v1/webhooks",
         code: `curl -X POST https://api.settler.dev/v1/webhooks \\
-  -H "Authorization: Bearer YOUR_API_KEY" \\
+  -H "Authorization: Bearer sk_test_12345678901234567890123456789012" \\
   -H "Content-Type: application/json" \\
   -d '{
     "url": "https://your-app.com/webhook",
@@ -102,7 +102,7 @@ const API_EXAMPLES = {
         method: "POST",
         endpoint: "/api/v1/webhooks/{id}/test",
         code: `curl -X POST https://api.settler.dev/v1/webhooks/{id}/test \\
-  -H "Authorization: Bearer YOUR_API_KEY"`,
+  -H "Authorization: Bearer sk_test_12345678901234567890123456789012"`,
       },
     ],
   },

@@ -35,7 +35,7 @@ const serviceDocs = {
         description: "Create a reconciliation job",
         example: {
           curl: `curl -X POST https://settler.dev/api/v1/recon/jobs \\
-  -H "X-API-Key: rk_your_api_key" \\
+  -H "X-API-Key: rk_test_12345678901234567890123456789012" \\
   -H "Content-Type: application/json" \\
   -d '{
     "name": "Monthly Reconciliation",
@@ -45,7 +45,7 @@ const serviceDocs = {
           node: `const response = await fetch('https://settler.dev/api/v1/recon/jobs', {
   method: 'POST',
   headers: {
-    'X-API-Key': 'rk_your_api_key',
+    'X-API-Key': 'rk_test_12345678901234567890123456789012',
     'Content-Type': 'application/json'
   },
   body: JSON.stringify({
@@ -59,7 +59,7 @@ const serviceDocs = {
 response = requests.post(
     'https://settler.dev/api/v1/recon/jobs',
     headers={
-        'X-API-Key': 'rk_your_api_key',
+        'X-API-Key': 'rk_test_12345678901234567890123456789012',
         'Content-Type': 'application/json'
     },
     json={
@@ -82,7 +82,7 @@ response = requests.post(
         description: "Parse a receipt from an image or PDF",
         example: {
           curl: `curl -X POST https://settler.dev/api/v1/receipts \\
-  -H "X-API-Key: rk_your_api_key" \\
+  -H "X-API-Key: rk_test_12345678901234567890123456789012" \\
   -H "Content-Type: application/json" \\
   -d '{
     "fileUrl": "https://example.com/receipt.jpg",
@@ -91,7 +91,7 @@ response = requests.post(
           node: `const response = await fetch('https://settler.dev/api/v1/receipts', {
   method: 'POST',
   headers: {
-    'X-API-Key': 'rk_your_api_key',
+    'X-API-Key': 'rk_test_12345678901234567890123456789012',
     'Content-Type': 'application/json'
   },
   body: JSON.stringify({
@@ -106,7 +106,7 @@ const receipt = await response.json();`,
 response = requests.post(
     'https://settler.dev/api/v1/receipts',
     headers={
-        'X-API-Key': 'rk_your_api_key',
+        'X-API-Key': 'rk_test_12345678901234567890123456789012',
         'Content-Type': 'application/json'
     },
     json={
@@ -124,10 +124,10 @@ receipt = response.json()`,
         description: "Get a stored receipt",
         example: {
           curl: `curl https://settler.dev/api/v1/receipts/rec_abc123 \\
-  -H "X-API-Key: rk_your_api_key"`,
+  -H "X-API-Key: rk_test_12345678901234567890123456789012"`,
           node: `const response = await fetch('https://settler.dev/api/v1/receipts/rec_abc123', {
   headers: {
-    'X-API-Key': 'rk_your_api_key'
+    'X-API-Key': 'rk_test_12345678901234567890123456789012'
   }
 });
 
@@ -136,7 +136,7 @@ const receipt = await response.json();`,
 
 response = requests.get(
     'https://settler.dev/api/v1/receipts/rec_abc123',
-    headers={'X-API-Key': 'rk_your_api_key'}
+    headers={'X-API-Key': 'rk_test_12345678901234567890123456789012'}
 )
 
 receipt = response.json()`,
@@ -154,7 +154,7 @@ receipt = response.json()`,
         description: "Create a new feature flag",
         example: {
           curl: `curl -X POST https://settler.dev/api/v1/feature-flags \\
-  -H "X-API-Key: rk_your_api_key" \\
+  -H "X-API-Key: rk_test_12345678901234567890123456789012" \\
   -H "Content-Type: application/json" \\
   -d '{
     "key": "new-dashboard",
@@ -165,7 +165,7 @@ receipt = response.json()`,
           node: `const response = await fetch('https://settler.dev/api/v1/feature-flags', {
   method: 'POST',
   headers: {
-    'X-API-Key': 'rk_your_api_key',
+    'X-API-Key': 'rk_test_12345678901234567890123456789012',
     'Content-Type': 'application/json'
   },
   body: JSON.stringify({
@@ -180,7 +180,7 @@ receipt = response.json()`,
 response = requests.post(
     'https://settler.dev/api/v1/feature-flags',
     headers={
-        'X-API-Key': 'rk_your_api_key',
+        'X-API-Key': 'rk_test_12345678901234567890123456789012',
         'Content-Type': 'application/json'
     },
     json={
@@ -198,7 +198,7 @@ response = requests.post(
         description: "Evaluate a feature flag value",
         example: {
           curl: `curl -X POST https://settler.dev/api/v1/feature-flags/evaluate \\
-  -H "X-API-Key: rk_your_api_key" \\
+  -H "X-API-Key: rk_test_12345678901234567890123456789012" \\
   -H "Content-Type: application/json" \\
   -d '{
     "flagKey": "new-dashboard",
@@ -208,7 +208,7 @@ response = requests.post(
           node: `const response = await fetch('https://settler.dev/api/v1/feature-flags/evaluate', {
   method: 'POST',
   headers: {
-    'X-API-Key': 'rk_your_api_key',
+    'X-API-Key': 'rk_test_12345678901234567890123456789012',
     'Content-Type': 'application/json'
   },
   body: JSON.stringify({
@@ -224,7 +224,7 @@ const result = await response.json();`,
 response = requests.post(
     'https://settler.dev/api/v1/feature-flags/evaluate',
     headers={
-        'X-API-Key': 'rk_your_api_key',
+        'X-API-Key': 'rk_test_12345678901234567890123456789012',
         'Content-Type': 'application/json'
     },
     json={
@@ -252,7 +252,7 @@ const settler = new Settler({
 });`,
     example: `// Initialize SDK
 const settler = new Settler({
-  apiKey: 'rk_your_api_key'
+  apiKey: 'rk_test_12345678901234567890123456789012'
 });
 
 // Parse a receipt
@@ -291,9 +291,9 @@ print(receipt.merchant, receipt.total)`,
     "github.com/settler/settler-go"
 )
 
-client := settler.NewClient("rk_your_api_key")`,
+client := settler.NewClient("rk_test_12345678901234567890123456789012")`,
     example: `// Initialize SDK
-client := settler.NewClient("rk_your_api_key")
+client := settler.NewClient("rk_test_12345678901234567890123456789012")
 
 // Parse a receipt
 receipt, err := client.Receipts.Parse(settler.ParseReceiptRequest{
@@ -556,8 +556,9 @@ export default function DocsPage() {
                   API Key Detected
                 </p>
                 <p className="text-xs text-green-700 dark:text-green-400">
-                  Replace <code className="font-mono">rk_your_api_key</code> in examples with your
-                  key: <code className="font-mono">{apiKey}</code>
+                  Replace{" "}
+                  <code className="font-mono">rk_test_12345678901234567890123456789012</code> in
+                  examples with your key: <code className="font-mono">{apiKey}</code>
                 </p>
               </div>
               <Button asChild variant="outline" size="sm">
@@ -633,8 +634,8 @@ export default function DocsPage() {
                           </pre>
                           <CopyButton
                             text={endpoint.example[selectedLanguage].replace(
-                              "rk_your_api_key",
-                              apiKey || "rk_your_api_key"
+                              "rk_test_12345678901234567890123456789012",
+                              apiKey || "rk_test_12345678901234567890123456789012"
                             )}
                             className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
                           />

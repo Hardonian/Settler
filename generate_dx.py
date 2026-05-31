@@ -134,7 +134,7 @@ Use Bearer authentication with your API key:
 ## Creating a Run
 ```bash
 curl -X POST https://api.settler.dev/api/v1/runs \\
-  -H "Authorization: Bearer sk_test_123" \\
+  -H "Authorization: Bearer sk_test_12345678901234567890123456789012" \\
   -H "Content-Type: application/json" \\
   -d '{"templateId": "tmpl_abc123"}'
 ```
@@ -142,7 +142,7 @@ curl -X POST https://api.settler.dev/api/v1/runs \\
 ## Getting Exceptions
 ```bash
 curl -X GET https://api.settler.dev/api/v1/runs/run_xyz789/exceptions \\
-  -H "Authorization: Bearer sk_test_123"
+  -H "Authorization: Bearer sk_test_12345678901234567890123456789012"
 ```
 """
 with open("docs/api/quickstart.md", "w") as f:
@@ -199,7 +199,7 @@ pnpm add @settler/sdk
 ```typescript
 import { Settler } from '@settler/sdk';
 
-const settler = new Settler({ apiKey: 'sk_test_123' });
+const settler = new Settler({ apiKey: 'sk_test_12345678901234567890123456789012' });
 
 const run = await settler.runs.create({
   templateId: 'tmpl_abc123'

@@ -13,7 +13,7 @@ const sdkExamples = {
 import { Settler } from '@settler/sdk';
 
 const settler = new Settler({
-  apiKey: 'rk_your_api_key'
+  apiKey: 'rk_test_12345678901234567890123456789012'
 });
 
 const receipt = await settler.receipts.parse({
@@ -26,7 +26,7 @@ console.log(receipt);`,
   python: `# Using Python SDK
 from settler import Settler
 
-settler = Settler(api_key='rk_your_api_key')
+settler = Settler(api_key='rk_test_12345678901234567890123456789012')
 
 receipt = settler.receipts.parse(
     file_url='https://example.com/receipt.jpg',
@@ -35,7 +35,7 @@ receipt = settler.receipts.parse(
 
 print(receipt)`,
   curl: `curl -X POST https://settler.dev/api/v1/receipts \\
-  -H "X-API-Key: rk_your_api_key" \\
+  -H "X-API-Key: rk_test_12345678901234567890123456789012" \\
   -H "Content-Type: application/json" \\
   -d '{
     "fileUrl": "https://example.com/receipt.jpg",
