@@ -11883,10 +11883,15 @@ BEGIN
     RETURN;
   END IF;
 
-  -- TODO: Query actual rate limit violations from logs/metrics
-  -- For now, return empty result
-  
-  RETURN;
+  RETURN QUERY
+  SELECT DISTINCT
+    v_rule.id AS alert_id,
+    ru.tenant_id,
+    true AS rate_limit_exceeded
+  FROM public.rate_usage ru
+  JOIN public.rate_limits rl ON ru.tenant_id = rl.tenant_id AND ru.key = rl.key
+  WHERE (ru.ts_minute >= NOW() - INTERVAL '5 minutes' AND ru.count_minute > rl.max_per_minute)
+     OR (ru.ts_day = CURRENT_DATE AND ru.count_day > rl.max_per_day);
 END;
 $function$;
 
