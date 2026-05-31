@@ -201,6 +201,129 @@ class ReconciliationMigrationGenerator {
     this.migrationSQL.push("");
   }
 
+  private findFunctionInMigrations(funcName: string): string | null {
+    const migrationsDir = path.join(__dirname, "../supabase/migrations");
+    if (!fs.existsSync(migrationsDir)) return null;
+
+    // Also check _archive directory if it exists
+    const archiveDir = path.join(migrationsDir, "_archive");
+
+    // Collect all sql files from both directories
+    const files: string[] = [];
+
+    for (const file of fs.readdirSync(migrationsDir)) {
+      if (file.endsWith(".sql")) {
+        files.push(path.join(migrationsDir, file));
+      }
+    }
+
+    if (fs.existsSync(archiveDir)) {
+      for (const file of fs.readdirSync(archiveDir)) {
+        if (file.endsWith(".sql")) {
+          files.push(path.join(archiveDir, file));
+        }
+      }
+    }
+
+    // Sort descending by filename so we look at newest first
+    files.sort((a, b) => path.basename(b).localeCompare(path.basename(a)));
+
+    for (const filePath of files) {
+      const content = fs.readFileSync(filePath, "utf-8");
+      const definition = this.extractFunctionDefinition(content, funcName);
+      if (definition) {
+        return definition;
+      }
+    }
+
+    return null;
+  }
+
+  private extractFunctionDefinition(content: string, funcName: string): string | null {
+    const functionRegex = new RegExp(
+      `CREATE\\s+(?:OR\\s+REPLACE\\s+)?FUNCTION\\s+(?:[\\w"]+\\.)?"?${funcName}"?\\s*\\(`,
+      "i"
+    );
+    const match = content.match(functionRegex);
+    if (!match) return null;
+
+    const startIndex = match.index!;
+    let inDollarQuote = false;
+    let dollarQuoteMarker = "";
+    let inSingleQuote = false;
+    let inBlockComment = false;
+    let inLineComment = false;
+    let endIndex = -1;
+
+    for (let i = startIndex; i < content.length; i++) {
+      if (inBlockComment) {
+        if (content[i] === "*" && content[i + 1] === "/") {
+          inBlockComment = false;
+          i++;
+        }
+        continue;
+      }
+      if (inLineComment) {
+        if (content[i] === "\n") {
+          inLineComment = false;
+        }
+        continue;
+      }
+      if (inSingleQuote) {
+        if (content[i] === "'") {
+          if (content[i + 1] === "'") {
+            i++; // escaped quote
+          } else {
+            inSingleQuote = false;
+          }
+        }
+        continue;
+      }
+      if (inDollarQuote) {
+        if (content.slice(i).startsWith(dollarQuoteMarker)) {
+          inDollarQuote = false;
+          i += dollarQuoteMarker.length - 1;
+        }
+        continue;
+      }
+
+      // Check for start of comments or quotes
+      if (content[i] === "-" && content[i + 1] === "-") {
+        inLineComment = true;
+        i++;
+        continue;
+      }
+      if (content[i] === "/" && content[i + 1] === "*") {
+        inBlockComment = true;
+        i++;
+        continue;
+      }
+      if (content[i] === "'") {
+        inSingleQuote = true;
+        continue;
+      }
+      if (content[i] === "$") {
+        const markerMatch = content.slice(i).match(/^\$[a-zA-Z0-9_]*\$/);
+        if (markerMatch) {
+          inDollarQuote = true;
+          dollarQuoteMarker = markerMatch[0];
+          i += dollarQuoteMarker.length - 1;
+          continue;
+        }
+      }
+
+      if (content[i] === ";") {
+        endIndex = i;
+        break;
+      }
+    }
+
+    if (endIndex !== -1) {
+      return content.slice(startIndex, endIndex + 1);
+    }
+    return null;
+  }
+
   private generateFunctionSQL(issues: VerificationResult[]) {
     if (issues.length === 0) return;
 
@@ -212,12 +335,22 @@ class ReconciliationMigrationGenerator {
       "-- ============================================================================"
     );
     this.migrationSQL.push("-- NOTE: Function creation requires manual review.");
-    this.migrationSQL.push("-- Functions should be created from migration files.\n");
+    this.migrationSQL.push(
+      "-- Function definitions are automatically extracted from existing migrations where possible.\n"
+    );
 
     for (const issue of issues) {
       const funcName = issue.component.replace("function.", "");
       this.migrationSQL.push(`-- Missing function: ${funcName}`);
-      this.migrationSQL.push(`-- TODO: Create function ${funcName} from migration files`);
+
+      const functionDef = this.findFunctionInMigrations(funcName);
+      if (functionDef) {
+        this.migrationSQL.push(functionDef);
+      } else {
+        this.migrationSQL.push(
+          `-- TODO: Create function ${funcName} from migration files (Definition not found in migrations)`
+        );
+      }
     }
 
     this.migrationSQL.push("");
@@ -247,7 +380,7 @@ async function main() {
 
     console.log(`✅ Generated reconciliation migration: ${migrationPath}`);
     console.log("\n⚠️  IMPORTANT: Review the migration before applying!");
-    console.log("   Some sections require manual implementation (tables, functions).");
+    console.log("   Some sections require manual implementation (tables, missing functions).");
     console.log(`   Apply with: supabase db push\n`);
   } catch (error) {
     console.error("Fatal error:", error);
