@@ -321,7 +321,7 @@ function scoreTechnicalCorrectness(input: EvalInput): {
     );
   }
 
-  // Placeholder / TODO content (production-grade rule)
+  // Check for placeholder or incomplete content (production-grade rule)
   if (containsPlaceholder(response)) {
     score -= 1;
     notes.push("Response contains TODO/FIXME/placeholder content");
