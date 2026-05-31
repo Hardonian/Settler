@@ -106,11 +106,11 @@ export class AgentLearningLoops {
 
       // Emulate the original logic which caps the check at 10 results
       // and reports error rate as results.length / 10.
-      if (failureCount > 5) {
+      if (results.length > 5) {
         insights.push({
           type: "transform",
           issue: `Transform "${transform.name}" has high failure rate`,
-          currentState: { errorRate: Math.min(failureCount, 10) / 10 },
+          currentState: { errorRate: Math.min(results.length, 10) / 10 },
           proposedImprovement: {
             action: "optimize_transform",
             transformId: transform.id,

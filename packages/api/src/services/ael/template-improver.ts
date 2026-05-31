@@ -199,15 +199,6 @@ export class TemplateImprover {
       const jobs = jobsByRecipeId[recipe.id] || [];
 
       // Group jobs by recipe ID
-      const jobsByRecipeId = new Map<string, { id: string }[]>();
-      for (const job of jobs) {
-        if (job.transformRecipeId) {
-          if (!jobsByRecipeId.has(job.transformRecipeId)) {
-            jobsByRecipeId.set(job.transformRecipeId, []);
-          }
-          jobsByRecipeId.get(job.transformRecipeId)!.push(job);
-        }
-      }
 
       const jobIds = jobs.map((j: { id: string }) => j.id);
 
@@ -233,7 +224,7 @@ export class TemplateImprover {
 
       for (const recipe of recipes) {
         // Enforce the original logic's 100 jobs per recipe limit in memory
-        const recipeJobs = (jobsByRecipeId.get(recipe.id) || []).slice(0, 100);
+        const recipeJobs = (jobsByRecipeId[recipe.id] || []).slice(0, 100);
 
         const durations: number[] = [];
         for (const job of recipeJobs) {
@@ -317,14 +308,14 @@ export class TemplateImprover {
       // Note: validationRules is a Json array field, so we check if rule.id is in the array
       const jobs = jobsByRuleId.get(rule.id) || [];
 
-      const jobIdsArray = Array.from(allJobIds);
+      const jobIdsArray = jobs.map((j) => j.id);
 
       // Fetch all failed results for these jobs at once
       const failedResults =
         jobIdsArray.length > 0
           ? await this.prisma.reconResult.findMany({
               where: {
-                reconJobId: { in: jobIdsArray },
+                reconJobId: { in: jobIdsArray as string[] },
                 status: "failed",
               },
               take: 1000,
