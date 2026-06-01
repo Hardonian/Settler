@@ -103,6 +103,7 @@ export class AgentLearningLoops {
         },
         take: 10,
       });
+      const failureCount = results.length;
 
       // Emulate the original logic which caps the check at 10 results
       // and reports error rate as results.length / 10.

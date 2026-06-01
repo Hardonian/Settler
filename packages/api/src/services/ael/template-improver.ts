@@ -195,79 +195,57 @@ export class TemplateImprover {
     );
 
     for (const recipe of recipes) {
-      // Analyze performance
       const jobs = jobsByRecipeId[recipe.id] || [];
+      const recipeJobs = jobs.slice(0, 100);
+      const jobIds = recipeJobs.map((job) => job.id);
 
-      // Group jobs by recipe ID
-      const jobsByRecipeId = new Map<string, { id: string }[]>();
-      for (const job of jobs) {
-        if (job.transformRecipeId) {
-          if (!jobsByRecipeId.has(job.transformRecipeId)) {
-            jobsByRecipeId.set(job.transformRecipeId, []);
-          }
-          jobsByRecipeId.get(job.transformRecipeId)!.push(job);
-        }
-      }
-
-      const jobIds = jobs.map((j: { id: string }) => j.id);
-
-      // Fetch all results for these jobs at once
       const results =
         jobIds.length > 0
           ? await this.prisma.reconResult.findMany({
               where: {
                 reconJobId: { in: jobIds },
               },
-              take: 5000, // 100 recipes * 100 jobs * 50 results
+              take: 5000, // 100 jobs * 50 results per recipe max
             })
           : [];
 
-      // Group results by job ID
-      const resultsByJobId = new Map<string, any[]>();
+      const resultsByJobId = new Map<string, typeof results>();
       for (const result of results) {
-        if (!resultsByJobId.has(result.reconJobId)) {
-          resultsByJobId.set(result.reconJobId, []);
-        }
-        resultsByJobId.get(result.reconJobId)!.push(result);
+        const existing = resultsByJobId.get(result.reconJobId) || [];
+        existing.push(result);
+        resultsByJobId.set(result.reconJobId, existing);
       }
 
-      for (const recipe of recipes) {
-        // Enforce the original logic's 100 jobs per recipe limit in memory
-        const recipeJobs = (jobsByRecipeId.get(recipe.id) || []).slice(0, 100);
-
-        const durations: number[] = [];
-        for (const job of recipeJobs) {
-          // Enforce the original logic's 50 results per job limit in memory
-          const jobResults = (resultsByJobId.get(job.id) || []).slice(0, 50);
-          for (const r of jobResults) {
-            if (r.completedAt && r.startedAt) {
-              durations.push(r.completedAt.getTime() - r.startedAt.getTime());
-            }
+      const durations: number[] = [];
+      for (const job of recipeJobs) {
+        const jobResults = (resultsByJobId.get(job.id) || []).slice(0, 50);
+        for (const result of jobResults) {
+          if (result.completedAt && result.startedAt) {
+            durations.push(result.completedAt.getTime() - result.startedAt.getTime());
           }
         }
+      }
 
-        const avgDuration =
-          durations.length > 0
-            ? durations.reduce((a: number, b: number) => a + b, 0) / durations.length
-            : 0;
+      const avgDuration =
+        durations.length > 0
+          ? durations.reduce((a: number, b: number) => a + b, 0) / durations.length
+          : 0;
 
-        if (avgDuration > 10000) {
-          // > 10 seconds
-          const currentVersion = recipe.version ? String(recipe.version) : "1.0.0";
-          improvements.push({
-            templateId: recipe.id,
-            templateType: "transform",
-            currentVersion,
-            proposedVersion: this.incrementVersion(currentVersion),
-            improvements: [
-              "Optimize transformation logic",
-              "Add caching for repeated operations",
-              "Parallelize independent transforms",
-            ],
-            backwardCompatible: true,
-            confidence: 0.7,
-          });
-        }
+      if (avgDuration > 10000) {
+        const currentVersion = recipe.version ? String(recipe.version) : "1.0.0";
+        improvements.push({
+          templateId: recipe.id,
+          templateType: "transform",
+          currentVersion,
+          proposedVersion: this.incrementVersion(currentVersion),
+          improvements: [
+            "Optimize transformation logic",
+            "Add caching for repeated operations",
+            "Parallelize independent transforms",
+          ],
+          backwardCompatible: true,
+          confidence: 0.7,
+        });
       }
     }
 
@@ -316,8 +294,7 @@ export class TemplateImprover {
       // Check if rule catches issues effectively
       // Note: validationRules is a Json array field, so we check if rule.id is in the array
       const jobs = jobsByRuleId.get(rule.id) || [];
-
-      const jobIdsArray = Array.from(allJobIds);
+      const jobIdsArray = jobs.map((job) => job.id);
 
       // Fetch all failed results for these jobs at once
       const failedResults =
@@ -331,40 +308,34 @@ export class TemplateImprover {
             })
           : [];
 
-      // Group failed results by job ID
-      const failuresByJobId = new Map<string, any[]>();
+      const failuresByJobId = new Map<string, typeof failedResults>();
       for (const failure of failedResults) {
-        if (!failuresByJobId.has(failure.reconJobId)) {
-          failuresByJobId.set(failure.reconJobId, []);
-        }
-        failuresByJobId.get(failure.reconJobId)!.push(failure);
+        const existing = failuresByJobId.get(failure.reconJobId) || [];
+        existing.push(failure);
+        failuresByJobId.set(failure.reconJobId, existing);
       }
 
-      for (const rule of rules) {
-        const jobs = jobsByRuleId.get(rule.id) || [];
+      let failureCount = 0;
+      for (const job of jobs) {
+        // Apply original limit of 1 failure (since take was 1 in original loop)
+        failureCount += (failuresByJobId.get(job.id) || []).slice(0, 1).length;
+      }
 
-        let failureCount = 0;
-        for (const job of jobs) {
-          // Apply original limit of 1 failure (since take was 1 in original loop)
-          failureCount += (failuresByJobId.get(job.id) || []).slice(0, 1).length;
-        }
-
-        if (failureCount === 0 && jobs.length > 10) {
-          // ValidationRule doesn't have a version field, use '1.0.0' as default
-          improvements.push({
-            templateId: rule.id,
-            templateType: "validation",
-            currentVersion: "1.0.0",
-            proposedVersion: this.incrementVersion("1.0.0"),
-            improvements: [
-              "Tighten validation criteria",
-              "Add additional checks",
-              "Improve error messages",
-            ],
-            backwardCompatible: true,
-            confidence: 0.6,
-          });
-        }
+      if (failureCount === 0 && jobs.length > 10) {
+        // ValidationRule doesn't have a version field, use '1.0.0' as default
+        improvements.push({
+          templateId: rule.id,
+          templateType: "validation",
+          currentVersion: "1.0.0",
+          proposedVersion: this.incrementVersion("1.0.0"),
+          improvements: [
+            "Tighten validation criteria",
+            "Add additional checks",
+            "Improve error messages",
+          ],
+          backwardCompatible: true,
+          confidence: 0.6,
+        });
       }
     }
 

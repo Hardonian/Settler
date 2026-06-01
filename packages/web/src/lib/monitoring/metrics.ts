@@ -34,7 +34,7 @@ export async function trackMetric(event: MetricEvent): Promise<void> {
       try {
         const Sentry = await import("@sentry/nextjs");
         Sentry.metrics.distribution(event.name, event.value, {
-          tags: event.tags,
+          attributes: event.tags,
           unit: "none",
         });
       } catch {

@@ -55,12 +55,12 @@ class SentryClient {
 
         // Performance monitoring
         integrations: [
-          // BrowserTracing and Replay may not be available in all Sentry versions
-          // Use optional chaining or check if they exist
-          ...(typeof Sentry.BrowserTracing !== "undefined" ? [new Sentry.BrowserTracing()] : []),
-          ...(typeof Sentry.Replay !== "undefined"
+          ...(typeof Sentry.browserTracingIntegration === "function"
+            ? [Sentry.browserTracingIntegration()]
+            : []),
+          ...(typeof Sentry.replayIntegration === "function"
             ? [
-                new Sentry.Replay({
+                Sentry.replayIntegration({
                   maskAllText: true,
                   blockAllMedia: true,
                 }),
@@ -121,7 +121,8 @@ class SentryClient {
         tracesSampleRate: this.config.tracesSampleRate,
 
         // Server-side integrations
-        integrations: [new Sentry.Integrations.Http({ tracing: true })],
+        integrations:
+          typeof Sentry.httpIntegration === "function" ? [Sentry.httpIntegration()] : [],
       });
 
       this.initialized = true;
