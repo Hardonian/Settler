@@ -61,7 +61,7 @@ function shouldRunPrismaGenerate() {
 function runPrismaGenerate() {
   try {
     console.log("🔧 Running Prisma generate...");
-    execSync("pnpm exec prisma generate", {
+    execSync("node scripts/prisma-generate.mjs", {
       stdio: "inherit",
       cwd: path.join(__dirname, ".."),
       env: {

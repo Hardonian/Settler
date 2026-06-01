@@ -1,5 +1,42 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
+import { cpSync, existsSync, readdirSync } from "node:fs";
+import path from "node:path";
+
+function syncGeneratedPrismaClients() {
+  const repoRoot = path.resolve(import.meta.dirname, "..");
+  const pnpmRoot = path.join(repoRoot, "node_modules", ".pnpm");
+
+  if (!existsSync(pnpmRoot)) {
+    return;
+  }
+
+  const variantNodeModules = readdirSync(pnpmRoot, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && entry.name.startsWith("@prisma+client@"))
+    .map((entry) => path.join(pnpmRoot, entry.name, "node_modules"));
+
+  const sourcePrismaDir = variantNodeModules
+    .map((nodeModulesDir) => path.join(nodeModulesDir, ".prisma"))
+    .find((prismaDir) => existsSync(path.join(prismaDir, "client", "default.js")));
+
+  if (!sourcePrismaDir) {
+    return;
+  }
+
+  for (const nodeModulesDir of variantNodeModules) {
+    const targetPrismaDir = path.join(nodeModulesDir, ".prisma");
+    const targetDefaultJs = path.join(targetPrismaDir, "client", "default.js");
+
+    if (existsSync(targetDefaultJs)) {
+      continue;
+    }
+
+    cpSync(sourcePrismaDir, targetPrismaDir, { force: true, recursive: true });
+    console.log(
+      `[prisma-generate] synced generated client into ${path.relative(repoRoot, targetPrismaDir)}`
+    );
+  }
+}
 
 const env = {
   ...process.env,
@@ -20,6 +57,7 @@ if (result.stdout) process.stdout.write(result.stdout);
 if (result.stderr) process.stderr.write(result.stderr);
 
 if (result.status === 0) {
+  syncGeneratedPrismaClients();
   process.exit(0);
 }
 
