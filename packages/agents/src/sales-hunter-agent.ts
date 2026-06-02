@@ -4,68 +4,80 @@ import {
   type AgentReport,
   type AgentCheck,
 } from "./agent-contract";
-
-/**
- * Sales Hunter-Gatherer Agent
- *
- * Autonomous Outbound SDR. Scans social platforms (mocked) for high-intent keywords,
- * scores leads, and gathers them into the CRM.
- */
+import { getAIProvider } from "./ai-core";
+import { generateObject } from "ai";
+import { z } from "zod";
 
 export async function runSalesHunterAgent(): Promise<AgentReport> {
   console.info("[SalesHunter] Scanning the web for high-intent SaaS leads...");
 
+  const ai = getAIProvider();
+
+  if (!ai) {
+    return {
+      agent: "sales-hunter-agent",
+      verdict: "verified_degraded",
+      summary: "Missing OPENAI_API_KEY. Operating in degraded/mocked mode.",
+      timestamp: new Date().toISOString(),
+      checks: [{ name: "ai_readiness", status: "degraded", summary: "BYOK missing." }],
+    };
+  }
+
   const checks: AgentCheck[] = [];
 
-  // Mock platform scanning
-  checks.push({
-    name: "platform_scan",
-    status: "verified",
-    summary:
-      "Scanned Twitter/X and LinkedIn for keywords: 'QuickBooks mismatch', 'Stripe payout failed'.",
-  });
+  // Mock raw firehose data from a social API
+  const rawFirehose = `
+    Post 1: "Man, I love writing CSS." 
+    Post 2: "Stripe payout failed again, does anyone know how to sync this to QuickBooks? Total nightmare."
+    Post 3: "Looking for a good CRM tool."
+  `;
 
-  // Mock lead gathering
-  const gatheredLeads = [
-    {
-      company: "TechFlow Inc",
-      intentScore: 92,
-      source: "Twitter",
-      snippet: "Does anyone know why my Stripe payouts NEVER match QuickBooks?",
-    },
-    {
-      company: "SaaSify LLC",
-      intentScore: 85,
-      source: "LinkedIn",
-      snippet: "Looking for a deterministic reconciliation engine for our B2B billing.",
-    },
-  ];
+  try {
+    const { object: leads } = await generateObject({
+      model: ai("gpt-4-turbo"),
+      system:
+        "You are an expert Outbound SDR for a SaaS called Settler.dev (a deterministic reconciliation engine). Extract ONLY high-intent leads who are complaining about reconciliation, stripe, or quickbooks mismatches from the raw social firehose.",
+      prompt: `Analyze the following firehose and return structured leads:\n\n${rawFirehose}`,
+      schema: z.object({
+        leads: z.array(
+          z.object({
+            companyOrUser: z.string().describe("The guessed company or username"),
+            intentScore: z
+              .number()
+              .min(1)
+              .max(100)
+              .describe("1-100 score of how badly they need our product"),
+            snippet: z.string().describe("The exact quote they posted"),
+          })
+        ),
+      }),
+    });
 
-  checks.push({
-    name: "lead_gathering",
-    status: "verified",
-    summary: `Gathered ${gatheredLeads.length} high-intent leads.`,
-    details: {
-      leads: gatheredLeads,
-    },
-  });
+    checks.push({
+      name: "llm_lead_generation",
+      status: "verified",
+      summary: `LLM successfully extracted ${leads.leads.length} high-intent leads.`,
+      details: { leads: leads.leads },
+    });
 
-  // Mock CRM push
-  checks.push({
-    name: "crm_sync",
-    status: "verified",
-    summary: "Pushed 2 leads to the founder's CRM and dispatched a Slack notification.",
-  });
-
-  const report: AgentReport = {
-    agent: "sales-hunter-agent",
-    verdict: "verified_pass",
-    summary: "Outbound SDR operations completed successfully. 2 hot leads gathered.",
-    timestamp: new Date().toISOString(),
-    checks,
-  };
-
-  return report;
+    return {
+      agent: "sales-hunter-agent",
+      verdict: "verified_pass",
+      summary: "Outbound SDR operations completed successfully with True AI.",
+      timestamp: new Date().toISOString(),
+      checks,
+    };
+  } catch (err: any) {
+    return {
+      agent: "sales-hunter-agent",
+      verdict: "failed",
+      summary: `AI generation failed: ${err.message}`,
+      timestamp: new Date().toISOString(),
+      checks: [
+        { name: "llm_lead_generation", status: "failed", summary: "Failed to run generateObject" },
+      ],
+    };
+  }
 }
 
 if (require.main === module) {
