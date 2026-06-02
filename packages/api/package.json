@@ -75,7 +75,7 @@
     "pretypecheck": "cd ../.. && node scripts/assert-node-version.mjs && pnpm run prisma:generate && pnpm --filter @settler/types run build && pnpm --filter @settler/adapters run build && pnpm --filter @settler/support-intake run build && pnpm --filter @settler/reconciliation-core run build",
     "build": "node ../../scripts/run-package-tsc-build.mjs --skipLibCheck --noEmit false",
     "dev": "tsx watch src/index.ts",
-    "start": "node dist/index.js",
+    "start": "node ../../scripts/assert-node-version.mjs && node dist/index.js",
     "migrate": "tsx src/db/migrate.ts",
     "migrate:prod": "node dist/db/migrate.js",
     "migrate:check": "tsx src/db/migrate.ts --check",

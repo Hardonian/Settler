@@ -57,10 +57,14 @@ if git diff --cached --name-only | grep -q "prisma/schema.prisma"; then
 fi
 
 # Block unresolved merge conflict markers
-pnpm verify:conflict-markers || {
-  echo "❌ Unresolved merge conflict markers detected. Please resolve them before committing."
-  exit 1
-}
+if command -v pnpm >/dev/null 2>&1; then
+  pnpm verify:conflict-markers || {
+    echo "❌ Unresolved merge conflict markers detected. Please resolve them before committing."
+    exit 1
+  }
+else
+  echo "⚠️ Skipping conflict-marker gate because pnpm was not found in hook environment."
+fi
 
 # Stage-scoped lint/format, sequential to reduce memory spikes on constrained machines.
 echo "🔍 Running lint-staged (sequential, low-memory mode)..."

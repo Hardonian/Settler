@@ -14,7 +14,7 @@
     "prebuild": "cd ../.. && node scripts/assert-node-version.mjs && pnpm run prisma:generate && pnpm --filter @settler/types run build && pnpm --filter @settler/support-intake run build && pnpm --filter @settler/reconciliation-core run build",
     "build": "node ./scripts/assert-build-env.mjs && node ./scripts/assert-reconciliation-core-dist.mjs && next build --webpack",
     "build:vercel": "node ./scripts/assert-build-env.mjs && node ./scripts/assert-reconciliation-core-dist.mjs && next build --webpack",
-    "start": "next start",
+    "start": "node ../../scripts/assert-node-version.mjs && next start",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "typecheck": "tsc --noEmit",
