@@ -2,156 +2,56 @@
 
 This directory contains GitHub Actions workflows for CI/CD automation.
 
-## Workflows
+## Workflow Inventory
 
-### `ci.yml` - Continuous Integration
+| Workflow | Purpose | Trigger |
+|---|---|---|
+| `ci.yml` | Core CI: conflict markers, parity, API tests, web tests, determinism | push + PR |
+| `security.yml` | Security invariants, dependency audit, secret scanning, CodeQL | push + PR + weekly |
+| `guardrails.yml` | Pricing links, env vars, hard 500s, unverified claims, doc alignment | PR + push to main |
+| `e2e.yml` | E2E & visual regression tests | push + PR |
+| `migration-guardian.yml` | Comprehensive migration safety validation | push + PR + schedule |
+| `auto-migrate-on-main.yml` | Auto-apply migrations after merge to main | push to main |
+| `deploy-production.yml` | Production deployment via Vercel | push to main |
+| `deploy-preview.yml` | Preview deploys for PRs | PR |
+| `deploy-edge-functions.yml` | Edge function deployment | push to main |
+| `release.yml` | Release management | push + manual |
+| `release-cli.yml` | CLI artifact releases | push + manual |
+| `release-provenance.yml` | SBOM and provenance generation | push + manual |
+| `release-safety-check.yml` | Pre-release safety validation | push + PR |
+| `auto-merge.yml` | Auto-merge safety checks | PR |
+| `auto-sync-oss.yml` | OSS mirror sync | push to main |
+| `dependency-review.yml` | PR dependency review | PR |
+| `rust-verify.yml` | Rust code verification | push + PR |
 
-**Triggers:** Push to main/develop, Pull requests
+## Tiered Strategy
 
-**Jobs:**
-
-- Environment validation
-- Lint and type check
-- Tests (unit + integration)
-- Security scan
-- Build
-- E2E tests
-- Load tests
-
-### `post-merge-validation.yml` - Post-Merge Validation & Setup
-
-**Triggers:** Push to main
-
-**Jobs:**
-
-- Comprehensive validation (type check, lint, format, build)
-- Run migrations on staging
-- Run migrations on production (requires approval)
-- Post-deployment verification
-
-**Features:**
-
-- Automatically runs database migrations when PR is merged to main
-- Validates environment configuration
-- Verifies build artifacts
-- Checks for accidentally committed secrets
-- Runs health checks after deployment
-
-### `auto-migrate-on-merge.yml` - Auto-Migrate on Merge
-
-**Triggers:** PR closed (merged to main)
-
-**Features:**
-
-- Detects new migration files in PR
-- Automatically runs migrations if migrations are present
-- Creates summary of applied migrations
-
-### `deploy-production.yml` - Production Deployment
-
-**Triggers:** Push to main, Manual dispatch
-
-**Jobs:**
-
-- Run tests
-- Build application
-- Run database migrations
-- Deploy to Vercel
-- Verify deployment
-- Post-deployment health check
-
-### `deploy-preview.yml` - Preview Deployment
-
-**Triggers:** Pull requests
-
-**Jobs:**
-
-- Build and deploy preview environment
-- Run tests
-- No migrations (preview uses test database)
+See [WORKFLOW_TIERS.md](./WORKFLOW_TIERS.md) for the tier classification.
 
 ## Environment Secrets Required
 
-### Production Environment
+### Production
+- `DATABASE_URL` — Production database connection string
+- `JWT_SECRET` — Production JWT secret
+- `ENCRYPTION_KEY` — Production encryption key
+- `VERCEL_TOKEN` — Vercel deployment token
+- `VERCEL_ORG_ID` — Vercel organization ID
+- `VERCEL_PROJECT_ID` — Vercel project ID
 
-- `DATABASE_URL` - Production database connection string
-- `JWT_SECRET` - Production JWT secret
-- `ENCRYPTION_KEY` - Production encryption key
-- `PRODUCTION_URL` - Production API URL (for health checks)
-- `VERCEL_TOKEN` - Vercel deployment token (optional)
-- `VERCEL_ORG_ID` - Vercel organization ID (optional)
-- `VERCEL_PROJECT_ID` - Vercel project ID (optional)
-
-### Staging Environment
-
-- `STAGING_DATABASE_URL` - Staging database connection string
-- `STAGING_JWT_SECRET` - Staging JWT secret
-- `STAGING_ENCRYPTION_KEY` - Staging encryption key
-- `STAGING_URL` - Staging API URL (for health checks)
+### CI/Testing
+- `TURBO_TOKEN` — Turborepo cache token
+- `TURBO_TEAM` — Turborepo team
+- `SNYK_TOKEN` — Snyk security scanning token
+- `SUPABASE_DB_URL_STAGING` — Staging database URL
 
 ## Migration Workflow
 
 When a PR with migration files is merged to main:
-
-1. **Post-Merge Validation** runs:
-   - Validates environment schema
-   - Type checks, lints, formats
-   - Builds application
-   - Verifies artifacts
-
-2. **Staging Migrations** run:
-   - Migrations applied to staging database
-   - Health checks verify staging
-
-3. **Production Migrations** run (requires approval):
-   - Migrations applied to production database
-   - Health checks verify production
-
-4. **Post-Deployment Verification**:
-   - All endpoints verified
-   - Health checks pass
-   - Deployment summary created
+1. `migration-guardian.yml` validates the migration during PR review
+2. `auto-migrate-on-main.yml` applies the migration after merge
+3. `deploy-production.yml` deploys the updated application
 
 ## Manual Triggers
 
-All workflows support `workflow_dispatch` for manual triggering:
-
-- Go to Actions → Select workflow → Run workflow
-
-## Migration Detection
-
-Migrations are automatically detected if:
-
-- Files in `packages/api/src/db/migrations/` are added/modified
-- PR commit message contains `[migrate]` or `[migration]`
-- Workflow is manually triggered
-
-## Safety Features
-
-- **Production migrations require approval** (GitHub environment protection)
-- **Staging migrations run first** (catch issues before production)
-- **Health checks** verify migrations didn't break anything
-- **Rollback capability** (migrations are reversible)
-- **Secret scanning** prevents accidental commits
-
-## Troubleshooting
-
-### Migrations Not Running
-
-- Check if migration files are in the PR
-- Verify environment secrets are set
-- Check workflow logs for errors
-
-### Migration Failures
-
-- Check database connection string
-- Verify migration file syntax
-- Check for conflicting migrations
-- Review migration logs
-
-### Health Check Failures
-
-- Verify deployment URL is correct
-- Check if service is running
-- Review application logs
-- Verify environment variables
+Most workflows support `workflow_dispatch` for manual triggering:
+Actions → Select workflow → Run workflow
