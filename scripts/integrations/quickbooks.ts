@@ -5,7 +5,13 @@
  * Includes OAuth flow and webhook listener
  */
 
-import { AdapterConfig, ProviderAdapter } from '../support-os/src/adapters/base';
+export interface AdapterConfig {
+  [key: string]: unknown;
+}
+
+export interface ProviderAdapter {
+  [key: string]: unknown;
+}
 
 export interface QuickBooksConfig extends AdapterConfig {
   realmId: string;
