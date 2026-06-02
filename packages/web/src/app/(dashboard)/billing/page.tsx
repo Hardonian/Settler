@@ -1,6 +1,13 @@
-import React from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import React from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export default function BillingPage() {
   return (
@@ -22,7 +29,9 @@ export default function BillingPage() {
             <CardDescription>Perfect for testing and small projects.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-4xl font-bold mb-4">$0<span className="text-sm font-normal text-gray-500">/mo</span></div>
+            <div className="text-4xl font-bold mb-4">
+              $0<span className="text-sm font-normal text-gray-500">/mo</span>
+            </div>
             <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
               <li>✓ Up to 500 transactions/mo</li>
               <li>✓ 1 Integration</li>
@@ -30,7 +39,9 @@ export default function BillingPage() {
             </ul>
           </CardContent>
           <CardFooter>
-            <Button variant="outline" className="w-full">Current Plan</Button>
+            <Button variant="outline" className="w-full">
+              Current Plan
+            </Button>
           </CardFooter>
         </Card>
 
@@ -40,11 +51,20 @@ export default function BillingPage() {
             RECOMMENDED
           </div>
           <CardHeader>
-            <CardTitle className="text-2xl text-indigo-900 dark:text-indigo-100">Growth (Pay-as-you-go)</CardTitle>
-            <CardDescription className="text-indigo-700 dark:text-indigo-300">For scaling startups and solo founders.</CardDescription>
+            <CardTitle className="text-2xl text-indigo-900 dark:text-indigo-100">
+              Growth (Pay-as-you-go)
+            </CardTitle>
+            <CardDescription className="text-indigo-700 dark:text-indigo-300">
+              For scaling startups and solo founders.
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-4xl font-bold mb-4 text-indigo-900 dark:text-indigo-100">$99<span className="text-sm font-normal text-indigo-600 dark:text-indigo-400">/mo + $0.01/txn</span></div>
+            <div className="text-4xl font-bold mb-4 text-indigo-900 dark:text-indigo-100">
+              $99
+              <span className="text-sm font-normal text-indigo-600 dark:text-indigo-400">
+                /mo + $0.01/txn
+              </span>
+            </div>
             <ul className="space-y-2 text-sm text-indigo-800 dark:text-indigo-200">
               <li>✓ Unlimited transactions</li>
               <li>✓ All Integrations (Stripe, QuickBooks, etc.)</li>
@@ -53,7 +73,9 @@ export default function BillingPage() {
             </ul>
           </CardContent>
           <CardFooter>
-            <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">Upgrade Now</Button>
+            <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
+              Upgrade Now
+            </Button>
           </CardFooter>
         </Card>
 
@@ -72,21 +94,30 @@ export default function BillingPage() {
             </ul>
           </CardContent>
           <CardFooter>
-            <Button variant="outline" className="w-full">Contact Sales</Button>
+            <Button variant="outline" className="w-full">
+              Contact Sales
+            </Button>
           </CardFooter>
         </Card>
       </div>
 
       <div className="mt-12 bg-white dark:bg-gray-900 rounded-2xl p-8 border border-gray-200 dark:border-gray-800 shadow-sm">
-        <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Current Usage (This Month)</h3>
+        <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
+          Current Usage (This Month)
+        </h3>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-gray-600 dark:text-gray-400">4,201 / 10,000 transactions processed</span>
+          <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+            4,201 / 10,000 transactions processed
+          </span>
           <span className="text-sm font-bold text-indigo-600 dark:text-indigo-400">42%</span>
         </div>
         <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-          <div className="bg-indigo-600 h-2.5 rounded-full" style={{ width: '42%' }}></div>
+          <div className="bg-indigo-600 h-2.5 rounded-full w-[42%]"></div>
         </div>
-        <p className="mt-4 text-sm text-gray-500">Estimated upcoming charge: <strong className="text-gray-900 dark:text-white">$141.01</strong></p>
+        <p className="mt-4 text-sm text-gray-500">
+          Estimated upcoming charge:{" "}
+          <strong className="text-gray-900 dark:text-white">$141.01</strong>
+        </p>
       </div>
     </div>
   );

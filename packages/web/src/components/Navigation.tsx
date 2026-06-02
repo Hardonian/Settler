@@ -197,7 +197,7 @@ export function Navigation() {
                       "motion-reduce:transition-none",
                       featuresMenuOpen && "text-primary-600 dark:text-primary-400"
                     )}
-                    aria-expanded={featuresMenuOpen}
+                    aria-expanded={featuresMenuOpen ? "true" : "false"}
                     aria-haspopup="true"
                     aria-label="Features navigation"
                   >
@@ -258,7 +258,7 @@ export function Navigation() {
                         "motion-reduce:transition-none",
                         moreMenuOpen && "text-primary-600 dark:text-primary-400"
                       )}
-                      aria-expanded={moreMenuOpen}
+                      aria-expanded={moreMenuOpen ? "true" : "false"}
                       aria-haspopup="true"
                       aria-label="More navigation options"
                     >
@@ -379,7 +379,7 @@ export function Navigation() {
                       "motion-reduce:transition-none"
                     )}
                     aria-label="Open menu"
-                    aria-expanded={mobileMenuOpen}
+                    aria-expanded={mobileMenuOpen ? "true" : "false"}
                     aria-controls="mobile-menu"
                     type="button"
                   >
