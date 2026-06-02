@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@settler/react-settler/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 // Note: Recharts or Tremor would be injected here in a full build.
 // For the structural scaffolding, we'll build a beautiful CSS representation

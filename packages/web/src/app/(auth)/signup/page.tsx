@@ -1,6 +1,6 @@
 import React from 'react';
-import { Button } from '@settler/react-settler/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@settler/react-settler/ui/card';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function SignupFlow() {
   return (

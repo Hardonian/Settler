@@ -32,7 +32,7 @@ export const ReconciliationCascade: React.FC<CascadeProps> = ({ isProcessing, on
     let count = 0;
     const interval = setInterval(() => {
       if (count < mockData.length) {
-        setItems(prev => [...prev, mockData[count]]);
+        setItems(prev => [...prev, mockData[count]!]);
         count++;
       } else {
         clearInterval(interval);
