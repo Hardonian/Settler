@@ -1,20 +1,29 @@
-import {
-  createUnsupportedActionReport,
-  exitCodeForVerdict,
-  printAgentReport,
-  type AgentReport,
-} from "./agent-contract";
-
-export function createOrchestratorAgentReport(): AgentReport {
-  return createUnsupportedActionReport({
-    agent: "orchestrator-agent",
-    action: "Legacy local multi-agent orchestration",
-    supportedPath: "`scripts/run-agent.ts` and repo-owned verification/release workflows",
-  });
-}
+import { exitCodeForVerdict, printAgentReport, type AgentReport } from "./agent-contract";
+import { runSupportBot } from "./support-agent";
+import { runSalesHunterAgent } from "./sales-hunter-agent";
 
 export async function runOrchestratorAgentCli(): Promise<AgentReport> {
-  const report = createOrchestratorAgentReport();
+  console.info("[Orchestrator] Spinning up the AI Workforce...\n");
+
+  const supportReport = await runSupportBot();
+  console.info("");
+  const salesReport = await runSalesHunterAgent();
+  console.info("");
+
+  const hasFailed = supportReport.verdict === "failed" || salesReport.verdict === "failed";
+  const hasDegraded =
+    supportReport.verdict === "verified_degraded" || salesReport.verdict === "verified_degraded";
+
+  const verdict = hasFailed ? "failed" : hasDegraded ? "verified_degraded" : "verified_pass";
+
+  const report: AgentReport = {
+    agent: "orchestrator-agent",
+    verdict,
+    summary: `Workforce execution completed. SupportVerdict: ${supportReport.verdict}, SalesVerdict: ${salesReport.verdict}`,
+    timestamp: new Date().toISOString(),
+    checks: [...supportReport.checks, ...salesReport.checks],
+  };
+
   printAgentReport(report);
   return report;
 }
