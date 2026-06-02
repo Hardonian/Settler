@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { SettlerLogo } from "@/components/brand/SettlerLogo";
+import { CommandPalette } from "@/components/ui/command-palette";
+import { AgentActivityFeed } from "@/components/ux/agent-activity-feed";
 import { cn } from "@/lib/utils";
 import { Menu, ChevronDown } from "lucide-react";
 
@@ -307,6 +309,8 @@ export function Navigation() {
 
               {/* Right side actions */}
               <div className="flex items-center gap-3 ml-2">
+                <CommandPalette />
+                <AgentActivityFeed />
                 <DarkModeToggle />
                 <Link
                   href="/login"

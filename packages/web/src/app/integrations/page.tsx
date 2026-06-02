@@ -9,6 +9,7 @@ import { Section, PageHero } from "@/components/site/primitives";
 import { AdapterConnectionMap, VisualGrid } from "@/components/site/infographics";
 import { RealityEvidencePanel } from "@/components/RealityEvidencePanel";
 import { IntegrationFlowDiagram } from "@/components/feature-visual-proof";
+import { AppMarketplace } from "@/components/integrations/app-marketplace";
 
 export const dynamic = "force-dynamic";
 
@@ -54,13 +55,16 @@ export default function IntegrationsPage() {
       </Section>
 
       <Section withGrid className="bg-muted/10 border-y border-border/40">
-        <div className="text-center space-y-4 max-w-3xl mx-auto mb-16">
+        <div className="text-center space-y-4 max-w-3xl mx-auto mb-8">
           <h2 className="text-3xl font-bold tracking-tight">Multi-Source Connectivity</h2>
           <p className="text-muted-foreground font-medium">
             Connect disparate financial systems into a single, deterministic reconciliation hub.
           </p>
         </div>
-        <AdapterConnectionMap />
+        <AppMarketplace />
+        <div className="mt-16">
+          <AdapterConnectionMap />
+        </div>
       </Section>
 
       <Section className="py-20 lg:py-32">
