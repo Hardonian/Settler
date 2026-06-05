@@ -1,7 +1,12 @@
 # Investor Narrative - Settler
 
+> [!WARNING]
+> **SUPERSEDED DOCUMENT**
+> This document contains outdated pricing and positioning. It has been superseded by the materials in the `docs/investor/` directory.
+> Please refer to the [Pitch Deck Outline](investor/settler_preseed_pitch_deck_outline.md) and the [Canonical Pricing Table](investor/canonical_pricing.md).
+
 **Date:** 2025-01-27  
-**Status:** Launch-Ready
+**Status:** Superseded
 
 ---
 

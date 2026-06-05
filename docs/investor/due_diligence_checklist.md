@@ -13,20 +13,20 @@ Pre-assemble all items below BEFORE investor meetings. When an investor asks for
 
 ## 1. Corporate / Legal
 
-| #    | Item                            | Status          | Location                            | Notes                                                                                               |
-| ---- | ------------------------------- | --------------- | ----------------------------------- | --------------------------------------------------------------------------------------------------- |
-| 1.1  | Certificate of Incorporation    | ❌ Missing      | —                                   | Entity formation needed. Delaware C-Corp recommended for VC compatibility.                          |
-| 1.2  | Operating Agreement / Bylaws    | ❌ Missing      | —                                   | Required after incorporation.                                                                       |
-| 1.3  | Cap Table                       | ❌ Missing      | —                                   | No existing investors, advisors, or options documented. Create on Carta/Pulley after incorporation. |
-| 1.4  | Founder Employment Agreement    | ❌ Missing      | —                                   | IP assignment clause critical.                                                                      |
-| 1.5  | IP Assignment Agreement         | ❌ Missing      | —                                   | Must confirm all IP is owned by the company, not the individual.                                    |
-| 1.6  | Terms of Service                | ✅ Ready        | `/legal/terms` route in app         | Review for investor-specific concerns.                                                              |
-| 1.7  | Privacy Policy                  | ✅ Ready        | `/legal/privacy` route in app       | GDPR, CCPA coverage needed.                                                                         |
-| 1.8  | Data Processing Agreement (DPA) | ✅ Ready        | `/legal/dpa` route in app           | Template available.                                                                                 |
-| 1.9  | Acceptable Use Policy           | ✅ Ready        | `/legal/aup` route in app           |                                                                                                     |
-| 1.10 | Subprocessor List               | ✅ Ready        | `/legal/subprocessors` route in app |                                                                                                     |
-| 1.11 | Patent / Trademark Status       | ❌ Missing      | —                                   | Consider trademark for "Settler" name. Patent TBD.                                                  |
-| 1.12 | Open Source License Compliance  | ⚠️ Needs Review | `LICENSE` file at repo root         | Verify license terms are compatible with SaaS business model.                                       |
+| #    | Item                            | Status     | Location                            | Notes                                                                                               |
+| ---- | ------------------------------- | ---------- | ----------------------------------- | --------------------------------------------------------------------------------------------------- |
+| 1.1  | Certificate of Incorporation    | ❌ Missing | —                                   | Entity formation needed. Delaware C-Corp recommended for VC compatibility.                          |
+| 1.2  | Operating Agreement / Bylaws    | ❌ Missing | —                                   | Required after incorporation.                                                                       |
+| 1.3  | Cap Table                       | ❌ Missing | —                                   | No existing investors, advisors, or options documented. Create on Carta/Pulley after incorporation. |
+| 1.4  | Founder Employment Agreement    | ❌ Missing | —                                   | IP assignment clause critical.                                                                      |
+| 1.5  | IP Assignment Agreement         | ❌ Missing | —                                   | Must confirm all IP is owned by the company, not the individual.                                    |
+| 1.6  | Terms of Service                | ✅ Ready   | `/legal/terms` route in app         | Review for investor-specific concerns.                                                              |
+| 1.7  | Privacy Policy                  | ✅ Ready   | `/legal/privacy` route in app       | GDPR, CCPA coverage needed.                                                                         |
+| 1.8  | Data Processing Agreement (DPA) | ✅ Ready   | `/legal/dpa` route in app           | Template available.                                                                                 |
+| 1.9  | Acceptable Use Policy           | ✅ Ready   | `/legal/aup` route in app           |                                                                                                     |
+| 1.10 | Subprocessor List               | ✅ Ready   | `/legal/subprocessors` route in app |                                                                                                     |
+| 1.11 | Patent / Trademark Status       | ❌ Missing | —                                   | Consider trademark for "Settler" name. Patent TBD.                                                  |
+| 1.12 | Open Source License Compliance  | ✅ Ready   | `LICENSE` file at repo root         | License is proprietary, dual licensing structure noted.                                             |
 
 ## 2. Financial
 
@@ -73,27 +73,27 @@ Pre-assemble all items below BEFORE investor meetings. When an investor asks for
 
 ## 5. Investor Materials
 
-| #   | Item                           | Status          | Location                                              | Notes                                                                           |
-| --- | ------------------------------ | --------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------- |
-| 5.1 | Pitch Deck Outline (12 slides) | ✅ Ready        | `docs/investor/settler_preseed_pitch_deck_outline.md` | Full outline with fact-grounding.                                               |
-| 5.2 | One-Page Investor Memo         | ✅ Ready        | `docs/investor/one_page_investor_memo.md`             | For cold outreach.                                                              |
-| 5.3 | Demo Script                    | ✅ Ready        | `docs/investor/demo_script.md`                        | 10-minute live demo.                                                            |
-| 5.4 | Market Map                     | ✅ Ready        | `docs/investor/market_map.md`                         |                                                                                 |
-| 5.5 | ROI Calculator                 | ✅ Ready        | `docs/investor/roi_calculator.md`                     | Self-serve calculation tool.                                                    |
-| 5.6 | Moat Documentation             | ✅ Ready        | `docs/moat.md`                                        | Rules engine moat with schema evidence.                                         |
-| 5.7 | Defense Moat Analysis          | ✅ Ready        | `docs/settler-defense-moat.md`                        | Security + business fortification.                                              |
-| 5.8 | Product Screenshots            | 🔄 Spec Ready   | `docs/investor/product_screenshots_spec.md`           | 12 screenshots defined, need capture.                                           |
-| 5.9 | Existing Investor Narrative    | ⚠️ Needs Update | `docs/INVESTOR_NARRATIVE.md`                          | Contains outdated pricing and unsourced claims. Use pitch deck outline instead. |
+| #   | Item                           | Status        | Location                                              | Notes                                                                                 |
+| --- | ------------------------------ | ------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| 5.1 | Pitch Deck Outline (12 slides) | ✅ Ready      | `docs/investor/settler_preseed_pitch_deck_outline.md` | Full outline with fact-grounding.                                                     |
+| 5.2 | One-Page Investor Memo         | ✅ Ready      | `docs/investor/one_page_investor_memo.md`             | For cold outreach.                                                                    |
+| 5.3 | Demo Script                    | ✅ Ready      | `docs/investor/demo_script.md`                        | 10-minute live demo.                                                                  |
+| 5.4 | Market Map                     | ✅ Ready      | `docs/investor/market_map.md`                         |                                                                                       |
+| 5.5 | ROI Calculator                 | ✅ Ready      | `docs/investor/roi_calculator.md`                     | Self-serve calculation tool.                                                          |
+| 5.6 | Moat Documentation             | ✅ Ready      | `docs/moat.md`                                        | Rules engine moat with schema evidence.                                               |
+| 5.7 | Defense Moat Analysis          | ✅ Ready      | `docs/settler-defense-moat.md`                        | Security + business fortification.                                                    |
+| 5.8 | Product Screenshots            | 🔄 Spec Ready | `docs/investor/product_screenshots_spec.md`           | 12 screenshots defined, need capture.                                                 |
+| 5.9 | Existing Investor Narrative    | ✅ Ready      | `docs/INVESTOR_NARRATIVE.md`                          | Marked as superseded. Refer to `docs/investor/settler_preseed_pitch_deck_outline.md`. |
 
 ## 6. Team / Operations
 
-| #   | Item                       | Status     | Location                               | Notes                                                                    |
-| --- | -------------------------- | ---------- | -------------------------------------- | ------------------------------------------------------------------------ |
-| 6.1 | Founder Bio / Resume       | ⚠️ Partial | `docs/founder-story.md`                | Story exists; formal resume/LinkedIn needed.                             |
-| 6.2 | Hiring Plan                | ⚠️ Partial | `docs/DUE_DILIGENCE.md` (team section) | Generic. Need role-specific JDs and timeline.                            |
-| 6.3 | Advisory Board             | ❌ Missing | —                                      | No advisors documented. Consider domain experts in fintech/accounting.   |
-| 6.4 | Board Structure (Proposed) | ❌ Missing | —                                      | Define before term sheet. Typical: 2 founders + 1 investor for pre-seed. |
-| 6.5 | Operational Runbooks       | ✅ Ready   | `/runbooks` route + operational docs   |                                                                          |
+| #   | Item                       | Status     | Location                             | Notes                                                                    |
+| --- | -------------------------- | ---------- | ------------------------------------ | ------------------------------------------------------------------------ |
+| 6.1 | Founder Bio / Resume       | ✅ Ready   | `docs/investor/founder_resume.md`    | Founder profile tailored for investors.                                  |
+| 6.2 | Hiring Plan                | ✅ Ready   | `docs/investor/hiring_plan.md`       | First 12 months hiring plan aligned with financial model.                |
+| 6.3 | Advisory Board             | ❌ Missing | —                                    | No advisors documented. Consider domain experts in fintech/accounting.   |
+| 6.4 | Board Structure (Proposed) | ❌ Missing | —                                    | Define before term sheet. Typical: 2 founders + 1 investor for pre-seed. |
+| 6.5 | Operational Runbooks       | ✅ Ready   | `/runbooks` route + operational docs |                                                                          |
 
 ---
 
@@ -101,13 +101,13 @@ Pre-assemble all items below BEFORE investor meetings. When an investor asks for
 
 | Category            | Ready  | Partial | Missing | Total              |
 | ------------------- | ------ | ------- | ------- | ------------------ |
-| Corporate / Legal   | 4      | 1       | 7       | 12                 |
+| Corporate / Legal   | 5      | 0       | 7       | 12                 |
 | Financial           | 4      | 0       | 4       | 8                  |
 | Product / Technical | 8      | 3       | 0       | 11 (+ 1 needs run) |
 | Go-to-Market        | 5      | 0       | 2       | 7 (+ 1 ready)      |
-| Investor Materials  | 8      | 1       | 0       | 9                  |
-| Team / Operations   | 1      | 2       | 2       | 5                  |
-| **TOTAL**           | **30** | **7**   | **15**  | **52**             |
+| Investor Materials  | 9      | 0       | 0       | 9                  |
+| Team / Operations   | 3      | 0       | 2       | 5                  |
+| **TOTAL**           | **34** | **3**   | **15**  | **52**             |
 
 ## Critical Path Before First Investor Meeting
 
