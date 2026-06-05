@@ -20,7 +20,7 @@ Technical founder with domain expertise in financial operations, data engineerin
 
 ### Founder & CEO | Settler
 
-_Jan 2026 – Present_
+**Period:** Jan 2026 – Present
 
 - Architected and built the Settler MVP: a deterministic reconciliation engine for B2B SaaS operators.
 - Developed 33+ platform integration adapters (Stripe, PayPal, Shopify, QuickBooks, Xero, Plaid, NetSuite).
@@ -30,7 +30,7 @@ _Jan 2026 – Present_
 
 ### Previous Experience
 
-_(To be tailored by the founder prior to fundraising — placeholder below)_
+**Note:** To be tailored by the founder prior to fundraising — placeholder below
 
 - **Lead Software Engineer / Engineering Manager:** Led engineering teams in scaling data-intensive applications. Experienced the pain of building internal tools for finance teams to reconcile payments and revenue.
 - **Data Engineer / Platform Engineer:** Built ETL pipelines and data normalization layers, directly informing the adapter-first architecture of Settler.
@@ -38,7 +38,7 @@ _(To be tailored by the founder prior to fundraising — placeholder below)_
 
 ## Education
 
-_(To be tailored by the founder prior to fundraising)_
+**Note:** To be tailored by the founder prior to fundraising
 
 - B.S. in Computer Science / Engineering / Mathematics (or relevant field/experience)
 

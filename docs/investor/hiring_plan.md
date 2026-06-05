@@ -27,8 +27,7 @@
 
 ### Hire 1: Founding Full-Stack Engineer
 
-_Target Start: Month 2_
-
+- **Target Start:** Month 2
 - **Profile:** Senior generalist, highly autonomous. Experience with Next.js, TypeScript, and ideally Rust.
 - **Primary Responsibilities:**
   1. Build and maintain the next batch of platform adapters (ERP, HRIS, banking).
@@ -39,8 +38,7 @@ _Target Start: Month 2_
 
 ### Hire 2 (Optional/Contract): Growth Marketer / Content
 
-_Target Start: Month 3 (Contract/Fractional)_
-
+- **Target Start:** Month 3 (Contract/Fractional)
 - **Profile:** Content creator with deep understanding of finance/ops workflows.
 - **Primary Responsibilities:**
   1. Write detailed SEO content (e.g., "How to reconcile Stripe payouts with Xero").
@@ -58,8 +56,7 @@ _Target Start: Month 3 (Contract/Fractional)_
 
 ### Hire 3: Customer Success / Sales Engineer
 
-_Target Start: Month 7_
-
+- **Target Start:** Month 7
 - **Profile:** Technical enough to help customers map their CSVs or configure API connections, empathetic enough to run onboarding.
 - **Primary Responsibilities:**
   1. Take over customer onboarding from the founder.
@@ -71,8 +68,7 @@ _Target Start: Month 7_
 
 ### Hire 4: Founding Account Executive
 
-_Target Start: Month 9_
-
+- **Target Start:** Month 9
 - **Profile:** Consultative seller, experience selling technical products to finance/ops teams.
 - **Primary Responsibilities:**
   1. Take over the founder's validated sales playbook.
@@ -85,7 +81,7 @@ _Target Start: Month 9_
 
 ## Organizational Structure at Month 12
 
-```
+```text
 Founder / CEO
 ├── Founding Full-Stack Engineer
 ├── Customer Success / Sales Engineer
