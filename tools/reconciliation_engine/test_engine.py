@@ -446,6 +446,178 @@ def test_convenience_function():
     print("OK: Convenience function")
 
 
+
+def test_integration_to_junit_xml_basic():
+    """Test converting result to JUnit XML format."""
+    from reconciliation_engine.integration import to_junit_xml
+    import xml.etree.ElementTree as ET
+
+    result = ReconciliationResult(
+        run_id="run_123",
+        started_at="2024-01-01T00:00:00Z",
+        completed_at="2024-01-01T00:00:01Z",
+        total_source=10,
+        total_target=10,
+        match_keys=["id"],
+        truth_table=[
+            TruthTableEntry(
+                source_record_id="s1",
+                target_record_id="t1",
+                match_status=MatchStatus.MATCHED,
+                rule_applied="exact_match",
+                confidence=1.0,
+                explanation="Exact match",
+            )
+        ],
+        invariant_violations=[],
+        matched_count=1,
+        mismatched_count=0,
+        source_orphan_count=0,
+        target_orphan_count=0,
+        source_data_hash="hash1",
+        target_data_hash="hash2",
+        options={},
+    )
+
+    xml_str = to_junit_xml(result)
+    root = ET.fromstring(xml_str)
+
+    assert root.tag == "testsuite"
+    assert root.attrib["name"] == "ReconciliationEngine"
+    assert root.attrib["tests"] == "1"
+    assert root.attrib["failures"] == "0"
+    assert root.attrib["errors"] == "0"
+
+    # Check that properties contain expected metadata
+    properties = root.find("properties")
+    assert properties is not None
+    prop_dict = {p.attrib["name"]: p.attrib["value"] for p in properties.findall("property")}
+    assert prop_dict["run_id"] == "run_123"
+    assert prop_dict["total_source"] == "10"
+    assert prop_dict["matched_count"] == "1"
+
+    print("OK: to_junit_xml basic")
+
+def test_integration_to_junit_xml_with_violations():
+    """Test JUnit XML generation with invariant violations."""
+    from reconciliation_engine.integration import to_junit_xml
+    import xml.etree.ElementTree as ET
+
+    result = ReconciliationResult(
+        run_id="run_123",
+        started_at="2024-01-01T00:00:00Z",
+        completed_at="2024-01-01T00:00:01Z",
+        total_source=10,
+        total_target=10,
+        match_keys=["id"],
+        truth_table=[],
+        invariant_violations=[
+            InvariantViolation(
+                invariant_name="totals_match",
+                severity=Severity.BLOCKER,
+                message="Totals do not match",
+            ),
+            InvariantViolation(
+                invariant_name="currency_match",
+                severity=Severity.HIGH,
+                message="Currency mismatch",
+            ),
+        ],
+        matched_count=0,
+        mismatched_count=0,
+        source_orphan_count=0,
+        target_orphan_count=0,
+        source_data_hash="hash1",
+        target_data_hash="hash2",
+        options={},
+    )
+
+    xml_str = to_junit_xml(result)
+    root = ET.fromstring(xml_str)
+
+    assert root.attrib["errors"] == "2"
+
+    testcases = root.findall("testcase")
+    assert len(testcases) == 3  # 2 invariants + 1 summary
+
+    # Blocker invariant
+    tc_blocker = testcases[0]
+    assert tc_blocker.attrib["name"] == "invariant_totals_match"
+    failure = tc_blocker.find("failure")
+    assert failure is not None
+    assert failure.attrib["type"] == "blocker"
+    assert failure.text == "Totals do not match"
+
+    # High severity invariant (warning)
+    tc_warning = testcases[1]
+    assert tc_warning.attrib["name"] == "invariant_currency_match"
+    skipped = tc_warning.find("skipped")
+    assert skipped is not None
+    assert skipped.attrib["message"] == "Currency mismatch"
+
+    # Summary
+    tc_summary = testcases[2]
+    assert tc_summary.attrib["name"] == "reconciliation_summary"
+    summary_failure = tc_summary.find("failure")
+    assert summary_failure is not None
+    assert "BLOCKER violations detected: 1" in summary_failure.text
+
+    print("OK: to_junit_xml with violations")
+
+def test_integration_to_junit_xml_failures():
+    """Test JUnit XML failure counts."""
+    from reconciliation_engine.integration import to_junit_xml
+    import xml.etree.ElementTree as ET
+
+    result = ReconciliationResult(
+        run_id="run_123",
+        started_at="2024-01-01T00:00:00Z",
+        completed_at="2024-01-01T00:00:01Z",
+        total_source=10,
+        total_target=10,
+        match_keys=["id"],
+        truth_table=[
+            TruthTableEntry(
+                source_record_id="s1",
+                target_record_id="t1",
+                match_status=MatchStatus.MISMATCHED,
+                rule_applied="exact_match",
+                confidence=0.0,
+                explanation="Mismatch",
+                source_values={},
+                target_values={},
+                differences={},
+            ),
+             TruthTableEntry(
+                source_record_id="s2",
+                target_record_id=None,
+                match_status=MatchStatus.SOURCE_ORPHAN,
+                rule_applied="none",
+                confidence=0.0,
+                explanation="Orphan",
+                source_values={},
+                target_values={},
+                differences={},
+            ),
+        ],
+        invariant_violations=[],
+        matched_count=0,
+        mismatched_count=1,
+        source_orphan_count=1,
+        target_orphan_count=0,
+        source_data_hash="hash1",
+        target_data_hash="hash2",
+        options={},
+    )
+
+    xml_str = to_junit_xml(result)
+    root = ET.fromstring(xml_str)
+
+    assert root.attrib["failures"] == "2" # 1 mismatch + 1 orphan
+    assert root.attrib["tests"] == "2"
+
+    print("OK: to_junit_xml failures calculation")
+
 def run_all_tests():
     """Run all tests."""
     tests = [
@@ -464,6 +636,9 @@ def run_all_tests():
         test_deterministic_hash,
         test_emit_audit_bundle,
         test_convenience_function,
+        test_integration_to_junit_xml_basic,
+        test_integration_to_junit_xml_with_violations,
+        test_integration_to_junit_xml_failures,
     ]
 
     passed = 0
