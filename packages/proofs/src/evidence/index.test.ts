@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { computePayloadHash } from "./index";
+import { computePayloadHash, matchComparisonReliabilityFactors } from "./index";
 
 describe("computePayloadHash", () => {
   it("computes deterministic hash for objects regardless of key order", () => {
@@ -54,5 +54,75 @@ describe("computePayloadHash", () => {
 
     const hash = computePayloadHash(payload);
     expect(hash).toMatch(/^[a-f0-9]{64}$/);
+  });
+});
+
+describe("matchComparisonReliabilityFactors", () => {
+  it("returns correct reliability factors for general inputs", () => {
+    const confidence = 0.8;
+    const sourceReliability = 0.9;
+    const targetReliability = 0.85;
+
+    const factors = matchComparisonReliabilityFactors(
+      confidence,
+      sourceReliability,
+      targetReliability
+    );
+
+    expect(factors).toHaveLength(4);
+
+    expect(factors[0]).toEqual({
+      factor: "match_confidence",
+      weight: 0.35,
+      value: 0.8,
+      notes: "Match confidence: 80.0%",
+    });
+
+    expect(factors[1]).toEqual({
+      factor: "source_reliability",
+      weight: 0.25,
+      value: 0.9,
+      notes: "Source data reliability: 90.0%",
+    });
+
+    expect(factors[2]).toEqual({
+      factor: "target_reliability",
+      weight: 0.25,
+      value: 0.85,
+      notes: "Target data reliability: 85.0%",
+    });
+
+    expect(factors[3]).toEqual({
+      factor: "comparison_method",
+      weight: 0.15,
+      value: 0.95,
+      notes: "Deterministic field comparison",
+    });
+  });
+
+  it("handles edge case inputs of 0", () => {
+    const factors = matchComparisonReliabilityFactors(0, 0, 0);
+
+    expect(factors[0].value).toBe(0);
+    expect(factors[0].notes).toBe("Match confidence: 0.0%");
+
+    expect(factors[1].value).toBe(0);
+    expect(factors[1].notes).toBe("Source data reliability: 0.0%");
+
+    expect(factors[2].value).toBe(0);
+    expect(factors[2].notes).toBe("Target data reliability: 0.0%");
+  });
+
+  it("handles edge case inputs of 1", () => {
+    const factors = matchComparisonReliabilityFactors(1, 1, 1);
+
+    expect(factors[0].value).toBe(1);
+    expect(factors[0].notes).toBe("Match confidence: 100.0%");
+
+    expect(factors[1].value).toBe(1);
+    expect(factors[1].notes).toBe("Source data reliability: 100.0%");
+
+    expect(factors[2].value).toBe(1);
+    expect(factors[2].notes).toBe("Target data reliability: 100.0%");
   });
 });
