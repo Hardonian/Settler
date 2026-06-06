@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { computePayloadHash } from "./index";
+import { computePayloadHash, computeReliabilityScore } from "./index";
 
 describe("computePayloadHash", () => {
   it("computes deterministic hash for objects regardless of key order", () => {
@@ -49,10 +49,47 @@ describe("computePayloadHash", () => {
     // This test just documents current behavior to prevent regressions
     const payload = {
       user: { id: "u1" },
-      amount: 100
+      amount: 100,
     };
 
     const hash = computePayloadHash(payload);
     expect(hash).toMatch(/^[a-f0-9]{64}$/);
+  });
+});
+
+describe("computeReliabilityScore", () => {
+  it("returns 0.5 when factors list is empty", () => {
+    expect(computeReliabilityScore([])).toBe(0.5);
+  });
+
+  it("returns 0.5 when total weight of all factors is 0", () => {
+    const factors = [
+      { factor: "f1", weight: 0, value: 1 },
+      { factor: "f2", weight: 0, value: 0.5 },
+    ];
+    expect(computeReliabilityScore(factors)).toBe(0.5);
+  });
+
+  it("computes correct weighted average when total weight is 1", () => {
+    const factors = [
+      { factor: "f1", weight: 0.7, value: 0.8 },
+      { factor: "f2", weight: 0.3, value: 0.4 },
+    ];
+    // (0.7 * 0.8) + (0.3 * 0.4) = 0.56 + 0.12 = 0.68
+    expect(computeReliabilityScore(factors)).toBe(0.68);
+  });
+
+  it("computes correct weighted average when total weight is not 1", () => {
+    const factors = [
+      { factor: "f1", weight: 2, value: 0.9 },
+      { factor: "f2", weight: 3, value: 0.4 },
+    ];
+    // (2 * 0.9 + 3 * 0.4) / 5 = (1.8 + 1.2) / 5 = 3.0 / 5 = 0.6
+    expect(computeReliabilityScore(factors)).toBe(0.6);
+  });
+
+  it("rounds to 4 decimal places", () => {
+    const factors = [{ factor: "f1", weight: 1, value: 0.333333333 }];
+    expect(computeReliabilityScore(factors)).toBe(0.3333);
   });
 });
