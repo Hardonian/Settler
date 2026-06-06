@@ -18,6 +18,7 @@ jobs:
         with:
           toolchain: stable
           profile: minimal
+          target: wasm32-unknown-unknown
           override: true
 
       - name: Rust fmt
