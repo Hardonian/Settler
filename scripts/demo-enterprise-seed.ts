@@ -912,181 +912,193 @@ async function seedDatabase(dataset: ReturnType<typeof generateDemoDataset>, res
     console.log(`   ✓ Tenant: ${DEMO_TENANT_NAME} (${DEMO_TENANT_SLUG})`);
 
     // Upsert ingestion sources
-    for (const source of dataset.sources) {
-      await prisma.ingestionSource.upsert({
-        where: { id: source.id },
-        update: {
-          status: source.status,
-          lastSyncAt: source.lastSyncAt,
-          lastSyncStatus: source.lastSyncStatus,
-          lastSyncError: source.lastSyncError,
-          configMetadata: source.configMetadata as object,
-          metadata: source.metadata as object,
-          updatedAt: source.updatedAt,
-        },
-        create: {
-          id: source.id,
-          tenantId: source.tenantId,
-          userId: source.userId,
-          name: source.name,
-          type: source.type,
-          connectorType: source.connectorType,
-          status: source.status,
-          lastSyncAt: source.lastSyncAt,
-          lastSyncStatus: source.lastSyncStatus,
-          lastSyncError: source.lastSyncError,
-          syncSchedule: source.syncSchedule,
-          configMetadata: source.configMetadata as object,
-          metadata: source.metadata as object,
-          createdAt: source.createdAt,
-          updatedAt: source.updatedAt,
-        },
-      });
-    }
+    await Promise.all(
+      dataset.sources.map((source) =>
+        prisma.ingestionSource.upsert({
+          where: { id: source.id },
+          update: {
+            status: source.status,
+            lastSyncAt: source.lastSyncAt,
+            lastSyncStatus: source.lastSyncStatus,
+            lastSyncError: source.lastSyncError,
+            configMetadata: source.configMetadata as object,
+            metadata: source.metadata as object,
+            updatedAt: source.updatedAt,
+          },
+          create: {
+            id: source.id,
+            tenantId: source.tenantId,
+            userId: source.userId,
+            name: source.name,
+            type: source.type,
+            connectorType: source.connectorType,
+            status: source.status,
+            lastSyncAt: source.lastSyncAt,
+            lastSyncStatus: source.lastSyncStatus,
+            lastSyncError: source.lastSyncError,
+            syncSchedule: source.syncSchedule,
+            configMetadata: source.configMetadata as object,
+            metadata: source.metadata as object,
+            createdAt: source.createdAt,
+            updatedAt: source.updatedAt,
+          },
+        })
+      )
+    );
     console.log(`   ✓ Sources: ${dataset.sources.length} connectors`);
 
     // Insert ingestions
-    for (const ingestion of dataset.ingestions) {
-      await prisma.ingestion
-        .upsert({
-          where: { idempotencyKey: `demo-${ingestion.id}` },
-          update: {},
-          create: {
-            id: ingestion.id,
-            sourceId: ingestion.sourceId,
-            tenantId: ingestion.tenantId,
-            userId: ingestion.userId,
-            idempotencyKey: `demo-${ingestion.id}`,
-            status: ingestion.status,
-            startedAt: ingestion.startedAt,
-            completedAt: ingestion.completedAt,
-            rawRecordCount: ingestion.rawRecordCount,
-            normalizedCount: ingestion.normalizedCount,
-            failedCount: ingestion.failedCount,
-            metadata: ingestion.metadata as object,
-            createdAt: ingestion.createdAt,
-            updatedAt: ingestion.updatedAt,
-          },
-        })
-        .catch(() => {
-          // If ingestion already exists, skip
-        });
-    }
+    await Promise.all(
+      dataset.ingestions.map((ingestion) =>
+        prisma.ingestion
+          .upsert({
+            where: { idempotencyKey: `demo-${ingestion.id}` },
+            update: {},
+            create: {
+              id: ingestion.id,
+              sourceId: ingestion.sourceId,
+              tenantId: ingestion.tenantId,
+              userId: ingestion.userId,
+              idempotencyKey: `demo-${ingestion.id}`,
+              status: ingestion.status,
+              startedAt: ingestion.startedAt,
+              completedAt: ingestion.completedAt,
+              rawRecordCount: ingestion.rawRecordCount,
+              normalizedCount: ingestion.normalizedCount,
+              failedCount: ingestion.failedCount,
+              metadata: ingestion.metadata as object,
+              createdAt: ingestion.createdAt,
+              updatedAt: ingestion.updatedAt,
+            },
+          })
+          .catch(() => {
+            // If ingestion already exists, skip
+          })
+      )
+    );
     console.log(`   ✓ Ingestions: ${dataset.ingestions.length}`);
 
     // Insert normalized transactions
     const allTxns = [...dataset.transactions.stripe, ...dataset.transactions.bank];
     let txnCount = 0;
-    for (const txn of allTxns) {
-      try {
-        await prisma.normalizedTransaction.upsert({
-          where: { id: txn.id },
-          update: {},
-          create: {
-            id: txn.id,
-            ingestionId: txn.ingestionId,
-            tenantId: txn.tenantId,
-            sourceId: txn.sourceId,
-            externalId: txn.externalId,
-            amount: txn.amount,
-            currency: txn.currency,
-            date: txn.date,
-            description: txn.description,
-            category: txn.category,
-            paymentMethod: txn.paymentMethod,
-            reference: txn.reference,
-            metadata: txn.metadata as object,
-            createdAt: txn.createdAt,
-            updatedAt: txn.updatedAt,
-          },
-        });
-        txnCount++;
-      } catch {
-        // skip duplicates
-      }
-    }
+    await Promise.all(
+      allTxns.map(async (txn) => {
+        try {
+          await prisma.normalizedTransaction.upsert({
+            where: { id: txn.id },
+            update: {},
+            create: {
+              id: txn.id,
+              ingestionId: txn.ingestionId,
+              tenantId: txn.tenantId,
+              sourceId: txn.sourceId,
+              externalId: txn.externalId,
+              amount: txn.amount,
+              currency: txn.currency,
+              date: txn.date,
+              description: txn.description,
+              category: txn.category,
+              paymentMethod: txn.paymentMethod,
+              reference: txn.reference,
+              metadata: txn.metadata as object,
+              createdAt: txn.createdAt,
+              updatedAt: txn.updatedAt,
+            },
+          });
+          txnCount++;
+        } catch {
+          // skip duplicates
+        }
+      })
+    );
     console.log(`   ✓ Transactions: ${txnCount} (Stripe + Bank)`);
 
     // Insert reconciliation runs
-    for (const run of dataset.runs) {
-      await prisma.reconciliationRun
-        .upsert({
-          where: { id: run.id },
-          update: {},
-          create: {
-            id: run.id,
-            tenantId: run.tenantId,
-            userId: run.userId,
-            name: run.name,
-            status: run.status,
-            startedAt: run.startedAt,
-            completedAt: run.completedAt,
-            sourceCount: run.sourceCount,
-            targetCount: run.targetCount,
-            matchedCount: run.matchedCount,
-            unmatchedSourceCount: run.unmatchedSourceCount,
-            unmatchedTargetCount: run.unmatchedTargetCount,
-            confidenceAvg: run.confidenceAvg,
-            errorMessage: run.errorMessage,
-            metadata: run.metadata as object,
-            createdAt: run.createdAt,
-            updatedAt: run.updatedAt,
-          },
-        })
-        .catch(() => {});
-    }
+    await Promise.all(
+      dataset.runs.map((run) =>
+        prisma.reconciliationRun
+          .upsert({
+            where: { id: run.id },
+            update: {},
+            create: {
+              id: run.id,
+              tenantId: run.tenantId,
+              userId: run.userId,
+              name: run.name,
+              status: run.status,
+              startedAt: run.startedAt,
+              completedAt: run.completedAt,
+              sourceCount: run.sourceCount,
+              targetCount: run.targetCount,
+              matchedCount: run.matchedCount,
+              unmatchedSourceCount: run.unmatchedSourceCount,
+              unmatchedTargetCount: run.unmatchedTargetCount,
+              confidenceAvg: run.confidenceAvg,
+              errorMessage: run.errorMessage,
+              metadata: run.metadata as object,
+              createdAt: run.createdAt,
+              updatedAt: run.updatedAt,
+            },
+          })
+          .catch(() => {})
+      )
+    );
     console.log(`   ✓ Reconciliation runs: ${dataset.runs.length}`);
 
     // Insert matches
     let matchCount = 0;
-    for (const match of dataset.matches) {
-      try {
-        await prisma.reconciliationMatch.upsert({
-          where: { id: match.id },
-          update: {},
-          create: {
-            id: match.id,
-            runId: match.runId,
-            tenantId: match.tenantId,
-            sourceTransactionId: match.sourceTransactionId,
-            targetTransactionId: match.targetTransactionId,
-            matchType: match.matchType,
-            confidence: match.confidence,
-            matchReason: match.matchReason,
-            amountDiff: match.amountDiff,
-            dateDiff: match.dateDiff,
-            reviewed: match.reviewed,
-            metadata: match.metadata as object,
-            createdAt: match.createdAt,
-            updatedAt: match.updatedAt,
-          },
-        });
-        matchCount++;
-      } catch {
-        // skip duplicates
-      }
-    }
+    await Promise.all(
+      dataset.matches.map(async (match) => {
+        try {
+          await prisma.reconciliationMatch.upsert({
+            where: { id: match.id },
+            update: {},
+            create: {
+              id: match.id,
+              runId: match.runId,
+              tenantId: match.tenantId,
+              sourceTransactionId: match.sourceTransactionId,
+              targetTransactionId: match.targetTransactionId,
+              matchType: match.matchType,
+              confidence: match.confidence,
+              matchReason: match.matchReason,
+              amountDiff: match.amountDiff,
+              dateDiff: match.dateDiff,
+              reviewed: match.reviewed,
+              metadata: match.metadata as object,
+              createdAt: match.createdAt,
+              updatedAt: match.updatedAt,
+            },
+          });
+          matchCount++;
+        } catch {
+          // skip duplicates
+        }
+      })
+    );
     console.log(`   ✓ Matches: ${matchCount} (exact + fuzzy + unmatched)`);
 
     // Insert audit logs
-    for (const log of dataset.auditLogs) {
-      await prisma.auditLog
-        .create({
-          data: {
-            id: log.id,
-            userId: log.userId,
-            tenantId: log.tenantId,
-            action: log.action,
-            resourceType: log.resourceType,
-            resourceId: log.resourceId,
-            changes: log.changes as object,
-            ipAddress: log.ipAddress,
-            metadata: log.metadata as object,
-            createdAt: log.createdAt,
-          },
-        })
-        .catch(() => {});
-    }
+    await Promise.all(
+      dataset.auditLogs.map((log) =>
+        prisma.auditLog
+          .create({
+            data: {
+              id: log.id,
+              userId: log.userId,
+              tenantId: log.tenantId,
+              action: log.action,
+              resourceType: log.resourceType,
+              resourceId: log.resourceId,
+              changes: log.changes as object,
+              ipAddress: log.ipAddress,
+              metadata: log.metadata as object,
+              createdAt: log.createdAt,
+            },
+          })
+          .catch(() => {})
+      )
+    );
     console.log(`   ✓ Audit logs: ${dataset.auditLogs.length}`);
 
     await prisma.$disconnect();
