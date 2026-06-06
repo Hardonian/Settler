@@ -192,8 +192,28 @@ class ReconciliationMigrationGenerator {
         if (issue.message.includes("RLS not enabled")) {
           this.migrationSQL.push(`ALTER TABLE ${fullTable} ENABLE ROW LEVEL SECURITY;`);
         } else if (issue.message.includes("no policies found")) {
-          this.migrationSQL.push(`-- RLS enabled but no policies on ${fullTable}`);
-          this.migrationSQL.push(`-- TODO: Add RLS policies - review golden schema`);
+          this.migrationSQL.push(`-- Generating standard tenant isolation policies for ${fullTable}`);
+
+          this.migrationSQL.push(`DROP POLICY IF EXISTS tenant_select ON ${fullTable};`);
+          this.migrationSQL.push(`CREATE POLICY tenant_select ON ${fullTable}`);
+          this.migrationSQL.push(`  FOR SELECT`);
+          this.migrationSQL.push(`  USING (((( SELECT auth.uid() AS uid) IS NOT NULL) AND (tenant_id = ANY (ARRAY( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))));`);
+
+          this.migrationSQL.push(`DROP POLICY IF EXISTS tenant_insert ON ${fullTable};`);
+          this.migrationSQL.push(`CREATE POLICY tenant_insert ON ${fullTable}`);
+          this.migrationSQL.push(`  FOR INSERT`);
+          this.migrationSQL.push(`  WITH CHECK ((tenant_id = ANY (ARRAY( SELECT get_user_tenant_ids() AS get_user_tenant_ids))));`);
+
+          this.migrationSQL.push(`DROP POLICY IF EXISTS tenant_update ON ${fullTable};`);
+          this.migrationSQL.push(`CREATE POLICY tenant_update ON ${fullTable}`);
+          this.migrationSQL.push(`  FOR UPDATE`);
+          this.migrationSQL.push(`  USING ((tenant_id = ANY (ARRAY( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))`);
+          this.migrationSQL.push(`  WITH CHECK ((tenant_id = ANY (ARRAY( SELECT get_user_tenant_ids() AS get_user_tenant_ids))));`);
+
+          this.migrationSQL.push(`DROP POLICY IF EXISTS tenant_delete ON ${fullTable};`);
+          this.migrationSQL.push(`CREATE POLICY tenant_delete ON ${fullTable}`);
+          this.migrationSQL.push(`  FOR DELETE`);
+          this.migrationSQL.push(`  USING ((tenant_id = ANY (ARRAY( SELECT get_user_tenant_ids() AS get_user_tenant_ids))));`);
         }
       }
     }
