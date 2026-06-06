@@ -55,4 +55,32 @@ describe("computePayloadHash", () => {
     const hash = computePayloadHash(payload);
     expect(hash).toMatch(/^[a-f0-9]{64}$/);
   });
+
+  it("drops nested properties that do not match top-level keys", () => {
+    // Top level keys are ['a', 'b'].
+    // The nested object { c: 2 } does not contain keys from the top level.
+    // JSON.stringify will drop 'c' and output {"a":1,"b":{}}.
+    const payload1 = { a: 1, b: { c: 2 } };
+    const payload2 = { a: 1, b: { d: 3 } };
+
+    const hash1 = computePayloadHash(payload1);
+    const hash2 = computePayloadHash(payload2);
+
+    // Because nested properties that don't match top level keys are dropped, the hashes will be exactly the same!
+    expect(hash1).toBe(hash2);
+  });
+
+  it("handles arrays deterministically but filters them as objects", () => {
+    // Array keys are '0', '1', '2'.
+    const array1 = [1, 2, 3];
+    const hash1 = computePayloadHash(array1);
+    const array2 = [1, 2, 3];
+    const hash2 = computePayloadHash(array2);
+
+    expect(hash1).toBe(hash2);
+
+    // Changing the order of array changes the hash because the keys '0', '1', '2' map to different values
+    const array3 = [3, 2, 1];
+    expect(computePayloadHash(array3)).not.toBe(hash1);
+  });
 });
