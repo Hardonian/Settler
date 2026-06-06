@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { computePayloadHash } from "./index";
+import { computePayloadHash, buildArtifactKey } from "./index";
 
 describe("computePayloadHash", () => {
   it("computes deterministic hash for objects regardless of key order", () => {
@@ -49,10 +49,33 @@ describe("computePayloadHash", () => {
     // This test just documents current behavior to prevent regressions
     const payload = {
       user: { id: "u1" },
-      amount: 100
+      amount: 100,
     };
 
     const hash = computePayloadHash(payload);
     expect(hash).toMatch(/^[a-f0-9]{64}$/);
+  });
+});
+
+describe("buildArtifactKey", () => {
+  it("builds a key correctly without a suffix", () => {
+    const key = buildArtifactKey("source_snapshot", "run-123", "entity-456");
+    expect(key).toBe("source_snapshot::run-123::entity-456");
+  });
+
+  it("builds a key correctly with a suffix", () => {
+    const key = buildArtifactKey("match_comparison", "run-123", "entity-456", "extra");
+    expect(key).toBe("match_comparison::run-123::entity-456::extra");
+  });
+
+  it("handles empty strings for parameters correctly", () => {
+    const key = buildArtifactKey("source_snapshot", "", "entity-456");
+    expect(key).toBe("source_snapshot::::entity-456");
+  });
+
+  it("does not include suffix if suffix is empty string", () => {
+    const key = buildArtifactKey("operator_annotation", "run-123", "entity-456", "");
+    // Note: since `if (suffix)` evaluates to false for an empty string `""`, it won't be pushed
+    expect(key).toBe("operator_annotation::run-123::entity-456");
   });
 });
