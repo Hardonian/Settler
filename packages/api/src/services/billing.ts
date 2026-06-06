@@ -1,9 +1,8 @@
-import Stripe from 'stripe';
-import { getEnv } from '../utils/env';
+import Stripe from "stripe";
 
 // In a real implementation, this would be injected via a DI container
-const stripe = new Stripe(getEnv('STRIPE_SECRET_KEY') || '', {
-  apiVersion: '2023-10-16', // Using standard API version
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+  apiVersion: "2023-10-16", // Using standard API version
 });
 
 export class BillingService {
@@ -19,9 +18,9 @@ export class BillingService {
       await stripe.subscriptionItems.createUsageRecord(subscriptionItemId, {
         quantity: transactionCount,
         timestamp: Math.floor(Date.now() / 1000),
-        action: 'increment',
+        action: "increment",
       });
-      console.log(`Successfully reported ${transactionCount} transactions for tenant ${tenantId}`);
+      console.info(`Successfully reported ${transactionCount} transactions for tenant ${tenantId}`);
     } catch (error) {
       console.error(`Failed to report usage for tenant ${tenantId}:`, error);
       throw error;
@@ -32,29 +31,29 @@ export class BillingService {
    * Handle incoming Stripe webhooks (upgrades, downgrades, failed payments)
    */
   async handleWebhook(body: string | Buffer, signature: string): Promise<void> {
-    const webhookSecret = getEnv('STRIPE_WEBHOOK_SECRET') || '';
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
     let event: Stripe.Event;
 
     try {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
     } catch (err) {
-      console.error('Webhook signature verification failed.', err);
-      throw new Error('Webhook signature verification failed.');
+      console.error("Webhook signature verification failed.", err);
+      throw new Error("Webhook signature verification failed.");
     }
 
     // Zero-Touch Ops: Automatically handle billing events without manual intervention
     switch (event.type) {
-      case 'invoice.payment_succeeded':
+      case "invoice.payment_succeeded":
         // Provision access / reset limits
         break;
-      case 'invoice.payment_failed':
+      case "invoice.payment_failed":
         // Automatically downgrade the tenant / send automated dunning email
         break;
-      case 'customer.subscription.deleted':
+      case "customer.subscription.deleted":
         // Revoke access automatically
         break;
       default:
-        console.log(`Unhandled event type ${event.type}`);
+        console.info(`Unhandled event type ${event.type}`);
     }
   }
 }

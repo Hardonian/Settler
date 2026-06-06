@@ -379,6 +379,7 @@
   },
   "packageManager": "pnpm@10.13.1",
   "dependencies": {
-    "turbo": "^2.9.14"
+    "turbo": "^2.9.14",
+    "vite": "^6.4.3"
   }
 }
