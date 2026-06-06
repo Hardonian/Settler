@@ -211,17 +211,71 @@ class ReconciliationMigrationGenerator {
     this.migrationSQL.push(
       "-- ============================================================================"
     );
-    this.migrationSQL.push("-- NOTE: Function creation requires manual review.");
-    this.migrationSQL.push("-- Functions should be created from migration files.\n");
+    this.migrationSQL.push("-- NOTE: Functions are automatically extracted from previous migrations.\n");
 
     for (const issue of issues) {
       const funcName = issue.component.replace("function.", "");
-      this.migrationSQL.push(`-- Missing function: ${funcName}`);
-      this.migrationSQL.push(`-- TODO: Create function ${funcName} from migration files`);
+      const sql = this.extractFunctionSQL(funcName);
+
+      if (sql) {
+        this.migrationSQL.push(`-- Re-creating missing function: ${funcName}`);
+        this.migrationSQL.push(sql);
+      } else {
+        this.migrationSQL.push(`-- Missing function: ${funcName}`);
+        this.migrationSQL.push(`-- TODO: Create function ${funcName} (definition not found in migrations)`);
+      }
     }
 
     this.migrationSQL.push("");
   }
+
+  private extractFunctionSQL(funcName: string): string | null {
+    const migrationsDir = path.join(__dirname, "../supabase/migrations");
+    if (!fs.existsSync(migrationsDir)) return null;
+
+    // Read files and sort newest first to get the most recent definition
+    const files = fs.readdirSync(migrationsDir).sort((a, b) => b.localeCompare(a));
+
+    for (const file of files) {
+      if (!file.endsWith(".sql")) continue;
+
+      const filePath = path.join(migrationsDir, file);
+      const content = fs.readFileSync(filePath, "utf8");
+
+      // Attempt to find the CREATE FUNCTION block
+      // Functions are generally defined like: CREATE OR REPLACE FUNCTION public.my_func
+      const startPattern = `(?:CREATE\\s+(?:OR\\s+REPLACE\\s+)?FUNCTION\\s+(?:public\\.)?${funcName}\\b)`;
+
+      // PostgreSQL functions usually enclose the body in dollar quotes, like AS $ ... $ or AS $func$ ... $func$
+      // We'll capture the start pattern, optionally some attributes, the AS keyword, the dollar quote marker,
+      // the body content up to the matching dollar quote marker, and the final semicolon.
+      const dollarQuoteRegex = new RegExp(
+        `(${startPattern}[\\s\\S]*?AS\\s+(\\$\\w*\\$)[\\s\\S]*?\\2[\\s\\S]*?;)`,
+        'i'
+      );
+
+      let match = content.match(dollarQuoteRegex);
+      if (match) {
+        return match[1].trim() + '\n';
+      }
+
+      // If it doesn't use dollar quotes (e.g., standard SQL functions returning values directly
+      // or using single quotes which is rare but possible), we'll do a fallback greedy match
+      // up to the LANGUAGE declaration and semicolon, assuming no internal dollar quotes.
+      const simpleRegex = new RegExp(
+        `(${startPattern}[\\s\\S]*?LANGUAGE\\s+\\w+[\\s\\S]*?;)`,
+        'i'
+      );
+
+      match = content.match(simpleRegex);
+      if (match) {
+        return match[1].trim() + '\n';
+      }
+    }
+
+    return null;
+  }
+
 }
 
 async function main() {
@@ -247,7 +301,7 @@ async function main() {
 
     console.log(`✅ Generated reconciliation migration: ${migrationPath}`);
     console.log("\n⚠️  IMPORTANT: Review the migration before applying!");
-    console.log("   Some sections require manual implementation (tables, functions).");
+    console.log("   Some sections require manual implementation (tables).");
     console.log(`   Apply with: supabase db push\n`);
   } catch (error) {
     console.error("Fatal error:", error);
