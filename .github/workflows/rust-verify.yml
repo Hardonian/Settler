@@ -19,6 +19,7 @@ jobs:
           toolchain: stable
           profile: minimal
           override: true
+          target: wasm32-unknown-unknown
 
       - name: Rust fmt
         run: cargo fmt --all -- --check

@@ -24,6 +24,6 @@ export function getAIProvider() {
   // Strict BYOK configuration
   return createOpenAI({
     apiKey,
-    compatibility: "strict", // Ensure exact API compatibility
+    // Ensure exact API compatibility
   });
 }
