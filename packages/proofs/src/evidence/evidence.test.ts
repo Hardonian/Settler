@@ -1,10 +1,14 @@
 import { describe, it, expect } from "vitest";
-import { assessEvidenceCompleteness, EvidenceArtifactType } from "./index";
+import { assessEvidenceCompleteness, EvidenceArtifactType, computeReliabilityScore } from "./index";
 
 describe("assessEvidenceCompleteness", () => {
   it("returns a 1.0 completeness score when all required types are present", () => {
     const requiredTypes: EvidenceArtifactType[] = ["run_summary", "source_snapshot"];
-    const presentTypes: EvidenceArtifactType[] = ["run_summary", "source_snapshot", "target_snapshot"];
+    const presentTypes: EvidenceArtifactType[] = [
+      "run_summary",
+      "source_snapshot",
+      "target_snapshot",
+    ];
 
     const result = assessEvidenceCompleteness(presentTypes, requiredTypes);
 
@@ -27,7 +31,11 @@ describe("assessEvidenceCompleteness", () => {
   });
 
   it("calculates partial completeness scores accurately", () => {
-    const requiredTypes: EvidenceArtifactType[] = ["run_summary", "source_snapshot", "target_snapshot"];
+    const requiredTypes: EvidenceArtifactType[] = [
+      "run_summary",
+      "source_snapshot",
+      "target_snapshot",
+    ];
     const presentTypes: EvidenceArtifactType[] = ["run_summary"];
 
     const result = assessEvidenceCompleteness(presentTypes, requiredTypes);
@@ -83,5 +91,50 @@ describe("assessEvidenceCompleteness", () => {
         gapType: "missing_match_comparison",
       })
     );
+  });
+});
+
+describe("computeReliabilityScore", () => {
+  it("returns 0.5 when factors array is empty", () => {
+    expect(computeReliabilityScore([])).toBe(0.5);
+  });
+
+  it("returns 0.5 when total weight is 0", () => {
+    const factors = [
+      { factor: "test1", weight: 0, value: 1.0 },
+      { factor: "test2", weight: 0, value: 0.8 },
+    ];
+    expect(computeReliabilityScore(factors)).toBe(0.5);
+  });
+
+  it("calculates weighted sum correctly and rounds to 4 decimal places", () => {
+    const factors = [
+      { factor: "test1", weight: 0.3, value: 0.9 }, // 0.27
+      { factor: "test2", weight: 0.7, value: 0.8 }, // 0.56
+    ]; // totalWeight = 1.0, weightedSum = 0.83
+
+    expect(computeReliabilityScore(factors)).toBe(0.83);
+  });
+
+  it("handles mixed weights and values accurately", () => {
+    const factors = [
+      { factor: "test1", weight: 0.25, value: 1.0 },
+      { factor: "test2", weight: 0.25, value: 0.0 },
+      { factor: "test3", weight: 0.5, value: 0.5 },
+    ];
+    // totalWeight = 1.0
+    // weightedSum = 0.25*1 + 0 + 0.5*0.5 = 0.25 + 0.25 = 0.5
+    expect(computeReliabilityScore(factors)).toBe(0.5);
+  });
+
+  it("handles total weights other than 1.0", () => {
+    const factors = [
+      { factor: "test1", weight: 2.0, value: 0.9 },
+      { factor: "test2", weight: 3.0, value: 0.8 },
+    ];
+    // totalWeight = 5.0
+    // weightedSum = 1.8 + 2.4 = 4.2
+    // score = 4.2 / 5.0 = 0.84
+    expect(computeReliabilityScore(factors)).toBe(0.84);
   });
 });
