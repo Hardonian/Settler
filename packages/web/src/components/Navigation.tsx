@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { SettlerLogo } from "@/components/brand/SettlerLogo";
+import { CommandPalette } from "@/components/ui/command-palette";
+import { AgentActivityFeed } from "@/components/ux/agent-activity-feed";
 import { cn } from "@/lib/utils";
 import { Menu, ChevronDown } from "lucide-react";
 
@@ -195,9 +197,8 @@ export function Navigation() {
                       "motion-reduce:transition-none",
                       featuresMenuOpen && "text-primary-600 dark:text-primary-400"
                     )}
-                    aria-expanded={featuresMenuOpen}
-                    aria-haspopup="true"
                     aria-label="Features navigation"
+                    {...{ "aria-expanded": featuresMenuOpen }}
                   >
                     Features
                     <ChevronDown
@@ -210,11 +211,7 @@ export function Navigation() {
                   </button>
 
                   {featuresMenuOpen && (
-                    <div
-                      className="absolute top-full left-0 mt-2 w-52 bg-background border border-border rounded-lg shadow-lg py-2 z-50"
-                      role="menu"
-                      aria-orientation="vertical"
-                    >
+                    <div className="absolute top-full left-0 mt-2 w-52 bg-background border border-border rounded-lg shadow-lg py-2 z-50">
                       {featureNavigationItems.map((item) => {
                         const isActive =
                           pathname === item.href || pathname?.startsWith(item.href + "/");
@@ -229,7 +226,6 @@ export function Navigation() {
                               "transition-colors duration-150 ease-out",
                               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
                             )}
-                            role="menuitem"
                             onClick={() => setFeaturesMenuOpen(false)}
                             aria-current={isActive ? "page" : undefined}
                           >
@@ -256,9 +252,8 @@ export function Navigation() {
                         "motion-reduce:transition-none",
                         moreMenuOpen && "text-primary-600 dark:text-primary-400"
                       )}
-                      aria-expanded={moreMenuOpen}
-                      aria-haspopup="true"
                       aria-label="More navigation options"
+                      {...{ "aria-expanded": moreMenuOpen }}
                     >
                       More
                       <ChevronDown
@@ -272,11 +267,7 @@ export function Navigation() {
 
                     {/* Dropdown menu */}
                     {moreMenuOpen && (
-                      <div
-                        className="absolute top-full right-0 mt-2 w-56 bg-background border border-border rounded-lg shadow-lg py-2 z-50"
-                        role="menu"
-                        aria-orientation="vertical"
-                      >
+                      <div className="absolute top-full right-0 mt-2 w-56 bg-background border border-border rounded-lg shadow-lg py-2 z-50">
                         {secondaryNavigationItems.map((item) => {
                           const isActive =
                             pathname === item.href || pathname?.startsWith(item.href + "/");
@@ -291,7 +282,6 @@ export function Navigation() {
                                 "transition-colors duration-150 ease-out",
                                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
                               )}
-                              role="menuitem"
                               onClick={() => setMoreMenuOpen(false)}
                               aria-current={isActive ? "page" : undefined}
                             >
@@ -307,6 +297,8 @@ export function Navigation() {
 
               {/* Right side actions */}
               <div className="flex items-center gap-3 ml-2">
+                <CommandPalette />
+                <AgentActivityFeed />
                 <DarkModeToggle />
                 <Link
                   href="/login"
@@ -375,8 +367,6 @@ export function Navigation() {
                       "motion-reduce:transition-none"
                     )}
                     aria-label="Open menu"
-                    aria-expanded={mobileMenuOpen}
-                    aria-controls="mobile-menu"
                     type="button"
                   >
                     <Menu className="w-6 h-6" aria-hidden="true" />
