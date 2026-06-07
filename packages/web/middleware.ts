@@ -206,14 +206,6 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
         return addSecurityHeaders(redirectResponse, { nonce });
       }
     }
-
-    // Add route protection logic here if needed
-    // Example: Protect /dashboard routes
-    // const { data: { user } } = await supabase.auth.getUser();
-    // if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
-    //   return NextResponse.redirect(new URL('/login', request.url));
-    // }
-
     // Add security headers to all responses
     // CRITICAL: Always return a response, never throw
     return addSecurityHeaders(response, { nonce });
