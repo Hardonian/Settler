@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   calculateRetryDelay,
   isRetryableStatus,
@@ -34,6 +34,39 @@ describe("Retry Logic", () => {
 
       const delay = calculateRetryDelay(10, config);
       expect(delay).toBeLessThanOrEqual(5000 * 1.25); // Max + jitter
+    });
+
+    describe("jitter boundaries", () => {
+      let randomSpy: ReturnType<typeof vi.spyOn>;
+
+      beforeEach(() => {
+        randomSpy = vi.spyOn(Math, "random");
+      });
+
+      afterEach(() => {
+        randomSpy.mockRestore();
+      });
+
+      it("should apply minimum jitter (-25%) when Math.random() is 0", () => {
+        randomSpy.mockReturnValue(0);
+        const delay = calculateRetryDelay(1, DEFAULT_RETRY_CONFIG);
+        // delayWithCap = 1000; jitter = 1000 * 0.25 * (-1) = -250; result = 750
+        expect(delay).toBe(750);
+      });
+
+      it("should apply maximum jitter (+25%) when Math.random() is 1", () => {
+        randomSpy.mockReturnValue(1);
+        const delay = calculateRetryDelay(1, DEFAULT_RETRY_CONFIG);
+        // delayWithCap = 1000; jitter = 1000 * 0.25 * (1) = 250; result = 1250
+        expect(delay).toBe(1250);
+      });
+
+      it("should apply zero jitter (0%) when Math.random() is 0.5", () => {
+        randomSpy.mockReturnValue(0.5);
+        const delay = calculateRetryDelay(1, DEFAULT_RETRY_CONFIG);
+        // delayWithCap = 1000; jitter = 1000 * 0.25 * (0) = 0; result = 1000
+        expect(delay).toBe(1000);
+      });
     });
   });
 
