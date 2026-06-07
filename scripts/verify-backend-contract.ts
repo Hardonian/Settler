@@ -22,7 +22,6 @@ import * as fs from "fs";
 import * as path from "path";
 import { execSync } from "child_process";
 
-
 interface VerificationResult {
   component: string;
   status: "pass" | "fail" | "warning";
@@ -716,11 +715,13 @@ async function main() {
 
     if (reconcile && failures.length > 0) {
       console.log("\n🔄 Reconciliation mode: generating migration...");
-      // TODO: Generate reconciliation migration
       try {
-        execSync(`npx tsx ${path.join(__dirname, "generate-reconciliation-migration.ts")} ${outputPath}`, {
-          stdio: "inherit",
-        });
+        execSync(
+          `npx tsx ${path.join(__dirname, "generate-reconciliation-migration.ts")} ${outputPath}`,
+          {
+            stdio: "inherit",
+          }
+        );
       } catch (e) {
         console.error("Failed to generate migration:", e instanceof Error ? e.message : String(e));
       }
