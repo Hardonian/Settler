@@ -3,7 +3,6 @@
   "devCommand": "pnpm --filter @settler/web dev",
   "installCommand": "corepack enable && corepack prepare pnpm@10.13.1 --activate && pnpm install --frozen-lockfile",
   "framework": "nextjs",
-  "nodeVersion": "24.x",
   "env": {
     "NODE_ENV": "production"
   }

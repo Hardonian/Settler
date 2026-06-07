@@ -122,34 +122,31 @@ console.log("\n[4] Node version consistency");
 
 const vercelJson = JSON.parse(readFileSync(resolve(ROOT, "vercel.json"), "utf-8"));
 const webVercelJson = JSON.parse(readFileSync(resolve(ROOT, "packages/web/vercel.json"), "utf-8"));
-const vercelNodeVersion = vercelJson.nodeVersion;
-const webVercelNodeVersion = webVercelJson.nodeVersion;
+
+const unsupportedVercelKeys = ["nodeVersion"];
+for (const [label, config] of [
+  ["vercel.json", vercelJson],
+  ["packages/web/vercel.json", webVercelJson],
+]) {
+  const presentUnsupportedKeys = unsupportedVercelKeys.filter((key) =>
+    Object.prototype.hasOwnProperty.call(config, key)
+  );
+  if (presentUnsupportedKeys.length > 0) {
+    fail(
+      `${label} contains unsupported Vercel config key(s): ${presentUnsupportedKeys.join(
+        ", "
+      )}. Use package.json#engines.node for Node runtime selection.`
+    );
+  } else {
+    pass(`${label} avoids unsupported Node runtime config keys`);
+  }
+}
 
 const nvmrcPath = resolve(ROOT, ".nvmrc");
 const nvmrcVersion = existsSync(nvmrcPath) ? readFileSync(nvmrcPath, "utf-8").trim() : null;
 
 const rootPkg = JSON.parse(readFileSync(resolve(ROOT, "package.json"), "utf-8"));
 const engineNode = rootPkg.engines?.node;
-
-if (vercelNodeVersion) {
-  pass(`vercel.json nodeVersion: ${vercelNodeVersion}`);
-} else {
-  warn("vercel.json missing nodeVersion — Vercel will auto-detect");
-}
-
-if (webVercelNodeVersion) {
-  pass(`packages/web/vercel.json nodeVersion: ${webVercelNodeVersion}`);
-} else {
-  warn(
-    "packages/web/vercel.json missing nodeVersion — package-root Vercel projects may auto-detect"
-  );
-}
-
-if (vercelNodeVersion && webVercelNodeVersion && vercelNodeVersion !== webVercelNodeVersion) {
-  fail(
-    `Vercel Node version drift: vercel.json=${vercelNodeVersion}, packages/web/vercel.json=${webVercelNodeVersion}`
-  );
-}
 
 if (nvmrcVersion) {
   pass(`.nvmrc: ${nvmrcVersion}`);
@@ -161,6 +158,11 @@ if (engineNode) {
   if (engineNode.startsWith(">=") && !engineNode.includes("<")) {
     warn(`engines.node "${engineNode}" has no upper bound — Node major drift possible`);
   }
+  if (!engineNode.includes("24")) {
+    fail(`engines.node "${engineNode}" does not pin Vercel to the Node 24 major contract`);
+  }
+} else {
+  fail("package.json missing engines.node — Vercel Node runtime would auto-detect");
 }
 
 // ── 5. Vercel install command hygiene ────────────────────────────────
