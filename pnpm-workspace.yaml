@@ -5,6 +5,26 @@ packages:
   - "!packages/sdk-ruby"
   - "!packages/workhorse"
 
+# Install against the lockfile when possible and keep native optional binaries
+# available for local WSL verification, Linux Vercel builds, and Windows/macOS
+# contributor installs. Keeping this in pnpm-workspace.yaml avoids npm/npx
+# warning on pnpm-only project settings while preserving pnpm behavior.
+preferFrozenLockfile: true
+supportedArchitectures:
+  os:
+    - current
+    - linux
+    - win32
+    - darwin
+  cpu:
+    - current
+    - x64
+    - arm64
+  libc:
+    - current
+    - glibc
+    - musl
+
 overrides:
   prisma: 7.8.0
   "@prisma/client": 7.8.0
