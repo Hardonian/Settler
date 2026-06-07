@@ -46,6 +46,7 @@ const requiredFiles = [
   "pnpm-workspace.yaml",
   "turbo.json",
   "vercel.json",
+  "packages/web/vercel.json",
 ];
 
 for (const rel of requiredFiles) {
@@ -120,19 +121,32 @@ for (const [name, cmd] of [
 console.log("\n[4] Node version consistency");
 
 const vercelJson = JSON.parse(readFileSync(resolve(ROOT, "vercel.json"), "utf-8"));
-const vercelNodeVersion = vercelJson.nodeVersion;
+const webVercelJson = JSON.parse(readFileSync(resolve(ROOT, "packages/web/vercel.json"), "utf-8"));
+
+const unsupportedVercelKeys = ["nodeVersion"];
+for (const [label, config] of [
+  ["vercel.json", vercelJson],
+  ["packages/web/vercel.json", webVercelJson],
+]) {
+  const presentUnsupportedKeys = unsupportedVercelKeys.filter((key) =>
+    Object.prototype.hasOwnProperty.call(config, key)
+  );
+  if (presentUnsupportedKeys.length > 0) {
+    fail(
+      `${label} contains unsupported Vercel config key(s): ${presentUnsupportedKeys.join(
+        ", "
+      )}. Use package.json#engines.node for Node runtime selection.`
+    );
+  } else {
+    pass(`${label} avoids unsupported Node runtime config keys`);
+  }
+}
 
 const nvmrcPath = resolve(ROOT, ".nvmrc");
 const nvmrcVersion = existsSync(nvmrcPath) ? readFileSync(nvmrcPath, "utf-8").trim() : null;
 
 const rootPkg = JSON.parse(readFileSync(resolve(ROOT, "package.json"), "utf-8"));
 const engineNode = rootPkg.engines?.node;
-
-if (vercelNodeVersion) {
-  pass(`vercel.json nodeVersion: ${vercelNodeVersion}`);
-} else {
-  warn("vercel.json missing nodeVersion — Vercel will auto-detect");
-}
 
 if (nvmrcVersion) {
   pass(`.nvmrc: ${nvmrcVersion}`);
@@ -144,10 +158,83 @@ if (engineNode) {
   if (engineNode.startsWith(">=") && !engineNode.includes("<")) {
     warn(`engines.node "${engineNode}" has no upper bound — Node major drift possible`);
   }
+  if (!engineNode.includes("24")) {
+    fail(`engines.node "${engineNode}" does not pin Vercel to the Node 24 major contract`);
+  }
+} else {
+  fail("package.json missing engines.node — Vercel Node runtime would auto-detect");
 }
 
-// ── 5. Lockfile exists ────────────────────────────────────────────────
-console.log("\n[5] Lockfile");
+// ── 5. Vercel install command hygiene ────────────────────────────────
+console.log("\n[5] Vercel install command hygiene");
+
+const expectedPnpmVersion = rootPkg.packageManager?.replace(/^pnpm@/, "");
+
+function checkInstallCommand(label, command) {
+  if (!command) {
+    fail(`${label} missing installCommand — Vercel may fall back to npm`);
+    return;
+  }
+
+  if (command.includes("npx pnpm")) {
+    fail(
+      `${label} uses npx pnpm, which makes npm read project .npmrc and emit npm config warnings`
+    );
+  } else {
+    pass(`${label} avoids npx pnpm`);
+  }
+
+  if (!command.includes("corepack")) {
+    fail(`${label} does not bootstrap pnpm through corepack`);
+  } else {
+    pass(`${label} bootstraps pnpm through corepack`);
+  }
+
+  if (expectedPnpmVersion && !command.includes(`pnpm@${expectedPnpmVersion}`)) {
+    fail(`${label} does not pin pnpm@${expectedPnpmVersion} from package.json#packageManager`);
+  } else if (expectedPnpmVersion) {
+    pass(`${label} pins pnpm@${expectedPnpmVersion}`);
+  }
+
+  if (!command.includes("--frozen-lockfile")) {
+    fail(`${label} does not enforce --frozen-lockfile`);
+  } else {
+    pass(`${label} enforces --frozen-lockfile`);
+  }
+}
+
+checkInstallCommand("vercel.json", vercelJson.installCommand);
+checkInstallCommand("packages/web/vercel.json", webVercelJson.installCommand);
+
+const npmrcContent = existsSync(resolve(ROOT, ".npmrc"))
+  ? readFileSync(resolve(ROOT, ".npmrc"), "utf-8")
+  : "";
+const npmWarningProneKeys = [
+  "package-manager",
+  "lockfile",
+  "prefer-frozen-lockfile",
+  "optional",
+  "always-auth",
+  "supportedArchitectures.",
+];
+const activeNpmrcLines = npmrcContent
+  .split("\n")
+  .map((line) => line.trim())
+  .filter((line) => line && !line.startsWith("#"));
+let foundNpmWarningProneKey = false;
+for (const key of npmWarningProneKeys) {
+  const hasKey = activeNpmrcLines.some((line) => line.includes(key));
+  if (hasKey) {
+    foundNpmWarningProneKey = true;
+    fail(`.npmrc contains npm warning-prone project config "${key}"`);
+  }
+}
+if (!foundNpmWarningProneKey) {
+  pass(".npmrc avoids known npm warning-prone pnpm-only settings");
+}
+
+// ── 6. Lockfile exists ────────────────────────────────────────────────
+console.log("\n[6] Lockfile");
 
 if (existsSync(resolve(ROOT, "pnpm-lock.yaml"))) {
   pass("pnpm-lock.yaml exists");
@@ -155,8 +242,8 @@ if (existsSync(resolve(ROOT, "pnpm-lock.yaml"))) {
   fail("pnpm-lock.yaml missing — frozen-lockfile install will fail on Vercel");
 }
 
-// ── 6. Prisma schema ─────────────────────────────────────────────────
-console.log("\n[6] Prisma");
+// ── 7. Prisma schema ─────────────────────────────────────────────────
+console.log("\n[7] Prisma");
 
 const prismaSchema = resolve(ROOT, "prisma/schema.prisma");
 if (existsSync(prismaSchema)) {

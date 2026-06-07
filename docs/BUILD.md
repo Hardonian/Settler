@@ -23,10 +23,10 @@
 ## Vercel parity
 
 - `vercel.json` uses:
-  - `installCommand`: `npx pnpm@10.13.1 install --frozen-lockfile`
+  - `installCommand`: `corepack enable && corepack prepare pnpm@10.13.1 --activate && pnpm install --frozen-lockfile`
   - `buildCommand`: `pnpm --filter @settler/web... build`
-  - `nodeVersion`: `24.x`
-- CI uses the same Node major and pnpm version.
+  - Node runtime: controlled by root `package.json#engines.node` (`>=24.0.0 <25.0.0`) because `nodeVersion` is not a valid Vercel config key.
+- CI and Vercel use the same Node major and pnpm version.
 
 ## Environment checklist (Preview + Production)
 

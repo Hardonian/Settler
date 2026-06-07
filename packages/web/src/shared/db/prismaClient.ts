@@ -96,7 +96,9 @@ try {
   // The build phase sets a dummy DATABASE_URL to prevent build-time failures.
   prismaInstance = globalForPrisma.prisma ?? new PrismaClient();
 } catch (error) {
-  console.error("[Prisma] Failed to initialize Prisma client:", error);
+  if (!isBuildPhase) {
+    console.error("[Prisma] Failed to initialize Prisma client:", error);
+  }
   // Create a stub client for graceful failure during builds or when DB is unavailable.
   prismaInstance = new Proxy({} as PrismaClientType, {
     get(_target, prop) {

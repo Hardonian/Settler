@@ -104,6 +104,18 @@ const nextConfig = {
     "@settler/support-intake",
   ],
   webpack: (config, { isServer }) => {
+    config.ignoreWarnings = [
+      ...(config.ignoreWarnings || []),
+      {
+        module: /@opentelemetry[\\/]instrumentation/,
+        message: /Critical dependency: the request of a dependency is an expression/,
+      },
+      {
+        module: /require-in-the-middle/,
+        message:
+          /Critical dependency: require function is used in a way in which dependencies cannot be statically extracted/,
+      },
+    ];
     // Ensure webpack can resolve path aliases in dynamic imports
     // This is needed for marketing components in subdirectories
     const originalResolve = config.resolve;
@@ -228,15 +240,6 @@ const nextConfig = {
   // PWA Configuration
   async headers() {
     return [
-      {
-        source: "/_next/static/:path*",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
-          },
-        ],
-      },
       {
         source: "/assets/:path*",
         headers: [
