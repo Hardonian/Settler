@@ -1,11 +1,16 @@
-import { flushApiCallLogs, bufferApiCallLog } from "@/lib/db/write-buffer";
+import { flushApiCallLogs, bufferApiCallLog, inMemoryBuffers } from "@/lib/db/write-buffer";
 import { prisma } from "@/shared/db/prismaClient";
 
-jest.mock("@/shared/db/prismaClient", () => ({
-  prisma: {
-    $executeRaw: jest.fn().mockResolvedValue(1),
-  },
-}));
+jest.mock("@/shared/db/prismaClient", () => {
+  const { Prisma } = jest.requireActual("@prisma/client");
+
+  return {
+    Prisma,
+    prisma: {
+      $executeRaw: jest.fn().mockResolvedValue(1),
+    },
+  };
+});
 
 jest.mock("@/lib/utils/logger", () => ({
   appLogger: {
@@ -19,6 +24,7 @@ jest.mock("@/lib/utils/logger", () => ({
 describe("Write Buffer Security", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    inMemoryBuffers.apiCallLogs.length = 0;
   });
 
   it("should safely handle SQL injection attempts in API call logs", async () => {
@@ -35,30 +41,18 @@ describe("Write Buffer Security", () => {
       createdAt: new Date(),
     };
 
-    // Trigger sync write (since buffering is disabled in test env by default)
     await bufferApiCallLog(maliciousLog);
 
     expect(prisma.$executeRaw).toHaveBeenCalled();
 
-    // The first argument to $executeRaw should be a template strings array (or something that Prisma handles)
-    // When using tagged template literals, the parameters are passed separately from the SQL string.
     const mockPrisma = prisma as any;
     const call = mockPrisma.$executeRaw.mock.calls[0];
     const sqlParts = call[0];
-
-    // Verify that malicious strings are passed as parameters, not part of the SQL string
     const params = call.slice(1);
 
-    let foundUserAgent = false;
-    let foundError = false;
-    for (const param of params) {
-      if (param === maliciousLog.userAgent) foundUserAgent = true;
-      if (param === maliciousLog.error) foundError = true;
-    }
-    expect(foundUserAgent).toBe(true);
-    expect(foundError).toBe(true);
+    expect(params).toContain(maliciousLog.userAgent);
+    expect(params).toContain(maliciousLog.error);
 
-    // Ensure the SQL itself doesn't contain the unescaped malicious strings
     const fullSql = sqlParts.join("?");
     expect(fullSql).not.toContain("OR '1'='1");
     expect(fullSql).not.toContain("DROP TABLE api_call_logs");
@@ -88,29 +82,25 @@ describe("Write Buffer Security", () => {
         ipAddress: "127.0.0.2",
         error: "injection'); --",
         createdAt: new Date(),
-      }
+      },
     ];
 
-    // We need to put logs into the in-memory buffer first
-    const { inMemoryBuffers } = require("@/lib/db/write-buffer");
     inMemoryBuffers.apiCallLogs.push(...maliciousLogs);
 
     await flushApiCallLogs();
 
     expect(prisma.$executeRaw).toHaveBeenCalled();
 
-    // Check parameters of the batch insert
     const mockPrisma = prisma as any;
     const call = mockPrisma.$executeRaw.mock.calls[0];
-    const params = call.slice(1);
+    const sqlParts = call[0];
+    const joinedValues = call[1]?.values ?? [];
 
-    let foundUserAgent = false;
-    let foundError = false;
-    for (const param of params) {
-      if (param === maliciousLogs[1].userAgent) foundUserAgent = true;
-      if (param === maliciousLogs[1].error) foundError = true;
-    }
-    expect(foundUserAgent).toBe(true);
-    expect(foundError).toBe(true);
+    expect(joinedValues).toContain(maliciousLogs[1].userAgent);
+    expect(joinedValues).toContain(maliciousLogs[1].error);
+
+    const fullSql = sqlParts.join("?");
+    expect(fullSql).not.toContain("UNION SELECT");
+    expect(fullSql).not.toContain("injection'); --");
   });
 });

@@ -3,7 +3,7 @@ import { SETTLER_IMAGES } from "@/lib/images/image-config";
 import { BRAND_STRINGS } from "../strings";
 
 describe("canonical brand assets", () => {
-  it("horizontal lockup dimensions match generated raster (1099×339)", () => {
+  it("horizontal lockup dimensions match generated raster (1099x339)", () => {
     expect(SETTLER_BRAND.lockupHorizontalLight.width).toBe(1099);
     expect(SETTLER_BRAND.lockupHorizontalLight.height).toBe(339);
   });
