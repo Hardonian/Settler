@@ -4,6 +4,7 @@
  */
 
 import type { CustomizationPatch, InferenceMode, OperatingMode } from "./schema";
+import { defaultAdminDashboardCustomization } from "./registry";
 import { getPresetById } from "./presets";
 
 export type ProposalBuildResult =
@@ -59,6 +60,44 @@ export function buildProposalFromNaturalLanguage(request: string): ProposalBuild
       reason: "Empty request.",
       inferenceMode: "rules",
       explanationEvidence: { engine: "rules", ruleId: "empty_request" },
+    };
+  }
+
+  if (
+    /(pin|prioriti[sz]e|move).*(exception|heatmap)|(exception|heatmap).*(first|top|front)/i.test(
+      trimmed
+    )
+  ) {
+    const baseline = defaultAdminDashboardCustomization();
+    const modules = baseline.modules.map((module) => {
+      if (module.moduleId === "exception_heatmap") {
+        return { ...module, order: 2 };
+      }
+      if (module.moduleId === "usage_warning") {
+        return { ...module, order: 3 };
+      }
+      if (module.moduleId === "kpi_tiles") {
+        return { ...module, order: 4 };
+      }
+      return module;
+    });
+
+    return {
+      ok: true,
+      patch: {
+        modules,
+        operatingMode: baseline.operatingMode,
+      },
+      rationale:
+        "Pinned the exception heatmap ahead of KPI tiles using the baseline layout so the change stays available on starter plans.",
+      inferenceMode: "rules",
+      explanationEvidence: {
+        engine: "rules",
+        ruleId: "intent_exception_heatmap_pin",
+        moduleId: "exception_heatmap",
+        proposalLane: "rules",
+        entitlementClass: "baseline",
+      },
     };
   }
 

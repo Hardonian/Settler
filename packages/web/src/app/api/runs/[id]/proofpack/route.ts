@@ -39,12 +39,20 @@ export const GET = withSecurity(
       }
 
       // Try to load immutable proofpack
-      const stored = await prisma.reconResult.findUnique({
-        where: { id: params.id },
-        select: { proofpackPayload: true },
-      });
-      if (stored?.proofpackPayload) {
-        return NextResponse.json({ artifact: stored.proofpackPayload });
+      const storedProofpackLookup = prisma.reconResult?.findUnique;
+      if (typeof storedProofpackLookup === "function") {
+        try {
+          const stored = await storedProofpackLookup({
+            where: { id: params.id },
+            select: { proofpackPayload: true },
+          });
+          if (stored?.proofpackPayload) {
+            return NextResponse.json({ artifact: stored.proofpackPayload });
+          }
+        } catch {
+          // Immutable proofpack lookup is additive; if unavailable, fall back to
+          // the deterministic artifact built from the resolved run detail.
+        }
       }
 
       // Fallback for legacy runs
