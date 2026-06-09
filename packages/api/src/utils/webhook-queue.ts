@@ -2,6 +2,7 @@ import { query } from "../db";
 import { generateWebhookSignature } from "./webhook-signature";
 import { logInfo, logError, logWarn } from "./logger";
 import { validatedConfig as config } from "../config/validation";
+import { secureFetch } from "./ssrf-protection";
 
 /**
  * Webhook payload structure
@@ -173,7 +174,7 @@ export async function processWebhookDelivery(delivery: WebhookDelivery): Promise
     try {
       const signature = generateWebhookSignature(JSON.stringify(delivery.payload), delivery.secret);
 
-      const response = await fetch(delivery.url, {
+      const response = await secureFetch(delivery.url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
