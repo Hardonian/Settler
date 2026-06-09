@@ -30,7 +30,28 @@ type TenantAccessSource =
   | "user_not_found"
   | "no_membership";
 
+/**
+ * Determines which tenant-access tables exist in the database.
+ *
+ * SECURITY NOTE: This probes the schema ONCE at startup and caches the result.
+ * The previous implementation queried information_schema on every request, which
+ * meant a schema migration could silently alter the auth model. This cached
+ * approach ensures consistent behavior within a process lifecycle.
+ *
+ * The canonical tenant access lookup path is:
+ *   1. Direct user.tenant_id match
+ *   2. Super admin bypass
+ *   3. tenant_users table (if exists)
+ *   4. memberships table (if exists)
+ *   5. tenant_memberships table (if exists)
+ */
+let cachedTenantAccessTables: Set<string> | null = null;
+
 async function listTenantAccessTables(): Promise<Set<string>> {
+  if (cachedTenantAccessTables) {
+    return cachedTenantAccessTables;
+  }
+
   const rows = await query<{ table_name: string }>(
     `SELECT table_name
        FROM information_schema.tables
@@ -39,7 +60,8 @@ async function listTenantAccessTables(): Promise<Set<string>> {
     [["tenant_users", "memberships", "tenant_memberships"]]
   );
 
-  return new Set(rows.map((row) => row.table_name));
+  cachedTenantAccessTables = new Set(rows.map((row) => row.table_name));
+  return cachedTenantAccessTables;
 }
 
 async function hasSuperAdminAccess(userId: string): Promise<boolean> {
