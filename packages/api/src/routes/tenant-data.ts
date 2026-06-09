@@ -48,7 +48,7 @@ router.get(
   validateRequest(exportTenantDataSchema),
   async (req: TenantRequest, res: Response) => {
     try {
-      const tenantId = tenantId;
+      const tenantId = req.tenantId!;
       const userId = req.userId!;
       const format = (req.query.format as string) || "json";
 
@@ -240,7 +240,7 @@ router.get(
   }
 );
 
-async function tableExists(tableName: string): Promise<boolean> {
+async function tableExists(tableName: string, tenantId: string): Promise<boolean> {
   const rows = await queryWithTenant<{ exists: string | null }>(
     tenantId,
     `SELECT to_regclass($1) as exists`,
@@ -253,9 +253,10 @@ async function tableExists(tableName: string): Promise<boolean> {
 async function countIfTableExists(
   tableName: string,
   sql: string,
-  params: (string | number)[]
+  params: (string | number)[],
+  tenantId: string
 ): Promise<number> {
-  if (!(await tableExists(tableName))) {
+  if (!(await tableExists(tableName, tenantId))) {
     return 0;
   }
 
@@ -268,7 +269,7 @@ router.get(
   requirePermission(Permission.TENANT_READ),
   async (req: TenantRequest, res: Response) => {
     try {
-      const tenantId = tenantId;
+      const tenantId = req.tenantId!;
       validateTenantId(tenantId, "tenant-data integrity-check");
 
       const rlsRows = await queryWithTenant<{
@@ -299,7 +300,8 @@ router.get(
          LEFT JOIN users u ON j.user_id = u.id
          WHERE j.tenant_id = $1
            AND (u.id IS NULL OR u.tenant_id <> j.tenant_id)`,
-        [tenantId]
+        [tenantId],
+        tenantId
       );
 
       const orphanMatches = await countIfTableExists(
@@ -309,7 +311,8 @@ router.get(
          LEFT JOIN reconciliation_runs r ON m.run_id = r.id
          WHERE m.tenant_id = $1
            AND (r.id IS NULL OR r.tenant_id <> m.tenant_id)`,
-        [tenantId]
+        [tenantId],
+        tenantId
       );
 
       const crossTenantJobRefs = await countIfTableExists(
@@ -319,7 +322,8 @@ router.get(
          JOIN users u ON j.user_id = u.id
          WHERE j.tenant_id = $1
            AND u.tenant_id <> j.tenant_id`,
-        [tenantId]
+        [tenantId],
+        tenantId
       );
 
       const crossTenantMatchRefs = await countIfTableExists(
@@ -329,7 +333,8 @@ router.get(
          JOIN reconciliation_runs r ON m.run_id = r.id
          WHERE m.tenant_id = $1
            AND r.tenant_id <> m.tenant_id`,
-        [tenantId]
+        [tenantId],
+        tenantId
       );
 
       const chainIntegrity = await verifyTenantIntegrityChain(tenantId);
@@ -387,7 +392,7 @@ router.delete(
   validateRequest(deleteTenantDataSchema),
   async (req: TenantRequest, res: Response) => {
     try {
-      const tenantId = tenantId;
+      const tenantId = req.tenantId!;
       const userId = req.userId!;
       const { confirmation, password } = req.body;
 

@@ -49,7 +49,7 @@ router.post(
       });
 
       await queryWithTenant(
-        tenantId,
+        tenantId || "00000000-0000-0000-0000-000000000000",
         `INSERT INTO audit_logs (event, user_id, tenant_id, ip, user_agent, path, metadata)
          VALUES ($1, $2, $3, $4, $5, $6, $7)`,
         [

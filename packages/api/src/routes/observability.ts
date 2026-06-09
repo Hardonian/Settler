@@ -39,7 +39,7 @@ observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
       completed: number;
       failed: number;
     }>(
-      (req as any)?.tenantId || (_req as any)?.tenantId || "",
+      tenantId,
       `SELECT 
         COUNT(*) as total,
         COUNT(*) FILTER (WHERE status = 'active') as active,
@@ -57,7 +57,7 @@ observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
       totalUnmatched: number;
       averageAccuracy: number;
     }>(
-      (req as any)?.tenantId || (_req as any)?.tenantId || "",
+      tenantId,
       `SELECT 
         COUNT(*) as "totalReconciliations",
         COALESCE(SUM(matched_count), 0) as "totalMatched",
@@ -76,7 +76,7 @@ observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
       failedRequests: number;
       averageLatency: number;
     }>(
-      (req as any)?.tenantId || (_req as any)?.tenantId || "",
+      tenantId,
       `SELECT 
         COUNT(*) as "totalRequests",
         COUNT(*) FILTER (WHERE status_code < 400) as "successfulRequests",
@@ -94,7 +94,7 @@ observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
       successfulWebhooks: number;
       failedWebhooks: number;
     }>(
-      (req as any)?.tenantId || (_req as any)?.tenantId || "",
+      tenantId,
       `SELECT 
         COUNT(*) as "totalWebhooks",
         COUNT(*) FILTER (WHERE status = 'delivered') as "successfulWebhooks",
@@ -201,7 +201,7 @@ observabilityRouter.get("/logs", async (req: Request, res: Response) => {
     queryStr += ` ORDER BY created_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
     params.push(parseInt(limit as string), parseInt(offset as string));
 
-    const logs = await queryWithTenant(req.tenantId!, queryStr, params);
+    const logs = await queryWithTenant(tenantId, queryStr, params);
 
     res.json({
       data: logs,
@@ -262,7 +262,10 @@ observabilityRouter.get("/health", async (_req: Request, res: Response) => {
     // Check database connection
     let dbStatus = "healthy";
     try {
-      await queryWithTenant(req.tenantId!, "SELECT 1");
+      // For health check without tenant context, we shouldn't use queryWithTenant
+      // We will skip db check or use an unscoped query, but since we migrated it:
+      // Let's just use queryWithTenant with a dummy uuid
+      await queryWithTenant("00000000-0000-0000-0000-000000000000", "SELECT 1");
     } catch {
       dbStatus = "unhealthy";
     }
