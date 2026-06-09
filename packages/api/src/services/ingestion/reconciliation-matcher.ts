@@ -874,6 +874,38 @@ export async function runReconciliation(
       }
     }
 
+    // Phase: Save Immutable Proofpack
+    // Compute JSON and hash at the END of reconciliation and save it to the database
+    // so it is not dynamically computed at export time.
+    try {
+      const { resolveOperatorRunDetailForTenants, buildDeterministicRunProofpackArtifact } =
+        await import("@settler/reconciliation-core");
+      const { prisma } = await import("../../infrastructure/db/prisma");
+
+      const outcome = await resolveOperatorRunDetailForTenants(prisma, [tenantId], runId);
+      if (outcome.kind === "success") {
+        const artifact = buildDeterministicRunProofpackArtifact({
+          detail: outcome.detail,
+          generatedAtIso: new Date().toISOString(),
+        });
+
+        await query(
+          `UPDATE recon_results SET
+            proofpack_payload = $1,
+            proofpack_hash = $2
+          WHERE id = $3`,
+          [JSON.stringify(artifact), artifact.contentHash, runId]
+        );
+        logInfo("Immutable proofpack saved successfully", {
+          runId,
+          tenantId,
+          hash: artifact.contentHash,
+        });
+      }
+    } catch (error) {
+      logError("Failed to build immutable proofpack", error, { runId, tenantId });
+    }
+
     return runId;
   } catch (error) {
     logError("Reconciliation failed", error, { runId, traceId });

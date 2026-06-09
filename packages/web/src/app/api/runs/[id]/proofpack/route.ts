@@ -38,6 +38,16 @@ export const GET = withSecurity(
         );
       }
 
+      // Try to load immutable proofpack
+      const stored = await prisma.reconResult.findUnique({
+        where: { id: params.id },
+        select: { proofpackPayload: true },
+      });
+      if (stored?.proofpackPayload) {
+        return NextResponse.json({ artifact: stored.proofpackPayload });
+      }
+
+      // Fallback for legacy runs
       const detail = outcome.detail;
       const artifact = buildDeterministicRunProofpackArtifact({
         detail,

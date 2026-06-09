@@ -291,6 +291,8 @@ model ReconResult {
   summary               Json      @default("{}")
   metadata              Json      @default("{}")
   proofCapsule          Json?     @default("{}") @map("proof_capsule")
+  proofpackPayload      Json?     @map("proofpack_payload")
+  proofpackHash         String?   @map("proofpack_hash")
   createdAt             DateTime  @default(now()) @map("created_at")
   updatedAt             DateTime  @updatedAt @map("updated_at")
 
