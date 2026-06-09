@@ -70,10 +70,10 @@ export async function buildReconciliationExport(
 ): Promise<PaginatedExportDocument | null> {
   validateTenantId(tenantId, "buildReconciliationExport");
   const runRows = await query<Record<string, unknown>>(
-    `SELECT id, tenant_id, ingestion_id, status, source_count, target_count,
+    `SELECT id, tenant_id, null as ingestion_id, status, source_count, target_count,
             matched_count, unmatched_source_count, unmatched_target_count,
             confidence_avg, started_at, completed_at
-     FROM reconciliation_runs
+     FROM recon_results
      WHERE id = $1 AND tenant_id = $2
      LIMIT 1`,
     [runId, tenantId]
@@ -88,7 +88,7 @@ export async function buildReconciliationExport(
     return null;
   }
 
-  assertTenantOwnership(runRow as { tenant_id?: string | null }, tenantId, "reconciliation_runs");
+  assertTenantOwnership(runRow as { tenant_id?: string | null }, tenantId, "recon_results");
   const run: ReconciliationRunForIntegrity = {
     id: String(runRow.id),
     tenantId: String(runRow.tenant_id),
@@ -142,10 +142,10 @@ export async function buildReconciliationExport(
 
   const chainRows = await query<Record<string, unknown>>(
     `SELECT id, metadata
-     FROM reconciliation_runs
+     FROM recon_results
      WHERE tenant_id = $1
        AND metadata->'integrity'->>'chainHash' IS NOT NULL
-     ORDER BY COALESCE(completed_at, created_at) ASC, id ASC`,
+     ORDER BY COALESCE(completed_at, started_at) ASC, id ASC`,
     [tenantId]
   );
 

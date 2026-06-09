@@ -131,7 +131,7 @@ router.get(
       // Fetch one extra row to determine hasMore
       const fetchLimit = limit + 1;
 
-      // Query runs from reconciliation_runs table with tenant scoping
+      // Query runs from recon_results table with tenant scoping
       const runs = await queryWithTenant<{
         id: string;
         tenant_id: string;
@@ -146,19 +146,20 @@ router.get(
       }>(
         tenantId,
         `SELECT
-          id,
-          tenant_id,
-          created_at,
-          updated_at,
-          status,
-          policy_name,
-          total_records,
-          matched_count,
-          unmatched_source_count,
-          unmatched_target_count
-         FROM reconciliation_runs
-         ${whereClause}
-         ${orderByClause}
+          r.id,
+          r.tenant_id,
+          r.started_at as created_at,
+          r.updated_at,
+          r.status,
+          j.name as policy_name,
+          r.source_count + r.target_count as total_records,
+          r.matched_count,
+          r.unmatched_source_count,
+          r.unmatched_target_count
+         FROM recon_results r
+         LEFT JOIN recon_jobs j ON r.recon_job_id = j.id
+         ${whereClause.replace("tenant_id =", "r.tenant_id =").replace("status =", "r.status =").replace("created_at", "r.started_at")}
+         ${orderByClause.replace(/created_at/g, "r.started_at").replace(/id /g, "r.id ")}
          LIMIT $${params.length + 1}`,
         [...params, fetchLimit]
       );
@@ -211,7 +212,7 @@ router.get(
       if (!cursorPagination) {
         const countResult = await queryWithTenant<{ count: string }>(
           tenantId,
-          `SELECT COUNT(*)::text as count FROM reconciliation_runs WHERE tenant_id = $1`,
+          `SELECT COUNT(*)::text as count FROM recon_results WHERE tenant_id = $1`,
           [tenantId]
         );
         totalCount = countResult[0] ? parseInt(countResult[0].count, 10) : 0;
@@ -304,33 +305,33 @@ router.get(
       }>(
         tenantId,
         `SELECT
-          rr.id,
-          rr.tenant_id,
-          rr.created_at,
-          rr.updated_at,
-          rr.status,
-          rr.policy_name,
-          rr.total_records,
-          rr.matched_count,
-          rr.unmatched_source_count,
-          rr.unmatched_target_count,
-          rr.error_message,
-          rr.source_adapter,
-          rr.target_adapter,
-          rr.template_id,
-          recon_results.id as result_id,
-          recon_results.snapshot_id,
-          recon_results.input_hash,
-          recon_results.started_at,
-          recon_results.completed_at,
-          recon_results.summary -> 'provenance' ->> 'configVersion' as provenance_config_version,
+          r.id,
+          r.tenant_id,
+          r.started_at as created_at,
+          r.updated_at,
+          r.status,
+          j.name as policy_name,
+          r.source_count + r.target_count as total_records,
+          r.matched_count,
+          r.unmatched_source_count,
+          r.unmatched_target_count,
+          r.error_message,
+          j.source_adapter,
+          j.target_adapter,
+          j.template_id,
+          r.id as result_id,
+          r.snapshot_id,
+          r.input_hash,
+          r.started_at,
+          r.completed_at,
+          r.summary -> 'provenance' ->> 'configVersion' as provenance_config_version,
           recon_results.summary -> 'provenance' ->> 'configSource' as provenance_config_source,
           recon_results.summary -> 'provenance' ->> 'templateId' as provenance_template_id,
           recon_results.summary -> 'provenance' ->> 'matchingRuleIds' as provenance_matching_rule_ids,
           recon_results.summary -> 'provenance' ->> 'ruleVersionCount' as provenance_rule_version_count
-         FROM reconciliation_runs rr
-         LEFT JOIN recon_results ON recon_results.recon_job_id = rr.id AND recon_results.tenant_id = rr.tenant_id
-         WHERE rr.id = $1 AND rr.tenant_id = $2`,
+         FROM recon_results r
+         LEFT JOIN recon_jobs j ON r.recon_job_id = j.id
+         WHERE r.id = $1 AND r.tenant_id = $2`,
         [runId, tenantId]
       );
 
@@ -444,7 +445,7 @@ router.get(
       // Invariant: Verify run exists and belongs to tenant
       const runCheck = await queryWithTenant<{ status: string }>(
         tenantId,
-        `SELECT status FROM reconciliation_runs WHERE id = $1 AND tenant_id = $2`,
+        `SELECT status FROM recon_results WHERE id = $1 AND tenant_id = $2`,
         [runId, tenantId]
       );
 
@@ -538,7 +539,7 @@ router.post(
 
       const runs = await queryWithTenant<{ id: string; status: string }>(
         tenantId,
-        `SELECT id, status FROM reconciliation_runs WHERE id = $1 AND tenant_id = $2`,
+        `SELECT id, status FROM recon_results WHERE id = $1 AND tenant_id = $2`,
         [runId, tenantId]
       );
 
@@ -558,7 +559,7 @@ router.post(
       // Enforce Consequence: Trigger retry
       await queryWithTenant(
         tenantId,
-        `UPDATE reconciliation_runs SET status = 'pending', error_message = NULL, updated_at = NOW() WHERE id = $1 AND tenant_id = $2`,
+        `UPDATE recon_results SET status = 'pending', error_message = NULL, updated_at = NOW() WHERE id = $1 AND tenant_id = $2`,
         [runId, tenantId]
       );
 

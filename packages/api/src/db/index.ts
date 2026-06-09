@@ -134,7 +134,6 @@ const TENANT_SCOPED_TABLES = new Set([
   "recon_audits",
   "recon_runs",
   "recon_templates",
-  "reconciliation_runs",
   "reconciliation_matches",
   "reconciliation_candidates",
   "reconciliation_graph_edges",

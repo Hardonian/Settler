@@ -434,8 +434,7 @@ async function logAuditTrail(params: {
   afterState: Record<string, unknown>;
   metadata: Record<string, unknown>;
 }): Promise<string> {
-  // Check if recon_audits table exists (it might be in Supabase schema)
-  // For now, we'll use reconciliation_runs metadata or create audit entry
+  // For now, we'll use recon_results metadata or create audit entry
   const auditId = uuidv4();
 
   try {
@@ -458,7 +457,7 @@ async function logAuditTrail(params: {
       ]
     );
   } catch {
-    // If table doesn't exist, log to reconciliation_runs metadata
+    // If table doesn't exist, log to recon_results metadata
     logInfo("Audit table not available, logging to metadata", {
       auditId,
       params,

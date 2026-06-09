@@ -135,7 +135,7 @@ async function getCurrentUsage(
     case "reconciliations": {
       const reconCount = await query<{ count: number }>(
         `SELECT COUNT(*) as count
-         FROM reconciliation_runs
+         FROM recon_results
          WHERE tenant_id = $1
            AND started_at >= $2`,
         [tenantId, startDate]
@@ -271,9 +271,9 @@ async function getCurrentRunningJobs(
         : "";
       break;
     case "reconciliation":
-      globalQuery = `SELECT COUNT(*) as count FROM reconciliation_runs WHERE status = 'running'`;
+      globalQuery = `SELECT COUNT(*) as count FROM recon_results WHERE status = 'running'`;
       tenantQuery = tenantId
-        ? `SELECT COUNT(*) as count FROM reconciliation_runs WHERE status = 'running' AND tenant_id = $1`
+        ? `SELECT COUNT(*) as count FROM recon_results WHERE status = 'running' AND tenant_id = $1`
         : "";
       break;
     case "webhook":
