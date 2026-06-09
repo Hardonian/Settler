@@ -136,7 +136,7 @@ export class JobSchedulerService {
             // Calculate next execution after current time
             newNextExecution = interval.next().toDate();
             // If interval.next() is still in the past, loop until it's future
-            while (newNextExecution <= now) {
+            while (newNextExecution && newNextExecution.getTime() <= now.getTime()) {
               newNextExecution = interval.next().toDate();
             }
           }

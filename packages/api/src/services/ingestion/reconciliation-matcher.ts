@@ -6,7 +6,7 @@
 
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
-import { query, transaction } from "../../db";
+import { queryWithTenant as query, transactionWithTenant as transaction } from "../../db";
 import { logError, logInfo, logWarn } from "../../utils/logger";
 import { ConflictError, NotFoundError, ValidationError } from "../../utils/typed-errors";
 import { MatchResult, ReconciliationConfig } from "./types";
@@ -72,6 +72,7 @@ async function assertIngestionReadyForReconciliation(
   }
 
   const rows = await query(
+    tenantId,
     `SELECT id, status FROM ingestions WHERE id = $1 AND tenant_id = $2 LIMIT 1`,
     [ingestionId, tenantId]
   );
@@ -256,6 +257,7 @@ export async function matchTransaction(
 
   // Get source transaction — scoped by tenant_id
   const sourceResults = await query(
+    tenantId,
     `SELECT id, amount, currency, date, description, external_id
     FROM normalized_transactions
     WHERE id = $1 AND tenant_id = $2`,
@@ -287,6 +289,7 @@ export async function matchTransaction(
 
   const placeholders = targetTransactionIds.map((_, i) => `$${i + 3}`).join(", ");
   const targetResults = await query(
+    tenantId,
     `SELECT id, amount, currency, date, description, external_id
     FROM normalized_transactions
     WHERE id IN (${placeholders}) AND tenant_id = $2`,
@@ -646,6 +649,7 @@ export async function runReconciliation(
   try {
     // Guard: prevent duplicate running reconciliation for same ingestion+tenant
     const existingRunning = await query(
+      tenantId,
       `SELECT id FROM recon_results
        WHERE ingestion_id = $1 AND tenant_id = $2 AND status = 'running'
        LIMIT 1`,
@@ -661,6 +665,7 @@ export async function runReconciliation(
     }
 
     await query(
+      tenantId,
       `INSERT INTO recon_results (
         id, ingestion_id, tenant_id, status, started_at,
         metadata, created_at, updated_at
@@ -677,6 +682,7 @@ export async function runReconciliation(
 
     // Get source transactions (from this ingestion)
     const sourceTransactions = await query(
+      tenantId,
       `SELECT id FROM normalized_transactions
       WHERE ingestion_id = $1 AND tenant_id = $2
       ORDER BY date, amount`,
@@ -686,6 +692,7 @@ export async function runReconciliation(
     // Get target transactions (from other ingestions or manual entries)
     // For MVP, we'll match against all other transactions in the tenant
     const targetTransactions = await query(
+      tenantId,
       `SELECT id FROM normalized_transactions
       WHERE tenant_id = $1 AND ingestion_id != $2
       ORDER BY date, amount`,
@@ -713,7 +720,7 @@ export async function runReconciliation(
     const totalConfidence = oneToOneResult.totalConfidence;
 
     // Store matches
-    await transaction(async (client) => {
+    await transaction(tenantId, async (client) => {
       for (const match of matches) {
         await client.query(
           `INSERT INTO reconciliation_matches (
@@ -758,6 +765,7 @@ export async function runReconciliation(
     };
 
     await query(
+      tenantId,
       `UPDATE recon_results SET
         status = 'completed',
         completed_at = NOW(),
@@ -890,6 +898,7 @@ export async function runReconciliation(
         });
 
         await query(
+          tenantId,
           `UPDATE recon_results SET
             proofpack_payload = $1,
             proofpack_hash = $2
@@ -910,6 +919,7 @@ export async function runReconciliation(
   } catch (error) {
     logError("Reconciliation failed", error, { runId, traceId });
     await query(
+      tenantId,
       `UPDATE recon_results SET
         status = 'failed',
         completed_at = NOW(),
@@ -936,6 +946,7 @@ export async function runReconciliation(
 async function getSourceAdapter(transactionId: string, tenantId: string): Promise<string | null> {
   try {
     const result = await query(
+      tenantId,
       `SELECT si.connector_type
       FROM normalized_transactions nt
       JOIN ingestion_sources si ON si.id = nt.source_id
