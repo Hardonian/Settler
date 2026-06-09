@@ -262,8 +262,9 @@ model ReconJob {
 
 model ReconResult {
   id                    String    @id @default(uuid()) @db.Uuid
-  reconJobId            String    @map("recon_job_id") @db.Uuid
+  reconJobId            String?   @map("recon_job_id") @db.Uuid
   tenantId              String    @map("tenant_id") @db.Uuid
+  ingestionId           String?   @map("ingestion_id") @db.Uuid
   executionId           String?   @map("execution_id") @db.Uuid
   snapshotId            String?   @map("snapshot_id") @db.Uuid
   inputHash             String?   @map("input_hash")
@@ -293,7 +294,7 @@ model ReconResult {
   createdAt             DateTime  @default(now()) @map("created_at")
   updatedAt             DateTime  @updatedAt @map("updated_at")
 
-  reconJob              ReconJob @relation(fields: [reconJobId], references: [id], onDelete: Cascade)
+  reconJob              ReconJob? @relation(fields: [reconJobId], references: [id], onDelete: Cascade)
   snapshot              RunSnapshot? @relation(fields: [snapshotId], references: [id], onDelete: SetNull)
   audits                ReconAudit[]
   provenance            ExecutionProvenance[]

@@ -108,10 +108,12 @@ export class TemplateImprover {
       // Group failures by job ID
       const failuresByJobId = new Map<string, any[]>();
       for (const failure of failures) {
-        if (!failuresByJobId.has(failure.reconJobId)) {
-          failuresByJobId.set(failure.reconJobId, []);
+        if (failure.reconJobId) {
+          if (!failuresByJobId.has(failure.reconJobId)) {
+            failuresByJobId.set(failure.reconJobId, []);
+          }
+          failuresByJobId.get(failure.reconJobId)!.push(failure);
         }
-        failuresByJobId.get(failure.reconJobId)!.push(failure);
       }
 
       for (const template of templates) {
@@ -211,9 +213,11 @@ export class TemplateImprover {
 
       const resultsByJobId = new Map<string, typeof results>();
       for (const result of results) {
-        const existing = resultsByJobId.get(result.reconJobId) || [];
-        existing.push(result);
-        resultsByJobId.set(result.reconJobId, existing);
+        if (result.reconJobId) {
+          const existing = resultsByJobId.get(result.reconJobId) || [];
+          existing.push(result);
+          resultsByJobId.set(result.reconJobId, existing);
+        }
       }
 
       const durations: number[] = [];
@@ -310,9 +314,11 @@ export class TemplateImprover {
 
       const failuresByJobId = new Map<string, typeof failedResults>();
       for (const failure of failedResults) {
-        const existing = failuresByJobId.get(failure.reconJobId) || [];
-        existing.push(failure);
-        failuresByJobId.set(failure.reconJobId, existing);
+        if (failure.reconJobId) {
+          const existing = failuresByJobId.get(failure.reconJobId) || [];
+          existing.push(failure);
+          failuresByJobId.set(failure.reconJobId, existing);
+        }
       }
 
       let failureCount = 0;

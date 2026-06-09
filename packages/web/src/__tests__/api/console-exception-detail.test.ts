@@ -108,7 +108,7 @@ beforeEach(() => {
   resolveExceptionProvenanceRunMock.mockResolvedValue({
     id: RUN_UUID,
     runKind: "ingestion_run",
-    sourceModel: "reconciliation_runs",
+    sourceModel: "recon_results",
     name: "Canonical run",
     normalizedStatus: "completed",
     statusLabel: "Completed",

@@ -172,6 +172,7 @@ export interface ReconciliationConfig {
   amountTolerance?: number; // Default: 0.01
   fuzzyDescriptionThreshold?: number; // Default: 0.8 (0-1)
   requireExactAmount?: boolean; // Default: false
+  enableAdvancedMatching?: boolean; // Default: false
 }
 
 /**
@@ -185,4 +186,7 @@ export interface MatchResult {
   matchReason?: string;
   amountDiff?: number;
   dateDiff?: number; // Days
+  descriptionSimilarity?: number;
+  featureVector?: Record<string, unknown>;
+  modelWeights?: Record<string, unknown>;
 }

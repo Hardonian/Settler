@@ -530,8 +530,8 @@ export async function getConsoleActivationOverview(): Promise<ConsoleActivationO
             firstCompletedRun?.startedAt.toISOString() ??
             null,
           evidenceSummary: firstCompletedRun
-            ? "First completed reconciliation_runs row for accessible tenants."
-            : "No completed reconciliation_runs row yet.",
+            ? "First completed recon_results row for accessible tenants."
+            : "No completed recon_results row yet.",
         },
         first_exception_reviewed: {
           id: "first_exception_reviewed",

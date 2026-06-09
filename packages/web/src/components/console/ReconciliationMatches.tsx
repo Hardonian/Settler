@@ -230,7 +230,7 @@ export function ReconciliationMatches({ runId, runKind: runKindProp }: Reconcili
     if (blockReason.kind === "wrong_run_kind") {
       return {
         title: "Matches not available for this run type",
-        body: "Row-level matches are stored on ingestion reconciliation runs (reconciliation_runs). Recon jobs use job results and the console results view instead—do not call the v1 matches route with a recon_job id.",
+        body: "Row-level matches are stored on ingestion reconciliation runs (recon_results). Recon jobs use job results and the console results view instead—do not call the v1 matches route with a recon_job id.",
       };
     }
     if (blockReason.kind === "uuid_collision") {

@@ -1,5 +1,5 @@
 /**
- * Explicit resolution of a reconciliation run id across recon_jobs and reconciliation_runs.
+ * Explicit resolution of a reconciliation run id across recon_jobs and recon_results.
  */
 
 import { logConflict } from "./uuid-collision-log.js";

@@ -484,8 +484,8 @@ export class ExportJobWorker extends EventEmitter {
     try {
       // Verify run exists and belongs to tenant
       const runResult = await client.query(
-        `SELECT id, status, matched_count, unmatched_source_count, unmatched_target_count, total_records
-         FROM reconciliation_runs WHERE id = $1 AND tenant_id = $2`,
+        `SELECT id, status, matched_count, unmatched_source_count, unmatched_target_count, source_count + target_count as total_records
+         FROM recon_results WHERE id = $1 AND tenant_id = $2`,
         [runId, tenantId]
       );
 
@@ -615,8 +615,8 @@ export class ExportJobWorker extends EventEmitter {
     try {
       const runResult = await client.query(
         `SELECT rr.id, rr.status, rr.matched_count, rr.unmatched_source_count, rr.unmatched_target_count,
-                rr.total_records, rr.confidence_avg, rr.error_message, rr.started_at, rr.completed_at
-         FROM reconciliation_runs rr
+                rr.source_count + rr.target_count as total_records, rr.confidence_avg, rr.error_message, rr.started_at, rr.completed_at
+         FROM recon_results rr
          WHERE rr.id = $1 AND rr.tenant_id = $2`,
         [runId, tenantId]
       );

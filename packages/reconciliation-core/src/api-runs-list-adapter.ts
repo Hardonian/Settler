@@ -24,7 +24,7 @@ import {
 
 export type ApiRunsListLegacyItem = {
   runKind: "recon_job" | "ingestion_run";
-  sourceModel: "recon_jobs" | "reconciliation_runs";
+  sourceModel: "recon_jobs" | "recon_results";
   id: string;
   detailHref: string;
   name: string;

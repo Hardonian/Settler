@@ -138,7 +138,7 @@ describe("operator run detail serializer", () => {
       runKind: "ingestion_run",
       id: "ing-1",
       provenance: {
-        sourceModel: "reconciliation_runs",
+        sourceModel: "recon_results",
         runKind: "ingestion_run",
         ingestionId: "ingestion-1",
         reconJobId: null,
@@ -161,7 +161,7 @@ describe("operator run detail serializer", () => {
     });
 
     expect(payload.runKind).toBe("ingestion_run");
-    expect(payload.sourceModel).toBe("reconciliation_runs");
+    expect(payload.sourceModel).toBe("recon_results");
     expect(payload.kindDetail).toEqual(
       expect.objectContaining({
         kind: "ingestion_run",

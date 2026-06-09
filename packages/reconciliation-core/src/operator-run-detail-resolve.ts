@@ -403,9 +403,9 @@ export async function resolveOperatorRunDetailForTenants(
     } else if (exceptionScope.kind === "scoped" && exceptionScope.runIds.length === 0) {
       institutionalMemory = {
         state: "unavailable",
-        reasonCodes: ["ADJ_MEMORY_NO_LINKED_RECONCILIATION_RUNS"],
+        reasonCodes: ["ADJ_MEMORY_NO_LINKED_recon_results"],
         operatorMessage:
-          "No reconciliation_runs rows are linked to this recon job in metadata; adjudication memory cannot be scoped.",
+          "No recon_results rows are linked to this recon job in metadata; adjudication memory cannot be scoped.",
         adjudications: [],
       };
     }

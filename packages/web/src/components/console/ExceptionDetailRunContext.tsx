@@ -4,7 +4,7 @@
  * Run / execution context for a DriftEvent on the console exception detail page.
  *
  * DriftEvent.reconJobId is resolved via the same dual-model path as the run list:
- * ReconJob (recon_jobs) or ReconciliationRun (reconciliation_runs). This is not
+ * ReconJob (recon_jobs) or ReconciliationRun (recon_results). This is not
  * ReconciliationMatch adjudication (/jobs/.../exceptions/...).
  */
 
@@ -16,7 +16,7 @@ import { reconciliationRunStatusToBadgeType } from "@/lib/console/run-display";
 export interface ExceptionDetailProvenanceRun {
   id: string;
   runKind: "recon_job" | "ingestion_run";
-  sourceModel: "recon_jobs" | "reconciliation_runs";
+  sourceModel: "recon_jobs" | "recon_results";
   name: string | null;
   normalizedStatus: string;
   statusLabel: string;
@@ -64,7 +64,7 @@ export function ExceptionDetailRunContext({ run }: { run: ExceptionDetailProvena
         </p>
         <div className="mt-2 space-y-1 text-xs font-mono text-muted-foreground">
           <p>recon_jobs.id: {run.collision.reconJobId}</p>
-          <p>reconciliation_runs.id: {run.collision.reconciliationRunId}</p>
+          <p>recon_results.id: {run.collision.reconciliationRunId}</p>
         </div>
       </div>
     );
@@ -90,7 +90,7 @@ export function ExceptionDetailRunContext({ run }: { run: ExceptionDetailProvena
               <p className="text-[11px] text-muted-foreground pt-0.5">
                 Model:{" "}
                 <span className="font-mono">
-                  {run.sourceModel === "recon_jobs" ? "recon_jobs" : "reconciliation_runs"}
+                  {run.sourceModel === "recon_jobs" ? "recon_jobs" : "recon_results"}
                 </span>
               </p>
             </>

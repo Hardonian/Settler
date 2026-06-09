@@ -7,7 +7,7 @@ describe("ExceptionDetailRunContext", () => {
   const baseRun = {
     id: "66666666-7777-4888-8999-aaaaaaaaaaaa",
     runKind: "ingestion_run" as const,
-    sourceModel: "reconciliation_runs" as const,
+    sourceModel: "recon_results" as const,
     name: "Nightly Stripe ↔ Ledger",
     normalizedStatus: "completed",
     statusLabel: "Completed",
@@ -27,7 +27,7 @@ describe("ExceptionDetailRunContext", () => {
     expect(html).toContain("Nightly Stripe");
     expect(html).toContain("66666666-7777-4888-8999-aaaaaaaaaaaa");
     expect(html).toContain("Completed");
-    expect(html).toContain("reconciliation_runs");
+    expect(html).toContain("recon_results");
     expect(html).not.toMatch(/Mark Resolved|Ignore Exception|Reopen/);
   });
 

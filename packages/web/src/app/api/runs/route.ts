@@ -3,7 +3,7 @@
  *
  * GET /api/runs
  *
- * Returns recon_jobs-backed runs and ingestion-backed reconciliation_runs in one list,
+ * Returns recon_jobs-backed runs and ingestion-backed recon_results in one list,
  * using the same merge + cursor semantics as reconciliation-core.
  */
 
@@ -271,7 +271,7 @@ export const GET = withSecurity(
                   ? (["recon_job"] as const)
                   : (["ingestion_run"] as const),
             ordering:
-              "merged: recon_jobs.created_at DESC,id DESC + reconciliation_runs GREATEST(started_at,created_at) DESC,id DESC; filtered mode scans pages until enough matches",
+              "merged: recon_jobs.created_at DESC,id DESC + recon_results GREATEST(started_at,created_at) DESC,id DESC; filtered mode scans pages until enough matches",
             consistency: "read_committed",
             api: "GET /api/runs",
             tenant_id: tenantId,

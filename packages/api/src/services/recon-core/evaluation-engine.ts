@@ -130,7 +130,9 @@ export class EvaluationEngine {
     const fpFnMetrics = await this.calculateFpFn(run.id);
 
     // Historical comparison
-    const historicalComparison = await this.compareWithHistory(run.reconJobId, run.confidenceAvg);
+    const historicalComparison = run.reconJobId
+      ? await this.compareWithHistory(run.reconJobId, run.confidenceAvg)
+      : { trend: "stable" as const, delta: 0, percentile: 50 };
 
     // Determine grade
     const grade = this.determineGrade(weightedScore);

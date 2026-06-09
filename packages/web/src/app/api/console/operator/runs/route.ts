@@ -28,7 +28,7 @@ export const GET = withSecurity(
     const [countRow] = await prisma.$queryRaw<Array<{ total: number }>>(
       `
       SELECT COUNT(*)::int AS total
-      FROM reconciliation_runs r
+      FROM recon_results r
       WHERE ($1::text = '' OR r.tenant_id::text = $1::text)
         AND ($2::text = '' OR r.status = $2::text)
     `,
@@ -76,7 +76,7 @@ export const GET = withSecurity(
         COALESCE((COALESCE(r.matched_count, 0)::numeric / NULLIF(COALESCE(r.source_count, 0), 0)) * 100, 0)::float8 AS match_rate,
         COALESCE(mrc.manual_review_count, 0)::int AS manual_review_count,
         COALESCE(ec.error_count, 0)::int AS error_count
-      FROM reconciliation_runs r
+      FROM recon_results r
       LEFT JOIN manual_review_counts mrc
         ON mrc.run_id = r.id
        AND mrc.tenant_id = r.tenant_id

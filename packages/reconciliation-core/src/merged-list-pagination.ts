@@ -1,5 +1,5 @@
 /**
- * Dual-stream keyset cursor pagination for merged recon_jobs + reconciliation_runs lists.
+ * Dual-stream keyset cursor pagination for merged recon_jobs + recon_results lists.
  * Ordering: COALESCE(started_at, created_at) DESC, id DESC (per stream).
  */
 

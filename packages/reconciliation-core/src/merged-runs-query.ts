@@ -71,9 +71,9 @@ async function fetchIngestionRunsPage(
       SELECT
         id,
         tenant_id,
-        user_id,
+        metadata->>'userId' as user_id,
         ingestion_id,
-        name,
+        null as name,
         status,
         started_at,
         completed_at,
@@ -84,12 +84,12 @@ async function fetchIngestionRunsPage(
         unmatched_target_count,
         confidence_avg,
         error_message,
-        trace_id,
+        metadata->>'traceId' as trace_id,
         metadata,
         created_at,
         updated_at
-      FROM reconciliation_runs
-      WHERE tenant_id = ${tenantId}::uuid
+      FROM recon_results
+      WHERE tenant_id = ${tenantId}::uuid AND recon_job_id IS NULL
       ORDER BY GREATEST(started_at, created_at) DESC NULLS LAST, id::text DESC
       LIMIT ${take}
     `;
@@ -101,9 +101,9 @@ async function fetchIngestionRunsPage(
     SELECT
       id,
       tenant_id,
-      user_id,
+      metadata->>'userId' as user_id,
       ingestion_id,
-      name,
+      null as name,
       status,
       started_at,
       completed_at,
@@ -114,12 +114,12 @@ async function fetchIngestionRunsPage(
       unmatched_target_count,
       confidence_avg,
       error_message,
-      trace_id,
+      metadata->>'traceId' as trace_id,
       metadata,
       created_at,
       updated_at
-    FROM reconciliation_runs
-    WHERE tenant_id = ${tenantId}::uuid
+    FROM recon_results
+    WHERE tenant_id = ${tenantId}::uuid AND recon_job_id IS NULL
       AND (
         GREATEST(started_at, created_at) < ${t}
         OR (
@@ -451,7 +451,7 @@ export async function fetchMergedReconciliationRunsPage(input: {
       contract_version: 1,
       included_run_kinds: includedKinds,
       ordering:
-        "merged: recon_jobs.created_at DESC,id DESC + reconciliation_runs GREATEST(started_at,created_at) DESC,id DESC",
+        "merged: recon_jobs.created_at DESC,id DESC + recon_results GREATEST(started_at,created_at) DESC,id DESC",
       consistency: "read_committed",
     },
   };

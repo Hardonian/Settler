@@ -100,7 +100,7 @@ describe("GET /api/console/reconciliation", () => {
         {
           id: "run-1",
           runKind: "ingestion_run",
-          sourceModel: "reconciliation_runs",
+          sourceModel: "recon_results",
           detailHref: "/console/runs/run-1",
         },
       ],
@@ -152,7 +152,7 @@ describe("GET /api/console/reconciliation", () => {
       expect.objectContaining({
         id: "run-1",
         runKind: "ingestion_run",
-        sourceModel: "reconciliation_runs",
+        sourceModel: "recon_results",
         detailHref: "/console/runs/run-1",
       }),
     ]);

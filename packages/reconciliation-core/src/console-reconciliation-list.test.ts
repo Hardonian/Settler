@@ -90,7 +90,7 @@ describe("buildConsoleReconciliationListBody", () => {
     runKind: "ingestion_run",
     id: "i1",
     provenance: {
-      sourceModel: "reconciliation_runs",
+      sourceModel: "recon_results",
       runKind: "ingestion_run",
       ingestionId: null,
       reconJobId: null,
@@ -109,7 +109,7 @@ describe("buildConsoleReconciliationListBody", () => {
       expect.objectContaining({
         id: "i1",
         runKind: "ingestion_run",
-        sourceModel: "reconciliation_runs",
+        sourceModel: "recon_results",
         detailHref: "/console/runs/i1",
       }),
     ]);

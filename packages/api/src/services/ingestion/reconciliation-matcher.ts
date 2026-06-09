@@ -27,6 +27,7 @@ const DEFAULT_CONFIG: Required<ReconciliationConfig> = {
   amountTolerance: 0.01,
   fuzzyDescriptionThreshold: 0.8,
   requireExactAmount: false,
+  enableAdvancedMatching: false,
 };
 
 /**
@@ -305,55 +306,83 @@ export async function matchTransaction(
   if (source.external_id) {
     const exactMatch = targets.find((t) => t.external_id === source.external_id);
     if (exactMatch) {
+      const amountDiff = Math.abs(source.amount - exactMatch.amount);
+      const dateDiff = daysDifference(source.date, exactMatch.date);
+      const descriptionSimilarity = stringSimilarity(
+        source.description || "",
+        exactMatch.description || ""
+      );
+
       return {
         sourceTransactionId: source.id,
         targetTransactionId: exactMatch.id,
         matchType: "exact",
         confidence: 1.0,
         matchReason: "Exact external ID match",
-        amountDiff: Math.abs(source.amount - exactMatch.amount),
-        dateDiff: daysDifference(source.date, exactMatch.date),
+        amountDiff,
+        dateDiff,
+        descriptionSimilarity,
+        featureVector: {
+          amountDiff,
+          dateDiff,
+          descriptionSimilarity,
+          currencyMatch: true,
+          exactExternalId: true,
+        },
+        modelWeights: { deterministic: 1.0 },
       };
     }
   }
 
   // Try ML matching engine (proprietary, creates data moat)
   // This uses historical match data and cross-customer intelligence
-  try {
-    const sourceAdapter = await getSourceAdapter(sourceTransactionId, tenantId);
-    const targetAdapters = await Promise.all(
-      targetTransactionIds.map((id) => getSourceAdapter(id, tenantId))
-    );
-
-    // Use ML engine for first target adapter (most common case)
-    if (targetAdapters.length > 0) {
-      const mlPrediction = await mlMatchingEngine.predictMatch(
-        sourceTransactionId,
-        targetTransactionIds,
-        tenantId,
-        sourceAdapter || "unknown",
-        targetAdapters[0] || "unknown"
+  if (opts.enableAdvancedMatching) {
+    try {
+      const sourceAdapter = await getSourceAdapter(sourceTransactionId, tenantId);
+      const targetAdapters = await Promise.all(
+        targetTransactionIds.map((id) => getSourceAdapter(id, tenantId))
       );
 
-      if (mlPrediction && mlPrediction.confidence > 0.7) {
-        // ML prediction is confident, use it
-        const bestTarget = targets.find((t) => targetTransactionIds.includes(t.id));
-        if (bestTarget) {
-          return {
-            sourceTransactionId: source.id,
-            targetTransactionId: bestTarget.id,
-            matchType: mlPrediction.matchType,
-            confidence: mlPrediction.confidence,
-            matchReason: `ML model prediction: ${mlPrediction.reasoning}`,
-            amountDiff: Math.abs(source.amount - bestTarget.amount),
-            dateDiff: daysDifference(source.date, bestTarget.date),
-          };
+      // Use ML engine for first target adapter (most common case)
+      if (targetAdapters.length > 0) {
+        const mlPrediction = await mlMatchingEngine.predictMatch(
+          sourceTransactionId,
+          targetTransactionIds,
+          tenantId,
+          sourceAdapter || "unknown",
+          targetAdapters[0] || "unknown"
+        );
+
+        if (mlPrediction && mlPrediction.confidence > 0.7) {
+          // ML prediction is confident, use it
+          const bestTarget = targets.find((t) => targetTransactionIds.includes(t.id));
+          if (bestTarget) {
+            const amountDiff = Math.abs(source.amount - bestTarget.amount);
+            const dateDiff = daysDifference(source.date, bestTarget.date);
+            const descriptionSimilarity = stringSimilarity(
+              source.description || "",
+              bestTarget.description || ""
+            );
+
+            return {
+              sourceTransactionId: source.id,
+              targetTransactionId: bestTarget.id,
+              matchType: mlPrediction.matchType,
+              confidence: mlPrediction.confidence,
+              matchReason: `ML model prediction: ${mlPrediction.reasoning}`,
+              amountDiff,
+              dateDiff,
+              descriptionSimilarity,
+              featureVector: { amountDiff, dateDiff, descriptionSimilarity, mlPrediction: true },
+              modelWeights: { version: mlPrediction.modelVersion },
+            };
+          }
         }
       }
+    } catch (error) {
+      // Fall back to deterministic algorithm if ML fails
+      logError("ML matching failed, falling back to deterministic", error);
     }
-  } catch (error) {
-    // Fall back to deterministic algorithm if ML fails
-    logError("ML matching failed, falling back to deterministic", error);
   }
 
   // Filter by currency match
@@ -472,6 +501,14 @@ export async function matchTransaction(
     matchReason: `Matched by amount (diff: ${bestMatch.amountDiff.toFixed(2)}), date (diff: ${bestMatch.dateDiff} days), description similarity: ${(bestMatch.descSimilarity * 100).toFixed(1)}%`,
     amountDiff: bestMatch.amountDiff,
     dateDiff: bestMatch.dateDiff,
+    descriptionSimilarity: bestMatch.descSimilarity,
+    featureVector: {
+      amountDiff: bestMatch.amountDiff,
+      dateDiff: bestMatch.dateDiff,
+      descriptionSimilarity: bestMatch.descSimilarity,
+      deterministicScore: bestMatch.confidence,
+    },
+    modelWeights: { deterministic: 1.0 },
   };
 }
 
@@ -547,12 +584,17 @@ export async function runReconciliation(
     config.requireExactAmount,
     DEFAULT_CONFIG.requireExactAmount
   ) as boolean;
+  const effectiveEnableAdvancedMatching = pickDefined(
+    config.enableAdvancedMatching,
+    DEFAULT_CONFIG.enableAdvancedMatching
+  ) as boolean;
 
   const effectiveConfig: Required<ReconciliationConfig> = {
     dateWindowDays: effectiveDateWindowDays,
     amountTolerance: effectiveAmountTolerance,
     fuzzyDescriptionThreshold: effectiveFuzzyDescriptionThreshold,
     requireExactAmount: effectiveRequireExactAmount,
+    enableAdvancedMatching: effectiveEnableAdvancedMatching,
   };
 
   const configResolution = {
@@ -604,7 +646,7 @@ export async function runReconciliation(
   try {
     // Guard: prevent duplicate running reconciliation for same ingestion+tenant
     const existingRunning = await query(
-      `SELECT id FROM reconciliation_runs
+      `SELECT id FROM recon_results
        WHERE ingestion_id = $1 AND tenant_id = $2 AND status = 'running'
        LIMIT 1`,
       [ingestionId, tenantId]
@@ -618,13 +660,12 @@ export async function runReconciliation(
       });
     }
 
-    // Create reconciliation run
     await query(
-      `INSERT INTO reconciliation_runs (
-        id, ingestion_id, tenant_id, user_id, status, started_at,
-        trace_id, metadata, created_at, updated_at
-      ) VALUES ($1, $2, $3, $4, $5, NOW(), $6, $7, NOW(), NOW())`,
-      [runId, ingestionId, tenantId, userId, "running", traceId, JSON.stringify(runMetadata)]
+      `INSERT INTO recon_results (
+        id, ingestion_id, tenant_id, status, started_at,
+        metadata, created_at, updated_at
+      ) VALUES ($1, $2, $3, $4, NOW(), $5, NOW(), NOW())`,
+      [runId, ingestionId, tenantId, "running", JSON.stringify({ ...runMetadata, userId, traceId })]
     );
 
     await emitOperatorRuntimeEvent({
@@ -692,7 +733,11 @@ export async function runReconciliation(
             match.amountDiff || null,
             match.dateDiff || null,
             false,
-            JSON.stringify({}),
+            JSON.stringify({
+              descriptionSimilarity: match.descriptionSimilarity,
+              featureVector: match.featureVector,
+              modelWeights: match.modelWeights,
+            }),
           ]
         );
       }
@@ -713,7 +758,7 @@ export async function runReconciliation(
     };
 
     await query(
-      `UPDATE reconciliation_runs SET
+      `UPDATE recon_results SET
         status = 'completed',
         completed_at = NOW(),
         source_count = $1,
@@ -833,7 +878,7 @@ export async function runReconciliation(
   } catch (error) {
     logError("Reconciliation failed", error, { runId, traceId });
     await query(
-      `UPDATE reconciliation_runs SET
+      `UPDATE recon_results SET
         status = 'failed',
         completed_at = NOW(),
         error_message = $1,

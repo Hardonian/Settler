@@ -224,6 +224,16 @@ router.post(
         ]);
       }
 
+      if (!originalRun.reconJobId) {
+        throw new ValidationError("Can only retry job runs, not ingestion runs", "status", [
+          {
+            field: "reconJobId",
+            message: "Missing reconJobId",
+            code: "INVALID_RUN_TYPE",
+          },
+        ]);
+      }
+
       // Wrap duplicate-check + create in a Serializable transaction to prevent
       // TOCTOU race: two concurrent retry requests could both pass the findFirst
       // check before either creates, resulting in duplicate running retries.
@@ -256,7 +266,7 @@ router.post(
             data: {
               reconJob: {
                 connect: {
-                  id: originalRun.reconJobId,
+                  id: originalRun.reconJobId!,
                 },
               },
               tenantId,
@@ -291,7 +301,7 @@ router.post(
         message: "Run retry initiated successfully",
         data: {
           id: newRun.id,
-          name: originalRun.reconJob.name,
+          name: originalRun.reconJob?.name ?? "Unknown Job",
           status: "running",
           triggeredBy: userId,
           triggeredAt: new Date().toISOString(),

@@ -1,5 +1,5 @@
 /**
- * Structured logging for UUID collisions across recon_jobs and reconciliation_runs.
+ * Structured logging for UUID collisions across recon_jobs and recon_results.
  * No PII beyond ids already in the request path.
  */
 

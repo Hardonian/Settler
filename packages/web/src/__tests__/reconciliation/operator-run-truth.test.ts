@@ -191,7 +191,7 @@ describe("deriveOperatorRunAttention", () => {
     const items = deriveOperatorRunAttention(
       baseRun({
         runKind: "ingestion_run",
-        sourceModel: "reconciliation_runs",
+        sourceModel: "recon_results",
         exceptionWorkflowNote: "Keyed differently",
       })
     );

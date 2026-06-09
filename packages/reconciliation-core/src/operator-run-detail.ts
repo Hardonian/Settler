@@ -120,7 +120,7 @@ export interface OperatorRunStageRow {
 
 export interface OperatorRunDetailBase {
   runKind: "recon_job" | "ingestion_run";
-  sourceModel: "recon_jobs" | "reconciliation_runs";
+  sourceModel: "recon_jobs" | "recon_results";
   id: string;
   detailHref: string;
   name: string;
@@ -146,7 +146,7 @@ export interface OperatorRunDetailBase {
     note: string;
   };
   provenance: {
-    sourceModel: "recon_jobs" | "reconciliation_runs";
+    sourceModel: "recon_jobs" | "recon_results";
     runKind: "recon_job" | "ingestion_run";
     ingestionId: string | null;
     reconJobId: string | null;
@@ -299,7 +299,7 @@ export function buildOperatorIngestionRunDetailJson(input: {
       unmatchedSourceCount: input.detail.summary.unmatchedSourceCount,
       unmatchedTargetCount: input.detail.summary.unmatchedTargetCount,
       conflictCount: input.detail.summary.conflicts,
-      note: "Ingestion-backed run: counts come from reconciliation_runs; exception workflow and snapshot-backed config apply to recon job runs only.",
+      note: "Ingestion-backed run: counts come from recon_results; exception workflow and snapshot-backed config apply to recon job runs only.",
     },
     resultContext: {
       latestResultId: null,
@@ -308,7 +308,7 @@ export function buildOperatorIngestionRunDetailJson(input: {
       latestResultCompletedAt: completedAt,
       persistedResultCount: 0,
       comparison: null,
-      note: "This run is stored in reconciliation_runs (ingestion path), not recon_jobs + recon_results.",
+      note: "This run is stored in recon_results (ingestion path), not recon_jobs + recon_results.",
     },
     config: {
       sourceAdapter: input.detail.adapters.sourceAdapter,

@@ -24,7 +24,7 @@ import {
 export type ReconciliationRunKind = "recon_job" | "ingestion_run";
 
 export interface CanonicalReconciliationProvenance {
-  sourceModel: "recon_jobs" | "reconciliation_runs";
+  sourceModel: "recon_jobs" | "recon_results";
   runKind: ReconciliationRunKind;
   /** Ingestion-scoped execution id when runKind === ingestion_run */
   ingestionId: string | null;
@@ -219,7 +219,7 @@ export function mapIngestionReconciliationRunToCanonicalDetail(row: {
     summaryState,
     summary,
     provenance: {
-      sourceModel: "reconciliation_runs",
+      sourceModel: "recon_results",
       runKind: "ingestion_run",
       ingestionId: row.ingestionId,
       reconJobId: null,
