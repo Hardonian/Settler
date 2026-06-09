@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
 import { accessSync, constants, existsSync } from "node:fs";
+import { extname } from "node:path";
 
 const KERNEL_STDIO_CAPTURE_LIMIT = 4096;
 const KERNEL_PROTOCOL_VERSION = "v1";
@@ -174,6 +175,24 @@ function shouldAllowCargoFallback(env: NodeJS.ProcessEnv): boolean {
   if (env.SETTLER_KERNEL_ALLOW_CARGO === "1") return true;
   if (env.SETTLER_KERNEL_DEV_FALLBACK === "1") return true;
   return env.NODE_ENV !== "production" && env.CI !== "true";
+}
+
+function isConfiguredBinaryExecutable(filePath: string, env: NodeJS.ProcessEnv): boolean {
+  if (process.platform === "win32") {
+    const executableExtensions = (env.PATHEXT ?? ".COM;.EXE;.BAT;.CMD")
+      .split(";")
+      .map((value) => value.trim().toLowerCase())
+      .filter(Boolean);
+    const fileExtension = extname(filePath).toLowerCase();
+    if (!fileExtension || !executableExtensions.includes(fileExtension)) {
+      return false;
+    }
+    accessSync(filePath, constants.F_OK);
+    return true;
+  }
+
+  accessSync(filePath, constants.X_OK);
+  return true;
 }
 
 function parseExecutionMode(env: NodeJS.ProcessEnv): KernelExecutionMode {
@@ -363,7 +382,9 @@ export function resolveKernelRunner(env: NodeJS.ProcessEnv = process.env): {
       return { runner: null, mode: "fallback-ts", reason: "binary_missing" };
     }
     try {
-      accessSync(configuredBin, constants.X_OK);
+      if (!isConfiguredBinaryExecutable(configuredBin, env)) {
+        throw new Error("binary_not_executable");
+      }
       return { runner: { mode: "binary", cmd: configuredBin, args: [] }, mode: "binary" };
     } catch {
       return { runner: null, mode: "fallback-ts", reason: "binary_not_executable" };
