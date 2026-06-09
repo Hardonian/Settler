@@ -883,7 +883,7 @@ export async function runReconciliation(
       const { prisma } = await import("../../infrastructure/db/prisma");
 
       const outcome = await resolveOperatorRunDetailForTenants(prisma, [tenantId], runId);
-      if (outcome.kind === "success") {
+      if (outcome.kind === "ok") {
         const artifact = buildDeterministicRunProofpackArtifact({
           detail: outcome.detail,
           generatedAtIso: new Date().toISOString(),
