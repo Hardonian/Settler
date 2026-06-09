@@ -77,6 +77,14 @@ export interface ILedgerRepository {
   postPendingTransfer(transferId: string, tenantId: string): Promise<LedgerTransfer | null>;
 
   /**
+   * Void a pending transfer
+   * @param transferId - Transfer ID to void
+   * @param tenantId - Tenant ID (required for isolation)
+   * @returns Voided transfer or null if not found
+   */
+  voidPendingTransfer(transferId: string, tenantId: string): Promise<LedgerTransfer | null>;
+
+  /**
    * Get a transfer by ID
    * @param transferId - Transfer ID
    * @param tenantId - Tenant ID (required for isolation)

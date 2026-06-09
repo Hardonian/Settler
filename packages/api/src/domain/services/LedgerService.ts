@@ -17,6 +17,7 @@ import {
   createDisabledLedgerRepository,
   LedgerUnavailableError,
 } from "../../infrastructure/repositories/DisabledLedgerRepository";
+import { LedgerConnectionError } from "../LedgerError";
 import { logger } from "@settler/types";
 
 // =============================================================================
@@ -126,7 +127,7 @@ export class LedgerService {
           error: message,
         });
         // Remove graceful degradation for enterprise scale - if ledger is required, it must be available
-        throw new Error(
+        throw new LedgerConnectionError(
           `Critical Infrastructure Failure: TigerBeetle initialization failed: ${message}`
         );
       }

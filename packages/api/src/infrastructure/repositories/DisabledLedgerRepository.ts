@@ -160,7 +160,14 @@ export class DisabledLedgerRepository implements ILedgerRepository {
     _transferId: string,
     _tenantId: string
   ): Promise<LedgerTransfer | null> {
-    this.throwUnavailable();
+    throw new LedgerUnavailableError(this.reason);
+  }
+
+  async voidPendingTransfer(
+    _transferId: string,
+    _tenantId: string
+  ): Promise<LedgerTransfer | null> {
+    throw new LedgerUnavailableError(this.reason);
   }
 
   async getTransfer(_transferId: string, _tenantId: string): Promise<LedgerTransfer | null> {
