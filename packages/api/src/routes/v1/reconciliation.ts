@@ -12,7 +12,7 @@ import { logError, logInfo } from "../../utils/logger";
 import { isApiError, ValidationError } from "../../utils/typed-errors";
 import { sendProblemJson } from "../../utils/problem-json";
 import { runReconciliation } from "../../services/ingestion/reconciliation-matcher";
-import { query } from "../../db";
+import { queryWithTenant } from "../../db";
 import { ReconciliationConfig } from "../../services/ingestion/types";
 import {
   buildWorkbenchItem,
@@ -465,9 +465,14 @@ router.get(
       queryStr += ` ORDER BY rm.confidence DESC, st.date DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
       params.push(limit.toString(), offset.toString());
 
-      const matches = await query(queryStr, params as (string | number | boolean | Date | null)[]);
+      const matches = await queryWithTenant(
+        tenantId,
+        queryStr,
+        params as (string | number | boolean | Date | null)[]
+      );
 
-      const totalResults = await query(
+      const totalResults = await queryWithTenant(
+        tenantId,
         `SELECT COUNT(*) as count
       FROM reconciliation_matches
       WHERE run_id = $1 AND tenant_id = $2`,
@@ -543,7 +548,8 @@ router.get(
       const offset = Number.isFinite(offsetRaw) && offsetRaw >= 0 ? offsetRaw : 0;
       const queue = req.query.queue as string | undefined;
 
-      const runs = await query(
+      const runs = await queryWithTenant(
+        tenantId,
         `SELECT metadata FROM reconciliation_runs WHERE id = $1 AND tenant_id = $2 LIMIT 1`,
         [runId, tenantId]
       );
@@ -562,7 +568,8 @@ router.get(
           ? (JSON.parse(runMetadataRaw) as Record<string, unknown>)
           : ((runMetadataRaw as Record<string, unknown>) ?? {});
 
-      const rows = await query(
+      const rows = await queryWithTenant(
+        tenantId,
         `SELECT
         rm.id, rm.run_id, rm.match_type, rm.confidence, rm.match_reason,
         rm.amount_diff, rm.date_diff, rm.reviewed, rm.reviewed_at, rm.reviewed_by, rm.metadata,
@@ -624,7 +631,8 @@ router.get(
       if (!respondIngestionWorkbenchGate(req, res, gateB)) return;
 
       const fetchRunItems = async (targetRunId: string) => {
-        const runRows = await query(
+        const runRows = await queryWithTenant(
+          tenantId,
           `SELECT metadata FROM reconciliation_runs WHERE id = $1 AND tenant_id = $2 LIMIT 1`,
           [targetRunId, tenantId]
         );
@@ -638,7 +646,8 @@ router.get(
             ? (JSON.parse(runMetadataRaw) as Record<string, unknown>)
             : ((runMetadataRaw as Record<string, unknown>) ?? {});
 
-        const rows = await query(
+        const rows = await queryWithTenant(
+          tenantId,
           `SELECT
           rm.id, rm.run_id, rm.match_type, rm.confidence, rm.match_reason,
           rm.amount_diff, rm.date_diff, rm.reviewed, rm.reviewed_at, rm.reviewed_by, rm.metadata,
@@ -682,7 +691,8 @@ router.get(
       const gate = await gateIngestionRunForWorkbench(runId, tenantId);
       if (!respondIngestionWorkbenchGate(req, res, gate)) return;
 
-      const runRows = await query(
+      const runRows = await queryWithTenant(
+        tenantId,
         `SELECT metadata FROM reconciliation_runs WHERE id = $1 AND tenant_id = $2 LIMIT 1`,
         [runId, tenantId]
       );
@@ -700,7 +710,8 @@ router.get(
         typeof runMetadataRaw === "string"
           ? (JSON.parse(runMetadataRaw) as Record<string, unknown>)
           : ((runMetadataRaw as Record<string, unknown>) ?? {});
-      const rows = await query(
+      const rows = await queryWithTenant(
+        tenantId,
         `SELECT
         rm.id, rm.run_id, rm.match_type, rm.confidence, rm.match_reason,
         rm.amount_diff, rm.date_diff, rm.reviewed, rm.reviewed_at, rm.reviewed_by, rm.metadata,
@@ -762,7 +773,8 @@ router.patch(
             ? "reviewed"
             : "pending_review";
 
-      await query(
+      await queryWithTenant(
+        tenantId,
         `UPDATE reconciliation_matches SET
         reviewed = $1,
         reviewed_by = $2,

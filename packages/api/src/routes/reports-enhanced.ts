@@ -9,7 +9,7 @@ import { validateRequest } from "../middleware/validation";
 import { AuthRequest } from "../middleware/auth";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
-import { query } from "../db";
+import { queryWithTenant } from "../db";
 import { handleRouteError } from "../utils/error-handler";
 import { NotFoundError } from "../utils/typed-errors";
 
@@ -49,7 +49,8 @@ router.get(
       const tenantId = req.tenantId!;
 
       // Verify job ownership — scoped by tenant_id
-      const jobs = await query<{ user_id: string; name: string }>(
+      const jobs = await queryWithTenant<{ user_id: string; name: string }>(
+        tenantId,
         `SELECT user_id, name FROM jobs WHERE id = $1 AND tenant_id = $2`,
         [jobId, tenantId]
       );
@@ -64,7 +65,7 @@ router.get(
       const end = endDate ? new Date(endDate) : new Date();
 
       // Get summary statistics
-      const summary = await query<{
+      const summary = await queryWithTenant<{
         total: string;
         matched: string;
         unmatched: string;
@@ -74,6 +75,7 @@ router.get(
         matched_amount: number;
         unmatched_amount: number;
       }>(
+        tenantId,
         `SELECT 
            COUNT(*) as total,
            COUNT(*) FILTER (WHERE status = 'completed' AND (summary->>'matched')::int > 0) as matched,
@@ -100,13 +102,14 @@ router.get(
       };
 
       // Get recent executions
-      const recentExecutions = await query<{
+      const recentExecutions = await queryWithTenant<{
         id: string;
         status: string;
         started_at: Date;
         completed_at: Date | null;
         summary: unknown;
       }>(
+        tenantId,
         `SELECT id, status, started_at, completed_at, summary
          FROM executions
          WHERE job_id = $1 AND tenant_id = $2 AND started_at >= $3 AND started_at <= $4
@@ -116,7 +119,8 @@ router.get(
       );
 
       // Get exception count
-      const exceptionCount = await query<{ count: string }>(
+      const exceptionCount = await queryWithTenant<{ count: string }>(
+        tenantId,
         `SELECT COUNT(*) as count
          FROM exceptions e
          JOIN jobs j ON e.job_id = j.id
@@ -181,11 +185,12 @@ router.get(
       } else {
         // JSON or CSV format (existing behavior)
         // Return standard report format
-        const report = await query<{
+        const report = await queryWithTenant<{
           id: string;
           summary: unknown;
           generated_at: Date;
         }>(
+          tenantId,
           `SELECT id, summary, generated_at
            FROM reports
            WHERE job_id = $1 AND tenant_id = $2 AND generated_at >= $3 AND generated_at <= $4

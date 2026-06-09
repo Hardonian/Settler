@@ -9,7 +9,7 @@ import { validateRequest } from "../middleware/validation";
 import { AuthRequest } from "../middleware/auth";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
-import { query } from "../db";
+import { queryWithTenant } from "../db";
 import { handleRouteError } from "../utils/error-handler";
 
 const router: Router = Router();
@@ -33,7 +33,7 @@ router.get(
     try {
       const userId = req.userId!;
 
-      const rules = await query<{
+      const rules = await queryWithTenant<{
         id: string;
         name: string;
         metric: string;
@@ -43,6 +43,7 @@ router.get(
         enabled: boolean;
         created_at: Date;
       }>(
+        req.tenantId!,
         `SELECT id, name, metric, threshold, operator, channels, enabled, created_at
          FROM alert_rules
          WHERE user_id = $1
@@ -78,7 +79,8 @@ router.post(
       const userId = req.userId!;
       const { name, metric, threshold, operator, channels, enabled } = req.body;
 
-      const result = await query<{ id: string }>(
+      const result = await queryWithTenant<{ id: string }>(
+        req.tenantId!,
         `INSERT INTO alert_rules (user_id, name, metric, threshold, operator, channels, enabled)
          VALUES ($1, $2, $3, $4, $5, $6, $7)
          RETURNING id`,
@@ -109,7 +111,7 @@ router.get(
       const userId = req.userId!;
       const { limit = 50, offset = 0 } = req.query as { limit?: number; offset?: number };
 
-      const alerts = await query<{
+      const alerts = await queryWithTenant<{
         id: string;
         rule_id: string;
         metric: string;
@@ -118,6 +120,7 @@ router.get(
         triggered_at: Date;
         resolved_at: Date | null;
       }>(
+        req.tenantId!,
         `SELECT a.id, a.rule_id, a.metric, a.value, a.threshold, a.triggered_at, a.resolved_at
          FROM alert_history a
          JOIN alert_rules r ON a.rule_id = r.id

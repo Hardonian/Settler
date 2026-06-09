@@ -10,7 +10,7 @@ import { validateRequest } from "../../middleware/validation";
 import { AuthRequest } from "../../middleware/auth";
 import { requirePermission } from "../../middleware/authorization";
 import { Permission } from "../../infrastructure/security/Permissions";
-import { query } from "../../db";
+import { queryWithTenant } from "../../db";
 import { sendSuccess, sendPaginated } from "../../utils/api-response";
 import { handleRouteError } from "../../utils/error-handler";
 
@@ -89,7 +89,8 @@ router.get(
       }
 
       // Get total count
-      const countResult = await query<{ count: string }>(
+      const countResult = await queryWithTenant<{ count: string }>(
+        tenantId,
         `SELECT COUNT(*) as count FROM fees WHERE ${whereClause}`,
         params
       );
@@ -99,7 +100,8 @@ router.get(
       const total = parseInt(countResult[0].count, 10);
 
       // Get fees
-      const fees = await query(
+      const fees = await queryWithTenant(
+        tenantId,
         `SELECT 
           id,
           tenant_id as "tenantId",
@@ -169,7 +171,8 @@ router.get(
         paramIndex++;
       }
 
-      const result = await query(
+      const result = await queryWithTenant(
+        tenantId,
         `SELECT 
           t.id as "transactionId",
           t.provider,

@@ -10,7 +10,7 @@ import { AuthRequest } from "../middleware/auth";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
 import { handleRouteError } from "../utils/error-handler";
-import { query } from "../db";
+import { queryWithTenant } from "../db";
 import { deterministicAISandbox } from "../services/ai-assistant/deterministic-ai-sandbox";
 
 const router: Router = Router();
@@ -48,7 +48,8 @@ router.post(
         preferredModel: req.body.model,
       });
 
-      await query(
+      await queryWithTenant(
+        tenantId,
         `INSERT INTO audit_logs (event, user_id, tenant_id, ip, user_agent, path, metadata)
          VALUES ($1, $2, $3, $4, $5, $6, $7)`,
         [
@@ -100,12 +101,13 @@ router.get(
       const tenantId = req.tenantId!;
 
       // Get job details — scoped by tenant_id
-      const jobs = await query<{
+      const jobs = await queryWithTenant<{
         id: string;
         rules: unknown;
         source_adapter: string;
         target_adapter: string;
       }>(
+        tenantId,
         `SELECT id, rules, source_adapter, target_adapter FROM jobs WHERE id = $1 AND user_id = $2 AND tenant_id = $3`,
         [jobId || null, userId, tenantId]
       );
@@ -118,12 +120,13 @@ router.get(
       const job = jobs[0];
 
       // Get performance metrics
-      const metrics = await query<{
+      const metrics = await queryWithTenant<{
         avg_accuracy: number;
         avg_confidence: number;
         exception_rate: number;
         match_rate: number;
       }>(
+        tenantId,
         `SELECT 
            AVG((summary->>'accuracy')::float) as avg_accuracy,
            AVG((SELECT AVG(confidence) FROM matches WHERE execution_id = e.id)) as avg_confidence,

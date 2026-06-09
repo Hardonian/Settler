@@ -8,6 +8,7 @@ import { AuthRequest } from "./auth";
 import { ITenantRepository } from "../domain/repositories/ITenantRepository";
 import { Container } from "../infrastructure/di/Container";
 import { query } from "../db";
+import { logError } from "../utils/logger";
 import { sendProblemJson } from "../utils/problem-json";
 
 export interface TenantRequest extends AuthRequest {

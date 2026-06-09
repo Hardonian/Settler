@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { query } from "../db";
+import { queryWithTenant } from "../db";
 import { logError } from "../utils/logger";
 
 /**
@@ -33,12 +33,13 @@ observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
     }
 
     // Get job metrics
-    const jobStats = await query<{
+    const jobStats = await queryWithTenant<{
       total: number;
       active: number;
       completed: number;
       failed: number;
     }>(
+      (req as any)?.tenantId || (_req as any)?.tenantId || "",
       `SELECT 
         COUNT(*) as total,
         COUNT(*) FILTER (WHERE status = 'active') as active,
@@ -50,12 +51,13 @@ observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
     );
 
     // Get reconciliation metrics
-    const reconciliationStats = await query<{
+    const reconciliationStats = await queryWithTenant<{
       totalReconciliations: number;
       totalMatched: number;
       totalUnmatched: number;
       averageAccuracy: number;
     }>(
+      (req as any)?.tenantId || (_req as any)?.tenantId || "",
       `SELECT 
         COUNT(*) as "totalReconciliations",
         COALESCE(SUM(matched_count), 0) as "totalMatched",
@@ -68,12 +70,13 @@ observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
     );
 
     // Get API usage metrics
-    const apiUsage = await query<{
+    const apiUsage = await queryWithTenant<{
       totalRequests: number;
       successfulRequests: number;
       failedRequests: number;
       averageLatency: number;
     }>(
+      (req as any)?.tenantId || (_req as any)?.tenantId || "",
       `SELECT 
         COUNT(*) as "totalRequests",
         COUNT(*) FILTER (WHERE status_code < 400) as "successfulRequests",
@@ -86,11 +89,12 @@ observabilityRouter.get("/metrics", async (req: Request, res: Response) => {
     );
 
     // Get webhook metrics
-    const webhookStats = await query<{
+    const webhookStats = await queryWithTenant<{
       totalWebhooks: number;
       successfulWebhooks: number;
       failedWebhooks: number;
     }>(
+      (req as any)?.tenantId || (_req as any)?.tenantId || "",
       `SELECT 
         COUNT(*) as "totalWebhooks",
         COUNT(*) FILTER (WHERE status = 'delivered') as "successfulWebhooks",
@@ -197,7 +201,7 @@ observabilityRouter.get("/logs", async (req: Request, res: Response) => {
     queryStr += ` ORDER BY created_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
     params.push(parseInt(limit as string), parseInt(offset as string));
 
-    const logs = await query(queryStr, params);
+    const logs = await queryWithTenant(req.tenantId!, queryStr, params);
 
     res.json({
       data: logs,
@@ -258,7 +262,7 @@ observabilityRouter.get("/health", async (_req: Request, res: Response) => {
     // Check database connection
     let dbStatus = "healthy";
     try {
-      await query("SELECT 1");
+      await queryWithTenant(req.tenantId!, "SELECT 1");
     } catch {
       dbStatus = "unhealthy";
     }

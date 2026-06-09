@@ -10,7 +10,7 @@ import {
 } from "../services/capabilities/registry";
 import { isMissingOptionalCapabilityDependency } from "../services/capabilities/errors";
 import { observeCapabilityStatus } from "../services/capabilities/telemetry";
-import { query } from "../db";
+import { queryWithTenant } from "../db";
 
 export const platformControlPlaneRouter: Router = Router();
 
@@ -23,7 +23,8 @@ async function getRecentImportWorkbenchSummary(tenantId: string): Promise<{
     canProceed?: boolean;
   };
 }> {
-  const rowsResult = await query(
+  const rowsResult = await queryWithTenant(
+    tenantId,
     `SELECT id, completed_at, metadata
        FROM ingestions
       WHERE tenant_id = $1

@@ -16,7 +16,7 @@ import { requirePermission } from "../../middleware/authorization";
 import { Permission } from "../../infrastructure/security/Permissions";
 import { handleRouteError } from "../../utils/error-handler";
 import { validateRequest } from "../../middleware/validation";
-import { query } from "../../db";
+import { queryWithTenant } from "../../db";
 import { logError } from "../../utils/logger";
 import { enforceFreezeState } from "../../middleware/governance";
 import {
@@ -132,7 +132,7 @@ router.get(
       const fetchLimit = limit + 1;
 
       // Query runs from reconciliation_runs table with tenant scoping
-      const runs = await query<{
+      const runs = await queryWithTenant<{
         id: string;
         tenant_id: string;
         created_at: string;
@@ -144,6 +144,7 @@ router.get(
         unmatched_source_count: number | null;
         unmatched_target_count: number | null;
       }>(
+        tenantId,
         `SELECT
           id,
           tenant_id,
@@ -208,7 +209,8 @@ router.get(
       // Get total count only for offset pagination (cursor pagination doesn't need it)
       let totalCount: number | undefined;
       if (!cursorPagination) {
-        const countResult = await query<{ count: string }>(
+        const countResult = await queryWithTenant<{ count: string }>(
+          tenantId,
           `SELECT COUNT(*)::text as count FROM reconciliation_runs WHERE tenant_id = $1`,
           [tenantId]
         );
@@ -272,7 +274,7 @@ router.get(
       }
 
       // Query specific run with tenant scoping and LEFT JOIN to recon_results for provenance
-      const runs = await query<{
+      const runs = await queryWithTenant<{
         id: string;
         tenant_id: string;
         created_at: string;
@@ -300,6 +302,7 @@ router.get(
         provenance_matching_rule_ids: string | null;
         provenance_rule_version_count: string | null;
       }>(
+        tenantId,
         `SELECT
           rr.id,
           rr.tenant_id,
@@ -439,7 +442,8 @@ router.get(
       const offset = (req.query.offset as unknown as number) || 0;
 
       // Invariant: Verify run exists and belongs to tenant
-      const runCheck = await query<{ status: string }>(
+      const runCheck = await queryWithTenant<{ status: string }>(
+        tenantId,
         `SELECT status FROM reconciliation_runs WHERE id = $1 AND tenant_id = $2`,
         [runId, tenantId]
       );
@@ -453,7 +457,7 @@ router.get(
       }
 
       // Query exceptions tied directly to this execution
-      const exceptions = await query<{
+      const exceptions = await queryWithTenant<{
         exception_id: string;
         execution_id: string;
         source_record_id: string;
@@ -465,6 +469,7 @@ router.get(
         resolved_at: string | null;
         resolved_by: string | null;
       }>(
+        tenantId,
         `SELECT
            id as exception_id,
            run_id as execution_id,
@@ -483,7 +488,8 @@ router.get(
         [runId, tenantId, limit, offset]
       );
 
-      const countRes = await query<{ count: string }>(
+      const countRes = await queryWithTenant<{ count: string }>(
+        tenantId,
         `SELECT COUNT(*)::text as count FROM exceptions WHERE run_id = $1 AND tenant_id = $2`,
         [runId, tenantId]
       );
@@ -530,7 +536,8 @@ router.post(
         return;
       }
 
-      const runs = await query<{ id: string; status: string }>(
+      const runs = await queryWithTenant<{ id: string; status: string }>(
+        tenantId,
         `SELECT id, status FROM reconciliation_runs WHERE id = $1 AND tenant_id = $2`,
         [runId, tenantId]
       );
@@ -549,13 +556,15 @@ router.post(
       }
 
       // Enforce Consequence: Trigger retry
-      await query(
+      await queryWithTenant(
+        tenantId,
         `UPDATE reconciliation_runs SET status = 'pending', error_message = NULL, updated_at = NOW() WHERE id = $1 AND tenant_id = $2`,
         [runId, tenantId]
       );
 
       // Audit record
-      await query(
+      await queryWithTenant(
+        tenantId,
         `INSERT INTO audit_logs (tenant_id, user_id, action, resource_type, resource_id, details) VALUES ($1, $2, $3, $4, $5, $6)`,
         [
           tenantId,
@@ -603,7 +612,8 @@ router.post(
         return;
       }
 
-      const exceptions = await query<{ id: string; status: string }>(
+      const exceptions = await queryWithTenant<{ id: string; status: string }>(
+        tenantId,
         `SELECT id, status FROM exceptions WHERE id = $1 AND run_id = $2 AND tenant_id = $3`,
         [exceptionId, runId, tenantId]
       );
@@ -615,12 +625,14 @@ router.post(
         return;
       }
 
-      await query(
+      await queryWithTenant(
+        tenantId,
         `UPDATE exceptions SET status = $1, resolution_notes = $2, resolved_by = $3, resolved_at = NOW(), updated_at = NOW() WHERE id = $4 AND tenant_id = $5`,
         [status, notes || null, req.userId || null, exceptionId, tenantId]
       );
 
-      await query(
+      await queryWithTenant(
+        tenantId,
         `INSERT INTO audit_logs (tenant_id, user_id, action, resource_type, resource_id, details) VALUES ($1, $2, $3, $4, $5, $6)`,
         [
           tenantId,

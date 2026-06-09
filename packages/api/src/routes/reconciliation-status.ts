@@ -9,7 +9,7 @@ import { validateRequest } from "../middleware/validation";
 import { AuthRequest } from "../middleware/auth";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
-import { query } from "../db";
+import { queryWithTenant } from "../db";
 import { handleRouteError } from "../utils/error-handler";
 import { NotFoundError } from "../utils/typed-errors";
 
@@ -43,7 +43,7 @@ router.get(
       }
 
       // Get execution details
-      const executions = await query<{
+      const executions = await queryWithTenant<{
         id: string;
         job_id: string;
         status: string;
@@ -52,6 +52,7 @@ router.get(
         summary: unknown;
         error: string | null;
       }>(
+        req.tenantId!,
         `SELECT e.id, e.job_id, e.status, e.started_at, e.completed_at, e.summary, e.error
          FROM executions e
          JOIN jobs j ON e.job_id = j.id
@@ -84,7 +85,8 @@ router.get(
       }
 
       // Get match count (if available)
-      const matchCount = await query<{ count: string }>(
+      const matchCount = await queryWithTenant<{ count: string }>(
+        req.tenantId!,
         `SELECT COUNT(*) as count FROM matches WHERE execution_id = $1 AND tenant_id = $2`,
         [executionId, req.tenantId!]
       );

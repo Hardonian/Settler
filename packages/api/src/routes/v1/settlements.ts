@@ -10,7 +10,7 @@ import { validateRequest } from "../../middleware/validation";
 import { AuthRequest } from "../../middleware/auth";
 import { requirePermission } from "../../middleware/authorization";
 import { Permission } from "../../infrastructure/security/Permissions";
-import { query } from "../../db";
+import { queryWithTenant } from "../../db";
 import { sendSuccess, sendError, sendPaginated } from "../../utils/api-response";
 import { handleRouteError } from "../../utils/error-handler";
 
@@ -78,7 +78,8 @@ router.get(
       }
 
       // Get total count
-      const countResult = await query<{ count: string }>(
+      const countResult = await queryWithTenant<{ count: string }>(
+        tenantId,
         `SELECT COUNT(*) as count FROM settlements WHERE ${whereClause}`,
         params
       );
@@ -88,7 +89,8 @@ router.get(
       const total = parseInt(countResult[0].count, 10);
 
       // Get settlements
-      const settlements = await query(
+      const settlements = await queryWithTenant(
+        tenantId,
         `SELECT 
           id,
           tenant_id as "tenantId",
@@ -133,7 +135,8 @@ router.get(
       const { id } = req.params;
       const tenantId = req.tenantId!;
 
-      const settlements = await query(
+      const settlements = await queryWithTenant(
+        tenantId,
         `SELECT 
           id,
           tenant_id as "tenantId",
