@@ -9,8 +9,8 @@ function isPrivateIp(ip: string): boolean {
   // Simple IPv4 matching
   const parts = ip.split(".");
   if (parts.length === 4) {
-    const num0 = parseInt(parts[0], 10);
-    const num1 = parseInt(parts[1], 10);
+    const num0 = parseInt(parts[0] as string, 10);
+    const num1 = parseInt(parts[1] as string, 10);
 
     // 10.0.0.0/8
     if (num0 === 10) return true;
