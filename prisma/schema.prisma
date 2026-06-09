@@ -253,6 +253,7 @@ model ReconJob {
   transformRecipe    TransformRecipe? @relation(fields: [transformRecipeId], references: [id], onDelete: SetNull)
   results            ReconResult[]
   audits             ReconAudit[]
+  scheduledJobs      ScheduledJob[]
 
   @@index([tenantId])
   @@index([userId])

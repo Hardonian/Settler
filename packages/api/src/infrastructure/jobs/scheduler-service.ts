@@ -8,7 +8,7 @@
  */
 
 import { PrismaClient } from "@prisma/client";
-import cronParser from "cron-parser";
+import * as cronParser from "cron-parser";
 import { logInfo, logError, logWarn } from "../../utils/logger";
 import { ReconCoreEngine } from "../../services/recon-core";
 import { v4 as uuidv4 } from "uuid";
@@ -113,7 +113,7 @@ export class JobSchedulerService {
         if (!job.scheduleCron) continue;
 
         try {
-          const interval = cronParser.parseExpression(job.scheduleCron, {
+          const interval = (cronParser as any).parseExpression(job.scheduleCron, {
             tz: job.scheduleTimezone || "UTC",
           });
 
@@ -167,7 +167,7 @@ export class JobSchedulerService {
           }
 
           // Update nextExecutionAt if needed
-          if (newNextExecution !== null) {
+          if (newNextExecution) {
             await this.prisma.reconJob.update({
               where: { id: job.id },
               data: { nextExecutionAt: newNextExecution },

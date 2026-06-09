@@ -37,6 +37,16 @@ function buildPrismaOptions(): ConstructorParameters<typeof PrismaClient>[0] {
 
 export const prisma = globalForPrisma.prisma || new PrismaClient(buildPrismaOptions());
 
+export async function withTenant<T>(
+  tenantId: string,
+  fn: (tx: Parameters<Parameters<PrismaClient["$transaction"]>[0]>[0]) => Promise<T>
+): Promise<T> {
+  return prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
+    return fn(tx);
+  });
+}
+
 if (config.nodeEnv !== "production") {
   globalForPrisma.prisma = prisma;
 }
