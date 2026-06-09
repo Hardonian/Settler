@@ -240,6 +240,7 @@ model ReconJob {
   reconStrategy      String    @default("deterministic") @map("recon_strategy")
   scheduleCron       String?   @map("schedule_cron")
   scheduleTimezone   String    @default("UTC") @map("schedule_timezone")
+  nextExecutionAt    DateTime? @map("next_execution_at")
   status             String    @default("active")
   version            Int       @default(1)
   metadata           Json      @default("{}")
