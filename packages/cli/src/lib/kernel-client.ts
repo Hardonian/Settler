@@ -195,6 +195,24 @@ function isConfiguredBinaryExecutable(filePath: string, env: NodeJS.ProcessEnv):
   return true;
 }
 
+function resolveConfiguredBinaryRunner(
+  filePath: string,
+  env: NodeJS.ProcessEnv
+): ResolvedKernelRunner {
+  if (process.platform === "win32") {
+    const fileExtension = extname(filePath).toLowerCase();
+    if (fileExtension === ".cmd" || fileExtension === ".bat") {
+      return {
+        mode: "binary",
+        cmd: env.ComSpec ?? env.COMSPEC ?? "cmd.exe",
+        args: ["/d", "/s", "/c", filePath],
+      };
+    }
+  }
+
+  return { mode: "binary", cmd: filePath, args: [] };
+}
+
 function parseExecutionMode(env: NodeJS.ProcessEnv): KernelExecutionMode {
   if (env.SETTLER_DISABLE_KERNEL === "1") return "disabled";
   if (env.SETTLER_KERNEL_SHADOW_ONLY === "1") return "shadow";
@@ -385,7 +403,7 @@ export function resolveKernelRunner(env: NodeJS.ProcessEnv = process.env): {
       if (!isConfiguredBinaryExecutable(configuredBin, env)) {
         throw new Error("binary_not_executable");
       }
-      return { runner: { mode: "binary", cmd: configuredBin, args: [] }, mode: "binary" };
+      return { runner: resolveConfiguredBinaryRunner(configuredBin, env), mode: "binary" };
     } catch {
       return { runner: null, mode: "fallback-ts", reason: "binary_not_executable" };
     }
