@@ -261,6 +261,27 @@ model ReconJob {
   @@map("recon_jobs")
 }
 
+model ScheduledJob {
+  id               String    @id @default(uuid()) @db.Uuid
+  reconJobId       String    @map("recon_job_id") @db.Uuid
+  tenantId         String    @map("tenant_id") @db.Uuid
+  status           String    @default("pending") // pending, running, completed, failed
+  scheduledFor     DateTime  @map("scheduled_for")
+  lockedAt         DateTime? @map("locked_at")
+  startedAt        DateTime? @map("started_at")
+  completedAt      DateTime? @map("completed_at")
+  attempts         Int       @default(0)
+  error            String?   @db.Text
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  reconJob         ReconJob  @relation(fields: [reconJobId], references: [id], onDelete: Cascade)
+
+  @@index([status, scheduledFor])
+  @@index([reconJobId])
+  @@map("scheduled_jobs")
+}
+
 model ReconResult {
   id                    String    @id @default(uuid()) @db.Uuid
   reconJobId            String?   @map("recon_job_id") @db.Uuid

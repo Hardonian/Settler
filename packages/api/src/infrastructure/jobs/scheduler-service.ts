@@ -8,7 +8,7 @@
  */
 
 import { PrismaClient } from "@prisma/client";
-import * as cronParser from "cron-parser";
+import cronParser from "cron-parser";
 import { logInfo, logError, logWarn } from "../../utils/logger";
 import { ReconCoreEngine } from "../../services/recon-core";
 import { v4 as uuidv4 } from "uuid";
@@ -20,9 +20,19 @@ export class JobSchedulerService {
   private enqueuerInterval: NodeJS.Timeout | null = null;
   private workerInterval: NodeJS.Timeout | null = null;
 
+  private static instance: JobSchedulerService;
+
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;
     this.reconEngine = new ReconCoreEngine(prisma);
+  }
+
+  public getStatus() {
+    return {
+      running: this.isRunning,
+      enqueuerActive: this.enqueuerInterval !== null,
+      workerActive: this.workerInterval !== null,
+    };
   }
 
   /**
@@ -113,7 +123,7 @@ export class JobSchedulerService {
           // We check if the previous expected execution was in the past minute
           // Or if we haven't scheduled it yet.
           // Better logic: calculate nextExecutionAt if not set, or check if now > nextExecutionAt
-          
+
           let shouldQueue = false;
           let newNextExecution: Date | null = null;
 
@@ -138,7 +148,7 @@ export class JobSchedulerService {
               where: {
                 reconJobId: job.id,
                 status: "pending",
-              }
+              },
             });
 
             if (!existing) {
@@ -148,20 +158,21 @@ export class JobSchedulerService {
                   tenantId: job.tenantId,
                   status: "pending",
                   scheduledFor: job.nextExecutionAt || now,
-                }
+                },
               });
-              logInfo(`[JobScheduler] Enqueued job ${job.id}`, { scheduledFor: job.nextExecutionAt });
+              logInfo(`[JobScheduler] Enqueued job ${job.id}`, {
+                scheduledFor: job.nextExecutionAt,
+              });
             }
           }
 
           // Update nextExecutionAt if needed
-          if (newNextExecution) {
+          if (newNextExecution !== null) {
             await this.prisma.reconJob.update({
               where: { id: job.id },
-              data: { nextExecutionAt: newNextExecution }
+              data: { nextExecutionAt: newNextExecution },
             });
           }
-
         } catch (err) {
           logWarn(`[JobScheduler] Invalid cron for job ${job.id}: ${job.scheduleCron}`);
         }
@@ -179,7 +190,7 @@ export class JobSchedulerService {
 
     try {
       // Use raw SQL for SKIP LOCKED since Prisma doesn't natively support it yet
-      const lockedJobs: any[] = await this.prisma.$queryRaw\`
+      const lockedJobs: any[] = await this.prisma.$queryRaw`
         UPDATE scheduled_jobs
         SET status = 'running', locked_at = NOW()
         WHERE id = (
@@ -191,19 +202,21 @@ export class JobSchedulerService {
           LIMIT 1
         )
         RETURNING *;
-      \`;
+      `;
 
       if (!lockedJobs || lockedJobs.length === 0) {
         return; // No jobs to process
       }
 
       const lockedJob = lockedJobs[0];
-      logInfo(`[JobScheduler] Acquired lock for scheduled job ${lockedJob.id} (reconJobId: ${lockedJob.recon_job_id})`);
+      logInfo(
+        `[JobScheduler] Acquired lock for scheduled job ${lockedJob.id} (reconJobId: ${lockedJob.recon_job_id})`
+      );
 
       // Start execution
       await this.prisma.scheduledJob.update({
         where: { id: lockedJob.id },
-        data: { startedAt: new Date() }
+        data: { startedAt: new Date() },
       });
 
       const startTime = Date.now();
@@ -220,13 +233,13 @@ export class JobSchedulerService {
         );
 
         const duration = Date.now() - startTime;
-        
+
         await this.prisma.scheduledJob.update({
           where: { id: lockedJob.id },
-          data: { 
-            status: "completed", 
-            completedAt: new Date() 
-          }
+          data: {
+            status: "completed",
+            completedAt: new Date(),
+          },
         });
 
         // Update ReconJob metadata to reflect last scheduled execution
@@ -236,33 +249,43 @@ export class JobSchedulerService {
             metadata: {
               lastScheduledExecutionAt: new Date().toISOString(),
               lastScheduledExecutionResultId: result.id,
-            }
-          }
+            },
+          },
         });
 
-        logInfo(`[JobScheduler] Scheduled job ${lockedJob.id} completed successfully in ${duration}ms`);
+        logInfo(
+          `[JobScheduler] Scheduled job ${lockedJob.id} completed successfully in ${duration}ms`
+        );
       } catch (execError) {
         const duration = Date.now() - startTime;
         const errorMessage = execError instanceof Error ? execError.message : String(execError);
-        
+
         await this.prisma.scheduledJob.update({
           where: { id: lockedJob.id },
-          data: { 
-            status: "failed", 
+          data: {
+            status: "failed",
             completedAt: new Date(),
-            error: errorMessage
-          }
+            error: errorMessage,
+          },
         });
-        
+
         logError(`[JobScheduler] Scheduled job ${lockedJob.id} failed`, execError, { duration });
       }
 
       // If we got a job, there might be more. Immediately poll again.
       // Doing this async so we don't block.
       setImmediate(() => this.pollAndExecute());
-
     } catch (error) {
       logError("[JobScheduler] Poll error:", error);
     }
   }
+}
+
+let schedulerInstance: JobSchedulerService | null = null;
+
+export function getJobSchedulerService(prisma: PrismaClient): JobSchedulerService {
+  if (!schedulerInstance) {
+    schedulerInstance = new JobSchedulerService(prisma);
+  }
+  return schedulerInstance;
 }
