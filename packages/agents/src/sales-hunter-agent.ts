@@ -52,7 +52,7 @@ export async function runSalesHunterAgent(): Promise<AgentReport> {
             snippet: z.string().describe("The exact quote they posted"),
           })
         ),
-      }),
+      }) as any,
     });
 
     checks.push({

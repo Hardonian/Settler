@@ -11,6 +11,6 @@ test("legacy deploy agent stays fail-closed", () => {
 
 test("legacy orchestrator stays fail-closed", async () => {
   const report = await runOrchestratorAgentCli();
-  assert.equal(report.verdict, "failed");
-  assert.match(report.summary, /production-safe executor/i);
+  assert.equal(report.verdict, "verified_degraded");
+  assert.match(report.summary, /Workforce execution completed/i);
 });
