@@ -43,7 +43,7 @@ export interface LedgerConfig {
  * Default configuration
  */
 const DEFAULT_CONFIG: LedgerConfig = {
-  enabled: false, // Disabled by default for safe fallback
+  enabled: true, // Enabled by default for enterprise financial consistency
   address: "localhost:4300",
   clusterId: 0,
   timeoutMs: 5000,
@@ -89,8 +89,8 @@ export class LedgerService {
   private getTigerBeetleEnabledFromEnv(): boolean {
     const envValue = process.env.TIGERBEETLE_ENABLED;
     if (envValue === undefined || envValue === "") {
-      // Default to disabled for safe fallback
-      return false;
+      // Default to true for enterprise financial consistency
+      return true;
     }
     return envValue.toLowerCase() === "true" || envValue === "1";
   }
@@ -122,15 +122,18 @@ export class LedgerService {
         logger.info("TigerBeetle ledger repository initialized successfully");
       } catch (error) {
         const message = error instanceof Error ? error.message : "Unknown error";
-        logger.error("Failed to initialize TigerBeetle, falling back to disabled repository", {
+        logger.error("Failed to initialize TigerBeetle", {
           error: message,
         });
-        this.repository = createDisabledLedgerRepository(
-          `TigerBeetle initialization failed: ${message}`
+        // Remove graceful degradation for enterprise scale - if ledger is required, it must be available
+        throw new Error(
+          `Critical Infrastructure Failure: TigerBeetle initialization failed: ${message}`
         );
       }
     } else {
-      logger.info("TigerBeetle is disabled, using fallback repository");
+      logger.warn(
+        "TigerBeetle is explicitly disabled, using fallback repository. This should not be used in production."
+      );
       this.repository = createDisabledLedgerRepository(
         "TigerBeetle is not enabled. Set TIGERBEETLE_ENABLED=true to enable."
       );
