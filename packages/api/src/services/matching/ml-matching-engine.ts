@@ -178,12 +178,23 @@ export class MLMatchingEngine {
         matchType = "fuzzy";
       }
 
-      return {
+      const prediction: MLMatchPrediction = {
         confidence: bestCandidate.score,
         matchType,
         reasoning: `ML model prediction: ${bestCandidate.features.externalIdMatch ? "external ID match" : ""} ${bestCandidate.features.amountDiff === 0 ? "exact amount" : `amount diff: ${bestCandidate.features.amountDiff.toFixed(2)}`} ${bestCandidate.features.dateDiff === 0 ? "exact date" : `date diff: ${bestCandidate.features.dateDiff} days`} description similarity: ${(bestCandidate.features.descriptionSimilarity * 100).toFixed(1)}% historical match rate: ${(historicalMatchRate * 100).toFixed(1)}%`,
         modelVersion: this.modelVersion,
       };
+
+      logInfo("ML match decision", {
+        matchType,
+        confidence: bestCandidate.score,
+        features: bestCandidate.features,
+        tenantId,
+        sourceTransactionId,
+        targetTransactionId: bestCandidate.target.id,
+      });
+
+      return prediction;
     } catch (error) {
       logError("ML matching prediction failed", error, {
         sourceTransactionId,

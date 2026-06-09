@@ -210,7 +210,16 @@ export class JobSchedulerService {
 
       const lockedJob = lockedJobs[0];
       logInfo(
-        `[JobScheduler] Acquired lock for scheduled job ${lockedJob.id} (reconJobId: ${lockedJob.recon_job_id})`
+        `[JobScheduler] Acquired lock for scheduled job ${lockedJob.id} (reconJobId: ${lockedJob.recon_job_id})`,
+        {
+          lease: {
+            scheduledJobId: lockedJob.id,
+            reconJobId: lockedJob.recon_job_id,
+            tenantId: lockedJob.tenant_id,
+            lockedAt: lockedJob.locked_at,
+            scheduledFor: lockedJob.scheduled_for,
+          },
+        }
       );
 
       // Start execution

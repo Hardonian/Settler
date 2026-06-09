@@ -158,4 +158,42 @@ export class ProofPackageOrchestrator {
     });
     return crypto.createHash("sha256").update(payload).digest("hex");
   }
+
+  /**
+   * Validates the integrity of an existing proof package
+   */
+  async validateProofPackage(proofPackageId: string, tenantId: string): Promise<boolean> {
+    const pkg = await this.prisma.proofPackage.findUnique({
+      where: { id: proofPackageId },
+    });
+
+    if (!pkg || pkg.tenantId !== tenantId) {
+      logInfo(`[ProofPackage] Validation failed: Package not found or unauthorized`, {
+        proofPackageId,
+        tenantId,
+        validationResult: "failed_not_found",
+      });
+      return false;
+    }
+
+    const recomputedHash = this.computePackageHash(
+      pkg.summary,
+      (pkg.evidenceIds as string[]) || [],
+      pkg.narrative || ""
+    );
+
+    const isValid = recomputedHash === pkg.packageHash;
+
+    logInfo(`[ProofPackage] Validation completed`, {
+      validation: {
+        proofPackageId,
+        tenantId,
+        originalHash: pkg.packageHash,
+        recomputedHash,
+        isValid,
+      },
+    });
+
+    return isValid;
+  }
 }
