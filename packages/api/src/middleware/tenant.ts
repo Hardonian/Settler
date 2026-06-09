@@ -64,7 +64,7 @@ async function listTenantAccessTables(): Promise<Set<string>> {
   return cachedTenantAccessTables;
 }
 
-async function hasSuperAdminAccess(userId: string): Promise<boolean> {
+async function hasSuperAdminAccess(userId: string, targetTenantId: string): Promise<boolean> {
   const rows = await query<{ allowed: boolean }>(
     `SELECT EXISTS (
        SELECT 1
@@ -72,14 +72,32 @@ async function hasSuperAdminAccess(userId: string): Promise<boolean> {
         WHERE id = $1
           AND (
             COALESCE(is_super_admin, false) = true
-            OR COALESCE(raw_user_meta_data ->> 'role', '') = 'SUPER_ADMIN'
-            OR COALESCE(raw_user_meta_data ->> 'is_super_admin', 'false') = 'true'
+            OR COALESCE(raw_app_meta_data ->> 'role', '') = 'SUPER_ADMIN'
           )
      ) AS allowed`,
     [userId]
   );
 
-  return rows[0]?.allowed === true;
+  const isAllowed = rows[0]?.allowed === true;
+
+  if (isAllowed) {
+    try {
+      await query(
+        `INSERT INTO super_admin_audit_logs (user_id, action, tenant_id_accessed, metadata) 
+         VALUES ($1, $2, $3, $4)`,
+        [
+          userId,
+          "Cross-tenant bypass via super admin",
+          targetTenantId,
+          JSON.stringify({ via: "tenant_middleware" }),
+        ]
+      );
+    } catch (e) {
+      logError("Failed to log super admin access: " + e);
+    }
+  }
+
+  return isAllowed;
 }
 
 async function resolveTenantAccess(
@@ -98,7 +116,7 @@ async function resolveTenantAccess(
     return { allowed: true, source: "direct_user_tenant" };
   }
 
-  if (await hasSuperAdminAccess(userId)) {
+  if (await hasSuperAdminAccess(userId, tenantId)) {
     return { allowed: true, source: "super_admin" };
   }
 
