@@ -89,6 +89,7 @@ import {
 } from "@settler/reconciliation-core";
 
 const app: Express = express();
+app.set("trust proxy", 1); // Trust first proxy (load balancer) for correct client IP
 const PORT = config.port;
 
 // Initialize Sentry before other middleware

@@ -46,10 +46,8 @@ export function csrfProtection(req: Request, res: Response, next: NextFunction):
     return next();
   }
 
-  // Skip CSRF for API endpoints (they use API keys or JWT)
-  if (req.path.startsWith("/api/")) {
-    return next();
-  }
+  // CSRF protection must apply to all endpoints accessed via browser cookies
+  // API key requests are already bypassed above
 
   // Get token from cookie and header
   const cookieToken = req.cookies[CSRF_TOKEN_COOKIE];
