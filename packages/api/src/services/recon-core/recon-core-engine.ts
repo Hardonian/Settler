@@ -845,18 +845,35 @@ export class ReconCoreEngine {
     const sources = sourceData as unknown as NormalizedRecord[];
     const targets = targetData as unknown as NormalizedRecord[];
 
-    // 1. DETERMINISTIC: Exact External ID Match (Payouts)
+    // Index targets to avoid O(N^2)
     const targetMapByExternalId = new Map<string, NormalizedRecord>();
+    const targetsByRoundedAmount = new Map<number, NormalizedRecord[]>();
+
     targets.forEach((t) => {
       if (t.externalId) targetMapByExternalId.set(t.externalId, t);
+      const roundedAmount = Math.round(t.amount);
+      if (!targetsByRoundedAmount.has(roundedAmount)) {
+        targetsByRoundedAmount.set(roundedAmount, []);
+      }
+      targetsByRoundedAmount.get(roundedAmount)!.push(t);
     });
 
-    // Payout Logic
+    // Helper for yielding the event loop
+    const yieldEventLoop = () => new Promise((resolve) => setImmediate(resolve));
+
+    // 1. DETERMINISTIC: Exact External ID Match (Payouts)
+    let processed = 0;
     for (const source of sources) {
+      if (++processed % 1000 === 0) await yieldEventLoop();
+
       if (matchedSourceIds.has(source.id)) continue;
 
       if (source.type === "PAYOUT" || source.type === "TRANSFER") {
-        for (const target of targets) {
+        const potentialTargets = targetMapByExternalId.get(source.externalId)
+          ? [targetMapByExternalId.get(source.externalId)!]
+          : targets; // fallback to all if description match is needed
+
+        for (const target of potentialTargets) {
           if (matchedTargetIds.has(target.id)) continue;
 
           const descriptionMatch =
@@ -865,7 +882,6 @@ export class ReconCoreEngine {
 
           const amountMatch = Math.abs(source.amount - target.amount) < amountTolerance;
 
-          // Date within configurable tolerance
           const dateDiff = Math.abs(
             new Date(source.occurredAt).getTime() - new Date(target.occurredAt).getTime()
           );
@@ -896,11 +912,30 @@ export class ReconCoreEngine {
       }
     }
 
+    // Amount match helper
+    const getCandidatesByAmount = (sourceAmt: number, tolerance: number) => {
+      const ceil = Math.ceil(sourceAmt + tolerance);
+      const floor = Math.floor(sourceAmt - tolerance);
+      const candidates: NormalizedRecord[] = [];
+      for (let amt = floor; amt <= ceil; amt++) {
+        const arr = targetsByRoundedAmount.get(amt);
+        if (arr) {
+          candidates.push(...arr);
+        }
+      }
+      return candidates;
+    };
+
     // 2. STRONG MATCH: Amount + Date (within 1 day)
+    processed = 0;
     for (const source of sources) {
+      if (++processed % 1000 === 0) await yieldEventLoop();
+
       if (matchedSourceIds.has(source.id)) continue;
 
-      for (const target of targets) {
+      const candidates = getCandidatesByAmount(source.amount, amountTolerance);
+
+      for (const target of candidates) {
         if (matchedTargetIds.has(target.id)) continue;
 
         const amountMatch = Math.abs(source.amount - target.amount) < amountTolerance;
@@ -933,10 +968,15 @@ export class ReconCoreEngine {
     }
 
     // 3. FUZZY MATCH: Amount + Date (3 Days)
+    processed = 0;
     for (const source of sources) {
+      if (++processed % 1000 === 0) await yieldEventLoop();
+
       if (matchedSourceIds.has(source.id)) continue;
 
-      for (const target of targets) {
+      const candidates = getCandidatesByAmount(source.amount, amountTolerance);
+
+      for (const target of candidates) {
         if (matchedTargetIds.has(target.id)) continue;
 
         const amountMatch = Math.abs(source.amount - target.amount) < amountTolerance;
