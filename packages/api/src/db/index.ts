@@ -103,7 +103,12 @@ export async function queryWithTenant<T = Record<string, unknown>>(
 // ============================================================================
 // Tables that MUST include tenant_id in every SELECT/UPDATE/DELETE WHERE clause.
 // INSERT is excluded because tenant_id is set by DB triggers or explicitly.
+//
+// IMPORTANT: Every public table with a tenant_id column MUST be listed here.
+// If you add a new tenant-scoped table, add it to this set. The assertTenantScoped
+// guard will throw for any query on these tables that omits tenant_id.
 const TENANT_SCOPED_TABLES = new Set([
+  // Core user & tenant tables
   "users",
   "jobs",
   "executions",
@@ -118,13 +123,50 @@ const TENANT_SCOPED_TABLES = new Set([
   "idempotency_keys",
   "tenant_usage",
   "tenant_quota_usage",
-  "normalized_transactions",
-  "reconciliation_runs",
-  "reconciliation_matches",
   "audit_exports",
   "alert_rules",
   "alert_history",
   "operator_runtime_events",
+
+  // Reconciliation core tables
+  "recon_jobs",
+  "recon_results",
+  "recon_audits",
+  "recon_runs",
+  "recon_templates",
+  "reconciliation_runs",
+  "reconciliation_matches",
+  "reconciliation_candidates",
+  "reconciliation_graph_edges",
+  "reconciliation_graph_nodes",
+  "normalized_transactions",
+
+  // Evidence & proofpack tables
+  "proof_packages",
+  "exception_adjudication_memory",
+  "exception_archetypes",
+
+  // Ingestion & export tables
+  "ingestions",
+  "ingestion_sources",
+  "exports",
+  "tolerance_settings",
+
+  // Intelligence & analytics tables
+  "ai_analyses",
+  "ai_analysis_usage",
+  "ai_usage_events",
+  "ai_usage_quotas",
+
+  // Billing & account tables
+  "billing_accounts",
+  "account_balances",
+
+  // Activity & notification tables
+  "activity_logs",
+  "notifications",
+  "alert_notifications",
+  "alerts",
 ]);
 
 /**
@@ -134,7 +176,9 @@ const TENANT_SCOPED_TABLES = new Set([
  * Skipped for: DDL (CREATE/ALTER/DROP), INSERT without subselect, RETURNING-only.
  * Active for: SELECT, UPDATE, DELETE on tenant-scoped tables.
  *
- * Throws in development/test; logs a warning in production.
+ * SECURITY: Throws in ALL environments (including production).
+ * A missing tenant_id filter is a data isolation violation that must never
+ * be silently allowed. If this breaks a query, the query is wrong.
  */
 export function assertTenantScoped(sql: string): void {
   const normalized = sql.replace(/\s+/g, " ").trim().toLowerCase();
@@ -162,11 +206,9 @@ export function assertTenantScoped(sql: string): void {
     // Check if tenant_id appears in the WHERE clause
     if (!normalized.includes("tenant_id")) {
       const message = `TENANT ISOLATION VIOLATION: Query on "${table}" missing tenant_id filter. SQL: ${sql.substring(0, 200)}`;
-      if (process.env.NODE_ENV === "production") {
-        logWarn(message);
-      } else {
-        throw new Error(message);
-      }
+      // HARDENED: Always throw. Never silently allow unscoped tenant queries.
+      logError(message);
+      throw new Error(message);
     }
     // Found the table and it has tenant_id — pass
     return;
