@@ -48,6 +48,7 @@ export class JobSchedulerService {
   private isRunning = false;
   private healthCheckInterval: NodeJS.Timeout | null = null;
   private reloadInterval: NodeJS.Timeout | null = null;
+  private reaperInterval: NodeJS.Timeout | null = null;
 
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;
@@ -88,6 +89,13 @@ export class JobSchedulerService {
       });
     }, 300000);
 
+    // Reap stuck jobs every 5 minutes
+    this.reaperInterval = setInterval(() => {
+      this.reapStuckJobs().catch((error) => {
+        logError("[JobScheduler] Reap stuck jobs failed:", error);
+      });
+    }, 300000);
+
     logInfo("[JobScheduler] Scheduler started");
   }
 
@@ -120,6 +128,11 @@ export class JobSchedulerService {
     if (this.reloadInterval) {
       clearInterval(this.reloadInterval);
       this.reloadInterval = null;
+    }
+
+    if (this.reaperInterval) {
+      clearInterval(this.reaperInterval);
+      this.reaperInterval = null;
     }
 
     logInfo("[JobScheduler] Scheduler stopped");
@@ -436,6 +449,38 @@ export class JobSchedulerService {
       }
     } catch (error) {
       logError("[JobScheduler] Health check failed", error);
+    }
+  }
+
+  private async reapStuckJobs(): Promise<void> {
+    try {
+      const stuckThreshold = new Date(Date.now() - 3600000);
+      const stuckJobs = await this.prisma.reconResult.findMany({
+        where: {
+          status: "running",
+          startedAt: { lt: stuckThreshold },
+        },
+        select: { id: true, reconJobId: true, tenantId: true },
+      });
+
+      if (stuckJobs.length === 0) return;
+
+      logWarn(`[JobScheduler] Found ${stuckJobs.length} stuck jobs. Reaping...`);
+
+      for (const job of stuckJobs) {
+        await this.prisma.reconResult.update({
+          where: { id: job.id },
+          data: {
+            status: "failed",
+            completedAt: new Date(),
+            errorMessage: "Timeout: Job stuck in running state for over 1 hour",
+          },
+        });
+
+        logWarn(`[JobScheduler] Reaped stuck job result ${job.id} for job ${job.reconJobId}`);
+      }
+    } catch (error) {
+      logError("[JobScheduler] Failed to reap stuck jobs", error);
     }
   }
 
