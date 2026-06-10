@@ -11,7 +11,8 @@
       "@settler/adapters": ["../adapters/dist/index"],
       "@settler/adapters/*": ["../adapters/dist/*"]
     },
-    "types": ["node", "jest"]
+    "types": ["node", "jest"],
+    "rootDir": "src"
   },
   "include": ["src/**/*"],
   "exclude": [
