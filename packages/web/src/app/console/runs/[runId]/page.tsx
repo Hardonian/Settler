@@ -231,7 +231,7 @@ export default function RunPage() {
               <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover/back:-translate-x-1" />
               Back to Runs
             </Link>
-          </FreezeBlockedButton>
+          </Button>
           <div className="space-y-1.5 pt-2">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400">
@@ -255,7 +255,7 @@ export default function RunPage() {
           >
             <Activity className={`w-4 h-4 mr-2 ${autoRefresh ? "animate-pulse" : ""}`} />
             {autoRefresh ? "Auto-Refresh Active" : "Auto-Refresh Paused"}
-          </Button>
+          </FreezeBlockedButton>
           <FreezeBlockedButton
             variant="outline"
             disabled={!run.isTerminal || exporting}
