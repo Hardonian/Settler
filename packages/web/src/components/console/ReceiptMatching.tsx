@@ -23,6 +23,13 @@ import { Label } from "@/components/ui/label";
 import { CheckCircle2, AlertTriangle, RefreshCw, Upload, Loader2 } from "lucide-react";
 import { useGovernanceState } from "@/hooks/use-governance-state";
 import { FreezeBlockedButton } from "@/components/shared/FreezeBlockedButton";
+import { FreezeErrorAlert } from "@/components/shared/FreezeErrorAlert";
+import {
+  getApiErrorMessage,
+  getGovernanceRecoveryHref,
+  parseGovernanceFreezeError,
+  type GovernanceFreezeErrorDetails,
+} from "@/lib/governance/freeze-client";
 
 interface ReceiptMatch {
   id: string;
@@ -53,6 +60,7 @@ export function ReceiptMatching() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [freezeError, setFreezeError] = useState<GovernanceFreezeErrorDetails | null>(null);
   const [reconciliationRunId, setReconciliationRunId] = useState<string>("");
   const [matching, setMatching] = useState(false);
   const { isFrozen, governanceState } = useGovernanceState();
@@ -108,6 +116,7 @@ export function ReceiptMatching() {
     try {
       setMatching(true);
       setError(null);
+      setFreezeError(null);
 
       // First, fetch the actual receipts and transactions for this run
       const { receipts, transactions } = await fetchReceiptsAndTransactions(reconciliationRunId);
@@ -145,9 +154,16 @@ export function ReceiptMatching() {
         }),
       });
 
+      const payload = (await res.json().catch(() => null)) as unknown;
+      const freezeDetails = parseGovernanceFreezeError(payload, res.status);
+
+      if (freezeDetails) {
+        setFreezeError(freezeDetails);
+        return;
+      }
+
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || "Failed to match receipts");
+        throw new Error(getApiErrorMessage(payload, "Failed to match receipts"));
       }
 
       await fetchMatches();
@@ -160,11 +176,23 @@ export function ReceiptMatching() {
 
   const handleVerify = async (linkId: string) => {
     try {
+      setFreezeError(null);
       const res = await fetch(`/api/v1/receipt-matching/links/${linkId}/verify`, {
         method: "POST",
       });
 
-      if (!res.ok) throw new Error("Failed to verify link");
+      const payload = (await res.json().catch(() => null)) as unknown;
+      const freezeDetails = parseGovernanceFreezeError(payload, res.status);
+
+      if (freezeDetails) {
+        setFreezeError(freezeDetails);
+        return;
+      }
+
+      if (!res.ok) {
+        throw new Error(getApiErrorMessage(payload, "Failed to verify link"));
+      }
+
       await fetchMatches();
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "Failed to verify link");
@@ -196,6 +224,17 @@ export function ReceiptMatching() {
           <CardDescription>Match receipts to transactions automatically</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {freezeError ? (
+            <FreezeErrorAlert
+              reason={freezeError.reason}
+              frozenAt={freezeError.frozenAt ?? undefined}
+              recoveryAction={{
+                label: "Open Governance Controls",
+                href: getGovernanceRecoveryHref(),
+              }}
+            />
+          ) : null}
+
           {error && (
             <Alert variant="destructive">
               <AlertTriangle className="h-4 w-4" />

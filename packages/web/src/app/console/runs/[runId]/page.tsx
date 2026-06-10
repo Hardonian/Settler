@@ -213,14 +213,14 @@ export default function RunPage() {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 relative group">
         <div className="space-y-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="group/back -ml-3 text-muted-foreground hover:text-foreground transition-colors"
-            onClick={() => router.back()}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2 group-hover/back:-translate-x-1 transition-transform" />
-            Back to Dashboard
+          <Button asChild variant="ghost" size="sm" className="group/back -ml-3">
+            <Link
+              href="/console/runs"
+              className="text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover/back:-translate-x-1" />
+              Back to Runs
+            </Link>
           </Button>
           <div className="space-y-1.5 pt-2">
             <div className="flex items-center gap-3">
@@ -258,16 +258,87 @@ export default function RunPage() {
             )}
             {exporting ? "Exporting…" : "Export results"}
           </Button>
-          <Button
+          <FreezeBlockedButton
             className="bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20"
             disabled={!run.isTerminal}
             onClick={handleRetry}
+            isFrozen={isFrozen}
+            freezeReason={governanceState?.freeze_reason}
+            frozenMessage="Retrying a run is blocked by tenant freeze"
           >
             <RotateCcw className="w-4 h-4 mr-2" />
             Retry run
-          </Button>
+          </FreezeBlockedButton>
         </div>
       </div>
+
+      {activeFreezeDetails ? (
+        <FreezeErrorAlert
+          reason={activeFreezeDetails.reason}
+          frozenAt={activeFreezeDetails.frozenAt ?? undefined}
+          recoveryAction={{
+            label: "Open Governance Controls",
+            href: getGovernanceRecoveryHref(),
+          }}
+        />
+      ) : null}
+
+      {actionError ? (
+        <Card className="border-red-200 bg-red-50/60 dark:border-red-900/60 dark:bg-red-950/20">
+          <CardContent className="flex flex-col gap-3 py-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-medium text-red-700 dark:text-red-300">
+                Action could not be completed
+              </p>
+              <p className="mt-1 text-sm text-red-700/90 dark:text-red-300/90">{actionError}</p>
+            </div>
+            <Button variant="outline" onClick={() => setActionError(null)}>
+              Dismiss
+            </Button>
+          </CardContent>
+        </Card>
+      ) : null}
+
+      <Card className="border-border/60 bg-muted/20">
+        <CardContent className="flex flex-col gap-4 py-5 lg:flex-row lg:items-center lg:justify-between">
+          <div className="space-y-1">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              Workflow Continuity
+            </p>
+            <p className="text-sm font-medium text-foreground">
+              Move from execution truth to outcome review without losing run context.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Use the links below to inspect results, work run-scoped exceptions, or confirm
+              governance state before retrying mutations.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            {showResultsLink ? (
+              <Button asChild>
+                <Link href={`/console/reconciliations?runId=${run.id}`}>
+                  Inspect results
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            ) : null}
+            {showRunExceptionsLink ? (
+              <Button asChild variant="outline">
+                <Link href={`/console/exceptions?runId=${run.id}&runKind=${run.runKind}`}>
+                  Review exceptions
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            ) : null}
+            <Button asChild variant="outline">
+              <Link href={getGovernanceRecoveryHref()}>
+                Governance controls
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <DetailCard

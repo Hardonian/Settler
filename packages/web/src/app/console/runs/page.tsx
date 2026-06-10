@@ -14,6 +14,7 @@ import { StatusBadge, type StatusType } from "@/components/ui/status-badge";
 import { ConsolePageHeader } from "@/components/console/ConsolePageHeader";
 import { FreezeErrorAlert } from "@/components/shared/FreezeErrorAlert";
 import { useGovernanceState } from "@/hooks/use-governance-state";
+import { getGovernanceRecoveryHref } from "@/lib/governance/freeze-client";
 import { shouldPollRuns } from "@/lib/console/polling";
 import { safeFetch } from "@/lib/safe-fetch";
 
@@ -345,7 +346,7 @@ export default function RunsPage() {
             frozenAt={governanceState.frozen_at || undefined}
             recoveryAction={{
               label: "View Governance Settings",
-              href: "/console/settings?tab=governance",
+              href: getGovernanceRecoveryHref(),
             }}
           />
         ) : null}
@@ -363,7 +364,7 @@ export default function RunsPage() {
           frozenAt={governanceState.frozen_at || undefined}
           recoveryAction={{
             label: "View Governance Settings",
-            href: "/console/settings?tab=governance",
+            href: getGovernanceRecoveryHref(),
           }}
         />
       ) : null}

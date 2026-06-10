@@ -6,6 +6,15 @@ import type { ExceptionFamilySummary } from "@settler/reconciliation-core";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FreezeBlockedButton } from "@/components/shared/FreezeBlockedButton";
+import { FreezeErrorAlert } from "@/components/shared/FreezeErrorAlert";
+import { useGovernanceState } from "@/hooks/use-governance-state";
+import {
+  getApiErrorMessage,
+  getGovernanceRecoveryHref,
+  parseGovernanceFreezeError,
+  type GovernanceFreezeErrorDetails,
+} from "@/lib/governance/freeze-client";
 import { StatusBadge, type StatusType } from "@/components/ui/status-badge";
 import { cn } from "@/lib/utils";
 import {
@@ -531,9 +540,11 @@ export function ExceptionActionPanel({
   status: ExceptionStatus;
 }) {
   const router = useRouter();
+  const { isFrozen, governanceState } = useGovernanceState();
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [freezeError, setFreezeError] = useState<GovernanceFreezeErrorDetails | null>(null);
   const [pendingAction, setPendingAction] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -543,6 +554,7 @@ export function ExceptionActionPanel({
   const handleAction = (action: string) => {
     setError(null);
     setSuccess(null);
+    setFreezeError(null);
     setPendingAction(action);
 
     startTransition(async () => {
@@ -554,16 +566,19 @@ export function ExceptionActionPanel({
           },
           body: JSON.stringify({ notes: notes.trim() || undefined }),
         });
-        const payload = (await response.json().catch(() => ({}))) as {
-          message?: string;
-          error?: string;
-        };
+        const payload = (await response.json().catch(() => null)) as unknown;
+        const freezeDetails = parseGovernanceFreezeError(payload, response.status);
 
-        if (!response.ok) {
-          throw new Error(payload.error || payload.message || "Failed to update exception");
+        if (freezeDetails) {
+          setFreezeError(freezeDetails);
+          return;
         }
 
-        setSuccess(payload.message || "Exception updated successfully.");
+        if (!response.ok) {
+          throw new Error(getApiErrorMessage(payload, "Failed to update exception"));
+        }
+
+        setSuccess(getApiErrorMessage(payload, "Exception updated successfully."));
         setNotes("");
         router.refresh();
       } catch (requestError) {
@@ -590,6 +605,17 @@ export function ExceptionActionPanel({
           stay aligned. Notes are stored as part of the operator trail.
         </p>
 
+        {freezeError ? (
+          <FreezeErrorAlert
+            reason={freezeError.reason}
+            frozenAt={freezeError.frozenAt ?? undefined}
+            recoveryAction={{
+              label: "Open Governance Controls",
+              href: getGovernanceRecoveryHref(),
+            }}
+          />
+        ) : null}
+
         <textarea
           value={notes}
           onChange={(event) => setNotes(event.target.value)}
@@ -611,11 +637,14 @@ export function ExceptionActionPanel({
 
         <div className="flex flex-wrap gap-3">
           {availableActions.map((action) => (
-            <Button
+            <FreezeBlockedButton
               key={action}
               variant={action === "ignore" ? "outline" : "default"}
               onClick={() => handleAction(action)}
               disabled={isPending}
+              isFrozen={isFrozen}
+              freezeReason={governanceState?.freeze_reason}
+              frozenMessage="Exception decisions are blocked by tenant freeze"
             >
               {isPending && pendingAction === action ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -625,7 +654,7 @@ export function ExceptionActionPanel({
                 : action === "ignore"
                   ? "Ignore exception"
                   : "Reopen exception"}
-            </Button>
+            </FreezeBlockedButton>
           ))}
         </div>
       </CardContent>
