@@ -12,7 +12,11 @@ const EXPECTED_PROTECTED_ROUTES: RouteExpectation[] = [
   { file: "packages/api/src/routes/jobs.ts", method: "post", route: "/" },
   { file: "packages/api/src/routes/jobs.ts", method: "post", route: "/:id/run" },
   { file: "packages/api/src/routes/jobs.ts", method: "delete", route: "/:id" },
-  { file: "packages/api/src/routes/exceptions.ts", method: "post", route: "/exceptions/:id/resolve" },
+  {
+    file: "packages/api/src/routes/exceptions.ts",
+    method: "post",
+    route: "/exceptions/:id/resolve",
+  },
   {
     file: "packages/api/src/routes/exceptions.ts",
     method: "post",
@@ -53,6 +57,7 @@ const EXPECTED_PROTECTED_ROUTES: RouteExpectation[] = [
   { file: "packages/api/src/routes/v1/ingestion.ts", method: "post", route: "/sources" },
   { file: "packages/api/src/routes/v1/ingestion.ts", method: "post", route: "/upload" },
   { file: "packages/api/src/routes/v1/ingestion.ts", method: "post", route: "/:ingestionId/retry" },
+  { file: "packages/api/src/routes/tolerance-settings.ts", method: "put", route: "/:templateId" },
   {
     file: "packages/api/src/routes/v1/multi-source-reconciliation.ts",
     method: "post",
@@ -124,11 +129,25 @@ const EXPECTED_PROTECTED_ROUTES: RouteExpectation[] = [
     method: "post",
     route: "/links/:linkId/verify",
   },
+  { file: "packages/api/src/routes/v1/notifications.ts", method: "put", route: "/preferences" },
+  { file: "packages/api/src/routes/v1/progress.ts", method: "post", route: "/checkpoints" },
+  {
+    file: "packages/api/src/routes/v1/progress.ts",
+    method: "post",
+    route: "/checkpoints/:checkpointId/resume",
+  },
   { file: "packages/api/src/routes/v1/reconciliation.ts", method: "post", route: "/run" },
   {
     file: "packages/api/src/routes/v1/reconciliation.ts",
     method: "patch",
     route: "/matches/:matchId",
+  },
+  { file: "packages/api/src/routes/v1/sla.ts", method: "post", route: "/agreements" },
+  { file: "packages/api/src/routes/v1/sla.ts", method: "post", route: "/metrics" },
+  {
+    file: "packages/api/src/routes/v1/sla.ts",
+    method: "post",
+    route: "/violations/:violationId/acknowledge",
   },
 ];
 

@@ -9,6 +9,7 @@ import { Router, Response } from "express";
 import { z } from "zod";
 import { validateRequest } from "../middleware/validation";
 import { AuthRequest } from "../middleware/auth";
+import { enforceFreezeState } from "../middleware/governance";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
 import { handleRouteError } from "../utils/error-handler";
@@ -110,6 +111,7 @@ router.get(
  */
 router.put(
   "/:templateId",
+  enforceFreezeState(),
   requirePermission(Permission.JOBS_WRITE),
   validateRequest(updateToleranceSchema),
   async (req: AuthRequest, res: Response) => {

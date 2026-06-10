@@ -13,6 +13,7 @@ import { authMiddleware, AuthRequest } from "../middleware/auth";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
 import { logInfo, logError } from "../utils/logger";
+import { enforceFreezeState } from "../middleware/governance";
 
 const router: Router = Router();
 
@@ -24,6 +25,7 @@ router.post(
   "/jobs",
   authMiddleware,
   requirePermission(Permission.JOBS_WRITE),
+  enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
       const { jobs } = req.body;

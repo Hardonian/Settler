@@ -14,6 +14,7 @@ import {
   requireTenantContext,
   requireUserContext,
 } from "./authz-helpers";
+import { enforceFreezeState } from "../middleware/governance";
 
 const router: Router = Router();
 
@@ -160,6 +161,7 @@ router.get(
 router.post(
   "/api-keys",
   requirePermission(Permission.USERS_WRITE),
+  enforceFreezeState(),
   validateRequest(createApiKeySchema),
   async (req: AuthRequest, res: Response) => {
     try {
@@ -247,6 +249,7 @@ router.post(
 router.patch(
   "/api-keys/:id",
   requirePermission(Permission.USERS_WRITE),
+  enforceFreezeState(),
   validateRequest(updateApiKeySchema),
   async (req: AuthRequest, res: Response) => {
     try {
@@ -341,6 +344,7 @@ router.patch(
 router.post(
   "/api-keys/:id/regenerate",
   requirePermission(Permission.USERS_WRITE),
+  enforceFreezeState(),
   validateRequest(regenerateApiKeySchema),
   async (req: AuthRequest, res: Response) => {
     try {
@@ -459,6 +463,7 @@ router.post(
 router.delete(
   "/api-keys/:id",
   requirePermission(Permission.USERS_DELETE),
+  enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
       const idParam4 = req.params["id"];

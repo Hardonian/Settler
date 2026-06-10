@@ -11,6 +11,7 @@ import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
 import { queryWithTenant } from "../db";
 import { handleRouteError } from "../utils/error-handler";
+import { enforceFreezeState } from "../middleware/governance";
 
 const router: Router = Router();
 
@@ -73,6 +74,7 @@ router.get(
 router.post(
   "/alerts/rules",
   requirePermission(Permission.ADMIN_WRITE),
+  enforceFreezeState(),
   validateRequest(createAlertRuleSchema),
   async (req: AuthRequest, res: Response) => {
     try {
