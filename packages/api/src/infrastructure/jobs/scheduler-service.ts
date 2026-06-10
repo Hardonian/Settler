@@ -11,7 +11,6 @@ import { PrismaClient } from "@prisma/client";
 import * as cronParser from "cron-parser";
 import { logInfo, logError, logWarn } from "../../utils/logger";
 import { ReconCoreEngine } from "../../services/recon-core";
-import { v4 as uuidv4 } from "uuid";
 
 export class JobSchedulerService {
   private prisma: PrismaClient;
@@ -117,9 +116,6 @@ export class JobSchedulerService {
             tz: job.scheduleTimezone || "UTC",
           });
 
-          const nextDate = interval.next().toDate();
-          const prevDate = interval.prev().toDate();
-
           // We check if the previous expected execution was in the past minute
           // Or if we haven't scheduled it yet.
           // Better logic: calculate nextExecutionAt if not set, or check if now > nextExecutionAt
@@ -173,7 +169,7 @@ export class JobSchedulerService {
               data: { nextExecutionAt: newNextExecution },
             });
           }
-        } catch (err) {
+        } catch {
           logWarn(`[JobScheduler] Invalid cron for job ${job.id}: ${job.scheduleCron}`);
         }
       }

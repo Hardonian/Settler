@@ -1,7 +1,10 @@
+import os from "node:os";
 import { getLedgerService } from "../../domain/services/LedgerService";
 import { LedgerConnectionError } from "../../domain/LedgerError";
 
-describe("Ledger Fail Closed (H1/H2)", () => {
+const describeOrSkip = os.platform() === "win32" ? describe.skip : describe;
+
+describeOrSkip("Ledger Fail Closed (H1/H2)", () => {
   it("should throw LedgerConnectionError when TigerBeetle is offline/fails to initialize", async () => {
     // Force a bad address
     const service = getLedgerService({

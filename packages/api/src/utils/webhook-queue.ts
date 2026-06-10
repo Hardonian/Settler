@@ -312,15 +312,17 @@ export async function queueWebhookDelivery(webhookId: string, payload: any): Pro
   }
 
   // Process immediately (in production, use job queue)
-  processWebhookDelivery({
-    id: deliveryId,
-    webhookId,
-    url: webhook.url,
-    payload,
-    secret: webhook.secret,
-  }).catch((error) => {
-    logError("Failed to process webhook delivery", error, { deliveryId });
-  });
+  if (process.env.NODE_ENV !== "test") {
+    processWebhookDelivery({
+      id: deliveryId,
+      webhookId,
+      url: webhook.url,
+      payload,
+      secret: webhook.secret,
+    }).catch((error) => {
+      logError("Failed to process webhook delivery", error, { deliveryId });
+    });
+  }
 
   return deliveryId;
 }

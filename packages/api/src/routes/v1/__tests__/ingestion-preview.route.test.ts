@@ -6,6 +6,11 @@ const mockQuery = jest.fn();
 
 jest.mock("../../../db", () => ({
   query: (...args: unknown[]) => mockQuery(...args),
+  queryWithTenant: (_tenantId: string, text: string, params?: unknown[]) => mockQuery(text, params),
+}));
+
+jest.mock("../../../middleware/authorization", () => ({
+  requirePermission: () => (_req: unknown, _res: unknown, next: () => void) => next(),
 }));
 
 jest.mock("../../../middleware/usage-enforcement", () => ({

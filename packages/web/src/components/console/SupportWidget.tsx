@@ -1,3 +1,4 @@
+/**
  * Tenant-scoped support intake — canonical POST /api/v1/support/intake.
  */
 
@@ -145,7 +146,11 @@ export function SupportWidget({
 
       if (!res.ok) {
         setErrorMessage(
-          getApiErrorMessage(data, data.message || (typeof data.code === "string" ? data.code : "Support intake was not accepted."))
+          getApiErrorMessage(
+            data,
+            data.message ||
+              (typeof data.code === "string" ? data.code : "Support intake was not accepted.")
+          )
         );
         return;
       }

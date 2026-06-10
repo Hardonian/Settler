@@ -30,7 +30,13 @@ jest.mock("../../infrastructure/db/prisma", () => {
   };
 });
 
-jest.mock("@settler/reconciliation-core");
+jest.mock("@settler/reconciliation-core", () => ({
+  scanMergedRunsForLegacyPage: jest.fn(),
+  resolveOperatorRunDetailForTenants: jest.fn(),
+  fetchMergedReconciliationRunsPage: jest.fn(),
+  buildRunProofpackIndexByRunId: jest.fn(),
+  resolveRunCompactProofSummary: jest.fn(),
+}));
 
 // Access mocked modules after jest.mock is applied
 const { prisma: mockedPrisma } = require("../../infrastructure/db/prisma");

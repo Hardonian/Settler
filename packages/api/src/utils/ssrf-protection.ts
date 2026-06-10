@@ -40,7 +40,7 @@ export async function validateUrl(urlStr: string): Promise<void> {
   let parsed: URL;
   try {
     parsed = new URL(urlStr);
-  } catch (e) {
+  } catch {
     throw new Error("SSRF attempt blocked: Invalid URL");
   }
 

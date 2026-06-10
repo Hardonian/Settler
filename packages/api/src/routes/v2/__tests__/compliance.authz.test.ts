@@ -5,6 +5,11 @@ jest.mock("../../../middleware/authorization", () => ({
   requirePermission: () => (_req: unknown, _res: unknown, next: () => void) => next(),
 }));
 
+jest.mock("../../../middleware/governance", () => ({
+  enforceFreezeState: () => (_req: unknown, _res: unknown, next: () => void) => next(),
+  bypassFreeze: (_req: unknown, _res: unknown, next: () => void) => next(),
+}));
+
 const authorizeTenantActionMock = jest.fn();
 jest.mock("../../../services/authz/openfga-authorization-service", () => ({
   getOpenFgaAuthorizationService: () => ({

@@ -30,9 +30,13 @@ jest.mock("../../services/capabilities/registry", () => ({
   })),
 }));
 
-jest.mock("../../db", () => ({
-  query: jest.fn(),
-}));
+jest.mock("../../db", () => {
+  const query = jest.fn();
+  return {
+    query,
+    queryWithTenant: jest.fn((tenantId, text, params) => query(text, params)),
+  };
+});
 
 const registry = jest.requireMock("../../services/capabilities/registry") as {
   getOperatorIntelligenceProvider: jest.Mock;
@@ -42,6 +46,7 @@ const registry = jest.requireMock("../../services/capabilities/registry") as {
 
 const db = jest.requireMock("../../db") as {
   query: jest.Mock;
+  queryWithTenant: jest.Mock;
 };
 
 describe("capability route degradation", () => {

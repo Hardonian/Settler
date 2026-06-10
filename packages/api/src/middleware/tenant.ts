@@ -281,3 +281,7 @@ export async function tenantMiddleware(
     next(error);
   }
 }
+
+export function resetTenantAccessTablesCache(): void {
+  cachedTenantAccessTables = null;
+}

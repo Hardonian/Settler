@@ -1,6 +1,5 @@
 "use client";
 
-import { Metadata } from "next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -16,7 +15,7 @@ export default function SignupPage() {
     try {
       const code = localStorage.getItem("settler_referral_code");
       if (code) setReferralCode(code);
-    } catch (e) {
+    } catch {
       // ignore
     }
   }, []);

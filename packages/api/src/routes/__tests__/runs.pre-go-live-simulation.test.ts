@@ -25,7 +25,12 @@ jest.mock("../../infrastructure/db/prisma", () => {
   };
 });
 
-jest.mock("@settler/reconciliation-core");
+jest.mock("@settler/reconciliation-core", () => ({
+  decodeMergedRunsCursor: jest.fn(),
+  fetchMergedReconciliationRunsPage: jest.fn(),
+  scanMergedRunsForLegacyPage: jest.fn(),
+  resolveOperatorRunDetailForTenants: jest.fn(),
+}));
 
 const { prisma: mockedPrisma } = require("../../infrastructure/db/prisma");
 const mockReconResult = mockedPrisma.reconResult;

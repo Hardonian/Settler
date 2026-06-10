@@ -11,7 +11,7 @@ export function useReferralTracking() {
     if (ref) {
       try {
         localStorage.setItem("settler_referral_code", ref);
-      } catch (e) {
+      } catch {
         // Ignore local storage errors in incognito mode
       }
     }

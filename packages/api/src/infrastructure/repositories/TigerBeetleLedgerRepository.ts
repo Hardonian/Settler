@@ -41,7 +41,6 @@ import {
   AccountNotFoundError,
   TransferNotFoundError,
   InvalidTransferStateError,
-  TransferReversalError,
   LedgerConnectionError,
   LedgerOperationError,
   LedgerTimeoutError,
