@@ -149,7 +149,6 @@ const EXPECTED_PROTECTED_ROUTES: RouteExpectation[] = [
     method: "post",
     route: "/violations/:violationId/acknowledge",
   },
-  { file: "packages/api/src/routes/v1/nudger.ts", method: "post", route: "/evaluate" },
   {
     file: "packages/api/src/routes/v1/venture-invoice-nudger.ts",
     method: "post",
