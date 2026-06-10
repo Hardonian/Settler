@@ -2,85 +2,37 @@
   "signals": [
     {
       "type": "feature_in_docs",
-      "description": "Feature \"emails\" mentioned in README but not found in code",
+      "description": "Feature \"boundaries\" mentioned in README but not found in code",
       "location": "README.md",
       "severity": "medium"
     },
     {
       "type": "feature_in_docs",
-      "description": "Feature \"Workflows\" mentioned in README but not found in code",
+      "description": "Feature \"boundary\" mentioned in README but not found in code",
       "location": "README.md",
       "severity": "medium"
     },
     {
       "type": "feature_in_docs",
-      "description": "Feature \"bot prompt\" mentioned in README but not found in code",
+      "description": "Feature \"trace metadata\" mentioned in README but not found in code",
       "location": "README.md",
       "severity": "medium"
     },
     {
       "type": "feature_in_docs",
-      "description": "Feature \"efficiently\" mentioned in README but not found in code",
+      "description": "Feature \"correlation\" mentioned in README but not found in code",
       "location": "README.md",
       "severity": "medium"
     },
     {
       "type": "feature_in_docs",
-      "description": "Feature \"placeholders\" mentioned in README but not found in code",
+      "description": "Feature \"deterministic execution with replayable verification and auditable run lineage\" mentioned in README but not found in code",
       "location": "README.md",
       "severity": "medium"
     },
     {
       "type": "feature_in_docs",
-      "description": "Feature \"version numbers and last updated dates\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"enterprise teams with\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"Flags\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"flags for your applications\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"actionable\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"risk assessments\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"flag evaluations\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"Detection\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"in docs but not code\" mentioned in README but not found in code",
+      "description": "Feature \"pages\" mentioned in README but not found in code",
       "location": "README.md",
       "severity": "medium"
     },
@@ -104,145 +56,13 @@
     },
     {
       "type": "feature_in_docs",
-      "description": "Feature \"AND survive billing failures\" mentioned in README but not found in code",
+      "description": "Feature \"For connector\" mentioned in README but not found in code",
       "location": "README.md",
       "severity": "medium"
     },
     {
       "type": "feature_in_docs",
-      "description": "Feature \"validation phases to prove various aspects\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"dynamic merge fields defined in\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"plain text version\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"benefit or urgency\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"alt text\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"For questions or issues with email templates\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"FX conversion\n    fxConversion\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"Demonstrated\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"Interactions\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"templates for billing\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"Teams\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"Templates\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"templates\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"CORS restrictions\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"full Console management\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"clear error messages\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"While this protocol package is free and open\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"in\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"everything you need to get started\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"import\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"Comparison\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"tiers and pricing\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"split\" mentioned in README but not found in code",
+      "description": "Feature \"bundle\" mentioned in README but not found in code",
       "location": "README.md",
       "severity": "medium"
     },
@@ -290,79 +110,355 @@
     },
     {
       "type": "feature_in_docs",
-      "description": "Feature \"both\" mentioned in README but not found in code",
+      "description": "Feature \"everything you need to get started\" mentioned in README but not found in code",
       "location": "README.md",
       "severity": "medium"
     },
     {
       "type": "feature_in_docs",
-      "description": "Feature \"flag management\" mentioned in README but not found in code",
+      "description": "Feature \"import\" mentioned in README but not found in code",
       "location": "README.md",
       "severity": "medium"
     },
     {
       "type": "feature_in_docs",
-      "description": "Feature \"flag changes\" mentioned in README but not found in code",
+      "description": "Feature \"Comparison\" mentioned in README but not found in code",
       "location": "README.md",
       "severity": "medium"
     },
     {
       "type": "feature_in_docs",
-      "description": "Feature \"flags and\" mentioned in README but not found in code",
+      "description": "Feature \"tiers and pricing\" mentioned in README but not found in code",
       "location": "README.md",
       "severity": "medium"
     },
     {
       "type": "feature_in_docs",
-      "description": "Feature \"flag resolver\" mentioned in README but not found in code",
+      "description": "Feature \"split\" mentioned in README but not found in code",
       "location": "README.md",
       "severity": "medium"
     },
     {
       "type": "feature_in_docs",
-      "description": "Feature \"flag\nconst flagValue\" mentioned in README but not found in code",
+      "description": "Feature \"replica\" mentioned in README but not found in code",
       "location": "README.md",
       "severity": "medium"
     },
     {
       "type": "feature_in_docs",
-      "description": "Feature \"flag system automatically uses Edge Config if configured\" mentioned in README but not found in code",
+      "description": "Feature \"write buffering for usage events and API logs\" mentioned in README but not found in code",
       "location": "README.md",
       "severity": "medium"
     },
     {
       "type": "feature_in_docs",
-      "description": "Feature \"flags fall back to environment variables\" mentioned in README but not found in code",
+      "description": "Feature \"Redis caching\" mentioned in README but not found in code",
       "location": "README.md",
       "severity": "medium"
     },
     {
       "type": "feature_in_docs",
-      "description": "Feature \"error handling\" mentioned in README but not found in code",
+      "description": "Feature \"domain primitives for reconciliation decisions and evidence exports\" mentioned in README but not found in code",
       "location": "README.md",
       "severity": "medium"
     },
     {
       "type": "feature_in_docs",
-      "description": "Feature \"flags\" mentioned in README but not found in code",
+      "description": "Feature \"assumptions\" mentioned in README but not found in code",
       "location": "README.md",
       "severity": "medium"
     },
     {
       "type": "feature_in_docs",
-      "description": "Feature \"flags that need to change without deployments\" mentioned in README but not found in code",
+      "description": "Feature \"prompt\" mentioned in README but not found in code",
       "location": "README.md",
       "severity": "medium"
     },
     {
       "type": "feature_in_docs",
-      "description": "Feature \"flag resolver automatically checks Edge Config first\" mentioned in README but not found in code",
+      "description": "Feature \"AND survive billing failures\" mentioned in README but not found in code",
       "location": "README.md",
       "severity": "medium"
     },
     {
       "type": "feature_in_docs",
-      "description": "Feature \"better performance when deployed on Vercel\" mentioned in README but not found in code",
+      "description": "Feature \"validation phases to prove various aspects\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"exact commands in implementation reports\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"explicit compounding loop impact in the report\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"pressure\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"strengthen evidence\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"tenant\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"Self\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"payload contract and escalation attachment guidance\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"dynamic merge fields defined in\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"plain text version\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"benefit or urgency\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"alt text\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"For questions or issues with email templates\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"Demonstrated\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"FX conversion\n    fxConversion\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"emails\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"Workflows\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"bot prompt\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"efficiently\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"placeholders\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"version numbers and last updated dates\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"Interactions\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"templates for billing\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"Teams\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"Templates\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"templates\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"production\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"trace propagation\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"still active on\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"While this protocol package is free and open\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"in\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"Flags\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"CSV processing\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"JSON processing\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"PDF generation\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"Excel export\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"ML anomaly detection\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"ML reconciliation scoring\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"flags enabled\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"For issues\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"specific job handlers\nWORKHORSE\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"flags for selective handler enabling\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"Row Level Security\nALTER TABLE python\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"ROW LEVEL SECURITY\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"Python processing\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"deterministic primitives for computation\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"the primary interface for operators\" mentioned in README but not found in code",
       "location": "README.md",
       "severity": "medium"
     },
@@ -389,6 +485,1644 @@
       "description": "Feature \"chaos engineering tests\" mentioned in README but not found in code",
       "location": "README.md",
       "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"compliance snapshot features\n  enable\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"index_usage_snapshots\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"audit_log\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"memberships\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"profiles_enterprise\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"usage_events_enterprise\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"audit_log_entries\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"flow_state\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"identities\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"instances\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"mfa_amr_claims\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"mfa_challenges\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"mfa_factors\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"oauth_authorizations\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"oauth_client_states\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"oauth_clients\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"oauth_consents\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"one_time_tokens\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"refresh_tokens\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"saml_providers\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"saml_relay_states\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"schema_migrations\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"sessions\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"sso_domains\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"sso_providers\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"users\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"job\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"job_run_details\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"wrappers_fdw_stats\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"_http_response\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_request_queue\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"meta\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"account_balances\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"activation_checklist\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"activity_log\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"activity_logs\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"add_on_purchases\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"add_ons\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"advisor_findings\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"advisors_findings\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"affiliate_conversions\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"affiliates\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"agent_runs\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ai_analyses\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ai_analysis_usage\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ai_usage_events\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ai_usage_quotas\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"alert_notifications\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"alert_rules\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"alerts\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"analytics_events\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"anomaly_events\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_keys\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"architecture_violations\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"audit_logs\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"automated_decisions\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"billing_accounts\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"billing_customers\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"billing_disputes\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"billing_reconciliation_log\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"billing_subscriptions\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"blocked_ips\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"canned_responses\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"chat_message_embeddings\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"chat_messages\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"chat_threads\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"chatbot_analytics\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"chatbot_conversations\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"circuit_breakers\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"cms_audit\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"cms_media\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"cms_page_versions\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"cms_pages\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"confidence_events\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"console_activities\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"contacts\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"contract_versions\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"conversation_members\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"conversation_summaries\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"conversations\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"cron_targets\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"customer_segments\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"data_export_items\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"data_exports\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"dead_letters\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"deals\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"device_profiles\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"diagnostics\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"drift_events\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"edge_jobs\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"edge_node_deployments\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"edge_nodes\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"email_invites\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"email_sends\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"email_sequences\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"email_templates\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"entitlements\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"error_logs\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"escalation_history\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"escalation_rules\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"event_logs\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"executions\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"experiment_assignments\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"experiment_metric_events\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"experiment_variants\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"experiments\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"feature_flag_environments\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"feature_flag_events\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"feature_flag_overrides\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"feature_flags\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"financial_insights\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"financial_ledger\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"fraud_signals\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"growth_content\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"health_checks\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"idempotency_keys\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"integration_credentials\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"integration_health\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"integration_quota_usage\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"job_attempts\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"job_failure_log\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"job_rule_snapshots\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"jobs\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"leads\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"mapping_templates\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"matches\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"memberships\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"message_summaries\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"messages\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"model_versions\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"monitoring_metrics\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"newsletter_subscriptions\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"notifications\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"onboarding_progress\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ops_actions\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ops_audit_logs\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ops_briefings\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ops_errors\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ops_insights\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ops_jobs\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ops_recommendations\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ops_support_tickets\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ops_usage_aggregates\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ops_webhooks\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"participants\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"payment_recovery\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"pii_mapping_tokens\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"plans\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"playground_usage\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"positioning_feedback\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"posts\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"preemptive_support_actions\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"preview_tokens\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"profiles\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"project_snapshots\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"public_content\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"rate_limits\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"rate_usage\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"reality_events\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"reality_metrics\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"receipt_audit_logs\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"receipt_conversions\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"receipt_events\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"receipt_items\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"receipt_items_extracted\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"receipt_ratings\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"receipt_uploads\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"receipt_webhook_outbox\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"receipt_webhooks\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"receipts\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"receipts_extracted\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"recon_audits\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"recon_jobs\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"recon_results\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"recon_runs\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"recon_templates\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"recon_templates_full\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"reconciliation_candidates\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"reconciliation_graph_edges\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"reconciliation_graph_nodes\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"referrals\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"release_safety_checks\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"reports\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"retention_policies\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"revoked_tokens\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"run_events\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"schema_migrations\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"sdk_downloads\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"security_events\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"service_events\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"service_integrations\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"shareable_artifacts\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"staleness_checks\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"storage_references\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"strategic_backlog\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"stripe_customers\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"stripe_event_log\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"stripe_events\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"stripe_webhook_logs\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"subscriptions\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"support_articles\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"support_categories\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"support_tickets\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"system_state_snapshots\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_billing_accounts\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_branding\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_drafts\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_feature_flags\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_media\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_memberships\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_navigation\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_page_blocks\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_page_revisions\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_pages\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_plans\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_quota_usage\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_usage\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_usage_monthly\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_users\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_versions\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenants\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ticket_messages\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"transform_recipes\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"unmatched\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"uploads\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"usage_aggregate_daily\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"usage_counters\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"usage_event_idempotency\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"usage_events\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"usage_events_billing\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"usage_tracking\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"user_artifacts\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"user_confusion_events\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"user_email_preferences\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"user_intent_insights\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"user_lifecycle\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"user_milestones\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"user_organizations\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"user_presence\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"user_tenants\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"users\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"validation_rules\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"webhook_attempts\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"webhook_configs\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"webhook_dead_letters\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"webhook_deliveries\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"webhook_payloads\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"webhooks\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"weekly_snapshots\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"workflow_runs\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"messages\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"messages_2025_12_16\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"messages_2025_12_17\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"messages_2025_12_18\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"messages_2025_12_19\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"messages_2025_12_20\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"messages_2025_12_21\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"messages_2025_12_22\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"schema_migrations\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"subscription\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"buckets\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"buckets_analytics\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"buckets_vectors\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"migrations\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"objects\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"prefixes\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"s3_multipart_uploads\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"s3_multipart_uploads_parts\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"vector_indexes\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"hooks\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"migrations\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"secrets\" exists but has no consumers in code",
+      "location": "supabase/production-schema.json",
+      "severity": "high"
     },
     {
       "type": "unused_env",
@@ -638,6 +2372,30 @@
     },
     {
       "type": "unused_env",
+      "description": "Environment variable \"RATE_LIMIT_DB_WINDOW_MS\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"WEBHOOK_REPLAY_WINDOW_MS\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"WEBHOOK_REPLAY_WINDOW_MS_BY_PROVIDER\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"DISTRIBUTED_GUARD_CLEANUP_INTERVAL_MS\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
       "description": "Environment variable \"WEBHOOK_MAX_RETRIES\" defined but never used",
       "location": ".env.example",
       "severity": "low"
@@ -677,91 +2435,301 @@
       "description": "Environment variable \"ENABLE_API_DOCS\" defined but never used",
       "location": ".env.example",
       "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"JOBFORGE_INTEGRATION_ENABLED\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"JOBFORGE_BUNDLE_EXECUTION_ENABLED\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"SUPABASE_ACCESS_TOKEN\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"SUPABASE_PROJECT_REF\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"SUPABASE_DB_PASSWORD\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"DIRECT_URL\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"STRIPE_SECRET_KEY\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"STRIPE_WEBHOOK_SECRET\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"NEXT_PUBLIC_SUPABASE_URL\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"NEXT_PUBLIC_SUPABASE_ANON_KEY\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"NEXT_PUBLIC_SITE_URL\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"NEXT_PUBLIC_APP_URL\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"IP_RPM\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"USER_RPM\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"CACHE_MAX_AGE\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"FRONTEND_URL\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"DEMO_MODE\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"DEMO_TENANT_ID\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"DEMO_SEED\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"DEMO_API_KEY\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"DEMO_USER_EMAIL\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"DEMO_USER_PASSWORD\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"SETTLER_ENABLE_V2_STRATEGIC_PREVIEW\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"TIGERBEETLE_ENABLED\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"TIGERBEETLE_ADDRESS\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"TIGERBEETLE_CLUSTER_ID\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"TIGERBEETLE_TIMEOUT_MS\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"TIGERBEETLE_MAX_RETRIES\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"SLACK_ALERT_WEBHOOK_URL\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"TEAMS_ALERT_WEBHOOK_URL\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"TELEGRAM_BOT_TOKEN\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"TELEGRAM_CHAT_ID\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"ALERT_NOTIFIER_DRY_RUN\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"ALERT_NOTIFICATION_COOLDOWN_MS\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"SUPABASE_AUTH_ENABLED\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"SUPABASE_ENTERPRISE_SSO_ENABLED\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"OPENFGA_ENABLED\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"TEMPORAL_ENABLED\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"TEMPORAL_WORKER_ENABLED\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"OTEL_ENABLED\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"OTEL_SERVICE_NAME\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"NANGO_ENABLED\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"AIRBYTE_ENABLED\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
     }
   ],
   "summary": {
     "feature_in_docs": [
       {
         "type": "feature_in_docs",
-        "description": "Feature \"emails\" mentioned in README but not found in code",
+        "description": "Feature \"boundaries\" mentioned in README but not found in code",
         "location": "README.md",
         "severity": "medium"
       },
       {
         "type": "feature_in_docs",
-        "description": "Feature \"Workflows\" mentioned in README but not found in code",
+        "description": "Feature \"boundary\" mentioned in README but not found in code",
         "location": "README.md",
         "severity": "medium"
       },
       {
         "type": "feature_in_docs",
-        "description": "Feature \"bot prompt\" mentioned in README but not found in code",
+        "description": "Feature \"trace metadata\" mentioned in README but not found in code",
         "location": "README.md",
         "severity": "medium"
       },
       {
         "type": "feature_in_docs",
-        "description": "Feature \"efficiently\" mentioned in README but not found in code",
+        "description": "Feature \"correlation\" mentioned in README but not found in code",
         "location": "README.md",
         "severity": "medium"
       },
       {
         "type": "feature_in_docs",
-        "description": "Feature \"placeholders\" mentioned in README but not found in code",
+        "description": "Feature \"deterministic execution with replayable verification and auditable run lineage\" mentioned in README but not found in code",
         "location": "README.md",
         "severity": "medium"
       },
       {
         "type": "feature_in_docs",
-        "description": "Feature \"version numbers and last updated dates\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"enterprise teams with\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"Flags\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"flags for your applications\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"actionable\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"risk assessments\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"flag evaluations\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"Detection\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"in docs but not code\" mentioned in README but not found in code",
+        "description": "Feature \"pages\" mentioned in README but not found in code",
         "location": "README.md",
         "severity": "medium"
       },
@@ -785,145 +2753,13 @@
       },
       {
         "type": "feature_in_docs",
-        "description": "Feature \"AND survive billing failures\" mentioned in README but not found in code",
+        "description": "Feature \"For connector\" mentioned in README but not found in code",
         "location": "README.md",
         "severity": "medium"
       },
       {
         "type": "feature_in_docs",
-        "description": "Feature \"validation phases to prove various aspects\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"dynamic merge fields defined in\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"plain text version\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"benefit or urgency\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"alt text\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"For questions or issues with email templates\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"FX conversion\n    fxConversion\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"Demonstrated\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"Interactions\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"templates for billing\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"Teams\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"Templates\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"templates\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"CORS restrictions\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"full Console management\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"clear error messages\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"While this protocol package is free and open\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"in\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"everything you need to get started\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"import\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"Comparison\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"tiers and pricing\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"split\" mentioned in README but not found in code",
+        "description": "Feature \"bundle\" mentioned in README but not found in code",
         "location": "README.md",
         "severity": "medium"
       },
@@ -971,79 +2807,355 @@
       },
       {
         "type": "feature_in_docs",
-        "description": "Feature \"both\" mentioned in README but not found in code",
+        "description": "Feature \"everything you need to get started\" mentioned in README but not found in code",
         "location": "README.md",
         "severity": "medium"
       },
       {
         "type": "feature_in_docs",
-        "description": "Feature \"flag management\" mentioned in README but not found in code",
+        "description": "Feature \"import\" mentioned in README but not found in code",
         "location": "README.md",
         "severity": "medium"
       },
       {
         "type": "feature_in_docs",
-        "description": "Feature \"flag changes\" mentioned in README but not found in code",
+        "description": "Feature \"Comparison\" mentioned in README but not found in code",
         "location": "README.md",
         "severity": "medium"
       },
       {
         "type": "feature_in_docs",
-        "description": "Feature \"flags and\" mentioned in README but not found in code",
+        "description": "Feature \"tiers and pricing\" mentioned in README but not found in code",
         "location": "README.md",
         "severity": "medium"
       },
       {
         "type": "feature_in_docs",
-        "description": "Feature \"flag resolver\" mentioned in README but not found in code",
+        "description": "Feature \"split\" mentioned in README but not found in code",
         "location": "README.md",
         "severity": "medium"
       },
       {
         "type": "feature_in_docs",
-        "description": "Feature \"flag\nconst flagValue\" mentioned in README but not found in code",
+        "description": "Feature \"replica\" mentioned in README but not found in code",
         "location": "README.md",
         "severity": "medium"
       },
       {
         "type": "feature_in_docs",
-        "description": "Feature \"flag system automatically uses Edge Config if configured\" mentioned in README but not found in code",
+        "description": "Feature \"write buffering for usage events and API logs\" mentioned in README but not found in code",
         "location": "README.md",
         "severity": "medium"
       },
       {
         "type": "feature_in_docs",
-        "description": "Feature \"flags fall back to environment variables\" mentioned in README but not found in code",
+        "description": "Feature \"Redis caching\" mentioned in README but not found in code",
         "location": "README.md",
         "severity": "medium"
       },
       {
         "type": "feature_in_docs",
-        "description": "Feature \"error handling\" mentioned in README but not found in code",
+        "description": "Feature \"domain primitives for reconciliation decisions and evidence exports\" mentioned in README but not found in code",
         "location": "README.md",
         "severity": "medium"
       },
       {
         "type": "feature_in_docs",
-        "description": "Feature \"flags\" mentioned in README but not found in code",
+        "description": "Feature \"assumptions\" mentioned in README but not found in code",
         "location": "README.md",
         "severity": "medium"
       },
       {
         "type": "feature_in_docs",
-        "description": "Feature \"flags that need to change without deployments\" mentioned in README but not found in code",
+        "description": "Feature \"prompt\" mentioned in README but not found in code",
         "location": "README.md",
         "severity": "medium"
       },
       {
         "type": "feature_in_docs",
-        "description": "Feature \"flag resolver automatically checks Edge Config first\" mentioned in README but not found in code",
+        "description": "Feature \"AND survive billing failures\" mentioned in README but not found in code",
         "location": "README.md",
         "severity": "medium"
       },
       {
         "type": "feature_in_docs",
-        "description": "Feature \"better performance when deployed on Vercel\" mentioned in README but not found in code",
+        "description": "Feature \"validation phases to prove various aspects\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"exact commands in implementation reports\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"explicit compounding loop impact in the report\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"pressure\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"strengthen evidence\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"tenant\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"Self\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"payload contract and escalation attachment guidance\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"dynamic merge fields defined in\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"plain text version\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"benefit or urgency\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"alt text\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"For questions or issues with email templates\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"Demonstrated\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"FX conversion\n    fxConversion\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"emails\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"Workflows\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"bot prompt\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"efficiently\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"placeholders\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"version numbers and last updated dates\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"Interactions\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"templates for billing\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"Teams\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"Templates\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"templates\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"production\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"trace propagation\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"still active on\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"While this protocol package is free and open\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"in\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"Flags\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"CSV processing\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"JSON processing\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"PDF generation\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"Excel export\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"ML anomaly detection\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"ML reconciliation scoring\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"flags enabled\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"For issues\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"specific job handlers\nWORKHORSE\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"flags for selective handler enabling\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"Row Level Security\nALTER TABLE python\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"ROW LEVEL SECURITY\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"Python processing\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"deterministic primitives for computation\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"the primary interface for operators\" mentioned in README but not found in code",
         "location": "README.md",
         "severity": "medium"
       },
@@ -1070,6 +3182,1646 @@
         "description": "Feature \"chaos engineering tests\" mentioned in README but not found in code",
         "location": "README.md",
         "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"compliance snapshot features\n  enable\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      }
+    ],
+    "table_no_consumer": [
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"index_usage_snapshots\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"audit_log\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"memberships\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"profiles_enterprise\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"usage_events_enterprise\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"audit_log_entries\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"flow_state\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"identities\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"instances\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"mfa_amr_claims\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"mfa_challenges\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"mfa_factors\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"oauth_authorizations\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"oauth_client_states\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"oauth_clients\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"oauth_consents\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"one_time_tokens\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"refresh_tokens\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"saml_providers\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"saml_relay_states\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"schema_migrations\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"sessions\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"sso_domains\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"sso_providers\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"users\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"job\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"job_run_details\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"wrappers_fdw_stats\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"_http_response\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_request_queue\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"meta\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"account_balances\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"activation_checklist\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"activity_log\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"activity_logs\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"add_on_purchases\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"add_ons\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"advisor_findings\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"advisors_findings\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"affiliate_conversions\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"affiliates\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"agent_runs\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ai_analyses\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ai_analysis_usage\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ai_usage_events\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ai_usage_quotas\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"alert_notifications\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"alert_rules\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"alerts\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"analytics_events\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"anomaly_events\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_keys\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"architecture_violations\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"audit_logs\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"automated_decisions\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"billing_accounts\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"billing_customers\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"billing_disputes\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"billing_reconciliation_log\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"billing_subscriptions\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"blocked_ips\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"canned_responses\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"chat_message_embeddings\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"chat_messages\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"chat_threads\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"chatbot_analytics\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"chatbot_conversations\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"circuit_breakers\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"cms_audit\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"cms_media\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"cms_page_versions\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"cms_pages\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"confidence_events\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"console_activities\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"contacts\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"contract_versions\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"conversation_members\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"conversation_summaries\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"conversations\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"cron_targets\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"customer_segments\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"data_export_items\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"data_exports\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"dead_letters\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"deals\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"device_profiles\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"diagnostics\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"drift_events\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"edge_jobs\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"edge_node_deployments\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"edge_nodes\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"email_invites\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"email_sends\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"email_sequences\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"email_templates\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"entitlements\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"error_logs\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"escalation_history\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"escalation_rules\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"event_logs\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"executions\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"experiment_assignments\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"experiment_metric_events\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"experiment_variants\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"experiments\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"feature_flag_environments\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"feature_flag_events\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"feature_flag_overrides\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"feature_flags\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"financial_insights\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"financial_ledger\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"fraud_signals\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"growth_content\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"health_checks\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"idempotency_keys\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"integration_credentials\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"integration_health\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"integration_quota_usage\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"job_attempts\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"job_failure_log\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"job_rule_snapshots\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"jobs\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"leads\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"mapping_templates\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"matches\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"memberships\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"message_summaries\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"messages\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"model_versions\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"monitoring_metrics\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"newsletter_subscriptions\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"notifications\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"onboarding_progress\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ops_actions\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ops_audit_logs\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ops_briefings\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ops_errors\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ops_insights\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ops_jobs\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ops_recommendations\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ops_support_tickets\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ops_usage_aggregates\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ops_webhooks\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"participants\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"payment_recovery\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"pii_mapping_tokens\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"plans\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"playground_usage\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"positioning_feedback\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"posts\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"preemptive_support_actions\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"preview_tokens\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"profiles\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"project_snapshots\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"public_content\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"rate_limits\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"rate_usage\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"reality_events\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"reality_metrics\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"receipt_audit_logs\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"receipt_conversions\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"receipt_events\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"receipt_items\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"receipt_items_extracted\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"receipt_ratings\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"receipt_uploads\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"receipt_webhook_outbox\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"receipt_webhooks\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"receipts\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"receipts_extracted\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"recon_audits\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"recon_jobs\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"recon_results\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"recon_runs\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"recon_templates\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"recon_templates_full\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"reconciliation_candidates\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"reconciliation_graph_edges\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"reconciliation_graph_nodes\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"referrals\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"release_safety_checks\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"reports\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"retention_policies\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"revoked_tokens\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"run_events\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"schema_migrations\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"sdk_downloads\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"security_events\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"service_events\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"service_integrations\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"shareable_artifacts\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"staleness_checks\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"storage_references\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"strategic_backlog\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"stripe_customers\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"stripe_event_log\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"stripe_events\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"stripe_webhook_logs\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"subscriptions\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"support_articles\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"support_categories\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"support_tickets\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"system_state_snapshots\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_billing_accounts\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_branding\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_drafts\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_feature_flags\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_media\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_memberships\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_navigation\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_page_blocks\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_page_revisions\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_pages\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_plans\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_quota_usage\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_usage\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_usage_monthly\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_users\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_versions\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenants\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ticket_messages\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"transform_recipes\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"unmatched\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"uploads\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"usage_aggregate_daily\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"usage_counters\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"usage_event_idempotency\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"usage_events\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"usage_events_billing\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"usage_tracking\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"user_artifacts\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"user_confusion_events\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"user_email_preferences\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"user_intent_insights\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"user_lifecycle\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"user_milestones\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"user_organizations\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"user_presence\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"user_tenants\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"users\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"validation_rules\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"webhook_attempts\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"webhook_configs\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"webhook_dead_letters\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"webhook_deliveries\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"webhook_payloads\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"webhooks\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"weekly_snapshots\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"workflow_runs\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"messages\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"messages_2025_12_16\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"messages_2025_12_17\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"messages_2025_12_18\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"messages_2025_12_19\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"messages_2025_12_20\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"messages_2025_12_21\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"messages_2025_12_22\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"schema_migrations\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"subscription\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"buckets\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"buckets_analytics\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"buckets_vectors\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"migrations\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"objects\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"prefixes\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"s3_multipart_uploads\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"s3_multipart_uploads_parts\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"vector_indexes\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"hooks\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"migrations\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"secrets\" exists but has no consumers in code",
+        "location": "supabase/production-schema.json",
+        "severity": "high"
       }
     ],
     "unused_env": [
@@ -1321,6 +5073,30 @@
       },
       {
         "type": "unused_env",
+        "description": "Environment variable \"RATE_LIMIT_DB_WINDOW_MS\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"WEBHOOK_REPLAY_WINDOW_MS\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"WEBHOOK_REPLAY_WINDOW_MS_BY_PROVIDER\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"DISTRIBUTED_GUARD_CLEANUP_INTERVAL_MS\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
         "description": "Environment variable \"WEBHOOK_MAX_RETRIES\" defined but never used",
         "location": ".env.example",
         "severity": "low"
@@ -1358,6 +5134,264 @@
       {
         "type": "unused_env",
         "description": "Environment variable \"ENABLE_API_DOCS\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"JOBFORGE_INTEGRATION_ENABLED\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"JOBFORGE_BUNDLE_EXECUTION_ENABLED\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"SUPABASE_ACCESS_TOKEN\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"SUPABASE_PROJECT_REF\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"SUPABASE_DB_PASSWORD\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"DIRECT_URL\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"STRIPE_SECRET_KEY\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"STRIPE_WEBHOOK_SECRET\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"NEXT_PUBLIC_SUPABASE_URL\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"NEXT_PUBLIC_SUPABASE_ANON_KEY\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"NEXT_PUBLIC_SITE_URL\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"NEXT_PUBLIC_APP_URL\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"IP_RPM\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"USER_RPM\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"CACHE_MAX_AGE\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"FRONTEND_URL\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"DEMO_MODE\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"DEMO_TENANT_ID\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"DEMO_SEED\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"DEMO_API_KEY\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"DEMO_USER_EMAIL\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"DEMO_USER_PASSWORD\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"SETTLER_ENABLE_V2_STRATEGIC_PREVIEW\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"TIGERBEETLE_ENABLED\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"TIGERBEETLE_ADDRESS\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"TIGERBEETLE_CLUSTER_ID\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"TIGERBEETLE_TIMEOUT_MS\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"TIGERBEETLE_MAX_RETRIES\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"SLACK_ALERT_WEBHOOK_URL\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"TEAMS_ALERT_WEBHOOK_URL\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"TELEGRAM_BOT_TOKEN\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"TELEGRAM_CHAT_ID\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"ALERT_NOTIFIER_DRY_RUN\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"ALERT_NOTIFICATION_COOLDOWN_MS\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"SUPABASE_AUTH_ENABLED\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"SUPABASE_ENTERPRISE_SSO_ENABLED\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"OPENFGA_ENABLED\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"TEMPORAL_ENABLED\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"TEMPORAL_WORKER_ENABLED\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"OTEL_ENABLED\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"OTEL_SERVICE_NAME\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"NANGO_ENABLED\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"AIRBYTE_ENABLED\" defined but never used",
         "location": ".env.example",
         "severity": "low"
       }
