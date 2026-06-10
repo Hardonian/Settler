@@ -19,7 +19,13 @@ const serviceLogPath = path.resolve("examples/demo-output/dev-stack.log");
 
 function runCommand(command: string, args: string[], step: string) {
   console.log(`\n▶ ${step}`);
-  const result = spawnSync(command, args, { stdio: "inherit", env: process.env });
+  const actualCommand = command === "pnpm" ? "npx" : command;
+  const actualArgs = command === "pnpm" ? ["pnpm", ...args] : args;
+  const result = spawnSync(actualCommand, actualArgs, {
+    stdio: "inherit",
+    env: process.env,
+    shell: true,
+  });
   if (result.status !== 0) {
     throw new Error(`Step failed (${step}): ${command} ${args.join(" ")}`);
   }
@@ -27,7 +33,13 @@ function runCommand(command: string, args: string[], step: string) {
 
 function runCommandAllowFailure(command: string, args: string[], step: string): boolean {
   console.log(`\n▶ ${step}`);
-  const result = spawnSync(command, args, { stdio: "inherit", env: process.env });
+  const actualCommand = command === "pnpm" ? "npx" : command;
+  const actualArgs = command === "pnpm" ? ["pnpm", ...args] : args;
+  const result = spawnSync(actualCommand, actualArgs, {
+    stdio: "inherit",
+    env: process.env,
+    shell: true,
+  });
   if (result.status !== 0) {
     console.warn(`⚠️ ${step} failed; continuing with non-blocking demo path.`);
     return false;
@@ -66,10 +78,11 @@ async function startServices(): Promise<{ started: boolean; note: string }> {
     return { started: true, note: "Detected existing services on :3000 and :4000." };
   }
 
-  const child = spawn("pnpm", ["run", "dev:stack"], {
+  const child = spawn("npx", ["pnpm", "run", "dev:stack"], {
     env: process.env,
     stdio: "ignore",
     detached: true,
+    shell: true,
   });
 
   child.unref();

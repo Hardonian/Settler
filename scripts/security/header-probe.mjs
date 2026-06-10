@@ -108,11 +108,16 @@ async function maybeStartServer() {
   if (!existsSync(buildId))
     return { baseUrl: null, child: null, reason: "missing_build", startupLogs: [] };
 
-  const child = spawn("pnpm", ["--filter", "@settler/web", "start", "-p", String(config.port)], {
-    cwd: repoRoot,
-    env: process.env,
-    stdio: ["ignore", "pipe", "pipe"],
-  });
+  const child = spawn(
+    "npx",
+    ["pnpm", "--filter", "@settler/web", "start", "-p", String(config.port)],
+    {
+      cwd: repoRoot,
+      env: process.env,
+      stdio: ["ignore", "pipe", "pipe"],
+      shell: true,
+    }
+  );
   const logs = [];
   child.stdout.on("data", (chunk) => logs.push(chunk.toString()));
   child.stderr.on("data", (chunk) => logs.push(chunk.toString()));

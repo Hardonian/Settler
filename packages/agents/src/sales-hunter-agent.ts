@@ -33,10 +33,8 @@ export async function runSalesHunterAgent(): Promise<AgentReport> {
   `;
 
   try {
-    // @ts-ignore
-    const { object: leads } = await generateObject({
-      // @ts-ignore
-      model: ai("gpt-4-turbo"),
+    const { object } = (await generateObject({
+      model: ai("gpt-4-turbo") as any,
       system:
         "You are an expert Outbound SDR for a SaaS called Settler.dev (a deterministic reconciliation engine). Extract ONLY high-intent leads who are complaining about reconciliation, stripe, or quickbooks mismatches from the raw social firehose.",
       prompt: `Analyze the following firehose and return structured leads:\n\n${rawFirehose}`,
@@ -52,8 +50,12 @@ export async function runSalesHunterAgent(): Promise<AgentReport> {
             snippet: z.string().describe("The exact quote they posted"),
           })
         ),
-      }) as any,
-    });
+      }),
+    } as any)) as any;
+
+    const leads = object as {
+      leads: Array<{ companyOrUser: string; intentScore: number; snippet: string }>;
+    };
 
     checks.push({
       name: "llm_lead_generation",

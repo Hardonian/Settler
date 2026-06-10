@@ -21,9 +21,10 @@ async function waitFor(predicate, timeoutMs = 5000) {
 }
 
 test("mcp stdio initialize/list/call flow works", async () => {
-  const child = spawn("pnpm", ["exec", "tsx", "src/index.ts", "mcp", "serve"], {
+  const child = spawn("npx", ["pnpm", "exec", "tsx", "src/index.ts", "mcp", "serve"], {
     cwd: new URL("..", import.meta.url).pathname,
     stdio: ["pipe", "pipe", "inherit"],
+    shell: true,
   });
 
   const responses = [];

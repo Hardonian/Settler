@@ -27,10 +27,8 @@ export async function runSupportBot(): Promise<AgentReport> {
 
   // Provide the LLM with rigorous tools to inspect state and take action
   try {
-    // @ts-ignore
-    const { text, steps } = await generateText({
-      // @ts-ignore
-      model: ai("gpt-4-turbo"),
+    const { text, steps } = (await generateText({
+      model: ai("gpt-4-turbo") as any,
       system: `You are the Customer Support AI for Settler.dev. 
       Your goal is to detect struggling users, diagnose ledger differences, and draft highly professional emails explaining the mismatch.
       Always try to fetch struggling users, diagnose their mismatch, and send a resolution.`,
@@ -66,7 +64,7 @@ export async function runSupportBot(): Promise<AgentReport> {
           },
         }),
       },
-    });
+    } as any)) as any;
 
     checks.push({
       name: "ai_execution",
