@@ -93,7 +93,7 @@
     "demo:reset": "tsx scripts/demo-enterprise-seed.ts --reset",
     "demo:seed:legacy": "tsx scripts/seed-demo.ts",
     "demo:seed:reset:legacy": "tsx scripts/seed-demo.ts --reset",
-    "verify": "pnpm run lint && pnpm run typecheck && pnpm run build && pnpm run test:ci:verify && pnpm run test:surface-commands && pnpm run verify:surface-docs && pnpm run verify:route-classes-doc && pnpm run verify:api-family-docs && pnpm run verify:capability-registry && pnpm run verify:boundaries && pnpm run verify:policy && pnpm run verify:routes && pnpm run verify:launch-assets",
+    "verify": "pnpm run lint && pnpm run typecheck && pnpm run build && pnpm run test:ci:verify && pnpm run test:surface-commands && pnpm run verify:surface-docs && pnpm run verify:route-classes-doc && pnpm run verify:api-family-docs && pnpm run verify:capability-registry && pnpm run verify:boundaries && pnpm run verify:policy && pnpm run verify:routes && pnpm run verify:launch-assets && pnpm run verify:tenant-isolation && pnpm run test:cross-tenant",
     "verify:fast": "node scripts/assert-verify-fast-profile.mjs && node --test scripts/__tests__/verify-fast-profile-contract.test.mjs && node scripts/verify-release.mjs --profile=fast",
     "verify:fast:with-links": "node scripts/verify-release.mjs --profile=fast-with-links",
     "verify:staged": "node scripts/verify-staged-packages.mjs",

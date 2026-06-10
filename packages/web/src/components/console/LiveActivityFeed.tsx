@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { useBackoffPolling } from "@/hooks/use-backoff-polling";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -38,7 +39,7 @@ export function LiveActivityFeed() {
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchActivities = async () => {
+  const fetchActivities = useCallback(async () => {
     try {
       const res = await fetch("/api/console/activities");
       if (res.ok) {
@@ -69,17 +70,19 @@ export function LiveActivityFeed() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     // Initial fetch
     fetchActivities();
+  }, [fetchActivities]);
 
-    // Poll for new activities every 10 seconds
-    const interval = setInterval(fetchActivities, 10000);
-
-    return () => clearInterval(interval);
-  }, []);
+  // Poll for new activities with exponential backoff
+  useBackoffPolling(fetchActivities, {
+    initialIntervalMs: 10000,
+    maxIntervalMs: 60000,
+    backoffFactor: 1.5,
+  });
 
   return (
     <Card className="h-full">

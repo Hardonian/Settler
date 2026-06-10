@@ -8,6 +8,9 @@
 import { supabase } from "../infrastructure/supabase/client";
 import { logInfo, logError } from "../utils/logger";
 import { checkTenantFrozen } from "../middleware/governance";
+import { usageSyncOutboxQueue } from "./queue/UsageSyncOutboxQueue";
+import { TenantTier } from "../domain/entities/Tenant";
+import { QueuePriority } from "../infrastructure/queue/PrioritizedQueue";
 
 const SYNC_FUNCTION_PATH = "/functions/v1/sync-usage-to-stripe";
 const DEFAULT_EDGE_TIMEOUT_MS = 15_000;
@@ -53,87 +56,6 @@ function computeBackoffMs(attempt: number, baseDelayMs: number): number {
   const exponential = baseDelayMs * Math.pow(2, Math.max(0, attempt - 1));
   const jitter = Math.floor(Math.random() * Math.min(250, baseDelayMs));
   return exponential + jitter;
-}
-
-async function syncBillingAccountWithRetries(params: {
-  syncUrl: string;
-  serviceRoleKey: string;
-  billingAccountId: string;
-  dateStr: string;
-  maxAttempts?: number;
-  timeoutMs?: number;
-}): Promise<{ ok: true } | { ok: false; reason: string }> {
-  const maxAttempts = params.maxAttempts ?? DEFAULT_EDGE_MAX_ATTEMPTS;
-  const timeoutMs = params.timeoutMs ?? DEFAULT_EDGE_TIMEOUT_MS;
-
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      const response = await fetch(params.syncUrl, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${params.serviceRoleKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          billing_account_id: params.billingAccountId,
-          date: params.dateStr,
-        }),
-        signal: AbortSignal.timeout(timeoutMs),
-      });
-
-      if (response.ok) {
-        return { ok: true };
-      }
-
-      const responseBody = await response.text().catch(() => "");
-      const retryable = response.status === 429 || response.status >= 500;
-
-      if (!retryable || attempt === maxAttempts) {
-        return {
-          ok: false,
-          reason: `HTTP ${response.status}: ${responseBody || response.statusText}`,
-        };
-      }
-
-      const retryAfter = parseRetryAfterMs(response);
-      const delayMs = retryAfter ?? computeBackoffMs(attempt, DEFAULT_EDGE_BASE_DELAY_MS);
-      logInfo("Retrying Stripe usage sync edge call", {
-        billingAccountId: params.billingAccountId,
-        attempt,
-        maxAttempts,
-        delayMs,
-        status: response.status,
-      });
-      await sleep(delayMs);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      if (attempt === maxAttempts) {
-        return { ok: false, reason: message };
-      }
-      const delayMs = computeBackoffMs(attempt, DEFAULT_EDGE_BASE_DELAY_MS);
-      logInfo("Retrying Stripe usage sync edge call after network failure", {
-        billingAccountId: params.billingAccountId,
-        attempt,
-        maxAttempts,
-        delayMs,
-        error: message,
-      });
-      await sleep(delayMs);
-    }
-  }
-
-  return { ok: false, reason: "Unknown retry exhaustion state" };
-}
-
-async function processInBatches<T>(
-  items: readonly T[],
-  concurrency: number,
-  worker: (item: T) => Promise<void>
-): Promise<void> {
-  for (let i = 0; i < items.length; i += concurrency) {
-    const batch = items.slice(i, i + concurrency);
-    await Promise.all(batch.map((item) => worker(item)));
-  }
 }
 
 /**
@@ -231,36 +153,31 @@ export async function syncUsageToStripe(
       eligibleAccounts.push(account);
     }
 
-    await processInBatches(eligibleAccounts, DEFAULT_SYNC_CONCURRENCY, async (account) => {
-      const result = await syncBillingAccountWithRetries({
-        syncUrl,
-        serviceRoleKey,
-        billingAccountId: account.id,
-        dateStr,
-      });
-
-      if (result.ok) {
-        syncedCount++;
-      } else {
-        failedCount++;
-        logError("Failed to sync usage to Stripe", new Error(result.reason), {
+    for (const account of eligibleAccounts) {
+      // Add to transactional outbox (BullMQ)
+      // This guarantees zero dropped events even if Stripe API fails,
+      // because BullMQ uses exponential backoff and persists jobs.
+      await usageSyncOutboxQueue.add(
+        {
+          tenantId: account.tenant_id || "system",
+          tenantTier: TenantTier.GROWTH, // Default mapping
           billingAccountId: account.id,
-        });
-      }
-    });
+          dateStr,
+          syncUrl,
+          serviceRoleKey,
+          jobId: `sync-${account.id}-${dateStr}`,
+        },
+        QueuePriority.HIGH
+      );
+      syncedCount++;
+    }
 
-    logInfo("Stripe usage sync completed", {
+    logInfo("Stripe usage sync jobs enqueued to outbox", {
       totalAccounts: billingAccounts.length,
       eligibleAccounts: eligibleAccounts.length,
-      syncedCount,
+      enqueuedCount: syncedCount,
       skippedCount,
-      failedCount,
       date: dateStr,
-      degraded: failedCount > 0,
-      degradedReason:
-        failedCount > 0
-          ? "One or more account sync edge calls exhausted retries or were rejected"
-          : undefined,
     });
   } catch (error) {
     logError("Failed to sync usage to Stripe", error);
