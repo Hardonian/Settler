@@ -220,7 +220,7 @@ export function UsageAnalyticsDashboard() {
         body: JSON.stringify({ action: "retry" }),
       });
       const payload = (await res.json().catch(() => null)) as UsageExportJob | null;
-      
+
       const freezeDetails = parseGovernanceFreezeError(payload, res.status);
       if (freezeDetails) {
         setFreezeError(freezeDetails);
@@ -349,7 +349,7 @@ export function UsageAnalyticsDashboard() {
             </CardContent>
           </Card>
         )}
-        
+
         {freezeError && (
           <FreezeErrorAlert
             reason={freezeError.reason}
@@ -360,7 +360,7 @@ export function UsageAnalyticsDashboard() {
             }}
           />
         )}
-        
+
         {exportError && <p className="text-sm text-red-600 dark:text-red-400">{exportError}</p>}
 
         {/* Key Metrics */}
@@ -477,7 +477,6 @@ export function UsageAnalyticsDashboard() {
                                 ? "bg-amber-600"
                                 : "bg-blue-600"
                           }`}
-                          // eslint-disable-next-line react/forbid-dom-props
                           style={{ width: `${Math.min(usagePercent, 100)}%` }}
                         />
                       </div>
