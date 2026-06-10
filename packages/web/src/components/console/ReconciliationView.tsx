@@ -314,6 +314,17 @@ export function ReconciliationView({
               </div>
             </div>
           )}
+
+          <div className="mt-6 pt-4 border-t border-border flex justify-end">
+            <a
+              href="https://settler.dev?ref=shared_recon_report"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-medium text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-1 opacity-70 hover:opacity-100"
+            >
+              Powered by <span className="font-bold">Settler</span>
+            </a>
+          </div>
         </CardContent>
       </Card>
 

@@ -2216,54 +2216,61 @@ export class ExceptionIntelligenceService {
     tenantId: string,
     lookbackDays: number
   ): Promise<ExceptionTaxonomySummary> {
-    const matches = await this.fetchScopedMatches(tenantId, lookbackDays);
-    const dims: ExceptionTaxonomySummary["dimensions"] = {
-      mismatchType: {},
-      evidenceGapType: {},
-      timingDiscrepancyType: {},
-      policyConflictType: {},
-      sourceInconsistencyType: {},
-      reviewRequiredType: {},
-      unresolvedBecause: {},
-      disputeBecause: {},
-    };
+    return withCache(
+      cacheKey("exception_intelligence", "taxonomy", tenantId, lookbackDays),
+      300000,
+      async () => {
+        const matches = await this.fetchScopedMatches(tenantId, lookbackDays);
+        const dims: ExceptionTaxonomySummary["dimensions"] = {
+          mismatchType: {},
+          evidenceGapType: {},
+          timingDiscrepancyType: {},
+          policyConflictType: {},
+          sourceInconsistencyType: {},
+          reviewRequiredType: {},
+          unresolvedBecause: {},
+          disputeBecause: {},
+        };
 
-    for (const match of matches) {
-      const ontology = classifyExceptionOntology(match);
-      dims.mismatchType[ontology.mismatchType] =
-        (dims.mismatchType[ontology.mismatchType] ?? 0) + 1;
-      dims.evidenceGapType[ontology.evidenceGapType] =
-        (dims.evidenceGapType[ontology.evidenceGapType] ?? 0) + 1;
-      dims.timingDiscrepancyType[ontology.timingDiscrepancyType] =
-        (dims.timingDiscrepancyType[ontology.timingDiscrepancyType] ?? 0) + 1;
-      dims.policyConflictType[ontology.policyConflictType] =
-        (dims.policyConflictType[ontology.policyConflictType] ?? 0) + 1;
-      dims.sourceInconsistencyType[ontology.sourceInconsistencyType] =
-        (dims.sourceInconsistencyType[ontology.sourceInconsistencyType] ?? 0) + 1;
-      dims.reviewRequiredType[ontology.reviewRequiredType] =
-        (dims.reviewRequiredType[ontology.reviewRequiredType] ?? 0) + 1;
-      dims.unresolvedBecause[ontology.unresolvedBecause] =
-        (dims.unresolvedBecause[ontology.unresolvedBecause] ?? 0) + 1;
-      dims.disputeBecause[ontology.disputeBecause] =
-        (dims.disputeBecause[ontology.disputeBecause] ?? 0) + 1;
-    }
+        for (const match of matches) {
+          const ontology = classifyExceptionOntology(match);
+          dims.mismatchType[ontology.mismatchType] =
+            (dims.mismatchType[ontology.mismatchType] ?? 0) + 1;
+          dims.evidenceGapType[ontology.evidenceGapType] =
+            (dims.evidenceGapType[ontology.evidenceGapType] ?? 0) + 1;
+          dims.timingDiscrepancyType[ontology.timingDiscrepancyType] =
+            (dims.timingDiscrepancyType[ontology.timingDiscrepancyType] ?? 0) + 1;
+          dims.policyConflictType[ontology.policyConflictType] =
+            (dims.policyConflictType[ontology.policyConflictType] ?? 0) + 1;
+          dims.sourceInconsistencyType[ontology.sourceInconsistencyType] =
+            (dims.sourceInconsistencyType[ontology.sourceInconsistencyType] ?? 0) + 1;
+          dims.reviewRequiredType[ontology.reviewRequiredType] =
+            (dims.reviewRequiredType[ontology.reviewRequiredType] ?? 0) + 1;
+          dims.unresolvedBecause[ontology.unresolvedBecause] =
+            (dims.unresolvedBecause[ontology.unresolvedBecause] ?? 0) + 1;
+          dims.disputeBecause[ontology.disputeBecause] =
+            (dims.disputeBecause[ontology.disputeBecause] ?? 0) + 1;
+        }
 
-    const unresolvedCount = matches.filter((match) => !match.reviewed).length;
-    const degradedReasons: string[] = [];
-    if (matches.length === 0) degradedReasons.push("no_exception_history_in_scope");
-    if ((dims.mismatchType["unknown"] ?? 0) > 0) degradedReasons.push("partial_ontology_coverage");
+        const unresolvedCount = matches.filter((match) => !match.reviewed).length;
+        const degradedReasons: string[] = [];
+        if (matches.length === 0) degradedReasons.push("no_exception_history_in_scope");
+        if ((dims.mismatchType["unknown"] ?? 0) > 0)
+          degradedReasons.push("partial_ontology_coverage");
 
-    return {
-      tenantId,
-      generatedAt: new Date().toISOString(),
-      lookbackDays,
-      totals: {
-        exceptionCount: matches.length,
-        unresolvedCount,
-      },
-      dimensions: dims,
-      degraded: degradedReasons.length > 0,
-      degradedReasons,
-    };
+        return {
+          tenantId,
+          generatedAt: new Date().toISOString(),
+          lookbackDays,
+          totals: {
+            exceptionCount: matches.length,
+            unresolvedCount,
+          },
+          dimensions: dims,
+          degraded: degradedReasons.length > 0,
+          degradedReasons,
+        };
+      }
+    );
   }
 }

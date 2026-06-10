@@ -1,17 +1,26 @@
+"use client";
+
 import { Metadata } from "next";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BrandLockup } from "@/components/brand/BrandLockup";
 import { ShieldCheck, ArrowRight, Zap, History, Globe } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Create Account | Settler.dev",
-  description: "Join the infrastructure for deterministic financial reconciliation.",
-};
-
 export default function SignupPage() {
+  const [referralCode, setReferralCode] = useState("");
+
+  useEffect(() => {
+    try {
+      const code = localStorage.getItem("settler_referral_code");
+      if (code) setReferralCode(code);
+    } catch (e) {
+      // ignore
+    }
+  }, []);
+
   return (
     <div className="flex min-h-screen">
       {/* Left side: Content support */}
@@ -85,6 +94,7 @@ export default function SignupPage() {
           </div>
 
           <form className="space-y-6">
+            <input type="hidden" name="referral_code" value={referralCode} />
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
