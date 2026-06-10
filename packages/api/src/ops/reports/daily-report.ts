@@ -9,7 +9,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "../../infrastructure/db/prisma";
 import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
-import { COST_BASELINES as BASELINE_CONFIG } from "../../../../../ops/cost_baselines";
+import { COST_BASELINES as BASELINE_CONFIG } from "../cost_baselines";
 
 const COST_BASELINES = BASELINE_CONFIG ?? {
   vercel: {

@@ -8,7 +8,7 @@ import { initDatabase } from "../db";
 import { getRedisClient } from "./cache";
 import { logInfo, logError, logWarn } from "./logger";
 import { validateSchema } from "./schema-validation";
-import * as envSchema from "../../../../config/env.schema";
+import * as envSchema from "../config/env.schema";
 
 const getRequiredEnvVars = envSchema.getRequiredEnvVars as (
   environment: "local" | "development" | "preview" | "staging" | "production"
