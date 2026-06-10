@@ -7,6 +7,7 @@ import { validateRequest } from "../../middleware/validation";
 import { handleRouteError } from "../../utils/error-handler";
 import { ExceptionIntelligenceService } from "../../services/operator-mode/exception-intelligence-service";
 import { authorizeTenantActionOr403, requireTenantContext } from "../authz-helpers";
+import { enforceUsageLimits } from "../../middleware/tenant-usage";
 
 const router: Router = Router();
 const service = new ExceptionIntelligenceService();
@@ -280,6 +281,7 @@ router.get(
 router.get(
   "/operator/intelligence/runs/:runId/evidence-pack",
   requirePermission(Permission.REPORTS_EXPORT),
+  enforceUsageLimits(),
   validateRequest(runSchema),
   async (req: AuthRequest, res: Response) => {
     try {
@@ -439,6 +441,7 @@ router.get(
 router.post(
   "/operator/intelligence/policy/sandbox",
   requirePermission(Permission.ADMIN_WRITE),
+  enforceUsageLimits(),
   validateRequest(policySandboxSchema),
   async (req: AuthRequest, res: Response) => {
     try {

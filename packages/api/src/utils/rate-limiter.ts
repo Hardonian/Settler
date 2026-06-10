@@ -38,6 +38,11 @@ const LIMIT_TIERS: Record<UserRole, RateLimitConfig> = {
 const ENDPOINT_OVERRIDES: Record<string, RateLimitConfig> = {
   "/api/v1/heavy-op": { limit: 10, windowSeconds: 60 },
   "/api/v1/health": { limit: 500, windowSeconds: 60 },
+  // Strict limits for compute-heavy operations to prevent DoS and cost sprawl
+  "/api/v1/recon/run": { limit: 10, windowSeconds: 60 },
+  "/api/v1/ingestion/csv": { limit: 5, windowSeconds: 60 },
+  "/api/v1/governance/close-period": { limit: 5, windowSeconds: 60 },
+  "/api/v1/exception-intelligence/analyze": { limit: 20, windowSeconds: 60 },
 };
 
 export class RedisRateLimiter {
