@@ -69,6 +69,7 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
     }
   };
 
+  const acknowledgeAlert = async (alertId: string) => {
     try {
       setAcknowledging(alertId);
       setError(null);

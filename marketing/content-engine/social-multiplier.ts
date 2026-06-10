@@ -36,10 +36,10 @@ const twitterTemplates = {
 const linkedinTemplates = {
   story: [
     "I used to spend every Monday morning reconciling transactions.\n\nIt took 4-6 hours of mind-numbing work.\n\nThen I discovered {idea}.\n\nNow it takes 15 minutes.\n\nHere's what changed:",
-    "Our finance team was drowning in {topic}.\n\nLate nights.\nMissed deadlines.\nErrors everywhere.\n\nThen we implemented {idea}.\n\n6 months later, we've:
+    `Our finance team was drowning in {topic}.\n\nLate nights.\nMissed deadlines.\nErrors everywhere.\n\nThen we implemented {idea}.\n\n6 months later, we've:
 ✅ Saved 500+ hours
 ✅ Eliminated errors
-✅ Scaled 3x without adding headcount\n\nHere's the playbook:"
+✅ Scaled 3x without adding headcount\n\nHere's the playbook:`
   ],
   educational: [
     "{idea}\n\nSounds simple, right?\n\nBut 90% of companies are still doing this manually.\n\nHere's why that needs to change:",

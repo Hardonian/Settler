@@ -24,7 +24,7 @@
       "name": "Classify Ticket",
       "func": "const payload = msg.payload;\n\n// Simple classification\nlet priority = 'medium';\nlet category = 'general';\n\nif (payload.subject?.toLowerCase().includes('urgent') || \n    payload.body?.toLowerCase().includes('critical')) {\n  priority = 'critical';\n  category = 'urgent';\n} else if (payload.subject?.toLowerCase().includes('billing')) {\n  priority = 'high';\n  category = 'billing';\n} else if (payload.subject?.toLowerCase().includes('reconciliation')) {\n  priority = 'high';\n  category = 'reconciliation';\n}\n\nmsg.payload = {\n  ...payload,\n  priority,\n  category,\n  classifiedAt: new Date().toISOString()\n};\n\nreturn msg;",
       "outputs": 2,
-      "wires": [[""criticalGate"], [""slackNotify"]]
+      "wires": [["criticalGate"], ["slackNotify"]]
     },
     {
       "id": "criticalGate",
