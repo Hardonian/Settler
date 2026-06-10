@@ -1,4 +1,3 @@
-/**
  * Tenant-scoped support intake — canonical POST /api/v1/support/intake.
  */
 
