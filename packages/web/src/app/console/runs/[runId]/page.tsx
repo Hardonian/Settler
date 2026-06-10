@@ -197,7 +197,7 @@ export default function RunPage() {
         <div className="flex gap-3 pt-4">
           <Button variant="outline" onClick={() => router.back()}>
             Go Back
-          </FreezeBlockedButton>
+          </Button>
           <Button onClick={() => refetch()}>Retry Connection</Button>
         </div>
       </div>
@@ -231,7 +231,7 @@ export default function RunPage() {
               <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover/back:-translate-x-1" />
               Back to Runs
             </Link>
-          </Button>
+          </FreezeBlockedButton>
           <div className="space-y-1.5 pt-2">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400">

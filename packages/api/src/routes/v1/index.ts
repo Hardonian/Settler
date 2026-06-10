@@ -42,6 +42,7 @@ import supportRouter from "./support";
 import toleranceSettingsRouter from "../tolerance-settings";
 import ventureInvoiceNudgerRouter from "./venture-invoice-nudger";
 import agenticWorkflowRouter from "./agentic-workflow";
+import nudgerRouter from "./nudger";
 
 export const v1Router: Router = Router();
 
@@ -65,6 +66,7 @@ v1Router.use("/ingestion/exports", ingestionExportsRouter);
 v1Router.use("/automated-review", automatedReviewRouter);
 v1Router.use("/support", supportRouter);
 v1Router.use("/venture", ventureInvoiceNudgerRouter);
+v1Router.use("/nudger", nudgerRouter);
 
 // Phase 1: Core Features
 v1Router.use("/multi-source-reconciliation", multiSourceReconciliationRouter);
