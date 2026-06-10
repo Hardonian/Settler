@@ -71,7 +71,8 @@ function findPipeDreamSignals(): PipeDreamSignal[] {
   // Check if features exist in code
   const codeFiles = findFiles(path.join(baseDir, "packages"), /\.(ts|tsx)$/);
   const codeContent = codeFiles
-    .slice(0, 100) // Limit to avoid memory issues
+    // Read all files without artificial limit
+
     .map((f) => {
       try {
         return fs.readFileSync(path.join(__dirname, "..", f), "utf-8");
