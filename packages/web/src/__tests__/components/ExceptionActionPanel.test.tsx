@@ -3,6 +3,13 @@ import { ExceptionActionPanel } from "@/app/console/exceptions/[exceptionId]/com
 
 const refresh = jest.fn();
 
+jest.mock("@/hooks/use-governance-state", () => ({
+  useGovernanceState: () => ({
+    isFrozen: false,
+    governanceState: null,
+  }),
+}));
+
 jest.mock("next/navigation", () => ({
   useRouter: () => ({
     refresh,
@@ -54,5 +61,27 @@ describe("ExceptionActionPanel", () => {
     await waitFor(() => {
       expect(refresh).toHaveBeenCalled();
     });
+  });
+
+  it("shows a governance recovery alert when the action is freeze-blocked", async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      status: 423,
+      json: async () => ({
+        error: "GOVERNANCE_FREEZE_ACTIVE",
+        message: "Writes are blocked",
+        freeze_reason: "Maintenance window",
+        frozen_at: "2026-03-17T10:00:00Z",
+      }),
+    }) as typeof fetch;
+
+    render(<ExceptionActionPanel exceptionId="exc-1" status="pending" />);
+    fireEvent.click(screen.getByRole("button", { name: "Resolve exception" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("Action blocked by tenant freeze")).toBeInTheDocument();
+    });
+
+    expect(refresh).not.toHaveBeenCalled();
   });
 });
