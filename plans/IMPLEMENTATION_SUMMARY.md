@@ -1,8 +1,22 @@
 # Core Operator Workflow Closure - Implementation Summary
 
 **Date:** 2026-03-18  
-**Status:** READY FOR IMPLEMENTATION  
+**Status:** IMPLEMENTED IN REPO WITH VERIFICATION SNAPSHOT  
 **Estimated Effort:** 3-5 days (1 senior engineer)
+
+---
+
+## COMPLETION SNAPSHOT
+
+As of 2026-06-09, the remaining operator-workflow gaps called out in this plan have working repo implementations:
+
+- Run detail now includes explicit workflow continuity paths to results, run-scoped exceptions, and governance recovery.
+- Settings now contains a real governance recovery surface anchored at `/console/settings?tab=governance#governance`.
+- Mutation-heavy console surfaces now parse 423 freeze responses consistently and show actionable recovery guidance.
+- A dedicated freeze coverage verification script exists at `scripts/verify-freeze-coverage.ts`.
+- Focused tests cover the freeze client helper, freeze-aware button, governance hook, exception decision recovery, and run retry freeze enforcement.
+
+Residual work is now primarily broader regression coverage and optional documentation polish rather than missing core operator workflow behavior.
 
 ---
 

@@ -4,7 +4,6 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { ExceptionFamilySummary } from "@settler/reconciliation-core";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FreezeBlockedButton } from "@/components/shared/FreezeBlockedButton";
 import { FreezeErrorAlert } from "@/components/shared/FreezeErrorAlert";

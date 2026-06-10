@@ -221,6 +221,7 @@
     "verify:determinism": "node scripts/verify-determinism.mjs",
     "verify:replay": "node scripts/verify-replay.mjs",
     "verify:tenant-isolation": "node scripts/verify-tenant-isolation.mjs",
+    "verify:freeze-coverage": "tsx scripts/verify-freeze-coverage.ts",
     "settler demo": "node scripts/settler-demo.mjs",
     "verify:root": "node scripts/verify-root-cleanliness.mjs",
     "verify:reconciliation-core-dist": "node scripts/assert-reconciliation-core-dist-root.mjs",
