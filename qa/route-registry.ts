@@ -1,6 +1,6 @@
 /**
  * Route Registry - Auto-generated
- * Generated at: 2026-03-27T03:48:29.853Z
+ * Generated at: 2026-06-10T16:31:25.306Z
  *
  * This file contains all routes discovered in the Next.js app directory.
  * Use this for type-safe route checking and link validation.
@@ -27,7 +27,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/[slug]",
     type: "page",
-    file: "[slug]/page.tsx",
+    file: "[slug]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -35,7 +35,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/about",
     type: "page",
-    file: "about/page.tsx",
+    file: "about\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -43,7 +43,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/admin",
     type: "page",
-    file: "admin/page.tsx",
+    file: "admin\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -51,7 +51,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/admin/analytics",
     type: "page",
-    file: "admin/analytics/page.tsx",
+    file: "admin\\analytics\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -59,7 +59,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/admin/audit",
     type: "page",
-    file: "admin/audit/page.tsx",
+    file: "admin\\audit\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -67,7 +67,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/admin/branding",
     type: "page",
-    file: "admin/branding/page.tsx",
+    file: "admin\\branding\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -75,7 +75,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/admin/database",
     type: "page",
-    file: "admin/database/page.tsx",
+    file: "admin\\database\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -83,7 +83,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/admin/database/[table]",
     type: "page",
-    file: "admin/database/[table]/page.tsx",
+    file: "admin\\database\\[table]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -91,7 +91,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/admin/exceptions",
     type: "page",
-    file: "admin/exceptions/page.tsx",
+    file: "admin\\exceptions\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -99,7 +99,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/admin/exceptions/[id]",
     type: "page",
-    file: "admin/exceptions/[id]/page.tsx",
+    file: "admin\\exceptions\\[id]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -107,7 +107,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/admin/experiments",
     type: "page",
-    file: "admin/experiments/page.tsx",
+    file: "admin\\experiments\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -115,7 +115,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/admin/experiments/[id]",
     type: "page",
-    file: "admin/experiments/[id]/page.tsx",
+    file: "admin\\experiments\\[id]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -123,7 +123,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/admin/experiments/new",
     type: "page",
-    file: "admin/experiments/new/page.tsx",
+    file: "admin\\experiments\\new\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -131,7 +131,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/admin/flags",
     type: "page",
-    file: "admin/flags/page.tsx",
+    file: "admin\\flags\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -139,7 +139,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/admin/jobforge",
     type: "page",
-    file: "admin/jobforge/page.tsx",
+    file: "admin\\jobforge\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -147,7 +147,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/admin/metrics",
     type: "page",
-    file: "admin/metrics/page.tsx",
+    file: "admin\\metrics\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -155,7 +155,15 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/admin/monitoring",
     type: "page",
-    file: "admin/monitoring/page.tsx",
+    file: "admin\\monitoring\\page.tsx",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/admin/operator-customization",
+    type: "page",
+    file: "admin\\operator-customization\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -163,7 +171,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/admin/ops",
     type: "page",
-    file: "admin/ops/page.tsx",
+    file: "admin\\ops\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -171,7 +179,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/admin/pages",
     type: "page",
-    file: "admin/pages/page.tsx",
+    file: "admin\\pages\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -179,7 +187,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/admin/pages/[id]/editor",
     type: "page",
-    file: "admin/pages/[id]/editor/page.tsx",
+    file: "admin\\pages\\[id]\\editor\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -187,7 +195,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/admin/pages/new",
     type: "page",
-    file: "admin/pages/new/page.tsx",
+    file: "admin\\pages\\new\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -195,7 +203,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/admin/runs",
     type: "page",
-    file: "admin/runs/page.tsx",
+    file: "admin\\runs\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -203,7 +211,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/admin/runs/[runId]",
     type: "page",
-    file: "admin/runs/[runId]/page.tsx",
+    file: "admin\\runs\\[runId]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -211,7 +219,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/admin/runs/compare",
     type: "page",
-    file: "admin/runs/compare/page.tsx",
+    file: "admin\\runs\\compare\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -219,7 +227,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/admin/settings",
     type: "page",
-    file: "admin/settings/page.tsx",
+    file: "admin\\settings\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -227,7 +235,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/admin/webhooks",
     type: "page",
-    file: "admin/webhooks/page.tsx",
+    file: "admin\\webhooks\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -235,7 +243,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/admin/audit",
     type: "route",
-    file: "api/admin/audit/route.ts",
+    file: "api\\admin\\audit\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -243,7 +251,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/admin/exceptions",
     type: "route",
-    file: "api/admin/exceptions/route.ts",
+    file: "api\\admin\\exceptions\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -251,7 +259,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/admin/exceptions/[id]",
     type: "route",
-    file: "api/admin/exceptions/[id]/route.ts",
+    file: "api\\admin\\exceptions\\[id]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -259,7 +267,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/admin/exceptions/[id]/escalate",
     type: "route",
-    file: "api/admin/exceptions/[id]/escalate/route.ts",
+    file: "api\\admin\\exceptions\\[id]\\escalate\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -267,7 +275,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/admin/exceptions/[id]/resolve",
     type: "route",
-    file: "api/admin/exceptions/[id]/resolve/route.ts",
+    file: "api\\admin\\exceptions\\[id]\\resolve\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -275,7 +283,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/admin/health",
     type: "route",
-    file: "api/admin/health/route.ts",
+    file: "api\\admin\\health\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -283,7 +291,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/admin/jobforge",
     type: "route",
-    file: "api/admin/jobforge/route.ts",
+    file: "api\\admin\\jobforge\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -291,7 +299,79 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/admin/metrics",
     type: "route",
-    file: "api/admin/metrics/route.ts",
+    file: "api\\admin\\metrics\\route.ts",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/admin/operator-customization",
+    type: "route",
+    file: "api\\admin\\operator-customization\\route.ts",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/admin/operator-customization/proposals",
+    type: "route",
+    file: "api\\admin\\operator-customization\\proposals\\route.ts",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/admin/operator-customization/proposals/[id]/apply",
+    type: "route",
+    file: "api\\admin\\operator-customization\\proposals\\[id]\\apply\\route.ts",
+    dynamic: true,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/admin/operator-customization/publish",
+    type: "route",
+    file: "api\\admin\\operator-customization\\publish\\route.ts",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/admin/operator-customization/revert-draft",
+    type: "route",
+    file: "api\\admin\\operator-customization\\revert-draft\\route.ts",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/admin/operator-customization/signals",
+    type: "route",
+    file: "api\\admin\\operator-customization\\signals\\route.ts",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/admin/operator-customization/suggestions",
+    type: "route",
+    file: "api\\admin\\operator-customization\\suggestions\\route.ts",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/admin/operator-customization/suggestions/dismiss",
+    type: "route",
+    file: "api\\admin\\operator-customization\\suggestions\\dismiss\\route.ts",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/admin/operator-customization/tenants",
+    type: "route",
+    file: "api\\admin\\operator-customization\\tenants\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -299,7 +379,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/admin/runs",
     type: "route",
-    file: "api/admin/runs/route.ts",
+    file: "api\\admin\\runs\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -307,7 +387,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/admin/stream",
     type: "route",
-    file: "api/admin/stream/route.ts",
+    file: "api\\admin\\stream\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -315,7 +395,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/ai/data-insights",
     type: "route",
-    file: "api/ai/data-insights/route.ts",
+    file: "api\\ai\\data-insights\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -323,7 +403,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/ai/onboarding-assistant",
     type: "route",
-    file: "api/ai/onboarding-assistant/route.ts",
+    file: "api\\ai\\onboarding-assistant\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -331,7 +411,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/ai/support-assistant",
     type: "route",
-    file: "api/ai/support-assistant/route.ts",
+    file: "api\\ai\\support-assistant\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -339,7 +419,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/ai/troubleshooting",
     type: "route",
-    file: "api/ai/troubleshooting/route.ts",
+    file: "api\\ai\\troubleshooting\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -347,7 +427,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/billing/dispute",
     type: "route",
-    file: "api/billing/dispute/route.ts",
+    file: "api\\billing\\dispute\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -355,7 +435,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/billing/payment-recovery",
     type: "route",
-    file: "api/billing/payment-recovery/route.ts",
+    file: "api\\billing\\payment-recovery\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -363,7 +443,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/billing/retry-payment",
     type: "route",
-    file: "api/billing/retry-payment/route.ts",
+    file: "api\\billing\\retry-payment\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -371,7 +451,15 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/builder/revalidate",
     type: "route",
-    file: "api/builder/revalidate/route.ts",
+    file: "api\\builder\\revalidate\\route.ts",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/chatbot",
+    type: "route",
+    file: "api\\chatbot\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -379,7 +467,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/connectors/backfill/[providerId]",
     type: "route",
-    file: "api/connectors/backfill/[providerId]/route.ts",
+    file: "api\\connectors\\backfill\\[providerId]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -387,7 +475,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/connectors/callback/[providerId]",
     type: "route",
-    file: "api/connectors/callback/[providerId]/route.ts",
+    file: "api\\connectors\\callback\\[providerId]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -395,7 +483,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/connectors/connect/[providerId]",
     type: "route",
-    file: "api/connectors/connect/[providerId]/route.ts",
+    file: "api\\connectors\\connect\\[providerId]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -403,7 +491,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/connectors/disconnect/[providerId]",
     type: "route",
-    file: "api/connectors/disconnect/[providerId]/route.ts",
+    file: "api\\connectors\\disconnect\\[providerId]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -411,7 +499,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/connectors/refresh/[providerId]",
     type: "route",
-    file: "api/connectors/refresh/[providerId]/route.ts",
+    file: "api\\connectors\\refresh\\[providerId]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -419,7 +507,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/connectors/sync/[providerId]",
     type: "route",
-    file: "api/connectors/sync/[providerId]/route.ts",
+    file: "api\\connectors\\sync\\[providerId]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -427,7 +515,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/connectors/test/[providerId]",
     type: "route",
-    file: "api/connectors/test/[providerId]/route.ts",
+    file: "api\\connectors\\test\\[providerId]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -435,15 +523,23 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/connectors/webhook/[providerId]",
     type: "route",
-    file: "api/connectors/webhook/[providerId]/route.ts",
+    file: "api\\connectors\\webhook\\[providerId]\\route.ts",
     dynamic: true,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/console/activation",
+    type: "route",
+    file: "api\\console\\activation\\route.ts",
+    dynamic: false,
     catchAll: false,
     optional: false,
   },
   {
     path: "/api/console/activities",
     type: "route",
-    file: "api/console/activities/route.ts",
+    file: "api\\console\\activities\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -451,7 +547,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/ai-analysis",
     type: "route",
-    file: "api/console/ai-analysis/route.ts",
+    file: "api\\console\\ai-analysis\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -459,7 +555,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/ai-tokens/usage",
     type: "route",
-    file: "api/console/ai-tokens/usage/route.ts",
+    file: "api\\console\\ai-tokens\\usage\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -467,7 +563,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/alerts",
     type: "route",
-    file: "api/console/alerts/route.ts",
+    file: "api\\console\\alerts\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -475,7 +571,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/alerts/[id]/acknowledge",
     type: "route",
-    file: "api/console/alerts/[id]/acknowledge/route.ts",
+    file: "api\\console\\alerts\\[id]\\acknowledge\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -483,7 +579,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/analytics/datasets",
     type: "route",
-    file: "api/console/analytics/datasets/route.ts",
+    file: "api\\console\\analytics\\datasets\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -491,7 +587,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/analytics/pivot",
     type: "route",
-    file: "api/console/analytics/pivot/route.ts",
+    file: "api\\console\\analytics\\pivot\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -499,7 +595,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/analytics/rollup",
     type: "route",
-    file: "api/console/analytics/rollup/route.ts",
+    file: "api\\console\\analytics\\rollup\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -507,7 +603,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/analytics/saved-views",
     type: "route",
-    file: "api/console/analytics/saved-views/route.ts",
+    file: "api\\console\\analytics\\saved-views\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -515,7 +611,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/api-keys",
     type: "route",
-    file: "api/console/api-keys/route.ts",
+    file: "api\\console\\api-keys\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -523,7 +619,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/api-keys/[id]",
     type: "route",
-    file: "api/console/api-keys/[id]/route.ts",
+    file: "api\\console\\api-keys\\[id]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -531,7 +627,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/api-logs",
     type: "route",
-    file: "api/console/api-logs/route.ts",
+    file: "api\\console\\api-logs\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -539,7 +635,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/billing",
     type: "route",
-    file: "api/console/billing/route.ts",
+    file: "api\\console\\billing\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -547,7 +643,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/billing/ai-tokens",
     type: "route",
-    file: "api/console/billing/ai-tokens/route.ts",
+    file: "api\\console\\billing\\ai-tokens\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -555,7 +651,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/costs",
     type: "route",
-    file: "api/console/costs/route.ts",
+    file: "api\\console\\costs\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -563,7 +659,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/feature-flags",
     type: "route",
-    file: "api/console/feature-flags/route.ts",
+    file: "api\\console\\feature-flags\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -571,7 +667,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/feature-flags/[id]/environments/[env]",
     type: "route",
-    file: "api/console/feature-flags/[id]/environments/[env]/route.ts",
+    file: "api\\console\\feature-flags\\[id]\\environments\\[env]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -579,7 +675,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/health",
     type: "route",
-    file: "api/console/health/route.ts",
+    file: "api\\console\\health\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -587,7 +683,15 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/insights",
     type: "route",
-    file: "api/console/insights/route.ts",
+    file: "api\\console\\insights\\route.ts",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/console/intelligence",
+    type: "route",
+    file: "api\\console\\intelligence\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -595,7 +699,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/meaningful-changes",
     type: "route",
-    file: "api/console/meaningful-changes/route.ts",
+    file: "api\\console\\meaningful-changes\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -603,7 +707,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/metrics",
     type: "route",
-    file: "api/console/metrics/route.ts",
+    file: "api\\console\\metrics\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -611,7 +715,15 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/operator/control-plane",
     type: "route",
-    file: "api/console/operator/control-plane/route.ts",
+    file: "api\\console\\operator\\control-plane\\route.ts",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/console/operator/digest",
+    type: "route",
+    file: "api\\console\\operator\\digest\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -619,7 +731,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/operator/runs",
     type: "route",
-    file: "api/console/operator/runs/route.ts",
+    file: "api\\console\\operator\\runs\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -627,7 +739,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/performance",
     type: "route",
-    file: "api/console/performance/route.ts",
+    file: "api\\console\\performance\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -635,7 +747,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/reality",
     type: "route",
-    file: "api/console/reality/route.ts",
+    file: "api\\console\\reality\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -643,7 +755,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/receipts",
     type: "route",
-    file: "api/console/receipts/route.ts",
+    file: "api\\console\\receipts\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -651,7 +763,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/receipts-v2",
     type: "route",
-    file: "api/console/receipts-v2/route.ts",
+    file: "api\\console\\receipts-v2\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -659,7 +771,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/receipts/[id]",
     type: "route",
-    file: "api/console/receipts/[id]/route.ts",
+    file: "api\\console\\receipts\\[id]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -667,7 +779,15 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/reconciliation",
     type: "route",
-    file: "api/console/reconciliation/route.ts",
+    file: "api\\console\\reconciliation\\route.ts",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/console/schedules",
+    type: "route",
+    file: "api\\console\\schedules\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -675,7 +795,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/site/branding",
     type: "route",
-    file: "api/console/site/branding/route.ts",
+    file: "api\\console\\site\\branding\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -683,7 +803,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/site/experiments",
     type: "route",
-    file: "api/console/site/experiments/route.ts",
+    file: "api\\console\\site\\experiments\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -691,7 +811,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/site/experiments/[id]",
     type: "route",
-    file: "api/console/site/experiments/[id]/route.ts",
+    file: "api\\console\\site\\experiments\\[id]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -699,7 +819,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/site/experiments/[id]/results",
     type: "route",
-    file: "api/console/site/experiments/[id]/results/route.ts",
+    file: "api\\console\\site\\experiments\\[id]\\results\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -707,7 +827,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/site/experiments/[id]/start",
     type: "route",
-    file: "api/console/site/experiments/[id]/start/route.ts",
+    file: "api\\console\\site\\experiments\\[id]\\start\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -715,7 +835,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/site/navigation",
     type: "route",
-    file: "api/console/site/navigation/route.ts",
+    file: "api\\console\\site\\navigation\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -723,7 +843,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/site/pages",
     type: "route",
-    file: "api/console/site/pages/route.ts",
+    file: "api\\console\\site\\pages\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -731,7 +851,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/site/pages/[id]",
     type: "route",
-    file: "api/console/site/pages/[id]/route.ts",
+    file: "api\\console\\site\\pages\\[id]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -739,7 +859,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/site/pages/[id]/publish",
     type: "route",
-    file: "api/console/site/pages/[id]/publish/route.ts",
+    file: "api\\console\\site\\pages\\[id]\\publish\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -747,7 +867,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/site/ui-config",
     type: "route",
-    file: "api/console/site/ui-config/route.ts",
+    file: "api\\console\\site\\ui-config\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -755,7 +875,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/subscription",
     type: "route",
-    file: "api/console/subscription/route.ts",
+    file: "api\\console\\subscription\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -763,7 +883,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/subscription-status",
     type: "route",
-    file: "api/console/subscription-status/route.ts",
+    file: "api\\console\\subscription-status\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -771,7 +891,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/support/tickets",
     type: "route",
-    file: "api/console/support/tickets/route.ts",
+    file: "api\\console\\support\\tickets\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -779,7 +899,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/support/triage",
     type: "route",
-    file: "api/console/support/triage/route.ts",
+    file: "api\\console\\support\\triage\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -787,7 +907,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/tables/[table]",
     type: "route",
-    file: "api/console/tables/[table]/route.ts",
+    file: "api\\console\\tables\\[table]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -795,7 +915,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/tenants",
     type: "route",
-    file: "api/console/tenants/route.ts",
+    file: "api\\console\\tenants\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -803,7 +923,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/usage",
     type: "route",
-    file: "api/console/usage/route.ts",
+    file: "api\\console\\usage\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -811,7 +931,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/usage/alerts",
     type: "route",
-    file: "api/console/usage/alerts/route.ts",
+    file: "api\\console\\usage\\alerts\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -819,7 +939,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/usage/analytics",
     type: "route",
-    file: "api/console/usage/analytics/route.ts",
+    file: "api\\console\\usage\\analytics\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -827,7 +947,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/usage/export",
     type: "route",
-    file: "api/console/usage/export/route.ts",
+    file: "api\\console\\usage\\export\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -835,7 +955,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/usage/export/[exportId]",
     type: "route",
-    file: "api/console/usage/export/[exportId]/route.ts",
+    file: "api\\console\\usage\\export\\[exportId]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -843,7 +963,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/usage/export/[exportId]/download",
     type: "route",
-    file: "api/console/usage/export/[exportId]/download/route.ts",
+    file: "api\\console\\usage\\export\\[exportId]\\download\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -851,7 +971,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/usage/warnings",
     type: "route",
-    file: "api/console/usage/warnings/route.ts",
+    file: "api\\console\\usage\\warnings\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -859,7 +979,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/user-role",
     type: "route",
-    file: "api/console/user-role/route.ts",
+    file: "api\\console\\user-role\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -867,7 +987,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/webhooks",
     type: "route",
-    file: "api/console/webhooks/route.ts",
+    file: "api\\console\\webhooks\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -875,15 +995,39 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/console/webhooks/[id]",
     type: "route",
-    file: "api/console/webhooks/[id]/route.ts",
+    file: "api\\console\\webhooks\\[id]\\route.ts",
     dynamic: true,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/console/workforce/registry",
+    type: "route",
+    file: "api\\console\\workforce\\registry\\route.ts",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/console/workforce/run-deltas/[runDeltaId]/analysis",
+    type: "route",
+    file: "api\\console\\workforce\\run-deltas\\[runDeltaId]\\analysis\\route.ts",
+    dynamic: true,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/console/workforce/runs",
+    type: "route",
+    file: "api\\console\\workforce\\runs\\route.ts",
+    dynamic: false,
     catchAll: false,
     optional: false,
   },
   {
     path: "/api/control-plane/failures",
     type: "route",
-    file: "api/control-plane/failures/route.ts",
+    file: "api\\control-plane\\failures\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -891,7 +1035,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/control-plane/keys",
     type: "route",
-    file: "api/control-plane/keys/route.ts",
+    file: "api\\control-plane\\keys\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -899,7 +1043,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/control-plane/metrics",
     type: "route",
-    file: "api/control-plane/metrics/route.ts",
+    file: "api\\control-plane\\metrics\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -907,7 +1051,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/control-plane/policies",
     type: "route",
-    file: "api/control-plane/policies/route.ts",
+    file: "api\\control-plane\\policies\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -915,7 +1059,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/control-plane/policies/[policyId]",
     type: "route",
-    file: "api/control-plane/policies/[policyId]/route.ts",
+    file: "api\\control-plane\\policies\\[policyId]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -923,7 +1067,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/control-plane/triggers",
     type: "route",
-    file: "api/control-plane/triggers/route.ts",
+    file: "api\\control-plane\\triggers\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -931,7 +1075,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/cron/check-reliability-alerts",
     type: "route",
-    file: "api/cron/check-reliability-alerts/route.ts",
+    file: "api\\cron\\check-reliability-alerts\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -939,7 +1083,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/cron/daily-cost-rollup",
     type: "route",
-    file: "api/cron/daily-cost-rollup/route.ts",
+    file: "api\\cron\\daily-cost-rollup\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -947,7 +1091,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/cron/email-lifecycle",
     type: "route",
-    file: "api/cron/email-lifecycle/route.ts",
+    file: "api\\cron\\email-lifecycle\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -955,7 +1099,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/cron/low-activity",
     type: "route",
-    file: "api/cron/low-activity/route.ts",
+    file: "api\\cron\\low-activity\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -963,7 +1107,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/cron/monthly-summary",
     type: "route",
-    file: "api/cron/monthly-summary/route.ts",
+    file: "api\\cron\\monthly-summary\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -971,7 +1115,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/data/export",
     type: "route",
-    file: "api/data/export/route.ts",
+    file: "api\\data\\export\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -979,7 +1123,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/data/import",
     type: "route",
-    file: "api/data/import/route.ts",
+    file: "api\\data\\import\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -987,7 +1131,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/demo/alerts",
     type: "route",
-    file: "api/demo/alerts/route.ts",
+    file: "api\\demo\\alerts\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -995,7 +1139,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/demo/audit",
     type: "route",
-    file: "api/demo/audit/route.ts",
+    file: "api\\demo\\audit\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1003,7 +1147,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/demo/exceptions",
     type: "route",
-    file: "api/demo/exceptions/route.ts",
+    file: "api\\demo\\exceptions\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1011,7 +1155,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/demo/integrations",
     type: "route",
-    file: "api/demo/integrations/route.ts",
+    file: "api\\demo\\integrations\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1019,7 +1163,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/demo/metrics",
     type: "route",
-    file: "api/demo/metrics/route.ts",
+    file: "api\\demo\\metrics\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1027,7 +1171,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/demo/runs",
     type: "route",
-    file: "api/demo/runs/route.ts",
+    file: "api\\demo\\runs\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1035,7 +1179,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/demo/tenants",
     type: "route",
-    file: "api/demo/tenants/route.ts",
+    file: "api\\demo\\tenants\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1043,7 +1187,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/docs/openapi",
     type: "route",
-    file: "api/docs/openapi/route.ts",
+    file: "api\\docs\\openapi\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1051,7 +1195,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/enterprise/contact",
     type: "route",
-    file: "api/enterprise/contact/route.ts",
+    file: "api\\enterprise\\contact\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1059,7 +1203,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/enterprise/ip-allowlist",
     type: "route",
-    file: "api/enterprise/ip-allowlist/route.ts",
+    file: "api\\enterprise\\ip-allowlist\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1067,7 +1211,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/enterprise/ip-allowlist/[id]",
     type: "route",
-    file: "api/enterprise/ip-allowlist/[id]/route.ts",
+    file: "api\\enterprise\\ip-allowlist\\[id]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1075,7 +1219,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/exceptions",
     type: "route",
-    file: "api/exceptions/route.ts",
+    file: "api\\exceptions\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1083,7 +1227,15 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/exceptions/[exceptionId]",
     type: "route",
-    file: "api/exceptions/[exceptionId]/route.ts",
+    file: "api\\exceptions\\[exceptionId]\\route.ts",
+    dynamic: true,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/exceptions/[exceptionId]/proofpack",
+    type: "route",
+    file: "api\\exceptions\\[exceptionId]\\proofpack\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1091,7 +1243,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/explorer/execution/[id]",
     type: "route",
-    file: "api/explorer/execution/[id]/route.ts",
+    file: "api\\explorer\\execution\\[id]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1099,7 +1251,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/explorer/history",
     type: "route",
-    file: "api/explorer/history/route.ts",
+    file: "api\\explorer\\history\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1107,7 +1259,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/exports",
     type: "route",
-    file: "api/exports/route.ts",
+    file: "api\\exports\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1115,7 +1267,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/feedback-loops/insights",
     type: "route",
-    file: "api/feedback-loops/insights/route.ts",
+    file: "api\\feedback-loops\\insights\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1123,7 +1275,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/foundry/datasets",
     type: "route",
-    file: "api/foundry/datasets/route.ts",
+    file: "api\\foundry\\datasets\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1131,7 +1283,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/foundry/datasets/[id]",
     type: "route",
-    file: "api/foundry/datasets/[id]/route.ts",
+    file: "api\\foundry\\datasets\\[id]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1139,7 +1291,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/foundry/runs",
     type: "route",
-    file: "api/foundry/runs/route.ts",
+    file: "api\\foundry\\runs\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1147,7 +1299,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/foundry/runs/[id]",
     type: "route",
-    file: "api/foundry/runs/[id]/route.ts",
+    file: "api\\foundry\\runs\\[id]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1155,7 +1307,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/gtm/demo/reset",
     type: "route",
-    file: "api/gtm/demo/reset/route.ts",
+    file: "api\\gtm\\demo\\reset\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1163,7 +1315,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/gtm/funnel-stage",
     type: "route",
-    file: "api/gtm/funnel-stage/route.ts",
+    file: "api\\gtm\\funnel-stage\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1171,7 +1323,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/gtm/roi",
     type: "route",
-    file: "api/gtm/roi/route.ts",
+    file: "api\\gtm\\roi\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1179,7 +1331,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/health",
     type: "route",
-    file: "api/health/route.ts",
+    file: "api\\health\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1187,7 +1339,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/health/console",
     type: "route",
-    file: "api/health/console/route.ts",
+    file: "api\\health\\console\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1195,7 +1347,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/health/stripe",
     type: "route",
-    file: "api/health/stripe/route.ts",
+    file: "api\\health\\stripe\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1203,7 +1355,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/image-optimize",
     type: "route",
-    file: "api/image-optimize/route.ts",
+    file: "api\\image-optimize\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1211,7 +1363,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/imports/validate",
     type: "route",
-    file: "api/imports/validate/route.ts",
+    file: "api\\imports\\validate\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1219,7 +1371,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/integrations/[integrationId]/debug",
     type: "route",
-    file: "api/integrations/[integrationId]/debug/route.ts",
+    file: "api\\integrations\\[integrationId]\\debug\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1227,7 +1379,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/integrations/[integrationId]/test",
     type: "route",
-    file: "api/integrations/[integrationId]/test/route.ts",
+    file: "api\\integrations\\[integrationId]\\test\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1235,7 +1387,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/integrations/[integrationId]/upgrade",
     type: "route",
-    file: "api/integrations/[integrationId]/upgrade/route.ts",
+    file: "api\\integrations\\[integrationId]\\upgrade\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1243,7 +1395,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/integrations/[integrationId]/versions",
     type: "route",
-    file: "api/integrations/[integrationId]/versions/route.ts",
+    file: "api\\integrations\\[integrationId]\\versions\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1251,7 +1403,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/integrations/analytics",
     type: "route",
-    file: "api/integrations/analytics/route.ts",
+    file: "api\\integrations\\analytics\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1259,7 +1411,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/integrations/health",
     type: "route",
-    file: "api/integrations/health/route.ts",
+    file: "api\\integrations\\health\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1267,7 +1419,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/internal/health/deep",
     type: "route",
-    file: "api/internal/health/deep/route.ts",
+    file: "api\\internal\\health\\deep\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1275,7 +1427,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/internal/jobs/drain",
     type: "route",
-    file: "api/internal/jobs/drain/route.ts",
+    file: "api\\internal\\jobs\\drain\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1283,7 +1435,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/invite/[token]",
     type: "route",
-    file: "api/invite/[token]/route.ts",
+    file: "api\\invite\\[token]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1291,7 +1443,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/jobs",
     type: "route",
-    file: "api/jobs/route.ts",
+    file: "api\\jobs\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1299,7 +1451,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/jobs/[id]",
     type: "route",
-    file: "api/jobs/[id]/route.ts",
+    file: "api\\jobs\\[id]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1307,7 +1459,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/jobs/[id]/exceptions",
     type: "route",
-    file: "api/jobs/[id]/exceptions/route.ts",
+    file: "api\\jobs\\[id]\\exceptions\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1315,7 +1467,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/jobs/[id]/exceptions/[exceptionId]",
     type: "route",
-    file: "api/jobs/[id]/exceptions/[exceptionId]/route.ts",
+    file: "api\\jobs\\[id]\\exceptions\\[exceptionId]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1323,7 +1475,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/jobs/[id]/progress",
     type: "route",
-    file: "api/jobs/[id]/progress/route.ts",
+    file: "api\\jobs\\[id]\\progress\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1331,7 +1483,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/jobs/[id]/result",
     type: "route",
-    file: "api/jobs/[id]/result/route.ts",
+    file: "api\\jobs\\[id]\\result\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1339,7 +1491,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/jobs/bulk",
     type: "route",
-    file: "api/jobs/bulk/route.ts",
+    file: "api\\jobs\\bulk\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1347,7 +1499,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/metrics",
     type: "route",
-    file: "api/metrics/route.ts",
+    file: "api\\metrics\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1355,7 +1507,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/metrics/prometheus",
     type: "route",
-    file: "api/metrics/prometheus/route.ts",
+    file: "api\\metrics\\prometheus\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1363,7 +1515,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/milestones",
     type: "route",
-    file: "api/milestones/route.ts",
+    file: "api\\milestones\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1371,7 +1523,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/onboarding/progress",
     type: "route",
-    file: "api/onboarding/progress/route.ts",
+    file: "api\\onboarding\\progress\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1379,7 +1531,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/onboarding/progress/skip",
     type: "route",
-    file: "api/onboarding/progress/skip/route.ts",
+    file: "api\\onboarding\\progress\\skip\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1387,7 +1539,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/operator/incidents",
     type: "route",
-    file: "api/operator/incidents/route.ts",
+    file: "api\\operator\\incidents\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1395,7 +1547,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/ops/activation-funnel",
     type: "route",
-    file: "api/ops/activation-funnel/route.ts",
+    file: "api\\ops\\activation-funnel\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1403,7 +1555,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/ops/customers",
     type: "route",
-    file: "api/ops/customers/route.ts",
+    file: "api\\ops\\customers\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1411,7 +1563,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/ops/dashboard",
     type: "route",
-    file: "api/ops/dashboard/route.ts",
+    file: "api\\ops\\dashboard\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1419,7 +1571,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/ops/edge-functions",
     type: "route",
-    file: "api/ops/edge-functions/route.ts",
+    file: "api\\ops\\edge-functions\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1427,7 +1579,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/ops/integration-status",
     type: "route",
-    file: "api/ops/integration-status/route.ts",
+    file: "api\\ops\\integration-status\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1435,7 +1587,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/ops/overview",
     type: "route",
-    file: "api/ops/overview/route.ts",
+    file: "api\\ops\\overview\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1443,7 +1595,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/ops/performance",
     type: "route",
-    file: "api/ops/performance/route.ts",
+    file: "api\\ops\\performance\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1451,7 +1603,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/ops/retry-queues",
     type: "route",
-    file: "api/ops/retry-queues/route.ts",
+    file: "api\\ops\\retry-queues\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1459,7 +1611,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/ops/system-health",
     type: "route",
-    file: "api/ops/system-health/route.ts",
+    file: "api\\ops\\system-health\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1467,7 +1619,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/oss/stats",
     type: "route",
-    file: "api/oss/stats/route.ts",
+    file: "api\\oss\\stats\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1475,7 +1627,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/pricing/experiments",
     type: "route",
-    file: "api/pricing/experiments/route.ts",
+    file: "api\\pricing\\experiments\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1483,7 +1635,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/projects",
     type: "route",
-    file: "api/projects/route.ts",
+    file: "api\\projects\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1491,7 +1643,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/projects/snapshots",
     type: "route",
-    file: "api/projects/snapshots/route.ts",
+    file: "api\\projects\\snapshots\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1499,7 +1651,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/projects/snapshots/[snapshotId]/export",
     type: "route",
-    file: "api/projects/snapshots/[snapshotId]/export/route.ts",
+    file: "api\\projects\\snapshots\\[snapshotId]\\export\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1507,7 +1659,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/projects/snapshots/[snapshotId]/rollback",
     type: "route",
-    file: "api/projects/snapshots/[snapshotId]/rollback/route.ts",
+    file: "api\\projects\\snapshots\\[snapshotId]\\rollback\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1515,7 +1667,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/public/reality",
     type: "route",
-    file: "api/public/reality/route.ts",
+    file: "api\\public\\reality\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1523,7 +1675,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/public/ui-config",
     type: "route",
-    file: "api/public/ui-config/route.ts",
+    file: "api\\public\\ui-config\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1531,7 +1683,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/quota",
     type: "route",
-    file: "api/quota/route.ts",
+    file: "api\\quota\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1539,7 +1691,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/rbac/roles",
     type: "route",
-    file: "api/rbac/roles/route.ts",
+    file: "api\\rbac\\roles\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1547,7 +1699,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/rbac/users",
     type: "route",
-    file: "api/rbac/users/route.ts",
+    file: "api\\rbac\\users\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1555,7 +1707,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/receipts/ocr",
     type: "route",
-    file: "api/receipts/ocr/route.ts",
+    file: "api\\receipts\\ocr\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1563,7 +1715,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/referrals",
     type: "route",
-    file: "api/referrals/route.ts",
+    file: "api\\referrals\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1571,7 +1723,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/runs",
     type: "route",
-    file: "api/runs/route.ts",
+    file: "api\\runs\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1579,7 +1731,15 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/runs/[id]",
     type: "route",
-    file: "api/runs/[id]/route.ts",
+    file: "api\\runs\\[id]\\route.ts",
+    dynamic: true,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/runs/[id]/proofpack",
+    type: "route",
+    file: "api\\runs\\[id]\\proofpack\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1587,7 +1747,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/runs/create",
     type: "route",
-    file: "api/runs/create/route.ts",
+    file: "api\\runs\\create\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1595,7 +1755,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/seo/generate-sitemap",
     type: "route",
-    file: "api/seo/generate-sitemap/route.ts",
+    file: "api\\seo\\generate-sitemap\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1603,7 +1763,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/share/[id]",
     type: "route",
-    file: "api/share/[id]/route.ts",
+    file: "api\\share\\[id]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1611,7 +1771,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/status",
     type: "route",
-    file: "api/status/route.ts",
+    file: "api\\status\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1619,7 +1779,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/status/health",
     type: "route",
-    file: "api/status/health/route.ts",
+    file: "api\\status\\health\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1627,7 +1787,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/stripe/checkout",
     type: "route",
-    file: "api/stripe/checkout/route.ts",
+    file: "api\\stripe\\checkout\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1635,7 +1795,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/stripe/portal",
     type: "route",
-    file: "api/stripe/portal/route.ts",
+    file: "api\\stripe\\portal\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1643,7 +1803,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/stripe/webhook",
     type: "route",
-    file: "api/stripe/webhook/route.ts",
+    file: "api\\stripe\\webhook\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1651,7 +1811,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/support/canned-responses",
     type: "route",
-    file: "api/support/canned-responses/route.ts",
+    file: "api\\support\\canned-responses\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1659,7 +1819,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/support/report-issue",
     type: "route",
-    file: "api/support/report-issue/route.ts",
+    file: "api\\support\\report-issue\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1667,7 +1827,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/support/tickets",
     type: "route",
-    file: "api/support/tickets/route.ts",
+    file: "api\\support\\tickets\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1675,7 +1835,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/user/checklist",
     type: "route",
-    file: "api/user/checklist/route.ts",
+    file: "api\\user\\checklist\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1683,7 +1843,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/user/pre-test",
     type: "route",
-    file: "api/user/pre-test/route.ts",
+    file: "api\\user\\pre-test\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1691,7 +1851,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/user/upgrade",
     type: "route",
-    file: "api/user/upgrade/route.ts",
+    file: "api\\user\\upgrade\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1699,7 +1859,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/user/value-moments",
     type: "route",
-    file: "api/user/value-moments/route.ts",
+    file: "api\\user\\value-moments\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1707,7 +1867,15 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/v1",
     type: "route",
-    file: "api/v1/route.ts",
+    file: "api\\v1\\route.ts",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/v1/analytics",
+    type: "route",
+    file: "api\\v1\\analytics\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1715,7 +1883,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/v1/convert",
     type: "route",
-    file: "api/v1/convert/route.ts",
+    file: "api\\v1\\convert\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1723,7 +1891,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/v1/datasets",
     type: "route",
-    file: "api/v1/datasets/route.ts",
+    file: "api\\v1\\datasets\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1731,7 +1899,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/v1/feature-flags",
     type: "route",
-    file: "api/v1/feature-flags/route.ts",
+    file: "api\\v1\\feature-flags\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1739,7 +1907,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/v1/feature-flags/[id]",
     type: "route",
-    file: "api/v1/feature-flags/[id]/route.ts",
+    file: "api\\v1\\feature-flags\\[id]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1747,7 +1915,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/v1/feature-flags/evaluate",
     type: "route",
-    file: "api/v1/feature-flags/evaluate/route.ts",
+    file: "api\\v1\\feature-flags\\evaluate\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1755,7 +1923,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/v1/health",
     type: "route",
-    file: "api/v1/health/route.ts",
+    file: "api\\v1\\health\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1763,7 +1931,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/v1/meta",
     type: "route",
-    file: "api/v1/meta/route.ts",
+    file: "api\\v1\\meta\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1771,7 +1939,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/v1/metrics/summary",
     type: "route",
-    file: "api/v1/metrics/summary/route.ts",
+    file: "api\\v1\\metrics\\summary\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1779,7 +1947,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/v1/metrics/timeseries",
     type: "route",
-    file: "api/v1/metrics/timeseries/route.ts",
+    file: "api\\v1\\metrics\\timeseries\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1787,7 +1955,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/v1/metrics/top",
     type: "route",
-    file: "api/v1/metrics/top/route.ts",
+    file: "api\\v1\\metrics\\top\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1795,7 +1963,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/v1/ready",
     type: "route",
-    file: "api/v1/ready/route.ts",
+    file: "api\\v1\\ready\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1803,7 +1971,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/v1/receipts",
     type: "route",
-    file: "api/v1/receipts/route.ts",
+    file: "api\\v1\\receipts\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1811,7 +1979,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/v1/receipts/[id]",
     type: "route",
-    file: "api/v1/receipts/[id]/route.ts",
+    file: "api\\v1\\receipts\\[id]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1819,7 +1987,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/v1/recon/jobs",
     type: "route",
-    file: "api/v1/recon/jobs/route.ts",
+    file: "api\\v1\\recon\\jobs\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1827,7 +1995,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/v1/runs",
     type: "route",
-    file: "api/v1/runs/route.ts",
+    file: "api\\v1\\runs\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1835,7 +2003,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/v1/runs/[id]",
     type: "route",
-    file: "api/v1/runs/[id]/route.ts",
+    file: "api\\v1\\runs\\[id]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1843,7 +2011,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/v1/runs/[id]/[runId]",
     type: "route",
-    file: "api/v1/runs/[id]/[runId]/route.ts",
+    file: "api\\v1\\runs\\[id]\\[runId]\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1851,7 +2019,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/v1/runs/[id]/evidence",
     type: "route",
-    file: "api/v1/runs/[id]/evidence/route.ts",
+    file: "api\\v1\\runs\\[id]\\evidence\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1859,7 +2027,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/v1/runs/[id]/replay",
     type: "route",
-    file: "api/v1/runs/[id]/replay/route.ts",
+    file: "api\\v1\\runs\\[id]\\replay\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1867,7 +2035,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/v1/runs/[id]/results",
     type: "route",
-    file: "api/v1/runs/[id]/results/route.ts",
+    file: "api\\v1\\runs\\[id]\\results\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1875,7 +2043,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/v1/runs/[id]/trust-explorer/findPolicyImpact",
     type: "route",
-    file: "api/v1/runs/[id]/trust-explorer/findPolicyImpact/route.ts",
+    file: "api\\v1\\runs\\[id]\\trust-explorer\\findPolicyImpact\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1883,7 +2051,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/v1/runs/[id]/trust-explorer/getExecutionGraph",
     type: "route",
-    file: "api/v1/runs/[id]/trust-explorer/getExecutionGraph/route.ts",
+    file: "api\\v1\\runs\\[id]\\trust-explorer\\getExecutionGraph\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1891,7 +2059,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/v1/runs/[id]/trust-explorer/traceArtifactLineage",
     type: "route",
-    file: "api/v1/runs/[id]/trust-explorer/traceArtifactLineage/route.ts",
+    file: "api\\v1\\runs\\[id]\\trust-explorer\\traceArtifactLineage\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1899,23 +2067,55 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/v1/runs/[id]/trust-explorer/verifyProofChain",
     type: "route",
-    file: "api/v1/runs/[id]/trust-explorer/verifyProofChain/route.ts",
+    file: "api\\v1\\runs\\[id]\\trust-explorer\\verifyProofChain\\route.ts",
     dynamic: true,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/v1/support/intake",
+    type: "route",
+    file: "api\\v1\\support\\intake\\route.ts",
+    dynamic: false,
     catchAll: false,
     optional: false,
   },
   {
     path: "/api/vercel-example",
     type: "route",
-    file: "api/vercel-example/route.ts",
+    file: "api\\vercel-example\\route.ts",
     dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/workflows",
+    type: "route",
+    file: "api\\workflows\\route.ts",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/workflows/[id]",
+    type: "route",
+    file: "api\\workflows\\[id]\\route.ts",
+    dynamic: true,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/workflows/[id]/test",
+    type: "route",
+    file: "api\\workflows\\[id]\\test\\route.ts",
+    dynamic: true,
     catchAll: false,
     optional: false,
   },
   {
     path: "/api/workspaces",
     type: "route",
-    file: "api/workspaces/route.ts",
+    file: "api\\workspaces\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1923,7 +2123,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/workspaces/[workspaceId]/invites",
     type: "route",
-    file: "api/workspaces/[workspaceId]/invites/route.ts",
+    file: "api\\workspaces\\[workspaceId]\\invites\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1931,7 +2131,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/api/workspaces/[workspaceId]/onboarding",
     type: "route",
-    file: "api/workspaces/[workspaceId]/onboarding/route.ts",
+    file: "api\\workspaces\\[workspaceId]\\onboarding\\route.ts",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -1939,7 +2139,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app",
     type: "page",
-    file: "app/page.tsx",
+    file: "app\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1947,7 +2147,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/alerts",
     type: "page",
-    file: "app/alerts/page.tsx",
+    file: "app\\alerts\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1955,7 +2155,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/audit",
     type: "page",
-    file: "app/audit/page.tsx",
+    file: "app\\audit\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1963,7 +2163,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/capability-status",
     type: "page",
-    file: "app/capability-status/page.tsx",
+    file: "app\\capability-status\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1971,7 +2171,15 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/connections",
     type: "page",
-    file: "app/connections/page.tsx",
+    file: "app\\connections\\page.tsx",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/app/console/intelligence",
+    type: "page",
+    file: "app\\console\\intelligence\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1979,7 +2187,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/evidence",
     type: "page",
-    file: "app/evidence/page.tsx",
+    file: "app\\evidence\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1987,7 +2195,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/executions",
     type: "page",
-    file: "app/executions/page.tsx",
+    file: "app\\executions\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -1995,7 +2203,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/executions/[id]",
     type: "page",
-    file: "app/executions/[id]/page.tsx",
+    file: "app\\executions\\[id]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -2003,7 +2211,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/governance",
     type: "page",
-    file: "app/governance/page.tsx",
+    file: "app\\governance\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2011,7 +2219,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/integrations",
     type: "page",
-    file: "app/integrations/page.tsx",
+    file: "app\\integrations\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2019,7 +2227,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/metrics",
     type: "page",
-    file: "app/metrics/page.tsx",
+    file: "app\\metrics\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2027,7 +2235,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/mismatches",
     type: "page",
-    file: "app/mismatches/page.tsx",
+    file: "app\\mismatches\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2035,7 +2243,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/onboarding",
     type: "page",
-    file: "app/onboarding/page.tsx",
+    file: "app\\onboarding\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2043,7 +2251,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/overview",
     type: "page",
-    file: "app/overview/page.tsx",
+    file: "app\\overview\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2051,7 +2259,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/pipelines",
     type: "page",
-    file: "app/pipelines/page.tsx",
+    file: "app\\pipelines\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2059,7 +2267,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/policies",
     type: "page",
-    file: "app/policies/page.tsx",
+    file: "app\\policies\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2067,7 +2275,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/proofs",
     type: "page",
-    file: "app/proofs/page.tsx",
+    file: "app\\proofs\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2075,7 +2283,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/proofs/[id]",
     type: "page",
-    file: "app/proofs/[id]/page.tsx",
+    file: "app\\proofs\\[id]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -2083,7 +2291,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/reconciliation",
     type: "page",
-    file: "app/reconciliation/page.tsx",
+    file: "app\\reconciliation\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2091,7 +2299,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/reconciliation/[id]",
     type: "page",
-    file: "app/reconciliation/[id]/page.tsx",
+    file: "app\\reconciliation\\[id]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -2099,7 +2307,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/replay",
     type: "page",
-    file: "app/replay/page.tsx",
+    file: "app\\replay\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2107,7 +2315,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/results",
     type: "page",
-    file: "app/results/page.tsx",
+    file: "app\\results\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2115,7 +2323,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/review",
     type: "page",
-    file: "app/review/page.tsx",
+    file: "app\\review\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2123,7 +2331,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/rules",
     type: "page",
-    file: "app/rules/page.tsx",
+    file: "app\\rules\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2131,7 +2339,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/runs",
     type: "page",
-    file: "app/runs/page.tsx",
+    file: "app\\runs\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2139,7 +2347,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/runs/[id]",
     type: "page",
-    file: "app/runs/[id]/page.tsx",
+    file: "app\\runs\\[id]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -2147,7 +2355,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/settings",
     type: "page",
-    file: "app/settings/page.tsx",
+    file: "app\\settings\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2155,7 +2363,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/system-health",
     type: "page",
-    file: "app/system-health/page.tsx",
+    file: "app\\system-health\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2163,7 +2371,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/app/traces",
     type: "page",
-    file: "app/traces/page.tsx",
+    file: "app\\traces\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2171,7 +2379,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/architecture",
     type: "page",
-    file: "architecture/page.tsx",
+    file: "architecture\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2179,7 +2387,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/benchmarks",
     type: "page",
-    file: "benchmarks/page.tsx",
+    file: "benchmarks\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2187,7 +2395,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/billing",
     type: "error",
-    file: "billing/error.tsx",
+    file: "billing\\error.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2195,7 +2403,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/billing/success",
     type: "page",
-    file: "billing/success/page.tsx",
+    file: "billing\\success\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2203,7 +2411,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/blog",
     type: "page",
-    file: "blog/page.tsx",
+    file: "blog\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2211,7 +2419,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/builder/[...page]",
     type: "page",
-    file: "builder/[...page]/page.tsx",
+    file: "builder\\[...page]\\page.tsx",
     dynamic: true,
     catchAll: true,
     optional: false,
@@ -2219,7 +2427,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/capabilities",
     type: "page",
-    file: "capabilities/page.tsx",
+    file: "capabilities\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2227,7 +2435,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/categorize",
     type: "page",
-    file: "categorize/page.tsx",
+    file: "categorize\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2235,7 +2443,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/changelog",
     type: "page",
-    file: "changelog/page.tsx",
+    file: "changelog\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2243,7 +2451,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/changelog/[slug]",
     type: "page",
-    file: "changelog/[slug]/page.tsx",
+    file: "changelog\\[slug]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -2251,7 +2459,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/community",
     type: "page",
-    file: "community/page.tsx",
+    file: "community\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2259,7 +2467,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/community/contributors",
     type: "page",
-    file: "community/contributors/page.tsx",
+    file: "community\\contributors\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2267,7 +2475,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console",
     type: "page",
-    file: "console/page.tsx",
+    file: "console\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2275,7 +2483,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/activity",
     type: "page",
-    file: "console/activity/page.tsx",
+    file: "console\\activity\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2283,7 +2491,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/admin/activation",
     type: "page",
-    file: "console/admin/activation/page.tsx",
+    file: "console\\admin\\activation\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2291,7 +2499,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/admin/jobs",
     type: "page",
-    file: "console/admin/jobs/page.tsx",
+    file: "console\\admin\\jobs\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2299,7 +2507,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/admin/tenants",
     type: "page",
-    file: "console/admin/tenants/page.tsx",
+    file: "console\\admin\\tenants\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2307,7 +2515,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/ai-analysis",
     type: "page",
-    file: "console/ai-analysis/page.tsx",
+    file: "console\\ai-analysis\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2315,7 +2523,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/alerts-view",
     type: "page",
-    file: "console/alerts-view/page.tsx",
+    file: "console\\alerts-view\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2323,7 +2531,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/analytics",
     type: "page",
-    file: "console/analytics/page.tsx",
+    file: "console\\analytics\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2331,7 +2539,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/api-keys",
     type: "page",
-    file: "console/api-keys/page.tsx",
+    file: "console\\api-keys\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2339,7 +2547,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/api-logs",
     type: "page",
-    file: "console/api-logs/page.tsx",
+    file: "console\\api-logs\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2347,7 +2555,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/api-playground",
     type: "page",
-    file: "console/api-playground/page.tsx",
+    file: "console\\api-playground\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2355,7 +2563,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/api-playground/collections",
     type: "page",
-    file: "console/api-playground/collections/page.tsx",
+    file: "console\\api-playground\\collections\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2363,7 +2571,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/api-test",
     type: "page",
-    file: "console/api-test/page.tsx",
+    file: "console\\api-test\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2371,7 +2579,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/approvals",
     type: "page",
-    file: "console/approvals/page.tsx",
+    file: "console\\approvals\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2379,7 +2587,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/audit-trail",
     type: "page",
-    file: "console/audit-trail/page.tsx",
+    file: "console\\audit-trail\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2387,7 +2595,15 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/audits",
     type: "page",
-    file: "console/audits/page.tsx",
+    file: "console\\audits\\page.tsx",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/console/audits/lock",
+    type: "page",
+    file: "console\\audits\\lock\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2395,7 +2611,15 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/billing",
     type: "page",
-    file: "console/billing/page.tsx",
+    file: "console\\billing\\page.tsx",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/console/billing/upgrade",
+    type: "page",
+    file: "console\\billing\\upgrade\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2403,7 +2627,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/briefings",
     type: "page",
-    file: "console/briefings/page.tsx",
+    file: "console\\briefings\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2411,7 +2635,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/bulk-operations",
     type: "page",
-    file: "console/bulk-operations/page.tsx",
+    file: "console\\bulk-operations\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2419,7 +2643,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/changes",
     type: "page",
-    file: "console/changes/page.tsx",
+    file: "console\\changes\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2427,7 +2651,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/control-plane",
     type: "page",
-    file: "console/control-plane/page.tsx",
+    file: "console\\control-plane\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2435,7 +2659,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/costs",
     type: "page",
-    file: "console/costs/page.tsx",
+    file: "console\\costs\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2443,7 +2667,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/diagnostics",
     type: "page",
-    file: "console/diagnostics/page.tsx",
+    file: "console\\diagnostics\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2451,7 +2675,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/docs",
     type: "page",
-    file: "console/docs/page.tsx",
+    file: "console\\docs\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2459,7 +2683,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/docs/glossary",
     type: "page",
-    file: "console/docs/glossary/page.tsx",
+    file: "console\\docs\\glossary\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2467,7 +2691,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/exceptions",
     type: "page",
-    file: "console/exceptions/page.tsx",
+    file: "console\\exceptions\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2475,7 +2699,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/exceptions/[exceptionId]",
     type: "page",
-    file: "console/exceptions/[exceptionId]/page.tsx",
+    file: "console\\exceptions\\[exceptionId]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -2483,7 +2707,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/feature-flags",
     type: "page",
-    file: "console/feature-flags/page.tsx",
+    file: "console\\feature-flags\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2491,7 +2715,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/feature-flags-policy",
     type: "page",
-    file: "console/feature-flags-policy/page.tsx",
+    file: "console\\feature-flags-policy\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2499,15 +2723,23 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/ingestion/[ingestionId]",
     type: "page",
-    file: "console/ingestion/[ingestionId]/page.tsx",
+    file: "console\\ingestion\\[ingestionId]\\page.tsx",
     dynamic: true,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/console/ingestion/ai-mapper",
+    type: "page",
+    file: "console\\ingestion\\ai-mapper\\page.tsx",
+    dynamic: false,
     catchAll: false,
     optional: false,
   },
   {
     path: "/console/insights",
     type: "page",
-    file: "console/insights/page.tsx",
+    file: "console\\insights\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2515,7 +2747,23 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/inspector",
     type: "page",
-    file: "console/inspector/page.tsx",
+    file: "console\\inspector\\page.tsx",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/console/integrations",
+    type: "page",
+    file: "console\\integrations\\page.tsx",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/console/intelligence",
+    type: "page",
+    file: "console\\intelligence\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2523,7 +2771,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/multi-source-reconciliation",
     type: "page",
-    file: "console/multi-source-reconciliation/page.tsx",
+    file: "console\\multi-source-reconciliation\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2531,7 +2779,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/onboarding",
     type: "page",
-    file: "console/onboarding/page.tsx",
+    file: "console\\onboarding\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2539,7 +2787,15 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/operator",
     type: "page",
-    file: "console/operator/page.tsx",
+    file: "console\\operator\\page.tsx",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/console/operator-digest",
+    type: "page",
+    file: "console\\operator-digest\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2547,7 +2803,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/ops",
     type: "page",
-    file: "console/ops/page.tsx",
+    file: "console\\ops\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2555,7 +2811,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/organizations",
     type: "page",
-    file: "console/organizations/page.tsx",
+    file: "console\\organizations\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2563,7 +2819,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/performance",
     type: "page",
-    file: "console/performance/page.tsx",
+    file: "console\\performance\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2571,7 +2827,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/playground",
     type: "page",
-    file: "console/playground/page.tsx",
+    file: "console\\playground\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2579,7 +2835,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/playground/cli",
     type: "page",
-    file: "console/playground/cli/page.tsx",
+    file: "console\\playground\\cli\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2587,7 +2843,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/playground/convert",
     type: "page",
-    file: "console/playground/convert/page.tsx",
+    file: "console\\playground\\convert\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2595,7 +2851,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/playground/flags",
     type: "page",
-    file: "console/playground/flags/page.tsx",
+    file: "console\\playground\\flags\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2603,7 +2859,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/playground/receipts",
     type: "page",
-    file: "console/playground/receipts/page.tsx",
+    file: "console\\playground\\receipts\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2611,7 +2867,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/playground/reconcile",
     type: "page",
-    file: "console/playground/reconcile/page.tsx",
+    file: "console\\playground\\reconcile\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2619,7 +2875,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/policies",
     type: "page",
-    file: "console/policies/page.tsx",
+    file: "console\\policies\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2627,7 +2883,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/proof-explorer",
     type: "page",
-    file: "console/proof-explorer/page.tsx",
+    file: "console\\proof-explorer\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2635,7 +2891,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/reality",
     type: "page",
-    file: "console/reality/page.tsx",
+    file: "console\\reality\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2643,7 +2899,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/receipt-matching",
     type: "page",
-    file: "console/receipt-matching/page.tsx",
+    file: "console\\receipt-matching\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2651,7 +2907,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/receipts",
     type: "page",
-    file: "console/receipts/page.tsx",
+    file: "console\\receipts\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2659,7 +2915,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/receipts-hash",
     type: "page",
-    file: "console/receipts-hash/page.tsx",
+    file: "console\\receipts-hash\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2667,7 +2923,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/reconciliation",
     type: "page",
-    file: "console/reconciliation/page.tsx",
+    file: "console\\reconciliation\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2675,7 +2931,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/reconciliation-view",
     type: "page",
-    file: "console/reconciliation-view/page.tsx",
+    file: "console\\reconciliation-view\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2683,7 +2939,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/reconciliation/[runId]",
     type: "page",
-    file: "console/reconciliation/[runId]/page.tsx",
+    file: "console\\reconciliation\\[runId]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -2691,7 +2947,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/reconciliations",
     type: "page",
-    file: "console/reconciliations/page.tsx",
+    file: "console\\reconciliations\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2699,7 +2955,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/replay",
     type: "page",
-    file: "console/replay/page.tsx",
+    file: "console\\replay\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2707,7 +2963,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/replay-lab",
     type: "page",
-    file: "console/replay-lab/page.tsx",
+    file: "console\\replay-lab\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2715,15 +2971,23 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/replay/[executionId]",
     type: "page",
-    file: "console/replay/[executionId]/page.tsx",
+    file: "console\\replay\\[executionId]\\page.tsx",
     dynamic: true,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/console/report-issue",
+    type: "page",
+    file: "console\\report-issue\\page.tsx",
+    dynamic: false,
     catchAll: false,
     optional: false,
   },
   {
     path: "/console/rules-engine",
     type: "page",
-    file: "console/rules-engine/page.tsx",
+    file: "console\\rules-engine\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2731,7 +2995,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/runs",
     type: "page",
-    file: "console/runs/page.tsx",
+    file: "console\\runs\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2739,15 +3003,23 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/runs/[runId]",
     type: "page",
-    file: "console/runs/[runId]/page.tsx",
+    file: "console\\runs\\[runId]\\page.tsx",
     dynamic: true,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/console/schedules",
+    type: "page",
+    file: "console\\schedules\\page.tsx",
+    dynamic: false,
     catchAll: false,
     optional: false,
   },
   {
     path: "/console/settings",
     type: "page",
-    file: "console/settings/page.tsx",
+    file: "console\\settings\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2755,7 +3027,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/setup-check",
     type: "page",
-    file: "console/setup-check/page.tsx",
+    file: "console\\setup-check\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2763,7 +3035,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/site",
     type: "page",
-    file: "console/site/page.tsx",
+    file: "console\\site\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2771,7 +3043,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/site/branding",
     type: "page",
-    file: "console/site/branding/page.tsx",
+    file: "console\\site\\branding\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2779,7 +3051,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/site/experiments",
     type: "page",
-    file: "console/site/experiments/page.tsx",
+    file: "console\\site\\experiments\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2787,7 +3059,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/site/experiments/[id]",
     type: "page",
-    file: "console/site/experiments/[id]/page.tsx",
+    file: "console\\site\\experiments\\[id]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -2795,7 +3067,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/site/navigation",
     type: "page",
-    file: "console/site/navigation/page.tsx",
+    file: "console\\site\\navigation\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2803,7 +3075,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/site/pages/[id]",
     type: "page",
-    file: "console/site/pages/[id]/page.tsx",
+    file: "console\\site\\pages\\[id]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -2811,7 +3083,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/site/ui-config",
     type: "page",
-    file: "console/site/ui-config/page.tsx",
+    file: "console\\site\\ui-config\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2819,7 +3091,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/sla",
     type: "page",
-    file: "console/sla/page.tsx",
+    file: "console\\sla\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2827,7 +3099,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/support",
     type: "page",
-    file: "console/support/page.tsx",
+    file: "console\\support\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2835,7 +3107,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/tables",
     type: "page",
-    file: "console/tables/page.tsx",
+    file: "console\\tables\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2843,7 +3115,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/tables/[table]",
     type: "page",
-    file: "console/tables/[table]/page.tsx",
+    file: "console\\tables\\[table]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -2851,7 +3123,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/usage",
     type: "page",
-    file: "console/usage/page.tsx",
+    file: "console\\usage\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2859,7 +3131,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/webhooks",
     type: "page",
-    file: "console/webhooks/page.tsx",
+    file: "console\\webhooks\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2867,7 +3139,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/workflows",
     type: "page",
-    file: "console/workflows/page.tsx",
+    file: "console\\workflows\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2875,7 +3147,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/workflows/[id]",
     type: "page",
-    file: "console/workflows/[id]/page.tsx",
+    file: "console\\workflows\\[id]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -2883,7 +3155,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/console/workflows/new",
     type: "page",
-    file: "console/workflows/new/page.tsx",
+    file: "console\\workflows\\new\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2891,7 +3163,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/contact",
     type: "page",
-    file: "contact/page.tsx",
+    file: "contact\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2899,7 +3171,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/cookbook",
     type: "page",
-    file: "cookbook/page.tsx",
+    file: "cookbook\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2907,7 +3179,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/dashboard",
     type: "page",
-    file: "dashboard/page.tsx",
+    file: "dashboard\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2915,7 +3187,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/dashboard/addons",
     type: "page",
-    file: "dashboard/addons/page.tsx",
+    file: "dashboard\\addons\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2923,7 +3195,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/dashboard/billing",
     type: "page",
-    file: "dashboard/billing/page.tsx",
+    file: "dashboard\\billing\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2931,7 +3203,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/dashboard/billing/invoices",
     type: "page",
-    file: "dashboard/billing/invoices/page.tsx",
+    file: "dashboard\\billing\\invoices\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2939,7 +3211,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/dashboard/billing/payment-methods",
     type: "page",
-    file: "dashboard/billing/payment-methods/page.tsx",
+    file: "dashboard\\billing\\payment-methods\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2947,7 +3219,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/dashboard/integrations",
     type: "page",
-    file: "dashboard/integrations/page.tsx",
+    file: "dashboard\\integrations\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2955,7 +3227,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/dashboard/integrations/[integrationId]",
     type: "page",
-    file: "dashboard/integrations/[integrationId]/page.tsx",
+    file: "dashboard\\integrations\\[integrationId]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -2963,7 +3235,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/dashboard/integrations/[integrationId]/logs",
     type: "page",
-    file: "dashboard/integrations/[integrationId]/logs/page.tsx",
+    file: "dashboard\\integrations\\[integrationId]\\logs\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -2971,7 +3243,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/dashboard/jobs",
     type: "page",
-    file: "dashboard/jobs/page.tsx",
+    file: "dashboard\\jobs\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -2979,7 +3251,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/dashboard/jobs/[jobId]",
     type: "page",
-    file: "dashboard/jobs/[jobId]/page.tsx",
+    file: "dashboard\\jobs\\[jobId]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -2987,7 +3259,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/dashboard/jobs/[jobId]/exceptions",
     type: "page",
-    file: "dashboard/jobs/[jobId]/exceptions/page.tsx",
+    file: "dashboard\\jobs\\[jobId]\\exceptions\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -2995,7 +3267,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/dashboard/usage",
     type: "page",
-    file: "dashboard/usage/page.tsx",
+    file: "dashboard\\usage\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3003,7 +3275,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/dashboard/user",
     type: "page",
-    file: "dashboard/user/page.tsx",
+    file: "dashboard\\user\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3011,7 +3283,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/demo",
     type: "page",
-    file: "demo/page.tsx",
+    file: "demo\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3019,7 +3291,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/demo/api",
     type: "page",
-    file: "demo/api/page.tsx",
+    file: "demo\\api\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3027,7 +3299,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/demo/console",
     type: "page",
-    file: "demo/console/page.tsx",
+    file: "demo\\console\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3035,7 +3307,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/demo/receipts",
     type: "page",
-    file: "demo/receipts/page.tsx",
+    file: "demo\\receipts\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3043,7 +3315,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/demo/reconciliation",
     type: "page",
-    file: "demo/reconciliation/page.tsx",
+    file: "demo\\reconciliation\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3051,7 +3323,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/docs",
     type: "page",
-    file: "docs/page.tsx",
+    file: "docs\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3059,7 +3331,15 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/docs/api",
     type: "page",
-    file: "docs/api/page.tsx",
+    file: "docs\\api\\page.tsx",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/docs/architecture",
+    type: "page",
+    file: "docs\\architecture\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3067,7 +3347,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/docs/architecture/platform-architecture",
     type: "page",
-    file: "docs/architecture/platform-architecture/page.tsx",
+    file: "docs\\architecture\\platform-architecture\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3075,7 +3355,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/docs/auth",
     type: "page",
-    file: "docs/auth/page.tsx",
+    file: "docs\\auth\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3083,7 +3363,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/docs/cli",
     type: "page",
-    file: "docs/cli/page.tsx",
+    file: "docs\\cli\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3091,7 +3371,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/docs/errors",
     type: "page",
-    file: "docs/errors/page.tsx",
+    file: "docs\\errors\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3099,7 +3379,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/docs/examples",
     type: "page",
-    file: "docs/examples/page.tsx",
+    file: "docs\\examples\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3107,7 +3387,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/docs/getting-started",
     type: "page",
-    file: "docs/getting-started/page.tsx",
+    file: "docs\\getting-started\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3115,7 +3395,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/docs/integrations",
     type: "page",
-    file: "docs/integrations/page.tsx",
+    file: "docs\\integrations\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3123,7 +3403,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/docs/integrations/[integrationId]",
     type: "page",
-    file: "docs/integrations/[integrationId]/page.tsx",
+    file: "docs\\integrations\\[integrationId]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -3131,7 +3411,15 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/docs/launch",
     type: "page",
-    file: "docs/launch/page.tsx",
+    file: "docs\\launch\\page.tsx",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/docs/pilot",
+    type: "page",
+    file: "docs\\pilot\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3139,7 +3427,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/docs/quickstart",
     type: "page",
-    file: "docs/quickstart/page.tsx",
+    file: "docs\\quickstart\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3147,7 +3435,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/docs/replay-lab",
     type: "page",
-    file: "docs/replay-lab/page.tsx",
+    file: "docs\\replay-lab\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3155,7 +3443,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/docs/sdk",
     type: "page",
-    file: "docs/sdk/page.tsx",
+    file: "docs\\sdk\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3163,7 +3451,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/docs/sdk/go",
     type: "page",
-    file: "docs/sdk/go/page.tsx",
+    file: "docs\\sdk\\go\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3171,7 +3459,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/docs/sdk/nodejs",
     type: "page",
-    file: "docs/sdk/nodejs/page.tsx",
+    file: "docs\\sdk\\nodejs\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3179,7 +3467,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/docs/sdk/python",
     type: "page",
-    file: "docs/sdk/python/page.tsx",
+    file: "docs\\sdk\\python\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3187,7 +3475,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/docs/sdk/ruby",
     type: "page",
-    file: "docs/sdk/ruby/page.tsx",
+    file: "docs\\sdk\\ruby\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3195,7 +3483,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/docs/status",
     type: "page",
-    file: "docs/status/page.tsx",
+    file: "docs\\status\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3203,7 +3491,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/docs/webhooks",
     type: "page",
-    file: "docs/webhooks/page.tsx",
+    file: "docs\\webhooks\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3211,7 +3499,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/edge-ai",
     type: "page",
-    file: "edge-ai/page.tsx",
+    file: "edge-ai\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3219,7 +3507,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/edge-ai/nodes",
     type: "page",
-    file: "edge-ai/nodes/page.tsx",
+    file: "edge-ai\\nodes\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3227,7 +3515,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/edge-ai/nodes/[nodeId]",
     type: "page",
-    file: "edge-ai/nodes/[nodeId]/page.tsx",
+    file: "edge-ai\\nodes\\[nodeId]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -3235,7 +3523,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/edge-ai/nodes/new",
     type: "page",
-    file: "edge-ai/nodes/new/page.tsx",
+    file: "edge-ai\\nodes\\new\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3243,7 +3531,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/engine",
     type: "page",
-    file: "engine/page.tsx",
+    file: "engine\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3251,7 +3539,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/engine/create-run-pack",
     type: "page",
-    file: "engine/create-run-pack/page.tsx",
+    file: "engine\\create-run-pack\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3259,7 +3547,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/engine/import-results",
     type: "page",
-    file: "engine/import-results/page.tsx",
+    file: "engine\\import-results\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3267,7 +3555,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/engine/view-variances",
     type: "page",
-    file: "engine/view-variances/page.tsx",
+    file: "engine\\view-variances\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3275,7 +3563,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/enterprise",
     type: "page",
-    file: "enterprise/page.tsx",
+    file: "enterprise\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3283,7 +3571,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/enterprise/dashboard",
     type: "page",
-    file: "enterprise/dashboard/page.tsx",
+    file: "enterprise\\dashboard\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3291,7 +3579,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/explorer",
     type: "page",
-    file: "explorer/page.tsx",
+    file: "explorer\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3299,7 +3587,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/explorer/execution/[id]",
     type: "page",
-    file: "explorer/execution/[id]/page.tsx",
+    file: "explorer\\execution\\[id]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -3307,7 +3595,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/explorer/tenant/[tenant_id]",
     type: "page",
-    file: "explorer/tenant/[tenant_id]/page.tsx",
+    file: "explorer\\tenant\\[tenant_id]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -3315,7 +3603,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/exports",
     type: "page",
-    file: "exports/page.tsx",
+    file: "exports\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3323,7 +3611,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/faq",
     type: "page",
-    file: "faq/page.tsx",
+    file: "faq\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3331,7 +3619,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/feature-flags",
     type: "page",
-    file: "feature-flags/page.tsx",
+    file: "feature-flags\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3339,7 +3627,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/founder",
     type: "page",
-    file: "founder/page.tsx",
+    file: "founder\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3347,7 +3635,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/future-proof",
     type: "page",
-    file: "future-proof/page.tsx",
+    file: "future-proof\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3355,7 +3643,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/home",
     type: "page",
-    file: "(marketing)/home/page.tsx",
+    file: "(marketing)\\home\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3363,7 +3651,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/integrations",
     type: "page",
-    file: "integrations/page.tsx",
+    file: "integrations\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3371,7 +3659,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/integrations/request",
     type: "page",
-    file: "integrations/request/page.tsx",
+    file: "integrations\\request\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3379,7 +3667,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/intelligence/foundry",
     type: "page",
-    file: "intelligence/foundry/page.tsx",
+    file: "intelligence\\foundry\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3387,7 +3675,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/intelligence/foundry/[datasetId]",
     type: "page",
-    file: "intelligence/foundry/[datasetId]/page.tsx",
+    file: "intelligence\\foundry\\[datasetId]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -3395,7 +3683,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/intelligence/foundry/runs/[runId]",
     type: "page",
-    file: "intelligence/foundry/runs/[runId]/page.tsx",
+    file: "intelligence\\foundry\\runs\\[runId]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -3403,7 +3691,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/investor/proof",
     type: "page",
-    file: "investor/proof/page.tsx",
+    file: "investor\\proof\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3411,7 +3699,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/investor/reality",
     type: "page",
-    file: "investor/reality/page.tsx",
+    file: "investor\\reality\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3419,7 +3707,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/invite/[token]",
     type: "page",
-    file: "invite/[token]/page.tsx",
+    file: "invite\\[token]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -3427,7 +3715,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/legal",
     type: "page",
-    file: "legal/page.tsx",
+    file: "legal\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3435,7 +3723,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/legal/aup",
     type: "page",
-    file: "legal/aup/page.tsx",
+    file: "legal\\aup\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3443,7 +3731,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/legal/cookies",
     type: "page",
-    file: "legal/cookies/page.tsx",
+    file: "legal\\cookies\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3451,7 +3739,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/legal/dpa",
     type: "page",
-    file: "legal/dpa/page.tsx",
+    file: "legal\\dpa\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3459,7 +3747,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/legal/license",
     type: "page",
-    file: "legal/license/page.tsx",
+    file: "legal\\license\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3467,7 +3755,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/legal/privacy",
     type: "page",
-    file: "legal/privacy/page.tsx",
+    file: "legal\\privacy\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3475,7 +3763,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/legal/subprocessors",
     type: "page",
-    file: "legal/subprocessors/page.tsx",
+    file: "legal\\subprocessors\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3483,7 +3771,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/legal/terms",
     type: "page",
-    file: "legal/terms/page.tsx",
+    file: "legal\\terms\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3491,7 +3779,15 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/login",
     type: "page",
-    file: "login/page.tsx",
+    file: "login\\page.tsx",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/managed",
+    type: "page",
+    file: "managed\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3499,7 +3795,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/mobile",
     type: "page",
-    file: "mobile/page.tsx",
+    file: "mobile\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3507,7 +3803,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/offline",
     type: "page",
-    file: "offline/page.tsx",
+    file: "offline\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3515,7 +3811,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/open-source",
     type: "page",
-    file: "open-source/page.tsx",
+    file: "open-source\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3523,7 +3819,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/openapi.json",
     type: "route",
-    file: "openapi.json/route.ts",
+    file: "openapi.json\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3531,7 +3827,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/operator/incidents",
     type: "page",
-    file: "operator/incidents/page.tsx",
+    file: "operator\\incidents\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3539,7 +3835,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/parser",
     type: "page",
-    file: "parser/page.tsx",
+    file: "parser\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3547,7 +3843,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/platform",
     type: "page",
-    file: "platform/page.tsx",
+    file: "platform\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3555,7 +3851,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/playground",
     type: "page",
-    file: "playground/page.tsx",
+    file: "playground\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3563,7 +3859,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/policies",
     type: "page",
-    file: "policies/page.tsx",
+    file: "policies\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3571,7 +3867,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/pricing",
     type: "page",
-    file: "pricing/page.tsx",
+    file: "pricing\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3579,7 +3875,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/privacy",
     type: "page",
-    file: "privacy/page.tsx",
+    file: "privacy\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3587,7 +3883,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/product",
     type: "page",
-    file: "product/page.tsx",
+    file: "product\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3595,7 +3891,15 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/proof-explorer",
     type: "page",
-    file: "proof-explorer/page.tsx",
+    file: "proof-explorer\\page.tsx",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/pulse",
+    type: "page",
+    file: "(dashboard)\\pulse\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3603,7 +3907,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/react-settler-demo",
     type: "page",
-    file: "react-settler-demo/page.tsx",
+    file: "react-settler-demo\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3611,7 +3915,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/realtime-dashboard",
     type: "page",
-    file: "realtime-dashboard/page.tsx",
+    file: "realtime-dashboard\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3619,7 +3923,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/receipts",
     type: "page",
-    file: "receipts/page.tsx",
+    file: "receipts\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3627,15 +3931,23 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/reconcile",
     type: "page",
-    file: "reconcile/page.tsx",
+    file: "reconcile\\page.tsx",
     dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/reconcile/[id]",
+    type: "page",
+    file: "reconcile\\[id]\\page.tsx",
+    dynamic: true,
     catchAll: false,
     optional: false,
   },
   {
     path: "/reconciliation",
     type: "page",
-    file: "reconciliation/page.tsx",
+    file: "reconciliation\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3643,7 +3955,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/replay-lab",
     type: "page",
-    file: "replay-lab/page.tsx",
+    file: "replay-lab\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3651,7 +3963,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/review/polish",
     type: "page",
-    file: "review/polish/page.tsx",
+    file: "review\\polish\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3659,7 +3971,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/runbooks",
     type: "page",
-    file: "runbooks/page.tsx",
+    file: "runbooks\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3667,7 +3979,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/schematics",
     type: "page",
-    file: "schematics/page.tsx",
+    file: "schematics\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3675,7 +3987,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/security-and-audit",
     type: "page",
-    file: "security-and-audit/page.tsx",
+    file: "security-and-audit\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3683,7 +3995,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/signup",
     type: "page",
-    file: "signup/page.tsx",
+    file: "signup\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3691,7 +4003,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/status",
     type: "page",
-    file: "status/page.tsx",
+    file: "status\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3699,7 +4011,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/support",
     type: "page",
-    file: "support/page.tsx",
+    file: "support\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3707,7 +4019,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/support/articles/[articleId]",
     type: "page",
-    file: "support/articles/[articleId]/page.tsx",
+    file: "support\\articles\\[articleId]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -3715,7 +4027,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/support/category/[categoryId]",
     type: "page",
-    file: "support/category/[categoryId]/page.tsx",
+    file: "support\\category\\[categoryId]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -3723,7 +4035,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/support/contact",
     type: "page",
-    file: "support/contact/page.tsx",
+    file: "support\\contact\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3731,7 +4043,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/terms",
     type: "page",
-    file: "terms/page.tsx",
+    file: "terms\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3739,7 +4051,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/transparency",
     type: "page",
-    file: "transparency/page.tsx",
+    file: "transparency\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3747,7 +4059,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/use-cases",
     type: "page",
-    file: "use-cases/page.tsx",
+    file: "use-cases\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3755,7 +4067,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/use-cases/[slug]",
     type: "page",
-    file: "use-cases/[slug]/page.tsx",
+    file: "use-cases\\[slug]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -3763,7 +4075,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/ux-playground",
     type: "page",
-    file: "ux-playground/page.tsx",
+    file: "ux-playground\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3771,7 +4083,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/ux-playground/events",
     type: "page",
-    file: "ux-playground/events/page.tsx",
+    file: "ux-playground\\events\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3779,7 +4091,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/verify",
     type: "page",
-    file: "verify/page.tsx",
+    file: "verify\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3787,7 +4099,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/why",
     type: "page",
-    file: "why/page.tsx",
+    file: "why\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3795,7 +4107,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/workspace",
     type: "page",
-    file: "workspace/page.tsx",
+    file: "workspace\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3803,7 +4115,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/workspace/bulk-triage",
     type: "page",
-    file: "workspace/bulk-triage/page.tsx",
+    file: "workspace\\bulk-triage\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3811,7 +4123,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/workspace/investigate",
     type: "page",
-    file: "workspace/investigate/page.tsx",
+    file: "workspace\\investigate\\page.tsx",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -3819,7 +4131,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "/workspace/investigate/[ingestionId]",
     type: "page",
-    file: "workspace/investigate/[ingestionId]/page.tsx",
+    file: "workspace\\investigate\\[ingestionId]\\page.tsx",
     dynamic: true,
     catchAll: false,
     optional: false,
@@ -3845,6 +4157,7 @@ export const PAGE_ROUTES: string[] = [
   "/admin/jobforge",
   "/admin/metrics",
   "/admin/monitoring",
+  "/admin/operator-customization",
   "/admin/ops",
   "/admin/pages",
   "/admin/pages/[id]/editor",
@@ -3859,6 +4172,7 @@ export const PAGE_ROUTES: string[] = [
   "/app/audit",
   "/app/capability-status",
   "/app/connections",
+  "/app/console/intelligence",
   "/app/evidence",
   "/app/executions",
   "/app/executions/[id]",
@@ -3910,7 +4224,9 @@ export const PAGE_ROUTES: string[] = [
   "/console/approvals",
   "/console/audit-trail",
   "/console/audits",
+  "/console/audits/lock",
   "/console/billing",
+  "/console/billing/upgrade",
   "/console/briefings",
   "/console/bulk-operations",
   "/console/changes",
@@ -3924,11 +4240,15 @@ export const PAGE_ROUTES: string[] = [
   "/console/feature-flags",
   "/console/feature-flags-policy",
   "/console/ingestion/[ingestionId]",
+  "/console/ingestion/ai-mapper",
   "/console/insights",
   "/console/inspector",
+  "/console/integrations",
+  "/console/intelligence",
   "/console/multi-source-reconciliation",
   "/console/onboarding",
   "/console/operator",
+  "/console/operator-digest",
   "/console/ops",
   "/console/organizations",
   "/console/performance",
@@ -3951,9 +4271,11 @@ export const PAGE_ROUTES: string[] = [
   "/console/replay",
   "/console/replay-lab",
   "/console/replay/[executionId]",
+  "/console/report-issue",
   "/console/rules-engine",
   "/console/runs",
   "/console/runs/[runId]",
+  "/console/schedules",
   "/console/settings",
   "/console/setup-check",
   "/console/site",
@@ -3994,6 +4316,7 @@ export const PAGE_ROUTES: string[] = [
   "/demo/reconciliation",
   "/docs",
   "/docs/api",
+  "/docs/architecture",
   "/docs/architecture/platform-architecture",
   "/docs/auth",
   "/docs/cli",
@@ -4003,6 +4326,7 @@ export const PAGE_ROUTES: string[] = [
   "/docs/integrations",
   "/docs/integrations/[integrationId]",
   "/docs/launch",
+  "/docs/pilot",
   "/docs/quickstart",
   "/docs/replay-lab",
   "/docs/sdk",
@@ -4048,6 +4372,7 @@ export const PAGE_ROUTES: string[] = [
   "/legal/subprocessors",
   "/legal/terms",
   "/login",
+  "/managed",
   "/mobile",
   "/offline",
   "/open-source",
@@ -4060,10 +4385,12 @@ export const PAGE_ROUTES: string[] = [
   "/privacy",
   "/product",
   "/proof-explorer",
+  "/pulse",
   "/react-settler-demo",
   "/realtime-dashboard",
   "/receipts",
   "/reconcile",
+  "/reconcile/[id]",
   "/reconciliation",
   "/replay-lab",
   "/review/polish",
@@ -4109,6 +4436,7 @@ export const ALL_ROUTES: string[] = [
   "/admin/jobforge",
   "/admin/metrics",
   "/admin/monitoring",
+  "/admin/operator-customization",
   "/admin/ops",
   "/admin/pages",
   "/admin/pages/[id]/editor",
@@ -4126,6 +4454,15 @@ export const ALL_ROUTES: string[] = [
   "/api/admin/health",
   "/api/admin/jobforge",
   "/api/admin/metrics",
+  "/api/admin/operator-customization",
+  "/api/admin/operator-customization/proposals",
+  "/api/admin/operator-customization/proposals/[id]/apply",
+  "/api/admin/operator-customization/publish",
+  "/api/admin/operator-customization/revert-draft",
+  "/api/admin/operator-customization/signals",
+  "/api/admin/operator-customization/suggestions",
+  "/api/admin/operator-customization/suggestions/dismiss",
+  "/api/admin/operator-customization/tenants",
   "/api/admin/runs",
   "/api/admin/stream",
   "/api/ai/data-insights",
@@ -4136,6 +4473,7 @@ export const ALL_ROUTES: string[] = [
   "/api/billing/payment-recovery",
   "/api/billing/retry-payment",
   "/api/builder/revalidate",
+  "/api/chatbot",
   "/api/connectors/backfill/[providerId]",
   "/api/connectors/callback/[providerId]",
   "/api/connectors/connect/[providerId]",
@@ -4144,6 +4482,7 @@ export const ALL_ROUTES: string[] = [
   "/api/connectors/sync/[providerId]",
   "/api/connectors/test/[providerId]",
   "/api/connectors/webhook/[providerId]",
+  "/api/console/activation",
   "/api/console/activities",
   "/api/console/ai-analysis",
   "/api/console/ai-tokens/usage",
@@ -4163,9 +4502,11 @@ export const ALL_ROUTES: string[] = [
   "/api/console/feature-flags/[id]/environments/[env]",
   "/api/console/health",
   "/api/console/insights",
+  "/api/console/intelligence",
   "/api/console/meaningful-changes",
   "/api/console/metrics",
   "/api/console/operator/control-plane",
+  "/api/console/operator/digest",
   "/api/console/operator/runs",
   "/api/console/performance",
   "/api/console/reality",
@@ -4173,6 +4514,7 @@ export const ALL_ROUTES: string[] = [
   "/api/console/receipts-v2",
   "/api/console/receipts/[id]",
   "/api/console/reconciliation",
+  "/api/console/schedules",
   "/api/console/site/branding",
   "/api/console/site/experiments",
   "/api/console/site/experiments/[id]",
@@ -4199,6 +4541,9 @@ export const ALL_ROUTES: string[] = [
   "/api/console/user-role",
   "/api/console/webhooks",
   "/api/console/webhooks/[id]",
+  "/api/console/workforce/registry",
+  "/api/console/workforce/run-deltas/[runDeltaId]/analysis",
+  "/api/console/workforce/runs",
   "/api/control-plane/failures",
   "/api/control-plane/keys",
   "/api/control-plane/metrics",
@@ -4225,6 +4570,7 @@ export const ALL_ROUTES: string[] = [
   "/api/enterprise/ip-allowlist/[id]",
   "/api/exceptions",
   "/api/exceptions/[exceptionId]",
+  "/api/exceptions/[exceptionId]/proofpack",
   "/api/explorer/execution/[id]",
   "/api/explorer/history",
   "/api/exports",
@@ -4287,6 +4633,7 @@ export const ALL_ROUTES: string[] = [
   "/api/referrals",
   "/api/runs",
   "/api/runs/[id]",
+  "/api/runs/[id]/proofpack",
   "/api/runs/create",
   "/api/seo/generate-sitemap",
   "/api/share/[id]",
@@ -4303,6 +4650,7 @@ export const ALL_ROUTES: string[] = [
   "/api/user/upgrade",
   "/api/user/value-moments",
   "/api/v1",
+  "/api/v1/analytics",
   "/api/v1/convert",
   "/api/v1/datasets",
   "/api/v1/feature-flags",
@@ -4327,7 +4675,11 @@ export const ALL_ROUTES: string[] = [
   "/api/v1/runs/[id]/trust-explorer/getExecutionGraph",
   "/api/v1/runs/[id]/trust-explorer/traceArtifactLineage",
   "/api/v1/runs/[id]/trust-explorer/verifyProofChain",
+  "/api/v1/support/intake",
   "/api/vercel-example",
+  "/api/workflows",
+  "/api/workflows/[id]",
+  "/api/workflows/[id]/test",
   "/api/workspaces",
   "/api/workspaces/[workspaceId]/invites",
   "/api/workspaces/[workspaceId]/onboarding",
@@ -4336,6 +4688,7 @@ export const ALL_ROUTES: string[] = [
   "/app/audit",
   "/app/capability-status",
   "/app/connections",
+  "/app/console/intelligence",
   "/app/evidence",
   "/app/executions",
   "/app/executions/[id]",
@@ -4388,7 +4741,9 @@ export const ALL_ROUTES: string[] = [
   "/console/approvals",
   "/console/audit-trail",
   "/console/audits",
+  "/console/audits/lock",
   "/console/billing",
+  "/console/billing/upgrade",
   "/console/briefings",
   "/console/bulk-operations",
   "/console/changes",
@@ -4402,11 +4757,15 @@ export const ALL_ROUTES: string[] = [
   "/console/feature-flags",
   "/console/feature-flags-policy",
   "/console/ingestion/[ingestionId]",
+  "/console/ingestion/ai-mapper",
   "/console/insights",
   "/console/inspector",
+  "/console/integrations",
+  "/console/intelligence",
   "/console/multi-source-reconciliation",
   "/console/onboarding",
   "/console/operator",
+  "/console/operator-digest",
   "/console/ops",
   "/console/organizations",
   "/console/performance",
@@ -4429,9 +4788,11 @@ export const ALL_ROUTES: string[] = [
   "/console/replay",
   "/console/replay-lab",
   "/console/replay/[executionId]",
+  "/console/report-issue",
   "/console/rules-engine",
   "/console/runs",
   "/console/runs/[runId]",
+  "/console/schedules",
   "/console/settings",
   "/console/setup-check",
   "/console/site",
@@ -4472,6 +4833,7 @@ export const ALL_ROUTES: string[] = [
   "/demo/reconciliation",
   "/docs",
   "/docs/api",
+  "/docs/architecture",
   "/docs/architecture/platform-architecture",
   "/docs/auth",
   "/docs/cli",
@@ -4481,6 +4843,7 @@ export const ALL_ROUTES: string[] = [
   "/docs/integrations",
   "/docs/integrations/[integrationId]",
   "/docs/launch",
+  "/docs/pilot",
   "/docs/quickstart",
   "/docs/replay-lab",
   "/docs/sdk",
@@ -4526,6 +4889,7 @@ export const ALL_ROUTES: string[] = [
   "/legal/subprocessors",
   "/legal/terms",
   "/login",
+  "/managed",
   "/mobile",
   "/offline",
   "/open-source",
@@ -4539,10 +4903,12 @@ export const ALL_ROUTES: string[] = [
   "/privacy",
   "/product",
   "/proof-explorer",
+  "/pulse",
   "/react-settler-demo",
   "/realtime-dashboard",
   "/receipts",
   "/reconcile",
+  "/reconcile/[id]",
   "/reconciliation",
   "/replay-lab",
   "/review/polish",
