@@ -258,6 +258,16 @@ const nextConfig = {
           },
         ],
       },
+      // Aggressive Edge caching for marketing/public funnel pages (Zero compute cost)
+      {
+        source: "/(home|pricing|product|about|security-and-audit)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, s-maxage=3600, stale-while-revalidate=86400",
+          },
+        ],
+      },
       {
         source: "/:path*",
         headers: [

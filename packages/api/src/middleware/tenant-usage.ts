@@ -59,8 +59,12 @@ export const enforceUsageLimits = () => {
       next();
     } catch (error) {
       logError("Failed to check tenant usage", error);
-      // Fail open to avoid blocking core operations due to a billing service glitch
-      next();
+      // Fail CLOSED to prevent DDOS / runaway resource costs during a billing service outage
+      res.status(503).json({
+        error: "Billing service unavailable",
+        message: "Unable to verify tenant usage quota. Request blocked to prevent runaway costs.",
+      });
+      return;
     }
   };
 };
