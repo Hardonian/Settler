@@ -195,6 +195,7 @@ export function SchemaMapper() {
                           className="w-full bg-muted/40 border-none rounded p-1 text-sm focus:ring-1 focus:ring-primary"
                           value={mappedHeader}
                           onChange={(e) => setMapping({ ...mapping, [field]: e.target.value })}
+                          aria-label={`Map CSV column to ${field}`}
                         >
                           <option value="">-- Ignore --</option>
                           {headers.map((h) => (

@@ -280,6 +280,7 @@ export function UsageAnalyticsDashboard() {
             <select
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value as "7d" | "30d" | "90d")}
+              aria-label="Select time range"
               className="px-3 py-2 border rounded-md bg-white dark:bg-card/80"
             >
               <option value="7d">Last 7 days</option>
@@ -476,6 +477,7 @@ export function UsageAnalyticsDashboard() {
                                 ? "bg-amber-600"
                                 : "bg-blue-600"
                           }`}
+                          // eslint-disable-next-line react/forbid-dom-props
                           style={{ width: `${Math.min(usagePercent, 100)}%` }}
                         />
                       </div>
