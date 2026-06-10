@@ -12,6 +12,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import {
   Download,
@@ -468,18 +469,10 @@ export function UsageAnalyticsDashboard() {
                       </span>
                     </div>
                     {limit && limit.limit > 0 && (
-                      <div className="w-full bg-border dark:bg-border rounded-full h-2">
-                        <div
-                          className={`h-2 rounded-full ${
-                            usagePercent > 90
-                              ? "bg-red-600"
-                              : usagePercent > 75
-                                ? "bg-amber-600"
-                                : "bg-blue-600"
-                          }`}
-                          style={{ width: `${Math.min(usagePercent, 100)}%` }}
-                        />
-                      </div>
+                      <Progress
+                        value={Math.min(usagePercent, 100)}
+                        className={`h-2 ${usagePercent > 90 ? "text-red-600" : usagePercent > 75 ? "text-amber-600" : "text-blue-600"}`}
+                      />
                     )}
                   </div>
                 );
