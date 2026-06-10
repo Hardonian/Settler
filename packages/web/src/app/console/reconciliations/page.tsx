@@ -12,6 +12,9 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { ConsoleListRow } from "@/components/console/console-list-row";
 import { ConsolePageHeader } from "@/components/console/ConsolePageHeader";
 import { ReconciliationView } from "@/components/console/ReconciliationView";
+import { FreezeErrorAlert } from "@/components/shared/FreezeErrorAlert";
+import { useGovernanceState } from "@/hooks/use-governance-state";
+import { getGovernanceRecoveryHref } from "@/lib/governance/freeze-client";
 import { safeFetch } from "@/lib/safe-fetch";
 
 interface RecentRun {
@@ -62,6 +65,7 @@ function getStatusIcon(status: RecentRun["status"]) {
 export default function ReconciliationsPage() {
   const searchParams = useSearchParams();
   const runId = searchParams.get("runId");
+  const { isFrozen, governanceState } = useGovernanceState();
   const [runs, setRuns] = useState<RecentRun[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -124,6 +128,16 @@ export default function ReconciliationsPage() {
 
   return (
     <div className="space-y-6">
+      {isFrozen ? (
+        <FreezeErrorAlert
+          reason={governanceState?.freeze_reason}
+          frozenAt={governanceState?.frozen_at || undefined}
+          recoveryAction={{
+            label: "Open Governance Controls",
+            href: getGovernanceRecoveryHref(),
+          }}
+        />
+      ) : null}
       <ConsolePageHeader
         title="Reconciliations"
         description="Inspect the outcomes of your reconciliation intelligence. Every matching decision is replayable, explainable, and linked to deterministic evidence."
@@ -207,6 +221,15 @@ export default function ReconciliationsPage() {
                   window.location.href = "/console/runs";
                 },
               }}
+              secondaryAction={
+                isFrozen
+                  ? {
+                      label: "Open Governance Controls",
+                      href: getGovernanceRecoveryHref(),
+                      variant: "outline",
+                    }
+                  : undefined
+              }
             />
           ) : (
             <div className="space-y-4">

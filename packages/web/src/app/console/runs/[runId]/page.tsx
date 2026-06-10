@@ -137,15 +137,15 @@ export default function RunPage() {
           reconciliationRunId: runId,
         }),
       });
-      const payload = (await response.json().catch(() => null)) as unknown;
-      const freezeDetails = parseGovernanceFreezeError(payload, response.status);
-
-      if (freezeDetails) {
-        setFreezeError(freezeDetails);
-        return;
-      }
-
       if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as unknown;
+        const freezeDetails = parseGovernanceFreezeError(payload, response.status);
+
+        if (freezeDetails) {
+          setFreezeError(freezeDetails);
+          return;
+        }
+
         const body =
           payload && typeof payload === "object"
             ? (payload as { capability?: { reason?: string } })
@@ -153,22 +153,8 @@ export default function RunPage() {
         setActionError(body?.capability?.reason ?? getApiErrorMessage(payload, "Export failed"));
         return;
       }
-      const downloadResponse = await fetch("/api/exports", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "csv",
-          format: "all",
-          reconciliationRunId: runId,
-        }),
-      });
 
-      if (!downloadResponse.ok) {
-        setActionError("Export completed but the download stream could not be retrieved.");
-        return;
-      }
-
-      const blob = await downloadResponse.blob();
+      const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = url;

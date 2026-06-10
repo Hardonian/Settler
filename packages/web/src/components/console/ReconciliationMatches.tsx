@@ -385,7 +385,9 @@ export function ReconciliationMatches({ runId, runKind: runKindProp }: Reconcili
                 {matches.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={9} className="text-center text-gray-500">
-                      No matches found
+                      No row-level matches are available for the current filter. Clear filters,
+                      open the run detail, or inspect the higher-level results summary for next
+                      steps.
                     </TableCell>
                   </TableRow>
                 ) : (

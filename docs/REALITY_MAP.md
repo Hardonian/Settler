@@ -37,6 +37,22 @@
 - **Invariants**
   - Deterministic matching logic; no hidden side effects.
   - No hard 500s on user routes; fail closed for entitlements.
+  - Freeze-protected mutations return `423 Locked` with governance recovery details.
+
+### 2b) Governance Freeze Recovery
+
+- **Routes**
+  - State read: `/api/v1/governance/freeze`
+  - State write: `/api/v1/governance/freeze`
+  - Recovery UI: `/console/settings?tab=governance#governance`
+- **Data stores**
+  - `tenant_governance`
+- **External deps**
+  - None beyond the tenant database/cache layer
+- **Invariants**
+  - High-risk tenant mutations are freeze-gated.
+  - Governance reads, diagnostics, and recovery remain available during freeze.
+  - Frontend mutation surfaces proactively disable blocked actions and show recovery guidance.
 
 ### 3) Billing & Webhooks (Checkout → Webhook → Entitlements)
 

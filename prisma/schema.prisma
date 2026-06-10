@@ -1074,6 +1074,8 @@ model Tenant {
   anomalies          Anomaly[]
   policyComparisons  PolicyComparison[]
   dpias              DPIA[]
+  nudgePolicies      NudgePolicy[]
+  nudgeActions       NudgeAction[]
 
   @@index([slug])
   @@index([primaryDomain])
@@ -2576,3 +2578,47 @@ model DPIA {
   @@index([tenantId])
   @@map("dpias")
 }
+
+// ============================================================================
+// NUDGER ENGINE
+// ============================================================================
+
+model NudgePolicy {
+  id                String    @id @default(uuid()) @db.Uuid
+  tenantId          String    @db.Uuid
+  name              String
+  criteria          Json      @default("{}")
+  channel           String    @default("email")
+  isActive          Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  tenant            Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  actions           NudgeAction[]
+
+  @@index([tenantId])
+  @@index([isActive])
+  @@map("nudge_policies")
+}
+
+model NudgeAction {
+  id                String    @id @default(uuid()) @db.Uuid
+  tenantId          String    @db.Uuid
+  policyId          String    @db.Uuid
+  invoiceId         String
+  targetContact     String
+  status            String    @default("dry_run") // dry_run, pending, executed, failed
+  executeAt         DateTime?
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  tenant            Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  policy            NudgePolicy @relation(fields: [policyId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([policyId])
+  @@index([status])
+  @@map("nudge_actions")
+}
+
