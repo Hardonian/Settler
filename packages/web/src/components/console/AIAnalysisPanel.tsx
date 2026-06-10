@@ -20,6 +20,13 @@ import {
 } from "@/components/ui/dialog";
 import { Sparkles, Zap, TrendingUp, AlertTriangle, Plus, RefreshCw } from "lucide-react";
 import { motion } from "framer-motion";
+import { FreezeErrorAlert } from "@/components/shared/FreezeErrorAlert";
+import {
+  getApiErrorMessage,
+  getGovernanceRecoveryHref,
+  parseGovernanceFreezeError,
+  type GovernanceFreezeErrorDetails,
+} from "@/lib/governance/freeze-client";
 
 interface TokenUsage {
   used: number;
@@ -49,6 +56,8 @@ export function AnalysisPanel() {
   const [running, setRunning] = useState(false);
   const [showPurchaseDialog, setShowPurchaseDialog] = useState(false);
   const [selectedAnalysis, setSelectedAnalysis] = useState<AIAnalysis | null>(null);
+  const [freezeError, setFreezeError] = useState<GovernanceFreezeErrorDetails | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchTokenUsage();
@@ -89,22 +98,35 @@ export function AnalysisPanel() {
 
     try {
       setRunning(true);
+      setFreezeError(null);
+      setError(null);
       const res = await fetch("/api/console/ai-analysis", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type }),
       });
 
+      const payload = (await res.json().catch(() => null)) as unknown;
+      const freezeDetails = parseGovernanceFreezeError(payload, res.status);
+
+      if (freezeDetails) {
+        setFreezeError(freezeDetails);
+        return;
+      }
+
       if (res.ok) {
-        const data = await res.json();
+        const data = payload as { analysis: AIAnalysis };
         setAnalyses([data.analysis, ...analyses]);
         await fetchTokenUsage();
       } else if (res.status === 402) {
         // Payment required - tokens exhausted
         setShowPurchaseDialog(true);
+      } else {
+        throw new Error(getApiErrorMessage(payload, "Failed to run analysis"));
       }
-    } catch (error: unknown) {
-      console.error("Failed to run analysis:", error);
+    } catch (err: unknown) {
+      console.error("Failed to run analysis:", err);
+      setError(err instanceof Error ? err.message : "Failed to run analysis");
     } finally {
       setRunning(false);
     }
@@ -126,6 +148,23 @@ export function AnalysisPanel() {
 
   return (
     <div className="space-y-6">
+      {freezeError ? (
+        <FreezeErrorAlert
+          reason={freezeError.reason}
+          frozenAt={freezeError.frozenAt ?? undefined}
+          recoveryAction={{
+            label: "Open Governance Controls",
+            href: getGovernanceRecoveryHref(),
+          }}
+        />
+      ) : null}
+
+      {error ? (
+        <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg border border-red-200 dark:border-red-800">
+          {error}
+        </div>
+      ) : null}
+
       {/* Token Usage Card */}
       <Card className="border-2 border-indigo-200 dark:border-indigo-800">
         <CardHeader>

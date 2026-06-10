@@ -28,6 +28,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Download, Save, AlertCircle } from "lucide-react";
+import { FreezeErrorAlert } from "@/components/shared/FreezeErrorAlert";
+import {
+  getApiErrorMessage,
+  getGovernanceRecoveryHref,
+  parseGovernanceFreezeError,
+  type GovernanceFreezeErrorDetails,
+} from "@/lib/governance/freeze-client";
 
 interface Dataset {
   name: string;
@@ -87,6 +94,7 @@ export function AnalyticsStudio({ userId: _userId }: { userId: string }) {
   const [pivotResult, setPivotResult] = useState<PivotResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [freezeError, setFreezeError] = useState<GovernanceFreezeErrorDetails | null>(null);
 
   const [savedViews, setSavedViews] = useState<SavedView[]>([]);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
@@ -131,6 +139,7 @@ export function AnalyticsStudio({ userId: _userId }: { userId: string }) {
 
     setLoading(true);
     setError(null);
+    setFreezeError(null);
 
     try {
       const query: PivotQuery = {
@@ -149,12 +158,18 @@ export function AnalyticsStudio({ userId: _userId }: { userId: string }) {
         body: JSON.stringify(query),
       });
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || "Failed to execute query");
+      const result = await res.json().catch(() => null);
+      
+      const freezeDetails = parseGovernanceFreezeError(result, res.status);
+      if (freezeDetails) {
+        setFreezeError(freezeDetails);
+        return;
       }
 
-      const result = await res.json();
+      if (!res.ok) {
+        throw new Error(getApiErrorMessage(result, result?.error || "Failed to execute query"));
+      }
+
       setPivotResult(result);
     } catch (error: unknown) {
       console.error("Query error:", error);
@@ -171,6 +186,8 @@ export function AnalyticsStudio({ userId: _userId }: { userId: string }) {
     }
 
     try {
+      setError(null);
+      setFreezeError(null);
       const res = await fetch("/api/console/analytics/saved-views", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -187,13 +204,20 @@ export function AnalyticsStudio({ userId: _userId }: { userId: string }) {
         }),
       });
 
+      const data = await res.json().catch(() => null);
+      
+      const freezeDetails = parseGovernanceFreezeError(data, res.status);
+      if (freezeDetails) {
+        setFreezeError(freezeDetails);
+        return;
+      }
+
       if (res.ok) {
-        const data = await res.json();
         setSavedViews([...savedViews, data.view]);
         setShowSaveDialog(false);
         setSaveViewName("");
       } else {
-        throw new Error("Failed to save view");
+        throw new Error(getApiErrorMessage(data, "Failed to save view"));
       }
     } catch (error: unknown) {
       console.error("Save error:", error);
@@ -404,7 +428,22 @@ export function AnalyticsStudio({ userId: _userId }: { userId: string }) {
       )}
 
       {/* Results */}
-      {error && (
+      {freezeError && (
+        <Card>
+          <CardContent className="pt-6">
+            <FreezeErrorAlert
+              reason={freezeError.reason}
+              frozenAt={freezeError.frozenAt ?? undefined}
+              recoveryAction={{
+                label: "Open Governance Controls",
+                href: getGovernanceRecoveryHref(),
+              }}
+            />
+          </CardContent>
+        </Card>
+      )}
+
+      {error && !freezeError && (
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-2 text-destructive">

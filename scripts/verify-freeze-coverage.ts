@@ -12,8 +12,12 @@ const EXPECTED_PROTECTED_ROUTES: RouteExpectation[] = [
   { file: "packages/api/src/routes/jobs.ts", method: "post", route: "/" },
   { file: "packages/api/src/routes/jobs.ts", method: "post", route: "/:id/run" },
   { file: "packages/api/src/routes/jobs.ts", method: "delete", route: "/:id" },
-  { file: "packages/api/src/routes/exceptions.ts", method: "post", route: "/:id/resolve" },
-  { file: "packages/api/src/routes/exceptions.ts", method: "post", route: "/bulk-resolve" },
+  { file: "packages/api/src/routes/exceptions.ts", method: "post", route: "/exceptions/:id/resolve" },
+  {
+    file: "packages/api/src/routes/exceptions.ts",
+    method: "post",
+    route: "/exceptions/bulk-resolve",
+  },
   { file: "packages/api/src/routes/tenant-data.ts", method: "delete", route: "/data" },
   { file: "packages/api/src/routes/v1/advanced-matching-rules.ts", method: "post", route: "/" },
   {

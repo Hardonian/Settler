@@ -19,6 +19,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { FreezeErrorAlert } from "@/components/shared/FreezeErrorAlert";
+import {
+  getApiErrorMessage,
+  getGovernanceRecoveryHref,
+  parseGovernanceFreezeError,
+  type GovernanceFreezeErrorDetails,
+} from "@/lib/governance/freeze-client";
 
 interface ShareButtonProps {
   artifactType: "reconciliation_report" | "receipt" | "dashboard";
@@ -32,11 +39,13 @@ export function ShareButton({ artifactType, artifactId, artifactName }: ShareBut
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [freezeError, setFreezeError] = useState<GovernanceFreezeErrorDetails | null>(null);
   const [copied, setCopied] = useState(false);
 
   const handleShare = async () => {
     setLoading(true);
     setError(null);
+    setFreezeError(null);
 
     try {
       const response = await fetch("/api/share", {
@@ -49,14 +58,21 @@ export function ShareButton({ artifactType, artifactId, artifactName }: ShareBut
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to create shareable link");
+      const data = await response.json().catch(() => null);
+      
+      const freezeDetails = parseGovernanceFreezeError(data, response.status);
+      if (freezeDetails) {
+        setFreezeError(freezeDetails);
+        return;
       }
 
-      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(getApiErrorMessage(data, "Failed to create shareable link"));
+      }
+
       setShareUrl(data.shareUrl);
-    } catch {
-      setError("Failed to create shareable link. Please try again.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to create shareable link. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -98,7 +114,18 @@ export function ShareButton({ artifactType, artifactId, artifactName }: ShareBut
                   : "Only you and people you share the link with can view this artifact."}
               </p>
 
-              {error && (
+              {freezeError && (
+                <FreezeErrorAlert
+                  reason={freezeError.reason}
+                  frozenAt={freezeError.frozenAt ?? undefined}
+                  recoveryAction={{
+                    label: "Open Governance Controls",
+                    href: getGovernanceRecoveryHref(),
+                  }}
+                />
+              )}
+
+              {error && !freezeError && (
                 <Alert variant="destructive">
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>

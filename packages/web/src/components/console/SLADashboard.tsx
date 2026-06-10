@@ -30,6 +30,13 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { AlertTriangle, CheckCircle2, Plus } from "lucide-react";
 import { format } from "date-fns";
+import { FreezeErrorAlert } from "@/components/shared/FreezeErrorAlert";
+import {
+  getApiErrorMessage,
+  getGovernanceRecoveryHref,
+  parseGovernanceFreezeError,
+  type GovernanceFreezeErrorDetails,
+} from "@/lib/governance/freeze-client";
 
 interface SLAViolation {
   id: string;
@@ -47,6 +54,7 @@ export function SLADashboard() {
   const [violations, setViolations] = useState<SLAViolation[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [freezeError, setFreezeError] = useState<GovernanceFreezeErrorDetails | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newAgreement, setNewAgreement] = useState({
     slaType: "",
@@ -77,6 +85,7 @@ export function SLADashboard() {
     try {
       setLoading(true);
       setError(null);
+      setFreezeError(null);
 
       const res = await fetch("/api/v1/sla/agreements", {
         method: "POST",
@@ -88,9 +97,15 @@ export function SLADashboard() {
         }),
       });
 
+      const data = await res.json().catch(() => null);
+      const freezeDetails = parseGovernanceFreezeError(data, res.status);
+      if (freezeDetails) {
+        setFreezeError(freezeDetails);
+        return;
+      }
+
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || "Failed to create agreement");
+        throw new Error(getApiErrorMessage(data, data?.message || "Failed to create agreement"));
       }
 
       setShowCreateForm(false);
@@ -105,11 +120,22 @@ export function SLADashboard() {
 
   const handleAcknowledgeViolation = async (violationId: string) => {
     try {
+      setError(null);
+      setFreezeError(null);
       const res = await fetch(`/api/v1/sla/violations/${violationId}/acknowledge`, {
         method: "POST",
       });
 
-      if (!res.ok) throw new Error("Failed to acknowledge");
+      const data = await res.json().catch(() => null);
+      const freezeDetails = parseGovernanceFreezeError(data, res.status);
+      if (freezeDetails) {
+        setFreezeError(freezeDetails);
+        return;
+      }
+
+      if (!res.ok) {
+        throw new Error(getApiErrorMessage(data, "Failed to acknowledge"));
+      }
       await fetchViolations();
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "Failed to acknowledge violation");
@@ -152,7 +178,18 @@ export function SLADashboard() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {error && (
+          {freezeError && (
+            <FreezeErrorAlert
+              reason={freezeError.reason}
+              frozenAt={freezeError.frozenAt ?? undefined}
+              recoveryAction={{
+                label: "Open Governance Controls",
+                href: getGovernanceRecoveryHref(),
+              }}
+            />
+          )}
+
+          {error && !freezeError && (
             <Alert variant="destructive">
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>{error}</AlertDescription>
