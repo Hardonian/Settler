@@ -96,9 +96,12 @@ v1Router.use("/", systemHealthRouter);
 v1Router.use("/", runsRouter);
 v1Router.use("/", governanceRouter);
 
-v1Router.use("/", capabilitiesRouter);
+import billingRouter from "./billing";
 
+v1Router.use("/", capabilitiesRouter);
 v1Router.use("/", enterpriseRouter);
+v1Router.use("/billing", billingRouter);
+
 // Health check
 v1Router.get("/health", (_req, res) => {
   res.json({
