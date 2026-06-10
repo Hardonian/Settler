@@ -305,33 +305,33 @@ router.get(
       }>(
         tenantId,
         `SELECT
-          r.id,
-          r.tenant_id,
-          r.started_at as created_at,
-          r.updated_at,
-          r.status,
+          rr.id,
+          rr.tenant_id,
+          rr.started_at as created_at,
+          rr.updated_at,
+          rr.status,
           j.name as policy_name,
-          r.source_count + r.target_count as total_records,
-          r.matched_count,
-          r.unmatched_source_count,
-          r.unmatched_target_count,
-          r.error_message,
+          rr.source_count + rr.target_count as total_records,
+          rr.matched_count,
+          rr.unmatched_source_count,
+          rr.unmatched_target_count,
+          rr.error_message,
           j.source_adapter,
           j.target_adapter,
           j.template_id,
-          r.id as result_id,
-          r.snapshot_id,
-          r.input_hash,
-          r.started_at,
-          r.completed_at,
-          r.summary -> 'provenance' ->> 'configVersion' as provenance_config_version,
+          rr.id as result_id,
+          rr.snapshot_id,
+          rr.input_hash,
+          rr.started_at,
+          rr.completed_at,
+          rr.summary -> 'provenance' ->> 'configVersion' as provenance_config_version,
           recon_results.summary -> 'provenance' ->> 'configSource' as provenance_config_source,
           recon_results.summary -> 'provenance' ->> 'templateId' as provenance_template_id,
           recon_results.summary -> 'provenance' ->> 'matchingRuleIds' as provenance_matching_rule_ids,
           recon_results.summary -> 'provenance' ->> 'ruleVersionCount' as provenance_rule_version_count
-         FROM recon_results r
-         LEFT JOIN recon_jobs j ON r.recon_job_id = j.id
-         WHERE r.id = $1 AND r.tenant_id = $2`,
+         FROM recon_results rr
+         LEFT JOIN recon_jobs j ON rr.recon_job_id = j.id
+         WHERE rr.id = $1 AND rr.tenant_id = $2`,
         [runId, tenantId]
       );
 
