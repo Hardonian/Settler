@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
+  ArrowRight,
   AlertCircle,
   Settings,
   Shield,
@@ -19,6 +21,8 @@ import {
 
 import {
   Button,
+  Card,
+  CardContent,
   CardTitle,
   CardDescription,
   Tabs,
@@ -27,6 +31,15 @@ import {
   TabsTrigger,
 } from "@/components/ui";
 
+import { FreezeBlockedButton } from "@/components/shared/FreezeBlockedButton";
+import { FreezeErrorAlert } from "@/components/shared/FreezeErrorAlert";
+import { useGovernanceState } from "@/hooks/use-governance-state";
+import {
+  getApiErrorMessage,
+  getGovernanceRecoveryHref,
+  parseGovernanceFreezeError,
+  type GovernanceFreezeErrorDetails,
+} from "@/lib/governance/freeze-client";
 import type { OperatorRunDetail } from "@/types/operator-run-detail";
 import { formatDistanceToNow } from "date-fns";
 import {
@@ -47,6 +60,9 @@ export default function RunPage() {
   const runId = Array.isArray(params.runId) ? params.runId[0] : params.runId;
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [exporting, setExporting] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [freezeError, setFreezeError] = useState<GovernanceFreezeErrorDetails | null>(null);
+  const { isFrozen, governanceState } = useGovernanceState();
 
   // Use React Query for efficient fetching, polling, and data synchronization
   const {
@@ -74,18 +90,42 @@ export default function RunPage() {
   const handleRetry = useCallback(async () => {
     if (!run) return;
     try {
+      setActionError(null);
+      setFreezeError(null);
       const response = await fetch(`/api/runs/${runId}/retry`, { method: "POST" });
-      if (response.ok) {
-        refetch();
+      const payload = (await response.json().catch(() => null)) as unknown;
+      const freezeDetails = parseGovernanceFreezeError(payload, response.status);
+
+      if (freezeDetails) {
+        setFreezeError(freezeDetails);
+        return;
       }
+
+      if (!response.ok) {
+        setActionError(getApiErrorMessage(payload, "Failed to retry run"));
+        return;
+      }
+
+      const nextRunId =
+        payload && typeof payload === "object" && "data" in payload
+          ? (payload as { data?: { id?: string } }).data?.id
+          : undefined;
+
+      if (typeof nextRunId === "string" && nextRunId.length > 0) {
+        router.push(`/console/runs/${nextRunId}`);
+        return;
+      }
+
+      refetch();
     } catch (err) {
-      console.error("Retry failed:", err);
+      setActionError(err instanceof Error ? err.message : "Failed to retry run");
     }
-  }, [runId, run, refetch]);
+  }, [router, runId, run, refetch]);
 
   const handleExport = useCallback(async () => {
     if (!runId) return;
     setExporting(true);
+    setActionError(null);
     try {
       const response = await fetch("/api/exports", {
         method: "POST",
@@ -97,9 +137,11 @@ export default function RunPage() {
         }),
       });
       if (!response.ok) {
-        const body = await response.json().catch(() => ({}));
-        const cap = (body as { capability?: { reason?: string } }).capability;
-        console.error("Export failed:", cap?.reason ?? response.statusText);
+        const body = (await response.json().catch(() => null)) as {
+          capability?: { reason?: string };
+        } | null;
+        const cap = body?.capability;
+        setActionError(cap?.reason ?? response.statusText);
         return;
       }
       const blob = await response.blob();
@@ -110,7 +152,7 @@ export default function RunPage() {
       anchor.click();
       URL.revokeObjectURL(url);
     } catch (err) {
-      console.error("Export error:", err);
+      setActionError(err instanceof Error ? err.message : "Export failed");
     } finally {
       setExporting(false);
     }
@@ -153,6 +195,18 @@ export default function RunPage() {
   }
 
   const provenanceSignals = getOperatorRunDetailProvenanceSignals(run);
+  const showResultsLink = run.status === "completed" && run.runKind !== "ingestion_run";
+  const showRunExceptionsLink = run.exceptions.total > 0;
+  const activeFreezeDetails =
+    freezeError ??
+    (isFrozen
+      ? {
+          message: "Write actions are currently blocked by tenant freeze.",
+          reason: governanceState?.freeze_reason ?? null,
+          frozenAt: governanceState?.frozen_at ?? null,
+          traceId: null,
+        }
+      : null);
 
   return (
     <div className="p-6 lg:p-10 space-y-10 max-w-7xl mx-auto">

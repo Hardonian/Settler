@@ -32,6 +32,7 @@ import {
   Info,
 } from "lucide-react";
 import { ConsolePageHeader } from "@/components/console/ConsolePageHeader";
+import { getGovernanceRecoveryHref } from "@/lib/governance/freeze-client";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -328,8 +329,20 @@ export default async function DiagnosticsPage() {
                 </Link>
               </Button>
               <Button variant="outline" size="sm" className="w-full justify-between" asChild>
+                <Link href="/console/runs">
+                  <span>Run history</span>
+                  <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
+                </Link>
+              </Button>
+              <Button variant="outline" size="sm" className="w-full justify-between" asChild>
                 <Link href="/console/admin/tenants">
                   <span>Tenant observability</span>
+                  <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
+                </Link>
+              </Button>
+              <Button variant="outline" size="sm" className="w-full justify-between" asChild>
+                <Link href={getGovernanceRecoveryHref()}>
+                  <span>Governance controls</span>
                   <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
                 </Link>
               </Button>

@@ -103,10 +103,10 @@ const FreezeToggle: React.FC = () => {
 
   if (loading && !freezeState) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
         <div className="flex items-center justify-center py-8">
-          <Loader2 className="h-6 w-6 animate-spin text-slate-400" aria-hidden="true" />
-          <span className="ml-2 text-sm text-slate-500">Loading freeze state...</span>
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" aria-hidden="true" />
+          <span className="ml-2 text-sm text-muted-foreground">Loading freeze state...</span>
         </div>
       </div>
     );
@@ -114,9 +114,9 @@ const FreezeToggle: React.FC = () => {
 
   return (
     <>
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
         {error && (
-          <div className="mb-4 rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
+          <div className="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/20 dark:text-red-300">
             {error}
           </div>
         )}
@@ -125,13 +125,19 @@ const FreezeToggle: React.FC = () => {
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
               <Lock className="h-5 w-5 text-red-500" aria-hidden="true" />
-              <h2 className="text-base font-bold text-slate-900">Freeze System</h2>
+              <h2 className="text-base font-bold text-foreground">Freeze System</h2>
             </div>
-            <p className="text-sm leading-relaxed text-slate-500">
+            <p className="text-sm leading-relaxed text-muted-foreground">
               Switch to Read-Only Mode for emergency safety. All write operations will be blocked.
             </p>
+            {freezeState?.freeze_reason ? (
+              <p className="text-xs text-muted-foreground">
+                Reason:{" "}
+                <span className="font-medium text-foreground">{freezeState.freeze_reason}</span>
+              </p>
+            ) : null}
             {frozen && freezeState?.frozen_at && (
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="mt-1 text-xs text-muted-foreground">
                 Frozen at: {new Date(freezeState.frozen_at).toLocaleString()}
               </p>
             )}
@@ -152,13 +158,13 @@ const FreezeToggle: React.FC = () => {
             <div
               className={[
                 "h-6 w-11 rounded-full transition-colors duration-200 peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2",
-                frozen ? "bg-red-500" : "bg-slate-200 dark:bg-slate-700",
+                frozen ? "bg-red-500" : "bg-muted",
                 loading ? "opacity-50 cursor-not-allowed" : "",
               ].join(" ")}
             />
             <div
               className={[
-                "absolute left-[2px] top-[2px] h-5 w-5 rounded-full border border-slate-300 bg-white shadow transition-transform duration-200",
+                "absolute left-[2px] top-[2px] h-5 w-5 rounded-full border border-border bg-background shadow transition-transform duration-200",
                 frozen ? "translate-x-5 border-red-300" : "",
               ].join(" ")}
             />
@@ -179,7 +185,7 @@ const FreezeToggle: React.FC = () => {
           </span>
         </div>
 
-        <div className="mt-3 text-xs text-slate-500">
+        <div className="mt-3 text-xs text-muted-foreground">
           <p className="font-semibold">Enforcement Scope:</p>
           <p className="mt-1">
             <strong>Enforced:</strong> Ingestion uploads, reconciliation runs, bulk operations,
@@ -189,7 +195,7 @@ const FreezeToggle: React.FC = () => {
             <strong>Not Enforced:</strong> Read operations, health checks, governance controls,
             connector reads
           </p>
-          <p className="mt-1 text-amber-700 font-medium">
+          <p className="mt-1 font-medium text-amber-700 dark:text-amber-300">
             This is a scoped operational freeze, not a universal system lock.
           </p>
         </div>
@@ -208,7 +214,7 @@ const FreezeToggle: React.FC = () => {
           <DialogFooter>
             <button
               onClick={() => setConfirming(false)}
-              className="rounded-md border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+              className="rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
             >
               Cancel
             </button>
