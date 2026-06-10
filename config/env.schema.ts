@@ -503,7 +503,7 @@ export const ENV_VAR_SCHEMA: EnvVarSpec[] = [
     format: "Min 32 characters",
     secret: true,
     platforms: ["github", "vercel", "local"],
-    validator: (v) => v.length >= 32,
+    validator: (v) => !v || v.length >= 32,
   },
   {
     name: "ENCRYPTION_KEY",
