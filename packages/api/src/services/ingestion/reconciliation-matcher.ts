@@ -133,7 +133,7 @@ function levenshteinDistance(str1: string, str2: string): number {
 /**
  * Calculate similarity score between two strings (0-1)
  */
-function stringSimilarity(str1: string, str2: string): number {
+export function stringSimilarity(str1: string, str2: string): number {
   if (!str1 || !str2) {
     return 0;
   }
@@ -814,6 +814,24 @@ export async function runReconciliation(
       configSource: matchingConfig.configSource,
       traceId,
     });
+
+    // Trigger DLQ Resolution for any unmatched transactions before automated review
+    try {
+      const { runAutomatedDLQResolution } = await import("../reconciliation/dlq-resolution");
+      const dlqResult = await runAutomatedDLQResolution(runId, tenantId);
+      logInfo("Automated DLQ Resolution completed", {
+        runId,
+        tenantId,
+        ...dlqResult,
+        traceId,
+      });
+    } catch (dlqError) {
+      logError("Automated DLQ Resolution failed (non-fatal)", dlqError, {
+        runId,
+        tenantId,
+        traceId,
+      });
+    }
 
     // Automatically trigger review process (industry best practice)
     try {

@@ -10,6 +10,10 @@ jest.mock("../../middleware/governance", () => ({
   enforceFreezeState: () => (_req: unknown, _res: unknown, next: () => void) => next(),
 }));
 
+jest.mock("../../middleware/authorization", () => ({
+  requirePermission: () => (_req: unknown, _res: unknown, next: () => void) => next(),
+}));
+
 const mockRunReconciliation = jest.fn().mockResolvedValue("33333333-3333-4333-8333-333333333333");
 
 jest.mock("../../services/ingestion/reconciliation-matcher", () => ({

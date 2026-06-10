@@ -34,7 +34,7 @@ jest.mock("@settler/reconciliation-core", () => {
     scanMergedRunsForLegacyPage: jest.fn(),
     resolveOperatorRunDetailForTenants: jest.fn(),
     buildRunProofpackIndexByRunId: jest.fn().mockResolvedValue(new Map()),
-    resolveRunCompactProofSummary: jest.fn(({ proofpackIndex }: any) => ({
+    resolveRunCompactProofSummary: jest.fn(({ proofpackIndex: _proofpackIndex }: any) => ({
       compactProofSummary: { delta: { state: "unavailable" } },
       source: "fallback_unavailable",
       fallbackReasonCode: "run_proofpack_missing",
