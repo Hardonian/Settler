@@ -55,6 +55,12 @@ const surfaces = [
     href: "/console/receipts",
     cta: "Open artifacts",
   },
+  {
+    title: "Month-End Lock (SOC2)",
+    description: "Cryptographically lock ledgers and generate auditor-ready compliance reports.",
+    href: "/console/audits/lock",
+    cta: "Manage Ledger Locks",
+  },
 ];
 
 export default async function AuditsPage() {
