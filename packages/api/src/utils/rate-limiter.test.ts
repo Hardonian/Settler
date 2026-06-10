@@ -5,8 +5,9 @@ describe("RedisRateLimiter Unit Tests", () => {
   let rateLimiter: RedisRateLimiter;
   let redisMock: any;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     redisMock = new RedisMock();
+    await redisMock.flushall();
     rateLimiter = new RedisRateLimiter(redisMock);
   });
 
