@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import { prisma } from "../../infrastructure/db/prisma";
+import { withCache, cacheKey } from "../../utils/cache";
 
 export interface ExceptionSignature {
   signature: string;
@@ -573,177 +574,191 @@ export class ExceptionIntelligenceService {
     tenantId: string,
     lookbackDays: number
   ): Promise<ExceptionIntelligenceSnapshot> {
-    const matches = await this.fetchScopedMatches(tenantId, lookbackDays);
+    return withCache(
+      cacheKey("exception_intelligence", "snapshot", tenantId, lookbackDays),
+      300000, // 5 minutes
+      async () => {
+        const matches = await this.fetchScopedMatches(tenantId, lookbackDays);
 
-    const clusters = new Map<
-      string,
-      {
-        signature: ExceptionSignature;
-        volume: number;
-        openCount: number;
-        resolvedCount: number;
-        lowConfidenceCount: number;
-        durations: number[];
-        lastSeenAt: Date | null;
-        adjudicationMix: Record<string, number>;
-      }
-    >();
+        const clusters = new Map<
+          string,
+          {
+            signature: ExceptionSignature;
+            volume: number;
+            openCount: number;
+            resolvedCount: number;
+            lowConfidenceCount: number;
+            durations: number[];
+            lastSeenAt: Date | null;
+            adjudicationMix: Record<string, number>;
+          }
+        >();
 
-    const sources = new Map<string, { name: string; total: number; resolved: number }>();
-    const counterparties = new Map<string, { name: string | null; count: number }>();
+        const sources = new Map<string, { name: string; total: number; resolved: number }>();
+        const counterparties = new Map<string, { name: string | null; count: number }>();
 
-    for (const match of matches) {
-      const sig = signatureFrom(match);
-      const c = clusters.get(sig.signature) ?? {
-        signature: sig,
-        volume: 0,
-        openCount: 0,
-        resolvedCount: 0,
-        lowConfidenceCount: 0,
-        durations: [],
-        lastSeenAt: null,
-        adjudicationMix: {},
-      };
-      c.volume += 1;
-      c.lastSeenAt =
-        c.lastSeenAt && c.lastSeenAt > match.createdAt ? c.lastSeenAt : match.createdAt;
-      if (Number(match.confidence) < 0.75) c.lowConfidenceCount += 1;
-      if (match.reviewed) {
-        c.resolvedCount += 1;
-        const d = decisionForMatch(match.matchReason);
-        c.adjudicationMix[d] = (c.adjudicationMix[d] ?? 0) + 1;
-        if (match.reviewedAt)
-          c.durations.push((match.reviewedAt.getTime() - match.createdAt.getTime()) / 60000);
-      } else {
-        c.openCount += 1;
-        c.adjudicationMix.open = (c.adjudicationMix.open ?? 0) + 1;
-      }
-      clusters.set(sig.signature, c);
+        for (const match of matches) {
+          const sig = signatureFrom(match);
+          const c = clusters.get(sig.signature) ?? {
+            signature: sig,
+            volume: 0,
+            openCount: 0,
+            resolvedCount: 0,
+            lowConfidenceCount: 0,
+            durations: [],
+            lastSeenAt: null,
+            adjudicationMix: {},
+          };
+          c.volume += 1;
+          c.lastSeenAt =
+            c.lastSeenAt && c.lastSeenAt > match.createdAt ? c.lastSeenAt : match.createdAt;
+          if (Number(match.confidence) < 0.75) c.lowConfidenceCount += 1;
+          if (match.reviewed) {
+            c.resolvedCount += 1;
+            const d = decisionForMatch(match.matchReason);
+            c.adjudicationMix[d] = (c.adjudicationMix[d] ?? 0) + 1;
+            if (match.reviewedAt)
+              c.durations.push((match.reviewedAt.getTime() - match.createdAt.getTime()) / 60000);
+          } else {
+            c.openCount += 1;
+            c.adjudicationMix.open = (c.adjudicationMix.open ?? 0) + 1;
+          }
+          clusters.set(sig.signature, c);
 
-      const sourceId = match.sourceTransaction?.source?.id;
-      if (sourceId) {
-        const src = sources.get(sourceId) ?? {
-          name: match.sourceTransaction?.source?.name ?? sourceId,
-          total: 0,
-          resolved: 0,
-        };
-        src.total += 1;
-        if (match.reviewed) src.resolved += 1;
-        sources.set(sourceId, src);
-      }
+          const sourceId = match.sourceTransaction?.source?.id;
+          if (sourceId) {
+            const src = sources.get(sourceId) ?? {
+              name: match.sourceTransaction?.source?.name ?? sourceId,
+              total: 0,
+              resolved: 0,
+            };
+            src.total += 1;
+            if (match.reviewed) src.resolved += 1;
+            sources.set(sourceId, src);
+          }
 
-      const counterpartyKey =
-        match.sourceTransaction?.externalId ?? `txn:${match.sourceTransactionId}`;
-      const cp = counterparties.get(counterpartyKey) ?? {
-        name: match.sourceTransaction?.description ?? null,
-        count: 0,
-      };
-      cp.count += 1;
-      counterparties.set(counterpartyKey, cp);
-    }
+          const counterpartyKey =
+            match.sourceTransaction?.externalId ?? `txn:${match.sourceTransactionId}`;
+          const cp = counterparties.get(counterpartyKey) ?? {
+            name: match.sourceTransaction?.description ?? null,
+            count: 0,
+          };
+          cp.count += 1;
+          counterparties.set(counterpartyKey, cp);
+        }
 
-    const recurring = Array.from(clusters.values()).map((cluster): RecurringExceptionCluster => {
-      const ontology = classifyExceptionOntology({
-        matchType: cluster.signature.construction.matchType,
-        matchReason: cluster.signature.construction.reason,
-        reviewed: cluster.openCount === 0,
-        metadata: { rationale_codes: cluster.signature.construction.rationaleCodes },
-      });
-      const openRatio = cluster.openCount / Math.max(1, cluster.volume);
-      const lowConfRatio = cluster.lowConfidenceCount / Math.max(1, cluster.volume);
-      const recommendation: ExplainableRecommendation =
-        cluster.volume < 3
-          ? {
-              action: "insufficient_data",
-              confidence: null,
-              confidenceBasis: "Fewer than 3 observations in lookback window",
-              reasons: ["insufficient_cluster_volume"],
-              degraded: true,
-            }
-          : openRatio > 0.6
-            ? {
-                action: "manual_review",
-                confidence: Number(Math.min(0.95, 0.6 + openRatio / 3).toFixed(2)),
-                confidenceBasis: "High unresolved concentration in recurring signature",
-                reasons: [`open_ratio=${openRatio.toFixed(2)}`],
-                degraded: false,
-              }
-            : lowConfRatio > 0.4
-              ? {
-                  action: "policy_adjustment",
-                  confidence: Number(Math.min(0.9, 0.5 + lowConfRatio / 2).toFixed(2)),
-                  confidenceBasis: "High low-confidence recurrence indicates policy sensitivity",
-                  reasons: [`low_confidence_ratio=${lowConfRatio.toFixed(2)}`],
-                  degraded: false,
-                }
-              : {
-                  action: "auto_match_candidate",
-                  confidence: Number(
-                    Math.max(0.55, cluster.resolvedCount / Math.max(1, cluster.volume)).toFixed(2)
-                  ),
-                  confidenceBasis: "Historically resolved signature with low open burden",
-                  reasons: [
-                    `resolved_ratio=${(cluster.resolvedCount / Math.max(1, cluster.volume)).toFixed(2)}`,
-                  ],
-                  degraded: false,
-                };
+        const recurring = Array.from(clusters.values()).map(
+          (cluster): RecurringExceptionCluster => {
+            const ontology = classifyExceptionOntology({
+              matchType: cluster.signature.construction.matchType,
+              matchReason: cluster.signature.construction.reason,
+              reviewed: cluster.openCount === 0,
+              metadata: { rationale_codes: cluster.signature.construction.rationaleCodes },
+            });
+            const openRatio = cluster.openCount / Math.max(1, cluster.volume);
+            const lowConfRatio = cluster.lowConfidenceCount / Math.max(1, cluster.volume);
+            const recommendation: ExplainableRecommendation =
+              cluster.volume < 3
+                ? {
+                    action: "insufficient_data",
+                    confidence: null,
+                    confidenceBasis: "Fewer than 3 observations in lookback window",
+                    reasons: ["insufficient_cluster_volume"],
+                    degraded: true,
+                  }
+                : openRatio > 0.6
+                  ? {
+                      action: "manual_review",
+                      confidence: Number(Math.min(0.95, 0.6 + openRatio / 3).toFixed(2)),
+                      confidenceBasis: "High unresolved concentration in recurring signature",
+                      reasons: [`open_ratio=${openRatio.toFixed(2)}`],
+                      degraded: false,
+                    }
+                  : lowConfRatio > 0.4
+                    ? {
+                        action: "policy_adjustment",
+                        confidence: Number(Math.min(0.9, 0.5 + lowConfRatio / 2).toFixed(2)),
+                        confidenceBasis:
+                          "High low-confidence recurrence indicates policy sensitivity",
+                        reasons: [`low_confidence_ratio=${lowConfRatio.toFixed(2)}`],
+                        degraded: false,
+                      }
+                    : {
+                        action: "auto_match_candidate",
+                        confidence: Number(
+                          Math.max(
+                            0.55,
+                            cluster.resolvedCount / Math.max(1, cluster.volume)
+                          ).toFixed(2)
+                        ),
+                        confidenceBasis: "Historically resolved signature with low open burden",
+                        reasons: [
+                          `resolved_ratio=${(cluster.resolvedCount / Math.max(1, cluster.volume)).toFixed(2)}`,
+                        ],
+                        degraded: false,
+                      };
 
-      const avgResolutionMinutes =
-        cluster.durations.length > 0
-          ? Number(
-              (cluster.durations.reduce((a, b) => a + b, 0) / cluster.durations.length).toFixed(2)
-            )
-          : null;
+            const avgResolutionMinutes =
+              cluster.durations.length > 0
+                ? Number(
+                    (
+                      cluster.durations.reduce((a, b) => a + b, 0) / cluster.durations.length
+                    ).toFixed(2)
+                  )
+                : null;
 
-      return {
-        signature: cluster.signature,
-        volume: cluster.volume,
-        openCount: cluster.openCount,
-        resolvedCount: cluster.resolvedCount,
-        resolutionPath: {
-          count: cluster.volume,
-          lastSeenAt: cluster.lastSeenAt?.toISOString() ?? null,
-          avgResolutionMinutes,
-          medianResolutionMinutes: computeMedian(cluster.durations),
-          adjudicationMix: cluster.adjudicationMix,
-        },
-        ontology,
-        recommendation,
-      };
-    });
+            return {
+              signature: cluster.signature,
+              volume: cluster.volume,
+              openCount: cluster.openCount,
+              resolvedCount: cluster.resolvedCount,
+              resolutionPath: {
+                count: cluster.volume,
+                lastSeenAt: cluster.lastSeenAt?.toISOString() ?? null,
+                avgResolutionMinutes,
+                medianResolutionMinutes: computeMedian(cluster.durations),
+                adjudicationMix: cluster.adjudicationMix,
+              },
+              ontology,
+              recommendation,
+            };
+          }
+        );
 
-    const degraded = matches.length === 0;
-    return {
-      tenantId,
-      generatedAt: new Date().toISOString(),
-      lookbackDays,
-      degraded,
-      degradedReasons: degraded ? ["no_exception_history_in_scope"] : [],
-      clusters: recurring.sort((a, b) => b.volume - a.volume).slice(0, 50),
-      sourceTrustSignals: Array.from(sources.entries()).map(([sourceId, source]) => {
-        const resolvedRate = source.total ? source.resolved / source.total : 0;
+        const degraded = matches.length === 0;
         return {
-          sourceId,
-          sourceName: source.name,
-          totalExceptions: source.total,
-          resolvedRate: Number(resolvedRate.toFixed(4)),
-          trustScore: Math.round(resolvedRate * 100),
-          basis: ["review_resolution_rate", `sample_size=${source.total}`],
+          tenantId,
+          generatedAt: new Date().toISOString(),
+          lookbackDays,
+          degraded,
+          degradedReasons: degraded ? ["no_exception_history_in_scope"] : [],
+          clusters: recurring.sort((a, b) => b.volume - a.volume).slice(0, 50),
+          sourceTrustSignals: Array.from(sources.entries()).map(([sourceId, source]) => {
+            const resolvedRate = source.total ? source.resolved / source.total : 0;
+            return {
+              sourceId,
+              sourceName: source.name,
+              totalExceptions: source.total,
+              resolvedRate: Number(resolvedRate.toFixed(4)),
+              trustScore: Math.round(resolvedRate * 100),
+              basis: ["review_resolution_rate", `sample_size=${source.total}`],
+            };
+          }),
+          counterparties: Array.from(counterparties.entries())
+            .map(([counterpartyKey, cp]) => ({
+              counterpartyKey,
+              displayName: cp.name,
+              exceptionCount: cp.count,
+              supportLevel: (cp.count >= 5 ? "strong" : cp.count >= 2 ? "partial" : "none") as
+                | "none"
+                | "partial"
+                | "strong",
+            }))
+            .sort((a, b) => b.exceptionCount - a.exceptionCount)
+            .slice(0, 50),
         };
-      }),
-      counterparties: Array.from(counterparties.entries())
-        .map(([counterpartyKey, cp]) => ({
-          counterpartyKey,
-          displayName: cp.name,
-          exceptionCount: cp.count,
-          supportLevel: (cp.count >= 5 ? "strong" : cp.count >= 2 ? "partial" : "none") as
-            | "none"
-            | "partial"
-            | "strong",
-        }))
-        .sort((a, b) => b.exceptionCount - a.exceptionCount)
-        .slice(0, 50),
-    };
+      }
+    );
   }
 
   async generatePolicyEvolutionProposals(
