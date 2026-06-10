@@ -8,8 +8,8 @@ async function run() {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - 90);
 
-    // Prune raw ingestion payloads older than 90 days to save DB storage costs
-    const { count } = await prisma.rawIngestionPayload.deleteMany({
+    // Prune raw records older than 90 days to save DB storage costs
+    const { count } = await prisma.rawRecord.deleteMany({
       where: {
         createdAt: {
           lt: cutoffDate,
@@ -17,7 +17,7 @@ async function run() {
       },
     });
 
-    logInfo(`Successfully pruned ${count} old ingestion payloads.`);
+    logInfo(`Successfully pruned ${count} old raw records.`);
   } catch (error) {
     logError("Data pruning job failed", error);
     process.exit(1);
