@@ -17,12 +17,17 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.69",
     "@prisma/client": "7.8.0",
     "@settler/types": "workspace:*",
+    "ai": "^6.0.199",
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "typescript": "^5.9.3"
+    "@vitest/coverage-v8": "^4.1.8",
+    "typescript": "^5.9.3",
+    "vite": "^8.0.16",
+    "vitest": "^4.1.8"
   },
   "license": "PROPRIETARY",
   "private": true

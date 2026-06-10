@@ -12,13 +12,17 @@
     "build": "node ../../scripts/run-package-tsc-build.mjs"
   },
   "dependencies": {
-    "@jobforge/errors": "workspace:*"
+    "@ai-sdk/openai": "^3.0.69",
+    "@jobforge/errors": "workspace:*",
+    "ai": "^6.0.199"
   },
   "devDependencies": {
     "@jobforge/typescript-config": "workspace:*",
     "@types/node": "^20.19.41",
+    "@vitest/coverage-v8": "^4.1.8",
     "eslint": "^9.39.4",
     "typescript": "^5.9.3",
+    "vite": "^8.0.16",
     "vitest": "^4.1.8"
   }
 }

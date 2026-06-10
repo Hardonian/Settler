@@ -25,7 +25,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.69",
     "@types/node": "^24.12.4",
+    "ai": "^6.0.199",
     "typescript": "^5.9.3",
     "uuid": "^13.0.2"
   },
@@ -34,12 +36,15 @@
     "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^8.59.4",
     "@typescript-eslint/parser": "^8.59.4",
+    "@vitest/coverage-v8": "^4.1.8",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
     "jest": "^30.4.2",
     "prettier": "^3.8.3",
     "ts-jest": "^29.4.11",
-    "tsx": "^4.22.3"
+    "tsx": "^4.22.3",
+    "vite": "^8.0.16",
+    "vitest": "^4.1.8"
   },
   "keywords": [
     "edge-ai",

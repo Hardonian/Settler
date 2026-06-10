@@ -101,6 +101,7 @@
     "tb:status": "docker-compose ps tigerbeetle && docker-compose exec -T tigerbeetle nc -z localhost 4300 && echo 'TigerBeetle is healthy' || echo 'TigerBeetle is not responding'"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.69",
     "@opentelemetry/api": "^1.9.1",
     "@opentelemetry/auto-instrumentations-node": "^0.76.0",
     "@opentelemetry/exporter-metrics-otlp-http": "^0.218.0",
@@ -120,6 +121,7 @@
     "@settler/types": "workspace:*",
     "@supabase/supabase-js": "^2.106.1",
     "@upstash/redis": "^1.38.0",
+    "ai": "^6.0.199",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
     "async-mutex": "^0.5.0",
@@ -174,6 +176,7 @@
     "@types/xml2js": "^0.4.14",
     "@typescript-eslint/eslint-plugin": "^8.59.4",
     "@typescript-eslint/parser": "^8.59.4",
+    "@vitest/coverage-v8": "^4.1.8",
     "artillery": "^2.0.32",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
@@ -183,7 +186,9 @@
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.11",
     "tsx": "^4.22.3",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vite": "^8.0.16",
+    "vitest": "^4.1.8"
   },
   "engines": {
     "node": ">=24.0.0 <25.0.0"
