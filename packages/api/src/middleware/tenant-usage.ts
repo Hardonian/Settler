@@ -1,12 +1,13 @@
-import { Request, Response, NextFunction } from "express";
-import { query } from "../db";
+import { Response, NextFunction } from "express";
+import { queryWithTenant } from "../db";
 import { logWarn, logError } from "../utils/logger";
+import { AuthRequest } from "./auth";
 
 /**
  * Middleware to enforce tenant usage limits based on their billing tier
  */
 export const enforceUsageLimits = () => {
-  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  return async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
       const tenantId = req.tenantId;
       if (!tenantId) {
@@ -15,17 +16,25 @@ export const enforceUsageLimits = () => {
       }
 
       // Check current usage vs limit
-      const { rows } = await query(
+      const rows = await queryWithTenant<{
+        tier: string;
+        current_usage: number;
+        usage_limit: number;
+        status: string;
+      }>(
+        tenantId,
         `SELECT tier, current_usage, usage_limit, status 
          FROM tenant_billing 
          WHERE tenant_id = $1`,
         [tenantId]
       );
 
+      const firstRow = rows[0];
+
       // Default free tier fallback if no record exists
-      const currentUsage = rows.length > 0 ? parseInt(rows[0].current_usage, 10) : 0;
-      const limit = rows.length > 0 ? parseInt(rows[0].usage_limit, 10) : 1000;
-      const status = rows.length > 0 ? rows[0].status : "active";
+      const currentUsage = firstRow ? Number(firstRow.current_usage) : 0;
+      const limit = firstRow ? Number(firstRow.usage_limit) : 1000;
+      const status = firstRow ? firstRow.status : "active";
 
       if (status !== "active") {
         logWarn("Blocked access for inactive subscription", { tenantId });

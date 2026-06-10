@@ -1,71 +1,96 @@
-import { Router } from "express";
-import { query } from "../../db";
+import { Router, Response } from "express";
+import { queryWithTenant } from "../../db";
 import { logInfo, logError } from "../../utils/logger";
-import { requireAuth } from "../../middleware/auth";
+import { authMiddleware, AuthRequest } from "../../middleware/auth";
 import { idempotencyMiddleware } from "../../middleware/idempotency";
 
 export const billingRouter = Router();
 
 // Retrieve current subscription status
-billingRouter.get("/status", requireAuth, async (req, res) => {
-  try {
-    const tenantId = req.tenantId;
-    if (!tenantId) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
+billingRouter.get(
+  "/status",
+  authMiddleware,
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const tenantId = req.tenantId;
+      if (!tenantId) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
+      }
 
-    const { rows } = await query(
-      `SELECT tier, current_usage, usage_limit, stripe_subscription_id, status 
+      const rows = await queryWithTenant<{
+        tier: string;
+        current_usage: number;
+        usage_limit: number;
+        stripe_subscription_id: string;
+        status: string;
+      }>(
+        tenantId,
+        `SELECT tier, current_usage, usage_limit, stripe_subscription_id, status 
        FROM tenant_billing 
        WHERE tenant_id = $1`,
-      [tenantId]
-    );
+        [tenantId]
+      );
 
-    if (rows.length === 0) {
-      // Default to free tier
-      return res.json({
-        tier: "free",
-        currentUsage: 0,
-        usageLimit: 1000,
-        status: "active",
+      const firstRow = rows[0];
+
+      if (!firstRow) {
+        // Default to free tier
+        res.json({
+          tier: "free",
+          currentUsage: 0,
+          usageLimit: 1000,
+          status: "active",
+        });
+        return;
+      }
+
+      res.json({
+        tier: firstRow.tier,
+        currentUsage: Number(firstRow.current_usage),
+        usageLimit: Number(firstRow.usage_limit) === -1 ? Infinity : Number(firstRow.usage_limit),
+        status: firstRow.status,
       });
+    } catch (error) {
+      logError("Failed to fetch billing status", error);
+      res.status(500).json({ error: "Internal server error" });
     }
-
-    res.json({
-      tier: rows[0].tier,
-      currentUsage: parseInt(rows[0].current_usage, 10),
-      usageLimit: rows[0].usage_limit === -1 ? Infinity : parseInt(rows[0].usage_limit, 10),
-      status: rows[0].status,
-    });
-  } catch (error) {
-    logError("Failed to fetch billing status", error);
-    res.status(500).json({ error: "Internal server error" });
   }
-});
+);
 
 // Create Stripe Checkout Session
-billingRouter.post("/checkout", requireAuth, idempotencyMiddleware(), async (req, res) => {
-  try {
-    const tenantId = req.tenantId;
-    const { tier } = req.body;
+billingRouter.post(
+  "/checkout",
+  authMiddleware,
+  idempotencyMiddleware(),
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const tenantId = req.tenantId;
+      if (!tenantId) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
+      }
 
-    logInfo("Creating checkout session", { tenantId, tier });
+      const { tier } = req.body;
 
-    // In a real implementation, we would call Stripe SDK here:
-    // const session = await stripe.checkout.sessions.create({...})
+      logInfo("Creating checkout session", { tenantId, tier });
 
-    // For now, mock a checkout URL
-    res.json({
-      url: `https://checkout.stripe.com/pay/cs_test_mock_${Date.now()}`,
-    });
-  } catch (error) {
-    logError("Failed to create checkout session", error);
-    res.status(500).json({ error: "Internal server error" });
+      // In a real implementation, we would call Stripe SDK here:
+      // const session = await stripe.checkout.sessions.create({...})
+
+      // For now, mock a checkout URL
+      res.json({
+        url: `https://checkout.stripe.com/pay/cs_test_mock_${Date.now()}`,
+      });
+    } catch (error) {
+      logError("Failed to create checkout session", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
   }
-});
+);
 
-// Stripe Webhook Endpoint (No requireAuth since Stripe calls this)
-billingRouter.post("/webhook", async (req, res) => {
+// Stripe Webhook Endpoint (No authMiddleware since Stripe calls this)
+billingRouter.post("/webhook", async (req: AuthRequest, res: Response): Promise<void> => {
   const sig = req.headers["stripe-signature"];
 
   try {
