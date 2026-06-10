@@ -54,10 +54,21 @@ describe("Input Validation Security Tests", () => {
   describe("Input Size Limits", () => {
     it("should reject oversized request bodies", async () => {
       const largeBody = "x".repeat(2 * 1024 * 1024); // 2MB
-      const response = await request(app).post("/api/v1/jobs").send({ data: largeBody });
-
-      // Should reject due to size limit (1MB)
-      expect([400, 401, 403, 413]).toContain(response.status);
+      try {
+        const response = await request(app).post("/api/v1/jobs").send({ data: largeBody });
+        // Should reject due to size limit (1MB)
+        expect([400, 401, 403, 413]).toContain(response.status);
+      } catch (err: any) {
+        // On Windows, when the server rejects a request early due to size limit,
+        // the socket connection may be reset (ECONNRESET/EPIPE).
+        // This is a valid way of rejecting the oversized body.
+        const isConnectionReset =
+          err.code === "ECONNRESET" ||
+          err.code === "EPIPE" ||
+          err.message?.includes("ECONNRESET") ||
+          err.message?.includes("EPIPE");
+        expect(isConnectionReset).toBe(true);
+      }
     });
   });
 

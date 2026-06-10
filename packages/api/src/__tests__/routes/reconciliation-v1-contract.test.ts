@@ -31,9 +31,15 @@ jest.mock("@settler/reconciliation-core", () => {
   };
 });
 
-jest.mock("../../db", () => ({
-  query: jest.fn(),
-}));
+jest.mock("../../db", () => {
+  const queryMock = jest.fn();
+  return {
+    query: queryMock,
+    queryWithTenant: jest.fn((tenantId: string, text: string, params?: any[]) =>
+      queryMock(text, params)
+    ),
+  };
+});
 
 jest.mock("../../utils/logger", () => ({
   logError: jest.fn(),

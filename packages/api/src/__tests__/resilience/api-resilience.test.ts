@@ -1,8 +1,10 @@
+jest.mock("ioredis", () => require("ioredis-mock"));
+
 import express from "express";
 import request from "supertest";
 import { apiGatewayCache } from "../../middleware/api-gateway-cache";
 import { idempotencyMiddleware } from "../../middleware/idempotency";
-import { checkRateLimit } from "../../utils/rate-limiter";
+import { checkRateLimit, rateLimiter } from "../../utils/rate-limiter";
 import { MAX_PAGE_LIMIT, parseCursorPaginationParams, encodeCursor } from "../../utils/pagination";
 import webhookReceiveRouter from "../../routes/v1/webhooks/receive";
 import { WebhookIngestionService } from "../../application/webhooks/WebhookIngestionService";
@@ -123,6 +125,8 @@ describe("API resilience primitives", () => {
   });
 
   it("enforces tenant-scoped rate limiting and isolation", async () => {
+    jest.spyOn(rateLimiter, "getLimitForRequest").mockReturnValue({ limit: 2, windowSeconds: 60 });
+
     const baseReq = {
       method: "GET",
       path: "/v1/jobs",

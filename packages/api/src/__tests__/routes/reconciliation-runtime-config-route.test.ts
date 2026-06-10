@@ -51,6 +51,11 @@ jest.mock("../../utils/logger", () => ({
   logWarn: jest.fn(),
 }));
 
+jest.mock("../../db", () => ({
+  query: jest.fn(),
+  queryWithTenant: jest.fn(),
+}));
+
 describe("reconciliation runtime config route", () => {
   let app: Express;
 

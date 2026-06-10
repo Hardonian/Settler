@@ -11,6 +11,7 @@ import { authMiddleware } from "../../middleware/auth";
 const mockQuery = jest.fn();
 jest.mock("../../db", () => ({
   query: (...args: any[]) => mockQuery(...args),
+  queryWithTenant: (tenantId: string, ...args: any[]) => mockQuery(...args),
 }));
 
 // Mock auth middleware

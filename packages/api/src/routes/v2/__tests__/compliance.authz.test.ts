@@ -24,7 +24,9 @@ jest.mock("../../../services/compliance/export-system", () => ({
     createExport: (tenantId: string, jurisdiction: unknown, format: unknown) =>
       createExportMock(tenantId, jurisdiction, format),
     listExports: jest.fn(() => []),
+    listExportsFromDb: jest.fn(() => []),
     getExport: (id: string) => getExportMock(id),
+    getExportFromDb: (id: string, tenantId: string) => getExportMock(id),
     getTemplates: jest.fn(() => []),
   },
 }));
