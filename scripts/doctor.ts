@@ -906,19 +906,21 @@ async function main() {
   checkBuild();
 
   // Output results
+  let output;
   if (JSON_OUTPUT) {
-    printJsonOutput(results);
+    output = generateOutput(results);
+    console.log(JSON.stringify(output, null, 2));
   } else {
-    const output = printHumanReadable(results);
+    output = printHumanReadable(results);
+  }
 
-    // Exit with appropriate code
-    if (output.status === "fail") {
-      process.exit(1);
-    } else if (output.status === "warn") {
-      process.exit(2);
-    } else {
-      process.exit(0);
-    }
+  // Exit with appropriate code
+  if (output.status === "fail") {
+    process.exit(1);
+  } else if (output.status === "warn") {
+    process.exit(2);
+  } else {
+    process.exit(0);
   }
 }
 

@@ -255,7 +255,7 @@ export default function RunPage() {
           >
             <Activity className={`w-4 h-4 mr-2 ${autoRefresh ? "animate-pulse" : ""}`} />
             {autoRefresh ? "Auto-Refresh Active" : "Auto-Refresh Paused"}
-          </FreezeBlockedButton>
+          </Button>
           <FreezeBlockedButton
             variant="outline"
             disabled={!run.isTerminal || exporting}
@@ -270,7 +270,7 @@ export default function RunPage() {
               <FileDown className="w-4 h-4 mr-2" />
             )}
             {exporting ? "Exporting…" : "Export results"}
-          </Button>
+          </FreezeBlockedButton>
           <FreezeBlockedButton
             className="bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20"
             disabled={!run.isTerminal}

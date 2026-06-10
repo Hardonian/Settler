@@ -1101,6 +1101,16 @@ async function seedDatabase(dataset: ReturnType<typeof generateDemoDataset>, res
     );
     console.log(`   ✓ Audit logs: ${dataset.auditLogs.length}`);
 
+    // Verification step
+    const tenantCheck = await prisma.tenant.findUnique({ where: { slug: DEMO_TENANT_SLUG } });
+    if (!tenantCheck) {
+      throw new Error("Verification failed: Demo tenant not found in database.");
+    }
+    const matchCountCheck = await prisma.reconciliationMatch.count({
+      where: { tenantId: DEMO_TENANT_ID },
+    });
+    console.log(`   ✓ Verification: ${matchCountCheck} matches confirmed in database`);
+
     await prisma.$disconnect();
     return true;
   } catch (err) {
