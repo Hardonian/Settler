@@ -107,7 +107,7 @@ class ReconciliationMigrationGenerator {
     for (const issue of issues) {
       const tableName = issue.component.replace("table.", "");
       this.migrationSQL.push(`-- Missing table: ${tableName}`);
-      this.migrationSQL.push(`-- TODO: Create table ${tableName} from golden schema`);
+      this.migrationSQL.push(`-- ACTION REQUIRED: Create table ${tableName} from golden schema`);
     }
 
     this.migrationSQL.push("");
@@ -164,7 +164,9 @@ class ReconciliationMigrationGenerator {
         const constraintType = parts[2];
 
         this.migrationSQL.push(`-- Missing ${constraintType} on ${table}`);
-        this.migrationSQL.push(`-- TODO: Add ${constraintType} constraint - review golden schema`);
+        this.migrationSQL.push(
+          `-- ACTION REQUIRED: Add ${constraintType} constraint - review golden schema`
+        );
       }
     }
 
@@ -193,7 +195,7 @@ class ReconciliationMigrationGenerator {
           this.migrationSQL.push(`ALTER TABLE ${fullTable} ENABLE ROW LEVEL SECURITY;`);
         } else if (issue.message.includes("no policies found")) {
           this.migrationSQL.push(`-- RLS enabled but no policies on ${fullTable}`);
-          this.migrationSQL.push(`-- TODO: Add RLS policies - review golden schema`);
+          this.migrationSQL.push(`-- ACTION REQUIRED: Add RLS policies - review golden schema`);
         }
       }
     }
@@ -211,7 +213,9 @@ class ReconciliationMigrationGenerator {
     this.migrationSQL.push(
       "-- ============================================================================"
     );
-    this.migrationSQL.push("-- NOTE: Functions are automatically extracted from previous migrations.\n");
+    this.migrationSQL.push(
+      "-- NOTE: Functions are automatically extracted from previous migrations.\n"
+    );
 
     for (const issue of issues) {
       const funcName = issue.component.replace("function.", "");
@@ -222,7 +226,9 @@ class ReconciliationMigrationGenerator {
         this.migrationSQL.push(sql);
       } else {
         this.migrationSQL.push(`-- Missing function: ${funcName}`);
-        this.migrationSQL.push(`-- TODO: Create function ${funcName} (definition not found in migrations)`);
+        this.migrationSQL.push(
+          `-- ACTION REQUIRED: Create function ${funcName} (definition not found in migrations)`
+        );
       }
     }
 
@@ -251,31 +257,27 @@ class ReconciliationMigrationGenerator {
       // the body content up to the matching dollar quote marker, and the final semicolon.
       const dollarQuoteRegex = new RegExp(
         `(${startPattern}[\\s\\S]*?AS\\s+(\\$\\w*\\$)[\\s\\S]*?\\2[\\s\\S]*?;)`,
-        'i'
+        "i"
       );
 
       let match = content.match(dollarQuoteRegex);
       if (match) {
-        return match[1].trim() + '\n';
+        return match[1].trim() + "\n";
       }
 
       // If it doesn't use dollar quotes (e.g., standard SQL functions returning values directly
       // or using single quotes which is rare but possible), we'll do a fallback greedy match
       // up to the LANGUAGE declaration and semicolon, assuming no internal dollar quotes.
-      const simpleRegex = new RegExp(
-        `(${startPattern}[\\s\\S]*?LANGUAGE\\s+\\w+[\\s\\S]*?;)`,
-        'i'
-      );
+      const simpleRegex = new RegExp(`(${startPattern}[\\s\\S]*?LANGUAGE\\s+\\w+[\\s\\S]*?;)`, "i");
 
       match = content.match(simpleRegex);
       if (match) {
-        return match[1].trim() + '\n';
+        return match[1].trim() + "\n";
       }
     }
 
     return null;
   }
-
 }
 
 async function main() {
