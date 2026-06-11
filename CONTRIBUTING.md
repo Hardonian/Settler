@@ -110,3 +110,5 @@ pnpm run verify:security:fast
 - Include evidence for behavior changes
 - Call out tenant and security assumption changes explicitly
 - All PRs must pass the full `pnpm verify` suite
+- **No AI Slop**: Reject any code or copy containing AI-generated filler, chatty comments, or generic placeholders.
+- **Enterprise-Grade & Seed-Ready**: Architecture must be pragmatic, cost-effective (scale-to-zero friendly), and professional. Avoid over-engineering.

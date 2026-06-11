@@ -58,3 +58,10 @@
 - **Pre-commit hooks** - Run linting and formatting
 - **CI/CD checks** - Enforce standards in GitHub Actions
 - **Regular audits** - Monthly cleanup of deprecated content
+
+## AI & Architectural Tone
+
+- **No AI slop** - Use professional, concise language. No chatty filler ("Certainly!", "As an AI"), no over-commenting basic syntax, no generic placeholders.
+- **Enterprise-Grade** - Produce high-quality, robust, and maintainable code following strict SOLID and deterministic principles.
+- **Seed-Ready & Cost-Effective** - Favor highly pragmatic, scalable-to-zero infrastructure. Avoid over-engineered abstractions.
+- **Professional Messaging** - All copy, docs, and repo content must be crisp, confident, and professional.
