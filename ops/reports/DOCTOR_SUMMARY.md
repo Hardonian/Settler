@@ -1,7 +1,7 @@
 # Ops Doctor Summary
 
-**Generated:** 2026-06-10, 12:33:54 p.m.
-**Total Duration:** 199.7s
+**Generated:** 2026-06-10, 9:01:16 p.m.
+**Total Duration:** 171.0s
 
 ---
 
@@ -22,7 +22,7 @@
 
 - **Status:** PASS
 - **Message:** Check passed
-- **Duration:** 8790ms
+- **Duration:** 8010ms
 
 **Logs:**
 
@@ -45,17 +45,16 @@
    • Running lint in 25 packages
    • Remote caching disabled
 
-@settler/sdk:lint: cache hit, replaying logs 1a5e921d05cd5cbb
-@settler/edge-node:lint: cache hit, replaying logs 6379bab61f589e81
-@settler/sdk:lint:
-@se
+@jobforge/fetch:lint: cache hit, replaying logs 991add7c54f8769e
+@settler/edge-ai-core:lint: cache hit, replaying logs f3857004e1d092ac
+@jobforge/fetch:l
 ```
 
 ### ✅ Typecheck
 
 - **Status:** PASS
 - **Message:** Check passed
-- **Duration:** 40445ms
+- **Duration:** 36471ms
 
 **Logs:**
 
@@ -78,8 +77,9 @@
    • Running typecheck in 25 packages
    • Remote caching disabled
 
-@settler/logger:build: cache hit, replaying logs 1dd31f86e3286e58
-@settler/edge-ai-core:typecheck: cache hit, replaying logs 131e002d
+@settler/protocol:typecheck: cache hit, replaying logs 94a9635335166475
+@settler/protocol:typecheck:
+@settler/protocol:typecheck: >
 ```
 
 ### ✅ Route Registry
@@ -94,7 +94,7 @@
   npm warn Unknown env config "allowed-deprecated-versions". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
   npm warn Unknown env config "overrides". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
   npm warn Unknown env config "patched-dependencies". This will stop working in the next major version of npm. See `npm help npmrc` for supported config
-- **Duration:** 1425ms
+- **Duration:** 1434ms
 
 **Logs:**
 
