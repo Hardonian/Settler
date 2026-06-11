@@ -1,5 +1,4 @@
 import { Resend } from "resend";
-import { z } from "zod";
 
 const resend = new Resend(process.env.RESEND_API_KEY || "re_dummy");
 
@@ -56,8 +55,8 @@ export async function sendTrialWelcomeEmail(user: LifecycleUser, trialData: Tria
 
 export async function sendTrialValueEmail(
   user: LifecycleUser,
-  trialData: TrialData,
-  reconciliationData: any
+  _trialData: TrialData,
+  _reconciliationData: any
 ) {
   const html = `
     <h1>Hi ${user.firstName || "there"}, see the value of Settler!</h1>
@@ -66,7 +65,7 @@ export async function sendTrialValueEmail(
   return sendEmail(user.email, "Get the most out of your Settler Trial", html);
 }
 
-export async function sendTrialGatedFeaturesEmail(user: LifecycleUser, trialData: TrialData) {
+export async function sendTrialGatedFeaturesEmail(user: LifecycleUser, _trialData: TrialData) {
   const html = `
     <h1>Unlock Premium Features</h1>
     <p>Upgrade to access advanced reconciliation features!</p>
@@ -76,8 +75,8 @@ export async function sendTrialGatedFeaturesEmail(user: LifecycleUser, trialData
 
 export async function sendTrialCaseStudyEmail(
   user: LifecycleUser,
-  trialData: TrialData,
-  caseStudy: any
+  _trialData: TrialData,
+  _caseStudy: any
 ) {
   const html = `
     <h1>See how others succeed with Settler</h1>
@@ -86,7 +85,7 @@ export async function sendTrialCaseStudyEmail(
   return sendEmail(user.email, "Customer Success with Settler", html);
 }
 
-export async function sendTrialComparisonEmail(user: LifecycleUser, trialData: TrialData) {
+export async function sendTrialComparisonEmail(user: LifecycleUser, _trialData: TrialData) {
   const html = `
     <h1>Settler vs Spreadsheets</h1>
     <p>Why automated reconciliation wins every time.</p>
@@ -97,7 +96,7 @@ export async function sendTrialComparisonEmail(user: LifecycleUser, trialData: T
 export async function sendTrialUrgencyEmail(
   user: LifecycleUser,
   trialData: TrialData,
-  day: 27 | 28 | 29
+  _day: 27 | 28 | 29
 ) {
   const html = `
     <h1>Your trial is ending soon!</h1>
@@ -122,7 +121,7 @@ export async function sendPaidWelcomeEmail(user: LifecycleUser) {
   return sendEmail(user.email, "Welcome to Settler Premium", html);
 }
 
-export async function sendMonthlySummaryEmail(user: LifecycleUser, metrics: any) {
+export async function sendMonthlySummaryEmail(user: LifecycleUser, _metrics: any) {
   const html = `
     <h1>Your Monthly Summary</h1>
     <p>Here is your reconciliation summary for the month.</p>

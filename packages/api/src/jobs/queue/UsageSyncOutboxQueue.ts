@@ -1,10 +1,5 @@
-import {
-  PrioritizedQueue,
-  QueueJobData,
-  QueuePriority,
-} from "../../infrastructure/queue/PrioritizedQueue";
+import { PrioritizedQueue, QueueJobData } from "../../infrastructure/queue/PrioritizedQueue";
 import { logInfo, logError } from "../../utils/logger";
-import { TenantTier } from "../../domain/entities/Tenant";
 
 export interface UsageSyncJobData extends QueueJobData {
   billingAccountId: string;

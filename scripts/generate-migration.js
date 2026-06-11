@@ -29,5 +29,5 @@ tablesToDrop.forEach((t) => {
 const migrationPath = `supabase/migrations/${timestamp}_drop_unused_tables.sql`;
 fs.writeFileSync(migrationPath, sql);
 
-console.log("Created migration:", migrationPath);
-console.log("Tables to drop:", tablesToDrop.join(", "));
+console.info("Created migration:", migrationPath);
+console.info("Tables to drop:", tablesToDrop.join(", "));

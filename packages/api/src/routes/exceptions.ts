@@ -167,6 +167,18 @@ const bulkStatusSchema = z.object({
   }),
 });
 
+const getExceptionSchema = z.object({
+  params: z.object({
+    id: z.string().uuid(),
+  }),
+});
+
+const statsSchema = z.object({
+  query: z.object({
+    jobId: z.string().uuid().optional(),
+  }),
+});
+
 // ─── Helper Functions ─────────────────────────────────────────────────────────
 
 function appendAdjudicationHistory(
@@ -344,6 +356,7 @@ router.get(
 router.get(
   "/exceptions/stats",
   requirePermission(Permission.REPORTS_READ),
+  validateRequest(statsSchema),
   async (req: ExceptionRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
@@ -407,6 +420,7 @@ router.get(
 router.get(
   "/exceptions/:id",
   requirePermission(Permission.REPORTS_READ),
+  validateRequest(getExceptionSchema),
   async (req: ExceptionRequest, res: Response) => {
     try {
       const idParam = req.params["id"];

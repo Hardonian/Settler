@@ -13,10 +13,6 @@ import { TenantTier } from "../domain/entities/Tenant";
 import { QueuePriority } from "../infrastructure/queue/PrioritizedQueue";
 
 const SYNC_FUNCTION_PATH = "/functions/v1/sync-usage-to-stripe";
-const DEFAULT_EDGE_TIMEOUT_MS = 15_000;
-const DEFAULT_EDGE_MAX_ATTEMPTS = 3;
-const DEFAULT_EDGE_BASE_DELAY_MS = 500;
-const DEFAULT_SYNC_CONCURRENCY = 5;
 
 function getRequiredSecureEnv(name: "SUPABASE_URL" | "SUPABASE_SERVICE_ROLE_KEY"): string {
   const value = process.env[name];
@@ -27,35 +23,6 @@ function getRequiredSecureEnv(name: "SUPABASE_URL" | "SUPABASE_SERVICE_ROLE_KEY"
     throw new Error("SUPABASE_URL must use https:// for secure service-role transit");
   }
   return value;
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function parseRetryAfterMs(response: Response): number | null {
-  const retryAfter = response.headers.get("retry-after");
-  if (!retryAfter) {
-    return null;
-  }
-
-  const seconds = Number(retryAfter);
-  if (Number.isFinite(seconds) && seconds >= 0) {
-    return seconds * 1000;
-  }
-
-  const dateMs = Date.parse(retryAfter);
-  if (!Number.isNaN(dateMs)) {
-    return Math.max(0, dateMs - Date.now());
-  }
-
-  return null;
-}
-
-function computeBackoffMs(attempt: number, baseDelayMs: number): number {
-  const exponential = baseDelayMs * Math.pow(2, Math.max(0, attempt - 1));
-  const jitter = Math.floor(Math.random() * Math.min(250, baseDelayMs));
-  return exponential + jitter;
 }
 
 /**
@@ -132,7 +99,6 @@ export async function syncUsageToStripe(
 
     let syncedCount = 0;
     let skippedCount = 0;
-    let failedCount = 0;
 
     const eligibleAccounts = [];
 

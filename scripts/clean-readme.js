@@ -19,4 +19,4 @@ content = content.replace(/\benables\b/g, "allows");
 content = content.replace(/\bEnables\b/g, "Allows");
 
 fs.writeFileSync(readmePath, content);
-console.log("Cleaned README.md pipe dreams");
+console.info("Cleaned README.md pipe dreams");

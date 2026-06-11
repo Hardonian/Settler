@@ -144,11 +144,11 @@ function findPipeDreamSignals(): PipeDreamSignal[] {
 }
 
 function main() {
-  console.log("🔍 Searching for pipe dream signals...");
+  console.info("🔍 Searching for pipe dream signals...");
 
   const signals = findPipeDreamSignals();
 
-  console.log(`\n📊 Found ${signals.length} pipe dream signals\n`);
+  console.info(`\n📊 Found ${signals.length} pipe dream signals\n`);
 
   // Group by type
   const byType = signals.reduce(
@@ -161,11 +161,11 @@ function main() {
   );
 
   for (const [type, typeSignals] of Object.entries(byType)) {
-    console.log(`\n${type.toUpperCase().replace(/_/g, " ")} (${typeSignals.length}):`);
+    console.info(`\n${type.toUpperCase().replace(/_/g, " ")} (${typeSignals.length}):`);
     typeSignals.forEach((s) => {
       const icon = s.severity === "high" ? "🔴" : s.severity === "medium" ? "🟡" : "🟢";
-      console.log(`  ${icon} ${s.description}`);
-      console.log(`     Location: ${s.location}`);
+      console.info(`  ${icon} ${s.description}`);
+      console.info(`     Location: ${s.location}`);
     });
   }
 
@@ -173,10 +173,10 @@ function main() {
   const reportPath = path.join(__dirname, "..", "supabase", "pipe-dream-signals.json");
   fs.writeFileSync(reportPath, JSON.stringify({ signals, summary: byType }, null, 2));
 
-  console.log(`\n✅ Pipe dream signal detection complete. Report: ${reportPath}`);
+  console.info(`\n✅ Pipe dream signal detection complete. Report: ${reportPath}`);
 
   if (signals.filter((s) => s.severity === "high").length > 0) {
-    console.log("\n⚠️  High severity signals found - these should be addressed");
+    console.warn("\n⚠️  High severity signals found - these should be addressed");
     process.exit(1);
   }
 }

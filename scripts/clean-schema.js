@@ -24,4 +24,4 @@ schemaData.tables = schemaData.tables.filter((t) => {
 });
 
 fs.writeFileSync(schemaPath, JSON.stringify(schemaData, null, 2));
-console.log("Removed", tablesToDrop.length, "tables from production-schema.json");
+console.info("Removed", tablesToDrop.length, "tables from production-schema.json");
