@@ -34,7 +34,7 @@ Security vulnerabilities must be reported privately. See [SECURITY.md](SECURITY.
 ### Build fails after install
 
 ```bash
-# Verify Node.js version (22+ required)
+# Verify Node.js version (24+ required)
 node --version
 
 # Verify pnpm version (10.13.1+ required)
