@@ -4,7 +4,6 @@ import { promisify } from "util";
 import Redis from "ioredis";
 import { config } from "../../config";
 import { logInfo, logError } from "../../utils/logger";
-import path from "path";
 
 const execAsync = promisify(exec);
 

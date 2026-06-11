@@ -41,7 +41,7 @@ See [Intentional Boundaries](docs/getting-started/INTENTIONAL_BOUNDARIES.md) for
 
 Settler is composed of five primary layers with a strict separation of concerns:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │  Console Surface  (packages/web — Next.js App Router)   │
 │  Operator dashboard, exception review, evidence export  │
@@ -73,7 +73,7 @@ Minimal path to a working console:
 
 ```bash
 git clone https://github.com/settler/settler.git
-cd settler
+# cd into the cloned directory, then:
 pnpm run bootstrap     # creates .env.local, installs deps, validates contract
 pnpm tb:start          # starts TigerBeetle + PostgreSQL + Redis
 pnpm dev               # http://localhost:3000 (console), http://localhost:4000 (API)

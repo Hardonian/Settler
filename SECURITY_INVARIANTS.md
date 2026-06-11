@@ -117,11 +117,11 @@ cross-tenant transaction matching.
 
 ```bash
 # Run isolation tests (unit — no DB required)
-npx jest --testPathPattern=tenant-isolation-enforced
+pnpm --filter @settler/api exec jest --testPathPattern=tenant-isolation-enforced
 
 # Run full RLS tests (requires database)
-RUN_DB_TESTS=true npx jest --testPathPattern=tenant-isolation
+RUN_DB_TESTS=true pnpm --filter @settler/api exec jest --testPathPattern=tenant-isolation
 
 # Build — TypeScript will catch any caller that omits tenantId
-npm run build
+pnpm run build
 ```
