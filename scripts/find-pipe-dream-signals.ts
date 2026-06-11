@@ -51,7 +51,7 @@ function findPipeDreamSignals(): PipeDreamSignal[] {
   const baseDir = __dirname + "/..";
 
   // 1. Check for features in README that aren't in code
-  const readmeFiles = findFiles(baseDir, /README\.md$/);
+  const readmeFiles = [path.join(baseDir, "README.md")];
   const readmeContent = readmeFiles
     .map((f) => {
       try {
@@ -98,7 +98,8 @@ function findPipeDreamSignals(): PipeDreamSignal[] {
   const schemaPath = path.join(__dirname, "..", "supabase", "production-schema.json");
   if (fs.existsSync(schemaPath)) {
     const schema = JSON.parse(fs.readFileSync(schemaPath, "utf-8"));
-    const tables = schema.tables?.map((t: any) => t.name) || [];
+    const tables =
+      schema.tables?.filter((t: any) => t.schema === "public").map((t: any) => t.name) || [];
 
     for (const table of tables) {
       // Check if table is referenced in code

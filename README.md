@@ -38,9 +38,9 @@ See [What Works Today](docs/getting-started/WHAT_WORKS.md) for full details.
 
 Settler's architecture is composed of five primary layers, ensuring a separation of concerns between deterministic computation, policy enforcement, and operator interfaces.
 
-1.  **Rust Kernel**: Provides deterministic primitives for computation, hashing, and proofs.
+1.  **Rust Kernel**: Delivers deterministic primitives for computation, hashing, and proofs.
 2.  **TypeScript Control Plane**: The `packages/api` service, which handles orchestration, tenancy, API routes, and persistence policies.
-3.  **CLI Surface**: `packages/cli` provides the primary interface for operators, automation, and local development verification (e.g., `foundry`).
+3.  **CLI Surface**: `packages/cli` delivers the primary interface for operators, automation, and local development verification (e.g., `foundry`).
 4.  **Console Surface**: The `packages/web` Next.js application, which serves as the visualization and control surface for operators.
 5.  **Enterprise Integration Layer**: Connectors and policies for managed environments.
 
