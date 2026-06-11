@@ -1,37 +1,46 @@
-# Investor Overview: Settler.dev
+# Investor Overview: Settler
 
-## The Problem: The Back-Office Black Hole
+## The Problem
 
-Every scaling business eventually hits the "reconciliation wall." When processing thousands of transactions across Stripe, bank feeds, and internal databases, matching the money requires massive human capital. Companies are forced to hire armies of finance ops personnel or task expensive senior engineers with writing fragile CRON scripts to hunt for missing pennies.
+Every scaling business eventually hits the reconciliation wall. When processing thousands of transactions across payment processors, bank feeds, and internal databases, matching the money requires massive manual effort. Companies hire finance ops teams or task expensive engineers with writing fragile scripts to hunt for missing pennies.
 
-**The result?** Delayed financial reporting, failed audits, and stalled growth.
+**The result:** Delayed financial reporting, failed audits, and stalled growth.
 
-## The Solution: Settler
+## The Solution
 
-Settler is a completely autonomous, Tier-1 SaaS platform that acts as a unified financial clearinghouse.
+Settler is a deterministic reconciliation engine that replaces spreadsheet matching with an API-first platform. It ingests transaction data from multiple sources, matches them using configurable tolerance rules, flags exceptions into a structured review queue, and exports hash-linked evidence bundles — all scoped to isolated tenants and replayable from scratch.
 
-- **Deterministic Ledger Engine**: Inspired by TigerBeetle, we provide a double-entry ledger that guarantees atomic accuracy.
-- **AI-Powered AutoMapper**: A Bring-Your-Own-Key (BYOK) AI orchestrator that autonomously resolves cross-border fees, currency discrepancies, and mismatched transaction IDs without human intervention.
-- **Ecosystem Integration**: Seamlessly pulls from Stripe, pushes to QuickBooks/Xero, and alerts via Slack.
+**What makes Settler different:**
 
-## The Market Opportunity
+- **Deterministic outcomes:** Every reconciliation run produces byte-for-byte reproducible results. No probabilistic guessing.
+- **Audit-grade evidence:** Hash-linked proofpacks that auditors can verify offline — not screenshots or pivot tables.
+- **Exception intelligence:** Past adjudication decisions are preserved as institutional memory. The system learns from operator decisions over time.
+- **Tenant isolation:** Five-layer security model (middleware, TypeScript interfaces, SQL guards, PostgreSQL RLS, entity-level checks) enforced by default.
 
-The financial operations software market is currently valued at $23B, growing at 14% CAGR. Settler is attacking the core of this market by replacing service-based human capital with zero-margin software execution.
+## Architecture
 
-## The Moat: "AI as a Workforce"
+| Layer                   | Technology           | Purpose                                                               |
+| ----------------------- | -------------------- | --------------------------------------------------------------------- |
+| **Rust Kernel**         | Cargo workspace      | Deterministic primitives, cryptographic hashing, proofpack generation |
+| **Reconciliation Core** | TypeScript           | Matching engine, tolerance evaluation, evidence emission              |
+| **Control Plane**       | Express + PostgreSQL | API routes, multi-tenant orchestration, audit trails                  |
+| **Operator Console**    | Next.js App Router   | Run history, exception review, evidence export                        |
+| **Ledger**              | TigerBeetle          | Immutable double-entry financial records                              |
 
-Unlike legacy SaaS platforms that require users to click through dashboards to do the work, Settler _does the work for them_.
+## Market Opportunity
 
-- **Support Deflection AI**: Drops support overhead to near zero.
-- **Sales Hunter AI**: Continuously mines for leads, acting as an automated SDR.
-- **Reconciliation AI**: Processes exceptions in the background.
+The financial operations software market is valued at $23B and growing at 14% CAGR. Settler targets the core of this market by replacing manual reconciliation labor with deterministic software execution.
 
-By wrapping complex AI orchestration in a beautiful, Vercel-tier user interface (Command Palettes, real-time activity feeds), Settler delivers an enterprise-grade experience that can be operated entirely by a solo founder.
+## Moat
 
-## Monetization & Unit Economics
+Settler's competitive advantage compounds over time through three reinforcing loops:
 
-Settler monetizes on **Day 1**:
+1. **Decision memory:** Every operator adjudication is preserved. The longer a customer uses Settler, the more institutional knowledge is embedded in their instance — increasing switching cost.
+2. **Evidence depth:** Proofpacks accumulate run-over-run, building a verifiable audit trail that becomes the system of record for compliance.
+3. **Workflow centrality:** Once wired into a company's payment processor and accounting stack, Settler becomes the reconciliation layer — not a tool you switch, but infrastructure you depend on.
 
-- **Pricing**: $99/mo base platform fee + $0.01 per transaction processed.
-- **Unit Economics**: Cloud infrastructure and BYOK LLM architecture ensure our variable costs approach zero. We achieve software margins (>90%) on AI labor.
-- **Expansion**: "Land and expand" via ecosystem integrations. Once Settler is wired into a company's payment processor and accounting software, churn drops to near absolute zero.
+## Monetization
+
+- **Pricing:** Tiered subscription (free developer tier, growth at $99/mo + per-transaction usage, enterprise custom)
+- **Unit economics:** Infrastructure costs are fixed (PostgreSQL, TigerBeetle, Redis). Variable costs approach zero at scale.
+- **Expansion:** Land-and-expand via ecosystem integrations. Once Settler is processing transactions from a payment processor, adding new data sources is incremental.

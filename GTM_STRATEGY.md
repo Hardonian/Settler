@@ -1,40 +1,59 @@
-# Settler: Go-To-Market (GTM) Strategy
+# Settler — Go-To-Market Strategy
 
 ## 1. Executive Summary
 
-Settler is positioned as the premium, deterministic reconciliation engine for modern FinTechs and scaling startups. Our GTM motion relies on a hybrid **Product-Led Growth (PLG)** model combined with an **AI-driven Outbound Sales** motion. This allows a solo-founder to scale revenue with minimal human capital.
+Settler is positioned as the deterministic reconciliation engine for modern finance teams, scaling startups, and enterprise compliance organizations. The GTM motion is a hybrid **Product-Led Growth (PLG)** model: self-serve developer onboarding that converts to paid subscriptions as transaction volume grows.
 
-## 2. Target Audience & Personas
+## 2. Target Audience
 
-- **The Scaling CTO/Engineer**: Needs deterministic consistency. Hates writing custom scripts to parse Stripe payouts and bank feeds.
-- **The Fractional CFO / Head of Finance**: Demands audit-readiness (SOC2) and real-time ledger visibility. Wants "Inbox Zero" for unmatched transactions.
-- **The Solo-Founder**: Wants a completely autonomous back-office that runs on autopilot so they can focus on product.
+| Persona                            | Pain Point                                            | Settler Value                                                |
+| ---------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------ |
+| **Scaling CTO / Engineering Lead** | Writing and maintaining custom reconciliation scripts | API-first matching engine with deterministic outcomes        |
+| **Head of Finance / Controller**   | Manual spreadsheet reconciliation, audit prep burden  | Automated matching with hash-linked proofpacks for auditors  |
+| **Compliance / Risk Officer**      | Proving reconciliation accuracy to regulators         | Replayable runs, tenant-scoped audit trails, evidence export |
 
-## 3. Product-Led Growth (PLG) Mechanics
+## 3. Product-Led Growth Mechanics
 
-Our funnel is designed to monetize from Day 1 while minimizing friction:
+The funnel is designed to monetize as customers scale:
 
-1. **The "Developer" Tier (Free/Loss-Leader)**: Allows up to 500 transactions/month. Users experience the magic of the AutoMapper engine immediately.
-2. **The "Growth" Tier ($99/mo + Usage)**: The primary monetization loop. Once users hit 500 transactions, they are seamlessly upgraded. We charge a micro-transaction fee ($0.01/txn), creating a direct correlation between their scale and our revenue.
-3. **The "App Marketplace" Hook**: By showing integrations for Stripe, QuickBooks, Xero, and Salesforce in the dashboard, we create instant "FOMO" and ecosystem lock-in.
+1. **Developer Tier (Free):** Up to 500 transactions/month. Full access to the matching engine, CLI tooling, and proofpack generation. Zero friction to first value.
+2. **Growth Tier ($99/mo + usage):** Primary monetization loop. Per-transaction pricing ($0.01/txn) creates a direct correlation between customer scale and Settler revenue. Includes live activity feed, advanced exception intelligence, and priority support.
+3. **Enterprise Tier (Custom):** SSO/SCIM, custom SLAs, dedicated tenant isolation guarantees, OpenFGA fine-grained authorization, and compliance evidence packages.
 
-## 4. Autonomous Sales & Marketing
+## 4. Distribution Channels
 
-Settler leverages its own product architecture to drive growth:
+### Phase 1: Developer Community Launch
 
-- **Sales Hunter AI**: Automatically deployed to scrape LinkedIn, X (Twitter), and GitHub for developers asking about "Stripe reconciliation" or "TigerBeetle". The agent drafts hyper-personalized outreach.
-- **Support Deflection AI**: Acts as a 24/7 technical pre-sales engineer, converting high-intent documentation visitors into paying users by answering integration questions autonomously.
+- **Channels:** Hacker News, Product Hunt, targeted developer communities (FinTech Twitter/X, Stripe developer forums)
+- **Messaging:** "Stop writing custom scripts for your ledger. Deterministic reconciliation as an API."
+- **Goal:** 100 active developer-tier users, 10 paying growth-tier users
 
-## 5. Launch & Distribution Phases
+### Phase 2: Ecosystem Partnerships
 
-### Phase 1: The "Ironclad" Launch
+- **Channels:** Stripe Apps marketplace, accounting software partner programs
+- **Messaging:** "The reconciliation layer for your existing financial stack."
+- **Goal:** Organic acquisition through platform marketplaces and integration directories
 
-- **Channels**: HackerNews, ProductHunt, and targeted X (Twitter) FinTech circles.
-- **Messaging**: "Stop writing custom CRON jobs for your ledger. Automate reconciliation deterministically."
-- **Goal**: 100 active Developer Tier users, 10 paying Growth Tier users.
+### Phase 3: Enterprise Outbound
 
-### Phase 2: Ecosystem Embedded
+- **Channels:** Direct outreach to finance teams at Series B+ companies processing >10k transactions/month
+- **Messaging:** "Audit-grade reconciliation with zero manual effort. Proofpacks your auditor can verify."
+- **Goal:** 5 enterprise contracts with annual commitment
 
-- **Channels**: Partnerships with Stripe (Stripe Apps), QuickBooks App Store.
-- **Messaging**: "The official reconciliation layer for your existing stack."
-- **Goal**: Organic acquisition through platform marketplaces.
+## 5. Content Strategy
+
+All content is grounded in verifiable product capabilities:
+
+- **Technical blog posts:** Deterministic matching algorithms, proofpack architecture, tenant isolation design
+- **Case studies:** Built from pilot program outcomes (see [Pilot Runbook](docs/pilot-runbook.md))
+- **Documentation as marketing:** The [SETUP.md](SETUP.md) → first working screen path is designed to be completed in under 10 minutes
+
+## 6. Success Metrics
+
+| Metric                           | Target (90 days) |
+| -------------------------------- | ---------------- |
+| Developer-tier signups           | 100              |
+| Growth-tier conversions          | 10               |
+| Time to first reconciliation run | < 15 minutes     |
+| Documentation-driven conversions | > 30% of signups |
+| Churn (monthly)                  | < 5%             |
