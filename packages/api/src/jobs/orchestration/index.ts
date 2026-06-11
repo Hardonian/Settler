@@ -141,25 +141,6 @@ export class OrchestrationEngine {
 export async function setupCentralizedOrchestration(): Promise<OrchestrationEngine> {
   const engine = new OrchestrationEngine();
 
-  // Resolve paths relative to the workspace root
-  const workspaceRoot = path.resolve(__dirname, "../../../../../");
-
-  // 1. Marketing / Lead Gen Quality Run (Daily at 8 AM)
-  await engine.scheduleCron(
-    "marketing_quality_daily_run",
-    "0 8 * * *",
-    "node marketing/quality-daily-run.js",
-    workspaceRoot
-  );
-
-  // 2. Add other marketing scripts as needed
-  await engine.scheduleCron(
-    "marketing_daily_run_fallback",
-    "0 9 * * *",
-    "node marketing/daily-run.js",
-    workspaceRoot
-  );
-
   // Start the worker to process them
   engine.startWorker();
 

@@ -1,10 +1,10 @@
-import { Router, Response } from "express";
+import express, { Router, Response } from "express";
 import { queryWithTenant } from "../../db";
 import { logInfo, logError } from "../../utils/logger";
 import { authMiddleware, AuthRequest } from "../../middleware/auth";
 import { idempotencyMiddleware } from "../../middleware/idempotency";
 
-export const billingRouter = Router();
+export const billingRouter: Router = express.Router();
 
 // Retrieve current subscription status
 billingRouter.get(
@@ -108,4 +108,4 @@ billingRouter.post("/webhook", async (req: AuthRequest, res: Response): Promise<
   }
 });
 
-export default billingRouter;
+export default billingRouter as any;

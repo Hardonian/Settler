@@ -12,8 +12,9 @@ import { RunDeltaService } from "../services/intelligence/run-delta";
 import { Prisma } from "@prisma/client";
 import * as crypto from "crypto";
 import { validateEvidenceManifest } from "../infrastructure/validation/evidence-manifest-validator";
+import express from "express";
 
-const router = Router();
+const router: Router = express.Router();
 const adjudicationMemoryService = new AdjudicationMemoryService(prisma);
 const runDeltaService = new RunDeltaService(prisma);
 
@@ -706,4 +707,4 @@ router.get(
   }
 );
 
-export { router as exceptionIntelligenceRouter };
+export default router as any;

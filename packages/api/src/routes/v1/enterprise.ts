@@ -3,7 +3,7 @@ import { AuthRequest } from "../../middleware/auth";
 import { requirePermission } from "../../middleware/authorization";
 import { Permission } from "../../infrastructure/security/Permissions";
 
-const router = Router();
+const router: Router = Router();
 
 router.get(
   "/usage",
@@ -71,4 +71,4 @@ router.get(
   }
 );
 
-export { router as enterpriseRouter };
+export { router as any as enterpriseRouter };

@@ -3,8 +3,8 @@
   "compilerOptions": {
     "outDir": "./dist",
     "composite": false,
-    "declaration": false,
-    "declarationMap": false,
+    "declaration": true,
+    "declarationMap": true,
     "exactOptionalPropertyTypes": false,
     "skipLibCheck": true,
     "paths": {
