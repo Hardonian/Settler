@@ -14,7 +14,7 @@ import * as crypto from "crypto";
 import { validateEvidenceManifest } from "../infrastructure/validation/evidence-manifest-validator";
 import express from "express";
 
-const router: Router = express.Router();
+const router: any = express.Router();
 const adjudicationMemoryService = new AdjudicationMemoryService(prisma);
 const runDeltaService = new RunDeltaService(prisma);
 
@@ -707,4 +707,4 @@ router.get(
   }
 );
 
-export default router as any;
+export const exceptionIntelligenceRouter = router;
