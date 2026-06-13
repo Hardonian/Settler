@@ -6,7 +6,7 @@
  * limits, descriptors, and taxonomy — not secrets.
  */
 
-export type PlanCode = "starter" | "growth" | "scale" | "enterprise";
+export type PlanCode = "starter" | "pro" | "scale" | "enterprise";
 
 export type ServiceCode = "reconcile" | "exceptions";
 
@@ -212,11 +212,11 @@ export const PLAN_SPINE: Record<PlanCode, PlanSpineEntry> = {
       support: "community",
     },
   },
-  growth: {
-    code: "growth",
-    name: "Growth",
+  pro: {
+    code: "pro",
+    name: "Pro",
     description: "For growing businesses",
-    monthlyPrice: 900,
+    monthlyPrice: 99,
     limits: {
       reconcile: {
         monthlyVolume: 100_000,
@@ -230,7 +230,7 @@ export const PLAN_SPINE: Record<PlanCode, PlanSpineEntry> = {
     marketing: {
       publicLine:
         "Usage-based cloud control plane with metered reconciliation and exception supervision.",
-      internalBillingDescriptor: "growth_volume_exception_supervision",
+      internalBillingDescriptor: "pro_volume_exception_supervision",
     },
     capabilities: {
       managedServiceDefault: false,
@@ -250,7 +250,7 @@ export const PLAN_SPINE: Record<PlanCode, PlanSpineEntry> = {
     code: "scale",
     name: "Scale",
     description: "For high-volume operations",
-    monthlyPrice: 9_900,
+    monthlyPrice: 399,
     limits: {
       reconcile: {
         monthlyVolume: 1_000_000,
@@ -317,8 +317,8 @@ export const PLAN_SPINE: Record<PlanCode, PlanSpineEntry> = {
 /** Default MRR when subscription metadata does not carry explicit revenue (USD). */
 export const PLAN_DEFAULT_MRR_USD: Record<PlanCode, number> = {
   starter: 0,
-  growth: 900,
-  scale: 9_900,
+  pro: 99,
+  scale: 399,
   enterprise: 0,
 };
 
@@ -326,9 +326,9 @@ export const LEGACY_SUBSCRIPTION_PLAN_ID_MAP: Record<string, PlanCode> = {
   base: "starter",
   free: "starter",
   starter: "starter",
-  pro: "growth",
-  commercial: "growth",
-  growth: "growth",
+  pro: "pro",
+  commercial: "pro",
+  growth: "pro",
   scale: "scale",
   enterprise: "enterprise",
 };
@@ -369,17 +369,17 @@ export function getDefaultPlanCode(): PlanCode {
  */
 export function mapLegacyPlanTypeToPlanCode(planType: string): PlanCode {
   const t = planType.trim().toLowerCase();
-  if (t === "starter" || t === "growth" || t === "scale" || t === "enterprise") {
+  if (t === "starter" || t === "pro" || t === "scale" || t === "enterprise") {
     return t as PlanCode;
   }
   // Stripe/subscription-era plan IDs that predate the canonical PlanCode taxonomy.
   // These must stay here so billing-gating middleware aligns with the canonical hierarchy.
   const extendedMap: Record<string, PlanCode> = {
     free: "starter", // free tier → starter capability level
-    trial: "growth",
-    commercial: "growth",
+    trial: "pro",
+    commercial: "pro",
     base: "starter", // legacy "base" plan → starter
-    pro: "growth", // legacy "pro" plan → growth
+    growth: "pro", // legacy "growth" plan → pro
   };
   return extendedMap[t] ?? "starter";
 }
@@ -408,7 +408,7 @@ const STARTER_API_FEATURES: ApiLegacyPlanFeatures = {
   support: "community",
 };
 
-const GROWTH_API_FEATURES: ApiLegacyPlanFeatures = {
+const PRO_API_FEATURES: ApiLegacyPlanFeatures = {
   cookbooks: "all",
   docs: "all",
   playground: { runsPerDay: "unlimited", advancedFeatures: true },
@@ -419,7 +419,7 @@ const GROWTH_API_FEATURES: ApiLegacyPlanFeatures = {
 };
 
 const SCALE_API_FEATURES: ApiLegacyPlanFeatures = {
-  ...GROWTH_API_FEATURES,
+  ...PRO_API_FEATURES,
   support: "priority",
   consulting: false,
 };
@@ -436,7 +436,7 @@ const ENTERPRISE_API_FEATURES: ApiLegacyPlanFeatures = {
 
 export const API_LEGACY_PLAN_FEATURES: Record<PlanCode, ApiLegacyPlanFeatures> = {
   starter: STARTER_API_FEATURES,
-  growth: GROWTH_API_FEATURES,
+  pro: PRO_API_FEATURES,
   scale: SCALE_API_FEATURES,
   enterprise: ENTERPRISE_API_FEATURES,
 };

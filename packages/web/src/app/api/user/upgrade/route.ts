@@ -34,7 +34,7 @@ export const POST = withSecurity(
         const normalizedProfilePlan =
           canonicalPlan === "starter"
             ? "free"
-            : canonicalPlan === "growth"
+            : canonicalPlan === "pro"
               ? "commercial"
               : canonicalPlan === "scale"
                 ? "enterprise"

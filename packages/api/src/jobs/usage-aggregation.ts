@@ -126,7 +126,7 @@ export async function syncUsageToStripe(
       await usageSyncOutboxQueue.add(
         {
           tenantId: account.tenant_id || "system",
-          tenantTier: TenantTier.GROWTH, // Default mapping
+          tenantTier: TenantTier.PRO, // Default mapping
           billingAccountId: account.id,
           dateStr,
           syncUrl,

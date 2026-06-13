@@ -28,7 +28,7 @@ export default function PricingPage() {
   const pricingScenarios = [
     {
       label: "Cloud API baseline",
-      plan: "growth" as const,
+      plan: "pro" as const,
       volume: 100_000,
       exceptions: 1_000,
     },
