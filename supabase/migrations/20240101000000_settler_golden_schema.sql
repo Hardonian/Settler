@@ -16345,9 +16345,13 @@ BEGIN
 
   -- Server-side validation: Check if integration is configured (if integration_id provided)
   IF p_integration_id IS NOT NULL THEN
-    -- TODO: Add integration_credentials table check when implemented
-    -- For now, we'll allow but log a warning
-    NULL;
+    IF NOT EXISTS (
+      SELECT 1 FROM integration_credentials
+      WHERE tenant_id = COALESCE(p_tenant_id, (SELECT tenant_id FROM billing_accounts WHERE id = p_billing_account_id))
+        AND adapter = p_integration_id
+    ) THEN
+      RAISE EXCEPTION 'Integration not configured';
+    END IF;
   END IF;
 
   -- Insert usage event
@@ -18749,8 +18753,15 @@ BEGIN
   END IF;
 
   -- If integration is specified, validate it's configured
-  -- TODO: Add integration_credentials table check when implemented
-  -- For now, we'll allow but this should be enhanced
+  IF p_integration_id IS NOT NULL THEN
+    IF NOT EXISTS (
+      SELECT 1 FROM integration_credentials
+      WHERE tenant_id = v_billing_account.tenant_id
+        AND adapter = p_integration_id
+    ) THEN
+      RETURN false;
+    END IF;
+  END IF;
 
   RETURN true;
 END;
