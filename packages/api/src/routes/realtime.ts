@@ -8,6 +8,7 @@ import { queryWithTenant } from "../db";
 import { AuthRequest } from "../middleware/auth";
 import { logInfo, logError, logWarn } from "../utils/logger";
 import { redact } from "../utils/redaction";
+import crypto from "crypto";
 
 const router: Router = Router();
 
@@ -117,7 +118,7 @@ router.get("/reconciliations/:jobId", async (req: AuthRequest, res: Response): P
   res.setHeader("Connection", "keep-alive");
   res.setHeader("X-Accel-Buffering", "no");
 
-  const connectionId = `${tenantId}-${jobId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const connectionId = `${tenantId}-${jobId}-${Date.now()}-${crypto.randomBytes(4).toString("hex")}`;
   sseConnections.set(connectionId, {
     id: connectionId,
     tenantId,
@@ -210,7 +211,7 @@ router.get("/workbench", async (req: AuthRequest, res: Response): Promise<void> 
   res.setHeader("Connection", "keep-alive");
   res.setHeader("X-Accel-Buffering", "no");
 
-  const connectionId = `workbench-${tenantId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const connectionId = `workbench-${tenantId}-${Date.now()}-${crypto.randomBytes(4).toString("hex")}`;
 
   logInfo("SSE Workbench connection established", { connectionId, tenantId });
 
