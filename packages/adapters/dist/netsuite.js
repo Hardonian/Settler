@@ -1,15 +1,7 @@
 "use strict";
-/**
- * NetSuite Adapter
- *
- * Production-ready NetSuite integration with:
- * - Token-based authentication (TBA)
- * - Circuit breaker protection
- * - Error handling and retries
- * - Comprehensive transaction fetching
- */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NetSuiteAdapter = void 0;
+const crypto_1 = require("crypto");
 // Circuit breaker will be imported from shared package in production
 async function withCircuitBreaker(serviceName, fn) {
     try {
@@ -51,7 +43,7 @@ class NetSuiteAdapter {
             // Simplified - in production, use proper OAuth 1.0 library
             return fetch(`${url}?${new URLSearchParams(params).toString()}`, {
                 headers: {
-                    Authorization: `OAuth realm="${this.config.accountId}", oauth_consumer_key="${this.config.consumerKey}", oauth_token="${this.config.tokenId}", oauth_signature_method="HMAC-SHA256", oauth_timestamp="${Math.floor(Date.now() / 1000)}", oauth_nonce="${Math.random().toString(36).substring(7)}", oauth_version="1.0"`,
+                    Authorization: `OAuth realm="${this.config.accountId}", oauth_consumer_key="${this.config.consumerKey}", oauth_token="${this.config.tokenId}", oauth_signature_method="HMAC-SHA256", oauth_timestamp="${Math.floor(Date.now() / 1000)}", oauth_nonce="${(0, crypto_1.randomBytes)(16).toString("hex")}", oauth_version="1.0"`,
                     "Content-Type": "application/json",
                 },
             });
