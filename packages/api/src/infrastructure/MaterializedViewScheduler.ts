@@ -19,6 +19,8 @@ import {
   getTenantConfig,
   getActiveTenantViews,
   checkViewExists,
+  checkViewsExist,
+  getMaterializedViewName,
 } from "./MaterializedViewManager";
 
 interface ScheduledTask {
@@ -234,19 +236,30 @@ async function schedulerLoop(): Promise<void> {
 /**
  * Cleanup stale or invalid scheduled tasks
  */
-async function cleanupScheduler(): Promise<void> {
+export async function cleanupScheduler(): Promise<void> {
   let cleaned = 0;
 
-  for (const [key, task] of scheduledTasks) {
-    const exists = await checkViewExists(task.tenantId, task.viewId);
-    if (!exists) {
-      scheduledTasks.delete(key);
-      cleaned++;
-    }
-  }
+  const snapshot = Array.from(scheduledTasks.entries());
+  if (snapshot.length === 0) return;
 
-  if (cleaned > 0) {
-    logInfo("Cleaned up scheduled tasks", { cleaned, remaining: scheduledTasks.size });
+  try {
+    const existingViews = await checkViewsExist(
+      snapshot.map(([_, task]) => ({ tenantId: task.tenantId, viewId: task.viewId }))
+    );
+
+    for (const [key, task] of snapshot) {
+      const viewName = getMaterializedViewName(task.tenantId, task.viewId);
+      if (!existingViews.has(viewName)) {
+        scheduledTasks.delete(key);
+        cleaned++;
+      }
+    }
+
+    if (cleaned > 0) {
+      logInfo("Cleaned up scheduled tasks", { cleaned, remaining: scheduledTasks.size });
+    }
+  } catch (error) {
+    logError("Skipping scheduler cleanup due to database error", { error });
   }
 }
 
