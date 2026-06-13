@@ -737,9 +737,11 @@ async function main() {
     console.log("📋 Step 1: Discovering environment files...");
     const envFiles = discoverEnvFiles();
     if (envFiles.length === 0) {
-      throw new Error("No .env files found. Please create .env.local, .env.development, or .env");
+      console.log("   ⚠️  No .env files found locally (expected in CI — checking environment variables)...");
+    } else {
+      console.log(`   Found: ${envFiles.join(", ")}`);
     }
-    console.log(`   Found: ${envFiles.join(", ")}\n`);
+    console.log("");
 
     // Select database URL (prioritizes GitHub Actions secrets)
     const { file, url, mode } = selectDatabaseUrl(envFiles);
