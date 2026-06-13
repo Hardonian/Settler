@@ -30,6 +30,10 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Build application
         run: npx turbo run build
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_PREVIEW || secrets.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/settler_test' }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL_PREVIEW || secrets.SUPABASE_URL || 'https://dummy.supabase.co' }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY_PREVIEW || secrets.SUPABASE_ANON_KEY || 'dummy-anon-key' }}
       - name: Verify build artifacts
         run: |
           test -d packages/api/dist || (echo "❌ API dist missing" && exit 1)
