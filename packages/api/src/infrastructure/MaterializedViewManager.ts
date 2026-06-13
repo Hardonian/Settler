@@ -143,6 +143,29 @@ export async function checkViewExists(tenantId: string, viewId: string): Promise
 }
 
 /**
+ * Check if multiple materialized views exist in a single query
+ */
+export async function checkViewsExist(
+  views: Array<{ tenantId: string; viewId: string }>
+): Promise<Set<string>> {
+  if (views.length === 0) return new Set();
+
+  const viewNames = views.map((v) => getMaterializedViewName(v.tenantId, v.viewId));
+
+  try {
+    const result = await query<{ matviewname: string }>(
+      `SELECT matviewname FROM pg_matviews WHERE matviewname = ANY($1)`,
+      [viewNames]
+    );
+
+    return new Set(result.map((r) => r.matviewname));
+  } catch (error) {
+    logError("Failed to check multiple views existence", { count: viewNames.length, error });
+    throw error;
+  }
+}
+
+/**
  * Get materialized view status
  */
 export async function getViewStatus(
