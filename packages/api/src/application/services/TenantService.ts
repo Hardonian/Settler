@@ -153,7 +153,7 @@ export class TenantService {
         monthlyReconciliations: 10000,
         customDomains: 0,
       },
-      [TenantTier.GROWTH]: {
+      [TenantTier.PRO]: {
         rateLimitRpm: 2000,
         storageBytes: 10 * 1024 * 1024 * 1024, // 10 GB
         concurrentJobs: 20,

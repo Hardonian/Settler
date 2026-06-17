@@ -141,7 +141,7 @@ export class PrioritizedQueue {
     const tierMultipliers: Record<TenantTier, number> = {
       [TenantTier.FREE]: 1,
       [TenantTier.STARTER]: 2,
-      [TenantTier.GROWTH]: 5,
+      [TenantTier.PRO]: 5,
       [TenantTier.SCALE]: 10,
       [TenantTier.ENTERPRISE]: 100, // Shouldn't reach here, but just in case
     };

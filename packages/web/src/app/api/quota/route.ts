@@ -30,7 +30,7 @@ interface QuotaItem {
 // Constants for plan limits (weekly limits derived from monthly plans)
 const PLAN_LIMITS: Readonly<Record<PlanCode, number>> = {
   starter: 10000,
-  growth: 100000,
+  pro: 100000,
   scale: 1000000,
   enterprise: 1000000,
 } as const;

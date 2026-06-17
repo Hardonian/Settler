@@ -674,11 +674,11 @@ async function buildPayload(days: number) {
           WHEN s.status IN ('active','trialing','past_due') THEN
             CASE s.plan_id
               WHEN 'starter' THEN ${PLAN_DEFAULT_MRR_USD.starter}
-              WHEN 'growth' THEN ${PLAN_DEFAULT_MRR_USD.growth}
+              WHEN 'pro' THEN ${PLAN_DEFAULT_MRR_USD.pro}
               WHEN 'scale' THEN ${PLAN_DEFAULT_MRR_USD.scale}
               WHEN 'enterprise' THEN ${PLAN_DEFAULT_MRR_USD.enterprise}
-              WHEN 'pro' THEN ${PLAN_DEFAULT_MRR_USD.growth}
-              WHEN 'commercial' THEN ${PLAN_DEFAULT_MRR_USD.growth}
+              WHEN 'growth' THEN ${PLAN_DEFAULT_MRR_USD.pro}
+              WHEN 'commercial' THEN ${PLAN_DEFAULT_MRR_USD.pro}
               WHEN 'base' THEN ${PLAN_DEFAULT_MRR_USD.starter}
               WHEN 'free' THEN ${PLAN_DEFAULT_MRR_USD.starter}
               ELSE 0

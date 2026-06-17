@@ -37,7 +37,7 @@ export const PRICING_PLANS: Record<string, PricingPlan> = {
       "Alias of starter for legacy callers; same included reconciliation volume as Starter.",
   },
   starter: row("starter"),
-  growth: row("growth"),
+  pro: row("pro"),
   scale: row("scale"),
   enterprise: row("enterprise"),
 };

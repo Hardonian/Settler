@@ -57,7 +57,7 @@ export default function UpgradePage() {
               For growing businesses needing robust ledger matching.
             </CardDescription>
             <div className="mt-4">
-              <span className="text-4xl font-bold">$299</span>
+              <span className="text-4xl font-bold">$99</span>
               <span className="text-muted-foreground">/mo</span>
             </div>
           </CardHeader>
@@ -101,7 +101,7 @@ export default function UpgradePage() {
             </CardTitle>
             <CardDescription>Advanced AI and reporting for high-volume operators.</CardDescription>
             <div className="mt-4">
-              <span className="text-4xl font-bold">$999</span>
+              <span className="text-4xl font-bold">$399</span>
               <span className="text-muted-foreground">/mo</span>
             </div>
           </CardHeader>

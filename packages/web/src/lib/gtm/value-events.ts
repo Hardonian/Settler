@@ -73,7 +73,7 @@ export const VALUE_EVENT_MAPPING: Record<
   ValueEventType,
   {
     role: "all" | "developer" | "admin" | "viewer";
-    planTier: "free" | "starter" | "growth" | "scale" | "enterprise" | "all";
+    planTier: "free" | "starter" | "pro" | "scale" | "enterprise" | "all";
     page?: string; // Where value is perceived
     description: string;
   }
@@ -158,7 +158,7 @@ export const VALUE_EVENT_MAPPING: Record<
   },
   manual_review_avoided: {
     role: "admin",
-    planTier: "growth",
+    planTier: "pro",
     page: "/console/reconciliation-view",
     description: "Manual review avoided through automation",
   },
@@ -170,13 +170,13 @@ export const VALUE_EVENT_MAPPING: Record<
   },
   drift_detected: {
     role: "developer",
-    planTier: "growth",
+    planTier: "pro",
     page: "/console",
     description: "Schema drift detected",
   },
   anomaly_detected: {
     role: "admin",
-    planTier: "growth",
+    planTier: "pro",
     page: "/console",
     description: "Anomaly detected in data",
   },
