@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 /**
  * Real-time Updates Route
  * WebSocket/SSE endpoint for reconciliation status updates
@@ -8,7 +9,6 @@ import { queryWithTenant } from "../db";
 import { AuthRequest } from "../middleware/auth";
 import { logInfo, logError, logWarn } from "../utils/logger";
 import { redact } from "../utils/redaction";
-import crypto from "crypto";
 
 const router: Router = Router();
 
