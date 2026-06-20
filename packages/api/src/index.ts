@@ -38,6 +38,8 @@ import { batchRouter } from "./routes/batch";
 import { exportsRouter } from "./routes/exports";
 import { retentionRouter } from "./routes/retention";
 import { workerHealthRouter } from "./routes/worker-health";
+import { npsRouter } from "./routes/nps";
+import { telemetryRouter } from "./routes/telemetry";
 import { testModeMiddleware, validateTestMode } from "./middleware/test-mode";
 import { featureFlagsMiddleware } from "./middleware/feature-flags";
 import { usageTrackingMiddleware } from "./middleware/usage-tracking";

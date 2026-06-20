@@ -5,22 +5,46 @@ on:
   push:
     branches: [main, develop]
   workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1"
 
 jobs:
   rust-verify:
+    name: Rust Verify (fmt, clippy, test, deny, audit)
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
-          profile: minimal
-          target: wasm32-unknown-unknown
-          override: true
-          target: wasm32-unknown-unknown
+          components: rustfmt, clippy
+          targets: wasm32-unknown-unknown
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Install cargo-deny
+        uses: EmbarkStudios/cargo-deny-action@v1
+        with:
+          command: install
+          version: "0.16"
+
+      - name: Install cargo-audit
+        run: cargo install cargo-audit --locked
 
       - name: Rust fmt
         run: cargo fmt --all -- --check
@@ -28,8 +52,36 @@ jobs:
       - name: Rust clippy
         run: cargo clippy --workspace --all-targets --all-features -- -D warnings
 
+      - name: Cargo deny (advisories, bans, licenses, sources)
+        run: cargo deny check --deny-warnings
+        working-directory: crates
+
+      - name: Cargo audit (vulnerability scan)
+        run: cargo audit --deny warnings
+        working-directory: crates
+
       - name: Rust tests
-        run: cargo test --workspace
+        run: cargo test --workspace --all-features
 
       - name: Build wasm verifier
-        run: cargo build -p settler-verify-wasm --target wasm32-unknown-unknown
+        run: cargo build -p settler-verify-wasm --target wasm32-unknown-unknown --all-features
+
+      - name: Build all targets
+        run: cargo build --workspace --all-targets --all-features
+
+  cargo-outdated:
+    name: Check for Outdated Dependencies
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install cargo-outdated
+        run: cargo install cargo-outdated --locked
+
+      - name: Check outdated
+        run: cargo outdated --workspace --root-deps-only --exit-code 1 || true

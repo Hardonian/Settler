@@ -201,8 +201,8 @@
     "jobs:smoke": "tsx scripts/worker-smoke-test.ts",
     "workhorse:dev": "cd packages/workhorse && python -m settler_workhorse.cli worker --poll-interval 2",
     "pnpm:clean": "pnpm run clean:all",
-    "pnpm:ci:install": "corepack enable && corepack prepare pnpm@10.13.1 --activate && pnpm install --frozen-lockfile",
-    "ci:install": "corepack enable && corepack prepare pnpm@10.13.1 --activate && pnpm install --frozen-lockfile",
+    "pnpm:ci:install": "corepack enable && corepack prepare pnpm@9.15.0 --activate && pnpm install --frozen-lockfile",
+    "ci:install": "corepack enable && corepack prepare pnpm@9.15.0 --activate && pnpm install --frozen-lockfile",
     "verify:globals-css-import-order": "node scripts/validate-globals-css-import-order.mjs",
     "test:web:offline-harness": "pnpm --filter @settler/web test -- offline-prerender-compat.test.ts offline-render-harness.test.tsx",
     "verify:route-boundaries": "node scripts/verify-route-boundaries.mjs",
@@ -353,7 +353,7 @@
     "@prisma/client": "7.8.0",
     "@supabase/supabase-js": "^2.106.1",
     "@types/jest": "^30.0.0",
-    "@types/node": "^24.12.4",
+    "@types/node": "^22.15.0",
     "@types/pg": "8.20.0",
     "@typescript-eslint/eslint-plugin": "^8.59.4",
     "@typescript-eslint/parser": "^8.59.4",
@@ -374,11 +374,11 @@
     "typescript": "^5.9.3"
   },
   "engines": {
-    "node": ">=24.0.0 <25.0.0",
+    "node": ">=22.0.0 <23.0.0",
     "npm": ">=10.0.0",
-    "pnpm": ">=10.13.1"
+    "pnpm": ">=9.0.0"
   },
-  "packageManager": "pnpm@10.13.1",
+  "packageManager": "pnpm@9.15.0",
   "dependencies": {
     "turbo": "^2.9.14"
   },
@@ -405,6 +405,10 @@
     "glob": "^13.0.6",
     "minimatch": ">=10.2.1",
     "eslint": "^9.39.4",
+    "eslint>ajv": "6.12.6",
+    "@eslint/eslintrc>ajv": "6.12.6",
+    "@typescript-eslint/eslint-plugin>ajv": "6.12.6",
+    "@typescript-eslint/type-utils>ajv": "6.12.6",
     "@types/pg": "8.20.0",
     "handlebars": "^4.7.9",
     "picomatch": "^4.0.4",

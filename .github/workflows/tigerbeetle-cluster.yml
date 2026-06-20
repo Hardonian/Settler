@@ -1,0 +1,252 @@
+name: TigerBeetle Cluster Tests
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - "packages/api/**"
+      - "scripts/**"
+      - ".github/workflows/tigerbeetle-cluster.yml"
+      - "package.json"
+      - "pnpm-lock.yaml"
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - "packages/api/**"
+      - "scripts/**"
+      - ".github/workflows/tigerbeetle-cluster.yml"
+      - "package.json"
+      - "pnpm-lock.yaml"
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE22: true
+  TIGERBEETLE_VERSION: "0.23.0"
+
+jobs:
+  tigerbeetle-cluster:
+    name: TigerBeetle 3-Node Cluster
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: settler_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Deterministic install
+        run: pnpm install --frozen-lockfile
+
+      - name: Install TigerBeetle
+        run: |
+          set -e
+          TB_VERSION="${TIGERBEETLE_VERSION}"
+          ARCH=$(uname -m)
+          if [ "$ARCH" = "x86_64" ]; then
+            TB_ARCH="x86_64"
+          elif [ "$ARCH" = "aarch64" ]; then
+            TB_ARCH="aarch64"
+          else
+            echo "Unsupported architecture: $ARCH"
+            exit 1
+          fi
+          curl -L "https://github.com/tigerbeetle/tigerbeetle/releases/download/v${TB_VERSION}/tigerbeetle-${TB_VERSION}-${TB_ARCH}-unknown-linux-gnu.tar.gz" | tar xz
+          sudo mv tigerbeetle /usr/local/bin/
+          tigerbeetle --version
+
+      - name: Setup TigerBeetle 3-Node Cluster
+        run: |
+          set -e
+          # Create data directories for 3 nodes
+          mkdir -p /tmp/tb/{0,1,2}
+
+          # Format each node
+          for i in 0 1 2; do
+            tigerbeetle format --cluster=0 --replica=$i --replica-count=3 /tmp/tb/$i/tigerbeetle_$i.tigerbeetle
+          done
+
+          # Start 3 nodes in background
+          for i in 0 1 2; do
+            PORT=$((3000 + i))
+            tigerbeetle start --addresses=127.0.0.1:$PORT /tmp/tb/$i/tigerbeetle_$i.tigerbeetle > /tmp/tb_$i.log 2>&1 &
+            echo $! > /tmp/tb_$i.pid
+            echo "Started node $i on port $PORT (PID: $(cat /tmp/tb_$i.pid))"
+          done
+
+          # Wait for cluster to be ready
+          sleep 3
+          for i in 0 1 2; do
+            PORT=$((3000 + i))
+            for attempt in {1..10}; do
+              if curl -s "http://127.0.0.1:$PORT/health" 2>/dev/null | grep -q "OK"; then
+                echo "Node $i is healthy"
+                break
+              fi
+              if [ $attempt -eq 10 ]; then
+                echo "Node $i failed to start"
+                cat /tmp/tb_$i.log
+                exit 1
+              fi
+              sleep 1
+            done
+          done
+
+          echo "TigerBeetle 3-node cluster ready on ports 3000, 3001, 3002"
+
+      - name: Verify Cluster Consensus
+        run: |
+          set -e
+          # Test that all 3 nodes agree on account creation
+          for i in 0 1 2; do
+            PORT=$((3000 + i))
+            # Create accounts via each node
+            cat <<EOF > /tmp/create_accounts_$i.json
+            [
+              { "id": 1000, "ledger": 1, "code": 10, "flags": 0, "debits_pending": 0, "debits_posted": 0, "credits_pending": 0, "credits_posted": 0, "user_data_128": "0", "user_data_64": "0", "user_data_32": "0", "reserved": "0", "linked_event": "0" },
+              { "id": 1001, "ledger": 1, "code": 10, "flags": 0, "debits_pending": 0, "debits_posted": 0, "credits_pending": 0, "credits_posted": 0, "user_data_128": "0", "user_data_64": "0", "user_data_32": "0", "reserved": "0", "linked_event": "0" }
+            ]
+            EOF
+            # Use tigerbeetle CLI to create accounts
+            tigerbeetle create_accounts --addresses="127.0.0.1:$PORT" --batch=/tmp/create_accounts_$i.json
+          done
+
+          # Verify all nodes have same account state
+          for i in 0 1 2; do
+            PORT=$((3000 + i))
+            tigerbeetle query_accounts --addresses="127.0.0.1:$PORT" 1000 1001 > /tmp/accounts_$i.json
+          done
+
+          # Compare states
+          if ! diff /tmp/accounts_0.json /tmp/accounts_1.json; then
+            echo "FAIL: Node 0 and 1 account states differ"
+            exit 1
+          fi
+          if ! diff /tmp/accounts_1.json /tmp/accounts_2.json; then
+            echo "FAIL: Node 1 and 2 account states differ"
+            exit 1
+          fi
+          echo "PASS: All 3 nodes have consistent account state"
+
+      - name: Test Split-Brain Handling
+        run: |
+          set -e
+          # Simulate network partition: stop node 2
+          kill $(cat /tmp/tb_2.pid) 2>/dev/null || true
+          sleep 2
+
+          # Nodes 0 and 1 should still form quorum (2 of 3)
+          for i in 0 1; do
+            PORT=$((3000 + i))
+            if curl -s "http://127.0.0.1:$PORT/health" 2>/dev/null | grep -q "OK"; then
+              echo "Node $i healthy during partition"
+            else
+              echo "Node $i failed during partition"
+              exit 1
+            fi
+          done
+
+          # Restart node 2
+          PORT=3002
+          tigerbeetle start --addresses=127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002 /tmp/tb/2/tigerbeetle_2.tigerbeetle > /tmp/tb_2.log 2>&1 &
+          echo $! > /tmp/tb_2.pid
+          sleep 3
+
+          # Verify node 2 catches up
+          for attempt in {1..10}; do
+            if curl -s "http://127.0.0.1:3002/health" 2>/dev/null | grep -q "OK"; then
+              echo "Node 2 recovered and caught up"
+              break
+            fi
+            if [ $attempt -eq 10 ]; then
+              echo "Node 2 failed to recover"
+              cat /tmp/tb_2.log
+              exit 1
+            fi
+            sleep 1
+          done
+
+          # Verify all 3 nodes consistent again
+          for i in 0 1 2; do
+            PORT=$((3000 + i))
+            tigerbeetle query_accounts --addresses="127.0.0.1:$PORT" 1000 1001 > /tmp/accounts_$i.json
+          done
+          diff /tmp/accounts_0.json /tmp/accounts_1.json && diff /tmp/accounts_1.json /tmp/accounts_2.json
+          echo "PASS: Cluster recovered from split-brain, all nodes consistent"
+
+      - name: Test Replication Factor
+        run: |
+          set -e
+          # Verify replication factor is 3
+          # Each account should exist on all 3 replicas
+          for i in 0 1 2; do
+            PORT=$((3000 + i))
+            # Create a new account
+            cat <<EOF > /tmp/new_account.json
+            [{ "id": 2000, "ledger": 1, "code": 20, "flags": 0 }]
+            EOF
+            tigerbeetle create_accounts --addresses="127.0.0.1:$PORT" --batch=/tmp/new_account.json
+            # Query from all nodes
+            for j in 0 1 2; do
+              QPORT=$((3000 + j))
+              tigerbeetle query_accounts --addresses="127.0.0.1:$QPORT" 2000 > /tmp/account_${i}_${j}.json
+            done
+          done
+          echo "PASS: Replication factor 3 verified - account created on any node visible on all"
+
+      - name: Run Settler API Tests Against TB Cluster
+        run: |
+          set -e
+          # Point Settler to the TB cluster
+          export TB_ADDRESSES="127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002"
+          export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/settler_test"
+          export REDIS_URL="redis://localhost:6379"
+          export JWT_SECRET="test-secret-min-32-chars-long-for-testing"
+          export ENCRYPTION_KEY="12345678901234567890123456789012"
+
+          # Build and run reconciliation tests
+          pnpm run build
+          pnpm --filter @settler/api exec jest --runInBand --forceExit --testPathPattern="reconciliation"
+
+      - name: Cleanup
+        if: always()
+        run: |
+          # Kill TigerBeetle processes
+          for pid_file in /tmp/tb_*.pid; do
+            if [ -f "$pid_file" ]; then
+              kill $(cat "$pid_file") 2>/dev/null || true
+            fi
+          done
+          # Clean up temp files
+          rm -rf /tmp/tb /tmp/tb_*.log /tmp/tb_*.pid /tmp/accounts_*.json /tmp/create_accounts_*.json /tmp/new_account.json

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { execSync, spawnSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import path from "node:path";
 
 function run(cmd, args, options = {}) {
@@ -40,6 +40,7 @@ function getStagedFiles() {
 
 function getPackageName(packageDir) {
   const pkgPath = path.join(process.cwd(), "packages", packageDir, "package.json");
+  if (!existsSync(pkgPath)) return null;
   const pkg = JSON.parse(readFileSync(pkgPath, "utf8"));
   return pkg.name;
 }
@@ -61,7 +62,11 @@ for (const file of stagedFiles) {
 }
 
 const changedPackages = Array.from(changedPackageDirs)
-  .map((dir) => ({ dir, name: getPackageName(dir) }))
+  .map((dir) => {
+    const name = getPackageName(dir);
+    return name ? { dir, name } : null;
+  })
+  .filter(Boolean)
   .sort((a, b) => a.name.localeCompare(b.name));
 
 if (changedPackages.length === 0) {

@@ -15,12 +15,12 @@ function readRootPackageJson() {
 }
 
 function readRequiredNodeVersion() {
-  return readFileIfPresent(path.join(process.cwd(), ".nvmrc")) || "24.12.0";
+  return readFileIfPresent(path.join(process.cwd(), ".nvmrc")) || "22.17.0";
 }
 
 function readRequiredNodeRange() {
   const rootPackage = readRootPackageJson();
-  return rootPackage.engines?.node || ">=24.0.0 <25.0.0";
+  return rootPackage.engines?.node || ">=22.0.0 <23.0.0";
 }
 
 function formatNodeRequirement() {

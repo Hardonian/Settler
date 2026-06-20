@@ -27,7 +27,7 @@ on:
       - "vercel.json"
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE22: true
 
 jobs:
   conflict-markers:
@@ -40,14 +40,11 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.13.1
+          version: 9.15.0
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-
-      - name: Setup pnpm
-        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
 
       - name: Deterministic install
         run: pnpm install --frozen-lockfile
@@ -100,14 +97,11 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.13.1
+          version: 9.15.0
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-
-      - name: Setup pnpm
-        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
 
       - name: Deterministic install
         run: pnpm install --frozen-lockfile
@@ -174,14 +168,11 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.13.1
+          version: 9.15.0
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-
-      - name: Setup pnpm
-        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
 
       - name: Deterministic install
         run: pnpm install --frozen-lockfile
@@ -216,14 +207,11 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.13.1
+          version: 9.15.0
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-
-      - name: Setup pnpm
-        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
 
       - name: Deterministic install
         run: pnpm install --frozen-lockfile
@@ -253,14 +241,11 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.13.1
+          version: 9.15.0
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-
-      - name: Setup pnpm
-        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
 
       - name: Deterministic install
         run: pnpm install --frozen-lockfile
@@ -330,14 +315,11 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.13.1
+          version: 9.15.0
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-
-      - name: Setup pnpm
-        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
 
       - name: Deterministic install
         run: pnpm install --frozen-lockfile

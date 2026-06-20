@@ -1,26 +1,36 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"
+  # pnpm dependencies (TypeScript/Next.js monorepo)
+  - package-ecosystem: "pnpm"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "06:00"
       timezone: "UTC"
-    open-pull-requests-limit: 3
+    open-pull-requests-limit: 10
+    allow:
+      - dependency-type: "direct"
+      - dependency-type: "indirect"
+    ignore:
+      - dependency-name: "next"
+        versions: ["17*"]
+      - dependency-name: "react"
+        versions: ["19*"]
+      - dependency-name: "typescript"
+        versions: ["6*"]
     labels:
       - "dependencies"
-      - "security"
+      - "pnpm"
     commit-message:
-      prefix: "chore(deps)"
-    groups:
-      non-major:
-        patterns:
-          - "*"
-        update-types:
-          - "minor"
-          - "patch"
+      prefix: "chore(deps):"
+      prefix-development: "chore(deps-dev):"
+      include: "scope"
+    rebase-strategy: "auto"
+    pull-request-branch-name:
+      separator: "-"
 
+  # GitHub Actions dependencies
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -28,9 +38,50 @@ updates:
       day: "monday"
       time: "06:30"
       timezone: "UTC"
-    open-pull-requests-limit: 2
+    open-pull-requests-limit: 5
     labels:
       - "dependencies"
-      - "ci"
+      - "github-actions"
     commit-message:
-      prefix: "chore(ci)"
+      prefix: "chore(actions):"
+    rebase-strategy: "auto"
+
+  # Cargo dependencies (Rust crates)
+  - package-ecosystem: "cargo"
+    directory: "/crates"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "07:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    allow:
+      - dependency-type: "direct"
+      - dependency-type: "indirect"
+    ignore:
+      - dependency-name: "tokio"
+        versions: ["2*"]
+      - dependency-name: "axum"
+        versions: ["0.8*"]
+    labels:
+      - "dependencies"
+      - "rust"
+    commit-message:
+      prefix: "chore(deps):"
+      include: "scope"
+    rebase-strategy: "auto"
+
+  # Docker dependencies (base images)
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      day: 1
+      time: "06:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    labels:
+      - "dependencies"
+      - "docker"
+    commit-message:
+      prefix: "chore(docker):"
