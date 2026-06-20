@@ -105,7 +105,16 @@ const ADAPTER_CONFIG_FIELDS: Record<
   ],
 };
 
-const DEFAULT_RULES = [
+interface Rule {
+  field: string;
+  type: string;
+  description: string;
+  tolerance?: number;
+  days?: number;
+  threshold?: number;
+}
+
+const DEFAULT_RULES: Rule[] = [
   { field: "transaction_id", type: "exact", description: "Match transaction IDs exactly" },
   { field: "amount", type: "exact", tolerance: 0.01, description: "Match amounts within $0.01" },
 ];
@@ -118,7 +127,7 @@ export default function OnboardingWizardPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [adapters, setAdapters] = useState<Array<{ id: string; name: string }>>([]);
-  const [suggestedRules, setSuggestedRules] = useState<typeof DEFAULT_RULES>(DEFAULT_RULES);
+  const [suggestedRules, setSuggestedRules] = useState<Rule[]>(DEFAULT_RULES);
   const [completed, setCompleted] = useState(false);
   const [jobConfig, setJobConfig] = useState<Record<string, unknown> | null>(null);
 
@@ -320,6 +329,8 @@ export default function OnboardingWizardPage() {
             onChange={(rules) => updateAnswer("rules", rules)}
           />
         );
+      default:
+        return null;
     }
   };
 
@@ -360,8 +371,8 @@ export default function OnboardingWizardPage() {
   return (
     <WizardLayout
       currentStep={currentStep}
-      title={STEPS[currentStep - 1].title}
-      subtitle={STEPS[currentStep - 1].description}
+      title={STEPS[currentStep - 1]?.title ?? ""}
+      subtitle={STEPS[currentStep - 1]?.description ?? ""}
       onBack={handleBack}
       onNext={handleNext}
       loading={loading}
@@ -381,21 +392,21 @@ function WizardLayout({
   children,
   onBack,
   onNext,
-  loading,
-  error,
-  canGoBack,
-  isLastStep,
+  loading = false,
+  error = null,
+  canGoBack = false,
+  isLastStep = false,
 }: {
   currentStep: number;
   title: string;
   subtitle: string;
   children: React.ReactNode;
-  onBack: () => void;
-  onNext: () => void;
-  loading: boolean;
-  error: string | null;
-  canGoBack: boolean;
-  isLastStep: boolean;
+  onBack?: () => void;
+  onNext?: () => void;
+  loading?: boolean;
+  error?: string | null;
+  canGoBack?: boolean;
+  isLastStep?: boolean;
 }) {
   return (
     <div className="flex min-h-screen bg-slate-50">
@@ -451,21 +462,25 @@ function WizardLayout({
         </Card>
 
         {/* Navigation */}
-        <div className="mt-8 flex justify-between">
-          {canGoBack && (
-            <Button variant="outline" onClick={onBack} disabled={loading}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back
-            </Button>
-          )}
-          <Button onClick={onNext} disabled={loading} className="ml-auto" size="lg">
-            {isLastStep ? "Generate Job Config" : "Continue"}
-            {!isLastStep && <ArrowRight className="ml-2 h-4 w-4" />}
-            {loading && (
-              <span className="ml-2 h-4 w-4 animate-spin border-2 border-current border-t-transparent rounded-full" />
+        {(onNext || onBack) && (
+          <div className="mt-8 flex justify-between">
+            {canGoBack && onBack && (
+              <Button variant="outline" onClick={onBack} disabled={loading}>
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back
+              </Button>
             )}
-          </Button>
-        </div>
+            {onNext && (
+              <Button onClick={onNext} disabled={loading} className="ml-auto" size="lg">
+                {isLastStep ? "Generate Job Config" : "Continue"}
+                {!isLastStep && <ArrowRight className="ml-2 h-4 w-4" />}
+                {loading && (
+                  <span className="ml-2 h-4 w-4 animate-spin border-2 border-current border-t-transparent rounded-full" />
+                )}
+              </Button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -575,9 +590,9 @@ function RulesStep({
   suggestedRules,
   onChange,
 }: {
-  rules: typeof DEFAULT_RULES;
-  suggestedRules: typeof DEFAULT_RULES;
-  onChange: (rules: typeof DEFAULT_RULES) => void;
+  rules: Rule[];
+  suggestedRules: Rule[];
+  onChange: (rules: Rule[]) => void;
 }) {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [newRule, setNewRule] = useState({
@@ -590,9 +605,12 @@ function RulesStep({
 
   const addRule = () => {
     if (!newRule.field || !newRule.description) return;
-    const rule = { ...newRule };
-    if (rule.type === "exact") delete rule.days;
-    if (rule.type === "range") delete rule.tolerance;
+    const { tolerance, days, ...rest } = newRule;
+    const rule: Rule = {
+      ...rest,
+      ...(newRule.type === "exact" ? { tolerance } : {}),
+      ...(newRule.type === "range" ? { days } : {}),
+    };
     onChange([...rules, rule]);
     setNewRule({ field: "", type: "exact", tolerance: 0.01, days: 1, description: "" });
   };
@@ -737,7 +755,7 @@ function RulesStep({
                 size="sm"
                 className="w-full justify-start gap-3"
                 onClick={() => {
-                  const newR = { ...rule };
+                  const newR: Rule = { ...rule };
                   if (newR.type === "exact") delete newR.days;
                   if (newR.type === "range") delete newR.tolerance;
                   onChange([...rules, newR]);
