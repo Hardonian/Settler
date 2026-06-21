@@ -160,7 +160,7 @@ export const POST = withSecurity(
             message: "Unable to create checkout session. Please try again or contact support.",
             retryable: true,
           },
-          { status: 200 }
+          { status: 422 }
         );
       }
 
@@ -215,7 +215,7 @@ export const POST = withSecurity(
             "Unable to process checkout request. Please try again or contact support at billing@settler.dev.",
           retryable: true,
         },
-        { status: 200 }
+        { status: 502 }
       );
     }
   }),

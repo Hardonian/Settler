@@ -179,10 +179,12 @@ export async function updateWebhook(
 
   // Validate URL if provided
   if (updates.url) {
-    try {
-      new URL(updates.url);
-    } catch {
-      throw new Error("Invalid webhook URL");
+    const validation = validateWebhookUrl(updates.url);
+    if (!validation.valid) {
+      throw new Error(validation.error || "Invalid webhook URL");
+    }
+    if (updates.url.length > 2048) {
+      throw new Error("Webhook URL is too long (max 2048 characters)");
     }
   }
 

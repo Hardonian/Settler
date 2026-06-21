@@ -137,9 +137,8 @@ export async function requireTenantContext(tenantId: string): Promise<string> {
     await safeLogger.warn("[requireTenantContext] Tenant access denied", {
       tenantId,
     });
-    // Return tenantId anyway - let the caller handle the error response
-    // This prevents throwing which could cause unhandled errors
-    return tenantId;
+    // SEC-AUDIT: Throw an error instead of returning the tenant ID on denial
+    throw new Error("Forbidden: You do not have access to this tenant");
   }
   return assertion.tenantId;
 }

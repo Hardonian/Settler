@@ -112,7 +112,7 @@ export const POST = withSecurity(
               "We encountered an issue accessing your billing portal. Please try again in a moment or contact support at billing@settler.dev.",
             retryable: true,
           },
-          { status: 200 }
+          { status: 502 }
         );
       }
     },

@@ -305,7 +305,7 @@ export const POST = withSecurity(
     },
     { feature: "POST API" }
   ),
-  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: false }
+  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: true }
 );
 
 /**
@@ -380,7 +380,7 @@ export const GET = withSecurity(
     },
     { feature: "GET API" }
   ),
-  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
 );
 
 /**
@@ -472,8 +472,15 @@ async function processExport(
             .map((header) => {
               const value = row[header];
               if (value === null || value === undefined) return "";
-              if (typeof value === "object") return JSON.stringify(value);
-              return String(value).replace(/"/g, '""');
+
+              let strValue = typeof value === "object" ? JSON.stringify(value) : String(value);
+
+              // CSV Formula Injection Protection
+              if (/^[=+\-@]/.test(strValue)) {
+                strValue = "'" + strValue;
+              }
+
+              return `"${strValue.replace(/"/g, '""')}"`;
             })
             .join(",")
         ),
@@ -485,6 +492,15 @@ async function processExport(
       filename = `export-${exportId}.json`;
     } else {
       throw new Error(`Unsupported export type: ${type}`);
+    }
+
+    const fileSizeBytes = Buffer.byteLength(fileContent);
+    const MAX_EXPORT_SIZE_BYTES = 50 * 1024 * 1024; // 50MB
+
+    if (fileSizeBytes > MAX_EXPORT_SIZE_BYTES) {
+      throw new Error(
+        `Export size (${Math.round(fileSizeBytes / 1024 / 1024)}MB) exceeds maximum allowed size of 50MB`
+      );
     }
 
     // In production, upload to S3 or similar storage
