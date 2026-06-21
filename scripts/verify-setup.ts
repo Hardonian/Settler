@@ -48,11 +48,13 @@ function validateToolchain(findings: Finding[]): void {
   try {
     nodeContract.assertSupportedNodeVersion("verify:setup");
   } catch (error) {
+    const { requiredVersion } = nodeContract.formatNodeRequirement();
+    const requiredMajor = requiredVersion.split(".")[0] ?? "22";
     findings.push({
       severity: "error",
       area: "toolchain",
       message: error instanceof Error ? error.message : String(error),
-      action: "Switch to the repo Node 24 toolchain before onboarding or verification.",
+      action: `Switch to the repo Node ${requiredMajor} toolchain before onboarding or verification.`,
     });
   }
 }

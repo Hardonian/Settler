@@ -1,7 +1,7 @@
 {
   "buildCommand": "pnpm --filter @settler/web... build",
   "devCommand": "pnpm --filter @settler/web dev",
-  "installCommand": "corepack enable && corepack prepare pnpm@10.13.1 --activate && pnpm install --frozen-lockfile",
+  "installCommand": "corepack enable && corepack prepare pnpm@9.15.0 --activate && pnpm install --frozen-lockfile",
   "framework": "nextjs",
   "env": {
     "NODE_ENV": "production"

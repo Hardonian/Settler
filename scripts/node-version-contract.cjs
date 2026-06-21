@@ -32,12 +32,12 @@ function formatNodeRequirement() {
 
 function assertSupportedNodeVersion(context = "this command") {
   const { requiredVersion, requiredRange } = formatNodeRequirement();
-  const requiredMajor = Number(requiredVersion.split(".")[0] ?? 24);
+  const requiredMajor = Number(requiredVersion.split(".")[0] ?? 22);
   const currentMajor = Number(process.versions.node.split(".")[0] ?? 0);
 
   if (currentMajor !== requiredMajor) {
     const error = new Error(
-      `${context} requires Node ${requiredVersion} (${requiredRange}); active runtime is ${process.version}. Switch to the repo Node 24 toolchain before continuing.`
+      `${context} requires Node ${requiredVersion} (${requiredRange}); active runtime is ${process.version}. Switch to the repo Node ${requiredMajor} toolchain before continuing.`
     );
     error.code = "ERR_NODE_VERSION_MISMATCH";
     throw error;

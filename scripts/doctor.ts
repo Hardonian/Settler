@@ -200,12 +200,14 @@ function checkNodeVersion() {
       `${process.version} (required: ${requiredVersion}, ${requiredRange})`
     );
   } catch (error: any) {
+    const { requiredVersion } = nodeContract.formatNodeRequirement();
+    const requiredMajor = requiredVersion.split(".")[0] ?? "22";
     addCheck(
       "toolchain",
       "Node.js",
       "fail",
-      `${process.version} (required: Node 24.x)`,
-      error?.message || "Switch to the repo Node 24 toolchain before running doctor."
+      `${process.version} (required: Node ${requiredMajor}.x)`,
+      error?.message || `Switch to the repo Node ${requiredMajor} toolchain before running doctor.`
     );
   }
 }

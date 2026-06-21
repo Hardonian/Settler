@@ -141,7 +141,7 @@ const profiles = {
   ],
 };
 
-function assertNode24Toolchain() {
+function assertRepoNodeToolchain() {
   nodeContract.assertSupportedNodeVersion("verify-release");
 }
 
@@ -320,7 +320,7 @@ function emitSummary(args, results, runDir) {
 }
 
 async function main() {
-  assertNode24Toolchain();
+  assertRepoNodeToolchain();
   const args = parseArgs(process.argv.slice(2));
   const stages = resolveStages(args);
 
