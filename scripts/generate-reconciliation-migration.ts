@@ -301,10 +301,10 @@ async function main() {
 
     fs.writeFileSync(migrationPath, migrationSQL);
 
-    console.log(`✅ Generated reconciliation migration: ${migrationPath}`);
-    console.log("\n⚠️  IMPORTANT: Review the migration before applying!");
-    console.log("   Some sections require manual implementation (tables).");
-    console.log(`   Apply with: supabase db push\n`);
+    console.info(`✅ Generated reconciliation migration: ${migrationPath}`);
+    console.warn("\n⚠️  IMPORTANT: Review the migration before applying!");
+    console.warn("   Some sections require manual implementation (tables).");
+    console.info(`   Apply with: supabase db push\n`);
   } catch (error) {
     console.error("Fatal error:", error);
     process.exit(1);

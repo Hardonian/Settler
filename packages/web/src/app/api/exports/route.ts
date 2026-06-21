@@ -21,6 +21,7 @@ import {
   requireTenantRequestContext,
 } from "@/lib/api/tenant-context";
 import { getTraceId } from "@/lib/observability/trace";
+import { sanitizeCsvValue } from "@/lib/validation/csv-sanitization";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -467,23 +468,7 @@ async function processExport(
       const headers = Object.keys(data[0] || {});
       const csvRows = [
         headers.join(","),
-        ...data.map((row: any) =>
-          headers
-            .map((header) => {
-              const value = row[header];
-              if (value === null || value === undefined) return "";
-
-              let strValue = typeof value === "object" ? JSON.stringify(value) : String(value);
-
-              // CSV Formula Injection Protection
-              if (/^[=+\-@]/.test(strValue)) {
-                strValue = "'" + strValue;
-              }
-
-              return `"${strValue.replace(/"/g, '""')}"`;
-            })
-            .join(",")
-        ),
+        ...data.map((row: any) => headers.map((header) => sanitizeCsvValue(row[header])).join(",")),
       ];
       fileContent = csvRows.join("\n");
       filename = `export-${exportId}.csv`;

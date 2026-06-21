@@ -17,7 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Bumped `defu` to `^6.1.5` to resolve prototype pollution vulnerability
 
-### Infrastructure
+### DevOps & Infrastructure
 
 - Pinned GitHub Actions to Node.js 24 to resolve upstream deprecation warnings
 - Enabled type declaration emit (`declaration: true`) in `packages/api` tsconfig to unblock cross-package type resolution for `@settler/api/lib/email-lifecycle`

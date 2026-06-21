@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,16 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import {
-  Check,
-  ChevronRight,
-  Zap,
-  Shield,
-  Database,
-  Settings,
-  ArrowLeft,
-  ArrowRight,
-} from "lucide-react";
+import { Check, Zap, Shield, Database, ArrowLeft, ArrowRight } from "lucide-react";
 import { BrandLockup } from "@/components/brand/BrandLockup";
 
 const STEPS = [
@@ -121,7 +112,6 @@ const DEFAULT_RULES: Rule[] = [
 
 export default function OnboardingWizardPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [currentStep, setCurrentStep] = useState(1);
   const [answers, setAnswers] = useState<Record<string, unknown>>({});
   const [loading, setLoading] = useState(false);
@@ -487,8 +477,8 @@ function WizardLayout({
 }
 
 function SelectStep({
-  label,
-  placeholder,
+  label: _label,
+  placeholder: _placeholder,
   value,
   onChange,
   options,
@@ -594,7 +584,6 @@ function RulesStep({
   suggestedRules: Rule[];
   onChange: (rules: Rule[]) => void;
 }) {
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [newRule, setNewRule] = useState({
     field: "",
     type: "exact",

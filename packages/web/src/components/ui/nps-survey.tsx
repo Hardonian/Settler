@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, StarIcon, Send, X, MessageSquare, Heart, ThumbsUp, ThumbsDown } from "lucide-react";
 import { Button } from "./button";
-import { Card, CardContent, CardHeader, CardTitle } from "./card";
+import { CardContent, CardHeader } from "./card";
 import { Textarea } from "./textarea";
 
 interface NPSSurveyData {
