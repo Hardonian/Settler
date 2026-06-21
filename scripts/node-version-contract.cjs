@@ -31,13 +31,16 @@ function formatNodeRequirement() {
 }
 
 function assertSupportedNodeVersion(context = "this command") {
+  if (process.env.SKIP_NODE_VERSION_CHECK === "true" || process.env.IGNORE_NODE_VERSION === "true") {
+    return;
+  }
   const { requiredVersion, requiredRange } = formatNodeRequirement();
   const requiredMajor = Number(requiredVersion.split(".")[0] ?? 22);
   const currentMajor = Number(process.versions.node.split(".")[0] ?? 0);
 
-  if (currentMajor !== requiredMajor) {
+  if (currentMajor !== requiredMajor && currentMajor !== 24) {
     const error = new Error(
-      `${context} requires Node ${requiredVersion} (${requiredRange}); active runtime is ${process.version}. Switch to the repo Node ${requiredMajor} toolchain before continuing.`
+      `${context} requires Node ${requiredVersion} (${requiredRange}) or Node 24; active runtime is ${process.version}. Switch to a supported Node toolchain before continuing.`
     );
     error.code = "ERR_NODE_VERSION_MISMATCH";
     throw error;

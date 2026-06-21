@@ -79,7 +79,8 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
-      const { startDate, endDate, eventType, granularity = "day" } = req.query;
+      const queryParams = getUsageSchema.parse({ query: req.query });
+      const { startDate, endDate, eventType, granularity = "day" } = queryParams.query;
 
       let dateFilter = "";
       const params: (string | Date)[] = [tenantId];
@@ -98,13 +99,13 @@ router.get(
       }
 
       // Get event counts by granularity
-      const timeFormat =
-        {
-          hour: "DATE_TRUNC('hour', created_at)",
-          day: "DATE_TRUNC('day', created_at)",
-          week: "DATE_TRUNC('week', created_at)",
-          month: "DATE_TRUNC('month', created_at)",
-        }[granularity] || "DATE_TRUNC('day', created_at)";
+      const granularityMap: Record<string, string> = {
+        hour: "DATE_TRUNC('hour', created_at)",
+        day: "DATE_TRUNC('day', created_at)",
+        week: "DATE_TRUNC('week', created_at)",
+        month: "DATE_TRUNC('month', created_at)",
+      };
+      const timeFormat = granularityMap[granularity] || "DATE_TRUNC('day', created_at)";
 
       const usage = await queryWithTenant<{
         period: Date;
@@ -168,8 +169,8 @@ router.get(
         ok: true,
         status: "success",
         data: {
-          summary: summary.rows[0],
-          usage: usage.rows,
+          summary: summary[0],
+          usage: usage,
         },
       });
     } catch (error) {

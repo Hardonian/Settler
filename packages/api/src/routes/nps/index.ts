@@ -6,12 +6,13 @@
 
 import { Router, Response } from "express";
 import { z } from "zod";
-import { validateRequest } from "../middleware/validation";
-import { AuthRequest } from "../middleware/auth";
-import { requirePermission } from "../middleware/authorization";
-import { Permission } from "../infrastructure/security/Permissions";
-import { queryWithTenant } from "../db";
-import { handleRouteError } from "../utils/error-handler";
+import { validateRequest } from "../../middleware/validation";
+import { AuthRequest } from "../../middleware/auth";
+import { requirePermission } from "../../middleware/authorization";
+import { Permission } from "../../infrastructure/security/Permissions";
+import { queryWithTenant } from "../../db";
+import { handleRouteError } from "../../utils/error-handler";
+import { trackEventAsync } from "../../utils/event-tracker";
 
 const router: Router = Router();
 
@@ -53,13 +54,16 @@ router.post(
       );
 
       // Track event for analytics
-      trackEventAsync("nps_submitted", {
+      trackEventAsync(
         userId,
-        tenantId: tenantId!,
-        score: req.body.score,
-        npsType,
-        category,
-      });
+        "nps_submitted",
+        {
+          score: req.body.score,
+          npsType,
+          category,
+        },
+        tenantId
+      );
 
       res.status(201).json({
         ok: true,
@@ -79,7 +83,8 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId!;
-      const { startDate, endDate } = req.query;
+      const queryParams = getStatsSchema.parse({ query: req.query });
+      const { startDate, endDate } = queryParams.query;
 
       let dateFilter = "";
       const params: (string | Date)[] = [tenantId];
@@ -163,9 +168,9 @@ router.get(
         ok: true,
         status: "success",
         data: {
-          ...stats.rows[0],
-          trend: trend.rows,
-          categories: categories.rows,
+          ...stats[0],
+          trend: trend,
+          categories: categories,
         },
       });
     } catch (error) {
