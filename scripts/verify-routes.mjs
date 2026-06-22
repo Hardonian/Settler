@@ -46,7 +46,7 @@ function startWebServer() {
   const commandArgs = isWindows ? ["pnpm", ...args] : args;
   const server = spawn(command, commandArgs, {
     stdio: "pipe",
-    env: { ...process.env, SETTLER_VERIFY_MODE: "1" },
+    env: { ...process.env, SETTLER_VERIFY_MODE: "1", PORT: String(port) },
     shell: true,
   });
   server.stdout.on("data", (d) => process.stdout.write(d));
