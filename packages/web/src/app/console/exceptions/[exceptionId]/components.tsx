@@ -656,6 +656,41 @@ export function ExceptionActionPanel({
                     : "Reopen exception"}
               </FreezeBlockedButton>
             ))}
+            {status !== "resolved" && status !== "ignored" ? (
+              <FreezeBlockedButton
+                variant="outline"
+                className="border-amber-500 text-amber-700 hover:bg-amber-50"
+                onClick={async () => {
+                  setError(null);
+                  setSuccess(null);
+                  setPendingAction("propose");
+                  try {
+                    const res = await fetch("/api/approvals/request", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ exceptionId, proposedAction: "resolve", notes }),
+                    });
+                    const data = await res.json();
+                    if (data.data?.status === "pending_controller_review") {
+                      setSuccess(
+                        `Match proposed. Awaiting Controller approval (SOX). ID: ${data.data.approvalId}`
+                      );
+                    }
+                  } catch (e) {
+                    setError("Failed to propose match for approval.");
+                  } finally {
+                    setPendingAction(null);
+                  }
+                }}
+                disabled={isPending}
+                isFrozen={isFrozen}
+              >
+                {isPending && pendingAction === "propose" ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
+                Propose Match (SOX)
+              </FreezeBlockedButton>
+            ) : null}
           </div>
 
           <div className="pt-2 border-t border-border mt-2">

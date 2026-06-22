@@ -132,7 +132,7 @@ export function ApprovalWorkflows() {
   const handleApprove = async (requestId: string) => {
     try {
       setFreezeError(null);
-      const res = await fetch(`/api/v1/approvals/requests/${requestId}/approve`, {
+      const res = await fetch(`/api/approvals/${requestId}/approve`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({}),
