@@ -39,6 +39,11 @@ import { exportsRouter } from "./routes/exports";
 import { retentionRouter } from "./routes/retention";
 import { workerHealthRouter } from "./routes/worker-health";
 import { npsRouter } from "./routes/nps";
+import { erpSyncRouter } from "./routes/erp-sync";
+import { approvalsRouter } from "./routes/approvals";
+import { periodCloseRouter } from "./routes/period-close";
+import { fxTranslationRouter } from "./routes/fx-translation";
+import { auditorRouter } from "./routes/auditor";
 // telemetryRouter removed — orphaned dead code with broken imports (SEC-AUDIT-001)
 import { testModeMiddleware, validateTestMode } from "./middleware/test-mode";
 import { featureFlagsMiddleware } from "./middleware/feature-flags";
@@ -333,6 +338,11 @@ function configureProtectedRouter(router: Router, options: ProtectedRouterOption
   router.use("/retention", retentionRouter);
   router.use("/worker", workerHealthRouter);
   router.use("/tenant", tenantMiddleware, platformControlPlaneRouter);
+  router.use("/erp-sync", erpSyncRouter);
+  router.use("/approvals", approvalsRouter);
+  router.use("/close", periodCloseRouter);
+  router.use("/fx", fxTranslationRouter);
+  router.use("/auditor", auditorRouter);
 
   // Version-specific routes
   router.use(options.versionRouter);

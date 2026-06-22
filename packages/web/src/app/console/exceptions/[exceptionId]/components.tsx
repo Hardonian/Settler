@@ -708,8 +708,8 @@ export function ExceptionActionPanel({
                   setNotes(
                     `[AI Suggested Match] ${data.data?.suggestedResolution || "Match recommended"}`
                   );
-                } catch (e) {
-                  setError(e instanceof Error ? e.message : "AI suggestion failed.");
+                } catch (_e) {
+                  setError("AI suggestion failed.");
                 } finally {
                   setPendingAction(null);
                 }

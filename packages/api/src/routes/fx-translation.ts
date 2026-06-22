@@ -32,6 +32,7 @@ router.get(
       handleRouteError(res, error, "Failed to fetch FX rates", 500, {
         userId: req.userId,
       });
+      return;
     }
   }
 );
@@ -66,6 +67,7 @@ router.post(
       handleRouteError(res, error, "Failed to execute FX translation", 500, {
         userId: req.userId,
       });
+      return;
     }
   }
 );
