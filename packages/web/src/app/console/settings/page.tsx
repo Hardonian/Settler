@@ -57,6 +57,13 @@ const settingsCards = [
     label: "View Billing",
     icon: CreditCard,
   },
+  {
+    title: "Enterprise Security",
+    description: "Configure SAML SSO, OIDC, and SCIM directory provisioning for your workspace.",
+    href: "/console/settings/security",
+    label: "Manage SSO & SCIM",
+    icon: Shield,
+  },
 ];
 
 export default async function SettingsPage({
