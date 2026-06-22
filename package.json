@@ -348,15 +348,15 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",
-    "@playwright/test": "^1.60.0",
+    "@playwright/test": "^1.61.0",
     "@prisma/adapter-pg": "7.8.0",
     "@prisma/client": "7.8.0",
-    "@supabase/supabase-js": "^2.106.1",
+    "@supabase/supabase-js": "^2.108.2",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.15.0",
     "@types/pg": "8.20.0",
-    "@typescript-eslint/eslint-plugin": "^8.59.4",
-    "@typescript-eslint/parser": "^8.59.4",
+    "@typescript-eslint/eslint-plugin": "^8.61.1",
+    "@typescript-eslint/parser": "^8.61.1",
     "cross-env": "^10.1.0",
     "dotenv": "^17.4.2",
     "eslint": "^9.39.4",
@@ -365,12 +365,12 @@
     "husky": "^8.0.3",
     "jest": "^30.4.2",
     "lint-staged": "^15.5.2",
-    "pg": "^8.21.0",
-    "prettier": "^3.8.3",
+    "pg": "^8.22.0",
+    "prettier": "^3.8.4",
     "prisma": "7.8.0",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.2",
     "ts-jest": "^29.4.11",
-    "tsx": "^4.22.3",
+    "tsx": "^4.22.4",
     "typescript": "^5.9.3"
   },
   "engines": {
@@ -381,7 +381,7 @@
   "packageManager": "pnpm@9.15.0",
   "overrides": {},
   "dependencies": {
-    "turbo": "^2.9.14"
+    "turbo": "^2.9.18"
   },
   "resolutions": {
     "prisma": "7.8.0",

@@ -23,19 +23,19 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^3.0.69",
+    "@ai-sdk/openai": "^3.0.73",
     "@jobforge/shared": "workspace:*",
-    "@supabase/supabase-js": "^2.106.1",
-    "ai": "^6.0.199",
+    "@supabase/supabase-js": "^2.108.2",
+    "ai": "^6.0.208",
     "zod": "^3.25.76"
   },
   "devDependencies": {
     "@jobforge/typescript-config": "workspace:*",
     "@types/node": "^20.19.41",
-    "@vitest/coverage-v8": "^4.1.8",
+    "@vitest/coverage-v8": "^4.1.9",
     "eslint": "^9.39.4",
     "typescript": "^5.9.3",
     "vite": "^8.0.16",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.9"
   }
 }
