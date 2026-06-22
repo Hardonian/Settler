@@ -187,4 +187,51 @@ router.get(
   }
 );
 
+/**
+ * Get webhook delivery logs (IT Persona)
+ * GET /api/v1/webhooks/logs
+ */
+router.get(
+  "/logs",
+  authMiddleware,
+  requirePermission(Permission.WEBHOOKS_READ),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      // Mocking comprehensive webhook delivery logs for the IT Persona
+      return res.json({
+        data: {
+          logs: [
+            {
+              id: "wh_log_001",
+              webhookId: "wh_endpoint_a",
+              endpoint: "https://api.acmecorp.com/webhooks/settler",
+              event: "exception.created",
+              status: 200,
+              deliveredAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
+              payload: { id: "exc_123", amount: 500, currency: "USD" },
+              latencyMs: 124,
+            },
+            {
+              id: "wh_log_002",
+              webhookId: "wh_endpoint_a",
+              endpoint: "https://api.acmecorp.com/webhooks/settler",
+              event: "reconciliation.completed",
+              status: 503,
+              deliveredAt: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
+              payload: { runId: "run_456", matchedCount: 15000 },
+              latencyMs: 3500,
+            },
+          ],
+        },
+      });
+    } catch (error) {
+      logError("Failed to fetch webhook logs", error);
+      return res.status(500).json({
+        error: "Internal Server Error",
+        message: "Failed to fetch webhook logs",
+      });
+    }
+  }
+);
+
 export { router as webhookManagementRouter };
