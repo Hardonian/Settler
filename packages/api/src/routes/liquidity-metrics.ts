@@ -12,7 +12,7 @@ const router: Router = Router();
 router.get(
   "/",
   authMiddleware,
-  requirePermission(Permission.DASHBOARDS_READ),
+  requirePermission(Permission.REPORTS_READ),
   async (req: AuthRequest, res: Response) => {
     return res.json({
       data: {

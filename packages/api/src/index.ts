@@ -44,6 +44,11 @@ import { approvalsRouter } from "./routes/approvals";
 import { periodCloseRouter } from "./routes/period-close";
 import { fxTranslationRouter } from "./routes/fx-translation";
 import { auditorRouter } from "./routes/auditor";
+import { ruleDiscoveryRouter } from "./routes/rule-discovery";
+import { dataResidencyRouter } from "./routes/data-residency";
+import { liquidityMetricsRouter } from "./routes/liquidity-metrics";
+import { supportTicketsRouter } from "./routes/support-tickets";
+import { vendorDisputesRouter } from "./routes/vendor-disputes";
 // telemetryRouter removed — orphaned dead code with broken imports (SEC-AUDIT-001)
 import { testModeMiddleware, validateTestMode } from "./middleware/test-mode";
 import { featureFlagsMiddleware } from "./middleware/feature-flags";
@@ -344,6 +349,11 @@ function configureProtectedRouter(router: Router, options: ProtectedRouterOption
   router.use("/fx", fxTranslationRouter);
   router.use("/auditor", auditorRouter);
   router.use("/nps", npsRouter);
+  router.use("/intelligence/rule-discovery", ruleDiscoveryRouter);
+  router.use("/security/data-residency", dataResidencyRouter);
+  router.use("/dashboards/liquidity", liquidityMetricsRouter);
+  router.use("/support/tickets", supportTicketsRouter);
+  router.use("/vendor-disputes", vendorDisputesRouter);
 
   // Version-specific routes
   router.use(options.versionRouter);
