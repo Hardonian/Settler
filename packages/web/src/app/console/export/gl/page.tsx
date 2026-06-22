@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Download, FileSpreadsheet, ArrowRightRight } from "lucide-react";
+import { Download, FileSpreadsheet, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { fadeUp } from "@/lib/motion/variants";
 
@@ -87,7 +87,7 @@ export default function GLExportPage() {
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
-              <ArrowRightRight className="w-5 h-5 text-primary" />
+              <ArrowRight className="w-5 h-5 text-primary" />
               <CardTitle>Direct API Integration</CardTitle>
             </div>
             <CardDescription>

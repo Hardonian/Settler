@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Server, ShieldAlert, Key } from "lucide-react";
+import { Server } from "lucide-react";
 import { motion } from "framer-motion";
 import { fadeUp } from "@/lib/motion/variants";
 
