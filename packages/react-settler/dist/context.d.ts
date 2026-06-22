@@ -9,6 +9,6 @@ export interface CompilationProviderProps {
     config?: Partial<ReconciliationConfig>;
     children: ReactNode;
 }
-export declare function CompilationProvider({ mode, config, children, }: CompilationProviderProps): import("react/jsx-runtime").JSX.Element;
+export declare function CompilationProvider({ mode, config, children, }: CompilationProviderProps): import("react").JSX.Element;
 export declare function useCompilationContext(): ProtocolCompilationContext;
 //# sourceMappingURL=context.d.ts.map

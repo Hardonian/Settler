@@ -10,5 +10,5 @@ export interface ReconciliationDashboardProps {
     config?: Partial<ReconciliationConfig>;
     className?: string;
 }
-export declare function ReconciliationDashboard({ children, mode, config, className, }: ReconciliationDashboardProps): import("react/jsx-runtime").JSX.Element;
+export declare function ReconciliationDashboard({ children, mode, config, className, }: ReconciliationDashboardProps): import("react").JSX.Element;
 //# sourceMappingURL=ReconciliationDashboard.d.ts.map

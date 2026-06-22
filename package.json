@@ -379,18 +379,13 @@
     "pnpm": ">=9.0.0"
   },
   "packageManager": "pnpm@9.15.0",
-  "overrides": {
-    "@types/react": "18.3.28",
-    "@types/react-dom": "18.3.7"
-  },
+  "overrides": {},
   "dependencies": {
     "turbo": "^2.9.14"
   },
   "resolutions": {
     "prisma": "7.8.0",
     "@prisma/client": "7.8.0",
-    "@types/react": "18.3.28",
-    "@types/react-dom": "18.3.7",
     "rimraf": "^5.0.0",
     "raw-body": "^2.5.2",
     "hono": "^4.12.25",

@@ -2,6 +2,7 @@
  * SearchBar Component
  * Search functionality for reconciliation data
  */
+import React from "react";
 export interface SearchBarProps {
     onSearch?: (query: string) => void;
     placeholder?: string;
@@ -9,5 +10,5 @@ export interface SearchBarProps {
     debounceMs?: number;
     searchFields?: string[];
 }
-export declare function SearchBar({ onSearch, placeholder, className, debounceMs, searchFields, }: SearchBarProps): import("react/jsx-runtime").JSX.Element | null;
+export declare function SearchBar({ onSearch, placeholder, className, debounceMs, searchFields, }: SearchBarProps): React.JSX.Element | null;
 //# sourceMappingURL=SearchBar.d.ts.map

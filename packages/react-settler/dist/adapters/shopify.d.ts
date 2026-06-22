@@ -11,7 +11,7 @@ export interface ShopifyAppProps {
  * Shopify App Wrapper
  * Optimized for Shopify Polaris design system
  */
-export declare function ShopifyApp({ shop, transactions, exceptions, onAction, }: ShopifyAppProps): import("react/jsx-runtime").JSX.Element;
+export declare function ShopifyApp({ shop, transactions, exceptions, onAction, }: ShopifyAppProps): React.JSX.Element;
 /**
  * Shopify App Bridge Integration
  * For use with Shopify App Bridge

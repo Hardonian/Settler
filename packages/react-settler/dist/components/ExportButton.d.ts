@@ -10,5 +10,5 @@ export interface ExportButtonProps {
     className?: string | undefined;
     disabled?: boolean | undefined;
 }
-export declare function ExportButton({ data, filename, format, onExport, className, disabled, }: ExportButtonProps): import("react/jsx-runtime").JSX.Element | null;
+export declare function ExportButton({ data, filename, format, onExport, className, disabled, }: ExportButtonProps): import("react").JSX.Element | null;
 //# sourceMappingURL=ExportButton.d.ts.map

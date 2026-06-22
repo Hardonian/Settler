@@ -13,5 +13,5 @@ export interface MobileDashboardProps {
 /**
  * Mobile-optimized dashboard with responsive design
  */
-export declare function MobileDashboard({ transactions, exceptions, onTransactionSelect, onExceptionResolve, className, }: MobileDashboardProps): import("react/jsx-runtime").JSX.Element;
+export declare function MobileDashboard({ transactions, exceptions, onTransactionSelect, onExceptionResolve, className, }: MobileDashboardProps): import("react").JSX.Element;
 //# sourceMappingURL=MobileDashboard.d.ts.map

@@ -9,5 +9,5 @@ export interface MetricCardProps {
     trend?: "up" | "down" | "neutral";
     className?: string;
 }
-export declare function MetricCard({ title, value, subtitle, trend, className }: MetricCardProps): import("react/jsx-runtime").JSX.Element | null;
+export declare function MetricCard({ title, value, subtitle, trend, className }: MetricCardProps): import("react").JSX.Element | null;
 //# sourceMappingURL=MetricCard.d.ts.map

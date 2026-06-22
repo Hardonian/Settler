@@ -2,6 +2,7 @@
  * FilterBar Component
  * Advanced filtering for reconciliation data
  */
+import React from "react";
 export interface FilterBarProps {
     onFilterChange?: (filters: FilterState) => void;
     className?: string;
@@ -23,5 +24,5 @@ export interface FilterState {
     } | undefined;
     search?: string | undefined;
 }
-export declare function FilterBar({ onFilterChange, className, showProviderFilter, showStatusFilter, showDateRangeFilter, showAmountRangeFilter, }: FilterBarProps): import("react/jsx-runtime").JSX.Element | null;
+export declare function FilterBar({ onFilterChange, className, showProviderFilter, showStatusFilter, showDateRangeFilter, showAmountRangeFilter, }: FilterBarProps): React.JSX.Element | null;
 //# sourceMappingURL=FilterBar.d.ts.map

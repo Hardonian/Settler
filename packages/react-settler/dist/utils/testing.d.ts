@@ -28,7 +28,7 @@ export interface TestWrapperProps {
     mode?: "ui" | "config";
     config?: Partial<ReconciliationConfig>;
 }
-export declare function TestWrapper({ children, mode, config }: TestWrapperProps): import("react/jsx-runtime").JSX.Element;
+export declare function TestWrapper({ children, mode, config }: TestWrapperProps): React.JSX.Element;
 /**
  * Wait for async updates
  */

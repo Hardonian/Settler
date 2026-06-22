@@ -17,5 +17,5 @@ export interface MatchRuleProps {
     priority?: number;
     enabled?: boolean;
 }
-export declare function MatchRule({ id, name, field, type, tolerance, priority, enabled, }: MatchRuleProps): import("react/jsx-runtime").JSX.Element | null;
+export declare function MatchRule({ id, name, field, type, tolerance, priority, enabled, }: MatchRuleProps): import("react").JSX.Element | null;
 //# sourceMappingURL=MatchRule.d.ts.map

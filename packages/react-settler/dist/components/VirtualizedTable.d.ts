@@ -1,3 +1,4 @@
+import React from "react";
 import { ReconciliationTransaction } from "@settler/protocol";
 export interface VirtualizedTableProps {
     transactions: ReconciliationTransaction[];
@@ -6,5 +7,5 @@ export interface VirtualizedTableProps {
     onSelect?: (transaction: ReconciliationTransaction) => void;
     className?: string;
 }
-export declare function VirtualizedTable({ transactions, height, rowHeight, onSelect, className, }: VirtualizedTableProps): import("react/jsx-runtime").JSX.Element | null;
+export declare function VirtualizedTable({ transactions, height, rowHeight, onSelect, className, }: VirtualizedTableProps): React.JSX.Element | null;
 //# sourceMappingURL=VirtualizedTable.d.ts.map
