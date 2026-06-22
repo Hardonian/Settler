@@ -4,6 +4,7 @@ use std::collections::{BTreeMap, HashMap, HashSet};
 use std::fmt;
 
 pub mod plugin_runtime;
+pub mod streaming;
 
 pub const SCHEMA_VERSION: &str = "v1";
 
