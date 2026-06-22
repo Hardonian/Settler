@@ -15,8 +15,8 @@ router.post(
   requirePermission(Permission.JOBS_WRITE),
   async (req: AuthRequest, res: Response) => {
     try {
-      const tenantId = req.tenantId!;
-      const { period, entries } = req.body;
+      const _tenantId = req.tenantId!;
+      const { period: _period, entries } = req.body;
 
       // In a real implementation, this would use Token-Based Authentication (TBA)
       // to call the NetSuite SuiteTalk REST Web Services.
