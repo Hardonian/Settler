@@ -542,6 +542,27 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
     ctaRestrictions: "read-only",
     dataMode: "restricted",
   },
+  {
+    href: "/console/trust-score",
+    label: "Trust Score",
+    section: "Evidence + audit",
+    domain: "audits",
+    maturity: "runtime-operational",
+    runtimeDependency: "none",
+    authRequired: true,
+    tenantScopeRequired: false,
+    roleRestriction: "none",
+    envRequired: false,
+    databaseRequired: false,
+    stripeRequired: false,
+    supabaseRequired: false,
+    externalProviderRequired: false,
+    explicitDisclosureRequired: false,
+    degradedBehavior: "Always available — shows composite determinism metrics from run history.",
+    navTreatment: "primary",
+    ctaRestrictions: "read-only",
+    dataMode: "operational",
+  },
 ] as const;
 
 export function getConsoleRouteMeta(href: string): ConsoleRouteEntry | undefined {

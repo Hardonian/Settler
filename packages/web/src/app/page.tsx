@@ -94,9 +94,12 @@ export default function HomePage() {
           actions={
             <>
               <Button asChild size="lg">
-                <UiLink href="/demo/console">
-                  Explore operator console <ArrowRight className="ml-2 h-4 w-4" />
+                <UiLink href="/tour">
+                  See it in 60 seconds <ArrowRight className="ml-2 h-4 w-4" />
                 </UiLink>
+              </Button>
+              <Button variant="outline" size="lg" asChild>
+                <UiLink href="/demo/console">Explore operator console</UiLink>
               </Button>
               <Button variant="outline" size="lg" asChild>
                 <UiLink href="/signup">Start evaluating today</UiLink>

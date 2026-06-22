@@ -87,9 +87,11 @@ export default function VerifyPage() {
     let currentStep = 0;
     const interval = setInterval(() => {
       if (currentStep < steps.length) {
-        steps[currentStep].status = "passed";
-        steps[currentStep].hash =
-          `sha256:${Math.random().toString(36).substring(2, 10)}...${Math.random().toString(36).substring(2, 10)}`;
+        const step = steps[currentStep];
+        if (step) {
+          step.status = "passed";
+          step.hash = `sha256:${Math.random().toString(36).substring(2, 10)}...${Math.random().toString(36).substring(2, 10)}`;
+        }
         currentStep++;
         setProgress((currentStep / steps.length) * 100);
       } else {
