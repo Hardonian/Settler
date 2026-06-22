@@ -52,7 +52,29 @@ export default function FinancialClosePage() {
             <Button
               className="w-full"
               variant={closeStatus === "closed" ? "outline" : "default"}
-              onClick={() => setCloseStatus(closeStatus === "closed" ? "ready" : "closed")}
+              onClick={async () => {
+                if (closeStatus === "closed") {
+                  setCloseStatus("ready");
+                } else {
+                  try {
+                    const res = await fetch("/api/close/sign-off", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ period: "2026-10" }),
+                    });
+                    const data = await res.json();
+                    if (data.data?.status === "closed") {
+                      setCloseStatus("closed");
+                      alert(
+                        `Period successfully closed. Cryptographic Signature: ${data.data.signature}`
+                      );
+                    }
+                  } catch (e) {
+                    console.error(e);
+                    alert("Failed to close period securely.");
+                  }
+                }
+              }}
             >
               {closeStatus === "closed" ? "Reopen Period" : "Sign Off & Close Period"}
             </Button>

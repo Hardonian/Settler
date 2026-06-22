@@ -163,13 +163,13 @@ router.get(
       }
 
       const prompt = `Analyze this reconciliation exception and suggest a semantic match resolution.
-Source Data: ${JSON.stringify(exception.sourceTransaction)}
-Target Data: ${JSON.stringify(exception.targetTransactions)}
+Source Data ID: ${exception.sourceTransactionId}
+Target Data ID: ${exception.targetTransactionId}
 Context: Amount difference is ${exception.amountDiff}, confidence is ${exception.confidence}`;
 
       const aiResponse = deterministicAISandbox.execute({
         prompt,
-        context: { jobId: exception.executionId || undefined },
+        context: { jobId: exception.runId || undefined },
       });
 
       logInfo("Agentic AI semantic match generated", {
