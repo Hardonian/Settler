@@ -31,7 +31,7 @@ export function soc2AuditLogger() {
         timestamp: requestTime,
         traceId: req.traceId || "UNKNOWN",
         tenantId: req.tenantId || "SYSTEM",
-        userId: req.user?.id || "ANONYMOUS",
+        userId: req.userId || "ANONYMOUS",
         method: req.method,
         path: req.originalUrl || req.path,
         ipAddress: clientIp,

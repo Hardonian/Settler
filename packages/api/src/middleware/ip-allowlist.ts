@@ -1,12 +1,27 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "./auth";
 import { query } from "../db";
-import IPCIDR from "ip-cidr";
+import net from "net";
 
 export interface IPAllowlistError extends Error {
   code: string;
   statusCode: number;
   ipAddress: string;
+}
+
+// Simple IPv4 CIDR checker without external ESM dependencies
+function isIpInCidr(ip: string, cidr: string): boolean {
+  if (!net.isIPv4(ip)) return false; // Basic implementation: IPv4 only for now
+  const [range, bits] = cidr.split("/");
+  if (!range || !bits) return ip === cidr;
+
+  const mask = ~(2 ** (32 - parseInt(bits, 10)) - 1);
+
+  const ipLong = ip.split(".").reduce((acc, octet) => (acc << 8) + parseInt(octet, 10), 0) >>> 0;
+  const rangeLong =
+    range.split(".").reduce((acc, octet) => (acc << 8) + parseInt(octet, 10), 0) >>> 0;
+
+  return (ipLong & mask) === (rangeLong & mask);
 }
 
 /**
@@ -52,8 +67,7 @@ export async function enforceIpAllowlist(req: AuthRequest, res: Response, next: 
     // Check if the client IP falls into ANY of the configured CIDR blocks
     let isAllowed = false;
     for (const row of result) {
-      const cidr = new IPCIDR(row.cidr_block);
-      if (cidr.contains(clientIp)) {
+      if (isIpInCidr(clientIp, row.cidr_block)) {
         isAllowed = true;
         break;
       }
