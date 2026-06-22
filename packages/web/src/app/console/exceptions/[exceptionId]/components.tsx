@@ -676,7 +676,7 @@ export function ExceptionActionPanel({
                         `Match proposed. Awaiting Controller approval (SOX). ID: ${data.data.approvalId}`
                       );
                     }
-                  } catch (e) {
+                  } catch {
                     setError("Failed to propose match for approval.");
                   } finally {
                     setPendingAction(null);
@@ -708,7 +708,7 @@ export function ExceptionActionPanel({
                   setNotes(
                     `[AI Suggested Match] ${data.data?.suggestedResolution || "Match recommended"}`
                   );
-                } catch (_e) {
+                } catch {
                   setError("AI suggestion failed.");
                 } finally {
                   setPendingAction(null);

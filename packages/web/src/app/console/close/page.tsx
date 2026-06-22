@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ConsolePageHeader } from "@/components/console/ConsolePageHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Lock, ShieldAlert } from "lucide-react";
+import { CheckCircle2, AlertCircle, Download } from "lucide-react";
 import { motion } from "framer-motion";
 import { fadeUp } from "@/lib/motion/variants";
 

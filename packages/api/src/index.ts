@@ -343,6 +343,7 @@ function configureProtectedRouter(router: Router, options: ProtectedRouterOption
   router.use("/close", periodCloseRouter);
   router.use("/fx", fxTranslationRouter);
   router.use("/auditor", auditorRouter);
+  router.use("/nps", npsRouter);
 
   // Version-specific routes
   router.use(options.versionRouter);
