@@ -33,6 +33,10 @@ import {
   AlertTriangle,
   Headphones,
   CalendarClock,
+  Database,
+  BrainCircuit,
+  ShieldCheck,
+  DollarSign,
   type LucideIcon,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -76,6 +80,11 @@ const labelToIcon: Record<string, LucideIcon> = {
   "Operator Console": Bot,
   "Tenant Observability": Building2,
   Schedules: CalendarClock,
+  "Schema Registry": Database,
+  "Rule Discovery": BrainCircuit,
+  "Data Residency": ShieldCheck,
+  "Liquidity Metrics": DollarSign,
+  "CX Support": Headphones,
 };
 
 function maturityBadge(entry: ConsoleRouteEntry) {

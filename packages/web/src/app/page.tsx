@@ -71,13 +71,13 @@ const capabilityClusters = [
     ],
   },
   {
-    title: "Tenant-isolated security",
+    title: "Omnichannel Enterprise Suite",
     description:
-      "Row-level security, API-level tenant binding, and ledger partitioning. Cross-tenant access is mechanically prevented.",
+      "Fully featured workspaces and APIs for CFO Maker-Checker flows, Data Residency policies, Vendor Portals, and AI Rule Discovery.",
     bullets: [
-      "RLS on all tenant tables",
-      "Explicit degraded-state notices",
-      "Scoped API key lifecycle",
+      "SOX-compliant Maker-Checker approvals",
+      "Agentic AI exception resolution",
+      "Isolated Auditor & Vendor portals",
     ],
   },
 ];
@@ -194,9 +194,14 @@ export default function HomePage() {
                   desc: "Rust kernel, control plane, ledger architecture, and tenant isolation boundaries.",
                 },
                 {
-                  role: "Buyer / evaluator",
-                  href: "/docs/trust-packet",
-                  desc: "Trust packet, capability truth matrix, security invariants, and teardown path.",
+                  role: "CFO / Risk",
+                  href: "/console/close",
+                  desc: "SOX-compliant approvals, continuous close dashboards, and liquidity metric analysis.",
+                },
+                {
+                  role: "InfoSec / Admin",
+                  href: "/console/security/data-residency",
+                  desc: "Geo-fencing, PII redaction engines, SIEM exports, and tenant observability.",
                 },
               ].map((item) => (
                 <MarketingIntentCard key={item.role}>

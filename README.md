@@ -1,38 +1,31 @@
-# Settler — Reconciliation Intelligence Platform
+# Settler — Omnichannel Reconciliation Intelligence OS
 
-> Match financial transactions deterministically. Preserve adjudication memory. Export audit-grade evidence. Expose it all as an API.
+> Deterministic matching. Agentic AI exception resolution. Maker-Checker compliance. 6-Persona Enterprise Lock-In.
 
-Settler replaces spreadsheet reconciliation with a purpose-built engine: deterministic runs, hash-linked proofpacks, explicit degraded states, and tenant-scoped operator truth — not UI-invented summaries.
+Settler replaces legacy spreadsheet reconciliation and isolated back-office scripts with a comprehensive, purpose-built, and **audit-grade Operating System**. Built for the modern enterprise, Settler provides deterministic runs, hash-linked proofpacks, live ERP sync, and explicit degraded states that ensure zero data drift.
 
-## What Settler Does
+## The Omnichannel Enterprise Suite
 
-Given two data sources (e.g., Stripe payouts vs. bank deposits), Settler:
+Settler is no longer just for operations. We provide natively integrated workspaces engineered to permanently solve the reconciliation burden across 6 critical enterprise personas:
 
-1. **Ingests** transactions from CSV uploads or API calls
-2. **Matches** them deterministically using configurable tolerance rules
-3. **Flags exceptions** — unmatched and conflicting items — into a structured review queue
-4. **Records every decision** with full adjudication memory, so outcomes are replayable
-5. **Exports proofpacks** — hash-linked, auditor-verifiable evidence bundles — on demand
+| Audience                   | The Settler Solution                                                                                                 |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **CFO / FP&A**             | Maker-Checker SOX gates, Continuous Close APIs, Live FX Translation, and Liquidity Risk visualizers.                 |
+| **CISO / InfoSec**         | Hardened Data Residency (Geo-fencing) controls, runtime PII Redaction engines, and verifiable SIEM exports.          |
+| **IT & Engineering**       | Robust JSON/CSV Schema Registries, Real-time Webhook telemetry/replay loops, and developer tooling.                  |
+| **FinOps & Operators**     | AI-Powered Rule Discovery (mines manual behavior), Agentic exception auto-triage, and ZKP payload syncs.             |
+| **Customer Support (CX)**  | Native CRM syncing (Zendesk/Salesforce) directly tying support tickets to specific ledger exceptions.                |
+| **External Vendors (B2B)** | Isolated Vendor Portals allowing external partners to submit SLA/Dispute evidence directly into the ledger workflow. |
+| **External Auditors**      | Read-only statistical sampling portals specifically designed for Big 4 auditors checking ITGC/SOC2.                  |
 
-Every reconciliation run produces a canonical result that can be replayed from scratch and verified byte-for-byte.
+## Core Capabilities
 
-## Who This Is For
-
-| Audience                     | Problem Solved                                                                 |
-| ---------------------------- | ------------------------------------------------------------------------------ |
-| **Finance operations teams** | Replace manual spreadsheet matching with automated, audit-ready reconciliation |
-| **Engineering teams**        | Embed transaction matching into financial products via REST API                |
-| **Compliance teams**         | Produce deterministic evidence for every reconciliation decision               |
-
-## Core Capabilities (Shipped)
-
-- Stripe ↔ Bank transaction matching with configurable tolerance rules
-- CSV and API ingestion pipelines with idempotency guarantees
-- Manual review queue with structured adjudication and audit trails
-- Hash-linked proofpack generation for every reconciliation run
-- Multi-workspace tenant isolation enforced at the database and application layer
-- Live activity feed surfacing reconciliation and billing events
-- Operator console with run history, exception review, and evidence export
+- **Deterministic Edge Matching:** Stripe ↔ Bank transaction matching with configurable, programmatic tolerance rules.
+- **Agentic AI Resolution:** Deep reinforcement AI models that adjudicate exceptions within strict, deterministic bounds.
+- **Zero-Knowledge Proofs (ZKP):** Secure payload syncing that proves reconciliation intent without exposing raw PII.
+- **Live ERP Synchronization:** Write-back interfaces pushing perfectly matched datasets to Netsuite/Oracle/SAP.
+- **Continuous Close:** Real-time financial period closure with Maker-Checker multi-party signature tracking.
+- **Hash-Linked Proofpacks:** Cryptographic, byte-for-byte evidence generated on every single reconciliation run.
 
 See [What Works Today](docs/getting-started/WHAT_WORKS.md) for the full verified capability list.  
 See [Intentional Boundaries](docs/getting-started/INTENTIONAL_BOUNDARIES.md) for what is not yet production-ready.
@@ -44,7 +37,7 @@ Settler is composed of five primary layers with a strict separation of concerns:
 ```text
 ┌─────────────────────────────────────────────────────────┐
 │  Console Surface  (packages/web — Next.js App Router)   │
-│  Operator dashboard, exception review, evidence export  │
+│  Operator dashboard, CFO workflows, IT webhooks         │
 ├─────────────────────────────────────────────────────────┤
 │  CLI Surface  (packages/cli)                            │
 │  Foundry tooling, deterministic verification, replay    │
@@ -73,7 +66,6 @@ Minimal path to a working console:
 
 ```bash
 git clone https://github.com/settler/settler.git
-# cd into the cloned directory, then:
 pnpm run bootstrap     # creates .env.local, installs deps, validates contract
 pnpm tb:start          # starts TigerBeetle + PostgreSQL + Redis
 pnpm dev               # http://localhost:3000 (console), http://localhost:4000 (API)
@@ -85,16 +77,10 @@ Run a deterministic onboarding check with no network or secrets required:
 pnpm exec tsx packages/cli/src/index.ts first-run
 ```
 
-Run the full verification suite:
+Run the full verification suite (Required before any PR merge):
 
 ```bash
 pnpm verify
-```
-
-For a faster canonical surface + proofpack + tenant posture check:
-
-```bash
-pnpm run verify:moat-readiness
 ```
 
 ## Repository Structure
@@ -110,15 +96,6 @@ pnpm run verify:moat-readiness
 | `scripts/`                     | Verification, operational automation, and repo hygiene      |
 | `supabase/`                    | Database migrations and RLS policies                        |
 
-## TigerBeetle Management
-
-```bash
-pnpm tb:start    # Start the ledger container
-pnpm tb:status   # Check ledger health
-pnpm tb:logs     # Follow ledger logs
-pnpm tb:reset    # Wipe and reformat (development only)
-```
-
 ## Documentation
 
 **Getting started:**
@@ -126,9 +103,7 @@ pnpm tb:reset    # Wipe and reformat (development only)
 - [Canonical Local Setup](SETUP.md)
 - [Quickstart](QUICKSTART.md) — Fastest path to a running system
 - [What Works Today](docs/getting-started/WHAT_WORKS.md)
-- [Intentional Boundaries](docs/getting-started/INTENTIONAL_BOUNDARIES.md)
 - [Demo Walkthrough](docs/getting-started/DEMO_WALKTHROUGH.md)
-- [Common Setup Traps](docs/troubleshooting/SETUP_TRAPS.md)
 
 **Reference:**
 
@@ -136,25 +111,11 @@ pnpm tb:reset    # Wipe and reformat (development only)
 - [API Reference](docs/API_REFERENCE.md)
 - [Verification Commands](docs/VERIFICATION_COMMANDS.md)
 - [Security Policy](SECURITY.md)
-- [Security Invariants](SECURITY_INVARIANTS.md)
-
-**Evaluation and pilot:**
-
-- [Pilot Runbook](docs/pilot-runbook.md)
-- [Trust Packet](docs/trust-packet.md)
-- [Teardown Guide](docs/getting-started/teardown.md)
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). All pull requests must pass `pnpm verify`.
+See [CONTRIBUTING.md](CONTRIBUTING.md). All pull requests must pass `pnpm verify` and `pnpm run typecheck`.
 
 ## License
 
 See [LICENSE](LICENSE).
-
-## Repository Standards
-
-- Squash-only merges — no merge commits
-- Auto-delete merged branches
-- Weekly dependency update windows
-- Secret scanning and code scanning enforced in CI
