@@ -31,7 +31,7 @@
   "license": "MIT",
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.8",
-    "vite": "^8.0.16",
+    "vite": "^6.4.3",
     "vitest": "^4.1.8"
   }
 }
