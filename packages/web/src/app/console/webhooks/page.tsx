@@ -65,6 +65,9 @@ interface WebhooksListResponse {
 const availableEvents = [
   "reconciliation.completed",
   "reconciliation.failed",
+  "anomaly.detected",
+  "exception.auto_resolved",
+  "sla.breached",
   "receipt.parsed",
   "receipt.failed",
   "feature_flag.updated",
@@ -208,8 +211,8 @@ export default function WebhooksPage() {
       <div className="space-y-6">
         <div className="flex items-start justify-between gap-4">
           <ConsolePageHeader
-            title="Webhooks"
-            description="Configure endpoints to receive real-time event notifications from Settler."
+            title="Notifications & Webhooks"
+            description="Configure webhooks and notification endpoints (Slack, Email) to receive real-time event alerts like anomalies or SLA breaches."
           />
           <div className="flex-shrink-0 pt-1">
             <Button
