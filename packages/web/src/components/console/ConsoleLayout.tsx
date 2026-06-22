@@ -40,6 +40,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { BackendHealthBadge } from "./BackendHealthBadge";
+import { OnboardingChecklist } from "./OnboardingChecklist";
 import { CONSOLE_ROUTE_REGISTRY, type ConsoleRouteEntry } from "@/lib/console/route-maturity";
 import { OperationalRouteNotice } from "@/components/shared/OperationalRouteNotice";
 
@@ -189,6 +190,9 @@ export function ConsoleLayout({
               <BackendHealthBadge />
             </div>
             <NavContent />
+            <div className="p-4 border-t border-border mt-auto">
+              <OnboardingChecklist />
+            </div>
           </SheetContent>
         </Sheet>
       </div>
@@ -200,6 +204,9 @@ export function ConsoleLayout({
           </div>
           <div className="flex-1 overflow-y-auto">
             <NavContent />
+          </div>
+          <div className="p-4 border-t border-border/60">
+            <OnboardingChecklist />
           </div>
         </aside>
 

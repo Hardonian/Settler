@@ -46,7 +46,7 @@ export default function VerifyPage() {
   const [progress, setProgress] = useState(0);
   const [result, setResult] = useState<VerificationResult | null>(null);
 
-  const simulateVerification = useCallback((uploadedFile: File) => {
+  const simulateVerification = useCallback((_uploadedFile: File) => {
     setVerifying(true);
     setProgress(0);
     setResult(null);
@@ -203,6 +203,8 @@ export default function VerifyPage() {
                   <input
                     id="proofpack-input"
                     type="file"
+                    title="Upload proofpack file"
+                    aria-label="Upload proofpack file"
                     accept=".zip,.settler-proof"
                     className="hidden"
                     onChange={handleFileInput}
