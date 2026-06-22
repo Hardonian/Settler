@@ -12,7 +12,7 @@ jest.mock("../../db", () => ({
 describe("SOC 2 Enterprise Hardening Middleware", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.spyOn(console, "log").mockImplementation(() => {});
+    jest.spyOn(console, "info").mockImplementation(() => {});
   });
 
   describe("IP Allowlist (SOC 2 CC6.1)", () => {
@@ -95,7 +95,7 @@ describe("SOC 2 Enterprise Hardening Middleware", () => {
 
       soc2AuditLogger()(req, res, next);
       expect(next).toHaveBeenCalled();
-      expect(console.log).not.toHaveBeenCalled();
+      expect(console.info).not.toHaveBeenCalled();
     });
 
     it("should log POST mutations upon response finish", () => {
@@ -103,7 +103,7 @@ describe("SOC 2 Enterprise Hardening Middleware", () => {
         method: "POST",
         path: "/api/v1/exceptions",
         tenantId: "tenant-1",
-        user: { id: "user-123" },
+        userId: "user-123",
         ip: "10.0.0.1",
         headers: {},
         socket: {},
@@ -127,12 +127,12 @@ describe("SOC 2 Enterprise Hardening Middleware", () => {
       finishCallback();
 
       // Assert that the structured SOC 2 log was emitted
-      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('"_soc2_audit":true'));
-      expect(console.log).toHaveBeenCalledWith(
-        expect.stringContaining('"action":"HTTP_POST_/API/V1/EXCEPTIONS"')
+      expect(console.info).toHaveBeenCalledWith(expect.stringContaining('"_soc2_audit":true'));
+      expect(console.info).toHaveBeenCalledWith(
+        expect.stringContaining('"action":"HTTP_POST__API_V1_EXCEPTIONS"')
       );
-      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('"userId":"user-123"'));
-      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('"statusCode":201'));
+      expect(console.info).toHaveBeenCalledWith(expect.stringContaining('"userId":"user-123"'));
+      expect(console.info).toHaveBeenCalledWith(expect.stringContaining('"statusCode":201'));
     });
   });
 });

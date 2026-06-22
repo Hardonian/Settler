@@ -5,6 +5,7 @@
  */
 
 import { PrismaClient, Prisma } from "@prisma/client";
+import { secureFetch } from "../../utils/ssrf-protection";
 import { logInfo, logError } from "../../utils/logger";
 
 interface WebhookNotificationParams {
@@ -75,7 +76,7 @@ export async function sendWebhookNotification(
       : null;
 
     // Send webhook
-    const response = await fetch(webhook.url, {
+    const response = await secureFetch(webhook.url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

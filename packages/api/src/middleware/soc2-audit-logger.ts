@@ -41,8 +41,9 @@ export function soc2AuditLogger() {
       };
 
       // In production, this output is ingested by Datadog / Splunk / SIEM directly.
-      // We log it as a structured JSON object.
-      console.log(JSON.stringify(auditEvent));
+      // Output immutable structured JSON directly to STDOUT (12-factor app)
+
+      console.info(JSON.stringify(auditEvent));
 
       // In a more robust system, we would also write this async to a 'system_audit_log' DB table.
     });
