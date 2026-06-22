@@ -11,6 +11,7 @@ import { VisualGrid } from "@/components/site/infographics";
 import { COMMERCIAL_OFFERS, OfferCode } from "@/domain/billing/commercialModel";
 import { PREMIUM_PACKS } from "@/domain/billing/premiumPacks";
 import { calculateMonthlyCost, planConfigs } from "@/domain/billing/planConfig";
+import { ROICalculator } from "@/components/pricing/ROICalculator";
 
 export const metadata = {
   title: "Pricing | Settler",
@@ -208,6 +209,19 @@ export default function PricingPage() {
                 </CardContent>
               </Card>
             ))}
+          </div>
+        </div>
+      </Section>
+
+      {/* ROI Calculator */}
+      <Section className="border-t border-border/40 py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl">
+          <SectionHeader
+            title="Calculate your ROI"
+            description="See how much time and money Settler saves compared to manual reconciliation. Adjust the inputs to match your workload."
+          />
+          <div className="mt-10">
+            <ROICalculator />
           </div>
         </div>
       </Section>
