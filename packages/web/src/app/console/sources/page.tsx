@@ -78,6 +78,23 @@ export default function SourcesPage() {
                   </span>
                 </div>
                 <Progress value={source.reliabilityScore} className="h-2" />
+                <div className="pt-2 mt-4 border-t border-border flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">Ingestion Mode:</span>
+                  {source.id === "src_1" ? (
+                    <Badge
+                      variant="outline"
+                      className="bg-blue-50 text-blue-700 border-blue-200 flex gap-1 items-center"
+                    >
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                      </span>
+                      Real-Time Stream (Kafka)
+                    </Badge>
+                  ) : (
+                    <Badge variant="secondary">Batch (Cron)</Badge>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>

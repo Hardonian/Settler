@@ -112,9 +112,35 @@ export default function GLExportPage() {
               <p className="text-xs text-muted-foreground pt-1">
                 Configure NetSuite Token-Based Authentication (TBA) to enable direct syncing.
               </p>
-              <Button variant="outline" size="sm" className="w-full mt-2">
-                Configure NetSuite
-              </Button>
+              <div className="flex gap-2 mt-2">
+                <Button variant="outline" size="sm" className="w-1/2">
+                  Configure NetSuite
+                </Button>
+                <Button
+                  size="sm"
+                  className="w-1/2 bg-blue-600 hover:bg-blue-700 text-white"
+                  onClick={async () => {
+                    try {
+                      const res = await fetch("/api/erp/sync/netsuite/journal-entry", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ period: "2026-10", entries: [] }),
+                      });
+                      const data = await res.json();
+                      if (data.data?.success) {
+                        alert(
+                          `Successfully synced to NetSuite. JE ID: ${data.data.netsuiteInternalId}`
+                        );
+                      }
+                    } catch (e) {
+                      console.error(e);
+                      alert("Failed to sync to NetSuite");
+                    }
+                  }}
+                >
+                  Sync Open JEs
+                </Button>
+              </div>
             </div>
 
             <div className="rounded-lg border border-border bg-card p-4 space-y-2">

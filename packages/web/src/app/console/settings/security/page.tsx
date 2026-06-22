@@ -151,6 +151,71 @@ export default function SecuritySettingsPage() {
             </CardContent>
           )}
         </Card>
+
+        {/* ZKP Sync */}
+        <Card className="border-purple-200 bg-purple-50/10">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Shield className="w-5 h-5 text-purple-600" />
+                <CardTitle>Federated Zero-Knowledge Proof (B2B Sync)</CardTitle>
+              </div>
+            </div>
+            <CardDescription>
+              Verify ledger parity with partner organizations without revealing underlying
+              transaction PII.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6 pt-4 border-t border-purple-100">
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <h4 className="text-sm font-semibold">Generate Proof</h4>
+                <div className="space-y-2">
+                  <Label>Partner Tenant ID</Label>
+                  <Input placeholder="tenant_xyz" />
+                </div>
+                <Button
+                  onClick={async () => {
+                    const res = await fetch("/api/intelligence/zkp/generate", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ targetTenantId: "mock", runId: "mock" }),
+                    });
+                    const data = await res.json();
+                    alert(`Generated Proof Hash: ${data.data?.proofHash}`);
+                  }}
+                  variant="secondary"
+                  className="w-full"
+                >
+                  Generate Cryptographic Proof
+                </Button>
+              </div>
+
+              <div className="space-y-4">
+                <h4 className="text-sm font-semibold">Verify Partner Proof</h4>
+                <div className="space-y-2">
+                  <Label>Paste Proof Hash</Label>
+                  <Input placeholder="0x..." id="proof-hash" />
+                </div>
+                <Button
+                  onClick={async () => {
+                    const hash = (document.getElementById("proof-hash") as HTMLInputElement).value;
+                    const res = await fetch("/api/intelligence/zkp/verify", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ proofHash: hash }),
+                    });
+                    const data = await res.json();
+                    alert(data.data?.message);
+                  }}
+                  className="w-full bg-purple-600 hover:bg-purple-700"
+                >
+                  Verify Proof Parity
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </motion.div>
     </div>
   );

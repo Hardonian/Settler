@@ -634,27 +634,61 @@ export function ExceptionActionPanel({
           </div>
         ) : null}
 
-        <div className="flex flex-wrap gap-3">
-          {availableActions.map((action) => (
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-wrap gap-3">
+            {availableActions.map((action) => (
+              <FreezeBlockedButton
+                key={action}
+                variant={action === "ignore" ? "outline" : "default"}
+                onClick={() => handleAction(action)}
+                disabled={isPending}
+                isFrozen={isFrozen}
+                freezeReason={governanceState?.freeze_reason}
+                frozenMessage="Exception decisions are blocked by tenant freeze"
+              >
+                {isPending && pendingAction === action ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
+                {action === "resolve"
+                  ? "Resolve exception"
+                  : action === "ignore"
+                    ? "Ignore exception"
+                    : "Reopen exception"}
+              </FreezeBlockedButton>
+            ))}
+          </div>
+
+          <div className="pt-2 border-t border-border mt-2">
             <FreezeBlockedButton
-              key={action}
-              variant={action === "ignore" ? "outline" : "default"}
-              onClick={() => handleAction(action)}
+              variant="secondary"
+              onClick={async () => {
+                setError(null);
+                setPendingAction("ai-match");
+                try {
+                  const res = await fetch(
+                    `/api/intelligence/exceptions/${exceptionId}/agentic-match`
+                  );
+                  if (!res.ok) throw new Error("Failed to get AI match suggestion.");
+                  const data = await res.json();
+                  setNotes(
+                    `[AI Suggested Match] ${data.data?.suggestedResolution || "Match recommended"}`
+                  );
+                } catch (e) {
+                  setError(e instanceof Error ? e.message : "AI suggestion failed.");
+                } finally {
+                  setPendingAction(null);
+                }
+              }}
               disabled={isPending}
               isFrozen={isFrozen}
-              freezeReason={governanceState?.freeze_reason}
-              frozenMessage="Exception decisions are blocked by tenant freeze"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-purple-50 text-purple-700 hover:bg-purple-100 hover:text-purple-800 border border-purple-200"
             >
-              {isPending && pendingAction === action ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              {isPending && pendingAction === "ai-match" ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
               ) : null}
-              {action === "resolve"
-                ? "Resolve exception"
-                : action === "ignore"
-                  ? "Ignore exception"
-                  : "Reopen exception"}
+              ✨ Ask AI (Agentic Match)
             </FreezeBlockedButton>
-          ))}
+          </div>
         </div>
       </CardContent>
     </Card>
