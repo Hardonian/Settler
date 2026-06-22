@@ -7,7 +7,7 @@ import { tenantMiddleware } from "./middleware/tenant";
 import { securityHeaders } from "./middleware/security-headers";
 import { enforceIpAllowlist } from "./middleware/ip-allowlist";
 import { soc2AuditLogger } from "./middleware/soc2-audit-logger";
-import { metricsMiddleware } from "./middleware/observability-enhanced";
+import { observabilityEnhancedMiddleware } from "./middleware/observability-enhanced";
 import { errorHandler } from "./middleware/error";
 import { idempotencyMiddleware } from "./middleware/idempotency";
 import { healthRouter } from "./routes/health";
@@ -78,12 +78,7 @@ import { observabilityMiddleware } from "./middleware/observability";
 import { eventTrackingMiddleware } from "./middleware/event-tracking";
 import { setupSignalHandlers, registerShutdownHandler } from "./utils/graceful-shutdown";
 import { requestTimeoutMiddleware, getRequestTimeout } from "./middleware/request-timeout";
-import {
-  initializeSentry,
-  sentryRequestHandler,
-  sentryTracingHandler,
-  sentryErrorHandler,
-} from "./middleware/sentry";
+import { initializeSentry, sentryErrorHandler } from "./middleware/sentry";
 import { profilingMiddleware } from "./infrastructure/observability/profiling";
 import { setCsrfToken, csrfProtection, getCsrfToken } from "./middleware/csrf";
 import { sanitizeInput, sanitizeUrlParams } from "./middleware/input-sanitization";
@@ -113,7 +108,7 @@ initializeSentry();
 
 // Sentry request and tracing handlers (must be first)
 app.use(securityHeaders());
-app.use(metricsMiddleware());
+app.use(observabilityEnhancedMiddleware);
 app.use(soc2AuditLogger()); // SOC 2 System Monitoring (CC7.2)
 
 // Global tenant-context dependent middleware must be mounted AFTER tenant identification
