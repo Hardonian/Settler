@@ -35,7 +35,6 @@ import {
   CalendarClock,
   Database,
   BrainCircuit,
-  ShieldCheck,
   DollarSign,
   type LucideIcon,
 } from "lucide-react";

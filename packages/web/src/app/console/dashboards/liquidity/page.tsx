@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { ConsolePageHeader } from "@/components/console/ConsolePageHeader";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { DollarSign, TrendingUp, AlertCircle, BarChart3 } from "lucide-react";
 
 export default function LiquidityDashboardPage() {

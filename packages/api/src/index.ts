@@ -4,6 +4,10 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { authMiddleware, AuthRequest } from "./middleware/auth";
 import { tenantMiddleware } from "./middleware/tenant";
+import { securityHeaders } from "./middleware/security-headers";
+import { enforceIpAllowlist } from "./middleware/ip-allowlist";
+import { soc2AuditLogger } from "./middleware/soc2-audit-logger";
+import { metricsMiddleware } from "./middleware/observability-enhanced";
 import { errorHandler } from "./middleware/error";
 import { idempotencyMiddleware } from "./middleware/idempotency";
 import { healthRouter } from "./routes/health";
@@ -108,10 +112,16 @@ const PORT = config.port;
 initializeSentry();
 
 // Sentry request and tracing handlers (must be first)
-app.use(sentryRequestHandler());
-app.use(sentryTracingHandler());
+app.use(securityHeaders());
+app.use(metricsMiddleware());
+app.use(soc2AuditLogger()); // SOC 2 System Monitoring (CC7.2)
 
-// Security middleware
+// Global tenant-context dependent middleware must be mounted AFTER tenant identification
+// Currently, tenant context usually happens in the specific routes or via `requireTenant`
+// But we mount the IP allowlist early as a generic middleware. It will passively skip if no tenantId is found yet.
+app.use(enforceIpAllowlist); // Enterprise Logical Access (CC6.1)
+
+// Parserscurity middleware
 app.use(
   helmet({
     contentSecurityPolicy: {
