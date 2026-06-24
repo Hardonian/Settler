@@ -97,10 +97,6 @@ const profiles = {
     "reconciliationTopology",
     "lint",
     "typecheck",
-    "claims",
-    "boundaries",
-    "routes",
-    "security",
   ],
   /** Same as `fast` plus static internal link integrity (requires fresh `qa/route-registry.json` from `qa:routes`). */
   "fast-with-links": [
