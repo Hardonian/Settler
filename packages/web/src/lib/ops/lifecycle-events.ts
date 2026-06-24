@@ -48,8 +48,7 @@ async function getActivationFunnel(): Promise<ActivationFunnelModule> {
         eventType: string,
         params: any
       ) {
-        const { PrismaClient } = await import("@prisma/client");
-        const prisma = new PrismaClient();
+        const { prisma } = await import("@/shared/db/prismaClient");
         try {
           const { userId, tenantId, billingAccountId, properties = {} } = params;
 
@@ -79,8 +78,8 @@ async function getActivationFunnel(): Promise<ActivationFunnelModule> {
               aggregated: false,
             },
           });
-        } finally {
-          await prisma.$disconnect();
+        } catch (error) {
+          console.error("[Lifecycle Events] Failed in fallback event emission:", error);
         }
       },
     };

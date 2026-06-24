@@ -248,12 +248,7 @@ export function deriveOperatorRunNextActions(run: OperatorRunDetail): OperatorNe
     });
   }
 
-  if (
-    actions.length === 0 &&
-    run.isTerminal &&
-    run.summary.unmatched === 0 &&
-    run.summary.conflicts === 0
-  ) {
+  if (run.isTerminal && run.summary.unmatched === 0 && run.summary.conflicts === 0) {
     actions.push({
       label: "Archive evidence for close or audit",
       href: undefined,

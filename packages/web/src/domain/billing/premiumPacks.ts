@@ -43,7 +43,7 @@ export const PREMIUM_PACKS: readonly PremiumPack[] = [
     name: "API & automation",
     summary:
       "Programmatic execution, keys, webhooks, and workflow scaffolding (where marked thin/restricted in route maturity).",
-    consoleRoutes: ["/console/api-keys", "/console/webhooks", "/console/workflows"],
+    consoleRoutes: ["/console/api-keys", "/console/developers/webhooks", "/console/workflows"],
     suggestedBasePlan: "pro",
   },
   {

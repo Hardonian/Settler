@@ -5,7 +5,7 @@
  */
 
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/shared/db/prismaClient";
 import { safeLogger } from "@/lib/observability/safe-logger";
 
 type BillingHardeningModule = {
@@ -28,7 +28,6 @@ async function getBillingHardening(): Promise<BillingHardeningModule> {
   } catch {
     cachedBilling = {
       checkEntitlements: async (billingAccountId: string, _options?: any) => {
-        const prisma = new PrismaClient();
         try {
           const account = await prisma.billingAccount.findUnique({
             where: { id: billingAccountId },
@@ -72,12 +71,14 @@ async function getBillingHardening(): Promise<BillingHardeningModule> {
             canViewReports: true,
             canUseAPI: true,
           };
-        } finally {
-          await prisma.$disconnect();
+        } catch (error) {
+          await safeLogger.error("[Entitlement Checks] Failed in fallback checkEntitlements", {
+            error,
+          });
+          throw error;
         }
       },
       getBillingStatus: async (billingAccountId: string) => {
-        const prisma = new PrismaClient();
         try {
           const account = await prisma.billingAccount.findUnique({
             where: { id: billingAccountId },
@@ -99,8 +100,11 @@ async function getBillingHardening(): Promise<BillingHardeningModule> {
             return "unpaid";
           }
           return sub.status as string;
-        } finally {
-          await prisma.$disconnect();
+        } catch (error) {
+          await safeLogger.error("[Entitlement Checks] Failed in fallback getBillingStatus", {
+            error,
+          });
+          return "unknown";
         }
       },
     };

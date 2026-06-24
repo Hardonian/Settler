@@ -6,7 +6,7 @@ describe("mapLegacyPlanId", () => {
   });
 
   it("passes through modern plan codes", () => {
-    expect(mapLegacyPlanId("growth")).toBe("growth");
+    expect(mapLegacyPlanId("pro")).toBe("pro");
     expect(mapLegacyPlanId("scale")).toBe("scale");
   });
 });

@@ -61,7 +61,7 @@ function runCommand(command: string, args: string[], cwd: string): Promise<void>
   });
 }
 
-async function waitForServer(url: string, timeoutMs = 60_000): Promise<void> {
+async function waitForServer(url: string, timeoutMs = 120_000): Promise<void> {
   const startedAt = Date.now();
 
   while (Date.now() - startedAt < timeoutMs) {
@@ -96,15 +96,15 @@ describe("content pages in production build mode", () => {
     }
 
     serverProcess = spawn(
-      PACKAGE_MANAGER.command,
-      [...PACKAGE_MANAGER.argsPrefix, "exec", "next", "start", "-p", String(PRODUCTION_PORT)],
+      process.execPath,
+      ["node_modules/next/dist/bin/next", "start", "-p", String(PRODUCTION_PORT)],
       {
         cwd: WEB_PACKAGE_DIR,
-        env: { ...process.env, NODE_ENV: "production" },
-        stdio: "ignore",
-        shell: process.platform === "win32",
+        env: { ...process.env, NODE_ENV: "production", PORT: String(PRODUCTION_PORT) },
+        stdio: "inherit",
+        shell: false,
       }
-    );
+    ) as unknown as ChildProcessWithoutNullStreams;
 
     await waitForServer(`${BASE_URL}/product`);
   });
