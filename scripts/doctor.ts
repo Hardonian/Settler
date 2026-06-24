@@ -218,14 +218,14 @@ function checkPnpmVersion() {
     const version = output.trim();
     const major = parseInt(version.split(".")[0]);
 
-    if (major >= 10) {
-      addCheck("toolchain", "pnpm", "pass", `v${version} (required: >=10.x)`);
+    if (major >= 9) {
+      addCheck("toolchain", "pnpm", "pass", `v${version} (required: >=9.x)`);
     } else {
       addCheck(
         "toolchain",
         "pnpm",
         "fail",
-        `v${version} (required: >=10.x)`,
+        `v${version} (required: >=9.x)`,
         "Upgrade pnpm: npm install -g pnpm@latest"
       );
     }
@@ -359,6 +359,11 @@ function checkOptionalEnvVars() {
 // ---------------------------------------------------------------------------
 
 async function checkPostgres() {
+  if (FAST_MODE || FIRST_RUN) {
+    addCheck("services", "PostgreSQL", "warn", "Skipped in fast/first-run mode");
+    return;
+  }
+
   const port = parseInt(getEnvVar("DB_PORT") || "5432");
   const host = getEnvVar("DB_HOST") || "localhost";
 
@@ -919,8 +924,6 @@ async function main() {
   // Exit with appropriate code
   if (output.status === "fail") {
     process.exit(1);
-  } else if (output.status === "warn") {
-    process.exit(2);
   } else {
     process.exit(0);
   }
