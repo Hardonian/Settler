@@ -100,7 +100,7 @@ jobs:
           # Start 3 nodes in background
           for i in 0 1 2; do
             PORT=$((3000 + i))
-            tigerbeetle start --addresses=127.0.0.1:$PORT /tmp/tb/$i/tigerbeetle_$i.tigerbeetle > /tmp/tb_$i.log 2>&1 &
+            tigerbeetle start --addresses=127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002 /tmp/tb/$i/tigerbeetle_$i.tigerbeetle > /tmp/tb_$i.log 2>&1 &
             echo $! > /tmp/tb_$i.pid
             echo "Started node $i on port $PORT (PID: $(cat /tmp/tb_$i.pid))"
           done
