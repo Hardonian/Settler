@@ -1,5 +1,3 @@
 config-variables:
   - "ENABLE_AUTO_SYNC"
   - "PUBLIC_MIRROR_GIT_USERNAME"
-ignore:
-  - "Context access might be invalid"

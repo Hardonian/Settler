@@ -1,4 +1,5 @@
 import { Router, Response } from "express";
+import { AuthRequest } from "../middleware/auth";
 import { handleRouteError } from "../utils/error-handler";
 
 const router: Router = Router();
@@ -7,8 +8,13 @@ const router: Router = Router();
  * GET /api/v1/vendor-disputes
  * B2B Vendor Portal: fetch disputes associated with external vendors.
  */
-router.get("/", async (req, res: Response) => {
+router.get("/", async (req: AuthRequest, res: Response) => {
   try {
+    const tenantId = req.tenantId;
+    if (!tenantId) {
+      return res.status(400).json({ error: "Missing tenant context" });
+    }
+
     return res.json({
       data: {
         vendorName: "Acme Logistics Inc.",

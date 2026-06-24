@@ -69,3 +69,10 @@ if (missing.length > 0 || leakedToClient.length > 0) {
 }
 
 console.log("✅ Build-time environment validation passed for required key groups.");
+
+import { rmSync } from "node:fs";
+try {
+  rmSync(resolve(__dirname, "..", ".next", "next.lock"), { force: true });
+  rmSync(resolve(__dirname, "..", ".next", "build.lock"), { force: true });
+  rmSync(resolve(__dirname, "..", ".next", "trace"), { force: true });
+} catch {}
