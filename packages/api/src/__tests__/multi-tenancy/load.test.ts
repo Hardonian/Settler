@@ -32,7 +32,7 @@ describeLoadTests("Load Testing", () => {
         slug: `load-test-${Date.now()}`,
         ownerEmail: `load-${Date.now()}@test.com`,
         ownerPasswordHash: await hashPassword("password123"),
-        tier: TenantTier.GROWTH,
+        tier: TenantTier.PRO,
       });
 
       const promises = Array.from({ length: 100 }, () =>

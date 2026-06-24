@@ -100,11 +100,7 @@ try {
   prismaInstance =
     globalForPrisma.prisma ??
     new PrismaClient({
-      datasources: {
-        db: {
-          url: dbUrl,
-        },
-      },
+      datasourceUrl: dbUrl,
     });
 } catch (error) {
   if (!isBuildPhase) {

@@ -15,7 +15,7 @@ function makeTenant(): Tenant {
     id: "tenant-1",
     name: "Tenant One",
     slug: "tenant-one",
-    tier: TenantTier.GROWTH,
+    tier: TenantTier.PRO,
     status: TenantStatus.ACTIVE,
     quotas: {
       rateLimitRpm: 1000,
