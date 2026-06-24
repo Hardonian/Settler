@@ -166,6 +166,12 @@ const TENANT_SCOPED_TABLES = new Set([
   "notifications",
   "alert_notifications",
   "alerts",
+
+  // Autonomous agent & monitoring tables
+  "agent_status",
+  "monitoring_alerts",
+  "deploys",
+  "security_audits",
 ]);
 
 /**

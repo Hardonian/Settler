@@ -2414,25 +2414,30 @@ model OperatorSuggestionDismissal {
 
 model AgentStatus {
   id        BigInt   @id @default(autoincrement())
+  tenantId  String?  @map("tenant_id") @db.Uuid
   timestamp DateTime @default(now())
   agents    Json     // Array of agent status objects
   metadata  Json     @default("{}")
 
+  @@index([tenantId])
   @@map("agent_status")
 }
 
 model MonitoringAlert {
   id         BigInt   @id @default(autoincrement())
+  tenantId   String?  @map("tenant_id") @db.Uuid
   message    String   @db.Text
   status     Json?
   metadata   Json     @default("{}")
   createdAt  DateTime @default(now()) @map("created_at")
 
+  @@index([tenantId])
   @@map("monitoring_alerts")
 }
 
 model AgentDeploy {
   id         BigInt   @id @default(autoincrement())
+  tenantId   String?  @map("tenant_id") @db.Uuid
   env        String
   commit     String
   status     String
@@ -2440,17 +2445,20 @@ model AgentDeploy {
   error      String?  @db.Text
   createdAt  DateTime @default(now()) @map("created_at")
 
+  @@index([tenantId])
   @@map("deploys")
 }
 
 model SecurityAudit {
   id        BigInt   @id @default(autoincrement())
+  tenantId  String?  @map("tenant_id") @db.Uuid
   scanTime  DateTime? @map("scan_time")
   issues    Json?
   summary   Json?
   metadata  Json     @default("{}")
   createdAt DateTime @default(now()) @map("created_at")
 
+  @@index([tenantId])
   @@map("security_audits")
 }
 

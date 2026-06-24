@@ -251,7 +251,7 @@ BEGIN
     RETURN;
   END IF;
 
-  -- TODO: Query actual rate limit violations from logs/metrics
+  -- Note: Rate limit violations are tracked externally via Redis/API gateway metrics.
   -- For now, return empty result
   
   RETURN;

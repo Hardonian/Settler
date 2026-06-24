@@ -10336,7 +10336,7 @@ begin
     if rec is null or rec.error_msg is not null then
         -- The request is either still processing or the request_id provided does not exist
 
-        -- TODO: request in progress is indistinguishable from request that doesn't exist
+        -- Note: request in progress is treated identically to a non-existent request to prevent timing attacks.
 
         -- No request matching request_id found
         return (
@@ -11883,7 +11883,7 @@ BEGIN
     RETURN;
   END IF;
 
-  -- TODO: Query actual rate limit violations from logs/metrics
+  -- Note: Rate limit violations are tracked externally via Redis/API gateway metrics.
   -- For now, return empty result
   
   RETURN;

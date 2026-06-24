@@ -14,7 +14,7 @@ fi
 
 echo "🔍 Running pre-push verification gate (aligned with CI verify:fast)..."
 if command -v pnpm >/dev/null 2>&1; then
-  pnpm verify:fast || {
+  pnpm run repo-integrity && pnpm verify:fast || {
     echo "❌ Pre-push verification failed. Run 'pnpm run verify:fast' locally and fix issues before pushing."
     exit 1
   }
