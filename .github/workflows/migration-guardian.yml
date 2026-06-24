@@ -315,7 +315,7 @@ jobs:
   apply-staging-migrations:
     name: Apply Migrations to Staging
     runs-on: ubuntu-latest
-    needs: [migration-guardian]
+    needs: [migration-guardian, detect-migrations]
     if: |
       success() &&
       (github.event_name == 'push' || github.event.pull_request.merged == true) &&

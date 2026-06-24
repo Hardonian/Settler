@@ -44,7 +44,7 @@ export interface LedgerConfig {
  * Default configuration
  */
 const DEFAULT_CONFIG: LedgerConfig = {
-  enabled: true, // Enabled by default for enterprise financial consistency
+  enabled: process.env.NODE_ENV !== "test", // Enabled by default for enterprise financial consistency, except in tests
   address: "localhost:4300",
   clusterId: 0,
   timeoutMs: 5000,
@@ -90,8 +90,8 @@ export class LedgerService {
   private getTigerBeetleEnabledFromEnv(): boolean {
     const envValue = process.env.TIGERBEETLE_ENABLED;
     if (envValue === undefined || envValue === "") {
-      // Default to true for enterprise financial consistency
-      return true;
+      // Default to false in test environment unless explicitly enabled, otherwise true for enterprise financial consistency
+      return process.env.NODE_ENV !== "test";
     }
     return envValue.toLowerCase() === "true" || envValue === "1";
   }

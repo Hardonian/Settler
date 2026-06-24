@@ -94,14 +94,7 @@ let prismaInstance: PrismaClientType;
 try {
   // Pass datasourceUrl explicitly to satisfy Prisma wasm/client engine validation.
   // The build phase sets a dummy DATABASE_URL to prevent build-time failures.
-  const dbUrl =
-    (typeof process !== "undefined" && process.env ? process.env["DATABASE_URL"] : null) ||
-    "postgresql://dummy:dummy@localhost:5432/dummy?schema=public&connection_limit=1";
-  prismaInstance =
-    globalForPrisma.prisma ??
-    new PrismaClient({
-      datasourceUrl: dbUrl,
-    });
+  prismaInstance = globalForPrisma.prisma ?? new PrismaClient();
 } catch (error) {
   if (!isBuildPhase) {
     console.error("[Prisma] Failed to initialize Prisma client:", error);
