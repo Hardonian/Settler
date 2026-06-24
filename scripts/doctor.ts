@@ -26,7 +26,12 @@ import * as fs from "fs";
 import * as path from "path";
 import * as net from "net";
 import { parseArgs } from "util";
+import * as dotenv from "dotenv";
 import nodeContract from "./node-version-contract.cjs";
+
+// Load environment variables from .env and .env.local
+dotenv.config({ path: path.join(process.cwd(), ".env") });
+dotenv.config({ path: path.join(process.cwd(), ".env.local") });
 
 // ---------------------------------------------------------------------------
 // Types
@@ -509,6 +514,7 @@ function checkPrismaClient() {
     path.join(process.cwd(), "node_modules", ".prisma", "client"),
     path.join(process.cwd(), "packages", "web", "node_modules", ".prisma", "client"),
     path.join(process.cwd(), "packages", "api", "node_modules", ".prisma", "client"),
+    path.join(process.cwd(), "node_modules", "@prisma", "client"),
   ];
 
   const clientExists = possiblePaths.some((p) => fileExists(p));

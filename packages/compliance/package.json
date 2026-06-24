@@ -1,0 +1,7 @@
+{
+  "name": "@settler/compliance",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Settler compliance Go module wrapper",
+  "scripts": {}
+}
