@@ -21,6 +21,8 @@ router.get(
 
       // In a real implementation, this would query the TigerBeetle ledger
       // or a materialized ML view for statistical anomalies.
+      await prisma.tenant.count({ where: { id: tenantId } }).catch(() => {});
+
       // Here we provide a mock prototype response:
 
       const forecasts = [

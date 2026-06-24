@@ -42,15 +42,15 @@ router.post(
 
       // Determine promoter/detractor/passive
       let npsType: "promoter" | "passive" | "detractor" = "passive";
-      if (req.body.score >= 9) npsType = "promoter";
-      else if (req.body.score <= 6) npsType = "detractor";
+      if (score >= 9) npsType = "promoter";
+      else if (score <= 6) npsType = "detractor";
 
       await queryWithTenant(
         tenantId,
         `INSERT INTO nps_responses (
           user_id, tenant_id, score, feedback, category, nps_type, created_at
         ) VALUES ($1, $2, $3, $4, $5, $6, NOW())`,
-        [userId, req.body.score, feedback || "", category, npsType]
+        [userId, score, feedback || "", category, npsType]
       );
 
       // Track event for analytics
@@ -58,7 +58,7 @@ router.post(
         userId,
         "nps_submitted",
         {
-          score: req.body.score,
+          score,
           npsType,
           category,
         },
