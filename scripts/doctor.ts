@@ -202,7 +202,7 @@ function checkPnpmVersion() {
   try {
     const output = execSync("pnpm --version", { encoding: "utf-8", stdio: "pipe" });
     const version = output.trim();
-    const major = parseInt(version.split(".")[0]);
+    const major = parseInt(version.split(".")[0] ?? "0", 10);
 
     if (major >= 9) {
       addCheck("toolchain", "pnpm", "pass", `v${version} (required: >=9.x)`);
@@ -238,7 +238,7 @@ function checkDocker() {
 function checkDockerCompose() {
   try {
     const output = execSync("docker-compose --version", { encoding: "utf-8", stdio: "pipe" });
-    addCheck("toolchain", "Docker Compose", "pass", output.trim().split("\n")[0]);
+    addCheck("toolchain", "Docker Compose", "pass", output.trim().split("\n")[0] ?? "");
   } catch {
     // Try docker compose (newer syntax)
     try {
