@@ -36,7 +36,9 @@ export default function VendorPortalPage() {
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       <div className="flex flex-col space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Partner Dispute Resolution</h1>
+        <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
+          <Handshake className="w-8 h-8 text-primary" /> Partner Dispute Resolution
+        </h1>
         <p className="text-muted-foreground">
           Welcome back, {data?.vendorName || "Partner"}. Review open disputes and submit evidence
           directly.

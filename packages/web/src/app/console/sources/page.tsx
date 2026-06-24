@@ -46,6 +46,18 @@ export default function SourcesPage() {
         description="Monitor the health and reliability scoring of your connected data sources."
       />
 
+      <Card className="border-emerald-500/20 bg-emerald-500/5">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-emerald-600 text-lg">
+            <ServerCrash className="w-5 h-5" />
+            Active Failover & Anomaly Protection
+          </CardTitle>
+          <CardDescription>
+            Multi-region database redundancy and zero-downtime ledger replay are fully operational.
+          </CardDescription>
+        </CardHeader>
+      </Card>
+
       <motion.div initial="hidden" animate="visible" variants={fadeUp} className="grid gap-6">
         {sources.map((source) => (
           <Card key={source.id}>

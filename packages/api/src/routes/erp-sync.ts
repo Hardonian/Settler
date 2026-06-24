@@ -15,14 +15,16 @@ router.post(
   requirePermission(Permission.JOBS_WRITE),
   async (req: AuthRequest, res: Response) => {
     try {
-      const _tenantId = req.tenantId!;
-      const { period: _period, entries } = req.body;
+      const tenantId = req.tenantId!;
+      const { period, entries } = req.body;
 
       // In a real implementation, this would use Token-Based Authentication (TBA)
       // to call the NetSuite SuiteTalk REST Web Services.
 
       const mockedResponse = {
         success: true,
+        tenantId,
+        period: period || "Q3-2026",
         netsuiteInternalId: `JE_${Math.floor(Math.random() * 100000)}`,
         status: "POSTED",
         linesProcessed: entries ? entries.length : 14,

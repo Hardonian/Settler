@@ -39,7 +39,7 @@ export default function RuleDiscoveryPage() {
         <div className="grid gap-6">
           {suggestions.map((s) => (
             <Card key={s.id} className="overflow-hidden border-primary/20">
-              <div className="bg-primary/5 px-6 py-4 flex items-center justify-between border-b border-primary/10">
+              <CardHeader className="bg-primary/5 px-6 py-4 flex flex-row items-center justify-between border-b border-primary/10 space-y-0">
                 <div className="flex items-center gap-3">
                   <Sparkles className="w-5 h-5 text-primary" />
                   <CardTitle className="text-lg">{s.name}</CardTitle>
@@ -50,7 +50,7 @@ export default function RuleDiscoveryPage() {
                 <div className="text-sm text-muted-foreground font-mono">
                   {s.occurrences} historical occurrences
                 </div>
-              </div>
+              </CardHeader>
               <CardContent className="p-6">
                 <p className="text-sm text-foreground mb-4">{s.description}</p>
                 <div className="bg-muted/30 p-4 rounded-md border border-border/50 font-mono text-xs flex items-center gap-4">

@@ -86,8 +86,17 @@ export default function WebhookDeliveryPage() {
                       {log.endpoint}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={log.status === 200 ? "default" : "destructive"}>
-                        {log.status === 200 ? "200 OK" : `${log.status} Failed`}
+                      <Badge
+                        variant={log.status === 200 ? "default" : "destructive"}
+                        className="flex w-fit items-center gap-1"
+                      >
+                        {log.status === 200 ? (
+                          "200 OK"
+                        ) : (
+                          <>
+                            <AlertTriangle className="w-3 h-3" /> {log.status} Failed
+                          </>
+                        )}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-xs">{log.latencyMs}ms</TableCell>

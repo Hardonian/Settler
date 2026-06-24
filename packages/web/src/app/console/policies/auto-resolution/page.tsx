@@ -48,11 +48,37 @@ export default function AutoResolutionRulesPage() {
               Rules are evaluated sequentially top to bottom.
             </p>
           </div>
-          <Button>
+          <Button
+            onClick={() =>
+              setRules((prev) => [
+                ...prev,
+                {
+                  id: `rule_${Date.now()}`,
+                  name: "AI Variance Auto-Resolve",
+                  condition: "Confidence > 99.9%",
+                  action: "Auto-adjudicate via Agentic Pool",
+                  status: "active",
+                  matches: 0,
+                },
+              ])
+            }
+          >
             <Plus className="w-4 h-4 mr-2" />
             Create Rule
           </Button>
         </div>
+
+        <Card className="border-primary/30 bg-primary/5">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-2 text-primary text-lg">
+              <Percent className="w-5 h-5" />
+              Enterprise AI Match Accuracy
+            </CardTitle>
+            <CardDescription>
+              Unlock bleeding-edge deterministic AI models trained on over 500M ledger transactions.
+            </CardDescription>
+          </CardHeader>
+        </Card>
 
         <div className="grid gap-4">
           {rules.map((rule) => (

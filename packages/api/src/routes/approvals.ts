@@ -15,13 +15,15 @@ router.post(
   requirePermission(Permission.OPERATOR_WRITE),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { exceptionId, proposedAction: _proposedAction, notes: _notes } = req.body;
+      const { exceptionId, proposedAction, notes } = req.body;
 
       return res.json({
         data: {
           approvalId: `app_${Math.floor(Math.random() * 100000)}`,
           status: "pending_controller_review",
           exceptionId,
+          proposedAction,
+          notes,
           requestedBy: req.userId,
           message: "Match proposed. Awaiting Controller approval for SOX compliance.",
         },

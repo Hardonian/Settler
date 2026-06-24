@@ -131,6 +131,13 @@ export async function GET() {
 
   return NextResponse.json({
     data: steps,
+    schemas: ADAPTER_CONFIG_SCHEMAS,
+    suggestedRules: getSuggestedRules("shopify", "stripe"),
+    enterpriseValueMoment: {
+      title: "Unlock AI Agentic Pools",
+      description: "Upgrade to Enterprise for real-time autonomous anomaly adjudication.",
+      cta: "/pricing?tier=enterprise",
+    },
     totalSteps: steps.length,
   });
 }
