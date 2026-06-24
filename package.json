@@ -272,7 +272,7 @@
     "verify:security:full": "pnpm run security:evidence && node scripts/security/verdict.mjs",
     "verify:security:enterprise": "node scripts/run-with-env.mjs --set SECURITY_DEPENDENCY_EVIDENCE_MODE=strict --set SECURITY_RLS_EVIDENCE_MODE=runtime-rls-required --shell -- \"pnpm run security:evidence && node scripts/security/verdict.mjs\"",
     "bootstrap": "node scripts/bootstrap.mjs",
-    "dev:stack": "pnpm run check:node && set -a; [ -f .env.local ] && . ./.env.local; set +a; (cd packages/api && PORT=${API_PORT:-4000} pnpm run dev) & (cd packages/web && PORT=${WEB_PORT:-3000} pnpm run dev) & wait",
+    "dev:stack": "pnpm run check:node && node scripts/run-with-env.mjs --shell -- \"turbo run dev --filter @settler/api --filter @settler/web\"",
     "dev:teardown": "node scripts/dev-teardown.mjs",
     "generate:test-data": "pnpm exec tsx packages/cli/src/index.ts foundry reconciliation-generate --seed 42 --profile smoke --output test-data/exports/latest",
     "generate:test-data:smoke": "pnpm exec tsx packages/cli/src/index.ts foundry reconciliation-generate --seed 42 --profile smoke --output test-data/exports/smoke-seed42",

@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 dotenv.config();
 
-const port = Number(process.env.PORT || 3210);
+const port = Number(process.env.PORT || 3210 + Math.floor(Math.random() * 500));
 const base = `http://127.0.0.1:${port}`;
 
 const strict200Routes = ["/home", "/docs", "/pricing"];
@@ -53,7 +53,23 @@ function startWebServer() {
   });
   server.stdout.on("data", (d) => process.stdout.write(d));
   server.stderr.on("data", (d) => process.stderr.write(d));
-  return server;
+
+  const killServer = () => {
+    if (isWindows) {
+      try {
+        spawn("taskkill", ["/F", "/T", "/PID", String(server.pid)], { stdio: "ignore" });
+      } catch {}
+    } else {
+      server.kill("SIGTERM");
+    }
+  };
+  process.on("exit", killServer);
+  process.on("SIGINT", () => {
+    killServer();
+    process.exit(1);
+  });
+
+  return { server, killServer };
 }
 
 async function verifyRoute(route, allowedStatuses) {
@@ -65,7 +81,7 @@ async function verifyRoute(route, allowedStatuses) {
 }
 
 async function main() {
-  const server = startWebServer();
+  const { server, killServer } = startWebServer();
   try {
     await waitForServer();
 
@@ -79,13 +95,7 @@ async function main() {
 
     console.log("✅ Route verification completed without hard-500 responses on critical routes");
   } finally {
-    if (process.platform === "win32") {
-      try {
-        spawn("taskkill", ["/F", "/T", "/PID", String(server.pid)], { stdio: "ignore" });
-      } catch {}
-    } else {
-      server.kill("SIGTERM");
-    }
+    killServer();
   }
 }
 
