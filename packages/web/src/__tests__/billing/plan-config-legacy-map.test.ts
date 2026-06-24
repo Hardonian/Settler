@@ -1,4 +1,4 @@
-import { mapLegacyPlanId } from "@/domain/billing/planConfig";
+import { mapLegacyPlanId } from "../../domain/billing/planConfig";
 
 describe("mapLegacyPlanId", () => {
   it("maps enterprise subscription ids to enterprise plan code", () => {

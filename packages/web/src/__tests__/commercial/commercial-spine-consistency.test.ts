@@ -6,8 +6,8 @@ import {
   mapLegacyPlanTypeToPlanCode,
   mapLegacySubscriptionPlanId,
 } from "@settler/types";
-import { PRICING_PLANS } from "@/config/pricing-simple";
-import { mapLegacyPlanId, planConfigs } from "@/domain/billing/planConfig";
+import { PRICING_PLANS } from "../../config/pricing-simple";
+import { mapLegacyPlanId, planConfigs } from "../../domain/billing/planConfig";
 
 describe("commercial spine consistency", () => {
   it("exports every plan code in PLAN_SPINE", () => {
