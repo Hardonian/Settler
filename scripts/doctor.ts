@@ -21,12 +21,13 @@
  *   2 - Warnings only (non-blocking)
  */
 
-import { execSync, spawnSync } from "child_process";
+import { execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import * as net from "net";
 import { parseArgs } from "util";
 import * as dotenv from "dotenv";
+// @ts-expect-error - CJS module without declarations
 import nodeContract from "./node-version-contract.cjs";
 
 // Load environment variables from .env and .env.local
@@ -82,7 +83,7 @@ const FAST_MODE = Boolean(args.fast);
 const FIRST_RUN = Boolean(args["first-run"]);
 
 if (args.help) {
-  console.log(`
+  console.info(`
 Settler Doctor - Local Environment Health Check
 
 Usage:
@@ -120,33 +121,13 @@ function addCheck(
   results.push({ category, name, status, message, remediation });
 }
 
-function readFile(filePath: string): string | null {
-  try {
-    return fs.readFileSync(filePath, "utf-8").trim();
-  } catch {
-    return null;
-  }
-}
-
 function fileExists(filePath: string): boolean {
   return fs.existsSync(filePath);
-}
-
-function getEnvVar(name: string): string | undefined {
-  return process.env[name];
 }
 
 function hasEnvVar(name: string): boolean {
   const val = process.env[name];
   return Boolean(val && val.trim().length > 0);
-}
-
-function parseArgs$1(command: string): string {
-  const res = spawnSync(command, ["--version"], {
-    encoding: "utf-8",
-    stdio: ["pipe", "pipe", "pipe"],
-  });
-  return res.status === 0 ? res.stdout.trim().split("\n")[0] : "not found";
 }
 
 async function checkPort(host: string, port: number, timeout = 3000): Promise<boolean> {
@@ -369,8 +350,8 @@ async function checkPostgres() {
     return;
   }
 
-  const port = parseInt(getEnvVar("DB_PORT") || "5432");
-  const host = getEnvVar("DB_HOST") || "localhost";
+  const port = parseInt(process.env["DB_PORT"] || "5432");
+  const host = process.env["DB_HOST"] || "localhost";
 
   const isReachable = await checkPort(host, port);
 
@@ -388,8 +369,8 @@ async function checkPostgres() {
 }
 
 async function checkRedis() {
-  const port = parseInt(getEnvVar("REDIS_PORT") || "6379");
-  const host = getEnvVar("REDIS_HOST") || "localhost";
+  const port = parseInt(process.env["REDIS_PORT"] || "6379");
+  const host = process.env["REDIS_HOST"] || "localhost";
 
   const isReachable = await checkPort(host, port);
 
@@ -438,8 +419,8 @@ async function checkTigerBeetle() {
 }
 
 async function checkWebPort() {
-  const port = parseInt(getEnvVar("PORT") || getEnvVar("NEXT_PORT") || "3000");
-  const host = getEnvVar("HOST") || "localhost";
+  const port = parseInt(process.env["PORT"] || process.env["NEXT_PORT"] || "3000");
+  const host = process.env["HOST"] || "localhost";
 
   const isReachable = await checkPort(host, port, 1000);
 
@@ -538,7 +519,7 @@ async function checkDatabaseConnection() {
     return;
   }
 
-  const dbUrl = getEnvVar("DATABASE_URL") || getEnvVar("SUPABASE_DATABASE_URL");
+  const dbUrl = process.env["DATABASE_URL"] || process.env["SUPABASE_DATABASE_URL"] || "";
 
   if (!dbUrl) {
     addCheck("database", "Database Connection", "warn", "No DATABASE_URL configured - skipped");
@@ -592,7 +573,7 @@ async function checkMigrations() {
     return;
   }
 
-  const dbUrl = getEnvVar("DATABASE_URL") || getEnvVar("SUPABASE_DATABASE_URL");
+  const dbUrl = process.env["DATABASE_URL"] || process.env["SUPABASE_DATABASE_URL"] || "";
 
   if (!dbUrl) {
     addCheck("database", "Migrations", "warn", "No DATABASE_URL - skipped");
@@ -640,7 +621,7 @@ async function checkSeedData() {
     return;
   }
 
-  const dbUrl = getEnvVar("DATABASE_URL") || getEnvVar("SUPABASE_DATABASE_URL");
+  const dbUrl = process.env["DATABASE_URL"] || process.env["SUPABASE_DATABASE_URL"] || "";
 
   if (!dbUrl) {
     addCheck("database", "Seed Data", "warn", "No DATABASE_URL - skipped");
@@ -713,7 +694,7 @@ async function checkSeedData() {
       JSON.parse(fs.readFileSync(filePath, "utf-8"));
     });
     addCheck("database", "Demo Data Files", "pass", "All demo data files exist and are valid JSON");
-  } catch (err) {
+  } catch {
     addCheck(
       "database",
       "Demo Data Files",
@@ -829,8 +810,8 @@ function generateOutput(results: Check[]): DoctorResult {
 function printHumanReadable(results: Check[]) {
   const output = generateOutput(results);
 
-  console.log("\n🏥 Settler Doctor - Local Environment Health Check\n");
-  console.log("=".repeat(55));
+  console.info("\n🏥 Settler Doctor - Local Environment Health Check\n");
+  console.info("=".repeat(55));
 
   const categories: Category[] = ["toolchain", "environment", "services", "database", "workspace"];
   const categoryLabels: Record<Category, string> = {
@@ -845,28 +826,28 @@ function printHumanReadable(results: Check[]) {
     const categoryChecks = results.filter((r) => r.category === category);
     if (categoryChecks.length === 0) continue;
 
-    console.log(`\n[${categoryLabels[category]}]`);
+    console.info(`\n[${categoryLabels[category]}]`);
 
     for (const check of categoryChecks) {
       const icon = check.status === "pass" ? "✅" : check.status === "warn" ? "⚠️" : "❌";
-      console.log(`${icon} ${check.name}: ${check.message}`);
+      console.info(`${icon} ${check.name}: ${check.message}`);
       if (check.remediation) {
-        console.log(`   → ${check.remediation}`);
+        console.info(`   → ${check.remediation}`);
       }
     }
   }
 
-  console.log("\n" + "=".repeat(55));
-  console.log(
+  console.info("\n" + "=".repeat(55));
+  console.info(
     `\n📊 Summary: ${output.summary.passed} passed, ${output.summary.warnings} warnings, ${output.summary.failures} failures\n`
   );
 
   if (output.status === "fail") {
-    console.log("❌ FAILURES DETECTED - Please fix the errors above before proceeding\n");
+    console.error("❌ FAILURES DETECTED - Please fix the errors above before proceeding\n");
   } else if (output.status === "warn") {
-    console.log("⚠️  WARNINGS PRESENT - Review the warnings above\n");
+    console.warn("⚠️  WARNINGS PRESENT - Review the warnings above\n");
   } else {
-    console.log("✅ All checks passed!\n");
+    console.info("✅ All checks passed!\n");
   }
 
   return output;
@@ -874,7 +855,8 @@ function printHumanReadable(results: Check[]) {
 
 function printJsonOutput(results: Check[]) {
   const output = generateOutput(results);
-  console.log(JSON.stringify(output, null, 2));
+  console.info(JSON.stringify(output, null, 2));
+  return output;
 }
 
 // ---------------------------------------------------------------------------
@@ -882,7 +864,7 @@ function printJsonOutput(results: Check[]) {
 // ---------------------------------------------------------------------------
 
 async function main() {
-  console.log("🏥 Running Settler Doctor...\n");
+  console.info("🏥 Running Settler Doctor...\n");
 
   // Toolchain checks
   checkNodeVersion();
@@ -921,8 +903,7 @@ async function main() {
   // Output results
   let output;
   if (JSON_OUTPUT) {
-    output = generateOutput(results);
-    console.log(JSON.stringify(output, null, 2));
+    output = printJsonOutput(results);
   } else {
     output = printHumanReadable(results);
   }
