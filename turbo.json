@@ -194,6 +194,17 @@
     },
     "lint": {
       "outputs": [],
+      "inputs": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "app/**/*.ts",
+        "app/**/*.tsx",
+        "src/**/*.js",
+        "src/**/*.jsx",
+        ".eslintrc.js",
+        "eslint.config.js",
+        "package.json"
+      ],
       "env": ["NODE_ENV"]
     },
     "typecheck": {

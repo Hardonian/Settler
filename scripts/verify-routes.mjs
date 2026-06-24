@@ -36,7 +36,9 @@ async function waitForServer(timeoutMs = 90000) {
 }
 
 function startWebServer() {
-  const hasBuild = existsSync("packages/web/.next/BUILD_ID");
+  const hasBuild =
+    existsSync("packages/web/.next/BUILD_ID") &&
+    existsSync("packages/web/.next/prerender-manifest.json");
   const args = hasBuild
     ? ["--filter", "@settler/web", "run", "start", "-p", String(port)]
     : ["--filter", "@settler/web", "run", "dev", "-p", String(port), "--hostname", "127.0.0.1"];
