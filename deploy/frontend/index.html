@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Dashboard</title>
+    <style>
+        :root { --bg:#0a0a0f; --surface:#12121a; --border:#1e1e2e; --text:#e4e4ef; --text-dim:#8888a0; --accent:#6c5ce7; --accent-light:#a29bfe; --green:#00d68f; --red:#ff4757; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; min-height:100vh; }
+        .container { max-width:1000px; margin:0 auto; padding:2rem 1.5rem; }
+        header { display:flex; justify-content:space-between; align-items:center; padding:1rem 0 2rem; border-bottom:1px solid var(--border); margin-bottom:2rem; }
+        .logo { font-size:1.25rem; font-weight:700; color:var(--accent-light); }
+        .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1rem; margin-bottom:2rem; }
+        .stat { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:1.25rem; }
+        .stat-value { font-size:1.75rem; font-weight:800; }
+        .stat-label { color:var(--text-dim); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; }
+        .stat.critical .stat-value { color:var(--red); }
+        .stat.clean .stat-value { color:var(--green); }
+        .card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.5rem; margin-bottom:2rem; }
+        .btn { display:inline-flex; align-items:center; gap:0.5rem; padding:0.6rem 1.25rem; border-radius:8px; font-size:0.9rem; font-weight:600; text-decoration:none; border:none; cursor:pointer; transition:all 0.2s; }
+        .btn-primary { background:var(--accent); color:white; }
+        .btn-secondary { background:var(--surface); color:var(--text); border:1px solid var(--border); }
+        .loading { text-align:center; padding:3rem; color:var(--text-dim); }
+        table { width:100%; border-collapse:collapse; }
+        th { text-align:left; padding:0.75rem 1rem; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-dim); border-bottom:1px solid var(--border); }
+        td { padding:0.75rem 1rem; font-size:0.9rem; border-bottom:1px solid var(--border); }
+        .footer { text-align:center; padding:3rem 0; color:var(--text-dim); font-size:0.8rem; }
+        code { background:rgba(108,92,231,0.1); padding:0.15rem 0.4rem; border-radius:4px; font-size:0.85rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo" id="logo">API Dashboard</div>
+            <button class="btn btn-primary" onclick="location.reload()">Refresh</button>
+        </header>
+
+        <section class="stats" id="stats">
+            <div class="stat"><div class="stat-value" id="s-total">-</div><div class="stat-label">Total</div></div>
+            <div class="stat"><div class="stat-value" id="s-active">-</div><div class="stat-label">Active</div></div>
+            <div class="stat critical"><div class="stat-value" id="s-critical">-</div><div class="stat-label">Issues</div></div>
+            <div class="stat clean"><div class="stat-value" id="s-healthy">-</div><div class="stat-label">Healthy</div></div>
+        </section>
+
+        <div class="card">
+            <h2 style="margin-bottom:1rem;">API Endpoints</h2>
+            <table>
+                <thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead>
+                <tbody>
+                    <tr><td><span style="color:var(--green);">GET</span></td><td><code>/health</code></td><td>Health check</td></tr>
+                    <tr><td><span style="color:var(--green);">GET</span></td><td><code>/api/v1/*</code></td><td>List all records</td></tr>
+                    <tr><td><span style="color:var(--accent);">POST</span></td><td><code>/api/v1/*</code></td><td>Create new record</td></tr>
+                    <tr><td><span style="color:var(--green);">GET</span></td><td><code>/api/v1/*/:id</code></td><td>Get record by ID</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2 style="margin-bottom:1rem;">Live Status</h2>
+            <div id="status" class="loading">Loading...</div>
+        </div>
+
+        <footer class="footer">Powered by Cloudflare Workers + D1 | Free tier | Built with Hermes</footer>
+    </div>
+
+    <script>
+        // Per-project config (injected at build or set by deploy script)
+        const SERVICE_NAME = 'API Dashboard';
+        const API_BASE = '/api/v1';
+
+        document.getElementById('logo').textContent = SERVICE_NAME + ' Dashboard';
+
+        async function loadHealth() {
+            const el = document.getElementById('status');
+            try {
+                const res = await fetch('/health');
+                const data = await res.json();
+                el.innerHTML = '<span style="color:var(--green);">●</span> Online — ' + (data.service || SERVICE_NAME) + ' v' + (data.version || '0.1.0');
+            } catch (e) {
+                el.innerHTML = '<span style="color:var(--red);">●</span> Offline or unreachable';
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const res = await fetch(API_BASE + '/stats');
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('s-total').textContent = data.total || 0;
+                    document.getElementById('s-active').textContent = data.active || 0;
+                    document.getElementById('s-critical').textContent = data.issues || 0;
+                    document.getElementById('s-healthy').textContent = data.healthy || 0;
+                }
+            } catch (e) {
+                // Stats endpoint may not exist yet
+            }
+        }
+
+        loadHealth();
+        loadStats();
+    </script>
+</body>
+</html>
