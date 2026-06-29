@@ -26,22 +26,22 @@
   "dependencies": {
     "@ai-sdk/openai": "^3.0.69",
     "@settler/types": "workspace:*",
-    "@supabase/supabase-js": "^2.106.1",
+    "@supabase/supabase-js": "^2.108.2",
     "ai": "^6.0.199",
-    "resend": "^6.12.3",
+    "resend": "^6.16.0",
     "stripe": "^14.25.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "@types/node": "^24.12.4",
-    "@vitest/coverage-v8": "^4.1.8",
+    "@vitest/coverage-v8": "^4.1.9",
     "eslint-config-prettier": "^10.1.8",
     "jest": "^30.4.2",
     "ts-jest": "^29.4.11",
     "typescript": "^5.9.3",
     "vite": "^8.0.16",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.9"
   },
   "license": "MIT"
 }

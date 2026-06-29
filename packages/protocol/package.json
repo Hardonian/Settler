@@ -44,10 +44,10 @@
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
-    "@vitest/coverage-v8": "^4.1.8",
+    "@vitest/coverage-v8": "^4.1.9",
     "jest": "^30.4.2",
     "ts-jest": "^29.4.11",
     "vite": "^8.0.16",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.9"
   }
 }
