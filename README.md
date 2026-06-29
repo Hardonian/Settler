@@ -1,116 +1,116 @@
-# Settler — Omnichannel Reconciliation Intelligence OS
+# Settler — Open Source Reconciliation Engine
 
-> Deterministic matching. Agentic AI exception resolution. Maker-Checker compliance. 6-Persona Enterprise Lock-In.
+Deterministic transaction matching with configurable rules, audit trails, and a REST API. Built as a monorepo with TypeScript, Node.js, and PostgreSQL.
 
-Settler replaces legacy spreadsheet reconciliation and isolated back-office scripts with a comprehensive, purpose-built, and **audit-grade Operating System**. Built for the modern enterprise, Settler provides deterministic runs, hash-linked proofpacks, live ERP sync, and explicit degraded states that ensure zero data drift.
+**Status:** Active development (local). Not yet production-ready. See [Intentional Boundaries](docs/getting-started/INTENTIONAL_BOUNDARIES.md).
 
-## The Omnichannel Enterprise Suite
+## What It Does
 
-Settler is no longer just for operations. We provide natively integrated workspaces engineered to permanently solve the reconciliation burden across 6 critical enterprise personas:
+Settler compares financial records from two sources (e.g., a payment processor's statement and a bank statement) and produces a deterministic match report identifying:
 
-| Audience                   | The Settler Solution                                                                                                 |
-| -------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| **CFO / FP&A**             | Maker-Checker SOX gates, Continuous Close APIs, Live FX Translation, and Liquidity Risk visualizers.                 |
-| **CISO / InfoSec**         | Hardened Data Residency (Geo-fencing) controls, runtime PII Redaction engines, and verifiable SIEM exports.          |
-| **IT & Engineering**       | Robust JSON/CSV Schema Registries, Real-time Webhook telemetry/replay loops, and developer tooling.                  |
-| **FinOps & Operators**     | AI-Powered Rule Discovery (mines manual behavior), Agentic exception auto-triage, and ZKP payload syncs.             |
-| **Customer Support (CX)**  | Native CRM syncing (Zendesk/Salesforce) directly tying support tickets to specific ledger exceptions.                |
-| **External Vendors (B2B)** | Isolated Vendor Portals allowing external partners to submit SLA/Dispute evidence directly into the ledger workflow. |
-| **External Auditors**      | Read-only statistical sampling portals specifically designed for Big 4 auditors checking ITGC/SOC2.                  |
+- **Matched records** — records that agree within configured tolerances
+- **Unmatched source records** — records in the source with no corresponding match
+- **Unmatched target records** — records in the target with no corresponding match
+- **Conflicts** — records where reference data exists on both sides but values differ beyond tolerance
 
-## Core Capabilities
+Results are stored in PostgreSQL with an append-only audit trail. The system supports tenant-isolated data, configurable matching rules, and idempotent ingestion.
 
-- **Deterministic Edge Matching:** Stripe ↔ Bank transaction matching with configurable, programmatic tolerance rules.
-- **Agentic AI Resolution:** Deep reinforcement AI models that adjudicate exceptions within strict, deterministic bounds.
-- **Zero-Knowledge Proofs (ZKP):** Secure payload syncing that proves reconciliation intent without exposing raw PII.
-- **Live ERP Synchronization:** Write-back interfaces pushing perfectly matched datasets to Netsuite/Oracle/SAP.
-- **Continuous Close:** Real-time financial period closure with Maker-Checker multi-party signature tracking.
-- **Hash-Linked Proofpacks:** Cryptographic, byte-for-byte evidence generated on every single reconciliation run.
+## Tech Stack
 
-See [What Works Today](docs/getting-started/WHAT_WORKS.md) for the full verified capability list.  
-See [Intentional Boundaries](docs/getting-started/INTENTIONAL_BOUNDARIES.md) for what is not yet production-ready.
+| Layer           | Technology                              |
+| --------------- | --------------------------------------- |
+| Runtime         | Node.js 22+ / 24+                       |
+| Language        | TypeScript 5.x                          |
+| API framework   | Express 5.x                             |
+| Package manager | pnpm 9.x                                |
+| Database        | PostgreSQL 15+ via Prisma ORM           |
+| Ledger (opt.)   | TigerBeetle (Docker, optional)          |
+| Queue (opt.)    | Redis via BullMQ / Upstash              |
+| Frontend        | Next.js (App Router) — operator console |
+| CLI tooling     | TypeScript CLI via tsx                  |
 
-## Architecture
-
-Settler is composed of five primary layers with a strict separation of concerns:
-
-```text
-┌─────────────────────────────────────────────────────────┐
-│  Console Surface  (packages/web — Next.js App Router)   │
-│  Operator dashboard, CFO workflows, IT webhooks         │
-├─────────────────────────────────────────────────────────┤
-│  CLI Surface  (packages/cli)                            │
-│  Foundry tooling, deterministic verification, replay    │
-├─────────────────────────────────────────────────────────┤
-│  TypeScript Control Plane  (packages/api — Express)     │
-│  API routes, orchestration, tenancy, persistence policy │
-├─────────────────────────────────────────────────────────┤
-│  Reconciliation Core  (packages/reconciliation-core)    │
-│  Matching engine, tolerance evaluation, proofpack emit  │
-├─────────────────────────────────────────────────────────┤
-│  Rust Kernel  (crates/)                                 │
-│  Deterministic primitives, hashing, cryptographic proof │
-└─────────────────────────────────────────────────────────┘
-
-Persistence:
-  TigerBeetle ──── Immutable financial ledger (double-entry)
-  PostgreSQL ────── Projections, audit logs, tenant config
-  Redis ─────────── Queue backend and distributed cache
-```
-
-## Quick Start
-
-For the complete local setup guide, see **[SETUP.md](SETUP.md)**.
-
-Minimal path to a working console:
-
-```bash
-git clone https://github.com/settler/settler.git
-pnpm run bootstrap     # creates .env.local, installs deps, validates contract
-pnpm tb:start          # starts TigerBeetle + PostgreSQL + Redis
-pnpm dev               # http://localhost:3000 (console), http://localhost:4000 (API)
-```
-
-Run a deterministic onboarding check with no network or secrets required:
-
-```bash
-pnpm exec tsx packages/cli/src/index.ts first-run
-```
-
-Run the full verification suite (Required before any PR merge):
-
-```bash
-pnpm verify
-```
+See [packages/api/package.json](packages/api/package.json) and [package.json](package.json) for the full dependency tree.
 
 ## Repository Structure
 
-| Path                           | Purpose                                                     |
-| ------------------------------ | ----------------------------------------------------------- |
-| `packages/api`                 | Node.js Control Plane — Express, TypeScript, all API routes |
-| `packages/web`                 | Operator Console — Next.js App Router                       |
-| `packages/cli`                 | Foundry, replay, and verification tooling                   |
-| `packages/reconciliation-core` | Core matching engine and proofpack generation               |
-| `crates/`                      | Rust Kernel — deterministic primitives and proofs           |
-| `docs/`                        | Canonical product and engineering documentation             |
-| `scripts/`                     | Verification, operational automation, and repo hygiene      |
-| `supabase/`                    | Database migrations and RLS policies                        |
+```
+packages/
+  api/                  Express API server — routes, services, middleware
+  web/                  Next.js operator console
+  cli/                  CLI tooling (foundry, replay, verification)
+  reconciliation-core/  Core matching engine and run result serialization
+  types/                Shared TypeScript types
+  adapters/             Source/target adapters
+  sdk/                  Client SDK
+  support-intake/       Support ticket integration
+  proofs/               Proofpack generation utilities
+  edge-ai-core/         ML matching enhancement (optional)
+  agents/               Workflow agent runner (experimental)
+  workhorse/            Python background worker
+tools/
+  settler-engine/       Go reconciliation engine (experimental)
+  reconciliation_intel/ Drift detection, compliance snapshots (experimental)
+  reconciliation_engine/ Python reconciliation engine
+docs/                   Documentation
+scripts/                Build, CI, and operational automation
+prisma/                 Prisma schema and migrations
+```
+
+## Prerequisites
+
+- **Node.js** 22.x or 24.x (see `.nvmrc` or engine field in `package.json`)
+- **pnpm** 9.x (enable via `corepack enable`)
+- **Docker** (for local PostgreSQL, Redis, and optional TigerBeetle)
+- **PostgreSQL** 15+ (via Docker or native install)
+
+## Quick Start
+
+```bash
+git clone https://github.com/settler/settler.git
+cd settler
+pnpm run bootstrap     # creates .env.local, installs deps, validates setup
+pnpm tb:start          # starts PostgreSQL + Redis + TigerBeetle (Docker)
+pnpm dev               # http://localhost:3000 (console), http://localhost:4000 (API)
+```
+
+For step-by-step setup instructions, see [SETUP.md](SETUP.md).
+
+## API Overview
+
+The API exposes versioned routes under `/api/v1/`. Key endpoints include:
+
+- `POST /api/v1/ingestion` — Ingest source/target records (CSV, JSON, webhooks)
+- `POST /api/v1/reconciliation/run` — Execute a reconciliation run
+- `GET /api/v1/reconciliation/runs` — List reconciliation runs
+- `GET /api/v1/reconciliation/runs/:id` — Reconciliation result detail
+- `GET /api/v1/audit-trail` — Append-only audit log
+
+Routes require authentication and are scoped by tenant ID. See [API Reference](docs/API_REFERENCE.md) for full documentation.
+
+## Verification
+
+The monorepo includes a comprehensive verification pipeline:
+
+```bash
+pnpm verify   # lint, typecheck, build, test, integrity checks
+pnpm test     # unit tests
+pnpm test:e2e # Playwright-based end-to-end tests
+```
+
+## Development
+
+```bash
+pnpm dev              # Start API + web in dev mode (hot reload)
+pnpm run demo:seed    # Seed 100+ realistic transaction scenarios
+pnpm run doctor       # Environment diagnostics
+```
 
 ## Documentation
 
-**Getting started:**
-
-- [Canonical Local Setup](SETUP.md)
-- [Quickstart](QUICKSTART.md) — Fastest path to a running system
-- [What Works Today](docs/getting-started/WHAT_WORKS.md)
-- [Demo Walkthrough](docs/getting-started/DEMO_WALKTHROUGH.md)
-
-**Reference:**
-
-- [Architecture](docs/platform-architecture.md)
-- [API Reference](docs/API_REFERENCE.md)
-- [Verification Commands](docs/VERIFICATION_COMMANDS.md)
-- [Security Policy](SECURITY.md)
+- [SETUP.md](SETUP.md) — Canonical local development setup
+- [What Works Today](docs/getting-started/WHAT_WORKS.md) — Currently functional features
+- [Intentional Boundaries](docs/getting-started/INTENTIONAL_BOUNDARIES.md) — Known limitations
+- [Architecture](docs/platform-architecture.md) — System design overview
 
 ## Contributing
 
