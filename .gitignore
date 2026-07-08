@@ -33,3 +33,10 @@ Thumbs.db
 
 # Logs
 *.log
+# --- Hardonian bootstrap kit ---
+# Hardonian standard ignores
+!.env.template
+venv/
+target/
+.coverage
+htmlcov/
