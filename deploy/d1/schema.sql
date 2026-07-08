@@ -1,42 +1,48 @@
-CREATE TABLE IF NOT EXISTS audits (
+-- Settler D1 Schema
+CREATE TABLE IF NOT EXISTS jobs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    workspace_name TEXT NOT NULL,
-    repo_url TEXT,
-    audited_at TEXT NOT NULL,
-    overall_score REAL,
-    critical_findings INTEGER DEFAULT 0,
-    high_findings INTEGER DEFAULT 0,
-    medium_findings INTEGER DEFAULT 0,
-    total_findings INTEGER DEFAULT 0,
-    report_json TEXT,
+    source_type TEXT NOT NULL,
+    target_type TEXT NOT NULL,
+    source_config TEXT,
+    target_config TEXT,
     status TEXT DEFAULT 'pending',
-    created_at TEXT DEFAULT (datetime('now'))
+    result TEXT,
+    created_at TEXT DEFAULT (datetime('now')),
+    completed_at TEXT
 );
 
-CREATE TABLE IF NOT EXISTS findings (
+CREATE TABLE IF NOT EXISTS diffs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    audit_id INTEGER NOT NULL,
-    category TEXT NOT NULL,
+    job_id INTEGER NOT NULL,
+    source_key TEXT,
+    target_key TEXT,
+    diff_type TEXT NOT NULL,
     severity TEXT NOT NULL,
-    title TEXT NOT NULL,
     description TEXT,
-    recommendation TEXT,
-    resource_type TEXT,
-    resource_name TEXT,
     created_at TEXT DEFAULT (datetime('now'))
 );
 
-CREATE TABLE IF NOT EXISTS reports (
+CREATE TABLE IF NOT EXISTS tenants (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    audit_id INTEGER NOT NULL,
-    format TEXT DEFAULT 'markdown',
-    content TEXT,
-    delivered_via TEXT,
-    delivered_at TEXT,
+    name TEXT NOT NULL UNIQUE,
+    stripe_customer_id TEXT,
+    stripe_subscription_id TEXT,
+    plan TEXT DEFAULT 'free',
     created_at TEXT DEFAULT (datetime('now'))
 );
 
-CREATE INDEX IF NOT EXISTS idx_audit_workspace ON audits(workspace_name);
-CREATE INDEX IF NOT EXISTS idx_audit_status ON audits(status);
-CREATE INDEX IF NOT EXISTS idx_finding_audit ON findings(audit_id);
-CREATE INDEX IF NOT EXISTS idx_finding_severity ON findings(severity);
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tenant_id INTEGER,
+    action TEXT NOT NULL,
+    resource_type TEXT,
+    resource_id TEXT,
+    metadata TEXT,
+    created_at TEXT DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_jobs_status ON jobs(status);
+CREATE INDEX IF NOT EXISTS idx_jobs_created ON jobs(created_at);
+CREATE INDEX IF NOT EXISTS idx_diffs_job ON diffs(job_id);
+CREATE INDEX IF NOT EXISTS idx_diffs_severity ON diffs(severity);
+CREATE INDEX IF NOT EXISTS idx_tenants_stripe_customer ON tenants(stripe_customer_id);

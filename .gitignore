@@ -40,3 +40,7 @@ venv/
 target/
 .coverage
 htmlcov/
+deploy/workers/.wrangler/
+deploy/workers/node_modules/
+deploy/workers/package-lock.json
+DEPLOY_INFO.json

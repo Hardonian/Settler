@@ -1,0 +1,9 @@
+{
+  "name": "settler-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "itty-router": "^5.0.18"
+  }
+}
