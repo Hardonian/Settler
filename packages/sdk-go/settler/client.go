@@ -3,6 +3,8 @@ package settler
 import (
 	"bytes"
 	"context"
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -108,6 +110,18 @@ func (c *Client) requestWithBase(ctx context.Context, baseURL, method, path stri
 
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("User-Agent", c.userAgent)
+	req.Header.Set("Accept-Encoding", "gzip")
+
+	// Generate unique request ID
+	reqIDBytes := make([]byte, 16)
+	rand.Read(reqIDBytes)
+	reqID := hex.EncodeToString(reqIDBytes)
+	req.Header.Set("X-Request-ID", reqID)
+
+	// Add idempotency key for mutations
+	if method == "POST" || method == "PUT" || method == "PATCH" {
+		req.Header.Set("Idempotency-Key", reqID)
+	}
 
 	// Set authentication header
 	if strings.HasPrefix(c.apiKey, "rk_") {

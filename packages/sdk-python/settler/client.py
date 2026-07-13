@@ -12,6 +12,7 @@ import hashlib
 import json
 import socket
 import time
+import uuid
 from typing import Any, Dict, List, Optional, Union
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
@@ -94,9 +95,12 @@ class SettlerClient:
         self.reports = ReportsClient(self)
 
     def _get_headers(self) -> Dict[str, str]:
+        req_id = str(uuid.uuid4())
         headers = {
             "Content-Type": "application/json",
             "User-Agent": "settler-python/1.0.0",
+            "Accept-Encoding": "gzip",
+            "X-Request-ID": req_id,
         }
         if self._api_key.startswith("rk_") or self._api_key.startswith("sk_"):
             headers["X-API-Key"] = self._api_key
@@ -122,6 +126,10 @@ class SettlerClient:
 
         payload = None
         headers = self._get_headers()
+        
+        if method in ("POST", "PUT", "PATCH"):
+            headers["Idempotency-Key"] = headers["X-Request-ID"]
+
         if data is not None:
             payload = json.dumps(data).encode("utf-8")
             headers["Content-Type"] = "application/json"

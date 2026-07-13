@@ -94,7 +94,7 @@ public sealed class SettlerClient : IDisposable
     {
         var uri = BuildUri(path, query);
         using var request = new HttpRequestMessage(method, uri);
-        SetAuthHeaders(request);
+        SetHeaders(request, method);
 
         if (body != null)
         {
@@ -123,7 +123,7 @@ public sealed class SettlerClient : IDisposable
     {
         var uri = BuildUri(path, null);
         using var request = new HttpRequestMessage(method, uri);
-        SetAuthHeaders(request);
+        SetHeaders(request, method);
 
         if (body != null)
         {
@@ -152,7 +152,7 @@ public sealed class SettlerClient : IDisposable
         }
     }
 
-    private void SetAuthHeaders(HttpRequestMessage request)
+    private void SetHeaders(HttpRequestMessage request, HttpMethod method)
     {
         if (_apiKey.StartsWith("rk_") || _apiKey.StartsWith("sk_"))
         {
@@ -161,6 +161,16 @@ public sealed class SettlerClient : IDisposable
         else
         {
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _apiKey);
+        }
+
+        request.Headers.AcceptEncoding.ParseAdd("gzip");
+
+        var reqId = Guid.NewGuid().ToString();
+        request.Headers.Add("X-Request-ID", reqId);
+
+        if (method == HttpMethod.Post || method == HttpMethod.Put || method == HttpMethod.Patch)
+        {
+            request.Headers.Add("Idempotency-Key", reqId);
         }
     }
 

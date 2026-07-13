@@ -65,6 +65,15 @@ module Settler
 
       request["Content-Type"] = "application/json"
       request["User-Agent"] = "settler-ruby/1.0.0"
+      request["Accept-Encoding"] = "gzip"
+      
+      req_id = SecureRandom.uuid
+      request["X-Request-ID"] = req_id
+      
+      if ["POST", "PUT", "PATCH"].include?(method.upcase)
+        request["Idempotency-Key"] = req_id
+      end
+
       request.body = data.to_json if data
 
       retries = 0
