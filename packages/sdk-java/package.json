@@ -4,15 +4,8 @@
   "private": true,
   "description": "Settler Java SDK workspace metadata",
   "scripts": {
-    "verify:presence": "echo 'java sdk metadata workspace'"
+    "verify:presence": "echo 'java sdk metadata workspace'",
+    "test": "cd ../.. && mvn test -pl packages/sdk-java"
   },
-  "devDependencies": {
-    "@vitest/coverage-v8": "^4.1.8",
-    "vite": "^6.4.3",
-    "vitest": "^4.1.8"
-  },
-  "dependencies": {
-    "@ai-sdk/openai": "^3.0.69",
-    "ai": "^6.0.199"
-  }
+  "dependencies": {}
 }
