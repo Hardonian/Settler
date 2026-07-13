@@ -1,0 +1,11 @@
+{
+  "files": {
+    "packages/edge-ai-core/.turbo/turbo-lint.log": {
+      "size": 102,
+      "mtime_nanos": 1783985232535245100,
+      "mode": 420,
+      "is_dir": false
+    }
+  },
+  "order": ["packages/edge-ai-core/.turbo/turbo-lint.log"]
+}

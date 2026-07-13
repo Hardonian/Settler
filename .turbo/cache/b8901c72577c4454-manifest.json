@@ -1,0 +1,20 @@
+{
+  "files": {
+    "packages/protocol/tsconfig.tsbuildinfo": {
+      "size": 92353,
+      "mtime_nanos": 1783985241840896800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/protocol/.turbo/turbo-typecheck.log": {
+      "size": 101,
+      "mtime_nanos": 1783985241903880800,
+      "mode": 420,
+      "is_dir": false
+    }
+  },
+  "order": [
+    "packages/protocol/.turbo/turbo-typecheck.log",
+    "packages/protocol/tsconfig.tsbuildinfo"
+  ]
+}

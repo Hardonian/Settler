@@ -1,0 +1,20 @@
+{
+  "files": {
+    "packages/edge-node/.turbo/turbo-typecheck.log": {
+      "size": 103,
+      "mtime_nanos": 1783985246364533900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-node/tsconfig.tsbuildinfo": {
+      "size": 99274,
+      "mtime_nanos": 1783985246310352400,
+      "mode": 420,
+      "is_dir": false
+    }
+  },
+  "order": [
+    "packages/edge-node/.turbo/turbo-typecheck.log",
+    "packages/edge-node/tsconfig.tsbuildinfo"
+  ]
+}

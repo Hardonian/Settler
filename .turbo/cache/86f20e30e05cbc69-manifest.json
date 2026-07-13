@@ -1,0 +1,17 @@
+{
+  "files": {
+    "packages/web/.next/tsconfig.tsbuildinfo": {
+      "size": 4269417,
+      "mtime_nanos": 1783985284841203000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/.turbo/turbo-typecheck.log": {
+      "size": 91,
+      "mtime_nanos": 1783985284958581400,
+      "mode": 420,
+      "is_dir": false
+    }
+  },
+  "order": ["packages/web/.next/tsconfig.tsbuildinfo", "packages/web/.turbo/turbo-typecheck.log"]
+}
