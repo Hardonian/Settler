@@ -68,7 +68,7 @@ import { processPendingWebhooks } from "./utils/webhook-queue";
 import { logDistributedGuardStartupSummary } from "./services/distributed-guards";
 import { startDistributedGuardsMaintenanceJob } from "./jobs/distributed-guards-maintenance";
 import { versionMiddleware } from "./middleware/versioning";
-import { v1Router } from "./routes/v1";
+import { v1Router, v1WebhookRouter } from "./routes/v1";
 import { v2Router } from "./routes/v2";
 import { reconciliationSummaryRouter } from "./routes/reconciliation-summary";
 import { SecretsManager, REQUIRED_SECRETS } from "./infrastructure/security/SecretsManager";
@@ -406,6 +406,9 @@ app.use("/api/v2/playground", playgroundLimiter, playgroundRouter);
 
 // CSRF token endpoint (for web UI)
 app.get("/api/csrf-token", getCsrfToken);
+
+// Unprotected Webhook routes (Stripe, external services)
+app.use("/api/v1", v1WebhookRouter);
 
 app.use("/api/v1", v1ProtectedRouter);
 app.use("/api/v2", v2ProtectedRouter);

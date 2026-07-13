@@ -667,15 +667,12 @@ router.post(
 
 // ---- Added for 2026 API Product Spine ----
 
-import { idempotencyMiddleware } from "../../middleware/idempotency";
-
 /**
  * Creates a new reconciliation run
  */
 router.post(
   "/runs",
   requirePermission(Permission.JOBS_WRITE),
-  idempotencyMiddleware,
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId;

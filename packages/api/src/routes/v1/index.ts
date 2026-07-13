@@ -14,6 +14,7 @@ import exportsRouter from "./exports";
 import currencyRouter from "./currency";
 import webhookReceiveRouter from "./webhooks/receive";
 import webhookEventsRouter from "./webhooks/events";
+import billingRouter, { billingWebhookRouter } from "./billing";
 import ingestionRouter from "./ingestion";
 import reconciliationRouter from "./reconciliation";
 import ingestionExportsRouter from "./ingestion-exports";
@@ -44,9 +45,15 @@ import ventureInvoiceNudgerRouter from "./venture-invoice-nudger";
 import agenticWorkflowRouter from "./agentic-workflow";
 
 export const v1Router: Router = Router();
+export const v1WebhookRouter: Router = Router();
+
+// Mount unprotected webhooks separately
+v1WebhookRouter.use("/webhooks/receive", webhookReceiveRouter);
+v1WebhookRouter.use("/billing/webhook", billingWebhookRouter);
+
+export { webhookReceiveRouter, billingWebhookRouter };
 
 // Mount v1 routes
-v1Router.use("/webhooks/receive", webhookReceiveRouter);
 v1Router.use("/webhooks", webhookEventsRouter); // Events discovery endpoint
 v1Router.use("/realtime", realtimeRouter);
 v1Router.use("/reconciliations", reconciliationSummaryRouter);
@@ -95,8 +102,6 @@ v1Router.use("/", agenticWorkflowRouter);
 v1Router.use("/", systemHealthRouter);
 v1Router.use("/", runsRouter);
 v1Router.use("/", governanceRouter);
-
-import billingRouter from "./billing";
 
 v1Router.use("/", capabilitiesRouter);
 v1Router.use("/", enterpriseRouter);
