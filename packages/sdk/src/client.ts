@@ -244,7 +244,10 @@ export class SettlerClient {
       useBearer = true;
     }
 
-    const reqId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    const reqId =
+      typeof crypto !== "undefined" && crypto.randomUUID
+        ? crypto.randomUUID()
+        : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
     const headers: Record<string, string> = {
       "Content-Type": "application/json",

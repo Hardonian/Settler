@@ -10,6 +10,7 @@
 **Purpose:** Identify likely acquirers and partners, understand what they'd buy, and prepare for exit scenarios.
 
 **Exit Scenarios:**
+
 1. Strategic Acquisition
 2. Financial Acquisition
 3. IPO (long-term)
@@ -22,12 +23,14 @@
 ### 1. Stripe
 
 **Why They'd Buy:**
+
 - Expand payment ecosystem
 - Add reconciliation capabilities
 - Strengthen developer platform
 - Compete with QuickBooks/NetSuite
 
 **What They'd Buy:**
+
 - Reconciliation technology
 - Developer platform
 - Customer base
@@ -38,6 +41,7 @@
 **Timeline:** 3-5 years
 
 **Strategic Fit:**
+
 - ✅ Strong developer focus
 - ✅ API-first approach
 - ✅ Payment ecosystem
@@ -48,12 +52,14 @@
 ### 2. Intuit (QuickBooks)
 
 **Why They'd Buy:**
+
 - Modernize reconciliation
 - Add API-first capabilities
 - Compete with Stripe/Shopify
 - Expand developer platform
 
 **What They'd Buy:**
+
 - Reconciliation technology
 - API platform
 - Customer base
@@ -64,6 +70,7 @@
 **Timeline:** 3-5 years
 
 **Strategic Fit:**
+
 - ✅ Accounting focus
 - ✅ SMB market
 - ✅ Customer overlap
@@ -74,12 +81,14 @@
 ### 3. Shopify
 
 **Why They'd Buy:**
+
 - Expand merchant services
 - Add reconciliation capabilities
 - Strengthen platform ecosystem
 - Compete with Stripe
 
 **What They'd Buy:**
+
 - Reconciliation technology
 - Merchant services
 - Customer base
@@ -90,6 +99,7 @@
 **Timeline:** 3-5 years
 
 **Strategic Fit:**
+
 - ✅ E-commerce focus
 - ✅ Merchant services
 - ✅ Customer overlap
@@ -100,12 +110,14 @@
 ### 4. Fivetran
 
 **Why They'd Buy:**
+
 - Add reconciliation capabilities
 - Expand data platform
 - Compete with BlackLine
 - Strengthen enterprise offering
 
 **What They'd Buy:**
+
 - Reconciliation technology
 - Customer base
 - Team expertise
@@ -116,6 +128,7 @@
 **Timeline:** 3-5 years
 
 **Strategic Fit:**
+
 - ✅ Data platform
 - ✅ Enterprise focus
 - ⚠️ Less developer-focused
@@ -126,12 +139,14 @@
 ### 5. BlackLine
 
 **Why They'd Buy:**
+
 - Modernize product
 - Add API-first capabilities
 - Compete with Stripe/Intuit
 - Expand developer platform
 
 **What They'd Buy:**
+
 - Reconciliation technology
 - API platform
 - Customer base
@@ -142,6 +157,7 @@
 **Timeline:** 3-5 years
 
 **Strategic Fit:**
+
 - ✅ Reconciliation focus
 - ✅ Enterprise market
 - ⚠️ Less developer-focused
@@ -155,12 +171,14 @@
 
 **Type:** Technology Partner  
 **Benefits:**
+
 - Listed in Stripe Partner Directory
 - Co-marketing opportunities
 - Customer referrals
 - Technical integration support
 
 **What They'd Want:**
+
 - Stripe integration
 - Co-marketing
 - Customer referrals
@@ -175,12 +193,14 @@
 
 **Type:** App Partner  
 **Benefits:**
+
 - Listed in Shopify App Store
 - Access to Shopify merchants
 - Co-marketing opportunities
 - Revenue share
 
 **What They'd Want:**
+
 - Shopify app
 - Merchant integration
 - Co-marketing
@@ -195,12 +215,14 @@
 
 **Type:** App Partner  
 **Benefits:**
+
 - Listed in QuickBooks App Store
 - Access to QuickBooks users
 - Co-marketing opportunities
 - Revenue share
 
 **What They'd Want:**
+
 - QuickBooks integration
 - User integration
 - Co-marketing
@@ -216,6 +238,7 @@
 ### Strategic Acquisition (Preferred)
 
 **Target Acquirers:**
+
 - Stripe
 - Intuit (QuickBooks)
 - Shopify
@@ -224,6 +247,7 @@
 **Valuation Range:** $50M-$500M  
 **Timeline:** 3-5 years  
 **Success Criteria:**
+
 - $50M+ ARR
 - Strong product-market fit
 - Strategic value
@@ -234,6 +258,7 @@
 ### Financial Acquisition
 
 **Target Acquirers:**
+
 - Private equity firms
 - Financial buyers
 - Roll-up strategies
@@ -241,6 +266,7 @@
 **Valuation Range:** $20M-$100M  
 **Timeline:** 2-4 years  
 **Success Criteria:**
+
 - Profitable
 - Strong cash flow
 - Growth potential
@@ -254,6 +280,7 @@
 **Valuation Range:** $500M+  
 **Timeline:** 7-10 years  
 **Success Criteria:**
+
 - $100M+ ARR
 - Profitable
 - Strong growth
@@ -266,18 +293,21 @@
 ### Strategic Value
 
 **Technology:**
+
 - Reconciliation engine
 - API platform
 - Adapter ecosystem
 - Developer experience
 
 **Market Position:**
+
 - Market share
 - Competitive position
 - Customer base
 - Brand strength
 
 **Team:**
+
 - Engineering team
 - Product team
 - Sales team
@@ -288,18 +318,21 @@
 ### Financial Value
 
 **Revenue:**
+
 - ARR/MRR
 - Growth rate
 - Profitability
 - Unit economics
 
 **Customers:**
+
 - Customer count
 - Customer retention
 - Customer expansion
 - Customer concentration
 
 **Market:**
+
 - Market size
 - Market growth
 - Competitive landscape

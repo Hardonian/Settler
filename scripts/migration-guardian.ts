@@ -737,7 +737,9 @@ async function main() {
     console.log("📋 Step 1: Discovering environment files...");
     const envFiles = discoverEnvFiles();
     if (envFiles.length === 0) {
-      console.log("   ⚠️  No .env files found locally (expected in CI — checking environment variables)...");
+      console.log(
+        "   ⚠️  No .env files found locally (expected in CI — checking environment variables)..."
+      );
     } else {
       console.log(`   Found: ${envFiles.join(", ")}`);
     }

@@ -10,6 +10,7 @@
 **Goal:** Get customers from signup to first successful reconciliation in <24 hours.
 
 **Success Metrics:**
+
 - Time to first value: <24 hours
 - Activation rate: 60%+ (created first job within 7 days)
 - Engagement rate: 80%+ (weekly active users)
@@ -43,6 +44,7 @@
    - Access interactive playground
 
 **Success Criteria:**
+
 - ✅ Account created
 - ✅ Email verified
 - ✅ API key generated
@@ -59,11 +61,13 @@
 **Steps:**
 
 1. **Install SDK**
+
    ```bash
    npm install @settler/sdk
    ```
 
 2. **Initialize Client**
+
    ```typescript
    import Settler from "@settler/sdk";
 
@@ -73,6 +77,7 @@
    ```
 
 3. **Create First Job**
+
    ```typescript
    const job = await client.jobs.create({
      name: "Shopify-Stripe Reconciliation",
@@ -100,6 +105,7 @@
    - Validate configuration
 
 **Success Criteria:**
+
 - ✅ SDK installed
 - ✅ Client initialized
 - ✅ First job created
@@ -116,11 +122,13 @@
 **Steps:**
 
 1. **Run Reconciliation**
+
    ```typescript
    await client.jobs.run(job.data.id);
    ```
 
 2. **Get Report**
+
    ```typescript
    const report = await client.reports.get(job.data.id);
    console.log(report.data.summary);
@@ -141,6 +149,7 @@
    ```
 
 **Success Criteria:**
+
 - ✅ First reconciliation completed
 - ✅ Report generated
 - ✅ Results reviewed
@@ -162,6 +171,7 @@
    - Set up monitoring and alerts
 
 2. **Set Up Scheduled Jobs**
+
    ```typescript
    await client.jobs.update(job.data.id, {
      schedule: {
@@ -183,10 +193,11 @@
    - Verify alerts
 
 **Success Criteria:**
+
 - ✅ Production environment configured
-   - ✅ Scheduled jobs set up
-   - ✅ Alerts configured
-   - ✅ Production workflow tested
+  - ✅ Scheduled jobs set up
+  - ✅ Alerts configured
+  - ✅ Production workflow tested
 
 **Time:** 1-2 hours
 
@@ -224,18 +235,21 @@
 ### Documentation
 
 **Getting Started:**
+
 - [Quick Start Guide](https://docs.settler.io/quick-start)
 - [API Reference](https://docs.settler.io/api)
 - [SDK Documentation](https://docs.settler.io/sdk)
 - [Adapter Guide](https://docs.settler.io/adapters)
 
 **Tutorials:**
+
 - [Shopify-Stripe Reconciliation](https://docs.settler.io/tutorials/shopify-stripe)
 - [QuickBooks Integration](https://docs.settler.io/tutorials/quickbooks)
 - [Webhook Setup](https://docs.settler.io/tutorials/webhooks)
 - [Scheduled Jobs](https://docs.settler.io/tutorials/scheduled-jobs)
 
 **Best Practices:**
+
 - [Reconciliation Best Practices](https://docs.settler.io/best-practices)
 - [Error Handling](https://docs.settler.io/error-handling)
 - [Performance Optimization](https://docs.settler.io/performance)
@@ -243,12 +257,14 @@
 ### Interactive Resources
 
 **Playground:**
+
 - [Interactive Playground](https://settler.io/playground)
 - Try API without signup
 - Test adapters and configurations
 - View sample code
 
 **Examples:**
+
 - [Code Examples](https://docs.settler.io/examples)
 - [Integration Recipes](https://docs.settler.io/recipes)
 - [Case Studies](https://docs.settler.io/case-studies)
@@ -256,11 +272,13 @@
 ### Support
 
 **Community:**
+
 - [Discord](https://discord.gg/settler)
 - [GitHub Discussions](https://github.com/settler/settler/discussions)
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/settler)
 
 **Support:**
+
 - Email: [support@settler.io](mailto:support@settler.io)
 - Documentation: [docs.settler.io](https://docs.settler.io)
 - Status Page: [status.settler.io](https://status.settler.io)
@@ -274,6 +292,7 @@
 **Subject:** Welcome to Settler! Let's get you started
 
 **Body:**
+
 ```
 Hi [Name],
 
@@ -299,6 +318,7 @@ The Settler Team
 **Subject:** Create your first reconciliation job
 
 **Body:**
+
 ```
 Hi [Name],
 
@@ -321,6 +341,7 @@ The Settler Team
 **Subject:** 🎉 Your first reconciliation is complete!
 
 **Body:**
+
 ```
 Hi [Name],
 
@@ -343,6 +364,7 @@ The Settler Team
 **Subject:** Ready for production? Let's set it up
 
 **Body:**
+
 ```
 Hi [Name],
 
@@ -364,16 +386,19 @@ The Settler Team
 ### Activation Metrics
 
 **Time to First Value:**
+
 - Target: <24 hours
 - Measurement: Time from signup to first successful reconciliation
 - Tracking: Analytics dashboard
 
 **Activation Rate:**
+
 - Target: 60%+
 - Measurement: % of users who create first job within 7 days
 - Tracking: Analytics dashboard
 
 **Engagement Rate:**
+
 - Target: 80%+
 - Measurement: % of users who run reconciliations weekly
 - Tracking: Analytics dashboard
@@ -381,16 +406,19 @@ The Settler Team
 ### Satisfaction Metrics
 
 **Customer Satisfaction:**
+
 - Target: NPS >50
 - Measurement: Net Promoter Score survey
 - Tracking: Post-onboarding survey (Day 7)
 
 **Support Tickets:**
+
 - Target: <5% of users
 - Measurement: % of users who open support tickets
 - Tracking: Support dashboard
 
 **Documentation Usage:**
+
 - Target: 80%+ of users
 - Measurement: % of users who access documentation
 - Tracking: Analytics dashboard
@@ -402,12 +430,14 @@ The Settler Team
 ### A/B Testing
 
 **Test Variables:**
+
 - Welcome email content
 - Onboarding flow (guided vs. self-service)
 - Documentation format (video vs. text)
 - Support channel (email vs. chat)
 
 **Metrics to Track:**
+
 - Time to first value
 - Activation rate
 - Engagement rate
@@ -416,12 +446,14 @@ The Settler Team
 ### Feedback Loops
 
 **Feedback Collection:**
+
 - Post-onboarding survey (Day 7)
 - In-app feedback widget
 - Support ticket analysis
 - User interviews
 
 **Feedback Implementation:**
+
 - Weekly review of feedback
 - Monthly optimization sprints
 - Quarterly onboarding improvements
@@ -433,33 +465,40 @@ The Settler Team
 ### Common Issues
 
 **Issue 1: API Key Not Working**
+
 - Solution: Verify API key is correct, check permissions
 - Documentation: [API Key Setup](https://docs.settler.io/api-keys)
 
 **Issue 2: Adapter Connection Failed**
+
 - Solution: Verify adapter credentials, check API permissions
 - Documentation: [Adapter Setup](https://docs.settler.io/adapters)
 
 **Issue 3: Reconciliation Errors**
+
 - Solution: Check matching rules, validate data format
 - Documentation: [Error Handling](https://docs.settler.io/error-handling)
 
 **Issue 4: Low Accuracy**
+
 - Solution: Review matching rules, adjust tolerance
 - Documentation: [Best Practices](https://docs.settler.io/best-practices)
 
 ### Support Escalation
 
 **Level 1: Self-Service**
+
 - Documentation
 - Community (Discord, GitHub)
 - Knowledge base
 
 **Level 2: Email Support**
+
 - Email: [support@settler.io](mailto:support@settler.io)
 - Response time: 24 hours (Standard), 4 hours (Growth+)
 
 **Level 3: Priority Support**
+
 - Slack channel (Enterprise)
 - Phone support (Enterprise)
 - Dedicated account manager (Enterprise)

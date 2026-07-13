@@ -79,6 +79,7 @@ Made with ❤️ for developers who hate manual reconciliation.
 ```
 
 **Gallery Images:**
+
 1. Dashboard screenshot showing reconciliation results
 2. API code example (TypeScript)
 3. Webhook payload example
@@ -87,12 +88,15 @@ Made with ❤️ for developers who hate manual reconciliation.
 **Maker Comments:**
 
 **Comment 1 (Founder):**
+
 > Hey Product Hunt! 👋 I'm [Founder Name], founder of Settler. We built Settler because we were tired of spending hours manually matching orders to payments. Settler automates this in 5 minutes with 99%+ accuracy. Try it free and let us know what you think!
 
 **Comment 2 (Use Case):**
+
 > We use Settler to reconcile Shopify orders with Stripe payments. It saves us 15 hours per week and eliminated all manual errors. The API is super clean and the webhooks make it easy to integrate into our workflow.
 
 **Comment 3 (Technical):**
+
 > The SDK is really well-designed. TypeScript types, retry logic, webhook signature verification—everything you need is there. Plus, the adapters are open source, so you can see exactly how they work.
 
 ---
@@ -153,6 +157,7 @@ Thanks for checking it out!
 ### Pre-Launch (2 Weeks Before)
 
 **Content Preparation:**
+
 - [ ] Product Hunt post written and reviewed
 - [ ] Show HN post written and reviewed
 - [ ] Press release drafted
@@ -163,6 +168,7 @@ Thanks for checking it out!
 - [ ] Screenshots/graphics created
 
 **Technical Preparation:**
+
 - [ ] Production environment tested
 - [ ] Load testing completed
 - [ ] Monitoring/alerting configured
@@ -171,6 +177,7 @@ Thanks for checking it out!
 - [ ] Onboarding flow tested
 
 **Community Preparation:**
+
 - [ ] Beta users notified
 - [ ] Advisors notified
 - [ ] Partners notified
@@ -181,6 +188,7 @@ Thanks for checking it out!
 ### Launch Day (T-0)
 
 **Morning (9 AM ET):**
+
 - [ ] Product Hunt post goes live
 - [ ] Show HN post submitted
 - [ ] Press release sent
@@ -189,12 +197,14 @@ Thanks for checking it out!
 - [ ] Blog post published
 
 **Midday (12 PM ET):**
+
 - [ ] Monitor Product Hunt ranking
 - [ ] Respond to comments/questions
 - [ ] Share on social media
 - [ ] Engage with community
 
 **Evening (6 PM ET):**
+
 - [ ] Thank you post on Product Hunt
 - [ ] Update Show HN with launch results
 - [ ] Send follow-up emails
@@ -205,18 +215,21 @@ Thanks for checking it out!
 ### Post-Launch (Week 1)
 
 **Day 1:**
+
 - [ ] Monitor signups and conversions
 - [ ] Respond to all comments/questions
 - [ ] Share launch results on social media
 - [ ] Thank early supporters
 
 **Day 2-3:**
+
 - [ ] Analyze launch metrics
 - [ ] Gather feedback
 - [ ] Address any issues
 - [ ] Follow up with signups
 
 **Day 4-7:**
+
 - [ ] Write launch recap blog post
 - [ ] Share lessons learned
 - [ ] Plan next steps
@@ -232,7 +245,7 @@ Thanks for checking it out!
 
 **Settler Launches Reconciliation-as-a-Service API to Automate Financial Data Matching**
 
-*New API platform eliminates manual reconciliation, saving finance teams 10+ hours per week*
+_New API platform eliminates manual reconciliation, saving finance teams 10+ hours per week_
 
 **[City, Date]** — Settler, a reconciliation-as-a-Service API platform, today announced its public beta launch. Settler automates the process of matching records across disconnected systems (Shopify orders with Stripe payments, QuickBooks invoices with PayPal transactions, etc.), eliminating the need for manual reconciliation.
 
@@ -241,18 +254,21 @@ Finance teams spend 10-20 hours per week manually matching records between diffe
 
 **The Solution**
 Settler automates reconciliation with 99%+ accuracy:
+
 - Connect systems in 5 minutes via API
 - Automated matching with configurable rules
 - Real-time webhook notifications
 - Complete audit trail and reports
 
 **Key Features**
+
 - Pre-built adapters for 50+ platforms (Stripe, Shopify, QuickBooks, PayPal, etc.)
 - Configurable matching rules with confidence scoring
 - API-first design (use from any language, any framework)
 - Usage-based pricing (no per-seat fees)
 
 **Pricing**
+
 - Free: 1 job, 100 reconciliations/month
 - Starter: $29/mo - 5 jobs, 1,000 reconciliations/month
 - Growth: $99/mo - 20 jobs, 10,000 reconciliations/month
@@ -270,6 +286,7 @@ Settler is a reconciliation-as-a-Service API platform that automates financial d
 [Phone]
 
 **Links**
+
 - Website: settler.io
 - Documentation: docs.settler.io
 - GitHub: github.com/settler/settler
@@ -325,6 +342,7 @@ Founder, Settler
 **Database:** Launch Tasks
 
 **Properties:**
+
 - Task Name (Title)
 - Status (Select: Not Started, In Progress, Done, Blocked)
 - Owner (Person)
@@ -349,15 +367,15 @@ Founder, Settler
 
 **Sample Tasks:**
 
-| Task | Owner | Due Date | Priority | Status |
-|------|-------|----------|----------|--------|
-| Write Product Hunt post | Marketing | T-14 | P0 | Done |
-| Record demo video | Marketing | T-10 | P0 | In Progress |
-| Test production environment | Engineering | T-7 | P0 | Done |
-| Schedule social media posts | Marketing | T-3 | P1 | Done |
-| Prepare support team | Support | T-1 | P1 | Done |
-| Launch Product Hunt | Founder | T-0 | P0 | Not Started |
-| Monitor launch metrics | All | T+1 | P1 | Not Started |
+| Task                        | Owner       | Due Date | Priority | Status      |
+| --------------------------- | ----------- | -------- | -------- | ----------- |
+| Write Product Hunt post     | Marketing   | T-14     | P0       | Done        |
+| Record demo video           | Marketing   | T-10     | P0       | In Progress |
+| Test production environment | Engineering | T-7      | P0       | Done        |
+| Schedule social media posts | Marketing   | T-3      | P1       | Done        |
+| Prepare support team        | Support     | T-1      | P1       | Done        |
+| Launch Product Hunt         | Founder     | T-0      | P0       | Not Started |
+| Monitor launch metrics      | All         | T+1      | P1       | Not Started |
 
 ---
 
@@ -372,21 +390,25 @@ Founder, Settler
 **Outline:**
 
 #### Introduction (2 paragraphs)
+
 - Hook: "Every finance team wastes 10+ hours per week on manual reconciliation."
 - Problem: Manual matching is slow, error-prone, and doesn't scale.
 - Solution: Settler automates this in 5 minutes.
 
 #### What is Settler? (1 paragraph)
+
 - Reconciliation-as-a-Service API
 - Automates matching across disconnected systems
 - 99%+ accuracy, 5-minute setup
 
 #### Step 1: Sign Up (1 paragraph + code)
+
 - Create account at settler.io
 - Get API key
 - Code: Show API key in dashboard
 
 #### Step 2: Install SDK (1 paragraph + code)
+
 ```bash
 npm install @settler/sdk
 ```
@@ -400,6 +422,7 @@ const client = new Settler({
 ```
 
 #### Step 3: Create Reconciliation Job (2 paragraphs + code)
+
 - Explain job concept
 - Show example: Shopify → Stripe
 - Code: Create job API call
@@ -430,6 +453,7 @@ const job = await client.jobs.create({
 ```
 
 #### Step 4: Run Reconciliation (1 paragraph + code)
+
 - Explain execution
 - Code: Run job and get results
 
@@ -449,6 +473,7 @@ console.log(report.data.summary);
 ```
 
 #### Step 5: Handle Exceptions (1 paragraph + code)
+
 - Explain unmatched records
 - Code: Get unmatched records and webhooks
 
@@ -464,22 +489,26 @@ const unmatched = await client.reports.getUnmatched(job.data.id);
 ```
 
 #### Advanced Features (2 paragraphs)
+
 - Scheduled reconciliations
 - Custom matching rules
 - Confidence scoring
 - Export reports
 
 #### Use Cases (3 paragraphs)
+
 - E-commerce: Shopify ↔ Stripe
 - SaaS: Subscription events ↔ Billing
 - Finance: Multi-platform accounting
 
 #### Next Steps (1 paragraph)
+
 - Try it free: settler.io/signup
 - Read docs: docs.settler.io
 - Join Discord: discord.gg/settler
 
 #### Conclusion (1 paragraph)
+
 - Recap: 5-minute setup, 99%+ accuracy
 - Call to action: Sign up and try it
 
@@ -505,19 +534,24 @@ const unmatched = await client.reports.getUnmatched(job.data.id);
 3. **"Rate your experience so far:"** (1-5 stars)
 
 **Implementation:**
+
 ```typescript
 // Show survey after first reconciliation
 if (isFirstReconciliation && !hasCompletedSurvey) {
   showSurveyModal({
     questions: [
-      { type: 'radio', question: 'How helpful was this reconciliation?', options: ['Very helpful', 'Somewhat helpful', 'Not helpful'] },
-      { type: 'text', question: 'What would make it more useful?', optional: true },
-      { type: 'stars', question: 'Rate your experience so far:' }
+      {
+        type: "radio",
+        question: "How helpful was this reconciliation?",
+        options: ["Very helpful", "Somewhat helpful", "Not helpful"],
+      },
+      { type: "text", question: "What would make it more useful?", optional: true },
+      { type: "stars", question: "Rate your experience so far:" },
     ],
     onComplete: (answers) => {
-      trackEvent('survey_completed', { answers });
+      trackEvent("survey_completed", { answers });
       markSurveyCompleted();
-    }
+    },
   });
 }
 ```
@@ -532,6 +566,7 @@ if (isFirstReconciliation && !hasCompletedSurvey) {
 
 **Question:**
 **"How easy was it to set up Settler?"**
+
 - [ ] Very easy (5 stars)
 - [ ] Easy (4 stars)
 - [ ] Neutral (3 stars)
@@ -542,19 +577,20 @@ if (isFirstReconciliation && !hasCompletedSurvey) {
 **"What was difficult?"** (Open text)
 
 **Implementation:**
+
 ```typescript
 // Show poll after first report view
 if (isFirstReportView && !hasCompletedPoll) {
   showPollWidget({
-    question: 'How easy was it to set up Settler?',
-    type: 'stars',
+    question: "How easy was it to set up Settler?",
+    type: "stars",
     onComplete: (rating) => {
-      trackEvent('setup_rating', { rating });
+      trackEvent("setup_rating", { rating });
       if (rating < 3) {
-        showFollowUpQuestion('What was difficult?');
+        showFollowUpQuestion("What was difficult?");
       }
       markPollCompleted();
-    }
+    },
   });
 }
 ```
@@ -570,6 +606,7 @@ if (isFirstReportView && !hasCompletedPoll) {
 **Link:** [Feature Request Form](https://settler.io/feedback) or GitHub Issues
 
 **Implementation:**
+
 ```typescript
 // Add feature request link to dashboard
 <Sidebar>
@@ -581,13 +618,13 @@ if (isFirstReportView && !hasCompletedPoll) {
 
 ### Feedback Collection Points
 
-| Location | Trigger | Format | Purpose |
-|---------|---------|--------|---------|
-| **Post-Signup** | After account creation | Email survey | Onboarding experience |
-| **First Reconciliation** | After first successful run | In-app modal | Product value |
-| **First Report** | After viewing first report | Sidebar poll | Setup ease |
-| **Dashboard** | Always visible | Link/button | Feature requests |
-| **Settings** | In settings page | Feedback form | General feedback |
+| Location                 | Trigger                    | Format        | Purpose               |
+| ------------------------ | -------------------------- | ------------- | --------------------- |
+| **Post-Signup**          | After account creation     | Email survey  | Onboarding experience |
+| **First Reconciliation** | After first successful run | In-app modal  | Product value         |
+| **First Report**         | After viewing first report | Sidebar poll  | Setup ease            |
+| **Dashboard**            | Always visible             | Link/button   | Feature requests      |
+| **Settings**             | In settings page           | Feedback form | General feedback      |
 
 ---
 
@@ -595,31 +632,31 @@ if (isFirstReportView && !hasCompletedPoll) {
 
 ### Immediate Actions (This Week)
 
-| Task | Owner | Time Estimate | Priority |
-|------|-------|---------------|----------|
-| Write Product Hunt post | Marketing | 2 hours | P0 |
-| Write Show HN post | Founder | 1 hour | P0 |
-| Create launch checklist | Marketing | 1 hour | P0 |
-| Draft press release | Marketing | 2 hours | P1 |
-| Set up Notion launch board | Operations | 1 hour | P1 |
+| Task                       | Owner      | Time Estimate | Priority |
+| -------------------------- | ---------- | ------------- | -------- |
+| Write Product Hunt post    | Marketing  | 2 hours       | P0       |
+| Write Show HN post         | Founder    | 1 hour        | P0       |
+| Create launch checklist    | Marketing  | 1 hour        | P0       |
+| Draft press release        | Marketing  | 2 hours       | P1       |
+| Set up Notion launch board | Operations | 1 hour        | P1       |
 
 ### Short-Term (This Month)
 
-| Task | Owner | Time Estimate | Priority |
-|------|-------|---------------|----------|
-| Write blog post | Marketing | 4 hours | P1 |
-| Record demo video | Marketing | 4 hours | P1 |
-| Set up feedback collection | Engineering | 1 day | P1 |
-| Schedule social media posts | Marketing | 2 hours | P2 |
+| Task                        | Owner       | Time Estimate | Priority |
+| --------------------------- | ----------- | ------------- | -------- |
+| Write blog post             | Marketing   | 4 hours       | P1       |
+| Record demo video           | Marketing   | 4 hours       | P1       |
+| Set up feedback collection  | Engineering | 1 day         | P1       |
+| Schedule social media posts | Marketing   | 2 hours       | P2       |
 
 ### Long-Term (This Quarter)
 
-| Task | Owner | Time Estimate | Priority |
-|------|-------|---------------|----------|
-| Analyze launch metrics | Marketing | 1 day | P1 |
-| Iterate based on feedback | Product | Ongoing | P1 |
-| Plan next launch | Marketing | 1 week | P2 |
-| Build community | Marketing | Ongoing | P2 |
+| Task                      | Owner     | Time Estimate | Priority |
+| ------------------------- | --------- | ------------- | -------- |
+| Analyze launch metrics    | Marketing | 1 day         | P1       |
+| Iterate based on feedback | Product   | Ongoing       | P1       |
+| Plan next launch          | Marketing | 1 week        | P2       |
+| Build community           | Marketing | Ongoing       | P2       |
 
 ---
 

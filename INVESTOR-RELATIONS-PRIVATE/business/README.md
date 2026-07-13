@@ -147,24 +147,29 @@ This framework provides a comprehensive business and operational blueprint for S
 ## Key Highlights
 
 ### Business Model
+
 - **Elevator Pitch:** "Settler automates financial reconciliation across Stripe, Shopify, QuickBooks, and 50+ platforms—eliminating hours of manual work with a 5-minute API integration."
 - **Pricing:** Free ($0), Starter ($29), Growth ($99), Scale ($299), Enterprise (Custom)
 - **Target:** 1,000 customers, $600K ARR (Year 1)
 
 ### Go-to-Market
+
 - **Phase 1:** Developer-led growth (Product Hunt, technical content, partnerships)
 - **Phase 2:** Product-led growth (free tier, self-service, open source)
 - **Phase 3:** Sales-assisted growth (enterprise sales, partnerships, paid acquisition)
 
 ### Team
+
 - **Year 1:** 15 people (5 engineers, 3 product/design, 4 sales/marketing, 2 operations)
 - **Year 2:** 40 people (15 engineers, 6 product/design, 12 sales/marketing, 7 operations)
 
 ### Growth
+
 - **10+ Experiments:** Product Hunt, blog posts, partnerships, API directories, pricing tweaks
 - **Metrics:** Activation (60%+), Retention (<5% churn), Expansion (20% of MRR), NPS (>50)
 
 ### Exit
+
 - **Likely Acquirers:** Stripe, Intuit (QuickBooks), Shopify, Fivetran, BlackLine
 - **Valuation Range:** $50M-$500M (strategic acquisition)
 - **Timeline:** 3-5 years
@@ -174,16 +179,19 @@ This framework provides a comprehensive business and operational blueprint for S
 ## Usage Notes
 
 ### For AI Agents
+
 - All documents are structured with clear sections and markdown formatting
 - Templates include placeholders (e.g., `[Name]`, `[Date]`) for customization
 - Tables and lists are used for easy parsing and extraction
 
 ### For Founders/Operators
+
 - Documents are written in startup-operator English (not consultant-legalese)
 - Focus on actionable insights and practical templates
 - All documents are ready to use with minimal customization
 
 ### Customization
+
 - Replace placeholders (`[Name]`, `[Date]`, etc.) with actual values
 - Update metrics and timelines based on actual data
 - Customize templates for your specific use case
@@ -193,11 +201,13 @@ This framework provides a comprehensive business and operational blueprint for S
 ## Maintenance
 
 ### Regular Updates
+
 - **Quarterly:** Review and update metrics, timelines, and strategies
 - **Annually:** Comprehensive review of all documents
 - **As Needed:** Update based on market changes, customer feedback, or strategic shifts
 
 ### Version Control
+
 - All documents include version numbers and last updated dates
 - Track changes in git for version history
 - Maintain changelog for major updates
@@ -207,6 +217,7 @@ This framework provides a comprehensive business and operational blueprint for S
 ## Contact
 
 **Questions or Feedback?**
+
 - Email: founders@settler.io
 - Website: [settler.io](https://settler.io)
 - GitHub: [github.com/settler](https://github.com/settler)

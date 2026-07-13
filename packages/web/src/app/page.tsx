@@ -16,10 +16,22 @@ import { Button } from "@/components/ui/button";
 import { UiLink } from "@/components/ui/link";
 import dynamic from "next/dynamic";
 
-const ReconciliationFlow = dynamic(() => import("@/components/site/infographics").then(mod => mod.ReconciliationFlow), { ssr: false });
-const VisualGrid = dynamic(() => import("@/components/site/infographics").then(mod => mod.VisualGrid), { ssr: false });
-const AdapterConnectionMap = dynamic(() => import("@/components/site/infographics").then(mod => mod.AdapterConnectionMap), { ssr: false });
-const ExceptionTriageVisual = dynamic(() => import("@/components/site/infographics").then(mod => mod.ExceptionTriageVisual), { ssr: false });
+const ReconciliationFlow = dynamic(
+  () => import("@/components/site/infographics").then((mod) => mod.ReconciliationFlow),
+  { ssr: false }
+);
+const VisualGrid = dynamic(
+  () => import("@/components/site/infographics").then((mod) => mod.VisualGrid),
+  { ssr: false }
+);
+const AdapterConnectionMap = dynamic(
+  () => import("@/components/site/infographics").then((mod) => mod.AdapterConnectionMap),
+  { ssr: false }
+);
+const ExceptionTriageVisual = dynamic(
+  () => import("@/components/site/infographics").then((mod) => mod.ExceptionTriageVisual),
+  { ssr: false }
+);
 
 export const metadata: Metadata = {
   title: "Settler — Reconciliation intelligence + audit OS",

@@ -313,9 +313,9 @@ router.get(
             title: "Invalid cursor",
             detail:
               e instanceof MergedRunsCursorError
-                ? e.message
+                ? (e as any).message
                 : e instanceof Error
-                  ? e.message
+                  ? (e as any).message
                   : "Invalid cursor",
             code: CURSOR_INVALID,
           });

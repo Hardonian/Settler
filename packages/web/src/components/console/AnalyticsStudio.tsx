@@ -159,7 +159,7 @@ export function AnalyticsStudio({ userId: _userId }: { userId: string }) {
       });
 
       const result = await res.json().catch(() => null);
-      
+
       const freezeDetails = parseGovernanceFreezeError(result, res.status);
       if (freezeDetails) {
         setFreezeError(freezeDetails);
@@ -205,7 +205,7 @@ export function AnalyticsStudio({ userId: _userId }: { userId: string }) {
       });
 
       const data = await res.json().catch(() => null);
-      
+
       const freezeDetails = parseGovernanceFreezeError(data, res.status);
       if (freezeDetails) {
         setFreezeError(freezeDetails);

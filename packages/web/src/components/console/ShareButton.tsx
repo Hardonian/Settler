@@ -59,7 +59,7 @@ export function ShareButton({ artifactType, artifactId, artifactName }: ShareBut
       });
 
       const data = await response.json().catch(() => null);
-      
+
       const freezeDetails = parseGovernanceFreezeError(data, response.status);
       if (freezeDetails) {
         setFreezeError(freezeDetails);
@@ -72,7 +72,9 @@ export function ShareButton({ artifactType, artifactId, artifactName }: ShareBut
 
       setShareUrl(data.shareUrl);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to create shareable link. Please try again.");
+      setError(
+        err instanceof Error ? err.message : "Failed to create shareable link. Please try again."
+      );
     } finally {
       setLoading(false);
     }

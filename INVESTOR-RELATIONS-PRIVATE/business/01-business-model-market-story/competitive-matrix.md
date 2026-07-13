@@ -7,6 +7,7 @@
 ## Competitive Landscape Overview
 
 The reconciliation market is fragmented across multiple categories:
+
 1. **Legacy Enterprise Software** (BlackLine, Trintech)
 2. **Accounting Platforms** (QuickBooks, Xero, NetSuite)
 3. **Payment Platforms** (Stripe Revenue Recognition, PayPal Reporting)
@@ -19,20 +20,21 @@ The reconciliation market is fragmented across multiple categories:
 
 ## Competitive Comparison Matrix
 
-| Feature | Settler | BlackLine | QuickBooks/Xero | Stripe Revenue Recognition | Fivetran | Custom Scripts |
-|---------|---------|-----------|-----------------|---------------------------|----------|----------------|
-| **API-First** | ✅ Yes | ❌ No | ⚠️ Limited | ✅ Yes | ✅ Yes | ⚠️ Depends |
-| **Real-Time** | ✅ Yes | ❌ Batch | ❌ Batch | ✅ Yes | ⚠️ Near-real-time | ⚠️ Depends |
-| **Multi-Platform** | ✅ Yes (50+) | ✅ Yes | ⚠️ Limited | ❌ Stripe-only | ✅ Yes | ⚠️ Depends |
-| **Developer Experience** | ✅ Excellent | ❌ Poor | ⚠️ Moderate | ✅ Good | ✅ Good | ⚠️ Depends |
-| **Setup Time** | ⚡ 5 minutes | 🐌 3-6 months | 🐌 Days-weeks | ⚡ Minutes | 🐌 Days | 🐌 Weeks-months |
-| **Pricing** | 💰 $29-$299/mo | 💰💰💰 $100K+/year | 💰💰 $20-$200/mo | 💰💰 $99-$999/mo | 💰💰💰 $100-$1000+/mo | 💰💰💰 Custom |
-| **Compliance** | ✅ SOC 2, GDPR | ✅ SOC 2 | ⚠️ Basic | ✅ SOC 2 | ⚠️ Basic | ⚠️ Depends |
-| **Composability** | ✅ Adapter SDK | ❌ No | ❌ No | ❌ No | ⚠️ Limited | ⚠️ Depends |
-| **Open Source** | ✅ SDK & Adapters | ❌ No | ❌ No | ❌ No | ⚠️ Limited | ⚠️ Depends |
-| **Support** | ✅ Email, Slack | ✅ Dedicated | ⚠️ Community | ✅ Email | ✅ Email | ⚠️ None |
+| Feature                  | Settler           | BlackLine          | QuickBooks/Xero  | Stripe Revenue Recognition | Fivetran              | Custom Scripts  |
+| ------------------------ | ----------------- | ------------------ | ---------------- | -------------------------- | --------------------- | --------------- |
+| **API-First**            | ✅ Yes            | ❌ No              | ⚠️ Limited       | ✅ Yes                     | ✅ Yes                | ⚠️ Depends      |
+| **Real-Time**            | ✅ Yes            | ❌ Batch           | ❌ Batch         | ✅ Yes                     | ⚠️ Near-real-time     | ⚠️ Depends      |
+| **Multi-Platform**       | ✅ Yes (50+)      | ✅ Yes             | ⚠️ Limited       | ❌ Stripe-only             | ✅ Yes                | ⚠️ Depends      |
+| **Developer Experience** | ✅ Excellent      | ❌ Poor            | ⚠️ Moderate      | ✅ Good                    | ✅ Good               | ⚠️ Depends      |
+| **Setup Time**           | ⚡ 5 minutes      | 🐌 3-6 months      | 🐌 Days-weeks    | ⚡ Minutes                 | 🐌 Days               | 🐌 Weeks-months |
+| **Pricing**              | 💰 $29-$299/mo    | 💰💰💰 $100K+/year | 💰💰 $20-$200/mo | 💰💰 $99-$999/mo           | 💰💰💰 $100-$1000+/mo | 💰💰💰 Custom   |
+| **Compliance**           | ✅ SOC 2, GDPR    | ✅ SOC 2           | ⚠️ Basic         | ✅ SOC 2                   | ⚠️ Basic              | ⚠️ Depends      |
+| **Composability**        | ✅ Adapter SDK    | ❌ No              | ❌ No            | ❌ No                      | ⚠️ Limited            | ⚠️ Depends      |
+| **Open Source**          | ✅ SDK & Adapters | ❌ No              | ❌ No            | ❌ No                      | ⚠️ Limited            | ⚠️ Depends      |
+| **Support**              | ✅ Email, Slack   | ✅ Dedicated       | ⚠️ Community     | ✅ Email                   | ✅ Email              | ⚠️ None         |
 
 **Legend:**
+
 - ✅ Excellent/Yes
 - ⚠️ Moderate/Limited
 - ❌ Poor/No
@@ -48,12 +50,14 @@ The reconciliation market is fragmented across multiple categories:
 ### 1. BlackLine (Legacy Enterprise)
 
 **Strengths:**
+
 - ✅ Comprehensive reconciliation features
 - ✅ Strong compliance capabilities (SOC 2, audit trails)
 - ✅ Enterprise-grade security
 - ✅ Large customer base (Fortune 500)
 
 **Weaknesses:**
+
 - ❌ Expensive ($100K+/year)
 - ❌ Complex setup (3-6 months)
 - ❌ UI-heavy, not API-first
@@ -63,12 +67,14 @@ The reconciliation market is fragmented across multiple categories:
 **Target Customer:** Large enterprises with complex reconciliation needs
 
 **Our Differentiation:**
+
 - ⚡ 5-minute setup vs. 3-6 months
 - 💰 $29-$299/month vs. $100K+/year
 - 🔌 API-first vs. UI-heavy
 - 🚀 Real-time vs. batch processing
 
 **Competitive Moat:**
+
 - Developer experience (5-minute integration)
 - Pricing (10-100x cheaper)
 - Speed (real-time vs. batch)
@@ -79,12 +85,14 @@ The reconciliation market is fragmented across multiple categories:
 ### 2. QuickBooks / Xero (Accounting Platforms)
 
 **Strengths:**
+
 - ✅ Widely adopted (millions of users)
 - ✅ Good accounting features
 - ✅ Affordable pricing
 - ✅ Strong brand recognition
 
 **Weaknesses:**
+
 - ❌ Manual reconciliation process
 - ❌ Limited API capabilities
 - ❌ Batch processing (not real-time)
@@ -94,12 +102,14 @@ The reconciliation market is fragmented across multiple categories:
 **Target Customer:** Small businesses with basic accounting needs
 
 **Our Differentiation:**
+
 - ⚡ Automated reconciliation vs. manual
 - 🔄 Real-time vs. batch processing
 - 🔌 Multi-platform vs. limited integrations
 - 🎯 Purpose-built for reconciliation
 
 **Competitive Moat:**
+
 - Automation (eliminates manual work)
 - Real-time processing
 - Multi-platform support
@@ -110,12 +120,14 @@ The reconciliation market is fragmented across multiple categories:
 ### 3. Stripe Revenue Recognition (Payment Platform)
 
 **Strengths:**
+
 - ✅ Excellent developer experience
 - ✅ Real-time processing
 - ✅ Strong API documentation
 - ✅ Trusted brand (Stripe)
 
 **Weaknesses:**
+
 - ❌ Stripe-only (no multi-platform)
 - ❌ Focused on revenue recognition (not general reconciliation)
 - ❌ Limited to Stripe ecosystem
@@ -124,12 +136,14 @@ The reconciliation market is fragmented across multiple categories:
 **Target Customer:** Stripe-only businesses needing revenue recognition
 
 **Our Differentiation:**
+
 - 🔌 Multi-platform vs. Stripe-only
 - 🎯 General reconciliation vs. revenue recognition only
 - 🔗 Works with any platform (not just Stripe)
 - 💰 More affordable for multi-platform use
 
 **Competitive Moat:**
+
 - Multi-platform support
 - General-purpose reconciliation
 - Composable adapters
@@ -140,12 +154,14 @@ The reconciliation market is fragmented across multiple categories:
 ### 4. Fivetran / Stitch (Data Integration Platforms)
 
 **Strengths:**
+
 - ✅ Excellent data integration capabilities
 - ✅ Strong API and developer experience
 - ✅ Wide platform support
 - ✅ Good documentation
 
 **Weaknesses:**
+
 - ❌ Not purpose-built for reconciliation
 - ❌ Expensive for reconciliation use case
 - ❌ Requires data warehouse setup
@@ -155,6 +171,7 @@ The reconciliation market is fragmented across multiple categories:
 **Target Customer:** Companies needing data integration and ETL
 
 **Our Differentiation:**
+
 - 🎯 Purpose-built for reconciliation vs. general ETL
 - ⚡ 5-minute setup vs. days of configuration
 - 💰 More affordable for reconciliation use case
@@ -162,6 +179,7 @@ The reconciliation market is fragmented across multiple categories:
 - 📊 Reconciliation-specific features (matching, conflict resolution)
 
 **Competitive Moat:**
+
 - Purpose-built for reconciliation
 - Faster setup and configuration
 - Reconciliation-specific features
@@ -172,11 +190,13 @@ The reconciliation market is fragmented across multiple categories:
 ### 5. Custom Scripts / In-House Solutions
 
 **Strengths:**
+
 - ✅ Full control and customization
 - ✅ No vendor lock-in
 - ✅ Can be tailored to specific needs
 
 **Weaknesses:**
+
 - ❌ High development and maintenance cost
 - ❌ Requires engineering resources
 - ❌ No compliance guarantees
@@ -186,6 +206,7 @@ The reconciliation market is fragmented across multiple categories:
 **Target Customer:** Companies with engineering resources and custom needs
 
 **Our Differentiation:**
+
 - ⚡ 5-minute setup vs. weeks of development
 - 🔒 Compliance built-in vs. custom implementation
 - 🛠️ Maintenance-free vs. ongoing maintenance
@@ -193,6 +214,7 @@ The reconciliation market is fragmented across multiple categories:
 - 🔄 Continuous updates vs. manual updates
 
 **Competitive Moat:**
+
 - Faster time to value
 - Compliance built-in
 - Maintenance-free
@@ -217,6 +239,7 @@ The reconciliation market is fragmented across multiple categories:
 ## Competitive Advantages (Moats)
 
 ### 1. Developer Experience Moat
+
 - **5-minute integration** vs. weeks/months for competitors
 - **TypeScript SDK** with full type safety
 - **Interactive playground** for instant testing
@@ -228,6 +251,7 @@ The reconciliation market is fragmented across multiple categories:
 ---
 
 ### 2. Composability Moat
+
 - **Adapter SDK** for building custom adapters
 - **Open-source adapters** for community contributions
 - **Extensible architecture** for any platform
@@ -238,6 +262,7 @@ The reconciliation market is fragmented across multiple categories:
 ---
 
 ### 3. Compliance Moat
+
 - **SOC 2 Type II** certified (target: Q2 2026)
 - **GDPR, PCI-DSS** built-in from day one
 - **Audit trails** for compliance requirements
@@ -248,6 +273,7 @@ The reconciliation market is fragmented across multiple categories:
 ---
 
 ### 4. Real-Time Processing Moat
+
 - **Real-time reconciliation** vs. batch processing
 - **Webhook-based** event-driven architecture
 - **Low latency** (<100ms p95)
@@ -258,6 +284,7 @@ The reconciliation market is fragmented across multiple categories:
 ---
 
 ### 5. Pricing Moat
+
 - **10-100x cheaper** than enterprise competitors
 - **Transparent pricing** (no hidden fees)
 - **Generous free tier** (1K reconciliations/month)
@@ -270,9 +297,11 @@ The reconciliation market is fragmented across multiple categories:
 ## Competitive Threats
 
 ### 1. Stripe Launches Multi-Platform Reconciliation
+
 **Likelihood:** Medium  
 **Impact:** High  
 **Mitigation:**
+
 - Focus on platform-agnostic approach
 - Build strong adapter ecosystem
 - Emphasize composability and extensibility
@@ -281,9 +310,11 @@ The reconciliation market is fragmented across multiple categories:
 ---
 
 ### 2. BlackLine Launches API-First Product
+
 **Likelihood:** Low  
 **Impact:** Medium  
 **Mitigation:**
+
 - Maintain developer experience advantage
 - Focus on speed and simplicity
 - Build strong community and ecosystem
@@ -292,9 +323,11 @@ The reconciliation market is fragmented across multiple categories:
 ---
 
 ### 3. Fivetran Adds Reconciliation Features
+
 **Likelihood:** Medium  
 **Impact:** Medium  
 **Mitigation:**
+
 - Emphasize purpose-built reconciliation features
 - Focus on real-time vs. batch processing
 - Build reconciliation-specific features (matching, conflict resolution)
@@ -303,9 +336,11 @@ The reconciliation market is fragmented across multiple categories:
 ---
 
 ### 4. New API-First Competitor Enters Market
+
 **Likelihood:** High  
 **Impact:** Medium  
 **Mitigation:**
+
 - Build strong brand and community
 - Focus on developer experience and composability
 - Build network effects (more adapters → more customers)
@@ -316,6 +351,7 @@ The reconciliation market is fragmented across multiple categories:
 ## Competitive Strategy
 
 ### Phase 1: Differentiation (Months 1-6)
+
 - **Focus:** Developer experience and speed
 - **Message:** "5-minute integration vs. weeks of custom code"
 - **Channels:** Developer communities, Product Hunt, technical blog posts
@@ -323,6 +359,7 @@ The reconciliation market is fragmented across multiple categories:
 ---
 
 ### Phase 2: Expansion (Months 7-12)
+
 - **Focus:** Multi-platform and composability
 - **Message:** "Reconcile any platform with composable adapters"
 - **Channels:** Partnerships (Stripe, Shopify), API directories, content marketing
@@ -330,6 +367,7 @@ The reconciliation market is fragmented across multiple categories:
 ---
 
 ### Phase 3: Enterprise (Year 2+)
+
 - **Focus:** Compliance and enterprise features
 - **Message:** "Enterprise-grade reconciliation with SOC 2, GDPR, PCI-DSS"
 - **Channels:** Enterprise sales, partnerships, case studies
@@ -339,6 +377,7 @@ The reconciliation market is fragmented across multiple categories:
 ## Competitive Intelligence
 
 ### Monitoring Competitors
+
 1. **Product Updates**: Track competitor feature releases
 2. **Pricing Changes**: Monitor competitor pricing updates
 3. **Customer Feedback**: Listen to competitor customer complaints
@@ -346,6 +385,7 @@ The reconciliation market is fragmented across multiple categories:
 5. **Partnerships**: Monitor competitor partnerships and integrations
 
 ### Sources
+
 - Competitor websites and documentation
 - Customer interviews and feedback
 - Industry reports and analyst research

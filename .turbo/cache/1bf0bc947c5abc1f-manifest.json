@@ -1,0 +1,218 @@
+{
+  "files": {
+    "packages/jobforge-sdk-ts/dist/jobforge-shared/src/types.d.ts.map": {
+      "size": 3446,
+      "mtime_nanos": 1783979865184631600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/jobforge-sdk-ts/dist": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/jobforge-sdk-ts/dist/jobforge-sdk-ts/src/index.js": {
+      "size": 101,
+      "mtime_nanos": 1783979865225549900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/jobforge-sdk-ts/dist/jobforge-sdk-ts": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/jobforge-sdk-ts/dist/jobforge-shared/src/schemas.js": {
+      "size": 1602,
+      "mtime_nanos": 1783979865188920400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/jobforge-sdk-ts/dist/jobforge-shared/src/constants.d.ts.map": {
+      "size": 440,
+      "mtime_nanos": 1783979865208244900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/jobforge-sdk-ts/dist/client.d.ts": {
+      "size": 1650,
+      "mtime_nanos": 1783973460746900400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/jobforge-sdk-ts/dist/jobforge-shared/src/types.d.ts": {
+      "size": 3383,
+      "mtime_nanos": 1783979865184631600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/jobforge-sdk-ts/dist/jobforge-shared/src/constants.js": {
+      "size": 626,
+      "mtime_nanos": 1783979865206235200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/jobforge-sdk-ts/dist/tsconfig.tsbuildinfo": {
+      "size": 49422,
+      "mtime_nanos": 1783979865236186300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/jobforge-sdk-ts/.turbo/turbo-build.log": {
+      "size": 135,
+      "mtime_nanos": 1783979865301247000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/jobforge-sdk-ts/dist/index.d.ts.map": {
+      "size": 396,
+      "mtime_nanos": 1783973460762980100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/jobforge-sdk-ts/dist/jobforge-shared/src/constants.d.ts": {
+      "size": 543,
+      "mtime_nanos": 1783979865208244900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/jobforge-sdk-ts/dist/jobforge-shared/src/index.js": {
+      "size": 138,
+      "mtime_nanos": 1783979865210254800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/jobforge-sdk-ts/dist/jobforge-shared/src/index.d.ts": {
+      "size": 173,
+      "mtime_nanos": 1783979865210254800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/jobforge-sdk-ts/dist/jobforge-shared/src/schemas.d.ts.map": {
+      "size": 413,
+      "mtime_nanos": 1783979865200940200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/jobforge-sdk-ts/dist/index.js": {
+      "size": 101,
+      "mtime_nanos": 1783973460762980100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/jobforge-sdk-ts/dist/jobforge-shared/src": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/jobforge-sdk-ts/dist/jobforge-sdk-ts/src/client.d.ts.map": {
+      "size": 1190,
+      "mtime_nanos": 1783979865223403300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/jobforge-sdk-ts/dist/client.js": {
+      "size": 4940,
+      "mtime_nanos": 1783973460746900400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/jobforge-sdk-ts/dist/jobforge-sdk-ts/src/index.d.ts.map": {
+      "size": 402,
+      "mtime_nanos": 1783979865227189600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/jobforge-sdk-ts/dist/jobforge-shared": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/jobforge-sdk-ts/dist/jobforge-shared/src/schemas.d.ts": {
+      "size": 3795,
+      "mtime_nanos": 1783979865200940200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/jobforge-sdk-ts/dist/jobforge-sdk-ts/src/client.d.ts": {
+      "size": 1650,
+      "mtime_nanos": 1783979865223934200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/jobforge-sdk-ts/dist/index.d.ts": {
+      "size": 468,
+      "mtime_nanos": 1783973460762980100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/jobforge-sdk-ts/dist/jobforge-sdk-ts/src/client.js": {
+      "size": 4940,
+      "mtime_nanos": 1783979865220177800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/jobforge-sdk-ts/dist/jobforge-sdk-ts/src": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/jobforge-sdk-ts/dist/jobforge-sdk-ts/src/index.d.ts": {
+      "size": 468,
+      "mtime_nanos": 1783979865228285000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/jobforge-sdk-ts/dist/client.d.ts.map": {
+      "size": 1184,
+      "mtime_nanos": 1783973460746900400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/jobforge-sdk-ts/dist/jobforge-shared/src/index.d.ts.map": {
+      "size": 201,
+      "mtime_nanos": 1783979865210254800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/jobforge-sdk-ts/dist/jobforge-shared/src/types.js": {
+      "size": 87,
+      "mtime_nanos": 1783979865174061900,
+      "mode": 420,
+      "is_dir": false
+    }
+  },
+  "order": [
+    "packages/jobforge-sdk-ts/.turbo/turbo-build.log",
+    "packages/jobforge-sdk-ts/dist",
+    "packages/jobforge-sdk-ts/dist/client.d.ts",
+    "packages/jobforge-sdk-ts/dist/client.d.ts.map",
+    "packages/jobforge-sdk-ts/dist/client.js",
+    "packages/jobforge-sdk-ts/dist/index.d.ts",
+    "packages/jobforge-sdk-ts/dist/index.d.ts.map",
+    "packages/jobforge-sdk-ts/dist/index.js",
+    "packages/jobforge-sdk-ts/dist/jobforge-sdk-ts",
+    "packages/jobforge-sdk-ts/dist/jobforge-sdk-ts/src",
+    "packages/jobforge-sdk-ts/dist/jobforge-sdk-ts/src/client.d.ts",
+    "packages/jobforge-sdk-ts/dist/jobforge-sdk-ts/src/client.d.ts.map",
+    "packages/jobforge-sdk-ts/dist/jobforge-sdk-ts/src/client.js",
+    "packages/jobforge-sdk-ts/dist/jobforge-sdk-ts/src/index.d.ts",
+    "packages/jobforge-sdk-ts/dist/jobforge-sdk-ts/src/index.d.ts.map",
+    "packages/jobforge-sdk-ts/dist/jobforge-sdk-ts/src/index.js",
+    "packages/jobforge-sdk-ts/dist/jobforge-shared",
+    "packages/jobforge-sdk-ts/dist/jobforge-shared/src",
+    "packages/jobforge-sdk-ts/dist/jobforge-shared/src/constants.d.ts",
+    "packages/jobforge-sdk-ts/dist/jobforge-shared/src/constants.d.ts.map",
+    "packages/jobforge-sdk-ts/dist/jobforge-shared/src/constants.js",
+    "packages/jobforge-sdk-ts/dist/jobforge-shared/src/index.d.ts",
+    "packages/jobforge-sdk-ts/dist/jobforge-shared/src/index.d.ts.map",
+    "packages/jobforge-sdk-ts/dist/jobforge-shared/src/index.js",
+    "packages/jobforge-sdk-ts/dist/jobforge-shared/src/schemas.d.ts",
+    "packages/jobforge-sdk-ts/dist/jobforge-shared/src/schemas.d.ts.map",
+    "packages/jobforge-sdk-ts/dist/jobforge-shared/src/schemas.js",
+    "packages/jobforge-sdk-ts/dist/jobforge-shared/src/types.d.ts",
+    "packages/jobforge-sdk-ts/dist/jobforge-shared/src/types.d.ts.map",
+    "packages/jobforge-sdk-ts/dist/jobforge-shared/src/types.js",
+    "packages/jobforge-sdk-ts/dist/tsconfig.tsbuildinfo"
+  ]
+}

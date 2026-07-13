@@ -34,9 +34,9 @@ Every AI response must include metadata:
 
 ```typescript
 interface AIResponseMetadata {
-  model: string;           // e.g., "claude-3-opus-20240229"
-  version: string;         // e.g., "2024-02-29"
-  timestamp: string;       // ISO 8601
+  model: string; // e.g., "claude-3-opus-20240229"
+  version: string; // e.g., "2024-02-29"
+  timestamp: string; // ISO 8601
   inputs_fingerprint: string; // Hash of input data
   confidence_score: number; // 0.0 - 1.0
   human_approval_required: boolean;
@@ -67,15 +67,15 @@ CREATE TABLE ai_advisory_log (
 
 ### Allowed Use Cases
 
-| Use Case | Approval Required | Disclaimer Required |
-|----------|-------------------|-------------------|
-| Suggest matching rules | No | Yes |
-| Flag anomalies | No | Yes |
-| Recommend tolerance | No | Yes |
-| Generate audit summary | No | Yes |
-| Predict cash flow | Yes | Yes |
-| Classify transactions | No | Yes |
-| Auto-approve matches | 🔴 FORBIDDEN | N/A |
+| Use Case               | Approval Required | Disclaimer Required |
+| ---------------------- | ----------------- | ------------------- |
+| Suggest matching rules | No                | Yes                 |
+| Flag anomalies         | No                | Yes                 |
+| Recommend tolerance    | No                | Yes                 |
+| Generate audit summary | No                | Yes                 |
+| Predict cash flow      | Yes               | Yes                 |
+| Classify transactions  | No                | Yes                 |
+| Auto-approve matches   | 🔴 FORBIDDEN      | N/A                 |
 
 ### Prohibited Use Cases
 
@@ -94,12 +94,12 @@ CREATE TABLE ai_advisory_log (
 
 ### Score Interpretation
 
-| Score | Meaning | Action |
-|-------|---------|--------|
-| 0.90 - 1.00 | High confidence | Human review required |
-| 0.70 - 0.89 | Medium confidence | Human review required |
-| 0.50 - 0.69 | Low confidence | Human review required + flagged |
-| < 0.50 | Very low confidence | Human review required + blocked |
+| Score       | Meaning             | Action                          |
+| ----------- | ------------------- | ------------------------------- |
+| 0.90 - 1.00 | High confidence     | Human review required           |
+| 0.70 - 0.89 | Medium confidence   | Human review required           |
+| 0.50 - 0.69 | Low confidence      | Human review required + flagged |
+| < 0.50      | Very low confidence | Human review required + blocked |
 
 ### Score Factors
 
@@ -141,7 +141,7 @@ Action Executed + Logged with approver ID
 ```sql
 -- Every approval logged
 INSERT INTO audit_logs (
-  organization_id, user_id, action, 
+  organization_id, user_id, action,
   target_type, target_id, metadata
 ) VALUES (
   @org_id, @user_id, 'AI_ADVISORY_APPROVED',
@@ -187,12 +187,12 @@ When model/provider changes:
 
 ### Regulatory Alignment
 
-| Regulation | Requirement | Settler Compliance |
-|------------|-------------|------------------|
-| SEC AI Guidance | Human oversight of AI recommendations | ✅ Mandatory approval |
-| FINRA | Suitability for AI advice | ✅ Human review required |
-| GDPR | AI transparency | ✅ Metadata logging |
-| CPA guidelines | Human judgment required | ✅ Human-in-loop |
+| Regulation      | Requirement                           | Settler Compliance       |
+| --------------- | ------------------------------------- | ------------------------ |
+| SEC AI Guidance | Human oversight of AI recommendations | ✅ Mandatory approval    |
+| FINRA           | Suitability for AI advice             | ✅ Human review required |
+| GDPR            | AI transparency                       | ✅ Metadata logging      |
+| CPA guidelines  | Human judgment required               | ✅ Human-in-loop         |
 
 ---
 
@@ -216,16 +216,16 @@ All users with access to AI features must complete:
 
 ### Metrics Tracked
 
-| Metric | Target | Alert |
-|--------|--------|-------|
-| Auto-approval rate | < 5% | > 10% |
-| AI rejection rate | > 20% | < 10% |
-| Model accuracy | > 85% | < 75% |
-| False positive rate | < 15% | > 25% |
+| Metric              | Target | Alert |
+| ------------------- | ------ | ----- |
+| Auto-approval rate  | < 5%   | > 10% |
+| AI rejection rate   | > 20%  | < 10% |
+| Model accuracy      | > 85%  | < 75% |
+| False positive rate | < 15%  | > 25% |
 
 ---
 
-*Document Version: 1.0*  
-*Effective: 2026-04-10*  
-*Review: Quarterly*  
-*Owner: Security + Legal*
+_Document Version: 1.0_  
+_Effective: 2026-04-10_  
+_Review: Quarterly_  
+_Owner: Security + Legal_

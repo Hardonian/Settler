@@ -10,6 +10,7 @@
 ## Problem Statement
 
 No structured onboarding flow after signup. Users are dropped into dashboard without guidance, leading to:
+
 - High time-to-value
 - Increased churn
 - Support burden
@@ -20,6 +21,7 @@ No structured onboarding flow after signup. Users are dropped into dashboard wit
 ## Solution Overview
 
 Implement guided onboarding with:
+
 1. Progress tracking
 2. Step-by-step checklist
 3. Contextual help and tooltips

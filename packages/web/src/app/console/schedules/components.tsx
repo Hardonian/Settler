@@ -85,7 +85,7 @@ function describeCron(cron: string): string {
 }
 
 /** Compute approximate next N run times from a cron expression (client-side rough estimate). */
-function computeNextRuns(cron: string, timezone: string, count: number): Date[] {
+function computeNextRuns(cron: string, _timezone: string, count: number): Date[] {
   const runs: Date[] = [];
   const parts = cron.trim().split(/\s+/);
   if (parts.length < 5) return runs;

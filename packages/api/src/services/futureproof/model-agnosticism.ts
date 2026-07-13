@@ -124,19 +124,19 @@ export class ModelAgnosticism {
 
     // Process multimodal data and perform reconciliation
     const processedData: Record<string, unknown> = {};
-    
+
     if (data.text) {
       processedData.text = await this.processText(data.text);
     }
-    
+
     if (data.image) {
       processedData.image = await this.processImage(data.image);
     }
-    
+
     if (data.audio) {
       processedData.audio = await this.processAudio(data.audio);
     }
-    
+
     if (data.video) {
       processedData.video = await this.processVideo(data.video);
     }
@@ -158,14 +158,14 @@ export class ModelAgnosticism {
     // Generate embeddings using configured provider
     const embeddingProvider = _provider || this.config.defaultEmbeddingProvider || "openai";
     const adapter = this.getAdapter(embeddingProvider, "embedding");
-    
+
     if (!adapter) {
       throw new Error(`No embedding adapter found for ${embeddingProvider}`);
     }
 
     // Generate embedding via API
     const embedding = await adapter.generateEmbedding(_text);
-    
+
     return embedding;
   }
 }

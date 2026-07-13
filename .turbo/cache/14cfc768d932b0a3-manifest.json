@@ -1,0 +1,103 @@
+{
+  "files": {
+    "packages/proofs/dist/proofpack/index.js": {
+      "size": 9107,
+      "mtime_nanos": 1783979865381226200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/proofs/dist/proofpack/index.js.map": {
+      "size": 8217,
+      "mtime_nanos": 1783979865377169100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/proofs/dist/proofpack/index.d.ts.map": {
+      "size": 3684,
+      "mtime_nanos": 1783979865383233800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/proofs/dist/evidence/index.js.map": {
+      "size": 5500,
+      "mtime_nanos": 1783979865356423600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/proofs/dist/index.d.ts": {
+      "size": 370,
+      "mtime_nanos": 1783979865387954400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/proofs/dist/index.d.ts.map": {
+      "size": 167,
+      "mtime_nanos": 1783979865387954400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/proofs/dist/evidence/index.d.ts.map": {
+      "size": 3670,
+      "mtime_nanos": 1783979865356423600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/proofs/dist/evidence/index.d.ts": {
+      "size": 4723,
+      "mtime_nanos": 1783979865367423700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/proofs/.turbo/turbo-build.log": {
+      "size": 125,
+      "mtime_nanos": 1783979865455596200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/proofs/dist/evidence/index.js": {
+      "size": 7729,
+      "mtime_nanos": 1783979865356423600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/proofs/dist/proofpack/index.d.ts": {
+      "size": 4329,
+      "mtime_nanos": 1783979865383233800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/proofs/dist/evidence": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/proofs/dist/index.js": {
+      "size": 1161,
+      "mtime_nanos": 1783979865387954400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/proofs/dist": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/proofs/dist/index.js.map": {
+      "size": 161,
+      "mtime_nanos": 1783979865387954400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/proofs/dist/proofpack": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true }
+  },
+  "order": [
+    "packages/proofs/.turbo/turbo-build.log",
+    "packages/proofs/dist",
+    "packages/proofs/dist/evidence",
+    "packages/proofs/dist/evidence/index.d.ts",
+    "packages/proofs/dist/evidence/index.d.ts.map",
+    "packages/proofs/dist/evidence/index.js",
+    "packages/proofs/dist/evidence/index.js.map",
+    "packages/proofs/dist/index.d.ts",
+    "packages/proofs/dist/index.d.ts.map",
+    "packages/proofs/dist/index.js",
+    "packages/proofs/dist/index.js.map",
+    "packages/proofs/dist/proofpack",
+    "packages/proofs/dist/proofpack/index.d.ts",
+    "packages/proofs/dist/proofpack/index.d.ts.map",
+    "packages/proofs/dist/proofpack/index.js",
+    "packages/proofs/dist/proofpack/index.js.map"
+  ]
+}

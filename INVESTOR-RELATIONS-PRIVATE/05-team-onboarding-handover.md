@@ -53,12 +53,14 @@ Settler is committed to providing a welcoming and inclusive environment. All con
 ### Getting Started
 
 **Before you start:**
+
 1. Check existing issues and pull requests
 2. Join our Discord: [discord.gg/settler](https://discord.gg/settler)
 3. Read this contributing guide
 4. Set up your development environment
 
 **Good first issues:**
+
 - Look for issues labeled `good-first-issue`
 - Check our [GitHub Issues](https://github.com/settler/settler/issues)
 
@@ -144,6 +146,7 @@ npm run build
 ```
 
 **Verify setup:**
+
 ```bash
 curl http://localhost:3000/health
 # Should return: {"status":"healthy","database":"connected","redis":"connected"}
@@ -162,6 +165,7 @@ curl http://localhost:3000/health
 - `test/description` - Test additions/updates
 
 **Examples:**
+
 - `feature/add-paypal-adapter`
 - `fix/webhook-retry-logic`
 - `docs/update-api-docs`
@@ -169,22 +173,25 @@ curl http://localhost:3000/health
 #### Code Style
 
 **TypeScript:**
+
 - Use TypeScript strict mode
 - Follow ESLint rules (run `npm run lint`)
 - Use Prettier for formatting (run `npm run format`)
 
 **Naming Conventions:**
+
 - Files: `kebab-case.ts`
 - Classes: `PascalCase`
 - Functions/Variables: `camelCase`
 - Constants: `UPPER_SNAKE_CASE`
 
 **Example:**
+
 ```typescript
 // Good
 export class ReconciliationService {
   private readonly apiKey: string;
-  
+
   async createJob(config: JobConfig): Promise<Job> {
     // ...
   }
@@ -193,7 +200,7 @@ export class ReconciliationService {
 // Bad
 export class reconciliation_service {
   private readonly api_key: string;
-  
+
   async create_job(config: job_config): Promise<job> {
     // ...
   }
@@ -213,6 +220,7 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 ```
 
 **Types:**
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation
@@ -222,6 +230,7 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 - `chore`: Maintenance
 
 **Examples:**
+
 ```
 feat(api): add PayPal adapter
 
@@ -247,6 +256,7 @@ Fixes #456
 #### Step 1: Create Pull Request
 
 1. **Push your branch:**
+
    ```bash
    git push origin feature/your-feature
    ```
@@ -298,39 +308,42 @@ npm test
 #### Writing Tests
 
 **Unit Tests:**
+
 ```typescript
 // __tests__/services/JobService.test.ts
-import { JobService } from '../services/JobService';
+import { JobService } from "../services/JobService";
 
-describe('JobService', () => {
-  it('should create a job', async () => {
+describe("JobService", () => {
+  it("should create a job", async () => {
     const service = new JobService();
-    const job = await service.create({ name: 'Test Job' });
-    expect(job.name).toBe('Test Job');
+    const job = await service.create({ name: "Test Job" });
+    expect(job.name).toBe("Test Job");
   });
 });
 ```
 
 **Integration Tests:**
+
 ```typescript
 // __tests__/integration/jobs.test.ts
-import request from 'supertest';
-import app from '../../src/index';
+import request from "supertest";
+import app from "../../src/index";
 
-describe('POST /api/v1/jobs', () => {
-  it('should create a job', async () => {
+describe("POST /api/v1/jobs", () => {
+  it("should create a job", async () => {
     const response = await request(app)
-      .post('/api/v1/jobs')
-      .set('X-API-Key', 'test-key')
-      .send({ name: 'Test Job' });
-    
+      .post("/api/v1/jobs")
+      .set("X-API-Key", "test-key")
+      .send({ name: "Test Job" });
+
     expect(response.status).toBe(201);
-    expect(response.body.data.name).toBe('Test Job');
+    expect(response.body.data.name).toBe("Test Job");
   });
 });
 ```
 
 **Test Coverage:**
+
 - Aim for 80%+ coverage
 - Critical paths should have 100% coverage
 - Use `npm run test:coverage` to check
@@ -342,10 +355,11 @@ describe('POST /api/v1/jobs', () => {
 #### Code Documentation
 
 **JSDoc comments:**
-```typescript
+
+````typescript
 /**
  * Creates a reconciliation job.
- * 
+ *
  * @param config - Job configuration
  * @returns Created job
  * @throws {ValidationError} If config is invalid
@@ -361,7 +375,7 @@ describe('POST /api/v1/jobs', () => {
 export async function createJob(config: JobConfig): Promise<Job> {
   // ...
 }
-```
+````
 
 #### API Documentation
 
@@ -380,11 +394,13 @@ export async function createJob(config: JobConfig): Promise<Job> {
 ### Support
 
 **Questions?**
+
 - **Discord:** [discord.gg/settler](https://discord.gg/settler)
 - **GitHub Issues:** [github.com/settler/settler/issues](https://github.com/settler/settler/issues)
 - **Email:** dev@settler.io
 
 **Need Help?**
+
 - Check [Documentation](./docs/)
 - Search [GitHub Issues](https://github.com/settler/settler/issues)
 - Ask in [Discord](https://discord.gg/settler)
@@ -530,35 +546,35 @@ export async function createJob(config: JobConfig): Promise<Job> {
 
 ### Code Ownership Matrix
 
-| Area | Primary Owner | Secondary Owner | Escalation |
-|------|---------------|-----------------|------------|
-| **API Server** | [Name] | [Name] | Scott Hardie (CEO) |
-| **SDK** | [Name] | [Name] | Engineering Lead |
-| **Web UI** | [Name] | [Name] | Engineering Lead |
-| **Adapters** | [Name] | [Name] | Engineering Lead |
-| **Database** | [Name] | [Name] | Scott Hardie (CEO) |
-| **Infrastructure** | [Name] | [Name] | Scott Hardie (CEO) |
-| **Security** | [Name] | [Name] | Scott Hardie (CEO) |
-| **Documentation** | [Name] | [Name] | Product Lead |
+| Area               | Primary Owner | Secondary Owner | Escalation         |
+| ------------------ | ------------- | --------------- | ------------------ |
+| **API Server**     | [Name]        | [Name]          | Scott Hardie (CEO) |
+| **SDK**            | [Name]        | [Name]          | Engineering Lead   |
+| **Web UI**         | [Name]        | [Name]          | Engineering Lead   |
+| **Adapters**       | [Name]        | [Name]          | Engineering Lead   |
+| **Database**       | [Name]        | [Name]          | Scott Hardie (CEO) |
+| **Infrastructure** | [Name]        | [Name]          | Scott Hardie (CEO) |
+| **Security**       | [Name]        | [Name]          | Scott Hardie (CEO) |
+| **Documentation**  | [Name]        | [Name]          | Product Lead       |
 
 ### Documentation Ownership
 
-| Document | Owner | Last Updated | Review Frequency |
-|----------|-------|--------------|------------------|
-| **README.md** | Engineering Lead | [Date] | [Date] | Quarterly |
-| **CONTRIBUTING.md** | Engineering Lead | [Date] | Quarterly |
-| **API Docs** | API Team | [Date] | Monthly |
-| **Architecture Docs** | Scott Hardie (CEO) | [Date] | Quarterly |
-| **Runbooks** | SRE Team | [Date] | Monthly |
+| Document              | Owner              | Last Updated | Review Frequency |
+| --------------------- | ------------------ | ------------ | ---------------- | --------- |
+| **README.md**         | Engineering Lead   | [Date]       | [Date]           | Quarterly |
+| **CONTRIBUTING.md**   | Engineering Lead   | [Date]       | Quarterly        |
+| **API Docs**          | API Team           | [Date]       | Monthly          |
+| **Architecture Docs** | Scott Hardie (CEO) | [Date]       | Quarterly        |
+| **Runbooks**          | SRE Team           | [Date]       | Monthly          |
 
 ### Support Contacts
 
-| Type | Contact | Response Time |
-|------|---------|----------------|
-| **Technical Questions** | dev@settler.io | 24 hours |
-| **Security Issues** | security@settler.io | 4 hours |
-| **Infrastructure Issues** | infra@settler.io | 1 hour |
-| **On-Call** | PagerDuty | Immediate |
+| Type                      | Contact             | Response Time |
+| ------------------------- | ------------------- | ------------- |
+| **Technical Questions**   | dev@settler.io      | 24 hours      |
+| **Security Issues**       | security@settler.io | 4 hours       |
+| **Infrastructure Issues** | infra@settler.io    | 1 hour        |
+| **On-Call**               | PagerDuty           | Immediate     |
 
 ---
 
@@ -569,6 +585,7 @@ export async function createJob(config: JobConfig): Promise<Job> {
 #### 1. Setup & Configuration
 
 **Missing Docs:**
+
 - [ ] **Environment Variables:** Complete list with descriptions
 - [ ] **Database Setup:** Step-by-step setup guide
 - [ ] **Redis Setup:** Configuration and troubleshooting
@@ -576,6 +593,7 @@ export async function createJob(config: JobConfig): Promise<Job> {
 - [ ] **Cloud Deployment:** Deployment runbook
 
 **Action Items:**
+
 - Create `.env.example` with all variables documented
 - Create `docs/setup.md` with detailed setup instructions
 - Create `docs/deployment.md` with deployment guide
@@ -585,12 +603,14 @@ export async function createJob(config: JobConfig): Promise<Job> {
 #### 2. Architecture Decisions
 
 **Missing Docs:**
+
 - [ ] **Why Event Sourcing?** Decision rationale
 - [ ] **Why CQRS?** Benefits and trade-offs
 - [ ] **Why Multi-Tenancy?** Architecture choices
 - [ ] **Why PostgreSQL?** Database selection rationale
 
 **Action Items:**
+
 - Create `docs/architecture-decisions.md` (ADR format)
 - Document key architectural decisions
 - Include alternatives considered
@@ -600,12 +620,14 @@ export async function createJob(config: JobConfig): Promise<Job> {
 #### 3. Business Logic
 
 **Missing Docs:**
+
 - [ ] **Matching Algorithm:** How matching works
 - [ ] **Confidence Scoring:** How confidence is calculated
 - [ ] **Exception Handling:** How unmatched records are handled
 - [ ] **Quota Enforcement:** How quotas are enforced
 
 **Action Items:**
+
 - Create `docs/reconciliation-algorithm.md`
 - Document matching rules and logic
 - Include examples and edge cases
@@ -615,12 +637,14 @@ export async function createJob(config: JobConfig): Promise<Job> {
 #### 4. Operations & Troubleshooting
 
 **Missing Docs:**
+
 - [ ] **Common Issues:** Troubleshooting guide
 - [ ] **Performance Tuning:** Optimization guide
 - [ ] **Scaling:** How to scale the system
 - [ ] **Disaster Recovery:** Recovery procedures
 
 **Action Items:**
+
 - Create `docs/troubleshooting.md`
 - Document common issues and solutions
 - Include performance tuning tips
@@ -630,12 +654,14 @@ export async function createJob(config: JobConfig): Promise<Job> {
 #### 5. Sample Data & Scripts
 
 **Missing:**
+
 - [ ] **Sample Data:** Test data for development
 - [ ] **Migration Scripts:** Data migration tools
 - [ ] **Seed Scripts:** Database seeding scripts
 - [ ] **Test Fixtures:** Reusable test data
 
 **Action Items:**
+
 - Create `scripts/sample-data.sql`
 - Create `scripts/seed.ts`
 - Create `tests/fixtures/` directory
@@ -645,12 +671,14 @@ export async function createJob(config: JobConfig): Promise<Job> {
 #### 6. Videos & Recordings
 
 **Missing:**
+
 - [ ] **Setup Walkthrough:** Video of local setup
 - [ ] **Architecture Overview:** Video explaining architecture
 - [ ] **Demo:** Product demo video
 - [ ] **Onboarding:** New engineer onboarding video
 
 **Action Items:**
+
 - Record setup walkthrough
 - Create architecture overview video
 - Record product demo
@@ -686,6 +714,7 @@ export async function createJob(config: JobConfig): Promise<Job> {
 #### When Someone Leaves
 
 **Checklist:**
+
 - [ ] **Documentation Review:** Ensure all knowledge is documented
 - [ ] **Code Review:** Review code ownership
 - [ ] **Handover Meeting:** 1-hour handover session
@@ -698,18 +727,22 @@ export async function createJob(config: JobConfig): Promise<Job> {
 ## Handover: [Name] - [Date]
 
 ### Areas of Ownership
+
 - [Area 1]
 - [Area 2]
 
 ### Key Knowledge
+
 - [Knowledge point 1]
 - [Knowledge point 2]
 
 ### Pending Work
+
 - [Task 1]
 - [Task 2]
 
 ### Contacts
+
 - [Contact 1]
 - [Contact 2]
 ```
@@ -720,30 +753,30 @@ export async function createJob(config: JobConfig): Promise<Job> {
 
 ### Immediate Actions (This Week)
 
-| Task | Owner | Time Estimate | Priority |
-|------|-------|---------------|----------|
-| Create CONTRIBUTING.md | Engineering Lead | 2 hours | P0 |
-| Create onboarding checklist | Engineering Lead | 1 hour | P0 |
-| Document environment variables | Engineering | 1 hour | P0 |
-| Create setup guide | Engineering | 2 hours | P1 |
+| Task                           | Owner            | Time Estimate | Priority |
+| ------------------------------ | ---------------- | ------------- | -------- |
+| Create CONTRIBUTING.md         | Engineering Lead | 2 hours       | P0       |
+| Create onboarding checklist    | Engineering Lead | 1 hour        | P0       |
+| Document environment variables | Engineering      | 1 hour        | P0       |
+| Create setup guide             | Engineering      | 2 hours       | P1       |
 
 ### Short-Term (This Month)
 
-| Task | Owner | Time Estimate | Priority |
-|------|-------|---------------|----------|
-| Create architecture decisions doc | CTO | 4 hours | P1 |
-| Record setup walkthrough video | Engineering | 2 hours | P1 |
-| Create troubleshooting guide | SRE | 4 hours | P1 |
-| Document matching algorithm | Engineering | 4 hours | P2 |
+| Task                              | Owner       | Time Estimate | Priority |
+| --------------------------------- | ----------- | ------------- | -------- |
+| Create architecture decisions doc | CTO         | 4 hours       | P1       |
+| Record setup walkthrough video    | Engineering | 2 hours       | P1       |
+| Create troubleshooting guide      | SRE         | 4 hours       | P1       |
+| Document matching algorithm       | Engineering | 4 hours       | P2       |
 
 ### Long-Term (This Quarter)
 
-| Task | Owner | Time Estimate | Priority |
-|------|-------|---------------|----------|
-| Create comprehensive runbooks | SRE | 1 week | P1 |
-| Build sample data scripts | Engineering | 2 days | P2 |
-| Create onboarding video series | Engineering | 1 week | P2 |
-| Document all tribal knowledge | All | Ongoing | P2 |
+| Task                           | Owner       | Time Estimate | Priority |
+| ------------------------------ | ----------- | ------------- | -------- |
+| Create comprehensive runbooks  | SRE         | 1 week        | P1       |
+| Build sample data scripts      | Engineering | 2 days        | P2       |
+| Create onboarding video series | Engineering | 1 week        | P2       |
+| Document all tribal knowledge  | All         | Ongoing       | P2       |
 
 ---
 

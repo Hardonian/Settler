@@ -106,7 +106,8 @@ export async function buildExceptionRunComparisonSnapshotForRunIds(
   for (const id of unique) {
     const kind = kinds.get(id);
     if (kind === "recon_job") {
-      const index = indexByRun.get(id) ?? unavailableRunProofpackIndex("proofpack_index_unavailable");
+      const index =
+        indexByRun.get(id) ?? unavailableRunProofpackIndex("proofpack_index_unavailable");
       out.set(id, snapshotFromProofpackIndex(index));
       continue;
     }
@@ -119,7 +120,10 @@ export async function buildExceptionRunComparisonSnapshotForRunIds(
       );
       continue;
     }
-    out.set(id, snapshotFromProofpackIndex(unavailableRunProofpackIndex("proofpack_index_unavailable")));
+    out.set(
+      id,
+      snapshotFromProofpackIndex(unavailableRunProofpackIndex("proofpack_index_unavailable"))
+    );
   }
 
   return out;

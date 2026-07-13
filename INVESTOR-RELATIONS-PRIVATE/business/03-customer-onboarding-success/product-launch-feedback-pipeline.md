@@ -11,6 +11,7 @@
 This document provides comprehensive guidance for product launches, user onboarding, feedback collection, and iterative improvement. It includes screen-recordable QA scripts, feedback mechanisms, launch plans, and prioritized experiments.
 
 **Core Principles:**
+
 1. **User-Centric:** Every launch and iteration is driven by user feedback
 2. **Data-Driven:** Decisions based on metrics and user data
 3. **Rapid Iteration:** Fast feedback loops enable quick improvements
@@ -68,12 +69,14 @@ This document provides comprehensive guidance for product launches, user onboard
    - [ ] Return to dashboard
 
 **Success Criteria:**
+
 - ✅ All steps complete without errors
 - ✅ Total time <7 minutes
 - ✅ User can make first API call successfully
 - ✅ No broken links or errors
 
 **Common Issues to Check:**
+
 - Email delivery delays
 - API key generation failures
 - Dashboard loading issues
@@ -91,26 +94,31 @@ This document provides comprehensive guidance for product launches, user onboard
 **Steps:**
 
 1. **Install SDK (2 minutes)**
+
    ```bash
    npm install @settler/sdk
    ```
+
    - [ ] Verify installation succeeds
    - [ ] No dependency conflicts
    - [ ] SDK imports correctly
 
 2. **Initialize Client (1 minute)**
+
    ```typescript
    import Settler from "@settler/sdk";
-   
+
    const client = new Settler({
      apiKey: process.env.SETTLER_API_KEY,
    });
    ```
+
    - [ ] Client initializes without errors
    - [ ] API key is valid
    - [ ] Base URL is correct
 
 3. **Create Reconciliation Job (3 minutes)**
+
    ```typescript
    const job = await client.jobs.create({
      name: "Shopify-Stripe Reconciliation",
@@ -130,6 +138,7 @@ This document provides comprehensive guidance for product launches, user onboard
      },
    });
    ```
+
    - [ ] Job creation succeeds
    - [ ] Job ID is returned
    - [ ] Job appears in dashboard
@@ -143,9 +152,11 @@ This document provides comprehensive guidance for product launches, user onboard
    - [ ] Verify adapters are connected
 
 5. **Run First Reconciliation (3 minutes)**
+
    ```typescript
    await client.jobs.run(job.data.id);
    ```
+
    - [ ] Reconciliation starts successfully
    - [ ] Status updates to "running"
    - [ ] Wait for completion (<30 seconds)
@@ -156,18 +167,21 @@ This document provides comprehensive guidance for product launches, user onboard
    const report = await client.reports.get(job.data.id);
    console.log(report.data.summary);
    ```
+
    - [ ] Report is generated
    - [ ] Summary displays correctly
    - [ ] Matched/unmatched counts are accurate
    - [ ] Report appears in dashboard
 
 **Success Criteria:**
+
 - ✅ Job created successfully
 - ✅ Reconciliation completes successfully
 - ✅ Report is accurate
 - ✅ Total time <15 minutes
 
 **Common Issues to Check:**
+
 - Adapter connection failures
 - API key validation errors
 - Job creation validation errors
@@ -221,12 +235,14 @@ This document provides comprehensive guidance for product launches, user onboard
    - [ ] Verify job is created
 
 **Success Criteria:**
+
 - ✅ All pages load correctly
 - ✅ Navigation works smoothly
 - ✅ Data displays accurately
 - ✅ No UI bugs or errors
 
 **Common Issues to Check:**
+
 - Page loading delays
 - Data not displaying
 - Navigation bugs
@@ -239,18 +255,21 @@ This document provides comprehensive guidance for product launches, user onboard
 ### Mechanism 1: In-App Feedback Widget
 
 **Implementation:**
+
 - Feedback widget in dashboard (bottom-right corner)
 - One-click feedback submission
 - Optional screenshot attachment
 - Categorization (bug, feature request, question)
 
 **Collection Points:**
+
 - After first reconciliation
 - After viewing report
 - After creating job
 - After error occurs
 
 **Metrics:**
+
 - Feedback submission rate
 - Feedback categories
 - Response time
@@ -263,6 +282,7 @@ This document provides comprehensive guidance for product launches, user onboard
 **Timing:** Day 7 after signup
 
 **Questions:**
+
 1. How easy was it to get started? (1-5)
 2. Did you complete your first reconciliation? (Yes/No)
 3. What was the biggest challenge? (Open text)
@@ -271,11 +291,13 @@ This document provides comprehensive guidance for product launches, user onboard
 6. What's your primary use case? (Multiple choice)
 
 **Delivery:**
+
 - Email with survey link
 - In-app notification
 - Optional: Incentive (credits, swag)
 
 **Metrics:**
+
 - Response rate (target: 30%+)
 - NPS score (target: >50)
 - Completion rate
@@ -288,12 +310,14 @@ This document provides comprehensive guidance for product launches, user onboard
 **Frequency:** 5-10 interviews per month
 
 **Selection Criteria:**
+
 - Active users (3+ months)
 - Power users (high usage)
 - Churned users (recent churn)
 - Enterprise customers
 
 **Interview Structure:**
+
 1. **Introduction (5 min)**
    - Thank them for time
    - Explain purpose
@@ -320,6 +344,7 @@ This document provides comprehensive guidance for product launches, user onboard
    - Follow-up
 
 **Output:**
+
 - Interview notes
 - Key insights
 - Feature requests
@@ -330,17 +355,20 @@ This document provides comprehensive guidance for product launches, user onboard
 ### Mechanism 4: Support Ticket Analysis
 
 **Collection:**
+
 - All support tickets (email, chat, GitHub)
 - Categorization (bug, feature, question)
 - Tagging (priority, category)
 
 **Analysis:**
+
 - Weekly review of tickets
 - Identify common issues
 - Track resolution time
 - Measure satisfaction
 
 **Metrics:**
+
 - Ticket volume
 - Resolution time
 - Satisfaction score
@@ -351,18 +379,21 @@ This document provides comprehensive guidance for product launches, user onboard
 ### Mechanism 5: Usage Analytics
 
 **Tracking:**
+
 - Feature usage (which features are used most)
 - Drop-off points (where users stop)
 - Error rates (which errors occur most)
 - Performance metrics (API latency, success rates)
 
 **Tools:**
+
 - Mixpanel (user behavior)
 - Datadog (performance)
 - Sentry (errors)
 - Custom analytics
 
 **Metrics:**
+
 - Feature adoption rates
 - User drop-off points
 - Error rates
@@ -377,6 +408,7 @@ This document provides comprehensive guidance for product launches, user onboard
 **Timeline:** Month 4
 
 **Pre-Launch (Weeks 1-2):**
+
 - [ ] Prepare Product Hunt page
 - [ ] Create demo video (2-3 minutes)
 - [ ] Write compelling description
@@ -384,6 +416,7 @@ This document provides comprehensive guidance for product launches, user onboard
 - [ ] Schedule launch date
 
 **Launch Day:**
+
 - [ ] Post on Product Hunt at 12:01 AM PST
 - [ ] Share on social media
 - [ ] Email to early supporters
@@ -391,12 +424,14 @@ This document provides comprehensive guidance for product launches, user onboard
 - [ ] Monitor rankings
 
 **Post-Launch (Weeks 3-4):**
+
 - [ ] Follow up with signups
 - [ ] Collect feedback
 - [ ] Analyze results
 - [ ] Iterate based on feedback
 
 **Success Metrics:**
+
 - Product Hunt ranking (target: top 5)
 - Signups from Product Hunt (target: 500+)
 - Conversion rate (target: 20%+)
@@ -409,23 +444,27 @@ This document provides comprehensive guidance for product launches, user onboard
 **Timeline:** Month 2
 
 **Pre-Launch:**
+
 - [ ] Prepare Show HN post
 - [ ] Create demo/tutorial
 - [ ] Test product thoroughly
 - [ ] Schedule launch time (Tuesday-Thursday, 9-11 AM PST)
 
 **Launch Day:**
+
 - [ ] Post on Hacker News
 - [ ] Engage with comments
 - [ ] Answer questions
 - [ ] Monitor discussion
 
 **Post-Launch:**
+
 - [ ] Follow up with signups
 - [ ] Collect feedback
 - [ ] Analyze results
 
 **Success Metrics:**
+
 - Hacker News ranking (target: top 10)
 - Signups from HN (target: 200+)
 - Conversion rate (target: 15%+)
@@ -438,6 +477,7 @@ This document provides comprehensive guidance for product launches, user onboard
 **Timeline:** Month 3
 
 **Pre-Launch:**
+
 - [ ] Write press release
 - [ ] Create press kit (logos, screenshots, quotes)
 - [ ] Identify target publications
@@ -445,6 +485,7 @@ This document provides comprehensive guidance for product launches, user onboard
 - [ ] Schedule embargo date
 
 **Launch Day:**
+
 - [ ] Send press release
 - [ ] Post on website/blog
 - [ ] Share on social media
@@ -452,11 +493,13 @@ This document provides comprehensive guidance for product launches, user onboard
 - [ ] Monitor coverage
 
 **Post-Launch:**
+
 - [ ] Follow up with journalists
 - [ ] Track coverage
 - [ ] Analyze results
 
 **Success Metrics:**
+
 - Press coverage (target: 10+ articles)
 - Signups from press (target: 300+)
 - Brand awareness
@@ -469,6 +512,7 @@ This document provides comprehensive guidance for product launches, user onboard
 ### Blog Post 1: "Introducing Settler: API-First Reconciliation"
 
 **Outline:**
+
 1. **Hook:** The problem with manual reconciliation
 2. **Solution:** Introducing Settler
 3. **How It Works:** Architecture overview
@@ -485,6 +529,7 @@ This document provides comprehensive guidance for product launches, user onboard
 ### Blog Post 2: "How We Built Settler: Architecture Deep Dive"
 
 **Outline:**
+
 1. **Introduction:** Why we built Settler
 2. **Architecture Overview:** High-level architecture
 3. **Technical Stack:** Technologies we use
@@ -500,6 +545,7 @@ This document provides comprehensive guidance for product launches, user onboard
 ### Blog Post 3: "Settler vs. BlackLine: Why We're Different"
 
 **Outline:**
+
 1. **Introduction:** The reconciliation market
 2. **BlackLine Overview:** What BlackLine does
 3. **Settler Overview:** What Settler does
@@ -518,26 +564,31 @@ This document provides comprehensive guidance for product launches, user onboard
 ### Email Series 1: Welcome Series (5 emails)
 
 **Email 1: Welcome (Day 0)**
+
 - Subject: Welcome to Settler!
 - Content: Welcome message, getting started guide, resources
 - CTA: Get your API key
 
 **Email 2: First Steps (Day 1)**
+
 - Subject: Let's create your first reconciliation job
 - Content: Step-by-step guide, video tutorial
 - CTA: Create your first job
 
 **Email 3: Tips & Tricks (Day 3)**
+
 - Subject: Pro tips for better reconciliation
 - Content: Best practices, common mistakes to avoid
 - CTA: Try these tips
 
 **Email 4: Advanced Features (Day 7)**
+
 - Subject: Unlock advanced features
 - Content: Webhooks, scheduled jobs, advanced matching
 - CTA: Explore advanced features
 
 **Email 5: Success Story (Day 14)**
+
 - Subject: How [Customer] saved $50K with Settler
 - Content: Customer case study, ROI calculation
 - CTA: Share your success story
@@ -547,16 +598,19 @@ This document provides comprehensive guidance for product launches, user onboard
 ### Email Series 2: Re-engagement (3 emails)
 
 **Email 1: We Miss You (Day 30 inactive)**
+
 - Subject: We haven't seen you in a while
 - Content: What you're missing, new features
 - CTA: Come back and try Settler
 
 **Email 2: Special Offer (Day 60 inactive)**
+
 - Subject: Special offer just for you
 - Content: Discount, free credits, new features
 - CTA: Redeem offer
 
 **Email 3: Final Chance (Day 90 inactive)**
+
 - Subject: Last chance to keep your account
 - Content: Account will be archived, export your data
 - CTA: Keep your account active
@@ -570,10 +624,12 @@ This document provides comprehensive guidance for product launches, user onboard
 **Hypothesis:** Simplifying onboarding flow will increase activation rate by 20%.
 
 **Experiment:**
+
 - A: Current onboarding flow
 - B: Simplified onboarding flow (fewer steps)
 
 **Metrics:**
+
 - Activation rate (target: 60%+)
 - Time to first value (target: <24 hours)
 - Drop-off rate
@@ -588,10 +644,12 @@ This document provides comprehensive guidance for product launches, user onboard
 **Hypothesis:** Optimizing pricing page will increase conversion rate by 15%.
 
 **Experiment:**
+
 - A: Current pricing page
 - B: Optimized pricing page (clearer value prop, social proof)
 
 **Metrics:**
+
 - Conversion rate (target: 5%+)
 - Revenue per visitor
 - Bounce rate
@@ -606,10 +664,12 @@ This document provides comprehensive guidance for product launches, user onboard
 **Hypothesis:** Expanding free tier will increase signups by 30%.
 
 **Experiment:**
+
 - A: Current free tier (1K reconciliations/month)
 - B: Expanded free tier (2K reconciliations/month)
 
 **Metrics:**
+
 - Signup rate
 - Conversion to paid (target: 20%+)
 - Revenue impact
@@ -624,10 +684,12 @@ This document provides comprehensive guidance for product launches, user onboard
 **Hypothesis:** Referral program will drive 20% of new signups.
 
 **Experiment:**
+
 - A: No referral program
 - B: Referral program (credits for referrer and referee)
 
 **Metrics:**
+
 - Referral rate (target: 20%+)
 - Viral coefficient (target: 0.3+)
 - Revenue from referrals
@@ -642,10 +704,12 @@ This document provides comprehensive guidance for product launches, user onboard
 **Hypothesis:** Scaling content production will increase organic traffic by 50%.
 
 **Experiment:**
+
 - A: Current content production (2 posts/week)
 - B: Scaled content production (5 posts/week)
 
 **Metrics:**
+
 - Organic traffic (target: 10K+ monthly)
 - Signups from content (target: 15%+)
 - SEO rankings
@@ -660,6 +724,7 @@ This document provides comprehensive guidance for product launches, user onboard
 ### Weekly Feedback Review
 
 **Process:**
+
 1. **Collect Feedback:** Gather all feedback from all sources
 2. **Categorize:** Categorize by type (bug, feature, question)
 3. **Prioritize:** Prioritize based on impact and effort
@@ -667,6 +732,7 @@ This document provides comprehensive guidance for product launches, user onboard
 5. **Communicate:** Communicate back to users
 
 **Participants:**
+
 - Product team
 - Engineering team
 - Support team
@@ -677,12 +743,14 @@ This document provides comprehensive guidance for product launches, user onboard
 ### Monthly Feedback Analysis
 
 **Process:**
+
 1. **Analyze Trends:** Identify trends in feedback
 2. **Identify Patterns:** Find common patterns
 3. **Update Roadmap:** Update product roadmap
 4. **Report:** Report to leadership team
 
 **Output:**
+
 - Feedback summary report
 - Roadmap updates
 - Action items

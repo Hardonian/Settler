@@ -52,6 +52,7 @@ The pilot is capped at 5 companies. Let me know if you want in.
 Settler supports full white-labeling via the TenantThemeProvider system:
 
 **Branding Configuration:**
+
 ```json
 {
   "primaryColor": "#1a1a2e",
@@ -67,11 +68,13 @@ Settler supports full white-labeling via the TenantThemeProvider system:
 ```
 
 **Custom Domain Setup:**
+
 1. Add CNAME record: `reconciliation.your-domain.com` → `app.settler.dev`
 2. Configure in Settler console: Settings → Custom Domain
 3. SSL auto-provisioned via Let's Enterprise
 
 **API White-Labeling:**
+
 - All API responses include `X-Powered-By: Settler` header (can be disabled)
 - Webhook URLs configurable per tenant
 - Custom email templates for notifications
@@ -81,6 +84,7 @@ Settler supports full white-labeling via the TenantThemeProvider system:
 ## Pilot Onboarding Checklist
 
 ### Pre-Pilot (Day 0)
+
 - [ ] Sign design partner agreement
 - [ ] Collect branding assets (logo, colors, fonts)
 - [ ] Configure white-label instance
@@ -88,6 +92,7 @@ Settler supports full white-labeling via the TenantThemeProvider system:
 - [ ] Create Stripe products for pilot pricing
 
 ### Onboarding (Day 1)
+
 - [ ] 30-min kickoff call
 - [ ] Stripe webhook integration (15-min setup)
 - [ ] Import historical data (if available)
@@ -95,12 +100,14 @@ Settler supports full white-labeling via the TenantThemeProvider system:
 - [ ] Set up exception workflow
 
 ### Pilot Period (Days 2-28)
+
 - [ ] Weekly 15-min check-in calls
 - [ ] Monitor reconciliation accuracy
 - [ ] Collect feedback on UX/features
 - [ ] Iterate on configuration
 
 ### Pilot End (Day 30)
+
 - [ ] Generate final evidence bundle
 - [ ] Present pilot results (accuracy, time saved, exceptions caught)
 - [ ] Discuss continuation options
@@ -111,13 +118,14 @@ Settler supports full white-labeling via the TenantThemeProvider system:
 
 ## Enterprise Pricing Tiers
 
-| Tier | Monthly Price | Reconciliations/mo | Support | SLA |
-|------|--------------|-------------------|---------|-----|
-| Growth | $99/mo | 100,000 | Email | 99.9% |
-| Scale | $990/mo | 1,000,000 | Priority | 99.95% |
-| Enterprise | Custom | Unlimited | Dedicated | 99.99% |
+| Tier       | Monthly Price | Reconciliations/mo | Support   | SLA    |
+| ---------- | ------------- | ------------------ | --------- | ------ |
+| Growth     | $99/mo        | 100,000            | Email     | 99.9%  |
+| Scale      | $990/mo       | 1,000,000          | Priority  | 99.95% |
+| Enterprise | Custom        | Unlimited          | Dedicated | 99.99% |
 
 **Enterprise Add-Ons:**
+
 - White-label branding: +$200/mo
 - Custom domain: +$50/mo
 - Dedicated support: +$300/mo

@@ -18,11 +18,13 @@
 ### Open Source Components
 
 **TypeScript SDK:**
+
 - **License:** MIT
 - **Rationale:** Build developer community, enable contributions
 - **Components:** SDK code, examples, documentation
 
 **Adapter SDK:**
+
 - **License:** MIT
 - **Rationale:** Enable community adapters, ecosystem growth
 - **Components:** Adapter framework, examples, documentation
@@ -34,16 +36,19 @@
 ### Proprietary Components
 
 **Core Reconciliation Engine:**
+
 - **License:** Proprietary
 - **Rationale:** Protect core IP, competitive advantage
 - **Components:** Reconciliation logic, matching algorithms
 
 **Built-in Adapters:**
+
 - **License:** Proprietary
 - **Rationale:** Competitive advantage, product value
 - **Components:** Stripe, Shopify, QuickBooks adapters
 
 **Web UI:**
+
 - **License:** Proprietary
 - **Rationale:** Product differentiation, user experience
 - **Components:** Dashboard, admin UI
@@ -57,12 +62,14 @@
 ### MIT License Compliance
 
 **Requirements:**
+
 - Include copyright notice
 - Include license text
 - No modification restrictions
 - No warranty
 
 **Compliance:**
+
 - ✅ Copyright notices included in all files
 - ✅ LICENSE file included in repositories
 - ✅ License text included
@@ -75,6 +82,7 @@
 ### Apache 2.0 License Compliance
 
 **Requirements:**
+
 - Include copyright notice
 - Include license text
 - Include NOTICE file (if applicable)
@@ -82,6 +90,7 @@
 - No warranty
 
 **Compliance:**
+
 - ✅ Copyright notices included
 - ✅ LICENSE file included
 - ✅ NOTICE file included (if applicable)
@@ -95,12 +104,14 @@
 ### BSD License Compliance
 
 **Requirements:**
+
 - Include copyright notice
 - Include license text
 - No modification restrictions
 - No warranty
 
 **Compliance:**
+
 - ✅ Copyright notices included
 - ✅ LICENSE file included
 - ✅ Attribution provided
@@ -114,11 +125,13 @@
 ### Contribution Guidelines
 
 **Contributor License Agreement (CLA):**
+
 - ✅ CLA required for contributions
 - ✅ CLA covers code, documentation, examples
 - ✅ CLA protects Settler IP
 
 **Contribution Process:**
+
 - ✅ GitHub pull request process
 - ✅ Code review required
 - ✅ Tests required
@@ -131,6 +144,7 @@
 ### Community Guidelines
 
 **Code of Conduct:**
+
 - ✅ Contributor Code of Conduct
 - ✅ Community guidelines
 - ✅ Enforcement process
@@ -144,6 +158,7 @@
 ### Dependency License Compatibility
 
 **Production Dependencies:**
+
 - Express.js (MIT) → ✅ Compatible
 - TypeScript (Apache 2.0) → ✅ Compatible
 - Next.js (MIT) → ✅ Compatible
@@ -157,13 +172,13 @@
 
 ### License Compatibility Matrix
 
-| License | MIT | Apache 2.0 | BSD | GPL | Proprietary |
-|---------|-----|------------|-----|-----|-------------|
-| **MIT** | ✅ | ✅ | ✅ | ❌ | ✅ |
-| **Apache 2.0** | ✅ | ✅ | ✅ | ❌ | ✅ |
-| **BSD** | ✅ | ✅ | ✅ | ❌ | ✅ |
-| **GPL** | ❌ | ❌ | ❌ | ✅ | ❌ |
-| **Proprietary** | ✅ | ✅ | ✅ | ❌ | ✅ |
+| License         | MIT | Apache 2.0 | BSD | GPL | Proprietary |
+| --------------- | --- | ---------- | --- | --- | ----------- |
+| **MIT**         | ✅  | ✅         | ✅  | ❌  | ✅          |
+| **Apache 2.0**  | ✅  | ✅         | ✅  | ❌  | ✅          |
+| **BSD**         | ✅  | ✅         | ✅  | ❌  | ✅          |
+| **GPL**         | ❌  | ❌         | ❌  | ✅  | ❌          |
+| **Proprietary** | ✅  | ✅         | ✅  | ❌  | ✅          |
 
 **Status:** ✅ No GPL dependencies, all compatible
 
@@ -174,11 +189,13 @@
 ### License Files
 
 **Root LICENSE File:**
+
 - ✅ MIT License (for open source components)
 - ✅ Copyright notice
 - ✅ License text
 
 **Component LICENSE Files:**
+
 - ✅ SDK LICENSE (MIT)
 - ✅ Adapter SDK LICENSE (MIT)
 - ✅ Proprietary components (no LICENSE file)
@@ -190,6 +207,7 @@
 ### Copyright Notices
 
 **File Headers:**
+
 - ✅ Copyright notice in all files
 - ✅ Year and copyright holder
 - ✅ License identifier
@@ -203,16 +221,19 @@
 ### Identified Risks
 
 **Risk 1: License Violations**
+
 - **Likelihood:** Low
 - **Impact:** Medium
 - **Mitigation:** License compliance audits
 
 **Risk 2: GPL Contamination**
+
 - **Likelihood:** Low
 - **Impact:** High
 - **Mitigation:** No GPL dependencies, license checks
 
 **Risk 3: Third-Party License Changes**
+
 - **Likelihood:** Low
 - **Impact:** Medium
 - **Mitigation:** Monitor dependencies, version pinning
@@ -242,16 +263,19 @@
 ### Goals
 
 **Community Building:**
+
 - Build developer community
 - Enable contributions
 - Foster ecosystem growth
 
 **Developer Experience:**
+
 - Improve SDK and adapter SDK
 - Enable custom adapters
 - Provide examples and documentation
 
 **Competitive Advantage:**
+
 - Open source SDK and adapters
 - Proprietary core engine
 - Best-in-class developer experience
@@ -261,12 +285,14 @@
 ### Success Metrics
 
 **Community Growth:**
+
 - GitHub stars
 - Contributors
 - Forks
 - Issues and PRs
 
 **Developer Adoption:**
+
 - SDK downloads
 - Adapter usage
 - Community adapters

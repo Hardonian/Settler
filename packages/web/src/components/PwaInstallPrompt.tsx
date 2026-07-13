@@ -65,10 +65,12 @@ export function PwaInstallPrompt() {
             sizes="36px"
           />
           <div>
-          <h3 id="install-title" className="font-semibold text-sm mb-1">
-            Install Settler
-          </h3>
-          <p className="text-xs text-slate-300">Add to your home screen for the best experience.</p>
+            <h3 id="install-title" className="font-semibold text-sm mb-1">
+              Install Settler
+            </h3>
+            <p className="text-xs text-slate-300">
+              Add to your home screen for the best experience.
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2">

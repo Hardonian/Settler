@@ -80,7 +80,7 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
       });
 
       const data = await res.json().catch(() => null);
-      
+
       const freezeDetails = parseGovernanceFreezeError(data, res.status);
       if (freezeDetails) {
         setFreezeError(freezeDetails);

@@ -19,12 +19,12 @@ Settler maintains enterprise-grade security through:
 
 ### Security Certifications
 
-| Certification | Status | Evidence |
-|--------------|--------|----------|
-| SOC2 Type II | In progress | Control mapping doc |
-| GDPR | Compliant | Privacy policy |
-| PCI-DSS | Merchant services via Stripe | Stripe certification |
-| ISO 27001 | Not certified | AWS upstream |
+| Certification | Status                       | Evidence             |
+| ------------- | ---------------------------- | -------------------- |
+| SOC2 Type II  | In progress                  | Control mapping doc  |
+| GDPR          | Compliant                    | Privacy policy       |
+| PCI-DSS       | Merchant services via Stripe | Stripe certification |
+| ISO 27001     | Not certified                | AWS upstream         |
 
 ---
 
@@ -56,24 +56,24 @@ Settler maintains enterprise-grade security through:
 
 ### Available Upon Request
 
-| Artifact | Description | Turnaround |
-|----------|-------------|----------|
-| SOC2 Type II Report | Last audit report | 2 weeks |
-| Penetration Test | Annual pen test results | 1 week |
-| Architecture Diagram | System design | Immediate |
-| Security Whitepaper | Full security posture | 1 week |
-| Privacy Policy | Data handling practices | Immediate |
-| DPA | Data Processing Agreement | 3 business days |
-| MSA | Master Service Agreement | 5 business days |
-| SLA | Service Level Agreement | 3 business days |
-| Insurance Certificate | Cyber liability | 1 week |
+| Artifact              | Description               | Turnaround      |
+| --------------------- | ------------------------- | --------------- |
+| SOC2 Type II Report   | Last audit report         | 2 weeks         |
+| Penetration Test      | Annual pen test results   | 1 week          |
+| Architecture Diagram  | System design             | Immediate       |
+| Security Whitepaper   | Full security posture     | 1 week          |
+| Privacy Policy        | Data handling practices   | Immediate       |
+| DPA                   | Data Processing Agreement | 3 business days |
+| MSA                   | Master Service Agreement  | 5 business days |
+| SLA                   | Service Level Agreement   | 3 business days |
+| Insurance Certificate | Cyber liability           | 1 week          |
 
 ### RLS Verification Evidence
 
 ```bash
 # Tenant isolation proof
-psql> SELECT * FROM reconciliation_runs 
-      WHERE organization_id = 'org_xxx' 
+psql> SELECT * FROM reconciliation_runs
+      WHERE organization_id = 'org_xxx'
       AND tenant_isolation_enforced = true;
 ```
 
@@ -81,16 +81,16 @@ psql> SELECT * FROM reconciliation_runs
 
 ## 4. Enterprise Readiness Checklist
 
-| Capability | Status | Notes |
-|------------|--------|-------|
-| SSO/SAML | Enterprise only | Okta, Azure AD, Google |
-| Custom contracts | ✅ Available | Enterprise tier |
-| Invoice billing | ✅ Available | ACH/wire |
-| Dedicated support | ✅ Available | Enterprise tier |
-| On-premise option | ✅ Available | Contact sales |
-| API rate limits | ✅ Enforced | Per tier |
-| Data residency | ⚠️ US-only | EU on request |
-| Custom SLA | ✅ Available | Enterprise |
+| Capability        | Status          | Notes                  |
+| ----------------- | --------------- | ---------------------- |
+| SSO/SAML          | Enterprise only | Okta, Azure AD, Google |
+| Custom contracts  | ✅ Available    | Enterprise tier        |
+| Invoice billing   | ✅ Available    | ACH/wire               |
+| Dedicated support | ✅ Available    | Enterprise tier        |
+| On-premise option | ✅ Available    | Contact sales          |
+| API rate limits   | ✅ Enforced     | Per tier               |
+| Data residency    | ⚠️ US-only      | EU on request          |
+| Custom SLA        | ✅ Available    | Enterprise             |
 
 ---
 
@@ -98,13 +98,13 @@ psql> SELECT * FROM reconciliation_runs
 
 ### Inherent Risk (Standard Tier)
 
-| Risk Category | Inherent Rating | Residual Rating | Mitigation |
-|--------------|----------------|---------------|------------|
-| Data breach | Medium | Low | Encryption, access controls |
-| Service disruption | Medium | Low | AWS redundancy |
-| Supply chain | Low | Low | AWS/Supabase SOC2 |
-| Regulatory | Medium | Low | GDPR compliance |
-| Financial | Low | Low | Stripe billing |
+| Risk Category      | Inherent Rating | Residual Rating | Mitigation                  |
+| ------------------ | --------------- | --------------- | --------------------------- |
+| Data breach        | Medium          | Low             | Encryption, access controls |
+| Service disruption | Medium          | Low             | AWS redundancy              |
+| Supply chain       | Low             | Low             | AWS/Supabase SOC2           |
+| Regulatory         | Medium          | Low             | GDPR compliance             |
+| Financial          | Low             | Low             | Stripe billing              |
 
 ### Mitigation Practices
 
@@ -118,11 +118,11 @@ psql> SELECT * FROM reconciliation_runs
 
 ## 6. Insurance
 
-| Type | Coverage | Provider |
-|------|---------|----------|
-| Cyber Liability | $5M | Coalition |
-| E&O | $2M | Hiscox |
-| Workers Comp | Required | State minimum |
+| Type            | Coverage | Provider      |
+| --------------- | -------- | ------------- |
+| Cyber Liability | $5M      | Coalition     |
+| E&O             | $2M      | Hiscox        |
+| Workers Comp    | Required | State minimum |
 
 ---
 
@@ -131,20 +131,20 @@ psql> SELECT * FROM reconciliation_runs
 **Security Questions:** security@settler.dev  
 **Legal/DPA:** legal@settler.dev  
 **Sales:** sales@settler.dev  
-**On-Call:** enterprise@settler.dev  
+**On-Call:** enterprise@settler.dev
 
 ---
 
 ## 8. Response SLAs
 
-| Request Type | SLA |
-|------------|-----|
-| Security inquiry | 24 hours |
-| Penetration report | 1 week |
-| DPA execution | 3 business days |
-| Contract negotiation | 5 business days |
-| Critical vulnerability | 24 hours |
-| Incident notification | Per breach SLA |
+| Request Type           | SLA             |
+| ---------------------- | --------------- |
+| Security inquiry       | 24 hours        |
+| Penetration report     | 1 week          |
+| DPA execution          | 3 business days |
+| Contract negotiation   | 5 business days |
+| Critical vulnerability | 24 hours        |
+| Incident notification  | Per breach SLA  |
 
 ---
 
@@ -164,4 +164,4 @@ Settler attests that:
 
 ---
 
-*This document is updated quarterly. Last update: 2026-04-10*
+_This document is updated quarterly. Last update: 2026-04-10_

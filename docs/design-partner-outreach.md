@@ -46,23 +46,28 @@ The pilot is capped at 5 companies. Let me know if you want in.
 **Compensation:** Free access to Settler Growth tier ($99/mo value)
 
 **Partner agrees to:**
+
 1. Use Settler for reconciliation during the pilot period
 2. Provide weekly feedback (15-min call or async)
 3. Allow Hardonia to reference company name in case study (optional)
 4. Report any bugs or issues promptly
 
 **Provider agrees to:**
+
 1. White-glove onboarding and setup assistance
 2. Priority support during pilot
 3. Deliver audit-ready evidence bundle at pilot end
 4. No charge during pilot period
 
 **Post-Pilot:**
+
 - Partner may continue at Growth tier ($99/mo) or cancel
 - Provider will share pilot results and recommendations
 - If Partner continues, first 3 months at 50% discount ($49.50/mo)
 
 **Signatures:**
-_________________________  _________________________
-Hardonia LLC               [Company]
-Date: _______________       Date: _______________
+
+---
+
+Hardonia LLC [Company]
+Date: ******\_\_\_****** Date: ******\_\_\_******

@@ -6,9 +6,7 @@
     {
       "name": "agent-monitor",
       "path": "/app/supabase/functions/agent-monitor/index.ts",
-      "tables": [
-        "agent_runs"
-      ],
+      "tables": ["agent_runs"],
       "functions": [
         "serve",
         "now",
@@ -36,9 +34,7 @@
     {
       "name": "agent-orchestrator",
       "path": "/app/supabase/functions/agent-orchestrator/index.ts",
-      "tables": [
-        "agent_runs"
-      ],
+      "tables": ["agent_runs"],
       "functions": [
         "serve",
         "get",
@@ -100,10 +96,7 @@
         "filter",
         "stringify"
       ],
-      "rpcCalls": [
-        "check_rls_policies",
-        "get_slow_queries"
-      ],
+      "rpcCalls": ["check_rls_policies", "get_slow_queries"],
       "hasDeployConfig": false,
       "errors": [
         "Function/RPC 'check_rls_policies' does not exist",
@@ -138,12 +131,7 @@
     {
       "name": "automated-alerting",
       "path": "/app/supabase/functions/automated-alerting/index.ts",
-      "tables": [
-        "alerts",
-        "users",
-        "subscriptions",
-        "agent_runs"
-      ],
+      "tables": ["alerts", "users", "subscriptions", "agent_runs"],
       "functions": [
         "serve",
         "get",
@@ -182,13 +170,7 @@
     {
       "name": "automated-diagnostics",
       "path": "/app/supabase/functions/automated-diagnostics/index.ts",
-      "tables": [
-        "stripe_event_log",
-        "subscriptions",
-        "usage_events",
-        "email_sends",
-        "diagnostics"
-      ],
+      "tables": ["stripe_event_log", "subscriptions", "usage_events", "email_sends", "diagnostics"],
       "functions": [
         "serve",
         "get",
@@ -213,13 +195,9 @@
         "sort",
         "error"
       ],
-      "rpcCalls": [
-        "get_slow_queries"
-      ],
+      "rpcCalls": ["get_slow_queries"],
       "hasDeployConfig": false,
-      "errors": [
-        "Function/RPC 'get_slow_queries' does not exist"
-      ]
+      "errors": ["Function/RPC 'get_slow_queries' does not exist"]
     },
     {
       "name": "automated-health-checks",
@@ -259,11 +237,7 @@
     {
       "name": "automated-onboarding-emails",
       "path": "/app/supabase/functions/automated-onboarding-emails/index.ts",
-      "tables": [
-        "profiles",
-        "onboarding_progress",
-        "email_sends"
-      ],
+      "tables": ["profiles", "onboarding_progress", "email_sends"],
       "functions": [
         "serve",
         "get",
@@ -289,20 +263,14 @@
         "insert",
         "substring"
       ],
-      "rpcCalls": [
-        "handle_trial_expiration"
-      ],
+      "rpcCalls": ["handle_trial_expiration"],
       "hasDeployConfig": false,
       "errors": []
     },
     {
       "name": "automated-reconciliation-review",
       "path": "/app/supabase/functions/automated-reconciliation-review/index.ts",
-      "tables": [
-        "reconciliation_matches",
-        "recon_audits",
-        "reconciliation_runs"
-      ],
+      "tables": ["reconciliation_matches", "recon_audits", "reconciliation_runs"],
       "functions": [
         "serve",
         "get",
@@ -398,21 +366,14 @@
         "stringify",
         "error"
       ],
-      "rpcCalls": [
-        "upsert_reality_metric"
-      ],
+      "rpcCalls": ["upsert_reality_metric"],
       "hasDeployConfig": false,
-      "errors": [
-        "Table 'onboarding_events' does not exist"
-      ]
+      "errors": ["Table 'onboarding_events' does not exist"]
     },
     {
       "name": "compute-bill",
       "path": "/app/supabase/functions/compute-bill/index.ts",
-      "tables": [
-        "billing_accounts",
-        "subscriptions"
-      ],
+      "tables": ["billing_accounts", "subscriptions"],
       "functions": [
         "serve",
         "get",
@@ -427,21 +388,14 @@
         "rpc",
         "error"
       ],
-      "rpcCalls": [
-        "compute_estimated_bill"
-      ],
+      "rpcCalls": ["compute_estimated_bill"],
       "hasDeployConfig": false,
       "errors": []
     },
     {
       "name": "generate-founder-digest",
       "path": "/app/supabase/functions/generate-founder-digest/index.ts",
-      "tables": [
-        "users",
-        "subscriptions",
-        "reconciliation_jobs",
-        "user_lifecycle"
-      ],
+      "tables": ["users", "subscriptions", "reconciliation_jobs", "user_lifecycle"],
       "functions": [
         "serve",
         "get",
@@ -459,19 +413,12 @@
       ],
       "rpcCalls": [],
       "hasDeployConfig": false,
-      "errors": [
-        "Table 'reconciliation_jobs' does not exist"
-      ]
+      "errors": ["Table 'reconciliation_jobs' does not exist"]
     },
     {
       "name": "generate-monthly-export",
       "path": "/app/supabase/functions/generate-monthly-export/index.ts",
-      "tables": [
-        "users",
-        "user_lifecycle",
-        "subscriptions",
-        "reconciliation_jobs"
-      ],
+      "tables": ["users", "user_lifecycle", "subscriptions", "reconciliation_jobs"],
       "functions": [
         "serve",
         "get",
@@ -486,9 +433,7 @@
       ],
       "rpcCalls": [],
       "hasDeployConfig": false,
-      "errors": [
-        "Table 'reconciliation_jobs' does not exist"
-      ]
+      "errors": ["Table 'reconciliation_jobs' does not exist"]
     },
     {
       "name": "generate-ops-insights",
@@ -524,9 +469,7 @@
         "abs",
         "includes"
       ],
-      "rpcCalls": [
-        "expire_insights"
-      ],
+      "rpcCalls": ["expire_insights"],
       "hasDeployConfig": false,
       "errors": []
     },
@@ -571,26 +514,15 @@
       "name": "integration-sync-paypal",
       "path": "/app/supabase/functions/integration-sync-paypal/index.ts",
       "tables": [],
-      "functions": [
-        "serve",
-        "get",
-        "stringify",
-        "json",
-        "rpc",
-        "error"
-      ],
-      "rpcCalls": [
-        "log_usage_event"
-      ],
+      "functions": ["serve", "get", "stringify", "json", "rpc", "error"],
+      "rpcCalls": ["log_usage_event"],
       "hasDeployConfig": false,
       "errors": []
     },
     {
       "name": "integration-sync-scheduler",
       "path": "/app/supabase/functions/integration-sync-scheduler/index.ts",
-      "tables": [
-        "connectors"
-      ],
+      "tables": ["connectors"],
       "functions": [
         "serve",
         "get",
@@ -607,36 +539,21 @@
       ],
       "rpcCalls": [],
       "hasDeployConfig": false,
-      "errors": [
-        "Table 'connectors' does not exist"
-      ]
+      "errors": ["Table 'connectors' does not exist"]
     },
     {
       "name": "integration-sync-shopify",
       "path": "/app/supabase/functions/integration-sync-shopify/index.ts",
       "tables": [],
-      "functions": [
-        "serve",
-        "get",
-        "stringify",
-        "json",
-        "rpc",
-        "error"
-      ],
-      "rpcCalls": [
-        "log_usage_event"
-      ],
+      "functions": ["serve", "get", "stringify", "json", "rpc", "error"],
+      "rpcCalls": ["log_usage_event"],
       "hasDeployConfig": false,
       "errors": []
     },
     {
       "name": "integration-sync-shopify-secure",
       "path": "/app/supabase/functions/integration-sync-shopify-secure/index.ts",
-      "tables": [
-        "service_integrations",
-        "webhook_payloads",
-        "integration_health"
-      ],
+      "tables": ["service_integrations", "webhook_payloads", "integration_health"],
       "functions": [
         "now",
         "get",
@@ -676,17 +593,8 @@
       "name": "integration-sync-stripe",
       "path": "/app/supabase/functions/integration-sync-stripe/index.ts",
       "tables": [],
-      "functions": [
-        "serve",
-        "get",
-        "stringify",
-        "json",
-        "rpc",
-        "error"
-      ],
-      "rpcCalls": [
-        "log_usage_event"
-      ],
+      "functions": ["serve", "get", "stringify", "json", "rpc", "error"],
+      "rpcCalls": ["log_usage_event"],
       "hasDeployConfig": false,
       "errors": []
     },
@@ -694,26 +602,15 @@
       "name": "integration-sync-tiktok",
       "path": "/app/supabase/functions/integration-sync-tiktok/index.ts",
       "tables": [],
-      "functions": [
-        "serve",
-        "get",
-        "stringify",
-        "json",
-        "rpc",
-        "error"
-      ],
-      "rpcCalls": [
-        "log_usage_event"
-      ],
+      "functions": ["serve", "get", "stringify", "json", "rpc", "error"],
+      "rpcCalls": ["log_usage_event"],
       "hasDeployConfig": false,
       "errors": []
     },
     {
       "name": "log-usage",
       "path": "/app/supabase/functions/log-usage/index.ts",
-      "tables": [
-        "billing_accounts"
-      ],
+      "tables": ["billing_accounts"],
       "functions": [
         "serve",
         "get",
@@ -726,18 +623,14 @@
         "rpc",
         "error"
       ],
-      "rpcCalls": [
-        "log_usage_event"
-      ],
+      "rpcCalls": ["log_usage_event"],
       "hasDeployConfig": false,
       "errors": []
     },
     {
       "name": "log-usage-secure",
       "path": "/app/supabase/functions/log-usage-secure/index.ts",
-      "tables": [
-        "billing_accounts"
-      ],
+      "tables": ["billing_accounts"],
       "functions": [
         "now",
         "get",
@@ -753,22 +646,14 @@
         "rpc",
         "error"
       ],
-      "rpcCalls": [
-        "log_usage_event"
-      ],
+      "rpcCalls": ["log_usage_event"],
       "hasDeployConfig": false,
       "errors": []
     },
     {
       "name": "organic-growth-agent",
       "path": "/app/supabase/functions/organic-growth-agent/index.ts",
-      "tables": [
-        "agent_runs",
-        "feature_flags",
-        "usage_events",
-        "error_logs",
-        "growth_content"
-      ],
+      "tables": ["agent_runs", "feature_flags", "usage_events", "error_logs", "growth_content"],
       "functions": [
         "get",
         "stringify",
@@ -803,12 +688,7 @@
     {
       "name": "preemptive-support-agent",
       "path": "/app/supabase/functions/preemptive-support-agent/index.ts",
-      "tables": [
-        "agent_runs",
-        "error_logs",
-        "analytics_events",
-        "preemptive_support_actions"
-      ],
+      "tables": ["agent_runs", "error_logs", "analytics_events", "preemptive_support_actions"],
       "functions": [
         "get",
         "fetch",
@@ -878,10 +758,7 @@
         "map",
         "stringify"
       ],
-      "rpcCalls": [
-        "check_rls_policies",
-        "get_slow_queries"
-      ],
+      "rpcCalls": ["check_rls_policies", "get_slow_queries"],
       "hasDeployConfig": false,
       "errors": [
         "Function/RPC 'check_rls_policies' does not exist",
@@ -891,10 +768,7 @@
     {
       "name": "retry-queue-processor",
       "path": "/app/supabase/functions/retry-queue-processor/index.ts",
-      "tables": [
-        "retry_queue",
-        "connectors"
-      ],
+      "tables": ["retry_queue", "connectors"],
       "functions": [
         "serve",
         "get",
@@ -918,10 +792,7 @@
       ],
       "rpcCalls": [],
       "hasDeployConfig": false,
-      "errors": [
-        "Table 'retry_queue' does not exist",
-        "Table 'connectors' does not exist"
-      ]
+      "errors": ["Table 'retry_queue' does not exist", "Table 'connectors' does not exist"]
     },
     {
       "name": "strategic-governor-agent",
@@ -978,11 +849,7 @@
     {
       "name": "sync-usage-to-stripe",
       "path": "/app/supabase/functions/sync-usage-to-stripe/index.ts",
-      "tables": [
-        "billing_accounts",
-        "subscriptions",
-        "usage_aggregate_daily"
-      ],
+      "tables": ["billing_accounts", "subscriptions", "usage_aggregate_daily"],
       "functions": [
         "serve",
         "get",
@@ -1008,9 +875,7 @@
     {
       "name": "trigger-upgrade-alert",
       "path": "/app/supabase/functions/trigger-upgrade-alert/index.ts",
-      "tables": [
-        "billing_accounts"
-      ],
+      "tables": ["billing_accounts"],
       "functions": [
         "serve",
         "get",
@@ -1077,11 +942,7 @@
     {
       "name": "weekly-reality-loop",
       "path": "/app/supabase/functions/weekly-reality-loop/index.ts",
-      "tables": [
-        "weekly_snapshots",
-        "reality_metrics",
-        "reality_events"
-      ],
+      "tables": ["weekly_snapshots", "reality_metrics", "reality_events"],
       "functions": [
         "serve",
         "get",
@@ -1109,9 +970,7 @@
         "slice",
         "entries"
       ],
-      "rpcCalls": [
-        "record_reality_event"
-      ],
+      "rpcCalls": ["record_reality_event"],
       "hasDeployConfig": false,
       "errors": []
     }

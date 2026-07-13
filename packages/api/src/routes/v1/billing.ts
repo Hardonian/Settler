@@ -70,10 +70,9 @@ billingRouter.post(
 
     logInfo("Creating checkout session", { tenantId, priceId, tier });
 
-    const stripe = new (await import("stripe")).default(
-      getEnv("STRIPE_SECRET_KEY") || "",
-      { apiVersion: "2023-10-16" }
-    );
+    const stripe = new (await import("stripe")).default(getEnv("STRIPE_SECRET_KEY") || "", {
+      apiVersion: "2023-10-16",
+    });
 
     if (!getEnv("STRIPE_SECRET_KEY")) {
       // Fallback to mock if not configured (dev)
@@ -144,102 +143,103 @@ billingRouter.post(
 );
 
 // Stripe Webhook Endpoint (No authMiddleware — Stripe calls this)
-billingWebhookRouter.post("/", asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
-  const sig = req.headers["stripe-signature"];
-  const webhookSecret = getEnv("STRIPE_WEBHOOK_SECRET") || "";
+billingWebhookRouter.post(
+  "/",
+  asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
+    const sig = req.headers["stripe-signature"];
+    const webhookSecret = getEnv("STRIPE_WEBHOOK_SECRET") || "";
 
-  if (!webhookSecret) {
-    logError("STRIPE_WEBHOOK_SECRET not configured", {});
-    res.status(503).json({ error: "Webhook secret not configured" });
-    return;
-  }
-
-  let event: any;
-  try {
-    const stripe = new (await import("stripe")).default(
-      getEnv("STRIPE_SECRET_KEY") || "",
-      { apiVersion: "2023-10-16" }
-    );
-    event = stripe.webhooks.constructEvent(
-      JSON.stringify(req.body),
-      sig as string,
-      webhookSecret
-    );
-  } catch (err: any) {
-    logError("Stripe webhook signature verification failed", err);
-    res.status(400).json({ error: `Webhook Error: ${err.message}` });
-    return;
-  }
-
-  const tenantId =
-    event.data?.object?.metadata?.tenant_id ||
-    event.data?.object?.client_reference_id ||
-    null;
-
-  if (!tenantId) {
-    logInfo("Webhook received with no tenant_id, skipping", { type: event.type });
-    res.json({ received: true, skipped: true });
-    return;
-  }
-
-  // Map Stripe price ID to plan tier
-  const priceToTier: Record<string, string> = {
-    [getEnv("STRIPE_PRICE_ID_STARTER") || ""]: "starter",
-    [getEnv("STRIPE_PRICE_ID_GROWTH") || ""]: "growth",
-  };
-
-  const subscriptionId = event.data?.object?.subscription || event.data?.object?.id;
-
-  switch (event.type) {
-    case "checkout.session.completed": {
-      const session = event.data.object;
-      const priceId = session.metadata?.price_id || "";
-      const tier = priceToTier[priceId] || "starter";
-      await queryWithTenant(
-        tenantId,
-        `UPDATE tenant_billing SET status = 'active', tier = $1, stripe_subscription_id = $2 WHERE tenant_id = $3`,
-        [tier, session.subscription, tenantId]
-      );
-      logInfo("Checkout completed", { tenantId, tier, subscriptionId });
-      break;
+    if (!webhookSecret) {
+      logError("STRIPE_WEBHOOK_SECRET not configured", {});
+      res.status(503).json({ error: "Webhook secret not configured" });
+      return;
     }
-    case "customer.subscription.created":
-    case "customer.subscription.updated": {
-      const sub = event.data.object;
-      const priceId = sub.items?.data?.[0]?.price?.id || "";
-      const tier = priceToTier[priceId] || "growth";
-      const status = sub.status === "active" ? "active" : sub.status === "past_due" ? "past_due" : "inactive";
-      await queryWithTenant(
-        tenantId,
-        `UPDATE tenant_billing SET tier = $1, status = $2, stripe_subscription_id = $3, updated_at = NOW() WHERE tenant_id = $4`,
-        [tier, status, sub.id, tenantId]
-      );
-      logInfo("Subscription updated", { tenantId, tier, status, subscriptionId: sub.id });
-      break;
-    }
-    case "customer.subscription.deleted": {
-      await queryWithTenant(
-        tenantId,
-        `UPDATE tenant_billing SET status = 'canceled', updated_at = NOW() WHERE tenant_id = $1`,
-        [tenantId]
-      );
-      logInfo("Subscription canceled", { tenantId });
-      break;
-    }
-    case "invoice.payment_failed": {
-      await queryWithTenant(
-        tenantId,
-        `UPDATE tenant_billing SET status = 'past_due', updated_at = NOW() WHERE tenant_id = $1`,
-        [tenantId]
-      );
-      logInfo("Payment failed", { tenantId });
-      break;
-    }
-    default:
-      logInfo("Unhandled webhook event", { type: event.type, tenantId });
-  }
 
-  res.json({ received: true });
-}));
+    let event: any;
+    try {
+      const stripe = new (await import("stripe")).default(getEnv("STRIPE_SECRET_KEY") || "", {
+        apiVersion: "2023-10-16",
+      });
+      event = stripe.webhooks.constructEvent(
+        JSON.stringify(req.body),
+        sig as string,
+        webhookSecret
+      );
+    } catch (err: any) {
+      logError("Stripe webhook signature verification failed", err);
+      res.status(400).json({ error: `Webhook Error: ${err.message}` });
+      return;
+    }
+
+    const tenantId =
+      event.data?.object?.metadata?.tenant_id || event.data?.object?.client_reference_id || null;
+
+    if (!tenantId) {
+      logInfo("Webhook received with no tenant_id, skipping", { type: event.type });
+      res.json({ received: true, skipped: true });
+      return;
+    }
+
+    // Map Stripe price ID to plan tier
+    const priceToTier: Record<string, string> = {
+      [getEnv("STRIPE_PRICE_ID_STARTER") || ""]: "starter",
+      [getEnv("STRIPE_PRICE_ID_GROWTH") || ""]: "growth",
+    };
+
+    const subscriptionId = event.data?.object?.subscription || event.data?.object?.id;
+
+    switch (event.type) {
+      case "checkout.session.completed": {
+        const session = event.data.object;
+        const priceId = session.metadata?.price_id || "";
+        const tier = priceToTier[priceId] || "starter";
+        await queryWithTenant(
+          tenantId,
+          `UPDATE tenant_billing SET status = 'active', tier = $1, stripe_subscription_id = $2 WHERE tenant_id = $3`,
+          [tier, session.subscription, tenantId]
+        );
+        logInfo("Checkout completed", { tenantId, tier, subscriptionId });
+        break;
+      }
+      case "customer.subscription.created":
+      case "customer.subscription.updated": {
+        const sub = event.data.object;
+        const priceId = sub.items?.data?.[0]?.price?.id || "";
+        const tier = priceToTier[priceId] || "growth";
+        const status =
+          sub.status === "active" ? "active" : sub.status === "past_due" ? "past_due" : "inactive";
+        await queryWithTenant(
+          tenantId,
+          `UPDATE tenant_billing SET tier = $1, status = $2, stripe_subscription_id = $3, updated_at = NOW() WHERE tenant_id = $4`,
+          [tier, status, sub.id, tenantId]
+        );
+        logInfo("Subscription updated", { tenantId, tier, status, subscriptionId: sub.id });
+        break;
+      }
+      case "customer.subscription.deleted": {
+        await queryWithTenant(
+          tenantId,
+          `UPDATE tenant_billing SET status = 'canceled', updated_at = NOW() WHERE tenant_id = $1`,
+          [tenantId]
+        );
+        logInfo("Subscription canceled", { tenantId });
+        break;
+      }
+      case "invoice.payment_failed": {
+        await queryWithTenant(
+          tenantId,
+          `UPDATE tenant_billing SET status = 'past_due', updated_at = NOW() WHERE tenant_id = $1`,
+          [tenantId]
+        );
+        logInfo("Payment failed", { tenantId });
+        break;
+      }
+      default:
+        logInfo("Unhandled webhook event", { type: event.type, tenantId });
+    }
+
+    res.json({ received: true });
+  })
+);
 
 export default billingRouter;

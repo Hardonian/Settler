@@ -5,7 +5,7 @@
 
 import { query } from "../db";
 import { logError, logInfo } from "../utils/logger";
-import { getRedisClient, isRedisConfigured } from "../infrastructure/redis/client";
+import { getRedisClient, isRedisAvailable } from "../infrastructure/redis/client";
 
 export interface ExchangeRate {
   fromCurrency: string;
@@ -32,7 +32,7 @@ export async function getExchangeRate(
     const cacheKey = `exchange_rate:${fromCurrency}:${toCurrency}:${dateStr}`;
 
     const redis = getRedisClient();
-    if (isRedisConfigured() && redis) {
+    if (isRedisAvailable() && redis) {
       const cached = await redis.get(cacheKey);
       if (cached) {
         return parseFloat(cached as string);
@@ -84,7 +84,7 @@ export async function getExchangeRate(
     }
 
     if (rate !== null) {
-      if (isRedisConfigured() && redis) {
+      if (isRedisAvailable() && redis) {
         // Cache the rate for 24 hours (exchange rates for a specific past date don't change)
         await redis.set(cacheKey, rate.toString(), { ex: 86400 });
       }
@@ -130,7 +130,7 @@ export async function addExchangeRate(
     const dateStr = date.toISOString().split("T")[0] as string;
     const cacheKey = `exchange_rate:${fromCurrency}:${toCurrency}:${dateStr}`;
     const redis = getRedisClient();
-    if (isRedisConfigured() && redis) {
+    if (isRedisAvailable() && redis) {
       await redis.del(cacheKey);
     }
 

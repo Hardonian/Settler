@@ -25,17 +25,20 @@ All gaps and weak spots identified in the defensive moat analysis have been addr
 **File:** `packages/api/src/services/matching/ml-matching-engine.ts`
 
 **Implementation:**
+
 - ML models trained on historical matches
 - Uses cross-customer intelligence for improved accuracy
 - Proprietary feature weights learned from tenant data
 - Falls back to deterministic algorithm if ML unavailable
 
 **Moat Value:**
+
 - Competitors cannot replicate without historical match data
 - Accuracy improves over time as more matches are processed
 - Creates switching friction (ML models are tenant-specific)
 
 **Integration:**
+
 - Integrated into `reconciliation-matcher.ts`
 - Automatically used when historical data available
 - Records patterns for cross-customer intelligence
@@ -47,17 +50,20 @@ All gaps and weak spots identified in the defensive moat analysis have been addr
 **File:** `packages/api/src/services/matching/enhanced-cross-customer-intelligence.ts`
 
 **Implementation:**
+
 - Aggregates anonymized reconciliation patterns across customers
 - Provides historical match rates for adapter pairs
 - Opt-in/opt-out mechanism for privacy
 - Stores patterns in database for persistence
 
 **Moat Value:**
+
 - Competitors cannot replicate without customer base
 - Provides proprietary insights (e.g., "90% of Stripe→Shopify matches succeed")
 - Creates network effects (more customers = better matching)
 
 **Integration:**
+
 - Used by ML matching engine
 - Patterns recorded automatically during reconciliation
 - Insights available via API
@@ -69,6 +75,7 @@ All gaps and weak spots identified in the defensive moat analysis have been addr
 **File:** `packages/api/src/services/ingestion/export-service.ts` (modified)
 
 **Implementation:**
+
 - Exports explicitly exclude:
   - ML confidence scores
   - Match reasoning (contains ML insights)
@@ -79,11 +86,13 @@ All gaps and weak spots identified in the defensive moat analysis have been addr
 - Raw data exported, but intelligence lost
 
 **Moat Value:**
+
 - Users can export data, but lose accumulated intelligence
 - Creates switching friction (intelligence is proprietary)
 - Encourages staying on platform
 
 **Integration:**
+
 - Applied to all CSV and JSON exports
 - Warning headers included
 - Documentation updated
@@ -95,17 +104,20 @@ All gaps and weak spots identified in the defensive moat analysis have been addr
 **File:** `packages/api/src/services/data-retention/export-retention-policy.ts`
 
 **Implementation:**
+
 - Exports expire after retention period (30-90 days)
 - Cancelled customers: 7-day retention
 - Automatic cleanup of expired exports
 - Enterprise customers: Extended retention
 
 **Moat Value:**
+
 - Creates switching friction (exports expire)
 - Encourages staying on platform
 - Reduces data portability
 
 **Integration:**
+
 - Applied to all export creation
 - Automatic expiration set
 - Cleanup job runs periodically
@@ -119,6 +131,7 @@ All gaps and weak spots identified in the defensive moat analysis have been addr
 **File:** `packages/api/src/services/workflows/workflow-templates.ts`
 
 **Implementation:**
+
 - Pre-built templates for common workflows:
   - Stripe → Shopify reconciliation
   - Stripe → QuickBooks reconciliation
@@ -131,11 +144,13 @@ All gaps and weak spots identified in the defensive moat analysis have been addr
   - External references
 
 **Moat Value:**
+
 - Embeds Settler into operational processes
 - Creates workflow references automatically
 - Reduces setup time (encourages adoption)
 
 **Integration:**
+
 - Templates available via API
 - Can create jobs from templates
 - Workflow references registered automatically
@@ -147,17 +162,20 @@ All gaps and weak spots identified in the defensive moat analysis have been addr
 **File:** `packages/api/src/middleware/export-limitations.ts`
 
 **Implementation:**
+
 - Daily limits: 5-100 exports (plan-based)
 - Monthly limits: 50-1000 exports (plan-based)
 - Size limits: 10K-1M rows (plan-based)
 - Approval required for large exports
 
 **Moat Value:**
+
 - Makes exports less convenient
 - Creates switching friction
 - Encourages staying on platform
 
 **Integration:**
+
 - Middleware applied to export endpoints
 - Limits enforced automatically
 - Error messages guide users
@@ -169,6 +187,7 @@ All gaps and weak spots identified in the defensive moat analysis have been addr
 **File:** `packages/api/src/middleware/api-contract-versioning.ts`
 
 **Implementation:**
+
 - Versioned API contracts (v1, v2, etc.)
 - Deprecation warnings
 - Sunset dates
@@ -176,11 +195,13 @@ All gaps and weak spots identified in the defensive moat analysis have been addr
 - Migration guides
 
 **Moat Value:**
+
 - Creates breaking change risk for competitors
 - Stable contracts create switching friction
 - Version tracking enables controlled evolution
 
 **Integration:**
+
 - Middleware applied to all API routes
 - Version extracted from path or header
 - Deprecation headers set automatically
@@ -192,11 +213,13 @@ All gaps and weak spots identified in the defensive moat analysis have been addr
 **File:** `packages/api/src/services/workflow-entanglement.ts` (existing)
 
 **Enhancement:**
+
 - Templates automatically register workflow references
 - External systems reference Settler IDs
 - Breaking change risk calculated
 
 **Moat Value:**
+
 - External systems depend on Settler
 - Removing Settler breaks workflows
 - Creates switching friction
@@ -210,6 +233,7 @@ All gaps and weak spots identified in the defensive moat analysis have been addr
 **File:** `docs/compliance/COMPLIANCE_DOCUMENTATION.md`
 
 **Implementation:**
+
 - Comprehensive compliance documentation
 - GDPR compliance
 - CCPA compliance
@@ -218,6 +242,7 @@ All gaps and weak spots identified in the defensive moat analysis have been addr
 - Data retention policies
 
 **Moat Value:**
+
 - Enterprise customers require compliance
 - Documentation demonstrates capability
 - Creates trust and reduces risk
@@ -229,6 +254,7 @@ All gaps and weak spots identified in the defensive moat analysis have been addr
 **File:** `docs/compliance/SOC2_PREPARATION.md`
 
 **Implementation:**
+
 - SOC 2 Type II preparation guide
 - Control implementation checklist
 - Gap analysis
@@ -236,6 +262,7 @@ All gaps and weak spots identified in the defensive moat analysis have been addr
 - Audit preparation checklist
 
 **Moat Value:**
+
 - SOC 2 certification required for enterprise
 - Demonstrates security and compliance
 - Creates competitive advantage
@@ -245,12 +272,14 @@ All gaps and weak spots identified in the defensive moat analysis have been addr
 ### 3.3 Deterministic Guarantees
 
 **Implementation:**
+
 - Documented in compliance documentation
 - Event-sourced architecture ensures determinism
 - Idempotency keys prevent duplicates
 - Versioned contracts ensure reproducibility
 
 **Moat Value:**
+
 - Financial systems require determinism
 - Creates trust and reliability
 - Differentiates from non-deterministic competitors
@@ -264,12 +293,14 @@ All gaps and weak spots identified in the defensive moat analysis have been addr
 **Status:** Already implemented
 
 **Adapters:**
+
 - `stripe-enhanced.ts`
 - `paypal-enhanced.ts`
 - `quickbooks-enhanced.ts`
 - `shopify-enhanced.ts`
 
 **Moat Value:**
+
 - Enhanced adapters handle edge cases
 - Competitors must rebuild these
 - Maintenance burden for competitors
@@ -285,12 +316,14 @@ All gaps and weak spots identified in the defensive moat analysis have been addr
 **Status:** Already implemented in billing system
 
 **Implementation:**
+
 - Usage tracked per tenant
 - Overage charges applied automatically
 - Quota enforcement middleware
 - Cost monitoring
 
 **Moat Value:**
+
 - Prevents cost overruns
 - Ensures profitability
 - Enables value-based pricing
@@ -300,27 +333,32 @@ All gaps and weak spots identified in the defensive moat analysis have been addr
 ## Implementation Checklist
 
 ### Data Moat ✅
+
 - [x] ML matching engine implemented
 - [x] Cross-customer intelligence implemented
 - [x] Lossy exports implemented
 - [x] Export retention policies implemented
 
 ### Workflow Lock-In ✅
+
 - [x] Workflow templates implemented
 - [x] Export limitations implemented
 - [x] API contract versioning implemented
 - [x] Workflow references enhanced
 
 ### Enforcement Moat ✅
+
 - [x] Compliance documentation created
 - [x] SOC 2 preparation guide created
 - [x] Deterministic guarantees documented
 
 ### Integration Moat ✅
+
 - [x] Enhanced adapters remain proprietary
 - [x] Adapter complexity documented
 
 ### Economic Moat ✅
+
 - [x] Usage-based overage enforced
 - [x] Cost monitoring implemented
 
@@ -329,18 +367,21 @@ All gaps and weak spots identified in the defensive moat analysis have been addr
 ## Next Steps
 
 ### Immediate (This Week)
+
 1. Test ML matching engine with real data
 2. Enable cross-customer intelligence opt-in
 3. Apply export limitations to production
 4. Deploy workflow templates
 
 ### Short Term (This Month)
+
 1. Train ML models on historical matches
 2. Monitor export usage and adjust limits
 3. Collect workflow reference metrics
 4. Update API documentation with versioning
 
 ### Medium Term (This Quarter)
+
 1. Complete SOC 2 gap remediation
 2. Engage SOC 2 auditor
 3. Conduct compliance audit
@@ -351,18 +392,21 @@ All gaps and weak spots identified in the defensive moat analysis have been addr
 ## Metrics to Track
 
 ### Data Moat
+
 - ML model accuracy improvement over time
 - Cross-customer intelligence pattern count
 - Export frequency (should decrease with limitations)
 - Export retention compliance
 
 ### Workflow Lock-In
+
 - Workflow template usage
 - External reference count per tenant
 - Breaking change risk scores
 - API version adoption
 
 ### Enforcement Moat
+
 - Compliance documentation views
 - SOC 2 preparation progress
 - Deterministic reconciliation success rate
@@ -373,18 +417,21 @@ All gaps and weak spots identified in the defensive moat analysis have been addr
 ## Success Criteria
 
 ### Data Moat
+
 - ✅ ML models improve matching accuracy by 10%+
 - ✅ Cross-customer intelligence provides insights
 - ✅ Exports are lossy (intelligence excluded)
 - ✅ Export retention creates switching friction
 
 ### Workflow Lock-In
+
 - ✅ Workflow templates reduce setup time
 - ✅ Export limitations reduce export frequency
 - ✅ API versioning enables controlled evolution
 - ✅ Workflow references create dependencies
 
 ### Enforcement Moat
+
 - ✅ Compliance documentation complete
 - ✅ SOC 2 preparation on track
 - ✅ Deterministic guarantees documented

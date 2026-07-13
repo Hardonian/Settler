@@ -166,7 +166,9 @@ export function FeatureFlagsPolicy() {
                   href: getGovernanceRecoveryHref(),
                 }}
               />
-              <Button onClick={() => setFreezeError(null)} className="mt-4">Back</Button>
+              <Button onClick={() => setFreezeError(null)} className="mt-4">
+                Back
+              </Button>
             </div>
           ) : (
             <>

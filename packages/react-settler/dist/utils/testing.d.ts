@@ -37,14 +37,14 @@ export declare function waitFor(ms: number): Promise<void>;
  * Mock telemetry provider
  */
 export declare function createMockTelemetryProvider(): {
-    track: (event: any) => void;
-    trackError: (error: any) => void;
+    track: (event: unknown) => void;
+    trackError: (error: unknown) => void;
     trackPerformance: () => void;
     flush: () => Promise<void>;
     setUser: () => void;
     setContext: () => void;
-    getEvents: () => any[];
-    getErrors: () => any[];
+    getEvents: () => unknown[];
+    getErrors: () => unknown[];
     clear: () => void;
 };
 //# sourceMappingURL=testing.d.ts.map

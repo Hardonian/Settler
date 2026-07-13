@@ -61,10 +61,7 @@ export interface SagaDefinition {
 export class SagaOrchestrator {
   private sagas: Map<string, SagaDefinition> = new Map();
 
-  constructor(
-    private db: Pool = pool
-  ) {
-  }
+  constructor(private db: Pool = pool) {}
 
   /**
    * Register a saga definition

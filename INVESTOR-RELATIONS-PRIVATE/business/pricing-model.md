@@ -12,19 +12,20 @@
 
 **Perfect for:** Testing, small projects, developers learning the platform
 
-| Feature | Limit |
-|---------|-------|
-| **Reconciliations** | 1,000/month |
-| **Adapters** | 2 |
-| **Log Retention** | 7 days |
-| **Support** | Community (Discord, GitHub) |
-| **API Rate Limit** | 100 requests/15 min |
-| **Webhooks** | ✅ Included |
-| **Reports** | JSON only |
+| Feature             | Limit                       |
+| ------------------- | --------------------------- |
+| **Reconciliations** | 1,000/month                 |
+| **Adapters**        | 2                           |
+| **Log Retention**   | 7 days                      |
+| **Support**         | Community (Discord, GitHub) |
+| **API Rate Limit**  | 100 requests/15 min         |
+| **Webhooks**        | ✅ Included                 |
+| **Reports**         | JSON only                   |
 
 **Price:** $0/month
 
-**Use Case:** 
+**Use Case:**
+
 - Testing reconciliation workflows
 - Small e-commerce stores (<100 orders/month)
 - Personal projects
@@ -36,27 +37,29 @@
 
 **Perfect for:** Small e-commerce stores, early-stage SaaS
 
-| Feature | Limit |
-|---------|-------|
-| **Reconciliations** | 10,000/month |
-| **Adapters** | 5 |
-| **Log Retention** | 30 days |
-| **Support** | Email (24-hour response) |
-| **API Rate Limit** | 500 requests/15 min |
-| **Webhooks** | ✅ Included |
-| **Reports** | JSON + CSV export |
-| **Scheduled Jobs** | ✅ Included |
+| Feature             | Limit                    |
+| ------------------- | ------------------------ |
+| **Reconciliations** | 10,000/month             |
+| **Adapters**        | 5                        |
+| **Log Retention**   | 30 days                  |
+| **Support**         | Email (24-hour response) |
+| **API Rate Limit**  | 500 requests/15 min      |
+| **Webhooks**        | ✅ Included              |
+| **Reports**         | JSON + CSV export        |
+| **Scheduled Jobs**  | ✅ Included              |
 
 **Price:** $29/month
 
 **Annual Billing:** $290/year (save $58, ~17% discount)
 
 **Use Case:**
+
 - Small e-commerce stores (100-1,000 orders/month)
 - Early-stage SaaS companies
 - Freelancers managing multiple clients
 
 **Example Customer:**
+
 - Shopify store processing 500 orders/month
 - Stripe payments reconciliation
 - Daily automated reports
@@ -68,31 +71,33 @@
 
 **Perfect for:** Mid-market SaaS, growing e-commerce
 
-| Feature | Limit |
-|---------|-------|
-| **Reconciliations** | 100,000/month |
-| **Adapters** | 15 |
-| **Log Retention** | 90 days |
-| **Support** | Priority email (4-hour response) |
-| **API Rate Limit** | 2,000 requests/15 min |
-| **Webhooks** | ✅ Included |
-| **Reports** | JSON + CSV + PDF export |
-| **Scheduled Jobs** | ✅ Included |
-| **Advanced Matching Rules** | ✅ Included |
-| **Multi-Currency** | ✅ Included |
-| **Custom Webhooks** | ✅ Included |
+| Feature                     | Limit                            |
+| --------------------------- | -------------------------------- |
+| **Reconciliations**         | 100,000/month                    |
+| **Adapters**                | 15                               |
+| **Log Retention**           | 90 days                          |
+| **Support**                 | Priority email (4-hour response) |
+| **API Rate Limit**          | 2,000 requests/15 min            |
+| **Webhooks**                | ✅ Included                      |
+| **Reports**                 | JSON + CSV + PDF export          |
+| **Scheduled Jobs**          | ✅ Included                      |
+| **Advanced Matching Rules** | ✅ Included                      |
+| **Multi-Currency**          | ✅ Included                      |
+| **Custom Webhooks**         | ✅ Included                      |
 
 **Price:** $99/month
 
 **Annual Billing:** $990/year (save $198, ~17% discount)
 
 **Use Case:**
+
 - Mid-market SaaS companies
 - Growing e-commerce (1,000-10,000 orders/month)
 - Multi-platform operations
 - Need for advanced features
 
 **Example Customer:**
+
 - SaaS company processing 5,000 transactions/month
 - Stripe + PayPal + QuickBooks reconciliation
 - Real-time webhook reconciliation
@@ -105,34 +110,36 @@
 
 **Perfect for:** Large e-commerce, enterprise SaaS
 
-| Feature | Limit |
-|---------|-------|
-| **Reconciliations** | 1,000,000/month |
-| **Adapters** | Unlimited |
-| **Log Retention** | 1 year |
-| **Support** | Priority support (1-hour SLA) |
-| **API Rate Limit** | 10,000 requests/15 min |
-| **Webhooks** | ✅ Included |
-| **Reports** | All formats + White-label |
-| **Scheduled Jobs** | ✅ Included |
-| **Advanced Matching Rules** | ✅ Included |
-| **Multi-Currency** | ✅ Included |
-| **Custom Webhooks** | ✅ Included |
-| **Multi-Entity Support** | ✅ Included |
-| **Dedicated Infrastructure** | ✅ Included |
-| **Custom Adapters** | ✅ Included (1 free) |
+| Feature                      | Limit                         |
+| ---------------------------- | ----------------------------- |
+| **Reconciliations**          | 1,000,000/month               |
+| **Adapters**                 | Unlimited                     |
+| **Log Retention**            | 1 year                        |
+| **Support**                  | Priority support (1-hour SLA) |
+| **API Rate Limit**           | 10,000 requests/15 min        |
+| **Webhooks**                 | ✅ Included                   |
+| **Reports**                  | All formats + White-label     |
+| **Scheduled Jobs**           | ✅ Included                   |
+| **Advanced Matching Rules**  | ✅ Included                   |
+| **Multi-Currency**           | ✅ Included                   |
+| **Custom Webhooks**          | ✅ Included                   |
+| **Multi-Entity Support**     | ✅ Included                   |
+| **Dedicated Infrastructure** | ✅ Included                   |
+| **Custom Adapters**          | ✅ Included (1 free)          |
 
 **Price:** $299/month
 
 **Annual Billing:** $2,990/year (save $598, ~17% discount)
 
 **Use Case:**
+
 - Large e-commerce operations
 - Enterprise SaaS companies
 - Multi-entity organizations
 - High-volume reconciliation needs
 
 **Example Customer:**
+
 - E-commerce platform processing 50,000 orders/month
 - Multiple payment providers (Stripe, PayPal, Square)
 - Multiple accounting systems (QuickBooks, NetSuite)
@@ -145,41 +152,43 @@
 
 **Perfect for:** Large enterprises, regulated industries
 
-| Feature | Limit |
-|---------|-------|
-| **Reconciliations** | Unlimited |
-| **Adapters** | Unlimited |
-| **Log Retention** | Custom (up to 7 years) |
-| **Support** | Dedicated account manager (1-hour SLA) |
-| **API Rate Limit** | Custom |
-| **Webhooks** | ✅ Included |
-| **Reports** | All formats + White-label + Custom |
-| **Scheduled Jobs** | ✅ Included |
-| **Advanced Matching Rules** | ✅ Included |
-| **Multi-Currency** | ✅ Included |
-| **Custom Webhooks** | ✅ Included |
-| **Multi-Entity Support** | ✅ Included |
-| **Dedicated Infrastructure** | ✅ Included |
-| **Custom Adapters** | ✅ Included (unlimited) |
-| **SSO (SAML, OIDC)** | ✅ Included |
-| **SOC 2 Type II** | ✅ Included |
-| **PCI-DSS Level 1** | ✅ Included |
-| **HIPAA-Ready** | ✅ Included (on-demand) |
-| **Custom SLAs** | ✅ Included (99.99% uptime) |
-| **VPC Peering** | ✅ Included |
-| **Private Endpoints** | ✅ Included |
+| Feature                      | Limit                                  |
+| ---------------------------- | -------------------------------------- |
+| **Reconciliations**          | Unlimited                              |
+| **Adapters**                 | Unlimited                              |
+| **Log Retention**            | Custom (up to 7 years)                 |
+| **Support**                  | Dedicated account manager (1-hour SLA) |
+| **API Rate Limit**           | Custom                                 |
+| **Webhooks**                 | ✅ Included                            |
+| **Reports**                  | All formats + White-label + Custom     |
+| **Scheduled Jobs**           | ✅ Included                            |
+| **Advanced Matching Rules**  | ✅ Included                            |
+| **Multi-Currency**           | ✅ Included                            |
+| **Custom Webhooks**          | ✅ Included                            |
+| **Multi-Entity Support**     | ✅ Included                            |
+| **Dedicated Infrastructure** | ✅ Included                            |
+| **Custom Adapters**          | ✅ Included (unlimited)                |
+| **SSO (SAML, OIDC)**         | ✅ Included                            |
+| **SOC 2 Type II**            | ✅ Included                            |
+| **PCI-DSS Level 1**          | ✅ Included                            |
+| **HIPAA-Ready**              | ✅ Included (on-demand)                |
+| **Custom SLAs**              | ✅ Included (99.99% uptime)            |
+| **VPC Peering**              | ✅ Included                            |
+| **Private Endpoints**        | ✅ Included                            |
 
 **Price:** Custom (typically $1,000-$10,000+/month)
 
 **Annual Billing:** Custom contracts
 
 **Use Case:**
+
 - Large enterprises
 - Regulated industries (healthcare, finance)
 - Multi-entity holding companies
 - Custom compliance requirements
 
 **Example Customer:**
+
 - Financial services company
 - Processing millions of transactions/month
 - Multiple subsidiaries
@@ -193,6 +202,7 @@
 **Beyond Plan Limits:** $0.01 per reconciliation
 
 **Example:**
+
 - Starter plan: 10,000 reconciliations/month
 - Actual usage: 12,000 reconciliations
 - **Overage:** 2,000 × $0.01 = $20
@@ -210,6 +220,7 @@
 - Maximum: 7 years (for compliance)
 
 **Example:**
+
 - Growth plan: 90 days included
 - Need: 180 days total
 - **Cost:** $10/month for additional 90 days
@@ -230,6 +241,7 @@
 - For platforms not in our adapter library
 
 **Example:**
+
 - Need custom adapter for internal ERP system
 - **Cost:** $500 + $50/month
 
@@ -237,13 +249,13 @@
 
 ## Pricing Comparison
 
-| Tier | Price/Month | Reconciliations | Cost per 1K |
-|------|-------------|-----------------|-------------|
-| **Free** | $0 | 1,000 | $0 |
-| **Starter** | $29 | 10,000 | $2.90 |
-| **Growth** | $99 | 100,000 | $0.99 |
-| **Scale** | $299 | 1,000,000 | $0.30 |
-| **Enterprise** | Custom | Unlimited | Custom |
+| Tier           | Price/Month | Reconciliations | Cost per 1K |
+| -------------- | ----------- | --------------- | ----------- |
+| **Free**       | $0          | 1,000           | $0          |
+| **Starter**    | $29         | 10,000          | $2.90       |
+| **Growth**     | $99         | 100,000         | $0.99       |
+| **Scale**      | $299        | 1,000,000       | $0.30       |
+| **Enterprise** | Custom      | Unlimited       | Custom      |
 
 **Volume Discount:** The more you use, the less you pay per reconciliation.
 
@@ -271,6 +283,7 @@
 ### Unit Economics
 
 **Average Customer:**
+
 - **ACV:** $600/year ($50/month average)
 - **CAC:** $300 (6 months payback)
 - **LTV:** $3,600 (3-year average, 5% monthly churn)
@@ -290,6 +303,7 @@
 5. **Competitive Moat**: Hard for competitors to match
 
 **Free Tier Conversion:**
+
 - **Target:** 5-10% conversion to paid within 6 months
 - **Average Time to Convert:** 3-4 months
 - **Average First Paid Plan:** Starter ($29/month)
@@ -299,6 +313,7 @@
 ## Pricing Transparency
 
 **What You Get:**
+
 - ✅ No setup fees
 - ✅ No hidden costs
 - ✅ Cancel anytime
@@ -306,6 +321,7 @@
 - ✅ Transparent overage pricing
 
 **What We Don't Charge For:**
+
 - ❌ API calls (within rate limits)
 - ❌ Webhook deliveries
 - ❌ Report generation
@@ -317,15 +333,18 @@
 ## Billing & Payment
 
 **Payment Methods:**
+
 - Credit card (Stripe)
 - ACH (US customers)
 - Wire transfer (Enterprise)
 
 **Billing Cycle:**
+
 - Monthly: Billed on signup date
 - Annual: Billed upfront, save 17%
 
 **Invoicing:**
+
 - Automatic invoices via email
 - PDF invoices available in dashboard
 - Enterprise: Custom invoicing available
@@ -366,4 +385,4 @@ A: Yes! Contact sales@settler.io for custom pricing based on your needs.
 
 ---
 
-*Last Updated: January 2026*
+_Last Updated: January 2026_

@@ -15,12 +15,14 @@ Settler is an API-first platform that automates reconciliation—the process of 
 ## The Problem
 
 Modern businesses operate across **10+ platforms**:
+
 - E-commerce: Shopify, WooCommerce, BigCommerce
 - Payments: Stripe, PayPal, Square
 - Accounting: QuickBooks, Xero, NetSuite
 - And more...
 
 **Manual reconciliation is:**
+
 - ❌ Time-consuming (10-15 hours/week)
 - ❌ Error-prone (15-20% error rate)
 - ❌ Doesn't scale
@@ -53,6 +55,7 @@ const report = await client.reports.get(job.id);
 ```
 
 **Benefits:**
+
 - ✅ **5-minute integration** vs. weeks of custom code
 - ✅ **99%+ accuracy** with ML-powered matching
 - ✅ **Real-time webhooks** for instant alerts
@@ -64,15 +67,19 @@ const report = await client.reports.get(job.id);
 ## Who It's For
 
 ### E-commerce Businesses
+
 Reconcile orders with payment processors automatically
 
 ### SaaS Companies
+
 Match subscription events across billing systems
 
 ### Finance Teams
+
 Automate accounting reconciliation workflows
 
 ### Developers
+
 Build financial data pipelines with a simple API
 
 ---
@@ -80,21 +87,27 @@ Build financial data pipelines with a simple API
 ## Key Features
 
 ### 🚀 API-First Design
+
 Everything accessible via REST API. Use from any language, any framework.
 
 ### 🔌 Pre-Built Adapters
+
 Stripe, Shopify, QuickBooks, PayPal, Square, and more. Add custom adapters easily.
 
 ### ⚡ Real-Time Processing
+
 Webhook-based reconciliation with instant notifications.
 
 ### 📊 Complete Visibility
+
 Dashboard with real-time status, audit trails, and detailed reports.
 
 ### 🔒 Compliance Ready
+
 GDPR, SOC 2 Type II ready out of the box. Complete audit trail.
 
 ### 🎯 Smart Matching
+
 ML-powered matching with configurable rules and confidence scoring.
 
 ---
@@ -102,21 +115,25 @@ ML-powered matching with configurable rules and confidence scoring.
 ## Pricing
 
 **Free Tier:**
+
 - 1,000 reconciliations/month
 - 2 adapters
 - Community support
 
 **Starter ($29/month):**
+
 - 10,000 reconciliations/month
 - 5 adapters
 - Email support
 
 **Growth ($99/month):**
+
 - 100,000 reconciliations/month
 - 15 adapters
 - Priority support
 
 **Scale ($299/month):**
+
 - 1M reconciliations/month
 - Unlimited adapters
 - 4-hour SLA
@@ -128,17 +145,20 @@ ML-powered matching with configurable rules and confidence scoring.
 ## Why Settler?
 
 ### vs. Manual Process
+
 - **Time**: Minutes vs. hours
 - **Accuracy**: 99%+ vs. 85-95%
 - **Cost**: Usage-based vs. high labor costs
 
 ### vs. Legacy Solutions
+
 - **Setup**: 5 minutes vs. days/weeks
 - **API-First**: Yes vs. No
 - **Real-Time**: Yes vs. Batch only
 - **Developer DX**: Excellent vs. Poor
 
 ### vs. Custom Scripts
+
 - **Maintenance**: Zero vs. Ongoing
 - **Compliance**: Built-in vs. Manual
 - **Scalability**: Automatic vs. Requires work
@@ -148,17 +168,21 @@ ML-powered matching with configurable rules and confidence scoring.
 ## Get Started
 
 ### 1. Sign Up
+
 Visit [app.settler.io](https://app.settler.io) and create a free account.
 
 ### 2. Install SDK
+
 ```bash
 npm install @settler/sdk
 ```
 
 ### 3. Create Job
+
 Use the code example above to create your first reconciliation job.
 
 ### 4. Run & Monitor
+
 Run reconciliation and monitor results in the dashboard or via API.
 
 **That's it!** You're reconciling in minutes, not days.

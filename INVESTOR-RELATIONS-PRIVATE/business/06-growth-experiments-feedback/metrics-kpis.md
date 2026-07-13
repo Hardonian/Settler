@@ -10,6 +10,7 @@
 **Purpose:** Track key metrics to measure product-market fit, growth, and success.
 
 **Categories:**
+
 1. Activation Metrics
 2. Retention Metrics
 3. Expansion Metrics
@@ -29,6 +30,7 @@
 **Tracking:** Daily
 
 **Why It Matters:**
+
 - Faster activation = higher conversion
 - Indicates product ease of use
 - Predicts long-term engagement
@@ -44,6 +46,7 @@
 **Tracking:** Weekly
 
 **Why It Matters:**
+
 - Higher activation = better product-market fit
 - Indicates product value
 - Predicts retention
@@ -59,6 +62,7 @@
 **Tracking:** Weekly
 
 **Why It Matters:**
+
 - Higher engagement = better retention
 - Indicates product value
 - Predicts expansion
@@ -76,6 +80,7 @@
 **Tracking:** Monthly
 
 **Why It Matters:**
+
 - Lower churn = better product-market fit
 - Indicates product value
 - Predicts long-term success
@@ -91,6 +96,7 @@
 **Tracking:** Annually
 
 **Why It Matters:**
+
 - Lower churn = better retention
 - Indicates product value
 - Predicts LTV
@@ -106,6 +112,7 @@
 **Tracking:** Monthly
 
 **Why It Matters:**
+
 - Higher retention = better product-market fit
 - Indicates product value
 - Predicts growth
@@ -123,6 +130,7 @@
 **Tracking:** Monthly
 
 **Why It Matters:**
+
 - Higher expansion = better growth
 - Indicates product value
 - Predicts LTV
@@ -138,6 +146,7 @@
 **Tracking:** Monthly
 
 **Why It Matters:**
+
 - Higher upgrade = better product value
 - Indicates growth potential
 - Predicts revenue growth
@@ -153,6 +162,7 @@
 **Tracking:** Monthly
 
 **Why It Matters:**
+
 - Higher add-on = better monetization
 - Indicates product value
 - Predicts revenue growth
@@ -170,6 +180,7 @@
 **Tracking:** Monthly
 
 **Why It Matters:**
+
 - Higher referral = better product-market fit
 - Indicates customer satisfaction
 - Predicts organic growth
@@ -185,6 +196,7 @@
 **Tracking:** Monthly
 
 **Why It Matters:**
+
 - Higher conversion = better referrals
 - Indicates product value
 - Predicts growth
@@ -200,7 +212,8 @@
 **Tracking:** Monthly
 
 **Why It Matters:**
-- >1.0 = viral growth
+
+- > 1.0 = viral growth
 - Indicates product-market fit
 - Predicts exponential growth
 
@@ -217,6 +230,7 @@
 **Tracking:** Quarterly
 
 **Why It Matters:**
+
 - Higher NPS = better product-market fit
 - Indicates customer satisfaction
 - Predicts growth
@@ -232,6 +246,7 @@
 **Tracking:** Weekly
 
 **Why It Matters:**
+
 - Higher CSAT = better experience
 - Indicates customer satisfaction
 - Predicts retention
@@ -247,6 +262,7 @@
 **Tracking:** Quarterly
 
 **Why It Matters:**
+
 - Higher score = better product-market fit
 - Indicates product value
 - Predicts success
@@ -264,6 +280,7 @@
 **Tracking:** Monthly
 
 **Why It Matters:**
+
 - Higher MRR = better growth
 - Indicates business health
 - Predicts success
@@ -279,6 +296,7 @@
 **Tracking:** Annually
 
 **Why It Matters:**
+
 - Higher ARR = better growth
 - Indicates business health
 - Predicts success
@@ -294,6 +312,7 @@
 **Tracking:** Monthly
 
 **Why It Matters:**
+
 - Lower CAC = better efficiency
 - Indicates marketing effectiveness
 - Predicts profitability
@@ -309,6 +328,7 @@
 **Tracking:** Monthly
 
 **Why It Matters:**
+
 - Higher LTV = better value
 - Indicates product value
 - Predicts profitability
@@ -324,6 +344,7 @@
 **Tracking:** Monthly
 
 **Why It Matters:**
+
 - Higher ratio = better unit economics
 - Indicates profitability
 - Predicts success
@@ -352,31 +373,37 @@
 ### Dashboard Structure
 
 **Acquisition:**
+
 - Signups by channel
 - Conversion rate by channel
 - CAC by channel
 
 **Activation:**
+
 - Time to first value
 - Activation rate
 - Engagement rate
 
 **Retention:**
+
 - Monthly churn rate
 - Retention rate
 - NPS
 
 **Expansion:**
+
 - Expansion revenue
 - Upgrade rate
 - Add-on revenue
 
 **Referral:**
+
 - Referral rate
 - Referral conversion rate
 - Viral coefficient
 
 **Revenue:**
+
 - MRR
 - ARR
 - LTV
@@ -389,22 +416,26 @@
 ### Tracking Frequency
 
 **Daily:**
+
 - Signups
 - Activation
 - Engagement
 
 **Weekly:**
+
 - Churn
 - Expansion
 - Referral
 
 **Monthly:**
+
 - MRR
 - CAC
 - LTV
 - LTV:CAC ratio
 
 **Quarterly:**
+
 - NPS
 - Product-Market Fit Score
 - Annual metrics

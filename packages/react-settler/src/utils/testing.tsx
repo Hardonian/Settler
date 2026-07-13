@@ -105,14 +105,14 @@ export function waitFor(ms: number): Promise<void> {
  * Mock telemetry provider
  */
 export function createMockTelemetryProvider() {
-  const events: any[] = [];
-  const errors: any[] = [];
+  const events: unknown[] = [];
+  const errors: unknown[] = [];
 
   return {
-    track: (event: any) => {
+    track: (event: unknown) => {
       events.push(event);
     },
-    trackError: (error: any) => {
+    trackError: (error: unknown) => {
       errors.push(error);
     },
     trackPerformance: () => {},

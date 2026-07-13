@@ -136,8 +136,12 @@ export function useShopifyAppBridge() {
 
   React.useEffect(() => {
     // Extract shop and API key from Shopify App Bridge context
-    if (typeof window !== "undefined" && (window as any).ShopifyAppBridge) {
-      const appBridge = (window as any).ShopifyAppBridge;
+    if (typeof window !== "undefined" && "ShopifyAppBridge" in window) {
+      const appBridge = (
+        window as Window & {
+          ShopifyAppBridge: { getShopDomain?: () => string };
+        }
+      ).ShopifyAppBridge;
       // Get shop domain from App Bridge
       const shopDomain = appBridge.getShopDomain?.() || "";
       setShop(shopDomain);

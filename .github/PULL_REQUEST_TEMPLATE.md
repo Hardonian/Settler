@@ -69,7 +69,8 @@ Closes #
 
 ---
 
-**Remember:** 
+**Remember:**
+
 - CI green = merge allowed ✅
 - CI red = merge impossible ❌
 - Never merge with failing CI checks

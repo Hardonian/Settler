@@ -563,6 +563,6 @@ Before merging to production:
 - [ ] Team trained on new monitoring views
 - [ ] On-call runbook updated (see `04-runbook.md`)
 
-**Approved by**: ****\_\_\_**** **Date**: ****\_\_\_****
+**Approved by**: \***\*\_\_\_\*\*** **Date**: \***\*\_\_\_\*\***
 
 **Continue to**: [04-runbook.md](./04-runbook.md)

@@ -1,0 +1,267 @@
+{
+  "files": {
+    "packages/edge-ai-core/dist/model-distribution.js.map": {
+      "size": 1087,
+      "mtime_nanos": 1783979864786583700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/edge-ai-core/dist/deployment.d.ts.map": {
+      "size": 658,
+      "mtime_nanos": 1783979864726721500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/deployment.js.map": {
+      "size": 540,
+      "mtime_nanos": 1783979864720698100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/quantization.d.ts.map": {
+      "size": 570,
+      "mtime_nanos": 1783979864748301200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/deployment.d.ts": {
+      "size": 826,
+      "mtime_nanos": 1783979864728730400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/.turbo/turbo-build.log": {
+      "size": 360,
+      "mtime_nanos": 1783979864878471800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/index.js": {
+      "size": 1774,
+      "mtime_nanos": 1783979864805140700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/model-distribution.js": {
+      "size": 1189,
+      "mtime_nanos": 1783979864787533600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/runtime-selector.js.map": {
+      "size": 1902,
+      "mtime_nanos": 1783979864776855700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/security.d.ts.map": {
+      "size": 529,
+      "mtime_nanos": 1783979864800141600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/deployment.js": {
+      "size": 2010,
+      "mtime_nanos": 1783979864722706400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/model-distribution.d.ts.map": {
+      "size": 718,
+      "mtime_nanos": 1783979864789681200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/quantization.d.ts": {
+      "size": 728,
+      "mtime_nanos": 1783979864748301200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/runtime-selector.d.ts.map": {
+      "size": 510,
+      "mtime_nanos": 1783979864780873600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/security.js": {
+      "size": 2235,
+      "mtime_nanos": 1783979864797711100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/index.d.ts": {
+      "size": 625,
+      "mtime_nanos": 1783979864806142600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/index.d.ts.map": {
+      "size": 297,
+      "mtime_nanos": 1783979864806142600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/model-distribution.d.ts": {
+      "size": 805,
+      "mtime_nanos": 1783979864789681200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/quantization.js.map": {
+      "size": 782,
+      "mtime_nanos": 1783979864744542100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/inference.d.ts.map": {
+      "size": 909,
+      "mtime_nanos": 1783979864770832900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/device-profiling.js": {
+      "size": 4034,
+      "mtime_nanos": 1783979864738513800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/model-optimization.d.ts.map": {
+      "size": 1075,
+      "mtime_nanos": 1783979864756339200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/inference.js": {
+      "size": 793,
+      "mtime_nanos": 1783979864766792400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/security.d.ts": {
+      "size": 721,
+      "mtime_nanos": 1783979864801142300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/inference.d.ts": {
+      "size": 967,
+      "mtime_nanos": 1783979864770832900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/inference.js.map": {
+      "size": 663,
+      "mtime_nanos": 1783979864766133000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/device-profiling.d.ts": {
+      "size": 1032,
+      "mtime_nanos": 1783979864742531400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/model-optimization.js.map": {
+      "size": 1463,
+      "mtime_nanos": 1783979864754330100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/device-profiling.d.ts.map": {
+      "size": 872,
+      "mtime_nanos": 1783979864740522600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/index.js.map": {
+      "size": 338,
+      "mtime_nanos": 1783979864804142200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/security.js.map": {
+      "size": 1945,
+      "mtime_nanos": 1783979864795703200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/model-optimization.d.ts": {
+      "size": 1315,
+      "mtime_nanos": 1783979864758349700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/model-optimization.js": {
+      "size": 1935,
+      "mtime_nanos": 1783979864754330100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/runtime-selector.d.ts": {
+      "size": 659,
+      "mtime_nanos": 1783979864781899200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/device-profiling.js.map": {
+      "size": 1898,
+      "mtime_nanos": 1783979864738513800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/runtime-selector.js": {
+      "size": 2063,
+      "mtime_nanos": 1783979864778864600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/edge-ai-core/dist/quantization.js": {
+      "size": 1120,
+      "mtime_nanos": 1783979864746550000,
+      "mode": 420,
+      "is_dir": false
+    }
+  },
+  "order": [
+    "packages/edge-ai-core/.turbo/turbo-build.log",
+    "packages/edge-ai-core/dist",
+    "packages/edge-ai-core/dist/deployment.d.ts",
+    "packages/edge-ai-core/dist/deployment.d.ts.map",
+    "packages/edge-ai-core/dist/deployment.js",
+    "packages/edge-ai-core/dist/deployment.js.map",
+    "packages/edge-ai-core/dist/device-profiling.d.ts",
+    "packages/edge-ai-core/dist/device-profiling.d.ts.map",
+    "packages/edge-ai-core/dist/device-profiling.js",
+    "packages/edge-ai-core/dist/device-profiling.js.map",
+    "packages/edge-ai-core/dist/index.d.ts",
+    "packages/edge-ai-core/dist/index.d.ts.map",
+    "packages/edge-ai-core/dist/index.js",
+    "packages/edge-ai-core/dist/index.js.map",
+    "packages/edge-ai-core/dist/inference.d.ts",
+    "packages/edge-ai-core/dist/inference.d.ts.map",
+    "packages/edge-ai-core/dist/inference.js",
+    "packages/edge-ai-core/dist/inference.js.map",
+    "packages/edge-ai-core/dist/model-distribution.d.ts",
+    "packages/edge-ai-core/dist/model-distribution.d.ts.map",
+    "packages/edge-ai-core/dist/model-distribution.js",
+    "packages/edge-ai-core/dist/model-distribution.js.map",
+    "packages/edge-ai-core/dist/model-optimization.d.ts",
+    "packages/edge-ai-core/dist/model-optimization.d.ts.map",
+    "packages/edge-ai-core/dist/model-optimization.js",
+    "packages/edge-ai-core/dist/model-optimization.js.map",
+    "packages/edge-ai-core/dist/quantization.d.ts",
+    "packages/edge-ai-core/dist/quantization.d.ts.map",
+    "packages/edge-ai-core/dist/quantization.js",
+    "packages/edge-ai-core/dist/quantization.js.map",
+    "packages/edge-ai-core/dist/runtime-selector.d.ts",
+    "packages/edge-ai-core/dist/runtime-selector.d.ts.map",
+    "packages/edge-ai-core/dist/runtime-selector.js",
+    "packages/edge-ai-core/dist/runtime-selector.js.map",
+    "packages/edge-ai-core/dist/security.d.ts",
+    "packages/edge-ai-core/dist/security.d.ts.map",
+    "packages/edge-ai-core/dist/security.js",
+    "packages/edge-ai-core/dist/security.js.map"
+  ]
+}

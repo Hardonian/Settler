@@ -6,7 +6,7 @@ import { logError } from "../utils/logger";
 /**
  * Middleware that validates the request body, query, and params against Zod schemas.
  * Returns a 400 Bad Request with detailed validation errors if parsing fails.
- * 
+ *
  * @example
  * router.post("/users", validate({ body: CreateUserSchema }), createUser);
  */
@@ -34,19 +34,15 @@ export const validate = (schemas: {
           field: issue.path.join("."),
           message: issue.message,
         }));
-        
+
         logError("Validation failed", { errors: errorMessages, path: req.path });
-        
-        sendError(
-          res, 
-          400, 
-          "VALIDATION_ERROR", 
-          "Invalid request data", 
-          { validationErrors: errorMessages }
-        );
+
+        sendError(res, 400, "VALIDATION_ERROR", "Invalid request data", {
+          validationErrors: errorMessages,
+        });
         return;
       }
-      
+
       // Pass other unexpected errors to the global error handler
       next(error);
     }

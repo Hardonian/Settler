@@ -39,10 +39,13 @@ module Settler
       @jobs = JobsClient.new(self)
       @reports = ReportsClient.new(self)
       @adapters = AdaptersClient.new(self)
+      @flags = FlagsClient.new(self)
+      @receipts = ReceiptsClient.new(self)
+      @console = ConsoleClient.new(self)
     end
 
     attr_reader :transactions, :settlements, :fees, :exports, :currency,
-                :webhooks, :jobs, :reports, :adapters
+                :webhooks, :jobs, :reports, :adapters, :flags, :receipts, :console
 
     def request(method:, path:, data: nil, params: nil)
       uri = URI.parse("#{@base_url}#{path}")
@@ -301,6 +304,42 @@ module Settler
 
     def get(adapter_name)
       @client.request(method: "GET", path: "/adapters/#{adapter_name}")
+    end
+  end
+
+  # Flags client
+  class FlagsClient
+    def initialize(client)
+      @client = client
+    end
+
+    def evaluate(flag_key:, context: nil)
+      data = { flagKey: flag_key, context: context || {} }
+      @client.request(method: "POST", path: "/flags/evaluate", data: data)
+    end
+  end
+
+  # Receipts client
+  class ReceiptsClient
+    def initialize(client)
+      @client = client
+    end
+
+    def upload(file_base64:, file_name:, content_type:)
+      data = { file: file_base64, fileName: file_name, contentType: content_type }
+      @client.request(method: "POST", path: "/receipts/upload", data: data)
+    end
+  end
+
+  # Console client
+  class ConsoleClient
+    def initialize(client)
+      @client = client
+    end
+
+    def generate_api_key(name:)
+      data = { name: name }
+      @client.request(method: "POST", path: "/console/api-keys", data: data)
     end
   end
 end

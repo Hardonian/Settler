@@ -33,14 +33,4 @@ Thumbs.db
 
 # Logs
 *.log
-# --- Hardonian bootstrap kit ---
-# Hardonian standard ignores
-!.env.template
-venv/
-target/
-.coverage
-htmlcov/
-deploy/workers/.wrangler/
-deploy/workers/node_modules/
-deploy/workers/package-lock.json
-DEPLOY_INFO.json
+

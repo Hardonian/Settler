@@ -1,0 +1,99 @@
+{
+  "files": {
+    "packages/support-intake/dist": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/support-intake/dist/contract.js.map": {
+      "size": 257,
+      "mtime_nanos": 1783979865322697400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/support-intake/dist/index.js": {
+      "size": 1485,
+      "mtime_nanos": 1783979865352424000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/support-intake/dist/contract.d.ts.map": {
+      "size": 404,
+      "mtime_nanos": 1783979865326674400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/support-intake/dist/index.js.map": {
+      "size": 297,
+      "mtime_nanos": 1783979865351424300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/support-intake/dist/contract.d.ts": {
+      "size": 841,
+      "mtime_nanos": 1783979865327676200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/support-intake/dist/contract.js": {
+      "size": 1223,
+      "mtime_nanos": 1783979865323697900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/support-intake/dist/service.d.ts": {
+      "size": 2752,
+      "mtime_nanos": 1783979865348424100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/support-intake/dist/index.d.ts.map": {
+      "size": 327,
+      "mtime_nanos": 1783979865354424800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/support-intake/dist/service.d.ts.map": {
+      "size": 2273,
+      "mtime_nanos": 1783979865347423800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/support-intake/dist/service.js": {
+      "size": 7558,
+      "mtime_nanos": 1783979865342439700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/support-intake/dist/service.js.map": {
+      "size": 5785,
+      "mtime_nanos": 1783979865340431700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/support-intake/.turbo/turbo-build.log": {
+      "size": 141,
+      "mtime_nanos": 1783979865419297700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/support-intake/dist/index.d.ts": {
+      "size": 394,
+      "mtime_nanos": 1783979865354424800,
+      "mode": 420,
+      "is_dir": false
+    }
+  },
+  "order": [
+    "packages/support-intake/.turbo/turbo-build.log",
+    "packages/support-intake/dist",
+    "packages/support-intake/dist/contract.d.ts",
+    "packages/support-intake/dist/contract.d.ts.map",
+    "packages/support-intake/dist/contract.js",
+    "packages/support-intake/dist/contract.js.map",
+    "packages/support-intake/dist/index.d.ts",
+    "packages/support-intake/dist/index.d.ts.map",
+    "packages/support-intake/dist/index.js",
+    "packages/support-intake/dist/index.js.map",
+    "packages/support-intake/dist/service.d.ts",
+    "packages/support-intake/dist/service.d.ts.map",
+    "packages/support-intake/dist/service.js",
+    "packages/support-intake/dist/service.js.map"
+  ]
+}

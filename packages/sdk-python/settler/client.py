@@ -93,6 +93,10 @@ class SettlerClient:
         self.webhooks = WebhooksClient(self)
         self.jobs = JobsClient(self)
         self.reports = ReportsClient(self)
+        self.flags = FlagsClient(self)
+        self.receipts = ReceiptsClient(self)
+        self.adapters = AdaptersClient(self)
+        self.console = ConsoleClient(self)
 
     def _get_headers(self) -> Dict[str, str]:
         req_id = str(uuid.uuid4())
@@ -528,3 +532,125 @@ class ReportsClient:
     def get_unmatched(self, job_id: str) -> Dict[str, Any]:
         """Get unmatched transactions for a job."""
         return self._client._request("GET", f"/reports/{job_id}/unmatched")
+
+
+class FlagsClient:
+    """Client for evaluating feature flags."""
+
+    def __init__(self, client: SettlerClient) -> None:
+        self._client = client
+
+    def evaluate(
+        self,
+        flag_key: str,
+        context: Optional[Dict[str, Any]] = None,
+        default_value: Optional[Any] = None,
+    ) -> Dict[str, Any]:
+        """Evaluate a feature flag."""
+        data: Dict[str, Any] = {
+            "flagKey": flag_key,
+            "context": context or {},
+        }
+        if default_value is not None:
+            data["defaultValue"] = default_value
+        
+        try:
+            return self._client._request("POST", "/feature-flags/evaluate", data=data)
+        except SettlerError:
+            if default_value is not None:
+                return {
+                    "flagKey": flag_key,
+                    "value": default_value,
+                    "reason": "error_fallback",
+                }
+            raise
+
+
+class ReceiptsClient:
+    """Client for receipt operations."""
+
+    def __init__(self, client: SettlerClient) -> None:
+        self._client = client
+
+    def parse(
+        self,
+        file: str,
+        options: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Parse a receipt."""
+        data: Dict[str, Any] = {}
+        if file.startswith("http"):
+            data["url"] = file
+        else:
+            data["content"] = file
+            
+        if options:
+            data["options"] = options
+            
+        return self._client._request("POST", "/receipts/parse", data=data)
+
+    def get(self, receipt_id: str) -> Dict[str, Any]:
+        """Get a receipt by ID."""
+        return self._client._request("GET", f"/receipts/{receipt_id}")
+
+
+class AdaptersClient:
+    """Client for adapter operations."""
+
+    def __init__(self, client: SettlerClient) -> None:
+        self._client = client
+
+    def list(
+        self,
+        cursor: Optional[str] = None,
+        limit: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        """List adapters."""
+        params: Dict[str, Any] = {}
+        if cursor:
+            params["cursor"] = cursor
+        if limit is not None:
+            params["limit"] = limit
+        return self._client._request("GET", "/adapters", params=params)
+
+    def get(self, adapter_id: str) -> Dict[str, Any]:
+        """Get an adapter by ID."""
+        return self._client._request("GET", f"/adapters/{adapter_id}")
+
+
+class ConsoleClient:
+    """Client for Console operations."""
+
+    def __init__(self, client: SettlerClient) -> None:
+        self._client = client
+
+    def list_api_keys(self) -> Dict[str, Any]:
+        return self._client._request("GET", "/console/api-keys")
+
+    def create_api_key(self, name: Optional[str] = None, scopes: Optional[List[str]] = None, expires_at: Optional[str] = None) -> Dict[str, Any]:
+        data: Dict[str, Any] = {}
+        if name: data["name"] = name
+        if scopes: data["scopes"] = scopes
+        if expires_at: data["expiresAt"] = expires_at
+        return self._client._request("POST", "/console/api-keys", data=data)
+
+    def revoke_api_key(self, key_id: str) -> None:
+        self._client._request("DELETE", f"/console/api-keys/{key_id}")
+
+    def get_usage(self, days: int = 7) -> Dict[str, Any]:
+        return self._client._request("GET", "/console/usage", params={"days": days})
+
+    def list_receipts(self) -> Dict[str, Any]:
+        return self._client._request("GET", "/console/receipts")
+
+    def get_receipt(self, receipt_id: str) -> Dict[str, Any]:
+        return self._client._request("GET", f"/console/receipts/{receipt_id}")
+
+    def list_feature_flags(self) -> Dict[str, Any]:
+        return self._client._request("GET", "/console/feature-flags")
+
+    def get_activities(self) -> Dict[str, Any]:
+        return self._client._request("GET", "/console/activities")
+
+    def health(self) -> Dict[str, Any]:
+        return self._client._request("GET", "/health/console")

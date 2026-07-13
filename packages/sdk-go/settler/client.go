@@ -242,6 +242,16 @@ func (c *Client) Convert() *ConvertClient {
 	return &ConvertClient{client: c}
 }
 
+// Receipts returns a ReceiptsClient for receipt operations
+func (c *Client) Receipts() *ReceiptsClient {
+	return &ReceiptsClient{client: c}
+}
+
+// Adapters returns an AdaptersClient for adapter operations
+func (c *Client) Adapters() *AdaptersClient {
+	return &AdaptersClient{client: c}
+}
+
 // PaginationParams represents common pagination parameters
 type PaginationParams struct {
 	Page  int

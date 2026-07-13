@@ -30,7 +30,7 @@ THE PROBLEM
 
 Every finance team faces the same challenge:
 • Orders in Shopify
-• Payments in Stripe  
+• Payments in Stripe
 • Invoices in QuickBooks
 • All disconnected, requiring manual matching
 
@@ -46,6 +46,7 @@ THE PAIN
 ```
 
 **Speaker Notes:**
+
 - Start with relatable pain point
 - Emphasize time waste and error risk
 - Use real quote if available
@@ -81,6 +82,7 @@ KEY FEATURES
 ```
 
 **Speaker Notes:**
+
 - Emphasize speed (5 minutes)
 - Highlight accuracy (99%+)
 - Show simplicity (4 steps)
@@ -106,7 +108,7 @@ CUSTOMER QUOTES
 "Settler saved us 15 hours per week. Game changer."
 - CFO, SaaS Company
 
-"We went from weekly reconciliation to daily, 
+"We went from weekly reconciliation to daily,
 with zero errors."
 - Finance Manager, E-commerce Brand
 
@@ -117,6 +119,7 @@ USE CASES
 ```
 
 **Speaker Notes:**
+
 - Use real metrics if available
 - Include customer quotes
 - Show diverse use cases
@@ -155,6 +158,7 @@ NO COMMITMENT • NO CREDIT CARD • NO RISK
 ```
 
 **Speaker Notes:**
+
 - Emphasize risk-free
 - Set clear expectations
 - Make next steps easy
@@ -193,6 +197,7 @@ Let's talk.
 ```
 
 **Speaker Notes:**
+
 - Provide multiple contact methods
 - Make it easy to follow up
 - End with clear call to action
@@ -218,12 +223,14 @@ Settler is an API-first reconciliation platform that automates matching records 
 ### The Problem We Solve
 
 **Manual reconciliation is expensive and error-prone:**
+
 - Finance teams spend 10-20 hours per week manually matching records
 - Human error leads to incorrect financial reports (5-10% error rate)
 - Doesn't scale as business grows
 - No audit trail or visibility into reconciliation decisions
 
 **Fragmented data across platforms:**
+
 - Orders in Shopify, payments in Stripe, accounting in QuickBooks
 - Each system has different APIs, data formats, and update frequencies
 - Building custom integrations is time-consuming and brittle
@@ -233,12 +240,14 @@ Settler is an API-first reconciliation platform that automates matching records 
 ### Our Solution
 
 **Automated reconciliation with 99%+ accuracy:**
+
 1. **Connect systems** in 5 minutes via API
 2. **Set matching rules** (amount, date, ID, custom logic)
 3. **Run reconciliation** automatically (scheduled or on-demand)
 4. **Get results** via API, webhooks, or dashboard
 
 **Key features:**
+
 - Pre-built adapters for 50+ platforms (Stripe, Shopify, QuickBooks, PayPal, etc.)
 - Configurable matching rules with confidence scoring
 - Real-time webhook notifications
@@ -249,13 +258,13 @@ Settler is an API-first reconciliation platform that automates matching records 
 
 ### Pricing
 
-| Plan | Price | Includes |
-|------|-------|----------|
-| **Free** | $0/mo | 1 job, 100 reconciliations/month |
-| **Starter** | $29/mo | 5 jobs, 1,000 reconciliations/month |
-| **Growth** | $99/mo | 20 jobs, 10,000 reconciliations/month |
-| **Scale** | $299/mo | 100 jobs, 100,000 reconciliations/month |
-| **Enterprise** | Custom | Unlimited jobs, custom integrations, SLA |
+| Plan           | Price   | Includes                                 |
+| -------------- | ------- | ---------------------------------------- |
+| **Free**       | $0/mo   | 1 job, 100 reconciliations/month         |
+| **Starter**    | $29/mo  | 5 jobs, 1,000 reconciliations/month      |
+| **Growth**     | $99/mo  | 20 jobs, 10,000 reconciliations/month    |
+| **Scale**      | $299/mo | 100 jobs, 100,000 reconciliations/month  |
+| **Enterprise** | Custom  | Unlimited jobs, custom integrations, SLA |
 
 **Usage-based pricing:** Pay only for what you use. No setup fees, no long-term contracts.
 
@@ -264,18 +273,21 @@ Settler is an API-first reconciliation platform that automates matching records 
 ### Differentiators
 
 **vs. Manual Process:**
+
 - ✅ 90% time savings
 - ✅ 99%+ accuracy vs. 85-95% manual
 - ✅ Scales automatically
 - ✅ Complete audit trail
 
 **vs. Custom Scripts:**
+
 - ✅ 5-minute setup vs. days/weeks of development
 - ✅ Pre-built adapters vs. building from scratch
 - ✅ Maintenance-free vs. ongoing maintenance
 - ✅ Enterprise features (multi-tenancy, quotas, audit logs)
 
 **vs. Competitors:**
+
 - ✅ API-first (not just a UI)
 - ✅ Usage-based pricing (not per-seat)
 - ✅ Developer-friendly (SDK, webhooks, docs)
@@ -286,19 +298,23 @@ Settler is an API-first reconciliation platform that automates matching records 
 ### Migration Steps from Legacy/Manual
 
 **Step 1: Sign up** (2 minutes)
+
 - Create account at settler.io
 - Get API key
 
 **Step 2: Connect systems** (3 minutes)
+
 - Install SDK: `npm install @settler/sdk`
 - Create reconciliation job via API or dashboard
 - Configure adapters (Stripe, Shopify, etc.)
 
 **Step 3: Run first reconciliation** (1 minute)
+
 - Trigger reconciliation via API
 - Get results in seconds
 
 **Step 4: Set up automation** (5 minutes)
+
 - Schedule recurring reconciliations
 - Configure webhooks for notifications
 - Export reports
@@ -310,16 +326,19 @@ Settler is an API-first reconciliation platform that automates matching records 
 ### Customer Success Stories
 
 **E-commerce Company (500 employees)**
+
 - **Before:** 20 hours/week manual reconciliation, 8% error rate
 - **After:** 2 hours/week automated, 0.1% error rate
 - **ROI:** $50K/year saved in labor costs
 
 **SaaS Company (200 employees)**
+
 - **Before:** Weekly reconciliation, missed discrepancies
 - **After:** Daily reconciliation, real-time alerts
 - **ROI:** Improved cash flow visibility, reduced risk
 
 **Finance Team (50 employees)**
+
 - **Before:** Excel-based reconciliation, no audit trail
 - **After:** Automated reconciliation, complete audit trail
 - **ROI:** Compliance-ready, reduced audit risk
@@ -340,11 +359,13 @@ Settler is an API-first reconciliation platform that automates matching records 
 ### Next Steps
 
 **For Decision-Makers:**
+
 1. **Try it free:** settler.io/signup (30-day trial, no credit card)
 2. **Book a demo:** calendly.com/settler (15-minute walkthrough)
 3. **Read case studies:** settler.io/customers
 
 **For Technical Teams:**
+
 1. **Read docs:** docs.settler.io
 2. **Try API:** api.settler.io/playground
 3. **Join Discord:** discord.gg/settler
@@ -380,12 +401,14 @@ Settler proposes a 60-day enterprise pilot to automate [Company Name]'s reconcil
 ### Pilot Objectives
 
 **Primary Goals:**
+
 1. Automate reconciliation between [System A] and [System B]
 2. Achieve 95%+ match accuracy
 3. Reduce reconciliation time by 80%+
 4. Provide complete audit trail
 
 **Success Criteria:**
+
 - ✅ First reconciliation running within 1 week
 - ✅ 95%+ match accuracy
 - ✅ 80%+ time savings
@@ -396,6 +419,7 @@ Settler proposes a 60-day enterprise pilot to automate [Company Name]'s reconcil
 ### Pilot Scope
 
 **Included:**
+
 - Up to [X] reconciliation jobs
 - Unlimited reconciliations during pilot
 - Pre-built adapters for [System A, System B, etc.]
@@ -404,6 +428,7 @@ Settler proposes a 60-day enterprise pilot to automate [Company Name]'s reconcil
 - Weekly check-ins and progress reports
 
 **Not Included:**
+
 - Custom adapter development (available as add-on)
 - On-premise deployment (cloud-only)
 - Extended support beyond pilot period
@@ -412,12 +437,12 @@ Settler proposes a 60-day enterprise pilot to automate [Company Name]'s reconcil
 
 ### Timeline
 
-| Phase | Duration | Activities |
-|-------|----------|------------|
-| **Week 1: Setup** | 5 days | Account creation, API access, initial configuration |
-| **Week 2: Integration** | 5 days | Connect systems, create first job, test reconciliation |
-| **Week 3-7: Operations** | 5 weeks | Run reconciliations, monitor results, gather feedback |
-| **Week 8: Evaluation** | 5 days | Review results, discuss next steps, decision |
+| Phase                    | Duration | Activities                                             |
+| ------------------------ | -------- | ------------------------------------------------------ |
+| **Week 1: Setup**        | 5 days   | Account creation, API access, initial configuration    |
+| **Week 2: Integration**  | 5 days   | Connect systems, create first job, test reconciliation |
+| **Week 3-7: Operations** | 5 weeks  | Run reconciliations, monitor results, gather feedback  |
+| **Week 8: Evaluation**   | 5 days   | Review results, discuss next steps, decision           |
 
 **Total:** 60 days
 
@@ -425,24 +450,26 @@ Settler proposes a 60-day enterprise pilot to automate [Company Name]'s reconcil
 
 ### Success Metrics
 
-| Metric | Baseline | Target | Measurement |
-|--------|----------|--------|-------------|
-| **Reconciliation Time** | [X] hours/week | < [X/5] hours/week | Time tracking |
-| **Match Accuracy** | [X]% | >95% | Automated reports |
-| **Error Rate** | [X]% | <1% | Error logs |
-| **User Satisfaction** | N/A | NPS > 50 | Survey |
+| Metric                  | Baseline       | Target             | Measurement       |
+| ----------------------- | -------------- | ------------------ | ----------------- |
+| **Reconciliation Time** | [X] hours/week | < [X/5] hours/week | Time tracking     |
+| **Match Accuracy**      | [X]%           | >95%               | Automated reports |
+| **Error Rate**          | [X]%           | <1%                | Error logs        |
+| **User Satisfaction**   | N/A            | NPS > 50           | Survey            |
 
 ---
 
 ### Feedback Incorporation Guidelines
 
 **During Pilot:**
+
 - Weekly feedback sessions (30 minutes)
 - Real-time support via Slack/email
 - Feature requests tracked and prioritized
 - Bug fixes within 24-48 hours
 
 **Post-Pilot:**
+
 - Comprehensive feedback survey
 - Feature prioritization based on pilot learnings
 - Roadmap alignment with enterprise needs
@@ -452,6 +479,7 @@ Settler proposes a 60-day enterprise pilot to automate [Company Name]'s reconcil
 ### Pricing (Post-Pilot)
 
 **If pilot is successful:**
+
 - **Enterprise Plan:** Custom pricing based on usage
 - **Volume Discounts:** Available for annual commitments
 - **Custom Integrations:** Available as add-on
@@ -482,6 +510,7 @@ Settler proposes a 60-day enterprise pilot to automate [Company Name]'s reconcil
 ### Appendix: Pilot Agreement
 
 **Terms:**
+
 - Pilot duration: 60 days
 - No financial commitment required
 - Data confidentiality: All data encrypted, not shared
@@ -490,13 +519,17 @@ Settler proposes a 60-day enterprise pilot to automate [Company Name]'s reconcil
 
 **Signatures:**
 
-[Company Name]  
-_________________  
+[Company Name]
+
+---
+
 [Name], [Title]  
 [Date]
 
-Settler  
-_________________  
+Settler
+
+---
+
 [Name], [Title]  
 [Date]
 
@@ -509,6 +542,7 @@ _________________
 #### 1. How is my data secured?
 
 **Answer:**
+
 - **Encryption at rest:** AES-256-GCM encryption for all sensitive data
 - **Encryption in transit:** TLS 1.3 for all API communications
 - **Database security:** Row-level security (RLS) for multi-tenant isolation
@@ -516,6 +550,7 @@ _________________
 - **Secrets management:** Encrypted storage for third-party API keys (Stripe, Shopify, etc.)
 
 **Compliance:**
+
 - SOC 2 Type II (in progress, target: Q2 2026)
 - GDPR compliant (data retention, right to deletion)
 - CCPA compliant (California privacy rights)
@@ -525,6 +560,7 @@ _________________
 #### 2. Where is my data stored?
 
 **Answer:**
+
 - **Primary region:** US East (AWS us-east-1)
 - **Backup region:** US West (AWS us-west-2)
 - **Data residency:** Can be configured for EU/UK if needed (Enterprise plan)
@@ -532,6 +568,7 @@ _________________
 - **Disaster recovery:** RTO < 4 hours, RPO < 1 hour
 
 **Data location:**
+
 - Production data: US East
 - Backups: US West
 - Logs: US East (30-day retention)
@@ -541,11 +578,13 @@ _________________
 #### 3. Who has access to my data?
 
 **Answer:**
+
 - **Your team:** Only users you invite with appropriate permissions
 - **Settler team:** Support team has read-only access for troubleshooting (with your consent)
 - **No third parties:** We don't share data with third parties (except as required by law)
 
 **Access controls:**
+
 - Role-based access control (RBAC)
 - API key scoping (read-only, read-write, admin)
 - Audit logs for all data access
@@ -555,12 +594,14 @@ _________________
 #### 4. What happens if there's a security breach?
 
 **Answer:**
+
 - **Incident response:** Immediate investigation, containment, and remediation
 - **Notification:** Customers notified within 24 hours of confirmed breach
 - **Transparency:** Public post-mortem (without exposing sensitive details)
 - **Prevention:** Regular security audits, penetration testing, bug bounty program
 
 **Our commitment:**
+
 - 24-hour breach notification
 - Full transparency
 - Continuous security improvements
@@ -570,6 +611,7 @@ _________________
 #### 5. Do you comply with GDPR/CCPA?
 
 **Answer:**
+
 - **GDPR:** Yes, fully compliant
   - Right to access: Export your data via API
   - Right to deletion: Delete account and all data
@@ -582,6 +624,7 @@ _________________
   - Right to opt-out: Opt-out of data sharing (we don't share anyway)
 
 **Data retention:**
+
 - Active accounts: Data retained while account is active
 - Deleted accounts: Data deleted within 30 days
 - Audit logs: Retained for 1 year (compliance requirement)
@@ -591,12 +634,14 @@ _________________
 #### 6. How do you handle third-party API keys (Stripe, Shopify, etc.)?
 
 **Answer:**
+
 - **Encryption:** All third-party API keys encrypted at rest (AES-256-GCM)
 - **Access:** Keys only accessed when needed for reconciliation
 - **Rotation:** Support for key rotation (update keys via API)
 - **Audit:** All key access logged in audit logs
 
 **Best practices:**
+
 - Use read-only keys when possible
 - Rotate keys regularly
 - Monitor key usage via audit logs
@@ -606,11 +651,13 @@ _________________
 #### 7. What's your uptime SLA?
 
 **Answer:**
+
 - **Free/Starter/Growth:** Best effort (no SLA)
 - **Scale:** 99.5% uptime (target)
 - **Enterprise:** 99.9% uptime SLA with credits for downtime
 
 **Monitoring:**
+
 - 24/7 monitoring and alerting
 - Status page: status.settler.io
 - Incident notifications via email/Slack
@@ -620,11 +667,13 @@ _________________
 #### 8. Can I self-host Settler?
 
 **Answer:**
+
 - **Currently:** Cloud-only (SaaS)
 - **Enterprise:** On-premise deployment available as custom solution
 - **Open source:** SDK and adapters are open source (MIT license)
 
 **Why cloud-first:**
+
 - Faster setup (5 minutes vs. days)
 - Automatic updates and security patches
 - No infrastructure management
@@ -635,12 +684,14 @@ _________________
 #### 9. How do you ensure data isolation between tenants?
 
 **Answer:**
+
 - **Row-level security (RLS):** PostgreSQL RLS policies enforce tenant isolation
 - **Schema-per-tenant:** Optional schema-per-tenant for Enterprise customers
 - **API isolation:** All API requests scoped to tenant context
 - **Audit logs:** All data access logged with tenant ID
 
 **Technical details:**
+
 - PostgreSQL RLS policies on all tables
 - Tenant ID required for all queries
 - No cross-tenant data access possible
@@ -650,12 +701,14 @@ _________________
 #### 10. What certifications do you have?
 
 **Answer:**
+
 - **SOC 2 Type II:** In progress (target: Q2 2026)
 - **GDPR:** Compliant (self-assessment)
 - **CCPA:** Compliant (self-assessment)
 - **ISO 27001:** Planned (2026)
 
 **Security practices:**
+
 - Regular security audits
 - Penetration testing (quarterly)
 - Bug bounty program (planned)
@@ -666,11 +719,13 @@ _________________
 ### Additional Security Resources
 
 **Documentation:**
+
 - Security overview: settler.io/security
 - Privacy policy: settler.io/privacy
 - Terms of service: settler.io/terms
 
 **Contact:**
+
 - Security questions: security@settler.io
 - Vulnerability reports: security@settler.io
 - Compliance inquiries: compliance@settler.io
@@ -681,30 +736,30 @@ _________________
 
 ### Immediate Actions (This Week)
 
-| Task | Owner | Time Estimate | Priority |
-|------|-------|---------------|----------|
-| Create slide deck (PowerPoint/Keynote) | Marketing | 2 hours | P0 |
-| Design one-pager (PDF) | Marketing | 2 hours | P0 |
-| Create pilot agreement template | Legal | 2 hours | P0 |
-| Review security FAQ | Security | 1 hour | P1 |
+| Task                                   | Owner     | Time Estimate | Priority |
+| -------------------------------------- | --------- | ------------- | -------- |
+| Create slide deck (PowerPoint/Keynote) | Marketing | 2 hours       | P0       |
+| Design one-pager (PDF)                 | Marketing | 2 hours       | P0       |
+| Create pilot agreement template        | Legal     | 2 hours       | P0       |
+| Review security FAQ                    | Security  | 1 hour        | P1       |
 
 ### Short-Term (This Month)
 
-| Task | Owner | Time Estimate | Priority |
-|------|-------|---------------|----------|
-| Create case studies | Marketing | 1 week | P1 |
-| Set up demo environment | Engineering | 2 days | P1 |
-| Create pilot onboarding process | Sales | 1 day | P1 |
-| Design enterprise pricing | Sales | 1 day | P2 |
+| Task                            | Owner       | Time Estimate | Priority |
+| ------------------------------- | ----------- | ------------- | -------- |
+| Create case studies             | Marketing   | 1 week        | P1       |
+| Set up demo environment         | Engineering | 2 days        | P1       |
+| Create pilot onboarding process | Sales       | 1 day         | P1       |
+| Design enterprise pricing       | Sales       | 1 day         | P2       |
 
 ### Long-Term (This Quarter)
 
-| Task | Owner | Time Estimate | Priority |
-|------|-------|---------------|----------|
-| Get SOC 2 certification | Security | 3 months | P1 |
-| Create video demo | Marketing | 1 week | P2 |
-| Build enterprise features | Engineering | 1 month | P2 |
-| Create partner program | Sales | 2 weeks | P2 |
+| Task                      | Owner       | Time Estimate | Priority |
+| ------------------------- | ----------- | ------------- | -------- |
+| Get SOC 2 certification   | Security    | 3 months      | P1       |
+| Create video demo         | Marketing   | 1 week        | P2       |
+| Build enterprise features | Engineering | 1 month       | P2       |
+| Create partner program    | Sales       | 2 weeks       | P2       |
 
 ---
 

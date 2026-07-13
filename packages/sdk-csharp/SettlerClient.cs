@@ -52,6 +52,18 @@ public sealed class SettlerClient : IDisposable
     /// <summary>Client for report operations.</summary>
     public ReportsClient Reports { get; }
 
+    /// <summary>Client for feature flags operations.</summary>
+    public FlagsClient Flags { get; }
+
+    /// <summary>Client for receipts operations.</summary>
+    public ReceiptsClient Receipts { get; }
+
+    /// <summary>Client for adapters operations.</summary>
+    public AdaptersClient Adapters { get; }
+
+    /// <summary>Client for console operations.</summary>
+    public ConsoleClient Console { get; }
+
     /// <summary>
     /// Creates a new SettlerClient with the specified API key.
     /// </summary>
@@ -88,6 +100,10 @@ public sealed class SettlerClient : IDisposable
         Webhooks = new WebhooksClient(this);
         Jobs = new JobsClient(this);
         Reports = new ReportsClient(this);
+        Flags = new FlagsClient(this);
+        Receipts = new ReceiptsClient(this);
+        Adapters = new AdaptersClient(this);
+        Console = new ConsoleClient(this);
     }
 
     internal async Task<T> RequestAsync<T>(HttpMethod method, string path, object? body = null, Dictionary<string, string>? query = null, CancellationToken cancellationToken = default)

@@ -15,12 +15,12 @@ Settler commits to transparent breach notification within defined timeframes.
 
 ### Incident Types
 
-| Type | Definition | Notification |
-|------|------------|---------------|
-| **P1 - Critical** | Confirmed unauthorized access to customer data | 24 hours |
-| **P2 - High** | Suspected breach, evidence gathering | 72 hours |
-| **P3 - Medium** | Policy violation, no data impact | Next business day |
-| **P4 - Low** | Attempted scan/probe | Weekly summary |
+| Type              | Definition                                     | Notification      |
+| ----------------- | ---------------------------------------------- | ----------------- |
+| **P1 - Critical** | Confirmed unauthorized access to customer data | 24 hours          |
+| **P2 - High**     | Suspected breach, evidence gathering           | 72 hours          |
+| **P3 - Medium**   | Policy violation, no data impact               | Next business day |
+| **P4 - Low**      | Attempted scan/probe                           | Weekly summary    |
 
 ---
 
@@ -28,21 +28,21 @@ Settler commits to transparent breach notification within defined timeframes.
 
 ### P1: Confirmed Breach
 
-| Phase | Commitment | Timeline |
-|-------|------------|-----------|
-| Detection → Internal Triage | 4 hours | From discovery |
-| Customer Notification | 24 hours | From confirmation |
-| Regulatory Notification | 72 hours | From confirmation |
-| Root Cause Analysis | 7 days | From confirmation |
-| Remediation Plan | 14 days | From confirmation |
+| Phase                       | Commitment | Timeline          |
+| --------------------------- | ---------- | ----------------- |
+| Detection → Internal Triage | 4 hours    | From discovery    |
+| Customer Notification       | 24 hours   | From confirmation |
+| Regulatory Notification     | 72 hours   | From confirmation |
+| Root Cause Analysis         | 7 days     | From confirmation |
+| Remediation Plan            | 14 days    | From confirmation |
 
 ### P2: Suspected Breach
 
-| Phase | Commitment | Timeline |
-|-------|------------|-----------|
-| Detection → Assessment | 24 hours | From discovery |
-| Customer Update | 72 hours | If escalates |
-| Resolution | 14 days | From assessment |
+| Phase                  | Commitment | Timeline        |
+| ---------------------- | ---------- | --------------- |
+| Detection → Assessment | 24 hours   | From discovery  |
+| Customer Update        | 72 hours   | If escalates    |
+| Resolution             | 14 days    | From assessment |
 
 ---
 
@@ -59,18 +59,23 @@ Settler commits to transparent breach notification within defined timeframes.
 **Affected Customers:** [List or count]
 
 ## What Happened
+
 [Brief description]
 
 ## What Data Was Involved
+
 [Data types]
 
 ## What We Are Doing
+
 [Remediation steps]
 
 ## What You Should Do
+
 [Recommended actions for affected customers]
 
 ## Contact
+
 security@settler.dev
 
 We will provide updates every 24 hours.
@@ -106,12 +111,12 @@ Regulatory (72h)
 
 ### Contact Matrix
 
-| Role | Contact | Availability |
-|------|---------|--------------|
-| Security Lead | security@settler.dev | 24/7 |
-| Legal Counsel | legal@settler.dev | Business hours |
-| CEO | ceo@settler.dev | P1 only |
-| Press | press@settler.dev | All |
+| Role          | Contact              | Availability   |
+| ------------- | -------------------- | -------------- |
+| Security Lead | security@settler.dev | 24/7           |
+| Legal Counsel | legal@settler.dev    | Business hours |
+| CEO           | ceo@settler.dev      | P1 only        |
+| Press         | press@settler.dev    | All            |
 
 ---
 
@@ -138,12 +143,12 @@ Regulatory (72h)
 
 ### Primary Channels
 
-| Channel | Use Case |
-|---------|----------|
-| Email | Formal notification |
-| Status page | Real-time updates |
-| Console notification | Account-specific |
-| API webhook | Automated customers |
+| Channel              | Use Case            |
+| -------------------- | ------------------- |
+| Email                | Formal notification |
+| Status page          | Real-time updates   |
+| Console notification | Account-specific    |
+| API webhook          | Automated customers |
 
 ### Status Page
 
@@ -157,12 +162,12 @@ Regulatory (72h)
 
 ### P1 Breach Credit Monitoring
 
-| Tier | Credit Monitoring |
-|------|-------------------|
-| Free | N/A |
-| Starter | 12 months, 2 bureaus |
-| Growth | 24 months, 3 bureaus |
-| Enterprise | Custom |
+| Tier       | Credit Monitoring    |
+| ---------- | -------------------- |
+| Free       | N/A                  |
+| Starter    | 12 months, 2 bureaus |
+| Growth     | 24 months, 3 bureaus |
+| Enterprise | Custom               |
 
 ### Enrollment
 
@@ -193,12 +198,12 @@ Notification may be delayed if:
 
 ### Required Post-Incident Actions
 
-| Action | Timeline |
-|--------|----------|
-| Root cause analysis | 7 days |
-| Remediation plan | 14 days |
-| Customer report | 30 days |
-| Process improvement | 60 days |
+| Action              | Timeline |
+| ------------------- | -------- |
+| Root cause analysis | 7 days   |
+| Remediation plan    | 14 days  |
+| Customer report     | 30 days  |
+| Process improvement | 60 days  |
 
 ### Annual Review
 
@@ -212,10 +217,10 @@ Notification may be delayed if:
 
 **Security Incidents:** security@settler.dev  
 **Emergency:** +1-555-SETTLER (24/7)  
-**Legal:** legal@settler.dev  
+**Legal:** legal@settler.dev
 
 ---
 
-*Document Version: 1.0*  
-*Effective: 2026-04-10*  
-*Review: Annual*
+_Document Version: 1.0_  
+_Effective: 2026-04-10_  
+_Review: Annual_

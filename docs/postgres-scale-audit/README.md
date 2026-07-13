@@ -297,9 +297,9 @@ If issues arise:
 
 ## Approval Sign-Off
 
-**Engineering Lead**: ****\_\_\_**** **Date**: ****\_\_\_****
-**Database Admin**: ****\_\_\_**** **Date**: ****\_\_\_****
-**CTO/VP Eng**: ****\_\_\_**** **Date**: ****\_\_\_****
+**Engineering Lead**: \***\*\_\_\_\*\*** **Date**: \***\*\_\_\_\*\***
+**Database Admin**: \***\*\_\_\_\*\*** **Date**: \***\*\_\_\_\*\***
+**CTO/VP Eng**: \***\*\_\_\_\*\*** **Date**: \***\*\_\_\_\*\***
 
 ---
 

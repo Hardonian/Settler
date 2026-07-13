@@ -4,7 +4,7 @@ import { Request, Response, NextFunction, RequestHandler } from "express";
  * Wraps an async Express route handler to automatically catch promise rejections
  * and pass them to the global error handler via next().
  * This eliminates the need for try/catch boilerplate in every route.
- * 
+ *
  * @example
  * router.get("/users", asyncHandler(async (req, res) => {
  *   const users = await db.query("SELECT * FROM users");

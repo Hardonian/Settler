@@ -22,11 +22,13 @@
 [Brief description of the business problem and how Settler solves it]
 
 **Expected Outcomes:**
+
 - [Outcome 1]
 - [Outcome 2]
 - [Outcome 3]
 
 **Success Criteria:**
+
 - [Criterion 1]
 - [Criterion 2]
 - [Criterion 3]
@@ -78,33 +80,33 @@
 
 ### Technical Success Criteria
 
-| Criterion | Target | Measurement |
-|-----------|--------|-------------|
-| **Reconciliation Accuracy** | 95%+ | Percentage of matched transactions |
-| **API Latency** | <100ms (p95) | API response time |
-| **Uptime** | 99.9%+ | System availability |
-| **Integration Time** | <1 week | Time to first successful reconciliation |
-| **Error Rate** | <1% | Percentage of failed reconciliations |
+| Criterion                   | Target       | Measurement                             |
+| --------------------------- | ------------ | --------------------------------------- |
+| **Reconciliation Accuracy** | 95%+         | Percentage of matched transactions      |
+| **API Latency**             | <100ms (p95) | API response time                       |
+| **Uptime**                  | 99.9%+       | System availability                     |
+| **Integration Time**        | <1 week      | Time to first successful reconciliation |
+| **Error Rate**              | <1%          | Percentage of failed reconciliations    |
 
 ### Business Success Criteria
 
-| Criterion | Target | Measurement |
-|-----------|--------|-------------|
-| **Time Savings** | 80% reduction | Hours saved per week |
-| **Cost Savings** | $X/month | Cost comparison (before vs. after) |
-| **Accuracy Improvement** | 95%+ | Reconciliation accuracy |
-| **Compliance Readiness** | 100% | SOC 2, GDPR compliance validation |
-| **User Satisfaction** | NPS >50 | Net Promoter Score |
+| Criterion                | Target        | Measurement                        |
+| ------------------------ | ------------- | ---------------------------------- |
+| **Time Savings**         | 80% reduction | Hours saved per week               |
+| **Cost Savings**         | $X/month      | Cost comparison (before vs. after) |
+| **Accuracy Improvement** | 95%+          | Reconciliation accuracy            |
+| **Compliance Readiness** | 100%          | SOC 2, GDPR compliance validation  |
+| **User Satisfaction**    | NPS >50       | Net Promoter Score                 |
 
 ### User Experience Success Criteria
 
-| Criterion | Target | Measurement |
-|-----------|--------|-------------|
-| **Onboarding Time** | <1 hour | Time to first reconciliation |
-| **Developer Satisfaction** | 4/5+ | Developer feedback survey |
-| **Finance Team Satisfaction** | 4/5+ | Finance team feedback survey |
-| **Documentation Quality** | 4/5+ | Documentation feedback survey |
-| **Support Responsiveness** | <4 hours | Support response time |
+| Criterion                     | Target   | Measurement                   |
+| ----------------------------- | -------- | ----------------------------- |
+| **Onboarding Time**           | <1 hour  | Time to first reconciliation  |
+| **Developer Satisfaction**    | 4/5+     | Developer feedback survey     |
+| **Finance Team Satisfaction** | 4/5+     | Finance team feedback survey  |
+| **Documentation Quality**     | 4/5+     | Documentation feedback survey |
+| **Support Responsiveness**    | <4 hours | Support response time         |
 
 ---
 
@@ -113,16 +115,19 @@
 ### In Scope
 
 **Platforms/Adapters:**
+
 - [Platform 1] (e.g., Stripe)
 - [Platform 2] (e.g., Shopify)
 - [Platform 3] (e.g., QuickBooks)
 
 **Use Cases:**
+
 - [Use Case 1] (e.g., Order-to-payment reconciliation)
 - [Use Case 2] (e.g., Subscription revenue recognition)
 - [Use Case 3] (e.g., Multi-payment provider reconciliation)
 
 **Features:**
+
 - Real-time reconciliation
 - Scheduled reconciliation
 - Report generation
@@ -142,18 +147,21 @@
 ### Week 1: Setup & Onboarding
 
 **Day 1-2: Account Setup**
+
 - Create Settler account
 - Provision API keys
 - Configure SSO (if applicable)
 - Access provisioning
 
 **Day 3-4: Adapter Configuration**
+
 - Configure [Platform 1] adapter
 - Configure [Platform 2] adapter
 - Configure [Platform 3] adapter
 - Test adapter connectivity
 
 **Day 5: First Reconciliation**
+
 - Create first reconciliation job
 - Run test reconciliation
 - Validate results
@@ -162,12 +170,14 @@
 ### Week 2: Integration & Testing
 
 **Day 6-8: API Integration**
+
 - Integrate Settler API with existing systems
 - Test API endpoints
 - Validate webhook delivery
 - Test error handling
 
 **Day 9-10: Performance Testing**
+
 - Test reconciliation volume
 - Test API latency
 - Test system reliability
@@ -176,6 +186,7 @@
 ### Week 3: Production Testing
 
 **Day 11-15: Production Workload**
+
 - Run production reconciliation jobs
 - Monitor performance and accuracy
 - Gather user feedback
@@ -184,12 +195,14 @@
 ### Week 4: Evaluation & Reporting
 
 **Day 16-18: Data Collection**
+
 - Collect performance metrics
 - Gather user feedback
 - Document issues and resolutions
 - Prepare evaluation report
 
 **Day 19-20: Evaluation & Decision**
+
 - Review success criteria
 - Evaluate pilot outcomes
 - Make go/no-go decision
@@ -202,18 +215,21 @@
 ### Customer Resources
 
 **Team Members:**
+
 - [Name, Title] - Pilot Manager
 - [Name, Title] - Technical Lead
 - [Name, Title] - Finance Lead
 - [Name, Title] - Developer
 
 **Time Commitment:**
+
 - Pilot Manager: 10 hours/week
 - Technical Lead: 20 hours/week
 - Finance Lead: 5 hours/week
 - Developer: 15 hours/week
 
 **Systems:**
+
 - [System 1] (e.g., Stripe account)
 - [System 2] (e.g., Shopify store)
 - [System 3] (e.g., QuickBooks account)
@@ -221,12 +237,14 @@
 ### Settler Resources
 
 **Team Members:**
+
 - [Name, Title] - Pilot Manager
 - [Name, Title] - Solutions Engineer
 - [Name, Title] - Customer Success Manager
 - [Name, Title] - Support Engineer
 
 **Support:**
+
 - Dedicated Slack channel (#pilot-[company-name])
 - Weekly check-in calls
 - 4-hour support SLA
@@ -239,6 +257,7 @@
 ### Technical Metrics
 
 **Reconciliation Metrics:**
+
 - Total reconciliations: [Target: X]
 - Matched transactions: [Target: X%]
 - Unmatched transactions: [Target: <X%]
@@ -246,6 +265,7 @@
 - Accuracy: [Target: 95%+]
 
 **Performance Metrics:**
+
 - API latency: [Target: <100ms p95]
 - Reconciliation processing time: [Target: <X seconds]
 - Uptime: [Target: 99.9%+]
@@ -254,32 +274,38 @@
 ### Business Metrics
 
 **Time Savings:**
+
 - Hours saved per week: [Target: X hours]
 - Time reduction: [Target: 80%]
 - Manual reconciliation time: [Before: X hours, After: X hours]
 
 **Cost Savings:**
+
 - Cost per reconciliation: [Before: $X, After: $X]
 - Monthly cost savings: [Target: $X/month]
 - ROI: [Target: X%]
 
 **Accuracy:**
+
 - Reconciliation accuracy: [Before: X%, After: 95%+]
 - Error reduction: [Target: X%]
 
 ### User Experience Metrics
 
 **Onboarding:**
+
 - Time to first reconciliation: [Target: <1 hour]
 - Onboarding completion rate: [Target: 100%]
 - Documentation usage: [Target: X views]
 
 **Satisfaction:**
+
 - Developer satisfaction: [Target: 4/5+]
 - Finance team satisfaction: [Target: 4/5+]
 - Overall NPS: [Target: >50]
 
 **Support:**
+
 - Support tickets: [Target: <X]
 - Support response time: [Target: <4 hours]
 - Support resolution time: [Target: <24 hours]
@@ -290,13 +316,13 @@
 
 ### Identified Risks
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|-------|------------|
-| **Technical Integration Issues** | Medium | High | Dedicated solutions engineer, extended timeline |
-| **Performance Issues** | Low | Medium | Performance testing, optimization |
-| **Compliance Gaps** | Low | High | Compliance review, documentation |
-| **User Adoption** | Medium | Medium | Training, support, documentation |
-| **Timeline Delays** | Medium | Low | Buffer time, flexible timeline |
+| Risk                             | Likelihood | Impact | Mitigation                                      |
+| -------------------------------- | ---------- | ------ | ----------------------------------------------- |
+| **Technical Integration Issues** | Medium     | High   | Dedicated solutions engineer, extended timeline |
+| **Performance Issues**           | Low        | Medium | Performance testing, optimization               |
+| **Compliance Gaps**              | Low        | High   | Compliance review, documentation                |
+| **User Adoption**                | Medium     | Medium | Training, support, documentation                |
+| **Timeline Delays**              | Medium     | Low    | Buffer time, flexible timeline                  |
 
 ### Mitigation Strategies
 
@@ -379,6 +405,7 @@
 ### Evaluation Criteria
 
 **Go Decision Criteria:**
+
 - ✅ All primary objectives met
 - ✅ 80%+ of success criteria met
 - ✅ Positive user feedback (NPS >50)
@@ -386,6 +413,7 @@
 - ✅ Business value validated
 
 **No-Go Decision Criteria:**
+
 - ❌ Critical technical issues unresolved
 - ❌ Compliance gaps not addressed
 - ❌ Negative user feedback (NPS <30)
@@ -450,18 +478,21 @@
 ## Contact Information
 
 **Customer Pilot Manager:**
+
 - Name: [Name]
 - Title: [Title]
 - Email: [Email]
 - Phone: [Phone]
 
 **Settler Pilot Manager:**
+
 - Name: [Name]
 - Title: [Title]
 - Email: [Email]
 - Phone: [Phone]
 
 **Settler Support:**
+
 - Email: support@settler.io
 - Slack: #pilot-[company-name]
 - Phone: [Phone]

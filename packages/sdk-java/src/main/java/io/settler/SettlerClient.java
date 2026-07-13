@@ -53,6 +53,10 @@ public final class SettlerClient implements Closeable {
     private final ExportsClient exports;
     private final CurrencyClient currency;
     private final WebhooksClient webhooks;
+    private final FlagsClient flags;
+    private final ReceiptsClient receipts;
+    private final AdaptersClient adapters;
+    private final ConsoleClient console;
 
     private SettlerClient(SettlerConfig config) {
         this.config = config;
@@ -67,6 +71,10 @@ public final class SettlerClient implements Closeable {
         this.exports = new ExportsClient(httpExecutor);
         this.currency = new CurrencyClient(httpExecutor);
         this.webhooks = new WebhooksClient(httpExecutor);
+        this.flags = new FlagsClient(httpExecutor);
+        this.receipts = new ReceiptsClient(httpExecutor);
+        this.adapters = new AdaptersClient(httpExecutor);
+        this.console = new ConsoleClient(httpExecutor);
     }
 
     /**
@@ -173,6 +181,42 @@ public final class SettlerClient implements Closeable {
      */
     public WebhooksClient webhooks() {
         return webhooks;
+    }
+
+    /**
+     * Gets the Flags client for evaluating feature flags.
+     *
+     * @return the flags client
+     */
+    public FlagsClient flags() {
+        return flags;
+    }
+
+    /**
+     * Gets the Receipts client for processing and parsing receipts.
+     *
+     * @return the receipts client
+     */
+    public ReceiptsClient receipts() {
+        return receipts;
+    }
+
+    /**
+     * Gets the Adapters client for managing integrations.
+     *
+     * @return the adapters client
+     */
+    public AdaptersClient adapters() {
+        return adapters;
+    }
+
+    /**
+     * Gets the Console client for managing API keys and usage.
+     *
+     * @return the console client
+     */
+    public ConsoleClient console() {
+        return console;
     }
 
     /**

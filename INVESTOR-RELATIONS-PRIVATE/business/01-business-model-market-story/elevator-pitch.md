@@ -28,12 +28,14 @@ Modern businesses operate across 10+ platforms: Stripe for payments, Shopify for
 Settler is reconciliation-as-a-service—a single API that normalizes, validates, and reconciles data across all platforms in real-time.
 
 **How it works:**
+
 1. Connect your platforms (Stripe, Shopify, QuickBooks, etc.) via adapters
 2. Configure matching rules (order ID, amount, timestamp)
 3. Automatic reconciliation runs in real-time or on schedule
 4. Get reports and alerts for mismatches
 
 **Key Differentiators:**
+
 - ⚡ **5-minute integration** vs. weeks of custom code
 - 🔄 **Real-time reconciliation** vs. batch processing
 - 🔌 **Composable adapters** for any platform
@@ -46,6 +48,7 @@ Settler is reconciliation-as-a-service—a single API that normalizes, validates
 **Primary ICP**: Mid-market e-commerce and SaaS companies ($1M-$50M ARR) processing 1,000+ transactions/month across multiple platforms.
 
 **Buyer Personas:**
+
 1. **CTO/VP Engineering** (technical buyer): Wants to eliminate custom reconciliation code, reduce maintenance burden
 2. **CFO/Finance Director** (business buyer): Needs compliance, audit trails, reduced manual work
 3. **Operations Manager** (end user): Spends hours daily on reconciliation, wants automation
