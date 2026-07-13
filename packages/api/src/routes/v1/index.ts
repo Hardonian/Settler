@@ -43,6 +43,7 @@ import supportRouter from "./support";
 import toleranceSettingsRouter from "../tolerance-settings";
 import ventureInvoiceNudgerRouter from "./venture-invoice-nudger";
 import agenticWorkflowRouter from "./agentic-workflow";
+import { ssoRouter } from "./sso";
 
 export const v1Router: Router = Router();
 export const v1WebhookRouter: Router = Router();
@@ -92,6 +93,7 @@ v1Router.use("/sla", slaRouter);
 v1Router.use("/slo", sloAlertingRouter);
 v1Router.use("/custom-integrations", customIntegrationsRouter);
 v1Router.use("/dedicated-infrastructure", dedicatedInfrastructureRouter);
+v1Router.use("/sso", ssoRouter);
 
 // Operator mode routes
 v1Router.use("/", operatorModeRouter);

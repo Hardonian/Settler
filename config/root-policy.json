@@ -193,6 +193,7 @@
     "generate_dx.py",
     "GTM_STRATEGY.md",
     "INVESTOR_OVERVIEW.md",
+    "justfile",
     "openapi",
     "OPERATIONS_RUNBOOK.md",
     "output.txt",
