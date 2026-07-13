@@ -67,6 +67,7 @@ import { startMaterializedViewRefreshJob } from "./jobs/materialized-view-refres
 import { processPendingWebhooks } from "./utils/webhook-queue";
 import { logDistributedGuardStartupSummary } from "./services/distributed-guards";
 import { startDistributedGuardsMaintenanceJob } from "./jobs/distributed-guards-maintenance";
+import { siemEgress } from "./jobs/egress";
 import { versionMiddleware } from "./middleware/versioning";
 import { v1Router, v1WebhookRouter } from "./routes/v1";
 import { v2Router } from "./routes/v2";
@@ -475,6 +476,7 @@ async function startServer() {
     startDataRetentionJob();
     startMaterializedViewRefreshJob();
     const distributedGuardsMaintenanceTimer = startDistributedGuardsMaintenanceJob();
+    siemEgress.startWorker();
 
     // Process pending webhooks every minute
     const webhookInterval = setInterval(() => {
@@ -487,6 +489,7 @@ async function startServer() {
     registerShutdownHandler(async () => {
       clearInterval(webhookInterval);
       clearInterval(distributedGuardsMaintenanceTimer);
+      await siemEgress.close();
       logInfo("Webhook processing stopped");
     });
 

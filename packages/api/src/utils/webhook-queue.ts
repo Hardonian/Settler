@@ -212,20 +212,21 @@ export async function processWebhookDelivery(delivery: WebhookDelivery): Promise
       attempt++;
 
       if (attempt > maxRetries) {
-        // Max retries exceeded - mark as failed
+        // Max retries exceeded - mark as dlq (Dead Letter Queue)
         await query(
           `UPDATE webhook_deliveries
-           SET status = 'failed',
+           SET status = 'dlq',
                error = $1,
                attempts = $2
            WHERE id = $3`,
           [error.message, attempt, delivery.id]
         );
 
-        logError("Webhook delivery failed after max retries", error, {
+        logError("Webhook delivery sent to DLQ after max retries", error, {
           deliveryId: delivery.id,
           webhookId: delivery.webhookId,
           attempts: attempt,
+          dlq: true,
         });
         return;
       }
