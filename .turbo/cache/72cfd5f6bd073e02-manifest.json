@@ -1,14 +1,14 @@
 {
   "files": {
-    "packages\\types\\tsconfig.tsbuildinfo": {
-      "size": 95284,
-      "mtime_nanos": 1783986049680943100,
-      "mode": 420,
-      "is_dir": false
-    },
     "packages\\types\\.turbo\\turbo-typecheck.log": {
       "size": 95,
       "mtime_nanos": 1783985426125528000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\types\\tsconfig.tsbuildinfo": {
+      "size": 95284,
+      "mtime_nanos": 1783986115362146000,
       "mode": 420,
       "is_dir": false
     }
