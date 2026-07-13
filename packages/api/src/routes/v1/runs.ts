@@ -684,10 +684,56 @@ router.post(
         return;
       }
 
-      // Stub implementation for creating run
+      const { jobId } = req.body;
+      if (!jobId) {
+        res.status(400).json({
+          error: "BAD_REQUEST",
+          message: "Job ID is required",
+        });
+        return;
+      }
+
+      // Check if job exists for tenant
+      const jobs = await queryWithTenant<{ id: string }>(
+        tenantId,
+        `SELECT id FROM recon_jobs WHERE id = $1 AND tenant_id = $2`,
+        [jobId, tenantId]
+      );
+
+      if (jobs.length === 0) {
+        res.status(404).json({
+          error: "NOT_FOUND",
+          message: "Job not found",
+        });
+        return;
+      }
+
+      // Create ReconciliationRun
+      const result = await queryWithTenant<{ id: string; status: string }>(
+        tenantId,
+        `INSERT INTO recon_results (tenant_id, recon_job_id, status, started_at, updated_at) 
+         VALUES ($1, $2, 'pending', NOW(), NOW()) RETURNING id, status`,
+        [tenantId, jobId]
+      );
+
+      // Audit log
+      const userId = (req.userId as string) || null;
+      await queryWithTenant(
+        tenantId,
+        `INSERT INTO audit_logs (tenant_id, user_id, action, resource_type, resource_id, details) VALUES ($1, $2, $3, $4, $5, $6)`,
+        [
+          tenantId,
+          userId,
+          "create_run",
+          "reconciliation_run",
+          result[0]!.id,
+          JSON.stringify({ jobId }),
+        ]
+      );
+
       res.status(201).json({
-        id: `run_${Date.now()}`,
-        status: "pending",
+        id: result[0]!.id,
+        status: result[0]!.status,
         message: "Run created successfully",
       });
     } catch (error) {
@@ -717,11 +763,41 @@ router.get(
         return;
       }
 
-      // Stub implementation for proofpack
+      const runId = req.params.id as string;
+
+      // Ensure run exists
+      const runs = await queryWithTenant<{ id: string }>(
+        tenantId,
+        `SELECT id FROM recon_results WHERE id = $1 AND tenant_id = $2`,
+        [runId, tenantId]
+      );
+
+      if (runs.length === 0) {
+        res.status(404).json({
+          error: "NOT_FOUND",
+          message: "Run not found",
+        });
+        return;
+      }
+
+      // Fetch audit logs related to this run
+      const auditLogs = await queryWithTenant(
+        tenantId,
+        `SELECT * FROM audit_logs WHERE resource_id = $1 AND tenant_id = $2 ORDER BY created_at ASC`,
+        [runId, tenantId]
+      );
+
+      // Fetch exceptions related to this run
+      const exceptions = await queryWithTenant(
+        tenantId,
+        `SELECT * FROM exceptions WHERE run_id = $1 AND tenant_id = $2`,
+        [runId, tenantId]
+      );
+
       res.status(200).json({
-        runId: req.params.id,
-        auditTrail: [],
-        evidence: [],
+        runId,
+        auditTrail: auditLogs,
+        evidence: exceptions,
       });
     } catch (error) {
       logError("Error fetching proofpack", { error });
@@ -750,9 +826,32 @@ router.get(
         return;
       }
 
+      const runId = req.params.id as string;
+
+      const runs = await queryWithTenant<{ id: string }>(
+        tenantId,
+        `SELECT id FROM recon_results WHERE id = $1 AND tenant_id = $2`,
+        [runId, tenantId]
+      );
+
+      if (runs.length === 0) {
+        res.status(404).json({
+          error: "NOT_FOUND",
+          message: "Run not found",
+        });
+        return;
+      }
+
+      // Fetch run delta
+      const deltas = await queryWithTenant(
+        tenantId,
+        `SELECT * FROM run_deltas WHERE currentRunId = $1`,
+        [runId]
+      );
+
       res.status(200).json({
-        runId: req.params.id,
-        deltas: [],
+        runId,
+        deltas: deltas,
       });
     } catch {
       res.status(500).json({
@@ -780,8 +879,67 @@ router.post(
         return;
       }
 
+      const runId = req.params.id as string;
+      const { exceptionId, resolution, resolutionReason } = req.body;
+
+      if (!exceptionId || !resolution) {
+        res.status(400).json({
+          error: "BAD_REQUEST",
+          message: "exceptionId and resolution are required",
+        });
+        return;
+      }
+
+      // Ensure run exists
+      const runs = await queryWithTenant<{ id: string }>(
+        tenantId,
+        `SELECT id FROM recon_results WHERE id = $1 AND tenant_id = $2`,
+        [runId, tenantId]
+      );
+
+      if (runs.length === 0) {
+        res.status(404).json({
+          error: "NOT_FOUND",
+          message: "Run not found",
+        });
+        return;
+      }
+
+      // Insert adjudication record
+      const userIdForAdj = (req.userId as string) || "system";
+      const result = await queryWithTenant<{ id: string }>(
+        tenantId,
+        `INSERT INTO exception_adjudication_memory (
+          id, tenantId, exceptionId, resolution, resolutionReason, adjudicatorId, adjudicatorType, adjudicationType, startedAt
+        ) VALUES (
+          gen_random_uuid(), $1, $2, $3, $4, $5, 'operator', 'initial', NOW()
+        ) RETURNING id`,
+        [
+          tenantId,
+          exceptionId as string,
+          resolution as string,
+          (resolutionReason as string) || null,
+          userIdForAdj,
+        ]
+      );
+
+      // Audit log
+      const userId = (req.userId as string) || null;
+      await queryWithTenant(
+        tenantId,
+        `INSERT INTO audit_logs (tenant_id, user_id, action, resource_type, resource_id, details) VALUES ($1, $2, $3, $4, $5, $6)`,
+        [
+          tenantId,
+          userId,
+          "create_adjudication",
+          "exception",
+          exceptionId as string,
+          JSON.stringify({ resolution, resolutionReason }),
+        ]
+      );
+
       res.status(201).json({
-        id: `adj_${Date.now()}`,
+        id: result[0]!.id,
         status: "recorded",
       });
     } catch {

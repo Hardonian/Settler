@@ -97,6 +97,7 @@ class SettlerClient:
         self.receipts = ReceiptsClient(self)
         self.adapters = AdaptersClient(self)
         self.console = ConsoleClient(self)
+        self.runs = RunsClient(self)
 
     def _get_headers(self) -> Dict[str, str]:
         req_id = str(uuid.uuid4())
@@ -654,3 +655,58 @@ class ConsoleClient:
 
     def health(self) -> Dict[str, Any]:
         return self._client._request("GET", "/health/console")
+
+
+class RunsClient:
+    """Client for reconciliation run operations."""
+
+    def __init__(self, client: SettlerClient) -> None:
+        self._client = client
+
+    def list(
+        self,
+        page: Optional[int] = None,
+        limit: Optional[int] = None,
+        status: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """List reconciliation runs."""
+        params: Dict[str, Any] = {}
+        if page is not None:
+            params["page"] = page
+        if limit is not None:
+            params["limit"] = limit
+        if status:
+            params["status"] = status
+        return self._client._request("GET", "/runs", params=params)
+
+    def get(self, run_id: str) -> Dict[str, Any]:
+        """Get a reconciliation run by ID."""
+        return self._client._request("GET", f"/runs/{run_id}")
+
+    def create(self, job_id: str) -> Dict[str, Any]:
+        """Create a new reconciliation run."""
+        return self._client._request("POST", "/runs", data={"jobId": job_id})
+
+    def get_proofpack(self, run_id: str) -> Dict[str, Any]:
+        """Get the proofpack for a run."""
+        return self._client._request("GET", f"/runs/{run_id}/proofpack")
+
+    def get_delta(self, run_id: str) -> Dict[str, Any]:
+        """Get the deltas for a run."""
+        return self._client._request("GET", f"/runs/{run_id}/delta")
+
+    def record_adjudication(
+        self,
+        run_id: str,
+        exception_id: str,
+        resolution: str,
+        resolution_reason: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Record an adjudication decision."""
+        data: Dict[str, Any] = {
+            "exceptionId": exception_id,
+            "resolution": resolution,
+        }
+        if resolution_reason:
+            data["resolutionReason"] = resolution_reason
+        return self._client._request("POST", f"/runs/{run_id}/adjudications", data=data)

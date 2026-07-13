@@ -57,6 +57,7 @@ public final class SettlerClient implements Closeable {
     private final ReceiptsClient receipts;
     private final AdaptersClient adapters;
     private final ConsoleClient console;
+    private final RunsClient runs;
 
     private SettlerClient(SettlerConfig config) {
         this.config = config;
@@ -75,6 +76,7 @@ public final class SettlerClient implements Closeable {
         this.receipts = new ReceiptsClient(httpExecutor);
         this.adapters = new AdaptersClient(httpExecutor);
         this.console = new ConsoleClient(httpExecutor);
+        this.runs = new RunsClient(httpExecutor);
     }
 
     /**
@@ -217,6 +219,13 @@ public final class SettlerClient implements Closeable {
      */
     public ConsoleClient console() {
         return console;
+    }
+
+    /**
+     * @return client for reconciliation run operations
+     */
+    public RunsClient runs() {
+        return runs;
     }
 
     /**
