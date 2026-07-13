@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { logWarn } from "../utils/logger";
+import { logWarn, logError } from "../utils/logger";
 
 const PII_REGEXES = {
   ssn: /\b\d{3}-\d{2}-\d{4}\b/g,
@@ -50,7 +50,7 @@ export const dlpMiddleware = (req: Request, res: Response, next: NextFunction) =
       const redactedBody = redactObject(body);
       return originalJson.call(this, redactedBody);
     } catch (e) {
-      logWarn("DLP redactor failed on JSON body", e);
+      logError("DLP redactor failed on JSON body", e);
       return originalJson.call(this, body);
     }
   };
@@ -71,7 +71,7 @@ export const dlpMiddleware = (req: Request, res: Response, next: NextFunction) =
         const redactedBody = redactObject(body);
         return originalSend.call(this, redactedBody);
       } catch (e) {
-        logWarn("DLP redactor failed on Object body", e);
+        logError("DLP redactor failed on Object body", e);
         return originalSend.call(this, body);
       }
     }

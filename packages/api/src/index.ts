@@ -68,6 +68,7 @@ import { processPendingWebhooks } from "./utils/webhook-queue";
 import { logDistributedGuardStartupSummary } from "./services/distributed-guards";
 import { startDistributedGuardsMaintenanceJob } from "./jobs/distributed-guards-maintenance";
 import { siemEgress } from "./jobs/egress";
+import { dlpMiddleware } from "./middleware/dlp";
 import { versionMiddleware } from "./middleware/versioning";
 import { v1Router, v1WebhookRouter } from "./routes/v1";
 import { v2Router } from "./routes/v2";
@@ -111,6 +112,7 @@ initializeSentry();
 app.use(securityHeaders());
 app.use(observabilityEnhancedMiddleware);
 app.use(soc2AuditLogger()); // SOC 2 System Monitoring (CC7.2)
+app.use(dlpMiddleware); // Enterprise Data Loss Prevention (PII Redaction)
 
 // Global tenant-context dependent middleware must be mounted AFTER tenant identification
 // Currently, tenant context usually happens in the specific routes or via `requireTenant`
