@@ -1,94 +1,59 @@
 package io.settler.clients;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.settler.exceptions.*;
-import okhttp3.*;
-
-import java.io.IOException;
+import io.settler.http.HttpExecutor;
 
 /**
  * Client for reconciliation report operations.
+ *
+ * <pre>{@code
+ * SettlerClient client = SettlerClient.create("sk_test");
+ * JsonNode report = client.reports().get("job_123");
+ * JsonNode unmatched = client.reports().getUnmatched("job_123");
+ * }</pre>
  */
 public class ReportsClient {
-    private final String baseUrl;
-    private final String apiKey;
-    private final OkHttpClient httpClient;
-    private final ObjectMapper mapper;
+    private final HttpExecutor http;
 
+    /**
+     * Creates a ReportsClient with a shared HttpExecutor.
+     *
+     * @param http the shared HTTP executor
+     */
+    public ReportsClient(HttpExecutor http) {
+        this.http = http;
+    }
+
+    /**
+     * @deprecated Use {@link #ReportsClient(HttpExecutor)} via SettlerClient instead.
+     */
+    @Deprecated
     public ReportsClient(String baseUrl, String apiKey) {
-        this.baseUrl = baseUrl;
-        this.apiKey = apiKey;
-        this.httpClient = new OkHttpClient.Builder()
-                .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-                .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-                .build();
-        this.mapper = new ObjectMapper();
-        this.mapper.findAndRegisterModules();
+        this(new HttpExecutor(
+            io.settler.SettlerConfig.builder().apiKey(apiKey).baseUrl(baseUrl).build()
+        ));
     }
 
     /**
      * Get a reconciliation report for a job.
+     *
+     * @param jobId the job ID
+     * @return the report data
+     * @throws SettlerException if the request fails
      */
-    public JsonNode get(String jobId) throws IOException {
-        Request request = buildRequest("GET", "/reports/" + jobId);
-        return executeRequest(request);
+    public JsonNode get(String jobId) throws SettlerException {
+        return http.get("/reports/" + jobId, null);
     }
 
     /**
      * Get unmatched transactions for a job.
+     *
+     * @param jobId the job ID
+     * @return unmatched transaction data
+     * @throws SettlerException if the request fails
      */
-    public JsonNode getUnmatched(String jobId) throws IOException {
-        Request request = buildRequest("GET", "/reports/" + jobId + "/unmatched");
-        return executeRequest(request);
-    }
-
-    private Request buildRequest(String method, String path) {
-        HttpUrl url = HttpUrl.parse(baseUrl + path);
-
-        Request.Builder builder = new Request.Builder()
-                .url(url)
-                .header("Content-Type", "application/json")
-                .header("User-Agent", "settler-java/1.0.0");
-
-        if (apiKey.startsWith("rk_") || apiKey.startsWith("sk_")) {
-            builder.header("X-API-Key", apiKey);
-        } else {
-            builder.header("Authorization", "Bearer " + apiKey);
-        }
-
-        builder.method(method, null);
-        return builder.build();
-    }
-
-    private JsonNode executeRequest(Request request) throws IOException {
-        try (Response response = httpClient.newCall(request).execute()) {
-            String responseBody = response.body() != null ? response.body().string() : "";
-            if (!response.isSuccessful()) {
-                handleError(response.code(), responseBody);
-            }
-            return mapper.readTree(responseBody);
-        }
-    }
-
-    private void handleError(int code, String body) throws IOException {
-        String message = "Unknown error";
-        try {
-            JsonNode json = mapper.readTree(body);
-            if (json.has("message")) message = json.get("message").asText();
-            else if (json.has("error")) message = json.get("error").asText();
-        } catch (Exception ignored) {
-            message = body.isEmpty() ? message : body;
-        }
-
-        switch (code) {
-            case 400: throw new ValidationException(message);
-            case 401: case 403: throw new AuthException(message);
-            case 404: throw new NotFoundException(message);
-            case 429: throw new RateLimitException(message);
-            default:
-                if (code >= 500) throw new ServerException(message);
-                throw new SettlerException(message);
-        }
+    public JsonNode getUnmatched(String jobId) throws SettlerException {
+        return http.get("/reports/" + jobId + "/unmatched", null);
     }
 }
