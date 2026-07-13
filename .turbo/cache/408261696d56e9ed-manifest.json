@@ -1,17 +1,17 @@
 {
   "files": {
-    "packages/sdk/.turbo/turbo-typecheck.log": {
+    "packages\\sdk\\.turbo\\turbo-typecheck.log": {
       "size": 288,
-      "mtime_nanos": 1783985242126899100,
+      "mtime_nanos": 1783985426124533700,
       "mode": 420,
       "is_dir": false
     },
-    "packages/sdk/tsconfig.tsbuildinfo": {
+    "packages\\sdk\\tsconfig.tsbuildinfo": {
       "size": 94506,
-      "mtime_nanos": 1783985242048844000,
+      "mtime_nanos": 1783985426125528000,
       "mode": 420,
       "is_dir": false
     }
   },
-  "order": ["packages/sdk/.turbo/turbo-typecheck.log", "packages/sdk/tsconfig.tsbuildinfo"]
+  "order": ["packages\\sdk\\.turbo\\turbo-typecheck.log", "packages\\sdk\\tsconfig.tsbuildinfo"]
 }

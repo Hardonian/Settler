@@ -1,20 +1,20 @@
 {
   "files": {
-    "packages/edge-ai-core/tsconfig.tsbuildinfo": {
-      "size": 93631,
-      "mtime_nanos": 1783979864817874500,
+    "packages\\edge-ai-core\\.turbo\\turbo-typecheck.log": {
+      "size": 109,
+      "mtime_nanos": 1783985426127698100,
       "mode": 420,
       "is_dir": false
     },
-    "packages/edge-ai-core/.turbo/turbo-typecheck.log": {
-      "size": 109,
-      "mtime_nanos": 1783985241622179600,
+    "packages\\edge-ai-core\\tsconfig.tsbuildinfo": {
+      "size": 93631,
+      "mtime_nanos": 1783985426129696300,
       "mode": 420,
       "is_dir": false
     }
   },
   "order": [
-    "packages/edge-ai-core/.turbo/turbo-typecheck.log",
-    "packages/edge-ai-core/tsconfig.tsbuildinfo"
+    "packages\\edge-ai-core\\.turbo\\turbo-typecheck.log",
+    "packages\\edge-ai-core\\tsconfig.tsbuildinfo"
   ]
 }

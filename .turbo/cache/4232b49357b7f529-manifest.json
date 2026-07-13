@@ -1,1023 +1,1021 @@
 {
   "files": {
-    "packages/reconciliation-core/dist/merged-list-pagination.js.map": {
-      "size": 5458,
-      "mtime_nanos": 1783985246831035500,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/canonical-run-result.js.map": {
-      "size": 23636,
-      "mtime_nanos": 1783985246717713500,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-resolution.d.ts.map": {
-      "size": 1306,
-      "mtime_nanos": 1783985246761203000,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/canonical-reconciliation.js": {
-      "size": 7784,
-      "mtime_nanos": 1783985246734333200,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-proofpack-artifact.js": {
-      "size": 3831,
-      "mtime_nanos": 1783985247031944800,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/canonical-consistency.d.ts": {
-      "size": 807,
-      "mtime_nanos": 1783985246879155600,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/console-reconciliation-list.js.map": {
-      "size": 1821,
-      "mtime_nanos": 1783985246882455700,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/exception-workbench.d.ts": {
-      "size": 2153,
-      "mtime_nanos": 1783985246772962800,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-capabilities.d.ts.map": {
-      "size": 433,
-      "mtime_nanos": 1783985246959853900,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/policy-tolerance-merge.d.ts": {
-      "size": 655,
-      "mtime_nanos": 1783985247039222400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/source-reliability.js": {
-      "size": 1795,
-      "mtime_nanos": 1783985246788869500,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/merged-runs-query.js": {
-      "size": 10749,
-      "mtime_nanos": 1783985246851316800,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/api-runs-list-adapter.d.ts": {
-      "size": 3029,
-      "mtime_nanos": 1783985246864135900,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-proofpack-artifact.js.map": {
-      "size": 2760,
-      "mtime_nanos": 1783985247031129600,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/canonical-consistency.js.map": {
-      "size": 1806,
-      "mtime_nanos": 1783985246875377200,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-proofpack-artifact.d.ts.map": {
-      "size": 1733,
-      "mtime_nanos": 1783985247032933700,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/policy-tolerance-merge.js.map": {
-      "size": 1471,
-      "mtime_nanos": 1783985247039222400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/operator-run-detail.d.ts": {
-      "size": 7500,
-      "mtime_nanos": 1783985246974656800,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/exception-intelligence.d.ts": {
-      "size": 2735,
-      "mtime_nanos": 1783985246918911300,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/operator-api-envelope.d.ts": {
-      "size": 1136,
-      "mtime_nanos": 1783985247047891800,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/recon-audit-stages.d.ts.map": {
-      "size": 466,
-      "mtime_nanos": 1783985246987847900,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/exception-run-comparison.js": {
-      "size": 3659,
-      "mtime_nanos": 1783985246953853400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/billing-entitlements.d.ts.map": {
-      "size": 1101,
-      "mtime_nanos": 1783985246871335400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/prior-run-delta-analyst.js.map": {
-      "size": 3650,
-      "mtime_nanos": 1783985247012459400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-delta-classification.js": {
-      "size": 2048,
-      "mtime_nanos": 1783985246787856300,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/exception-run-comparison.d.ts": {
-      "size": 1577,
-      "mtime_nanos": 1783985246955848400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/source-reliability.js.map": {
-      "size": 1551,
-      "mtime_nanos": 1783985246788869500,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-resolution.js.map": {
-      "size": 4270,
-      "mtime_nanos": 1783985246757172100,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/operator-api-envelope.js": {
-      "size": 1667,
-      "mtime_nanos": 1783985247046381400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/exception-intelligence.js": {
-      "size": 17925,
-      "mtime_nanos": 1783985246908425700,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/exception-run-comparison.js.map": {
-      "size": 3075,
-      "mtime_nanos": 1783985246952859700,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/operator-run-detail-resolve.js": {
-      "size": 21040,
-      "mtime_nanos": 1783985246998683000,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/api-runs-list-adapter.d.ts.map": {
-      "size": 2395,
-      "mtime_nanos": 1783985246863598400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/cross-run-intelligence.js": {
-      "size": 22253,
-      "mtime_nanos": 1783985246895202800,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-operator-intelligence.js.map": {
-      "size": 1439,
-      "mtime_nanos": 1783985246802366900,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/source-reliability.d.ts.map": {
-      "size": 585,
-      "mtime_nanos": 1783985246797691900,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-surface-shaping.d.ts": {
-      "size": 1685,
-      "mtime_nanos": 1783985246820245300,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/index.d.ts": {
-      "size": 1567,
-      "mtime_nanos": 1783985247061963100,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/policy-engine.d.ts": {
-      "size": 1260,
-      "mtime_nanos": 1783985246781814500,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/prior-run-delta-analyst.d.ts": {
-      "size": 1700,
-      "mtime_nanos": 1783985247012459400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/exception-workbench.d.ts.map": {
-      "size": 1940,
-      "mtime_nanos": 1783985246772962800,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/exception-workbench.js": {
-      "size": 6841,
-      "mtime_nanos": 1783985246766749600,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/prior-run-delta-analyst.d.ts.map": {
-      "size": 1377,
-      "mtime_nanos": 1783985247012459400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/prior-run-delta-analyst.js": {
-      "size": 4868,
-      "mtime_nanos": 1783985247012459400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/v1-serializer.d.ts": {
-      "size": 365,
-      "mtime_nanos": 1783985246965137500,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/recon-audit-stages.js": {
-      "size": 1543,
-      "mtime_nanos": 1783985246980666700,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-configuration-summary.js": {
-      "size": 5727,
-      "mtime_nanos": 1783985246980666700,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/structured-run-delta.js": {
-      "size": 5209,
-      "mtime_nanos": 1783985247053924200,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/billing-entitlements.js": {
-      "size": 3093,
-      "mtime_nanos": 1783985246869705400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/index.d.ts.map": {
-      "size": 907,
-      "mtime_nanos": 1783985247061963100,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-institutional-memory.js": {
-      "size": 4013,
-      "mtime_nanos": 1783985247023599400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/uuid-collision-log.js": {
-      "size": 903,
-      "mtime_nanos": 1783985246680211400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/exception-intelligence.d.ts.map": {
-      "size": 2617,
-      "mtime_nanos": 1783985246918911300,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/api-runs-list-adapter.js.map": {
-      "size": 3334,
-      "mtime_nanos": 1783985246859244600,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/canonical-reconciliation.d.ts": {
-      "size": 4310,
-      "mtime_nanos": 1783985246741921700,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-proofpack-index.d.ts.map": {
-      "size": 4910,
-      "mtime_nanos": 1783985246934826200,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/.turbo/turbo-build.log": {
-      "size": 376,
-      "mtime_nanos": 1783985247146488500,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/exception-intelligence.js.map": {
-      "size": 13317,
-      "mtime_nanos": 1783985246908425700,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/adjudication-policy-load.d.ts": {
-      "size": 761,
-      "mtime_nanos": 1783985246814857400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/policy-engine.d.ts.map": {
-      "size": 602,
-      "mtime_nanos": 1783985246781814500,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/canonical-run-result.d.ts": {
-      "size": 6984,
-      "mtime_nanos": 1783985246726584800,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-delta-classification.d.ts.map": {
-      "size": 655,
-      "mtime_nanos": 1783985246788869500,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/cross-run-intelligence.d.ts": {
-      "size": 4519,
-      "mtime_nanos": 1783985246903157400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/billing-entitlements.d.ts": {
-      "size": 1224,
-      "mtime_nanos": 1783985246871866900,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/source-reliability.d.ts": {
-      "size": 762,
-      "mtime_nanos": 1783985246797691900,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/support-intake-run-context.js": {
-      "size": 9200,
-      "mtime_nanos": 1783985247007202800,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-operator-intelligence.d.ts": {
-      "size": 1307,
-      "mtime_nanos": 1783985246804506500,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-operator-intelligence.js": {
-      "size": 1643,
-      "mtime_nanos": 1783985246802366900,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/merged-list-pagination.d.ts.map": {
-      "size": 1604,
-      "mtime_nanos": 1783985246838065900,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/exception-workbench.js.map": {
-      "size": 5964,
-      "mtime_nanos": 1783985246766749600,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/merged-list-pagination.d.ts": {
-      "size": 3158,
-      "mtime_nanos": 1783985246839885800,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-delta-classification.js.map": {
-      "size": 2105,
-      "mtime_nanos": 1783985246785841700,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/operator-run-detail.d.ts.map": {
-      "size": 5969,
-      "mtime_nanos": 1783985246974146500,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-proofpack-index.js": {
-      "size": 27083,
-      "mtime_nanos": 1783985246934826200,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-configuration-summary.d.ts.map": {
-      "size": 1791,
-      "mtime_nanos": 1783985246980666700,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/policy-tolerance-merge.js": {
-      "size": 1716,
-      "mtime_nanos": 1783985247039222400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/prisma-client-like.js": {
-      "size": 123,
-      "mtime_nanos": 1783985246741921700,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-resolution.js": {
-      "size": 6087,
-      "mtime_nanos": 1783985246757172100,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-proofpack-index.js.map": {
-      "size": 21579,
-      "mtime_nanos": 1783985246934826200,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/canonical-consistency.d.ts.map": {
-      "size": 463,
-      "mtime_nanos": 1783985246878086600,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/support-intake-run-context.d.ts": {
-      "size": 2096,
-      "mtime_nanos": 1783985247012459400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/policy-engine.js.map": {
-      "size": 2276,
-      "mtime_nanos": 1783985246772962800,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/recon-audit-stages.js.map": {
-      "size": 1457,
-      "mtime_nanos": 1783985246980666700,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/operator-api-envelope.d.ts.map": {
-      "size": 857,
-      "mtime_nanos": 1783985247047891800,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/policy-tolerance-merge.d.ts.map": {
-      "size": 460,
-      "mtime_nanos": 1783985247039222400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/policy-engine.js": {
-      "size": 2482,
-      "mtime_nanos": 1783985246779801900,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/v1-serializer.js": {
-      "size": 2107,
-      "mtime_nanos": 1783985246963623700,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/console-reconciliation-list.js": {
-      "size": 2385,
-      "mtime_nanos": 1783985246883619600,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/merged-list-pagination.js": {
-      "size": 5741,
-      "mtime_nanos": 1783985246833049700,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-capabilities.js": {
-      "size": 731,
-      "mtime_nanos": 1783985246957849800,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-proofpack-index.d.ts": {
-      "size": 6689,
-      "mtime_nanos": 1783985246934826200,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/operator-run-detail.js.map": {
-      "size": 6364,
-      "mtime_nanos": 1783985246970146600,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/adjudication-policy-load.js.map": {
-      "size": 1945,
-      "mtime_nanos": 1783985246810832400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-institutional-memory.d.ts": {
-      "size": 1698,
-      "mtime_nanos": 1783985247027113800,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/merged-runs-query.js.map": {
-      "size": 5162,
-      "mtime_nanos": 1783985246850248400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/adjudication-policy-load.d.ts.map": {
-      "size": 526,
-      "mtime_nanos": 1783985246814857400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-delta-classification.d.ts": {
-      "size": 722,
-      "mtime_nanos": 1783985246788869500,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-operator-intelligence.d.ts.map": {
-      "size": 1227,
-      "mtime_nanos": 1783985246804506500,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/uuid-collision-log.d.ts": {
-      "size": 598,
-      "mtime_nanos": 1783985246684209100,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/operator-run-detail-resolve.js.map": {
-      "size": 13349,
-      "mtime_nanos": 1783985246998683000,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/adjudication-policy-load.js": {
-      "size": 2814,
-      "mtime_nanos": 1783985246812844400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/recon-audit-stages.d.ts": {
-      "size": 463,
-      "mtime_nanos": 1783985246988418400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-capabilities.d.ts": {
-      "size": 710,
-      "mtime_nanos": 1783985246959853900,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/canonical-reconciliation.d.ts.map": {
+    "packages\\reconciliation-core\\dist\\canonical-reconciliation.d.ts.map": {
       "size": 3698,
-      "mtime_nanos": 1783985246741921700,
+      "mtime_nanos": 1783985426202181100,
       "mode": 420,
       "is_dir": false
     },
-    "packages/reconciliation-core/dist/support-intake-run-context.d.ts.map": {
-      "size": 1610,
-      "mtime_nanos": 1783985247007202800,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/cross-run-intelligence.d.ts.map": {
-      "size": 2652,
-      "mtime_nanos": 1783985246903157400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/v1-serializer.js.map": {
-      "size": 1479,
-      "mtime_nanos": 1783985246962623200,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/prisma-client-like.d.ts.map": {
-      "size": 326,
-      "mtime_nanos": 1783985246747736100,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/canonical-reconciliation.js.map": {
+    "packages\\reconciliation-core\\dist\\canonical-reconciliation.js.map": {
       "size": 5826,
-      "mtime_nanos": 1783985246734333200,
+      "mtime_nanos": 1783985426214888900,
       "mode": 420,
       "is_dir": false
     },
-    "packages/reconciliation-core/dist/operator-run-detail-resolve.d.ts": {
-      "size": 1043,
-      "mtime_nanos": 1783985247003182800,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/merged-runs-query.d.ts": {
-      "size": 1735,
-      "mtime_nanos": 1783985246854121300,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-resolution.d.ts": {
-      "size": 1765,
-      "mtime_nanos": 1783985246761203000,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/support-intake-run-context.js.map": {
-      "size": 6339,
-      "mtime_nanos": 1783985247007202800,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-capabilities.js.map": {
-      "size": 480,
-      "mtime_nanos": 1783985246957849800,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/billing-entitlements.js.map": {
-      "size": 2430,
-      "mtime_nanos": 1783985246868652600,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/structured-run-delta.d.ts.map": {
-      "size": 1642,
-      "mtime_nanos": 1783985247055932600,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/merged-runs-query.d.ts.map": {
-      "size": 1487,
-      "mtime_nanos": 1783985246853106900,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-institutional-memory.js.map": {
-      "size": 2866,
-      "mtime_nanos": 1783985247023599400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/operator-run-detail-resolve.d.ts.map": {
-      "size": 676,
-      "mtime_nanos": 1783985246998683000,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/structured-run-delta.d.ts": {
-      "size": 1671,
-      "mtime_nanos": 1783985247055932600,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/api-runs-list-adapter.js": {
-      "size": 4505,
-      "mtime_nanos": 1783985246860873300,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/uuid-collision-log.d.ts.map": {
-      "size": 499,
-      "mtime_nanos": 1783985246683210400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-institutional-memory.d.ts.map": {
-      "size": 1270,
-      "mtime_nanos": 1783985247025597700,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/structured-run-delta.js.map": {
-      "size": 4954,
-      "mtime_nanos": 1783985247051914900,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/index.js": {
-      "size": 2952,
-      "mtime_nanos": 1783985247059952900,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/canonical-run-result.d.ts.map": {
-      "size": 6677,
-      "mtime_nanos": 1783985246725490800,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/cross-run-intelligence.js.map": {
-      "size": 18530,
-      "mtime_nanos": 1783985246895202800,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-configuration-summary.js.map": {
-      "size": 5037,
-      "mtime_nanos": 1783985246978667700,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/run-proofpack-artifact.d.ts": {
-      "size": 2283,
-      "mtime_nanos": 1783985247032933700,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/canonical-run-result.js": {
-      "size": 27472,
-      "mtime_nanos": 1783985246718802200,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/canonical-consistency.js": {
-      "size": 2270,
-      "mtime_nanos": 1783985246876474600,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/console-reconciliation-list.d.ts": {
-      "size": 718,
-      "mtime_nanos": 1783985246885809700,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/console-reconciliation-list.d.ts.map": {
-      "size": 388,
-      "mtime_nanos": 1783985246885259500,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
-    "packages/reconciliation-core/dist/exception-run-comparison.d.ts.map": {
-      "size": 1010,
-      "mtime_nanos": 1783985246954853400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/uuid-collision-log.js.map": {
-      "size": 623,
-      "mtime_nanos": 1783985246679213700,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/v1-serializer.d.ts.map": {
-      "size": 265,
-      "mtime_nanos": 1783985246964628400,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/prisma-client-like.d.ts": {
-      "size": 476,
-      "mtime_nanos": 1783985246747736100,
-      "mode": 420,
-      "is_dir": false
-    },
-    "packages/reconciliation-core/dist/prisma-client-like.js.map": {
+    "packages\\reconciliation-core\\dist\\prisma-client-like.js.map": {
       "size": 128,
-      "mtime_nanos": 1783985246741921700,
+      "mtime_nanos": 1783985426290476400,
       "mode": 420,
       "is_dir": false
     },
-    "packages/reconciliation-core/dist/run-surface-shaping.d.ts.map": {
-      "size": 600,
-      "mtime_nanos": 1783985246820245300,
+    "packages\\reconciliation-core\\dist\\run-institutional-memory.js": {
+      "size": 4013,
+      "mtime_nanos": 1783985426314812100,
       "mode": 420,
       "is_dir": false
     },
-    "packages/reconciliation-core/dist/run-surface-shaping.js": {
-      "size": 2121,
-      "mtime_nanos": 1783985246820245300,
+    "packages\\reconciliation-core\\dist\\operator-api-envelope.js": {
+      "size": 1667,
+      "mtime_nanos": 1783985426266862000,
       "mode": 420,
       "is_dir": false
     },
-    "packages/reconciliation-core/dist/index.js.map": {
-      "size": 571,
-      "mtime_nanos": 1783985247059952900,
+    "packages\\reconciliation-core\\dist\\exception-intelligence.d.ts": {
+      "size": 2735,
+      "mtime_nanos": 1783985426232964500,
       "mode": 420,
       "is_dir": false
     },
-    "packages/reconciliation-core/dist/run-surface-shaping.js.map": {
+    "packages\\reconciliation-core\\dist\\exception-intelligence.js": {
+      "size": 17925,
+      "mtime_nanos": 1783985426236988800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-proofpack-artifact.d.ts": {
+      "size": 2283,
+      "mtime_nanos": 1783985426320821800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\uuid-collision-log.d.ts": {
+      "size": 598,
+      "mtime_nanos": 1783985426360828800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\billing-entitlements.js.map": {
+      "size": 2430,
+      "mtime_nanos": 1783985426192343300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-surface-shaping.js.map": {
       "size": 1338,
-      "mtime_nanos": 1783985246814857400,
+      "mtime_nanos": 1783985426341408400,
       "mode": 420,
       "is_dir": false
     },
-    "packages/reconciliation-core/dist/run-configuration-summary.d.ts": {
-      "size": 1937,
-      "mtime_nanos": 1783985246980666700,
+    "packages\\reconciliation-core\\dist\\run-resolution.js": {
+      "size": 6087,
+      "mtime_nanos": 1783985426333358200,
       "mode": 420,
       "is_dir": false
     },
-    "packages/reconciliation-core/dist/operator-api-envelope.js.map": {
+    "packages\\reconciliation-core\\dist\\exception-intelligence.js.map": {
+      "size": 13317,
+      "mtime_nanos": 1783985426236988800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-surface-shaping.d.ts.map": {
+      "size": 600,
+      "mtime_nanos": 1783985426335370200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\exception-intelligence.d.ts.map": {
+      "size": 2617,
+      "mtime_nanos": 1783985426232964500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\structured-run-delta.js": {
+      "size": 5209,
+      "mtime_nanos": 1783985426352174000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\operator-api-envelope.js.map": {
       "size": 1013,
-      "mtime_nanos": 1783985247044367100,
+      "mtime_nanos": 1783985426268874100,
       "mode": 420,
       "is_dir": false
     },
-    "packages/reconciliation-core/dist/operator-run-detail.js": {
+    "packages\\reconciliation-core\\dist\\policy-engine.js": {
+      "size": 2482,
+      "mtime_nanos": 1783985426279949000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\api-runs-list-adapter.d.ts": {
+      "size": 3029,
+      "mtime_nanos": 1783985426174584200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-configuration-summary.js.map": {
+      "size": 5037,
+      "mtime_nanos": 1783985426304485500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-resolution.d.ts.map": {
+      "size": 1306,
+      "mtime_nanos": 1783985426333358200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\api-runs-list-adapter.js": {
+      "size": 4505,
+      "mtime_nanos": 1783985426178250100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\recon-audit-stages.js.map": {
+      "size": 1457,
+      "mtime_nanos": 1783985426296511700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-surface-shaping.js": {
+      "size": 2121,
+      "mtime_nanos": 1783985426339396500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\canonical-consistency.d.ts": {
+      "size": 807,
+      "mtime_nanos": 1783985426192343300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\adjudication-policy-load.js.map": {
+      "size": 1945,
+      "mtime_nanos": 1783985426174584200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\canonical-run-result.d.ts": {
+      "size": 6984,
+      "mtime_nanos": 1783985426216898200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\operator-api-envelope.d.ts.map": {
+      "size": 857,
+      "mtime_nanos": 1783985426262225700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-institutional-memory.d.ts": {
+      "size": 1698,
+      "mtime_nanos": 1783985426310523100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\policy-engine.d.ts.map": {
+      "size": 602,
+      "mtime_nanos": 1783985426278937100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\structured-run-delta.d.ts.map": {
+      "size": 1642,
+      "mtime_nanos": 1783985426352174000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-resolution.js.map": {
+      "size": 4270,
+      "mtime_nanos": 1783985426335370200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\recon-audit-stages.js": {
+      "size": 1543,
+      "mtime_nanos": 1783985426294501900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\merged-runs-query.d.ts.map": {
+      "size": 1487,
+      "mtime_nanos": 1783985426258205300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\index.d.ts.map": {
+      "size": 907,
+      "mtime_nanos": 1783985426250166200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\operator-api-envelope.d.ts": {
+      "size": 1136,
+      "mtime_nanos": 1783985426260215600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-capabilities.d.ts": {
+      "size": 710,
+      "mtime_nanos": 1783985426297474500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\prior-run-delta-analyst.js": {
+      "size": 4868,
+      "mtime_nanos": 1783985426287891300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\operator-run-detail.js": {
       "size": 9794,
-      "mtime_nanos": 1783985246971147800,
+      "mtime_nanos": 1783985426274911500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\policy-tolerance-merge.d.ts.map": {
+      "size": 460,
+      "mtime_nanos": 1783985426283892300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\v1-serializer.js.map": {
+      "size": 1479,
+      "mtime_nanos": 1783985426371445700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\billing-entitlements.d.ts": {
+      "size": 1224,
+      "mtime_nanos": 1783985426184283700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\merged-list-pagination.d.ts.map": {
+      "size": 1604,
+      "mtime_nanos": 1783985426256196100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\console-reconciliation-list.d.ts.map": {
+      "size": 388,
+      "mtime_nanos": 1783985426222937000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\merged-runs-query.d.ts": {
+      "size": 1735,
+      "mtime_nanos": 1783985426258205300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\uuid-collision-log.js": {
+      "size": 903,
+      "mtime_nanos": 1783985426362839100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\policy-tolerance-merge.js.map": {
+      "size": 1471,
+      "mtime_nanos": 1783985426285895400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\operator-run-detail-resolve.d.ts": {
+      "size": 1043,
+      "mtime_nanos": 1783985426270887300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\v1-serializer.d.ts.map": {
+      "size": 265,
+      "mtime_nanos": 1783985426369434500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-configuration-summary.js": {
+      "size": 5727,
+      "mtime_nanos": 1783985426302483400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-proofpack-artifact.js.map": {
+      "size": 2760,
+      "mtime_nanos": 1783985426324820100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-resolution.d.ts": {
+      "size": 1765,
+      "mtime_nanos": 1783985426331850900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-proofpack-artifact.js": {
+      "size": 3831,
+      "mtime_nanos": 1783985426324820100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\policy-engine.d.ts": {
+      "size": 1260,
+      "mtime_nanos": 1783985426276921900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-capabilities.d.ts.map": {
+      "size": 433,
+      "mtime_nanos": 1783985426297474500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\console-reconciliation-list.d.ts": {
+      "size": 718,
+      "mtime_nanos": 1783985426220924000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\operator-run-detail.d.ts": {
+      "size": 7500,
+      "mtime_nanos": 1783985426274911500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\console-reconciliation-list.js": {
+      "size": 2385,
+      "mtime_nanos": 1783985426222937000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\adjudication-policy-load.d.ts": {
+      "size": 761,
+      "mtime_nanos": 1783985426164681200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\exception-run-comparison.d.ts.map": {
+      "size": 1010,
+      "mtime_nanos": 1783985426241008800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\source-reliability.js.map": {
+      "size": 1551,
+      "mtime_nanos": 1783985426348145700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\index.js.map": {
+      "size": 571,
+      "mtime_nanos": 1783985426252176800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-proofpack-index.d.ts.map": {
+      "size": 4910,
+      "mtime_nanos": 1783985426328979400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\merged-runs-query.js.map": {
+      "size": 5162,
+      "mtime_nanos": 1783985426260215600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\exception-workbench.d.ts.map": {
+      "size": 1940,
+      "mtime_nanos": 1783985426246780200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-capabilities.js.map": {
+      "size": 480,
+      "mtime_nanos": 1783985426298463300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\source-reliability.d.ts": {
+      "size": 762,
+      "mtime_nanos": 1783985426343418600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\support-intake-run-context.d.ts": {
+      "size": 2096,
+      "mtime_nanos": 1783985426354185600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\canonical-run-result.js.map": {
+      "size": 23636,
+      "mtime_nanos": 1783985426220924000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\cross-run-intelligence.js": {
+      "size": 22253,
+      "mtime_nanos": 1783985426231449500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\prisma-client-like.d.ts.map": {
+      "size": 326,
+      "mtime_nanos": 1783985426290476400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-delta-classification.js": {
+      "size": 2048,
+      "mtime_nanos": 1783985426306498300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\prisma-client-like.d.ts": {
+      "size": 476,
+      "mtime_nanos": 1783985426290476400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\policy-tolerance-merge.d.ts": {
+      "size": 655,
+      "mtime_nanos": 1783985426283892300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\support-intake-run-context.js.map": {
+      "size": 6339,
+      "mtime_nanos": 1783985426358817000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\canonical-consistency.js": {
+      "size": 2270,
+      "mtime_nanos": 1783985426194356400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\console-reconciliation-list.js.map": {
+      "size": 1821,
+      "mtime_nanos": 1783985426225796800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\prior-run-delta-analyst.d.ts": {
+      "size": 1700,
+      "mtime_nanos": 1783985426285895400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-delta-classification.d.ts": {
+      "size": 722,
+      "mtime_nanos": 1783985426304485500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-institutional-memory.d.ts.map": {
+      "size": 1270,
+      "mtime_nanos": 1783985426312533100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\prior-run-delta-analyst.js.map": {
+      "size": 3650,
+      "mtime_nanos": 1783985426288466500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\uuid-collision-log.d.ts.map": {
+      "size": 499,
+      "mtime_nanos": 1783985426360828800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\operator-run-detail.d.ts.map": {
+      "size": 5969,
+      "mtime_nanos": 1783985426274911500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\merged-list-pagination.js": {
+      "size": 5741,
+      "mtime_nanos": 1783985426256196100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\adjudication-policy-load.js": {
+      "size": 2814,
+      "mtime_nanos": 1783985426164681200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\cross-run-intelligence.d.ts.map": {
+      "size": 2652,
+      "mtime_nanos": 1783985426227808000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\source-reliability.d.ts.map": {
+      "size": 585,
+      "mtime_nanos": 1783985426345432000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\exception-run-comparison.js.map": {
+      "size": 3075,
+      "mtime_nanos": 1783985426243018400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\canonical-run-result.js": {
+      "size": 27472,
+      "mtime_nanos": 1783985426218911500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\.turbo\\turbo-build.log": {
+      "size": 376,
+      "mtime_nanos": 1783985426164681200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\index.d.ts": {
+      "size": 1567,
+      "mtime_nanos": 1783985426250166200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\merged-runs-query.js": {
+      "size": 10749,
+      "mtime_nanos": 1783985426260215600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\source-reliability.js": {
+      "size": 1795,
+      "mtime_nanos": 1783985426345432000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\exception-workbench.js.map": {
+      "size": 5964,
+      "mtime_nanos": 1783985426248157000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\exception-run-comparison.js": {
+      "size": 3659,
+      "mtime_nanos": 1783985426241008800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\canonical-reconciliation.js": {
+      "size": 7784,
+      "mtime_nanos": 1783985426208224000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\structured-run-delta.d.ts": {
+      "size": 1671,
+      "mtime_nanos": 1783985426350158600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\v1-serializer.js": {
+      "size": 2107,
+      "mtime_nanos": 1783985426369434500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-institutional-memory.js.map": {
+      "size": 2866,
+      "mtime_nanos": 1783985426315810500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\canonical-consistency.js.map": {
+      "size": 1806,
+      "mtime_nanos": 1783985426198153600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\adjudication-policy-load.d.ts.map": {
+      "size": 526,
+      "mtime_nanos": 1783985426164681200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-proofpack-index.js.map": {
+      "size": 21579,
+      "mtime_nanos": 1783985426330834400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\canonical-consistency.d.ts.map": {
+      "size": 463,
+      "mtime_nanos": 1783985426194356400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\cross-run-intelligence.js.map": {
+      "size": 18530,
+      "mtime_nanos": 1783985426232964500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\policy-engine.js.map": {
+      "size": 2276,
+      "mtime_nanos": 1783985426282891400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\operator-run-detail-resolve.js.map": {
+      "size": 13349,
+      "mtime_nanos": 1783985426272898800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-operator-intelligence.js": {
+      "size": 1643,
+      "mtime_nanos": 1783985426317810700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\billing-entitlements.d.ts.map": {
+      "size": 1101,
+      "mtime_nanos": 1783985426190328400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\structured-run-delta.js.map": {
+      "size": 4954,
+      "mtime_nanos": 1783985426352174000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-capabilities.js": {
+      "size": 731,
+      "mtime_nanos": 1783985426298463300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-proofpack-index.d.ts": {
+      "size": 6689,
+      "mtime_nanos": 1783985426326965300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-operator-intelligence.d.ts.map": {
+      "size": 1227,
+      "mtime_nanos": 1783985426316812400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-operator-intelligence.d.ts": {
+      "size": 1307,
+      "mtime_nanos": 1783985426316812400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-operator-intelligence.js.map": {
+      "size": 1439,
+      "mtime_nanos": 1783985426318821000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\recon-audit-stages.d.ts.map": {
+      "size": 466,
+      "mtime_nanos": 1783985426292490800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\prior-run-delta-analyst.d.ts.map": {
+      "size": 1377,
+      "mtime_nanos": 1783985426286891700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-surface-shaping.d.ts": {
+      "size": 1685,
+      "mtime_nanos": 1783985426335370200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-proofpack-artifact.d.ts.map": {
+      "size": 1733,
+      "mtime_nanos": 1783985426322821300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\billing-entitlements.js": {
+      "size": 3093,
+      "mtime_nanos": 1783985426190328400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\support-intake-run-context.d.ts.map": {
+      "size": 1610,
+      "mtime_nanos": 1783985426354185600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\prisma-client-like.js": {
+      "size": 123,
+      "mtime_nanos": 1783985426290476400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\support-intake-run-context.js": {
+      "size": 9200,
+      "mtime_nanos": 1783985426356198300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\operator-run-detail-resolve.d.ts.map": {
+      "size": 676,
+      "mtime_nanos": 1783985426270887300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\api-runs-list-adapter.js.map": {
+      "size": 3334,
+      "mtime_nanos": 1783985426184283700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\merged-list-pagination.d.ts": {
+      "size": 3158,
+      "mtime_nanos": 1783985426254186200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\exception-run-comparison.d.ts": {
+      "size": 1577,
+      "mtime_nanos": 1783985426241008800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\exception-workbench.d.ts": {
+      "size": 2153,
+      "mtime_nanos": 1783985426245028900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-configuration-summary.d.ts.map": {
+      "size": 1791,
+      "mtime_nanos": 1783985426300473700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\policy-tolerance-merge.js": {
+      "size": 1716,
+      "mtime_nanos": 1783985426284893700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\canonical-run-result.d.ts.map": {
+      "size": 6677,
+      "mtime_nanos": 1783985426216898200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\operator-run-detail-resolve.js": {
+      "size": 21040,
+      "mtime_nanos": 1783985426272898800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\operator-run-detail.js.map": {
+      "size": 6364,
+      "mtime_nanos": 1783985426276921900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-configuration-summary.d.ts": {
+      "size": 1937,
+      "mtime_nanos": 1783985426298463300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\uuid-collision-log.js.map": {
+      "size": 623,
+      "mtime_nanos": 1783985426365169500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\cross-run-intelligence.d.ts": {
+      "size": 4519,
+      "mtime_nanos": 1783985426227808000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\v1-serializer.d.ts": {
+      "size": 365,
+      "mtime_nanos": 1783985426369434500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\merged-list-pagination.js.map": {
+      "size": 5458,
+      "mtime_nanos": 1783985426258205300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\canonical-reconciliation.d.ts": {
+      "size": 4310,
+      "mtime_nanos": 1783985426200168500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-delta-classification.js.map": {
+      "size": 2105,
+      "mtime_nanos": 1783985426308511200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\exception-workbench.js": {
+      "size": 6841,
+      "mtime_nanos": 1783985426247467700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\api-runs-list-adapter.d.ts.map": {
+      "size": 2395,
+      "mtime_nanos": 1783985426174584200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\recon-audit-stages.d.ts": {
+      "size": 463,
+      "mtime_nanos": 1783985426292490800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-delta-classification.d.ts.map": {
+      "size": 655,
+      "mtime_nanos": 1783985426306498300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\run-proofpack-index.js": {
+      "size": 27083,
+      "mtime_nanos": 1783985426328979400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages\\reconciliation-core\\dist\\index.js": {
+      "size": 2952,
+      "mtime_nanos": 1783985426250166200,
       "mode": 420,
       "is_dir": false
     }
   },
   "order": [
-    "packages/reconciliation-core/.turbo/turbo-build.log",
-    "packages/reconciliation-core/dist",
-    "packages/reconciliation-core/dist/adjudication-policy-load.d.ts",
-    "packages/reconciliation-core/dist/adjudication-policy-load.d.ts.map",
-    "packages/reconciliation-core/dist/adjudication-policy-load.js",
-    "packages/reconciliation-core/dist/adjudication-policy-load.js.map",
-    "packages/reconciliation-core/dist/api-runs-list-adapter.d.ts",
-    "packages/reconciliation-core/dist/api-runs-list-adapter.d.ts.map",
-    "packages/reconciliation-core/dist/api-runs-list-adapter.js",
-    "packages/reconciliation-core/dist/api-runs-list-adapter.js.map",
-    "packages/reconciliation-core/dist/billing-entitlements.d.ts",
-    "packages/reconciliation-core/dist/billing-entitlements.d.ts.map",
-    "packages/reconciliation-core/dist/billing-entitlements.js",
-    "packages/reconciliation-core/dist/billing-entitlements.js.map",
-    "packages/reconciliation-core/dist/canonical-consistency.d.ts",
-    "packages/reconciliation-core/dist/canonical-consistency.d.ts.map",
-    "packages/reconciliation-core/dist/canonical-consistency.js",
-    "packages/reconciliation-core/dist/canonical-consistency.js.map",
-    "packages/reconciliation-core/dist/canonical-reconciliation.d.ts",
-    "packages/reconciliation-core/dist/canonical-reconciliation.d.ts.map",
-    "packages/reconciliation-core/dist/canonical-reconciliation.js",
-    "packages/reconciliation-core/dist/canonical-reconciliation.js.map",
-    "packages/reconciliation-core/dist/canonical-run-result.d.ts",
-    "packages/reconciliation-core/dist/canonical-run-result.d.ts.map",
-    "packages/reconciliation-core/dist/canonical-run-result.js",
-    "packages/reconciliation-core/dist/canonical-run-result.js.map",
-    "packages/reconciliation-core/dist/console-reconciliation-list.d.ts",
-    "packages/reconciliation-core/dist/console-reconciliation-list.d.ts.map",
-    "packages/reconciliation-core/dist/console-reconciliation-list.js",
-    "packages/reconciliation-core/dist/console-reconciliation-list.js.map",
-    "packages/reconciliation-core/dist/cross-run-intelligence.d.ts",
-    "packages/reconciliation-core/dist/cross-run-intelligence.d.ts.map",
-    "packages/reconciliation-core/dist/cross-run-intelligence.js",
-    "packages/reconciliation-core/dist/cross-run-intelligence.js.map",
-    "packages/reconciliation-core/dist/exception-intelligence.d.ts",
-    "packages/reconciliation-core/dist/exception-intelligence.d.ts.map",
-    "packages/reconciliation-core/dist/exception-intelligence.js",
-    "packages/reconciliation-core/dist/exception-intelligence.js.map",
-    "packages/reconciliation-core/dist/exception-run-comparison.d.ts",
-    "packages/reconciliation-core/dist/exception-run-comparison.d.ts.map",
-    "packages/reconciliation-core/dist/exception-run-comparison.js",
-    "packages/reconciliation-core/dist/exception-run-comparison.js.map",
-    "packages/reconciliation-core/dist/exception-workbench.d.ts",
-    "packages/reconciliation-core/dist/exception-workbench.d.ts.map",
-    "packages/reconciliation-core/dist/exception-workbench.js",
-    "packages/reconciliation-core/dist/exception-workbench.js.map",
-    "packages/reconciliation-core/dist/index.d.ts",
-    "packages/reconciliation-core/dist/index.d.ts.map",
-    "packages/reconciliation-core/dist/index.js",
-    "packages/reconciliation-core/dist/index.js.map",
-    "packages/reconciliation-core/dist/merged-list-pagination.d.ts",
-    "packages/reconciliation-core/dist/merged-list-pagination.d.ts.map",
-    "packages/reconciliation-core/dist/merged-list-pagination.js",
-    "packages/reconciliation-core/dist/merged-list-pagination.js.map",
-    "packages/reconciliation-core/dist/merged-runs-query.d.ts",
-    "packages/reconciliation-core/dist/merged-runs-query.d.ts.map",
-    "packages/reconciliation-core/dist/merged-runs-query.js",
-    "packages/reconciliation-core/dist/merged-runs-query.js.map",
-    "packages/reconciliation-core/dist/operator-api-envelope.d.ts",
-    "packages/reconciliation-core/dist/operator-api-envelope.d.ts.map",
-    "packages/reconciliation-core/dist/operator-api-envelope.js",
-    "packages/reconciliation-core/dist/operator-api-envelope.js.map",
-    "packages/reconciliation-core/dist/operator-run-detail-resolve.d.ts",
-    "packages/reconciliation-core/dist/operator-run-detail-resolve.d.ts.map",
-    "packages/reconciliation-core/dist/operator-run-detail-resolve.js",
-    "packages/reconciliation-core/dist/operator-run-detail-resolve.js.map",
-    "packages/reconciliation-core/dist/operator-run-detail.d.ts",
-    "packages/reconciliation-core/dist/operator-run-detail.d.ts.map",
-    "packages/reconciliation-core/dist/operator-run-detail.js",
-    "packages/reconciliation-core/dist/operator-run-detail.js.map",
-    "packages/reconciliation-core/dist/policy-engine.d.ts",
-    "packages/reconciliation-core/dist/policy-engine.d.ts.map",
-    "packages/reconciliation-core/dist/policy-engine.js",
-    "packages/reconciliation-core/dist/policy-engine.js.map",
-    "packages/reconciliation-core/dist/policy-tolerance-merge.d.ts",
-    "packages/reconciliation-core/dist/policy-tolerance-merge.d.ts.map",
-    "packages/reconciliation-core/dist/policy-tolerance-merge.js",
-    "packages/reconciliation-core/dist/policy-tolerance-merge.js.map",
-    "packages/reconciliation-core/dist/prior-run-delta-analyst.d.ts",
-    "packages/reconciliation-core/dist/prior-run-delta-analyst.d.ts.map",
-    "packages/reconciliation-core/dist/prior-run-delta-analyst.js",
-    "packages/reconciliation-core/dist/prior-run-delta-analyst.js.map",
-    "packages/reconciliation-core/dist/prisma-client-like.d.ts",
-    "packages/reconciliation-core/dist/prisma-client-like.d.ts.map",
-    "packages/reconciliation-core/dist/prisma-client-like.js",
-    "packages/reconciliation-core/dist/prisma-client-like.js.map",
-    "packages/reconciliation-core/dist/recon-audit-stages.d.ts",
-    "packages/reconciliation-core/dist/recon-audit-stages.d.ts.map",
-    "packages/reconciliation-core/dist/recon-audit-stages.js",
-    "packages/reconciliation-core/dist/recon-audit-stages.js.map",
-    "packages/reconciliation-core/dist/run-capabilities.d.ts",
-    "packages/reconciliation-core/dist/run-capabilities.d.ts.map",
-    "packages/reconciliation-core/dist/run-capabilities.js",
-    "packages/reconciliation-core/dist/run-capabilities.js.map",
-    "packages/reconciliation-core/dist/run-configuration-summary.d.ts",
-    "packages/reconciliation-core/dist/run-configuration-summary.d.ts.map",
-    "packages/reconciliation-core/dist/run-configuration-summary.js",
-    "packages/reconciliation-core/dist/run-configuration-summary.js.map",
-    "packages/reconciliation-core/dist/run-delta-classification.d.ts",
-    "packages/reconciliation-core/dist/run-delta-classification.d.ts.map",
-    "packages/reconciliation-core/dist/run-delta-classification.js",
-    "packages/reconciliation-core/dist/run-delta-classification.js.map",
-    "packages/reconciliation-core/dist/run-institutional-memory.d.ts",
-    "packages/reconciliation-core/dist/run-institutional-memory.d.ts.map",
-    "packages/reconciliation-core/dist/run-institutional-memory.js",
-    "packages/reconciliation-core/dist/run-institutional-memory.js.map",
-    "packages/reconciliation-core/dist/run-operator-intelligence.d.ts",
-    "packages/reconciliation-core/dist/run-operator-intelligence.d.ts.map",
-    "packages/reconciliation-core/dist/run-operator-intelligence.js",
-    "packages/reconciliation-core/dist/run-operator-intelligence.js.map",
-    "packages/reconciliation-core/dist/run-proofpack-artifact.d.ts",
-    "packages/reconciliation-core/dist/run-proofpack-artifact.d.ts.map",
-    "packages/reconciliation-core/dist/run-proofpack-artifact.js",
-    "packages/reconciliation-core/dist/run-proofpack-artifact.js.map",
-    "packages/reconciliation-core/dist/run-proofpack-index.d.ts",
-    "packages/reconciliation-core/dist/run-proofpack-index.d.ts.map",
-    "packages/reconciliation-core/dist/run-proofpack-index.js",
-    "packages/reconciliation-core/dist/run-proofpack-index.js.map",
-    "packages/reconciliation-core/dist/run-resolution.d.ts",
-    "packages/reconciliation-core/dist/run-resolution.d.ts.map",
-    "packages/reconciliation-core/dist/run-resolution.js",
-    "packages/reconciliation-core/dist/run-resolution.js.map",
-    "packages/reconciliation-core/dist/run-surface-shaping.d.ts",
-    "packages/reconciliation-core/dist/run-surface-shaping.d.ts.map",
-    "packages/reconciliation-core/dist/run-surface-shaping.js",
-    "packages/reconciliation-core/dist/run-surface-shaping.js.map",
-    "packages/reconciliation-core/dist/source-reliability.d.ts",
-    "packages/reconciliation-core/dist/source-reliability.d.ts.map",
-    "packages/reconciliation-core/dist/source-reliability.js",
-    "packages/reconciliation-core/dist/source-reliability.js.map",
-    "packages/reconciliation-core/dist/structured-run-delta.d.ts",
-    "packages/reconciliation-core/dist/structured-run-delta.d.ts.map",
-    "packages/reconciliation-core/dist/structured-run-delta.js",
-    "packages/reconciliation-core/dist/structured-run-delta.js.map",
-    "packages/reconciliation-core/dist/support-intake-run-context.d.ts",
-    "packages/reconciliation-core/dist/support-intake-run-context.d.ts.map",
-    "packages/reconciliation-core/dist/support-intake-run-context.js",
-    "packages/reconciliation-core/dist/support-intake-run-context.js.map",
-    "packages/reconciliation-core/dist/uuid-collision-log.d.ts",
-    "packages/reconciliation-core/dist/uuid-collision-log.d.ts.map",
-    "packages/reconciliation-core/dist/uuid-collision-log.js",
-    "packages/reconciliation-core/dist/uuid-collision-log.js.map",
-    "packages/reconciliation-core/dist/v1-serializer.d.ts",
-    "packages/reconciliation-core/dist/v1-serializer.d.ts.map",
-    "packages/reconciliation-core/dist/v1-serializer.js",
-    "packages/reconciliation-core/dist/v1-serializer.js.map"
+    "packages\\reconciliation-core\\.turbo\\turbo-build.log",
+    "packages\\reconciliation-core\\dist\\adjudication-policy-load.d.ts",
+    "packages\\reconciliation-core\\dist\\adjudication-policy-load.d.ts.map",
+    "packages\\reconciliation-core\\dist\\adjudication-policy-load.js",
+    "packages\\reconciliation-core\\dist\\adjudication-policy-load.js.map",
+    "packages\\reconciliation-core\\dist\\api-runs-list-adapter.d.ts",
+    "packages\\reconciliation-core\\dist\\api-runs-list-adapter.d.ts.map",
+    "packages\\reconciliation-core\\dist\\api-runs-list-adapter.js",
+    "packages\\reconciliation-core\\dist\\api-runs-list-adapter.js.map",
+    "packages\\reconciliation-core\\dist\\billing-entitlements.d.ts",
+    "packages\\reconciliation-core\\dist\\billing-entitlements.d.ts.map",
+    "packages\\reconciliation-core\\dist\\billing-entitlements.js",
+    "packages\\reconciliation-core\\dist\\billing-entitlements.js.map",
+    "packages\\reconciliation-core\\dist\\canonical-consistency.d.ts",
+    "packages\\reconciliation-core\\dist\\canonical-consistency.d.ts.map",
+    "packages\\reconciliation-core\\dist\\canonical-consistency.js",
+    "packages\\reconciliation-core\\dist\\canonical-consistency.js.map",
+    "packages\\reconciliation-core\\dist\\canonical-reconciliation.d.ts",
+    "packages\\reconciliation-core\\dist\\canonical-reconciliation.d.ts.map",
+    "packages\\reconciliation-core\\dist\\canonical-reconciliation.js",
+    "packages\\reconciliation-core\\dist\\canonical-reconciliation.js.map",
+    "packages\\reconciliation-core\\dist\\canonical-run-result.d.ts",
+    "packages\\reconciliation-core\\dist\\canonical-run-result.d.ts.map",
+    "packages\\reconciliation-core\\dist\\canonical-run-result.js",
+    "packages\\reconciliation-core\\dist\\canonical-run-result.js.map",
+    "packages\\reconciliation-core\\dist\\console-reconciliation-list.d.ts",
+    "packages\\reconciliation-core\\dist\\console-reconciliation-list.d.ts.map",
+    "packages\\reconciliation-core\\dist\\console-reconciliation-list.js",
+    "packages\\reconciliation-core\\dist\\console-reconciliation-list.js.map",
+    "packages\\reconciliation-core\\dist\\cross-run-intelligence.d.ts",
+    "packages\\reconciliation-core\\dist\\cross-run-intelligence.d.ts.map",
+    "packages\\reconciliation-core\\dist\\cross-run-intelligence.js",
+    "packages\\reconciliation-core\\dist\\cross-run-intelligence.js.map",
+    "packages\\reconciliation-core\\dist\\exception-intelligence.d.ts",
+    "packages\\reconciliation-core\\dist\\exception-intelligence.d.ts.map",
+    "packages\\reconciliation-core\\dist\\exception-intelligence.js",
+    "packages\\reconciliation-core\\dist\\exception-intelligence.js.map",
+    "packages\\reconciliation-core\\dist\\exception-run-comparison.d.ts",
+    "packages\\reconciliation-core\\dist\\exception-run-comparison.d.ts.map",
+    "packages\\reconciliation-core\\dist\\exception-run-comparison.js",
+    "packages\\reconciliation-core\\dist\\exception-run-comparison.js.map",
+    "packages\\reconciliation-core\\dist\\exception-workbench.d.ts",
+    "packages\\reconciliation-core\\dist\\exception-workbench.d.ts.map",
+    "packages\\reconciliation-core\\dist\\exception-workbench.js",
+    "packages\\reconciliation-core\\dist\\exception-workbench.js.map",
+    "packages\\reconciliation-core\\dist\\index.d.ts",
+    "packages\\reconciliation-core\\dist\\index.d.ts.map",
+    "packages\\reconciliation-core\\dist\\index.js",
+    "packages\\reconciliation-core\\dist\\index.js.map",
+    "packages\\reconciliation-core\\dist\\merged-list-pagination.d.ts",
+    "packages\\reconciliation-core\\dist\\merged-list-pagination.d.ts.map",
+    "packages\\reconciliation-core\\dist\\merged-list-pagination.js",
+    "packages\\reconciliation-core\\dist\\merged-list-pagination.js.map",
+    "packages\\reconciliation-core\\dist\\merged-runs-query.d.ts",
+    "packages\\reconciliation-core\\dist\\merged-runs-query.d.ts.map",
+    "packages\\reconciliation-core\\dist\\merged-runs-query.js",
+    "packages\\reconciliation-core\\dist\\merged-runs-query.js.map",
+    "packages\\reconciliation-core\\dist\\operator-api-envelope.d.ts",
+    "packages\\reconciliation-core\\dist\\operator-api-envelope.d.ts.map",
+    "packages\\reconciliation-core\\dist\\operator-api-envelope.js",
+    "packages\\reconciliation-core\\dist\\operator-api-envelope.js.map",
+    "packages\\reconciliation-core\\dist\\operator-run-detail-resolve.d.ts",
+    "packages\\reconciliation-core\\dist\\operator-run-detail-resolve.d.ts.map",
+    "packages\\reconciliation-core\\dist\\operator-run-detail-resolve.js",
+    "packages\\reconciliation-core\\dist\\operator-run-detail-resolve.js.map",
+    "packages\\reconciliation-core\\dist\\operator-run-detail.d.ts",
+    "packages\\reconciliation-core\\dist\\operator-run-detail.d.ts.map",
+    "packages\\reconciliation-core\\dist\\operator-run-detail.js",
+    "packages\\reconciliation-core\\dist\\operator-run-detail.js.map",
+    "packages\\reconciliation-core\\dist\\policy-engine.d.ts",
+    "packages\\reconciliation-core\\dist\\policy-engine.d.ts.map",
+    "packages\\reconciliation-core\\dist\\policy-engine.js",
+    "packages\\reconciliation-core\\dist\\policy-engine.js.map",
+    "packages\\reconciliation-core\\dist\\policy-tolerance-merge.d.ts",
+    "packages\\reconciliation-core\\dist\\policy-tolerance-merge.d.ts.map",
+    "packages\\reconciliation-core\\dist\\policy-tolerance-merge.js",
+    "packages\\reconciliation-core\\dist\\policy-tolerance-merge.js.map",
+    "packages\\reconciliation-core\\dist\\prior-run-delta-analyst.d.ts",
+    "packages\\reconciliation-core\\dist\\prior-run-delta-analyst.d.ts.map",
+    "packages\\reconciliation-core\\dist\\prior-run-delta-analyst.js",
+    "packages\\reconciliation-core\\dist\\prior-run-delta-analyst.js.map",
+    "packages\\reconciliation-core\\dist\\prisma-client-like.d.ts",
+    "packages\\reconciliation-core\\dist\\prisma-client-like.d.ts.map",
+    "packages\\reconciliation-core\\dist\\prisma-client-like.js",
+    "packages\\reconciliation-core\\dist\\prisma-client-like.js.map",
+    "packages\\reconciliation-core\\dist\\recon-audit-stages.d.ts",
+    "packages\\reconciliation-core\\dist\\recon-audit-stages.d.ts.map",
+    "packages\\reconciliation-core\\dist\\recon-audit-stages.js",
+    "packages\\reconciliation-core\\dist\\recon-audit-stages.js.map",
+    "packages\\reconciliation-core\\dist\\run-capabilities.d.ts",
+    "packages\\reconciliation-core\\dist\\run-capabilities.d.ts.map",
+    "packages\\reconciliation-core\\dist\\run-capabilities.js",
+    "packages\\reconciliation-core\\dist\\run-capabilities.js.map",
+    "packages\\reconciliation-core\\dist\\run-configuration-summary.d.ts",
+    "packages\\reconciliation-core\\dist\\run-configuration-summary.d.ts.map",
+    "packages\\reconciliation-core\\dist\\run-configuration-summary.js",
+    "packages\\reconciliation-core\\dist\\run-configuration-summary.js.map",
+    "packages\\reconciliation-core\\dist\\run-delta-classification.d.ts",
+    "packages\\reconciliation-core\\dist\\run-delta-classification.d.ts.map",
+    "packages\\reconciliation-core\\dist\\run-delta-classification.js",
+    "packages\\reconciliation-core\\dist\\run-delta-classification.js.map",
+    "packages\\reconciliation-core\\dist\\run-institutional-memory.d.ts",
+    "packages\\reconciliation-core\\dist\\run-institutional-memory.d.ts.map",
+    "packages\\reconciliation-core\\dist\\run-institutional-memory.js",
+    "packages\\reconciliation-core\\dist\\run-institutional-memory.js.map",
+    "packages\\reconciliation-core\\dist\\run-operator-intelligence.d.ts",
+    "packages\\reconciliation-core\\dist\\run-operator-intelligence.d.ts.map",
+    "packages\\reconciliation-core\\dist\\run-operator-intelligence.js",
+    "packages\\reconciliation-core\\dist\\run-operator-intelligence.js.map",
+    "packages\\reconciliation-core\\dist\\run-proofpack-artifact.d.ts",
+    "packages\\reconciliation-core\\dist\\run-proofpack-artifact.d.ts.map",
+    "packages\\reconciliation-core\\dist\\run-proofpack-artifact.js",
+    "packages\\reconciliation-core\\dist\\run-proofpack-artifact.js.map",
+    "packages\\reconciliation-core\\dist\\run-proofpack-index.d.ts",
+    "packages\\reconciliation-core\\dist\\run-proofpack-index.d.ts.map",
+    "packages\\reconciliation-core\\dist\\run-proofpack-index.js",
+    "packages\\reconciliation-core\\dist\\run-proofpack-index.js.map",
+    "packages\\reconciliation-core\\dist\\run-resolution.d.ts",
+    "packages\\reconciliation-core\\dist\\run-resolution.d.ts.map",
+    "packages\\reconciliation-core\\dist\\run-resolution.js",
+    "packages\\reconciliation-core\\dist\\run-resolution.js.map",
+    "packages\\reconciliation-core\\dist\\run-surface-shaping.d.ts",
+    "packages\\reconciliation-core\\dist\\run-surface-shaping.d.ts.map",
+    "packages\\reconciliation-core\\dist\\run-surface-shaping.js",
+    "packages\\reconciliation-core\\dist\\run-surface-shaping.js.map",
+    "packages\\reconciliation-core\\dist\\source-reliability.d.ts",
+    "packages\\reconciliation-core\\dist\\source-reliability.d.ts.map",
+    "packages\\reconciliation-core\\dist\\source-reliability.js",
+    "packages\\reconciliation-core\\dist\\source-reliability.js.map",
+    "packages\\reconciliation-core\\dist\\structured-run-delta.d.ts",
+    "packages\\reconciliation-core\\dist\\structured-run-delta.d.ts.map",
+    "packages\\reconciliation-core\\dist\\structured-run-delta.js",
+    "packages\\reconciliation-core\\dist\\structured-run-delta.js.map",
+    "packages\\reconciliation-core\\dist\\support-intake-run-context.d.ts",
+    "packages\\reconciliation-core\\dist\\support-intake-run-context.d.ts.map",
+    "packages\\reconciliation-core\\dist\\support-intake-run-context.js",
+    "packages\\reconciliation-core\\dist\\support-intake-run-context.js.map",
+    "packages\\reconciliation-core\\dist\\uuid-collision-log.d.ts",
+    "packages\\reconciliation-core\\dist\\uuid-collision-log.d.ts.map",
+    "packages\\reconciliation-core\\dist\\uuid-collision-log.js",
+    "packages\\reconciliation-core\\dist\\uuid-collision-log.js.map",
+    "packages\\reconciliation-core\\dist\\v1-serializer.d.ts",
+    "packages\\reconciliation-core\\dist\\v1-serializer.d.ts.map",
+    "packages\\reconciliation-core\\dist\\v1-serializer.js",
+    "packages\\reconciliation-core\\dist\\v1-serializer.js.map"
   ]
 }
