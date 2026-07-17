@@ -71,6 +71,8 @@ export function csrfProtection(req: Request, res: Response, next: NextFunction):
   next();
 }
 
+const isProduction = config.nodeEnv === "production" || config.nodeEnv === "preview";
+
 /**
  * Middleware to set CSRF token cookie
  * Sets token on GET requests for web UI
@@ -86,8 +88,8 @@ export function setCsrfToken(req: Request, res: Response, next: NextFunction): v
   if (!existingToken) {
     const token = generateCsrfToken();
     res.cookie(CSRF_TOKEN_COOKIE, token, {
-      httpOnly: false, // Must be accessible to JavaScript
-      secure: config.security.secureCookies, // HTTPS only in production
+      httpOnly: isProduction, // Must be accessible to JavaScript in dev, strict in prod
+      secure: isProduction || config.security.secureCookies, // HTTPS only in production
       sameSite: "strict", // Prevent CSRF attacks
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     });
@@ -106,8 +108,8 @@ export function getCsrfToken(req: Request, res: Response): void {
   // Set cookie if not present
   if (!req.cookies[CSRF_TOKEN_COOKIE]) {
     res.cookie(CSRF_TOKEN_COOKIE, token, {
-      httpOnly: false,
-      secure: config.security.secureCookies,
+      httpOnly: isProduction,
+      secure: isProduction || config.security.secureCookies,
       sameSite: "strict",
       maxAge: 24 * 60 * 60 * 1000,
     });
