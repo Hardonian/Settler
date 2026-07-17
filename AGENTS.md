@@ -1,0 +1,1 @@
+* When mocking `global.fetch` in Jest tests, explicitly store the original `global.fetch` reference in a variable during `beforeEach` and restore it in `afterEach` to prevent mock leakage into other test files running in the same worker.
