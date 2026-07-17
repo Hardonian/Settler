@@ -204,7 +204,10 @@
     "scratch",
     "test-edit.js",
     "test-edit2.js",
-    "test-spawn.js"
+    "test-spawn.js",
+    "BOOTSTRAP.md",
+    "DEPLOY_INFO.json",
+    "justfile"
   ],
   "blockedExtensions": [".tar", ".tgz", ".bak", ".tmp", ".old"],
   "localClutterPatterns": [
