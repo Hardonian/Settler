@@ -117,6 +117,9 @@ router.post(
         let nudged = 0;
         let suppressed = 0;
 
+        const insertValues: string[] = [];
+        const insertArgs: any[] = [];
+
         for (const invoice of invoices) {
           const amountCents = Number(invoice.amount_cents);
 
@@ -172,42 +175,60 @@ router.post(
           if (action === "suppress") suppressed += 1;
           else nudged += 1;
 
-          await client.query(
-            `INSERT INTO venture_invoice_nudge_items (
-              run_id,
-              tenant_id,
-              invoice_id,
-              external_id,
-              invoice_number,
-              customer_id,
-              customer_name,
-              amount_cents,
-              currency,
-              due_date,
-              action,
-              reason,
-              has_payment_signal,
-              has_recon_signal
-            ) VALUES (
-              $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14
-            )`,
-            [
-              run.id,
-              tenantId,
-              invoice.id,
-              invoice.external_id,
-              invoice.invoice_number,
-              invoice.customer_id,
-              invoice.customer_name,
-              amountCents,
-              invoice.currency,
-              invoice.due_date,
-              action,
-              reason,
-              hasPaymentSignal,
-              hasReconSignal,
-            ]
+          insertValues.push(""); // Placeholder for count
+          insertArgs.push(
+            run.id,
+            tenantId,
+            invoice.id,
+            invoice.external_id,
+            invoice.invoice_number,
+            invoice.customer_id,
+            invoice.customer_name,
+            amountCents,
+            invoice.currency,
+            invoice.due_date,
+            action,
+            reason,
+            hasPaymentSignal,
+            hasReconSignal
           );
+        }
+
+        if (insertValues.length > 0) {
+          // Chunk size is 4500 to keep parameter count well below Postgres limit of 65535
+          // (4500 rows * 14 parameters = 63000 parameters)
+          const CHUNK_SIZE = 4500;
+          for (let i = 0; i < insertValues.length; i += CHUNK_SIZE) {
+            const valuesChunk = insertValues.slice(i, i + CHUNK_SIZE);
+
+            // Rewrite offsets for the chunk
+            const rewrittenValuesChunk = valuesChunk.map((val, idx) => {
+              const startOffset = idx * 14;
+              return `($${startOffset + 1}, $${startOffset + 2}, $${startOffset + 3}, $${startOffset + 4}, $${startOffset + 5}, $${startOffset + 6}, $${startOffset + 7}, $${startOffset + 8}, $${startOffset + 9}, $${startOffset + 10}, $${startOffset + 11}, $${startOffset + 12}, $${startOffset + 13}, $${startOffset + 14})`;
+            });
+
+            const argsChunk = insertArgs.slice(i * 14, (i + CHUNK_SIZE) * 14);
+
+            await client.query(
+              `INSERT INTO venture_invoice_nudge_items (
+                run_id,
+                tenant_id,
+                invoice_id,
+                external_id,
+                invoice_number,
+                customer_id,
+                customer_name,
+                amount_cents,
+                currency,
+                due_date,
+                action,
+                reason,
+                has_payment_signal,
+                has_recon_signal
+              ) VALUES ${rewrittenValuesChunk.join(", ")}`,
+              argsChunk
+            );
+          }
         }
 
         await client.query(
