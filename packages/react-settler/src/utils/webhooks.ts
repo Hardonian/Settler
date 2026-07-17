@@ -139,7 +139,9 @@ export class WebhookManager {
     }
 
     // Fallback for environments without crypto.subtle
-    return btoa(message + this.secret).substring(0, 64);
+    throw new Error(
+      "Secure crypto implementation is required but not available in this environment."
+    );
   }
 }
 
