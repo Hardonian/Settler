@@ -70,6 +70,9 @@ overrides:
   ws: ^8.20.1
   postcss: ^8.5.10
   uuid: ^13.0.1
+  ajv: 6.14.0
+  "ip-address": 10.2.0
+  "@opentelemetry/core": 2.8.0
 
 onlyBuiltDependencies:
   - esbuild
