@@ -219,6 +219,7 @@ async function validateJWT(req: AuthRequest, token: string): Promise<void> {
     const decoded = jwt.verify(token, config.jwt.secret, {
       issuer: "settler-api",
       audience: "settler-client",
+      algorithms: ["HS256"],
     }) as { userId: string; tenantId?: string; type?: string };
 
     // Check token type (access vs refresh)

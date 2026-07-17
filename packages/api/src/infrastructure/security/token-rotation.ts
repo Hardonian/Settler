@@ -36,6 +36,7 @@ export async function rotateRefreshToken(oldRefreshToken: string): Promise<Token
     const decoded = jwt.verify(oldRefreshToken, config.jwt.refreshSecret || config.jwt.secret, {
       issuer: "settler-api",
       audience: "settler-client",
+      algorithms: ["HS256"],
     }) as RefreshTokenPayload;
 
     if (decoded.type !== "refresh") {
@@ -103,6 +104,7 @@ export async function rotateRefreshToken(oldRefreshToken: string): Promise<Token
       expiresIn: accessTokenExpiry,
       issuer: "settler-api",
       audience: "settler-client",
+      algorithm: "HS256",
     } as jwt.SignOptions);
 
     const refreshSecret = config.jwt.refreshSecret || jwtSecret;
@@ -119,6 +121,7 @@ export async function rotateRefreshToken(oldRefreshToken: string): Promise<Token
         expiresIn: refreshTokenExpiry,
         issuer: "settler-api",
         audience: "settler-client",
+        algorithm: "HS256",
       } as jwt.SignOptions
     );
 

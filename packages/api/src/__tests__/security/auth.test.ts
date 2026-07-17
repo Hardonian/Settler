@@ -107,4 +107,20 @@ describe("Security Tests", () => {
       expect(hasRateLimit || allUnauthorized).toBe(true);
     });
   });
+
+  describe("JWT Authentication", () => {
+    it("should reject tokens signed with none algorithm", async () => {
+      // Simulate none algorithm bypass attempt
+      const jwt = require("jsonwebtoken");
+      const maliciousToken = jwt.sign({ userId: "123", type: "access" }, "secret", {
+        algorithm: "none",
+      });
+
+      const response = await request(app)
+        .get("/api/v1/jobs")
+        .set("Authorization", `Bearer ${maliciousToken}`);
+
+      expect(response.status).toBe(401);
+    });
+  });
 });
