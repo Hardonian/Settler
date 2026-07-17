@@ -118,7 +118,7 @@ router.get("/reconciliations/:jobId", async (req: AuthRequest, res: Response): P
   res.setHeader("Connection", "keep-alive");
   res.setHeader("X-Accel-Buffering", "no");
 
-  const connectionId = `${tenantId}-${jobId}-${Date.now()}-${crypto.randomBytes(4).toString("hex")}`;
+  const connectionId = `${tenantId}-${jobId}-${Date.now()}-${crypto.randomBytes(16).toString("hex")}`;
   sseConnections.set(connectionId, {
     id: connectionId,
     tenantId,
@@ -211,7 +211,7 @@ router.get("/workbench", async (req: AuthRequest, res: Response): Promise<void> 
   res.setHeader("Connection", "keep-alive");
   res.setHeader("X-Accel-Buffering", "no");
 
-  const connectionId = `workbench-${tenantId}-${Date.now()}-${crypto.randomBytes(4).toString("hex")}`;
+  const connectionId = `workbench-${tenantId}-${Date.now()}-${crypto.randomBytes(16).toString("hex")}`;
 
   logInfo("SSE Workbench connection established", { connectionId, tenantId });
 
