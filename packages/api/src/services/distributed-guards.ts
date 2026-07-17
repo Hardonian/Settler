@@ -167,6 +167,12 @@ async function consumeRedis(key: string, limit: number, windowMs: number): Promi
     throw new Error("Redis unavailable");
   }
 
+  // Validate inputs
+  if (!Number.isFinite(limit) || limit < 0 || !Number.isFinite(windowMs) || windowMs < 0) {
+    logWarn("invalid_redis_consume_params", { key, limit, windowMs });
+    return { allowed: false, remaining: 0, resetAt: Date.now() + windowMs, current: limit + 1 };
+  }
+
   const script = `
     local current = redis.call('INCR', KEYS[1])
     if current == 1 then
@@ -176,10 +182,26 @@ async function consumeRedis(key: string, limit: number, windowMs: number): Promi
     return {current, ttl}
   `;
 
-  const [currentRaw, ttlRaw] = (await redis.eval(script, 1, key, String(windowMs))) as [
-    number,
-    number,
-  ];
+  let currentRaw, ttlRaw;
+
+  if (typeof redis.defineCommand === "function") {
+    if (!redis.consumeRateLimit) {
+      redis.defineCommand("consumeRateLimit", {
+        numberOfKeys: 1,
+        lua: script,
+      });
+    }
+    [currentRaw, ttlRaw] = (await redis.consumeRateLimit(key, String(windowMs))) as [
+      number,
+      number,
+    ];
+  } else {
+    // Upstash Redis client fallback
+    [currentRaw, ttlRaw] = (await redis.eval(script, [key], [String(windowMs)])) as [
+      number,
+      number,
+    ];
+  }
   const current = Number(currentRaw);
   const ttl = Math.max(0, Number(ttlRaw));
   const resetAt = Date.now() + ttl;
