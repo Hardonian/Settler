@@ -1,0 +1,99 @@
+{
+  "files": {
+    "packages/jobforge-errors/dist/index.d.ts": {
+      "size": 671,
+      "mtime_nanos": 1784285419327505347,
+      "mode": 436,
+      "is_dir": false
+    },
+    "packages/jobforge-errors/dist/index.d.ts.map": {
+      "size": 479,
+      "mtime_nanos": 1784285419327505347,
+      "mode": 436,
+      "is_dir": false
+    },
+    "packages/jobforge-errors/dist/types.d.ts": {
+      "size": 2259,
+      "mtime_nanos": 1784285419247505348,
+      "mode": 436,
+      "is_dir": false
+    },
+    "packages/jobforge-errors/dist/correlation.d.ts": {
+      "size": 749,
+      "mtime_nanos": 1784285419143505349,
+      "mode": 436,
+      "is_dir": false
+    },
+    "packages/jobforge-errors/.turbo/turbo-build.log": {
+      "size": 110,
+      "mtime_nanos": 1784285419515505345,
+      "mode": 436,
+      "is_dir": false
+    },
+    "packages/jobforge-errors/dist/factories.js": {
+      "size": 2752,
+      "mtime_nanos": 1784285419291505348,
+      "mode": 436,
+      "is_dir": false
+    },
+    "packages/jobforge-errors/dist/types.d.ts.map": {
+      "size": 1421,
+      "mtime_nanos": 1784285419247505348,
+      "mode": 436,
+      "is_dir": false
+    },
+    "packages/jobforge-errors/dist/index.js": {
+      "size": 588,
+      "mtime_nanos": 1784285419327505347,
+      "mode": 436,
+      "is_dir": false
+    },
+    "packages/jobforge-errors/dist/types.js": {
+      "size": 2583,
+      "mtime_nanos": 1784285419207505349,
+      "mode": 436,
+      "is_dir": false
+    },
+    "packages/jobforge-errors/dist/correlation.d.ts.map": {
+      "size": 449,
+      "mtime_nanos": 1784285419123505349,
+      "mode": 436,
+      "is_dir": false
+    },
+    "packages/jobforge-errors/dist/factories.d.ts.map": {
+      "size": 1759,
+      "mtime_nanos": 1784285419311505347,
+      "mode": 436,
+      "is_dir": false
+    },
+    "packages/jobforge-errors/dist/factories.d.ts": {
+      "size": 1885,
+      "mtime_nanos": 1784285419311505347,
+      "mode": 436,
+      "is_dir": false
+    },
+    "packages/jobforge-errors/dist": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/jobforge-errors/dist/correlation.js": {
+      "size": 1880,
+      "mtime_nanos": 1784285419071505350,
+      "mode": 436,
+      "is_dir": false
+    }
+  },
+  "order": [
+    "packages/jobforge-errors/.turbo/turbo-build.log",
+    "packages/jobforge-errors/dist",
+    "packages/jobforge-errors/dist/correlation.d.ts",
+    "packages/jobforge-errors/dist/correlation.d.ts.map",
+    "packages/jobforge-errors/dist/correlation.js",
+    "packages/jobforge-errors/dist/factories.d.ts",
+    "packages/jobforge-errors/dist/factories.d.ts.map",
+    "packages/jobforge-errors/dist/factories.js",
+    "packages/jobforge-errors/dist/index.d.ts",
+    "packages/jobforge-errors/dist/index.d.ts.map",
+    "packages/jobforge-errors/dist/index.js",
+    "packages/jobforge-errors/dist/types.d.ts",
+    "packages/jobforge-errors/dist/types.d.ts.map",
+    "packages/jobforge-errors/dist/types.js"
+  ]
+}
