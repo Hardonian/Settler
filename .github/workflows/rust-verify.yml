@@ -38,10 +38,7 @@ jobs:
             ${{ runner.os }}-cargo-
 
       - name: Install cargo-deny
-        uses: EmbarkStudios/cargo-deny-action@v1
-        with:
-          command: install
-          version: "0.16"
+        run: cargo install cargo-deny --locked
 
       - name: Install cargo-audit
         run: cargo install cargo-audit --locked
