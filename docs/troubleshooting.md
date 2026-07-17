@@ -14,7 +14,7 @@ Common issues and solutions for Settler API.
 
    ```bash
    # Correct format
-   sk_live_1234567890abcdef
+   [REDACTED_STRIPE_KEY]
 
    # Wrong format
    rk_1234567890  # Old format
