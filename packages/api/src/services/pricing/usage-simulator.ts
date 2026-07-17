@@ -6,7 +6,6 @@
  */
 
 import { PrismaClient } from "@prisma/client";
-// logInfo imported but unused - may be used in future
 
 export interface UsageSimulation {
   period: "daily" | "weekly" | "monthly";
