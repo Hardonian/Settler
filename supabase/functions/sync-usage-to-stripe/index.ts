@@ -6,15 +6,26 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 import Stripe from "https://esm.sh/stripe@14.21.0?target=deno";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+const getCorsHeaders = (origin: string | null) => {
+  const allowedOrigins = Deno.env.get("ALLOWED_ORIGINS")?.split(",") || ["*"];
+  let corsOrigin = "*";
+
+  if (origin && allowedOrigins.includes(origin)) {
+    corsOrigin = origin;
+  } else if (!allowedOrigins.includes("*")) {
+    corsOrigin = allowedOrigins[0] || "*";
+  }
+
+  return {
+    "Access-Control-Allow-Origin": corsOrigin,
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  };
 };
 
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response("ok", { headers: getCorsHeaders(req.headers.get("origin")) });
   }
 
   try {
@@ -43,7 +54,10 @@ serve(async (req) => {
     if (!billingAccountId) {
       return new Response(JSON.stringify({ error: "Missing billing_account_id" }), {
         status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: {
+          ...getCorsHeaders(req.headers.get("origin")),
+          "Content-Type": "application/json",
+        },
       });
     }
 
@@ -61,7 +75,10 @@ serve(async (req) => {
         }),
         {
           status: 404,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: {
+            ...getCorsHeaders(req.headers.get("origin")),
+            "Content-Type": "application/json",
+          },
         }
       );
     }
@@ -83,7 +100,10 @@ serve(async (req) => {
         }),
         {
           status: 404,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: {
+            ...getCorsHeaders(req.headers.get("origin")),
+            "Content-Type": "application/json",
+          },
         }
       );
     }
@@ -103,7 +123,10 @@ serve(async (req) => {
         }),
         {
           status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: {
+            ...getCorsHeaders(req.headers.get("origin")),
+            "Content-Type": "application/json",
+          },
         }
       );
     }
@@ -164,7 +187,10 @@ serve(async (req) => {
       }),
       {
         status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: {
+          ...getCorsHeaders(req.headers.get("origin")),
+          "Content-Type": "application/json",
+        },
       }
     );
   } catch (error) {
@@ -176,7 +202,10 @@ serve(async (req) => {
       }),
       {
         status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: {
+          ...getCorsHeaders(req.headers.get("origin")),
+          "Content-Type": "application/json",
+        },
       }
     );
   }
