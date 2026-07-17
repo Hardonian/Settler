@@ -292,20 +292,37 @@ export async function batchCreateNormalizedTransactions(
   }
 
   const transactionIds: string[] = [];
+  const rawRecordIds: string[] = [];
+
+  // Pre-generate UUIDs and collect raw record IDs
+  for (const { rawRecordId } of transactions) {
+    transactionIds.push(uuidv4());
+    if (rawRecordId) {
+      rawRecordIds.push(rawRecordId);
+    }
+  }
 
   // Use transaction for atomicity
   await transaction(async (client) => {
-    for (const { transaction, rawRecordId } of transactions) {
-      const transactionId = uuidv4();
-      transactionIds.push(transactionId);
+    // Process in chunks to avoid hitting PostgreSQL parameter limits (65535)
+    // 14 parameters per row * 1000 rows = 14000 parameters (well within limits)
+    const CHUNK_SIZE = 1000;
 
-      await client.query(
-        `INSERT INTO normalized_transactions (
-          id, ingestion_id, raw_record_id, tenant_id, source_id, external_id,
-          amount, currency, date, description, category, payment_method,
-          reference, metadata, created_at, updated_at
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW(), NOW())`,
-        [
+    for (let i = 0; i < transactions.length; i += CHUNK_SIZE) {
+      const chunk = transactions.slice(i, i + CHUNK_SIZE);
+      const chunkTransactionIds = transactionIds.slice(i, i + CHUNK_SIZE);
+
+      const values: any[] = [];
+      const valueStrings: string[] = [];
+      let paramCount = 1;
+
+      for (let j = 0; j < chunk.length; j++) {
+        const item = chunk[j];
+        if (!item) continue;
+        const { transaction, rawRecordId } = item;
+        const transactionId = chunkTransactionIds[j];
+
+        values.push(
           transactionId,
           ingestionId,
           rawRecordId || null,
@@ -319,17 +336,30 @@ export async function batchCreateNormalizedTransactions(
           transaction.category || null,
           transaction.paymentMethod || null,
           transaction.reference || null,
-          JSON.stringify(transaction.metadata || {}),
-        ]
-      );
-
-      // Update raw record status if provided
-      if (rawRecordId) {
-        await client.query(
-          `UPDATE raw_records SET status = 'normalized', updated_at = NOW() WHERE id = $1 AND tenant_id = $2`,
-          [rawRecordId, tenantId]
+          JSON.stringify(transaction.metadata || {})
         );
+
+        const params = Array.from({ length: 14 }, (_, idx) => `${paramCount + idx}`);
+        valueStrings.push(`(${params.join(", ")}, NOW(), NOW())`);
+        paramCount += 14;
       }
+
+      await client.query(
+        `INSERT INTO normalized_transactions (
+          id, ingestion_id, raw_record_id, tenant_id, source_id, external_id,
+          amount, currency, date, description, category, payment_method,
+          reference, metadata, created_at, updated_at
+        ) VALUES ${valueStrings.join(", ")}`,
+        values
+      );
+    }
+
+    // Bulk update raw record statuses
+    if (rawRecordIds.length > 0) {
+      await client.query(
+        `UPDATE raw_records SET status = 'normalized', updated_at = NOW() WHERE id = ANY($1) AND tenant_id = $2`,
+        [rawRecordIds, tenantId]
+      );
     }
   });
 
