@@ -1,0 +1,8 @@
+{
+  "worker_url": "https://settler-api.scottrmhardie.workers.dev",
+  "account_id": "fd30fc24125e2af1d204729478fe3ae7",
+  "d1_database": "settler-db",
+  "d1_database_id": "7b916b23-70e4-4c46-8eb8-28781be68da4",
+  "deployed_version": "c2966051-5852-49a8-bc3c-44f06fceff30",
+  "status": "deployed"
+}

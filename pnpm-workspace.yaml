@@ -1,14 +1,9 @@
 packages:
-  - "packages/*"
+  - packages/*
   - "!packages/sdk-go"
   - "!packages/sdk-python"
   - "!packages/sdk-ruby"
   - "!packages/workhorse"
-
-# Install against the lockfile when possible and keep native optional binaries
-# available for local WSL verification, Linux Vercel builds, and Windows/macOS
-# contributor installs. Keeping this in pnpm-workspace.yaml avoids npm/npx
-# warning on pnpm-only project settings while preserving pnpm behavior.
 preferFrozenLockfile: true
 supportedArchitectures:
   os:
@@ -24,7 +19,6 @@ supportedArchitectures:
     - current
     - glibc
     - musl
-
 overrides:
   prisma: 7.8.0
   "@prisma/client": 7.8.0
@@ -71,9 +65,8 @@ overrides:
   postcss: ^8.5.10
   uuid: ^13.0.1
   ajv: 6.14.0
-  "ip-address": 10.2.0
+  ip-address: 10.2.0
   "@opentelemetry/core": 2.8.0
-
 onlyBuiltDependencies:
   - esbuild
   - sharp
@@ -89,14 +82,8 @@ onlyBuiltDependencies:
   - isolated-vm
   - msgpackr-extract
   - unrs-resolver
-
 patchedDependencies:
   proper-lockfile@4.1.2: patches/proper-lockfile@4.1.2.patch
-
-# These are deprecated transitive packages retained by current maintained
-# toolchains: Jest 30, jsdom/Cheerio, OpenTelemetry's GCP resource detector,
-# and better-sqlite3's native prebuild path. They are not direct runtime API
-# dependencies and have no high/critical advisory in the current audit.
 allowedDeprecatedVersions:
   "@ungap/structured-clone": 1.3.0
   node-domexception: 1.0.0
