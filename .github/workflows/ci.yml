@@ -52,6 +52,23 @@ jobs:
       - name: Detect unresolved conflict markers
         run: pnpm run verify:conflict-markers
 
+  pnpm-overrides-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Guard — pnpm overrides must live in pnpm-workspace.yaml, not package.json
+        shell: bash
+        run: |
+          # pnpm v9+ SILENTLY IGNORES `pnpm.overrides` inside package.json.
+          # Overrides only take effect from pnpm-workspace.yaml. A package.json
+          # overrides block is a silent no-op that leaves CVEs unpatched.
+          if python3 -c "import json,sys; d=json.load(open('package.json')); sys.exit(0 if ('pnpm' in d and 'overrides' in d.get('pnpm',{})) or 'overrides' in d else 1)"; then
+            echo "::error::package.json contains a 'pnpm.overrides' or top-level 'overrides' block. pnpm v9 ignores package.json overrides — move them to pnpm-workspace.yaml 'overrides:' instead."
+            exit 1
+          fi
+          echo "OK: no package.json overrides block (overrides belong in pnpm-workspace.yaml)."
+
   parity:
     needs: conflict-markers
     runs-on: ubuntu-latest
