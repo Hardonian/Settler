@@ -41,7 +41,7 @@ jobs:
         uses: EmbarkStudios/cargo-deny-action@v1
         with:
           command: install
-          version: "0.16"
+          rust-version: "0.16"
 
       - name: Install cargo-audit
         run: cargo install cargo-audit --locked
