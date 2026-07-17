@@ -170,14 +170,6 @@ export class WorkflowEngine {
         const result = await this.executeStep(step, context, workflowRun.id, stepResults);
         stepResults[step.id] = result;
 
-        // Update step results in database
-        await (this.prisma as any).workflowRuns.update({
-          where: { id: (workflowRun as any).id },
-          data: {
-            stepResults: stepResults as unknown as Prisma.InputJsonValue,
-          },
-        });
-
         // Determine next step
         if (result.status === "completed") {
           currentStepId = step.onSuccess;
@@ -198,6 +190,7 @@ export class WorkflowEngine {
           status: finalStatus,
           completedAt: new Date(),
           durationMs: BigInt(Date.now() - (workflowRun as any).startedAt.getTime()),
+          stepResults: stepResults as unknown as Prisma.InputJsonValue,
         },
       });
 
@@ -213,6 +206,7 @@ export class WorkflowEngine {
           status: "failed",
           completedAt: new Date(),
           errorMessage: error instanceof Error ? error.message : "Unknown error",
+          stepResults: stepResults as unknown as Prisma.InputJsonValue,
         },
       });
 
