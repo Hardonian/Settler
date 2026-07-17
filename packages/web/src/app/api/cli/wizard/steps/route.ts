@@ -1,4 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import {
+  buildTenantContextErrorResponse,
+  requireTenantRequestContext,
+} from "@/lib/api/tenant-context";
 
 const ADAPTERS = [
   { id: "stripe", name: "Stripe" },
@@ -77,7 +81,13 @@ function getSuggestedRules(sourceAdapter: string, targetAdapter: string) {
   ];
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  try {
+    await requireTenantRequestContext(request);
+  } catch (error) {
+    return buildTenantContextErrorResponse(error);
+  }
+
   const steps = [
     {
       step: 1,

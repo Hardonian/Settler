@@ -59,8 +59,8 @@ overrides:
   defu: ^6.1.5
   rollup: ^4.59.0
   "@tootallnate/once": ^3.0.1
-  dompurify: ^3.4.0
-  protobufjs: ^7.5.8
+  dompurify: 3.4.9
+  protobufjs: 7.6.3
   axios: ^1.15.2
   next: ^16.2.6
   fast-uri: ^3.1.2

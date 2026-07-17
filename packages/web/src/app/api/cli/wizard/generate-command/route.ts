@@ -1,4 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import {
+  buildTenantContextErrorResponse,
+  requireTenantRequestContext,
+} from "@/lib/api/tenant-context";
 
 function generateJobConfig(answers: Record<string, unknown>): Record<string, unknown> {
   const config: Record<string, unknown> = {
@@ -36,6 +40,12 @@ function generateCLICommand(jobConfig: Record<string, unknown>): string {
 
 export async function POST(request: NextRequest) {
   try {
+    try {
+      await requireTenantRequestContext(request);
+    } catch (error) {
+      return buildTenantContextErrorResponse(error);
+    }
+
     const answers = await request.json();
 
     if (!answers.sourceAdapter || !answers.targetAdapter) {
