@@ -1,1 +1,11 @@
-{"files":{"packages/protocol/.turbo/turbo-test.log":{"size":636,"mtime_nanos":1784267437100504708,"mode":436,"is_dir":false}},"order":["packages/protocol/.turbo/turbo-test.log"]}
+{
+  "files": {
+    "packages/protocol/.turbo/turbo-test.log": {
+      "size": 636,
+      "mtime_nanos": 1784267437100504708,
+      "mode": 436,
+      "is_dir": false
+    }
+  },
+  "order": ["packages/protocol/.turbo/turbo-test.log"]
+}

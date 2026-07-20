@@ -74,7 +74,7 @@ jobs:
           HARD_500S=0
           for route in $ROUTES; do
             # Check for patterns that indicate hard 500s (no try-catch, direct 500 returns)
-            if grep -q "status: 500" "$route" && ! grep -q "try.*catch" "$route"; then
+            if grep -q "status: 500" "$route" && ! grep -zoP '(?s)try.*catch' "$route" >/dev/null; then
               echo "⚠️  Potential hard 500 in $route"
               HARD_500S=$((HARD_500S + 1))
             fi
