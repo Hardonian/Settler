@@ -1,3 +1,4 @@
+import * as crypto from "crypto";
 /**
  * Ecosystem Growth Analytics
  *
@@ -79,7 +80,7 @@ export class EcosystemAnalytics {
         adoption.set(pack, total > 0 ? (count / total) * 100 : 0);
       } catch {
         // Fallback if column doesn't exist
-        adoption.set(pack, Math.random() * 50 + 20);
+        adoption.set(pack, crypto.randomInt(2000, 7000) / 100);
       }
     }
 
