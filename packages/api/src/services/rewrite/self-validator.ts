@@ -5,8 +5,6 @@
  * Part 8: Self-Rewriting OS & Meta-Orchestration
  */
 
-// logInfo and logError imported but unused - may be used in future
-
 export interface ValidationResult {
   check: string;
   status: "pass" | "fail" | "warning";
