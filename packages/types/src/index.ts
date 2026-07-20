@@ -17,7 +17,7 @@ export {
   type ServerEnv,
   type ClientEnv,
   type FullEnv,
-} from "./env-validation";
+} from "./env-validation.js";
 
 export {
   CLIENT_ENV_KEYS,
@@ -30,7 +30,7 @@ export {
   type ClientEnvKey,
   type ServerEnvKey,
   type EnvValidationResult,
-} from "./typed-env";
+} from "./typed-env.js";
 
 // Logging utilities (Phase 5: Observability)
 export {
@@ -40,7 +40,7 @@ export {
   safeAsync,
   type LogLevel,
   type LogContext,
-} from "./logging";
+} from "./logging.js";
 
 // Ledger domain types
 export {
@@ -54,7 +54,7 @@ export {
   type CreateLedgerTransferInput,
   type ReverseLedgerTransferInput,
   type LedgerQueryResult,
-} from "./ledger";
+} from "./ledger.js";
 
 export type PaymentStatus =
   | "pending"
@@ -289,7 +289,7 @@ export {
   supportIntakeSubmissionSchema,
   type SupportIntakeSubmission,
   type SupportIssueCategory,
-} from "./support-intake-contract";
+} from "./support-intake-contract.js";
 
 // Run types (for reconciliation runs/executions)
 export {
@@ -305,7 +305,7 @@ export {
   RunListItem,
   RunDetail,
   RunListResponse,
-} from "./run";
+} from "./run.js";
 
 // Commercial spine (plans, meters, premium packs, legacy mappings)
 export {
@@ -335,4 +335,4 @@ export {
   type UsageMeterDefinition,
   type LegacyQuotaProfile,
   type ApiLegacyPlanFeatures,
-} from "./commercial-spine";
+} from "./commercial-spine.js";
