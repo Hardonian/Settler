@@ -59,7 +59,7 @@ export function OnboardingChecklist() {
       try {
         setSteps(JSON.parse(saved));
       } catch (err) {
-        console.debug("Using default checklist steps", err);
+        console.info("Using default checklist steps", err);
       }
     }
   }, []);

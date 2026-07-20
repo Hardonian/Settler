@@ -13,6 +13,9 @@ const { checkAndIncrementUsage } = jest.requireMock("@/lib/usage/tracking") as {
 };
 
 describe("Usage enforcement", () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
   const authContext: ApiKeyAuthContext = {
     apiKeyId: "rk_test",
     userId: "user-test",
@@ -22,6 +25,7 @@ describe("Usage enforcement", () => {
   };
 
   beforeEach(() => {
+    jest.spyOn(console, "error").mockImplementation(() => {});
     checkAndIncrementUsage.mockReset();
   });
 

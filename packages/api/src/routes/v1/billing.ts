@@ -1,8 +1,7 @@
 import express, { Router, Response } from "express";
 import { queryWithTenant } from "../../db";
 import { logInfo, logError } from "../../utils/logger";
-import { authMiddleware, AuthRequest } from "../../middleware/auth";
-import { idempotencyMiddleware } from "../../middleware/idempotency";
+import { AuthRequest } from "../../middleware/auth";
 import { getEnv } from "../../utils/env";
 
 import { asyncHandler } from "../../utils/async-handler";

@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { config } from "../../config";
-import { Pool, pool } from "../../db";
+import { pool } from "../../db";
 
 // Global variable to prevent multiple instances of Prisma Client in development
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };

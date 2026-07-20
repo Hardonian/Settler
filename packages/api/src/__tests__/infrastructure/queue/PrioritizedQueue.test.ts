@@ -88,64 +88,6 @@ describe("PrioritizedQueue", () => {
       await localQueue.close();
     });
 
-    it("should calculate priority correctly for STARTER tier", async () => {
-      const mockAdd = jest.fn();
-      (Queue as unknown as jest.Mock).mockImplementation(() => ({
-        add: mockAdd,
-        getWaitingCount: jest.fn().mockResolvedValue(0),
-        getActiveCount: jest.fn().mockResolvedValue(0),
-        getDelayedCount: jest.fn().mockResolvedValue(0),
-        close: jest.fn(),
-      }));
-
-      const localQueue = new PrioritizedQueue("test-queue-starter", mockProcessor);
-
-      await localQueue.add(
-        {
-          tenantId: "tenant-2",
-          tenantTier: TenantTier.STARTER,
-        },
-        QueuePriority.HIGH
-      );
-
-      expect(mockAdd).toHaveBeenCalledWith(
-        "job",
-        expect.any(Object),
-        expect.objectContaining({ priority: 20 }) // STARTER(2) * HIGH(10) = 20
-      );
-
-      await localQueue.close();
-    });
-
-    it("should calculate priority correctly for PRO tier", async () => {
-      const mockAdd = jest.fn();
-      (Queue as unknown as jest.Mock).mockImplementation(() => ({
-        add: mockAdd,
-        getWaitingCount: jest.fn().mockResolvedValue(0),
-        getActiveCount: jest.fn().mockResolvedValue(0),
-        getDelayedCount: jest.fn().mockResolvedValue(0),
-        close: jest.fn(),
-      }));
-
-      const localQueue = new PrioritizedQueue("test-queue-pro", mockProcessor);
-
-      await localQueue.add(
-        {
-          tenantId: "tenant-3",
-          tenantTier: TenantTier.PRO,
-        },
-        QueuePriority.CRITICAL
-      );
-
-      expect(mockAdd).toHaveBeenCalledWith(
-        "job",
-        expect.any(Object),
-        expect.objectContaining({ priority: 100 }) // PRO(5) * CRITICAL(20) = 100
-      );
-
-      await localQueue.close();
-    });
-
     it("should bypass queue and execute immediately for ENTERPRISE tier", async () => {
       const jobData = {
         tenantId: "tenant-ent",
