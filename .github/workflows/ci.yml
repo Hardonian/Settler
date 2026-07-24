@@ -252,6 +252,10 @@ jobs:
 
       - name: Build web package
         run: pnpm --filter @settler/web build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co"
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: "dummy"
+          DATABASE_URL: "postgresql://dummy"
 
       - name: Provision Playwright browsers for landing visual gate
         run: npx playwright install --with-deps chromium webkit

@@ -40,8 +40,10 @@ jobs:
       - name: Install cargo-deny
         uses: EmbarkStudios/cargo-deny-action@v1
         with:
-          command: install
-          version: "0.16"
+          command: check
+          version: "0.16.2"
+          manifest-path: "crates/Cargo.toml"
+          arguments: "--all-features"
 
       - name: Install cargo-audit
         run: cargo install cargo-audit --locked

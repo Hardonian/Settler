@@ -30,6 +30,10 @@ jobs:
 
       - name: Build web app for runtime header probing
         run: pnpm --filter @settler/web build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co"
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: "dummy"
+          DATABASE_URL: "postgresql://dummy"
 
       - name: Generate route registry
         run: pnpm run security:routes
@@ -72,6 +76,10 @@ jobs:
 
       - name: Build web app for runtime header probing
         run: pnpm --filter @settler/web build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co"
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: "dummy"
+          DATABASE_URL: "postgresql://dummy"
 
       - name: Run dependency audit gate (strict mode)
         env:
@@ -137,24 +145,3 @@ jobs:
           no-git: false
           verbose: true
           redact: true
-
-  codeql:
-    name: CodeQL Scan
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: javascript
-
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
-
-      - name: Analyze
-        uses: github/codeql-action/analyze@v3

@@ -43,10 +43,10 @@ registry.registerPath({
       content: {
         "application/json": {
           schema: z.object({
-            status: z.string().openapi({ example: "healthy" }),
+            status: z.string(),
             timestamp: z.string().datetime(),
-            service: z.string().openapi({ example: "settler-api" }),
-            version: z.string().openapi({ example: "1.0.0" }),
+            service: z.string(),
+            version: z.string(),
           }),
         },
       },

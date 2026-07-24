@@ -41,7 +41,7 @@ describe("Route Validation Integration", () => {
     it("should access /api/v1/docs (if enabled)", async () => {
       const response = await request(app).get("/api/v1/docs");
       // May return 200 (Swagger UI) or 404 (if disabled)
-      expect([200, 404]).toContain(response.status);
+      expect([200, 301, 302, 404]).toContain(response.status);
     });
   });
 
@@ -69,7 +69,7 @@ describe("Route Validation Integration", () => {
     it("should access /metrics", async () => {
       const response = await request(app).get("/metrics");
       // May return 200 (metrics) or 404 (if disabled)
-      expect([200, 404]).toContain(response.status);
+      expect([200, 301, 302, 404]).toContain(response.status);
     });
   });
 

@@ -6,9 +6,18 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./dist/index.js",
-    "./evidence": "./dist/evidence/index.js",
-    "./proofpack": "./dist/proofpack/index.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./evidence": {
+      "types": "./dist/evidence/index.d.ts",
+      "default": "./dist/evidence/index.js"
+    },
+    "./proofpack": {
+      "types": "./dist/proofpack/index.d.ts",
+      "default": "./dist/proofpack/index.js"
+    }
   },
   "scripts": {
     "build": "node ../../scripts/run-package-tsc-build.mjs",

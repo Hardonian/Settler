@@ -21,7 +21,7 @@ import {
   sendTrialEndedEmail,
   LifecycleUser,
   TrialData,
-} from "@settler/api/lib/email-lifecycle";
+} from "@settler/api";
 import { safeRpcCall } from "@/types/api";
 
 import { logger } from "@/lib/logging/logger";
