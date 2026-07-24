@@ -58,7 +58,6 @@ export async function calculateRevenue(
     }
 
     // Usage-based revenue (simplified - would need actual usage pricing)
-    // const usage = await getCurrentUsage(billingAccountId, 'reconcile');
     const usageRevenue = 0; // Would calculate based on usage pricing
 
     const totalRevenue = subscriptionRevenue + usageRevenue;
