@@ -16,8 +16,6 @@ const describeIfDatabase = hasDatabaseUrl ? describe : describe.skip;
 
 describeIfDatabase("Entitlement Gating", () => {
   let testBillingAccountId: string;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let testUserId: string;
 
   beforeAll(async () => {
     // Create test billing account
@@ -29,7 +27,6 @@ describeIfDatabase("Entitlement Gating", () => {
       },
     });
     testBillingAccountId = billingAccount.id;
-    testUserId = billingAccount.userId;
   });
 
   afterAll(async () => {
