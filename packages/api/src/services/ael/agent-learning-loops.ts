@@ -90,19 +90,34 @@ export class AgentLearningLoops {
       }
     }
 
+    // Batch query all failed recon results for the relevant jobs
+    const allJobIds = Array.from(jobsByTransform.values()).flatMap((jobs) => jobs.map((j) => j.id));
+    let allFailedResults: { reconJobId: string }[] = [];
+    if (allJobIds.length > 0) {
+      allFailedResults = await this.prisma.reconResult.findMany({
+        where: {
+          reconJobId: { in: allJobIds },
+          status: "failed",
+        },
+        select: { reconJobId: true },
+      });
+    }
+
+    const failedResultsByJob = new Map<string, any[]>();
+    for (const result of allFailedResults) {
+      if (!failedResultsByJob.has(result.reconJobId)) {
+        failedResultsByJob.set(result.reconJobId, []);
+      }
+      failedResultsByJob.get(result.reconJobId)!.push(result);
+    }
+
     // Find transforms with high error rates
     for (const transform of transforms) {
       const jobs = jobsByTransform.get(transform.id) || [];
 
       if (jobs.length === 0) continue;
 
-      const results = await this.prisma.reconResult.findMany({
-        where: {
-          reconJobId: { in: jobs.map((j) => j.id) },
-          status: "failed",
-        },
-        take: 10,
-      });
+      const results = jobs.flatMap((j) => failedResultsByJob.get(j.id) || []).slice(0, 10);
       const failureCount = results.length;
 
       // Emulate the original logic which caps the check at 10 results
