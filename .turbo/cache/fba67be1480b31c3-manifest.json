@@ -1,0 +1,11 @@
+{
+  "files": {
+    "packages/jobforge-fetch/.turbo/turbo-lint.log": {
+      "size": 79,
+      "mtime_nanos": 1784876344355103664,
+      "mode": 436,
+      "is_dir": false
+    }
+  },
+  "order": ["packages/jobforge-fetch/.turbo/turbo-lint.log"]
+}

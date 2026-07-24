@@ -163,7 +163,6 @@ export class AmazonSellerDriver implements ConnectorDriver {
             if (event.ShipmentEventList) {
               // Extract payout information from shipment events
               // This is a simplified mapping - future implementation will parse shipment events
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
               for (const _shipment of event.ShipmentEventList) {
                 // Parse shipment events into payouts
               }
