@@ -241,7 +241,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ data: response });
   } catch (error) {
-    console.error("Wizard step error:", error);
+    console.error("Wizard step error:", error); // catch
     return NextResponse.json(
       { error: { code: "INTERNAL_ERROR", message: "Failed to process wizard step" } },
       { status: 500 }

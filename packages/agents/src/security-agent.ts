@@ -50,7 +50,7 @@ import type {
 } from "./security/types";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
-import { createLogger } from "@settler/logger";
+const log = console;
 import {
   deriveVerdict,
   exitCodeForVerdict,
@@ -58,8 +58,6 @@ import {
   type AgentCheck,
   type AgentReport,
 } from "./agent-contract";
-
-const log = createLogger("security-agent");
 
 export class SecurityAgent {
   private readonly config: Required<Pick<SecurityConfig, "repoRoot">> & SecurityConfig;

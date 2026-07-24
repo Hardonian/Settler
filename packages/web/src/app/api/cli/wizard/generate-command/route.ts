@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Generate command error:", error);
+    console.error("Generate command error:", error); // catch
     return NextResponse.json(
       { error: { code: "INTERNAL_ERROR", message: "Failed to generate CLI command" } },
       { status: 500 }
