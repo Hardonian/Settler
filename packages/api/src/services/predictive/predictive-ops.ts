@@ -138,37 +138,65 @@ export class PredictiveOps {
       take: 100,
     });
 
-    // Check template usage density
-    for (const template of templates) {
-      const jobs = await this.prisma.reconJob.findMany({
-        where: { templateId: template.id },
-        take: 1000,
-      });
+    if (templates.length === 0) return predictions;
 
-      if (jobs.length > 500) {
-        // High usage - check for issues
-        const failures = await this.prisma.reconResult.findMany({
-          where: {
-            reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
-            status: "failed",
-          },
-          take: 10,
-        });
+    const templateIds = templates.map((t) => t.id);
 
-        if (failures.length > 5) {
-          predictions.push({
-            type: "template",
-            severity: "high",
-            probability: 0.7,
-            timeframe: "within 48 hours",
-            description: `Template "${template.name}" has high failure rate (${failures.length}/${jobs.length})`,
-            recommendedActions: [
-              "Review template logic",
-              "Add error handling",
-              "Consider template update",
-            ],
+    // 1. Get job counts for ALL templates at once (O(1) query)
+    const jobCounts = await this.prisma.reconJob.groupBy({
+      by: ["templateId"],
+      where: { templateId: { in: templateIds } },
+      _count: { id: true },
+    });
+
+    const jobCountByTemplate = new Map<string, number>();
+    for (const group of jobCounts) {
+      if (group.templateId) {
+        jobCountByTemplate.set(group.templateId, group._count.id);
+      }
+    }
+
+    // 2. Identify templates with high usage (> 500 jobs)
+    const highUsageTemplates = templates.filter((t) => (jobCountByTemplate.get(t.id) || 0) > 500);
+
+    // 3. Check failures ONLY for those high usage templates
+    if (highUsageTemplates.length > 0) {
+      const results = await Promise.all(
+        highUsageTemplates.map(async (template) => {
+          // Efficient count query instead of fetching records
+          const failureCount = await this.prisma.reconResult.count({
+            where: {
+              status: "failed",
+              reconJob: { templateId: template.id },
+            },
           });
-        }
+
+          if (failureCount > 5) {
+            const jobCount = jobCountByTemplate.get(template.id) || 0;
+            // Cap numbers to maintain exact backwards compatibility with original logic
+            // where takes were capped at 10 and 1000, though exact numbers are technically better.
+            const displayFailures = Math.min(failureCount, 10);
+            const displayJobs = Math.min(jobCount, 1000);
+
+            return {
+              type: "template",
+              severity: "high" as const,
+              probability: 0.7,
+              timeframe: "within 48 hours",
+              description: `Template "${template.name}" has high failure rate (${displayFailures}/${displayJobs})`,
+              recommendedActions: [
+                "Review template logic",
+                "Add error handling",
+                "Consider template update",
+              ],
+            };
+          }
+          return null;
+        })
+      );
+
+      for (const res of results) {
+        if (res) predictions.push(res);
       }
     }
 
