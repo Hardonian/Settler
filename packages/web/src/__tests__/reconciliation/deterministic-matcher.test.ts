@@ -5,8 +5,7 @@
  * Tests the deterministic matching logic with various scenarios.
  */
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { matchTransactions, MatchingRule } from "@/lib/reconciliation/deterministic-matcher";
+import { matchTransactions } from "@/lib/reconciliation/deterministic-matcher";
 
 describe("Deterministic Matcher", () => {
   const sourceTransactions = [
