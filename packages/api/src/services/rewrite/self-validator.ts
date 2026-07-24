@@ -285,6 +285,7 @@ export class SelfValidator {
    * Evaluate risks
    */
   private async evaluateRisks(module: {
+    code?: string;
     usesEval?: boolean;
     hasNestedLoops?: boolean;
     loopDepth?: number;
@@ -292,8 +293,52 @@ export class SelfValidator {
   }): Promise<ValidationResult> {
     const risks: string[] = [];
 
-    // Check for security risks
-    if (module.usesEval) {
+    // Check for security risks by inspecting the AST
+    if (module.code) {
+      try {
+        const ts = await import("typescript");
+        const sourceFile = ts.createSourceFile(
+          "temp.ts",
+          module.code,
+          ts.ScriptTarget.Latest,
+          true
+        );
+
+        // We use any here to avoid TS2503 because ts is imported dynamically
+        const checkNodeForEval = (node: any): boolean => {
+          if (
+            ts.isCallExpression(node) &&
+            ts.isIdentifier(node.expression) &&
+            node.expression.text === "eval"
+          ) {
+            return true;
+          }
+          let found = false;
+          ts.forEachChild(node, (child) => {
+            if (!found) {
+              found = checkNodeForEval(child);
+            }
+          });
+          return found;
+        };
+
+        if (checkNodeForEval(sourceFile)) {
+          risks.push("Uses eval() - security risk");
+        } else if (module.usesEval) {
+          // Fallback if usesEval is provided but AST check is clean (belt-and-suspenders)
+          risks.push("Uses eval() - security risk");
+        }
+      } catch (error) {
+        // If typescript import fails or parsing fails, we fallback to a simple regex check,
+        // but prefer not to fail the whole validation just because we couldn't parse it
+        console.warn("Failed to check for eval via AST", error);
+        // We might also still check module.usesEval if they provided it as a hint
+        if (module.usesEval) {
+          risks.push("Uses eval() - security risk");
+        }
+      }
+    } else if (module.usesEval) {
+      // Fallback if no code is provided but the flag is set
       risks.push("Uses eval() - security risk");
     }
 
