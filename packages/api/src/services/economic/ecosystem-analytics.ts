@@ -62,6 +62,16 @@ export class EcosystemAnalytics {
       "ecommerce",
     ];
 
+    // Fetch total once outside the loop
+    let total = 0;
+    try {
+      total = await this.prisma.reconJob.count({
+        where: { createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } },
+      });
+    } catch {
+      // Ignore if table/column doesn't exist, fallback handles it per-pack
+    }
+
     for (const pack of domainPacks) {
       // Query actual usage from database
       try {
@@ -70,11 +80,6 @@ export class EcosystemAnalytics {
             domainPack: pack,
             createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
           },
-        });
-
-        // Calculate adoption as percentage of total
-        const total = await this.prisma.reconJob.count({
-          where: { createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } },
         });
 
         adoption.set(pack, total > 0 ? (count / total) * 100 : 0);
