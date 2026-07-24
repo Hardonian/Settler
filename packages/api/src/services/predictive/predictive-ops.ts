@@ -100,28 +100,45 @@ export class PredictiveOps {
     });
 
     // Check mapping update frequency
-    for (const mapping of mappings) {
-      const updates = await this.prisma.mappingTemplate.findMany({
+    if (mappings.length > 0) {
+      const mappingNames = mappings.map((m: { name: string }) => m.name);
+
+      const allUpdates = await this.prisma.mappingTemplate.findMany({
         where: {
-          name: mapping.name,
+          name: { in: mappingNames },
         },
         orderBy: { updatedAt: "desc" },
-        take: 10,
       });
 
-      if (updates.length > 5) {
-        predictions.push({
-          type: "mapping",
-          severity: "medium",
-          probability: 0.6,
-          timeframe: "within 7 days",
-          description: `Mapping "${mapping.name}" has been updated ${updates.length} times - high volatility`,
-          recommendedActions: [
-            "Stabilize mapping template",
-            "Add versioning",
-            "Document mapping changes",
-          ],
-        });
+      const updatesByMapping = new Map<string, any[]>();
+      for (const update of allUpdates) {
+        if (!updatesByMapping.has(update.name)) {
+          updatesByMapping.set(update.name, []);
+        }
+
+        const updates = updatesByMapping.get(update.name)!;
+        if (updates.length < 10) {
+          updates.push(update);
+        }
+      }
+
+      for (const mapping of mappings) {
+        const updates = updatesByMapping.get(mapping.name) || [];
+
+        if (updates.length > 5) {
+          predictions.push({
+            type: "mapping",
+            severity: "medium",
+            probability: 0.6,
+            timeframe: "within 7 days",
+            description: `Mapping "${mapping.name}" has been updated ${updates.length} times - high volatility`,
+            recommendedActions: [
+              "Stabilize mapping template",
+              "Add versioning",
+              "Document mapping changes",
+            ],
+          });
+        }
       }
     }
 
