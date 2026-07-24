@@ -82,6 +82,22 @@ def detect_amount_anomalies(
     variance = sum((x - mean) ** 2 for x in amounts) / len(amounts)
     std = variance**0.5
 
+    # Pre-compute for other methods
+    sorted_amounts = sorted(amounts)
+
+    # IQR pre-computation
+    q1_idx = len(sorted_amounts) // 4
+    q3_idx = 3 * len(sorted_amounts) // 4
+    q1 = sorted_amounts[q1_idx]
+    q3 = sorted_amounts[q3_idx]
+    iqr = q3 - q1
+    lower_bound = q1 - 1.5 * iqr
+    upper_bound = q3 + 1.5 * iqr
+
+    # MAD pre-computation
+    median = sorted_amounts[len(sorted_amounts) // 2]
+    mad = sum(abs(x - median) for x in amounts) / len(amounts)
+
     # Detect anomalies
     anomalies = []
     for idx, record in enumerate(records):
@@ -96,23 +112,10 @@ def detect_amount_anomalies(
             if method == "zscore":
                 score = abs(calculate_zscore(val, mean, std))
             elif method == "iqr":
-                # Interquartile range method
-                sorted_amounts = sorted(amounts)
-                q1_idx = len(sorted_amounts) // 4
-                q3_idx = 3 * len(sorted_amounts) // 4
-                q1 = sorted_amounts[q1_idx]
-                q3 = sorted_amounts[q3_idx]
-                iqr = q3 - q1
-                lower = q1 - 1.5 * iqr
-                upper = q3 + 1.5 * iqr
-                if val < lower or val > upper:
+                if val < lower_bound or val > upper_bound:
                     score = 999.0  # Flag as anomaly
-            elif method == "mad":
-                # Median Absolute Deviation
-                median = sorted_amounts[len(sorted_amounts) // 2]
-                mad = sum(abs(x - median) for x in amounts) / len(amounts)
-                if mad > 0:
-                    score = abs(val - median) / mad
+            elif method == "mad" and mad > 0:
+                score = abs(val - median) / mad
 
             if score > threshold:
                 anomalies.append(
