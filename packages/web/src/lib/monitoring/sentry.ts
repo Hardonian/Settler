@@ -202,8 +202,7 @@ class SentryClient {
             context
           );
         });
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
+    } catch {
       // eslint-disable-next-line no-console
       (console[consoleLevel as "info" | "warn" | "error"] as typeof console.log)(
         "[Message]",
