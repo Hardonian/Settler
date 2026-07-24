@@ -8,8 +8,6 @@
 
 import { ReactElement } from "react";
 import { ReconciliationConfig } from "@settler/protocol";
-// Note: CompilationProvider would be used in a real implementation to render components
-// import { CompilationProvider } from './context';
 
 /**
  * Compile a React component tree into a ReconciliationConfig
@@ -39,16 +37,6 @@ export function compileToConfig(
     views: [],
     widgets: {},
   };
-
-  // Create a wrapper component that provides compilation context
-  // Note: In a real implementation, we would render the component tree here
-  // const Wrapper = ({ children }: { children: ReactElement }) => {
-  //   return (
-  //     <CompilationProvider mode="config" config={config}>
-  //       {children}
-  //     </CompilationProvider>
-  //   );
-  // };
 
   // Render the component tree in config mode
   // Components will mutate the config object during render
