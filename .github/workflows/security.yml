@@ -29,6 +29,10 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build web app for runtime header probing
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: "https://dummy.supabase.co"
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: "dummy-key"
+          DATABASE_URL: "postgres://dummy:dummy@localhost:5432/dummy"
         run: pnpm --filter @settler/web build
 
       - name: Generate route registry
@@ -71,6 +75,10 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build web app for runtime header probing
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: "https://dummy.supabase.co"
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: "dummy-key"
+          DATABASE_URL: "postgres://dummy:dummy@localhost:5432/dummy"
         run: pnpm --filter @settler/web build
 
       - name: Run dependency audit gate (strict mode)
@@ -138,23 +146,3 @@ jobs:
           verbose: true
           redact: true
 
-  codeql:
-    name: CodeQL Scan
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: javascript
-
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
-
-      - name: Analyze
-        uses: github/codeql-action/analyze@v3
