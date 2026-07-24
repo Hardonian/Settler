@@ -138,39 +138,42 @@ export class PredictiveOps {
       take: 100,
     });
 
-    // Check template usage density
-    for (const template of templates) {
-      const jobs = await this.prisma.reconJob.findMany({
-        where: { templateId: template.id },
-        take: 1000,
-      });
-
-      if (jobs.length > 500) {
-        // High usage - check for issues
-        const failures = await this.prisma.reconResult.findMany({
-          where: {
-            reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
-            status: "failed",
-          },
-          take: 10,
+    // Run the checks for all templates concurrently
+    await Promise.all(
+      templates.map(async (template) => {
+        const jobs = await this.prisma.reconJob.findMany({
+          where: { templateId: template.id },
+          take: 1000,
+          select: { id: true },
         });
 
-        if (failures.length > 5) {
-          predictions.push({
-            type: "template",
-            severity: "high",
-            probability: 0.7,
-            timeframe: "within 48 hours",
-            description: `Template "${template.name}" has high failure rate (${failures.length}/${jobs.length})`,
-            recommendedActions: [
-              "Review template logic",
-              "Add error handling",
-              "Consider template update",
-            ],
+        if (jobs.length > 500) {
+          // High usage - check for issues
+          const failures = await this.prisma.reconResult.findMany({
+            where: {
+              reconJobId: { in: jobs.map((j) => j.id) },
+              status: "failed",
+            },
+            take: 10,
           });
+
+          if (failures.length > 5) {
+            predictions.push({
+              type: "template",
+              severity: "high",
+              probability: 0.7,
+              timeframe: "within 48 hours",
+              description: `Template "${template.name}" has high failure rate (${failures.length}/${jobs.length})`,
+              recommendedActions: [
+                "Review template logic",
+                "Add error handling",
+                "Consider template update",
+              ],
+            });
+          }
         }
-      }
-    }
+      })
+    );
 
     return predictions;
   }
