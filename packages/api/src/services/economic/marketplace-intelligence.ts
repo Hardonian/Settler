@@ -122,32 +122,100 @@ export class MarketplaceIntelligence {
 
     const items: MarketplaceItem[] = [];
 
-    for (const template of templates) {
-      const jobs = await this.prisma.reconJob.findMany({
-        where: { templateId: template.id },
-        take: 1000,
+    if (templates.length === 0) {
+      return items;
+    }
+
+    const templateIds = templates.map((t) => t.id);
+
+    // Bulk fetch jobs for all templates
+    const allJobs: any[] = await this.prisma.reconJob.findMany({
+      where: { templateId: { in: templateIds } },
+      take: 1000 * templates.length, // Allow up to 1000 per template on average
+      select: { id: true, templateId: true },
+    });
+
+    // Group jobs by template
+    const jobsByTemplate = new Map<string, { id: string; templateId: string }[]>();
+    for (const job of allJobs) {
+      if (!jobsByTemplate.has(job.templateId)) {
+        jobsByTemplate.set(job.templateId, []);
+      }
+      jobsByTemplate.get(job.templateId)!.push(job);
+    }
+
+    const allJobIds = allJobs.map((j) => j.id);
+
+    // Bulk fetch drifts for all jobs
+    const driftsByJob = new Map<string, number>();
+    if (allJobIds.length > 0) {
+      const allDrifts: any[] = await this.prisma.driftEvent.findMany({
+        where: { reconJobId: { in: allJobIds } },
+        take: 100 * templates.length,
+        select: { id: true, reconJobId: true },
       });
+
+      for (const drift of allDrifts) {
+        if (!drift.reconJobId) continue;
+        const count = driftsByJob.get(drift.reconJobId) || 0;
+        driftsByJob.set(drift.reconJobId, count + 1);
+      }
+    }
+
+    // Bulk fetch results for all jobs
+    const failuresByJob = new Map<string, number>();
+    const resultsCountByJob = new Map<string, number>();
+    if (allJobIds.length > 0) {
+      const allResults: any[] = await this.prisma.reconResult.findMany({
+        where: { reconJobId: { in: allJobIds } },
+        take: 1000 * templates.length,
+        select: { id: true, reconJobId: true, status: true },
+      });
+
+      for (const result of allResults) {
+        if (!result.reconJobId) continue;
+
+        const rCount = resultsCountByJob.get(result.reconJobId) || 0;
+        resultsCountByJob.set(result.reconJobId, rCount + 1);
+
+        if (result.status === "failed") {
+          const fCount = failuresByJob.get(result.reconJobId) || 0;
+          failuresByJob.set(result.reconJobId, fCount + 1);
+        }
+      }
+    }
+
+    for (const template of templates) {
+      const templateJobs = jobsByTemplate.get(template.id) || [];
+      // To match the previous logic of taking at most 1000 per template
+      const jobs = templateJobs.slice(0, 1000);
 
       const popularity = Math.min(jobs.length / 1000, 1.0);
 
-      const drifts = await this.prisma.driftEvent.findMany({
-        where: {
-          reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
-        },
-        take: 100,
-      });
+      let driftsCount = 0;
+      for (const job of jobs) {
+        driftsCount += driftsByJob.get(job.id) || 0;
+      }
+      // Simulate taking at most 100
+      driftsCount = Math.min(driftsCount, 100);
 
-      const driftRate = drifts.length / Math.max(jobs.length, 1);
+      const driftRate = driftsCount / Math.max(jobs.length, 1);
 
-      const results = await this.prisma.reconResult.findMany({
-        where: {
-          reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
-        },
-        take: 1000,
-      });
+      let failuresCount = 0;
+      let totalResultsCount = 0;
+      for (const job of jobs) {
+        failuresCount += failuresByJob.get(job.id) || 0;
+        totalResultsCount += resultsCountByJob.get(job.id) || 0;
+      }
 
-      const failures = results.filter((r: { status: string }) => r.status === "failed").length;
-      const reliability = 1 - failures / Math.max(results.length, 1);
+      // Simulate taking at most 1000 results total
+      if (totalResultsCount > 1000) {
+        const failureRatio = failuresCount / totalResultsCount;
+        totalResultsCount = 1000;
+        failuresCount = Math.round(1000 * failureRatio);
+      }
+
+      const reliability = 1 - failuresCount / Math.max(totalResultsCount, 1);
 
       const revenuePotential = popularity * reliability * 1000; // Placeholder
 
