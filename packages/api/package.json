@@ -188,7 +188,7 @@
     "@typescript-eslint/eslint-plugin": "^8.59.4",
     "@typescript-eslint/parser": "^8.59.4",
     "@vitest/coverage-v8": "^4.1.8",
-    "artillery": "^2.0.32",
+    "artillery": "^2.0.33",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
     "ioredis-mock": "^8.13.1",
