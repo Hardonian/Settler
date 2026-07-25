@@ -347,7 +347,7 @@
     "verify:scim-surface": "node scripts/verify-scim-surface.mjs"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.11.3",
+    "@axe-core/playwright": "^4.12.1",
     "@playwright/test": "^1.60.0",
     "@prisma/adapter-pg": "7.8.0",
     "@prisma/client": "7.8.0",
