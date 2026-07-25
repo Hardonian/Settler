@@ -21,7 +21,7 @@ on:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE22: true
-  TIGERBEETLE_VERSION: "0.23.0"
+  TIGERBEETLE_VERSION: "0.17.4"
 
 jobs:
   tigerbeetle-cluster:
@@ -82,9 +82,10 @@ jobs:
             echo "Unsupported architecture: $ARCH"
             exit 1
           fi
-          curl -L "https://github.com/tigerbeetle/tigerbeetle/releases/download/v${TB_VERSION}/tigerbeetle-${TB_VERSION}-${TB_ARCH}-unknown-linux-gnu.tar.gz" | tar xz
+          curl -L -o tigerbeetle.zip "https://github.com/tigerbeetle/tigerbeetle/releases/download/${TB_VERSION}/tigerbeetle-${TB_ARCH}-linux.zip"
+          unzip tigerbeetle.zip
           sudo mv tigerbeetle /usr/local/bin/
-          tigerbeetle --version
+          tigerbeetle version
 
       - name: Setup TigerBeetle 3-Node Cluster
         run: |
