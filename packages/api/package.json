@@ -187,7 +187,7 @@
     "@types/xml2js": "^0.4.14",
     "@typescript-eslint/eslint-plugin": "^8.59.4",
     "@typescript-eslint/parser": "^8.59.4",
-    "@vitest/coverage-v8": "^4.1.8",
+    "@vitest/coverage-v8": "^4.1.10",
     "artillery": "^2.0.32",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",

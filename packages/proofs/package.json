@@ -22,7 +22,7 @@
     "ai": "^6.0.199"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "^4.1.8",
+    "@vitest/coverage-v8": "^4.1.10",
     "typescript": "^5.9.3",
     "vite": "^6.4.3",
     "vitest": "^4.1.8"
