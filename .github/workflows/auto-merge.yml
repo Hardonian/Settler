@@ -51,7 +51,7 @@ jobs:
 
       - name: Upload Classification Report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: classification-report-pr-${{ github.event.pull_request.number }}
           path: artifacts/classification-report.json

@@ -111,7 +111,7 @@ jobs:
           test -d packages/sdk/dist || (echo "❌ SDK dist missing" && exit 1)
           echo "✅ All build artifacts verified"
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: build-artifacts
           path: |

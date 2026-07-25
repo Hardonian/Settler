@@ -117,7 +117,7 @@ jobs:
           E2E_BASE_URL: http://localhost:3000
 
       - name: Upload E2E test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: e2e-test-results
@@ -164,7 +164,7 @@ jobs:
           E2E_BASE_URL: http://localhost:3000
 
       - name: Upload demo test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: demo-mode-test-results
@@ -284,7 +284,7 @@ jobs:
           WEB_BASE_URL: http://localhost:3001
 
       - name: Upload visual test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: visual-test-results

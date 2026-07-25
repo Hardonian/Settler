@@ -76,7 +76,7 @@ jobs:
             tar -czf "out/$NAME.tar.gz" -C out/$NAME .
             sha256sum "out/$NAME.tar.gz" > "out/$NAME.tar.gz.sha256"
           fi
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: cli-${{ matrix.os }}-${{ matrix.arch }}
           path: out/*

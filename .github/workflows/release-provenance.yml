@@ -163,7 +163,7 @@ jobs:
       # -----------------------------------------------------------------------
 
       - name: Upload release evidence bundle (directory)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release-evidence-bundle-${{ github.sha }}
           path: security/release-bundle/
@@ -171,7 +171,7 @@ jobs:
           if-no-files-found: error
 
       - name: Upload signed bundle archive
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release-evidence-bundle-archive-${{ github.sha }}
           path: ${{ steps.package.outputs.archive }}
