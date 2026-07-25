@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.69",
-    "@builder.io/react": "^9.4.0",
+    "@builder.io/react": "^9.4.1",
     "@builder.io/sdk": "^6.3.0",
     "@jobforge/sdk-ts": "workspace:*",
     "@jobforge/shared": "workspace:*",
