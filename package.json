@@ -368,7 +368,7 @@
     "pg": "^8.21.0",
     "prettier": "^3.8.3",
     "prisma": "7.8.0",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.0",
     "ts-jest": "^29.4.11",
     "tsx": "^4.22.3",
     "typescript": "^5.9.3"
@@ -395,8 +395,20 @@
     "dompurify@<=3.4.10": ">=3.4.11",
     "dompurify@<=3.4.11": ">=3.4.12",
     "js-yaml@<3.15.0": ">=3.15.0",
-    "js-yaml@>=4.0.0 <=4.1.1": ">=4.2.0",
-    "@opentelemetry/propagator-jaeger@<2.0.0": ">=2.0.0"
+    "js-yaml@>=4.0.0 <=4.1.1": ">=4.3.0",
+    "js-yaml@>=4.0.0 <4.3.0": ">=4.3.0",
+    "@opentelemetry/propagator-jaeger@<2.9.0": ">=2.9.0",
+    "@hono/node-server@<2.0.5": ">=2.0.5",
+    "@xmldom/xmldom@<0.8.13": ">=0.8.13",
+    "axios@>=1.0.0 <1.18.0": ">=1.18.0",
+    "body-parser@<1.20.6": ">=1.20.6",
+    "brace-expansion@>=3.0.0 <5.0.7": ">=5.0.7",
+    "fast-uri@>=3.0.0 <3.1.4": ">=3.1.4",
+    "hono@>=4.0.0 <4.12.27": ">=4.12.27",
+    "next@>=16.0.0 <16.2.11": ">=16.2.11",
+    "postcss@<=8.5.17": ">=8.5.18",
+    "sharp@<0.35.0": ">=0.35.0",
+    "xml2js@<0.5.0": ">=0.5.0"
   },
   "dependencies": {
     "turbo": "^2.9.14"
@@ -442,17 +454,22 @@
     "dompurify": "^3.4.0",
     "protobufjs": "^7.5.8",
     "axios": "^1.18.0",
-    "next": "^16.2.6",
-    "fast-uri": "^3.1.2",
+    "next": "^16.2.11",
+    "fast-uri": "^3.1.4",
     "@opentelemetry/auto-instrumentations-node": "^0.76.0",
     "@opentelemetry/sdk-node": "^0.218.0",
     "@opentelemetry/exporter-prometheus": "^0.218.0",
     "ws": "^8.20.1",
-    "postcss": "^8.5.10",
+    "postcss": "^8.5.18",
     "uuid": "^13.0.1",
     "nanoid": "3.3.8",
     "vite": "6.4.2",
     "@ai-sdk/provider-utils": "4.0.27",
-    "tmp": "0.2.6"
+    "tmp": "0.2.7",
+    "@xmldom/xmldom": "^0.8.13",
+    "xml2js": "^0.5.0",
+    "passport-saml": "^4.0.0",
+    "wasmtime": "^24.0.7",
+    "ip-address": "^10.1.1"
   }
 }
