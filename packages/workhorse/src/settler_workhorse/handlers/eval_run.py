@@ -207,12 +207,29 @@ def evaluate_consistency(
 
     amount_stats = {}
     if amounts:
+        total = 0.0
+        neg_count = 0
+        zero_count = 0
+        min_amt = amounts[0]
+        max_amt = amounts[0]
+
+        for a in amounts:
+            total += a
+            if a < 0:
+                neg_count += 1
+            elif a == 0:
+                zero_count += 1
+            if a < min_amt:
+                min_amt = a
+            elif a > max_amt:
+                max_amt = a
+
         amount_stats = {
-            "min": min(amounts),
-            "max": max(amounts),
-            "mean": sum(amounts) / len(amounts),
-            "negative_count": sum(1 for a in amounts if a < 0),
-            "zero_count": sum(1 for a in amounts if a == 0),
+            "min": min_amt,
+            "max": max_amt,
+            "mean": total / len(amounts),
+            "negative_count": neg_count,
+            "zero_count": zero_count,
         }
 
     return {
