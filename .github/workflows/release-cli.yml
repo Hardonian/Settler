@@ -93,7 +93,7 @@ jobs:
           - os: windows
             runner: windows-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: downloaded
       - name: Run smoke (linux)
@@ -125,7 +125,7 @@ jobs:
     needs: [build-cli-artifacts, install-smoke]
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: release-assets
       - name: Flatten assets
