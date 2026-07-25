@@ -8,7 +8,7 @@
     "react.json"
   ],
   "devDependencies": {
-    "@vitest/coverage-v8": "^4.1.8",
+    "@vitest/coverage-v8": "^4.1.10",
     "vite": "^6.4.3",
     "vitest": "^4.1.8"
   },

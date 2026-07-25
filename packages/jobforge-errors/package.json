@@ -14,7 +14,7 @@
   "devDependencies": {
     "@jobforge/typescript-config": "workspace:*",
     "@types/node": "^20.19.41",
-    "@vitest/coverage-v8": "^4.1.8",
+    "@vitest/coverage-v8": "^4.1.10",
     "eslint": "^9.39.4",
     "typescript": "^5.9.3",
     "vite": "^6.4.3",
