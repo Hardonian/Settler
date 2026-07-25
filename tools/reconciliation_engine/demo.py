@@ -14,7 +14,7 @@ from pathlib import Path
 # Add tools directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from reconciliation_engine.engine import ReconciliationEngine, reconcile
+from reconciliation_engine.engine import ReconciliationEngine
 from reconciliation_engine.integration import (
     emit_readylayer_report,
     to_readylayer_format,

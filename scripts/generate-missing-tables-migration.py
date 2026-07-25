@@ -5,9 +5,8 @@ that may not exist in migrations yet.
 """
 
 import re
-import json
 from pathlib import Path
-from typing import Dict, List, Set
+from typing import Dict
 
 def camel_to_snake(name: str) -> str:
     """Convert camelCase to snake_case."""
@@ -194,7 +193,8 @@ def generate_table_sql(table_name: str, model_info: Dict) -> str:
                 elif default_val.startswith('dbgenerated('):
                     val = extract_default_value(default_val.replace('dbgenerated', '@default'))
                     if val:
-                        constraints.append(f"DEFAULT {val.replace('"', "'")}")
+                        replaced = val.replace('"', "'")
+                        constraints.append(f"DEFAULT {replaced}")
 
                 elif default_val.startswith('"') or default_val.startswith("'"):
                     val = default_val.replace('"', "'")

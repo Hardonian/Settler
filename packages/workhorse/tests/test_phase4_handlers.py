@@ -19,7 +19,6 @@ from settler_workhorse.handlers.variance_report import (
 )
 from settler_workhorse.handlers.recon_run import (
     reconcile_datasets,
-    handle_recon_run,
 )
 from settler_workhorse.models import JobType
 

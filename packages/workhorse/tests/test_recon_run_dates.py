@@ -1,4 +1,3 @@
-import pytest
 from settler_workhorse.handlers.recon_run import _records_match
 
 def test_records_match_dates():

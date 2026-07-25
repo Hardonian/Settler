@@ -7,7 +7,7 @@ Generates consolidated migration SQL for all missing tables.
 import re
 import os
 from pathlib import Path
-from typing import Set, Dict, List
+from typing import Set, Dict
 
 def extract_prisma_tables() -> Set[str]:
     """Extract table names from Prisma schema files."""
