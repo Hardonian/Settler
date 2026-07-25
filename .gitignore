@@ -34,3 +34,10 @@ Thumbs.db
 # Logs
 *.log
 
+
+# Turbo build cache
+.turbo/
+
+# Test/verification artifacts
+artifacts/
+*.tsbuildinfo
