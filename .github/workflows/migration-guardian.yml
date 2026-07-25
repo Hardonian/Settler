@@ -67,7 +67,7 @@ jobs:
       migration_type: ${{ steps.check.outputs.migration_type }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -135,7 +135,7 @@ jobs:
       (needs.detect-migrations.outputs.has_migrations == 'true' && github.event.pull_request.merged == true)
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -322,7 +322,7 @@ jobs:
       needs.detect-migrations.outputs.has_migrations == 'true'
     environment: staging
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -369,7 +369,7 @@ jobs:
     if: success()
     environment: production # Requires approval
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:

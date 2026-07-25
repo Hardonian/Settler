@@ -19,7 +19,7 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE22: true
     if: github.event.pull_request.draft == false
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0

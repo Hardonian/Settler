@@ -11,7 +11,7 @@ jobs:
     name: Check Pricing Links
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Check for broken pricing links
         run: |
@@ -39,7 +39,7 @@ jobs:
     name: Check Required Env Vars
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Check .env.example exists
         run: |
@@ -61,7 +61,7 @@ jobs:
     name: Check for Hard 500 Routes
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Check API routes for hard 500s
         run: |
@@ -110,7 +110,7 @@ jobs:
     name: Check for Unverified Claims
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Check for unverified claims
         run: |
@@ -147,7 +147,7 @@ jobs:
     name: Check Documentation Alignment
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Check investor docs exist
         run: |
@@ -177,7 +177,7 @@ jobs:
     name: Lint & Type Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4

@@ -35,7 +35,7 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -92,7 +92,7 @@ jobs:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
       REDIS_URL: redis://localhost:6379
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -163,7 +163,7 @@ jobs:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
       REDIS_URL: redis://localhost:6379
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -202,7 +202,7 @@ jobs:
       REDIS_URL: redis://localhost:6379
       NODE_OPTIONS: --max-old-space-size=4096
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -236,7 +236,7 @@ jobs:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
       REDIS_URL: redis://localhost:6379
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -310,7 +310,7 @@ jobs:
       JWT_SECRET: test-secret-min-32-chars-long-for-testing
       ENCRYPTION_KEY: 12345678901234567890123456789012
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
