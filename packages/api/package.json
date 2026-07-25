@@ -141,7 +141,7 @@
     "express-rate-limit": "^7.5.1",
     "express-session": "^1.19.0",
     "helmet": "^7.2.0",
-    "ioredis": "^5.10.1",
+    "ioredis": "^5.11.1",
     "ip-cidr": "^4.0.2",
     "isomorphic-dompurify": "^2.36.0",
     "jsonwebtoken": "^9.0.3",
