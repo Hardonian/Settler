@@ -13,7 +13,9 @@ export class TenantContext {
    * This enables RLS policies to filter data by tenant
    */
   static async setTenantContext(client: PoolClient, tenantId: string): Promise<void> {
-    await client.query(`SET LOCAL ${this.TENANT_ID_KEY} = $1`, [tenantId]);
+    await client.query(`SELECT set_config('${this.TENANT_ID_KEY.replace(/"/g, "")}', $1, true)`, [
+      tenantId,
+    ]);
   }
 
   /**
