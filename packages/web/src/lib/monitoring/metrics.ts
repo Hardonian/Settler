@@ -1,3 +1,5 @@
+import { safeLogger } from "@/lib/observability/safe-logger";
+
 /**
  * Monitoring & Metrics Utilities
  *
@@ -25,8 +27,7 @@ export async function trackMetric(event: MetricEvent): Promise<void> {
   try {
     // Log to console in development
     if (process.env.NODE_ENV === "development") {
-      // eslint-disable-next-line no-console
-      console.log("[Metric]", event.name, event.value, event.tags);
+      void safeLogger.info(`[Metric] ${event.name}`, { value: event.value, tags: event.tags });
     }
 
     // Send to Sentry if configured
@@ -56,7 +57,7 @@ export async function trackMetric(event: MetricEvent): Promise<void> {
     */
   } catch (error) {
     // Don't throw - metrics are non-critical
-    console.warn("[Metrics] Failed to track metric:", error);
+    void safeLogger.warn("[Metrics] Failed to track metric", { error: String(error) });
   }
 }
 
@@ -66,7 +67,7 @@ export async function trackMetric(event: MetricEvent): Promise<void> {
 export async function trackError(event: ErrorEvent): Promise<void> {
   try {
     // Log error
-    console.error("[Error]", event.error.message, event.context);
+    void safeLogger.error(`[Error] ${event.error.message}`, { context: event.context });
 
     // Send to Sentry if configured
     if (process.env.SENTRY_DSN) {
@@ -123,7 +124,7 @@ export async function trackError(event: ErrorEvent): Promise<void> {
     */
   } catch (error) {
     // Don't throw - error tracking is non-critical
-    console.warn("[Monitoring] Failed to track error:", error);
+    void safeLogger.warn("[Monitoring] Failed to track error", { error: String(error) });
   }
 }
 
