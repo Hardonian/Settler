@@ -13,14 +13,20 @@ export class TenantContext {
    * This enables RLS policies to filter data by tenant
    */
   static async setTenantContext(client: PoolClient, tenantId: string): Promise<void> {
-    await client.query(`SET LOCAL ${this.TENANT_ID_KEY} = $1`, [tenantId]);
+    await client.query(`SELECT set_config($1, $2, true)`, [
+      this.TENANT_ID_KEY.replace(/"/g, ""),
+      tenantId,
+    ]);
   }
 
   /**
    * Clear tenant context
    */
   static async clearTenantContext(client: PoolClient): Promise<void> {
-    await client.query(`RESET ${this.TENANT_ID_KEY}`);
+    await client.query(`SELECT set_config($1, $2, true)`, [
+      this.TENANT_ID_KEY.replace(/"/g, ""),
+      "",
+    ]);
   }
 
   /**
