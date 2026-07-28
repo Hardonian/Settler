@@ -5,6 +5,7 @@
 
 import pRetry, { AbortError } from "p-retry";
 import { logWarn } from "../../utils/logger";
+import crypto from "node:crypto";
 
 export interface RetryOptions {
   retries?: number;
@@ -103,6 +104,7 @@ function isRetryableError(error: Error): boolean {
  * Add jitter to delay to prevent thundering herd
  */
 export function addJitter(delay: number, jitterPercent: number = 0.1): number {
-  const jitter = delay * jitterPercent * Math.random();
+  const jitter =
+    delay * jitterPercent * (crypto.getRandomValues(new Uint32Array(1))[0] / (0xffffffff + 1));
   return delay + jitter - delay * jitterPercent * 0.5;
 }
