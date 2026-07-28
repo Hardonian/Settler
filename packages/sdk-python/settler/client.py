@@ -27,10 +27,13 @@ from .exceptions import (
     ValidationError,
 )
 
+
 class SimpleResponse:
     """Minimal response wrapper to mirror requests.Response fields used by the SDK."""
 
-    def __init__(self, status_code: int, content: bytes, headers: Dict[str, str]) -> None:
+    def __init__(
+        self, status_code: int, content: bytes, headers: Dict[str, str]
+    ) -> None:
         self.status_code = status_code
         self.content = content
         self.headers = headers
@@ -54,7 +57,8 @@ class SettlerClient:
 
     Example::
 
-        client = SettlerClient(api_key="sk_your_api_key")
+        import os
+        client = SettlerClient(api_key=os.environ.get("SETTLER_API_KEY"))
         txns = client.transactions.list(provider="stripe", limit=50)
         job = client.jobs.create(provider="stripe", date_range={"start": "...", "end": "..."})
     """
@@ -130,7 +134,7 @@ class SettlerClient:
 
         payload = None
         headers = self._get_headers()
-        
+
         if method in ("POST", "PUT", "PATCH"):
             headers["Idempotency-Key"] = headers["X-Request-ID"]
 
@@ -553,7 +557,7 @@ class FlagsClient:
         }
         if default_value is not None:
             data["defaultValue"] = default_value
-        
+
         try:
             return self._client._request("POST", "/feature-flags/evaluate", data=data)
         except SettlerError:
@@ -583,10 +587,10 @@ class ReceiptsClient:
             data["url"] = file
         else:
             data["content"] = file
-            
+
         if options:
             data["options"] = options
-            
+
         return self._client._request("POST", "/receipts/parse", data=data)
 
     def get(self, receipt_id: str) -> Dict[str, Any]:
@@ -627,11 +631,19 @@ class ConsoleClient:
     def list_api_keys(self) -> Dict[str, Any]:
         return self._client._request("GET", "/console/api-keys")
 
-    def create_api_key(self, name: Optional[str] = None, scopes: Optional[List[str]] = None, expires_at: Optional[str] = None) -> Dict[str, Any]:
+    def create_api_key(
+        self,
+        name: Optional[str] = None,
+        scopes: Optional[List[str]] = None,
+        expires_at: Optional[str] = None,
+    ) -> Dict[str, Any]:
         data: Dict[str, Any] = {}
-        if name: data["name"] = name
-        if scopes: data["scopes"] = scopes
-        if expires_at: data["expiresAt"] = expires_at
+        if name:
+            data["name"] = name
+        if scopes:
+            data["scopes"] = scopes
+        if expires_at:
+            data["expiresAt"] = expires_at
         return self._client._request("POST", "/console/api-keys", data=data)
 
     def revoke_api_key(self, key_id: str) -> None:
