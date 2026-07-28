@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 /**
  * Hardware / Runtime Flexibility
  *
@@ -101,7 +102,7 @@ export class HardwareFlexibility {
     code: string,
     input: Record<string, unknown>
   ): Promise<{ success: boolean; result: Record<string, unknown>; enclaveId: string }> {
-    const enclaveId = `enclave-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+    const enclaveId = `enclave-${Date.now()}-${randomUUID()}`;
 
     try {
       // Check if SAFE runtime is available
