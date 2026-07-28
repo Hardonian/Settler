@@ -17,6 +17,7 @@ import {
   RefundDisputeType,
   RefundDisputeStatus,
 } from "@settler/types";
+import crypto from "crypto";
 
 export class PayPalEnhancedAdapter implements EnhancedAdapter {
   name = "paypal";
@@ -347,6 +348,6 @@ export class PayPalEnhancedAdapter implements EnhancedAdapter {
    * Generate ID
    */
   private generateId(): string {
-    return `paypal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `paypal_${Date.now()}_${crypto.randomBytes(8).toString("hex")}`;
   }
 }

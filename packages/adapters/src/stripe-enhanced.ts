@@ -341,6 +341,6 @@ export class StripeEnhancedAdapter implements EnhancedAdapter {
    * Generate ID
    */
   private generateId(): string {
-    return `stripe_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `stripe_${Date.now()}_${crypto.randomBytes(8).toString("hex")}`;
   }
 }
