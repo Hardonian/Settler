@@ -49,7 +49,7 @@ export const dlpMiddleware = (req: Request, res: Response, next: NextFunction) =
     try {
       const redactedBody = redactObject(body);
       return originalJson.call(this, redactedBody);
-    } catch (e) {
+    } catch (_e) {
       logError("DLP redactor failed on JSON body", e);
       return originalJson.call(this, body);
     }
@@ -62,7 +62,7 @@ export const dlpMiddleware = (req: Request, res: Response, next: NextFunction) =
         const parsed = JSON.parse(body);
         const redacted = redactObject(parsed);
         return originalSend.call(this, JSON.stringify(redacted));
-      } catch (e) {
+      } catch (_e) {
         // Not JSON, just run string replacement
         return originalSend.call(this, redactPII(body));
       }

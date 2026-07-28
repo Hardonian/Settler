@@ -887,7 +887,9 @@ export class ConnectorRuntime {
     }
 
     // Process other data types similarly - exclude transactions from remaining data
-    const { transactions: _transactions, ...remainingData } = data;
+    const { transactions: _ignored, ...remainingData } = data;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const __ignored_tx = _ignored;
 
     if (
       (data.accounts?.length || 0) +
