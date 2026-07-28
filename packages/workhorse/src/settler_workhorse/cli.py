@@ -9,7 +9,6 @@ from settler_workhorse.db import create_connection_pool
 
 # Import handlers to register them
 from settler_workhorse.handlers import (  # noqa: F401
-    anomaly_score,
     csv_ingestion,
     eval_run,
     ingest_normalize,
