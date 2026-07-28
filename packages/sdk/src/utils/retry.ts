@@ -34,7 +34,9 @@ function calculateDelay(
   multiplier: number
 ): number {
   const exponentialDelay = initialDelay * Math.pow(multiplier, attempt);
-  const jitter = Math.random() * 0.1 * exponentialDelay; // 10% jitter
+  const array = new Uint32Array(1);
+  crypto.getRandomValues(array);
+  const jitter = (array[0]! / (0xffffffff + 1)) * 0.1 * exponentialDelay; // 10% jitter
   return Math.min(exponentialDelay + jitter, maxDelay);
 }
 
