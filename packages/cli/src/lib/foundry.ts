@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { createHash } from "crypto";
-import { execSync } from "child_process";
+import { execSync, execFileSync } from "child_process";
 
 export type DatasetType = "VECTORS" | "GIT_MINED" | "METAMORPHIC" | "FAULT_INJECTION";
 export type DatasetItemKind =
@@ -81,6 +81,42 @@ export function getFoundryRoot(
   root = execSync("git rev-parse --show-toplevel", { encoding: "utf8" }).trim()
 ): string {
   return path.join(root, "artifacts", "foundry");
+}
+
+function parseCommandArgs(command: string): string[] {
+  const args: string[] = [];
+  let currentArg = "";
+  let inDoubleQuotes = false;
+  let inSingleQuotes = false;
+  let isEscaped = false;
+
+  for (let i = 0; i < command.length; i++) {
+    const char = command[i];
+
+    if (isEscaped) {
+      currentArg += char;
+      isEscaped = false;
+    } else if (char === "\\") {
+      isEscaped = true;
+    } else if (char === '"' && !inSingleQuotes) {
+      inDoubleQuotes = !inDoubleQuotes;
+    } else if (char === "'" && !inDoubleQuotes) {
+      inSingleQuotes = !inSingleQuotes;
+    } else if (char === " " && !inDoubleQuotes && !inSingleQuotes) {
+      if (currentArg.length > 0) {
+        args.push(currentArg);
+        currentArg = "";
+      }
+    } else {
+      currentArg += char;
+    }
+  }
+
+  if (currentArg.length > 0) {
+    args.push(currentArg);
+  }
+
+  return args;
 }
 
 function ensureRoot(root: string): void {
@@ -307,7 +343,8 @@ export function runDataset(
         typeof item.input_ref.command === "string" ? item.input_ref.command : undefined;
       if (command) {
         try {
-          execSync(`pnpm ${command}`, { stdio: "pipe" });
+          const args = parseCommandArgs(command);
+          execFileSync(process.platform === "win32" ? "pnpm.cmd" : "pnpm", args, { stdio: "pipe" });
           pass = true;
         } catch {
           pass = false;
