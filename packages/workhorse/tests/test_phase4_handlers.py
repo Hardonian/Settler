@@ -9,6 +9,9 @@ from pathlib import Path
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
+from settler_workhorse.handlers.recon_run import (
+    reconcile_datasets,
+)
 from settler_workhorse.handlers.transaction_match import (
     _match_transactions,
     handle_transaction_match,
@@ -16,9 +19,6 @@ from settler_workhorse.handlers.transaction_match import (
 from settler_workhorse.handlers.variance_report import (
     _calculate_variance_metrics,
     handle_variance_report,
-)
-from settler_workhorse.handlers.recon_run import (
-    reconcile_datasets,
 )
 from settler_workhorse.models import JobType
 

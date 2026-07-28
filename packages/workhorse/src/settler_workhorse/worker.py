@@ -203,7 +203,22 @@ class Worker:
         self.logger.info("Executing job", job_type=job.job_type.value, attempt=job.attempts + 1)
 
         start_time = time.time()
-        result = handler(job)
+
+        try:
+            # Execute the handler with the job payload
+            result = handler(job)
+
+            # Normalize result
+            if not isinstance(result, JobResult):
+                result = JobResult(success=True, data=result)
+
+        except Exception as e:
+            self.logger.exception(f"Error executing job {job.id} of type {job.job_type}")
+            result = JobResult(
+                success=False,
+                error=str(e),
+            )
+
         elapsed_ms = int((time.time() - start_time) * 1000)
 
         result.processing_time_ms = elapsed_ms

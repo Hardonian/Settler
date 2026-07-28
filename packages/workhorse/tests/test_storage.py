@@ -1,8 +1,9 @@
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
-from settler_workhorse.utils.storage import fetch_file_content, fetch_url_content
+import pytest
+
 from settler_workhorse.config import Settings
+from settler_workhorse.utils.storage import fetch_file_content, fetch_url_content
 
 
 def get_mock_settings():

@@ -1,9 +1,12 @@
-import pytest
-from uuid import uuid4
 from datetime import datetime
-from settler_workhorse.models import Job, JobType
+from unittest.mock import MagicMock, patch
+from uuid import uuid4
+
+import pytest
+
 from settler_workhorse.handlers.csv_ingestion import handle_csv_ingestion
-from unittest.mock import patch, MagicMock
+from settler_workhorse.models import Job, JobType
+
 
 def test_csv_ingestion_with_url():
     job = Job(

@@ -327,6 +327,7 @@ def handle_csv_ingestion(job: Job) -> JobResult:
 
     if file_content_b64:
         import base64
+
         import httpx
 
         content = base64.b64decode(file_content_b64)
