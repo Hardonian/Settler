@@ -13,6 +13,7 @@
 
 import type { AISuggestion, AISuggestionCategory, AIAuditEntry, Policy } from "./primitives";
 import { DeterministicExecutionFence } from "./determinism";
+import { randomUUID } from "crypto";
 
 export interface AICopilotConfig {
   enabled: boolean;
@@ -85,7 +86,7 @@ export class AICopilot {
     }
 
     const suggestion: AISuggestion = {
-      suggestionId: `ai-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      suggestionId: `ai-${Date.now()}-${randomUUID()}`,
       tenantId: params.tenantId,
       executionId: params.executionId,
       workflowId: params.workflowId,
