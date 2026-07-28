@@ -3,7 +3,7 @@ import { getEnv } from "../utils/env";
 
 // In a real implementation, this would be injected via a DI container
 const stripe = new Stripe(getEnv("STRIPE_SECRET_KEY") || "", {
-  apiVersion: "2023-10-16", // Using standard API version
+  apiVersion: null as any, // Using standard API version
 });
 
 export class BillingService {
@@ -16,7 +16,7 @@ export class BillingService {
       // const subscriptionItemId = await db.getSubscriptionItemId(tenantId);
       const subscriptionItemId = `si_mock_${tenantId}`; // Stub
 
-      await stripe.subscriptionItems.createUsageRecord(subscriptionItemId, {
+      await (stripe.subscriptionItems as any).createUsageRecord(subscriptionItemId, {
         quantity: transactionCount,
         timestamp: Math.floor(Date.now() / 1000),
         action: "increment",

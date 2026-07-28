@@ -71,7 +71,7 @@ billingRouter.post(
     logInfo("Creating checkout session", { tenantId, priceId, tier });
 
     const stripe = new (await import("stripe")).default(getEnv("STRIPE_SECRET_KEY") || "", {
-      apiVersion: "2023-10-16",
+      apiVersion: null as any,
     });
 
     if (!getEnv("STRIPE_SECRET_KEY")) {
@@ -158,7 +158,7 @@ billingWebhookRouter.post(
     let event: any;
     try {
       const stripe = new (await import("stripe")).default(getEnv("STRIPE_SECRET_KEY") || "", {
-        apiVersion: "2023-10-16",
+        apiVersion: null as any,
       });
       event = stripe.webhooks.constructEvent(
         JSON.stringify(req.body),

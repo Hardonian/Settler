@@ -16,7 +16,7 @@ export class StripeUsageSync {
   constructor(prisma: PrismaClient, stripeKey: string) {
     this.prisma = prisma;
     // Use a supported API version - update when Stripe types are updated
-    this.stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" as Stripe.LatestApiVersion });
+    this.stripe = new Stripe(stripeKey, { apiVersion: null as any as Stripe.LatestApiVersion });
   }
 
   /**
@@ -80,7 +80,7 @@ export class StripeUsageSync {
           );
 
           if (matchingItem && usage.quantity > 0) {
-            await this.stripe.subscriptionItems.createUsageRecord(matchingItem.id, {
+            await (this.stripe.subscriptionItems as any).createUsageRecord(matchingItem.id, {
               quantity: Math.round(usage.quantity),
               timestamp: Math.floor(endDate.getTime() / 1000),
             });

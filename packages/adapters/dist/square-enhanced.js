@@ -315,7 +315,7 @@ class SquareEnhancedAdapter {
      * Generate ID
      */
     generateId() {
-        return `square_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        return `square_${Date.now()}_${crypto_1.default.randomUUID()}`;
     }
 }
 exports.SquareEnhancedAdapter = SquareEnhancedAdapter;
