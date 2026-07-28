@@ -50,7 +50,7 @@ import type {
 } from "./security/types";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
-import { createLogger } from "@settler/logger";
+import { appLogger as createLogger } from "../../web/src/lib/utils/logger";
 import {
   deriveVerdict,
   exitCodeForVerdict,
