@@ -39,7 +39,9 @@ export class ConnectionManager {
       }
 
       // 2. ENFORCEMENT: Physically restrict this transaction to the operator's control plane setting
-      await client.query(`SET LOCAL statement_timeout = ${timeoutMs}`);
+      await client.query(`SELECT set_config('statement_timeout', $1, true)`, [
+        timeoutMs.toString(),
+      ]);
 
       // 3. Execute payload
       const result = await client.query(text, params);
