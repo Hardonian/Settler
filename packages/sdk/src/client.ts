@@ -244,10 +244,21 @@ export class SettlerClient {
       useBearer = true;
     }
 
-    const reqId =
-      typeof crypto !== "undefined" && crypto.randomUUID
-        ? crypto.randomUUID()
-        : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    const generateRequestId = (): string => {
+      if (typeof crypto !== "undefined" && crypto.randomUUID) {
+        return crypto.randomUUID();
+      }
+      if (typeof crypto !== "undefined" && crypto.getRandomValues) {
+        return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
+          (
+            Number(c) ^
+            ((crypto.getRandomValues(new Uint8Array(1))[0] || 0) & (15 >> (Number(c) / 4)))
+          ).toString(16)
+        );
+      }
+      throw new Error("Secure random number generator is not available.");
+    };
+    const reqId = generateRequestId();
 
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
