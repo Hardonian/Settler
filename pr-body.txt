@@ -1,0 +1,8 @@
+🎯 **What:**
+Replaced `execSync` with `execFileSync` in `packages/cli/src/commands/foundry.ts` to prevent potential command injection vulnerabilities. The arguments for `git log` are now passed as a structured array instead of a concatenated string.
+
+⚠️ **Risk:**
+While the `limit` argument was being cast to a `Number` locally, concatenating inputs directly into a shell command using `execSync` is inherently risky and can easily lead to command injection if the input sanitization logic changes or is bypassed. This could allow an attacker to execute arbitrary shell commands on the host system.
+
+🛡️ **Solution:**
+Switched from `execSync` to `execFileSync`, which bypasses the shell execution entirely and directly invokes the executable with a safe array of arguments.
