@@ -117,16 +117,6 @@ export class PayPalEnhancedAdapter implements EnhancedAdapter {
       throw new Error("PayPal client ID and secret are required");
     }
 
-    // In production, use PayPal SDK
-    // const paypal = require('@paypal/checkout-server-sdk');
-    // const environment = new paypal.core.SandboxEnvironment(clientId, clientSecret);
-    // const client = new paypal.core.PayPalHttpClient(environment);
-    //
-    // const request = new paypal.orders.OrdersGetRequest();
-    // request.startTime = dateRange.start.toISOString();
-    // request.endTime = dateRange.end.toISOString();
-    // const response = await client.execute(request);
-
     // Mock implementation for now
     return [];
   }
@@ -141,16 +131,6 @@ export class PayPalEnhancedAdapter implements EnhancedAdapter {
     if (!clientId || !clientSecret) {
       throw new Error("PayPal client ID and secret are required");
     }
-
-    // In production, use PayPal SDK
-    // const paypal = require('@paypal/payouts-sdk');
-    // const environment = new paypal.core.SandboxEnvironment(clientId, clientSecret);
-    // const client = new paypal.core.PayPalHttpClient(environment);
-    //
-    // const request = new paypal.payouts.PayoutsGetRequest();
-    // request.startTime = dateRange.start.toISOString();
-    // request.endTime = dateRange.end.toISOString();
-    // const response = await client.execute(request);
 
     // Mock implementation for now
     return [];
