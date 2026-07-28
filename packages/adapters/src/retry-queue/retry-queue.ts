@@ -205,7 +205,10 @@ export class RetryQueue {
     // Add jitter if enabled
     if (this.config.jitter) {
       const jitterAmount = delay * 0.1; // 10% jitter
-      delay += (Math.random() * 2 - 1) * jitterAmount;
+      const randomBuffer = new Uint32Array(1);
+      crypto.getRandomValues(randomBuffer);
+      const secureRandom = randomBuffer[0]! / (0xffffffff + 1);
+      delay += (secureRandom * 2 - 1) * jitterAmount;
     }
 
     return new Date(Date.now() + delay);

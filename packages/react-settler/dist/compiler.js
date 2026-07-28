@@ -9,8 +9,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.compileToConfig = compileToConfig;
 exports.compileToJSON = compileToJSON;
-// Note: CompilationProvider would be used in a real implementation to render components
-// import { CompilationProvider } from './context';
 /**
  * Compile a React component tree into a ReconciliationConfig
  *
@@ -33,15 +31,6 @@ function compileToConfig(_component, options) {
         views: [],
         widgets: {},
     };
-    // Create a wrapper component that provides compilation context
-    // Note: In a real implementation, we would render the component tree here
-    // const Wrapper = ({ children }: { children: ReactElement }) => {
-    //   return (
-    //     <CompilationProvider mode="config" config={config}>
-    //       {children}
-    //     </CompilationProvider>
-    //   );
-    // };
     // Render the component tree in config mode
     // Components will mutate the config object during render
     // Note: In a real implementation, we'd use React's renderer here
