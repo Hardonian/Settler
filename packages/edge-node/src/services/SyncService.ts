@@ -7,6 +7,7 @@ import { AxiosInstance } from "axios";
 import Database from "better-sqlite3";
 import { logger } from "../utils/logger";
 import { config } from "../config";
+import { randomUUID } from "crypto";
 
 export class SyncService {
   constructor(
@@ -139,7 +140,7 @@ export class SyncService {
   }
 
   queueSync(entityType: string, payload: Record<string, unknown>): void {
-    const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const id = randomUUID();
 
     const stmt = this.db.prepare(`
       INSERT INTO sync_queue (id, entity_type, entity_id, action, payload, created_at)
