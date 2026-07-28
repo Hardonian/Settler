@@ -1,4 +1,4 @@
-import { execSync } from "child_process";
+import { execFileSync } from "child_process";
 import path from "path";
 
 /**
@@ -13,14 +13,16 @@ export default async function globalSetup() {
     const composePath = path.resolve(__dirname, "../docker-compose.test.yml");
 
     // Start the container
-    execSync(`docker-compose -f "${composePath}" up -d`, { stdio: "inherit" });
+    execFileSync("docker-compose", ["-f", composePath, "up", "-d"], { stdio: "inherit" });
 
     // Wait for Postgres to be ready to accept connections
     console.log("Waiting for database to be ready...");
     let ready = false;
     for (let i = 0; i < 10; i++) {
       try {
-        execSync(`docker exec postgres-test pg_isready -U postgres`, { stdio: "ignore" });
+        execFileSync("docker", ["exec", "postgres-test", "pg_isready", "-U", "postgres"], {
+          stdio: "ignore",
+        });
         ready = true;
         break;
       } catch {
@@ -35,7 +37,7 @@ export default async function globalSetup() {
     let redisReady = false;
     for (let i = 0; i < 10; i++) {
       try {
-        execSync(`docker exec redis-test redis-cli ping`, { stdio: "ignore" });
+        execFileSync("docker", ["exec", "redis-test", "redis-cli", "ping"], { stdio: "ignore" });
         redisReady = true;
         break;
       } catch {
@@ -47,7 +49,7 @@ export default async function globalSetup() {
 
     // Apply migrations to the test database
     console.log("Applying migrations...");
-    execSync(`npx prisma migrate deploy`, {
+    execFileSync("npx", ["prisma", "migrate", "deploy"], {
       stdio: "inherit",
       env: { ...process.env, NODE_ENV: "test" },
     });
