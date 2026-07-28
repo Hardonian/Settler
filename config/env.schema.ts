@@ -1049,7 +1049,7 @@ export function validateEnvVar(
   spec: EnvVarSpec,
   value: string
 ): { valid: boolean; error?: string } {
-  if (spec.required && !value) {
+  if (spec.required && !value && spec.defaultValue === undefined) {
     return { valid: false, error: `${spec.name} is required but not set` };
   }
 
