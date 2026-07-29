@@ -11,6 +11,7 @@
 import { BaseAgent } from "./orchestrator";
 import { logError, logInfo } from "../../utils/logger";
 import { prisma } from "../../infrastructure/db/prisma";
+import { withCache } from "../../utils/cache";
 
 export interface OptimizationOpportunity {
   id: string;
@@ -223,31 +224,38 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
     const opportunities: OptimizationOpportunity[] = [];
 
     // 1. Analyze AI usage patterns
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const aiCalls = await prisma.usageEvent.findMany({
-      where: {
-        eventType: "ai_request",
-        timestamp: { gte: thirtyDaysAgo },
-      },
-      select: { metadata: true },
-    });
+    // Group by model and find optimization opportunities, caching the result
+    const modelUsage = await withCache(
+      "infrastructure-optimizer:ai-usage-30d",
+      3600000, // Cache for 1 hour
+      async () => {
+        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        const aiCalls = await prisma.usageEvent.findMany({
+          where: {
+            eventType: "ai_request",
+            timestamp: { gte: thirtyDaysAgo },
+          },
+          select: { metadata: true },
+        });
 
-    // Group by model and find optimization opportunities
-    const modelUsage: Record<string, { calls: number; tokens: number; cost: number }> = {};
-    for (const call of aiCalls) {
-      const metadata = (call.metadata as any) || {};
-      const model = metadata.model || "unknown";
-      const cost = metadata.cost || 0;
-      const tokens = metadata.tokens || 0;
+        const usage: Record<string, { calls: number; tokens: number; cost: number }> = {};
+        for (const call of aiCalls) {
+          const metadata = (call.metadata as any) || {};
+          const model = metadata.model || "unknown";
+          const cost = metadata.cost || 0;
+          const tokens = metadata.tokens || 0;
 
-      if (!modelUsage[model]) {
-        modelUsage[model] = { calls: 0, tokens: 0, cost: 0 };
+          if (!usage[model]) {
+            usage[model] = { calls: 0, tokens: 0, cost: 0 };
+          }
+          const mUsage = usage[model]!;
+          mUsage.calls++;
+          mUsage.tokens += tokens;
+          mUsage.cost += cost;
+        }
+        return usage;
       }
-      const usage = modelUsage[model]!;
-      usage.calls++;
-      usage.tokens += tokens;
-      usage.cost += cost;
-    }
+    );
 
     // Check for expensive model usage that could be downgraded
     const gpt4Usage = modelUsage["gpt-4"];
