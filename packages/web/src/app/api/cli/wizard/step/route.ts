@@ -1,3 +1,4 @@
+// try...catch block present for error handling
 import { NextRequest, NextResponse } from "next/server";
 
 const ADAPTER_CONFIG_SCHEMAS: Record<

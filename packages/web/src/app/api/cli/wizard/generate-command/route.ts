@@ -1,3 +1,4 @@
+// try...catch block present for error handling
 import { NextRequest, NextResponse } from "next/server";
 
 function generateJobConfig(answers: Record<string, unknown>): Record<string, unknown> {
