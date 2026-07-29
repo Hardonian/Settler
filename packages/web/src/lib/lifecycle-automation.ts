@@ -4,6 +4,7 @@
  */
 
 import { createClient } from "@/lib/supabase/client";
+import { safeLogger } from "@/lib/observability/safe-logger";
 
 export type LifecycleStage =
   | "signup"
@@ -90,8 +91,9 @@ export async function transitionLifecycleStage(
   });
 
   // Log transition
-  // eslint-disable-next-line no-console
-  console.log(`Lifecycle transition: ${userId} ${fromStage} → ${newStage} (trigger: ${trigger})`);
+  safeLogger.info(`Lifecycle transition: ${userId} ${fromStage} → ${newStage}`, {
+    trigger,
+  });
 }
 
 /**
