@@ -221,22 +221,26 @@ export class TTLWorker {
       // Process each artifact type
       const artifactTypes = ["csv", "json", "excel", "pdf"] as const;
 
-      for (const artifactType of artifactTypes) {
-        try {
-          const typeResult = await this.processArtifactType(
-            tenantId,
-            artifactType,
-            policy.artifactRetention[artifactType]
-          );
-          result.prunedCount += typeResult.prunedCount;
-          result.storageReclaimedBytes += typeResult.storageReclaimedBytes;
-          result.violations += typeResult.violations;
-        } catch (error) {
-          const errorMsg = error instanceof Error ? error.message : String(error);
-          result.errors.push(`Error processing ${artifactType}: ${errorMsg}`);
-          logError(`Error processing artifact type ${artifactType}`, error, { tenantId });
-        }
-      }
+      await Promise.all(
+        artifactTypes.map(async (artifactType) => {
+          try {
+            const typeResult = await this.processArtifactType(
+              tenantId,
+              artifactType,
+              policy.artifactRetention[artifactType]
+            );
+
+            // Accumulate results thread-safely (in Node's single-threaded event loop, simple addition is safe)
+            result.prunedCount += typeResult.prunedCount;
+            result.storageReclaimedBytes += typeResult.storageReclaimedBytes;
+            result.violations += typeResult.violations;
+          } catch (error) {
+            const errorMsg = error instanceof Error ? error.message : String(error);
+            result.errors.push(`Error processing ${artifactType}: ${errorMsg}`);
+            logError(`Error processing artifact type ${artifactType}`, error, { tenantId });
+          }
+        })
+      );
 
       result.latencyMs = Date.now() - startTime;
 
