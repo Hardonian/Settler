@@ -20,7 +20,7 @@ on:
   workflow_dispatch:
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE22: true
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
   TIGERBEETLE_VERSION: "0.23.0"
 
 jobs:

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "tsc",
+    "build": "node ../../scripts/run-package-tsc-build.mjs",
     "typecheck": "tsc --noEmit",
     "start": "node dist/security-agent.js --scan=all",
     "security:scan": "node dist/security-agent.js --scan=all",
