@@ -224,29 +224,35 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
 
     // 1. Analyze AI usage patterns
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const aiCalls = await prisma.usageEvent.findMany({
-      where: {
-        eventType: "ai_request",
-        timestamp: { gte: thirtyDaysAgo },
-      },
-      select: { metadata: true },
-    });
+
+    // Use DB Group By instead of fetching into memory
+    const modelUsageRaw = await prisma.$queryRaw<
+      Array<{
+        model: string;
+        calls: bigint;
+        tokens: number;
+        cost: number;
+      }>
+    >`
+      SELECT
+        COALESCE(metadata->>'model', 'unknown') as model,
+        COUNT(*)::bigint as calls,
+        SUM(CAST(COALESCE(metadata->>'tokens', '0') AS NUMERIC))::float as tokens,
+        SUM(CAST(COALESCE(metadata->>'cost', '0') AS NUMERIC))::float as cost
+      FROM usage_events
+      WHERE "eventType" = 'ai_request'
+      AND timestamp >= ${thirtyDaysAgo}
+      GROUP BY COALESCE(metadata->>'model', 'unknown')
+    `;
 
     // Group by model and find optimization opportunities
     const modelUsage: Record<string, { calls: number; tokens: number; cost: number }> = {};
-    for (const call of aiCalls) {
-      const metadata = (call.metadata as any) || {};
-      const model = metadata.model || "unknown";
-      const cost = metadata.cost || 0;
-      const tokens = metadata.tokens || 0;
-
-      if (!modelUsage[model]) {
-        modelUsage[model] = { calls: 0, tokens: 0, cost: 0 };
-      }
-      const usage = modelUsage[model]!;
-      usage.calls++;
-      usage.tokens += tokens;
-      usage.cost += cost;
+    for (const row of modelUsageRaw) {
+      modelUsage[row.model] = {
+        calls: Number(row.calls),
+        tokens: Number(row.tokens),
+        cost: Number(row.cost),
+      };
     }
 
     // Check for expensive model usage that could be downgraded
