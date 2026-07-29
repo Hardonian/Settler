@@ -94,13 +94,24 @@ async function checkInputHashConsistency(): Promise<CheckResult> {
   // Duplicate hashes are expected for re-runs, check if outputs match
   const inconsistencies: Array<{ inputHash: string; matchCounts: number[] }> = [];
 
-  for (const row of results) {
-    const runsWithSameHash = await prisma.reconResult.findMany({
-      where: { inputHash: row.inputHash },
-      select: { id: true, matchedCount: true },
-    });
+  // Fix N+1 query: Fetch all related runs in a single query
+  const allRuns = await prisma.reconResult.findMany({
+    where: { inputHash: { in: results.map((r) => r.inputHash) } },
+    select: { inputHash: true, id: true, matchedCount: true },
+  });
 
-    const matchCounts = [...new Set(runsWithSameHash.map((r) => r.matchedCount))];
+  const runsByHash = new Map<string, typeof allRuns>();
+  for (const run of allRuns) {
+    if (run.inputHash) {
+      if (!runsByHash.has(run.inputHash)) runsByHash.set(run.inputHash, []);
+      runsByHash.get(run.inputHash)!.push(run);
+    }
+  }
+
+  for (const row of results) {
+    const runsWithSameHash = runsByHash.get(row.inputHash) || [];
+
+    const matchCounts = Array.from(new Set(runsWithSameHash.map((r) => Number(r.matchedCount))));
     if (matchCounts.length > 1) {
       inconsistencies.push({
         inputHash: row.inputHash,
