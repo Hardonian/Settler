@@ -21,7 +21,7 @@ on:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE22: true
-  TIGERBEETLE_VERSION: "0.23.0"
+  TIGERBEETLE_VERSION: "0.17.4"
 
 jobs:
   tigerbeetle-cluster:
