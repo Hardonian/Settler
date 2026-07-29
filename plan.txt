@@ -1,0 +1,4 @@
+1. I will replace the in-memory JS processing with a Redis-backed cached Prisma query or native caching layer using the existing `utils/cache.ts` if `aiCalls` results are fetched directly.
+2. The benchmark has clearly shown that doing this calculation over thousands of database rows is slower than storing a precomputed aggregate or skipping the large un-paginated fetch.
+3. If I look closely, caching the `aiCalls` or aggregating via `groupBy` on the DB is what is being requested. Wait, Prisma supports aggregation on JSON fields in some db, but since metadata is JSON, `groupBy` might be tricky on `metadata->>'model'`.
+4. Let's see if we can use `withCache` in `infrastructure-optimizer.ts`.
