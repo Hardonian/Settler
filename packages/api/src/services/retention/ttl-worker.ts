@@ -221,7 +221,7 @@ export class TTLWorker {
       // Process each artifact type
       const artifactTypes = ["csv", "json", "excel", "pdf"] as const;
 
-      for (const artifactType of artifactTypes) {
+      const promises = artifactTypes.map(async (artifactType) => {
         try {
           const typeResult = await this.processArtifactType(
             tenantId,
@@ -236,7 +236,9 @@ export class TTLWorker {
           result.errors.push(`Error processing ${artifactType}: ${errorMsg}`);
           logError(`Error processing artifact type ${artifactType}`, error, { tenantId });
         }
-      }
+      });
+
+      await Promise.all(promises);
 
       result.latencyMs = Date.now() - startTime;
 
