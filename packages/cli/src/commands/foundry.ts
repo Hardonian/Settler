@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { execFileSync } from "child_process";
+import { execSync } from "child_process";
 import {
   FoundryFileStore,
   createCoreVectorDataset,
@@ -119,13 +119,9 @@ foundryCommand
   .option("--limit <limit>", "Number of commits", "25")
   .action((options: { limit: string }) => {
     const limit = Number(options.limit) || 25;
-    const log = execFileSync(
-      "git",
-      ["log", "--date=short", "--pretty=format:%H%x09%P%x09%s", "-n", limit.toString()],
-      {
-        encoding: "utf8",
-      }
-    );
+    const log = execSync(`git log --date=short --pretty=format:%H%x09%P%x09%s -n ${limit}`, {
+      encoding: "utf8",
+    });
     const candidates = log
       .split("\n")
       .map((line) => {
