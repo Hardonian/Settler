@@ -353,12 +353,9 @@ export class RetentionPolicyService {
         select: { id: true },
       });
 
-      const policies: TenantRetentionPolicy[] = [];
-
-      for (const tenant of tenants) {
-        const policy = await this.getTenantRetentionPolicy(tenant.id);
-        policies.push(policy);
-      }
+      const policies = await Promise.all(
+        tenants.map((tenant) => this.getTenantRetentionPolicy(tenant.id))
+      );
 
       return policies;
     } catch (error) {
