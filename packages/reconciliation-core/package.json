@@ -22,7 +22,7 @@
     "test": "jest --runInBand --forceExit"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^3.0.69",
+    "@ai-sdk/openai": "^4.0.23",
     "@prisma/client": "7.8.0",
     "@settler/types": "workspace:*",
     "ai": "^6.0.199",

@@ -30,7 +30,7 @@
     "foundry:faults": "tsx src/index.ts foundry generate --type faults --seeds 1 && node ../../scripts/run-with-env.mjs --set FOUNDRY_FAULTS=1 -- tsx src/index.ts foundry report --last 1"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^3.0.69",
+    "@ai-sdk/openai": "^4.0.23",
     "@jobforge/sdk-ts": "workspace:*",
     "@settler/sdk": "workspace:*",
     "ai": "^6.0.199",

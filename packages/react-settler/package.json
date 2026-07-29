@@ -44,7 +44,7 @@
     "react-dom": "^18.0.0 || ^19.0.0"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^3.0.69",
+    "@ai-sdk/openai": "^4.0.23",
     "@settler/protocol": "workspace:*",
     "ai": "^6.0.199"
   },

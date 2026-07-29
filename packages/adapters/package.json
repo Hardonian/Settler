@@ -24,7 +24,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^3.0.69",
+    "@ai-sdk/openai": "^4.0.23",
     "@settler/types": "workspace:*",
     "@supabase/supabase-js": "^2.106.1",
     "ai": "^6.0.199",

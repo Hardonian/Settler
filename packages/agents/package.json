@@ -10,7 +10,7 @@
     "test": "node --test dist/__tests__/legacy-agents.test.js dist/__tests__/security-agent.test.js"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^3.0.69",
+    "@ai-sdk/openai": "^4.0.23",
     "@settler/logger": "workspace:*",
     "ai": "^6.0.199",
     "zod": "^3.23.0"
