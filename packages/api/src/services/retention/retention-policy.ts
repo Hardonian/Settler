@@ -350,14 +350,94 @@ export class RetentionPolicyService {
     try {
       const tenants = await prisma.tenant.findMany({
         where: { isActive: true },
-        select: { id: true },
+        select: {
+          id: true,
+          metadata: true,
+          createdAt: true,
+          updatedAt: true,
+        },
       });
 
       const policies: TenantRetentionPolicy[] = [];
+      const tenantsNeedingSubscriptionPolicy: string[] = [];
 
+      // Step 1: Process tenants with custom metadata policies
       for (const tenant of tenants) {
-        const policy = await this.getTenantRetentionPolicy(tenant.id);
-        policies.push(policy);
+        const metadata = (tenant.metadata as Record<string, unknown>) || {};
+        const retentionConfig = metadata.retentionPolicy as TenantRetentionPolicy | undefined;
+
+        if (retentionConfig) {
+          policies.push({
+            ...retentionConfig,
+            tenantId: tenant.id,
+            createdAt: tenant.createdAt,
+            updatedAt: tenant.updatedAt,
+          });
+        } else {
+          tenantsNeedingSubscriptionPolicy.push(tenant.id);
+        }
+      }
+
+      if (tenantsNeedingSubscriptionPolicy.length === 0) {
+        return policies;
+      }
+
+      // Step 2: Fetch billing accounts for remaining tenants
+      const billingAccounts = await prisma.billingAccount.findMany({
+        where: { tenantId: { in: tenantsNeedingSubscriptionPolicy } },
+        select: { id: true, tenantId: true },
+      });
+
+      const billingAccountIds = billingAccounts.map((ba) => ba.id);
+      const tenantToBillingAccount = new Map<string, string>();
+      for (const ba of billingAccounts) {
+        if (ba.tenantId) {
+          tenantToBillingAccount.set(ba.tenantId, ba.id);
+        }
+      }
+
+      // Step 3: Fetch active subscriptions
+      let subscriptions: { planId: string; billingAccountId: string }[] = [];
+      if (billingAccountIds.length > 0) {
+        subscriptions = await prisma.subscription.findMany({
+          where: {
+            billingAccountId: { in: billingAccountIds },
+            status: "active",
+          },
+          orderBy: { createdAt: "desc" },
+          select: { planId: true, billingAccountId: true },
+        });
+      }
+
+      // Keep track of the first active subscription per billing account
+      // Since we order by createdAt desc in a normal query, findMany doesn't give us distinct on billingAccountId out of the box in this simplistic way,
+      // so we map them manually to take the first one (most recent).
+      const billingAccountToPlan = new Map<string, string>();
+      for (const sub of subscriptions) {
+        if (!billingAccountToPlan.has(sub.billingAccountId) && sub.planId) {
+          billingAccountToPlan.set(sub.billingAccountId, sub.planId);
+        }
+      }
+
+      // Step 4: Resolve policies for remaining tenants
+      for (const tenantId of tenantsNeedingSubscriptionPolicy) {
+        const billingAccountId = tenantToBillingAccount.get(tenantId);
+
+        if (!billingAccountId) {
+          policies.push(this.getDefaultPolicy(tenantId));
+          continue;
+        }
+
+        const planId = billingAccountToPlan.get(billingAccountId);
+        const isEnterprise = planId === "enterprise" || planId === "scale";
+
+        policies.push({
+          tenantId,
+          artifactRetention: this.getArtifactRetentionFromPlan(isEnterprise),
+          isCustomPolicy: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
       }
 
       return policies;
