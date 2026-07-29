@@ -150,23 +150,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <OrganizationSchema />
         <WebSiteSchema />
         <SoftwareApplicationSchema />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                var storedTheme = localStorage.getItem('theme');
-                var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                var resolvedTheme = storedTheme || (prefersDark ? 'dark' : 'light');
-                var root = document.documentElement;
-                if (resolvedTheme === 'dark') {
-                  root.classList.add('dark');
-                } else {
-                  root.classList.remove('dark');
-                }
-              })();
-            `,
-          }}
-        />
+        <script id="theme-script">{`
+            (function() {
+              var storedTheme = localStorage.getItem('theme');
+              var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+              var resolvedTheme = storedTheme || (prefersDark ? 'dark' : 'light');
+              var root = document.documentElement;
+              if (resolvedTheme === 'dark') {
+                root.classList.add('dark');
+              } else {
+                root.classList.remove('dark');
+              }
+            })();
+          `}</script>
       </head>
       <body className="relative">
         <div
