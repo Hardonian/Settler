@@ -350,14 +350,84 @@ export class RetentionPolicyService {
     try {
       const tenants = await prisma.tenant.findMany({
         where: { isActive: true },
-        select: { id: true },
+        select: {
+          id: true,
+          metadata: true,
+          createdAt: true,
+          updatedAt: true,
+        },
       });
+
+      const tenantIds = tenants.map((t) => t.id);
+
+      // Bulk fetch billing accounts
+      const billingAccounts = await prisma.billingAccount.findMany({
+        where: { tenantId: { in: tenantIds } },
+        select: { id: true, tenantId: true },
+      });
+
+      const billingAccountIds = billingAccounts.map((ba) => ba.id);
+
+      // Bulk fetch subscriptions
+      const subscriptions = await prisma.subscription.findMany({
+        where: {
+          billingAccountId: { in: billingAccountIds },
+          status: "active",
+        },
+        orderBy: { createdAt: "desc" },
+        select: { planId: true, billingAccountId: true },
+      });
+
+      // Map billing accounts to their active subscription
+      const subByBillingAccount = new Map<string, any>();
+      for (const sub of subscriptions) {
+        // Keep the first one since it's ordered by createdAt desc
+        if (!subByBillingAccount.has(sub.billingAccountId)) {
+          subByBillingAccount.set(sub.billingAccountId, sub);
+        }
+      }
+
+      // Map tenants to their billing accounts
+      const baByTenant = new Map<string, any>();
+      for (const ba of billingAccounts) {
+        if (ba.tenantId) {
+          baByTenant.set(ba.tenantId, ba);
+        }
+      }
 
       const policies: TenantRetentionPolicy[] = [];
 
       for (const tenant of tenants) {
-        const policy = await this.getTenantRetentionPolicy(tenant.id);
-        policies.push(policy);
+        const metadata = (tenant.metadata as Record<string, unknown>) || {};
+        const retentionConfig = metadata.retentionPolicy as TenantRetentionPolicy | undefined;
+
+        if (retentionConfig) {
+          policies.push({
+            ...retentionConfig,
+            tenantId: tenant.id,
+            createdAt: tenant.createdAt,
+            updatedAt: tenant.updatedAt,
+          });
+          continue;
+        }
+
+        const billingAccount = baByTenant.get(tenant.id);
+        if (!billingAccount) {
+          policies.push(this.getDefaultPolicy(tenant.id));
+          continue;
+        }
+
+        const subscription = subByBillingAccount.get(billingAccount.id);
+        const planId = subscription?.planId;
+        const isEnterprise = planId === "enterprise" || planId === "scale";
+
+        policies.push({
+          tenantId: tenant.id,
+          artifactRetention: this.getArtifactRetentionFromPlan(isEnterprise),
+          isCustomPolicy: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
       }
 
       return policies;
