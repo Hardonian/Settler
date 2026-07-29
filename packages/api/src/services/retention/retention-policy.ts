@@ -350,14 +350,88 @@ export class RetentionPolicyService {
     try {
       const tenants = await prisma.tenant.findMany({
         where: { isActive: true },
-        select: { id: true },
+        select: { id: true, metadata: true, createdAt: true, updatedAt: true },
       });
 
       const policies: TenantRetentionPolicy[] = [];
+      const tenantsNeedingSubscriptionLookup: string[] = [];
 
       for (const tenant of tenants) {
-        const policy = await this.getTenantRetentionPolicy(tenant.id);
-        policies.push(policy);
+        const metadata = (tenant.metadata as Record<string, unknown>) || {};
+        const retentionConfig = metadata.retentionPolicy as TenantRetentionPolicy | undefined;
+
+        if (retentionConfig) {
+          policies.push({
+            ...retentionConfig,
+            tenantId: tenant.id,
+            createdAt: tenant.createdAt,
+            updatedAt: tenant.updatedAt,
+          });
+        } else {
+          tenantsNeedingSubscriptionLookup.push(tenant.id);
+        }
+      }
+
+      if (tenantsNeedingSubscriptionLookup.length > 0) {
+        // Bulk fetch billing accounts
+        const billingAccounts = await prisma.billingAccount.findMany({
+          where: { tenantId: { in: tenantsNeedingSubscriptionLookup } },
+          select: { id: true, tenantId: true },
+        });
+
+        const tenantToBillingAccount = new Map<string, string>();
+        for (const account of billingAccounts) {
+          if (account.tenantId) {
+            tenantToBillingAccount.set(account.tenantId, account.id);
+          }
+        }
+
+        const billingAccountIds = Array.from(tenantToBillingAccount.values());
+
+        const latestSubscriptionByBillingAccount = new Map<string, any>();
+        if (billingAccountIds.length > 0) {
+          // Bulk fetch active subscriptions
+          const activeSubscriptions = await prisma.subscription.findMany({
+            where: {
+              billingAccountId: { in: billingAccountIds },
+              status: "active",
+            },
+            orderBy: { createdAt: "desc" },
+            select: { planId: true, billingAccountId: true },
+          });
+
+          // First one encountered will be the latest because of orderBy desc
+          for (const sub of activeSubscriptions) {
+            if (!latestSubscriptionByBillingAccount.has(sub.billingAccountId)) {
+              latestSubscriptionByBillingAccount.set(sub.billingAccountId, sub);
+            }
+          }
+        }
+
+        for (const tenantId of tenantsNeedingSubscriptionLookup) {
+          const billingAccountId = tenantToBillingAccount.get(tenantId);
+          if (!billingAccountId) {
+            policies.push(this.getDefaultPolicy(tenantId));
+            continue;
+          }
+
+          const sub = latestSubscriptionByBillingAccount.get(billingAccountId);
+          if (!sub) {
+            policies.push(this.getDefaultPolicy(tenantId));
+            continue;
+          }
+
+          const planId = sub.planId;
+          const isEnterprise = planId === "enterprise" || planId === "scale";
+
+          policies.push({
+            tenantId,
+            artifactRetention: this.getArtifactRetentionFromPlan(isEnterprise),
+            isCustomPolicy: false,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          });
+        }
       }
 
       return policies;
