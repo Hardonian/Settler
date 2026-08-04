@@ -1,6 +1,9 @@
 export type SiteMode = "oss" | "enterprise";
 
-const DEFAULT_OSS_HOST = "https://settler.dev";
+// Vercel redirects the apex hostname to www. Emit the final canonical origin in
+// metadata, robots, and sitemap entries so crawlers do not spend crawl budget on
+// redirect-only URLs.
+const DEFAULT_OSS_HOST = "https://www.settler.dev";
 const DEFAULT_ENTERPRISE_HOST = "https://enterprise.settler.dev";
 
 export function getSiteMode(env: NodeJS.ProcessEnv = process.env): SiteMode {

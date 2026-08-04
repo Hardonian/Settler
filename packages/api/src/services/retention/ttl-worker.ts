@@ -167,16 +167,23 @@ export class TTLWorker {
         tenantCount: tenants.length,
       });
 
-      for (const tenant of tenants) {
-        try {
-          await this.processTenant(tenant.id, tenant.name);
-        } catch (error) {
-          logError("Error processing tenant in TTL worker", error, {
-            workerId: this.workerId,
-            tenantId: tenant.id,
-          });
-          this.stats.errors++;
-        }
+      // Process tenants in parallel batches to prevent N+1 query performance issues
+      const concurrency = this.config.maxConcurrentDeletes || 10;
+      for (let i = 0; i < tenants.length; i += concurrency) {
+        const batch = tenants.slice(i, i + concurrency);
+        await Promise.all(
+          batch.map(async (tenant) => {
+            try {
+              await this.processTenant(tenant.id, tenant.name);
+            } catch (error) {
+              logError("Error processing tenant in TTL worker", error, {
+                workerId: this.workerId,
+                tenantId: tenant.id,
+              });
+              this.stats.errors++;
+            }
+          })
+        );
       }
 
       this.stats.runsCompleted++;
