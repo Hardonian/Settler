@@ -144,7 +144,7 @@ jobs:
 
       - name: Attest release evidence bundle provenance
         id: attest
-        uses: actions/attest-build-provenance@v1
+        uses: actions/attest-build-provenance@v4
         with:
           subject-path: ${{ steps.package.outputs.archive_path }}
 
