@@ -3,7 +3,7 @@ import { getEnv } from "../utils/env";
 
 // In a real implementation, this would be injected via a DI container
 const stripe = new Stripe(getEnv("STRIPE_SECRET_KEY") || "", {
-  apiVersion: "2023-10-16", // Using standard API version
+  apiVersion: "2026-06-24.dahlia" as Stripe.LatestApiVersion, // Must match installed Stripe SDK types
 });
 
 export class BillingService {
