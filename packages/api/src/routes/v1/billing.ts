@@ -159,7 +159,7 @@ billingWebhookRouter.post(
     let event: any;
     try {
       const stripe = new (await import("stripe")).default(getEnv("STRIPE_SECRET_KEY") || "", {
-        apiVersion: "2026-06-24.dahlia" as Stripe.LatestApiVersion,
+      apiVersion: "2026-06-24.dahlia" as Stripe.LatestApiVersion,
       });
       event = stripe.webhooks.constructEvent(
         JSON.stringify(req.body),
