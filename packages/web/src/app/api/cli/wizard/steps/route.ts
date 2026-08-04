@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { requireTenantRequestContext } from "@/lib/api/tenant-context";
 
 const ADAPTERS = [
   { id: "stripe", name: "Stripe" },
@@ -77,7 +78,8 @@ function getSuggestedRules(sourceAdapter: string, targetAdapter: string) {
   ];
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  await requireTenantRequestContext(request);
   const steps = [
     {
       step: 1,
