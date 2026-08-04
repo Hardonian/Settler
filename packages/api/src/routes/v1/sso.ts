@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from "express";
 import passport from "passport";
-import { Strategy as SamlStrategy } from "passport-saml";
+import { Strategy as SamlStrategy } from "@node-saml/passport-saml";
 import { config } from "../../config";
 import { query } from "../../db";
 import jwt from "jsonwebtoken";
