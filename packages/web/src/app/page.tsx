@@ -14,24 +14,12 @@ import {
 import { MarketingIntentCard } from "@/components/site/marketing-motion-wrappers";
 import { Button } from "@/components/ui/button";
 import { UiLink } from "@/components/ui/link";
-import dynamic from "next/dynamic";
-
-const ReconciliationFlow = dynamic(
-  () => import("@/components/site/infographics").then((mod) => mod.ReconciliationFlow),
-  { ssr: false, loading: () => <div className="min-h-80" aria-hidden="true" /> }
-);
-const VisualGrid = dynamic(
-  () => import("@/components/site/infographics").then((mod) => mod.VisualGrid),
-  { ssr: false, loading: () => <div className="min-h-72" aria-hidden="true" /> }
-);
-const AdapterConnectionMap = dynamic(
-  () => import("@/components/site/infographics").then((mod) => mod.AdapterConnectionMap),
-  { ssr: false, loading: () => <div className="min-h-80" aria-hidden="true" /> }
-);
-const ExceptionTriageVisual = dynamic(
-  () => import("@/components/site/infographics").then((mod) => mod.ExceptionTriageVisual),
-  { ssr: false, loading: () => <div className="min-h-80" aria-hidden="true" /> }
-);
+import {
+  AdapterConnectionMap,
+  ExceptionTriageVisual,
+  ReconciliationFlow,
+  VisualGrid,
+} from "@/components/site/HomeInfographics";
 
 export const metadata: Metadata = {
   title: "Settler — Reconciliation intelligence + audit OS",
