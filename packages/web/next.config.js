@@ -333,12 +333,6 @@ const nextConfig = {
         destination: "/icon.png",
         permanent: false,
       },
-      // Root redirect to home page
-      {
-        source: "/",
-        destination: "/home",
-        permanent: false,
-      },
       {
         source: "/oss",
         destination: "/open-source",
