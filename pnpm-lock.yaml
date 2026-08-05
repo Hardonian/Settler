@@ -429,8 +429,8 @@ importers:
         specifier: ^5.0.1
         version: 5.0.1(express@5.2.1)
       tigerbeetle-node:
-        specifier: 0.17.4
-        version: 0.17.4
+        specifier: 0.17.9
+        version: 0.17.9
       uuid:
         specifier: ^13.0.1
         version: 13.0.2
@@ -10155,8 +10155,8 @@ packages:
   through@2.3.8:
     resolution: {integrity: sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==}
 
-  tigerbeetle-node@0.17.4:
-    resolution: {integrity: sha512-qrqx5aHiWlLbrzD/QtueqLtPzwroA3AMkEQZxZL5dlFZE9E+SW6VMZ1sUeSGQgtZpyFArUY+fQfTAPu0DGfQcQ==}
+  tigerbeetle-node@0.17.9:
+    resolution: {integrity: sha512-jx2V8WtY1IKndEGhNWsUYHh7Sc9uYLylkJUIXwkskUm/q/ziqS3VyKzBCSTkfU4nZxkAXHeVzzbG30ENzGj68w==}
     engines: {node: '>=18.0.0'}
 
   tiny-inflate@1.0.3:
@@ -21228,7 +21228,7 @@ snapshots:
 
   through@2.3.8: {}
 
-  tigerbeetle-node@0.17.4: {}
+  tigerbeetle-node@0.17.9: {}
 
   tiny-inflate@1.0.3: {}
 
