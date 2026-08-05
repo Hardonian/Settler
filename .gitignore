@@ -41,6 +41,3 @@ Thumbs.db
 # Test/verification artifacts
 artifacts/
 *.tsbuildinfo
-
-# Local closure registers / operator state (kept local, not committed)
-state/
