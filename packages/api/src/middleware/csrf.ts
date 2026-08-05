@@ -77,7 +77,9 @@ export function csrfProtection(req: Request, res: Response, next: NextFunction):
  */
 export function setCsrfToken(req: Request, res: Response, next: NextFunction): void {
   // Only set CSRF token for web UI routes
-  if (req.path.startsWith("/api/")) {
+  // `req.path` can be relative after a router mount. `originalUrl` preserves the
+  // customer-visible route, so this never emits a duplicate token for /api/*.
+  if (req.originalUrl.startsWith("/api/")) {
     return next();
   }
 

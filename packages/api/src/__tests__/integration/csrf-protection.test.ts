@@ -32,17 +32,29 @@ describe("CSRF Protection Integration", () => {
       // Get CSRF token
       const tokenResponse = await request(app).get("/api/csrf-token");
       const csrfToken = tokenResponse.body.csrfToken;
-      const cookies = tokenResponse.headers["set-cookie"];
+      const csrfCookie = tokenResponse.headers["set-cookie"]
+        ?.find((cookie: string) => cookie.startsWith("csrf-token="))
+        ?.split(";", 1)[0];
+      expect(csrfCookie).toBeDefined();
+      const csrfCookieToken = csrfCookie
+        ? decodeURIComponent(csrfCookie.slice("csrf-token=".length))
+        : undefined;
+      expect(csrfCookieToken).toBe(csrfToken);
 
-      // Make request with CSRF token
+      // Send only the cookie-pair. Set-Cookie attributes are response metadata,
+      // not legal Cookie request-header values.
       const response = await request(app)
         .post("/api/v1/some-endpoint")
-        .set("Cookie", cookies)
+        .set("Cookie", csrfCookie!)
         .set("X-CSRF-Token", csrfToken)
         .send({});
 
-      // Should not fail with 403 CSRF error
-      expect(response.status).not.toBe(403);
+      // The synthetic endpoint can be rejected by downstream auth/routing policy,
+      // but a matching double-submit token must clear CSRF validation itself.
+      expect(response.body).not.toMatchObject({
+        error: "FORBIDDEN",
+        message: "CSRF token validation failed",
+      });
     });
   });
 });

@@ -40,8 +40,8 @@ describe("Route Validation Integration", () => {
 
     it("should access /api/v1/docs (if enabled)", async () => {
       const response = await request(app).get("/api/v1/docs");
-      // May return 200 (Swagger UI) or 404 (if disabled)
-      expect([200, 404]).toContain(response.status);
+      // Swagger UI's mounted route redirects `/docs` to its trailing-slash URL.
+      expect([200, 301, 404]).toContain(response.status);
     });
   });
 

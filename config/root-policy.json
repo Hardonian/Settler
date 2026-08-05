@@ -188,6 +188,7 @@
     "TODO_PAYOFF_SPRINT.md",
     "triage_pass_report.md",
     "deno.lock",
+    "desc.txt",
     "fix-marketplace.js",
     "fix-migration.js",
     "generate_dx.py",

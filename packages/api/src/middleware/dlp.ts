@@ -15,6 +15,8 @@ const redactPII = (text: string): string => {
   return redacted;
 };
 
+const RESPONSE_TOKEN_ALLOWLIST = new Set(["csrfToken"]); // Deliberately returned by /api/csrf-token for double-submit validation.
+
 const redactObject = (obj: any): any => {
   if (typeof obj === "string") {
     return redactPII(obj);
@@ -28,7 +30,11 @@ const redactObject = (obj: any): any => {
     const redactedObj: Record<string, any> = {};
     for (const [key, value] of Object.entries(obj)) {
       // Redact known sensitive keys completely
-      if (/password|secret|token|ssn|credit_card/i.test(key) && typeof value === "string") {
+      if (
+        /password|secret|token|ssn|credit_card/i.test(key) &&
+        typeof value === "string" &&
+        !RESPONSE_TOKEN_ALLOWLIST.has(key)
+      ) {
         redactedObj[key] = "[REDACTED_KEY]";
       } else {
         redactedObj[key] = redactObject(value);
