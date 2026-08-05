@@ -2,8 +2,12 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "..",
+    "baseUrl": ".",
+    "paths": {
+      "@settler/logger": ["../logger/src"]
+    }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "../logger/src/**/*"],
   "exclude": ["node_modules", "dist"]
 }

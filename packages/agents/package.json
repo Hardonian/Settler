@@ -5,9 +5,9 @@
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "start": "node dist/security-agent.js --scan=all",
-    "security:scan": "node dist/security-agent.js --scan=all",
-    "test": "node --test dist/__tests__/legacy-agents.test.js dist/__tests__/security-agent.test.js"
+    "start": "node dist/agents/src/security-agent.js --scan=all",
+    "security:scan": "node dist/agents/src/security-agent.js --scan=all",
+    "test": "node --test dist/agents/src/__tests__/legacy-agents.test.js dist/agents/src/__tests__/security-agent.test.js"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.69",
