@@ -72,12 +72,11 @@ jobs:
       - name: Install TigerBeetle
         run: |
           set -e
-          TB_VERSION="${TIGERBEETLE_VERSION}"
-          # Use the official TigerBeetle installer, which resolves the correct
-          # release asset for the target architecture/version (the previous
-          # hardcoded github release URL returned 404 for v0.23.0).
-          curl -sL https://tigerbeetle.com/install | bash -s -- --version "${TB_VERSION}"
-          # The installer drops the binary in ./tigerbeetle; place it on PATH.
+          # Official TigerBeetle Linux binary (version-agnostic, always resolves
+          # the correct asset). The previous hardcoded GitHub release URL returned
+          # 404 for v0.23.0.
+          curl -Lo tigerbeetle.zip https://linux.tigerbeetle.com
+          unzip -o tigerbeetle.zip
           sudo mv tigerbeetle /usr/local/bin/ 2>/dev/null || mv tigerbeetle /usr/local/bin/
           tigerbeetle --version
 
