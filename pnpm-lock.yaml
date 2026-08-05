@@ -45,7 +45,7 @@ overrides:
   dompurify: ^3.4.0
   protobufjs: ^7.5.8
   axios: ^1.18.0
-  next: ^16.2.12
+  next: ^16.2.11
   fast-uri: ^3.1.4
   '@opentelemetry/auto-instrumentations-node': ^0.76.0
   '@opentelemetry/sdk-node': ^0.218.0
@@ -187,8 +187,8 @@ importers:
         specifier: ^2.106.1
         version: 2.106.1
       ai:
-        specifier: ^6.0.199
-        version: 6.0.199(zod@3.25.76)
+        specifier: ^7.0.48
+        version: 7.0.48(zod@3.25.76)
       resend:
         specifier: ^6.18.1
         version: 6.18.1(@react-email/render@0.0.16(react-dom@19.2.7(react@19.2.7))(react@19.2.7))
@@ -236,8 +236,8 @@ importers:
         specifier: workspace:*
         version: link:../logger
       ai:
-        specifier: ^6.0.199
-        version: 6.0.199(zod@3.25.76)
+        specifier: ^7.0.48
+        version: 7.0.48(zod@3.25.76)
       zod:
         specifier: ^3.23.0
         version: 3.25.76
@@ -321,8 +321,8 @@ importers:
         specifier: ^1.38.0
         version: 1.38.0
       ai:
-        specifier: ^6.0.199
-        version: 6.0.199(zod@3.25.76)
+        specifier: ^7.0.48
+        version: 7.0.48(zod@3.25.76)
       ajv:
         specifier: ^8.20.0
         version: 8.20.0
@@ -559,8 +559,8 @@ importers:
         specifier: workspace:*
         version: link:../sdk
       ai:
-        specifier: ^6.0.199
-        version: 6.0.199(zod@4.4.3)
+        specifier: ^7.0.48
+        version: 7.0.48(zod@4.4.3)
       chalk:
         specifier: ^5.6.2
         version: 5.6.2
@@ -610,8 +610,8 @@ importers:
         specifier: ^26.1.2
         version: 26.1.2
       ai:
-        specifier: ^6.0.199
-        version: 6.0.199(zod@4.4.3)
+        specifier: ^7.0.48
+        version: 7.0.48(zod@4.4.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -668,8 +668,8 @@ importers:
         specifier: workspace:*
         version: link:../types
       ai:
-        specifier: ^6.0.199
-        version: 6.0.199(zod@4.4.3)
+        specifier: ^7.0.48
+        version: 7.0.48(zod@4.4.3)
       axios:
         specifier: ^1.18.0
         version: 1.18.1
@@ -744,8 +744,8 @@ importers:
         specifier: ^4.0.27
         version: 4.0.27(zod@4.4.3)
       ai:
-        specifier: ^6.0.199
-        version: 6.0.199(zod@4.4.3)
+        specifier: ^7.0.48
+        version: 7.0.48(zod@4.4.3)
     devDependencies:
       '@vitest/coverage-v8':
         specifier: ^4.1.10
@@ -769,8 +769,8 @@ importers:
         specifier: workspace:*
         version: link:../jobforge-shared
       ai:
-        specifier: ^6.0.199
-        version: 6.0.199(zod@3.25.76)
+        specifier: ^7.0.48
+        version: 7.0.48(zod@3.25.76)
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -797,8 +797,8 @@ importers:
         specifier: ^4.0.27
         version: 4.0.27(zod@4.4.3)
       ai:
-        specifier: ^6.0.199
-        version: 6.0.199(zod@4.4.3)
+        specifier: ^7.0.48
+        version: 7.0.48(zod@4.4.3)
     devDependencies:
       '@jobforge/typescript-config':
         specifier: workspace:*
@@ -831,8 +831,8 @@ importers:
         specifier: workspace:*
         version: link:../jobforge-errors
       ai:
-        specifier: ^6.0.199
-        version: 6.0.199(zod@4.4.3)
+        specifier: ^7.0.48
+        version: 7.0.48(zod@4.4.3)
     devDependencies:
       '@jobforge/typescript-config':
         specifier: workspace:*
@@ -868,8 +868,8 @@ importers:
         specifier: ^2.106.1
         version: 2.106.1
       ai:
-        specifier: ^6.0.199
-        version: 6.0.199(zod@3.25.76)
+        specifier: ^7.0.48
+        version: 7.0.48(zod@3.25.76)
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -902,8 +902,8 @@ importers:
         specifier: ^4.0.27
         version: 4.0.27(zod@3.25.76)
       ai:
-        specifier: ^6.0.199
-        version: 6.0.199(zod@3.25.76)
+        specifier: ^7.0.48
+        version: 7.0.48(zod@3.25.76)
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -936,8 +936,8 @@ importers:
         specifier: ^4.0.27
         version: 4.0.27(zod@4.4.3)
       ai:
-        specifier: ^6.0.199
-        version: 6.0.199(zod@4.4.3)
+        specifier: ^7.0.48
+        version: 7.0.48(zod@4.4.3)
     devDependencies:
       '@vitest/coverage-v8':
         specifier: ^4.1.10
@@ -955,8 +955,8 @@ importers:
         specifier: ^4.0.27
         version: 4.0.27(zod@4.4.3)
       ai:
-        specifier: ^6.0.199
-        version: 6.0.199(zod@4.4.3)
+        specifier: ^7.0.48
+        version: 7.0.48(zod@4.4.3)
     devDependencies:
       '@vitest/coverage-v8':
         specifier: ^4.1.10
@@ -980,8 +980,8 @@ importers:
         specifier: workspace:*
         version: link:../types
       ai:
-        specifier: ^6.0.199
-        version: 6.0.199(zod@4.4.3)
+        specifier: ^7.0.48
+        version: 7.0.48(zod@4.4.3)
     devDependencies:
       '@vitest/coverage-v8':
         specifier: ^4.1.10
@@ -1005,8 +1005,8 @@ importers:
         specifier: ^26.1.2
         version: 26.1.2
       ai:
-        specifier: ^6.0.199
-        version: 6.0.199(zod@4.4.3)
+        specifier: ^7.0.48
+        version: 7.0.48(zod@4.4.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1039,8 +1039,8 @@ importers:
         specifier: workspace:*
         version: link:../protocol
       ai:
-        specifier: ^6.0.199
-        version: 6.0.199(zod@4.4.3)
+        specifier: ^7.0.48
+        version: 7.0.48(zod@4.4.3)
     devDependencies:
       '@types/node':
         specifier: ^26.1.2
@@ -1082,8 +1082,8 @@ importers:
         specifier: workspace:*
         version: link:../types
       ai:
-        specifier: ^6.0.199
-        version: 6.0.199(zod@3.25.76)
+        specifier: ^7.0.48
+        version: 7.0.48(zod@3.25.76)
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -1122,8 +1122,8 @@ importers:
         specifier: ^26.1.2
         version: 26.1.2
       ai:
-        specifier: ^6.0.199
-        version: 6.0.199(zod@4.4.3)
+        specifier: ^7.0.48
+        version: 7.0.48(zod@4.4.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1159,8 +1159,8 @@ importers:
         specifier: ^4.0.27
         version: 4.0.27(zod@4.4.3)
       ai:
-        specifier: ^6.0.199
-        version: 6.0.199(zod@4.4.3)
+        specifier: ^7.0.48
+        version: 7.0.48(zod@4.4.3)
     devDependencies:
       '@vitest/coverage-v8':
         specifier: ^4.1.10
@@ -1196,8 +1196,8 @@ importers:
         specifier: workspace:*
         version: link:../types
       ai:
-        specifier: ^6.0.199
-        version: 6.0.199(zod@3.25.76)
+        specifier: ^7.0.48
+        version: 7.0.48(zod@3.25.76)
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -1224,8 +1224,8 @@ importers:
         specifier: ^26.1.2
         version: 26.1.2
       ai:
-        specifier: ^6.0.199
-        version: 6.0.199(zod@3.25.76)
+        specifier: ^7.0.48
+        version: 7.0.48(zod@3.25.76)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1342,8 +1342,8 @@ importers:
         specifier: ^6.1.0
         version: 6.1.0(@types/react@19.2.17)(react@19.2.7)(xstate@5.31.1)
       ai:
-        specifier: ^6.0.199
-        version: 6.0.199(zod@4.4.3)
+        specifier: ^7.0.48
+        version: 7.0.48(zod@4.4.3)
       autoprefixer:
         specifier: ^10.5.0
         version: 10.5.0(postcss@8.5.23)
@@ -1375,7 +1375,7 @@ importers:
         specifier: ^0.555.0
         version: 0.555.0(react@19.2.7)
       next:
-        specifier: ^16.2.12
+        specifier: ^16.2.11
         version: 16.2.12(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(@playwright/test@1.60.0)(@types/node@26.1.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       postcss:
         specifier: '>=8.5.18'
@@ -1495,9 +1495,9 @@ packages:
   '@adobe/css-tools@4.5.0':
     resolution: {integrity: sha512-6OzddxPio9UiWTCemp4N8cYLV2ZN1ncRnV1cVGtve7dhPOtRkleRyx32GQCYSwDYgaHU3USMm84tNsvKzRCa1Q==}
 
-  '@ai-sdk/gateway@3.0.127':
-    resolution: {integrity: sha512-Obmw5hmE5x+ccRrMp/Djx5r0rpFVX87YqE6OY06g5fwYlRI30dA84ARfTzX45ivCvkW4eCnBpOVXVWQ/pjH85w==}
-    engines: {node: '>=18'}
+  '@ai-sdk/gateway@4.0.37':
+    resolution: {integrity: sha512-YBCTsSlX0ETVsjo0ihfBOeJ3p3y1wXKXDzF9Ygp9dscUY06dzOGmyWJSGsKg+khKVArzBWUW4UCSAKms20ZDmg==}
+    engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
@@ -5868,9 +5868,9 @@ packages:
     resolution: {integrity: sha512-kja8j7PjmncONqaTsB8fQ+wE2mSU2DJ9D4XKoJ5PFWIdRMa6SLSN1ff4mOr4jCbfRSsxR4keIiySJU0N9T5hIQ==}
     engines: {node: '>= 8.0.0'}
 
-  ai@6.0.199:
-    resolution: {integrity: sha512-6H9RPEjzBQECM+eU1JxAh6jHcZPU/6q5QZ8D8QV8agubf0Mm/kcBlwqrFcFtup6RQzmEvMkVaQOoLCZ8bQ13lA==}
-    engines: {node: '>=18'}
+  ai@7.0.48:
+    resolution: {integrity: sha512-QmqshWFEDdkFFqSgdJ4cogaoDIYaedqbv73q/NXEYNkSIocJCzXnGFVyM9lrtAGTSBfm+5hq3/292ooXJ1jDSw==}
+    engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
@@ -10835,16 +10835,16 @@ snapshots:
 
   '@adobe/css-tools@4.5.0': {}
 
-  '@ai-sdk/gateway@3.0.127(zod@3.25.76)':
+  '@ai-sdk/gateway@4.0.37(zod@3.25.76)':
     dependencies:
-      '@ai-sdk/provider': 3.0.10
+      '@ai-sdk/provider': 4.0.4
       '@ai-sdk/provider-utils': 4.0.27(zod@3.25.76)
       '@vercel/oidc': 3.2.0
       zod: 3.25.76
 
-  '@ai-sdk/gateway@3.0.127(zod@4.4.3)':
+  '@ai-sdk/gateway@4.0.37(zod@4.4.3)':
     dependencies:
-      '@ai-sdk/provider': 3.0.10
+      '@ai-sdk/provider': 4.0.4
       '@ai-sdk/provider-utils': 4.0.27(zod@4.4.3)
       '@vercel/oidc': 3.2.0
       zod: 4.4.3
@@ -16060,20 +16060,18 @@ snapshots:
     dependencies:
       humanize-ms: 1.2.1
 
-  ai@6.0.199(zod@3.25.76):
+  ai@7.0.48(zod@3.25.76):
     dependencies:
-      '@ai-sdk/gateway': 3.0.127(zod@3.25.76)
-      '@ai-sdk/provider': 3.0.10
+      '@ai-sdk/gateway': 4.0.37(zod@3.25.76)
+      '@ai-sdk/provider': 4.0.4
       '@ai-sdk/provider-utils': 4.0.27(zod@3.25.76)
-      '@opentelemetry/api': 1.9.1
       zod: 3.25.76
 
-  ai@6.0.199(zod@4.4.3):
+  ai@7.0.48(zod@4.4.3):
     dependencies:
-      '@ai-sdk/gateway': 3.0.127(zod@4.4.3)
-      '@ai-sdk/provider': 3.0.10
+      '@ai-sdk/gateway': 4.0.37(zod@4.4.3)
+      '@ai-sdk/provider': 4.0.4
       '@ai-sdk/provider-utils': 4.0.27(zod@4.4.3)
-      '@opentelemetry/api': 1.9.1
       zod: 4.4.3
 
   ajv-formats@2.1.1(ajv@8.20.0):
