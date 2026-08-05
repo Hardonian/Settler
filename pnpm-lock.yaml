@@ -190,8 +190,8 @@ importers:
         specifier: ^6.0.199
         version: 6.0.199(zod@3.25.76)
       resend:
-        specifier: ^6.12.3
-        version: 6.12.3(@react-email/render@0.0.16(react-dom@19.2.7(react@19.2.7))(react@19.2.7))
+        specifier: ^6.18.1
+        version: 6.18.1(@react-email/render@0.0.16(react-dom@19.2.7(react@19.2.7))(react@19.2.7))
       stripe:
         specifier: ^22.4.0
         version: 22.4.0(@types/node@26.1.2)
@@ -417,8 +417,8 @@ importers:
         specifier: ^4.3.1
         version: 4.3.1(express-rate-limit@7.5.1(express@5.2.1))
       resend:
-        specifier: ^6.12.3
-        version: 6.12.3(@react-email/render@0.0.16(react-dom@19.2.7(react@19.2.7))(react@19.2.7))
+        specifier: ^6.18.1
+        version: 6.18.1(@react-email/render@0.0.16(react-dom@19.2.7(react@19.2.7))(react@19.2.7))
       socket.io:
         specifier: ^4.8.3
         version: 4.8.3
@@ -9237,8 +9237,8 @@ packages:
     resolution: {integrity: sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg==}
     engines: {node: '>= 0.4'}
 
-  postal-mime@2.7.4:
-    resolution: {integrity: sha512-0WdnFQYUrPGGTFu1uOqD2s7omwua8xaeYGdO6rb88oD5yJ/4pPHDA4sdWqfD8wQVfCny563n/HQS7zTFft+f/g==}
+  postal-mime@2.7.5:
+    resolution: {integrity: sha512-GNEXKvWFQnbgO5NlrGzVa0FmWzBZ24PersAWErttSg1Hjpf0ATxTwS5DOMGaOpTG6bUh5cTr7xi0jAD942wCJA==}
 
   postcss-import@15.1.0:
     resolution: {integrity: sha512-hpr+J05B2FVYUAXHeK1YyI267J/dDDhMU6B6civm8hSY1jYJnBXxzKDKDswzJmtLHryrjhnDjqqp/49t8FALew==}
@@ -9555,8 +9555,8 @@ packages:
     resolution: {integrity: sha512-QT7FVMXfWOYFbeRBF6nu+I6tr2Tf3u0q8RIEjNob/heKY/nh7drD/k7eeMFmSQgnTtCzLDcCu/XEnpW2wk4xCQ==}
     engines: {node: '>=9.3.0 || >=8.10.0 <9.0.0'}
 
-  resend@6.12.3:
-    resolution: {integrity: sha512-FkEi6YPnVL96/LvH8+QP7NaeaBy5brYXwlRqUCqZZeNL0/iyKij18IPmyPXYauT/2ODn1JG04qKz+qlJfzqzTw==}
+  resend@6.18.1:
+    resolution: {integrity: sha512-XN8XIaDdKF+ziSQ3K23ndUcyhP7U3ze2gky6SPgYkuAOq54mH4Wdhwm7QylEQ3zlz0NzdX7/l1AgmJUZbdPI/Q==}
     engines: {node: '>=20'}
     peerDependencies:
       '@react-email/render': '*'
@@ -10055,9 +10055,6 @@ packages:
   svelte@5.56.1:
     resolution: {integrity: sha512-eArsJmvl3xZVuTYD852PzIEdg2wgDdIZ1NEsIPbzAukHwi284B18No4nK2rCO9AwsWUDza4Cjvmoa4HaojTl5g==}
     engines: {node: '>=18'}
-
-  svix@1.92.2:
-    resolution: {integrity: sha512-ZmuA3UVvlnF9EgxlzmPtF7CKjQb64Z6OFlyfdDfU0sdcC7dJa+3aOYX5B9mA+RS6ch1AxBa4UP/l6KmqfGtWBQ==}
 
   swagger-ui-dist@5.32.8:
     resolution: {integrity: sha512-dgMdWXIgnI4zX4OPhKEdWnlDODbgm8W3AX0Ivn/BBqcUh6xZsBxhZMnvk6DJyRz1BTrj8dPxtarmEGgkz30oyA==}
@@ -20067,7 +20064,7 @@ snapshots:
 
   possible-typed-array-names@1.1.0: {}
 
-  postal-mime@2.7.4: {}
+  postal-mime@2.7.5: {}
 
   postcss-import@15.1.0(postcss@8.5.23):
     dependencies:
@@ -20387,10 +20384,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  resend@6.12.3(@react-email/render@0.0.16(react-dom@19.2.7(react@19.2.7))(react@19.2.7)):
+  resend@6.18.1(@react-email/render@0.0.16(react-dom@19.2.7(react@19.2.7))(react@19.2.7)):
     dependencies:
-      postal-mime: 2.7.4
-      svix: 1.92.2
+      postal-mime: 2.7.5
+      standardwebhooks: 1.0.0
     optionalDependencies:
       '@react-email/render': 0.0.16(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
 
@@ -21038,10 +21035,6 @@ snapshots:
     transitivePeerDependencies:
       - '@typescript-eslint/types'
     optional: true
-
-  svix@1.92.2:
-    dependencies:
-      standardwebhooks: 1.0.0
 
   swagger-ui-dist@5.32.8:
     dependencies:
