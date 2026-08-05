@@ -26,7 +26,7 @@
     "@ai-sdk/openai": "^4.0.27",
     "@jobforge/shared": "workspace:*",
     "@supabase/supabase-js": "^2.106.1",
-    "ai": "^6.0.199",
+    "ai": "^7.0.48",
     "zod": "^3.25.76"
   },
   "devDependencies": {
