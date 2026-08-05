@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.69",
-    "@prisma/client": "7.8.0",
+    "@prisma/client": "7.9.1",
     "@settler/types": "workspace:*",
     "ai": "^6.0.199",
     "zod": "^3.25.76"
