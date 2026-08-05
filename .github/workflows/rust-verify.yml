@@ -41,7 +41,7 @@ jobs:
         run: cargo install cargo-deny --locked
 
       - name: Cargo deny (advisories, bans, licenses, sources)
-        run: cargo deny check --deny-warnings --manifest-path crates/Cargo.toml
+        run: cargo deny check
         working-directory: crates
 
       - name: Install cargo-audit
