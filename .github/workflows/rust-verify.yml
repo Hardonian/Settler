@@ -42,6 +42,7 @@ jobs:
         with:
           command: check
           arguments: --all-features
+          manifest-path: ./crates/Cargo.toml
 
       - name: Install cargo-audit
         run: cargo install cargo-audit --locked
