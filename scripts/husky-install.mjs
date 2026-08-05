@@ -5,6 +5,13 @@ import { spawnSync } from "node:child_process";
 
 const repoRoot = process.cwd();
 
+// Skip hook installation in CI environments (GitHub Actions sets CI=true).
+// Husky is a developer-only convenience; it must not break CI installs.
+if (process.env.CI) {
+  console.log("[husky] CI environment detected; skipping hook install.");
+  process.exit(0);
+}
+
 if (!existsSync(join(repoRoot, ".git")) || !existsSync(join(repoRoot, ".husky"))) {
   console.log("[husky] Git metadata or hook directory unavailable; skipping hook install.");
   process.exit(0);

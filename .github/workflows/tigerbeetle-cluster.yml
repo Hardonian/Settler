@@ -73,17 +73,12 @@ jobs:
         run: |
           set -e
           TB_VERSION="${TIGERBEETLE_VERSION}"
-          ARCH=$(uname -m)
-          if [ "$ARCH" = "x86_64" ]; then
-            TB_ARCH="x86_64"
-          elif [ "$ARCH" = "aarch64" ]; then
-            TB_ARCH="aarch64"
-          else
-            echo "Unsupported architecture: $ARCH"
-            exit 1
-          fi
-          curl -L "https://github.com/tigerbeetle/tigerbeetle/releases/download/v${TB_VERSION}/tigerbeetle-${TB_VERSION}-${TB_ARCH}-unknown-linux-gnu.tar.gz" | tar xz
-          sudo mv tigerbeetle /usr/local/bin/
+          # Use the official TigerBeetle installer, which resolves the correct
+          # release asset for the target architecture/version (the previous
+          # hardcoded github release URL returned 404 for v0.23.0).
+          curl -sL https://tigerbeetle.com/install | bash -s -- --version "${TB_VERSION}"
+          # The installer drops the binary in ./tigerbeetle; place it on PATH.
+          sudo mv tigerbeetle /usr/local/bin/ 2>/dev/null || mv tigerbeetle /usr/local/bin/
           tigerbeetle --version
 
       - name: Setup TigerBeetle 3-Node Cluster
