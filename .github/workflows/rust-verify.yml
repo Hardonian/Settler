@@ -38,11 +38,11 @@ jobs:
             ${{ runner.os }}-cargo-
 
       - name: Install cargo-deny
-        uses: EmbarkStudios/cargo-deny-action@v2
-        with:
-          command: check
-          arguments: --all-features
-          manifest-path: ./crates/Cargo.toml
+        run: cargo install cargo-deny --locked
+
+      - name: Cargo deny (advisories, bans, licenses, sources)
+        run: cargo deny check --deny-warnings --manifest-path crates/Cargo.toml
+        working-directory: crates
 
       - name: Install cargo-audit
         run: cargo install cargo-audit --locked
@@ -52,10 +52,6 @@ jobs:
 
       - name: Rust clippy
         run: cargo clippy --workspace --all-targets --all-features -- -D warnings
-
-      - name: Cargo deny (advisories, bans, licenses, sources)
-        run: cargo deny check --deny-warnings
-        working-directory: crates
 
       - name: Cargo audit (vulnerability scan)
         run: cargo audit --deny warnings
