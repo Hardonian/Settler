@@ -18,7 +18,6 @@ import {
   FileCode,
   Play,
   BookOpen,
-  Github,
   Eye,
   Target,
   Layers,
@@ -174,7 +173,7 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
                 <div className="text-left max-w-2xl">
                   <div className="mb-5 flex justify-start">
                     <span className="inline-flex items-center gap-2 rounded-full border border-border dark:border-border bg-card dark:bg-background px-3.5 py-1.5 text-xs font-semibold text-foreground dark:text-muted-foreground shadow-sm">
-                      <Github className="w-3.5 h-3.5" aria-hidden="true" />
+                      <GitBranch className="w-3.5 h-3.5" aria-hidden="true" />
                       Open-source · Apache 2.0
                     </span>
                   </div>
@@ -644,7 +643,7 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
           <div className="max-w-3xl mx-auto text-center">
             <div className="mb-5 flex justify-center">
               <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1.5 text-xs font-semibold text-muted-foreground">
-                <Github className="w-3.5 h-3.5" aria-hidden="true" />
+                <GitBranch className="w-3.5 h-3.5" aria-hidden="true" />
                 Apache 2.0 · Open Source
               </span>
             </div>
@@ -666,7 +665,7 @@ const mismatches = await client.reconciliations.getMismatches(reconciliation.id)
               </Button>
               <Button size="lg" variant="outline" asChild>
                 <Link href={repoUrl} className="inline-flex items-center justify-center gap-2">
-                  <Github className="w-4 h-4" aria-hidden="true" />
+                  <GitBranch className="w-4 h-4" aria-hidden="true" />
                   View on GitHub
                 </Link>
               </Button>
