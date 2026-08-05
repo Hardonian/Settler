@@ -22,4 +22,15 @@ if (result.error) {
   process.exit(0);
 }
 
-process.exit(result.status === null ? 0 : result.status);
+// A non-zero exit (e.g. `pnpm exec husky` can't resolve the binary at
+// prepare-time during a fresh/frozen install) must NOT fail the whole
+// install/deploy. Git hooks are a local-dev convenience; CI and Vercel
+// enforce their own gates. Fail soft so deploys are resilient.
+if (result.status) {
+  console.log(
+    `[husky] hook install exited ${result.status}; skipping (non-fatal for install/deploy).`
+  );
+  process.exit(0);
+}
+
+process.exit(0);
