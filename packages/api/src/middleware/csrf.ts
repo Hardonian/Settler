@@ -101,17 +101,21 @@ export function setCsrfToken(req: Request, res: Response, next: NextFunction): v
  * Returns token in response body
  */
 export function getCsrfToken(req: Request, res: Response): void {
-  const token = req.cookies[CSRF_TOKEN_COOKIE] || generateCsrfToken();
+  // Always mint a fresh token and return the exact value set in the cookie,
+  // so the double-submit (header === cookie) check can never desync.
+  const token = generateCsrfToken();
 
-  // Set cookie if not present
-  if (!req.cookies[CSRF_TOKEN_COOKIE]) {
-    res.cookie(CSRF_TOKEN_COOKIE, token, {
-      httpOnly: false,
-      secure: config.security.secureCookies,
-      sameSite: "strict",
-      maxAge: 24 * 60 * 60 * 1000,
-    });
-  }
+  // The CSRF token is a deliberate, non-sensitive anti-forgery value that the
+  // browser/JS must read. Exempt it from DLP response redaction (which would
+  // otherwise replace it with [REDACTED_KEY] and break the whole CSRF flow).
+  res.locals.skipDlp = true;
+
+  res.cookie(CSRF_TOKEN_COOKIE, token, {
+    httpOnly: false,
+    secure: config.security.secureCookies,
+    sameSite: "strict",
+    maxAge: 24 * 60 * 60 * 1000,
+  });
 
   res.json({ csrfToken: token });
 }

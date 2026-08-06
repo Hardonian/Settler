@@ -47,6 +47,7 @@ export const dlpMiddleware = (req: Request, res: Response, next: NextFunction) =
   // Intercept res.json
   res.json = function (body) {
     try {
+      if (res.locals?.skipDlp) return originalJson.call(this, body);
       const redactedBody = redactObject(body);
       return originalJson.call(this, redactedBody);
     } catch (e) {
@@ -57,6 +58,7 @@ export const dlpMiddleware = (req: Request, res: Response, next: NextFunction) =
 
   // Intercept res.send
   res.send = function (body) {
+    if (res.locals?.skipDlp) return originalSend.call(this, body);
     if (typeof body === "string") {
       try {
         const parsed = JSON.parse(body);
