@@ -12,7 +12,7 @@ import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import { TextReveal, TextRevealHeading } from "@/components/ui/TextReveal";
 import { ParallaxBackground, ParallaxBlobs } from "@/components/ui/ParallaxBackground";
 import {
-  Github,
+  GitBranch,
   Code,
   BookOpen,
   Bug,
@@ -335,7 +335,7 @@ export default function ContributorsPage() {
             {[
               { icon: Users, value: "Growing", label: "Contributors" },
               { icon: Code, value: "50+", label: "Adapters" },
-              { icon: Github, value: "100+", label: "PRs Merged" },
+              { icon: GitBranch, value: "100+", label: "PRs Merged" },
               { icon: Award, value: "10M+", label: "Transactions" },
             ].map((stat, index) => {
               const Icon = stat.icon;
