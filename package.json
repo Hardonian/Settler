@@ -262,7 +262,7 @@
     "test:security:supply-chain-policy": "node --test scripts/__tests__/supply-chain-policy.test.mjs",
     "security:routes": "node scripts/security-route-registry.mjs",
     "verify:tenant": "node scripts/verify-tenant-coverage.mjs",
-    "test:cross-tenant": "node scripts/security/cross-tenant-runner.mjs",
+    "test:cross-tenant": "pnpm --filter @settler/api exec jest --runInBand --forceExit src/__tests__/multi-tenancy/cross-tenant-prevention.test.ts src/routes/__tests__/cross-tenant-regression.test.ts",
     "audit:deps": "node scripts/audit-deps.mjs",
     "verify:security:headers": "node scripts/security/header-probe.mjs",
     "verify:security:drift": "node scripts/security-drift-check.mjs",

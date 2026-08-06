@@ -143,7 +143,7 @@ jobs:
       - name: Run Gitleaks
         # gitleaks-action@v2 requires a paid GITLEAKS_LICENSE and fails open without
         # it; use the OSS gitleaks CLI with the same .gitleaks.toml instead.
-        uses: gitleaks/gitleaks@v8
+        uses: gitleaks/gitleaks@v8.30.1
         with:
           config-path: .gitleaks.toml
           no-git: false
