@@ -3,11 +3,6 @@ name: E2E & Visual Regression Tests
 on:
   pull_request:
     branches: [main, develop]
-    paths:
-      - "packages/**"
-      - "tests/**"
-      - "playwright.config.ts"
-      - ".github/workflows/e2e.yml"
     paths-ignore:
       - "**/*.md"
       - "LICENSE"
@@ -17,11 +12,6 @@ on:
       - "strategic/**"
   push:
     branches: [main, develop]
-    paths:
-      - "packages/**"
-      - "tests/**"
-      - "playwright.config.ts"
-      - ".github/workflows/e2e.yml"
     paths-ignore:
       - "**/*.md"
       - "LICENSE"
