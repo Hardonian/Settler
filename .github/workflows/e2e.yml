@@ -3,23 +3,33 @@ name: E2E & Visual Regression Tests
 on:
   pull_request:
     branches: [main, develop]
+    paths:
+      - "packages/**"
+      - "tests/**"
+      - "playwright.config.ts"
+      - ".github/workflows/e2e.yml"
+    paths-ignore:
+      - "**/*.md"
+      - "LICENSE"
+      - "docs/**"
+      - "business/**"
+      - "marketing/**"
+      - "strategic/**"
   push:
     branches: [main, develop]
+    paths:
+      - "packages/**"
+      - "tests/**"
+      - "playwright.config.ts"
+      - ".github/workflows/e2e.yml"
+    paths-ignore:
+      - "**/*.md"
+      - "LICENSE"
+      - "docs/**"
+      - "business/**"
+      - "marketing/**"
+      - "strategic/**"
   workflow_dispatch: # Allow manual trigger
-
-# Only run when relevant files change
-paths:
-  - "packages/**"
-  - "tests/**"
-  - "playwright.config.ts"
-  - ".github/workflows/e2e.yml"
-paths-ignore:
-  - "**/*.md"
-  - "LICENSE"
-  - "docs/**"
-  - "business/**"
-  - "marketing/**"
-  - "strategic/**"
 
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
