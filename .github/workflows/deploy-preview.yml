@@ -46,7 +46,6 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: "--yes"
-          working-directory: ./packages/web
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL_PREVIEW || secrets.DATABASE_URL }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL_PREVIEW || secrets.SUPABASE_URL }}
