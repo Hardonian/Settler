@@ -141,14 +141,15 @@ jobs:
           fetch-depth: 0
 
       - name: Run Gitleaks
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # gitleaks-action@v2 requires a paid GITLEAKS_LICENSE and fails open without
+        # it; use the OSS gitleaks CLI with the same .gitleaks.toml instead.
+        uses: gitleaks/gitleaks@v8
         with:
           config-path: .gitleaks.toml
           no-git: false
           verbose: true
           redact: true
+          exit-code: "1"
 
   codeql:
     name: CodeQL Scan
