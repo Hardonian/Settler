@@ -391,7 +391,7 @@ const authLimiter = rateLimit({
   message: "Too many authentication attempts, please try again later.",
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => req.ip || "unknown",
+  // SEC-04: key by request IP (library default handles IPv6 via ipKeyGenerator)
 });
 app.use("/api/v1/auth", authLimiter, authRouter);
 app.use("/api/v2/auth", authLimiter, authRouter);
