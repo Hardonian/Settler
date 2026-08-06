@@ -30,7 +30,7 @@ impl StreamingEngine {
         if !self.is_running {
             return Err("Streaming engine is not running".into());
         }
-        
+
         // Mock matching logic
         let mut response = "Processed event ".to_string();
         response.push_str(&event.id);
