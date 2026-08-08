@@ -1,3 +1,0 @@
-💡 **What:** Modified `batchInsert` in `packages/adapters/src/performance/batch-processor.ts` to process batches concurrently using `Promise.all` and a `Semaphore` instead of sequential inserts. Default maximum concurrency is set to 5.
-🎯 **Why:** Inserting items sequentially is much slower than parallelizing database writes.
-📊 **Measured Improvement:** In a benchmark testing 5000 items with simulated 10ms insertion latencies and batches of 100, the sequential implementation took 515ms, while the parallel implementation (with a concurrency of 5) took 103ms, an 80% improvement.
