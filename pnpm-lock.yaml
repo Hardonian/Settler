@@ -394,8 +394,8 @@ importers:
         specifier: ^3.0.3
         version: 3.0.3
       opossum:
-        specifier: ^9.0.0
-        version: 9.0.0
+        specifier: ^10.0.0
+        version: 10.0.0
       p-retry:
         specifier: ^6.2.1
         version: 6.2.1
@@ -8914,9 +8914,9 @@ packages:
     resolution: {integrity: sha512-vz9iS7MJ5+Bp1URw8Khvdyw1H/hGvzHWlKQ7eRrQojSCDL1/SrWfrY9QebLw97n2deyRtzHRC3MkQfVNUCo91Q==}
     engines: {node: '>=0.10'}
 
-  opossum@9.0.0:
-    resolution: {integrity: sha512-K76U0QkxOfUZamneQuzz+AP0fyfTJcCplZ2oZL93nxeupuJbN4s6uFNbmVCt4eWqqGqRnnowdFuBicJ1fLMVxw==}
-    engines: {node: ^24 || ^22 || ^20}
+  opossum@10.0.0:
+    resolution: {integrity: sha512-sghtqL8Usj+et06Zui0nyn0R6FFsl7cyuoU+d7MctYU0nbS7Htzjleh+tWohFqk1Rp1srrFwbFa8Vxd0O64w6A==}
+    engines: {node: ^26 || ^24 || ^22}
 
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
@@ -19600,7 +19600,7 @@ snapshots:
 
   opentracing@0.14.7: {}
 
-  opossum@9.0.0: {}
+  opossum@10.0.0: {}
 
   optionator@0.9.4:
     dependencies:
