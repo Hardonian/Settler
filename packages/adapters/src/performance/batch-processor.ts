@@ -185,9 +185,7 @@ export async function batchInsert<T>(
   }
   const batches = chunk(items, batchSize);
 
-  for (const batch of batches) {
-    await inserter(batch);
-  }
+  await Promise.all(batches.map(batch => inserter(batch)));
 }
 
 /**
