@@ -41,5 +41,4 @@ Thumbs.db
 # Test/verification artifacts
 artifacts/
 *.tsbuildinfo
-packages/web/.next/
-target/
+.pytest_cache/
