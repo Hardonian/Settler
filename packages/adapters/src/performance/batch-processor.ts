@@ -178,12 +178,17 @@ export function deduplicate<T>(array: T[], keyFn: (item: T) => string): T[] {
 export async function batchInsert<T>(
   items: T[],
   inserter: (batch: T[]) => Promise<void>,
-  batchSize: number = 1000
+  batchSize: number = 1000,
+  maxConcurrency: number = 5
 ): Promise<void> {
   if (!Number.isFinite(batchSize) || batchSize < 1 || !Number.isInteger(batchSize)) {
     throw new Error(`batchSize must be a finite integer >= 1, got ${batchSize}`);
   }
+  if (!Number.isFinite(maxConcurrency) || maxConcurrency < 1 || !Number.isInteger(maxConcurrency)) {
+    throw new Error(`maxConcurrency must be a finite integer >= 1, got ${maxConcurrency}`);
+  }
   const batches = chunk(items, batchSize);
+  const semaphore = new Semaphore(maxConcurrency);
 
   await Promise.all(batches.map(batch => inserter(batch)));
 }

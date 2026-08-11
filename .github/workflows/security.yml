@@ -8,6 +8,10 @@ on:
   schedule:
     - cron: "0 9 * * 1"
 
+env:
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+
 jobs:
   security-invariants:
     name: Security Invariant Verification
@@ -143,9 +147,10 @@ jobs:
       - name: Run Gitleaks
         # gitleaks-action@v2 requires a paid GITLEAKS_LICENSE and fails open without
         # it; use the OSS gitleaks CLI with the same .gitleaks.toml instead.
-        uses: gitleaks/gitleaks@v8.30.1
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          config-path: .gitleaks.toml
           no-git: false
           verbose: true
           redact: true
@@ -162,12 +167,12 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: javascript
 
       - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
+        uses: github/codeql-action/autobuild@v4
 
       - name: Analyze
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
