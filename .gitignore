@@ -41,4 +41,4 @@ Thumbs.db
 # Test/verification artifacts
 artifacts/
 *.tsbuildinfo
-.pytest_cache/
+/target/
