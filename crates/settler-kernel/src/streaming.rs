@@ -12,6 +12,12 @@ pub struct StreamingEngine {
     is_running: bool,
 }
 
+impl Default for StreamingEngine {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl StreamingEngine {
     pub fn new() -> Self {
         StreamingEngine { is_running: false }
