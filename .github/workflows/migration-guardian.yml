@@ -302,13 +302,18 @@ jobs:
             );
 
             if (sameBranchIssue) {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: sameBranchIssue.number,
-                body: `New failure observed at ${new Date().toISOString()}\n\n${body}`
-              });
-              core.info(`Updated existing migration failure issue #${sameBranchIssue.number}`);
+              const commitMarker = `**Commit:** \`${{ github.sha }}\``;
+              if ((sameBranchIssue.body || '').includes(commitMarker)) {
+                core.info(`Duplicate failure for issue #${sameBranchIssue.number} and commit ${{ github.sha }}; no update needed`);
+              } else {
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: sameBranchIssue.number,
+                  body
+                });
+                core.info(`Updated migration failure issue #${sameBranchIssue.number} for a new commit`);
+              }
             } else {
               const title = `🚨 Migration Guardian Failed - ${new Date().toISOString()}`;
               await github.rest.issues.create({
