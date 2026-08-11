@@ -696,6 +696,7 @@ ${run.warnings.length > 0 ? `### Warnings\n${run.warnings.map((w) => `- ${w}`).j
 `;
 
   content += entry;
+  fs.mkdirSync(path.dirname(logPath), { recursive: true });
   fs.writeFileSync(logPath, content, "utf-8");
 }
 
