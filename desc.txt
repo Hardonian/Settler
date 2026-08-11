@@ -1,0 +1,3 @@
+🎯 **What:** Added missing tests for logging middleware in `@settler/pdk`. Added `jest.config.js` to run the tests correctly using `ts-jest`.
+📊 **Coverage:** Covered happy paths (request start and completion) and error condition (`next()` throwing an error).
+✨ **Result:** Improved test coverage for logging middleware.
