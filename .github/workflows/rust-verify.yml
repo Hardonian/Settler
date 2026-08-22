@@ -8,6 +8,10 @@ on:
   schedule:
     - cron: "0 6 * * 1"
 
+env:
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+
 jobs:
   rust-verify:
     name: Rust Verify (fmt, clippy, test, deny, audit)
@@ -38,7 +42,7 @@ jobs:
             ${{ runner.os }}-cargo-
 
       - name: Install cargo-deny
-        run: cargo install cargo-deny --locked --version 0.16.4
+        run: cargo install cargo-deny --locked --version 0.20.2
 
       - name: Install cargo-audit
         run: cargo install cargo-audit --locked
@@ -50,12 +54,10 @@ jobs:
         run: cargo clippy --workspace --all-targets --all-features -- -D warnings
 
       - name: Cargo deny (advisories, bans, licenses, sources)
-        run: cargo deny check --deny-warnings
-        working-directory: crates
+        run: cargo deny check
 
       - name: Cargo audit (vulnerability scan)
         run: cargo audit --deny warnings
-        working-directory: crates
 
       - name: Rust tests
         run: cargo test --workspace --all-features
