@@ -188,6 +188,7 @@
     "TODO_PAYOFF_SPRINT.md",
     "triage_pass_report.md",
     "deno.lock",
+    "deny.toml",
     "fix-marketplace.js",
     "fix-migration.js",
     "generate_dx.py",
@@ -205,7 +206,10 @@
     "test-edit.js",
     "test-edit2.js",
     "test-spawn.js",
-    "pr.txt"
+    "pr.txt",
+    ".pre-commit-config.yaml",
+    "jest.config.js",
+    ".vercel"
   ],
   "blockedExtensions": [".tar", ".tgz", ".bak", ".tmp", ".old"],
   "localClutterPatterns": [

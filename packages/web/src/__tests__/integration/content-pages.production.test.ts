@@ -15,11 +15,6 @@ const ROUTES = fs
   .sort();
 
 function resolvePackageManager(): { command: string; argsPrefix: string[] } {
-  const execPath = process.env.npm_execpath;
-  if (execPath && /pnpm(?:\.cjs)?$/i.test(execPath)) {
-    return { command: process.execPath, argsPrefix: [execPath] };
-  }
-
   return {
     command: process.platform === "win32" ? "pnpm.cmd" : "pnpm",
     argsPrefix: [],

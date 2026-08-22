@@ -44,6 +44,8 @@ on:
       - main
 
 env:
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
   DATABASE_URL: ${{ secrets.DATABASE_URL || secrets.STAGING_DATABASE_URL || secrets.SUPABASE_DB_URL || secrets.SUPABASE_DB_URL_STAGING }}
   SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL || secrets.SUPABASE_DB_URL_STAGING || secrets.DATABASE_URL || secrets.STAGING_DATABASE_URL }}
   SUPABASE_URL: ${{ secrets.SUPABASE_URL || secrets.SUPABASE_URL_STAGING }}
@@ -300,13 +302,18 @@ jobs:
             );
 
             if (sameBranchIssue) {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: sameBranchIssue.number,
-                body: `New failure observed at ${new Date().toISOString()}\n\n${body}`
-              });
-              core.info(`Updated existing migration failure issue #${sameBranchIssue.number}`);
+              const commitMarker = `**Commit:** \`${{ github.sha }}\``;
+              if ((sameBranchIssue.body || '').includes(commitMarker)) {
+                core.info(`Duplicate failure for issue #${sameBranchIssue.number} and commit ${{ github.sha }}; no update needed`);
+              } else {
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: sameBranchIssue.number,
+                  body
+                });
+                core.info(`Updated migration failure issue #${sameBranchIssue.number} for a new commit`);
+              }
             } else {
               const title = `🚨 Migration Guardian Failed - ${new Date().toISOString()}`;
               await github.rest.issues.create({

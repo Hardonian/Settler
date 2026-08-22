@@ -1,17 +1,26 @@
+# Build artifacts
+**/dist/
+build/
+*.tsbuildinfo
+
 # Python
 __pycache__/
 *.pyc
 *.pyo
 .venv/
 .egg-info/
-dist/
-build/
 *.egg
+.pytest_cache/
 
-# Environment
+# Environment — keep examples, ignore secrets
 .env
 .env.*
 !.env.example
+!.env.example.*
+!.env.demo
+!.env.template
+!.env.production.example
+!.env.local.example
 
 # Node
 node_modules/
@@ -34,7 +43,6 @@ Thumbs.db
 # Logs
 *.log
 
-
 # Turbo build cache
 .turbo/
 
@@ -42,9 +50,14 @@ Thumbs.db
 artifacts/
 *.tsbuildinfo
 .pytest_cache/
-.vercel
 .env*
+
+# Vercel
+.vercel
 
 # Next.js generated build output
 .next/
 next-env.d.ts
+
+# Rust
+/target/

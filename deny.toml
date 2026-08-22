@@ -1,0 +1,38 @@
+# Cargo deny configuration for Settler
+# Checks: advisories (vulnerabilities), bans (yanked/multiple versions), licenses, sources
+
+[advisories]
+# cargo-deny 0.20 schema: use the official RustSec database and do not suppress advisories.
+db-urls = ["https://github.com/RustSec/advisory-db"]
+ignore = []
+
+[bans]
+multiple-versions = "warn"
+deny = []
+highlight = "all"
+
+[licenses]
+# An explicit allow-list rejects licenses outside this reviewed set.
+allow = [
+  "Apache-2.0",
+  "Apache-2.0 WITH LLVM-exception",
+  "MIT",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "ISC",
+  "Unicode-DFS-2016",
+  "Unicode-3.0",
+  "Zlib",
+  "CC0-1.0",
+]
+confidence-threshold = 0.8
+
+[sources]
+# Only crates.io registry sources and no unreviewed Git sources are acceptable.
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = []
+
+[output]
+feature-depth = 1

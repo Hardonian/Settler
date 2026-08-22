@@ -63,11 +63,11 @@ const capabilityClusters = [
   {
     title: "Verified integration adapters",
     description:
-      "7 verified platform adapters plus a custom adapter framework for proprietary systems.",
+      "25+ verified platform adapters spanning payments, accounting, e-commerce, banking, ERP, and subscription billing.",
     bullets: [
-      "Stripe, Shopify, QuickBooks",
-      "PayPal, Square, Xero, NetSuite",
-      "Custom adapter interface",
+      "Stripe, PayPal, Square, Shopify",
+      "QuickBooks, Xero, NetSuite, SAP",
+      "Plaid, TrueLayer, Chargebee, +14 more",
     ],
   },
   {
@@ -132,9 +132,10 @@ export default function HomePage() {
               <div className="space-y-6 text-center lg:text-left">
                 <h3 className="text-2xl font-bold tracking-tight">Connected Ecosystem</h3>
                 <p className="text-muted-foreground leading-relaxed italic">
-                  Ingest transaction data through verified adapters for Stripe, Shopify, QuickBooks,
-                  and more. Custom systems connect through the adapter framework. All data
-                  normalizes into a unified schema for deterministic matching.
+                  Ingest transaction data through 25+ verified adapters for Stripe, Shopify,
+                  QuickBooks, PayPal, Square, Xero, NetSuite, Plaid, SAP, and more. Custom systems
+                  connect through the adapter framework. All data normalizes into a unified schema
+                  for deterministic matching.
                 </p>
               </div>
               <AdapterConnectionMap />

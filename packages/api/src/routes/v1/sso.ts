@@ -1,6 +1,6 @@
-import { Router, Request, Response, NextFunction } from "express";
+import { Router, Request, Response } from "express";
 import passport from "passport";
-import { Strategy as SamlStrategy } from "passport-saml";
+import { Strategy as SamlStrategy } from "@node-saml/passport-saml";
 import { config } from "../../config";
 import { query } from "../../db";
 import jwt from "jsonwebtoken";
@@ -15,34 +15,40 @@ const SAML_ENTRY_POINT =
 const SAML_ISSUER = process.env.SAML_ISSUER || "settler-api";
 const SAML_CERT = process.env.SAML_CERT || "fake-cert"; // in prod, this would be the actual IdP cert
 
-// Passport SAML Strategy setup
-passport.use(
-  new SamlStrategy(
-    {
-      entryPoint: SAML_ENTRY_POINT,
-      issuer: SAML_ISSUER,
-      callbackUrl: `${process.env.PUBLIC_URL || "http://localhost:3000"}/api/v1/sso/saml/acs`,
-      cert: SAML_CERT,
-    },
-    (profile: any, done: any) => {
-      // In a real application, map profile to user here
-      if (!profile) {
-        return done(new Error("No profile returned from SAML provider"), null);
-      }
+// Passport SAML Strategy setup. The maintained @node-saml package requires
+// separate sign-on and logout verification callbacks.
+const verifySamlProfile = (profile: any, done: any) => {
+  // In a real application, map profile to user here
+  if (!profile) {
+    return done(new Error("No profile returned from SAML provider"), null);
+  }
 
-      const email = profile.nameID || profile.email;
-      if (!email) {
-        return done(new Error("SAML profile missing email/nameID"), null);
-      }
+  const email = profile.nameID || profile.email;
+  if (!email) {
+    return done(new Error("SAML profile missing email/nameID"), null);
+  }
 
-      return done(null, {
-        id: profile.nameID, // typically we'd look up the user by email
-        email: email,
-        ...profile,
-      });
-    }
-  )
+  return done(null, {
+    id: profile.nameID, // typically we'd look up the user by email
+    email,
+    ...profile,
+  });
+};
+
+const samlStrategy = new SamlStrategy(
+  {
+    entryPoint: SAML_ENTRY_POINT,
+    issuer: SAML_ISSUER,
+    callbackUrl: `${process.env.PUBLIC_URL || "http://localhost:3000"}/api/v1/sso/saml/acs`,
+    idpCert: SAML_CERT,
+  },
+  verifySamlProfile,
+  verifySamlProfile
 );
+
+// @node-saml currently compiles against Express 4 request types while Settler
+// uses Express 5. The runtime Passport strategy contract is unchanged.
+passport.use(samlStrategy as unknown as passport.Strategy);
 
 // Middleware to initialize passport (should be mounted in app, but doing it locally here for isolation)
 router.use(passport.initialize());

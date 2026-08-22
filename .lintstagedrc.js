@@ -5,3 +5,6 @@ module.exports = {
   "*.mjs": ["eslint --fix", "prettier --write"],
   "packages/workhorse/**/*.py": ["python -m black", "python -m ruff check --fix"],
 };
+
+// lint-staged will never match dist files because they are gitignored,
+// but this comment documents the intent for maintainers.

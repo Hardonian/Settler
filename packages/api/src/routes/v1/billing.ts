@@ -2,8 +2,7 @@ import express, { Router, Response } from "express";
 import Stripe from "stripe";
 import { queryWithTenant } from "../../db";
 import { logInfo, logError } from "../../utils/logger";
-import { authMiddleware, AuthRequest } from "../../middleware/auth";
-import { idempotencyMiddleware } from "../../middleware/idempotency";
+import type { AuthRequest } from "../../middleware/auth";
 import { getEnv } from "../../utils/env";
 
 import { asyncHandler } from "../../utils/async-handler";
@@ -71,17 +70,18 @@ billingRouter.post(
 
     logInfo("Creating checkout session", { tenantId, priceId, tier });
 
-    const stripe = new (await import("stripe")).default(getEnv("STRIPE_SECRET_KEY") || "", {
-      apiVersion: "2026-06-24.dahlia" as Stripe.LatestApiVersion,
-    });
-
-    if (!getEnv("STRIPE_SECRET_KEY")) {
+    const stripeSecretKey = getEnv("STRIPE_SECRET_KEY");
+    if (!stripeSecretKey) {
       // Fallback to mock if not configured (dev)
       res.json({
         url: `https://checkout.stripe.com/pay/cs_test_mock_${Date.now()}`,
       });
       return;
     }
+
+    const stripe = new (await import("stripe")).default(stripeSecretKey, {
+      apiVersion: "2026-06-24.dahlia" as Stripe.LatestApiVersion,
+    });
 
     // Get or create Stripe customer for tenant
     const tenantRows = await queryWithTenant<{ stripe_customer_id: string; name: string }>(
@@ -143,6 +143,50 @@ billingRouter.post(
   })
 );
 
+// Create Customer Portal Session
+billingRouter.post(
+  "/portal",
+  asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
+    const tenantId = req.tenantId;
+    if (!tenantId) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+
+    const stripeSecretKey = getEnv("STRIPE_SECRET_KEY");
+    if (!stripeSecretKey) {
+      res.json({
+        url: `https://billing.stripe.com/p/session/test_mock_${Date.now()}`,
+      });
+      return;
+    }
+
+    const stripe = new (await import("stripe")).default(stripeSecretKey, {
+      apiVersion: "2026-06-24.dahlia" as Stripe.LatestApiVersion,
+    });
+
+    const tenantRows = await queryWithTenant<{ stripe_customer_id: string }>(
+      tenantId,
+      `SELECT stripe_customer_id FROM tenant_billing WHERE tenant_id = $1`,
+      [tenantId]
+    );
+
+    const customerId = tenantRows[0]?.stripe_customer_id;
+    if (!customerId) {
+      res.status(400).json({ error: "No active Stripe customer found" });
+      return;
+    }
+
+    const origin = req.headers.origin || req.headers.referer || "https://app.settler.dev";
+    const session = await stripe.billingPortal.sessions.create({
+      customer: customerId,
+      return_url: `${origin}/settings`,
+    });
+
+    res.json({ url: session.url });
+  })
+);
+
 // Stripe Webhook Endpoint (No authMiddleware — Stripe calls this)
 billingWebhookRouter.post(
   "/",
@@ -159,7 +203,7 @@ billingWebhookRouter.post(
     let event: any;
     try {
       const stripe = new (await import("stripe")).default(getEnv("STRIPE_SECRET_KEY") || "", {
-      apiVersion: "2026-06-24.dahlia" as Stripe.LatestApiVersion,
+        apiVersion: "2026-06-24.dahlia" as Stripe.LatestApiVersion,
       });
       event = stripe.webhooks.constructEvent(
         JSON.stringify(req.body),

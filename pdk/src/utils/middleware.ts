@@ -50,7 +50,7 @@ export class MiddlewareChain {
       }
 
       const middleware = this.middlewares[index++];
-      return middleware(context, next);
+      return middleware!(context, next);
     };
 
     return next();

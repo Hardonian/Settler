@@ -6,6 +6,8 @@ const WEB_PACKAGE_CWD = "/workspace/Settler/packages/web";
 
 describe("getContentPage content directory resolution", () => {
   const warnMock = jest.fn();
+  const originalExistsSync = fs.existsSync;
+  const originalReadFileSync = fs.readFileSync;
 
   beforeEach(() => {
     jest.doMock("@/lib/utils/logger", () => ({
@@ -23,15 +25,26 @@ describe("getContentPage content directory resolution", () => {
 
   it("resolves content pages from packages/web/content/pages when running at monorepo root", async () => {
     jest.spyOn(process, "cwd").mockReturnValue(MONOREPO_CWD);
-    const existsSyncSpy = jest.spyOn(fs, "existsSync").mockImplementation((candidatePath) => {
-      return String(candidatePath) === path.join(MONOREPO_CWD, "packages/web/content/pages");
-    });
+    const existsSyncSpy = jest
+      .spyOn(fs, "existsSync")
+      .mockImplementation((candidatePath: fs.PathLike) => {
+        const p = String(candidatePath);
+        if (p.includes("content/pages") || p.includes("content\\pages")) {
+          return p === path.join(MONOREPO_CWD, "packages/web/content/pages");
+        }
+        return originalExistsSync(candidatePath);
+      });
 
-    const readFileSyncSpy = jest
-      .spyOn(fs, "readFileSync")
-      .mockReturnValue(
-        `---\ntitle: Product\ndescription: Product description\n---\n\n# Product page content`
-      );
+    const readFileSyncSpy = jest.spyOn(fs, "readFileSync").mockImplementation(((
+      filePath: fs.PathOrFileDescriptor,
+      options?: any
+    ) => {
+      const p = String(filePath);
+      if (p.endsWith(".mdx")) {
+        return `---\ntitle: Product\ndescription: Product description\n---\n\n# Product page content`;
+      }
+      return originalReadFileSync(filePath, options);
+    }) as typeof fs.readFileSync);
 
     const { getContentPage } = await import("@/lib/content/pages");
 
@@ -54,15 +67,26 @@ describe("getContentPage content directory resolution", () => {
 
   it("resolves content pages from content/pages when running inside packages/web", async () => {
     jest.spyOn(process, "cwd").mockReturnValue(WEB_PACKAGE_CWD);
-    const existsSyncSpy = jest.spyOn(fs, "existsSync").mockImplementation((candidatePath) => {
-      return String(candidatePath) === path.join(WEB_PACKAGE_CWD, "content/pages");
-    });
+    const existsSyncSpy = jest
+      .spyOn(fs, "existsSync")
+      .mockImplementation((candidatePath: fs.PathLike) => {
+        const p = String(candidatePath);
+        if (p.includes("content/pages") || p.includes("content\\pages")) {
+          return p === path.join(WEB_PACKAGE_CWD, "content/pages");
+        }
+        return originalExistsSync(candidatePath);
+      });
 
-    const readFileSyncSpy = jest
-      .spyOn(fs, "readFileSync")
-      .mockReturnValue(
-        `---\ntitle: Enterprise\ndescription: Enterprise description\n---\n\n# Enterprise content`
-      );
+    const readFileSyncSpy = jest.spyOn(fs, "readFileSync").mockImplementation(((
+      filePath: fs.PathOrFileDescriptor,
+      options?: any
+    ) => {
+      const p = String(filePath);
+      if (p.endsWith(".mdx")) {
+        return `---\ntitle: Enterprise\ndescription: Enterprise description\n---\n\n# Enterprise content`;
+      }
+      return originalReadFileSync(filePath, options);
+    }) as typeof fs.readFileSync);
 
     const { getContentPage } = await import("@/lib/content/pages");
 
@@ -82,10 +106,23 @@ describe("getContentPage content directory resolution", () => {
 
   it("logs a non-sensitive warning through structured logger if no content directory is found", async () => {
     jest.spyOn(process, "cwd").mockReturnValue(MONOREPO_CWD);
-    jest.spyOn(fs, "existsSync").mockReturnValue(false);
-    jest.spyOn(fs, "readFileSync").mockImplementation(() => {
-      throw new Error("missing file");
+    jest.spyOn(fs, "existsSync").mockImplementation((candidatePath: fs.PathLike) => {
+      const p = String(candidatePath);
+      if (p.includes("content/pages") || p.includes("content\\pages")) {
+        return false;
+      }
+      return originalExistsSync(candidatePath);
     });
+    jest.spyOn(fs, "readFileSync").mockImplementation(((
+      filePath: fs.PathOrFileDescriptor,
+      options?: any
+    ) => {
+      const p = String(filePath);
+      if (p.endsWith(".mdx")) {
+        throw new Error("missing file");
+      }
+      return originalReadFileSync(filePath, options);
+    }) as typeof fs.readFileSync);
 
     const { getContentPage } = await import("@/lib/content/pages");
 
