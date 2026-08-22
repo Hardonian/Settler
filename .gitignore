@@ -42,3 +42,9 @@ Thumbs.db
 artifacts/
 *.tsbuildinfo
 .pytest_cache/
+.vercel
+.env*
+
+# Next.js generated build output
+.next/
+next-env.d.ts

@@ -1,12 +1,6 @@
-/**
- * Enhanced Error Handler
- *
- * Provides comprehensive error handling for API routes with proper logging,
- * sanitization, and user-friendly error messages.
- */
-
+/** Enhanced Error Handler */
 import { NextResponse } from "next/server";
-import { sanitizeApiData } from "@/lib/privacy/pii-filter";
+import { sanitizePII } from "@/lib/privacy/pii-filter";
 
 export interface ApiError {
   code: string;
@@ -16,9 +10,6 @@ export interface ApiError {
   stack?: string;
 }
 
-/**
- * Create standardized API error response
- */
 export function createErrorResponse(
   error: unknown,
   defaultMessage: string = "An error occurred",
@@ -27,7 +18,6 @@ export function createErrorResponse(
   let apiError: ApiError;
 
   if (error instanceof Error) {
-    // Determine status code from error message or type
     let statusCode = defaultStatusCode;
 
     if (error.message.includes("not found") || error.message.includes("does not exist")) {
@@ -42,19 +32,30 @@ export function createErrorResponse(
       statusCode = 429;
     }
 
+    // Strip stack in production, sanitize any PII in message
+    const safeMessage =
+      process.env.NODE_ENV !== "development"
+        ? sanitizePII(error.message).toString()
+        : error.message || defaultMessage;
+
     apiError = {
       code: error.name || "INTERNAL_ERROR",
-      message: error.message || defaultMessage,
+      message: safeMessage,
       statusCode,
       ...(process.env.NODE_ENV === "development" && error.stack ? { stack: error.stack } : {}),
     };
   } else if (typeof error === "object" && error !== null) {
     const errorObj = error as Record<string, unknown>;
+    const safeMessage =
+      process.env.NODE_ENV !== "development"
+        ? sanitizePII(String(errorObj.message || defaultMessage)).toString()
+        : String(errorObj.message || defaultMessage);
+
     apiError = {
       code: String(errorObj.code || "UNKNOWN_ERROR"),
-      message: String(errorObj.message || defaultMessage),
+      message: safeMessage,
       statusCode: Number(errorObj.statusCode || defaultStatusCode),
-      details: errorObj.details as Record<string, unknown> | undefined,
+      details: sanitizePII(errorObj.details as Record<string, unknown>).toString(),
     };
   } else {
     apiError = {
@@ -64,59 +65,5 @@ export function createErrorResponse(
     };
   }
 
-  // Sanitize error details
-  if (apiError.details) {
-    apiError.details = sanitizeApiData({ body: apiError.details }).body as Record<string, unknown>;
-  }
-
-  // Log error (server-side only)
-  console.error("[API Error]", {
-    code: apiError.code,
-    message: apiError.message,
-    statusCode: apiError.statusCode,
-    ...(process.env.NODE_ENV === "development" && apiError.stack ? { stack: apiError.stack } : {}),
-  });
-
-  return NextResponse.json(
-    {
-      error: apiError.code,
-      message: apiError.message,
-      ...(apiError.details ? { details: apiError.details } : {}),
-      ...(process.env.NODE_ENV === "development" && apiError.stack
-        ? { stack: apiError.stack }
-        : {}),
-    },
-    { status: apiError.statusCode }
-  );
-}
-
-/**
- * Wrap API handler with error handling
- */
-export function withErrorHandling<T extends unknown[]>(
-  handler: (...args: T) => Promise<NextResponse>,
-  defaultMessage?: string,
-  defaultStatusCode?: number
-) {
-  return async (...args: T): Promise<NextResponse> => {
-    try {
-      return await handler(...args);
-    } catch (error) {
-      return createErrorResponse(error, defaultMessage, defaultStatusCode);
-    }
-  };
-}
-
-/**
- * Validate and handle validation errors
- */
-export function handleValidationError(errors: string[]): NextResponse {
-  return NextResponse.json(
-    {
-      error: "VALIDATION_ERROR",
-      message: "Request validation failed",
-      errors,
-    },
-    { status: 400 }
-  );
+  return NextResponse.json(apiError, { status: apiError.statusCode });
 }

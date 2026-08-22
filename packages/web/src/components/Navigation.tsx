@@ -145,13 +145,13 @@ export function Navigation() {
             <Link
               href="/"
               className={cn(
-                "flex items-center flex-shrink-0",
+                "flex items-center flex-shrink-0 select-none",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                 "rounded"
               )}
-              aria-label="Settler.dev homepage"
+              aria-label="Settler homepage"
             >
-              <SettlerLogo variant="horizontal" className="h-8 w-auto" priority alt="Settler.dev" />
+              <SettlerLogo className="h-8 w-auto" />
             </Link>
 
             {/* Desktop Navigation */}
