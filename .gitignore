@@ -34,11 +34,19 @@ Thumbs.db
 # Logs
 *.log
 
-
 # Turbo build cache
 .turbo/
 
 # Test/verification artifacts
 artifacts/
 *.tsbuildinfo
+
+.pytest_cache/
+.vercel
+.env*
+
+# Next.js generated build output
+.next/
+next-env.d.ts
+
 /target/
