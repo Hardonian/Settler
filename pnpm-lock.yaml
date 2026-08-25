@@ -161,8 +161,8 @@ importers:
         specifier: ^2.106.1
         version: 2.106.1
       ai:
-        specifier: ^7.0.48
-        version: 7.0.48(zod@3.25.76)
+        specifier: ^7.0.76
+        version: 7.0.76(zod@3.25.76)
       resend:
         specifier: ^6.18.1
         version: 6.18.1(@react-email/render@0.0.16(react-dom@19.2.7(react@19.2.7))(react@19.2.7))
@@ -210,8 +210,8 @@ importers:
         specifier: workspace:*
         version: link:../logger
       ai:
-        specifier: ^7.0.48
-        version: 7.0.48(zod@3.25.76)
+        specifier: ^7.0.76
+        version: 7.0.76(zod@3.25.76)
       zod:
         specifier: ^3.23.0
         version: 3.25.76
@@ -298,8 +298,8 @@ importers:
         specifier: ^1.38.0
         version: 1.38.0
       ai:
-        specifier: ^7.0.48
-        version: 7.0.48(zod@3.25.76)
+        specifier: ^7.0.76
+        version: 7.0.76(zod@3.25.76)
       ajv:
         specifier: ^8.20.0
         version: 8.20.0
@@ -530,8 +530,8 @@ importers:
         specifier: workspace:*
         version: link:../sdk
       ai:
-        specifier: ^7.0.48
-        version: 7.0.48(zod@4.4.3)
+        specifier: ^7.0.76
+        version: 7.0.76(zod@4.4.3)
       chalk:
         specifier: ^5.6.2
         version: 5.6.2
@@ -584,8 +584,8 @@ importers:
         specifier: ^26.1.2
         version: 26.1.2
       ai:
-        specifier: ^7.0.48
-        version: 7.0.48(zod@4.4.3)
+        specifier: ^7.0.76
+        version: 7.0.76(zod@4.4.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -642,8 +642,8 @@ importers:
         specifier: workspace:*
         version: link:../types
       ai:
-        specifier: ^7.0.48
-        version: 7.0.48(zod@4.4.3)
+        specifier: ^7.0.76
+        version: 7.0.76(zod@4.4.3)
       axios:
         specifier: ^1.18.0
         version: 1.18.1
@@ -718,8 +718,8 @@ importers:
         specifier: ^4.0.27
         version: 4.0.27(zod@4.4.3)
       ai:
-        specifier: ^7.0.48
-        version: 7.0.48(zod@4.4.3)
+        specifier: ^7.0.76
+        version: 7.0.76(zod@4.4.3)
     devDependencies:
       '@vitest/coverage-v8':
         specifier: ^4.1.10
@@ -743,8 +743,8 @@ importers:
         specifier: workspace:*
         version: link:../jobforge-shared
       ai:
-        specifier: ^7.0.48
-        version: 7.0.48(zod@3.25.76)
+        specifier: ^7.0.76
+        version: 7.0.76(zod@3.25.76)
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -771,8 +771,8 @@ importers:
         specifier: ^4.0.27
         version: 4.0.27(zod@4.4.3)
       ai:
-        specifier: ^7.0.48
-        version: 7.0.48(zod@4.4.3)
+        specifier: ^7.0.76
+        version: 7.0.76(zod@4.4.3)
     devDependencies:
       '@jobforge/typescript-config':
         specifier: workspace:*
@@ -805,8 +805,8 @@ importers:
         specifier: workspace:*
         version: link:../jobforge-errors
       ai:
-        specifier: ^7.0.48
-        version: 7.0.48(zod@4.4.3)
+        specifier: ^7.0.76
+        version: 7.0.76(zod@4.4.3)
     devDependencies:
       '@jobforge/typescript-config':
         specifier: workspace:*
@@ -842,8 +842,8 @@ importers:
         specifier: ^2.106.1
         version: 2.106.1
       ai:
-        specifier: ^7.0.48
-        version: 7.0.48(zod@3.25.76)
+        specifier: ^7.0.76
+        version: 7.0.76(zod@3.25.76)
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -876,8 +876,8 @@ importers:
         specifier: ^4.0.27
         version: 4.0.27(zod@3.25.76)
       ai:
-        specifier: ^7.0.48
-        version: 7.0.48(zod@3.25.76)
+        specifier: ^7.0.76
+        version: 7.0.76(zod@3.25.76)
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -910,8 +910,8 @@ importers:
         specifier: ^4.0.27
         version: 4.0.27(zod@4.4.3)
       ai:
-        specifier: ^7.0.48
-        version: 7.0.48(zod@4.4.3)
+        specifier: ^7.0.76
+        version: 7.0.76(zod@4.4.3)
     devDependencies:
       '@vitest/coverage-v8':
         specifier: ^4.1.10
@@ -929,8 +929,8 @@ importers:
         specifier: ^4.0.27
         version: 4.0.27(zod@4.4.3)
       ai:
-        specifier: ^7.0.48
-        version: 7.0.48(zod@4.4.3)
+        specifier: ^7.0.76
+        version: 7.0.76(zod@4.4.3)
     devDependencies:
       '@vitest/coverage-v8':
         specifier: ^4.1.10
@@ -954,8 +954,8 @@ importers:
         specifier: workspace:*
         version: link:../types
       ai:
-        specifier: ^7.0.48
-        version: 7.0.48(zod@4.4.3)
+        specifier: ^7.0.76
+        version: 7.0.76(zod@4.4.3)
     devDependencies:
       '@vitest/coverage-v8':
         specifier: ^4.1.10
@@ -979,8 +979,8 @@ importers:
         specifier: ^26.1.2
         version: 26.1.2
       ai:
-        specifier: ^7.0.48
-        version: 7.0.48(zod@4.4.3)
+        specifier: ^7.0.76
+        version: 7.0.76(zod@4.4.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1013,8 +1013,8 @@ importers:
         specifier: workspace:*
         version: link:../protocol
       ai:
-        specifier: ^7.0.48
-        version: 7.0.48(zod@4.4.3)
+        specifier: ^7.0.76
+        version: 7.0.76(zod@4.4.3)
     devDependencies:
       '@types/node':
         specifier: ^26.1.2
@@ -1056,8 +1056,8 @@ importers:
         specifier: workspace:*
         version: link:../types
       ai:
-        specifier: ^7.0.48
-        version: 7.0.48(zod@3.25.76)
+        specifier: ^7.0.76
+        version: 7.0.76(zod@3.25.76)
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -1096,8 +1096,8 @@ importers:
         specifier: ^26.1.2
         version: 26.1.2
       ai:
-        specifier: ^7.0.48
-        version: 7.0.48(zod@4.4.3)
+        specifier: ^7.0.76
+        version: 7.0.76(zod@4.4.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1133,8 +1133,8 @@ importers:
         specifier: ^4.0.27
         version: 4.0.27(zod@4.4.3)
       ai:
-        specifier: ^7.0.48
-        version: 7.0.48(zod@4.4.3)
+        specifier: ^7.0.76
+        version: 7.0.76(zod@4.4.3)
     devDependencies:
       '@vitest/coverage-v8':
         specifier: ^4.1.10
@@ -1170,8 +1170,8 @@ importers:
         specifier: workspace:*
         version: link:../types
       ai:
-        specifier: ^7.0.48
-        version: 7.0.48(zod@3.25.76)
+        specifier: ^7.0.76
+        version: 7.0.76(zod@3.25.76)
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -1198,8 +1198,8 @@ importers:
         specifier: ^26.1.2
         version: 26.1.2
       ai:
-        specifier: ^7.0.48
-        version: 7.0.48(zod@3.25.76)
+        specifier: ^7.0.76
+        version: 7.0.76(zod@3.25.76)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1316,8 +1316,8 @@ importers:
         specifier: ^6.1.0
         version: 6.1.0(@types/react@19.2.17)(react@19.2.7)(xstate@5.31.1)
       ai:
-        specifier: ^7.0.48
-        version: 7.0.48(zod@4.4.3)
+        specifier: ^7.0.76
+        version: 7.0.76(zod@4.4.3)
       autoprefixer:
         specifier: ^10.5.0
         version: 10.5.0(postcss@8.5.23)
@@ -1469,8 +1469,8 @@ packages:
   '@adobe/css-tools@4.5.0':
     resolution: {integrity: sha512-6OzddxPio9UiWTCemp4N8cYLV2ZN1ncRnV1cVGtve7dhPOtRkleRyx32GQCYSwDYgaHU3USMm84tNsvKzRCa1Q==}
 
-  '@ai-sdk/gateway@4.0.37':
-    resolution: {integrity: sha512-YBCTsSlX0ETVsjo0ihfBOeJ3p3y1wXKXDzF9Ygp9dscUY06dzOGmyWJSGsKg+khKVArzBWUW4UCSAKms20ZDmg==}
+  '@ai-sdk/gateway@4.0.61':
+    resolution: {integrity: sha512-b+PRdwM9/x0427CKqfd4zpCRgSzQeZsCZ9PtBOaLU2S1l+eRj8++Bwt766VnLerd/F5snKWAq13miV+OPcvclA==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -1493,6 +1493,10 @@ packages:
 
   '@ai-sdk/provider@4.0.4':
     resolution: {integrity: sha512-tbHKNLirllUNF3ZlkCsXnwab2ZV1Sl4b1H/Cp9ruCce15IBmskE8Gwkk0yo9xDWY+jho2of7lVXtwSsyrq7cwQ==}
+    engines: {node: '>=22'}
+
+  '@ai-sdk/provider@4.0.7':
+    resolution: {integrity: sha512-6or44XprPzKbr8zkmzosowSE0pxkvJcoojBL+mCZvPUt3kvXp3XSNqeVun9golb1acEfSo6yaEBRT18h2VU+1Q==}
     engines: {node: '>=22'}
 
   '@alloc/quick-lru@5.2.0':
@@ -6036,8 +6040,8 @@ packages:
     resolution: {integrity: sha512-kja8j7PjmncONqaTsB8fQ+wE2mSU2DJ9D4XKoJ5PFWIdRMa6SLSN1ff4mOr4jCbfRSsxR4keIiySJU0N9T5hIQ==}
     engines: {node: '>= 8.0.0'}
 
-  ai@7.0.48:
-    resolution: {integrity: sha512-QmqshWFEDdkFFqSgdJ4cogaoDIYaedqbv73q/NXEYNkSIocJCzXnGFVyM9lrtAGTSBfm+5hq3/292ooXJ1jDSw==}
+  ai@7.0.76:
+    resolution: {integrity: sha512-Mytm/RFJzwJ0nzXiHYAE3dgNpFG/2K2Tks5alwm+PzAQeB6RJAJ97eGuZ8wssy66PcvtGWGIscS4tRi6dg0KLQ==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -7344,8 +7348,8 @@ packages:
     resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}
     engines: {node: '>=0.8.x'}
 
-  eventsource-parser@3.1.0:
-    resolution: {integrity: sha512-kJezFj9YFAMLeORyi7aCLxLbD5/qWMQnoMVlVPyHIll7lgRJCc3JVln9Vgl9nwQi0YkMnhdGTMNn7CkRRAptMg==}
+  eventsource-parser@3.1.1:
+    resolution: {integrity: sha512-EKN1vKAMcZ8MlYMpaNuxN6R9yakzH6uajHcHVTqWJzvu5pWw9DyhbP35HH8MVBQ+dZjAfDxk+A8NiR9KWaXiyQ==}
     engines: {node: '>=18.0.0'}
 
   execa@5.1.1:
@@ -10898,16 +10902,16 @@ snapshots:
 
   '@adobe/css-tools@4.5.0': {}
 
-  '@ai-sdk/gateway@4.0.37(zod@3.25.76)':
+  '@ai-sdk/gateway@4.0.61(zod@3.25.76)':
     dependencies:
-      '@ai-sdk/provider': 4.0.4
+      '@ai-sdk/provider': 4.0.7
       '@ai-sdk/provider-utils': 4.0.27(zod@3.25.76)
       '@vercel/oidc': 3.2.0
       zod: 3.25.76
 
-  '@ai-sdk/gateway@4.0.37(zod@4.4.3)':
+  '@ai-sdk/gateway@4.0.61(zod@4.4.3)':
     dependencies:
-      '@ai-sdk/provider': 4.0.4
+      '@ai-sdk/provider': 4.0.7
       '@ai-sdk/provider-utils': 4.0.27(zod@4.4.3)
       '@vercel/oidc': 3.2.0
       zod: 4.4.3
@@ -10928,14 +10932,14 @@ snapshots:
     dependencies:
       '@ai-sdk/provider': 3.0.10
       '@standard-schema/spec': 1.1.0
-      eventsource-parser: 3.1.0
+      eventsource-parser: 3.1.1
       zod: 3.25.76
 
   '@ai-sdk/provider-utils@4.0.27(zod@4.4.3)':
     dependencies:
       '@ai-sdk/provider': 3.0.10
       '@standard-schema/spec': 1.1.0
-      eventsource-parser: 3.1.0
+      eventsource-parser: 3.1.1
       zod: 4.4.3
 
   '@ai-sdk/provider@3.0.10':
@@ -10943,6 +10947,10 @@ snapshots:
       json-schema: 0.4.0
 
   '@ai-sdk/provider@4.0.4':
+    dependencies:
+      json-schema: 0.4.0
+
+  '@ai-sdk/provider@4.0.7':
     dependencies:
       json-schema: 0.4.0
 
@@ -16312,17 +16320,17 @@ snapshots:
     dependencies:
       humanize-ms: 1.2.1
 
-  ai@7.0.48(zod@3.25.76):
+  ai@7.0.76(zod@3.25.76):
     dependencies:
-      '@ai-sdk/gateway': 4.0.37(zod@3.25.76)
-      '@ai-sdk/provider': 4.0.4
+      '@ai-sdk/gateway': 4.0.61(zod@3.25.76)
+      '@ai-sdk/provider': 4.0.7
       '@ai-sdk/provider-utils': 4.0.27(zod@3.25.76)
       zod: 3.25.76
 
-  ai@7.0.48(zod@4.4.3):
+  ai@7.0.76(zod@4.4.3):
     dependencies:
-      '@ai-sdk/gateway': 4.0.37(zod@4.4.3)
-      '@ai-sdk/provider': 4.0.4
+      '@ai-sdk/gateway': 4.0.61(zod@4.4.3)
+      '@ai-sdk/provider': 4.0.7
       '@ai-sdk/provider-utils': 4.0.27(zod@4.4.3)
       zod: 4.4.3
 
@@ -17997,7 +18005,7 @@ snapshots:
 
   events@3.3.0: {}
 
-  eventsource-parser@3.1.0: {}
+  eventsource-parser@3.1.1: {}
 
   execa@5.1.1:
     dependencies:
