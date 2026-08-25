@@ -27,7 +27,7 @@
     "@ai-sdk/openai": "^4.0.27",
     "@settler/types": "workspace:*",
     "@supabase/supabase-js": "^2.106.1",
-    "ai": "^7.0.48",
+    "ai": "^7.0.76",
     "resend": "^6.18.1",
     "stripe": "^22.4.0",
     "zod": "^3.25.76"
