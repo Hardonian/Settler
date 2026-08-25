@@ -2,8 +2,7 @@ import express, { Router, Response } from "express";
 import Stripe from "stripe";
 import { queryWithTenant } from "../../db";
 import { logInfo, logError } from "../../utils/logger";
-import { authMiddleware, AuthRequest } from "../../middleware/auth";
-import { idempotencyMiddleware } from "../../middleware/idempotency";
+import type { AuthRequest } from "../../middleware/auth";
 import { getEnv } from "../../utils/env";
 
 import { asyncHandler } from "../../utils/async-handler";
@@ -159,7 +158,7 @@ billingWebhookRouter.post(
     let event: any;
     try {
       const stripe = new (await import("stripe")).default(getEnv("STRIPE_SECRET_KEY") || "", {
-      apiVersion: "2026-06-24.dahlia" as Stripe.LatestApiVersion,
+        apiVersion: "2026-06-24.dahlia" as Stripe.LatestApiVersion,
       });
       event = stripe.webhooks.constructEvent(
         JSON.stringify(req.body),

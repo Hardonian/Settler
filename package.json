@@ -108,7 +108,7 @@
     "validate:env": "tsx scripts/check-env.ts production",
     "validate:env:build": "tsx scripts/validate-env-build.ts --build",
     "validate:env:runtime": "tsx scripts/validate-env-build.ts --runtime",
-    "validate:eslint-config": "test -f scripts/validate-eslint-config.ts && tsx scripts/validate-eslint-config.ts || (echo '\u26a0\ufe0f  ESLint config validation script not found (expected in Vercel builds), skipping...' && exit 0)",
+    "validate:eslint-config": "node scripts/run-tsx-safe.mjs scripts/validate-eslint-config.ts",
     "validate:build-safety": "tsx scripts/validate-build-safety.ts",
     "validate:nextjs": "tsx scripts/validate-nextjs-build.ts",
     "validate:lint-config": "tsx scripts/validate-lint-config.ts",

@@ -7,7 +7,7 @@
 
 import { PrismaClient } from "@prisma/client";
 import Stripe from "stripe";
-import { logError, logInfo } from "../../utils/logger";
+import { logError } from "../../utils/logger";
 
 export class StripeUsageSync {
   private prisma: PrismaClient;

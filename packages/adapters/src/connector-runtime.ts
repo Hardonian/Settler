@@ -736,13 +736,11 @@ export class ConnectorRuntime {
     data: SaveNormalizedDataPayload
   ): Promise<Map<string, string>> {
     const accountMap = new Map<string, string>();
-    if (
-      !(
-        data.transactions?.some((t) => t.accountId) ||
-        data.balances?.length ||
-        data.accounts?.length
-      )
-    ) {
+    if (!(
+      data.transactions?.some((t) => t.accountId) ||
+      data.balances?.length ||
+      data.accounts?.length
+    )) {
       return accountMap;
     }
 
@@ -886,8 +884,8 @@ export class ConnectorRuntime {
       }
     }
 
-    // Process other data types similarly - exclude transactions from remaining data
-    const { transactions: _transactions, ...remainingData } = data;
+    // Process other data types similarly - exclude transactions from remainingData
+    const remainingData = { ...data, transactions: undefined };
 
     if (
       (data.accounts?.length || 0) +
