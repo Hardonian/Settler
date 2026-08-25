@@ -40,7 +40,7 @@ export declare function deduplicate<T>(array: T[], keyFn: (item: T) => string): 
 /**
  * Optimize database inserts with batching
  */
-export declare function batchInsert<T>(items: T[], inserter: (batch: T[]) => Promise<void>, batchSize?: number): Promise<void>;
+export declare function batchInsert<T>(items: T[], inserter: (batch: T[]) => Promise<void>, batchSize?: number, maxConcurrency?: number): Promise<void>;
 /**
  * Stream processing for large datasets
  */

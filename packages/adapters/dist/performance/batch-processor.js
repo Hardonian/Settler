@@ -152,14 +152,16 @@ function deduplicate(array, keyFn) {
 /**
  * Optimize database inserts with batching
  */
-async function batchInsert(items, inserter, batchSize = 1000) {
+async function batchInsert(items, inserter, batchSize = 1000, maxConcurrency = 5) {
     if (!Number.isFinite(batchSize) || batchSize < 1 || !Number.isInteger(batchSize)) {
         throw new Error(`batchSize must be a finite integer >= 1, got ${batchSize}`);
     }
-    const batches = chunk(items, batchSize);
-    for (const batch of batches) {
-        await inserter(batch);
+    if (!Number.isFinite(maxConcurrency) || maxConcurrency < 1 || !Number.isInteger(maxConcurrency)) {
+        throw new Error(`maxConcurrency must be a finite integer >= 1, got ${maxConcurrency}`);
     }
+    const batches = chunk(items, batchSize);
+    const semaphore = new Semaphore(maxConcurrency);
+    await Promise.all(batches.map(batch => inserter(batch)));
 }
 /**
  * Stream processing for large datasets
