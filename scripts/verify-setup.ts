@@ -83,18 +83,27 @@ function validateCore(findings: Finding[]): void {
   const mode = (process.env.NODE_ENV ?? "development").toLowerCase();
   const prodLike = mode === "production" || process.env.DEPLOYMENT_ENV === "production";
 
-  addRequired(
-    findings,
-    ["NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY"],
-    "web",
-    "Bootstrap local env with cp .env.local.example .env.local, then set Supabase browser keys."
-  );
-  addRequired(
-    findings,
-    ["SUPABASE_URL", "SUPABASE_ANON_KEY"],
-    "api/auth",
-    "Set Supabase server keys in .env.local before running API or production checks."
-  );
+  const hasSupabaseUrl = hasValue("NEXT_PUBLIC_SUPABASE_URL") || hasValue("SUPABASE_URL");
+  const hasSupabaseAnon =
+    hasValue("NEXT_PUBLIC_SUPABASE_ANON_KEY") || hasValue("SUPABASE_ANON_KEY");
+
+  if (!hasSupabaseUrl) {
+    findings.push({
+      severity: prodLike ? "error" : "warning",
+      area: "web",
+      message: "Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL",
+      action: "Bootstrap local env with cp .env.local.example .env.local, then set Supabase keys.",
+    });
+  }
+
+  if (!hasSupabaseAnon) {
+    findings.push({
+      severity: prodLike ? "error" : "warning",
+      area: "api/auth",
+      message: "Missing NEXT_PUBLIC_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY",
+      action: "Set Supabase server/browser keys in .env.local.",
+    });
+  }
 
   const hasAnyDb =
     hasValue("DATABASE_URL") || hasValue("SUPABASE_DATABASE_URL") || hasValue("DIRECT_URL");

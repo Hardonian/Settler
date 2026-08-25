@@ -1,82 +1,112 @@
-# Settler — Platform Architecture
+# Settler — Platform Architecture & Technical Overview
 
 Settler is a reconciliation intelligence and audit operating system. It matches financial transactions across data sources with deterministic, replayable outcomes, adjudication-backed institutional memory, and auditor-verifiable evidence bundles.
 
-This document describes the real, shipped architecture. Every capability listed here is backed by verifiable code. See [Intentional Boundaries](getting-started/INTENTIONAL_BOUNDARIES.md) for what is not yet in scope.
+This document describes the real, shipped architecture. Every capability listed here is backed by verifiable code in this monorepo.
 
-## Architecture Layers
+---
 
-### 1. Rust Kernel (`crates/`)
+## 1. Core Architecture Layers
 
+```mermaid
+graph TB
+    subgraph "External Systems & Sources"
+        SRC1[Payment Gateways<br/>Stripe, PayPal, Square, Google Pay]
+        SRC2[E-Commerce Platforms<br/>Shopify, WooCommerce, Amazon, TikTok]
+        SRC3[ERP & Accounting<br/>QuickBooks, Xero, NetSuite, SAP]
+        SRC4[Banking & Open Finance<br/>Plaid, TrueLayer]
+    end
+
+    subgraph "Layer 1: Verified Adapter Ecosystem (25+ Connectors)"
+        ADAPT[packages/adapters<br/>Rate Limiting · Webhook Signing · Token Refresh · Concurrency Queues]
+    end
+
+    subgraph "Layer 2: Reconciliation Core"
+        CORE[packages/reconciliation-core<br/>Tolerance Engine · Canonical Match Surfaces · Institutional Memory]
+    end
+
+    subgraph "Layer 3: Rust Kernel"
+        RUST[crates/settler-kernel<br/>Content-Addressable Storage · Cryptographic Proofpacks · WASM Verifier]
+    end
+
+    subgraph "Layer 4: TypeScript Control Plane"
+        API[packages/api<br/>37 API v1 Routes · 46 Middleware Layers · Event Sourcing · OpenFGA ABAC]
+    end
+
+    subgraph "Layer 5: Operator Console & Surfaces"
+        WEB[packages/web · Next.js 16 App Router · 170+ Routes]
+        CLI[packages/cli · Test Data Foundry · Replay Tooling]
+        SDK[packages/sdk & Multi-Language SDKs · TS, Python, Go, Java, C#, Ruby]
+    end
+
+    subgraph "Storage & Ledger Infrastructure"
+        PG[(PostgreSQL + RLS<br/>Tenant Projections & Audit Logs)]
+        TB[(TigerBeetle<br/>Immutable Financial Ledger)]
+        REDIS[(Redis / BullMQ<br/>Job Queues & Cache)]
+    end
+
+    SRC1 & SRC2 & SRC3 & SRC4 --> ADAPT
+    ADAPT --> CORE
+    CORE <--> RUST
+    CORE --> API
+    API --> WEB & CLI & SDK
+    API --> PG & TB & REDIS
+```
+
+---
+
+## 2. Layer Deep-Dives
+
+### 2.1 Rust Kernel (`crates/`)
 Delivers the deterministic primitives that underpin all reconciliation guarantees:
+- **Content-Addressable Storage (CAS):** Every artifact — run outputs, evidence manifests, proofpack entries — is hashed and stored by content digest.
+- **Cryptographic Proofpack Generation:** Produces hash-linked, replayable evidence bundles that can be verified offline without network connectivity.
+- **WebAssembly Engine (`crates/settler-verify-wasm`):** Enables client-side offline verification of proofpacks inside browser environments.
 
-- **Content-addressable storage (CAS):** Every artifact — run outputs, evidence manifests, proofpack entries — is hashed and stored by content digest
-- **Cryptographic proofpack generation:** Produces hash-linked, replayable evidence bundles that can be verified offline
-- **Deterministic computation primitives:** All matching math is side-effect-free and reproducible
+### 2.2 Reconciliation Core (`packages/reconciliation-core`)
+The deterministic matching engine:
+- **Configurable Match Policies:** Flexible tolerance rules (absolute/percentage amount tolerances, date/time sliding windows, string normalization).
+- **Canonical Run Surface:** Each run is assigned an immutable, content-addressed run ID with complete input attribution.
+- **Institutional Memory:** Preserves past operator exception adjudications to train heuristic resolution paths over time.
+- **Explicit Degraded-State Semantics:** Never presents a partial result as a successful run; failures are explicitly typed and surfaced.
 
-### 2. Reconciliation Core (`packages/reconciliation-core`)
+### 2.3 Verified Adapter Ecosystem (`packages/adapters`)
+25+ turnkey connector drivers normalized to unified canonical transaction types:
+- **Payments:** Stripe, PayPal, Square, Stripe Connect, Google Pay
+- **Accounting:** QuickBooks, Xero, FreshBooks, Wave, NetSuite
+- **E-Commerce:** Shopify, WooCommerce, Etsy, Amazon Seller, eBay, Wix Stores, TikTok Shop
+- **Banking:** Plaid, TrueLayer
+- **Enterprise ERP & Billing:** SAP, NetSuite, Chargebee, Recurly
+- **Tax:** TaxJar, Avalara
 
-The matching engine:
+### 2.4 Control Plane (`packages/api`)
+The API server (Express 5, TypeScript):
+- **37 Route Modules:** Ingestion, reconciliation runs, SLA monitoring, SOX approvals, DLP, SAML SSO, billing, and workforce orchestration.
+- **46 Middleware Layers:** Auth, DLP redaction, rate limiting, request signing, idempotency, ETag caching, and SOC2 logging.
+- **OpenFGA Authorization:** Attribute-based access control with fail-closed posture when unavailable.
 
-- Configurable tolerance rules (amount tolerances, date windows, field normalization)
-- Canonical run surface — each run is assigned a stable ID and all outcomes are attributable to it
-- Proofpack emission — serializes the full evidence manifest for each run
-- Explicit degraded-state semantics — never presents a partial result as a successful one
+### 2.5 Operator Console (`packages/web`)
+Next.js 16 App Router application with 170+ static and dynamic routes:
+- Real-time exception triage workbench with deterministic context.
+- Historical run replay lab and cryptographic evidence download.
+- Full compliance and security administration (SAML SSO, Data Residency geo-fencing, Maker-Checker queues).
 
-### 3. TypeScript Control Plane (`packages/api`)
+---
 
-The API server (Express, TypeScript):
+## 3. Persistence & Data Model
 
-- All API routes (`/api/v1/`, `/api/v2/`) with request validation via Zod
-- Multi-tenant middleware: resolves `tenantId` from JWT, API key, header, or subdomain before any route handler executes
-- Job orchestration: BullMQ-backed job queue with retry, SLA alerting, and exponential backoff
-- Event sourcing: append-only event store with tenant-scoped audit trails
-- Billing enforcement: subscription tier checks with circuit-breaker degraded states
-- OpenFGA authorization: attribute-based access control with fail-closed posture when unavailable
+| Store | Role |
+| :--- | :--- |
+| **TigerBeetle** | Immutable double-entry ledger for financial-grade transaction accounts and state transitions |
+| **PostgreSQL (Supabase)** | Relational operational metadata, tenant configuration, projections, and append-only audit trail |
+| **Redis (BullMQ)** | Distributed job queue, concurrency semaphores, rate limiting, and cache |
 
-### 4. CLI Surface (`packages/cli`)
+---
 
-The primary interface for operators, automation, and local development:
+## 4. Multi-Tenant Security Model (5-Layer Invariant)
 
-- `foundry` — deterministic test-data generation and reconciliation verification
-- `replay` — re-executes any past run from its evidence manifest
-- `prove` — produces and verifies cryptographic proofpacks
-- `first-run` — local environment validation without network or credentials
-
-### 5. Operator Console (`packages/web`)
-
-The Next.js App Router console:
-
-- Run history, run detail, and exception review surfaces
-- Live activity feed polling `/api/console/activities` with exponential backoff
-- Evidence export — download proofpacks directly from the UI
-- Tenant-scoped by design — every data fetch is scoped to the authenticated tenant
-
-## Persistence
-
-| Store                     | Role                                                                      |
-| ------------------------- | ------------------------------------------------------------------------- |
-| **TigerBeetle**           | Immutable double-entry ledger for all financial-grade transaction records |
-| **PostgreSQL (Supabase)** | Projections, operational metadata, audit logs, tenant configuration       |
-| **Redis**                 | Job queue backend (BullMQ), distributed cache, rate limiting              |
-
-## Security Model
-
-Tenant isolation is enforced at five independent layers:
-
-1. **Middleware:** `tenantMiddleware` resolves `req.tenantId` before any route handler
-2. **Repository layer:** Every method requires a mandatory `tenantId` parameter (TypeScript enforced)
-3. **SQL queries:** Every tenant-scoped query includes `AND tenant_id = $N`
-4. **Row-Level Security:** PostgreSQL RLS policies filter rows by `current_setting('app.current_tenant_id')`
-5. **Entity layer:** Cross-tenant saves throw `Error('Tenant mismatch')` before touching the database
-
-See [SECURITY_INVARIANTS.md](../SECURITY_INVARIANTS.md) for the full mechanical specification.
-
-## Explicit Degraded States
-
-Settler never silently degrades. When a dependency is unavailable:
-
-- **OpenFGA unavailable:** Requests fail closed (403) rather than defaulting to permissive
-- **Redis unavailable:** Warning logged, cache bypassed, core reconciliation continues
-- **TigerBeetle disabled:** Feature flag gates ledger paths; reconciliation engine runs in standard mode
-- **AI features absent:** Platform runs as a fully deterministic reconciliation system without any AI dependency
+1. **Middleware Layer:** `tenantMiddleware` resolves `req.tenantId` from JWT/API key before route handlers execute.
+2. **Repository Layer:** Every database query requires an explicit `tenantId` parameter enforced by TypeScript types.
+3. **SQL Query Layer:** Queries enforce parameterized `WHERE tenant_id = $1` filters.
+4. **PostgreSQL RLS Layer:** Database-level Row-Level Security filters by `current_setting('app.current_tenant_id')`.
+5. **Entity Layer:** Cross-tenant write operations throw `Error('Tenant mismatch')` before execution.
