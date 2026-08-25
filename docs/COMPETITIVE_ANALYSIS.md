@@ -7,6 +7,7 @@ This document provides a rigorous architectural, economic, and operational compa
 ## 1. Market Overview & Strategic Landscape
 
 The financial reconciliation market is bifurcated into two failing paradigms:
+
 1. **Legacy Enterprise Monoliths (BlackLine, Trintech, ReconArt):** Built in the 2000s–2010s around scheduled batch jobs, proprietary closed databases, heavy professional services consulting ($50K–$250K implementation fees), and static spreadsheet-style PDF outputs.
 2. **Brittle In-House Custom Scripts:** Python, SQL, or Node scripts written by internal engineering teams that lack audit trails, fail on edge cases, degrade under scale, and require continuous developer maintenance.
 
@@ -52,17 +53,17 @@ quadrantChart
 ### 3.1 Settler vs. BlackLine (The Legacy Market Leader)
 
 - **The BlackLine Advantage:** Established public company ($2.5B+ enterprise valuation), broad Fortune 500 enterprise sales presence, recognized by traditional CFOs and Big 4 auditors.
-- **The BlackLine Vulnerability:** 
+- **The BlackLine Vulnerability:**
   - Monolithic, closed architecture requiring months-long professional services implementations.
   - No developer APIs or modern CLI; engineering teams cannot embed BlackLine into real-time CI/CD or modern cloud data flows.
   - Audit output is "paper-based" (PDFs and static reports), requiring auditors to manually sample entries rather than cryptographically verifying full datasets.
-- **Settler’s Winning Angle:** 
+- **Settler’s Winning Angle:**
   - *"Don't wait 6 months and pay $150K in consulting fees. Deploy Settler in 10 minutes, run deterministic matching with sub-second latency, and hand your auditors cryptographic proofpacks that eliminate audit sampling entirely."*
 
 ### 3.2 Settler vs. Trintech & ReconArt
 
 - **Vulnerabilities:** Slow batch-oriented matching, heavy reliance on scheduled overnight cron jobs, expensive per-user licensing seats that penalize company growth, lack of modern e-commerce/fintech adapters (Shopify, TikTok Shop, Plaid, TrueLayer).
-- **Settler’s Winning Angle:** 
+- **Settler’s Winning Angle:**
   - Real-time continuous reconciliation, unlimited operator seats on modern plans, native high-scale e-commerce & payment provider integrations.
 
 ### 3.3 Settler vs. Modern Treasury
@@ -75,7 +76,7 @@ quadrantChart
 
 ## 4. Key Moats & Defensibility
 
-1. **Deterministic Rust CAS Primitives:** 
+1. **Deterministic Rust CAS Primitives:**
    Our Rust content-addressable storage kernel creates cryptographic hashes of every input, rule snapshot, and execution output. This cannot be easily retrofitted into legacy systems without a ground-up rewrite.
 2. **Accumulating Adjudication Memory:**
    When human operators adjudicate complex edge-case exceptions (e.g. currency conversion slippage or split settlements), Settler captures the decision logic into institutional memory. Future exceptions inherit high-confidence recommendation paths.

@@ -39,6 +39,7 @@ graph LR
 | **Enterprise Sovereign** | Custom Annual ($25K–$250K+ ACV) | Multi-million txn/sec via TigerBeetle, custom ERP connectors (SAP/NetSuite), dedicated account team | Full SOX 404 audit packs, OpenFGA ABAC, SAML SSO/SCIM, Data residency geo-fencing | Single-tenant Dedicated / On-Prem / VPC |
 
 ### High-Margin Add-On Packs
+
 - **High-Frequency Real-time Stream Recon** (Kafka/Kinesis streaming matching)
 - **AI Exception Intelligence Copilot** (Self-learning adjudication memory)
 - **Multi-Jurisdiction Tax & FX Pack** (Avalara/TaxJar real-time conversion parity)
@@ -64,15 +65,18 @@ graph LR
 ## 5. Distribution Channels & Go-To-Market Motion
 
 ### Phase 1: Developer-First Product-Led Acquisition (Bottom-Up)
+
 - **Zero-Friction Dev Onboarding:** Self-serve repository clone to first matched proofpack in under 5 minutes (`pnpm run bootstrap && pnpm dev`).
 - **Developer Hub & SDKs:** Native SDKs in TypeScript, Python, Go, Java, C#, Ruby powering developer workflows.
 - **Content & Technical Authority:** Deep architectural teardowns on determinism, TigerBeetle double-entry accounting, and hash-chain verification published across Hacker News, Substack, and GitHub trending.
 
 ### Phase 2: Marketplace & Ecosystem Expansion (Middle-Out)
+
 - **App Marketplace Listings:** Certified app listings on Shopify App Store, Stripe Apps Marketplace, QuickBooks App Store, and Xero App Store.
 - **Ecosystem Flywheel:** Joint solution briefs with fintech infrastructure providers (Plaid, TrueLayer, Modern Treasury, Lithic).
 
 ### Phase 3: Enterprise & Regulatory Outbound (Top-Down)
+
 - **Target Accounts:** Direct ABM targeting VP Finance, Controllers, and Head of FinTech Operations at high-growth Series B–IPO tech companies.
 - **Procurement Acceleration:** Pre-packaged Enterprise Trust Packet including:
   - Architecture Decision Records (ADRs)
@@ -84,7 +88,7 @@ graph LR
 
 ## 6. Key Performance Indicators (KPIs) & Milestones
 
-```
+```text
 [Month 1-3: Seed & Developer Traction]
 ├── 500+ GitHub Stars & 150+ active OSS instances
 ├── 25 Paying Cloud API Tier customers ($2.5K MRR)

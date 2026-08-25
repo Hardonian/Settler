@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import * as dotenv from "dotenv";
+// @ts-ignore
 import nodeContract from "./node-version-contract.cjs";
 
 type Severity = "error" | "warning";
@@ -357,19 +358,19 @@ function printFindings(findings: Finding[], loadedEnvFiles: string[]): void {
     grouped.get(finding.area)?.push(finding);
   }
 
-  console.log("🩺 Settler setup verification");
+  console.info("🩺 Settler setup verification");
   const loadedSummary = loadedEnvFiles.length > 0 ? loadedEnvFiles.join(", ") : "none";
-  console.log(`Loaded env files: ${loadedSummary}`);
-  console.log(
+  console.info(`Loaded env files: ${loadedSummary}`);
+  console.info(
     "Tip: local runs only see env exported in this shell, loaded from local .env files, or injected by doppler run."
   );
   for (const [area, items] of grouped.entries()) {
-    console.log(`\n[${area}]`);
+    console.info(`\n[${area}]`);
     for (const item of items) {
       const icon = item.severity === "error" ? "❌" : "⚠️";
-      console.log(`${icon} ${item.message}`);
+      console.info(`${icon} ${item.message}`);
       if (item.action) {
-        console.log(`   ↳ ${item.action}`);
+        console.info(`   ↳ ${item.action}`);
       }
     }
   }
@@ -392,7 +393,7 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  console.log("\n✅ setup verification passed (no critical blockers)");
+  console.info("\n✅ setup verification passed (no critical blockers)");
 }
 
 main().catch((error: unknown) => {
