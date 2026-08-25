@@ -25,6 +25,8 @@ on:
         type: boolean
 
 env:
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
   NODE_ENV: production
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
@@ -34,7 +36,7 @@ jobs:
     name: Validate Before Deployment
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -45,7 +47,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
       - name: Validate environment schema
-        run: npx --yes tsx --check config/env.schema.ts
+        run: pnpm exec tsc --noEmit --skipLibCheck config/env.schema.ts
       - name: Type check
         run: pnpm run typecheck
       - name: Lint
@@ -59,7 +61,7 @@ jobs:
     needs: [validate]
     if: github.event.inputs.skip_tests != 'true'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -93,7 +95,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -111,7 +113,7 @@ jobs:
           test -d packages/sdk/dist || (echo "❌ SDK dist missing" && exit 1)
           echo "✅ All build artifacts verified"
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: build-artifacts
           path: |
@@ -125,7 +127,7 @@ jobs:
     needs: [build]
     environment: production
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -135,7 +137,7 @@ jobs:
           node-version-file: ".nvmrc"
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: build-artifacts
           path: .

@@ -1,1 +1,0 @@
-{"version":3,"file":"useValidation.d.ts","sourceRoot":"","sources":["../../src/hooks/useValidation.ts"],"names":[],"mappings":"AAAA;;;GAGG;AAGH,OAAO,EACL,yBAAyB,EACzB,wBAAwB,EACxB,uBAAuB,EACvB,gBAAgB,EAChB,eAAe,EAKhB,MAAM,mBAAmB,CAAC;AAE3B,wBAAgB,aAAa,CAAC,KAAK,CAAC,EAAE,eAAe;8BAErC,yBAAyB,KAAG,gBAAgB;6BAwH5C,wBAAwB,KAAG,gBAAgB;6BA8C1C,uBAAuB,KAAG,gBAAgB;EA0C1D"}

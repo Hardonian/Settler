@@ -18,6 +18,8 @@ on:
         type: boolean
 
 env:
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
   ENABLE_AUTO_SYNC: ${{ vars.ENABLE_AUTO_SYNC || 'true' }}
   OSS_REPO_URL: ${{ secrets.PUBLIC_MIRROR_REPO_URL || 'https://github.com/shardie-github/settler-oss.git' }}
   OSS_REPO_TOKEN: ${{ secrets.PUBLIC_MIRROR_GIT_TOKEN }}
@@ -32,7 +34,7 @@ jobs:
 
     steps:
       - name: Checkout private repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}

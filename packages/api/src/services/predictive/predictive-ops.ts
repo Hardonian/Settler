@@ -100,28 +100,45 @@ export class PredictiveOps {
     });
 
     // Check mapping update frequency
-    for (const mapping of mappings) {
-      const updates = await this.prisma.mappingTemplate.findMany({
+    if (mappings.length > 0) {
+      const mappingNames = mappings.map((m: { name: string }) => m.name);
+
+      const allUpdates = await this.prisma.mappingTemplate.findMany({
         where: {
-          name: mapping.name,
+          name: { in: mappingNames },
         },
         orderBy: { updatedAt: "desc" },
-        take: 10,
       });
 
-      if (updates.length > 5) {
-        predictions.push({
-          type: "mapping",
-          severity: "medium",
-          probability: 0.6,
-          timeframe: "within 7 days",
-          description: `Mapping "${mapping.name}" has been updated ${updates.length} times - high volatility`,
-          recommendedActions: [
-            "Stabilize mapping template",
-            "Add versioning",
-            "Document mapping changes",
-          ],
-        });
+      const updatesByMapping = new Map<string, any[]>();
+      for (const update of allUpdates) {
+        if (!updatesByMapping.has(update.name)) {
+          updatesByMapping.set(update.name, []);
+        }
+
+        const updates = updatesByMapping.get(update.name)!;
+        if (updates.length < 10) {
+          updates.push(update);
+        }
+      }
+
+      for (const mapping of mappings) {
+        const updates = updatesByMapping.get(mapping.name) || [];
+
+        if (updates.length > 5) {
+          predictions.push({
+            type: "mapping",
+            severity: "medium",
+            probability: 0.6,
+            timeframe: "within 7 days",
+            description: `Mapping "${mapping.name}" has been updated ${updates.length} times - high volatility`,
+            recommendedActions: [
+              "Stabilize mapping template",
+              "Add versioning",
+              "Document mapping changes",
+            ],
+          });
+        }
       }
     }
 
@@ -138,39 +155,42 @@ export class PredictiveOps {
       take: 100,
     });
 
-    // Check template usage density
-    for (const template of templates) {
-      const jobs = await this.prisma.reconJob.findMany({
-        where: { templateId: template.id },
-        take: 1000,
-      });
-
-      if (jobs.length > 500) {
-        // High usage - check for issues
-        const failures = await this.prisma.reconResult.findMany({
-          where: {
-            reconJobId: { in: jobs.map((j: { id: string }) => j.id) },
-            status: "failed",
-          },
-          take: 10,
+    // Run the checks for all templates concurrently
+    await Promise.all(
+      templates.map(async (template) => {
+        const jobs = await this.prisma.reconJob.findMany({
+          where: { templateId: template.id },
+          take: 1000,
+          select: { id: true },
         });
 
-        if (failures.length > 5) {
-          predictions.push({
-            type: "template",
-            severity: "high",
-            probability: 0.7,
-            timeframe: "within 48 hours",
-            description: `Template "${template.name}" has high failure rate (${failures.length}/${jobs.length})`,
-            recommendedActions: [
-              "Review template logic",
-              "Add error handling",
-              "Consider template update",
-            ],
+        if (jobs.length > 500) {
+          // High usage - check for issues
+          const failures = await this.prisma.reconResult.findMany({
+            where: {
+              reconJobId: { in: jobs.map((j) => j.id) },
+              status: "failed",
+            },
+            take: 10,
           });
+
+          if (failures.length > 5) {
+            predictions.push({
+              type: "template",
+              severity: "high",
+              probability: 0.7,
+              timeframe: "within 48 hours",
+              description: `Template "${template.name}" has high failure rate (${failures.length}/${jobs.length})`,
+              recommendedActions: [
+                "Review template logic",
+                "Add error handling",
+                "Consider template update",
+              ],
+            });
+          }
         }
-      }
-    }
+      })
+    );
 
     return predictions;
   }

@@ -11,6 +11,10 @@ on:
   pull_request_target:
     types: [opened, synchronize, reopened, ready_for_review, labeled]
 
+env:
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+
 jobs:
   pre-merge-checks:
     name: Pre-Merge Safety Checks
@@ -19,7 +23,7 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE22: true
     if: github.event.pull_request.draft == false
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
@@ -51,7 +55,7 @@ jobs:
 
       - name: Upload Classification Report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: classification-report-pr-${{ github.event.pull_request.number }}
           path: artifacts/classification-report.json
@@ -59,7 +63,7 @@ jobs:
 
       - name: Comment PR with Classification Status
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
@@ -122,7 +126,7 @@ jobs:
       needs.pre-merge-checks.result == 'success'
     steps:
       - name: Enable auto-merge for safe dependency updates
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const pr = context.payload.pull_request;

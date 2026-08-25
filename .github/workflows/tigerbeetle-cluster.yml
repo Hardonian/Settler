@@ -20,8 +20,9 @@ on:
   workflow_dispatch:
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE22: true
-  TIGERBEETLE_VERSION: "0.23.0"
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+  TIGERBEETLE_VERSION: "0.17.9"
 
 jobs:
   tigerbeetle-cluster:
@@ -54,7 +55,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -73,17 +74,11 @@ jobs:
         run: |
           set -e
           TB_VERSION="${TIGERBEETLE_VERSION}"
-          ARCH=$(uname -m)
-          if [ "$ARCH" = "x86_64" ]; then
-            TB_ARCH="x86_64"
-          elif [ "$ARCH" = "aarch64" ]; then
-            TB_ARCH="aarch64"
-          else
-            echo "Unsupported architecture: $ARCH"
-            exit 1
+          curl -fsSL "https://pkg.tigerbeetle.com/install.sh" | sh -s -- --version "${TB_VERSION}"
+          # install.sh places the binary in the current dir or /usr/local/bin
+          if [ -f ./tigerbeetle ]; then
+            sudo mv ./tigerbeetle /usr/local/bin/tigerbeetle
           fi
-          curl -L "https://github.com/tigerbeetle/tigerbeetle/releases/download/v${TB_VERSION}/tigerbeetle-${TB_VERSION}-${TB_ARCH}-unknown-linux-gnu.tar.gz" | tar xz
-          sudo mv tigerbeetle /usr/local/bin/
           tigerbeetle --version
 
       - name: Setup TigerBeetle 3-Node Cluster

@@ -1,8 +1,4 @@
-import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { BRAND_LOCKUP_PNG } from "./brand-assets";
-import { BrandMark } from "./BrandMark";
-import { BrandWordmark } from "./BrandWordmark";
 
 export type BrandLockupOrientation = "horizontal" | "stacked";
 
@@ -13,7 +9,6 @@ type HorizontalLockupProps = {
   className?: string;
   priority?: boolean;
   sizes?: string;
-  /** Horizontal: mark + text wordmark (default). Stacked uses format="word". */
   wordmarkFormat?: "product" | "word";
 };
 
@@ -30,46 +25,26 @@ type StackedLockupProps = {
 
 export type BrandLockupProps = HorizontalLockupProps | StackedLockupProps;
 
+/**
+ * Canonical Settler lockup, rendered as the "SETTLER" wordmark (text-only).
+ *
+ * Text-only on purpose: no generated-raster dependency, so there is no
+ * broken-image or stale-SVG fallback that could surface legacy placeholder
+ * text. The `orientation` prop is accepted for API compatibility but both
+ * render the same wordmark.
+ */
 export function BrandLockup(props: BrandLockupProps) {
-  if (props.orientation === "stacked") {
-    const {
-      alt = "Settler.dev",
-      className,
-      stackedGapClassName = "gap-3",
-      markClassName,
-      wordmarkClassName,
-      priority,
-      wordmarkFormat = "word",
-    } = props;
-    return (
-      <div className={cn("flex flex-col items-center", stackedGapClassName, className)}>
-        <BrandMark
-          alt=""
-          className={cn("h-14 w-14 sm:h-16 sm:w-16", markClassName)}
-          priority={priority}
-        />
-        <BrandWordmark alt={alt} format={wordmarkFormat} className={wordmarkClassName} />
-      </div>
-    );
-  }
-
-  const { alt = "Settler.dev", className, priority, sizes, theme = "auto" } = props;
-
-  const themeClass = theme === "dark" ? "invert" : theme === "auto" ? "dark:invert" : "";
-
+  const { alt = "Settler", className } = props;
   return (
-    <Image
-      src={BRAND_LOCKUP_PNG.webpSrc ?? BRAND_LOCKUP_PNG.src}
-      width={BRAND_LOCKUP_PNG.width}
-      height={BRAND_LOCKUP_PNG.height}
-      alt={alt}
+    <span
+      role="img"
+      aria-label={alt}
       className={cn(
-        "max-h-full w-auto max-w-full object-contain object-left",
-        themeClass,
+        "inline-flex items-center justify-center font-extrabold tracking-tight text-foreground text-2xl leading-none select-none",
         className
       )}
-      priority={priority}
-      sizes={sizes}
-    />
+    >
+      SETTLER
+    </span>
   );
 }

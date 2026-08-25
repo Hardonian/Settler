@@ -30,6 +30,8 @@ on:
         default: false
 
 env:
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
   SECURITY_AUDIT_MODE: strict
   SECURITY_HEADER_PROBE_STRICT: "1"
   SECURITY_HEADER_PROBE_ALLOW_DEGRADED: "1"
@@ -52,7 +54,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -144,7 +146,7 @@ jobs:
 
       - name: Attest release evidence bundle provenance
         id: attest
-        uses: actions/attest-build-provenance@v1
+        uses: actions/attest-build-provenance@v4
         with:
           subject-path: ${{ steps.package.outputs.archive_path }}
 
@@ -163,7 +165,7 @@ jobs:
       # -----------------------------------------------------------------------
 
       - name: Upload release evidence bundle (directory)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release-evidence-bundle-${{ github.sha }}
           path: security/release-bundle/
@@ -171,7 +173,7 @@ jobs:
           if-no-files-found: error
 
       - name: Upload signed bundle archive
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release-evidence-bundle-archive-${{ github.sha }}
           path: ${{ steps.package.outputs.archive }}

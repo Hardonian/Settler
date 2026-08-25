@@ -14,7 +14,6 @@ from typing import Any, Dict, List
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from reconciliation_engine.engine import (
-    ReconciliationEngine,
     Severity,
     reconcile,
 )

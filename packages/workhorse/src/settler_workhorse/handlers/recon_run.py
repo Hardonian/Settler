@@ -7,7 +7,6 @@ Safe no-op if no datasets provided.
 from datetime import date, datetime
 from typing import Any
 
-from dateutil import parser as date_parser
 
 from settler_workhorse.models import Job, JobResult, JobType
 from settler_workhorse.utils.logging import get_logger

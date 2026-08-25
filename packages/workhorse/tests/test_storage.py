@@ -1,6 +1,5 @@
 import pytest
 from unittest.mock import patch, MagicMock
-import sys
 
 from settler_workhorse.utils.storage import fetch_file_content, fetch_url_content
 from settler_workhorse.config import Settings

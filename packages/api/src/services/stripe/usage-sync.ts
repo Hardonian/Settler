@@ -16,7 +16,9 @@ export class StripeUsageSync {
   constructor(prisma: PrismaClient, stripeKey: string) {
     this.prisma = prisma;
     // Use a supported API version - update when Stripe types are updated
-    this.stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" as Stripe.LatestApiVersion });
+    this.stripe = new Stripe(stripeKey, {
+      apiVersion: "2026-06-24.dahlia" as Stripe.LatestApiVersion,
+    });
   }
 
   /**
@@ -65,34 +67,15 @@ export class StripeUsageSync {
         current.quantity += Number(event.quantity);
       }
 
-      // Create usage records in Stripe
-      for (const subscription of billingAccount.subscriptions) {
-        if (!subscription.stripeSubscriptionId) continue;
-
-        const subscriptionItems = await this.stripe.subscriptionItems.list({
-          subscription: subscription.stripeSubscriptionId,
+      // Stripe retired subscriptionItems.createUsageRecord. A billing-meter event
+      // name is provider configuration, not an application guess: fail closed and
+      // preserve unaggregated events until an operator supplies that mapping.
+      if (usageByType.size > 0) {
+        logError("Metered usage sync blocked: Stripe Billing Meter mapping is not configured", {
+          billingAccountId,
+          eventTypes: [...usageByType.keys()],
         });
-
-        for (const [eventType, usage] of usageByType.entries()) {
-          // Find matching subscription item by metadata or event type
-          const matchingItem = subscriptionItems.data.find(
-            (item) => item.metadata?.eventType === eventType
-          );
-
-          if (matchingItem && usage.quantity > 0) {
-            await this.stripe.subscriptionItems.createUsageRecord(matchingItem.id, {
-              quantity: Math.round(usage.quantity),
-              timestamp: Math.floor(endDate.getTime() / 1000),
-            });
-
-            logInfo("Usage synced to Stripe", {
-              billingAccountId,
-              eventType,
-              quantity: usage.quantity,
-              subscriptionItemId: matchingItem.id,
-            });
-          }
-        }
+        return;
       }
 
       // Mark events as aggregated

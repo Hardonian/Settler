@@ -3,7 +3,7 @@ import { getEnv } from "../utils/env";
 
 // In a real implementation, this would be injected via a DI container
 const stripe = new Stripe(getEnv("STRIPE_SECRET_KEY") || "", {
-  apiVersion: "2023-10-16", // Using standard API version
+  apiVersion: "2026-06-24.dahlia" as Stripe.LatestApiVersion, // Must match installed Stripe SDK types
 });
 
 export class BillingService {
@@ -11,21 +11,13 @@ export class BillingService {
    * Report metered usage for a tenant (Day One Monetization)
    */
   async reportUsage(tenantId: string, transactionCount: number): Promise<void> {
-    try {
-      // Lookup the Stripe Subscription Item ID for this tenant from your DB
-      // const subscriptionItemId = await db.getSubscriptionItemId(tenantId);
-      const subscriptionItemId = `si_mock_${tenantId}`; // Stub
-
-      await stripe.subscriptionItems.createUsageRecord(subscriptionItemId, {
-        quantity: transactionCount,
-        timestamp: Math.floor(Date.now() / 1000),
-        action: "increment",
-      });
-      console.info(`Successfully reported ${transactionCount} transactions for tenant ${tenantId}`);
-    } catch (error) {
-      console.error(`Failed to report usage for tenant ${tenantId}:`, error);
-      throw error;
-    }
+    // Stripe retired subscriptionItems.createUsageRecord. Do not invent a Billing
+    // Meter event name or silently mark local usage as sent; operators must wire a
+    // configured meter explicitly before enabling metered billing.
+    void stripe;
+    throw new Error(
+      `Metered usage reporting is not configured for tenant ${tenantId}; refusing to report ${transactionCount} units.`
+    );
   }
 
   /**

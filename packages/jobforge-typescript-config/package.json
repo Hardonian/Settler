@@ -8,12 +8,12 @@
     "react.json"
   ],
   "devDependencies": {
-    "@vitest/coverage-v8": "^4.1.8",
+    "@vitest/coverage-v8": "^4.1.10",
     "vite": "^6.4.3",
     "vitest": "^4.1.8"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^3.0.69",
-    "ai": "^6.0.199"
+    "@ai-sdk/openai": "^4.0.27",
+    "ai": "^7.0.48"
   }
 }

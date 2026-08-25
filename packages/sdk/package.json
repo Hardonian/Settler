@@ -55,15 +55,15 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^3.0.69",
-    "@types/node": "^24.12.4",
-    "ai": "^6.0.199",
+    "@ai-sdk/openai": "^4.0.27",
+    "@types/node": "^26.1.2",
+    "ai": "^7.0.48",
     "typescript": "^5.9.3"
   },
   "devDependencies": {
     "@jest/globals": "^30.4.1",
     "@types/jest": "^30.0.0",
-    "@vitest/coverage-v8": "^4.1.8",
+    "@vitest/coverage-v8": "^4.1.10",
     "eslint-config-prettier": "^10.1.8",
     "jest": "^30.4.2",
     "ts-jest": "^29.4.11",

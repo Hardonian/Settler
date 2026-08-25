@@ -120,30 +120,44 @@ def _calculate_variance_metrics(results: list[dict[str, Any]]) -> dict[str, Any]
         }
 
     total_runs = len(results)
-    total_sources = sum(r.get("source_count", 0) or 0 for r in results)
-    total_targets = sum(r.get("target_count", 0) or 0 for r in results)
-    total_matched = sum(r.get("matched_count", 0) or 0 for r in results)
-    total_unmatched_source = sum(r.get("unmatched_source_count", 0) or 0 for r in results)
-    total_unmatched_target = sum(r.get("unmatched_target_count", 0) or 0 for r in results)
+    total_sources = 0
+    total_targets = 0
+    total_matched = 0
+    total_unmatched_source = 0
+    total_unmatched_target = 0
+    amount_source = 0.0
+    amount_target = 0.0
+    status_counts: dict[str, int] = {}
+    currencies: set[str] = set()
+
+    for r in results:
+        total_sources += r.get("source_count", 0) or 0
+        total_targets += r.get("target_count", 0) or 0
+        total_matched += r.get("matched_count", 0) or 0
+        total_unmatched_source += r.get("unmatched_source_count", 0) or 0
+        total_unmatched_target += r.get("unmatched_target_count", 0) or 0
+
+        amt_src = r.get("total_amount_source")
+        if amt_src:
+            amount_source += float(amt_src)
+
+        amt_tgt = r.get("total_amount_target")
+        if amt_tgt:
+            amount_target += float(amt_tgt)
+
+        status = r.get("status", "unknown")
+        status_counts[status] = status_counts.get(status, 0) + 1
+
+        curr = r.get("currency")
+        if curr:
+            currencies.add(curr)
 
     # Calculate amount variance
-    amount_source = sum(
-        float(r.get("total_amount_source") or 0) for r in results if r.get("total_amount_source")
-    )
-    amount_target = sum(
-        float(r.get("total_amount_target") or 0) for r in results if r.get("total_amount_target")
-    )
     variance_amount = abs(amount_source - amount_target)
 
     # Calculate match rate
     total_records = total_sources + total_targets
     variance_rate = 1.0 - (total_matched * 2 / max(total_records, 1))
-
-    # Status breakdown
-    status_counts: dict[str, int] = {}
-    for r in results:
-        status = r.get("status", "unknown")
-        status_counts[status] = status_counts.get(status, 0) + 1
 
     return {
         "total_runs": total_runs,
@@ -158,7 +172,7 @@ def _calculate_variance_metrics(results: list[dict[str, Any]]) -> dict[str, Any]
         "variance_rate": round(variance_rate, 4),
         "match_rate": round(1.0 - variance_rate, 4),
         "status_breakdown": status_counts,
-        "currencies": list({r.get("currency") for r in results if r.get("currency")}),
+        "currencies": list(currencies),
     }
 
 

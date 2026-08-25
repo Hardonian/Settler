@@ -12,6 +12,12 @@ pub struct StreamingEngine {
     is_running: bool,
 }
 
+impl Default for StreamingEngine {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl StreamingEngine {
     pub fn new() -> Self {
         StreamingEngine { is_running: false }
@@ -30,7 +36,7 @@ impl StreamingEngine {
         if !self.is_running {
             return Err("Streaming engine is not running".into());
         }
-        
+
         // Mock matching logic
         let mut response = "Processed event ".to_string();
         response.push_str(&event.id);

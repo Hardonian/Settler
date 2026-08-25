@@ -1,5 +1,4 @@
 import pytest
-import base64
 from uuid import uuid4
 from datetime import datetime
 from settler_workhorse.models import Job, JobType

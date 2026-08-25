@@ -10,15 +10,15 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^3.0.69",
+    "@ai-sdk/openai": "^4.0.27",
     "@jobforge/sdk-ts": "workspace:*",
     "@jobforge/shared": "workspace:*",
-    "ai": "^6.0.199",
+    "ai": "^7.0.48",
     "zod": "^3.25.76"
   },
   "devDependencies": {
     "@jobforge/typescript-config": "workspace:*",
-    "@vitest/coverage-v8": "^4.1.8",
+    "@vitest/coverage-v8": "^4.1.10",
     "typescript": "^5.9.3",
     "vite": "^6.4.3",
     "vitest": "^4.1.8"
