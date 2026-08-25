@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import matter from "gray-matter";
+import { parseFrontmatter } from "./frontmatter";
 import { appLogger } from "@/lib/utils/logger";
 
 function resolveContentDirectory(): string {
@@ -41,7 +41,7 @@ export function getContentPage(slug: string): ContentPage | null {
   try {
     const fullPath = path.join(contentDirectory, `${slug}.mdx`);
     const fileContents = fs.readFileSync(fullPath, "utf8");
-    const { data, content } = matter(fileContents);
+    const { data, content } = parseFrontmatter<Record<string, any>>(fileContents);
 
     return {
       slug,

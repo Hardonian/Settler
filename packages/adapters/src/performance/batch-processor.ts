@@ -190,7 +190,16 @@ export async function batchInsert<T>(
   const batches = chunk(items, batchSize);
   const semaphore = new Semaphore(maxConcurrency);
 
-  await Promise.all(batches.map(batch => inserter(batch)));
+  await Promise.all(
+    batches.map(async (batch) => {
+      await semaphore.acquire();
+      try {
+        await inserter(batch);
+      } finally {
+        semaphore.release();
+      }
+    })
+  );
 }
 
 /**

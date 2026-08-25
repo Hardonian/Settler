@@ -8,19 +8,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- Support intake submission service with audit logging and runtime signal emission
-- Standardized error factories and typed exception management routes
-- Support intake system with reconciliation run and exception context embedding
-- Reconciliation export integrity verification with hash comparison
+- Architecture Decision Records (ADRs) covering Rust CAS, TigerBeetle, 5-layer isolation, and Express/Next.js decoupling (`docs/ARCHITECTURE_DECISION_RECORDS.md`)
+- Comprehensive enterprise readiness specification covering SOX 404, SOC 2 Type II, GDPR, and 46 middleware layers (`docs/ENTERPRISE_READINESS.md`)
+- Technical due diligence competitive analysis comparing Settler against legacy monoliths (`docs/COMPETITIVE_ANALYSIS.md`)
+- Unit test suite for Data Loss Prevention (DLP) middleware with SSN, credit card, and AWS Access Key ID redaction (`packages/api/src/middleware/__tests__/dlp.test.ts`)
+- Unit test suite for Stripe billing routes covering status, fallback checkout, and customer portal (`packages/api/src/routes/v1/__tests__/billing.test.ts`)
+- Safe zero-crash frontmatter parser in `@settler/web` resolving legacy `gray-matter` / `js-yaml` 4 incompatibilities during Next.js SSG route collection
+- Turnkey adapter ecosystem expansion documenting 25+ verified connector drivers across payments, accounting, e-commerce, banking, and ERP
 
-### Security
+### Fixed & Hardened
 
-- Bumped `defu` to `^6.1.5` to resolve prototype pollution vulnerability
-
-### DevOps & Infrastructure
-
-- Pinned GitHub Actions to Node.js 24 to resolve upstream deprecation warnings
-- Enabled type declaration emit (`declaration: true`) in `packages/api` tsconfig to unblock cross-package type resolution for `@settler/api/lib/email-lifecycle`
+- Resolved root clutter by organizing operational scripts into `scripts/housekeeping/`
+- Hardened `.gitignore` and `.lintstagedrc.js` to prevent build artifacts (`**/dist/**`) from ever entering the git index
+- Consolidated `pnpm.overrides` into `pnpm-workspace.yaml` eliminating deprecated package.json warning outputs
+- Enforced concurrency limiters on batch processor insertions in `@settler/adapters`
+- Fixed Vercel deployment preflight with frozen lockfile validation
+- Cleaned unused imports and variables across `@settler/api` and `@settler/web` achieving zero ESLint warnings monorepo-wide
 
 ## [1.0.0] — 2026-04-09
 
