@@ -59,7 +59,7 @@
     "@tanstack/react-query-devtools": "^5.100.14",
     "@types/bcrypt": "^6.0.0",
     "@upstash/redis": "^1.38.0",
-    "@vercel/analytics": "^1.6.1",
+    "@vercel/analytics": "^2.0.1",
     "@vercel/blob": "^0.26.0",
     "@vercel/edge-config": "^1.4.3",
     "@vercel/speed-insights": "^1.3.1",
