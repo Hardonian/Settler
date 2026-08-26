@@ -58,7 +58,7 @@ overrides:
   '@ai-sdk/provider-utils': 4.0.27
   tmp: 0.2.7
   '@xmldom/xmldom': ^0.8.13
-  xml2js: ^0.6.2
+  xml2js: ^0.5.0
   '@node-saml/passport-saml': 5.1.0
   wasmtime: ^24.0.7
   ip-address: ^10.3.1
@@ -412,8 +412,8 @@ importers:
         specifier: ^3.19.0
         version: 3.19.0
       xml2js:
-        specifier: ^0.6.2
-        version: 0.6.2
+        specifier: ^0.5.0
+        version: 0.5.0
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -1280,8 +1280,8 @@ importers:
         specifier: workspace:*
         version: link:../types
       '@stripe/stripe-js':
-        specifier: ^8.11.0
-        version: 8.11.0
+        specifier: ^9.14.0
+        version: 9.14.0
       '@supabase/ssr':
         specifier: ^0.12.4
         version: 0.12.4(@supabase/supabase-js@2.106.1)
@@ -5160,8 +5160,8 @@ packages:
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
 
-  '@stripe/stripe-js@8.11.0':
-    resolution: {integrity: sha512-3fVF4z3efsgwgyj64nFK+6F4/vMw0mUXD2TBbOfftJtKVNx4JNv3CSfe1fY4DCtCk0JFp8/YPNcRkzgV0HJ8cg==}
+  '@stripe/stripe-js@9.14.0':
+    resolution: {integrity: sha512-eCeVT2ee5YWyzz+m/cGwuatcPobe0MxzUGJtat8vUuZo4vNg1bzhoImKaTG2uB1ytIO03MrYAP4d6PTiGl+IZQ==}
     engines: {node: '>=12.16'}
 
   '@supabase/auth-js@2.106.1':
@@ -10838,8 +10838,8 @@ packages:
     resolution: {integrity: sha512-k8KO9hrMyNk6tUWqUfkTEZbezRRpONVOzUTnc97VnCvyj6Tf9lyUR9EDAIeiVLv56jsMcoXEwjW8Kv5yPY52lw==}
     engines: {node: '>=16.0.0'}
 
-  xml2js@0.6.2:
-    resolution: {integrity: sha512-T4rieHaC1EXcES0Kxxj4JWgaUQHDk+qwHcYOCFHfiwKz7tOVPLq7Hjq9dM1WCMhylqMEfP7hMcOIChvotiZegA==}
+  xml2js@0.5.0:
+    resolution: {integrity: sha512-drPFnkQJik/O+uPKpqSgr22mpuFHqKdbS835iAQrUC73L2F5WkboIRd63ai/2Yg6I1jzifPFKH2NTK+cfglkIA==}
     engines: {node: '>=4.0.0'}
 
   xmlbuilder@11.0.1:
@@ -13013,7 +13013,7 @@ snapshots:
       debug: 4.4.3(supports-color@8.1.1)
       xml-crypto: 6.1.2
       xml-encryption: 3.1.0
-      xml2js: 0.6.2
+      xml2js: 0.5.0
       xmlbuilder: 15.1.1
       xpath: 0.0.34
     transitivePeerDependencies:
@@ -15307,7 +15307,7 @@ snapshots:
 
   '@standard-schema/spec@1.1.0': {}
 
-  '@stripe/stripe-js@8.11.0': {}
+  '@stripe/stripe-js@9.14.0': {}
 
   '@supabase/auth-js@2.106.1':
     dependencies:
@@ -22065,7 +22065,7 @@ snapshots:
 
   xml-naming@0.1.0: {}
 
-  xml2js@0.6.2:
+  xml2js@0.5.0:
     dependencies:
       sax: 1.6.1
       xmlbuilder: 11.0.1
