@@ -82,7 +82,7 @@
     "server-only": "^0.0.1",
     "sharp": "^0.35.3",
     "sonner": "^2.0.8",
-    "stripe": "^22.4.0",
+    "stripe": "^22.5.0",
     "tailwind-merge": "^2.6.1",
     "tailwindcss": "^4.3.3",
     "uuid": "^13.0.2",
