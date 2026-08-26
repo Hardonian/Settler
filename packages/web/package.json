@@ -55,7 +55,7 @@
     "@stripe/stripe-js": "^8.11.0",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.106.1",
-    "@tanstack/react-query": "^5.100.14",
+    "@tanstack/react-query": "^5.102.1",
     "@tanstack/react-query-devtools": "^5.100.14",
     "@types/bcrypt": "^6.0.0",
     "@upstash/redis": "^1.38.0",
