@@ -1226,8 +1226,8 @@ importers:
         specifier: ^9.4.3
         version: 9.4.3(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@builder.io/sdk':
-        specifier: ^6.3.0
-        version: 6.3.0
+        specifier: ^6.3.2
+        version: 6.3.2
       '@jobforge/sdk-ts':
         specifier: workspace:*
         version: link:../jobforge-sdk-ts
@@ -2024,9 +2024,6 @@ packages:
     peerDependencies:
       react: '>=16.8.0 || ^19.0.0-rc'
       react-dom: '>=16.8.0 || ^19.0.0-rc'
-
-  '@builder.io/sdk@6.3.0':
-    resolution: {integrity: sha512-l1bUFeSzklPbU3pqyZ2i+yU9MBm72lWsWe/WISXsO4BCQJWG/0y1tp52xiq6XX2mV3c2hdSGHrIm229360yagQ==}
 
   '@builder.io/sdk@6.3.2':
     resolution: {integrity: sha512-/4ED17FFV/PZLaFS4Frq3QQU5te7tBZpwZWwwJkoJvin8gI4nU+UPnzngD4vuuOf4l0AEsJgDnAwbZoeohH7gQ==}
@@ -11974,14 +11971,6 @@ snapshots:
       - encoding
       - preact-render-to-string
       - supports-color
-
-  '@builder.io/sdk@6.3.0':
-    dependencies:
-      hash-sum: 2.0.0
-      node-fetch: 2.7.0
-      tslib: 1.14.1
-    transitivePeerDependencies:
-      - encoding
 
   '@builder.io/sdk@6.3.2':
     dependencies:
