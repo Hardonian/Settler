@@ -123,7 +123,7 @@
     "@settler/types": "workspace:*",
     "@supabase/supabase-js": "^2.106.1",
     "@upstash/redis": "^1.38.0",
-    "ai": "^7.0.76",
+    "ai": "^7.0.77",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
     "async-mutex": "^0.5.0",
