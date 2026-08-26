@@ -58,7 +58,7 @@ overrides:
   '@ai-sdk/provider-utils': 4.0.27
   tmp: 0.2.7
   '@xmldom/xmldom': ^0.8.13
-  xml2js: ^0.5.0
+  xml2js: ^0.6.2
   '@node-saml/passport-saml': 5.1.0
   wasmtime: ^24.0.7
   ip-address: ^10.3.1
@@ -412,8 +412,8 @@ importers:
         specifier: ^3.19.0
         version: 3.19.0
       xml2js:
-        specifier: ^0.5.0
-        version: 0.5.0
+        specifier: ^0.6.2
+        version: 0.6.2
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -10838,8 +10838,8 @@ packages:
     resolution: {integrity: sha512-k8KO9hrMyNk6tUWqUfkTEZbezRRpONVOzUTnc97VnCvyj6Tf9lyUR9EDAIeiVLv56jsMcoXEwjW8Kv5yPY52lw==}
     engines: {node: '>=16.0.0'}
 
-  xml2js@0.5.0:
-    resolution: {integrity: sha512-drPFnkQJik/O+uPKpqSgr22mpuFHqKdbS835iAQrUC73L2F5WkboIRd63ai/2Yg6I1jzifPFKH2NTK+cfglkIA==}
+  xml2js@0.6.2:
+    resolution: {integrity: sha512-T4rieHaC1EXcES0Kxxj4JWgaUQHDk+qwHcYOCFHfiwKz7tOVPLq7Hjq9dM1WCMhylqMEfP7hMcOIChvotiZegA==}
     engines: {node: '>=4.0.0'}
 
   xmlbuilder@11.0.1:
@@ -13010,7 +13010,7 @@ snapshots:
       debug: 4.4.3(supports-color@8.1.1)
       xml-crypto: 6.1.2
       xml-encryption: 3.1.0
-      xml2js: 0.5.0
+      xml2js: 0.6.2
       xmlbuilder: 15.1.1
       xpath: 0.0.34
     transitivePeerDependencies:
@@ -22062,7 +22062,7 @@ snapshots:
 
   xml-naming@0.1.0: {}
 
-  xml2js@0.5.0:
+  xml2js@0.6.2:
     dependencies:
       sax: 1.6.1
       xmlbuilder: 11.0.1
