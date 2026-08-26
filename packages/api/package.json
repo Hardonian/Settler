@@ -110,7 +110,7 @@
     "@opentelemetry/exporter-trace-otlp-http": "^0.221.0",
     "@opentelemetry/resources": "^2.7.1",
     "@opentelemetry/sdk-node": "^0.218.0",
-    "@opentelemetry/semantic-conventions": "^1.41.1",
+    "@opentelemetry/semantic-conventions": "^1.43.0",
     "@prisma/adapter-pg": "7.9.0",
     "@sentry/node": "^10.68.0",
     "@sentry/profiling-node": "^10.70.0",
