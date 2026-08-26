@@ -349,7 +349,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.12.1",
     "@playwright/test": "^1.60.0",
-    "@prisma/adapter-pg": "7.9.0",
+    "@prisma/adapter-pg": "7.9.1",
     "@prisma/client": "7.9.1",
     "@supabase/supabase-js": "^2.106.1",
     "@types/jest": "^30.0.0",
