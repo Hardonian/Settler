@@ -19,7 +19,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.27",
+    "@ai-sdk/openai": "^4.0.46",
     "ai": "^7.0.77",
     "zod": "^3.25.76"
   },

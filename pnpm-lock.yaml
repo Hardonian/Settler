@@ -152,8 +152,8 @@ importers:
   packages/adapters:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.27
-        version: 4.0.27(zod@3.25.76)
+        specifier: ^4.0.46
+        version: 4.0.46(zod@3.25.76)
       '@settler/types':
         specifier: workspace:*
         version: link:../types
@@ -204,8 +204,8 @@ importers:
   packages/agents:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.27
-        version: 4.0.27(zod@3.25.76)
+        specifier: ^4.0.46
+        version: 4.0.46(zod@3.25.76)
       '@settler/logger':
         specifier: workspace:*
         version: link:../logger
@@ -232,8 +232,8 @@ importers:
   packages/api:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.27
-        version: 4.0.27(zod@3.25.76)
+        specifier: ^4.0.46
+        version: 4.0.46(zod@3.25.76)
       '@asteasolutions/zod-to-openapi':
         specifier: ^7.3.4
         version: 7.3.4(zod@3.25.76)
@@ -521,8 +521,8 @@ importers:
   packages/cli:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.27
-        version: 4.0.27(zod@4.4.3)
+        specifier: ^4.0.46
+        version: 4.0.46(zod@4.4.3)
       '@jobforge/sdk-ts':
         specifier: workspace:*
         version: link:../jobforge-sdk-ts
@@ -578,8 +578,8 @@ importers:
   packages/edge-ai-core:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.27
-        version: 4.0.27(zod@4.4.3)
+        specifier: ^4.0.46
+        version: 4.0.46(zod@4.4.3)
       '@types/node':
         specifier: ^26.1.2
         version: 26.1.2
@@ -636,8 +636,8 @@ importers:
   packages/edge-node:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.27
-        version: 4.0.27(zod@4.4.3)
+        specifier: ^4.0.46
+        version: 4.0.46(zod@4.4.3)
       '@settler/types':
         specifier: workspace:*
         version: link:../types
@@ -715,8 +715,8 @@ importers:
   packages/hash:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.27
-        version: 4.0.27(zod@4.4.3)
+        specifier: ^4.0.46
+        version: 4.0.46(zod@4.4.3)
       ai:
         specifier: ^7.0.77
         version: 7.0.77(zod@4.4.3)
@@ -734,8 +734,8 @@ importers:
   packages/jobforge-adapter-settler:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.27
-        version: 4.0.27(zod@3.25.76)
+        specifier: ^4.0.46
+        version: 4.0.46(zod@3.25.76)
       '@jobforge/sdk-ts':
         specifier: workspace:*
         version: link:../jobforge-sdk-ts
@@ -768,8 +768,8 @@ importers:
   packages/jobforge-errors:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.27
-        version: 4.0.27(zod@4.4.3)
+        specifier: ^4.0.46
+        version: 4.0.46(zod@4.4.3)
       ai:
         specifier: ^7.0.77
         version: 7.0.77(zod@4.4.3)
@@ -799,8 +799,8 @@ importers:
   packages/jobforge-fetch:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.27
-        version: 4.0.27(zod@4.4.3)
+        specifier: ^4.0.46
+        version: 4.0.46(zod@4.4.3)
       '@jobforge/errors':
         specifier: workspace:*
         version: link:../jobforge-errors
@@ -833,8 +833,8 @@ importers:
   packages/jobforge-sdk-ts:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.27
-        version: 4.0.27(zod@3.25.76)
+        specifier: ^4.0.46
+        version: 4.0.46(zod@3.25.76)
       '@jobforge/shared':
         specifier: workspace:*
         version: link:../jobforge-shared
@@ -873,8 +873,8 @@ importers:
   packages/jobforge-shared:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.27
-        version: 4.0.27(zod@3.25.76)
+        specifier: ^4.0.46
+        version: 4.0.46(zod@3.25.76)
       ai:
         specifier: ^7.0.77
         version: 7.0.77(zod@3.25.76)
@@ -907,8 +907,8 @@ importers:
   packages/jobforge-typescript-config:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.27
-        version: 4.0.27(zod@4.4.3)
+        specifier: ^4.0.46
+        version: 4.0.46(zod@4.4.3)
       ai:
         specifier: ^7.0.77
         version: 7.0.77(zod@4.4.3)
@@ -926,8 +926,8 @@ importers:
   packages/logger:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.27
-        version: 4.0.27(zod@4.4.3)
+        specifier: ^4.0.46
+        version: 4.0.46(zod@4.4.3)
       ai:
         specifier: ^7.0.77
         version: 7.0.77(zod@4.4.3)
@@ -948,8 +948,8 @@ importers:
   packages/proofs:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.27
-        version: 4.0.27(zod@4.4.3)
+        specifier: ^4.0.46
+        version: 4.0.46(zod@4.4.3)
       '@settler/types':
         specifier: workspace:*
         version: link:../types
@@ -973,8 +973,8 @@ importers:
   packages/protocol:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.27
-        version: 4.0.27(zod@4.4.3)
+        specifier: ^4.0.46
+        version: 4.0.46(zod@4.4.3)
       '@types/node':
         specifier: ^26.1.2
         version: 26.1.2
@@ -1007,8 +1007,8 @@ importers:
   packages/react-settler:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.27
-        version: 4.0.27(zod@4.4.3)
+        specifier: ^4.0.46
+        version: 4.0.46(zod@4.4.3)
       '@settler/protocol':
         specifier: workspace:*
         version: link:../protocol
@@ -1047,8 +1047,8 @@ importers:
   packages/reconciliation-core:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.27
-        version: 4.0.27(zod@3.25.76)
+        specifier: ^4.0.46
+        version: 4.0.46(zod@3.25.76)
       '@prisma/client':
         specifier: 7.9.1
         version: 7.9.1(prisma@7.8.0(@types/react-dom@19.2.4(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.10.0)(magicast@0.5.3)(react-dom@19.2.8(react@19.2.7))(react@19.2.7)(typescript@5.9.3))(typescript@5.9.3)
@@ -1090,8 +1090,8 @@ importers:
   packages/sdk:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.27
-        version: 4.0.27(zod@4.4.3)
+        specifier: ^4.0.46
+        version: 4.0.46(zod@4.4.3)
       '@types/node':
         specifier: ^26.1.2
         version: 26.1.2
@@ -1130,8 +1130,8 @@ importers:
   packages/sdk-csharp:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.27
-        version: 4.0.27(zod@4.4.3)
+        specifier: ^4.0.46
+        version: 4.0.46(zod@4.4.3)
       ai:
         specifier: ^7.0.77
         version: 7.0.77(zod@4.4.3)
@@ -1161,8 +1161,8 @@ importers:
   packages/support-intake:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.27
-        version: 4.0.27(zod@3.25.76)
+        specifier: ^4.0.46
+        version: 4.0.46(zod@3.25.76)
       '@prisma/client':
         specifier: 7.9.1
         version: 7.9.1(prisma@7.8.0(@types/react-dom@19.2.4(@types/react@19.2.17))(@types/react@19.2.17)(better-sqlite3@12.10.0)(magicast@0.5.3)(react-dom@19.2.8(react@19.2.7))(react@19.2.7)(typescript@5.9.3))(typescript@5.9.3)
@@ -1192,8 +1192,8 @@ importers:
   packages/types:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.27
-        version: 4.0.27(zod@3.25.76)
+        specifier: ^4.0.46
+        version: 4.0.46(zod@3.25.76)
       '@types/node':
         specifier: ^26.1.2
         version: 26.1.2
@@ -1220,8 +1220,8 @@ importers:
   packages/web:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.27
-        version: 4.0.27(zod@4.4.3)
+        specifier: ^4.0.46
+        version: 4.0.46(zod@4.4.3)
       '@builder.io/react':
         specifier: ^9.4.3
         version: 9.4.3(react-dom@19.2.8(react@19.2.7))(react@19.2.7)
@@ -1472,8 +1472,8 @@ packages:
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
-  '@ai-sdk/openai@4.0.27':
-    resolution: {integrity: sha512-6MsWnbNG0ZjZgzYimNNjnTAlOFXn+jdLMFB47dDVUsRNjxdUoTSduCQPZZeTKoUl0ZNwCjsJ31of49l/t1r9MA==}
+  '@ai-sdk/openai@4.0.46':
+    resolution: {integrity: sha512-J53QUkZGOV9YIYf9caVjejdPZfVZ3V2xD5KyTAmMWFiMDkC/IcifEQHJferpGFaQkfmSehPGVPCLE4g8+VdkTA==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -1487,10 +1487,6 @@ packages:
   '@ai-sdk/provider@3.0.10':
     resolution: {integrity: sha512-Q3BZ27qfpYqnCYGvE3vt+Qi6LGOF9R5Nmzn+9JoM1lCRsD9mYaIhfJLkSunN48nfGXJ6n+XNV0J/XVpqGQl7Dw==}
     engines: {node: '>=18'}
-
-  '@ai-sdk/provider@4.0.4':
-    resolution: {integrity: sha512-tbHKNLirllUNF3ZlkCsXnwab2ZV1Sl4b1H/Cp9ruCce15IBmskE8Gwkk0yo9xDWY+jho2of7lVXtwSsyrq7cwQ==}
-    engines: {node: '>=22'}
 
   '@ai-sdk/provider@4.0.7':
     resolution: {integrity: sha512-6or44XprPzKbr8zkmzosowSE0pxkvJcoojBL+mCZvPUt3kvXp3XSNqeVun9golb1acEfSo6yaEBRT18h2VU+1Q==}
@@ -10627,15 +10623,15 @@ snapshots:
       '@vercel/oidc': 3.2.0
       zod: 4.4.3
 
-  '@ai-sdk/openai@4.0.27(zod@3.25.76)':
+  '@ai-sdk/openai@4.0.46(zod@3.25.76)':
     dependencies:
-      '@ai-sdk/provider': 4.0.4
+      '@ai-sdk/provider': 4.0.7
       '@ai-sdk/provider-utils': 4.0.27(zod@3.25.76)
       zod: 3.25.76
 
-  '@ai-sdk/openai@4.0.27(zod@4.4.3)':
+  '@ai-sdk/openai@4.0.46(zod@4.4.3)':
     dependencies:
-      '@ai-sdk/provider': 4.0.4
+      '@ai-sdk/provider': 4.0.7
       '@ai-sdk/provider-utils': 4.0.27(zod@4.4.3)
       zod: 4.4.3
 
@@ -10654,10 +10650,6 @@ snapshots:
       zod: 4.4.3
 
   '@ai-sdk/provider@3.0.10':
-    dependencies:
-      json-schema: 0.4.0
-
-  '@ai-sdk/provider@4.0.4':
     dependencies:
       json-schema: 0.4.0
 

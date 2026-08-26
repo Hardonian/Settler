@@ -29,7 +29,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.27",
+    "@ai-sdk/openai": "^4.0.46",
     "@settler/types": "workspace:*",
     "ai": "^7.0.77",
     "axios": "^1.18.0",
