@@ -34,7 +34,7 @@
   "dependencies": {
     "@ai-sdk/openai": "^4.0.27",
     "@builder.io/react": "^9.4.3",
-    "@builder.io/sdk": "^6.3.0",
+    "@builder.io/sdk": "^6.3.2",
     "@jobforge/sdk-ts": "workspace:*",
     "@jobforge/shared": "workspace:*",
     "@prisma/client": "7.9.1",
