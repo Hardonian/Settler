@@ -157,7 +157,7 @@
     "rate-limit-redis": "^4.3.1",
     "resend": "^6.18.1",
     "socket.io": "^4.8.3",
-    "stripe": "^22.4.0",
+    "stripe": "^22.5.0",
     "swagger-ui-express": "^5.0.1",
     "tigerbeetle-node": "0.17.9",
     "uuid": "^13.0.2",
