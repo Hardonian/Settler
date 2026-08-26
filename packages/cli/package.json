@@ -33,7 +33,7 @@
     "@ai-sdk/openai": "^4.0.27",
     "@jobforge/sdk-ts": "workspace:*",
     "@settler/sdk": "workspace:*",
-    "ai": "^7.0.76",
+    "ai": "^7.0.77",
     "chalk": "^5.6.2",
     "commander": "^11.1.0",
     "dotenv": "^17.4.2",
