@@ -102,7 +102,7 @@
     "tb:status": "docker-compose ps tigerbeetle && docker-compose exec -T tigerbeetle nc -z localhost 4300 && echo 'TigerBeetle is healthy' || echo 'TigerBeetle is not responding'"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.27",
+    "@ai-sdk/openai": "^4.0.46",
     "@asteasolutions/zod-to-openapi": "^7.3.4",
     "@opentelemetry/api": "^1.9.1",
     "@opentelemetry/auto-instrumentations-node": "^0.79.0",
