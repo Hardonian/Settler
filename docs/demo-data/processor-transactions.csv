@@ -1,0 +1,7 @@
+transaction_id,settled_at,description,counterparty,amount,currency,reference
+proc_1001,2026-05-31,Card payout INV-1001,Stripe,1250.00,USD,INV-1001
+proc_1002,2026-05-31,Marketplace seller payout INV-1002,Stripe,940.25,USD,INV-1002
+proc_1003,2026-05-31,Card payout INV-1003,Stripe,430.00,USD,INV-1003
+proc_1004,2026-05-31,Refund batch RF-204,Stripe,-75.00,USD,RF-204
+proc_1005,2026-05-31,Chargeback case CB-88,Stripe,-120.00,USD,CB-88
+proc_1006,2026-05-31,Marketplace payout INV-1006,Stripe,810.10,USD,INV-1006

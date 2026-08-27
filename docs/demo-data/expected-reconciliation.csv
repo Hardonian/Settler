@@ -1,0 +1,8 @@
+processor_transaction_id,bank_transaction_id,expected_scenario,reason
+proc_1001,bank_9001,exact,Same reference and amount.
+proc_1002,bank_9002,fuzzy,Same reference with a one-cent settlement rounding delta.
+proc_1003,bank_9003,unmatched,Amount is outside the fuzzy tolerance and should remain in review.
+proc_1004,bank_9004,exact,Refund amount and reference match exactly.
+proc_1005,,unmatched,Processor-side chargeback has no bank line yet.
+proc_1006,bank_9006,exact,Marketplace payout clears exactly.
+,bank_9005,unmatched,Bank fee has no processor-side source transaction.
