@@ -93,6 +93,30 @@ Every adapter includes rate limiting, token refresh, webhook verification, and r
 - **Billing Gating** — Tier-based feature access with circuit-breaker degraded states
 - **46 Middleware Layers** — Auth, CSRF, rate limiting, idempotency, compression, ETag, request signing, observability, and more
 
+## Try It Now: Try Settler in 5 minutes
+
+Run the self-serve reconciliation demo with committed CSV seed data and no external services:
+
+```bash
+pnpm run demo:quickstart
+```
+
+The command loads `docs/demo-data/processor-transactions.csv` and `docs/demo-data/bank-transactions.csv`, runs exact/fuzzy/unmatched matching scenarios, and writes the demo artifacts to `docs/demo-output/`:
+
+- `dashboard.html` — local dashboard showing matched vs. unmatched transactions
+- `reconciliation-results.json` — machine-readable match decisions
+- `proofpack.json` — audit-ready evidence export with input hashes, rules, summary counts, and match reasons
+
+Expected terminal output includes one fuzzy match, three exact matches, and three unmatched exceptions:
+
+```text
+Settler self-serve demo complete
+Matched: 4 (3 exact, 1 fuzzy)
+Unmatched: 3
+```
+
+Open `docs/demo-output/dashboard.html` in a browser to review the matched/unmatched dashboard, then attach `docs/demo-output/proofpack.json` when a prospect asks for audit-ready evidence.
+
 ## Quick Start
 
 ```bash
