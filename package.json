@@ -154,6 +154,7 @@
     "verify:build": "node scripts/verify-release.mjs --profile=build",
     "setup:turbo": "test -f scripts/setup-vercel-turbo-cache.sh && bash scripts/setup-vercel-turbo-cache.sh || echo '⚠️  Turbo setup script not available'",
     "demo:setup": "tsx scripts/generate-demo-data.ts",
+    "demo:quickstart": "tsx scripts/demo-quickstart.ts",
     "demo:reset:legacy": "tsx scripts/generate-demo-data.ts",
     "demo:start": "pnpm run demo:setup && turbo run dev --filter @settler/web",
     "agents:deploy": "bash scripts/deploy-autonomous-agents.sh",
