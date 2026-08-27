@@ -379,6 +379,7 @@
   },
   "packageManager": "pnpm@10.13.1",
   "dependencies": {
+    "@upstash/redis": "^1.38.0",
     "turbo": "^2.9.14"
   }
 }

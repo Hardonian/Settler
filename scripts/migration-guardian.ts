@@ -87,6 +87,16 @@ function discoverEnvFiles(): string[] {
   return envFiles.filter((file) => fs.existsSync(file));
 }
 
+function hasDatabaseUrlInProcessEnv(): boolean {
+  return Boolean(
+    process.env.DATABASE_URL ||
+    process.env.SUPABASE_DB_URL ||
+    process.env.SUPABASE_DATABASE_URL ||
+    (process.env.SUPABASE_URL &&
+      (process.env.SUPABASE_DB_PASSWORD || process.env.DATABASE_PASSWORD))
+  );
+}
+
 function loadEnvFile(file: string): Record<string, string> {
   const env: Record<string, string> = {};
   const content = fs.readFileSync(file, "utf-8");
@@ -162,7 +172,7 @@ function selectDatabaseUrl(envFiles: string[]): {
     "No DATABASE_URL or SUPABASE_DB_URL found in:\n" +
       "  - GitHub Actions / CI environment variables (secrets)\n" +
       "  - Env files: " +
-      envFiles.join(", ") +
+      (envFiles.length > 0 ? envFiles.join(", ") : "(none found)") +
       "\n\n" +
       "For GitHub Actions, ensure DATABASE_URL or SUPABASE_DB_URL is set as a repository secret."
   );
@@ -180,7 +190,7 @@ function constructSupabaseUrl(env: Record<string, string>): string | null {
   const password = env.SUPABASE_DB_PASSWORD || env.DB_PASSWORD;
   if (!password) return null;
 
-  return `postgresql://postgres.${projectRef}:${password}@${host}:5432/postgres?sslmode=require`;
+  return `postgresql://postgres.${projectRef}:${encodeURIComponent(password)}@${host}:5432/postgres?sslmode=require`;
 }
 
 function determineMode(file: string, url: string): "LIVE/PROD" | "STAGING/DEV" {
@@ -315,6 +325,38 @@ function getPrismaStatusCommand(): string {
   return "npx prisma migrate status";
 }
 
+function parseMigrationStatusOutput(output: string): {
+  pending: string[];
+  isUpToDate: boolean;
+} {
+  const pending = new Set<string>();
+  const lines = output.split("\n");
+  let inPendingSection = false;
+
+  for (const line of lines) {
+    const lowerLine = line.toLowerCase();
+
+    if (line.includes("Database schema is up to date")) {
+      return { pending: [], isUpToDate: true };
+    }
+
+    if (lowerLine.includes("not yet been applied") || lowerLine.includes("pending")) {
+      inPendingSection = true;
+    }
+
+    const migrationMatch = line.match(/(\d{14}_[A-Za-z0-9_]+)/);
+    if (migrationMatch && (inPendingSection || lowerLine.includes("pending"))) {
+      pending.add(migrationMatch[1]);
+    }
+
+    if (inPendingSection && line.trim() === "") {
+      inPendingSection = false;
+    }
+  }
+
+  return { pending: Array.from(pending), isUpToDate: false };
+}
+
 function getMigrationStatus(): {
   pending: string[];
   statusOutput: string;
@@ -322,34 +364,22 @@ function getMigrationStatus(): {
 } {
   const statusCmd = getPrismaStatusCommand();
   let output = "";
-  let pending: string[] = [];
-  let isUpToDate = false;
 
   try {
     output = execSync(statusCmd, {
       encoding: "utf-8",
       stdio: "pipe",
       cwd: process.cwd(),
+      env: { ...process.env },
     });
-
-    // Parse output for pending migrations
-    const lines = output.split("\n");
-    for (const line of lines) {
-      if (line.includes("Database schema is up to date")) {
-        isUpToDate = true;
-      }
-      // Look for migration IDs in the output
-      const migrationMatch = line.match(/(\d{14}_\w+)/);
-      if (migrationMatch && line.toLowerCase().includes("pending")) {
-        pending.push(migrationMatch[1]);
-      }
-    }
   } catch (error: any) {
-    output = error.stdout?.toString() || error.message || String(error);
-    // If command fails, we can't determine status
+    output = [error.stdout?.toString(), error.stderr?.toString(), error.message || String(error)]
+      .filter(Boolean)
+      .join("\n");
   }
 
-  return { pending, statusOutput: output, isUpToDate };
+  const parsed = parseMigrationStatusOutput(output);
+  return { pending: parsed.pending, statusOutput: output, isUpToDate: parsed.isUpToDate };
 }
 
 function getPendingMigrationIds(): string[] {
@@ -736,17 +766,28 @@ async function main() {
     // Step 1: Discover env files and select DB URL
     console.log("📋 Step 1: Discovering environment files...");
     const envFiles = discoverEnvFiles();
-    if (envFiles.length === 0) {
-      throw new Error("No .env files found. Please create .env.local, .env.development, or .env");
+    if (envFiles.length > 0) {
+      console.log(`   Found: ${envFiles.join(", ")}\n`);
+    } else if (hasDatabaseUrlInProcessEnv()) {
+      console.log(
+        "   No local .env files found; continuing with CI/repository-secret environment variables.\n"
+      );
+    } else {
+      throw new Error(
+        "No database configuration found. Set DATABASE_URL/SUPABASE_DB_URL in the environment or create .env.local, .env.development, or .env."
+      );
     }
-    console.log(`   Found: ${envFiles.join(", ")}\n`);
 
     // Select database URL (prioritizes GitHub Actions secrets)
     const { file, url, mode } = selectDatabaseUrl(envFiles);
+    process.env.DATABASE_URL = url;
+    process.env.SUPABASE_DB_URL = process.env.SUPABASE_DB_URL || url;
+    const dbInfo = extractDbInfo(url);
     run.env = {
       file,
       dbUrl: url,
-      ...extractDbInfo(url),
+      dbHost: dbInfo.host,
+      dbName: dbInfo.dbName,
       mode,
     };
 
@@ -819,7 +860,7 @@ async function main() {
     console.log("📊 Step 4: Checking Prisma migration status...");
     const status = getMigrationStatus();
     run.preRunStatus = {
-      pendingMigrations: status.pending.length > 0 ? status.pending : getPendingMigrationIds(),
+      pendingMigrations: status.pending,
       statusOutput: status.statusOutput,
     };
     console.log(`   Pending migrations: ${run.preRunStatus.pendingMigrations.length}`);
