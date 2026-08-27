@@ -3,25 +3,27 @@ name: E2E & Visual Regression Tests
 on:
   pull_request:
     branches: [main, develop]
+    paths-ignore:
+      - "**/*.md"
+      - "LICENSE"
+      - "docs/**"
+      - "business/**"
+      - "marketing/**"
+      - "strategic/**"
   push:
     branches: [main, develop]
+    paths-ignore:
+      - "**/*.md"
+      - "LICENSE"
+      - "docs/**"
+      - "business/**"
+      - "marketing/**"
+      - "strategic/**"
   workflow_dispatch: # Allow manual trigger
 
-# Only run when relevant files change
-paths:
-  - "packages/**"
-  - "tests/**"
-  - "playwright.config.ts"
-  - ".github/workflows/e2e.yml"
-paths-ignore:
-  - "**/*.md"
-  - "LICENSE"
-  - "docs/**"
-  - "business/**"
-  - "marketing/**"
-  - "strategic/**"
-
 env:
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
@@ -54,16 +56,15 @@ jobs:
         ports:
           - 6379:6379
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.13.1
+          version: 9.15.0
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -118,7 +119,7 @@ jobs:
           E2E_BASE_URL: http://localhost:3000
 
       - name: Upload E2E test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: e2e-test-results
@@ -132,16 +133,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.13.1
+          version: 9.15.0
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -166,7 +166,7 @@ jobs:
           E2E_BASE_URL: http://localhost:3000
 
       - name: Upload demo test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: demo-mode-test-results
@@ -205,16 +205,15 @@ jobs:
         ports:
           - 6379:6379
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.13.1
+          version: 9.15.0
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -287,7 +286,7 @@ jobs:
           WEB_BASE_URL: http://localhost:3001
 
       - name: Upload visual test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: visual-test-results

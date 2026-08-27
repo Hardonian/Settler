@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useBackoffPolling } from "@/hooks/use-backoff-polling";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -44,17 +45,7 @@ export default function ActivityPage() {
   const [loading, setLoading] = useState(true);
   const [autoRefresh, setAutoRefresh] = useState(true);
 
-  useEffect(() => {
-    loadEvents();
-
-    if (autoRefresh) {
-      const interval = setInterval(loadEvents, 5000); // Poll every 5 seconds
-      return () => clearInterval(interval);
-    }
-    return undefined;
-  }, [autoRefresh]);
-
-  const loadEvents = async () => {
+  const loadEvents = useCallback(async () => {
     try {
       const result = await fetch("/api/workspace/events");
       if (result.ok) {
@@ -70,7 +61,18 @@ export default function ActivityPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadEvents();
+  }, [loadEvents]);
+
+  useBackoffPolling(loadEvents, {
+    enabled: autoRefresh,
+    initialIntervalMs: 5000,
+    maxIntervalMs: 30000,
+    backoffFactor: 1.5,
+  });
 
   const getEventIcon = (type: ActivityEvent["type"]) => {
     switch (type) {

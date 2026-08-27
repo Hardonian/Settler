@@ -258,6 +258,16 @@ const nextConfig = {
           },
         ],
       },
+      // Aggressive Edge caching for marketing/public funnel pages (Zero compute cost)
+      {
+        source: "/(home|pricing|product|about|security-and-audit)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, s-maxage=3600, stale-while-revalidate=86400",
+          },
+        ],
+      },
       {
         source: "/:path*",
         headers: [
@@ -321,12 +331,6 @@ const nextConfig = {
       {
         source: "/favicon.svg",
         destination: "/icon.png",
-        permanent: false,
-      },
-      // Root redirect to home page
-      {
-        source: "/",
-        destination: "/home",
         permanent: false,
       },
       {

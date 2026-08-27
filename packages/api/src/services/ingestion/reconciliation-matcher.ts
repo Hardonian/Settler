@@ -6,7 +6,7 @@
 
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
-import { query, transaction } from "../../db";
+import { queryWithTenant as query, transactionWithTenant as transaction } from "../../db";
 import { logError, logInfo, logWarn } from "../../utils/logger";
 import { ConflictError, NotFoundError, ValidationError } from "../../utils/typed-errors";
 import { MatchResult, ReconciliationConfig } from "./types";
@@ -27,6 +27,7 @@ const DEFAULT_CONFIG: Required<ReconciliationConfig> = {
   amountTolerance: 0.01,
   fuzzyDescriptionThreshold: 0.8,
   requireExactAmount: false,
+  enableAdvancedMatching: false,
 };
 
 /**
@@ -71,6 +72,7 @@ async function assertIngestionReadyForReconciliation(
   }
 
   const rows = await query(
+    tenantId,
     `SELECT id, status FROM ingestions WHERE id = $1 AND tenant_id = $2 LIMIT 1`,
     [ingestionId, tenantId]
   );
@@ -131,7 +133,7 @@ function levenshteinDistance(str1: string, str2: string): number {
 /**
  * Calculate similarity score between two strings (0-1)
  */
-function stringSimilarity(str1: string, str2: string): number {
+export function stringSimilarity(str1: string, str2: string): number {
   if (!str1 || !str2) {
     return 0;
   }
@@ -255,6 +257,7 @@ export async function matchTransaction(
 
   // Get source transaction — scoped by tenant_id
   const sourceResults = await query(
+    tenantId,
     `SELECT id, amount, currency, date, description, external_id
     FROM normalized_transactions
     WHERE id = $1 AND tenant_id = $2`,
@@ -286,6 +289,7 @@ export async function matchTransaction(
 
   const placeholders = targetTransactionIds.map((_, i) => `$${i + 3}`).join(", ");
   const targetResults = await query(
+    tenantId,
     `SELECT id, amount, currency, date, description, external_id
     FROM normalized_transactions
     WHERE id IN (${placeholders}) AND tenant_id = $2`,
@@ -305,55 +309,83 @@ export async function matchTransaction(
   if (source.external_id) {
     const exactMatch = targets.find((t) => t.external_id === source.external_id);
     if (exactMatch) {
+      const amountDiff = Math.abs(source.amount - exactMatch.amount);
+      const dateDiff = daysDifference(source.date, exactMatch.date);
+      const descriptionSimilarity = stringSimilarity(
+        source.description || "",
+        exactMatch.description || ""
+      );
+
       return {
         sourceTransactionId: source.id,
         targetTransactionId: exactMatch.id,
         matchType: "exact",
         confidence: 1.0,
         matchReason: "Exact external ID match",
-        amountDiff: Math.abs(source.amount - exactMatch.amount),
-        dateDiff: daysDifference(source.date, exactMatch.date),
+        amountDiff,
+        dateDiff,
+        descriptionSimilarity,
+        featureVector: {
+          amountDiff,
+          dateDiff,
+          descriptionSimilarity,
+          currencyMatch: true,
+          exactExternalId: true,
+        },
+        modelWeights: { deterministic: 1.0 },
       };
     }
   }
 
   // Try ML matching engine (proprietary, creates data moat)
   // This uses historical match data and cross-customer intelligence
-  try {
-    const sourceAdapter = await getSourceAdapter(sourceTransactionId, tenantId);
-    const targetAdapters = await Promise.all(
-      targetTransactionIds.map((id) => getSourceAdapter(id, tenantId))
-    );
-
-    // Use ML engine for first target adapter (most common case)
-    if (targetAdapters.length > 0) {
-      const mlPrediction = await mlMatchingEngine.predictMatch(
-        sourceTransactionId,
-        targetTransactionIds,
-        tenantId,
-        sourceAdapter || "unknown",
-        targetAdapters[0] || "unknown"
+  if (opts.enableAdvancedMatching) {
+    try {
+      const sourceAdapter = await getSourceAdapter(sourceTransactionId, tenantId);
+      const targetAdapters = await Promise.all(
+        targetTransactionIds.map((id) => getSourceAdapter(id, tenantId))
       );
 
-      if (mlPrediction && mlPrediction.confidence > 0.7) {
-        // ML prediction is confident, use it
-        const bestTarget = targets.find((t) => targetTransactionIds.includes(t.id));
-        if (bestTarget) {
-          return {
-            sourceTransactionId: source.id,
-            targetTransactionId: bestTarget.id,
-            matchType: mlPrediction.matchType,
-            confidence: mlPrediction.confidence,
-            matchReason: `ML model prediction: ${mlPrediction.reasoning}`,
-            amountDiff: Math.abs(source.amount - bestTarget.amount),
-            dateDiff: daysDifference(source.date, bestTarget.date),
-          };
+      // Use ML engine for first target adapter (most common case)
+      if (targetAdapters.length > 0) {
+        const mlPrediction = await mlMatchingEngine.predictMatch(
+          sourceTransactionId,
+          targetTransactionIds,
+          tenantId,
+          sourceAdapter || "unknown",
+          targetAdapters[0] || "unknown"
+        );
+
+        if (mlPrediction && mlPrediction.confidence > 0.7) {
+          // ML prediction is confident, use it
+          const bestTarget = targets.find((t) => targetTransactionIds.includes(t.id));
+          if (bestTarget) {
+            const amountDiff = Math.abs(source.amount - bestTarget.amount);
+            const dateDiff = daysDifference(source.date, bestTarget.date);
+            const descriptionSimilarity = stringSimilarity(
+              source.description || "",
+              bestTarget.description || ""
+            );
+
+            return {
+              sourceTransactionId: source.id,
+              targetTransactionId: bestTarget.id,
+              matchType: mlPrediction.matchType,
+              confidence: mlPrediction.confidence,
+              matchReason: `ML model prediction: ${mlPrediction.reasoning}`,
+              amountDiff,
+              dateDiff,
+              descriptionSimilarity,
+              featureVector: { amountDiff, dateDiff, descriptionSimilarity, mlPrediction: true },
+              modelWeights: { version: mlPrediction.modelVersion },
+            };
+          }
         }
       }
+    } catch (error) {
+      // Fall back to deterministic algorithm if ML fails
+      logError("ML matching failed, falling back to deterministic", error);
     }
-  } catch (error) {
-    // Fall back to deterministic algorithm if ML fails
-    logError("ML matching failed, falling back to deterministic", error);
   }
 
   // Filter by currency match
@@ -472,6 +504,14 @@ export async function matchTransaction(
     matchReason: `Matched by amount (diff: ${bestMatch.amountDiff.toFixed(2)}), date (diff: ${bestMatch.dateDiff} days), description similarity: ${(bestMatch.descSimilarity * 100).toFixed(1)}%`,
     amountDiff: bestMatch.amountDiff,
     dateDiff: bestMatch.dateDiff,
+    descriptionSimilarity: bestMatch.descSimilarity,
+    featureVector: {
+      amountDiff: bestMatch.amountDiff,
+      dateDiff: bestMatch.dateDiff,
+      descriptionSimilarity: bestMatch.descSimilarity,
+      deterministicScore: bestMatch.confidence,
+    },
+    modelWeights: { deterministic: 1.0 },
   };
 }
 
@@ -547,12 +587,17 @@ export async function runReconciliation(
     config.requireExactAmount,
     DEFAULT_CONFIG.requireExactAmount
   ) as boolean;
+  const effectiveEnableAdvancedMatching = pickDefined(
+    config.enableAdvancedMatching,
+    DEFAULT_CONFIG.enableAdvancedMatching
+  ) as boolean;
 
   const effectiveConfig: Required<ReconciliationConfig> = {
     dateWindowDays: effectiveDateWindowDays,
     amountTolerance: effectiveAmountTolerance,
     fuzzyDescriptionThreshold: effectiveFuzzyDescriptionThreshold,
     requireExactAmount: effectiveRequireExactAmount,
+    enableAdvancedMatching: effectiveEnableAdvancedMatching,
   };
 
   const configResolution = {
@@ -604,7 +649,8 @@ export async function runReconciliation(
   try {
     // Guard: prevent duplicate running reconciliation for same ingestion+tenant
     const existingRunning = await query(
-      `SELECT id FROM reconciliation_runs
+      tenantId,
+      `SELECT id FROM recon_results
        WHERE ingestion_id = $1 AND tenant_id = $2 AND status = 'running'
        LIMIT 1`,
       [ingestionId, tenantId]
@@ -618,13 +664,13 @@ export async function runReconciliation(
       });
     }
 
-    // Create reconciliation run
     await query(
-      `INSERT INTO reconciliation_runs (
-        id, ingestion_id, tenant_id, user_id, status, started_at,
-        trace_id, metadata, created_at, updated_at
-      ) VALUES ($1, $2, $3, $4, $5, NOW(), $6, $7, NOW(), NOW())`,
-      [runId, ingestionId, tenantId, userId, "running", traceId, JSON.stringify(runMetadata)]
+      tenantId,
+      `INSERT INTO recon_results (
+        id, ingestion_id, tenant_id, status, started_at,
+        metadata, created_at, updated_at
+      ) VALUES ($1, $2, $3, $4, NOW(), $5, NOW(), NOW())`,
+      [runId, ingestionId, tenantId, "running", JSON.stringify({ ...runMetadata, userId, traceId })]
     );
 
     await emitOperatorRuntimeEvent({
@@ -636,6 +682,7 @@ export async function runReconciliation(
 
     // Get source transactions (from this ingestion)
     const sourceTransactions = await query(
+      tenantId,
       `SELECT id FROM normalized_transactions
       WHERE ingestion_id = $1 AND tenant_id = $2
       ORDER BY date, amount`,
@@ -645,6 +692,7 @@ export async function runReconciliation(
     // Get target transactions (from other ingestions or manual entries)
     // For MVP, we'll match against all other transactions in the tenant
     const targetTransactions = await query(
+      tenantId,
       `SELECT id FROM normalized_transactions
       WHERE tenant_id = $1 AND ingestion_id != $2
       ORDER BY date, amount`,
@@ -672,7 +720,7 @@ export async function runReconciliation(
     const totalConfidence = oneToOneResult.totalConfidence;
 
     // Store matches
-    await transaction(async (client) => {
+    await transaction(tenantId, async (client) => {
       for (const match of matches) {
         await client.query(
           `INSERT INTO reconciliation_matches (
@@ -692,7 +740,11 @@ export async function runReconciliation(
             match.amountDiff || null,
             match.dateDiff || null,
             false,
-            JSON.stringify({}),
+            JSON.stringify({
+              descriptionSimilarity: match.descriptionSimilarity,
+              featureVector: match.featureVector,
+              modelWeights: match.modelWeights,
+            }),
           ]
         );
       }
@@ -713,7 +765,8 @@ export async function runReconciliation(
     };
 
     await query(
-      `UPDATE reconciliation_runs SET
+      tenantId,
+      `UPDATE recon_results SET
         status = 'completed',
         completed_at = NOW(),
         source_count = $1,
@@ -761,6 +814,24 @@ export async function runReconciliation(
       configSource: matchingConfig.configSource,
       traceId,
     });
+
+    // Trigger DLQ Resolution for any unmatched transactions before automated review
+    try {
+      const { runAutomatedDLQResolution } = await import("../reconciliation/dlq-resolution");
+      const dlqResult = await runAutomatedDLQResolution(runId, tenantId);
+      logInfo("Automated DLQ Resolution completed", {
+        runId,
+        tenantId,
+        ...dlqResult,
+        traceId,
+      });
+    } catch (dlqError) {
+      logError("Automated DLQ Resolution failed (non-fatal)", dlqError, {
+        runId,
+        tenantId,
+        traceId,
+      });
+    }
 
     // Automatically trigger review process (industry best practice)
     try {
@@ -829,11 +900,45 @@ export async function runReconciliation(
       }
     }
 
+    // Phase: Save Immutable Proofpack
+    // Compute JSON and hash at the END of reconciliation and save it to the database
+    // so it is not dynamically computed at export time.
+    try {
+      const { resolveOperatorRunDetailForTenants, buildDeterministicRunProofpackArtifact } =
+        await import("@settler/reconciliation-core");
+      const { prisma } = await import("../../infrastructure/db/prisma");
+
+      const outcome = await resolveOperatorRunDetailForTenants(prisma, [tenantId], runId);
+      if (outcome.kind === "ok") {
+        const artifact = buildDeterministicRunProofpackArtifact({
+          detail: outcome.detail,
+          generatedAtIso: new Date().toISOString(),
+        });
+
+        await query(
+          tenantId,
+          `UPDATE recon_results SET
+            proofpack_payload = $1,
+            proofpack_hash = $2
+          WHERE id = $3`,
+          [JSON.stringify(artifact), artifact.contentHash, runId]
+        );
+        logInfo("Immutable proofpack saved successfully", {
+          runId,
+          tenantId,
+          hash: artifact.contentHash,
+        });
+      }
+    } catch (error) {
+      logError("Failed to build immutable proofpack", error, { runId, tenantId });
+    }
+
     return runId;
   } catch (error) {
     logError("Reconciliation failed", error, { runId, traceId });
     await query(
-      `UPDATE reconciliation_runs SET
+      tenantId,
+      `UPDATE recon_results SET
         status = 'failed',
         completed_at = NOW(),
         error_message = $1,
@@ -859,6 +964,7 @@ export async function runReconciliation(
 async function getSourceAdapter(transactionId: string, tenantId: string): Promise<string | null> {
   try {
     const result = await query(
+      tenantId,
       `SELECT si.connector_type
       FROM normalized_transactions nt
       JOIN ingestion_sources si ON si.id = nt.source_id

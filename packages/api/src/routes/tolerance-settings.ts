@@ -9,10 +9,11 @@ import { Router, Response } from "express";
 import { z } from "zod";
 import { validateRequest } from "../middleware/validation";
 import { AuthRequest } from "../middleware/auth";
+import { enforceFreezeState } from "../middleware/governance";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
 import { handleRouteError } from "../utils/error-handler";
-import { query } from "../db";
+import { queryWithTenant } from "../db";
 import { logInfo, logError } from "../utils/logger";
 
 const router: Router = Router();
@@ -53,13 +54,14 @@ router.get(
         });
       }
 
-      const result = await query<{
+      const result = await queryWithTenant<{
         id: string;
         name: string;
         amount_tolerance: number | null;
         date_tolerance_days: number | null;
         metadata: string;
       }>(
+        tenantId,
         `SELECT id, name, amount_tolerance, date_tolerance_days, metadata
          FROM recon_templates 
          WHERE id = $1 AND (tenant_id = $2 OR is_public = true)
@@ -109,6 +111,7 @@ router.get(
  */
 router.put(
   "/:templateId",
+  enforceFreezeState(),
   requirePermission(Permission.JOBS_WRITE),
   validateRequest(updateToleranceSchema),
   async (req: AuthRequest, res: Response) => {
@@ -125,7 +128,8 @@ router.put(
       }
 
       // Verify template exists and belongs to tenant
-      const existing = await query<{ id: string }>(
+      const existing = await queryWithTenant<{ id: string }>(
+        tenantId,
         `SELECT id FROM recon_templates 
          WHERE id = $1 AND (tenant_id = $2 OR is_public = true)
          AND deleted_at IS NULL
@@ -178,7 +182,7 @@ router.put(
         WHERE id = $${paramIndex++} AND tenant_id = $${paramIndex}
       `;
 
-      await query(sql, values);
+      await queryWithTenant(tenantId, sql, values);
 
       logInfo("Updated tolerance settings", {
         templateId,
@@ -227,10 +231,11 @@ router.post(
       }
 
       // Get current tolerance settings
-      const current = await query<{
+      const current = await queryWithTenant<{
         amount_tolerance: number | null;
         date_tolerance_days: number | null;
       }>(
+        tenantId,
         `SELECT amount_tolerance, date_tolerance_days 
          FROM recon_templates WHERE id = $1 AND tenant_id = $2
          AND deleted_at IS NULL`,

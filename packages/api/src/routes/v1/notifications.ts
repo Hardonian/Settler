@@ -5,6 +5,7 @@
 
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
+import { enforceFreezeState } from "../../middleware/governance";
 import { requirePermission } from "../../middleware/authorization";
 import { Permission } from "../../infrastructure/security/Permissions";
 import { logError, logInfo } from "../../utils/logger";
@@ -52,6 +53,7 @@ router.get(
  */
 router.put(
   "/preferences",
+  enforceFreezeState(),
   requirePermission(Permission.OPERATOR_WRITE),
   async (req: AuthRequest, res: Response) => {
     try {

@@ -161,7 +161,7 @@ export function UsageLimit({
   label,
   tier: _tier,
   className,
-}: UsageLimitProps): JSX.Element {
+}: UsageLimitProps): ReactNode {
   const isUnlimited = limit === -1;
   const percentage = isUnlimited ? 0 : Math.min((current / limit) * 100, 100);
   const isNearLimit = !isUnlimited && percentage >= 80;

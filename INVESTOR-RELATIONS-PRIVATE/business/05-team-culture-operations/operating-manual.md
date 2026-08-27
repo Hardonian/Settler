@@ -23,6 +23,7 @@
 **Format:** Async (Slack) or Sync (Video)
 
 **Format:**
+
 - What did you do yesterday?
 - What are you doing today?
 - Any blockers?
@@ -39,6 +40,7 @@
 **Format:** Video call
 
 **Agenda:**
+
 - Company updates
 - Product updates
 - Team updates
@@ -57,6 +59,7 @@
 **Format:** Video call
 
 **Agenda:**
+
 - Monthly review
 - Goals and metrics
 - Team updates
@@ -75,6 +78,7 @@
 **Format:** Video call + async
 
 **Agenda:**
+
 - Quarterly review
 - Goal setting
 - Roadmap planning
@@ -90,6 +94,7 @@
 ### Slack
 
 **Channels:**
+
 - #general - General announcements
 - #engineering - Engineering discussions
 - #product - Product discussions
@@ -98,6 +103,7 @@
 - #random - Non-work discussions
 
 **Guidelines:**
+
 - Use appropriate channels
 - Be respectful
 - Respond within 24 hours
@@ -108,12 +114,14 @@
 ### Email
 
 **Usage:**
+
 - External communication
 - Formal communication
 - Documentation
 - Asynchronous communication
 
 **Guidelines:**
+
 - Respond within 24 hours
 - Use clear subject lines
 - Keep messages concise
@@ -124,12 +132,14 @@
 ### Notion
 
 **Usage:**
+
 - Documentation
 - Knowledge base
 - Project management
 - Team wiki
 
 **Guidelines:**
+
 - Keep documentation updated
 - Use consistent formatting
 - Organize by topic
@@ -140,12 +150,14 @@
 ### GitHub
 
 **Usage:**
+
 - Code repository
 - Issue tracking
 - Pull requests
 - Documentation
 
 **Guidelines:**
+
 - Follow coding standards
 - Write clear commit messages
 - Review PRs promptly
@@ -160,6 +172,7 @@
 **Decision Maker:** Product Manager (or Founder/CEO if no PM)
 
 **Process:**
+
 1. Gather requirements
 2. Evaluate options
 3. Make decision
@@ -167,6 +180,7 @@
 5. Implement decision
 
 **Stakeholders:**
+
 - Engineering team
 - Design team
 - Customer success team
@@ -179,6 +193,7 @@
 **Decision Maker:** Security Team (or Founder/CTO)
 
 **Process:**
+
 1. Assess security risk
 2. Evaluate options
 3. Make decision
@@ -186,6 +201,7 @@
 5. Document decision
 
 **Stakeholders:**
+
 - Engineering team
 - Compliance team
 - Legal team
@@ -197,6 +213,7 @@
 **Decision Maker:** Founder/CEO
 
 **Process:**
+
 1. Analyze market and competition
 2. Evaluate pricing options
 3. Make decision
@@ -204,6 +221,7 @@
 5. Update pricing
 
 **Stakeholders:**
+
 - Sales team
 - Marketing team
 - Finance team
@@ -216,6 +234,7 @@
 **Decision Maker:** Founder/CEO (with input from relevant teams)
 
 **Process:**
+
 1. Assess customer impact
 2. Evaluate options
 3. Make decision
@@ -223,6 +242,7 @@
 5. Implement decision
 
 **Stakeholders:**
+
 - Customer success team
 - Support team
 - Engineering team
@@ -235,36 +255,42 @@
 ### Documentation Structure
 
 **Company:**
+
 - /company/vision - Company vision and mission
 - /company/values - Company values and culture
 - /company/org-chart - Organizational structure
 - /company/handbook - Employee handbook
 
 **Product:**
+
 - /product/roadmap - Product roadmap
 - /product/specs - Product specifications
 - /product/decisions - Product decisions
 - /product/metrics - Product metrics
 
 **Engineering:**
+
 - /engineering/architecture - System architecture
 - /engineering/standards - Coding standards
 - /engineering/processes - Engineering processes
 - /engineering/runbooks - Operational runbooks
 
 **Sales:**
+
 - /sales/process - Sales process
 - /sales/playbooks - Sales playbooks
 - /sales/metrics - Sales metrics
 - /sales/resources - Sales resources
 
 **Support:**
+
 - /support/processes - Support processes
 - /support/playbooks - Support playbooks
 - /support/knowledge-base - Knowledge base
 - /support/escalation - Escalation procedures
 
 **Operations:**
+
 - /operations/processes - Operational processes
 - /operations/compliance - Compliance documentation
 - /operations/security - Security documentation
@@ -275,18 +301,21 @@
 ### Documentation Tools
 
 **Notion:**
+
 - Company documentation
 - Knowledge base
 - Project management
 - Team wiki
 
 **GitHub:**
+
 - Code documentation
 - Technical documentation
 - API documentation
 - Runbooks
 
 **Google Docs:**
+
 - Collaborative documents
 - Meeting notes
 - Planning documents
@@ -299,6 +328,7 @@
 ### Internal Contributors
 
 **Week 1:**
+
 - [ ] Welcome email and introductions
 - [ ] Company overview and values
 - [ ] Product overview and roadmap
@@ -307,6 +337,7 @@
 - [ ] Onboarding buddy assigned
 
 **Week 2:**
+
 - [ ] Role-specific training
 - [ ] Processes and procedures
 - [ ] First assignments
@@ -314,6 +345,7 @@
 - [ ] Documentation standards
 
 **Week 3:**
+
 - [ ] First projects
 - [ ] Mentorship sessions
 - [ ] Feedback sessions
@@ -325,18 +357,21 @@
 ### External Contributors (OSS)
 
 **Day 1:**
+
 - [ ] GitHub access
 - [ ] Contributor guide review
 - [ ] Code of conduct review
 - [ ] Development environment setup
 
 **Week 1:**
+
 - [ ] First contribution (documentation or small bug fix)
 - [ ] Code review feedback
 - [ ] Community introduction
 - [ ] Contributor recognition
 
 **Ongoing:**
+
 - [ ] Regular contributions
 - [ ] Code reviews
 - [ ] Community participation
@@ -349,6 +384,7 @@
 ### How We Build
 
 **Principles:**
+
 - Build for developers
 - Prioritize developer experience
 - Ship quickly and iterate
@@ -357,6 +393,7 @@
 - Document well
 
 **Practices:**
+
 - Code reviews
 - Automated testing
 - Continuous integration
@@ -368,6 +405,7 @@
 ### How We Treat Each Other
 
 **Principles:**
+
 - Respect and empathy
 - Open communication
 - Transparency
@@ -376,6 +414,7 @@
 - Diversity and inclusion
 
 **Practices:**
+
 - Regular feedback
 - One-on-ones
 - Team building
@@ -387,6 +426,7 @@
 ### What We Ship
 
 **Principles:**
+
 - Customer value
 - Quality and reliability
 - Developer experience
@@ -394,6 +434,7 @@
 - Speed and iteration
 
 **Practices:**
+
 - Customer feedback loops
 - Quality assurance
 - Performance optimization
@@ -405,6 +446,7 @@
 ### How We Win
 
 **Principles:**
+
 - Customer success
 - Product-market fit
 - Team excellence
@@ -412,6 +454,7 @@
 - Sustainable growth
 
 **Practices:**
+
 - Customer obsession
 - Data-driven decisions
 - Continuous improvement
@@ -425,12 +468,14 @@
 ### Speed
 
 **Principles:**
+
 - Move fast
 - Ship quickly
 - Iterate rapidly
 - Learn fast
 
 **Practices:**
+
 - Weekly releases
 - Rapid prototyping
 - Quick decision-making
@@ -441,12 +486,14 @@
 ### Quality
 
 **Principles:**
+
 - Build reliable products
 - Maintain high standards
 - Test thoroughly
 - Document well
 
 **Practices:**
+
 - Code reviews
 - Automated testing
 - Quality assurance
@@ -457,12 +504,14 @@
 ### Transparency
 
 **Principles:**
+
 - Open communication
 - Share information
 - Be honest
 - Build trust
 
 **Practices:**
+
 - Regular updates
 - Open documentation
 - Transparent decision-making
@@ -473,12 +522,14 @@
 ### Customer Obsession
 
 **Principles:**
+
 - Listen to customers
 - Solve customer problems
 - Delight customers
 - Build relationships
 
 **Practices:**
+
 - Customer feedback loops
 - User research
 - Customer success
@@ -491,6 +542,7 @@
 ### Communication
 
 **Do's:**
+
 - ✅ Communicate early and often
 - ✅ Be clear and concise
 - ✅ Use appropriate channels
@@ -498,6 +550,7 @@
 - ✅ Be respectful
 
 **Don'ts:**
+
 - ❌ Delay communication
 - ❌ Use unclear language
 - ❌ Over-communicate
@@ -509,6 +562,7 @@
 ### Documentation
 
 **Do's:**
+
 - ✅ Keep documentation updated
 - ✅ Use consistent formatting
 - ✅ Organize by topic
@@ -516,6 +570,7 @@
 - ✅ Document decisions
 
 **Don'ts:**
+
 - ❌ Leave documentation outdated
 - ❌ Use inconsistent formatting
 - ❌ Create duplicate documentation
@@ -527,6 +582,7 @@
 ### Decision-Making
 
 **Do's:**
+
 - ✅ Gather information
 - ✅ Evaluate options
 - ✅ Make decisions quickly
@@ -534,6 +590,7 @@
 - ✅ Learn from decisions
 
 **Don'ts:**
+
 - ❌ Make decisions without information
 - ❌ Delay decisions unnecessarily
 - ❌ Make decisions in isolation

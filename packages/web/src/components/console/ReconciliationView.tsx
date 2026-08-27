@@ -19,10 +19,13 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Progress } from "@/components/ui/progress";
 import { AlertTriangle, CheckCircle2, RefreshCw, Play } from "lucide-react";
 import { useGovernanceState } from "@/hooks/use-governance-state";
 import { FreezeBlockedButton } from "@/components/shared/FreezeBlockedButton";
+import { FreezeErrorAlert } from "@/components/shared/FreezeErrorAlert";
+import { getGovernanceRecoveryHref } from "@/lib/governance/freeze-client";
 import type { ReconciliationSummary, ReconciliationItem } from "@/lib/domain/types";
 
 interface ReconciliationViewProps {
@@ -170,6 +173,16 @@ export function ReconciliationView({
 
   return (
     <div className="space-y-6">
+      {isFrozen ? (
+        <FreezeErrorAlert
+          reason={governanceState?.freeze_reason}
+          frozenAt={governanceState?.frozen_at || undefined}
+          recoveryAction={{
+            label: "Open Governance Controls",
+            href: getGovernanceRecoveryHref(),
+          }}
+        />
+      ) : null}
       {/* Summary Card */}
       <Card>
         <CardHeader>
@@ -301,6 +314,17 @@ export function ReconciliationView({
               </div>
             </div>
           )}
+
+          <div className="mt-6 pt-4 border-t border-border flex justify-end">
+            <a
+              href="https://settler.dev?ref=shared_recon_report"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-medium text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-1 opacity-70 hover:opacity-100"
+            >
+              Powered by <span className="font-bold">Settler</span>
+            </a>
+          </div>
         </CardContent>
       </Card>
 
@@ -314,10 +338,22 @@ export function ReconciliationView({
         </CardHeader>
         <CardContent>
           {items.length === 0 ? (
-            <div className="py-12 text-center">
-              <CheckCircle2 className="w-12 h-12 mx-auto mb-4 text-muted-foreground/60" />
-              <p className="text-muted-foreground">No items to display</p>
-            </div>
+            <EmptyState
+              icon={CheckCircle2}
+              title="No row-level result items to display"
+              description="This run has a summary record, but no detailed result rows are currently visible for the selected tenant and filters."
+              hint="Use the run detail to confirm execution posture, then inspect exceptions or rerun if you expected row-level evidence."
+              action={{ label: "Open Runs", href: "/console/runs" }}
+              secondaryAction={
+                reconciliationId
+                  ? {
+                      label: "Open Exceptions",
+                      href: `/console/exceptions?runId=${reconciliationId}`,
+                      variant: "outline",
+                    }
+                  : undefined
+              }
+            />
           ) : (
             <Table>
               <TableHeader>

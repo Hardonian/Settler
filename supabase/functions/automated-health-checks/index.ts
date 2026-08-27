@@ -246,6 +246,44 @@ serve(async (req) => {
         });
       }
     }
+    // 7. BYOK AI Provider check (Proactive Recovery)
+    const openaiKey = Deno.env.get("OPENAI_API_KEY");
+    if (!openaiKey) {
+      results.push({
+        check: "ai_readiness",
+        status: "degraded",
+        message: "No OPENAI_API_KEY configured (BYOK missing). System running in degraded mode.",
+        timestamp: now,
+      });
+    } else {
+      try {
+        const aiResponse = await fetch("https://api.openai.com/v1/models", {
+          headers: { Authorization: `Bearer ${openaiKey}` },
+        });
+        if (!aiResponse.ok) {
+          results.push({
+            check: "ai_readiness",
+            status: "degraded",
+            message: `AI provider degraded: HTTP ${aiResponse.status} ${aiResponse.statusText}. Please check your BYOK API key.`,
+            timestamp: now,
+          });
+        } else {
+          results.push({
+            check: "ai_readiness",
+            status: "healthy",
+            message: "AI provider is online and key is valid.",
+            timestamp: now,
+          });
+        }
+      } catch (error) {
+        results.push({
+          check: "ai_readiness",
+          status: "degraded",
+          message: `AI provider connection failed: ${error instanceof Error ? error.message : String(error)}`,
+          timestamp: now,
+        });
+      }
+    }
 
     // Store health check results
     const unhealthyChecks = results.filter((r) => r.status === "unhealthy");

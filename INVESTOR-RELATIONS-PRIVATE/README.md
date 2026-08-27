@@ -9,20 +9,23 @@ This directory contains confidential business documents, investor materials, and
 To access these encrypted files, you must:
 
 1. **Install git-crypt:**
+
    ```bash
    # macOS
    brew install git-crypt
-   
+
    # Linux (Ubuntu/Debian)
    sudo apt-get install git-crypt
-   
+
    # Or build from source: https://www.agwa.name/projects/git-crypt/
    ```
 
 2. **Unlock the repository:**
+
    ```bash
    git crypt unlock
    ```
+
    (You'll need the GPG key that was added by the repository maintainer)
 
 3. **Add a new collaborator:**

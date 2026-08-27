@@ -32,6 +32,13 @@ import { AlertTriangle, CheckCircle2, XCircle, Clock, UserPlus } from "lucide-re
 import { format } from "date-fns";
 import { useGovernanceState } from "@/hooks/use-governance-state";
 import { FreezeBlockedButton } from "@/components/shared/FreezeBlockedButton";
+import { FreezeErrorAlert } from "@/components/shared/FreezeErrorAlert";
+import {
+  getApiErrorMessage,
+  getGovernanceRecoveryHref,
+  parseGovernanceFreezeError,
+  type GovernanceFreezeErrorDetails,
+} from "@/lib/governance/freeze-client";
 
 interface ApprovalRequest {
   id: string;
@@ -53,6 +60,7 @@ export function ApprovalWorkflows() {
   const [requests, setRequests] = useState<ApprovalRequest[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [freezeError, setFreezeError] = useState<GovernanceFreezeErrorDetails | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newRequest, setNewRequest] = useState({
     requestType: "",
@@ -83,6 +91,7 @@ export function ApprovalWorkflows() {
     try {
       setLoading(true);
       setError(null);
+      setFreezeError(null);
 
       const res = await fetch("/api/v1/approvals/requests", {
         method: "POST",
@@ -98,9 +107,16 @@ export function ApprovalWorkflows() {
         }),
       });
 
+      const payload = (await res.json().catch(() => null)) as unknown;
+      const freezeDetails = parseGovernanceFreezeError(payload, res.status);
+
+      if (freezeDetails) {
+        setFreezeError(freezeDetails);
+        return;
+      }
+
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || "Failed to create request");
+        throw new Error(getApiErrorMessage(payload, "Failed to create request"));
       }
 
       setShowCreateForm(false);
@@ -115,13 +131,25 @@ export function ApprovalWorkflows() {
 
   const handleApprove = async (requestId: string) => {
     try {
-      const res = await fetch(`/api/v1/approvals/requests/${requestId}/approve`, {
+      setFreezeError(null);
+      const res = await fetch(`/api/approvals/${requestId}/approve`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({}),
       });
 
-      if (!res.ok) throw new Error("Failed to approve");
+      const payload = (await res.json().catch(() => null)) as unknown;
+      const freezeDetails = parseGovernanceFreezeError(payload, res.status);
+
+      if (freezeDetails) {
+        setFreezeError(freezeDetails);
+        return;
+      }
+
+      if (!res.ok) {
+        throw new Error(getApiErrorMessage(payload, "Failed to approve"));
+      }
+
       await fetchRequests();
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "Failed to approve");
@@ -130,13 +158,25 @@ export function ApprovalWorkflows() {
 
   const handleReject = async (requestId: string) => {
     try {
+      setFreezeError(null);
       const res = await fetch(`/api/v1/approvals/requests/${requestId}/reject`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ comments: "Rejected" }),
       });
 
-      if (!res.ok) throw new Error("Failed to reject");
+      const payload = (await res.json().catch(() => null)) as unknown;
+      const freezeDetails = parseGovernanceFreezeError(payload, res.status);
+
+      if (freezeDetails) {
+        setFreezeError(freezeDetails);
+        return;
+      }
+
+      if (!res.ok) {
+        throw new Error(getApiErrorMessage(payload, "Failed to reject"));
+      }
+
       await fetchRequests();
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "Failed to reject");
@@ -187,6 +227,17 @@ export function ApprovalWorkflows() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
+          {freezeError ? (
+            <FreezeErrorAlert
+              reason={freezeError.reason}
+              frozenAt={freezeError.frozenAt ?? undefined}
+              recoveryAction={{
+                label: "Open Governance Controls",
+                href: getGovernanceRecoveryHref(),
+              }}
+            />
+          ) : null}
+
           {error && (
             <Alert variant="destructive">
               <AlertTriangle className="h-4 w-4" />
@@ -253,6 +304,7 @@ export function ApprovalWorkflows() {
                     onClick={handleCreateRequest}
                     disabled={loading}
                     isFrozen={isFrozen}
+                    freezeReason={governanceState?.freeze_reason}
                     frozenMessage="Creating approval requests is blocked by tenant freeze"
                   >
                     Create Request

@@ -21,6 +21,7 @@ import {
   requireTenantRequestContext,
 } from "@/lib/api/tenant-context";
 import { getTraceId } from "@/lib/observability/trace";
+import { sanitizeCsvValue } from "@/lib/validation/csv-sanitization";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -305,7 +306,7 @@ export const POST = withSecurity(
     },
     { feature: "POST API" }
   ),
-  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: false }
+  { rateLimit: { windowMs: 60000, maxRequests: 20 }, requireAuth: true }
 );
 
 /**
@@ -380,7 +381,7 @@ export const GET = withSecurity(
     },
     { feature: "GET API" }
   ),
-  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: false }
+  { rateLimit: { windowMs: 60000, maxRequests: 100 }, requireAuth: true }
 );
 
 /**
@@ -467,16 +468,7 @@ async function processExport(
       const headers = Object.keys(data[0] || {});
       const csvRows = [
         headers.join(","),
-        ...data.map((row: any) =>
-          headers
-            .map((header) => {
-              const value = row[header];
-              if (value === null || value === undefined) return "";
-              if (typeof value === "object") return JSON.stringify(value);
-              return String(value).replace(/"/g, '""');
-            })
-            .join(",")
-        ),
+        ...data.map((row: any) => headers.map((header) => sanitizeCsvValue(row[header])).join(",")),
       ];
       fileContent = csvRows.join("\n");
       filename = `export-${exportId}.csv`;
@@ -485,6 +477,15 @@ async function processExport(
       filename = `export-${exportId}.json`;
     } else {
       throw new Error(`Unsupported export type: ${type}`);
+    }
+
+    const fileSizeBytes = Buffer.byteLength(fileContent);
+    const MAX_EXPORT_SIZE_BYTES = 50 * 1024 * 1024; // 50MB
+
+    if (fileSizeBytes > MAX_EXPORT_SIZE_BYTES) {
+      throw new Error(
+        `Export size (${Math.round(fileSizeBytes / 1024 / 1024)}MB) exceeds maximum allowed size of 50MB`
+      );
     }
 
     // In production, upload to S3 or similar storage

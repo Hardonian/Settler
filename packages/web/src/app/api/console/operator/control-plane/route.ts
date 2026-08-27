@@ -470,7 +470,7 @@ async function buildPayload(days: number) {
         COALESCE(r.matched_count, 0)::numeric AS matched_count,
         COALESCE(EXTRACT(EPOCH FROM (COALESCE(r.completed_at, NOW()) - COALESCE(r.started_at, r.created_at))) * 1000, 0)::numeric AS duration_ms,
         COALESCE(mrc.manual_review_count, 0)::numeric AS manual_review_count
-      FROM reconciliation_runs r
+      FROM recon_results r
       LEFT JOIN manual_review_counts mrc
         ON mrc.run_id = r.id
        AND mrc.tenant_id = r.tenant_id
@@ -513,7 +513,7 @@ async function buildPayload(days: number) {
           THEN COALESCE(mrc.manual_review_count, 0) / source_count::float8 * 100
           ELSE 0
         END), 0)::float8 AS manual_review_rate
-      FROM reconciliation_runs r
+      FROM recon_results r
       LEFT JOIN manual_review_counts mrc
         ON mrc.run_id = r.id
        AND mrc.tenant_id = r.tenant_id
@@ -527,7 +527,7 @@ async function buildPayload(days: number) {
           THEN COALESCE(mrc.manual_review_count, 0) / source_count::float8 * 100
           ELSE 0
         END), 0)::float8 AS manual_review_rate
-      FROM reconciliation_runs r
+      FROM recon_results r
       LEFT JOIN manual_review_counts mrc
         ON mrc.run_id = r.id
        AND mrc.tenant_id = r.tenant_id
@@ -580,7 +580,7 @@ async function buildPayload(days: number) {
     SELECT id::text AS run_id, tenant_id::text AS tenant_id, status, error_message,
       COALESCE(started_at, created_at) AS started_at, completed_at,
       COALESCE(source_count, 0) AS source_count, COALESCE(matched_count, 0) AS matched_count
-    FROM reconciliation_runs
+    FROM recon_results
     ORDER BY COALESCE(started_at, created_at) DESC, id DESC
     LIMIT 20;
   `);
@@ -611,7 +611,7 @@ async function buildPayload(days: number) {
   const usage = await prisma.$queryRaw<Array<Record<string, unknown>>>(`
     WITH run_window AS (
       SELECT tenant_id, COALESCE(source_count, 0)::bigint AS records
-      FROM reconciliation_runs
+      FROM recon_results
       WHERE COALESCE(started_at, created_at) >= NOW() - interval '30 days'
     ), segmented AS (
       SELECT
@@ -621,8 +621,8 @@ async function buildPayload(days: number) {
       WHERE created_at >= NOW() - interval '30 days'
     )
     SELECT
-      (SELECT COUNT(DISTINCT tenant_id)::int FROM reconciliation_runs WHERE COALESCE(started_at, created_at) >= NOW() - interval '7 days') AS active_tenants_7d,
-      (SELECT COUNT(DISTINCT tenant_id)::int FROM reconciliation_runs WHERE COALESCE(started_at, created_at) >= NOW() - interval '30 days') AS active_tenants_30d,
+      (SELECT COUNT(DISTINCT tenant_id)::int FROM recon_results WHERE COALESCE(started_at, created_at) >= NOW() - interval '7 days') AS active_tenants_7d,
+      (SELECT COUNT(DISTINCT tenant_id)::int FROM recon_results WHERE COALESCE(started_at, created_at) >= NOW() - interval '30 days') AS active_tenants_30d,
       COALESCE(COUNT(*), 0)::int AS runs_30d,
       COALESCE(SUM(records), 0)::bigint AS records_30d,
       (SELECT COALESCE(api_requests, 0) FROM segmented)::bigint AS api_requests_30d,
@@ -645,7 +645,7 @@ async function buildPayload(days: number) {
         THEN COALESCE(mrc.manual_review_count, 0) / source_count::float8 * 100
         ELSE 0
       END), 0)::float8 AS manual_review_rate
-    FROM reconciliation_runs r
+    FROM recon_results r
     LEFT JOIN manual_review_counts mrc
       ON mrc.run_id = r.id
      AND mrc.tenant_id = r.tenant_id
@@ -658,7 +658,7 @@ async function buildPayload(days: number) {
   const tenantEconomics = await prisma.$queryRaw<Array<Record<string, unknown>>>(`
     WITH run_stats AS (
       SELECT tenant_id::text AS tenant_id, COUNT(*)::int AS runs_30d, COALESCE(SUM(source_count), 0)::bigint AS records_30d
-      FROM reconciliation_runs
+      FROM recon_results
       WHERE COALESCE(started_at, created_at) >= NOW() - interval '30 days'
       GROUP BY tenant_id
     ),
@@ -674,11 +674,11 @@ async function buildPayload(days: number) {
           WHEN s.status IN ('active','trialing','past_due') THEN
             CASE s.plan_id
               WHEN 'starter' THEN ${PLAN_DEFAULT_MRR_USD.starter}
-              WHEN 'growth' THEN ${PLAN_DEFAULT_MRR_USD.growth}
+              WHEN 'pro' THEN ${PLAN_DEFAULT_MRR_USD.pro}
               WHEN 'scale' THEN ${PLAN_DEFAULT_MRR_USD.scale}
               WHEN 'enterprise' THEN ${PLAN_DEFAULT_MRR_USD.enterprise}
-              WHEN 'pro' THEN ${PLAN_DEFAULT_MRR_USD.growth}
-              WHEN 'commercial' THEN ${PLAN_DEFAULT_MRR_USD.growth}
+              WHEN 'growth' THEN ${PLAN_DEFAULT_MRR_USD.pro}
+              WHEN 'commercial' THEN ${PLAN_DEFAULT_MRR_USD.pro}
               WHEN 'base' THEN ${PLAN_DEFAULT_MRR_USD.starter}
               WHEN 'free' THEN ${PLAN_DEFAULT_MRR_USD.starter}
               ELSE 0
@@ -811,7 +811,7 @@ export const POST = withSecurity(
         `
         SELECT id::text AS run_id, tenant_id::text AS tenant_id, status, error_message,
           COALESCE(started_at, created_at) AS started_at
-        FROM reconciliation_runs
+        FROM recon_results
         WHERE ($1::text IS NULL OR tenant_id::text = $1::text)
           AND ($2::text IS NULL OR id::text = $2::text)
         ORDER BY COALESCE(started_at, created_at) DESC

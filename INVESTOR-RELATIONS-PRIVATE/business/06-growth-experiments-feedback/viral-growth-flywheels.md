@@ -37,6 +37,7 @@ More Contributions & Network Effects
 ### Implementation Strategy
 
 **Phase 1: Open Source Foundation (Months 1-3)**
+
 - Open source TypeScript SDK (MIT License)
 - Open source Adapter SDK (MIT License)
 - Open source community adapters (MIT License)
@@ -44,6 +45,7 @@ More Contributions & Network Effects
 - Documentation and examples
 
 **Phase 2: Community Building (Months 4-6)**
+
 - Discord/Slack community for developers
 - Monthly community calls/webinars
 - Contributor recognition program (swag, credits)
@@ -51,6 +53,7 @@ More Contributions & Network Effects
 - Community adapter marketplace
 
 **Phase 3: Network Effects (Months 7-12)**
+
 - 50+ community adapters
 - 1,000+ GitHub stars
 - 100+ active contributors
@@ -101,17 +104,20 @@ More Referrals
 **Referral Program Structure:**
 
 **For Referrer:**
+
 - $50 credit for each successful referral
 - Unlimited referrals
 - Credits apply to any plan
 - Track referrals in dashboard
 
 **For Referee:**
+
 - $25 credit on signup (from referral link)
 - Free tier extended to 2K reconciliations/month (first month)
 - Priority support for first 30 days
 
 **Referral Tracking:**
+
 - Unique referral links for each customer
 - Dashboard showing referrals and credits
 - Email notifications for successful referrals
@@ -158,6 +164,7 @@ More Integrations & Partnerships
 ### Implementation Strategy
 
 **Phase 1: Platform Partnerships (Months 1-6)**
+
 - Stripe Partner Program
 - Shopify App Store listing
 - QuickBooks App Store listing
@@ -165,12 +172,14 @@ More Integrations & Partnerships
 - Square Partner Program
 
 **Phase 2: Integration Marketplace Listings (Months 6-12)**
+
 - Zapier integration
 - Make (Integromat) integration
 - n8n integration
 - API directories (RapidAPI, Postman)
 
 **Phase 3: Co-Marketing (Months 12+)**
+
 - Co-marketing campaigns with partners
 - Joint webinars and content
 - Partner case studies
@@ -239,6 +248,7 @@ More Content Published
    - Integration recipes
 
 **Content Calendar:**
+
 - 2-3 blog posts per week
 - 1 case study per month
 - 1 tutorial per week
@@ -285,6 +295,7 @@ More Content Created
 **Developer Advocate Program:**
 
 **Benefits for Advocates:**
+
 - Early access to new features
 - Free credits ($500/month)
 - Swag and recognition
@@ -292,12 +303,14 @@ More Content Created
 - Co-marketing opportunities
 
 **Advocate Requirements:**
+
 - Active Settler user
 - Create content (blog posts, videos, talks)
 - Engage with community
 - Provide feedback
 
 **Advocate Tiers:**
+
 - **Bronze:** 1-2 pieces of content/month, $250/month credits
 - **Silver:** 3-4 pieces of content/month, $500/month credits
 - **Gold:** 5+ pieces of content/month, $1,000/month credits + speaking opportunities
@@ -325,6 +338,7 @@ More Content Created
 **Purpose:** Create a formal program for customers who want to advocate for Settler and get rewarded for it.
 
 **Target Audience:**
+
 - Active Settler users who love the product
 - Customers with strong networks (developers, finance professionals)
 - Content creators and influencers
@@ -333,6 +347,7 @@ More Content Created
 ### Program Structure
 
 **Tier 1: Settler Ambassador**
+
 - **Requirements:**
   - Active Settler user (3+ months)
   - 2+ referrals
@@ -344,6 +359,7 @@ More Content Created
   - Swag pack
 
 **Tier 2: Settler Champion**
+
 - **Requirements:**
   - Active Settler user (6+ months)
   - 5+ referrals
@@ -357,6 +373,7 @@ More Content Created
   - Annual Settler Summit invitation
 
 **Tier 3: Settler Partner**
+
 - **Requirements:**
   - Active Settler user (12+ months)
   - 10+ referrals
@@ -372,6 +389,7 @@ More Content Created
 ### Ambassador Activities
 
 **Content Creation:**
+
 - Blog posts about Settler
 - Video tutorials
 - Social media posts
@@ -379,12 +397,14 @@ More Content Created
 - Conference talks
 
 **Community Engagement:**
+
 - Answer questions in Discord/GitHub
 - Help new users onboard
 - Create adapter examples
 - Provide product feedback
 
 **Referrals:**
+
 - Refer friends/colleagues
 - Share referral links
 - Case studies and testimonials
@@ -392,12 +412,14 @@ More Content Created
 ### Ambassador Onboarding
 
 **Application Process:**
+
 1. Fill out application form
 2. Review by Settler team
 3. Onboarding call
 4. Welcome package (swag, credits, resources)
 
 **Onboarding Resources:**
+
 - Ambassador handbook
 - Brand assets (logos, templates)
 - Content templates
@@ -407,12 +429,14 @@ More Content Created
 ### Ambassador Recognition
 
 **Public Recognition:**
+
 - Ambassador page on website
 - Featured in newsletter
 - Social media shoutouts
 - Conference speaking opportunities
 
 **Private Recognition:**
+
 - Monthly ambassador calls
 - Early access to roadmap
 - Direct line to product team
@@ -425,6 +449,7 @@ More Content Created
 ### Template 1: Social Media Post
 
 **Twitter/X:**
+
 ```
 🚀 Just automated our reconciliation with @settler_io
 
@@ -437,6 +462,7 @@ Saved $50K+ this year. Best investment we've made.
 ```
 
 **LinkedIn:**
+
 ```
 I've been using Settler for the past 3 months, and it's transformed our finance operations.
 
@@ -458,6 +484,7 @@ If you're dealing with manual reconciliation, check out Settler: settler.io
 **Title:** "How Settler Saved Us $50K+ This Year: A Case Study"
 
 **Outline:**
+
 1. **Introduction:** Who we are, what we do
 2. **The Problem:** Manual reconciliation challenges
 3. **The Solution:** Why we chose Settler
@@ -471,6 +498,7 @@ If you're dealing with manual reconciliation, check out Settler: settler.io
 **Subject:** Check out Settler - saved us $50K+ this year
 
 **Body:**
+
 ```
 Hi [Name],
 
@@ -507,6 +535,7 @@ Best,
 [Describe how Settler solved your challenges]
 
 **Results:**
+
 - Time savings: [X] hours/day → [Y] minutes/day
 - Cost savings: $[X]/year
 - Error reduction: [X]% → 0%
@@ -522,6 +551,7 @@ Best,
 ### Key Metrics Dashboard
 
 **Flywheel Metrics:**
+
 - **Open Source:** GitHub stars, contributors, adapters
 - **Referrals:** Referral rate, conversion rate, viral coefficient
 - **Partnerships:** Partner referrals, integration usage
@@ -529,6 +559,7 @@ Best,
 - **Advocacy:** Advocates, content created, signups from advocates
 
 **Overall Growth Metrics:**
+
 - **Organic Signups:** % of signups from organic channels
 - **Viral Coefficient:** Average referrals per customer
 - **Customer Acquisition Cost (CAC):** Cost per customer from organic channels
@@ -538,12 +569,14 @@ Best,
 ### Tracking Tools
 
 **Analytics:**
+
 - Google Analytics (traffic, conversions)
 - Mixpanel (user behavior, referrals)
 - GitHub Analytics (community metrics)
 - Custom dashboard (flywheel metrics)
 
 **Attribution:**
+
 - UTM parameters for all links
 - Referral tracking codes
 - Partner tracking codes
@@ -554,18 +587,21 @@ Best,
 ## Implementation Roadmap
 
 ### Months 1-3: Foundation
+
 - ✅ Launch open source SDK and adapters
 - ✅ Set up referral program
 - ✅ Create content calendar
 - ✅ Launch developer advocate program
 
 ### Months 4-6: Growth
+
 - ✅ Build partner integrations
 - ✅ Scale content production
 - ✅ Launch ambassador program
 - ✅ Optimize referral program
 
 ### Months 7-12: Scale
+
 - ✅ Expand partner ecosystem
 - ✅ Scale community programs
 - ✅ Optimize flywheels based on data
@@ -576,6 +612,7 @@ Best,
 ## Success Criteria
 
 **Year 1 Targets:**
+
 - **Organic Signups:** 50%+ of total signups from organic channels
 - **Viral Coefficient:** 0.3+ (each customer brings 0.3 new customers)
 - **CAC Reduction:** 50%+ reduction in CAC from organic channels

@@ -1,0 +1,35 @@
+{
+  "profile": "fast",
+  "stageFilter": null,
+  "runId": "2026-07-13T23-25-59-942Z",
+  "completedAt": "2026-07-13T23:26:01.018Z",
+  "passed": false,
+  "signals": {
+    "supplyChainAuditState": "unknown",
+    "supplyChainUnavailableCategory": null,
+    "tenantGuardrailStaticStatus": "incomplete",
+    "tenantRuntimeCoverageStatus": "incomplete"
+  },
+  "results": [
+    {
+      "stage": "root",
+      "label": "Root cleanliness",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 378,
+      "timeoutMs": 60000,
+      "logPath": "artifacts\\verification\\2026-07-13T23-25-59-942Z\\root.log"
+    },
+    {
+      "stage": "envContract",
+      "label": "Environment contract",
+      "status": "failed",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 694,
+      "timeoutMs": 120000,
+      "logPath": "artifacts\\verification\\2026-07-13T23-25-59-942Z\\envContract.log"
+    }
+  ]
+}

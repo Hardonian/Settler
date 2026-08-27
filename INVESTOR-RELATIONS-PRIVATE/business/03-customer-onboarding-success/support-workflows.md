@@ -102,30 +102,35 @@ Can you share the error message? I can help diagnose the issue or escalate to ou
 ### Escalation Levels
 
 **Level 1: Support Bot / Self-Service**
+
 - Documentation
 - Community (Discord, GitHub)
 - Knowledge base
 - Automated responses
 
 **Level 2: Support Engineer**
+
 - Email support
 - Standard support tickets
 - Technical questions
 - Integration help
 
 **Level 3: Senior Support Engineer**
+
 - Complex technical issues
 - Escalated tickets
 - Performance problems
 - Integration challenges
 
 **Level 4: Engineering Team**
+
 - Bugs and product issues
 - Feature requests
 - Performance optimization
 - Infrastructure issues
 
 **Level 5: Leadership**
+
 - Critical incidents
 - Security issues
 - Customer escalations
@@ -135,19 +140,20 @@ Can you share the error message? I can help diagnose the issue or escalate to ou
 
 ### Escalation Criteria
 
-| Issue Type | Level 1 | Level 2 | Level 3 | Level 4 | Level 5 |
-|------------|---------|---------|---------|---------|---------|
-| **Documentation Questions** | ✅ | ⚠️ | ❌ | ❌ | ❌ |
-| **API Usage Questions** | ✅ | ✅ | ⚠️ | ❌ | ❌ |
-| **Integration Help** | ⚠️ | ✅ | ✅ | ⚠️ | ❌ |
-| **Technical Issues** | ❌ | ✅ | ✅ | ✅ | ⚠️ |
-| **Bugs** | ❌ | ⚠️ | ✅ | ✅ | ⚠️ |
-| **Performance Issues** | ❌ | ❌ | ✅ | ✅ | ⚠️ |
-| **Security Issues** | ❌ | ❌ | ❌ | ✅ | ✅ |
-| **Critical Incidents** | ❌ | ❌ | ❌ | ⚠️ | ✅ |
-| **Customer Escalations** | ❌ | ⚠️ | ✅ | ✅ | ✅ |
+| Issue Type                  | Level 1 | Level 2 | Level 3 | Level 4 | Level 5 |
+| --------------------------- | ------- | ------- | ------- | ------- | ------- |
+| **Documentation Questions** | ✅      | ⚠️      | ❌      | ❌      | ❌      |
+| **API Usage Questions**     | ✅      | ✅      | ⚠️      | ❌      | ❌      |
+| **Integration Help**        | ⚠️      | ✅      | ✅      | ⚠️      | ❌      |
+| **Technical Issues**        | ❌      | ✅      | ✅      | ✅      | ⚠️      |
+| **Bugs**                    | ❌      | ⚠️      | ✅      | ✅      | ⚠️      |
+| **Performance Issues**      | ❌      | ❌      | ✅      | ✅      | ⚠️      |
+| **Security Issues**         | ❌      | ❌      | ❌      | ✅      | ✅      |
+| **Critical Incidents**      | ❌      | ❌      | ❌      | ⚠️      | ✅      |
+| **Customer Escalations**    | ❌      | ⚠️      | ✅      | ✅      | ✅      |
 
 **Legend:**
+
 - ✅ Primary responsibility
 - ⚠️ Secondary responsibility
 - ❌ Not responsible
@@ -157,26 +163,31 @@ Can you share the error message? I can help diagnose the issue or escalate to ou
 ### Escalation Process
 
 **Step 1: Initial Triage**
+
 - Support bot attempts to resolve
 - Check documentation and knowledge base
 - Provide self-service resources
 
 **Step 2: Level 2 Escalation**
+
 - Support engineer reviews ticket
 - Provides technical assistance
 - Escalates if needed
 
 **Step 3: Level 3 Escalation**
+
 - Senior support engineer reviews
 - Provides advanced technical assistance
 - Escalates to engineering if needed
 
 **Step 4: Level 4 Escalation**
+
 - Engineering team reviews
 - Fixes bugs or implements features
 - Provides technical solutions
 
 **Step 5: Level 5 Escalation**
+
 - Leadership reviews
 - Makes strategic decisions
 - Handles critical incidents
@@ -188,24 +199,28 @@ Can you share the error message? I can help diagnose the issue or escalate to ou
 ### Severity Levels
 
 **P0: Critical**
+
 - System down
 - Data breach
 - Security incident
 - Complete service outage
 
 **P1: High**
+
 - Major feature broken
 - High error rate (>10%)
 - Performance degradation
 - Customer impact (multiple customers)
 
 **P2: Medium**
+
 - Minor feature broken
 - Moderate error rate (5-10%)
 - Performance issues
 - Customer impact (single customer)
 
 **P3: Low**
+
 - Documentation issues
 - UI/UX improvements
 - Feature requests
@@ -215,36 +230,40 @@ Can you share the error message? I can help diagnose the issue or escalate to ou
 
 ### Severity Response Times
 
-| Severity | Response Time | Resolution Time | Escalation |
-|----------|---------------|------------------|------------|
-| **P0: Critical** | 15 minutes | 4 hours | Immediate |
-| **P1: High** | 1 hour | 24 hours | 4 hours |
-| **P2: Medium** | 4 hours | 72 hours | 24 hours |
-| **P3: Low** | 24 hours | 7 days | 72 hours |
+| Severity         | Response Time | Resolution Time | Escalation |
+| ---------------- | ------------- | --------------- | ---------- |
+| **P0: Critical** | 15 minutes    | 4 hours         | Immediate  |
+| **P1: High**     | 1 hour        | 24 hours        | 4 hours    |
+| **P2: Medium**   | 4 hours       | 72 hours        | 24 hours   |
+| **P3: Low**      | 24 hours      | 7 days          | 72 hours   |
 
 ---
 
 ### Severity Assignment
 
 **P0: Critical**
+
 - System completely down
 - Data breach or security incident
 - Complete service outage
 - Multiple customers affected
 
 **P1: High**
+
 - Major feature broken
 - High error rate (>10%)
 - Performance degradation (>50%)
 - Multiple customers affected
 
 **P2: Medium**
+
 - Minor feature broken
 - Moderate error rate (5-10%)
 - Performance issues (10-50%)
 - Single customer affected
 
 **P3: Low**
+
 - Documentation issues
 - UI/UX improvements
 - Feature requests
@@ -257,12 +276,14 @@ Can you share the error message? I can help diagnose the issue or escalate to ou
 ### Ticket Creation
 
 **Triggers:**
+
 - Email to support@settler.io
 - In-app support widget
 - Support bot escalation
 - Phone call (Enterprise)
 
 **Information Collected:**
+
 - Customer name and email
 - Plan tier
 - Issue description
@@ -275,6 +296,7 @@ Can you share the error message? I can help diagnose the issue or escalate to ou
 ### Ticket Triage
 
 **Step 1: Categorize**
+
 - Technical issue
 - Integration help
 - Billing question
@@ -282,12 +304,14 @@ Can you share the error message? I can help diagnose the issue or escalate to ou
 - Bug report
 
 **Step 2: Assign Severity**
+
 - P0: Critical
 - P1: High
 - P2: Medium
 - P3: Low
 
 **Step 3: Route**
+
 - Support bot (Level 1)
 - Support engineer (Level 2)
 - Senior support engineer (Level 3)
@@ -299,18 +323,21 @@ Can you share the error message? I can help diagnose the issue or escalate to ou
 ### Ticket Resolution
 
 **Step 1: Investigation**
+
 - Review issue details
 - Reproduce issue (if possible)
 - Check logs and metrics
 - Identify root cause
 
 **Step 2: Solution**
+
 - Provide solution or workaround
 - Fix bug or implement feature
 - Update documentation
 - Communicate resolution
 
 **Step 3: Follow-Up**
+
 - Verify resolution
 - Collect feedback
 - Close ticket
@@ -323,12 +350,14 @@ Can you share the error message? I can help diagnose the issue or escalate to ou
 ### Response Time Metrics
 
 **Target Response Times:**
+
 - P0: Critical - 15 minutes
 - P1: High - 1 hour
 - P2: Medium - 4 hours
 - P3: Low - 24 hours
 
 **Measurement:**
+
 - Time from ticket creation to first response
 - Tracked by support system
 - Reported weekly
@@ -338,12 +367,14 @@ Can you share the error message? I can help diagnose the issue or escalate to ou
 ### Resolution Time Metrics
 
 **Target Resolution Times:**
+
 - P0: Critical - 4 hours
 - P1: High - 24 hours
 - P2: Medium - 72 hours
 - P3: Low - 7 days
 
 **Measurement:**
+
 - Time from ticket creation to resolution
 - Tracked by support system
 - Reported weekly
@@ -353,11 +384,13 @@ Can you share the error message? I can help diagnose the issue or escalate to ou
 ### Customer Satisfaction Metrics
 
 **CSAT (Customer Satisfaction):**
+
 - Target: 4.5/5.0
 - Measurement: Post-resolution survey
 - Tracked by support system
 
 **NPS (Net Promoter Score):**
+
 - Target: >50
 - Measurement: Quarterly survey
 - Tracked by support system
@@ -367,18 +400,22 @@ Can you share the error message? I can help diagnose the issue or escalate to ou
 ## Support Tools
 
 ### Support System
+
 - **Platform:** Zendesk / Intercom / Custom
 - **Features:** Ticket management, knowledge base, chat, email
 
 ### Documentation
+
 - **Platform:** GitBook / Notion / Custom
 - **Features:** API docs, guides, tutorials, examples
 
 ### Monitoring
+
 - **Platform:** Datadog / New Relic / Custom
 - **Features:** Error tracking, performance monitoring, alerts
 
 ### Communication
+
 - **Platform:** Slack / Discord / Email
 - **Features:** Team communication, customer communication
 
@@ -387,18 +424,21 @@ Can you share the error message? I can help diagnose the issue or escalate to ou
 ## Support Best Practices
 
 ### Communication
+
 - Respond within SLA
 - Use clear, technical language
 - Provide code examples when helpful
 - Follow up to ensure resolution
 
 ### Documentation
+
 - Document common issues
 - Update knowledge base regularly
 - Share learnings with team
 - Create reusable solutions
 
 ### Escalation
+
 - Escalate early if stuck
 - Provide context when escalating
 - Follow up on escalated tickets

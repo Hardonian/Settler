@@ -16,7 +16,7 @@ import { requirePermission } from "../../middleware/authorization";
 import { Permission } from "../../infrastructure/security/Permissions";
 import { handleRouteError } from "../../utils/error-handler";
 import { validateRequest } from "../../middleware/validation";
-import { query } from "../../db";
+import { queryWithTenant } from "../../db";
 import { logError } from "../../utils/logger";
 import { enforceFreezeState } from "../../middleware/governance";
 import {
@@ -131,8 +131,8 @@ router.get(
       // Fetch one extra row to determine hasMore
       const fetchLimit = limit + 1;
 
-      // Query runs from reconciliation_runs table with tenant scoping
-      const runs = await query<{
+      // Query runs from recon_results table with tenant scoping
+      const runs = await queryWithTenant<{
         id: string;
         tenant_id: string;
         created_at: string;
@@ -144,20 +144,22 @@ router.get(
         unmatched_source_count: number | null;
         unmatched_target_count: number | null;
       }>(
+        tenantId,
         `SELECT
-          id,
-          tenant_id,
-          created_at,
-          updated_at,
-          status,
-          policy_name,
-          total_records,
-          matched_count,
-          unmatched_source_count,
-          unmatched_target_count
-         FROM reconciliation_runs
-         ${whereClause}
-         ${orderByClause}
+          r.id,
+          r.tenant_id,
+          r.started_at as created_at,
+          r.updated_at,
+          r.status,
+          j.name as policy_name,
+          r.source_count + r.target_count as total_records,
+          r.matched_count,
+          r.unmatched_source_count,
+          r.unmatched_target_count
+         FROM recon_results r
+         LEFT JOIN recon_jobs j ON r.recon_job_id = j.id
+         ${whereClause.replace("tenant_id =", "r.tenant_id =").replace("status =", "r.status =").replace("created_at", "r.started_at")}
+         ${orderByClause.replace(/created_at/g, "r.started_at").replace(/id /g, "r.id ")}
          LIMIT $${params.length + 1}`,
         [...params, fetchLimit]
       );
@@ -208,8 +210,9 @@ router.get(
       // Get total count only for offset pagination (cursor pagination doesn't need it)
       let totalCount: number | undefined;
       if (!cursorPagination) {
-        const countResult = await query<{ count: string }>(
-          `SELECT COUNT(*)::text as count FROM reconciliation_runs WHERE tenant_id = $1`,
+        const countResult = await queryWithTenant<{ count: string }>(
+          tenantId,
+          `SELECT COUNT(*)::text as count FROM recon_results WHERE tenant_id = $1`,
           [tenantId]
         );
         totalCount = countResult[0] ? parseInt(countResult[0].count, 10) : 0;
@@ -272,7 +275,7 @@ router.get(
       }
 
       // Query specific run with tenant scoping and LEFT JOIN to recon_results for provenance
-      const runs = await query<{
+      const runs = await queryWithTenant<{
         id: string;
         tenant_id: string;
         created_at: string;
@@ -300,33 +303,34 @@ router.get(
         provenance_matching_rule_ids: string | null;
         provenance_rule_version_count: string | null;
       }>(
+        tenantId,
         `SELECT
           rr.id,
           rr.tenant_id,
-          rr.created_at,
+          rr.started_at as created_at,
           rr.updated_at,
           rr.status,
-          rr.policy_name,
-          rr.total_records,
+          j.name as policy_name,
+          rr.source_count + rr.target_count as total_records,
           rr.matched_count,
           rr.unmatched_source_count,
           rr.unmatched_target_count,
           rr.error_message,
-          rr.source_adapter,
-          rr.target_adapter,
-          rr.template_id,
-          recon_results.id as result_id,
-          recon_results.snapshot_id,
-          recon_results.input_hash,
-          recon_results.started_at,
-          recon_results.completed_at,
-          recon_results.summary -> 'provenance' ->> 'configVersion' as provenance_config_version,
+          j.source_adapter,
+          j.target_adapter,
+          j.template_id,
+          rr.id as result_id,
+          rr.snapshot_id,
+          rr.input_hash,
+          rr.started_at,
+          rr.completed_at,
+          rr.summary -> 'provenance' ->> 'configVersion' as provenance_config_version,
           recon_results.summary -> 'provenance' ->> 'configSource' as provenance_config_source,
           recon_results.summary -> 'provenance' ->> 'templateId' as provenance_template_id,
           recon_results.summary -> 'provenance' ->> 'matchingRuleIds' as provenance_matching_rule_ids,
           recon_results.summary -> 'provenance' ->> 'ruleVersionCount' as provenance_rule_version_count
-         FROM reconciliation_runs rr
-         LEFT JOIN recon_results ON recon_results.recon_job_id = rr.id AND recon_results.tenant_id = rr.tenant_id
+         FROM recon_results rr
+         LEFT JOIN recon_jobs j ON rr.recon_job_id = j.id
          WHERE rr.id = $1 AND rr.tenant_id = $2`,
         [runId, tenantId]
       );
@@ -439,8 +443,9 @@ router.get(
       const offset = (req.query.offset as unknown as number) || 0;
 
       // Invariant: Verify run exists and belongs to tenant
-      const runCheck = await query<{ status: string }>(
-        `SELECT status FROM reconciliation_runs WHERE id = $1 AND tenant_id = $2`,
+      const runCheck = await queryWithTenant<{ status: string }>(
+        tenantId,
+        `SELECT status FROM recon_results WHERE id = $1 AND tenant_id = $2`,
         [runId, tenantId]
       );
 
@@ -453,7 +458,7 @@ router.get(
       }
 
       // Query exceptions tied directly to this execution
-      const exceptions = await query<{
+      const exceptions = await queryWithTenant<{
         exception_id: string;
         execution_id: string;
         source_record_id: string;
@@ -465,6 +470,7 @@ router.get(
         resolved_at: string | null;
         resolved_by: string | null;
       }>(
+        tenantId,
         `SELECT
            id as exception_id,
            run_id as execution_id,
@@ -483,7 +489,8 @@ router.get(
         [runId, tenantId, limit, offset]
       );
 
-      const countRes = await query<{ count: string }>(
+      const countRes = await queryWithTenant<{ count: string }>(
+        tenantId,
         `SELECT COUNT(*)::text as count FROM exceptions WHERE run_id = $1 AND tenant_id = $2`,
         [runId, tenantId]
       );
@@ -530,8 +537,9 @@ router.post(
         return;
       }
 
-      const runs = await query<{ id: string; status: string }>(
-        `SELECT id, status FROM reconciliation_runs WHERE id = $1 AND tenant_id = $2`,
+      const runs = await queryWithTenant<{ id: string; status: string }>(
+        tenantId,
+        `SELECT id, status FROM recon_results WHERE id = $1 AND tenant_id = $2`,
         [runId, tenantId]
       );
 
@@ -549,13 +557,15 @@ router.post(
       }
 
       // Enforce Consequence: Trigger retry
-      await query(
-        `UPDATE reconciliation_runs SET status = 'pending', error_message = NULL, updated_at = NOW() WHERE id = $1 AND tenant_id = $2`,
+      await queryWithTenant(
+        tenantId,
+        `UPDATE recon_results SET status = 'pending', error_message = NULL, updated_at = NOW() WHERE id = $1 AND tenant_id = $2`,
         [runId, tenantId]
       );
 
       // Audit record
-      await query(
+      await queryWithTenant(
+        tenantId,
         `INSERT INTO audit_logs (tenant_id, user_id, action, resource_type, resource_id, details) VALUES ($1, $2, $3, $4, $5, $6)`,
         [
           tenantId,
@@ -603,7 +613,8 @@ router.post(
         return;
       }
 
-      const exceptions = await query<{ id: string; status: string }>(
+      const exceptions = await queryWithTenant<{ id: string; status: string }>(
+        tenantId,
         `SELECT id, status FROM exceptions WHERE id = $1 AND run_id = $2 AND tenant_id = $3`,
         [exceptionId, runId, tenantId]
       );
@@ -615,12 +626,14 @@ router.post(
         return;
       }
 
-      await query(
+      await queryWithTenant(
+        tenantId,
         `UPDATE exceptions SET status = $1, resolution_notes = $2, resolved_by = $3, resolved_at = NOW(), updated_at = NOW() WHERE id = $4 AND tenant_id = $5`,
         [status, notes || null, req.userId || null, exceptionId, tenantId]
       );
 
-      await query(
+      await queryWithTenant(
+        tenantId,
         `INSERT INTO audit_logs (tenant_id, user_id, action, resource_type, resource_id, details) VALUES ($1, $2, $3, $4, $5, $6)`,
         [
           tenantId,
@@ -654,15 +667,12 @@ router.post(
 
 // ---- Added for 2026 API Product Spine ----
 
-import { idempotencyMiddleware } from "../../middleware/idempotency";
-
 /**
  * Creates a new reconciliation run
  */
 router.post(
   "/runs",
   requirePermission(Permission.JOBS_WRITE),
-  idempotencyMiddleware,
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = req.tenantId;
@@ -674,10 +684,56 @@ router.post(
         return;
       }
 
-      // Stub implementation for creating run
+      const { jobId } = req.body;
+      if (!jobId) {
+        res.status(400).json({
+          error: "BAD_REQUEST",
+          message: "Job ID is required",
+        });
+        return;
+      }
+
+      // Check if job exists for tenant
+      const jobs = await queryWithTenant<{ id: string }>(
+        tenantId,
+        `SELECT id FROM recon_jobs WHERE id = $1 AND tenant_id = $2`,
+        [jobId, tenantId]
+      );
+
+      if (jobs.length === 0) {
+        res.status(404).json({
+          error: "NOT_FOUND",
+          message: "Job not found",
+        });
+        return;
+      }
+
+      // Create ReconciliationRun
+      const result = await queryWithTenant<{ id: string; status: string }>(
+        tenantId,
+        `INSERT INTO recon_results (tenant_id, recon_job_id, status, started_at, updated_at) 
+         VALUES ($1, $2, 'pending', NOW(), NOW()) RETURNING id, status`,
+        [tenantId, jobId]
+      );
+
+      // Audit log
+      const userId = (req.userId as string) || null;
+      await queryWithTenant(
+        tenantId,
+        `INSERT INTO audit_logs (tenant_id, user_id, action, resource_type, resource_id, details) VALUES ($1, $2, $3, $4, $5, $6)`,
+        [
+          tenantId,
+          userId,
+          "create_run",
+          "reconciliation_run",
+          result[0]!.id,
+          JSON.stringify({ jobId }),
+        ]
+      );
+
       res.status(201).json({
-        id: `run_${Date.now()}`,
-        status: "pending",
+        id: result[0]!.id,
+        status: result[0]!.status,
         message: "Run created successfully",
       });
     } catch (error) {
@@ -707,11 +763,41 @@ router.get(
         return;
       }
 
-      // Stub implementation for proofpack
+      const runId = req.params.id as string;
+
+      // Ensure run exists
+      const runs = await queryWithTenant<{ id: string }>(
+        tenantId,
+        `SELECT id FROM recon_results WHERE id = $1 AND tenant_id = $2`,
+        [runId, tenantId]
+      );
+
+      if (runs.length === 0) {
+        res.status(404).json({
+          error: "NOT_FOUND",
+          message: "Run not found",
+        });
+        return;
+      }
+
+      // Fetch audit logs related to this run
+      const auditLogs = await queryWithTenant(
+        tenantId,
+        `SELECT * FROM audit_logs WHERE resource_id = $1 AND tenant_id = $2 ORDER BY created_at ASC`,
+        [runId, tenantId]
+      );
+
+      // Fetch exceptions related to this run
+      const exceptions = await queryWithTenant(
+        tenantId,
+        `SELECT * FROM exceptions WHERE run_id = $1 AND tenant_id = $2`,
+        [runId, tenantId]
+      );
+
       res.status(200).json({
-        runId: req.params.id,
-        auditTrail: [],
-        evidence: [],
+        runId,
+        auditTrail: auditLogs,
+        evidence: exceptions,
       });
     } catch (error) {
       logError("Error fetching proofpack", { error });
@@ -740,9 +826,32 @@ router.get(
         return;
       }
 
+      const runId = req.params.id as string;
+
+      const runs = await queryWithTenant<{ id: string }>(
+        tenantId,
+        `SELECT id FROM recon_results WHERE id = $1 AND tenant_id = $2`,
+        [runId, tenantId]
+      );
+
+      if (runs.length === 0) {
+        res.status(404).json({
+          error: "NOT_FOUND",
+          message: "Run not found",
+        });
+        return;
+      }
+
+      // Fetch run delta
+      const deltas = await queryWithTenant(
+        tenantId,
+        `SELECT * FROM run_deltas WHERE currentRunId = $1`,
+        [runId]
+      );
+
       res.status(200).json({
-        runId: req.params.id,
-        deltas: [],
+        runId,
+        deltas: deltas,
       });
     } catch {
       res.status(500).json({
@@ -770,8 +879,67 @@ router.post(
         return;
       }
 
+      const runId = req.params.id as string;
+      const { exceptionId, resolution, resolutionReason } = req.body;
+
+      if (!exceptionId || !resolution) {
+        res.status(400).json({
+          error: "BAD_REQUEST",
+          message: "exceptionId and resolution are required",
+        });
+        return;
+      }
+
+      // Ensure run exists
+      const runs = await queryWithTenant<{ id: string }>(
+        tenantId,
+        `SELECT id FROM recon_results WHERE id = $1 AND tenant_id = $2`,
+        [runId, tenantId]
+      );
+
+      if (runs.length === 0) {
+        res.status(404).json({
+          error: "NOT_FOUND",
+          message: "Run not found",
+        });
+        return;
+      }
+
+      // Insert adjudication record
+      const userIdForAdj = (req.userId as string) || "system";
+      const result = await queryWithTenant<{ id: string }>(
+        tenantId,
+        `INSERT INTO exception_adjudication_memory (
+          id, tenantId, exceptionId, resolution, resolutionReason, adjudicatorId, adjudicatorType, adjudicationType, startedAt
+        ) VALUES (
+          gen_random_uuid(), $1, $2, $3, $4, $5, 'operator', 'initial', NOW()
+        ) RETURNING id`,
+        [
+          tenantId,
+          exceptionId as string,
+          resolution as string,
+          (resolutionReason as string) || null,
+          userIdForAdj,
+        ]
+      );
+
+      // Audit log
+      const userId = (req.userId as string) || null;
+      await queryWithTenant(
+        tenantId,
+        `INSERT INTO audit_logs (tenant_id, user_id, action, resource_type, resource_id, details) VALUES ($1, $2, $3, $4, $5, $6)`,
+        [
+          tenantId,
+          userId,
+          "create_adjudication",
+          "exception",
+          exceptionId as string,
+          JSON.stringify({ resolution, resolutionReason }),
+        ]
+      );
+
       res.status(201).json({
-        id: `adj_${Date.now()}`,
+        id: result[0]!.id,
         status: "recorded",
       });
     } catch {

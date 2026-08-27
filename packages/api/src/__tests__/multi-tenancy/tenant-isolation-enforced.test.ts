@@ -189,6 +189,52 @@ describe("assertTenantScoped guard", () => {
     ).not.toThrow();
   });
 
+  // --- Tests for newly hardened tables (P0-D) ---
+
+  it("REJECTS SELECT on recon_jobs WITHOUT tenant_id", () => {
+    expect(() => assertTenantScoped("SELECT * FROM recon_jobs WHERE id = $1")).toThrow(
+      "TENANT ISOLATION VIOLATION"
+    );
+  });
+
+  it("allows SELECT on recon_jobs WITH tenant_id", () => {
+    expect(() =>
+      assertTenantScoped("SELECT * FROM recon_jobs WHERE id = $1 AND tenant_id = $2")
+    ).not.toThrow();
+  });
+
+  it("REJECTS SELECT on proof_packages WITHOUT tenant_id", () => {
+    expect(() => assertTenantScoped("SELECT * FROM proof_packages WHERE package_key = $1")).toThrow(
+      "TENANT ISOLATION VIOLATION"
+    );
+  });
+
+  it("REJECTS SELECT on ingestions WITHOUT tenant_id", () => {
+    expect(() => assertTenantScoped("SELECT * FROM ingestions WHERE id = $1")).toThrow(
+      "TENANT ISOLATION VIOLATION"
+    );
+  });
+
+  it("REJECTS SELECT on billing_accounts WITHOUT tenant_id", () => {
+    expect(() => assertTenantScoped("SELECT * FROM billing_accounts WHERE id = $1")).toThrow(
+      "TENANT ISOLATION VIOLATION"
+    );
+  });
+
+  it("REJECTS SELECT on exception_adjudication_memory WITHOUT tenant_id", () => {
+    expect(() =>
+      assertTenantScoped("SELECT * FROM exception_adjudication_memory WHERE exception_id = $1")
+    ).toThrow("TENANT ISOLATION VIOLATION");
+  });
+
+  it("allows SELECT on exception_adjudication_memory WITH tenant_id", () => {
+    expect(() =>
+      assertTenantScoped(
+        "SELECT * FROM exception_adjudication_memory WHERE exception_id = $1 AND tenant_id = $2"
+      )
+    ).not.toThrow();
+  });
+
   it("allows SET LOCAL and RESET statements", () => {
     expect(() => assertTenantScoped("SET LOCAL app.current_tenant_id = 'abc'")).not.toThrow();
     expect(() => assertTenantScoped("RESET app.current_tenant_id")).not.toThrow();

@@ -27,7 +27,8 @@ on:
       - "vercel.json"
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
 
 jobs:
   conflict-markers:
@@ -35,19 +36,16 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.13.1
+          version: 9.15.0
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-
-      - name: Setup pnpm
-        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
 
       - name: Deterministic install
         run: pnpm install --frozen-lockfile
@@ -83,7 +81,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
-      NODE_ENV: production
+      NODE_ENV: test
       NEXT_PUBLIC_SITE_URL: http://localhost:3000
       NEXT_PUBLIC_APP_URL: http://localhost:3000
       NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
@@ -95,19 +93,16 @@ jobs:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
       REDIS_URL: redis://localhost:6379
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.13.1
+          version: 9.15.0
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-
-      - name: Setup pnpm
-        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
 
       - name: Deterministic install
         run: pnpm install --frozen-lockfile
@@ -122,7 +117,7 @@ jobs:
         run: pnpm run verify:surface-docs && pnpm run verify:route-classes-doc && pnpm run verify:api-family-docs
 
       - name: Install Helm (packaging verification)
-        uses: azure/setup-helm@v4
+        uses: azure/setup-helm@v5
         with:
           version: v3.14.4
 
@@ -169,22 +164,22 @@ jobs:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
       REDIS_URL: redis://localhost:6379
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.13.1
+          version: 9.15.0
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
 
-      - name: Setup pnpm
-        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
-
       - name: Deterministic install
         run: pnpm install --frozen-lockfile
+
+      - name: Build workspace packages (produces dist consumed by tests)
+        run: pnpm run build
 
       - name: API tests (serial, force exit)
         run: pnpm run test:ci:verify
@@ -211,22 +206,22 @@ jobs:
       REDIS_URL: redis://localhost:6379
       NODE_OPTIONS: --max-old-space-size=4096
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.13.1
+          version: 9.15.0
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
 
-      - name: Setup pnpm
-        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
-
       - name: Deterministic install
         run: pnpm install --frozen-lockfile
+
+      - name: Build workspace packages (produces dist consumed by web tests)
+        run: pnpm run build
 
       - name: Web tests (sharded with memory cap)
         run: pnpm --filter @settler/web exec jest --maxWorkers=50% --shard=${{ matrix.shard }} --passWithNoTests
@@ -248,22 +243,22 @@ jobs:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
       REDIS_URL: redis://localhost:6379
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.13.1
+          version: 9.15.0
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
 
-      - name: Setup pnpm
-        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
-
       - name: Deterministic install
         run: pnpm install --frozen-lockfile
+
+      - name: Build all workspace packages (web build consumes api/reconciliation-core/types/adapters dist)
+        run: pnpm run build
 
       - name: Build web package
         run: pnpm --filter @settler/web build
@@ -325,19 +320,16 @@ jobs:
       JWT_SECRET: test-secret-min-32-chars-long-for-testing
       ENCRYPTION_KEY: 12345678901234567890123456789012
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.13.1
+          version: 9.15.0
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-
-      - name: Setup pnpm
-        run: corepack enable && corepack prepare pnpm@10.13.1 --activate
 
       - name: Deterministic install
         run: pnpm install --frozen-lockfile

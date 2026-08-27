@@ -1,94 +1,31 @@
-# What Works Today
+# What Works
 
-**Last Updated:** 2026-03-19  
-**Purpose:** Operator-facing reference for workflows that are live in the current console.
+Settler is an enterprise reconciliation engine. The following features are fully functional out of the box in the `main` branch.
 
----
+## 1. Multi-Tenant Infrastructure
 
-## Core Operating Model
+- **Tenant Isolation**: Data is separated logically via `tenantId`.
+- **Governed Environments**: `enforceFreezeState` guarantees zero mutation windows.
+- **Doctor Check**: `pnpm run doctor` verifies the local environment end-to-end.
 
-Settler currently operates as a tenant-scoped reconciliation control plane with three primary entities:
+## 2. Ingestion & Normalization
 
-- **Run definition (`recon_job`)**: Configuration for source/target adapters, strategy, and rules.
-- **Persisted result (`recon_result`)**: Latest evaluated outcome for that run definition.
-- **Exception (`drift_event`)**: Operator decision item derived from reconciliation outcomes.
+- **CSV & Webhook Inputs**: Configurable ingestion pipelines for standard and custom formats.
+- **Idempotency**: All ingestion endpoints use idempotency keys to ensure duplicate requests don't duplicate data.
+- **Deterministic Models**: Normalization forces structured currencies, dates, and amounts.
 
-Additional provenance fields are available when captured:
+## 3. The Reconciliation Engine
 
-- **Run snapshot (`run_snapshot`)**: Snapshot-backed configuration and rule-version context.
+- **Decision Engine**: High-confidence matching algorithms for amounts and references.
+- **Fuzzy Matching**: Configurable thresholds for acceptable date and amount drift.
+- **Exception Intelligence**: Unmatched or fuzzy records are passed to the operator dashboard for human-in-the-loop review.
 
----
+## 4. The Operator Dashboard
 
-## Functional Workflows
+- **Demo Seed**: `pnpm demo:seed` generates 100+ realistic transaction scenarios including failures and exceptions.
+- **Visibility**: Dedicated UI for manual remediation of exceptions.
 
-### 1. Run Monitoring and Execution History
+## 5. Venture Invoice Nudger (Phase 1)
 
-**Status:** ✅ Functional  
-**Primary route:** `/console/runs`
-
-Supported today:
-
-- Tenant-scoped run list with canonical execution states
-- Run detail view with progress, summary counts, and stage timeline
-- Result provenance context (latest result + prior-result comparison)
-
----
-
-### 2. Reconciliation Result Inspection
-
-**Status:** ✅ Functional  
-**Primary route:** `/console/reconciliations?runId=<run-id>`
-
-Supported today:
-
-- Run-scoped result inspection for completed runs
-- Matched/unmatched/conflict outcome framing
-- Cross-linking back to run detail and exception queue
-
----
-
-### 3. Exception Decision Workflow
-
-**Status:** ✅ Functional  
-**Primary routes:** `/console/exceptions`, `/console/exceptions/<exception-id>`
-
-Supported today:
-
-- Run-scoped exception queues
-- Workflow states: `pending`, `investigating`, `resolved`, `ignored`
-- Operator actions: resolve, ignore, reopen
-- Decision detail and audit trail history
-
----
-
-### 4. Effective Configuration Visibility
-
-**Status:** ✅ Functional  
-**Primary route:** `/console/runs/<run-id>`
-
-Supported today:
-
-- Snapshot-backed vs live-definition configuration source disclosure
-- Recorded rule coverage and rule-version lock visibility (when snapshot data exists)
-- Explicit note when configuration falls back to current run definition
-
----
-
-## Verification Checklist
-
-Use this quick sequence after `pnpm dev`:
-
-1. Open `/console/runs` and confirm run history loads.
-2. Open any run detail and confirm:
-   - `Result Provenance` section is present,
-   - `Effective Configuration` shows snapshot/live source,
-   - `Exception Workflow` counts are visible.
-3. Open `/console/exceptions?runId=<run-id>` and verify status filters (`pending`, `investigating`, `resolved`, `ignored`) return expected records.
-4. Open `/console/reconciliations?runId=<run-id>` and confirm result inspection surface renders for that run.
-
----
-
-## Notes on Scope
-
-- This document lists currently operational console workflows only.
-- See [Intentional Boundaries](./INTENTIONAL_BOUNDARIES.md) for intentionally incomplete areas.
+- **Decision Engine**: Identifies overdue invoices and determines contact actions based on tenant-specific policies.
+- **Dry-run Mode**: Ability to test nudger policy execution safely without emitting side effects.

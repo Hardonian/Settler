@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "../..",
+    "outDir": "./dist-test"
+  },
+  "include": ["src/**/*"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/services/ai-agents",
+    "src/services/predictive",
+    "src/services/economic",
+    "src/services/futureproof",
+    "src/services/pricing",
+    "src/routes/v2/ai-agents.ts"
+  ]
+}

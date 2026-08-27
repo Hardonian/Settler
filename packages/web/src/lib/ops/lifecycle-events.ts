@@ -35,7 +35,7 @@ async function getActivationFunnel(): Promise<ActivationFunnelModule> {
 
   try {
     // Prefer ESM dynamic import (avoids eslint no-var-requires, works in Next runtime)
-    const mod: any = await import("@/lib/stubs/activation-funnel");
+    const mod: any = await import("@settler/api/dist/ops/activation-funnel");
     if (mod?.LifecycleEventType && typeof mod.LifecycleEventType === "object") {
       Object.assign(LifecycleEventType, mod.LifecycleEventType as Record<string, string>);
     }
@@ -48,8 +48,7 @@ async function getActivationFunnel(): Promise<ActivationFunnelModule> {
         eventType: string,
         params: any
       ) {
-        const { PrismaClient } = await import("@prisma/client");
-        const prisma = new PrismaClient();
+        const { prisma } = await import("@/shared/db/prismaClient");
         try {
           const { userId, tenantId, billingAccountId, properties = {} } = params;
 
@@ -79,8 +78,8 @@ async function getActivationFunnel(): Promise<ActivationFunnelModule> {
               aggregated: false,
             },
           });
-        } finally {
-          await prisma.$disconnect();
+        } catch (error) {
+          console.error("[Lifecycle Events] Failed in fallback event emission:", error);
         }
       },
     };

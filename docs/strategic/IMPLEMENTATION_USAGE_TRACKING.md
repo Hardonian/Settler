@@ -10,6 +10,7 @@
 ## Problem Statement
 
 Current usage tracking implementation always allows requests without checking actual usage against limits. This causes:
+
 - Revenue leakage (users exceeding limits without enforcement)
 - Inaccurate billing
 - Poor unit economics visibility
@@ -19,6 +20,7 @@ Current usage tracking implementation always allows requests without checking ac
 ## Solution Overview
 
 Implement database-backed usage tracking with:
+
 1. Real-time usage counters (Redis + PostgreSQL)
 2. Rate limiting enforcement at API level
 3. Usage dashboard for visibility
@@ -73,15 +75,15 @@ model UsageEvent {
 ```typescript
 /**
  * Usage Tracking Service
- * 
+ *
  * Tracks and enforces usage limits for billing accounts.
  */
 
-import { prisma } from '@/shared/db/prismaClient';
-import { Redis } from '@/lib/redis/client';
+import { prisma } from "@/shared/db/prismaClient";
+import { Redis } from "@/lib/redis/client";
 
-export type ServiceCode = 'reconcile' | 'receipts' | 'featureFlags' | 'playground';
-export type Period = 'daily' | 'monthly';
+export type ServiceCode = "reconcile" | "receipts" | "featureFlags" | "playground";
+export type Period = "daily" | "monthly";
 
 interface UsageCheckResult {
   allowed: boolean;
@@ -98,7 +100,7 @@ interface UsageCheckResult {
 export async function getCurrentUsage(
   billingAccountId: string,
   service: ServiceCode,
-  period: Period = 'monthly'
+  period: Period = "monthly"
 ): Promise<UsageCheckResult> {
   // Implementation details in actual file
 }
@@ -110,7 +112,7 @@ export async function checkAndIncrementUsage(
   billingAccountId: string,
   service: ServiceCode,
   quantity: number = 1,
-  period: Period = 'monthly'
+  period: Period = "monthly"
 ): Promise<UsageCheckResult> {
   // Implementation details in actual file
 }

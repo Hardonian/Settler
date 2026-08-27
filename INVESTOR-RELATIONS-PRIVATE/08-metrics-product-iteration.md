@@ -20,6 +20,7 @@
 **Definition:** User completes key actions that indicate they've derived value from Settler.
 
 **Key Actions:**
+
 1. **Account Created** - User signs up
 2. **API Key Generated** - User gets API key
 3. **First Job Created** - User creates reconciliation job
@@ -27,18 +28,21 @@
 5. **First Report Viewed** - User views results
 
 **Activation Rate:**
+
 ```
 Activation Rate = Users who completed all 5 actions / Total signups
 Target: 60%+
 ```
 
 **Funnel:**
+
 ```
 Signups → API Key Generated → Job Created → Reconciliation Run → Report Viewed
 100%     → 80%                → 60%         → 50%                → 40%
 ```
 
 **SQL Query:**
+
 ```sql
 -- Activation funnel
 WITH activation_steps AS (
@@ -73,17 +77,20 @@ FROM activation_steps;
 **Definition:** Where users drop off during onboarding.
 
 **Dropoff Points:**
+
 1. **After Signup** - User doesn't generate API key
 2. **After API Key** - User doesn't create job
 3. **After Job Creation** - User doesn't run reconciliation
 4. **After First Run** - User doesn't view report
 
 **Dropoff Rate:**
+
 ```
 Dropoff Rate = Users who drop off at step X / Users who reached step X
 ```
 
 **SQL Query:**
+
 ```sql
 -- Onboarding dropoff analysis
 WITH user_journey AS (
@@ -122,12 +129,14 @@ FROM user_journey;
 **Definition:** Percentage of reconciliation jobs that complete successfully.
 
 **Success Rate:**
+
 ```
 Success Rate = Successful Executions / Total Executions
 Target: >95%
 ```
 
 **SQL Query:**
+
 ```sql
 -- Reconciliation success rate
 SELECT
@@ -143,6 +152,7 @@ ORDER BY date DESC;
 ```
 
 **By Job:**
+
 ```sql
 -- Success rate by job
 SELECT
@@ -166,18 +176,21 @@ ORDER BY success_rate ASC;
 **Definition:** Percentage of operations that result in errors.
 
 **Error Types:**
+
 1. **API Errors** - 4xx/5xx HTTP errors
 2. **Reconciliation Errors** - Failed reconciliations
 3. **Webhook Errors** - Failed webhook deliveries
 4. **Adapter Errors** - Adapter-specific errors
 
 **Error Rate:**
+
 ```
 Error Rate = Errors / Total Operations
 Target: <1%
 ```
 
 **SQL Query:**
+
 ```sql
 -- API error rate
 SELECT
@@ -192,6 +205,7 @@ ORDER BY hour DESC;
 ```
 
 **By Error Type:**
+
 ```sql
 -- Error breakdown by type
 SELECT
@@ -212,12 +226,14 @@ ORDER BY error_count DESC;
 **Definition:** Time to respond to user feedback (support tickets, feature requests, etc.).
 
 **Response Time:**
+
 ```
 Response Time = Time to first response
 Target: <24 hours
 ```
 
 **SQL Query:**
+
 ```sql
 -- Feedback response time
 SELECT
@@ -238,24 +254,26 @@ ORDER BY date DESC;
 
 ### Tools Stack
 
-| Tool | Purpose | Cost |
-|------|---------|------|
-| **PostgreSQL** | Primary data store | Free (self-hosted) |
-| **Metabase** | BI/Analytics | Free (self-hosted) |
-| **Mixpanel** | Product analytics | $25/mo+ |
-| **Amplitude** | Product analytics | Free (up to 10M events) |
-| **Google Analytics** | Web analytics | Free |
-| **Segment** | Data collection | $120/mo+ |
+| Tool                 | Purpose            | Cost                    |
+| -------------------- | ------------------ | ----------------------- |
+| **PostgreSQL**       | Primary data store | Free (self-hosted)      |
+| **Metabase**         | BI/Analytics       | Free (self-hosted)      |
+| **Mixpanel**         | Product analytics  | $25/mo+                 |
+| **Amplitude**        | Product analytics  | Free (up to 10M events) |
+| **Google Analytics** | Web analytics      | Free                    |
+| **Segment**          | Data collection    | $120/mo+                |
 
 ### Recommended: Metabase Setup
 
 **Why Metabase:**
+
 - Free and open source
 - Easy SQL queries
 - Beautiful dashboards
 - Self-hosted (data stays in your database)
 
 **Setup:**
+
 ```bash
 # Using Docker
 docker run -d -p 3000:3000 \
@@ -277,12 +295,14 @@ docker run -d -p 3000:3000 \
 #### Dashboard 1: Activation Funnel
 
 **Panels:**
+
 1. Signups (line chart, last 30 days)
 2. Activation funnel (funnel chart)
 3. Dropoff by step (bar chart)
 4. Time to activation (histogram)
 
 **Queries:**
+
 - Use activation funnel SQL query above
 - Use onboarding dropoff SQL query above
 
@@ -291,12 +311,14 @@ docker run -d -p 3000:3000 \
 #### Dashboard 2: Product Health
 
 **Panels:**
+
 1. Reconciliation success rate (line chart)
 2. Error rate (line chart)
 3. Average reconciliation duration (line chart)
 4. Top error types (bar chart)
 
 **Queries:**
+
 - Use reconciliation success rate SQL query above
 - Use error rate SQL query above
 
@@ -305,12 +327,14 @@ docker run -d -p 3000:3000 \
 #### Dashboard 3: User Engagement
 
 **Panels:**
+
 1. Daily active users (line chart)
 2. Weekly active users (line chart)
 3. Jobs per user (histogram)
 4. Reconciliations per user (histogram)
 
 **Queries:**
+
 ```sql
 -- Daily active users
 SELECT
@@ -340,6 +364,7 @@ ORDER BY job_count DESC;
 ### Hypothesis Framework
 
 **Format:**
+
 ```
 We believe that [doing X] will result in [outcome Y] because [reason Z].
 
@@ -347,6 +372,7 @@ We'll know we're right when [metric M] [changes by N%].
 ```
 
 **Example:**
+
 ```
 We believe that adding a "Quick Start" tutorial will increase activation rate because new users need guidance.
 
@@ -360,6 +386,7 @@ We'll know we're right when activation rate increases from 40% to 60% within 2 w
 #### Hypothesis 1: Onboarding Tutorial Increases Activation
 
 **Hypothesis:**
+
 ```
 We believe that adding an interactive onboarding tutorial will increase activation rate because new users need step-by-step guidance.
 
@@ -367,6 +394,7 @@ We'll know we're right when activation rate increases from 40% to 60% within 2 w
 ```
 
 **Experiment:**
+
 - **Control:** Current onboarding (no tutorial)
 - **Variant:** Onboarding with interactive tutorial
 - **Split:** 50/50 A/B test
@@ -374,11 +402,13 @@ We'll know we're right when activation rate increases from 40% to 60% within 2 w
 - **Sample Size:** 100 users per variant
 
 **Metrics:**
+
 - Activation rate
 - Time to activation
 - Dropoff at each step
 
 **Success Criteria:**
+
 - Activation rate increases by 20%+
 - Time to activation decreases by 30%+
 
@@ -387,6 +417,7 @@ We'll know we're right when activation rate increases from 40% to 60% within 2 w
 #### Hypothesis 2: Pre-built Templates Increase Job Creation
 
 **Hypothesis:**
+
 ```
 We believe that offering pre-built job templates (Shopify-Stripe, QuickBooks-PayPal, etc.) will increase job creation rate because users don't need to configure from scratch.
 
@@ -394,17 +425,20 @@ We'll know we're right when job creation rate increases from 60% to 80% within 2
 ```
 
 **Experiment:**
+
 - **Control:** Manual job creation (current)
 - **Variant:** Template-based job creation
 - **Split:** 50/50 A/B test
 - **Duration:** 2 weeks
 
 **Metrics:**
+
 - Job creation rate
 - Time to first job
 - Template usage rate
 
 **Success Criteria:**
+
 - Job creation rate increases by 20%+
 - Time to first job decreases by 50%+
 
@@ -413,6 +447,7 @@ We'll know we're right when job creation rate increases from 60% to 80% within 2
 #### Hypothesis 3: In-App Help Reduces Support Tickets
 
 **Hypothesis:**
+
 ```
 We believe that adding contextual help tooltips and documentation links will reduce support tickets because users can self-serve.
 
@@ -420,17 +455,20 @@ We'll know we're right when support ticket volume decreases by 30% within 1 mont
 ```
 
 **Experiment:**
+
 - **Control:** Current UI (no help tooltips)
 - **Variant:** UI with contextual help
 - **Split:** 50/50 A/B test
 - **Duration:** 1 month
 
 **Metrics:**
+
 - Support ticket volume
 - Help tooltip clicks
 - Documentation page views
 
 **Success Criteria:**
+
 - Support ticket volume decreases by 30%+
 - Help tooltip click rate > 20%
 
@@ -439,6 +477,7 @@ We'll know we're right when support ticket volume decreases by 30% within 1 mont
 #### Hypothesis 4: Email Reminders Increase Re-engagement
 
 **Hypothesis:**
+
 ```
 We believe that sending email reminders to inactive users will increase re-engagement because users forget about Settler.
 
@@ -446,17 +485,20 @@ We'll know we're right when re-engagement rate increases from 10% to 25% within 
 ```
 
 **Experiment:**
+
 - **Control:** No email reminders
 - **Variant:** Email reminders after 7 days of inactivity
 - **Split:** 50/50 A/B test
 - **Duration:** 1 month
 
 **Metrics:**
+
 - Re-engagement rate (users who return after reminder)
 - Email open rate
 - Email click rate
 
 **Success Criteria:**
+
 - Re-engagement rate increases by 15%+
 - Email open rate > 30%
 
@@ -465,6 +507,7 @@ We'll know we're right when re-engagement rate increases from 10% to 25% within 
 #### Hypothesis 5: Free Tier Limits Increase Conversions
 
 **Hypothesis:**
+
 ```
 We believe that reducing free tier limits (from 1,000 to 100 reconciliations/month) will increase paid conversions because users hit limits faster.
 
@@ -472,17 +515,20 @@ We'll know we're right when conversion rate increases from 5% to 10% within 1 mo
 ```
 
 **Experiment:**
+
 - **Control:** Current free tier (1,000 reconciliations/month)
 - **Variant:** Reduced free tier (100 reconciliations/month)
 - **Split:** 50/50 A/B test
 - **Duration:** 1 month
 
 **Metrics:**
+
 - Conversion rate (free → paid)
 - Time to conversion
 - Churn rate
 
 **Success Criteria:**
+
 - Conversion rate increases by 5%+
 - No increase in churn rate
 
@@ -492,13 +538,13 @@ We'll know we're right when conversion rate increases from 5% to 10% within 1 mo
 
 **Experiment Log:**
 
-| Experiment | Hypothesis | Status | Start Date | End Date | Results |
-|------------|------------|--------|-----------|----------|---------|
-| Onboarding Tutorial | Increases activation | Running | 2026-01-15 | 2026-01-29 | TBD |
-| Pre-built Templates | Increases job creation | Planned | TBD | TBD | - |
-| In-App Help | Reduces support tickets | Planned | TBD | TBD | - |
-| Email Reminders | Increases re-engagement | Planned | TBD | TBD | - |
-| Free Tier Limits | Increases conversions | Planned | TBD | TBD | - |
+| Experiment          | Hypothesis              | Status  | Start Date | End Date   | Results |
+| ------------------- | ----------------------- | ------- | ---------- | ---------- | ------- |
+| Onboarding Tutorial | Increases activation    | Running | 2026-01-15 | 2026-01-29 | TBD     |
+| Pre-built Templates | Increases job creation  | Planned | TBD        | TBD        | -       |
+| In-App Help         | Reduces support tickets | Planned | TBD        | TBD        | -       |
+| Email Reminders     | Increases re-engagement | Planned | TBD        | TBD        | -       |
+| Free Tier Limits    | Increases conversions   | Planned | TBD        | TBD        | -       |
 
 ---
 
@@ -511,11 +557,13 @@ We'll know we're right when conversion rate increases from 5% to 10% within 1 mo
 #### Onboarding Too Slow
 
 **Symptoms:**
+
 - Time to activation > 7 days
 - Dropoff rate > 50% after signup
 - Support tickets about setup
 
 **Actions:**
+
 1. **Simplify onboarding:**
    - Reduce steps
    - Add progress indicator
@@ -532,6 +580,7 @@ We'll know we're right when conversion rate increases from 5% to 10% within 1 mo
    - Example code snippets
 
 **Success Metrics:**
+
 - Time to activation < 1 day
 - Dropoff rate < 30%
 - Support tickets decrease
@@ -541,11 +590,13 @@ We'll know we're right when conversion rate increases from 5% to 10% within 1 mo
 #### Confusion About Value
 
 **Symptoms:**
+
 - Low activation rate (< 40%)
 - High churn rate (> 10%)
 - Support tickets: "What does Settler do?"
 
 **Actions:**
+
 1. **Improve messaging:**
    - Clear value proposition
    - Use cases and examples
@@ -562,6 +613,7 @@ We'll know we're right when conversion rate increases from 5% to 10% within 1 mo
    - Success metrics
 
 **Success Metrics:**
+
 - Activation rate > 60%
 - Churn rate < 5%
 - Support tickets decrease
@@ -571,11 +623,13 @@ We'll know we're right when conversion rate increases from 5% to 10% within 1 mo
 #### Low Engagement
 
 **Symptoms:**
+
 - Low daily active users (< 10%)
 - Low job creation rate (< 50%)
 - High inactivity (> 30 days)
 
 **Actions:**
+
 1. **Increase engagement:**
    - Email reminders
    - In-app notifications
@@ -592,6 +646,7 @@ We'll know we're right when conversion rate increases from 5% to 10% within 1 mo
    - More integrations
 
 **Success Metrics:**
+
 - Daily active users > 20%
 - Job creation rate > 70%
 - Inactivity < 20%
@@ -601,11 +656,13 @@ We'll know we're right when conversion rate increases from 5% to 10% within 1 mo
 #### High Error Rate
 
 **Symptoms:**
+
 - Reconciliation success rate < 90%
 - High support tickets about errors
 - User complaints about accuracy
 
 **Actions:**
+
 1. **Fix bugs:**
    - Identify common errors
    - Fix root causes
@@ -622,6 +679,7 @@ We'll know we're right when conversion rate increases from 5% to 10% within 1 mo
    - Support links
 
 **Success Metrics:**
+
 - Success rate > 95%
 - Support tickets decrease
 - User satisfaction increases
@@ -631,31 +689,37 @@ We'll know we're right when conversion rate increases from 5% to 10% within 1 mo
 ### Experimentation Process
 
 **Step 1: Identify Problem**
+
 - Review metrics
 - Gather user feedback
 - Identify pain points
 
 **Step 2: Form Hypothesis**
+
 - Write hypothesis using framework
 - Define success criteria
 - Estimate impact
 
 **Step 3: Design Experiment**
+
 - Choose experiment type (A/B test, feature flag, etc.)
 - Define control and variant
 - Set sample size and duration
 
 **Step 4: Run Experiment**
+
 - Implement variant
 - Monitor metrics
 - Collect feedback
 
 **Step 5: Analyze Results**
+
 - Compare metrics
 - Statistical significance
 - User feedback
 
 **Step 6: Decide**
+
 - **If successful:** Roll out to all users
 - **If unsuccessful:** Iterate or abandon
 - **If inconclusive:** Extend experiment
@@ -666,30 +730,30 @@ We'll know we're right when conversion rate increases from 5% to 10% within 1 mo
 
 ### Immediate Actions (This Week)
 
-| Task | Owner | Time Estimate | Priority |
-|------|-------|---------------|----------|
-| Set up Metabase | Engineering | 1 day | P0 |
-| Create activation funnel dashboard | Product | 4 hours | P0 |
-| Create product health dashboard | Product | 4 hours | P0 |
-| Define key metrics | Product | 2 hours | P1 |
+| Task                               | Owner       | Time Estimate | Priority |
+| ---------------------------------- | ----------- | ------------- | -------- |
+| Set up Metabase                    | Engineering | 1 day         | P0       |
+| Create activation funnel dashboard | Product     | 4 hours       | P0       |
+| Create product health dashboard    | Product     | 4 hours       | P0       |
+| Define key metrics                 | Product     | 2 hours       | P1       |
 
 ### Short-Term (This Month)
 
-| Task | Owner | Time Estimate | Priority |
-|------|-------|---------------|----------|
-| Set up Mixpanel/Amplitude | Engineering | 1 day | P1 |
-| Create user engagement dashboard | Product | 4 hours | P1 |
-| Run first experiment (onboarding tutorial) | Product | 2 weeks | P1 |
-| Document experiment process | Product | 2 hours | P2 |
+| Task                                       | Owner       | Time Estimate | Priority |
+| ------------------------------------------ | ----------- | ------------- | -------- |
+| Set up Mixpanel/Amplitude                  | Engineering | 1 day         | P1       |
+| Create user engagement dashboard           | Product     | 4 hours       | P1       |
+| Run first experiment (onboarding tutorial) | Product     | 2 weeks       | P1       |
+| Document experiment process                | Product     | 2 hours       | P2       |
 
 ### Long-Term (This Quarter)
 
-| Task | Owner | Time Estimate | Priority |
-|------|-------|---------------|----------|
-| Run 5+ experiments | Product | Ongoing | P1 |
-| Build experimentation framework | Engineering | 1 week | P2 |
-| Create metrics dashboard for team | Product | 1 week | P2 |
-| Automate metric collection | Engineering | 1 week | P2 |
+| Task                              | Owner       | Time Estimate | Priority |
+| --------------------------------- | ----------- | ------------- | -------- |
+| Run 5+ experiments                | Product     | Ongoing       | P1       |
+| Build experimentation framework   | Engineering | 1 week        | P2       |
+| Create metrics dashboard for team | Product     | 1 week        | P2       |
+| Automate metric collection        | Engineering | 1 week        | P2       |
 
 ---
 

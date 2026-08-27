@@ -10,12 +10,15 @@
     "test": "node --test dist/__tests__/legacy-agents.test.js dist/__tests__/security-agent.test.js"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^4.0.46",
     "@settler/logger": "workspace:*",
-    "ai": "^5.0.52",
-    "@ai-sdk/openai": "^0.0.14",
+    "ai": "^7.0.77",
     "zod": "^3.23.0"
   },
   "devDependencies": {
-    "typescript": "^5.9.3"
+    "@vitest/coverage-v8": "^4.1.11",
+    "typescript": "^5.9.3",
+    "vite": "^8.2.2",
+    "vitest": "^4.1.8"
   }
 }

@@ -1,4 +1,4 @@
-import { Router, Response } from "express";
+import { Response } from "express";
 import { AuthRequest } from "../middleware/auth";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
@@ -12,8 +12,10 @@ import { RunDeltaService } from "../services/intelligence/run-delta";
 import { Prisma } from "@prisma/client";
 import * as crypto from "crypto";
 import { validateEvidenceManifest } from "../infrastructure/validation/evidence-manifest-validator";
+import { deterministicAISandbox } from "../services/ai-assistant/deterministic-ai-sandbox";
+import express from "express";
 
-const router = Router();
+const router: any = express.Router();
 const adjudicationMemoryService = new AdjudicationMemoryService(prisma);
 const runDeltaService = new RunDeltaService(prisma);
 
@@ -132,6 +134,62 @@ router.get(
       });
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to evaluate evidence completeness", 500, {
+        userId: req.userId,
+        exceptionId: req.params.exceptionId,
+      });
+      return;
+    }
+  }
+);
+
+/**
+ * GET /api/intelligence/exceptions/:exceptionId/agentic-match
+ * Run an AI agent semantic match heuristic on a specific exception
+ */
+router.get(
+  "/exceptions/:exceptionId/agentic-match",
+  requirePermission(Permission.OPERATOR_READ),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = req.tenantId!;
+      const exceptionId = req.params.exceptionId as string;
+
+      const exception = await prisma.reconciliationMatch.findFirst({
+        where: { id: exceptionId, tenantId },
+      });
+
+      if (!exception) {
+        throw new NotFoundError("Exception not found", "exception", exceptionId);
+      }
+
+      const prompt = `Analyze this reconciliation exception and suggest a semantic match resolution.
+Source Data ID: ${exception.sourceTransactionId}
+Target Data ID: ${exception.targetTransactionId}
+Context: Amount difference is ${exception.amountDiff}, confidence is ${exception.confidence}`;
+
+      const aiResponse = deterministicAISandbox.execute({
+        prompt,
+        context: { jobId: exception.runId || undefined },
+      });
+
+      logInfo("Agentic AI semantic match generated", {
+        tenantId,
+        exceptionId,
+        hash: aiResponse.responseHash,
+      });
+
+      return res.json({
+        data: {
+          exceptionId,
+          suggestedResolution: aiResponse.answer,
+          anomalies: aiResponse.anomalies,
+          confidence: aiResponse.workflowSuggestions.length > 0 ? 0.85 : 0.6,
+          aiModel: aiResponse.model,
+          responseHash: aiResponse.responseHash,
+        },
+      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, "Failed to generate agentic match", 500, {
         userId: req.userId,
         exceptionId: req.params.exceptionId,
       });
@@ -706,4 +764,4 @@ router.get(
   }
 );
 
-export { router as exceptionIntelligenceRouter };
+export const exceptionIntelligenceRouter = router;

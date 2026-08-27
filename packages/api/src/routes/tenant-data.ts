@@ -13,7 +13,7 @@ import { TenantRequest } from "../middleware/tenant";
 import { requirePermission } from "../middleware/authorization";
 import { enforceFreezeState } from "../middleware/governance";
 import { Permission } from "../infrastructure/security/Permissions";
-import { query, transaction } from "../db";
+import { queryWithTenant, transaction } from "../db";
 import { logInfo, logError } from "../utils/logger";
 import { handleRouteError } from "../utils/error-handler";
 import { validateTenantId } from "../infrastructure/tenancy/TenantEnforcement";
@@ -88,26 +88,30 @@ router.get(
         subscriptions,
       ] = await Promise.all([
         // Tenant info
-        query(
+        queryWithTenant(
+          tenantId,
           `SELECT id, slug, name, primary_domain, custom_domain, is_active, created_at, updated_at, metadata
            FROM tenants WHERE id = $1`,
           [tenantId]
         ),
         // Users
-        query(
+        queryWithTenant(
+          tenantId,
           `SELECT id, email, name, role, data_residency_region, created_at, updated_at, deleted_at
            FROM users WHERE tenant_id = $1`,
           [tenantId]
         ),
         // Recon jobs
-        query(
+        queryWithTenant(
+          tenantId,
           `SELECT id, name, description, source_adapter, target_adapter, status, schedule_cron,
                   created_at, updated_at, deleted_at, metadata
            FROM recon_jobs WHERE tenant_id = $1`,
           [tenantId]
         ),
         // Recon results
-        query(
+        queryWithTenant(
+          tenantId,
           `SELECT id, recon_job_id, status, started_at, completed_at, source_count, target_count,
                   matched_count, unmatched_source_count, unmatched_target_count, created_at
            FROM recon_results WHERE tenant_id = $1
@@ -115,13 +119,15 @@ router.get(
           [tenantId]
         ),
         // Webhooks
-        query(
+        queryWithTenant(
+          tenantId,
           `SELECT id, url, events, status, created_at, updated_at, deleted_at
            FROM webhooks WHERE tenant_id = $1`,
           [tenantId]
         ),
         // API keys (for all users in tenant)
-        query(
+        queryWithTenant(
+          tenantId,
           `SELECT ak.id, ak.user_id, ak.name, ak.scopes, ak.rate_limit, ak.created_at, ak.last_used_at
            FROM api_keys ak
            JOIN users u ON ak.user_id = u.id
@@ -129,7 +135,8 @@ router.get(
           [tenantId]
         ),
         // Audit logs (last 10000)
-        query(
+        queryWithTenant(
+          tenantId,
           `SELECT event, user_id, resource_type, resource_id, changes, ip_address, user_agent,
                   timestamp, metadata
            FROM audit_logs
@@ -139,26 +146,30 @@ router.get(
           [tenantId]
         ),
         // Ingestion sources
-        query(
+        queryWithTenant(
+          tenantId,
           `SELECT id, name, type, connector_type, status, last_sync_at, created_at, updated_at
            FROM ingestion_sources WHERE tenant_id = $1`,
           [tenantId]
         ),
         // Exports
-        query(
+        queryWithTenant(
+          tenantId,
           `SELECT id, type, format, status, storage_location, created_at, updated_at
            FROM exports WHERE tenant_id = $1
            ORDER BY created_at DESC LIMIT 100`,
           [tenantId]
         ),
         // Billing account
-        query(
+        queryWithTenant(
+          tenantId,
           `SELECT id, email, name, currency, status, created_at, updated_at
            FROM billing_accounts WHERE tenant_id = $1`,
           [tenantId]
         ),
         // Subscriptions
-        query(
+        queryWithTenant(
+          tenantId,
           `SELECT s.id, s.plan_id, s.plan_name, s.status, s.current_period_start, s.current_period_end
            FROM subscriptions s
            JOIN billing_accounts ba ON s.billing_account_id = ba.id
@@ -185,7 +196,8 @@ router.get(
       };
 
       // Log export in audit trail
-      await query(
+      await queryWithTenant(
+        tenantId,
         `INSERT INTO audit_logs (event, user_id, tenant_id, resource_type, metadata, ip_address, user_agent)
          VALUES ($1, $2, $3, $4, $5, $6, $7)`,
         [
@@ -228,10 +240,12 @@ router.get(
   }
 );
 
-async function tableExists(tableName: string): Promise<boolean> {
-  const rows = await query<{ exists: string | null }>(`SELECT to_regclass($1) as exists`, [
-    `public.${tableName}`,
-  ]);
+async function tableExists(tableName: string, tenantId: string): Promise<boolean> {
+  const rows = await queryWithTenant<{ exists: string | null }>(
+    tenantId,
+    `SELECT to_regclass($1) as exists`,
+    [`public.${tableName}`]
+  );
 
   return Boolean(rows[0]?.exists);
 }
@@ -239,13 +253,14 @@ async function tableExists(tableName: string): Promise<boolean> {
 async function countIfTableExists(
   tableName: string,
   sql: string,
-  params: (string | number)[]
+  params: (string | number)[],
+  tenantId: string
 ): Promise<number> {
-  if (!(await tableExists(tableName))) {
+  if (!(await tableExists(tableName, tenantId))) {
     return 0;
   }
 
-  const rows = await query<{ count: string }>(sql, params);
+  const rows = await queryWithTenant<{ count: string }>(tenantId, sql, params);
   return Number(rows[0]?.count ?? 0);
 }
 
@@ -257,11 +272,12 @@ router.get(
       const tenantId = req.tenantId!;
       validateTenantId(tenantId, "tenant-data integrity-check");
 
-      const rlsRows = await query<{
+      const rlsRows = await queryWithTenant<{
         table_name: string;
         relrowsecurity: boolean;
         policy_count: string;
       }>(
+        tenantId,
         `SELECT c.relname as table_name,
                 c.relrowsecurity,
                 COUNT(p.polname)::text as policy_count
@@ -284,7 +300,8 @@ router.get(
          LEFT JOIN users u ON j.user_id = u.id
          WHERE j.tenant_id = $1
            AND (u.id IS NULL OR u.tenant_id <> j.tenant_id)`,
-        [tenantId]
+        [tenantId],
+        tenantId
       );
 
       const orphanMatches = await countIfTableExists(
@@ -294,7 +311,8 @@ router.get(
          LEFT JOIN reconciliation_runs r ON m.run_id = r.id
          WHERE m.tenant_id = $1
            AND (r.id IS NULL OR r.tenant_id <> m.tenant_id)`,
-        [tenantId]
+        [tenantId],
+        tenantId
       );
 
       const crossTenantJobRefs = await countIfTableExists(
@@ -304,7 +322,8 @@ router.get(
          JOIN users u ON j.user_id = u.id
          WHERE j.tenant_id = $1
            AND u.tenant_id <> j.tenant_id`,
-        [tenantId]
+        [tenantId],
+        tenantId
       );
 
       const crossTenantMatchRefs = await countIfTableExists(
@@ -314,7 +333,8 @@ router.get(
          JOIN reconciliation_runs r ON m.run_id = r.id
          WHERE m.tenant_id = $1
            AND r.tenant_id <> m.tenant_id`,
-        [tenantId]
+        [tenantId],
+        tenantId
       );
 
       const chainIntegrity = await verifyTenantIntegrityChain(tenantId);
@@ -402,7 +422,8 @@ router.delete(
         });
       }
 
-      const userCheck = await query<{ password_hash: string }>(
+      const userCheck = await queryWithTenant<{ password_hash: string }>(
+        tenantId,
         `SELECT password_hash FROM users WHERE id = $1 AND tenant_id = $2`,
         [userId, tenantId]
       );
@@ -476,7 +497,8 @@ router.delete(
       });
 
       // Log deletion request
-      await query(
+      await queryWithTenant(
+        tenantId,
         `INSERT INTO audit_logs (event, user_id, tenant_id, resource_type, metadata, ip_address, user_agent)
          VALUES ($1, $2, $3, $4, $5, $6, $7)`,
         [

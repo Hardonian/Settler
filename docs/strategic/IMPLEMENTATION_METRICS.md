@@ -10,6 +10,7 @@
 ## Problem Statement
 
 No executive dashboard for key business metrics. Limited visibility into:
+
 - Business health
 - Growth metrics (CAC, LTV, churn)
 - Unit economics
@@ -20,6 +21,7 @@ No executive dashboard for key business metrics. Limited visibility into:
 ## Solution Overview
 
 Implement executive dashboard with:
+
 1. Key business metrics (MRR, ARR, churn, CAC, LTV)
 2. Growth metrics (signups, activations, conversions)
 3. Unit economics (cost per customer, margin)
@@ -52,24 +54,28 @@ API endpoint for metrics data.
 ## Key Metrics
 
 ### Revenue Metrics
+
 - MRR (Monthly Recurring Revenue)
 - ARR (Annual Recurring Revenue)
 - Revenue Growth Rate
 - Average Revenue Per User (ARPU)
 
 ### Growth Metrics
+
 - Signups (daily/weekly/monthly)
 - Activations (users who created first API key)
 - Conversion Rate (free → paid)
 - Churn Rate
 
 ### Unit Economics
+
 - CAC (Customer Acquisition Cost)
 - LTV (Lifetime Value)
 - LTV:CAC Ratio
 - Payback Period
 
 ### Product Metrics
+
 - Active Users (DAU/MAU)
 - API Usage (requests per user)
 - Feature Adoption

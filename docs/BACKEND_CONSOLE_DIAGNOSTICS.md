@@ -188,11 +188,7 @@ psql $DATABASE_URL -c "SELECT 1"
 ```typescript
 // In prismaClient.ts
 const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: process.env.DATABASE_URL + "?connection_limit=5&pool_timeout=20",
-    },
-  },
+  datasourceUrl: process.env.DATABASE_URL + "?connection_limit=5&pool_timeout=20",
 });
 ```
 

@@ -9,6 +9,7 @@ import { PrismaClient, Prisma } from "@prisma/client";
 import crypto from "crypto";
 import { logError, logInfo, logWarn } from "../../utils/logger";
 import { eventBus } from "../events/event-bus";
+import { secureFetch, validateUrl } from "../../utils/ssrf-protection";
 
 /**
  * Standard webhook event payload structure
@@ -241,7 +242,7 @@ export class WebhookService {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-      const response = await fetch(url, {
+      const response = await secureFetch(url, {
         method: "POST",
         headers,
         body: payload,
@@ -781,6 +782,7 @@ export class WebhookService {
     events: string[],
     secret?: string
   ) {
+    await validateUrl(url);
     const webhookSecret = secret || crypto.randomBytes(32).toString("hex");
 
     const webhook = await this.prisma.webhook.create({

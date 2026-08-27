@@ -42,7 +42,7 @@ if %errorLevel% == 0 (
 ) else (
     echo [WARN] pnpm not found. Installing via corepack...
     corepack enable
-    corepack prepare pnpm@10.13.1 --activate
+    corepack prepare pnpm@9.15.0 --activate
 )
 
 echo.

@@ -1,10 +1,10 @@
 [
   {
-    "id": "89dd5f7e-7744-44cc-a198-509afa8abc9a",
-    "externalId": "txn_ae96c02c",
+    "id": "6a49db2f-6823-428a-afdf-ecf71c216336",
+    "externalId": "txn_ae2d04da",
     "source": "Bank",
-    "occurredAt": "2025-01-28T19:42:57.000Z",
-    "amount": 571.24,
+    "occurredAt": "2025-01-30T23:02:51.000Z",
+    "amount": 539.13,
     "currency": "USD",
     "direction": "INCOMING",
     "type": "TRANSFER",
@@ -15,11 +15,11 @@
     }
   },
   {
-    "id": "8c4a9300-0150-4507-bcac-40d95f10405e",
-    "externalId": "txn_c71b74f1",
+    "id": "240f8d5a-f4b1-793d-b7a1-03bf8d5830ee",
+    "externalId": "txn_4a0dd999",
     "source": "Bank",
-    "occurredAt": "2025-01-30T12:27:14.000Z",
-    "amount": 512.47,
+    "occurredAt": "2025-01-31T10:50:03.000Z",
+    "amount": 884.05,
     "currency": "USD",
     "direction": "INCOMING",
     "type": "TRANSFER",
@@ -30,11 +30,11 @@
     }
   },
   {
-    "id": "344e1d04-246b-4015-83ce-8eb7016d27c6",
-    "externalId": "txn_a6d1877f",
+    "id": "0051e20b-276c-2d2a-b609-693b4e38dce5",
+    "externalId": "txn_654202aa",
     "source": "Bank",
-    "occurredAt": "2025-02-01T14:54:46.000Z",
-    "amount": 503.2,
+    "occurredAt": "2025-01-25T23:48:21.000Z",
+    "amount": 550.54,
     "currency": "USD",
     "direction": "INCOMING",
     "type": "TRANSFER",
@@ -45,11 +45,11 @@
     }
   },
   {
-    "id": "67652b8b-825c-4e41-9019-99c951e4109d",
-    "externalId": "txn_df143589",
+    "id": "a6fb0254-1435-b13f-87da-e761a0f115a6",
+    "externalId": "txn_06db9f00",
     "source": "Bank",
-    "occurredAt": "2025-02-01T09:59:34.000Z",
-    "amount": 606.84,
+    "occurredAt": "2025-01-28T16:58:05.000Z",
+    "amount": 623.31,
     "currency": "USD",
     "direction": "INCOMING",
     "type": "TRANSFER",
@@ -60,11 +60,11 @@
     }
   },
   {
-    "id": "51a8cb4f-0141-4461-979e-53217797a1f3",
-    "externalId": "txn_2bf9507f",
+    "id": "87060369-5e61-e991-3ea1-720746fa7db6",
+    "externalId": "txn_fc15fecc",
     "source": "Bank",
-    "occurredAt": "2025-01-30T07:05:11.000Z",
-    "amount": 602.88,
+    "occurredAt": "2025-01-29T00:08:08.000Z",
+    "amount": 535.81,
     "currency": "USD",
     "direction": "INCOMING",
     "type": "TRANSFER",
@@ -75,10 +75,10 @@
     }
   },
   {
-    "id": "c0ad943c-5443-4b9b-b31a-732643577629",
-    "externalId": "txn_fee_034db9d8",
+    "id": "2e737782-712a-06d0-10a4-a7e844d0f536",
+    "externalId": "txn_fee_fe4566eb",
     "source": "Bank",
-    "occurredAt": "2025-01-17T00:45:20.000Z",
+    "occurredAt": "2025-01-25T02:48:25.000Z",
     "amount": 15,
     "currency": "USD",
     "direction": "OUTGOING",

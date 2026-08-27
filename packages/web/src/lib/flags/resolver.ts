@@ -282,10 +282,6 @@ function getEnvOverride(key: FlagKey): boolean | string | null {
  * Can integrate with LaunchDarkly, GrowthBook, Unleash, etc.
  */
 async function getRemoteConfig(_key: FlagKey): Promise<boolean | string | null> {
-  // Integrate with remote config: LaunchDarkly, Split.io, or similar
-  // Example:
-  // const config = await fetchRemoteConfig(key);
-  // return config?.value || null;
   return null;
 }
 

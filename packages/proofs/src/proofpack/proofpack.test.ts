@@ -57,7 +57,6 @@ describe("computePackageHash", () => {
   });
 });
 
-
 describe("verifyProofIntegrity", () => {
   it("detects an invalid package hash", () => {
     const mockExport: any = {
@@ -79,15 +78,15 @@ describe("verifyProofIntegrity", () => {
           id: "ev-1",
           payload: { data: "test" },
           payloadHash: "some-hash",
-          degraded: false
-        }
+          degraded: false,
+        },
       ],
       completeness: {},
       integrity: {
         packageHash: "invalid-hash",
         evidenceHashes: {},
-        algorithm: "sha256"
-      }
+        algorithm: "sha256",
+      },
     };
 
     const result = verifyProofIntegrity(mockExport as ProofPackageExport);
@@ -96,7 +95,6 @@ describe("verifyProofIntegrity", () => {
     expect(result.errors).toContain("Package hash mismatch - evidence may have been tampered with");
   });
 });
-
 
 describe("verifyProofIntegrity", () => {
   const baseExport: ProofPackageExport = {
@@ -132,7 +130,7 @@ describe("verifyProofIntegrity", () => {
         degraded: false,
         degradedReasons: [],
         attested: false,
-      }
+      },
     ],
     completeness: {
       modelId: "model-1",
@@ -145,7 +143,7 @@ describe("verifyProofIntegrity", () => {
       packageHash: "",
       evidenceHashes: {},
       algorithm: "sha256",
-    }
+    },
   };
 
   it("returns invalid result with errors when package hash does not match", () => {
@@ -157,7 +155,10 @@ describe("verifyProofIntegrity", () => {
     const crypto = require("crypto");
     const payload = baseExport.evidence[0].payload;
     const sortedKeys = Object.keys(payload).sort();
-    const evidenceHash = crypto.createHash("sha256").update(JSON.stringify(payload, sortedKeys)).digest("hex");
+    const evidenceHash = crypto
+      .createHash("sha256")
+      .update(JSON.stringify(payload, sortedKeys))
+      .digest("hex");
 
     const invalidExport = JSON.parse(JSON.stringify(baseExport));
     invalidExport.evidence[0].payloadHash = evidenceHash;
@@ -175,7 +176,10 @@ describe("verifyProofIntegrity", () => {
     // Compute evidence hash
     const payload = baseExport.evidence[0].payload;
     const sortedKeys = Object.keys(payload).sort();
-    const evidenceHash = crypto.createHash("sha256").update(JSON.stringify(payload, sortedKeys)).digest("hex");
+    const evidenceHash = crypto
+      .createHash("sha256")
+      .update(JSON.stringify(payload, sortedKeys))
+      .digest("hex");
 
     // Compute package hash
     const computedHash = crypto

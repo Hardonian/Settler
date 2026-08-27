@@ -1,6 +1,6 @@
 {
   "reportVersion": "2026-03-09.1",
-  "generatedAt": "2026-04-01T19:22:09.765Z",
+  "generatedAt": "2026-06-10T16:30:52.905Z",
   "dimensions": {
     "code_security_status": {
       "status": "PASS",
@@ -13,9 +13,8 @@
       "status": "PASS_WITH_DEGRADED_EVIDENCE",
       "evidenceLevel": "degraded",
       "blocking": true,
-      "reason": "Local dependency audit artifact was not available. Local dependency audit was degraded: pnpm-audit-backend-unavailable, osv-scanner-missing. Authenticated advisory completeness is unauthenticated.",
+      "reason": "Local dependency audit was degraded: osv-scanner-missing. Authenticated advisory completeness is unauthenticated.",
       "nextAction": [
-        "Run `pnpm run audit:deps` before release verification.",
         "Restore registry audit connectivity/auth and rerun `pnpm run audit:deps`.",
         "Provide DEPENDABOT_ALERTS_EXPORT_PATH or set GITHUB_TOKEN/GH_TOKEN with GITHUB_REPOSITORY."
       ]
@@ -26,7 +25,6 @@
       "blocking": false,
       "reason": "No authenticated advisory source configured.",
       "nextAction": [
-        "Run `pnpm run audit:deps` before release verification.",
         "Restore registry audit connectivity/auth and rerun `pnpm run audit:deps`.",
         "Provide DEPENDABOT_ALERTS_EXPORT_PATH or set GITHUB_TOKEN/GH_TOKEN with GITHUB_REPOSITORY."
       ]

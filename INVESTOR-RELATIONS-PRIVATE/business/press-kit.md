@@ -5,21 +5,25 @@
 ### Logo
 
 **Primary Logo (Light Background)**
+
 ```
 [Insert: settler-logo-dark.svg]
 ```
 
 **Secondary Logo (Dark Background)**
+
 ```
 [Insert: settler-logo-light.svg]
 ```
 
 **Logomark (Icon Only)**
+
 ```
 [Insert: settler-icon.svg]
 ```
 
 **Usage Guidelines:**
+
 - Minimum clear space: 20% of logo height on all sides
 - Minimum size: 24px height for digital, 0.5" for print
 - Do not stretch, rotate, or modify colors
@@ -35,17 +39,20 @@
 The Settler logomark represents **balance and reconciliation** through two interlocking shapes that form a complete circle.
 
 **Visual Elements:**
+
 - **Two Arcs**: Represent source and target platforms coming together
 - **Perfect Circle**: Symbolizes complete reconciliation and harmony
 - **Modern, Minimal**: Reflects our developer-first, API-first philosophy
 - **Geometric Precision**: Represents accuracy and reliability
 
 **Color Palette:**
+
 - **Primary:** #0EA5E9 (Sky Blue) - Trust, technology, clarity
 - **Secondary:** #0369A1 (Deep Blue) - Stability, professionalism
 - **Accent:** #10B981 (Emerald Green) - Success, accuracy
 
 **Typography:**
+
 - **Logo:** Inter Bold
 - **Headings:** Inter SemiBold
 - **Body:** Inter Regular
@@ -60,12 +67,14 @@ The Settler logomark represents **balance and reconciliation** through two inter
 ### Homepage Hero
 
 **Headline:**
+
 # Automate Financial Reconciliation Across All Your Platforms
 
 **Subheadline:**
 Settler is the API-first reconciliation service that connects Stripe, Shopify, QuickBooks, and 50+ platforms. Set up in 5 minutes, reconcile in real-time.
 
 **CTA Buttons:**
+
 - **Primary:** "Get Started Free" → [settler.io/signup](https://settler.io/signup)
 - **Secondary:** "View Documentation" → [docs.settler.io](https://docs.settler.io)
 
@@ -142,24 +151,28 @@ Settler is the API-first reconciliation service that connects Stripe, Shopify, Q
 ### Footer
 
 **Company:**
+
 - About
 - Blog
 - Careers
 - Contact
 
 **Product:**
+
 - Documentation
 - API Reference
 - Adapters
 - Changelog
 
 **Resources:**
+
 - Community
 - Support
 - Status
 - Security
 
 **Legal:**
+
 - Privacy Policy
 - Terms of Service
 - GDPR
@@ -236,7 +249,7 @@ Modern businesses operate across 10+ platforms (Stripe, Shopify, QuickBooks, etc
 
 Manual reconciliation takes 2-3 hours daily and causes:
 • Revenue leakage
-• Compliance risks  
+• Compliance risks
 • Operational overhead
 
 3/ The Solution:
@@ -292,13 +305,14 @@ Questions? Ask us anything 👇
 
 **Settler Launches Reconciliation-as-a-Service Platform, Simplifying Financial Data Reconciliation for Modern Businesses**
 
-*API-first platform connects Stripe, Shopify, QuickBooks, and 50+ platforms with 5-minute integration*
+_API-first platform connects Stripe, Shopify, QuickBooks, and 50+ platforms with 5-minute integration_
 
 **[City, Date]** — Settler, a reconciliation-as-a-service platform, today announced its public launch, enabling businesses to automate financial data reconciliation across fragmented SaaS and e-commerce ecosystems through a single API.
 
 Modern businesses operate across 10+ platforms—from payment processors like Stripe to e-commerce platforms like Shopify to accounting systems like QuickBooks. Manual reconciliation takes finance teams 2-3 hours daily and causes revenue leakage, compliance risks, and operational overhead.
 
 Settler solves this by providing an API-first reconciliation service that:
+
 - Connects all platforms through composable adapters
 - Reconciles transactions in real-time via webhooks
 - Provides complete audit trails for compliance
@@ -309,6 +323,7 @@ Settler solves this by providing an API-first reconciliation service that:
 **Developer-First Approach**
 
 Settler is built with developers in mind. The platform offers:
+
 - TypeScript SDK with full type safety
 - 5-minute integration (`npm install @settler/sdk`)
 - Interactive playground for testing
@@ -317,6 +332,7 @@ Settler is built with developers in mind. The platform offers:
 **Pricing & Availability**
 
 Settler is available today with a generous free tier:
+
 - **Free:** 1,000 reconciliations/month
 - **Starter:** $29/month (10,000 reconciliations)
 - **Growth:** $99/month (100,000 reconciliations)
@@ -370,17 +386,20 @@ For more information, visit [settler.io](https://settler.io) or follow [@settler
 ## Contact Information
 
 **Press Inquiries:**
+
 - **Email:** press@settler.io
 - **Phone:** (Coming soon)
 
 **General Inquiries:**
+
 - **Email:** hello@settler.io
 - **Support:** support@settler.io
 
 **Sales:**
+
 - **Email:** sales@settler.io
 - **Calendar:** [settler.io/contact](https://settler.io/contact)
 
 ---
 
-*Last Updated: January 2026*
+_Last Updated: January 2026_

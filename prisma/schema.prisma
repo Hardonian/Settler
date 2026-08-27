@@ -240,6 +240,7 @@ model ReconJob {
   reconStrategy      String    @default("deterministic") @map("recon_strategy")
   scheduleCron       String?   @map("schedule_cron")
   scheduleTimezone   String    @default("UTC") @map("schedule_timezone")
+  nextExecutionAt    DateTime? @map("next_execution_at")
   status             String    @default("active")
   version            Int       @default(1)
   metadata           Json      @default("{}")
@@ -252,6 +253,7 @@ model ReconJob {
   transformRecipe    TransformRecipe? @relation(fields: [transformRecipeId], references: [id], onDelete: SetNull)
   results            ReconResult[]
   audits             ReconAudit[]
+  scheduledJobs      ScheduledJob[]
 
   @@index([tenantId])
   @@index([userId])
@@ -260,10 +262,32 @@ model ReconJob {
   @@map("recon_jobs")
 }
 
+model ScheduledJob {
+  id               String    @id @default(uuid()) @db.Uuid
+  reconJobId       String    @map("recon_job_id") @db.Uuid
+  tenantId         String    @map("tenant_id") @db.Uuid
+  status           String    @default("pending") // pending, running, completed, failed
+  scheduledFor     DateTime  @map("scheduled_for")
+  lockedAt         DateTime? @map("locked_at")
+  startedAt        DateTime? @map("started_at")
+  completedAt      DateTime? @map("completed_at")
+  attempts         Int       @default(0)
+  error            String?   @db.Text
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  reconJob         ReconJob  @relation(fields: [reconJobId], references: [id], onDelete: Cascade)
+
+  @@index([status, scheduledFor])
+  @@index([reconJobId])
+  @@map("scheduled_jobs")
+}
+
 model ReconResult {
   id                    String    @id @default(uuid()) @db.Uuid
-  reconJobId            String    @map("recon_job_id") @db.Uuid
+  reconJobId            String?   @map("recon_job_id") @db.Uuid
   tenantId              String    @map("tenant_id") @db.Uuid
+  ingestionId           String?   @map("ingestion_id") @db.Uuid
   executionId           String?   @map("execution_id") @db.Uuid
   snapshotId            String?   @map("snapshot_id") @db.Uuid
   inputHash             String?   @map("input_hash")
@@ -290,10 +314,12 @@ model ReconResult {
   summary               Json      @default("{}")
   metadata              Json      @default("{}")
   proofCapsule          Json?     @default("{}") @map("proof_capsule")
+  proofpackPayload      Json?     @map("proofpack_payload")
+  proofpackHash         String?   @map("proofpack_hash")
   createdAt             DateTime  @default(now()) @map("created_at")
   updatedAt             DateTime  @updatedAt @map("updated_at")
 
-  reconJob              ReconJob @relation(fields: [reconJobId], references: [id], onDelete: Cascade)
+  reconJob              ReconJob? @relation(fields: [reconJobId], references: [id], onDelete: Cascade)
   snapshot              RunSnapshot? @relation(fields: [snapshotId], references: [id], onDelete: SetNull)
   audits                ReconAudit[]
   provenance            ExecutionProvenance[]
@@ -1048,6 +1074,8 @@ model Tenant {
   anomalies          Anomaly[]
   policyComparisons  PolicyComparison[]
   dpias              DPIA[]
+  nudgePolicies      NudgePolicy[]
+  nudgeActions       NudgeAction[]
 
   @@index([slug])
   @@index([primaryDomain])
@@ -2386,25 +2414,30 @@ model OperatorSuggestionDismissal {
 
 model AgentStatus {
   id        BigInt   @id @default(autoincrement())
+  tenantId  String?  @map("tenant_id") @db.Uuid
   timestamp DateTime @default(now())
   agents    Json     // Array of agent status objects
   metadata  Json     @default("{}")
 
+  @@index([tenantId])
   @@map("agent_status")
 }
 
 model MonitoringAlert {
   id         BigInt   @id @default(autoincrement())
+  tenantId   String?  @map("tenant_id") @db.Uuid
   message    String   @db.Text
   status     Json?
   metadata   Json     @default("{}")
   createdAt  DateTime @default(now()) @map("created_at")
 
+  @@index([tenantId])
   @@map("monitoring_alerts")
 }
 
 model AgentDeploy {
   id         BigInt   @id @default(autoincrement())
+  tenantId   String?  @map("tenant_id") @db.Uuid
   env        String
   commit     String
   status     String
@@ -2412,17 +2445,20 @@ model AgentDeploy {
   error      String?  @db.Text
   createdAt  DateTime @default(now()) @map("created_at")
 
+  @@index([tenantId])
   @@map("deploys")
 }
 
 model SecurityAudit {
   id        BigInt   @id @default(autoincrement())
+  tenantId  String?  @map("tenant_id") @db.Uuid
   scanTime  DateTime? @map("scan_time")
   issues    Json?
   summary   Json?
   metadata  Json     @default("{}")
   createdAt DateTime @default(now()) @map("created_at")
 
+  @@index([tenantId])
   @@map("security_audits")
 }
 
@@ -2550,3 +2586,47 @@ model DPIA {
   @@index([tenantId])
   @@map("dpias")
 }
+
+// ============================================================================
+// NUDGER ENGINE
+// ============================================================================
+
+model NudgePolicy {
+  id                String    @id @default(uuid()) @db.Uuid
+  tenantId          String    @db.Uuid
+  name              String
+  criteria          Json      @default("{}")
+  channel           String    @default("email")
+  isActive          Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  tenant            Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  actions           NudgeAction[]
+
+  @@index([tenantId])
+  @@index([isActive])
+  @@map("nudge_policies")
+}
+
+model NudgeAction {
+  id                String    @id @default(uuid()) @db.Uuid
+  tenantId          String    @db.Uuid
+  policyId          String    @db.Uuid
+  invoiceId         String
+  targetContact     String
+  status            String    @default("dry_run") // dry_run, pending, executed, failed
+  executeAt         DateTime?
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  tenant            Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  policy            NudgePolicy @relation(fields: [policyId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([policyId])
+  @@index([status])
+  @@map("nudge_actions")
+}
+

@@ -68,7 +68,7 @@ describe("resolveOperatorRunDetailForTenants", () => {
       return;
     }
     expect(out.detail.runKind).toBe("ingestion_run");
-    expect(out.detail.sourceModel).toBe("reconciliation_runs");
+    expect(out.detail.sourceModel).toBe("recon_results");
     expect(out.detail.kindDetail.kind).toBe("ingestion_run");
     expect(out.detail.resultContext.latestResultId).toBeNull();
   });

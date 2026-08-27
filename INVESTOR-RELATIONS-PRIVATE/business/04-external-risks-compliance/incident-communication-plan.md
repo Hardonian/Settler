@@ -10,6 +10,7 @@
 **Purpose:** Provide templates and procedures for communicating incidents (downtime, security events, data breaches) to customers, stakeholders, and the public.
 
 **Incident Types:**
+
 1. Service Downtime
 2. Security Incidents
 3. Data Breaches
@@ -23,16 +24,19 @@
 ### Principles
 
 **Transparency:**
+
 - Honest and timely communication
 - Clear and concise messaging
 - Regular updates
 
 **Empathy:**
+
 - Acknowledge impact
 - Apologize when appropriate
 - Show commitment to resolution
 
 **Action-Oriented:**
+
 - Explain what happened
 - Describe what we're doing
 - Provide timeline and next steps
@@ -44,26 +48,31 @@
 ### Channels
 
 **Status Page:**
+
 - [status.settler.io](https://status.settler.io)
 - Real-time incident updates
 - Public visibility
 
 **Email:**
+
 - Customer notifications
 - Stakeholder updates
 - Regulatory notifications
 
 **In-App:**
+
 - In-app notifications
 - Banner alerts
 - Dashboard updates
 
 **Social Media:**
+
 - Twitter/X: [@settler_io](https://twitter.com/settler_io)
 - LinkedIn: [Settler](https://linkedin.com/company/settler)
 - Updates and announcements
 
 **Support:**
+
 - Support tickets
 - Discord community
 - Email: support@settler.io
@@ -75,24 +84,28 @@
 ### Severity Levels
 
 **P0: Critical**
+
 - Complete service outage
 - Data breach
 - Security incident
 - Multiple customers affected
 
 **P1: High**
+
 - Major service degradation
 - Partial outage
 - Performance issues
 - Multiple customers affected
 
 **P2: Medium**
+
 - Minor service degradation
 - Limited impact
 - Performance issues
 - Single customer affected
 
 **P3: Low**
+
 - Minor issues
 - Limited impact
 - No customer impact
@@ -106,6 +119,7 @@
 **Subject:** [URGENT] Settler Service Outage
 
 **Status Page:**
+
 ```
 🚨 INCIDENT: Service Outage
 
@@ -121,6 +135,7 @@ Last updated: [Time]
 ```
 
 **Email:**
+
 ```
 Subject: [URGENT] Settler Service Outage
 
@@ -161,6 +176,7 @@ The Settler Team
 **Subject:** [SECURITY] Security Incident Notification
 
 **Status Page:**
+
 ```
 🔒 SECURITY INCIDENT: Security Event Detected
 
@@ -174,6 +190,7 @@ Last updated: [Time]
 ```
 
 **Email:**
+
 ```
 Subject: [SECURITY] Security Incident Notification
 
@@ -222,6 +239,7 @@ The Settler Security Team
 **Subject:** [SECURITY] Data Breach Notification
 
 **Status Page:**
+
 ```
 🔒 SECURITY INCIDENT: Data Breach
 
@@ -236,6 +254,7 @@ Last updated: [Time]
 ```
 
 **Email:**
+
 ```
 Subject: [SECURITY] Data Breach Notification
 
@@ -287,6 +306,7 @@ The Settler Security Team
 **Subject:** Service Performance Issues
 
 **Status Page:**
+
 ```
 ⚠️ PERFORMANCE: Service Degradation
 
@@ -300,6 +320,7 @@ Last updated: [Time]
 ```
 
 **Email:**
+
 ```
 Subject: Service Performance Issues
 
@@ -336,6 +357,7 @@ The Settler Team
 **Subject:** Important: API Changes
 
 **Status Page:**
+
 ```
 ℹ️ UPDATE: API Changes
 
@@ -349,6 +371,7 @@ Last updated: [Time]
 ```
 
 **Email:**
+
 ```
 Subject: Important: API Changes
 
@@ -389,12 +412,14 @@ The Settler Team
 ### Step 1: Incident Detection
 
 **Triggers:**
+
 - Monitoring alerts
 - Customer reports
 - Security team detection
 - Performance monitoring
 
 **Actions:**
+
 - Acknowledge incident
 - Assess severity
 - Activate incident response team
@@ -405,12 +430,14 @@ The Settler Team
 ### Step 2: Initial Communication
 
 **Timeline:**
+
 - P0: Critical - 15 minutes
 - P1: High - 1 hour
 - P2: Medium - 4 hours
 - P3: Low - 24 hours
 
 **Channels:**
+
 - Status page update
 - Email notification (if applicable)
 - Social media update (if public)
@@ -421,12 +448,14 @@ The Settler Team
 ### Step 3: Ongoing Updates
 
 **Frequency:**
+
 - P0: Critical - Every 15 minutes
 - P1: High - Every hour
 - P2: Medium - Every 4 hours
 - P3: Low - Daily
 
 **Content:**
+
 - Current status
 - Progress update
 - Expected resolution time
@@ -437,9 +466,11 @@ The Settler Team
 ### Step 4: Resolution Communication
 
 **Timeline:**
+
 - Immediate upon resolution
 
 **Content:**
+
 - Incident resolved
 - Root cause (if appropriate)
 - What we've done to prevent recurrence
@@ -450,9 +481,11 @@ The Settler Team
 ### Step 5: Post-Incident Communication
 
 **Timeline:**
+
 - Within 72 hours
 
 **Content:**
+
 - Incident summary
 - Root cause analysis
 - Remediation steps
@@ -466,17 +499,20 @@ The Settler Team
 ### Status Page Format
 
 **Incident Title:**
+
 - Clear and descriptive
 - Severity indicator
 - Affected services
 
 **Status:**
+
 - Investigating
 - Identified
 - Monitoring
 - Resolved
 
 **Updates:**
+
 - Timestamp
 - Current status
 - Progress update
@@ -489,10 +525,12 @@ The Settler Team
 ### GDPR Breach Notification
 
 **Timeline:**
+
 - 72 hours to supervisory authority
 - Without undue delay to affected individuals
 
 **Content:**
+
 - Nature of breach
 - Categories of data affected
 - Number of individuals affected
@@ -504,10 +542,12 @@ The Settler Team
 ### CCPA Breach Notification
 
 **Timeline:**
+
 - Without unreasonable delay
 - No specific timeline
 
 **Content:**
+
 - Nature of breach
 - Types of personal information affected
 - Date of breach
@@ -541,15 +581,18 @@ The Settler Team
 ### Internal Contacts
 
 **Incident Response Team:**
+
 - Email: incident@settler.io
 - Slack: #incident-response
 - Phone: [Phone Number]
 
 **Communications Team:**
+
 - Email: communications@settler.io
 - Role: Public communications, status page
 
 **Legal Team:**
+
 - Email: legal@settler.io
 - Role: Regulatory notifications, legal review
 
@@ -558,14 +601,17 @@ The Settler Team
 ### External Contacts
 
 **Status Page Provider:**
+
 - [Provider Name]
 - Role: Status page hosting
 
 **PR Agency:**
+
 - [Agency Name]
 - Role: Public relations, media relations
 
 **Legal Counsel:**
+
 - [Law Firm Name]
 - Role: Legal advice, regulatory compliance
 

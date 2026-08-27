@@ -6,7 +6,7 @@ import { AuthRequest } from "../middleware/auth";
 import { requirePermission, requireResourceOwnership } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
 import { enforceFreezeState } from "../middleware/governance";
-import { query } from "../db";
+import { queryWithTenant } from "../db";
 import { verifyWebhookSignature } from "../utils/webhook-signature";
 import { validateExternalUrl } from "../infrastructure/security/SSRFProtection";
 import { logInfo, logError, logWarn } from "../utils/logger";
@@ -29,7 +29,7 @@ import {
 } from "./authz-helpers";
 
 // Initialize Boundary
-const ingestionBoundary = new IngestionBoundary({ query } as any);
+const ingestionBoundary = new IngestionBoundary({ query: queryWithTenant } as any);
 
 const router: Router = Router();
 const localReplayCache = new Map<string, number>();
@@ -129,7 +129,8 @@ router.post(
 
       const webhookSecret = secret || `whsec_${randomBytes(32).toString("base64url")}`;
 
-      const result = await query<{ id: string }>(
+      const result = await queryWithTenant<{ id: string }>(
+        tenantId,
         `INSERT INTO webhooks (user_id, tenant_id, url, events, secret, status)
          VALUES ($1, $2, $3, $4, $5, 'active')
          RETURNING id`,
@@ -141,7 +142,8 @@ router.post(
       }
       const webhookId = result[0].id;
 
-      await query(
+      await queryWithTenant(
+        tenantId,
         `INSERT INTO audit_logs (event, user_id, metadata)
          VALUES ($1, $2, $3)`,
         ["webhook_created", userId, JSON.stringify({ webhookId, url: url.substring(0, 50) })]
@@ -183,13 +185,14 @@ router.get(
       if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.webhook.read"))) return;
 
       const [webhooks, totalResult] = await Promise.all([
-        query<{
+        queryWithTenant<{
           id: string;
           url: string;
           events: string[];
           status: string;
           created_at: Date;
         }>(
+          tenantId,
           `SELECT id, url, events, status, created_at
            FROM webhooks
            WHERE user_id = $1 AND tenant_id = $2
@@ -197,7 +200,8 @@ router.get(
            LIMIT $3 OFFSET $4`,
           [userId, tenantId, limit, offset]
         ),
-        query<{ count: string }>(
+        queryWithTenant<{ count: string }>(
+          tenantId,
           `SELECT COUNT(*) as count FROM webhooks WHERE user_id = $1 AND tenant_id = $2`,
           [userId, tenantId]
         ),
@@ -368,7 +372,8 @@ router.post(
         return res.status(400).json({ error: message });
       }
 
-      await query(
+      await queryWithTenant(
+        tenantId,
         `INSERT INTO webhook_payloads (adapter, payload, signature, received_at)
            VALUES ($1, $2, $3, NOW())`,
         [adapter, JSON.stringify(req.body), signature]
@@ -428,13 +433,14 @@ router.delete(
         );
       });
 
-      await query(`DELETE FROM webhooks WHERE id = $1 AND user_id = $2 AND tenant_id = $3`, [
-        id || "",
-        userId,
+      await queryWithTenant(
         tenantId,
-      ]);
+        `DELETE FROM webhooks WHERE id = $1 AND user_id = $2 AND tenant_id = $3`,
+        [id || "", userId, tenantId]
+      );
 
-      await query(
+      await queryWithTenant(
+        tenantId,
         `INSERT INTO audit_logs (event, user_id, metadata)
          VALUES ($1, $2, $3)`,
         ["webhook_deleted", userId, JSON.stringify({ webhookId: id })]

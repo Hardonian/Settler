@@ -9,7 +9,7 @@ import { validateRequest } from "../middleware/validation";
 import { AuthRequest } from "../middleware/auth";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
-import { query } from "../db";
+import { queryWithTenant } from "../db";
 import { handleRouteError } from "../utils/error-handler";
 import { trackEventAsync } from "../utils/event-tracker";
 
@@ -30,7 +30,8 @@ router.get(
       const userId = req.userId!;
 
       const tenantId = req.tenantId!;
-      const users = await query<{ test_mode_enabled: boolean }>(
+      const users = await queryWithTenant<{ test_mode_enabled: boolean }>(
+        tenantId,
         `SELECT COALESCE(test_mode_enabled, false) as test_mode_enabled
          FROM users
          WHERE id = $1 AND tenant_id = $2`,
@@ -67,7 +68,8 @@ router.post(
       // Update user test mode setting
       // Add test_mode_enabled column if it doesn't exist (migration handles this)
       const tenantId = req.tenantId!;
-      await query(
+      await queryWithTenant(
+        tenantId,
         `UPDATE users
          SET test_mode_enabled = $1, updated_at = NOW()
          WHERE id = $2 AND tenant_id = $3`,

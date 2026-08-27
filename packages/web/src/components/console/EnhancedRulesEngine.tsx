@@ -30,6 +30,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Play, Save } from "lucide-react";
+import { FreezeErrorAlert } from "@/components/shared/FreezeErrorAlert";
+import {
+  getApiErrorMessage,
+  getGovernanceRecoveryHref,
+  parseGovernanceFreezeError,
+  type GovernanceFreezeErrorDetails,
+} from "@/lib/governance/freeze-client";
 
 interface CustomField {
   name: string;
@@ -63,6 +70,7 @@ export function EnhancedRulesEngine() {
   const [selectedRule, setSelectedRule] = useState<MatchingRule | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [freezeError, setFreezeError] = useState<GovernanceFreezeErrorDetails | null>(null);
   const [testResult, setTestResult] = useState<any>(null);
   const [newField, setNewField] = useState<CustomField>({
     name: "",
@@ -111,6 +119,7 @@ export function EnhancedRulesEngine() {
     try {
       setLoading(true);
       setError(null);
+      setFreezeError(null);
 
       const res = await fetch("/api/v1/advanced-matching-rules", {
         method: "POST",
@@ -118,9 +127,16 @@ export function EnhancedRulesEngine() {
         body: JSON.stringify(selectedRule),
       });
 
+      const payload = (await res.json().catch(() => null)) as unknown;
+      const freezeDetails = parseGovernanceFreezeError(payload, res.status);
+
+      if (freezeDetails) {
+        setFreezeError(freezeDetails);
+        return;
+      }
+
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || "Failed to save rule");
+        throw new Error(getApiErrorMessage(payload, "Failed to save rule"));
       }
 
       await fetchRules();
@@ -154,6 +170,8 @@ export function EnhancedRulesEngine() {
 
     try {
       setLoading(true);
+      setError(null);
+      setFreezeError(null);
       const res = await fetch(`/api/v1/advanced-matching-rules/${selectedRule.id || "test"}/test`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -163,9 +181,16 @@ export function EnhancedRulesEngine() {
         }),
       });
 
-      if (!res.ok) throw new Error("Failed to test rule");
-      const data = await res.json();
-      setTestResult(data);
+      const payload = (await res.json().catch(() => null)) as unknown;
+      const freezeDetails = parseGovernanceFreezeError(payload, res.status);
+
+      if (freezeDetails) {
+        setFreezeError(freezeDetails);
+        return;
+      }
+
+      if (!res.ok) throw new Error(getApiErrorMessage(payload, "Failed to test rule"));
+      setTestResult(payload);
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "Failed to test rule");
     } finally {
@@ -189,6 +214,17 @@ export function EnhancedRulesEngine() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
+          {freezeError ? (
+            <FreezeErrorAlert
+              reason={freezeError.reason}
+              frozenAt={freezeError.frozenAt ?? undefined}
+              recoveryAction={{
+                label: "Open Governance Controls",
+                href: getGovernanceRecoveryHref(),
+              }}
+            />
+          ) : null}
+
           {error && (
             <Alert variant="destructive">
               <AlertDescription>{error}</AlertDescription>

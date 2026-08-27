@@ -28,7 +28,7 @@ export const PREMIUM_PACKS: readonly PremiumPack[] = [
     summary:
       "Exception queues, severity triage, analytics rollups, and bounded AI insights with explicit degraded states when providers are absent.",
     consoleRoutes: ["/console/exceptions", "/console/analytics", "/console/insights"],
-    suggestedBasePlan: "growth",
+    suggestedBasePlan: "pro",
   },
   {
     code: "evidence_audit",
@@ -36,15 +36,15 @@ export const PREMIUM_PACKS: readonly PremiumPack[] = [
     summary:
       "Proof explorer, audit trail, and export-oriented surfaces for replayable, reviewable artifacts.",
     consoleRoutes: ["/console/proof-explorer", "/console/audit-trail", "/console/audits"],
-    suggestedBasePlan: "growth",
+    suggestedBasePlan: "pro",
   },
   {
     code: "api_automation",
     name: "API & automation",
     summary:
       "Programmatic execution, keys, webhooks, and workflow scaffolding (where marked thin/restricted in route maturity).",
-    consoleRoutes: ["/console/api-keys", "/console/webhooks", "/console/workflows"],
-    suggestedBasePlan: "growth",
+    consoleRoutes: ["/console/api-keys", "/console/developers/webhooks", "/console/workflows"],
+    suggestedBasePlan: "pro",
   },
   {
     code: "ai_augmentation",
@@ -52,7 +52,7 @@ export const PREMIUM_PACKS: readonly PremiumPack[] = [
     summary:
       "Advisory summarization and insight surfaces only; never a substitute for deterministic run truth.",
     consoleRoutes: ["/console/insights"],
-    suggestedBasePlan: "growth",
+    suggestedBasePlan: "pro",
   },
   {
     code: "managed_reliability",

@@ -127,7 +127,7 @@ def _match_transactions(
     """
     matches = []
     unmatched_sources = []
-    unmatched_targets = targets.copy()
+    unmatched_target_ids = {t["id"] for t in targets}
 
     # Build index of targets for efficient matching
     target_index: dict[str, list[dict]] = {}
@@ -148,7 +148,7 @@ def _match_transactions(
 
         if exact_key in target_index:
             for target in target_index[exact_key]:
-                if target in unmatched_targets:
+                if target["id"] in unmatched_target_ids:
                     # Check tolerance
                     target_amount = abs(float(target.get("amount", 0)))
                     if abs(source_amount - target_amount) <= tolerance:
@@ -162,12 +162,14 @@ def _match_transactions(
                                 "date_diff": 0,
                             }
                         )
-                        unmatched_targets.remove(target)
+                        unmatched_target_ids.remove(target["id"])
                         match_found = True
                         break
 
         if not match_found:
             unmatched_sources.append(source)
+
+    unmatched_targets = [t for t in targets if t["id"] in unmatched_target_ids]
 
     return {
         "matches": matches,

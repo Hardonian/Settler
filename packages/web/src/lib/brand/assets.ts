@@ -11,7 +11,7 @@ export const SETTLER_BRAND = {
   lockupHorizontalLight: {
     src: "/brand/settler/settler-lockup-horizontal-light.png",
     webpSrc: "/brand/settler/settler-lockup-horizontal-light.webp",
-    width: 1282,
+    width: 1099,
     height: 339,
     alt: BRAND_STRINGS.productSiteName,
   },

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useBackoffPolling } from "@/hooks/use-backoff-polling";
 import { useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -282,11 +283,12 @@ export default function ExceptionsPage() {
     void loadExceptions();
   }, [loadExceptions]);
 
-  useEffect(() => {
-    if (!pollingEnabled) return undefined;
-    const interval = setInterval(() => void loadExceptions(), POLL_INTERVAL_MS);
-    return () => clearInterval(interval);
-  }, [loadExceptions, pollingEnabled]);
+  useBackoffPolling(loadExceptions, {
+    enabled: pollingEnabled,
+    initialIntervalMs: POLL_INTERVAL_MS,
+    maxIntervalMs: 60000,
+    backoffFactor: 1.5,
+  });
 
   const handleRefresh = async () => void loadExceptions();
 

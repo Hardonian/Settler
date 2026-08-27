@@ -3,15 +3,16 @@
   "compilerOptions": {
     "outDir": "./dist",
     "composite": false,
-    "declaration": false,
-    "declarationMap": false,
+    "declaration": true,
+    "declarationMap": true,
     "exactOptionalPropertyTypes": false,
     "skipLibCheck": true,
     "paths": {
       "@settler/adapters": ["../adapters/dist/index"],
       "@settler/adapters/*": ["../adapters/dist/*"]
     },
-    "types": ["node", "jest"]
+    "types": ["node", "jest"],
+    "rootDir": "src"
   },
   "include": ["src/**/*"],
   "exclude": [

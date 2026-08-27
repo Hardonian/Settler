@@ -6,7 +6,7 @@ import { Permission } from "../infrastructure/security/Permissions";
 import { handleRouteError } from "../utils/error-handler";
 import { NotFoundError } from "../utils/typed-errors";
 
-const router = Router();
+const router: any = Router();
 
 const CANONICAL_EXCEPTION_MATCH_TYPES = ["unmatched", "conflict"] as const;
 
@@ -157,4 +157,4 @@ router.get(
   }
 );
 
-export { router as exceptionDetailsRouter };
+export const exceptionDetailsRouter = router;

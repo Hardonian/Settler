@@ -12,6 +12,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import {
   Download,
@@ -21,6 +22,12 @@ import {
   DollarSign,
   RefreshCw,
 } from "lucide-react";
+import { FreezeErrorAlert } from "@/components/shared/FreezeErrorAlert";
+import {
+  getGovernanceRecoveryHref,
+  parseGovernanceFreezeError,
+  type GovernanceFreezeErrorDetails,
+} from "@/lib/governance/freeze-client";
 import { ConsoleErrorBoundary } from "./ErrorBoundary";
 
 interface UsageAnalytics {
@@ -66,6 +73,7 @@ export function UsageAnalyticsDashboard() {
   const [activeExport, setActiveExport] = useState<UsageExportJob | null>(null);
   const [exportingFormat, setExportingFormat] = useState<UsageExportFormat | null>(null);
   const [exportError, setExportError] = useState<string | null>(null);
+  const [freezeError, setFreezeError] = useState<GovernanceFreezeErrorDetails | null>(null);
   const exportPollCountRef = useRef(0);
 
   useEffect(() => {
@@ -155,6 +163,7 @@ export function UsageAnalyticsDashboard() {
   const startExport = async (format: UsageExportFormat) => {
     try {
       setExportError(null);
+      setFreezeError(null);
       setExportingFormat(format);
       exportPollCountRef.current = 0;
       const days = timeRange === "7d" ? 7 : timeRange === "30d" ? 30 : 90;
@@ -168,6 +177,13 @@ export function UsageAnalyticsDashboard() {
         | UsageExportJob
         | { error?: string }
         | null;
+
+      const freezeDetails = parseGovernanceFreezeError(payload, res.status);
+      if (freezeDetails) {
+        setFreezeError(freezeDetails);
+        setExportingFormat(null);
+        return;
+      }
       if (!res.ok || !payload || !("exportId" in payload)) {
         setExportError(
           payload && "error" in payload && payload.error
@@ -196,6 +212,7 @@ export function UsageAnalyticsDashboard() {
 
     try {
       setExportError(null);
+      setFreezeError(null);
       setExportingFormat(activeExport.format);
       exportPollCountRef.current = 0;
       const res = await fetch(`/api/console/usage/export/${activeExport.exportId}`, {
@@ -203,10 +220,22 @@ export function UsageAnalyticsDashboard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "retry" }),
       });
-      const payload = (await res.json()) as UsageExportJob;
-      setActiveExport(payload);
-      if (payload.status === "completed" || payload.status === "failed") {
+      const payload = (await res.json().catch(() => null)) as UsageExportJob | null;
+
+      const freezeDetails = parseGovernanceFreezeError(payload, res.status);
+      if (freezeDetails) {
+        setFreezeError(freezeDetails);
         setExportingFormat(null);
+        return;
+      }
+
+      if (payload) {
+        setActiveExport(payload);
+        if (payload.status === "completed" || payload.status === "failed") {
+          setExportingFormat(null);
+        }
+      } else {
+        throw new Error("Empty payload");
       }
     } catch {
       setExportError("Retry failed. Please try again.");
@@ -252,6 +281,7 @@ export function UsageAnalyticsDashboard() {
             <select
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value as "7d" | "30d" | "90d")}
+              aria-label="Select time range"
               className="px-3 py-2 border rounded-md bg-white dark:bg-card/80"
             >
               <option value="7d">Last 7 days</option>
@@ -320,6 +350,18 @@ export function UsageAnalyticsDashboard() {
             </CardContent>
           </Card>
         )}
+
+        {freezeError && (
+          <FreezeErrorAlert
+            reason={freezeError.reason}
+            frozenAt={freezeError.frozenAt ?? undefined}
+            recoveryAction={{
+              label: "Open Governance Controls",
+              href: getGovernanceRecoveryHref(),
+            }}
+          />
+        )}
+
         {exportError && <p className="text-sm text-red-600 dark:text-red-400">{exportError}</p>}
 
         {/* Key Metrics */}
@@ -427,18 +469,10 @@ export function UsageAnalyticsDashboard() {
                       </span>
                     </div>
                     {limit && limit.limit > 0 && (
-                      <div className="w-full bg-border dark:bg-border rounded-full h-2">
-                        <div
-                          className={`h-2 rounded-full ${
-                            usagePercent > 90
-                              ? "bg-red-600"
-                              : usagePercent > 75
-                                ? "bg-amber-600"
-                                : "bg-blue-600"
-                          }`}
-                          style={{ width: `${Math.min(usagePercent, 100)}%` }}
-                        />
-                      </div>
+                      <Progress
+                        value={Math.min(usagePercent, 100)}
+                        className={`h-2 ${usagePercent > 90 ? "text-red-600" : usagePercent > 75 ? "text-amber-600" : "text-blue-600"}`}
+                      />
                     )}
                   </div>
                 );

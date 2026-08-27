@@ -16,7 +16,7 @@ const cmd = [
   "src/__tests__/security/crossTenantMatrix.test.ts",
 ];
 
-const run = spawnSync("pnpm", cmd, { cwd: repoRoot, encoding: "utf8" });
+const run = spawnSync("npx", ["pnpm", ...cmd], { cwd: repoRoot, encoding: "utf8", shell: true });
 process.stdout.write(run.stdout || "");
 process.stderr.write(run.stderr || "");
 

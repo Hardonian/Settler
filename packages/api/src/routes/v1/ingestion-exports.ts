@@ -13,7 +13,7 @@ import {
   generateExport,
   ExportOptions,
 } from "../../services/ingestion/export-service";
-import { query } from "../../db";
+import { queryWithTenant } from "../../db";
 import { checkExportLimit } from "../../middleware/usage-enforcement";
 import { trackExportUsage } from "../../utils/usage-tracking";
 import { getBillingAccount } from "../../utils/billing-helpers";
@@ -110,7 +110,8 @@ router.get(
       const { exportId } = req.params;
       const tenantId = req.tenantId!;
 
-      const results = await query(
+      const results = await queryWithTenant(
+        tenantId,
         `SELECT 
         id, type, format, status, storage_location, signed_url,
         signed_url_expires_at, file_size_bytes, row_count,
@@ -167,7 +168,8 @@ router.get(
       const limit = parseInt(req.query.limit as string) || 50;
       const offset = parseInt(req.query.offset as string) || 0;
 
-      const exports = await query(
+      const exports = await queryWithTenant(
+        tenantId,
         `SELECT 
         id, type, format, status, file_size_bytes, row_count,
         created_at, updated_at
@@ -178,7 +180,8 @@ router.get(
         [tenantId, limit.toString(), offset.toString()]
       );
 
-      const totalResults = await query(
+      const totalResults = await queryWithTenant(
+        tenantId,
         `SELECT COUNT(*) as count FROM exports WHERE tenant_id = $1`,
         [tenantId]
       );

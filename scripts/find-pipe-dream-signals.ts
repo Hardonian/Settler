@@ -51,7 +51,7 @@ function findPipeDreamSignals(): PipeDreamSignal[] {
   const baseDir = __dirname + "/..";
 
   // 1. Check for features in README that aren't in code
-  const readmeFiles = findFiles(baseDir, /README\.md$/);
+  const readmeFiles = [path.join(baseDir, "README.md")];
   const readmeContent = readmeFiles
     .map((f) => {
       try {
@@ -71,7 +71,8 @@ function findPipeDreamSignals(): PipeDreamSignal[] {
   // Check if features exist in code
   const codeFiles = findFiles(path.join(baseDir, "packages"), /\.(ts|tsx)$/);
   const codeContent = codeFiles
-    .slice(0, 100) // Limit to avoid memory issues
+    // Read all files without artificial limit
+
     .map((f) => {
       try {
         return fs.readFileSync(path.join(__dirname, "..", f), "utf-8");
@@ -97,7 +98,8 @@ function findPipeDreamSignals(): PipeDreamSignal[] {
   const schemaPath = path.join(__dirname, "..", "supabase", "production-schema.json");
   if (fs.existsSync(schemaPath)) {
     const schema = JSON.parse(fs.readFileSync(schemaPath, "utf-8"));
-    const tables = schema.tables?.map((t: any) => t.name) || [];
+    const tables =
+      schema.tables?.filter((t: any) => t.schema === "public").map((t: any) => t.name) || [];
 
     for (const table of tables) {
       // Check if table is referenced in code
@@ -142,11 +144,11 @@ function findPipeDreamSignals(): PipeDreamSignal[] {
 }
 
 function main() {
-  console.log("🔍 Searching for pipe dream signals...");
+  console.info("🔍 Searching for pipe dream signals...");
 
   const signals = findPipeDreamSignals();
 
-  console.log(`\n📊 Found ${signals.length} pipe dream signals\n`);
+  console.info(`\n📊 Found ${signals.length} pipe dream signals\n`);
 
   // Group by type
   const byType = signals.reduce(
@@ -159,11 +161,11 @@ function main() {
   );
 
   for (const [type, typeSignals] of Object.entries(byType)) {
-    console.log(`\n${type.toUpperCase().replace(/_/g, " ")} (${typeSignals.length}):`);
+    console.info(`\n${type.toUpperCase().replace(/_/g, " ")} (${typeSignals.length}):`);
     typeSignals.forEach((s) => {
       const icon = s.severity === "high" ? "🔴" : s.severity === "medium" ? "🟡" : "🟢";
-      console.log(`  ${icon} ${s.description}`);
-      console.log(`     Location: ${s.location}`);
+      console.info(`  ${icon} ${s.description}`);
+      console.info(`     Location: ${s.location}`);
     });
   }
 
@@ -171,10 +173,10 @@ function main() {
   const reportPath = path.join(__dirname, "..", "supabase", "pipe-dream-signals.json");
   fs.writeFileSync(reportPath, JSON.stringify({ signals, summary: byType }, null, 2));
 
-  console.log(`\n✅ Pipe dream signal detection complete. Report: ${reportPath}`);
+  console.info(`\n✅ Pipe dream signal detection complete. Report: ${reportPath}`);
 
   if (signals.filter((s) => s.severity === "high").length > 0) {
-    console.log("\n⚠️  High severity signals found - these should be addressed");
+    console.warn("\n⚠️  High severity signals found - these should be addressed");
     process.exit(1);
   }
 }

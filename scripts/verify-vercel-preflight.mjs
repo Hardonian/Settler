@@ -158,8 +158,11 @@ if (engineNode) {
   if (engineNode.startsWith(">=") && !engineNode.includes("<")) {
     warn(`engines.node "${engineNode}" has no upper bound — Node major drift possible`);
   }
-  if (!engineNode.includes("24")) {
-    fail(`engines.node "${engineNode}" does not pin Vercel to the Node 24 major contract`);
+  const nvmrcMajor = nvmrcVersion ? nvmrcVersion.split(".")[0] : "22";
+  if (!engineNode.includes(nvmrcMajor)) {
+    fail(
+      `engines.node "${engineNode}" does not pin Vercel to the Node ${nvmrcMajor} major contract`
+    );
   }
 } else {
   fail("package.json missing engines.node — Vercel Node runtime would auto-detect");

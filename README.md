@@ -1,131 +1,199 @@
-# Settler: Reconciliation API Service
+<p align="center">
+  <img src="packages/web/public/icon-512.png" alt="Settler" width="80" height="80" />
+</p>
 
-> Reconciliation infrastructure for finance teams that need explainable matching, audit-ready evidence, and reusable decision memory.
+<h1 align="center">Settler</h1>
 
-Replace spreadsheet reconciliation drift. Reduce manual exception review. Generate audit-ready proofpacks. Preserve institutional memory. Expose reconciliation as an API, and embed workflows into finance ops.
+<p align="center">
+  <strong>Reconciliation intelligence & audit operating system</strong><br />
+  Deterministic transaction matching · Hash-linked evidence · Enterprise-grade tenant isolation
+</p>
 
-**Use cases:**
+<p align="center">
+  <a href="https://github.com/Hardonian/Settler/actions/workflows/ci.yml"><img src="https://github.com/Hardonian/Settler/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-BSL--1.1-blue" alt="License" /></a>
+  <img src="https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Node.js-22%2B-339933?logo=node.js&logoColor=white" alt="Node.js" />
+  <img src="https://img.shields.io/badge/Rust-Kernel-DEA584?logo=rust&logoColor=white" alt="Rust" />
+  <img src="https://img.shields.io/badge/Next.js-16-000000?logo=next.js&logoColor=white" alt="Next.js" />
+</p>
 
-- Payments reconciliation
-- Marketplace seller payouts
-- Chargeback evidence
-- Supplier invoice reconciliation
-- Ledger vs processor matching
+---
 
-Settler is **reconciliation intelligence plus an audit-grade operating system**: deterministic runs, hash-linked proofpacks, explicit degraded states, and tenant-scoped operator truth (not UI-invented summaries).
+## What Settler Does
 
-## What is Settler?
+Settler replaces spreadsheet reconciliation and custom scripts with a deterministic, API-first matching engine. It ingests financial records from multiple sources, matches them using configurable tolerance rules, flags exceptions into structured adjudication workflows, and exports hash-linked evidence bundles — all tenant-isolated and replayable from scratch.
 
-Settler matches financial transactions across data sources (e.g., Stripe payments vs. bank deposits) with **replayable outcomes**, **adjudication-backed institutional memory**, and **evidence exports** operators and auditors can verify.
-
-## Who is this for?
-
-- **Finance operations teams** who need automated, audit-ready reconciliation
-- **Engineering teams** building financial products that require transaction matching
-- **Compliance teams** needing deterministic evidence for every reconciliation decision
-
-## Core Workflows That Work Today
-
-- Stripe ↔ Bank transaction matching with configurable tolerances
-- Manual review queue with audit trails
-- Deterministic evidence generation for every decision
-- CSV/API ingestion pipelines
-- Multi-workspace tenant isolation
-
-See [What Works Today](docs/getting-started/WHAT_WORKS.md) for full details.
+**Every reconciliation run produces byte-for-byte reproducible results.** No probabilistic guessing. No silent degradation. Auditors get verifiable proofpacks, not screenshots.
 
 ## Architecture
 
-Settler's architecture is composed of five primary layers, ensuring a separation of concerns between deterministic computation, policy enforcement, and operator interfaces.
+```mermaid
+graph TB
+    subgraph "Data Sources"
+        A1[Stripe] & A2[Shopify] & A3[QuickBooks] & A4[PayPal] & A5[+20 more]
+    end
+    
+    subgraph "Settler Platform"
+        B[Adapter Layer<br/>25+ verified connectors]
+        C[Reconciliation Core<br/>Deterministic matching engine]
+        D[Rust Kernel<br/>CAS + cryptographic proofpacks]
+        E[Control Plane<br/>Express API · 37 route modules]
+        F[Operator Console<br/>Next.js · 170+ routes]
+    end
+    
+    subgraph "Persistence"
+        G[(PostgreSQL<br/>+ RLS)]
+        H[(TigerBeetle<br/>Ledger)]
+        I[(Redis<br/>Queue + Cache)]
+    end
+    
+    A1 & A2 & A3 & A4 & A5 --> B --> C --> D
+    C --> E --> F
+    E --> G & H & I
+```
 
-1.  **Rust Kernel**: Provides deterministic primitives for computation, hashing, and proofs.
-2.  **TypeScript Control Plane**: The `packages/api` service, which handles orchestration, tenancy, API routes, and persistence policies.
-3.  **CLI Surface**: `packages/cli` provides the primary interface for operators, automation, and local development verification (e.g., `foundry`).
-4.  **Console Surface**: The `packages/web` Next.js application, which serves as the visualization and control surface for operators.
-5.  **Enterprise Integration Layer**: Connectors and policies for managed environments.
+## Adapter Ecosystem — 25+ Verified Connectors
 
-For persistence, the platform uses a hybrid model:
+| Category | Adapters |
+|----------|----------|
+| **Payment Processors** | Stripe, PayPal, Square, Stripe Connect, Google Pay |
+| **Accounting** | QuickBooks, Xero, FreshBooks, Wave, NetSuite |
+| **E-Commerce** | Shopify, WooCommerce, Etsy, Amazon Seller, eBay, Wix Stores, TikTok Shop |
+| **Banking & Open Finance** | Plaid, TrueLayer |
+| **Enterprise ERP** | SAP, NetSuite (advanced) |
+| **Subscription Billing** | Chargebee, Recurly |
+| **Tax & Compliance** | TaxJar, Avalara |
+| **Analytics** | GA4 Deep Sync |
+| **Messaging** | WhatsApp, Telegram (notification adapters) |
+| **Social Commerce** | Meta Commerce |
 
-- **TigerBeetle**: Acts as the immutable, high-performance ledger core for all financial-grade transactions.
-- **PostgreSQL (Supabase)**: Stores projections, operational metadata, audit logs, and tenant configurations.
+Every adapter includes rate limiting, token refresh, webhook verification, and retry queue integration.
 
-## Repository Structure
+## Tech Stack
 
-- `packages/api` — Node.js Control Plane (Express, TypeScript).
-- `packages/web` — Next.js Operator Console.
-- `packages/cli` — Engineering and Foundry tooling.
-- `crates` — Rust Kernel and related utilities.
-- `docs` — Canonical documentation.
-- `scripts` — Verification, repo hygiene, and automation.
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| **Rust Kernel** | Cargo workspace | Content-addressable storage, cryptographic proofpacks, deterministic primitives |
+| **Reconciliation Core** | TypeScript | Matching engine, tolerance evaluation, evidence emission, exception intelligence |
+| **Control Plane** | Express 5 + PostgreSQL + Prisma | 37 API route modules, multi-tenant middleware, event sourcing, billing enforcement |
+| **Operator Console** | Next.js 16 (App Router) | 170+ routes — run history, exception review, evidence export, admin surfaces |
+| **CLI** | TypeScript via tsx | Foundry (test data), replay, prove, first-run validation |
+| **Queue** | BullMQ / Redis | Job orchestration with retry, SLA alerting, exponential backoff |
+| **Ledger** | TigerBeetle | Immutable double-entry financial records (optional) |
+
+## Enterprise Features
+
+- **Multi-Tenant Isolation** — 5-layer enforcement: middleware → TypeScript interfaces → SQL guards → PostgreSQL RLS → entity-level checks
+- **SSO / SAML** — SAML 2.0 via `@node-saml/passport-saml` with configurable IdP
+- **DLP (Data Loss Prevention)** — PII redaction middleware for SSN, credit card, and sensitive field patterns
+- **SOX-Compliant Approvals** — Maker-checker workflows with audit trail and evidence bundles
+- **OpenFGA Authorization** — Attribute-based access control with fail-closed posture
+- **SLA Monitoring & Alerting** — Configurable SLA/SLO thresholds with alerting pipelines
+- **Billing Gating** — Tier-based feature access with circuit-breaker degraded states
+- **46 Middleware Layers** — Auth, CSRF, rate limiting, idempotency, compression, ETag, request signing, observability, and more
+
+## Try It Now: Try Settler in 5 minutes
+
+Run the self-serve reconciliation demo with committed CSV seed data and no external services:
+
+```bash
+pnpm run demo:quickstart
+```
+
+The command loads `docs/demo-data/processor-transactions.csv` and `docs/demo-data/bank-transactions.csv`, runs exact/fuzzy/unmatched matching scenarios, and writes the demo artifacts to `docs/demo-output/`:
+
+- `dashboard.html` — local dashboard showing matched vs. unmatched transactions
+- `reconciliation-results.json` — machine-readable match decisions
+- `proofpack.json` — audit-ready evidence export with input hashes, rules, summary counts, and match reasons
+
+Expected terminal output includes one fuzzy match, three exact matches, and three unmatched exceptions:
+
+```text
+Settler self-serve demo complete
+Matched: 4 (3 exact, 1 fuzzy)
+Unmatched: 3
+```
+
+Open `docs/demo-output/dashboard.html` in a browser to review the matched/unmatched dashboard, then attach `docs/demo-output/proofpack.json` when a prospect asks for audit-ready evidence.
 
 ## Quick Start
 
-For the complete local setup guide, see **[Canonical Local Setup](SETUP.md)**.
-
-After install, run a **deterministic onboarding checklist** (no network, no secrets):
-
 ```bash
-pnpm exec tsx packages/cli/src/index.ts first-run
+git clone https://github.com/Hardonian/Settler.git
+cd Settler
+pnpm run bootstrap     # Creates .env.local, installs deps, validates setup
+pnpm tb:start          # Starts PostgreSQL + Redis + TigerBeetle (Docker)
+pnpm dev               # http://localhost:3000 (console), http://localhost:4000 (API)
 ```
 
-The canonical verification command to ensure your environment is correctly configured and the codebase is healthy is:
+**Prerequisites:** Node.js 22+, pnpm 9+, Docker
 
-```bash
-# Run the full linting, typechecking, and testing suite
-pnpm verify
+## Repository Structure
+
+```
+packages/
+  api/                   Express API — 37 route modules, 46 middleware layers, 80+ services
+  web/                   Next.js operator console — 170+ routes
+  cli/                   CLI tooling (foundry, replay, verification)
+  reconciliation-core/   Core matching engine and run result serialization
+  adapters/              25+ source/target connectors with rate limiting & retry
+  types/                 Shared TypeScript types
+  sdk/                   Client SDK
+  proofs/                Proofpack generation utilities
+  edge-ai-core/          ML matching enhancement (optional)
+  react-settler/         React component library
+  compliance/            Compliance evidence generation
+  logger/                Structured logging
+crates/
+  settler-kernel/        Rust — CAS, cryptographic hashing, deterministic primitives
+  settler-verify-wasm/   WASM build for browser-side proof verification
+scripts/                 Build, CI, and operational automation
+prisma/                  Schema and migrations
 ```
 
-For **canonical run surface + proofpack + tenant posture** checks without the full `verify` wall clock:
+## Verification
+
+The monorepo includes a multi-tier verification pipeline:
 
 ```bash
-pnpm run verify:moat-readiness
+pnpm verify        # Full: lint → typecheck → build → test → integrity checks
+pnpm verify:fast   # Fast: lint → typecheck → env contract → dist freshness
+pnpm test          # Unit tests across all packages
+pnpm test:e2e      # Playwright-based end-to-end tests
 ```
 
-## TigerBeetle Management
+## API
 
-Global helper scripts are available for managing the local TigerBeetle container:
+Versioned routes under `/api/v1/`. Key endpoints:
 
-- `pnpm tb:start` — Start the TigerBeetle container.
-- `pnpm tb:status` — Check the ledger's health.
-- `pnpm tb:logs` — Follow ledger logs.
-- `pnpm tb:reset` — Wipe and reformat the ledger (for development use only).
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/v1/ingestion` | POST | Ingest source/target records (CSV, JSON, webhooks) |
+| `/api/v1/reconciliation/run` | POST | Execute a reconciliation run |
+| `/api/v1/reconciliation/runs` | GET | List reconciliation runs |
+| `/api/v1/reconciliation/runs/:id` | GET | Run detail with evidence |
+| `/api/v1/audit-trail` | GET | Append-only audit log |
+| `/api/v1/approvals` | POST/GET | SOX maker-checker workflows |
+| `/api/v1/sla` | GET | SLA monitoring dashboard data |
+| `/api/v1/billing/status` | GET | Subscription and usage status |
 
-## Documentation Hub
+Full API reference: [docs/API_REFERENCE.md](docs/API_REFERENCE.md)
 
-**Getting started:**
+## Documentation
 
-- [Quickstart](docs/getting-started/quickstart.md) — Fastest path to running locally
-- [Canonical Local Setup](SETUP.md) — Full local development setup
-- [Demo Walkthrough](docs/getting-started/DEMO_WALKTHROUGH.md) — Step-by-step demo guide
-- [Starter Kits](examples/starter-kits/) — Runnable example projects
-- [What Works Today](docs/getting-started/WHAT_WORKS.md) — Core functional workflows
-- [Intentional Boundaries](docs/getting-started/INTENTIONAL_BOUNDARIES.md) — What's not production-ready
-- [Common Setup Traps](docs/troubleshooting/SETUP_TRAPS.md) — Avoid setup issues
-
-**Evaluation and pilot:**
-
-- [Pilot Runbook](docs/pilot-runbook.md) — Run a pilot with go/no-go scorecard
-- [Trust Packet](docs/trust-packet.md) — Security, privacy, and procurement info
-- [Teardown Guide](docs/getting-started/teardown.md) — Clean removal and offboarding
-
-**Reference:**
-
-- [Architecture (Canonical)](docs/architecture/platform-architecture.md)
-- [API Reference](docs/API_REFERENCE.md)
-- [Verification Commands](docs/VERIFICATION_COMMANDS.md) — All verification commands
-- [Security Policy](SECURITY.md)
+| Document | Description |
+|----------|-------------|
+| [SETUP.md](SETUP.md) | Canonical local development setup |
+| [PRODUCT_OVERVIEW.md](PRODUCT_OVERVIEW.md) | Platform architecture and design |
+| [SECURITY_INVARIANTS.md](SECURITY_INVARIANTS.md) | Tenant isolation and security model |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Contribution guidelines |
+| [CHANGELOG.md](CHANGELOG.md) | Release history |
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution workflow and quality gates. All pull requests must pass the `pnpm verify` suite.
+See [CONTRIBUTING.md](CONTRIBUTING.md). All pull requests must pass `pnpm verify` and `pnpm run typecheck`.
 
 ## License
 
-Settler is licensed under the terms found in [LICENSE](LICENSE).
-
-## Repository Operations Standards
-
-- Squash-only merges
-- Auto-delete merged branches
-- Weekly dependency update windows
-- Security scanning in CI
+See [LICENSE](LICENSE).

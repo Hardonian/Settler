@@ -1,10 +1,11 @@
+import crypto from "node:crypto";
 /**
  * Real-time Updates Route
  * WebSocket/SSE endpoint for reconciliation status updates
  */
 
 import { Router, Response } from "express";
-import { query } from "../db";
+import { queryWithTenant } from "../db";
 import { AuthRequest } from "../middleware/auth";
 import { logInfo, logError, logWarn } from "../utils/logger";
 import { redact } from "../utils/redaction";
@@ -101,10 +102,11 @@ router.get("/reconciliations/:jobId", async (req: AuthRequest, res: Response): P
     return;
   }
 
-  const jobs = await query<{ id: string }>(`SELECT id FROM jobs WHERE id = $1 AND tenant_id = $2`, [
-    jobId,
+  const jobs = await queryWithTenant<{ id: string }>(
     tenantId,
-  ]);
+    `SELECT id FROM jobs WHERE id = $1 AND tenant_id = $2`,
+    [jobId, tenantId]
+  );
 
   if (jobs.length === 0) {
     res.status(404).json({ error: "Job not found" });
@@ -116,7 +118,7 @@ router.get("/reconciliations/:jobId", async (req: AuthRequest, res: Response): P
   res.setHeader("Connection", "keep-alive");
   res.setHeader("X-Accel-Buffering", "no");
 
-  const connectionId = `${tenantId}-${jobId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const connectionId = `${tenantId}-${jobId}-${Date.now()}-${crypto.randomBytes(4).toString("hex")}`;
   sseConnections.set(connectionId, {
     id: connectionId,
     tenantId,
@@ -137,7 +139,7 @@ router.get("/reconciliations/:jobId", async (req: AuthRequest, res: Response): P
         return;
       }
 
-      const executions = await query<{
+      const executions = await queryWithTenant<{
         id: string;
         status: string;
         started_at: Date;
@@ -145,6 +147,7 @@ router.get("/reconciliations/:jobId", async (req: AuthRequest, res: Response): P
         error: string | null;
         summary: unknown;
       }>(
+        tenantId,
         `
             SELECT
               id,
@@ -208,7 +211,7 @@ router.get("/workbench", async (req: AuthRequest, res: Response): Promise<void> 
   res.setHeader("Connection", "keep-alive");
   res.setHeader("X-Accel-Buffering", "no");
 
-  const connectionId = `workbench-${tenantId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const connectionId = `workbench-${tenantId}-${Date.now()}-${crypto.randomBytes(4).toString("hex")}`;
 
   logInfo("SSE Workbench connection established", { connectionId, tenantId });
 
@@ -222,12 +225,13 @@ router.get("/workbench", async (req: AuthRequest, res: Response): Promise<void> 
       }
 
       // Fetch global stats for the workbench
-      const stats = await query<{
+      const stats = await queryWithTenant<{
         open_exceptions: string;
         high_severity_exceptions: string;
         active_runs: string;
         last_run_timestamp: Date | null;
       }>(
+        tenantId,
         `
           SELECT 
             (SELECT COUNT(*) FROM reconciliation_matches WHERE tenant_id = $1 AND status = 'open') as open_exceptions,
@@ -239,7 +243,7 @@ router.get("/workbench", async (req: AuthRequest, res: Response): Promise<void> 
       );
 
       // Fetch most recent active runs
-      const activeRuns = await query<{
+      const activeRuns = await queryWithTenant<{
         id: string;
         recon_job_id: string;
         status: string;
@@ -249,6 +253,7 @@ router.get("/workbench", async (req: AuthRequest, res: Response): Promise<void> 
         source_count: number;
         target_count: number;
       }>(
+        tenantId,
         `
           SELECT 
             id, recon_job_id, status, matched_count, unmatched_source_count, unmatched_target_count,

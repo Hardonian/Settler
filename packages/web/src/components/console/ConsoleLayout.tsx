@@ -33,6 +33,9 @@ import {
   AlertTriangle,
   Headphones,
   CalendarClock,
+  Database,
+  BrainCircuit,
+  DollarSign,
   type LucideIcon,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -40,6 +43,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { BackendHealthBadge } from "./BackendHealthBadge";
+import { OnboardingChecklist } from "./OnboardingChecklist";
 import { CONSOLE_ROUTE_REGISTRY, type ConsoleRouteEntry } from "@/lib/console/route-maturity";
 import { OperationalRouteNotice } from "@/components/shared/OperationalRouteNotice";
 
@@ -75,6 +79,11 @@ const labelToIcon: Record<string, LucideIcon> = {
   "Operator Console": Bot,
   "Tenant Observability": Building2,
   Schedules: CalendarClock,
+  "Schema Registry": Database,
+  "Rule Discovery": BrainCircuit,
+  "Data Residency": ShieldCheck,
+  "Liquidity Metrics": DollarSign,
+  "CX Support": Headphones,
 };
 
 function maturityBadge(entry: ConsoleRouteEntry) {
@@ -189,6 +198,9 @@ export function ConsoleLayout({
               <BackendHealthBadge />
             </div>
             <NavContent />
+            <div className="p-4 border-t border-border mt-auto">
+              <OnboardingChecklist />
+            </div>
           </SheetContent>
         </Sheet>
       </div>
@@ -200,6 +212,9 @@ export function ConsoleLayout({
           </div>
           <div className="flex-1 overflow-y-auto">
             <NavContent />
+          </div>
+          <div className="p-4 border-t border-border/60">
+            <OnboardingChecklist />
           </div>
         </aside>
 

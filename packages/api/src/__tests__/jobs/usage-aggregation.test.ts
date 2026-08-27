@@ -10,8 +10,11 @@ jest.mock("../../middleware/governance", () => ({
   checkTenantFrozen: jest.fn(),
 }));
 
-const mockedFetch = jest.fn();
-global.fetch = mockedFetch as unknown as typeof fetch;
+jest.mock("../../jobs/queue/UsageSyncOutboxQueue", () => ({
+  usageSyncOutboxQueue: {
+    add: jest.fn(),
+  },
+}));
 
 describe("syncUsageToStripe", () => {
   const originalEnv = process.env;
@@ -29,9 +32,10 @@ describe("syncUsageToStripe", () => {
     process.env = originalEnv;
   });
 
-  it("retries 429 responses and succeeds when a later attempt is accepted", async () => {
+  it("enqueues jobs to usageSyncOutboxQueue for eligible tenants", async () => {
     const { supabase } = await import("../../infrastructure/supabase/client");
     const { checkTenantFrozen } = await import("../../middleware/governance");
+    const { usageSyncOutboxQueue } = await import("../../jobs/queue/UsageSyncOutboxQueue");
 
     (supabase.from as jest.Mock).mockReturnValue({
       select: () => ({
@@ -46,24 +50,21 @@ describe("syncUsageToStripe", () => {
 
     (checkTenantFrozen as jest.Mock).mockResolvedValue({ frozen: false });
 
-    mockedFetch
-      .mockResolvedValueOnce(
-        new Response("rate limited", {
-          status: 429,
-          headers: {
-            "retry-after": "0",
-          },
-        })
-      )
-      .mockResolvedValueOnce(new Response("ok", { status: 200 }));
-
     await syncUsageToStripe(new Date("2026-03-29T00:00:00.000Z"));
 
-    expect(mockedFetch).toHaveBeenCalledTimes(2);
+    expect(usageSyncOutboxQueue.add).toHaveBeenCalledTimes(1);
+    expect(usageSyncOutboxQueue.add).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tenantId: "tenant-1",
+        billingAccountId: "acct-1",
+      }),
+      expect.any(Number)
+    );
   });
 
   it("fails fast when SUPABASE_URL is not https", async () => {
     const { supabase } = await import("../../infrastructure/supabase/client");
+    const { usageSyncOutboxQueue } = await import("../../jobs/queue/UsageSyncOutboxQueue");
     process.env.SUPABASE_URL = "http://example.supabase.co";
 
     (supabase.from as jest.Mock).mockReturnValue({
@@ -80,6 +81,6 @@ describe("syncUsageToStripe", () => {
     await expect(syncUsageToStripe(new Date("2026-03-29T00:00:00.000Z"))).rejects.toThrow(
       "SUPABASE_URL must use https:// for secure service-role transit"
     );
-    expect(mockedFetch).not.toHaveBeenCalled();
+    expect(usageSyncOutboxQueue.add).not.toHaveBeenCalled();
   });
 });

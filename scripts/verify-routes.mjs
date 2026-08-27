@@ -1,8 +1,12 @@
-#!/usr/bin/env node
 import { existsSync } from "node:fs";
 import { spawn } from "node:child_process";
+import path from "node:path";
+import dotenv from "dotenv";
 
-const port = Number(process.env.PORT || 3210);
+dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
+dotenv.config();
+
+const port = Number(process.env.PORT || 3210 + Math.floor(Math.random() * 500));
 const base = `http://127.0.0.1:${port}`;
 
 const strict200Routes = ["/home", "/docs", "/pricing"];
@@ -32,31 +36,40 @@ async function waitForServer(timeoutMs = 90000) {
 }
 
 function startWebServer() {
-  const hasBuild = existsSync("packages/web/.next/BUILD_ID");
+  const hasBuild =
+    existsSync("packages/web/.next/BUILD_ID") &&
+    existsSync("packages/web/.next/prerender-manifest.json");
   const args = hasBuild
-    ? ["--filter", "@settler/web", "exec", "next", "start", "-p", String(port)]
-    : [
-        "--filter",
-        "@settler/web",
-        "exec",
-        "next",
-        "dev",
-        "-p",
-        String(port),
-        "--hostname",
-        "127.0.0.1",
-      ];
+    ? ["--filter", "@settler/web", "run", "start", "-p", String(port)]
+    : ["--filter", "@settler/web", "run", "dev", "-p", String(port), "--hostname", "127.0.0.1"];
 
   const isWindows = process.platform === "win32";
-  const command = isWindows ? "cmd.exe" : "pnpm";
-  const commandArgs = isWindows ? ["/c", "pnpm.cmd", ...args] : args;
+  const command = isWindows ? "npx" : "pnpm";
+  const commandArgs = isWindows ? ["pnpm", ...args] : args;
   const server = spawn(command, commandArgs, {
     stdio: "pipe",
-    env: { ...process.env, SETTLER_VERIFY_MODE: "1" },
+    env: { ...process.env, SETTLER_VERIFY_MODE: "1", PORT: String(port) },
+    shell: true,
   });
   server.stdout.on("data", (d) => process.stdout.write(d));
   server.stderr.on("data", (d) => process.stderr.write(d));
-  return server;
+
+  const killServer = () => {
+    if (isWindows) {
+      try {
+        spawn("taskkill", ["/F", "/T", "/PID", String(server.pid)], { stdio: "ignore" });
+      } catch {}
+    } else {
+      server.kill("SIGTERM");
+    }
+  };
+  process.on("exit", killServer);
+  process.on("SIGINT", () => {
+    killServer();
+    process.exit(1);
+  });
+
+  return { server, killServer };
 }
 
 async function verifyRoute(route, allowedStatuses) {
@@ -68,7 +81,7 @@ async function verifyRoute(route, allowedStatuses) {
 }
 
 async function main() {
-  const server = startWebServer();
+  const { server, killServer } = startWebServer();
   try {
     await waitForServer();
 
@@ -82,7 +95,7 @@ async function main() {
 
     console.log("✅ Route verification completed without hard-500 responses on critical routes");
   } finally {
-    server.kill("SIGTERM");
+    killServer();
   }
 }
 

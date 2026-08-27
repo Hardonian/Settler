@@ -10,7 +10,7 @@ import { validateRequest } from "../middleware/validation";
 import { AuthRequest } from "../middleware/auth";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
-import { query } from "../db";
+import { queryWithTenant } from "../db";
 import { handleRouteError } from "../utils/error-handler";
 import { NotFoundError } from "../utils/typed-errors";
 
@@ -74,7 +74,8 @@ router.get(
       const tenantId = req.tenantId!;
 
       // Verify job ownership — scoped by tenant_id
-      const jobs = await query<{ id: string; name: string }>(
+      const jobs = await queryWithTenant<{ id: string; name: string }>(
+        tenantId,
         `SELECT id, name FROM jobs WHERE id = $1 AND user_id = $2 AND tenant_id = $3`,
         [jobId, userId, tenantId]
       );
@@ -89,7 +90,8 @@ router.get(
       const end = endDate ? new Date(endDate) : new Date();
 
       // Get execution
-      const executions = await query<{ id: string }>(
+      const executions = await queryWithTenant<{ id: string }>(
+        tenantId,
         `SELECT id FROM executions
          WHERE job_id = $1 AND tenant_id = $2 AND started_at >= $3 AND started_at <= $4
          ORDER BY started_at DESC LIMIT 1`,
@@ -105,7 +107,7 @@ router.get(
       // Get data based on format
       if (format === "csv" || format === "xlsx") {
         const matches = includeMatched
-          ? await query<{
+          ? await queryWithTenant<{
               source_id: string;
               target_id: string;
               amount: number;
@@ -113,6 +115,7 @@ router.get(
               confidence: number;
               matched_at: Date;
             }>(
+              tenantId,
               `SELECT source_id, target_id, amount, currency, confidence, matched_at
                FROM matches WHERE execution_id = $1 AND tenant_id = $2`,
               [executionId, tenantId]
@@ -120,12 +123,13 @@ router.get(
           : [];
 
         const exceptions = includeExceptions
-          ? await query<{
+          ? await queryWithTenant<{
               source_id: string;
               category: string;
               description: string;
               severity: string;
             }>(
+              tenantId,
               `SELECT source_id, category, description, severity
                FROM exceptions WHERE execution_id = $1 AND tenant_id = $2`,
               [executionId, tenantId]
@@ -169,13 +173,14 @@ router.get(
 
       // Accounting format exports
       if (format === "quickbooks" || format === "xero" || format === "netsuite") {
-        const matches = await query<{
+        const matches = await queryWithTenant<{
           source_id: string;
           target_id: string;
           amount: number;
           currency: string;
           date: Date;
         }>(
+          tenantId,
           `SELECT source_id, target_id, amount, currency, matched_at as date
            FROM matches WHERE execution_id = $1 AND tenant_id = $2`,
           [executionId, tenantId]
@@ -197,17 +202,19 @@ router.get(
 
       // JSON format
       const matches = includeMatched
-        ? await query(`SELECT * FROM matches WHERE execution_id = $1 AND tenant_id = $2`, [
-            executionId,
+        ? await queryWithTenant(
             tenantId,
-          ])
+            `SELECT * FROM matches WHERE execution_id = $1 AND tenant_id = $2`,
+            [executionId, tenantId]
+          )
         : [];
 
       const exceptions = includeExceptions
-        ? await query(`SELECT * FROM exceptions WHERE execution_id = $1 AND tenant_id = $2`, [
-            executionId,
+        ? await queryWithTenant(
             tenantId,
-          ])
+            `SELECT * FROM exceptions WHERE execution_id = $1 AND tenant_id = $2`,
+            [executionId, tenantId]
+          )
         : [];
 
       res.json({
@@ -248,7 +255,8 @@ router.post(
       const tenantId = req.tenantId!;
 
       // Verify job ownership — scoped by tenant_id
-      const jobs = await query<{ id: string }>(
+      const jobs = await queryWithTenant<{ id: string }>(
+        tenantId,
         `SELECT id FROM jobs WHERE id = $1 AND user_id = $2 AND tenant_id = $3`,
         [jobId, userId, tenantId]
       );

@@ -5,6 +5,7 @@
 
 import { query } from "../db";
 import { logError, logInfo } from "../utils/logger";
+import { getRedisClient, isRedisAvailable } from "../infrastructure/redis/client";
 
 export interface ExchangeRate {
   fromCurrency: string;
@@ -28,6 +29,17 @@ export async function getExchangeRate(
     }
 
     const dateStr = date.toISOString().split("T")[0] as string;
+    const cacheKey = `exchange_rate:${fromCurrency}:${toCurrency}:${dateStr}`;
+
+    const redis = getRedisClient();
+    if (isRedisAvailable() && redis) {
+      const cached = await redis.get(cacheKey);
+      if (cached) {
+        return parseFloat(cached as string);
+      }
+    }
+
+    let rate: number | null = null;
 
     // Try exact date first
     let result = await query<{ rate: number }>(
@@ -38,8 +50,12 @@ export async function getExchangeRate(
       [fromCurrency, toCurrency, dateStr]
     );
 
+    if (result.length > 0 && result[0]) {
+      rate = result[0].rate;
+    }
+
     // If not found, try latest available rate
-    if (result.length === 0) {
+    if (rate === null) {
       result = await query<{ rate: number }>(
         `SELECT rate FROM currency_rates
          WHERE from_currency = $1 AND to_currency = $2 AND date <= $3
@@ -47,10 +63,13 @@ export async function getExchangeRate(
          LIMIT 1`,
         [fromCurrency, toCurrency, dateStr]
       );
+      if (result.length > 0 && result[0]) {
+        rate = result[0].rate;
+      }
     }
 
     // If still not found, try reverse (and invert rate)
-    if (result.length === 0) {
+    if (rate === null) {
       result = await query<{ rate: number }>(
         `SELECT rate FROM currency_rates
          WHERE from_currency = $1 AND to_currency = $2 AND date <= $3
@@ -60,11 +79,18 @@ export async function getExchangeRate(
       );
 
       if (result.length > 0 && result[0]) {
-        return 1 / result[0].rate;
+        rate = 1 / result[0].rate;
       }
     }
 
-    return result.length > 0 && result[0] ? result[0].rate : null;
+    if (rate !== null) {
+      if (isRedisAvailable() && redis) {
+        // Cache the rate for 24 hours (exchange rates for a specific past date don't change)
+        await redis.set(cacheKey, rate.toString(), { ex: 86400 });
+      }
+    }
+
+    return rate;
   } catch (error) {
     logError("Failed to get exchange rate", error, { fromCurrency, toCurrency, date });
     throw error;
@@ -99,6 +125,15 @@ export async function addExchangeRate(
 
     const rateId = result[0]?.id || "";
     logInfo("Exchange rate added", { rateId, fromCurrency, toCurrency, rate, date });
+
+    // Invalidate the cache for this currency pair and date
+    const dateStr = date.toISOString().split("T")[0] as string;
+    const cacheKey = `exchange_rate:${fromCurrency}:${toCurrency}:${dateStr}`;
+    const redis = getRedisClient();
+    if (isRedisAvailable() && redis) {
+      await redis.del(cacheKey);
+    }
+
     return rateId;
   } catch (error) {
     logError("Failed to add exchange rate", error, { fromCurrency, toCurrency, rate });

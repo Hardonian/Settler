@@ -1,24 +1,24 @@
-import { formatMoney, generateSecureId } from '../utils';
+import { formatMoney, generateSecureId } from "../utils";
 
-describe('formatMoney', () => {
-  it('should format valid money successfully', () => {
-    const money = { value: 100, currency: 'USD' };
-    expect(formatMoney(money)).toBe('$100.00');
+describe("formatMoney", () => {
+  it("should format valid money successfully", () => {
+    const money = { value: 100, currency: "USD" };
+    expect(formatMoney(money)).toBe("$100.00");
   });
 
-  it('should handle invalid money', () => {
-    expect(formatMoney(null as any)).toBe('Invalid');
+  it("should handle invalid money", () => {
+    expect(formatMoney(null as any)).toBe("Invalid");
   });
 
-  it('should fallback when Intl.NumberFormat throws an error', () => {
-    const spy = jest.spyOn(Intl, 'NumberFormat').mockImplementation(() => {
-      throw new Error('Simulated Intl error');
+  it("should fallback when Intl.NumberFormat throws an error", () => {
+    const spy = jest.spyOn(Intl, "NumberFormat").mockImplementation(() => {
+      throw new Error("Simulated Intl error");
     });
 
     try {
-      const money = { value: 100, currency: 'USD' };
+      const money = { value: 100, currency: "USD" };
       const result = formatMoney(money);
-      expect(result).toBe('USD 100.00');
+      expect(result).toBe("USD 100.00");
     } finally {
       spy.mockRestore();
     }

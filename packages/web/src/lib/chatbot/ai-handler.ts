@@ -290,7 +290,7 @@ function shouldEscalateToHuman(message: string, response: string, confidence: nu
 /**
  * Generate suggested follow-ups
  */
-function generateSuggestions(message: string, response: string): string[] {
+function generateSuggestions(_message: string, response: string): string[] {
   const suggestions = ["View documentation", "Check API status", "Contact support"];
 
   if (response.includes("billing")) suggestions.unshift("View pricing");

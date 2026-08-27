@@ -1,396 +1,6 @@
 {
   "signals": [
     {
-      "type": "feature_in_docs",
-      "description": "Feature \"emails\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"Workflows\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"bot prompt\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"efficiently\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"placeholders\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"version numbers and last updated dates\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"enterprise teams with\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"Flags\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"flags for your applications\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"actionable\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"risk assessments\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"flag evaluations\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"Detection\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"in docs but not code\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"demand\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"demand scoring\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"cases\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"AND survive billing failures\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"validation phases to prove various aspects\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"dynamic merge fields defined in\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"plain text version\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"benefit or urgency\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"alt text\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"For questions or issues with email templates\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"FX conversion\n    fxConversion\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"Demonstrated\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"Interactions\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"templates for billing\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"Teams\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"Templates\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"templates\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"CORS restrictions\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"full Console management\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"clear error messages\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"While this protocol package is free and open\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"in\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"everything you need to get started\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"import\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"Comparison\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"tiers and pricing\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"split\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"built\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"request deduplication\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"flags client\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"Flags\nawait client\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"The SDK is written in TypeScript and provides full type inference\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"strongly typed error classes\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"The SDK works in\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"both\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"flag management\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"flag changes\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"flags and\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"flag resolver\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"flag\nconst flagValue\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"flag system automatically uses Edge Config if configured\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"flags fall back to environment variables\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"error handling\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"flags\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"flags that need to change without deployments\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"flag resolver automatically checks Edge Config first\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"better performance when deployed on Vercel\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"others to build\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"others to succeed\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"prioritization\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
-      "type": "feature_in_docs",
-      "description": "Feature \"chaos engineering tests\" mentioned in README but not found in code",
-      "location": "README.md",
-      "severity": "medium"
-    },
-    {
       "type": "unused_env",
       "description": "Environment variable \"NODE_ENV\" defined but never used",
       "location": ".env.example",
@@ -638,6 +248,30 @@
     },
     {
       "type": "unused_env",
+      "description": "Environment variable \"RATE_LIMIT_DB_WINDOW_MS\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"WEBHOOK_REPLAY_WINDOW_MS\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"WEBHOOK_REPLAY_WINDOW_MS_BY_PROVIDER\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"DISTRIBUTED_GUARD_CLEANUP_INTERVAL_MS\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
       "description": "Environment variable \"WEBHOOK_MAX_RETRIES\" defined but never used",
       "location": ".env.example",
       "severity": "low"
@@ -677,401 +311,267 @@
       "description": "Environment variable \"ENABLE_API_DOCS\" defined but never used",
       "location": ".env.example",
       "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"JOBFORGE_INTEGRATION_ENABLED\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"JOBFORGE_BUNDLE_EXECUTION_ENABLED\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"SUPABASE_ACCESS_TOKEN\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"SUPABASE_PROJECT_REF\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"SUPABASE_DB_PASSWORD\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"DIRECT_URL\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"STRIPE_SECRET_KEY\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"STRIPE_WEBHOOK_SECRET\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"NEXT_PUBLIC_SUPABASE_URL\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"NEXT_PUBLIC_SUPABASE_ANON_KEY\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"NEXT_PUBLIC_SITE_URL\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"NEXT_PUBLIC_APP_URL\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"IP_RPM\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"USER_RPM\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"CACHE_MAX_AGE\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"FRONTEND_URL\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"DEMO_MODE\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"DEMO_TENANT_ID\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"DEMO_SEED\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"DEMO_API_KEY\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"DEMO_USER_EMAIL\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"DEMO_USER_PASSWORD\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"SETTLER_ENABLE_V2_STRATEGIC_PREVIEW\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"TIGERBEETLE_ENABLED\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"TIGERBEETLE_ADDRESS\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"TIGERBEETLE_CLUSTER_ID\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"TIGERBEETLE_TIMEOUT_MS\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"TIGERBEETLE_MAX_RETRIES\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"SLACK_ALERT_WEBHOOK_URL\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"TEAMS_ALERT_WEBHOOK_URL\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"TELEGRAM_BOT_TOKEN\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"TELEGRAM_CHAT_ID\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"ALERT_NOTIFIER_DRY_RUN\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"ALERT_NOTIFICATION_COOLDOWN_MS\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"SUPABASE_AUTH_ENABLED\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"SUPABASE_ENTERPRISE_SSO_ENABLED\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"OPENFGA_ENABLED\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"TEMPORAL_ENABLED\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"TEMPORAL_WORKER_ENABLED\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"OTEL_ENABLED\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"OTEL_SERVICE_NAME\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"NANGO_ENABLED\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"AIRBYTE_ENABLED\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
     }
   ],
   "summary": {
-    "feature_in_docs": [
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"emails\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"Workflows\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"bot prompt\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"efficiently\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"placeholders\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"version numbers and last updated dates\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"enterprise teams with\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"Flags\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"flags for your applications\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"actionable\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"risk assessments\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"flag evaluations\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"Detection\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"in docs but not code\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"demand\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"demand scoring\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"cases\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"AND survive billing failures\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"validation phases to prove various aspects\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"dynamic merge fields defined in\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"plain text version\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"benefit or urgency\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"alt text\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"For questions or issues with email templates\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"FX conversion\n    fxConversion\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"Demonstrated\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"Interactions\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"templates for billing\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"Teams\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"Templates\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"templates\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"CORS restrictions\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"full Console management\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"clear error messages\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"While this protocol package is free and open\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"in\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"everything you need to get started\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"import\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"Comparison\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"tiers and pricing\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"split\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"built\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"request deduplication\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"flags client\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"Flags\nawait client\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"The SDK is written in TypeScript and provides full type inference\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"strongly typed error classes\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"The SDK works in\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"both\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"flag management\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"flag changes\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"flags and\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"flag resolver\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"flag\nconst flagValue\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"flag system automatically uses Edge Config if configured\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"flags fall back to environment variables\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"error handling\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"flags\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"flags that need to change without deployments\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"flag resolver automatically checks Edge Config first\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"better performance when deployed on Vercel\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"others to build\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"others to succeed\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"prioritization\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      },
-      {
-        "type": "feature_in_docs",
-        "description": "Feature \"chaos engineering tests\" mentioned in README but not found in code",
-        "location": "README.md",
-        "severity": "medium"
-      }
-    ],
     "unused_env": [
       {
         "type": "unused_env",
@@ -1321,6 +821,30 @@
       },
       {
         "type": "unused_env",
+        "description": "Environment variable \"RATE_LIMIT_DB_WINDOW_MS\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"WEBHOOK_REPLAY_WINDOW_MS\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"WEBHOOK_REPLAY_WINDOW_MS_BY_PROVIDER\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"DISTRIBUTED_GUARD_CLEANUP_INTERVAL_MS\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
         "description": "Environment variable \"WEBHOOK_MAX_RETRIES\" defined but never used",
         "location": ".env.example",
         "severity": "low"
@@ -1358,6 +882,264 @@
       {
         "type": "unused_env",
         "description": "Environment variable \"ENABLE_API_DOCS\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"JOBFORGE_INTEGRATION_ENABLED\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"JOBFORGE_BUNDLE_EXECUTION_ENABLED\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"SUPABASE_ACCESS_TOKEN\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"SUPABASE_PROJECT_REF\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"SUPABASE_DB_PASSWORD\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"DIRECT_URL\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"STRIPE_SECRET_KEY\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"STRIPE_WEBHOOK_SECRET\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"NEXT_PUBLIC_SUPABASE_URL\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"NEXT_PUBLIC_SUPABASE_ANON_KEY\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"NEXT_PUBLIC_SITE_URL\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"NEXT_PUBLIC_APP_URL\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"IP_RPM\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"USER_RPM\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"CACHE_MAX_AGE\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"FRONTEND_URL\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"DEMO_MODE\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"DEMO_TENANT_ID\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"DEMO_SEED\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"DEMO_API_KEY\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"DEMO_USER_EMAIL\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"DEMO_USER_PASSWORD\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"SETTLER_ENABLE_V2_STRATEGIC_PREVIEW\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"TIGERBEETLE_ENABLED\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"TIGERBEETLE_ADDRESS\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"TIGERBEETLE_CLUSTER_ID\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"TIGERBEETLE_TIMEOUT_MS\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"TIGERBEETLE_MAX_RETRIES\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"SLACK_ALERT_WEBHOOK_URL\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"TEAMS_ALERT_WEBHOOK_URL\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"TELEGRAM_BOT_TOKEN\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"TELEGRAM_CHAT_ID\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"ALERT_NOTIFIER_DRY_RUN\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"ALERT_NOTIFICATION_COOLDOWN_MS\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"SUPABASE_AUTH_ENABLED\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"SUPABASE_ENTERPRISE_SSO_ENABLED\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"OPENFGA_ENABLED\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"TEMPORAL_ENABLED\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"TEMPORAL_WORKER_ENABLED\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"OTEL_ENABLED\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"OTEL_SERVICE_NAME\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"NANGO_ENABLED\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"AIRBYTE_ENABLED\" defined but never used",
         "location": ".env.example",
         "severity": "low"
       }

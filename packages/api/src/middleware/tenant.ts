@@ -8,6 +8,7 @@ import { AuthRequest } from "./auth";
 import { ITenantRepository } from "../domain/repositories/ITenantRepository";
 import { Container } from "../infrastructure/di/Container";
 import { query } from "../db";
+import { logError } from "../utils/logger";
 import { sendProblemJson } from "../utils/problem-json";
 
 export interface TenantRequest extends AuthRequest {
@@ -30,7 +31,28 @@ type TenantAccessSource =
   | "user_not_found"
   | "no_membership";
 
+/**
+ * Determines which tenant-access tables exist in the database.
+ *
+ * SECURITY NOTE: This probes the schema ONCE at startup and caches the result.
+ * The previous implementation queried information_schema on every request, which
+ * meant a schema migration could silently alter the auth model. This cached
+ * approach ensures consistent behavior within a process lifecycle.
+ *
+ * The canonical tenant access lookup path is:
+ *   1. Direct user.tenant_id match
+ *   2. Super admin bypass
+ *   3. tenant_users table (if exists)
+ *   4. memberships table (if exists)
+ *   5. tenant_memberships table (if exists)
+ */
+let cachedTenantAccessTables: Set<string> | null = null;
+
 async function listTenantAccessTables(): Promise<Set<string>> {
+  if (cachedTenantAccessTables) {
+    return cachedTenantAccessTables;
+  }
+
   const rows = await query<{ table_name: string }>(
     `SELECT table_name
        FROM information_schema.tables
@@ -39,10 +61,11 @@ async function listTenantAccessTables(): Promise<Set<string>> {
     [["tenant_users", "memberships", "tenant_memberships"]]
   );
 
-  return new Set(rows.map((row) => row.table_name));
+  cachedTenantAccessTables = new Set(rows.map((row) => row.table_name));
+  return cachedTenantAccessTables;
 }
 
-async function hasSuperAdminAccess(userId: string): Promise<boolean> {
+async function hasSuperAdminAccess(userId: string, targetTenantId: string): Promise<boolean> {
   const rows = await query<{ allowed: boolean }>(
     `SELECT EXISTS (
        SELECT 1
@@ -50,14 +73,32 @@ async function hasSuperAdminAccess(userId: string): Promise<boolean> {
         WHERE id = $1
           AND (
             COALESCE(is_super_admin, false) = true
-            OR COALESCE(raw_user_meta_data ->> 'role', '') = 'SUPER_ADMIN'
-            OR COALESCE(raw_user_meta_data ->> 'is_super_admin', 'false') = 'true'
+            OR COALESCE(raw_app_meta_data ->> 'role', '') = 'SUPER_ADMIN'
           )
      ) AS allowed`,
     [userId]
   );
 
-  return rows[0]?.allowed === true;
+  const isAllowed = rows[0]?.allowed === true;
+
+  if (isAllowed) {
+    try {
+      await query(
+        `INSERT INTO super_admin_audit_logs (user_id, action, tenant_id_accessed, metadata) 
+         VALUES ($1, $2, $3, $4)`,
+        [
+          userId,
+          "Cross-tenant bypass via super admin",
+          targetTenantId,
+          JSON.stringify({ via: "tenant_middleware" }),
+        ]
+      );
+    } catch (e) {
+      logError("Failed to log super admin access: " + e);
+    }
+  }
+
+  return isAllowed;
 }
 
 async function resolveTenantAccess(
@@ -76,7 +117,7 @@ async function resolveTenantAccess(
     return { allowed: true, source: "direct_user_tenant" };
   }
 
-  if (await hasSuperAdminAccess(userId)) {
+  if (await hasSuperAdminAccess(userId, tenantId)) {
     return { allowed: true, source: "super_admin" };
   }
 
@@ -239,4 +280,8 @@ export async function tenantMiddleware(
   } catch (error) {
     next(error);
   }
+}
+
+export function resetTenantAccessTablesCache(): void {
+  cachedTenantAccessTables = null;
 }

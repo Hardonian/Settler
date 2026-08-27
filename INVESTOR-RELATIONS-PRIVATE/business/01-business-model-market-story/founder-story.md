@@ -38,12 +38,15 @@ I evaluated every option:
 Three trends converged:
 
 ### 1. API Economy Maturity
+
 Every platform now has APIs and webhooks. Stripe, Shopify, QuickBooks, NetSuite—they all expose their data programmatically. The infrastructure exists to build reconciliation-as-a-service.
 
 ### 2. Serverless Infrastructure
+
 Lambda, Vercel, Cloudflare Workers enable global scale at low cost. We can process millions of reconciliations without managing servers.
 
 ### 3. Developer-First Tools Success
+
 Stripe, Resend, Supabase proved that API-first SaaS works. Developers want simple APIs, not complex UIs. They want to integrate in minutes, not months.
 
 **The insight:** If Stripe can make payments as simple as `stripe.charges.create()`, why can't reconciliation be as simple as `settler.reconcile()`?
@@ -81,18 +84,23 @@ I built the core reconciliation engine, Stripe and Shopify adapters, and a TypeS
 ## Why Now? The Market Timing
 
 ### 1. E-commerce Growth
+
 Multi-platform operations are standard, not exception. Every e-commerce company uses Stripe + Shopify + QuickBooks. The market is large and growing.
 
 ### 2. Compliance Requirements
+
 GDPR, SOC 2, PCI-DSS are table stakes for SaaS. Companies need audit trails and compliance guarantees. Manual reconciliation fails audits.
 
 ### 3. Developer-First Movement
+
 Developers are the new buyers. They want APIs, not UIs. They want to integrate in minutes, not months. They want transparency and control.
 
 ### 4. API Economy Maturity
+
 Every platform has APIs. The infrastructure exists. The timing is perfect.
 
 ### 5. Competitive Window
+
 No API-first competitor exists. BlackLine is expensive and slow. QuickBooks is manual. Stripe is single-platform. Fivetran is not purpose-built. **The window is open.**
 
 ---
@@ -104,6 +112,7 @@ No API-first competitor exists. BlackLine is expensive and slow. QuickBooks is m
 **Year 3:** 20,000 customers, $12M ARR, market leader
 
 **Beyond Reconciliation:**
+
 - Revenue recognition automation
 - Tax calculation and filing
 - Multi-entity consolidation
@@ -116,18 +125,23 @@ No API-first competitor exists. BlackLine is expensive and slow. QuickBooks is m
 ## Why I'm Building This
 
 ### 1. I Lived the Pain
+
 I spent hours daily on manual reconciliation. I built custom scripts that broke. I failed audits. I know the problem intimately.
 
 ### 2. The Market is Ready
+
 API economy maturity, serverless infrastructure, developer-first movement—the timing is perfect.
 
 ### 3. The Technology Exists
+
 APIs, webhooks, serverless infrastructure—everything we need exists. We just need to build the right abstraction.
 
 ### 4. The Competitive Window is Open
+
 No API-first competitor exists. The window is open, but it won't stay open forever.
 
 ### 5. I Can Build This
+
 10+ years building developer tools and APIs. Deep understanding of financial operations and compliance. Strong network in fintech, e-commerce, and developer communities.
 
 ---
@@ -155,4 +169,4 @@ No API-first competitor exists. The window is open, but it won't stay open forev
 
 ---
 
-*Last Updated: January 2026*
+_Last Updated: January 2026_

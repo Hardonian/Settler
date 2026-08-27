@@ -5,11 +5,10 @@ import { Footer } from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Github,
+  GitBranch,
   Code2,
   Shield,
   Database,
-  GitBranch,
   Package,
   ArrowRight,
   CheckCircle2,
@@ -134,7 +133,7 @@ export default function OpenSourcePage() {
                   rel="noopener"
                   className="inline-flex items-center gap-2"
                 >
-                  <Github className="w-4 h-4" />
+                  <GitBranch className="w-4 h-4" />
                   View on GitHub
                 </Link>
               </Button>
@@ -319,7 +318,7 @@ export default function OpenSourcePage() {
                     rel="noopener"
                     className="inline-flex items-center gap-2"
                   >
-                    <Github className="w-4 h-4" />
+                    <GitBranch className="w-4 h-4" />
                     Star on GitHub
                   </Link>
                 </Button>

@@ -6,6 +6,7 @@
 
 import { prisma } from "@/shared/db/prismaClient";
 import crypto from "crypto";
+import { validateWebhookUrl } from "../validation/api-validation";
 
 export interface Webhook {
   id: string;
@@ -51,18 +52,10 @@ export async function createWebhook(
 ): Promise<Webhook> {
   const scopedTenantId = requireTenantScope(tenantId);
 
-  // Validate URL format
-  try {
-    const url = new URL(input.url);
-    // Only allow HTTPS in production
-    if (process.env.NODE_ENV === "production" && url.protocol !== "https:") {
-      throw new Error("Webhook URLs must use HTTPS in production");
-    }
-  } catch (error) {
-    if (error instanceof Error && error.message.includes("HTTPS")) {
-      throw error;
-    }
-    throw new Error("Invalid webhook URL format");
+  // Validate URL format and SSRF safety
+  const validation = validateWebhookUrl(input.url);
+  if (!validation.valid) {
+    throw new Error(validation.error || "Invalid webhook URL");
   }
 
   // Validate URL length
@@ -186,10 +179,12 @@ export async function updateWebhook(
 
   // Validate URL if provided
   if (updates.url) {
-    try {
-      new URL(updates.url);
-    } catch {
-      throw new Error("Invalid webhook URL");
+    const validation = validateWebhookUrl(updates.url);
+    if (!validation.valid) {
+      throw new Error(validation.error || "Invalid webhook URL");
+    }
+    if (updates.url.length > 2048) {
+      throw new Error("Webhook URL is too long (max 2048 characters)");
     }
   }
 

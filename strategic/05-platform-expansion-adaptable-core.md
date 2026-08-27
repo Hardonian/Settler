@@ -1,4 +1,5 @@
 # Platform Expansion & Adaptable Core
+
 ## Settler Strategic Framework 2026-2031
 
 **Version:** 1.0  
@@ -12,6 +13,7 @@
 This document architects a modular Settler core that makes extending to entirely new verticals (healthcare, logistics, B2B marketplaces) a first-class pattern. We design for adaptability: plug-in event sources, reconciliation rules, dashboards, and a connector marketplace.
 
 **Key Principles:**
+
 - **Modular Core:** Core reconciliation engine is vertical-agnostic
 - **Plugin Architecture:** Everything is a plugin (adapters, rules, dashboards)
 - **Vertical Expansion Kits:** Pre-built kits for common verticals
@@ -80,6 +82,7 @@ This document architects a modular Settler core that makes extending to entirely
 **Example: Healthcare Vertical**
 
 **Requirements:**
+
 - HIPAA compliance (PHI handling)
 - HL7/FHIR data formats (healthcare standards)
 - Patient data reconciliation (appointments, billing, insurance)
@@ -88,6 +91,7 @@ This document architects a modular Settler core that makes extending to entirely
 ### Step 2: Build Vertical Plugin
 
 **Plugin Components:**
+
 1. **Adapters:**
    - Epic (EHR system)
    - Cerner (EHR system)
@@ -112,6 +116,7 @@ This document architects a modular Settler core that makes extending to entirely
 ### Step 3: Package as Vertical Kit
 
 **Healthcare Vertical Kit Includes:**
+
 - Pre-configured adapters (Epic, Cerner, insurance providers)
 - Pre-built rules (patient matching, claim reconciliation)
 - Compliance modules (HIPAA, audit logging)
@@ -125,16 +130,19 @@ This document architects a modular Settler core that makes extending to entirely
 ### Phase 1: Core Verticals (2026)
 
 **E-commerce (Current):**
+
 - ✅ Stripe, Shopify, PayPal, Square
 - ✅ Order → Payment reconciliation
 - ✅ Multi-currency support
 
 **SaaS/Subscription (Q2 2026):**
+
 - Adapters: Stripe Billing, Recurly, Chargebee
 - Rules: Subscription → Payment reconciliation
 - Dashboards: MRR tracking, churn analysis
 
 **B2B Marketplaces (Q3 2026):**
+
 - Adapters: Ariba, Coupa, SAP Ariba
 - Rules: Purchase order → Invoice reconciliation
 - Dashboards: Vendor reconciliation, payment terms
@@ -142,18 +150,21 @@ This document architects a modular Settler core that makes extending to entirely
 ### Phase 2: Regulated Verticals (2027)
 
 **Healthcare (Q1 2027):**
+
 - Adapters: Epic, Cerner, athenahealth
 - Rules: Patient → Billing → Insurance reconciliation
 - Compliance: HIPAA, audit logging
 - Dashboards: Patient reconciliation, claim status
 
 **Financial Services (Q2 2027):**
+
 - Adapters: Core banking systems, trading platforms
 - Rules: Transaction → Settlement reconciliation
 - Compliance: PCI-DSS, SOC 2, regulatory reporting
 - Dashboards: Transaction reconciliation, settlement status
 
 **Government/Public Sector (Q3 2027):**
+
 - Adapters: Government ERP systems, procurement platforms
 - Rules: Purchase order → Payment reconciliation
 - Compliance: FedRAMP, FISMA, audit requirements
@@ -162,16 +173,19 @@ This document architects a modular Settler core that makes extending to entirely
 ### Phase 3: Emerging Verticals (2027-2028)
 
 **Logistics/Supply Chain (Q4 2027):**
+
 - Adapters: TMS (Transportation Management Systems), WMS (Warehouse Management Systems)
 - Rules: Shipment → Delivery → Payment reconciliation
 - Dashboards: Shipment tracking, delivery reconciliation
 
 **Real Estate (Q1 2028):**
+
 - Adapters: Property management systems, payment processors
 - Rules: Lease → Payment → Accounting reconciliation
 - Dashboards: Property reconciliation, rent collection
 
 **Education (Q2 2028):**
+
 - Adapters: Student information systems, payment processors
 - Rules: Tuition → Payment → Financial aid reconciliation
 - Dashboards: Student account reconciliation, financial aid tracking
@@ -183,18 +197,19 @@ This document architects a modular Settler core that makes extending to entirely
 ### Kit Components
 
 **1. Adapters:**
+
 ```typescript
 // Example: Healthcare Adapter
 export class EpicAdapter implements Adapter {
   name = "epic";
   version = "1.0.0";
-  
+
   async fetch(options: FetchOptions): Promise<NormalizedData[]> {
     // Fetch patient data from Epic EHR
     // Normalize to Settler format
     // Return normalized data
   }
-  
+
   normalize(data: EpicPatientData): NormalizedData {
     return {
       id: data.mrn, // Medical Record Number
@@ -205,13 +220,14 @@ export class EpicAdapter implements Adapter {
         patientName: data.patientName,
         procedureCode: data.procedureCode,
         // ... healthcare-specific fields
-      }
+      },
     };
   }
 }
 ```
 
 **2. Rules:**
+
 ```typescript
 // Example: Healthcare Matching Rules
 export const healthcareMatchingRules = {
@@ -219,25 +235,26 @@ export const healthcareMatchingRules = {
     primary: [
       { field: "mrn", type: "exact" }, // Medical Record Number
       { field: "patientName", type: "fuzzy", threshold: 0.9 },
-      { field: "dateOfBirth", type: "exact" }
+      { field: "dateOfBirth", type: "exact" },
     ],
     fallback: [
       { field: "ssn", type: "exact" }, // Social Security Number (encrypted)
       { field: "patientName", type: "fuzzy", threshold: 0.95 },
-      { field: "serviceDate", type: "range", days: 1 }
-    ]
+      { field: "serviceDate", type: "range", days: 1 },
+    ],
   },
   claimMatching: {
     primary: [
       { field: "claimNumber", type: "exact" },
       { field: "dateOfService", type: "range", days: 7 },
-      { field: "procedureCode", type: "exact" }
-    ]
-  }
+      { field: "procedureCode", type: "exact" },
+    ],
+  },
 };
 ```
 
 **3. Dashboards:**
+
 ```typescript
 // Example: Healthcare Dashboard Widgets
 export const healthcareDashboards = {
@@ -245,20 +262,21 @@ export const healthcareDashboards = {
     widgets: [
       { type: "patient-list", config: { status: "unmatched" } },
       { type: "reconciliation-timeline", config: { patientId: "..." } },
-      { type: "claim-status", config: { dateRange: "..." } }
-    ]
+      { type: "claim-status", config: { dateRange: "..." } },
+    ],
   },
   billingReconciliation: {
     widgets: [
       { type: "revenue-chart", config: { period: "monthly" } },
       { type: "unmatched-bills", config: { threshold: 100 } },
-      { type: "insurance-claim-status", config: { provider: "..." } }
-    ]
-  }
+      { type: "insurance-claim-status", config: { provider: "..." } },
+    ],
+  },
 };
 ```
 
 **4. Compliance Modules:**
+
 ```typescript
 // Example: HIPAA Compliance Module
 export class HIPAAComplianceModule {
@@ -267,7 +285,7 @@ export class HIPAAComplianceModule {
     // Immutable audit trail
     // Alert on unauthorized access
   }
-  
+
   async encryptPHI(data: PHIData): Promise<EncryptedData> {
     // Encrypt PHI at rest
     // Customer-controlled encryption keys
@@ -305,20 +323,24 @@ export class HIPAAComplianceModule {
 ### Partner Onboarding Process
 
 **Step 1: Application**
+
 - Partner applies via Settler website
 - Provide vertical expertise, customer base, technical capabilities
 
 **Step 2: Technical Onboarding**
+
 - Access to Settler API and SDK
 - Technical documentation and training
 - Sandbox environment for testing
 
 **Step 3: Kit Development**
+
 - Partner develops vertical kit (with Settler support)
 - Settler reviews and certifies kit
 - Kit published to marketplace
 
 **Step 4: Go-to-Market**
+
 - Co-marketing (blog posts, case studies, webinars)
 - Sales enablement (pitch decks, demos)
 - Customer referrals (bidirectional)
@@ -330,21 +352,22 @@ export class HIPAAComplianceModule {
 ### SDK Components
 
 **1. Adapter SDK:**
+
 ```typescript
 import { Adapter, NormalizedData, FetchOptions } from "@settler/adapter-sdk";
 
 export class MyVerticalAdapter implements Adapter {
   name = "my-vertical-platform";
   version = "1.0.0";
-  
+
   async fetch(options: FetchOptions): Promise<NormalizedData[]> {
     // Implement fetch logic
   }
-  
+
   normalize(data: unknown): NormalizedData {
     // Implement normalization logic
   }
-  
+
   validate(data: NormalizedData): ValidationResult {
     // Implement validation logic
   }
@@ -352,13 +375,14 @@ export class MyVerticalAdapter implements Adapter {
 ```
 
 **2. Rule SDK:**
+
 ```typescript
 import { Rule, MatchingContext } from "@settler/rule-sdk";
 
 export class MyVerticalRule implements Rule {
   name = "my-vertical-matching";
   version = "1.0.0";
-  
+
   async match(context: MatchingContext): Promise<MatchResult> {
     // Implement custom matching logic
   }
@@ -366,13 +390,14 @@ export class MyVerticalRule implements Rule {
 ```
 
 **3. Dashboard SDK:**
+
 ```typescript
 import { DashboardWidget, WidgetConfig } from "@settler/dashboard-sdk";
 
 export class MyVerticalWidget implements DashboardWidget {
   name = "my-vertical-chart";
   version = "1.0.0";
-  
+
   async render(config: WidgetConfig): Promise<WidgetRenderResult> {
     // Implement custom visualization
   }
@@ -382,17 +407,20 @@ export class MyVerticalWidget implements DashboardWidget {
 ### Documentation
 
 **Developer Guides:**
+
 - "Building Your First Adapter" (step-by-step tutorial)
 - "Creating Custom Matching Rules" (rule development guide)
 - "Building Dashboard Widgets" (dashboard development guide)
 - "Vertical Expansion Best Practices" (architecture patterns)
 
 **API Reference:**
+
 - Adapter API (interfaces, types, examples)
 - Rule API (interfaces, types, examples)
 - Dashboard API (interfaces, types, examples)
 
 **Examples:**
+
 - Example adapters (GitHub repository)
 - Example rules (GitHub repository)
 - Example dashboards (GitHub repository)
@@ -404,6 +432,7 @@ export class MyVerticalWidget implements DashboardWidget {
 ### When to Build a Vertical Kit
 
 **Criteria:**
+
 1. **Market Size:** $100M+ TAM (Total Addressable Market)
 2. **Customer Demand:** 10+ enterprise customers requesting vertical
 3. **Technical Feasibility:** Core reconciliation engine can handle vertical requirements
@@ -412,6 +441,7 @@ export class MyVerticalWidget implements DashboardWidget {
 ### Vertical Kit Requirements
 
 **Must-Have:**
+
 - ✅ 3+ adapters (core platforms in vertical)
 - ✅ Pre-built matching rules (common reconciliation patterns)
 - ✅ Compliance modules (if regulated vertical)
@@ -419,6 +449,7 @@ export class MyVerticalWidget implements DashboardWidget {
 - ✅ Support (vertical domain experts)
 
 **Nice-to-Have:**
+
 - Custom dashboards (vertical-specific visualizations)
 - Workflow templates (common reconciliation workflows)
 - Integration guides (how to integrate with vertical platforms)
@@ -429,18 +460,21 @@ export class MyVerticalWidget implements DashboardWidget {
 ## Success Metrics
 
 **By End of 2026:**
+
 - 3 vertical kits (E-commerce, SaaS, B2B Marketplaces)
 - 20+ adapters across all verticals
 - 10+ partners in partner program
 - 30%+ of customers using vertical-specific features
 
 **By End of 2027:**
+
 - 6 vertical kits (add Healthcare, Financial Services, Government)
 - 50+ adapters across all verticals
 - 30+ partners in partner program
 - 50%+ of customers using vertical-specific features
 
 **By End of 2028:**
+
 - 10+ vertical kits (add Logistics, Real Estate, Education)
 - 100+ adapters across all verticals
 - 50+ partners in partner program

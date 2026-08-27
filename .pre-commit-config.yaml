@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: no-plaintext-secrets
+        name: block plaintext secrets
+        entry: bash -c 'if grep -RInE "(sk_live_|sk_test_|ghp_|AIza|BEGIN RSA)" . --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=vendor --exclude-dir=dist --exclude-dir=build --exclude-dir=test --exclude-dir=tests --exclude-dir=fixtures --exclude-dir=examples --exclude-dir=docs 2>/dev/null; then exit 1; fi'
+        language: system
+        pass_filenames: []
+        always_run: true

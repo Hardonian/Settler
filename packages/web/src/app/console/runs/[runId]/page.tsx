@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
+  ArrowRight,
   AlertCircle,
   Settings,
   Shield,
@@ -19,6 +21,8 @@ import {
 
 import {
   Button,
+  Card,
+  CardContent,
   CardTitle,
   CardDescription,
   Tabs,
@@ -27,6 +31,15 @@ import {
   TabsTrigger,
 } from "@/components/ui";
 
+import { FreezeBlockedButton } from "@/components/shared/FreezeBlockedButton";
+import { FreezeErrorAlert } from "@/components/shared/FreezeErrorAlert";
+import { useGovernanceState } from "@/hooks/use-governance-state";
+import {
+  getApiErrorMessage,
+  getGovernanceRecoveryHref,
+  parseGovernanceFreezeError,
+  type GovernanceFreezeErrorDetails,
+} from "@/lib/governance/freeze-client";
 import type { OperatorRunDetail } from "@/types/operator-run-detail";
 import { formatDistanceToNow } from "date-fns";
 import {
@@ -47,6 +60,9 @@ export default function RunPage() {
   const runId = Array.isArray(params.runId) ? params.runId[0] : params.runId;
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [exporting, setExporting] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [freezeError, setFreezeError] = useState<GovernanceFreezeErrorDetails | null>(null);
+  const { isFrozen, governanceState } = useGovernanceState();
 
   // Use React Query for efficient fetching, polling, and data synchronization
   const {
@@ -74,18 +90,43 @@ export default function RunPage() {
   const handleRetry = useCallback(async () => {
     if (!run) return;
     try {
+      setActionError(null);
+      setFreezeError(null);
       const response = await fetch(`/api/runs/${runId}/retry`, { method: "POST" });
-      if (response.ok) {
-        refetch();
+      const payload = (await response.json().catch(() => null)) as unknown;
+      const freezeDetails = parseGovernanceFreezeError(payload, response.status);
+
+      if (freezeDetails) {
+        setFreezeError(freezeDetails);
+        return;
       }
+
+      if (!response.ok) {
+        setActionError(getApiErrorMessage(payload, "Failed to retry run"));
+        return;
+      }
+
+      const nextRunId =
+        payload && typeof payload === "object" && "data" in payload
+          ? (payload as { data?: { id?: string } }).data?.id
+          : undefined;
+
+      if (typeof nextRunId === "string" && nextRunId.length > 0) {
+        router.push(`/console/runs/${nextRunId}`);
+        return;
+      }
+
+      refetch();
     } catch (err) {
-      console.error("Retry failed:", err);
+      setActionError(err instanceof Error ? err.message : "Failed to retry run");
     }
-  }, [runId, run, refetch]);
+  }, [router, runId, run, refetch]);
 
   const handleExport = useCallback(async () => {
     if (!runId) return;
     setExporting(true);
+    setActionError(null);
+    setFreezeError(null);
     try {
       const response = await fetch("/api/exports", {
         method: "POST",
@@ -97,11 +138,22 @@ export default function RunPage() {
         }),
       });
       if (!response.ok) {
-        const body = await response.json().catch(() => ({}));
-        const cap = (body as { capability?: { reason?: string } }).capability;
-        console.error("Export failed:", cap?.reason ?? response.statusText);
+        const payload = (await response.json().catch(() => null)) as unknown;
+        const freezeDetails = parseGovernanceFreezeError(payload, response.status);
+
+        if (freezeDetails) {
+          setFreezeError(freezeDetails);
+          return;
+        }
+
+        const body =
+          payload && typeof payload === "object"
+            ? (payload as { capability?: { reason?: string } })
+            : null;
+        setActionError(body?.capability?.reason ?? getApiErrorMessage(payload, "Export failed"));
         return;
       }
+
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
@@ -110,7 +162,7 @@ export default function RunPage() {
       anchor.click();
       URL.revokeObjectURL(url);
     } catch (err) {
-      console.error("Export error:", err);
+      setActionError(err instanceof Error ? err.message : "Export failed");
     } finally {
       setExporting(false);
     }
@@ -153,20 +205,32 @@ export default function RunPage() {
   }
 
   const provenanceSignals = getOperatorRunDetailProvenanceSignals(run);
+  const showResultsLink = run.status === "completed" && run.runKind !== "ingestion_run";
+  const showRunExceptionsLink = run.exceptions.total > 0;
+  const activeFreezeDetails =
+    freezeError ??
+    (isFrozen
+      ? {
+          message: "Write actions are currently blocked by tenant freeze.",
+          reason: governanceState?.freeze_reason ?? null,
+          frozenAt: governanceState?.frozen_at ?? null,
+          traceId: null,
+        }
+      : null);
 
   return (
     <div className="p-6 lg:p-10 space-y-10 max-w-7xl mx-auto">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 relative group">
         <div className="space-y-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="group/back -ml-3 text-muted-foreground hover:text-foreground transition-colors"
-            onClick={() => router.back()}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2 group-hover/back:-translate-x-1 transition-transform" />
-            Back to Dashboard
+          <Button asChild variant="ghost" size="sm" className="group/back -ml-3">
+            <Link
+              href="/console/runs"
+              className="text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover/back:-translate-x-1" />
+              Back to Runs
+            </Link>
           </Button>
           <div className="space-y-1.5 pt-2">
             <div className="flex items-center gap-3">
@@ -192,10 +256,13 @@ export default function RunPage() {
             <Activity className={`w-4 h-4 mr-2 ${autoRefresh ? "animate-pulse" : ""}`} />
             {autoRefresh ? "Auto-Refresh Active" : "Auto-Refresh Paused"}
           </Button>
-          <Button
+          <FreezeBlockedButton
             variant="outline"
             disabled={!run.isTerminal || exporting}
             onClick={() => void handleExport()}
+            isFrozen={isFrozen}
+            freezeReason={governanceState?.freeze_reason}
+            frozenMessage="Exporting run results is blocked by tenant freeze"
           >
             {exporting ? (
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -203,17 +270,88 @@ export default function RunPage() {
               <FileDown className="w-4 h-4 mr-2" />
             )}
             {exporting ? "Exporting…" : "Export results"}
-          </Button>
-          <Button
+          </FreezeBlockedButton>
+          <FreezeBlockedButton
             className="bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20"
             disabled={!run.isTerminal}
             onClick={handleRetry}
+            isFrozen={isFrozen}
+            freezeReason={governanceState?.freeze_reason}
+            frozenMessage="Retrying a run is blocked by tenant freeze"
           >
             <RotateCcw className="w-4 h-4 mr-2" />
             Retry run
-          </Button>
+          </FreezeBlockedButton>
         </div>
       </div>
+
+      {activeFreezeDetails ? (
+        <FreezeErrorAlert
+          reason={activeFreezeDetails.reason}
+          frozenAt={activeFreezeDetails.frozenAt ?? undefined}
+          recoveryAction={{
+            label: "Open Governance Controls",
+            href: getGovernanceRecoveryHref(),
+          }}
+        />
+      ) : null}
+
+      {actionError ? (
+        <Card className="border-red-200 bg-red-50/60 dark:border-red-900/60 dark:bg-red-950/20">
+          <CardContent className="flex flex-col gap-3 py-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-medium text-red-700 dark:text-red-300">
+                Action could not be completed
+              </p>
+              <p className="mt-1 text-sm text-red-700/90 dark:text-red-300/90">{actionError}</p>
+            </div>
+            <Button variant="outline" onClick={() => setActionError(null)}>
+              Dismiss
+            </Button>
+          </CardContent>
+        </Card>
+      ) : null}
+
+      <Card className="border-border/60 bg-muted/20">
+        <CardContent className="flex flex-col gap-4 py-5 lg:flex-row lg:items-center lg:justify-between">
+          <div className="space-y-1">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              Workflow Continuity
+            </p>
+            <p className="text-sm font-medium text-foreground">
+              Move from execution truth to outcome review without losing run context.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Use the links below to inspect results, work run-scoped exceptions, or confirm
+              governance state before retrying mutations.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            {showResultsLink ? (
+              <Button asChild>
+                <Link href={`/console/reconciliations?runId=${run.id}`}>
+                  Inspect results
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            ) : null}
+            {showRunExceptionsLink ? (
+              <Button asChild variant="outline">
+                <Link href={`/console/exceptions?runId=${run.id}&runKind=${run.runKind}`}>
+                  Review exceptions
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            ) : null}
+            <Button asChild variant="outline">
+              <Link href={getGovernanceRecoveryHref()}>
+                Governance controls
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <DetailCard

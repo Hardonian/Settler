@@ -25,12 +25,12 @@ export async function submitSupportIntake(params: {
       tenantId: params.tenantId,
       path: params.path,
       body: params.body,
-      resolveRunContext: async (tenantId, runId) =>
+      resolveRunContext: async (tenantId: string, runId: string) =>
         (await buildSupportIntakeRunContext(prisma, tenantId, runId)) as unknown as Record<
           string,
           unknown
         >,
-      resolveExceptionContext: async (tenantId, exceptionId) =>
+      resolveExceptionContext: async (tenantId: string, exceptionId: string) =>
         (await buildSupportIntakeExceptionContext(
           prisma,
           tenantId,
@@ -45,7 +45,7 @@ export async function submitSupportIntake(params: {
           payload,
           runContext,
           exceptionContext,
-        }) => {
+        }: any) => {
           await eventBus.emitEvent(
             "support.issue.created",
             tenantId,

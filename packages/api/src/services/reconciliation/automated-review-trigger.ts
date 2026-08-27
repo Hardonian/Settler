@@ -27,7 +27,7 @@ export async function processPendingReviews(limit: number = 100): Promise<{
       completed_at: Date | null;
     }>(
       `SELECT id, tenant_id, status, completed_at
-       FROM reconciliation_runs
+       FROM recon_results
        WHERE status = 'completed'
          AND completed_at IS NOT NULL
          AND completed_at > NOW() - INTERVAL '24 hours'
@@ -91,7 +91,7 @@ export async function triggerAutomatedReview(runId: string, tenantId: string): P
       completed_at: Date | null;
     }>(
       `SELECT status, completed_at
-       FROM reconciliation_runs
+       FROM recon_results
        WHERE id = $1 AND tenant_id = $2`,
       [runId, tenantId]
     );

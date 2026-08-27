@@ -1,0 +1,7 @@
+transaction_id,posted_at,description,counterparty,amount,currency,reference
+bank_9001,2026-06-01,Stripe card payout INV-1001,Operating Bank,1250.00,USD,INV-1001
+bank_9002,2026-06-01,Stripe marketplace payout invoice 1002,Operating Bank,940.24,USD,INV-1002
+bank_9003,2026-06-01,Stripe payout inv-1003 batch,Operating Bank,431.50,USD,INV-1003
+bank_9004,2026-06-01,Refund batch RF-204,Operating Bank,-75.00,USD,RF-204
+bank_9005,2026-06-01,Bank service fee May,Operating Bank,-25.00,USD,BANK-FEE-MAY
+bank_9006,2026-06-01,Stripe marketplace payout INV-1006,Operating Bank,810.10,USD,INV-1006

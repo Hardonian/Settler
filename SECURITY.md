@@ -2,16 +2,23 @@
 
 ## Reporting a Vulnerability
 
-Please open a GitHub Security Advisory or private issue with:
-- impacted component/path
-- reproduction steps
-- severity and potential blast radius
+If you discover a security vulnerability within this project, please report it responsibly.
 
-We will acknowledge within 72 hours.
+**Do NOT open a public GitHub issue for security vulnerabilities.**
 
-## Secure Defaults
+Email security issues to: **security@hardonia.store**
 
-- Least-privilege tokens and environment variables
-- Branch protection and PR review on default branch
-- Automated dependency and workflow updates
-- Code scanning + secret scanning in CI
+Please include:
+- Description of the vulnerability
+- Steps to reproduce
+- Potential impact
+- Suggested fix (if any)
+
+## Response
+
+We aim to acknowledge receipt within 48 hours and provide a remediation timeline within 7 days.
+
+## Scope
+
+This security policy applies to the latest release of this project.
+

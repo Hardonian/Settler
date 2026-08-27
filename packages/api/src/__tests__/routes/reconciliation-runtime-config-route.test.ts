@@ -8,6 +8,10 @@ jest.mock("../../middleware/governance", () => ({
   enforceFreezeState: () => (_req: unknown, _res: unknown, next: () => void) => next(),
 }));
 
+jest.mock("../../middleware/authorization", () => ({
+  requirePermission: () => (_req: unknown, _res: unknown, next: () => void) => next(),
+}));
+
 jest.mock("../../services/ingestion/reconciliation-matcher", () => ({
   runReconciliation: (...args: unknown[]) => runReconciliationMock(...args),
 }));
@@ -49,6 +53,11 @@ jest.mock("../../utils/logger", () => ({
   logError: jest.fn(),
   logInfo: jest.fn(),
   logWarn: jest.fn(),
+}));
+
+jest.mock("../../db", () => ({
+  query: jest.fn(),
+  queryWithTenant: jest.fn(),
 }));
 
 describe("reconciliation runtime config route", () => {

@@ -10,7 +10,7 @@ import { validateRequest } from "../middleware/validation";
 import { TenantRequest } from "../middleware/tenant";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
-import { query } from "../db";
+import { queryWithTenant } from "../db";
 import { handleRouteError } from "../utils/error-handler";
 import { logInfo, logWarn } from "../utils/logger";
 import { withCache } from "../utils/cache";
@@ -49,7 +49,7 @@ router.get(
         () =>
           Promise.all([
             // Signup funnel - filtered by tenant_id for multi-tenant isolation
-            query<{
+            queryWithTenant<{
               signup_started: string;
               signup_completed: string;
               email_verified: string;
@@ -57,6 +57,7 @@ router.get(
               job_created: string;
               reconciliation_success: string;
             }>(
+              tenantId,
               `SELECT
              COUNT(*) FILTER (WHERE event_name = 'SignupStarted') as signup_started,
              COUNT(*) FILTER (WHERE event_name = 'SignupCompleted') as signup_completed,
@@ -70,12 +71,13 @@ router.get(
             ),
 
             // Time to first value - filtered by tenant_id
-            query<{
+            queryWithTenant<{
               median_hours: number;
               p25_hours: number;
               p75_hours: number;
               p95_hours: number;
             }>(
+              tenantId,
               `WITH user_events AS (
              SELECT
                user_id,
@@ -96,12 +98,13 @@ router.get(
             ),
 
             // Activation rate by channel - filtered by tenant_id
-            query<{
+            queryWithTenant<{
               channel: string;
               signups: string;
               activated: string;
               activation_rate: number;
             }>(
+              tenantId,
               `SELECT
              COALESCE(properties->>'source', 'unknown') as channel,
              COUNT(*) FILTER (WHERE event_name = 'SignupCompleted') as signups,
@@ -183,11 +186,12 @@ router.get(
         () =>
           Promise.all([
             // Reconciliation volume - filtered by tenant_id
-            query<{
+            queryWithTenant<{
               date: Date;
               count: string;
               adapter_combination: string;
             }>(
+              tenantId,
               `SELECT
              DATE(timestamp) as date,
              COUNT(*) as count,
@@ -202,11 +206,12 @@ router.get(
             ),
 
             // Accuracy trends - filtered by tenant_id
-            query<{
+            queryWithTenant<{
               date: Date;
               avg_accuracy: number;
               job_type: string;
             }>(
+              tenantId,
               `SELECT
              DATE(timestamp) as date,
              AVG((properties->>'accuracy')::float) as avg_accuracy,
@@ -221,11 +226,12 @@ router.get(
             ),
 
             // Error rate - filtered by tenant_id
-            query<{
+            queryWithTenant<{
               error_type: string;
               count: string;
               percentage: number;
             }>(
+              tenantId,
               `SELECT
              properties->>'errorType' as error_type,
              COUNT(*) as count,
@@ -239,11 +245,12 @@ router.get(
             ),
 
             // Exception rate - filtered by tenant_id
-            query<{
+            queryWithTenant<{
               reason: string;
               count: string;
               percentage: number;
             }>(
+              tenantId,
               `SELECT
              reason,
              COUNT(*) as count,
@@ -359,11 +366,12 @@ router.get(
         () =>
           Promise.all([
             // Support ticket volume - filtered by tenant_id
-            query<{
+            queryWithTenant<{
               date: Date;
               category: string;
               count: string;
             }>(
+              tenantId,
               `SELECT
              DATE(timestamp) as date,
              properties->>'category' as category,
@@ -378,10 +386,11 @@ router.get(
             ),
 
             // Exception resolution time - filtered by tenant_id
-            query<{
+            queryWithTenant<{
               median_hours: number;
               p95_hours: number;
             }>(
+              tenantId,
               `SELECT
              PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY EXTRACT(EPOCH FROM (resolved_at - created_at)) / 3600) as median_hours,
              PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY EXTRACT(EPOCH FROM (resolved_at - created_at)) / 3600) as p95_hours

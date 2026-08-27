@@ -21,6 +21,13 @@ import { MessageSquare, CheckCircle2, AlertCircle } from "lucide-react";
 import { ConsoleErrorBoundary } from "./ErrorBoundary";
 import { SUPPORT_ISSUE_CATEGORY_LABELS, type SupportIssueCategory } from "@settler/types";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { FreezeErrorAlert } from "@/components/shared/FreezeErrorAlert";
+import {
+  getApiErrorMessage,
+  getGovernanceRecoveryHref,
+  parseGovernanceFreezeError,
+  type GovernanceFreezeErrorDetails,
+} from "@/lib/governance/freeze-client";
 
 const CATEGORY_ENTRIES = Object.entries(SUPPORT_ISSUE_CATEGORY_LABELS) as Array<
   [SupportIssueCategory, string]
@@ -50,6 +57,7 @@ export function SupportWidget({
   const [submitted, setSubmitted] = useState(false);
   const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [freezeError, setFreezeError] = useState<GovernanceFreezeErrorDetails | null>(null);
   const [copyFeedback, setCopyFeedback] = useState<string | null>(null);
 
   const contextBundle = useMemo(() => {
@@ -86,6 +94,7 @@ export function SupportWidget({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
+    setFreezeError(null);
 
     const summary = subject.trim();
     const body = description.trim();
@@ -129,10 +138,19 @@ export function SupportWidget({
         message?: string;
       };
 
+      const freezeDetails = parseGovernanceFreezeError(data, res.status);
+      if (freezeDetails) {
+        setFreezeError(freezeDetails);
+        return;
+      }
+
       if (!res.ok) {
         setErrorMessage(
-          data.message ||
-            (typeof data.code === "string" ? data.code : "Support intake was not accepted.")
+          getApiErrorMessage(
+            data,
+            data.message ||
+              (typeof data.code === "string" ? data.code : "Support intake was not accepted.")
+          )
         );
         return;
       }
@@ -194,6 +212,17 @@ export function SupportWidget({
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {freezeError ? (
+            <FreezeErrorAlert
+              reason={freezeError.reason}
+              frozenAt={freezeError.frozenAt ?? undefined}
+              recoveryAction={{
+                label: "Open Governance Controls",
+                href: getGovernanceRecoveryHref(),
+              }}
+            />
+          ) : null}
+
           {errorMessage ? (
             <Alert variant="destructive" className="mb-4">
               <AlertCircle className="h-4 w-4" />

@@ -3,7 +3,7 @@ import { getFoundryDatasets, getFoundryRuns } from "@/lib/foundry/store";
 
 export const dynamic = "force-dynamic";
 
-export default function FoundryPage(): JSX.Element {
+export default function FoundryPage() {
   const datasets = getFoundryDatasets();
   const runs = getFoundryRuns();
 

@@ -66,18 +66,21 @@ function checkToolchain() {
   try {
     nodeContract.assertSupportedNodeVersion("doctor");
     const { requiredVersion, requiredRange } = nodeContract.formatNodeRequirement();
+    const requiredMajor = requiredVersion.split(".")[0] ?? "22";
     addCheck(
       "toolchain.node",
       "PASS",
       `Node ${process.version} detected (required: ${requiredVersion}, ${requiredRange})`,
-      "Use the repo Node 24 toolchain (see .nvmrc/.node-version and package.json engines)."
+      `Use the repo Node ${requiredMajor} toolchain (see .nvmrc/.node-version and package.json engines).`
     );
   } catch (error) {
+    const { requiredVersion } = nodeContract.formatNodeRequirement();
+    const requiredMajor = requiredVersion.split(".")[0] ?? "22";
     addCheck(
       "toolchain.node",
       "FAIL",
       `Node ${process.version} detected`,
-      error instanceof Error ? error.message : "Use the repo Node 24 toolchain."
+      error instanceof Error ? error.message : `Use the repo Node ${requiredMajor} toolchain.`
     );
   }
 
@@ -86,7 +89,7 @@ function checkToolchain() {
     "toolchain.pnpm",
     pnpm.status === 0 ? "PASS" : "FAIL",
     pnpm.status === 0 ? `pnpm ${pnpm.stdout.trim()} detected` : "pnpm not available in PATH",
-    "Enable corepack and install pnpm 10.13.1+."
+    "Enable corepack and install pnpm 9.15.0+."
   );
 }
 

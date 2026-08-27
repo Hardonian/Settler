@@ -639,7 +639,7 @@ async function performHealthCheck(dbUrl: string): Promise<{
 // ============================================================================
 
 function readMigrationLog(): string {
-  const logPath = path.join(process.cwd(), "MIGRATION_LOG.md");
+  const logPath = path.join(process.cwd(), process.env.MIGRATION_LOG_PATH || "MIGRATION_LOG.md");
   if (fs.existsSync(logPath)) {
     return fs.readFileSync(logPath, "utf-8");
   }
@@ -652,7 +652,7 @@ This log is maintained by the Migration Guardian agent to track all Prisma migra
 }
 
 function appendMigrationLog(run: MigrationRun): void {
-  const logPath = path.join(process.cwd(), "MIGRATION_LOG.md");
+  const logPath = path.join(process.cwd(), process.env.MIGRATION_LOG_PATH || "MIGRATION_LOG.md");
   let content = readMigrationLog();
 
   const entry = `
@@ -726,6 +726,7 @@ ${run.warnings.length > 0 ? `### Warnings\n${run.warnings.map((w) => `- ${w}`).j
 `;
 
   content += entry;
+  fs.mkdirSync(path.dirname(logPath), { recursive: true });
   fs.writeFileSync(logPath, content, "utf-8");
 }
 

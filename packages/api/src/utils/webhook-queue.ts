@@ -2,6 +2,7 @@ import { query } from "../db";
 import { generateWebhookSignature } from "./webhook-signature";
 import { logInfo, logError, logWarn } from "./logger";
 import { validatedConfig as config } from "../config/validation";
+import { secureFetch } from "./ssrf-protection";
 
 /**
  * Webhook payload structure
@@ -173,7 +174,7 @@ export async function processWebhookDelivery(delivery: WebhookDelivery): Promise
     try {
       const signature = generateWebhookSignature(JSON.stringify(delivery.payload), delivery.secret);
 
-      const response = await fetch(delivery.url, {
+      const response = await secureFetch(delivery.url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -211,20 +212,21 @@ export async function processWebhookDelivery(delivery: WebhookDelivery): Promise
       attempt++;
 
       if (attempt > maxRetries) {
-        // Max retries exceeded - mark as failed
+        // Max retries exceeded - mark as dlq (Dead Letter Queue)
         await query(
           `UPDATE webhook_deliveries
-           SET status = 'failed',
+           SET status = 'dlq',
                error = $1,
                attempts = $2
            WHERE id = $3`,
           [error.message, attempt, delivery.id]
         );
 
-        logError("Webhook delivery failed after max retries", error, {
+        logError("Webhook delivery sent to DLQ after max retries", error, {
           deliveryId: delivery.id,
           webhookId: delivery.webhookId,
           attempts: attempt,
+          dlq: true,
         });
         return;
       }
@@ -311,15 +313,17 @@ export async function queueWebhookDelivery(webhookId: string, payload: any): Pro
   }
 
   // Process immediately (in production, use job queue)
-  processWebhookDelivery({
-    id: deliveryId,
-    webhookId,
-    url: webhook.url,
-    payload,
-    secret: webhook.secret,
-  }).catch((error) => {
-    logError("Failed to process webhook delivery", error, { deliveryId });
-  });
+  if (process.env.NODE_ENV !== "test") {
+    processWebhookDelivery({
+      id: deliveryId,
+      webhookId,
+      url: webhook.url,
+      payload,
+      secret: webhook.secret,
+    }).catch((error) => {
+      logError("Failed to process webhook delivery", error, { deliveryId });
+    });
+  }
 
   return deliveryId;
 }

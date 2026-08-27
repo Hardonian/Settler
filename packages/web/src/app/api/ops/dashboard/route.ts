@@ -209,17 +209,17 @@ async function getDashboard(request: NextRequest): Promise<NextResponse> {
     const since7d = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
     const { count: count24h } = await supabase
-      .from("reconciliation_runs")
+      .from("recon_results")
       .select("id", { count: "exact", head: true })
       .gte("created_at", since24h);
 
     const { count: count7d } = await supabase
-      .from("reconciliation_runs")
+      .from("recon_results")
       .select("id", { count: "exact", head: true })
       .gte("created_at", since7d);
 
     const { count: failedCount } = await supabase
-      .from("reconciliation_runs")
+      .from("recon_results")
       .select("id", { count: "exact", head: true })
       .gte("created_at", since24h)
       .eq("status", "failed");
@@ -284,7 +284,7 @@ async function getDashboard(request: NextRequest): Promise<NextResponse> {
   try {
     const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     const { data: tenantData } = await supabase
-      .from("reconciliation_runs")
+      .from("recon_results")
       .select("tenant_id")
       .gte("created_at", since24h);
 

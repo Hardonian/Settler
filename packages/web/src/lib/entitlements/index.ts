@@ -81,8 +81,8 @@ const PLAN_ENTITLEMENTS: Record<string, EntitlementLimits> = {
     retention_years: 1,
     sla_percentage: 99,
   },
-  // Growth plan ($299/month)
-  growth: {
+  // Pro plan ($99/month)
+  pro: {
     reconciliations_per_month: 100000,
     receipts_per_month: 10000,
     exports_per_month: 500,
@@ -119,10 +119,10 @@ function normalizePlanId(planId: string | null | undefined): string {
 
   // Map legacy plan IDs
   if (normalized === "base") return "starter";
-  if (normalized.includes("pro")) return "growth";
+  if (normalized.includes("pro")) return "pro";
   if (normalized.includes("enterprise") || normalized.includes("custom")) return "enterprise";
   if (normalized.includes("starter") || normalized.includes("starter")) return "starter";
-  if (normalized.includes("growth")) return "growth";
+  if (normalized.includes("growth")) return "pro";
 
   // Default to starter if unknown
   return "starter";
@@ -324,10 +324,10 @@ export async function requireEntitlement(
     // Check if usage + quantity exceeds limit
     if (currentUsage + quantity > limit) {
       // Determine upgrade path
-      let upgradePlan = "growth";
+      let upgradePlan = "pro";
       if (status.planId === "free") upgradePlan = "starter";
-      else if (status.planId === "starter") upgradePlan = "growth";
-      else if (status.planId === "growth") upgradePlan = "enterprise";
+      else if (status.planId === "starter") upgradePlan = "pro";
+      else if (status.planId === "pro") upgradePlan = "enterprise";
 
       return {
         allowed: false,
@@ -367,8 +367,8 @@ export async function getUpgradeUrl(): Promise<string> {
   }
 
   if (status.planId === "free") return "/pricing?plan=starter";
-  if (status.planId === "starter") return "/pricing?plan=growth";
-  if (status.planId === "growth") return "/pricing?plan=enterprise";
+  if (status.planId === "starter") return "/pricing?plan=pro";
+  if (status.planId === "pro") return "/pricing?plan=enterprise";
 
   return "/pricing";
 }

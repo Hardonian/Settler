@@ -15,11 +15,11 @@ import { MarketingIntentCard } from "@/components/site/marketing-motion-wrappers
 import { Button } from "@/components/ui/button";
 import { UiLink } from "@/components/ui/link";
 import {
-  ReconciliationFlow,
-  VisualGrid,
   AdapterConnectionMap,
   ExceptionTriageVisual,
-} from "@/components/site/infographics";
+  ReconciliationFlow,
+  VisualGrid,
+} from "@/components/site/HomeInfographics";
 
 export const metadata: Metadata = {
   title: "Settler — Reconciliation intelligence + audit OS",
@@ -63,21 +63,21 @@ const capabilityClusters = [
   {
     title: "Verified integration adapters",
     description:
-      "7 verified platform adapters plus a custom adapter framework for proprietary systems.",
+      "25+ verified platform adapters spanning payments, accounting, e-commerce, banking, ERP, and subscription billing.",
     bullets: [
-      "Stripe, Shopify, QuickBooks",
-      "PayPal, Square, Xero, NetSuite",
-      "Custom adapter interface",
+      "Stripe, PayPal, Square, Shopify",
+      "QuickBooks, Xero, NetSuite, SAP",
+      "Plaid, TrueLayer, Chargebee, +14 more",
     ],
   },
   {
-    title: "Tenant-isolated security",
+    title: "Omnichannel Enterprise Suite",
     description:
-      "Row-level security, API-level tenant binding, and ledger partitioning. Cross-tenant access is mechanically prevented.",
+      "Fully featured workspaces and APIs for CFO Maker-Checker flows, Data Residency policies, Vendor Portals, and AI Rule Discovery.",
     bullets: [
-      "RLS on all tenant tables",
-      "Explicit degraded-state notices",
-      "Scoped API key lifecycle",
+      "SOX-compliant Maker-Checker approvals",
+      "Agentic AI exception resolution",
+      "Isolated Auditor & Vendor portals",
     ],
   },
 ];
@@ -94,9 +94,12 @@ export default function HomePage() {
           actions={
             <>
               <Button asChild size="lg">
-                <UiLink href="/demo/console">
-                  Explore operator console <ArrowRight className="ml-2 h-4 w-4" />
+                <UiLink href="/tour">
+                  See it in 60 seconds <ArrowRight className="ml-2 h-4 w-4" />
                 </UiLink>
+              </Button>
+              <Button variant="outline" size="lg" asChild>
+                <UiLink href="/demo/console">Explore operator console</UiLink>
               </Button>
               <Button variant="outline" size="lg" asChild>
                 <UiLink href="/signup">Start evaluating today</UiLink>
@@ -129,9 +132,10 @@ export default function HomePage() {
               <div className="space-y-6 text-center lg:text-left">
                 <h3 className="text-2xl font-bold tracking-tight">Connected Ecosystem</h3>
                 <p className="text-muted-foreground leading-relaxed italic">
-                  Ingest transaction data through verified adapters for Stripe, Shopify, QuickBooks,
-                  and more. Custom systems connect through the adapter framework. All data
-                  normalizes into a unified schema for deterministic matching.
+                  Ingest transaction data through 25+ verified adapters for Stripe, Shopify,
+                  QuickBooks, PayPal, Square, Xero, NetSuite, Plaid, SAP, and more. Custom systems
+                  connect through the adapter framework. All data normalizes into a unified schema
+                  for deterministic matching.
                 </p>
               </div>
               <AdapterConnectionMap />
@@ -191,9 +195,14 @@ export default function HomePage() {
                   desc: "Rust kernel, control plane, ledger architecture, and tenant isolation boundaries.",
                 },
                 {
-                  role: "Buyer / evaluator",
-                  href: "/docs/trust-packet",
-                  desc: "Trust packet, capability truth matrix, security invariants, and teardown path.",
+                  role: "CFO / Risk",
+                  href: "/console/close",
+                  desc: "SOX-compliant approvals, continuous close dashboards, and liquidity metric analysis.",
+                },
+                {
+                  role: "InfoSec / Admin",
+                  href: "/console/security/data-residency",
+                  desc: "Geo-fencing, PII redaction engines, SIEM exports, and tenant observability.",
                 },
               ].map((item) => (
                 <MarketingIntentCard key={item.role}>

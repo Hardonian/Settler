@@ -5,6 +5,11 @@ jest.mock("../../../middleware/authorization", () => ({
   requirePermission: () => (_req: unknown, _res: unknown, next: () => void) => next(),
 }));
 
+jest.mock("../../../middleware/governance", () => ({
+  enforceFreezeState: () => (_req: unknown, _res: unknown, next: () => void) => next(),
+  bypassFreeze: (_req: unknown, _res: unknown, next: () => void) => next(),
+}));
+
 const authorizeTenantActionMock = jest.fn();
 jest.mock("../../../services/authz/openfga-authorization-service", () => ({
   getOpenFgaAuthorizationService: () => ({
@@ -19,7 +24,9 @@ jest.mock("../../../services/compliance/export-system", () => ({
     createExport: (tenantId: string, jurisdiction: unknown, format: unknown) =>
       createExportMock(tenantId, jurisdiction, format),
     listExports: jest.fn(() => []),
+    listExportsFromDb: jest.fn(() => []),
     getExport: (id: string) => getExportMock(id),
+    getExportFromDb: (id: string, _tenantId: string) => getExportMock(id),
     getTemplates: jest.fn(() => []),
   },
 }));

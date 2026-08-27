@@ -153,7 +153,8 @@ export function buildDeterministicRunProofpackArtifact(input: {
     },
   };
 
-  const contentHash = computeProofpackContentHash(base);
+  const { generatedAt: _ignoredGeneratedAt, ...hashPayload } = base;
+  const contentHash = computeProofpackContentHash(hashPayload);
 
   return {
     ...base,

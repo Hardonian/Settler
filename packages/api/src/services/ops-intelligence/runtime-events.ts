@@ -124,7 +124,7 @@ export async function getRunExplorer(
       COALESCE(r.started_at, r.created_at) as started_at,
       r.completed_at,
       r.error_message
-    FROM reconciliation_runs r
+    FROM recon_results r
     WHERE r.tenant_id = $1
       AND ($2::text IS NULL OR r.status = $2::text)
       AND ($3::text IS NULL OR r.id::text = $3::text)
@@ -189,7 +189,7 @@ export async function getSystemHealthSnapshot(
             AND m.reviewed = false
             AND m.match_type IN ('manual', 'unmatched')
         ) as manual_review_count
-      FROM reconciliation_runs r
+      FROM recon_results r
       WHERE r.tenant_id = $1
         AND COALESCE(r.started_at, r.created_at) >= NOW() - ($2::int || ' days')::interval
     )

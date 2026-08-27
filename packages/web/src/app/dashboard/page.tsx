@@ -14,7 +14,7 @@ import {
   MessageSquare,
   Zap,
   Target,
-  Github,
+  GitBranch,
   Package,
 } from "lucide-react";
 import { getExternalMetrics } from "@/lib/api/external";
@@ -297,7 +297,7 @@ async function DashboardMetrics() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-card dark:bg-card rounded-lg shadow-lg p-6 border border-border border-border">
               <div className="flex items-center gap-3 mb-4">
-                <Github className="w-6 h-6 text-foreground dark:text-muted-foreground" />
+                <GitBranch className="w-6 h-6 text-foreground dark:text-muted-foreground" />
                 <h3 className="text-xl font-semibold text-foreground dark:text-white">
                   GitHub Repository
                 </h3>

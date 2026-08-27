@@ -1,33 +1,12 @@
-import { MetadataRoute } from "next";
-import { getSiteHost, getSiteMode } from "@/lib/site-mode";
+import type { MetadataRoute } from "next";
+
+export const dynamic = "force-static";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://settler.dev";
 
 export default function robots(): MetadataRoute.Robots {
-  const mode = getSiteMode();
-  const baseUrl = getSiteHost(mode);
-  const enterpriseStub = process.env.ENTERPRISE_INDEXING_POLICY === "noindex";
-
   return {
-    rules: [
-      {
-        userAgent: "*",
-        allow: "/",
-        disallow: [
-          "/api/",
-          "/admin/",
-          "/console/",
-          "/dashboard/",
-          "/app/",
-          "/billing/",
-          "/review/",
-          "/invite/",
-          "/demo/",
-          "/_next/",
-          "/static/",
-        ],
-      },
-      ...(mode === "enterprise" && enterpriseStub ? [{ userAgent: "*", disallow: "/" }] : []),
-    ],
-    sitemap: `${baseUrl}/sitemap.xml`,
-    host: baseUrl,
+    rules: { userAgent: "*", allow: "/", disallow: ["/dashboard/", "/api/", "/demo/"] },
+    sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }

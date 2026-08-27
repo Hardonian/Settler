@@ -1,3 +1,4 @@
+import * as crypto from "crypto";
 /**
  * Ecosystem Growth Analytics
  *
@@ -70,16 +71,16 @@ export class EcosystemAnalytics {
             createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
           },
         });
-        
+
         // Calculate adoption as percentage of total
         const total = await this.prisma.reconJob.count({
           where: { createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } },
         });
-        
+
         adoption.set(pack, total > 0 ? (count / total) * 100 : 0);
       } catch {
         // Fallback if column doesn't exist
-        adoption.set(pack, Math.random() * 50 + 20);
+        adoption.set(pack, crypto.randomInt(2000, 7000) / 100);
       }
     }
 
@@ -159,15 +160,15 @@ export class EcosystemAnalytics {
     // Analyze usage patterns to find opportunities
     const jobs = await this.prisma.reconJob.findMany({
       take: 1000,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
 
     // Pattern detection: Analyze job configurations
     const configPatterns = new Map<string, number>();
     for (const job of jobs) {
       if (job.config) {
-        const config = typeof job.config === 'string' ? JSON.parse(job.config) : job.config;
-        const key = Object.keys(config).slice(0, 3).join('+');
+        const config = typeof job.config === "string" ? JSON.parse(job.config) : job.config;
+        const key = Object.keys(config).slice(0, 3).join("+");
         configPatterns.set(key, (configPatterns.get(key) || 0) + 1);
       }
     }

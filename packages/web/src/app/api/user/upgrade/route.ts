@@ -4,7 +4,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { sendPaidWelcomeEmail, LifecycleUser } from "@/lib/stubs/email-lifecycle";
+import { sendPaidWelcomeEmail, LifecycleUser } from "@settler/api/lib/email-lifecycle";
 import { withUniversalBillingGate } from "@/middleware/billing-gate-universal";
 import { appLogger } from "@/lib/utils/logger";
 import { withSecurity } from "@/lib/middleware/api-security";
@@ -34,7 +34,7 @@ export const POST = withSecurity(
         const normalizedProfilePlan =
           canonicalPlan === "starter"
             ? "free"
-            : canonicalPlan === "growth"
+            : canonicalPlan === "pro"
               ? "commercial"
               : canonicalPlan === "scale"
                 ? "enterprise"

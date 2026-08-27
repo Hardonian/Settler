@@ -8,8 +8,12 @@ const cwd = process.cwd();
 const require = createRequire(import.meta.url);
 
 function removeIfPresent(path) {
-  if (existsSync(path)) {
-    rmSync(path, { force: true, recursive: true });
+  try {
+    if (existsSync(path)) {
+      rmSync(path, { force: true, recursive: true });
+    }
+  } catch (err) {
+    // Ignore concurrent deletion errors
   }
 }
 

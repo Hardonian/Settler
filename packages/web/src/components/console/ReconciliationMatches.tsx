@@ -6,6 +6,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +22,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { AlertCircle, CheckCircle2, Info } from "lucide-react";
 import { capabilitiesForRunKind, type ReconciliationRunKind } from "@settler/reconciliation-core";
 import type { OperatorRunDetail } from "@/types/operator-run-detail";
+import { FreezeErrorAlert } from "@/components/shared/FreezeErrorAlert";
+import { useGovernanceState } from "@/hooks/use-governance-state";
+import {
+  getGovernanceRecoveryHref,
+  parseGovernanceFreezeError,
+  type GovernanceFreezeErrorDetails,
+} from "@/lib/governance/freeze-client";
 import { parseOperatorRunDetailResponse } from "@/lib/runs/operator-run-detail";
 
 interface Match {
@@ -70,6 +78,8 @@ export function ReconciliationMatches({ runId, runKind: runKindProp }: Reconcili
     runKindProp ?? null
   );
   const [blockReason, setBlockReason] = useState<LoadBlockReason>(null);
+  const [freezeError, setFreezeError] = useState<GovernanceFreezeErrorDetails | null>(null);
+  const { isFrozen, governanceState } = useGovernanceState();
 
   useEffect(() => {
     setResolvedRunKind(runKindProp ?? null);
@@ -187,6 +197,7 @@ export function ReconciliationMatches({ runId, runKind: runKindProp }: Reconcili
 
   const toggleReviewed = async (matchId: string, reviewed: boolean) => {
     try {
+      setFreezeError(null);
       const response = await fetch(`/api/v1/reconciliation/matches/${matchId}`, {
         method: "PATCH",
         headers: {
@@ -195,6 +206,13 @@ export function ReconciliationMatches({ runId, runKind: runKindProp }: Reconcili
         },
         body: JSON.stringify({ reviewed: !reviewed }),
       });
+      const payload = (await response.json().catch(() => null)) as unknown;
+      const freezeDetails = parseGovernanceFreezeError(payload, response.status);
+
+      if (freezeDetails) {
+        setFreezeError(freezeDetails);
+        return;
+      }
 
       if (response.ok) {
         setMatches((prev) =>
@@ -230,7 +248,7 @@ export function ReconciliationMatches({ runId, runKind: runKindProp }: Reconcili
     if (blockReason.kind === "wrong_run_kind") {
       return {
         title: "Matches not available for this run type",
-        body: "Row-level matches are stored on ingestion reconciliation runs (reconciliation_runs). Recon jobs use job results and the console results view instead—do not call the v1 matches route with a recon_job id.",
+        body: "Row-level matches are stored on ingestion reconciliation runs (recon_results). Recon jobs use job results and the console results view instead—do not call the v1 matches route with a recon_job id.",
       };
     }
     if (blockReason.kind === "uuid_collision") {
@@ -255,6 +273,16 @@ export function ReconciliationMatches({ runId, runKind: runKindProp }: Reconcili
   const unmatchedCount = matches.filter((m) => m.target === null).length;
   const reviewedCount = matches.filter((m) => m.reviewed).length;
   const filtersDisabled = loading || Boolean(blockedCopy);
+  const activeFreezeError =
+    freezeError ??
+    (isFrozen
+      ? {
+          message: "Review actions are currently blocked by tenant freeze.",
+          reason: governanceState?.freeze_reason ?? null,
+          frozenAt: governanceState?.frozen_at ?? null,
+          traceId: null,
+        }
+      : null);
 
   return (
     <Card>
@@ -305,12 +333,31 @@ export function ReconciliationMatches({ runId, runKind: runKindProp }: Reconcili
         </div>
       </CardHeader>
       <CardContent>
+        {activeFreezeError ? (
+          <FreezeErrorAlert
+            className="mb-4"
+            reason={activeFreezeError.reason}
+            frozenAt={activeFreezeError.frozenAt ?? undefined}
+            recoveryAction={{
+              label: "Open Governance Controls",
+              href: getGovernanceRecoveryHref(),
+            }}
+          />
+        ) : null}
         {blockedCopy && !loading ? (
           <div className="flex gap-3 rounded-lg border border-border bg-muted/30 p-4 text-sm">
             <Info className="h-5 w-5 shrink-0 text-muted-foreground" aria-hidden />
             <div>
               <p className="font-medium text-foreground">{blockedCopy.title}</p>
               <p className="mt-1 text-muted-foreground">{blockedCopy.body}</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Button asChild size="sm" variant="outline">
+                  <Link href={`/console/runs/${runId}`}>Open run detail</Link>
+                </Button>
+                <Button asChild size="sm" variant="outline">
+                  <Link href="/console/reconciliations">Open results</Link>
+                </Button>
+              </div>
             </div>
           </div>
         ) : null}
@@ -338,7 +385,8 @@ export function ReconciliationMatches({ runId, runKind: runKindProp }: Reconcili
                 {matches.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={9} className="text-center text-gray-500">
-                      No matches found
+                      No row-level matches are available for the current filter. Clear filters, open
+                      the run detail, or inspect the higher-level results summary for next steps.
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -426,6 +474,7 @@ export function ReconciliationMatches({ runId, runKind: runKindProp }: Reconcili
                       <TableCell>
                         <Checkbox
                           checked={match.reviewed}
+                          disabled={isFrozen}
                           onCheckedChange={() => toggleReviewed(match.id, match.reviewed)}
                         />
                       </TableCell>

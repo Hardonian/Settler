@@ -244,11 +244,22 @@ export class SettlerClient {
       useBearer = true;
     }
 
+    const reqId =
+      typeof crypto !== "undefined" && crypto.randomUUID
+        ? crypto.randomUUID()
+        : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
+      "Accept-Encoding": "gzip",
+      "X-Request-ID": reqId,
       ...(useBearer ? { Authorization: `Bearer ${authHeader}` } : { "X-API-Key": authHeader }),
       ...context.headers,
     };
+
+    if (["POST", "PUT", "PATCH"].includes(context.method.toUpperCase())) {
+      headers["Idempotency-Key"] = reqId;
+    }
 
     const fetchOptions: RequestInit = {
       method: context.method,

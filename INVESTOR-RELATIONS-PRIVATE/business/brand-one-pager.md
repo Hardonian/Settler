@@ -48,18 +48,21 @@ Modern businesses operate across **10+ platforms** (Stripe, Shopify, QuickBooks,
 ## Value Propositions
 
 ### For Developers
+
 - **5-minute integration** vs. weeks of custom reconciliation logic
 - Real-time webhook reconciliation
 - Built-in retry, deduplication, and conflict resolution
 - TypeScript SDK with full type safety
 
 ### For Finance Teams
+
 - Automated daily reconciliation reports
 - Exception handling with configurable rules
 - Audit trails for compliance
 - Multi-currency and multi-entity support
 
 ### For Operations
+
 - Reduce reconciliation time from **hours to minutes**
 - Proactive alerts on data mismatches
 - Self-service configuration (no engineering tickets)
@@ -70,12 +73,14 @@ Modern businesses operate across **10+ platforms** (Stripe, Shopify, QuickBooks,
 ## Team & Founder Edge
 
 ### Founder Profile
+
 - **Technical Background**: 10+ years building developer tools and APIs
 - **Previous Experience**: Built and scaled API-first SaaS products
 - **Domain Expertise**: Deep understanding of financial operations and compliance
 - **Network**: Strong connections in fintech, e-commerce, and developer communities
 
 ### Competitive Advantages
+
 1. **Developer DNA**: Built by developers, for developers
 2. **Open Source Strategy**: Core SDK and adapters open source (MIT), hosted service proprietary
 3. **Compliance-First**: SOC 2, GDPR, PCI-DSS built-in from day one
@@ -87,16 +92,19 @@ Modern businesses operate across **10+ platforms** (Stripe, Shopify, QuickBooks,
 ## Market Opportunity
 
 ### TAM (Total Addressable Market)
+
 - **$2.3B** reconciliation software market (2024)
 - Growing **12% YoY**
 - Expanding as businesses adopt more SaaS tools
 
 ### SAM (Serviceable Addressable Market)
+
 - **50K+ SMBs and mid-market companies** with multi-platform operations
 - E-commerce, SaaS, fintech companies
 - Companies processing $1M+ annual revenue
 
 ### SOM (Serviceable Obtainable Market)
+
 - **Year 1**: 1,000 customers ($50K MRR)
 - **Year 2**: 5,000 customers ($200K MRR)
 - **Year 3**: 20,000 customers ($1M MRR)
@@ -106,18 +114,21 @@ Modern businesses operate across **10+ platforms** (Stripe, Shopify, QuickBooks,
 ## Traction Plan
 
 ### Months 1-3: MVP & Private Beta
+
 - 50 handpicked developers (Twitter, Indie Hackers, Product Hunt makers)
 - Free unlimited usage
 - Weekly office hours
 - Direct feedback loop
 
 ### Months 4-6: Public Beta & Launch
+
 - Open signups (waitlist)
 - Free tier: 1K reconciliations/month
 - Product Hunt launch
 - Blog posts: "How we built Settler"
 
 ### Months 7-12: Scale
+
 - 1,000 paying customers
 - $50K MRR
 - 99.95% uptime

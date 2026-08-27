@@ -25,7 +25,7 @@ import { validateRequest } from "../../middleware/validation";
 import { handleRouteError } from "../../utils/error-handler";
 import { agenticWorkflowService } from "../../services/agentic-workflow/agentic-workflow-service";
 
-const router = Router();
+const router: Router = Router();
 
 const tenantOr400 = (req: AuthRequest, res: Response): string | null => {
   if (!req.tenantId) {
@@ -283,4 +283,4 @@ router.get(
   }
 );
 
-export default router;
+export default router as any;

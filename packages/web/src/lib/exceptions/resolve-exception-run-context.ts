@@ -6,7 +6,7 @@ export type ExceptionProvenanceRunDto = {
   id: string;
   /** Which persistence model backs this id for the workspace. */
   runKind: "recon_job" | "ingestion_run";
-  sourceModel: "recon_jobs" | "reconciliation_runs";
+  sourceModel: "recon_jobs" | "recon_results";
   name: string | null;
   /** Normalized lifecycle status (shared with run list / canonical contract). */
   normalizedStatus: string;
@@ -22,7 +22,7 @@ export type ExceptionProvenanceRunDto = {
   recordFound: boolean;
   /** Latest recon_result execution id when this is a recon_job run; null for ingestion-only. */
   latestResultId: string | null;
-  /** UUID collision: same id exists in both recon_jobs and reconciliation_runs (extremely rare). */
+  /** UUID collision: same id exists in both recon_jobs and recon_results (extremely rare). */
   uuidCollision: boolean;
   collision?: { reconJobId: string; reconciliationRunId: string };
 };
@@ -48,7 +48,7 @@ function mapDetailToDto(detail: CanonicalReconciliationRunDetail): ExceptionProv
 }
 
 /**
- * Resolves DriftEvent.reconJobId against both recon_jobs and reconciliation_runs (tenant-scoped),
+ * Resolves DriftEvent.reconJobId against both recon_jobs and recon_results (tenant-scoped),
  * matching console run list semantics.
  */
 export async function resolveExceptionProvenanceRun(
@@ -66,7 +66,7 @@ export async function resolveExceptionProvenanceRun(
     return {
       id: runId,
       runKind: "ingestion_run",
-      sourceModel: "reconciliation_runs",
+      sourceModel: "recon_results",
       name: null,
       normalizedStatus: "unknown",
       statusLabel: "Not found",
@@ -86,7 +86,7 @@ export async function resolveExceptionProvenanceRun(
     return {
       id: runId,
       runKind: "ingestion_run",
-      sourceModel: "reconciliation_runs",
+      sourceModel: "recon_results",
       name: null,
       normalizedStatus: "unknown",
       statusLabel: "Ambiguous id",

@@ -7,8 +7,11 @@ import {
 } from "@/lib/supabase/tenant-membership";
 import { prisma } from "@/shared/db/prismaClient";
 import {
-  buildDeterministicRunProofpackArtifact,
+  buildRunInstitutionalMemorySummary,
+  canonicalMissingProofpackReasonForRunKind,
   resolveOperatorRunDetailForTenants,
+  resolveRunCompactProofSummary,
+  unavailableRunProofpackIndex,
 } from "@settler/reconciliation-core";
 
 export const runtime = "nodejs";
@@ -38,11 +41,82 @@ export const GET = withSecurity(
         );
       }
 
+      // Try to load immutable proofpack
+      const storedProofpackLookup = prisma.reconResult?.findUnique;
+      if (typeof storedProofpackLookup === "function") {
+        try {
+          const stored = await storedProofpackLookup({
+            where: { id: params.id },
+            select: { proofpackPayload: true },
+          });
+          if (stored?.proofpackPayload) {
+            return NextResponse.json({ artifact: stored.proofpackPayload });
+          }
+        } catch {
+          // Immutable proofpack lookup is additive; if unavailable, fall back to
+          // the deterministic artifact built from the resolved run detail.
+        }
+      }
+
+      // Fallback for legacy runs
       const detail = outcome.detail;
-      const artifact = buildDeterministicRunProofpackArtifact({
-        detail,
-        generatedAtIso: new Date().toISOString(),
+      const detailConfig = detail.config as Partial<typeof detail.config> | undefined;
+      const proofpackIndex =
+        detail.proofpackIndex ??
+        unavailableRunProofpackIndex(canonicalMissingProofpackReasonForRunKind(detail.runKind));
+      const compactProofSummaryResolution = resolveRunCompactProofSummary({
+        runKind: detail.runKind,
+        compactProofSummary: detail.compactProofSummary,
+        proofpackIndex,
       });
+      const artifact = {
+        schemaVersion: "proofpack.run.v2" as const,
+        generatedAt: new Date().toISOString(),
+        run: {
+          id: detail.id,
+          runKind: detail.runKind,
+          status: detail.status,
+          startedAt: detail.startedAt,
+          completedAt: detail.completedAt,
+          detailHref: detail.detailHref,
+        },
+        proofpackIndex,
+        compactProofSummary: compactProofSummaryResolution.compactProofSummary,
+        institutionalMemory: buildRunInstitutionalMemorySummary({
+          runKind: detail.runKind,
+          summaryResolution: compactProofSummaryResolution,
+        }),
+        inputs: {
+          summary: detail.summary,
+          summarySemantics: detail.summarySemantics,
+          configDrift: detail.configDrift,
+          config: {
+            snapshotId: detailConfig?.snapshotId ?? null,
+            inputHash: detailConfig?.inputHash ?? null,
+            sourceAdapter: detailConfig?.sourceAdapter ?? null,
+            targetAdapter: detailConfig?.targetAdapter ?? null,
+            reconStrategy: detailConfig?.reconStrategy ?? null,
+            templateId: detailConfig?.templateId ?? null,
+          },
+        },
+        outputs: {
+          summaryState: detail.summaryState,
+          exceptions: detail.exceptions,
+          resultContext: detail.resultContext,
+        },
+        deltas: {
+          runDelta: detail.runDelta ?? null,
+        },
+        operatorSummary: compactProofSummaryResolution.compactProofSummary.operatorSummary,
+        provenance: detail.provenance,
+        supportability: {
+          shareable:
+            proofpackIndex.proofPackages.state === "ready" &&
+            proofpackIndex.comparison.state === "available",
+          notes:
+            compactProofSummaryResolution.compactProofSummary.operatorSummary.primaryReasonCodes,
+        },
+      };
 
       return NextResponse.json({ artifact });
     } catch (error) {

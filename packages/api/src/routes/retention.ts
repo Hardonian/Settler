@@ -17,6 +17,7 @@ import { logInfo, logError } from "../utils/logger";
 import { AuthRequest } from "../middleware/auth";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
+import { enforceFreezeState } from "../middleware/governance";
 
 const router: Router = Router();
 
@@ -315,6 +316,7 @@ router.get(
 router.put(
   "/policies/:tenantId",
   requirePermission(Permission.ADMIN_WRITE),
+  enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantIdParam3 = req.params["tenantId"];
@@ -382,6 +384,7 @@ router.put(
 router.delete(
   "/policies/:tenantId",
   requirePermission(Permission.ADMIN_WRITE),
+  enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantIdParam4 = req.params["tenantId"];
@@ -478,6 +481,7 @@ router.get(
 router.post(
   "/worker/run",
   requirePermission(Permission.ADMIN_WRITE),
+  enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
       const dryRun = req.query.dryRun === "true";
@@ -523,6 +527,7 @@ router.post(
 router.put(
   "/worker/config",
   requirePermission(Permission.ADMIN_WRITE),
+  enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
       const config = workerConfigSchema.parse(req.body);
@@ -567,6 +572,7 @@ router.put(
 router.post(
   "/worker/dry-run",
   requirePermission(Permission.ADMIN_WRITE),
+  enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
       const { enabled } = req.body;

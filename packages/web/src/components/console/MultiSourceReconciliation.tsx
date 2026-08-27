@@ -27,6 +27,13 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { AlertTriangle, CheckCircle2, RefreshCw, Play, X } from "lucide-react";
+import { FreezeErrorAlert } from "@/components/shared/FreezeErrorAlert";
+import {
+  getApiErrorMessage,
+  getGovernanceRecoveryHref,
+  parseGovernanceFreezeError,
+  type GovernanceFreezeErrorDetails,
+} from "@/lib/governance/freeze-client";
 
 interface SourceAdapter {
   adapter: string;
@@ -59,6 +66,7 @@ export function MultiSourceReconciliation() {
   const [targetAdapter, setTargetAdapter] = useState<string>("");
   const [conflictStrategy, setConflictStrategy] = useState<string>("manual");
   const [running, setRunning] = useState(false);
+  const [freezeError, setFreezeError] = useState<GovernanceFreezeErrorDetails | null>(null);
 
   const handleAddSource = () => {
     setSourceAdapters([...sourceAdapters, { adapter: "", config: {} }]);
@@ -88,6 +96,7 @@ export function MultiSourceReconciliation() {
     try {
       setLoading(true);
       setError(null);
+      setFreezeError(null);
 
       const res = await fetch("/api/v1/multi-source-reconciliation/jobs", {
         method: "POST",
@@ -100,12 +109,19 @@ export function MultiSourceReconciliation() {
         }),
       });
 
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || "Failed to create job");
+      const payload = (await res.json().catch(() => null)) as unknown;
+      const freezeDetails = parseGovernanceFreezeError(payload, res.status);
+
+      if (freezeDetails) {
+        setFreezeError(freezeDetails);
+        return;
       }
 
-      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(getApiErrorMessage(payload, "Failed to create job"));
+      }
+
+      const data = payload as MultiSourceJob;
       setJob(data);
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "Failed to create job");
@@ -120,6 +136,7 @@ export function MultiSourceReconciliation() {
     try {
       setRunning(true);
       setError(null);
+      setFreezeError(null);
 
       // Create a reconciliation run first
       const runRes = await fetch("/api/v1/reconciliation/run", {
@@ -131,11 +148,19 @@ export function MultiSourceReconciliation() {
         }),
       });
 
-      if (!runRes.ok) {
-        throw new Error("Failed to create reconciliation run");
+      const runPayload = (await runRes.json().catch(() => null)) as unknown;
+      const runFreezeDetails = parseGovernanceFreezeError(runPayload, runRes.status);
+
+      if (runFreezeDetails) {
+        setFreezeError(runFreezeDetails);
+        return;
       }
 
-      const runData = await runRes.json();
+      if (!runRes.ok) {
+        throw new Error(getApiErrorMessage(runPayload, "Failed to create reconciliation run"));
+      }
+
+      const runData = runPayload as { runId: string };
 
       const res = await fetch(`/api/v1/multi-source-reconciliation/jobs/${job.id}/run`, {
         method: "POST",
@@ -145,12 +170,19 @@ export function MultiSourceReconciliation() {
         }),
       });
 
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || "Failed to run reconciliation");
+      const payload = (await res.json().catch(() => null)) as unknown;
+      const freezeDetails = parseGovernanceFreezeError(payload, res.status);
+
+      if (freezeDetails) {
+        setFreezeError(freezeDetails);
+        return;
       }
 
-      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(getApiErrorMessage(payload, "Failed to run reconciliation"));
+      }
+
+      const data = payload as { conflicts: Conflict[] };
       setJob({ ...job, conflicts: data.conflicts });
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "Failed to run reconciliation");
@@ -163,6 +195,7 @@ export function MultiSourceReconciliation() {
     if (!job) return;
 
     try {
+      setFreezeError(null);
       const res = await fetch(
         `/api/v1/multi-source-reconciliation/conflicts/${conflictId}/resolve`,
         {
@@ -174,8 +207,16 @@ export function MultiSourceReconciliation() {
         }
       );
 
+      const payload = (await res.json().catch(() => null)) as unknown;
+      const freezeDetails = parseGovernanceFreezeError(payload, res.status);
+
+      if (freezeDetails) {
+        setFreezeError(freezeDetails);
+        return;
+      }
+
       if (!res.ok) {
-        throw new Error("Failed to resolve conflict");
+        throw new Error(getApiErrorMessage(payload, "Failed to resolve conflict"));
       }
 
       // Refresh job to get updated conflicts
@@ -199,6 +240,17 @@ export function MultiSourceReconciliation() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {freezeError ? (
+            <FreezeErrorAlert
+              reason={freezeError.reason}
+              frozenAt={freezeError.frozenAt ?? undefined}
+              recoveryAction={{
+                label: "Open Governance Controls",
+                href: getGovernanceRecoveryHref(),
+              }}
+            />
+          ) : null}
+
           {error && (
             <Alert variant="destructive">
               <AlertTriangle className="h-4 w-4" />

@@ -17,6 +17,9 @@ NON-NEGOTIABLES:
 - no silent contract drift
 - no cross-tenant leakage (data, metadata, cache, exports, admin surfaces)
 - no hidden degraded state
+- no "AI slop" (no verbose filler, over-commenting, or chatty phrasing)
+- must be seed-ready and super cost-effective (pragmatic infrastructure)
+- professional, enterprise-level messaging only
 
 REQUIRED THINKING LOOPS:
 

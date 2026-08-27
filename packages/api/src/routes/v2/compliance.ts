@@ -16,6 +16,7 @@ import {
   buildStrategicSurfaceMetadata,
   requireStrategicSurfaceAvailability,
 } from "./strategic-preview";
+import { enforceFreezeState } from "../../middleware/governance";
 
 const router: Router = Router();
 const COMPLIANCE_SURFACE = {
@@ -33,6 +34,7 @@ const COMPLIANCE_SURFACE = {
 router.post(
   "/exports",
   requirePermission(Permission.ADMIN_WRITE),
+  enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantContext(req, res);
@@ -245,6 +247,7 @@ router.get(
 router.post(
   "/edge/initialize",
   requirePermission(Permission.ADMIN_WRITE),
+  enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantContext(req, res);

@@ -4,6 +4,10 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { authMiddleware, AuthRequest } from "./middleware/auth";
 import { tenantMiddleware } from "./middleware/tenant";
+import { securityHeaders } from "./middleware/security-headers";
+import { enforceIpAllowlist } from "./middleware/ip-allowlist";
+import { soc2AuditLogger } from "./middleware/soc2-audit-logger";
+import { observabilityEnhancedMiddleware } from "./middleware/observability-enhanced";
 import { errorHandler } from "./middleware/error";
 import { idempotencyMiddleware } from "./middleware/idempotency";
 import { healthRouter } from "./routes/health";
@@ -38,6 +42,18 @@ import { batchRouter } from "./routes/batch";
 import { exportsRouter } from "./routes/exports";
 import { retentionRouter } from "./routes/retention";
 import { workerHealthRouter } from "./routes/worker-health";
+import { npsRouter } from "./routes/nps";
+import { erpSyncRouter } from "./routes/erp-sync";
+import { approvalsRouter } from "./routes/approvals";
+import { periodCloseRouter } from "./routes/period-close";
+import { fxTranslationRouter } from "./routes/fx-translation";
+import { auditorRouter } from "./routes/auditor";
+import { ruleDiscoveryRouter } from "./routes/rule-discovery";
+import { dataResidencyRouter } from "./routes/data-residency";
+import { liquidityMetricsRouter } from "./routes/liquidity-metrics";
+import { supportTicketsRouter } from "./routes/support-tickets";
+import { vendorDisputesRouter } from "./routes/vendor-disputes";
+// telemetryRouter removed — orphaned dead code with broken imports (SEC-AUDIT-001)
 import { testModeMiddleware, validateTestMode } from "./middleware/test-mode";
 import { featureFlagsMiddleware } from "./middleware/feature-flags";
 import { usageTrackingMiddleware } from "./middleware/usage-tracking";
@@ -51,8 +67,10 @@ import { startMaterializedViewRefreshJob } from "./jobs/materialized-view-refres
 import { processPendingWebhooks } from "./utils/webhook-queue";
 import { logDistributedGuardStartupSummary } from "./services/distributed-guards";
 import { startDistributedGuardsMaintenanceJob } from "./jobs/distributed-guards-maintenance";
+import { siemEgress } from "./jobs/egress";
+import { dlpMiddleware } from "./middleware/dlp";
 import { versionMiddleware } from "./middleware/versioning";
-import { v1Router } from "./routes/v1";
+import { v1Router, v1WebhookRouter } from "./routes/v1";
 import { v2Router } from "./routes/v2";
 import { reconciliationSummaryRouter } from "./routes/reconciliation-summary";
 import { SecretsManager, REQUIRED_SECRETS } from "./infrastructure/security/SecretsManager";
@@ -62,12 +80,7 @@ import { observabilityMiddleware } from "./middleware/observability";
 import { eventTrackingMiddleware } from "./middleware/event-tracking";
 import { setupSignalHandlers, registerShutdownHandler } from "./utils/graceful-shutdown";
 import { requestTimeoutMiddleware, getRequestTimeout } from "./middleware/request-timeout";
-import {
-  initializeSentry,
-  sentryRequestHandler,
-  sentryTracingHandler,
-  sentryErrorHandler,
-} from "./middleware/sentry";
+import { initializeSentry, sentryErrorHandler } from "./middleware/sentry";
 import { profilingMiddleware } from "./infrastructure/observability/profiling";
 import { setCsrfToken, csrfProtection, getCsrfToken } from "./middleware/csrf";
 import { sanitizeInput, sanitizeUrlParams } from "./middleware/input-sanitization";
@@ -89,16 +102,24 @@ import {
 } from "@settler/reconciliation-core";
 
 const app: Express = express();
+app.set("trust proxy", 1); // Trust first proxy (load balancer) for correct client IP
 const PORT = config.port;
 
 // Initialize Sentry before other middleware
 initializeSentry();
 
 // Sentry request and tracing handlers (must be first)
-app.use(sentryRequestHandler());
-app.use(sentryTracingHandler());
+app.use(securityHeaders());
+app.use(observabilityEnhancedMiddleware);
+app.use(soc2AuditLogger()); // SOC 2 System Monitoring (CC7.2)
+app.use(dlpMiddleware); // Enterprise Data Loss Prevention (PII Redaction)
 
-// Security middleware
+// Global tenant-context dependent middleware must be mounted AFTER tenant identification
+// Currently, tenant context usually happens in the specific routes or via `requireTenant`
+// But we mount the IP allowlist early as a generic middleware. It will passively skip if no tenantId is found yet.
+app.use(enforceIpAllowlist); // Enterprise Logical Access (CC6.1)
+
+// Parserscurity middleware
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -330,6 +351,17 @@ function configureProtectedRouter(router: Router, options: ProtectedRouterOption
   router.use("/retention", retentionRouter);
   router.use("/worker", workerHealthRouter);
   router.use("/tenant", tenantMiddleware, platformControlPlaneRouter);
+  router.use("/erp-sync", erpSyncRouter);
+  router.use("/approvals", approvalsRouter);
+  router.use("/close", periodCloseRouter);
+  router.use("/fx", fxTranslationRouter);
+  router.use("/auditor", auditorRouter);
+  router.use("/nps", npsRouter);
+  router.use("/intelligence/rule-discovery", ruleDiscoveryRouter);
+  router.use("/security/data-residency", dataResidencyRouter);
+  router.use("/dashboards/liquidity", liquidityMetricsRouter);
+  router.use("/support/tickets", supportTicketsRouter);
+  router.use("/vendor-disputes", vendorDisputesRouter);
 
   // Version-specific routes
   router.use(options.versionRouter);
@@ -359,7 +391,7 @@ const authLimiter = rateLimit({
   message: "Too many authentication attempts, please try again later.",
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => req.ip || "unknown",
+  // SEC-04: key by request IP (library default handles IPv6 via ipKeyGenerator)
 });
 app.use("/api/v1/auth", authLimiter, authRouter);
 app.use("/api/v2/auth", authLimiter, authRouter);
@@ -377,6 +409,9 @@ app.use("/api/v2/playground", playgroundLimiter, playgroundRouter);
 
 // CSRF token endpoint (for web UI)
 app.get("/api/csrf-token", getCsrfToken);
+
+// Unprotected Webhook routes (Stripe, external services)
+app.use("/api/v1", v1WebhookRouter);
 
 app.use("/api/v1", v1ProtectedRouter);
 app.use("/api/v2", v2ProtectedRouter);
@@ -443,6 +478,7 @@ async function startServer() {
     startDataRetentionJob();
     startMaterializedViewRefreshJob();
     const distributedGuardsMaintenanceTimer = startDistributedGuardsMaintenanceJob();
+    siemEgress.startWorker();
 
     // Process pending webhooks every minute
     const webhookInterval = setInterval(() => {
@@ -455,6 +491,7 @@ async function startServer() {
     registerShutdownHandler(async () => {
       clearInterval(webhookInterval);
       clearInterval(distributedGuardsMaintenanceTimer);
+      await siemEgress.close();
       logInfo("Webhook processing stopped");
     });
 

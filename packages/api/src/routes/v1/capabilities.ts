@@ -1,5 +1,5 @@
 import { Router, Response } from "express";
-import { query } from "../../db";
+import { queryWithTenant } from "../../db";
 import type { AuthRequest } from "../../middleware/auth";
 import { requirePermission } from "../../middleware/authorization";
 import { UserRole } from "../../domain/entities/User";
@@ -30,7 +30,8 @@ async function resolveRequestPermissions(
   const tenantId = req.tenantId;
 
   if (req.apiKeyId && tenantId) {
-    const apiKeyRows = await query<{ scopes: string[] | null }>(
+    const apiKeyRows = await queryWithTenant<{ scopes: string[] | null }>(
+      tenantId,
       `SELECT scopes FROM api_keys WHERE id = $1 AND tenant_id = $2`,
       [req.apiKeyId, tenantId]
     );
@@ -41,7 +42,8 @@ async function resolveRequestPermissions(
     return { role: UserRole.VIEWER, scopes };
   }
 
-  const userRows = await query<{ role: string }>(
+  const userRows = await queryWithTenant<{ role: string }>(
+    tenantId,
     `SELECT role FROM users WHERE id = $1 AND tenant_id = $2`,
     [req.userId, tenantId]
   );

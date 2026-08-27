@@ -46,6 +46,11 @@ export async function safeFetch<T = unknown>(
         // Ignore JSON parse errors
       }
 
+      // Intercept 402 (Payment Required/Limit Exceeded) to push users into upgrade funnel
+      if (response.status === 402 && typeof window !== "undefined") {
+        window.location.href = "/console/billing/upgrade";
+      }
+
       return {
         success: false,
         error: {

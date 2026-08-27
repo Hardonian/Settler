@@ -4,7 +4,7 @@ import { validateRequest } from "../middleware/validation";
 import { AuthRequest } from "../middleware/auth";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
-import { query, transaction } from "../db";
+import { queryWithTenant, transaction } from "../db";
 import { generateApiKey, hashApiKey } from "../utils/hash";
 import { logInfo } from "../utils/logger";
 import { handleRouteError } from "../utils/error-handler";
@@ -14,6 +14,7 @@ import {
   requireTenantContext,
   requireUserContext,
 } from "./authz-helpers";
+import { enforceFreezeState } from "../middleware/governance";
 
 const router: Router = Router();
 
@@ -55,7 +56,7 @@ router.get(
       if (!userId || !tenantId) return;
       if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.api_key.read"))) return;
 
-      const keys = await query<{
+      const keys = await queryWithTenant<{
         id: string;
         name: string | null;
         scopes: string[];
@@ -66,6 +67,7 @@ router.get(
         created_at: Date;
         key_prefix: string;
       }>(
+        tenantId,
         `SELECT id, name, scopes, rate_limit, revoked_at, expires_at, last_used_at, created_at, key_prefix
          FROM api_keys
          WHERE user_id = $1 AND tenant_id = $2
@@ -112,7 +114,7 @@ router.get(
       if (!tenantId) return;
       if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.api_key.read"))) return;
 
-      const keys = await query<{
+      const keys = await queryWithTenant<{
         id: string;
         name: string | null;
         scopes: string[];
@@ -123,6 +125,7 @@ router.get(
         created_at: Date;
         key_prefix: string;
       }>(
+        tenantId,
         `SELECT id, name, scopes, rate_limit, revoked_at, expires_at, last_used_at, created_at, key_prefix
          FROM api_keys
          WHERE id = $1 AND user_id = $2 AND tenant_id = $3`,
@@ -158,6 +161,7 @@ router.get(
 router.post(
   "/api-keys",
   requirePermission(Permission.USERS_WRITE),
+  enforceFreezeState(),
   validateRequest(createApiKeySchema),
   async (req: AuthRequest, res: Response) => {
     try {
@@ -170,7 +174,8 @@ router.post(
       const { key, prefix } = generateApiKey();
       const keyHash = await hashApiKey(key);
 
-      const result = await query<{ id: string }>(
+      const result = await queryWithTenant<{ id: string }>(
+        tenantId,
         `INSERT INTO api_keys (user_id, tenant_id, key_prefix, key_hash, name, scopes, rate_limit, expires_at)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
          RETURNING id`,
@@ -187,7 +192,8 @@ router.post(
       );
 
       // Log audit event
-      await query(
+      await queryWithTenant(
+        tenantId,
         `INSERT INTO audit_logs (event, user_id, tenant_id, metadata)
          VALUES ($1, $2, $3, $4)`,
         [
@@ -199,7 +205,8 @@ router.post(
       );
 
       // Log business event
-      await query(
+      await queryWithTenant(
+        tenantId,
         `INSERT INTO events (user_id, event_name, properties)
          VALUES ($1, $2, $3)`,
         [
@@ -242,6 +249,7 @@ router.post(
 router.patch(
   "/api-keys/:id",
   requirePermission(Permission.USERS_WRITE),
+  enforceFreezeState(),
   validateRequest(updateApiKeySchema),
   async (req: AuthRequest, res: Response) => {
     try {
@@ -258,7 +266,8 @@ router.patch(
       if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.api_key.manage"))) return;
 
       // Verify ownership
-      const existing = await query<{ id: string; revoked_at: Date | null }>(
+      const existing = await queryWithTenant<{ id: string; revoked_at: Date | null }>(
+        tenantId,
         `SELECT id, revoked_at FROM api_keys WHERE id = $1 AND user_id = $2 AND tenant_id = $3`,
         [id, userId, tenantId]
       );
@@ -301,13 +310,15 @@ router.patch(
       values.push(id, userId);
 
       values.push(tenantId);
-      await query(
+      await queryWithTenant(
+        tenantId,
         `UPDATE api_keys SET ${updates.join(", ")} WHERE id = $${paramCount++} AND user_id = $${paramCount++} AND tenant_id = $${paramCount++}`,
         values
       );
 
       // Log audit event
-      await query(
+      await queryWithTenant(
+        tenantId,
         `INSERT INTO audit_logs (event, user_id, tenant_id, metadata)
          VALUES ($1, $2, $3, $4)`,
         [
@@ -333,6 +344,7 @@ router.patch(
 router.post(
   "/api-keys/:id/regenerate",
   requirePermission(Permission.USERS_WRITE),
+  enforceFreezeState(),
   validateRequest(regenerateApiKeySchema),
   async (req: AuthRequest, res: Response) => {
     try {
@@ -348,13 +360,14 @@ router.post(
       if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.api_key.manage"))) return;
 
       // Verify ownership
-      const existing = await query<{
+      const existing = await queryWithTenant<{
         id: string;
         name: string | null;
         scopes: string[];
         rate_limit: number;
         expires_at: Date | null;
       }>(
+        tenantId,
         `SELECT id, name, scopes, rate_limit, expires_at
          FROM api_keys
          WHERE id = $1 AND user_id = $2 AND tenant_id = $3`,
@@ -450,6 +463,7 @@ router.post(
 router.delete(
   "/api-keys/:id",
   requirePermission(Permission.USERS_DELETE),
+  enforceFreezeState(),
   async (req: AuthRequest, res: Response) => {
     try {
       const idParam4 = req.params["id"];
@@ -464,7 +478,8 @@ router.delete(
       if (!(await authorizeTenantActionOr403(req, res, tenantId, "tenant.api_key.manage"))) return;
 
       // Verify ownership
-      const existing = await query<{ id: string }>(
+      const existing = await queryWithTenant<{ id: string }>(
+        tenantId,
         `SELECT id FROM api_keys WHERE id = $1 AND user_id = $2 AND tenant_id = $3`,
         [id, userId, tenantId]
       );
@@ -474,13 +489,15 @@ router.delete(
       }
 
       // Revoke instead of delete (soft delete)
-      await query(
+      await queryWithTenant(
+        tenantId,
         `UPDATE api_keys SET revoked_at = NOW(), updated_at = NOW() WHERE id = $1 AND user_id = $2 AND tenant_id = $3`,
         [id, userId, tenantId]
       );
 
       // Log audit event
-      await query(
+      await queryWithTenant(
+        tenantId,
         `INSERT INTO audit_logs (event, user_id, tenant_id, metadata)
          VALUES ($1, $2, $3, $4)`,
         ["api_key_deleted", userId, tenantId, JSON.stringify({ apiKeyId: id })]

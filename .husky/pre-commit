@@ -27,10 +27,10 @@ run_optional_node_tool() {
   return 127
 }
 
-# Keep pre-commit low-memory and staged-aware.
-# Full verification remains in pre-push/CI.
+# Keep pre-commit FAST and NON-BLOCKING (format, lint-staged only).
+# Blocking checks (typecheck, test, verify) run in pre-push and CI.
 
-# Verify migrations before commit
+# Verify migrations before commit (fast check)
 if git diff --cached --name-only | grep -q "supabase/migrations/"; then
   echo "🔍 Migration files detected, running verification..."
   bash scripts/verify-migrations.sh || {
@@ -47,41 +47,38 @@ if git diff --cached --name-only | grep -q "prisma/schema.prisma"; then
 
     if ! PRISMA_CLIENT_ENGINE_TYPE=wasm PRISMA_ENGINES_MIRROR= run_optional_node_tool "$prisma_entry" generate; then
       if ! npx prisma generate; then
-        echo "⚠️  Skipping Prisma client generation in pre-commit."
-        echo "⚠️  This Git hook is running in an environment that cannot execute the installed Prisma CLI."
-        echo "💡 Run 'pnpm prisma:generate' from your working Node environment after commit if needed."
+        echo "❌ Prisma client generation failed. Run 'pnpm prisma:generate' manually."
+        exit 1
       fi
     fi
   fi
   git add src/types/ 2>/dev/null || true
 fi
 
-# Block unresolved merge conflict markers
+# Block unresolved merge conflict markers (hard fail)
 if command -v pnpm >/dev/null 2>&1; then
   pnpm verify:conflict-markers || {
     echo "❌ Unresolved merge conflict markers detected. Please resolve them before committing."
     exit 1
   }
 else
-  echo "⚠️ Skipping conflict-marker gate because pnpm was not found in hook environment."
+  echo "❌ pnpm not found. Conflict-marker gate cannot run. Install pnpm and retry."
+  exit 1
 fi
 
-# Stage-scoped lint/format, sequential to reduce memory spikes on constrained machines.
+# Stage-scoped lint/format (blocking)
 echo "🔍 Running lint-staged (sequential, low-memory mode)..."
 if ! pnpm exec lint-staged --concurrent false; then
-  # Git for Windows can fail to execute pnpm's shimmed binary on symlink-heavy installs.
   lint_staged_entry="$(resolve_pnpm_package_file lint-staged bin/lint-staged.js)"
 
   if ! run_optional_node_tool "$lint_staged_entry" --concurrent false; then
-    echo "⚠️  Skipping lint-staged in pre-commit."
-    echo "⚠️  This Git hook runtime cannot execute the installed lint-staged package."
-    echo "💡 Run 'pnpm exec lint-staged --concurrent false' from your working Node environment if you want the same checks locally."
+    echo "❌ lint-staged failed. Run 'pnpm exec lint-staged --concurrent false' locally and fix issues."
+    exit 1
   fi
 fi
 
-# Package-scoped quick reliability checks only (lint + config safety), no full typecheck/test here.
+# Package-scoped quick config safety check (blocking)
 if ! node scripts/verify-staged-packages.mjs --tier=precommit; then
-  echo "⚠️  Skipping staged package verification in pre-commit."
-  echo "⚠️  This Git hook runtime could not execute Node-based verification reliably."
-  echo "💡 Run 'pnpm run verify:fast' from your working Node environment before push."
+  echo "❌ Staged package verification failed. Run 'pnpm run verify:fast' locally."
+  exit 1
 fi

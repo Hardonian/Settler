@@ -163,3 +163,11 @@ public record PaginatedResponse<T>(
     [property: JsonPropertyName("data")] T[] Data,
     [property: JsonPropertyName("pagination")] PaginationInfo Pagination
 );
+  
+public record FlagEvaluation([property: JsonPropertyName(\" "flagKey\)] string FlagKey, [property: JsonPropertyName(\enabled\)] bool Enabled, [property: JsonPropertyName(\value\)] object? Value);  
+  
+public record Receipt([property: JsonPropertyName(\id\)] string Id, [property: JsonPropertyName(\url\)] string Url, [property: JsonPropertyName(\createdAt\)] string CreatedAt);  
+  
+public record Adapter([property: JsonPropertyName(\id\)] string Id, [property: JsonPropertyName(\name\)] string Name, [property: JsonPropertyName(\version\)] string Version);  
+  
+public record ApiKey([property: JsonPropertyName(\id\)] string Id, [property: JsonPropertyName(\key\)] string Key, [property: JsonPropertyName(\createdAt\)] string CreatedAt); 

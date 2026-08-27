@@ -1,6 +1,34 @@
-import { prisma } from "../../infrastructure/db/prisma";
 import { SourceReliabilityService } from "../../services/intelligence/source-reliability";
 import crypto from "node:crypto";
+
+const mockPrisma = {
+  ingestionSource: {
+    create: jest.fn(),
+    delete: jest.fn(),
+    findFirst: jest.fn(),
+  },
+  driftEvent: {
+    create: jest.fn(),
+    count: jest.fn(),
+  },
+  exceptionAdjudicationMemory: {
+    findMany: jest.fn(),
+  },
+  normalizedTransaction: {
+    findMany: jest.fn(),
+  },
+  policyMemoryArtifact: {
+    upsert: jest.fn(),
+  },
+  $disconnect: jest.fn(),
+};
+
+jest.mock("../../infrastructure/db/prisma", () => ({
+  prisma: mockPrisma,
+}));
+
+// We import prisma here to let Jest associate it with our mock
+import { prisma } from "../../infrastructure/db/prisma";
 
 describe("SourceReliabilityService Determinism", () => {
   let service: SourceReliabilityService;
@@ -8,30 +36,32 @@ describe("SourceReliabilityService Determinism", () => {
   const sourceId = crypto.randomUUID();
   const userId = crypto.randomUUID();
 
-  beforeAll(async () => {
-    service = new SourceReliabilityService(prisma);
+  beforeAll(() => {
+    service = new SourceReliabilityService(prisma as any);
+  });
 
-    // Setup test source
-    await prisma.ingestionSource.create({
-      data: {
-        id: sourceId,
-        tenantId,
-        userId,
-        name: "Test Source",
-        type: "stripe",
-        status: "active",
-        lastSyncStatus: "success",
-      },
-    });
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
   afterAll(async () => {
-    // Cleanup
-    await prisma.ingestionSource.delete({ where: { id: sourceId } });
     await prisma.$disconnect();
   });
 
   it("should compute a deterministic score for the same input state", async () => {
+    mockPrisma.ingestionSource.findFirst.mockResolvedValue({
+      id: sourceId,
+      tenantId,
+      userId,
+      name: "Test Source",
+      type: "stripe",
+      status: "active",
+      lastSyncStatus: "success",
+    } as any);
+    mockPrisma.driftEvent.count.mockResolvedValue(0);
+    mockPrisma.exceptionAdjudicationMemory.findMany.mockResolvedValue([]);
+    mockPrisma.normalizedTransaction.findMany.mockResolvedValue([]);
+
     const score1 = await service.getSourceReliability(tenantId, sourceId);
     const score2 = await service.getSourceReliability(tenantId, sourceId);
 
@@ -41,15 +71,18 @@ describe("SourceReliabilityService Determinism", () => {
   });
 
   it("should reflect schema drift as a negative factor", async () => {
-    // Add a drift event
-    await prisma.driftEvent.create({
-      data: {
-        tenantId,
-        driftType: "field_missing",
-        severity: "warning",
-        metadata: { source_id: sourceId },
-      },
-    });
+    mockPrisma.ingestionSource.findFirst.mockResolvedValue({
+      id: sourceId,
+      tenantId,
+      userId,
+      name: "Test Source",
+      type: "stripe",
+      status: "active",
+      lastSyncStatus: "success",
+    } as any);
+    mockPrisma.driftEvent.count.mockResolvedValue(1);
+    mockPrisma.exceptionAdjudicationMemory.findMany.mockResolvedValue([]);
+    mockPrisma.normalizedTransaction.findMany.mockResolvedValue([]);
 
     const reliability = await service.getSourceReliability(tenantId, sourceId);
     const driftFactor = reliability.factors.find((f) => f.kind === "drift");
@@ -62,16 +95,18 @@ describe("SourceReliabilityService Determinism", () => {
     const emptyTenantId = crypto.randomUUID();
     const emptySourceId = crypto.randomUUID();
 
-    await prisma.ingestionSource.create({
-      data: {
-        id: emptySourceId,
-        tenantId: emptyTenantId,
-        userId,
-        name: "Empty Source",
-        type: "manual",
-        status: "active",
-      },
-    });
+    mockPrisma.ingestionSource.findFirst.mockResolvedValue({
+      id: emptySourceId,
+      tenantId: emptyTenantId,
+      userId,
+      name: "Empty Source",
+      type: "manual",
+      status: "active",
+      lastSyncStatus: null,
+    } as any);
+    mockPrisma.driftEvent.count.mockResolvedValue(0);
+    mockPrisma.exceptionAdjudicationMemory.findMany.mockResolvedValue([]);
+    mockPrisma.normalizedTransaction.findMany.mockResolvedValue([]);
 
     const reliability = await service.getSourceReliability(emptyTenantId, emptySourceId);
 
@@ -80,8 +115,6 @@ describe("SourceReliabilityService Determinism", () => {
     expect(
       reliability.factors.some((f) => f.description === "No adjudication history available")
     ).toBe(true);
-
-    await prisma.ingestionSource.delete({ where: { id: emptySourceId } });
   });
 
   it("should increase reliability when high trust scores are explicitly adjudicated", async () => {

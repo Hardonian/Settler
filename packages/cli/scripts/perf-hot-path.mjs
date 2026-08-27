@@ -14,9 +14,10 @@ const samples = [
 
 for (const sample of samples) {
   const start = performance.now();
-  const result = spawnSync("pnpm", ["exec", "tsx", ...sample.args], {
+  const result = spawnSync("npx", ["pnpm", "exec", "tsx", ...sample.args], {
     encoding: "utf8",
     cwd: new URL("..", import.meta.url).pathname,
+    shell: true,
   });
   const duration = performance.now() - start;
 

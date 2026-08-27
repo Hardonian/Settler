@@ -10,6 +10,7 @@
 **Purpose:** Assess Settler's intellectual property assets, dependencies, and readiness.
 
 **Scope:**
+
 1. Codebase and prior art
 2. Open source dependencies
 3. Third-party dependencies
@@ -23,36 +24,42 @@
 ### Core IP Assets
 
 **Reconciliation Engine:**
+
 - **Status:** Proprietary
 - **License:** Proprietary (Settler-owned)
 - **Dependencies:** None
 - **Value:** High (core technology)
 
 **API Server:**
+
 - **Status:** Proprietary
 - **License:** Proprietary (Settler-owned)
 - **Dependencies:** Express.js, TypeScript
 - **Value:** High (core product)
 
 **TypeScript SDK:**
+
 - **Status:** Open Source (MIT)
 - **License:** MIT License
 - **Dependencies:** None
 - **Value:** Medium (developer experience)
 
 **Adapter SDK:**
+
 - **Status:** Open Source (MIT)
 - **License:** MIT License
 - **Dependencies:** None
 - **Value:** Medium (ecosystem)
 
 **Built-in Adapters:**
+
 - **Status:** Proprietary
 - **License:** Proprietary (Settler-owned)
 - **Dependencies:** Platform APIs
 - **Value:** High (product value)
 
 **Web UI:**
+
 - **Status:** Proprietary
 - **License:** Proprietary (Settler-owned)
 - **Dependencies:** Next.js, React
@@ -63,12 +70,14 @@
 ### Prior Art Search
 
 **Search Areas:**
+
 - Reconciliation software patents
 - API-first reconciliation solutions
 - Financial data matching algorithms
 - Multi-platform data synchronization
 
 **Findings:**
+
 - No direct prior art found
 - Some related patents in financial reconciliation
 - No blocking patents identified
@@ -83,6 +92,7 @@
 ### Dependencies Analysis
 
 **Production Dependencies:**
+
 - Express.js (MIT)
 - TypeScript (Apache 2.0)
 - Next.js (MIT)
@@ -91,12 +101,14 @@
 - Redis (BSD)
 
 **Development Dependencies:**
+
 - Jest (MIT)
 - ESLint (MIT)
 - Prettier (MIT)
 - TypeScript (Apache 2.0)
 
 **License Summary:**
+
 - **MIT:** 80% of dependencies
 - **Apache 2.0:** 15% of dependencies
 - **BSD:** 5% of dependencies
@@ -109,12 +121,14 @@
 ### License Obligations
 
 **MIT License:**
+
 - Include copyright notice
 - Include license text
 - No modification restrictions
 - No warranty
 
 **Apache 2.0 License:**
+
 - Include copyright notice
 - Include license text
 - Include NOTICE file (if applicable)
@@ -122,12 +136,14 @@
 - No warranty
 
 **BSD License:**
+
 - Include copyright notice
 - Include license text
 - No modification restrictions
 - No warranty
 
 **Compliance:**
+
 - ✅ License notices included
 - ✅ License texts included
 - ✅ Attribution provided
@@ -140,21 +156,25 @@
 ### Platform APIs
 
 **Stripe API:**
+
 - **License:** Proprietary (Stripe Terms)
 - **Dependencies:** Stripe API access
 - **Risk:** Low (standard API terms)
 
 **Shopify API:**
+
 - **License:** Proprietary (Shopify Terms)
 - **Dependencies:** Shopify API access
 - **Risk:** Low (standard API terms)
 
 **QuickBooks API:**
+
 - **License:** Proprietary (Intuit Terms)
 - **Dependencies:** QuickBooks API access
 - **Risk:** Low (standard API terms)
 
 **PayPal API:**
+
 - **License:** Proprietary (PayPal Terms)
 - **Dependencies:** PayPal API access
 - **Risk:** Low (standard API terms)
@@ -166,11 +186,13 @@
 ### Commercial Dependencies
 
 **Cloud Providers:**
+
 - AWS (Proprietary)
 - Vercel (Proprietary)
 - Cloudflare (Proprietary)
 
 **Monitoring:**
+
 - Datadog (Proprietary)
 - Grafana (Apache 2.0)
 
@@ -183,12 +205,14 @@
 ### Open Source Strategy
 
 **Open Source Components:**
+
 - TypeScript SDK (MIT)
 - Adapter SDK (MIT)
 - Core engine (Proprietary)
 - Built-in adapters (Proprietary)
 
 **Rationale:**
+
 - SDK and adapter SDK open source to build community
 - Core engine proprietary to protect IP
 - Built-in adapters proprietary for competitive advantage
@@ -200,6 +224,7 @@
 ### License Compliance
 
 **Compliance Checklist:**
+
 - ✅ License notices included
 - ✅ License texts included
 - ✅ Attribution provided
@@ -216,10 +241,12 @@
 ### Patents
 
 **Current Status:**
+
 - No patents filed
 - No patents planned (for now)
 
 **Future Consideration:**
+
 - Matching algorithms (if novel)
 - Reconciliation methods (if novel)
 - Performance optimizations (if novel)
@@ -231,10 +258,12 @@
 ### Trademarks
 
 **Current Status:**
+
 - "Settler" trademark (pending)
 - Logo trademark (pending)
 
 **Protection:**
+
 - US trademark application (in progress)
 - International trademark (planned)
 
@@ -245,11 +274,13 @@
 ### Copyrights
 
 **Current Status:**
+
 - Code copyright (automatic)
 - Documentation copyright (automatic)
 - Design copyright (automatic)
 
 **Protection:**
+
 - Copyright notices included
 - License files included
 - Documentation protected
@@ -261,11 +292,13 @@
 ### Trade Secrets
 
 **Current Status:**
+
 - Matching algorithms (trade secret)
 - Performance optimizations (trade secret)
 - Business processes (trade secret)
 
 **Protection:**
+
 - Confidentiality agreements
 - Access controls
 - Documentation controls
@@ -279,16 +312,19 @@
 ### Identified Risks
 
 **Risk 1: Open Source License Violations**
+
 - **Likelihood:** Low
 - **Impact:** Medium
 - **Mitigation:** License compliance audits
 
 **Risk 2: Third-Party IP Claims**
+
 - **Likelihood:** Low
 - **Impact:** High
 - **Mitigation:** Prior art searches, legal counsel
 
 **Risk 3: Trademark Conflicts**
+
 - **Likelihood:** Low
 - **Impact:** Medium
 - **Mitigation:** Trademark searches, legal counsel

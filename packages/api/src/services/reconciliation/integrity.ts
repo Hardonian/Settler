@@ -110,10 +110,10 @@ async function loadRun(
 ): Promise<ReconciliationRunForIntegrity | null> {
   validateTenantId(tenantId, "loadRun");
   const rows = await query<Record<string, unknown>>(
-    `SELECT id, tenant_id, ingestion_id, status, source_count, target_count,
+    `SELECT id, tenant_id, null as ingestion_id, status, source_count, target_count,
             matched_count, unmatched_source_count, unmatched_target_count,
             confidence_avg, started_at, completed_at
-     FROM reconciliation_runs
+     FROM recon_results
      WHERE id = $1 AND tenant_id = $2
      LIMIT 1`,
     [runId, tenantId]
@@ -128,7 +128,7 @@ async function loadRun(
     return null;
   }
 
-  assertTenantOwnership(row as { tenant_id?: string | null }, tenantId, "reconciliation_runs");
+  assertTenantOwnership(row as { tenant_id?: string | null }, tenantId, "recon_results");
 
   return {
     id: String(row.id),
@@ -191,11 +191,11 @@ export async function appendRunIntegrityEntry(
 
   const previousRows = await query<Record<string, unknown>>(
     `SELECT metadata
-     FROM reconciliation_runs
+     FROM recon_results
      WHERE tenant_id = $1
        AND id <> $2
        AND metadata->'integrity'->>'chainHash' IS NOT NULL
-     ORDER BY COALESCE(completed_at, created_at) ASC, id ASC`,
+     ORDER BY COALESCE(completed_at, started_at) ASC, id ASC`,
     [tenantId, runId]
   );
 
@@ -221,7 +221,7 @@ export async function appendRunIntegrityEntry(
   };
 
   await query(
-    `UPDATE reconciliation_runs
+    `UPDATE recon_results
      SET metadata = COALESCE(metadata, '{}'::jsonb) || jsonb_build_object('integrity', $1::jsonb),
          updated_at = NOW()
      WHERE id = $2 AND tenant_id = $3`,
@@ -241,10 +241,10 @@ export async function verifyTenantIntegrityChain(tenantId: string): Promise<{
 
   const rows = await query<Record<string, unknown>>(
     `SELECT id, metadata
-     FROM reconciliation_runs
+     FROM recon_results
      WHERE tenant_id = $1
        AND metadata->'integrity'->>'chainHash' IS NOT NULL
-     ORDER BY COALESCE(completed_at, created_at) ASC, id ASC`,
+     ORDER BY COALESCE(completed_at, started_at) ASC, id ASC`,
     [tenantId]
   );
 

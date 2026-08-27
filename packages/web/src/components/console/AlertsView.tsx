@@ -19,17 +19,24 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { AlertTriangle, CheckCircle2, Info, Bell } from "lucide-react";
-import type { Alert } from "@/lib/domain/types";
+import type { Alert as DomainAlert } from "@/lib/domain/types";
+import { FreezeErrorAlert } from "@/components/shared/FreezeErrorAlert";
+import {
+  getGovernanceRecoveryHref,
+  parseGovernanceFreezeError,
+  type GovernanceFreezeErrorDetails,
+} from "@/lib/governance/freeze-client";
 
 interface AlertsViewProps {
   includeAcknowledged?: boolean;
 }
 
 export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
-  const [alerts, setAlerts] = useState<Alert[]>([]);
-  const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
+  const [alerts, setAlerts] = useState<DomainAlert[]>([]);
+  const [selectedAlert, setSelectedAlert] = useState<DomainAlert | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [freezeError, setFreezeError] = useState<GovernanceFreezeErrorDetails | null>(null);
   const [acknowledging, setAcknowledging] = useState<string | null>(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
 
@@ -65,10 +72,20 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
   const acknowledgeAlert = async (alertId: string) => {
     try {
       setAcknowledging(alertId);
+      setError(null);
+      setFreezeError(null);
 
       const res = await fetch(`/api/console/alerts/${alertId}/acknowledge`, {
         method: "POST",
       });
+
+      const data = await res.json().catch(() => null);
+
+      const freezeDetails = parseGovernanceFreezeError(data, res.status);
+      if (freezeDetails) {
+        setFreezeError(freezeDetails);
+        return;
+      }
 
       if (!res.ok) {
         throw new Error(`Failed to acknowledge alert: ${res.status}`);
@@ -83,7 +100,7 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
     }
   };
 
-  const inferRunId = (alert: Alert): string | null => {
+  const inferRunId = (alert: DomainAlert): string | null => {
     const candidates: string[] = [];
 
     for (const evidence of alert.explanation.evidence ?? []) {
@@ -108,7 +125,7 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
     return null;
   };
 
-  const getSeverityIcon = (severity: Alert["severity"]) => {
+  const getSeverityIcon = (severity: DomainAlert["severity"]) => {
     switch (severity) {
       case "critical":
         return <AlertTriangle className="w-5 h-5 text-red-600" />;
@@ -119,7 +136,7 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
     }
   };
 
-  const getSeverityColor = (severity: Alert["severity"]) => {
+  const getSeverityColor = (severity: DomainAlert["severity"]) => {
     switch (severity) {
       case "critical":
         return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
@@ -169,6 +186,17 @@ export function AlertsView({ includeAcknowledged = false }: AlertsViewProps) {
           Refresh
         </Button>
       </div>
+
+      {freezeError && (
+        <FreezeErrorAlert
+          reason={freezeError.reason}
+          frozenAt={freezeError.frozenAt ?? undefined}
+          recoveryAction={{
+            label: "Open Governance Controls",
+            href: getGovernanceRecoveryHref(),
+          }}
+        />
+      )}
 
       {/* Summary */}
       {alerts.length > 0 && (

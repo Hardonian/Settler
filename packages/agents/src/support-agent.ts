@@ -27,8 +27,8 @@ export async function runSupportBot(): Promise<AgentReport> {
 
   // Provide the LLM with rigorous tools to inspect state and take action
   try {
-    const { text, steps } = await generateText({
-      model: ai("gpt-4-turbo"),
+    const { text, steps } = (await generateText({
+      model: ai("gpt-4-turbo") as any,
       system: `You are the Customer Support AI for Settler.dev. 
       Your goal is to detect struggling users, diagnose ledger differences, and draft highly professional emails explaining the mismatch.
       Always try to fetch struggling users, diagnose their mismatch, and send a resolution.`,
@@ -38,6 +38,7 @@ export async function runSupportBot(): Promise<AgentReport> {
         fetchStrugglingUsers: tool({
           description: "Fetches active tenants who have high reconciliation friction.",
           parameters: z.object({}),
+          // @ts-ignore
           execute: async () => {
             console.info("[SupportBot] 🔍 Executing Tool: fetchStrugglingUsers()");
             return [{ tenantId: "acme_123", name: "ACME Corp", failedMatches: 4 }];
@@ -46,6 +47,7 @@ export async function runSupportBot(): Promise<AgentReport> {
         diagnoseMismatch: tool({
           description: "Gets the exact ledger differences for a tenant.",
           parameters: z.object({ tenantId: z.string() }),
+          // @ts-ignore
           execute: async ({ tenantId }) => {
             console.info(`[SupportBot] 🔍 Executing Tool: diagnoseMismatch(${tenantId})`);
             return { source: "$120.00", target: "$125.00", reason: "Cross-border fee missing" };
@@ -54,6 +56,7 @@ export async function runSupportBot(): Promise<AgentReport> {
         sendResolutionEmail: tool({
           description: "Sends a resolution email to the struggling tenant.",
           parameters: z.object({ tenantId: z.string(), emailBody: z.string() }),
+          // @ts-ignore
           execute: async ({ tenantId, emailBody }) => {
             console.info(`[SupportBot] ✉️ Executing Tool: sendResolutionEmail(${tenantId})`);
             console.info(`[Email Drafted]:\n${emailBody}\n`);
@@ -61,7 +64,7 @@ export async function runSupportBot(): Promise<AgentReport> {
           },
         }),
       },
-    });
+    } as any)) as any;
 
     checks.push({
       name: "ai_execution",

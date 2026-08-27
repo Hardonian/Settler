@@ -63,7 +63,7 @@ describeChaosTests("Chaos Engineering", () => {
         slug: `concurrent-${Date.now()}`,
         ownerEmail: `concurrent-${Date.now()}@test.com`,
         ownerPasswordHash: await hashPassword("password123"),
-        tier: TenantTier.GROWTH,
+        tier: TenantTier.PRO,
       });
 
       // Simulate concurrent quota increments

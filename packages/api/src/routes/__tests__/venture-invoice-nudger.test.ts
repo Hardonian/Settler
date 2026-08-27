@@ -14,6 +14,10 @@ jest.mock("../../middleware/validation", () => ({
   validateRequest: () => (_req: unknown, _res: unknown, next: () => void) => next(),
 }));
 
+jest.mock("../../middleware/governance", () => ({
+  enforceFreezeState: () => (_req: any, _res: any, next: any) => next(),
+}));
+
 jest.mock("../../db", () => ({
   queryWithTenant: (...args: unknown[]) => queryWithTenantMock(...args),
   transactionWithTenant: (...args: unknown[]) => transactionWithTenantMock(...args),

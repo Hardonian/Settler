@@ -37,11 +37,11 @@ const FALLBACK_PLAN_SPINE: Record<PlanCode, Omit<PlanConfig, "stripePriceId">> =
       exceptions: { includedRate: 0.01, pricePerException: 0.1 },
     },
   },
-  growth: {
-    code: "growth",
-    name: "Growth",
+  pro: {
+    code: "pro",
+    name: "Pro",
     description: "For growing businesses",
-    monthlyPrice: 900,
+    monthlyPrice: 99,
     limits: {
       reconcile: { monthlyVolume: 100_000, pricePerReconciliation: 0.01 },
       exceptions: { includedRate: 0.01, pricePerException: 0.1 },
@@ -51,7 +51,7 @@ const FALLBACK_PLAN_SPINE: Record<PlanCode, Omit<PlanConfig, "stripePriceId">> =
     code: "scale",
     name: "Scale",
     description: "For high-volume operations",
-    monthlyPrice: 9_900,
+    monthlyPrice: 399,
     limits: {
       reconcile: { monthlyVolume: 1_000_000, pricePerReconciliation: 0.01 },
       exceptions: { includedRate: 0.01, pricePerException: 0.1 },
@@ -86,7 +86,7 @@ function planRow(code: PlanCode, stripePriceId?: string): PlanConfig {
 
 export const planConfigs: Record<PlanCode, PlanConfig> = {
   starter: planRow("starter"),
-  growth: planRow("growth", process.env.STRIPE_PRICE_ID_GROWTH || undefined),
+  pro: planRow("pro", process.env.STRIPE_PRICE_ID_PRO || undefined),
   scale: planRow("scale", process.env.STRIPE_PRICE_ID_SCALE || undefined),
   enterprise: planRow("enterprise"),
 };

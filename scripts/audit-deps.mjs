@@ -22,8 +22,12 @@ if (mode === "off" && isCi) {
 const outputDir = path.join(repoRoot, "artifacts", "security", "dependency-audit", runId);
 mkdirSync(outputDir, { recursive: true });
 
-function run(command, args, timeout = 90_000) {
-  const result = spawnSync(command, args, { encoding: "utf8", timeout, shell: process.platform === "win32" });
+function run(command, args, timeout = isCi ? 90_000 : 15_000) {
+  const result = spawnSync(command, args, {
+    encoding: "utf8",
+    timeout,
+    shell: process.platform === "win32",
+  });
   return {
     timedOut: result.error && result.error.code === "ETIMEDOUT",
     command: [command, ...args].join(" "),

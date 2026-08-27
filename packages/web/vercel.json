@@ -1,6 +1,6 @@
 {
   "buildCommand": "cd ../.. && pnpm --filter @settler/web... build",
-  "installCommand": "cd ../.. && corepack enable && corepack prepare pnpm@10.13.1 --activate && pnpm install --frozen-lockfile",
+  "installCommand": "cd ../.. && corepack enable && corepack prepare pnpm@9.15.0 --activate && pnpm install --frozen-lockfile",
   "framework": "nextjs",
   "regions": ["iad1"],
   "build": {

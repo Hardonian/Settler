@@ -4,8 +4,16 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { ExceptionFamilySummary } from "@settler/reconciliation-core";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FreezeBlockedButton } from "@/components/shared/FreezeBlockedButton";
+import { FreezeErrorAlert } from "@/components/shared/FreezeErrorAlert";
+import { useGovernanceState } from "@/hooks/use-governance-state";
+import {
+  getApiErrorMessage,
+  getGovernanceRecoveryHref,
+  parseGovernanceFreezeError,
+  type GovernanceFreezeErrorDetails,
+} from "@/lib/governance/freeze-client";
 import { StatusBadge, type StatusType } from "@/components/ui/status-badge";
 import { cn } from "@/lib/utils";
 import {
@@ -531,9 +539,11 @@ export function ExceptionActionPanel({
   status: ExceptionStatus;
 }) {
   const router = useRouter();
+  const { isFrozen, governanceState } = useGovernanceState();
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [freezeError, setFreezeError] = useState<GovernanceFreezeErrorDetails | null>(null);
   const [pendingAction, setPendingAction] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -543,6 +553,7 @@ export function ExceptionActionPanel({
   const handleAction = (action: string) => {
     setError(null);
     setSuccess(null);
+    setFreezeError(null);
     setPendingAction(action);
 
     startTransition(async () => {
@@ -554,16 +565,19 @@ export function ExceptionActionPanel({
           },
           body: JSON.stringify({ notes: notes.trim() || undefined }),
         });
-        const payload = (await response.json().catch(() => ({}))) as {
-          message?: string;
-          error?: string;
-        };
+        const payload = (await response.json().catch(() => null)) as unknown;
+        const freezeDetails = parseGovernanceFreezeError(payload, response.status);
 
-        if (!response.ok) {
-          throw new Error(payload.error || payload.message || "Failed to update exception");
+        if (freezeDetails) {
+          setFreezeError(freezeDetails);
+          return;
         }
 
-        setSuccess(payload.message || "Exception updated successfully.");
+        if (!response.ok) {
+          throw new Error(getApiErrorMessage(payload, "Failed to update exception"));
+        }
+
+        setSuccess(getApiErrorMessage(payload, "Exception updated successfully."));
         setNotes("");
         router.refresh();
       } catch (requestError) {
@@ -590,6 +604,17 @@ export function ExceptionActionPanel({
           stay aligned. Notes are stored as part of the operator trail.
         </p>
 
+        {freezeError ? (
+          <FreezeErrorAlert
+            reason={freezeError.reason}
+            frozenAt={freezeError.frozenAt ?? undefined}
+            recoveryAction={{
+              label: "Open Governance Controls",
+              href: getGovernanceRecoveryHref(),
+            }}
+          />
+        ) : null}
+
         <textarea
           value={notes}
           onChange={(event) => setNotes(event.target.value)}
@@ -609,24 +634,96 @@ export function ExceptionActionPanel({
           </div>
         ) : null}
 
-        <div className="flex flex-wrap gap-3">
-          {availableActions.map((action) => (
-            <Button
-              key={action}
-              variant={action === "ignore" ? "outline" : "default"}
-              onClick={() => handleAction(action)}
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-wrap gap-3">
+            {availableActions.map((action) => (
+              <FreezeBlockedButton
+                key={action}
+                variant={action === "ignore" ? "outline" : "default"}
+                onClick={() => handleAction(action)}
+                disabled={isPending}
+                isFrozen={isFrozen}
+                freezeReason={governanceState?.freeze_reason}
+                frozenMessage="Exception decisions are blocked by tenant freeze"
+              >
+                {isPending && pendingAction === action ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
+                {action === "resolve"
+                  ? "Resolve exception"
+                  : action === "ignore"
+                    ? "Ignore exception"
+                    : "Reopen exception"}
+              </FreezeBlockedButton>
+            ))}
+            {status !== "resolved" && status !== "ignored" ? (
+              <FreezeBlockedButton
+                variant="outline"
+                className="border-amber-500 text-amber-700 hover:bg-amber-50"
+                onClick={async () => {
+                  setError(null);
+                  setSuccess(null);
+                  setPendingAction("propose");
+                  try {
+                    const res = await fetch("/api/approvals/request", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ exceptionId, proposedAction: "resolve", notes }),
+                    });
+                    const data = await res.json();
+                    if (data.data?.status === "pending_controller_review") {
+                      setSuccess(
+                        `Match proposed. Awaiting Controller approval (SOX). ID: ${data.data.approvalId}`
+                      );
+                    }
+                  } catch {
+                    setError("Failed to propose match for approval.");
+                  } finally {
+                    setPendingAction(null);
+                  }
+                }}
+                disabled={isPending}
+                isFrozen={isFrozen}
+              >
+                {isPending && pendingAction === "propose" ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
+                Propose Match (SOX)
+              </FreezeBlockedButton>
+            ) : null}
+          </div>
+
+          <div className="pt-2 border-t border-border mt-2">
+            <FreezeBlockedButton
+              variant="secondary"
+              onClick={async () => {
+                setError(null);
+                setPendingAction("ai-match");
+                try {
+                  const res = await fetch(
+                    `/api/intelligence/exceptions/${exceptionId}/agentic-match`
+                  );
+                  if (!res.ok) throw new Error("Failed to get AI match suggestion.");
+                  const data = await res.json();
+                  setNotes(
+                    `[AI Suggested Match] ${data.data?.suggestedResolution || "Match recommended"}`
+                  );
+                } catch {
+                  setError("AI suggestion failed.");
+                } finally {
+                  setPendingAction(null);
+                }
+              }}
               disabled={isPending}
+              isFrozen={isFrozen}
+              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-purple-50 text-purple-700 hover:bg-purple-100 hover:text-purple-800 border border-purple-200"
             >
-              {isPending && pendingAction === action ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              {isPending && pendingAction === "ai-match" ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
               ) : null}
-              {action === "resolve"
-                ? "Resolve exception"
-                : action === "ignore"
-                  ? "Ignore exception"
-                  : "Reopen exception"}
-            </Button>
-          ))}
+              ✨ Ask AI (Agentic Match)
+            </FreezeBlockedButton>
+          </div>
         </div>
       </CardContent>
     </Card>

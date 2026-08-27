@@ -15,7 +15,7 @@
 
 import { prisma, Prisma } from "@/shared/db/prismaClient";
 import { appLogger } from "@/lib/utils/logger";
-import { Redis } from "@upstash/redis";
+import type { Redis } from "@upstash/redis";
 
 // ============================================================================
 // CONFIGURATION
@@ -42,17 +42,37 @@ const BUFFER_CONFIG = {
 // REDIS CLIENT (OPTIONAL)
 // ============================================================================
 
-let redis: Redis | null = null;
+type RedisClient = Pick<Redis, "rpush" | "llen" | "lpop" | "lpush">;
 
-if (BUFFER_CONFIG.enabled && process.env.REDIS_URL) {
-  try {
-    redis = new Redis({
-      url: process.env.REDIS_URL,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN,
-    });
-  } catch (error) {
-    appLogger.warn("[Write Buffer] Redis initialization failed, buffering disabled", { error });
+let redis: RedisClient | null = null;
+let redisInitialization: Promise<RedisClient | null> | null = null;
+
+async function getRedisClient(): Promise<RedisClient | null> {
+  if (redis) {
+    return redis;
   }
+
+  if (!BUFFER_CONFIG.enabled || !process.env.REDIS_URL) {
+    return null;
+  }
+
+  if (!redisInitialization) {
+    redisInitialization = (async () => {
+      try {
+        const { Redis } = await import("@upstash/redis");
+        return new Redis({
+          url: process.env.REDIS_URL!,
+          token: process.env.UPSTASH_REDIS_REST_TOKEN,
+        });
+      } catch (error) {
+        appLogger.warn("[Write Buffer] Redis initialization failed, buffering disabled", { error });
+        return null;
+      }
+    })();
+  }
+
+  redis = await redisInitialization;
+  return redis;
 }
 
 // ============================================================================
@@ -127,12 +147,13 @@ export async function bufferUsageEvent(event: UsageEventBuffer): Promise<void> {
   }
 
   try {
-    if (redis) {
+    const redisClient = await getRedisClient();
+    if (redisClient) {
       // Push to Redis list
-      await redis.rpush("buffer:usage_events", JSON.stringify(event));
+      await redisClient.rpush("buffer:usage_events", JSON.stringify(event));
 
       // Check buffer size and flush if needed
-      const bufferSize = await redis.llen("buffer:usage_events");
+      const bufferSize = await redisClient.llen("buffer:usage_events");
       if (bufferSize >= BUFFER_CONFIG.maxBufferSize) {
         appLogger.warn("[Write Buffer] Usage events buffer full, triggering flush", { bufferSize });
         // Trigger immediate flush (non-blocking)
@@ -168,10 +189,11 @@ export async function bufferApiCallLog(log: ApiCallLogBuffer): Promise<void> {
   }
 
   try {
-    if (redis) {
-      await redis.rpush("buffer:api_call_logs", JSON.stringify(log));
+    const redisClient = await getRedisClient();
+    if (redisClient) {
+      await redisClient.rpush("buffer:api_call_logs", JSON.stringify(log));
 
-      const bufferSize = await redis.llen("buffer:api_call_logs");
+      const bufferSize = await redisClient.llen("buffer:api_call_logs");
       if (bufferSize >= BUFFER_CONFIG.maxBufferSize) {
         void flushApiCallLogs();
       }
@@ -203,10 +225,11 @@ export async function bufferAuditLog(log: AuditLogBuffer): Promise<void> {
   }
 
   try {
-    if (redis) {
-      await redis.rpush("buffer:audit_logs", JSON.stringify(log));
+    const redisClient = await getRedisClient();
+    if (redisClient) {
+      await redisClient.rpush("buffer:audit_logs", JSON.stringify(log));
 
-      const bufferSize = await redis.llen("buffer:audit_logs");
+      const bufferSize = await redisClient.llen("buffer:audit_logs");
       if (bufferSize >= BUFFER_CONFIG.maxBufferSize) {
         void flushAuditLogs();
       }
@@ -238,9 +261,13 @@ export async function flushUsageEvents(): Promise<void> {
   let events: UsageEventBuffer[] = [];
 
   try {
-    if (redis) {
+    const redisClient = await getRedisClient();
+    if (redisClient) {
       // Pop up to batchSize items from Redis list
-      const items = await redis.lpop<string[]>("buffer:usage_events", BUFFER_CONFIG.batchSize);
+      const items = await redisClient.lpop<string[]>(
+        "buffer:usage_events",
+        BUFFER_CONFIG.batchSize
+      );
       if (!items || items.length === 0) return;
 
       events = items.map((item: string) => JSON.parse(item));
@@ -272,9 +299,10 @@ export async function flushUsageEvents(): Promise<void> {
     });
 
     // Push back to buffer for retry (if Redis)
-    if (redis && events.length > 0) {
+    const redisClient = await getRedisClient();
+    if (redisClient && events.length > 0) {
       try {
-        await redis.lpush("buffer:usage_events", ...events.map((e) => JSON.stringify(e)));
+        await redisClient.lpush("buffer:usage_events", ...events.map((e) => JSON.stringify(e)));
       } catch (retryError) {
         appLogger.error("[Write Buffer] Failed to push back usage events", { retryError });
       }
@@ -290,8 +318,12 @@ export async function flushApiCallLogs(): Promise<void> {
   let logs: ApiCallLogBuffer[] = [];
 
   try {
-    if (redis) {
-      const items = await redis.lpop<string[]>("buffer:api_call_logs", BUFFER_CONFIG.batchSize);
+    const redisClient = await getRedisClient();
+    if (redisClient) {
+      const items = await redisClient.lpop<string[]>(
+        "buffer:api_call_logs",
+        BUFFER_CONFIG.batchSize
+      );
       if (!items || items.length === 0) return;
 
       logs = items.map((item: string) => JSON.parse(item));
@@ -324,9 +356,10 @@ export async function flushApiCallLogs(): Promise<void> {
       count: logs.length,
     });
 
-    if (redis && logs.length > 0) {
+    const redisClient = await getRedisClient();
+    if (redisClient && logs.length > 0) {
       try {
-        await redis.lpush("buffer:api_call_logs", ...logs.map((l) => JSON.stringify(l)));
+        await redisClient.lpush("buffer:api_call_logs", ...logs.map((l) => JSON.stringify(l)));
       } catch (retryError) {
         appLogger.error("[Write Buffer] Failed to push back API call logs", { retryError });
       }
@@ -342,8 +375,9 @@ export async function flushAuditLogs(): Promise<void> {
   let logs: AuditLogBuffer[] = [];
 
   try {
-    if (redis) {
-      const items = await redis.lpop<string[]>("buffer:audit_logs", BUFFER_CONFIG.batchSize);
+    const redisClient = await getRedisClient();
+    if (redisClient) {
+      const items = await redisClient.lpop<string[]>("buffer:audit_logs", BUFFER_CONFIG.batchSize);
       if (!items || items.length === 0) return;
 
       logs = items.map((item: string) => JSON.parse(item));
@@ -372,9 +406,10 @@ export async function flushAuditLogs(): Promise<void> {
       count: logs.length,
     });
 
-    if (redis && logs.length > 0) {
+    const redisClient = await getRedisClient();
+    if (redisClient && logs.length > 0) {
       try {
-        await redis.lpush("buffer:audit_logs", ...logs.map((l) => JSON.stringify(l)));
+        await redisClient.lpush("buffer:audit_logs", ...logs.map((l) => JSON.stringify(l)));
       } catch (retryError) {
         appLogger.error("[Write Buffer] Failed to push back audit logs", { retryError });
       }

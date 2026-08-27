@@ -11,6 +11,7 @@
 This document provides a comprehensive metrics framework for tracking Settler's growth, retention, and expansion. It includes growth hypotheses, prioritized experiments, and investor update templates.
 
 **Core Principles:**
+
 1. **Data-Driven:** All decisions based on metrics
 2. **Growth-Focused:** Metrics aligned with growth objectives
 3. **Investor-Ready:** Clear metrics for investor communication
@@ -29,11 +30,13 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Target:** <24 hours
 
 **Measurement:**
+
 - Track signup timestamp
 - Track first reconciliation timestamp
 - Calculate difference
 
 **Segmentation:**
+
 - By plan (Free, Starter, Growth, Scale)
 - By source (Organic, Paid, Referral)
 - By industry (E-commerce, SaaS, Enterprise)
@@ -49,11 +52,13 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Target:** 60%+
 
 **Measurement:**
+
 - Users who created first job / Total signups
 - Measure over 7-day window
 - Exclude test accounts
 
 **Segmentation:**
+
 - By plan
 - By source
 - By industry
@@ -67,6 +72,7 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Definition:** Percentage of users who use key features
 
 **Key Features:**
+
 - Webhooks
 - Scheduled jobs
 - Advanced matching rules
@@ -75,6 +81,7 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Target:** 40%+ for each feature
 
 **Measurement:**
+
 - Users who used feature / Total active users
 - Measure over 30-day window
 
@@ -91,10 +98,12 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Target:** 80%+ of signups
 
 **Measurement:**
+
 - Count unique users with activity in past 30 days
 - Exclude test accounts
 
 **Segmentation:**
+
 - By plan
 - By source
 - By industry
@@ -108,18 +117,21 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Definition:** Percentage of users who remain active over time
 
 **Cohorts:**
+
 - Week 1 retention
 - Week 4 retention
 - Week 12 retention
 - Week 52 retention
 
 **Targets:**
+
 - Week 1: 70%+
 - Week 4: 60%+
 - Week 12: 50%+
 - Week 52: 40%+
 
 **Measurement:**
+
 - Track user activity by cohort
 - Calculate retention rate for each cohort
 
@@ -134,11 +146,13 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Target:** <5% monthly churn
 
 **Measurement:**
+
 - Cancelled customers / Total customers
 - Measure over 30-day window
 - Exclude free tier
 
 **Segmentation:**
+
 - By plan
 - By tenure
 - By usage
@@ -156,10 +170,12 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Target:** 30%+ of MRR
 
 **Measurement:**
+
 - Expansion revenue / Total MRR
 - Measure over 30-day window
 
 **Expansion Sources:**
+
 - Plan upgrades
 - AI feature add-ons
 - Premium extensions
@@ -176,6 +192,7 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Target:** 110%+ (10%+ net expansion)
 
 **Measurement:**
+
 - (Starting MRR + Expansion - Churn) / Starting MRR
 - Measure over 12-month window
 
@@ -190,11 +207,13 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Target:** $100+ per month
 
 **Measurement:**
+
 - Total MRR / Total customers
 - Measure over 30-day window
 - Exclude free tier
 
 **Segmentation:**
+
 - By plan
 - By industry
 - By usage
@@ -212,16 +231,19 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Target:** <$500 per customer
 
 **Measurement:**
+
 - Total acquisition costs / New customers
 - Measure over 30-day window
 
 **Acquisition Costs:**
+
 - Marketing spend
 - Sales costs
 - Content creation
 - Tools and software
 
 **Segmentation:**
+
 - By channel (Organic, Paid, Referral, Partnership)
 - By plan
 
@@ -236,10 +258,12 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Target:** $2,400+ (2-year average lifetime × $100/month)
 
 **Measurement:**
+
 - ARPU × Average Lifetime
 - Average Lifetime = 1 / Monthly Churn Rate
 
 **Segmentation:**
+
 - By plan
 - By industry
 - By source
@@ -255,10 +279,12 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Target:** 5:1+ (for paid channels)
 
 **Measurement:**
+
 - LTV / CAC
 - Measure over 12-month window
 
 **Segmentation:**
+
 - By channel
 - By plan
 
@@ -275,11 +301,13 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Target:** 95%+
 
 **Measurement:**
+
 - Correctly matched / Total transactions
 - Exclude manual reviews
 - Measure over 30-day window
 
 **Segmentation:**
+
 - By adapter
 - By matching rules
 - By industry
@@ -295,11 +323,13 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Target:** <1%
 
 **Measurement:**
+
 - Error requests / Total requests
 - Measure over 30-day window
 - Exclude 4xx errors (client errors)
 
 **Segmentation:**
+
 - By endpoint
 - By error type
 - By customer
@@ -313,15 +343,18 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Definition:** API response time (p50, p95, p99)
 
 **Targets:**
+
 - p50: <100ms
 - p95: <500ms
 - p99: <1s
 
 **Measurement:**
+
 - Track response time for all API requests
 - Calculate percentiles over 30-day window
 
 **Segmentation:**
+
 - By endpoint
 - By region
 
@@ -338,10 +371,12 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Target:** 30%+ of MAU
 
 **Measurement:**
+
 - Count unique users with activity in past 24 hours
 - Exclude test accounts
 
 **Segmentation:**
+
 - By plan
 - By source
 
@@ -356,10 +391,12 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Target:** 10+ sessions per month
 
 **Measurement:**
+
 - Total sessions / Total users
 - Measure over 30-day window
 
 **Segmentation:**
+
 - By plan
 - By source
 
@@ -372,6 +409,7 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Definition:** Percentage of users who use each feature
 
 **Key Features:**
+
 - Dashboard
 - API
 - Webhooks
@@ -381,6 +419,7 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Target:** 50%+ for core features
 
 **Measurement:**
+
 - Users who used feature / Total active users
 - Measure over 30-day window
 
@@ -395,10 +434,12 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Hypothesis:** Simplifying onboarding flow will increase activation rate from 50% to 60%.
 
 **Experiment:**
+
 - A: Current onboarding flow (5 steps)
 - B: Simplified onboarding flow (3 steps)
 
 **Metrics:**
+
 - Activation rate (target: 60%+)
 - Time to first value (target: <24 hours)
 - Drop-off rate
@@ -407,6 +448,7 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Priority:** P0 (High)
 
 **Success Criteria:**
+
 - Activation rate increases by 10%+
 - Time to first value decreases by 20%+
 - Drop-off rate decreases by 15%+
@@ -418,10 +460,12 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Hypothesis:** Expanding free tier from 1K to 2K reconciliations/month will increase signups by 30%.
 
 **Experiment:**
+
 - A: Current free tier (1K reconciliations/month)
 - B: Expanded free tier (2K reconciliations/month)
 
 **Metrics:**
+
 - Signup rate
 - Conversion to paid (target: 20%+)
 - Revenue impact
@@ -430,6 +474,7 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Priority:** P1 (Medium)
 
 **Success Criteria:**
+
 - Signup rate increases by 30%+
 - Conversion to paid remains >20%
 - Revenue increases by 15%+
@@ -441,10 +486,12 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Hypothesis:** Referral program will drive 20% of new signups with viral coefficient of 0.3+.
 
 **Experiment:**
+
 - A: No referral program
 - B: Referral program (credits for referrer and referee)
 
 **Metrics:**
+
 - Referral rate (target: 20%+)
 - Viral coefficient (target: 0.3+)
 - Revenue from referrals
@@ -453,6 +500,7 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Priority:** P1 (Medium)
 
 **Success Criteria:**
+
 - Referral rate >20%
 - Viral coefficient >0.3
 - Revenue from referrals >15% of total
@@ -464,10 +512,12 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Hypothesis:** Scaling content production from 2 to 5 posts/week will increase organic traffic by 50%.
 
 **Experiment:**
+
 - A: Current content production (2 posts/week)
 - B: Scaled content production (5 posts/week)
 
 **Metrics:**
+
 - Organic traffic (target: 10K+ monthly)
 - Signups from content (target: 15%+)
 - SEO rankings
@@ -476,6 +526,7 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Priority:** P2 (Lower)
 
 **Success Criteria:**
+
 - Organic traffic increases by 50%+
 - Signups from content >15%
 - Top 3 rankings for 20+ keywords
@@ -487,10 +538,12 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Hypothesis:** AI-powered features will increase expansion revenue by 25% through upsells.
 
 **Experiment:**
+
 - A: No AI features
 - B: AI features (matching, alerts, anomaly detection)
 
 **Metrics:**
+
 - Expansion revenue rate (target: 30%+)
 - Upsell rate (target: 30%+)
 - Revenue per feature
@@ -499,6 +552,7 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Priority:** P1 (Medium)
 
 **Success Criteria:**
+
 - Expansion revenue rate >30%
 - Upsell rate >30%
 - Revenue per feature >$1,200/year
@@ -512,6 +566,7 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Hypothesis:** AI-powered matching will improve accuracy from 90% to 95%+.
 
 **Metrics:**
+
 - Reconciliation accuracy (target: 95%+)
 - False positive rate (target: <5%)
 - Customer satisfaction
@@ -519,6 +574,7 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Timeline:** 3 months (development + beta + launch)
 
 **Success Criteria:**
+
 - Accuracy >95%
 - False positive rate <5%
 - 20%+ adoption rate
@@ -530,6 +586,7 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Hypothesis:** Predictive alerts will reduce reconciliation errors by 30%+.
 
 **Metrics:**
+
 - Error reduction rate (target: 30%+)
 - Alert accuracy (target: 80%+)
 - Customer satisfaction
@@ -537,6 +594,7 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Timeline:** 3 months (development + beta + launch)
 
 **Success Criteria:**
+
 - Error reduction >30%
 - Alert accuracy >80%
 - 15%+ adoption rate
@@ -548,6 +606,7 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Hypothesis:** Marketplace will drive 30% of adapter usage through community contributions.
 
 **Metrics:**
+
 - Marketplace GMV (target: $2M+ Year 1)
 - Adapters listed (target: 100+ Year 1)
 - Settler commission (target: $600K+ Year 1)
@@ -555,6 +614,7 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Timeline:** 6 months (platform development + developer recruitment + launch)
 
 **Success Criteria:**
+
 - Marketplace GMV >$2M
 - Adapters listed >100
 - Settler commission >$600K
@@ -566,6 +626,7 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Hypothesis:** White-label offering will drive $1M+ ARR from 10+ partners.
 
 **Metrics:**
+
 - Partners onboarded (target: 10+ Year 1)
 - Revenue per partner (target: $50K+ per year)
 - Total embedded revenue (target: $1M+ Year 1)
@@ -573,6 +634,7 @@ This document provides a comprehensive metrics framework for tracking Settler's 
 **Timeline:** 6 months (infrastructure + partner recruitment + launch)
 
 **Success Criteria:**
+
 - Partners >10
 - Revenue per partner >$50K
 - Total embedded revenue >$1M
@@ -749,6 +811,7 @@ Best,
 ### Executive Dashboard
 
 **Metrics:**
+
 - MRR (Monthly Recurring Revenue)
 - ARR (Annual Recurring Revenue)
 - Customers (Total, New, Churned)
@@ -759,6 +822,7 @@ Best,
 - LTV:CAC Ratio
 
 **Visualization:**
+
 - Time series charts
 - Cohort analysis
 - Funnel visualization
@@ -769,6 +833,7 @@ Best,
 ### Product Dashboard
 
 **Metrics:**
+
 - Activation Rate
 - Retention Rate (Cohort)
 - Feature Adoption Rate
@@ -777,6 +842,7 @@ Best,
 - API Latency
 
 **Visualization:**
+
 - Funnel charts
 - Cohort tables
 - Feature usage charts
@@ -787,6 +853,7 @@ Best,
 ### Growth Dashboard
 
 **Metrics:**
+
 - Signups (by channel)
 - Conversion Rate (by channel)
 - CAC (by channel)
@@ -794,6 +861,7 @@ Best,
 - LTV:CAC (by channel)
 
 **Visualization:**
+
 - Channel comparison charts
 - Funnel analysis
 - ROI charts

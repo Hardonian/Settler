@@ -249,7 +249,7 @@ describe("run domain trust invariants", () => {
       detail: {
         id: "ing-run-1",
         runKind: "ingestion_run",
-        sourceModel: "reconciliation_runs",
+        sourceModel: "recon_results",
         detailHref: "/console/runs/ing-run-1",
         traceId: "trace-ing-1",
         status: "running",
@@ -298,7 +298,7 @@ describe("run domain trust invariants", () => {
     expect(response.status).toBe(200);
     const payload = await response.json();
     expect(payload.data.runKind).toBe("ingestion_run");
-    expect(payload.data.sourceModel).toBe("reconciliation_runs");
+    expect(payload.data.sourceModel).toBe("recon_results");
     expect(payload.data.kindDetail?.kind).toBe("ingestion_run");
     expect(payload.data.traceId).toBe("trace-ing-1");
     expect(payload.data.config.inputHash).toBeNull();

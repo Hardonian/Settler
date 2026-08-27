@@ -1,0 +1,17 @@
+name = "settler-api"
+main = "src/worker.js"
+compatibility_date = "2024-06-01"
+
+[vars]
+ENVIRONMENT = "production"
+APP_NAME = "settler-api"
+SCAN_CRON = "0 3 * * *"
+LOG_LEVEL = "INFO"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "settler-db"
+database_id = "7b916b23-70e4-4c46-8eb8-28781be68da4"
+
+[triggers]
+crons = ["0 3 * * *"]

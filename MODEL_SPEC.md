@@ -21,6 +21,8 @@ Settler is a reconciliation-intelligence and exception/evidence operating system
 - Evidence before claims: behavior assertions require tests/verification artifacts.
 - Tenant isolation always: no cross-tenant data or metadata bleed.
 - Contract discipline: no silent drift in API, policy, route-class, or evidence surfaces.
+- **No AI slop or theater**: Concise, professional execution. No over-commenting, filler language, or generic placeholders.
+- **Pragmatic Enterprise**: Architecture must be seed-ready, highly cost-effective (serverless/scale-to-zero), and avoid over-engineering.
 
 ## Work classification standard
 

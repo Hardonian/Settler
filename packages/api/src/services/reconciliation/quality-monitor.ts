@@ -71,7 +71,7 @@ export async function calculateQualityMetrics(
         source_count, target_count, matched_count,
         unmatched_source_count, unmatched_target_count,
         confidence_avg
-      FROM reconciliation_runs
+      FROM recon_results
       WHERE id = $1 AND tenant_id = $2`,
       [runId, tenantId]
     );

@@ -76,9 +76,58 @@ export function validateWebhookUrl(url: unknown): {
     return { valid: false, error: "Invalid URL format" };
   }
 
-  // Only allow HTTPS in production
-  if (process.env.NODE_ENV === "production" && !sanitized.startsWith("https://")) {
-    return { valid: false, error: "Webhook URLs must use HTTPS in production" };
+  try {
+    const parsedUrl = new URL(sanitized);
+
+    // Only allow HTTP/HTTPS
+    if (parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:") {
+      return { valid: false, error: "Webhook URLs must use HTTP or HTTPS" };
+    }
+
+    // Only allow HTTPS in production
+    if (process.env.NODE_ENV === "production" && parsedUrl.protocol !== "https:") {
+      return { valid: false, error: "Webhook URLs must use HTTPS in production" };
+    }
+
+    // SSRF Protection: Block private IPs, loopback, and cloud metadata
+    const hostname = parsedUrl.hostname;
+
+    if (
+      hostname === "localhost" ||
+      hostname.endsWith(".localhost") ||
+      hostname === "127.0.0.1" ||
+      hostname === "0.0.0.0" ||
+      hostname.startsWith("127.")
+    ) {
+      return { valid: false, error: "Localhost/Loopback URLs are not allowed" };
+    }
+
+    if (hostname === "169.254.169.254") {
+      return { valid: false, error: "Cloud metadata endpoints are not allowed" };
+    }
+
+    // IPv4 private networks (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 169.254.0.0/16)
+    const ipv4Regex =
+      /^(?:10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(?:1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|169\.254\.\d{1,3}\.\d{1,3})$/;
+    if (ipv4Regex.test(hostname)) {
+      return { valid: false, error: "Private/Internal IPs are not allowed" };
+    }
+
+    // IPv6 private networks (fc00::/7, fe80::/10, ::1)
+    if (
+      hostname.includes(":") &&
+      (hostname.startsWith("[fc") ||
+        hostname.startsWith("[fd") ||
+        hostname.startsWith("[fe8") ||
+        hostname.startsWith("[fe9") ||
+        hostname.startsWith("[fea") ||
+        hostname.startsWith("[feb") ||
+        hostname === "[::1]")
+    ) {
+      return { valid: false, error: "Private/Internal IPs are not allowed" };
+    }
+  } catch {
+    return { valid: false, error: "Invalid URL format" };
   }
 
   return { valid: true, sanitized };

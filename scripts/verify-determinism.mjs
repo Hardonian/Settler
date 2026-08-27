@@ -1,8 +1,16 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
 
-const runA = spawnSync("pnpm", ["demo"], { encoding: "utf8", env: process.env });
-const runB = spawnSync("pnpm", ["demo"], { encoding: "utf8", env: process.env });
+const runA = spawnSync("npx", ["pnpm", "demo"], {
+  encoding: "utf8",
+  env: process.env,
+  shell: true,
+});
+const runB = spawnSync("npx", ["pnpm", "demo"], {
+  encoding: "utf8",
+  env: process.env,
+  shell: true,
+});
 
 if (runA.status !== 0 || runB.status !== 0) {
   process.stderr.write(runA.stderr || runB.stderr || "demo execution failed\n");

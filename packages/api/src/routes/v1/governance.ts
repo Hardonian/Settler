@@ -11,7 +11,7 @@ import { bypassFreeze } from "../../middleware/governance";
 import { Permission } from "../../infrastructure/security/Permissions";
 import { handleRouteError } from "../../utils/error-handler";
 import { validateRequest } from "../../middleware/validation";
-import { query } from "../../db";
+import { queryWithTenant } from "../../db";
 import { invalidateTenantFreezeCache } from "../../utils/governance-cache";
 
 const router: Router = Router();
@@ -42,7 +42,7 @@ router.get(
       }
 
       // Query freeze state from governance table
-      const result = await query<{
+      const result = await queryWithTenant<{
         tenant_id: string;
         frozen: boolean;
         frozen_at: string | null;
@@ -50,6 +50,7 @@ router.get(
         freeze_reason: string | null;
         updated_at: string;
       }>(
+        tenantId,
         `SELECT tenant_id, frozen, frozen_at, frozen_by, freeze_reason, updated_at
          FROM tenant_governance
          WHERE tenant_id = $1`,
@@ -132,7 +133,7 @@ router.post(
       const { frozen, reason } = req.body;
 
       // Upsert governance state
-      const result = await query<{
+      const result = await queryWithTenant<{
         tenant_id: string;
         frozen: boolean;
         frozen_at: string | null;
@@ -140,6 +141,7 @@ router.post(
         freeze_reason: string | null;
         updated_at: string;
       }>(
+        tenantId,
         `INSERT INTO tenant_governance (tenant_id, frozen, frozen_at, frozen_by, freeze_reason, updated_at)
          VALUES ($1, $2, $3, $4, $5, NOW())
          ON CONFLICT (tenant_id)
@@ -173,7 +175,8 @@ router.post(
       invalidateTenantFreezeCache(tenantId);
 
       // Log the governance action in audit trail
-      await query(
+      await queryWithTenant(
+        tenantId,
         `INSERT INTO audit_logs (event, user_id, tenant_id, ip, user_agent, path, metadata)
          VALUES ($1, $2, $3, $4, $5, $6, $7)`,
         [
@@ -212,7 +215,8 @@ router.post(
  */
 export async function isTenantFrozen(tenantId: string): Promise<boolean> {
   try {
-    const result = await query<{ frozen: boolean }>(
+    const result = await queryWithTenant<{ frozen: boolean }>(
+      tenantId,
       `SELECT frozen FROM tenant_governance WHERE tenant_id = $1`,
       [tenantId]
     );

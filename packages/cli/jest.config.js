@@ -7,5 +7,8 @@ module.exports = {
   transform: {
     "^.+.tsx?$": "ts-jest",
   },
+  moduleNameMapper: {
+    "^chalk$": "<rootDir>/test-support/chalk.ts",
+  },
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
 };

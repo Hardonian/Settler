@@ -1,8 +1,8 @@
-import { Router, Request, Response } from "express";
+import { Request, Response, Router } from "express";
 import { rateLimiter } from "../../utils/rate-limiter";
 import { logInfo } from "../../utils/logger";
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * GET /api/v1/admin/kill-switch/status
@@ -50,4 +50,4 @@ router.post("/kill-switch", async (req: Request, res: Response) => {
   }
 });
 
-export default router;
+export default router as any;

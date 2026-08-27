@@ -38,6 +38,12 @@ const getSummarySchema = z.object({
   }),
 });
 
+const getJobIdSchema = z.object({
+  params: z.object({
+    jobId: z.string().uuid(),
+  }),
+});
+
 // Get reconciliation summary (cached, uses materialized view)
 router.get(
   "/:jobId",
@@ -80,6 +86,7 @@ router.get(
   "/:jobId/performance",
   requirePermission(Permission.REPORTS_READ),
   apiGatewayCache({ ttl: 300, includeUserId: true }),
+  validateRequest(getJobIdSchema),
   async (req: AuthRequest, res: Response) => {
     try {
       const jobIdParam2 = req.params["jobId"];
@@ -110,6 +117,7 @@ router.get(
   "/:jobId/accuracy",
   requirePermission(Permission.REPORTS_READ),
   apiGatewayCache({ ttl: 300, includeUserId: true }),
+  validateRequest(getJobIdSchema),
   async (req: AuthRequest, res: Response) => {
     try {
       const jobIdParam3 = req.params["jobId"];

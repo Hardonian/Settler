@@ -1,49 +1,82 @@
-# Settler: Operations Runbook
+# Settler — Operations Runbook
 
-This runbook defines the standard operating procedures (SOPs) for running the Settler platform. It is designed specifically for a solo-founder or minimal-ops team.
+Standard operating procedures for running the Settler platform. Designed for a small ops team or solo operator.
 
 ## 1. Incident Response
 
-### Edge Crashes (Sentry)
+### Application Errors (Sentry)
 
-- **Trigger**: Sentry alerts via Slack indicating a crash in `global-error.tsx`.
-- **Action**:
-  1. Check the Sentry dashboard for the stack trace.
-  2. If the issue is related to the AI SDK, verify that the `OPENAI_API_KEY` hasn't expired or hit rate limits.
-  3. If the issue is a UI crash, revert the latest UI deployment via the Vercel dashboard.
+- **Trigger:** Sentry alert indicating an unhandled exception in the API or console.
+- **Action:**
+  1. Check the Sentry dashboard for the stack trace and affected tenant.
+  2. If the error is in the API control plane, check recent deployments via `git log -5`.
+  3. If the error is in the console, check for client-side hydration issues or missing data.
+  4. If severity warrants, revert the latest deployment via the Vercel dashboard.
 
-### Reconciliation Mismatches (DLQ)
+### Reconciliation Exceptions
 
-- **Trigger**: Anomaly detector flags a mismatched transaction in the Dead Letter Queue (DLQ).
-- **Action**:
-  1. Open the Settler Dashboard -> "Pulse".
-  2. Review the "Unmatched Value" metric.
-  3. Trigger the `AI Support Sweep` via the Command Palette to have the agent attempt auto-resolution.
-  4. If the AI fails, manually map the transaction ID in the database.
+- **Trigger:** Operator notices elevated unmatched transaction count in the console's exception review queue.
+- **Action:**
+  1. Open the Settler Console → Exception Review.
+  2. Review the unmatched transactions and their tolerance violations.
+  3. Adjudicate each exception (approve, reject, or flag for further review).
+  4. If a pattern emerges, adjust tolerance rules for the affected job configuration.
 
-## 2. Managing the AI Workforce
+### Tenant Isolation Breach (Critical)
 
-### BYOK Key Failures
+- **Trigger:** Cross-tenant test failure in CI, or manual discovery of tenant data leakage.
+- **Action:**
+  1. Immediately freeze the affected tenant via the governance middleware.
+  2. Run `pnpm run verify:tenant-isolation` and `pnpm run test:cross-tenant` to assess scope.
+  3. Engage incident response per [SECURITY.md](SECURITY.md).
+  4. Document findings in a postmortem using the template in `docs/INCIDENT_POSTMORTEM_TEMPLATE.md`.
 
-- **Issue**: A user complains that the "Sales Hunter" isn't working.
-- **Resolution**: Direct the user to the Settings panel to verify their OpenAI API Key. The platform defaults to a `verified_degraded` state if their key is invalid.
+## 2. AI Feature Management
 
-### Monitoring Agent Activity
+### BYOK Key Configuration
 
-- **Procedure**: Periodically check the "Agent Activity Feed" (the bell icon in the dashboard). Ensure that the Orchestrator is successfully delegating tasks to the Support and Sales agents.
+- **Issue:** A customer reports that AI-assisted features are not available.
+- **Resolution:** Direct the customer to verify their OpenAI API key in tenant settings. When the key is missing or invalid, the platform operates in `verified_degraded` state — all core reconciliation and evidence features work normally without AI assistance.
+
+### Monitoring Degraded State
+
+- **Procedure:** Check the ops daily report (`pnpm run ops:daily`) for tenants operating in degraded state. Degraded state is an explicit, documented mode — not a failure condition.
 
 ## 3. Financial Operations
 
 ### Stripe Billing
 
-- **Monitoring**: Ensure the `log_usage_event` function in Supabase is correctly firing on every successful reconciliation map.
-- **Reporting**: End-of-month revenue is calculated as: `Base Platform Fee ($99) + (Total Transactions * $0.01)`.
-- **Overages**: Users are automatically billed for overages on the 1st of every month via Stripe Metered Billing.
+- **Monitoring:** Subscription tier enforcement is handled by the billing middleware. Usage events are recorded per reconciliation run.
+- **Reporting:** Revenue = Sum of subscription fees + (total transactions × per-transaction rate).
+- **Overages:** Handled automatically via Stripe metered billing.
+
+### Trial Lifecycle
+
+- **Automation:** Trial lifecycle emails (day 7, day 14, expiry) are managed by the email lifecycle service. Monitor via `pnpm run ops:daily`.
 
 ## 4. Deployment Pipeline
 
-- **Branching Strategy**: All work happens on feature branches. `main` must remain green at all times.
-- **Pre-commit Hooks**: Husky runs ESLint, Prettier, and Type-checking before any commit is allowed.
-- **CI/CD**: Pushing to `main` triggers a Vercel production build.
+- **Branching:** All work on feature branches. `main` must remain green.
+- **Pre-commit:** Husky runs ESLint, Prettier, and type-checking before every commit.
+- **CI/CD:** Pushing to `main` triggers a Vercel production build. All PRs must pass `pnpm verify`.
+- **Pre-deploy checklist:** Run `pnpm run build` locally before pushing major changes.
 
-_Always run `pnpm build` locally before pushing a major UI overhaul._
+## 5. Verification Commands Reference
+
+```bash
+pnpm run doctor              # Comprehensive environment diagnostic
+pnpm run ops:daily           # Daily operational report
+pnpm run ops:doctor          # Full health check (lint, typecheck, build, routes)
+pnpm run verify:fast         # Fast verification profile
+pnpm run verify:full         # Complete release verification
+pnpm run verify:security     # Security posture check
+```
+
+## 6. Escalation Path
+
+| Severity                        | Response Time     | Action                                           |
+| ------------------------------- | ----------------- | ------------------------------------------------ |
+| P0 — Data loss or tenant breach | Immediate         | Freeze tenant, engage incident response          |
+| P1 — Service outage             | < 1 hour          | Check Vercel/Supabase status, rollback if needed |
+| P2 — Feature degradation        | < 4 hours         | Investigate, document, schedule fix              |
+| P3 — Non-critical bug           | Next business day | Triage and assign                                |

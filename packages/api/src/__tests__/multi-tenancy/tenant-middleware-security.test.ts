@@ -1,4 +1,8 @@
-import { tenantMiddleware, type TenantRequest } from "../../middleware/tenant";
+import {
+  tenantMiddleware,
+  type TenantRequest,
+  resetTenantAccessTablesCache,
+} from "../../middleware/tenant";
 import { Container } from "../../infrastructure/di/Container";
 import { query } from "../../db";
 
@@ -33,6 +37,7 @@ describe("tenant middleware security", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    resetTenantAccessTablesCache();
     tenantRepo.findByCustomDomain.mockResolvedValue(null);
     tenantRepo.findBySlug.mockResolvedValue(null);
     tenantRepo.findById.mockResolvedValue(activeTenant);

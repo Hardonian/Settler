@@ -6,12 +6,12 @@ import {
   mapLegacyPlanTypeToPlanCode,
   mapLegacySubscriptionPlanId,
 } from "@settler/types";
-import { PRICING_PLANS } from "@/config/pricing-simple";
-import { mapLegacyPlanId, planConfigs } from "@/domain/billing/planConfig";
+import { PRICING_PLANS } from "../../config/pricing-simple";
+import { mapLegacyPlanId, planConfigs } from "../../domain/billing/planConfig";
 
 describe("commercial spine consistency", () => {
   it("exports every plan code in PLAN_SPINE", () => {
-    expect(Object.keys(PLAN_SPINE).sort()).toEqual(["enterprise", "growth", "scale", "starter"]);
+    expect(Object.keys(PLAN_SPINE).sort()).toEqual(["enterprise", "pro", "scale", "starter"]);
   });
 
   it("maps legacy subscription ids into PLAN_SPINE keys only", () => {
@@ -31,7 +31,7 @@ describe("commercial spine consistency", () => {
   });
 
   it("aligns pricing-simple with spine for canonical ids", () => {
-    for (const id of ["starter", "growth", "scale", "enterprise"] as const) {
+    for (const id of ["starter", "pro", "scale", "enterprise"] as const) {
       const p = PRICING_PLANS[id]!;
       expect(p.basePriceMonthly).toBe(PLAN_SPINE[id].monthlyPrice);
       expect(p.includedTransactions).toBe(PLAN_SPINE[id].limits.reconcile.monthlyVolume);
@@ -41,8 +41,8 @@ describe("commercial spine consistency", () => {
 
   it("maps legacy plan types to canonical codes", () => {
     expect(mapLegacyPlanTypeToPlanCode("free")).toBe("starter");
-    expect(mapLegacyPlanTypeToPlanCode("trial")).toBe("growth");
-    expect(mapLegacyPlanTypeToPlanCode("commercial")).toBe("growth");
+    expect(mapLegacyPlanTypeToPlanCode("trial")).toBe("pro");
+    expect(mapLegacyPlanTypeToPlanCode("commercial")).toBe("pro");
     expect(mapLegacyPlanTypeToPlanCode("enterprise")).toBe("enterprise");
     expect(mapLegacyPlanTypeToPlanCode("starter")).toBe("starter");
   });

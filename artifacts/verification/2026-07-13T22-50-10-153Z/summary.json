@@ -1,0 +1,25 @@
+{
+  "profile": "fast",
+  "stageFilter": null,
+  "runId": "2026-07-13T22-50-10-153Z",
+  "completedAt": "2026-07-13T22:50:10.547Z",
+  "passed": false,
+  "signals": {
+    "supplyChainAuditState": "unknown",
+    "supplyChainUnavailableCategory": null,
+    "tenantGuardrailStaticStatus": "incomplete",
+    "tenantRuntimeCoverageStatus": "incomplete"
+  },
+  "results": [
+    {
+      "stage": "root",
+      "label": "Root cleanliness",
+      "status": "failed",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 390,
+      "timeoutMs": 60000,
+      "logPath": "artifacts\\verification\\2026-07-13T22-50-10-153Z\\root.log"
+    }
+  ]
+}

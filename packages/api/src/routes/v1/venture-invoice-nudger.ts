@@ -6,6 +6,7 @@ import { Permission } from "../../infrastructure/security/Permissions";
 import { validateRequest } from "../../middleware/validation";
 import { queryWithTenant, transactionWithTenant } from "../../db";
 import { handleRouteError } from "../../utils/error-handler";
+import { enforceFreezeState } from "../../middleware/governance";
 
 const router: Router = Router();
 
@@ -47,6 +48,7 @@ type InvoiceRow = {
 router.post(
   "/invoice-nudger/run",
   requirePermission(Permission.OPERATOR_WRITE),
+  enforceFreezeState(),
   validateRequest(runNudgerSchema),
   async (req: AuthRequest, res: Response) => {
     const tenantId = req.tenantId;

@@ -9,7 +9,7 @@ import { validateRequest } from "../middleware/validation";
 import { AuthRequest } from "../middleware/auth";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
-import { query } from "../db";
+import { queryWithTenant } from "../db";
 import { handleRouteError } from "../utils/error-handler";
 import { NotFoundError } from "../utils/typed-errors";
 import { calculateConfidenceScore, explainConfidenceScore } from "../services/confidence-scoring";
@@ -41,7 +41,7 @@ router.get(
       const tenantId = req.tenantId!;
 
       // Get match details — scoped by tenant_id
-      const matches = await query<{
+      const matches = await queryWithTenant<{
         id: string;
         job_id: string;
         source_id: string;
@@ -50,6 +50,7 @@ router.get(
         source_data: unknown;
         target_data: unknown;
       }>(
+        tenantId,
         `SELECT m.id, m.job_id, m.source_id, m.target_id, m.confidence,
                 m.source_data, m.target_data
          FROM matches m
@@ -65,7 +66,8 @@ router.get(
       const match = matches[0];
 
       // Get job rules — scoped by tenant_id
-      const jobs = await query<{ rules: unknown }>(
+      const jobs = await queryWithTenant<{ rules: unknown }>(
+        tenantId,
         `SELECT rules FROM jobs WHERE id = $1 AND tenant_id = $2`,
         [match.job_id, tenantId]
       );
@@ -126,7 +128,8 @@ router.get(
       const tenantId = req.tenantId!;
 
       // Verify job ownership — scoped by tenant_id
-      const jobs = await query<{ id: string }>(
+      const jobs = await queryWithTenant<{ id: string }>(
+        tenantId,
         `SELECT id FROM jobs WHERE id = $1 AND user_id = $2 AND tenant_id = $3`,
         [jobId, userId, tenantId]
       );
@@ -136,7 +139,7 @@ router.get(
       }
 
       // Get accuracy metrics
-      const metrics = await query<{
+      const metrics = await queryWithTenant<{
         total_matches: string;
         high_confidence: string;
         medium_confidence: string;
@@ -144,6 +147,7 @@ router.get(
         avg_confidence: number;
         accuracy: number;
       }>(
+        tenantId,
         `SELECT 
            COUNT(*) as total_matches,
            COUNT(*) FILTER (WHERE confidence >= 0.95) as high_confidence,

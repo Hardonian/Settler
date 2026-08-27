@@ -8,11 +8,11 @@ currency, webhooks, jobs, and reports.
 
 from __future__ import annotations
 
-import hashlib
 import json
 import socket
 import time
-from typing import Any, Dict, List, Optional, Union
+import uuid
+from typing import Any, Dict, List, Optional
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
@@ -92,11 +92,19 @@ class SettlerClient:
         self.webhooks = WebhooksClient(self)
         self.jobs = JobsClient(self)
         self.reports = ReportsClient(self)
+        self.flags = FlagsClient(self)
+        self.receipts = ReceiptsClient(self)
+        self.adapters = AdaptersClient(self)
+        self.console = ConsoleClient(self)
+        self.runs = RunsClient(self)
 
     def _get_headers(self) -> Dict[str, str]:
+        req_id = str(uuid.uuid4())
         headers = {
             "Content-Type": "application/json",
             "User-Agent": "settler-python/1.0.0",
+            "Accept-Encoding": "gzip",
+            "X-Request-ID": req_id,
         }
         if self._api_key.startswith("rk_") or self._api_key.startswith("sk_"):
             headers["X-API-Key"] = self._api_key
@@ -122,6 +130,10 @@ class SettlerClient:
 
         payload = None
         headers = self._get_headers()
+        
+        if method in ("POST", "PUT", "PATCH"):
+            headers["Idempotency-Key"] = headers["X-Request-ID"]
+
         if data is not None:
             payload = json.dumps(data).encode("utf-8")
             headers["Content-Type"] = "application/json"
@@ -520,3 +532,180 @@ class ReportsClient:
     def get_unmatched(self, job_id: str) -> Dict[str, Any]:
         """Get unmatched transactions for a job."""
         return self._client._request("GET", f"/reports/{job_id}/unmatched")
+
+
+class FlagsClient:
+    """Client for evaluating feature flags."""
+
+    def __init__(self, client: SettlerClient) -> None:
+        self._client = client
+
+    def evaluate(
+        self,
+        flag_key: str,
+        context: Optional[Dict[str, Any]] = None,
+        default_value: Optional[Any] = None,
+    ) -> Dict[str, Any]:
+        """Evaluate a feature flag."""
+        data: Dict[str, Any] = {
+            "flagKey": flag_key,
+            "context": context or {},
+        }
+        if default_value is not None:
+            data["defaultValue"] = default_value
+        
+        try:
+            return self._client._request("POST", "/feature-flags/evaluate", data=data)
+        except SettlerError:
+            if default_value is not None:
+                return {
+                    "flagKey": flag_key,
+                    "value": default_value,
+                    "reason": "error_fallback",
+                }
+            raise
+
+
+class ReceiptsClient:
+    """Client for receipt operations."""
+
+    def __init__(self, client: SettlerClient) -> None:
+        self._client = client
+
+    def parse(
+        self,
+        file: str,
+        options: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Parse a receipt."""
+        data: Dict[str, Any] = {}
+        if file.startswith("http"):
+            data["url"] = file
+        else:
+            data["content"] = file
+            
+        if options:
+            data["options"] = options
+            
+        return self._client._request("POST", "/receipts/parse", data=data)
+
+    def get(self, receipt_id: str) -> Dict[str, Any]:
+        """Get a receipt by ID."""
+        return self._client._request("GET", f"/receipts/{receipt_id}")
+
+
+class AdaptersClient:
+    """Client for adapter operations."""
+
+    def __init__(self, client: SettlerClient) -> None:
+        self._client = client
+
+    def list(
+        self,
+        cursor: Optional[str] = None,
+        limit: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        """List adapters."""
+        params: Dict[str, Any] = {}
+        if cursor:
+            params["cursor"] = cursor
+        if limit is not None:
+            params["limit"] = limit
+        return self._client._request("GET", "/adapters", params=params)
+
+    def get(self, adapter_id: str) -> Dict[str, Any]:
+        """Get an adapter by ID."""
+        return self._client._request("GET", f"/adapters/{adapter_id}")
+
+
+class ConsoleClient:
+    """Client for Console operations."""
+
+    def __init__(self, client: SettlerClient) -> None:
+        self._client = client
+
+    def list_api_keys(self) -> Dict[str, Any]:
+        return self._client._request("GET", "/console/api-keys")
+
+    def create_api_key(self, name: Optional[str] = None, scopes: Optional[List[str]] = None, expires_at: Optional[str] = None) -> Dict[str, Any]:
+        data: Dict[str, Any] = {}
+        if name: data["name"] = name
+        if scopes: data["scopes"] = scopes
+        if expires_at: data["expiresAt"] = expires_at
+        return self._client._request("POST", "/console/api-keys", data=data)
+
+    def revoke_api_key(self, key_id: str) -> None:
+        self._client._request("DELETE", f"/console/api-keys/{key_id}")
+
+    def get_usage(self, days: int = 7) -> Dict[str, Any]:
+        return self._client._request("GET", "/console/usage", params={"days": days})
+
+    def list_receipts(self) -> Dict[str, Any]:
+        return self._client._request("GET", "/console/receipts")
+
+    def get_receipt(self, receipt_id: str) -> Dict[str, Any]:
+        return self._client._request("GET", f"/console/receipts/{receipt_id}")
+
+    def list_feature_flags(self) -> Dict[str, Any]:
+        return self._client._request("GET", "/console/feature-flags")
+
+    def get_activities(self) -> Dict[str, Any]:
+        return self._client._request("GET", "/console/activities")
+
+    def health(self) -> Dict[str, Any]:
+        return self._client._request("GET", "/health/console")
+
+
+class RunsClient:
+    """Client for reconciliation run operations."""
+
+    def __init__(self, client: SettlerClient) -> None:
+        self._client = client
+
+    def list(
+        self,
+        page: Optional[int] = None,
+        limit: Optional[int] = None,
+        status: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """List reconciliation runs."""
+        params: Dict[str, Any] = {}
+        if page is not None:
+            params["page"] = page
+        if limit is not None:
+            params["limit"] = limit
+        if status:
+            params["status"] = status
+        return self._client._request("GET", "/runs", params=params)
+
+    def get(self, run_id: str) -> Dict[str, Any]:
+        """Get a reconciliation run by ID."""
+        return self._client._request("GET", f"/runs/{run_id}")
+
+    def create(self, job_id: str) -> Dict[str, Any]:
+        """Create a new reconciliation run."""
+        return self._client._request("POST", "/runs", data={"jobId": job_id})
+
+    def get_proofpack(self, run_id: str) -> Dict[str, Any]:
+        """Get the proofpack for a run."""
+        return self._client._request("GET", f"/runs/{run_id}/proofpack")
+
+    def get_delta(self, run_id: str) -> Dict[str, Any]:
+        """Get the deltas for a run."""
+        return self._client._request("GET", f"/runs/{run_id}/delta")
+
+    def record_adjudication(
+        self,
+        run_id: str,
+        exception_id: str,
+        resolution: str,
+        resolution_reason: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Record an adjudication decision."""
+        data: Dict[str, Any] = {
+            "exceptionId": exception_id,
+            "resolution": resolution,
+        }
+        if resolution_reason:
+            data["resolutionReason"] = resolution_reason
+        return self._client._request("POST", f"/runs/{run_id}/adjudications", data=data)

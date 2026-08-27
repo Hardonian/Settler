@@ -9,8 +9,8 @@
   ],
   "functions": {
     "api/index.ts": {
-      "maxDuration": 30,
-      "memory": 1024
+      "maxDuration": 15,
+      "memory": 512
     }
   },
   "env": {

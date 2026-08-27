@@ -9,7 +9,7 @@ import { validateRequest } from "../middleware/validation";
 import { AuthRequest } from "../middleware/auth";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
-import { query } from "../db";
+import { queryWithTenant } from "../db";
 import { handleRouteError } from "../utils/error-handler";
 import { getSupportIntakeProvider } from "../services/capabilities/registry";
 import { observeCapabilityStatus } from "../services/capabilities/telemetry";
@@ -88,7 +88,8 @@ router.post(
       const feedback = req.body;
       const provider = getSupportIntakeProvider();
 
-      const result = await query<{ id: string }>(
+      const result = await queryWithTenant<{ id: string }>(
+        req.tenantId!,
         `INSERT INTO feedback (
            user_id, source, persona, company, context,
            pain, desired_outcome, workaround, quotes, feature_requests, tags
@@ -191,7 +192,7 @@ router.get(
 
       const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
-      const feedback = await query<{
+      const feedback = await queryWithTenant<{
         id: string;
         source: string;
         persona: string | null;
@@ -205,6 +206,7 @@ router.get(
         tags: string[];
         created_at: Date;
       }>(
+        req.tenantId!,
         `SELECT id, source, persona, company, context,
                 pain, desired_outcome, workaround, quotes, feature_requests, tags,
                 created_at
@@ -215,7 +217,8 @@ router.get(
         [...values, limit, offset]
       );
 
-      const countResult = await query<{ count: string }>(
+      const countResult = await queryWithTenant<{ count: string }>(
+        req.tenantId!,
         `SELECT COUNT(*) as count FROM feedback ${whereClause}`,
         values
       );
@@ -294,11 +297,12 @@ router.get(
       const end = endDate ? new Date(endDate) : new Date();
 
       // Top pains by frequency
-      const topPains = await query<{
+      const topPains = await queryWithTenant<{
         pain_description: string;
         count: string;
         avg_severity: string;
       }>(
+        req.tenantId!,
         `SELECT 
            pain->>'description' as pain_description,
            COUNT(*) as count,
@@ -316,11 +320,12 @@ router.get(
       );
 
       // Feature requests by frequency
-      const topFeatureRequests = await query<{
+      const topFeatureRequests = await queryWithTenant<{
         feature: string;
         count: string;
         avg_priority: string;
       }>(
+        req.tenantId!,
         `SELECT 
            feature_request->>'feature' as feature,
            COUNT(*) as count,

@@ -19,6 +19,7 @@ export interface ScheduleJob {
   targetAdapter: string;
   scheduleCron: string | null;
   scheduleTimezone: string;
+  emailDigest?: boolean;
   createdAt: string;
   updatedAt: string;
   lastExecution: {
@@ -84,7 +85,7 @@ function describeCron(cron: string): string {
 }
 
 /** Compute approximate next N run times from a cron expression (client-side rough estimate). */
-function computeNextRuns(cron: string, timezone: string, count: number): Date[] {
+function computeNextRuns(cron: string, _timezone: string, count: number): Date[] {
   const runs: Date[] = [];
   const parts = cron.trim().split(/\s+/);
   if (parts.length < 5) return runs;
@@ -169,6 +170,7 @@ interface ScheduleConfigPanelProps {
 export function ScheduleConfigPanel({ job, onSaved }: ScheduleConfigPanelProps) {
   const [cronValue, setCronValue] = useState(job.scheduleCron ?? "");
   const [timezone, setTimezone] = useState(job.scheduleTimezone || "UTC");
+  const [emailDigest, setEmailDigest] = useState(job.emailDigest ?? false);
   const [saving, setSaving] = useState(false);
   const [removing, setRemoving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -191,6 +193,7 @@ export function ScheduleConfigPanel({ job, onSaved }: ScheduleConfigPanelProps) 
         jobId: job.id,
         scheduleCron: cronValue.trim(),
         scheduleTimezone: timezone,
+        emailDigest,
       }),
     });
 
@@ -296,6 +299,20 @@ export function ScheduleConfigPanel({ job, onSaved }: ScheduleConfigPanelProps) 
               </option>
             ))}
           </select>
+        </div>
+
+        {/* Email Digest toggle */}
+        <div className="space-y-1.5 flex items-center gap-2">
+          <input
+            id={`digest-${job.id}`}
+            type="checkbox"
+            checked={emailDigest}
+            onChange={(e) => setEmailDigest(e.target.checked)}
+            className="rounded border-border text-primary focus:ring-primary"
+          />
+          <label htmlFor={`digest-${job.id}`} className="text-sm font-medium text-foreground">
+            Send email digest upon completion
+          </label>
         </div>
 
         {/* Next runs preview */}

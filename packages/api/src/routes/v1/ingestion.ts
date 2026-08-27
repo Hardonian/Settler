@@ -24,7 +24,7 @@ import {
   createRawRecord,
   updateIngestionStatus,
 } from "../../services/ingestion/ingestion-service";
-import { query } from "../../db";
+import { queryWithTenant } from "../../db";
 import { CSVColumnMapping } from "../../services/ingestion/types";
 import { checkIngestionLimit } from "../../middleware/usage-enforcement";
 import { trackIngestionUsage } from "../../utils/usage-tracking";
@@ -98,7 +98,8 @@ async function loadSchemaDriftBaseline(
     }
   | undefined
 > {
-  const previous = await query(
+  const previous = await queryWithTenant(
+    tenantId,
     `SELECT id, completed_at, metadata
        FROM ingestions
       WHERE tenant_id = $1
@@ -206,7 +207,8 @@ router.post(
       // Connector configs contain OAuth tokens and API keys — encrypt at rest with AES-256-GCM.
       const encryptedConfig = config ? encrypt(JSON.stringify(config)) : null;
 
-      await query(
+      await queryWithTenant(
+        tenantId,
         `INSERT INTO ingestion_sources (
         id, tenant_id, user_id, name, type, connector_type,
         config_encrypted, config_metadata, status, created_at, updated_at
@@ -259,7 +261,8 @@ router.get(
     try {
       const tenantId = req.tenantId!;
 
-      const sources = await query(
+      const sources = await queryWithTenant(
+        tenantId,
         `SELECT
         id, name, type, connector_type, status, last_sync_at,
         last_sync_status, created_at, updated_at
@@ -488,7 +491,8 @@ router.post(
       // Create source if not provided
       let finalSourceId = sourceId;
       if (!finalSourceId) {
-        const sourceResult = await query(
+        const sourceResult = await queryWithTenant(
+          tenantId,
           `INSERT INTO ingestion_sources (
             id, tenant_id, user_id, name, type, status, created_at, updated_at
           ) VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
@@ -602,7 +606,8 @@ router.post(
         completedAt: new Date(),
       });
 
-      await query(
+      await queryWithTenant(
+        tenantId,
         `UPDATE ingestions SET metadata = $2, updated_at = NOW() WHERE id = $1 AND tenant_id = $3`,
         [
           ingestionId,
@@ -702,7 +707,8 @@ router.get(
       const { ingestionId } = req.params;
       const tenantId = req.tenantId!;
 
-      const results = await query(
+      const results = await queryWithTenant(
+        tenantId,
         `SELECT
         id, source_id, status, raw_record_count, normalized_count,
         failed_count, retry_count, trace_id, started_at, completed_at,
@@ -764,7 +770,8 @@ router.get(
       const limit = parseInt(req.query.limit as string) || 100;
       const offset = parseInt(req.query.offset as string) || 0;
 
-      const transactions = await query(
+      const transactions = await queryWithTenant(
+        tenantId,
         `SELECT
           id, external_id, amount, currency, date, description,
           category, payment_method, reference, metadata, created_at
@@ -775,7 +782,8 @@ router.get(
         [ingestionId || "", tenantId, limit.toString(), offset.toString()]
       );
 
-      const totalResults = await query(
+      const totalResults = await queryWithTenant(
+        tenantId,
         `SELECT COUNT(*) as count
         FROM normalized_transactions
         WHERE ingestion_id = $1 AND tenant_id = $2`,
@@ -839,7 +847,8 @@ router.get(
       }
 
       const limit = Math.min(Math.max(parseInt(req.query.limit as string, 10) || 20, 1), 100);
-      const ingestions = await query(
+      const ingestions = await queryWithTenant(
+        tenantId,
         `SELECT id, source_id, status, completed_at, metadata
          FROM ingestions
         WHERE tenant_id = $1
@@ -915,7 +924,8 @@ router.post(
       }
 
       const dryRun = req.body.dryRun !== false;
-      const originalRows = await query(
+      const originalRows = await queryWithTenant(
+        tenantId,
         `SELECT i.source_id, r.row_number, r.raw_data
          FROM ingestions i
          JOIN raw_records r ON r.ingestion_id = i.id
@@ -1020,7 +1030,8 @@ router.post(
             retrySlots[index] = { kind: "ok", transaction: normalized, rawRecordId };
           } catch {
             retrySlots[index] = { kind: "fail", rawRecordId };
-            await query(
+            await queryWithTenant(
+              tenantId,
               `UPDATE raw_records SET status = 'failed', updated_at = NOW() WHERE id = $1 AND tenant_id = $2`,
               [rawRecordId, tenantId]
             );

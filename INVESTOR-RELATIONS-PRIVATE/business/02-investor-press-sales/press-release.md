@@ -19,24 +19,28 @@ Settler eliminates this pain with a 5-minute API integration that normalizes, va
 ### Key Features
 
 **API-First Design:**
+
 - Everything accessible via REST API—no UI required (but one is provided)
 - TypeScript SDK with full type safety
 - Interactive playground for instant testing
 - Comprehensive documentation and examples
 
 **Real-Time Reconciliation:**
+
 - Webhook-based event-driven architecture
 - Automatic reconciliation as transactions occur
 - Low latency (<100ms p95)
 - Serverless infrastructure for global scale
 
 **Composable Adapters:**
+
 - Pluggable adapters for any platform
 - Built-in adapters: Stripe, Shopify, QuickBooks, PayPal, Square, Xero, NetSuite
 - Open-source adapter SDK for community contributions
 - Custom adapters available for enterprise customers
 
 **Compliance Built-In:**
+
 - SOC 2 Type II ready (certification target: Q2 2026)
 - GDPR, PCI-DSS Level 1 compliant
 - Audit trails for compliance requirements
@@ -91,21 +95,25 @@ Settler differentiates from legacy solutions (BlackLine, QuickBooks) and data in
 ### Use Cases
 
 **E-commerce Reconciliation:**
+
 - Match Shopify orders with Stripe payments, PayPal refunds, shipping costs
 - Real-time alerts on mismatches
 - Automatic sync to QuickBooks
 
 **SaaS Revenue Recognition:**
+
 - Reconcile Stripe subscriptions with QuickBooks revenue
 - Handle upgrades, downgrades, cancellations
 - Revenue recognition compliance
 
 **Multi-Payment Provider:**
+
 - Match transactions across Stripe, PayPal, Square, Apple Pay
 - Unified reconciliation across all providers
 - Normalized data format
 
 **Compliance Auditing:**
+
 - Generate audit trails for SOC 2, PCI-DSS, financial audits
 - Automated compliance reports
 - White-label reports for stakeholders
@@ -157,6 +165,7 @@ Settler is reconciliation-as-a-service for modern businesses. We eliminate the e
 ## Product Screenshots & Assets
 
 **Available upon request:**
+
 - Product screenshots (dashboard, API playground, reports)
 - Logo and brand assets
 - Founder headshots and bios
@@ -168,6 +177,7 @@ Settler is reconciliation-as-a-service for modern businesses. We eliminate the e
 ## Quotes for Attribution
 
 **"[Founder Name], CEO and co-founder of Settler:**
+
 - "We built Settler because we lived the pain. As a CTO of a fast-growing e-commerce company, I watched our finance team spend hours daily on manual reconciliation."
 - "We're following the Stripe playbook—dead-simple onboarding, pure API, usage-based pricing."
 - "Developers want APIs, not UIs. They want to integrate in minutes, not months. That's our moat."

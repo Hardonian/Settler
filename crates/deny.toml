@@ -1,0 +1,78 @@
+# Cargo deny configuration for Settler
+# Checks: advisories (vulnerabilities), bans (yanked/multiple versions), licenses, sources
+
+[advisories]
+# Check for security vulnerabilities
+# Database: https://github.com/RustSec/advisory-db
+# Supported databases: "cargo-audit", "GitHub", "GitHub+CRATES.IO"
+database = "https://github.com/RustSec/advisory-db"
+# Path to advisory database (for offline usage)
+# path = "~/.cargo/advisory-db"
+# Ignore specific advisories (use sparingly with justification)
+# ignore = ["RUSTSEC-2023-0001"]
+# Severity threshold: "warning" | "error" (default: "error")
+severity = "error"
+
+[bans]
+# Deny yanked crates
+yanked = "deny"
+# Deny multiple versions of the same crate
+multiple-versions = "warn"
+# Allow specific crates to have multiple versions (use sparingly)
+# allow = [{ name = "serde", version = "=1.0.100" }]
+# Allow all versions of these crates
+# allow-all = []
+# Crates to explicitly deny
+deny = []
+# Allow specific versions of crates that would otherwise be denied by multiple-versions
+# skip = [{ name = "rand", version = "=0.8.0" }]
+# Highlight duplicate versions in output
+highlight = "all"
+# Treat multiple-versions as error in CI
+# multiple-versions = "deny"
+
+[licenses]
+# License policy: "allow" | "deny" | "warn" (default: "allow")
+allow = [
+  "Apache-2.0",
+  "MIT",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "ISC",
+  "Unicode-DFS-2016",
+  "Zlib",
+  "CC0-1.0",
+]
+# Deny these licenses
+deny = [
+  "GPL-3.0-only",
+  "GPL-3.0-or-later",
+  "AGPL-3.0-only",
+  "AGPL-3.0-or-later",
+  "SSPL-1.0",
+  "Commons-Clause",
+  "Proprietary",
+]
+# Allow specific crates with otherwise denied licenses (with justification)
+# allow-deny = [{ name = "some-crate", reason = "Only used in dev" }]
+# Unlicensed crates: "allow" | "deny" | "warn" (default: "warn")
+unlicensed = "warn"
+# Crates that don't have license info
+# unknown = [{ name = "some-crate", version = "1.0.0" }]
+
+[sources]
+# Only allow crates from crates.io
+allow-unknown = false
+# Allow crates from these registries
+allow-registries = ["crates-io"]
+# Allow specific crates from unknown registries
+# allow = [{ name = "some-crate", registry = "my-registry" }]
+
+[format]
+# Output format for cargo deny check
+# "text" | "json" | "checkstyle" | "sarif"
+output-format = "text"
+# Whether to show the affected package's manifest path
+show-manifest-path = true
+# Whether to show the affected package's license
+show-license = true

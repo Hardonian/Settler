@@ -21,15 +21,15 @@
 
 **$0/month**
 
-| Feature | Limit |
-|---------|-------|
-| **Reconciliations** | 1,000/month |
-| **Adapters** | 2 |
-| **Log Retention** | 7 days |
-| **Support** | Community (Discord, GitHub) |
-| **API Rate Limit** | 100 requests/15 min |
-| **Webhooks** | ✅ Included |
-| **Reports** | JSON only |
+| Feature             | Limit                       |
+| ------------------- | --------------------------- |
+| **Reconciliations** | 1,000/month                 |
+| **Adapters**        | 2                           |
+| **Log Retention**   | 7 days                      |
+| **Support**         | Community (Discord, GitHub) |
+| **API Rate Limit**  | 100 requests/15 min         |
+| **Webhooks**        | ✅ Included                 |
+| **Reports**         | JSON only                   |
 
 **Use Case:** Testing reconciliation workflows, small e-commerce stores (<100 orders/month), personal projects, learning and experimentation.
 
@@ -42,18 +42,18 @@
 **Perfect for:** Small e-commerce stores, early-stage SaaS
 
 **$29/month**  
-*$290/year (save $58, ~17% discount)*
+_$290/year (save $58, ~17% discount)_
 
-| Feature | Limit |
-|---------|-------|
-| **Reconciliations** | 10,000/month |
-| **Adapters** | 5 |
-| **Log Retention** | 30 days |
-| **Support** | Email (24-hour response) |
-| **API Rate Limit** | 500 requests/15 min |
-| **Webhooks** | ✅ Included |
-| **Reports** | JSON + CSV export |
-| **Scheduled Jobs** | ✅ Included |
+| Feature             | Limit                    |
+| ------------------- | ------------------------ |
+| **Reconciliations** | 10,000/month             |
+| **Adapters**        | 5                        |
+| **Log Retention**   | 30 days                  |
+| **Support**         | Email (24-hour response) |
+| **API Rate Limit**  | 500 requests/15 min      |
+| **Webhooks**        | ✅ Included              |
+| **Reports**         | JSON + CSV export        |
+| **Scheduled Jobs**  | ✅ Included              |
 
 **Use Case:** Small e-commerce stores (100-1,000 orders/month), early-stage SaaS companies, freelancers managing multiple clients.
 
@@ -68,21 +68,21 @@
 **Perfect for:** Mid-market SaaS, growing e-commerce
 
 **$99/month**  
-*$990/year (save $198, ~17% discount)*
+_$990/year (save $198, ~17% discount)_
 
-| Feature | Limit |
-|---------|-------|
-| **Reconciliations** | 100,000/month |
-| **Adapters** | 15 |
-| **Log Retention** | 90 days |
-| **Support** | Priority email (4-hour response) |
-| **API Rate Limit** | 2,000 requests/15 min |
-| **Webhooks** | ✅ Included |
-| **Reports** | JSON + CSV + PDF export |
-| **Scheduled Jobs** | ✅ Included |
-| **Advanced Matching Rules** | ✅ Included |
-| **Multi-Currency** | ✅ Included |
-| **Custom Webhooks** | ✅ Included |
+| Feature                     | Limit                            |
+| --------------------------- | -------------------------------- |
+| **Reconciliations**         | 100,000/month                    |
+| **Adapters**                | 15                               |
+| **Log Retention**           | 90 days                          |
+| **Support**                 | Priority email (4-hour response) |
+| **API Rate Limit**          | 2,000 requests/15 min            |
+| **Webhooks**                | ✅ Included                      |
+| **Reports**                 | JSON + CSV + PDF export          |
+| **Scheduled Jobs**          | ✅ Included                      |
+| **Advanced Matching Rules** | ✅ Included                      |
+| **Multi-Currency**          | ✅ Included                      |
+| **Custom Webhooks**         | ✅ Included                      |
 
 **Use Case:** Mid-market SaaS companies, growing e-commerce (1,000-10,000 orders/month), multi-platform operations, need for advanced features.
 
@@ -97,24 +97,24 @@
 **Perfect for:** Large e-commerce, enterprise SaaS
 
 **$299/month**  
-*$2,990/year (save $598, ~17% discount)*
+_$2,990/year (save $598, ~17% discount)_
 
-| Feature | Limit |
-|---------|-------|
-| **Reconciliations** | 1,000,000/month |
-| **Adapters** | Unlimited |
-| **Log Retention** | 1 year |
-| **Support** | Priority support (1-hour SLA) |
-| **API Rate Limit** | 10,000 requests/15 min |
-| **Webhooks** | ✅ Included |
-| **Reports** | All formats + White-label |
-| **Scheduled Jobs** | ✅ Included |
-| **Advanced Matching Rules** | ✅ Included |
-| **Multi-Currency** | ✅ Included |
-| **Custom Webhooks** | ✅ Included |
-| **Multi-Entity Support** | ✅ Included |
-| **Dedicated Infrastructure** | ✅ Included |
-| **Custom Adapters** | ✅ Included (1 free) |
+| Feature                      | Limit                         |
+| ---------------------------- | ----------------------------- |
+| **Reconciliations**          | 1,000,000/month               |
+| **Adapters**                 | Unlimited                     |
+| **Log Retention**            | 1 year                        |
+| **Support**                  | Priority support (1-hour SLA) |
+| **API Rate Limit**           | 10,000 requests/15 min        |
+| **Webhooks**                 | ✅ Included                   |
+| **Reports**                  | All formats + White-label     |
+| **Scheduled Jobs**           | ✅ Included                   |
+| **Advanced Matching Rules**  | ✅ Included                   |
+| **Multi-Currency**           | ✅ Included                   |
+| **Custom Webhooks**          | ✅ Included                   |
+| **Multi-Entity Support**     | ✅ Included                   |
+| **Dedicated Infrastructure** | ✅ Included                   |
+| **Custom Adapters**          | ✅ Included (1 free)          |
 
 **Use Case:** Large e-commerce operations, enterprise SaaS companies, multi-entity organizations, high-volume reconciliation needs.
 
@@ -129,31 +129,31 @@
 **Perfect for:** Large enterprises, regulated industries
 
 **Custom Pricing**  
-*Typically $1,000-$10,000+/month*
+_Typically $1,000-$10,000+/month_
 
-| Feature | Limit |
-|---------|-------|
-| **Reconciliations** | Unlimited |
-| **Adapters** | Unlimited |
-| **Log Retention** | Custom (up to 7 years) |
-| **Support** | Dedicated account manager (1-hour SLA) |
-| **API Rate Limit** | Custom |
-| **Webhooks** | ✅ Included |
-| **Reports** | All formats + White-label + Custom |
-| **Scheduled Jobs** | ✅ Included |
-| **Advanced Matching Rules** | ✅ Included |
-| **Multi-Currency** | ✅ Included |
-| **Custom Webhooks** | ✅ Included |
-| **Multi-Entity Support** | ✅ Included |
-| **Dedicated Infrastructure** | ✅ Included |
-| **Custom Adapters** | ✅ Included (unlimited) |
-| **SSO (SAML, OIDC)** | ✅ Included |
-| **SOC 2 Type II** | ✅ Included |
-| **PCI-DSS Level 1** | ✅ Included |
-| **HIPAA-Ready** | ✅ Included (on-demand) |
-| **Custom SLAs** | ✅ Included (99.99% uptime) |
-| **VPC Peering** | ✅ Included |
-| **Private Endpoints** | ✅ Included |
+| Feature                      | Limit                                  |
+| ---------------------------- | -------------------------------------- |
+| **Reconciliations**          | Unlimited                              |
+| **Adapters**                 | Unlimited                              |
+| **Log Retention**            | Custom (up to 7 years)                 |
+| **Support**                  | Dedicated account manager (1-hour SLA) |
+| **API Rate Limit**           | Custom                                 |
+| **Webhooks**                 | ✅ Included                            |
+| **Reports**                  | All formats + White-label + Custom     |
+| **Scheduled Jobs**           | ✅ Included                            |
+| **Advanced Matching Rules**  | ✅ Included                            |
+| **Multi-Currency**           | ✅ Included                            |
+| **Custom Webhooks**          | ✅ Included                            |
+| **Multi-Entity Support**     | ✅ Included                            |
+| **Dedicated Infrastructure** | ✅ Included                            |
+| **Custom Adapters**          | ✅ Included (unlimited)                |
+| **SSO (SAML, OIDC)**         | ✅ Included                            |
+| **SOC 2 Type II**            | ✅ Included                            |
+| **PCI-DSS Level 1**          | ✅ Included                            |
+| **HIPAA-Ready**              | ✅ Included (on-demand)                |
+| **Custom SLAs**              | ✅ Included (99.99% uptime)            |
+| **VPC Peering**              | ✅ Included                            |
+| **Private Endpoints**        | ✅ Included                            |
 
 **Use Case:** Large enterprises, regulated industries (healthcare, finance), multi-entity holding companies, custom compliance requirements.
 
@@ -168,6 +168,7 @@
 **Beyond Plan Limits:** $0.01 per reconciliation
 
 **Example:**
+
 - Starter plan: 10,000 reconciliations/month
 - Actual usage: 12,000 reconciliations
 - **Overage:** 2,000 × $0.01 = $20
@@ -180,6 +181,7 @@
 ## Add-Ons
 
 ### Additional Log Retention
+
 - **$10/month** per additional 90 days
 - Maximum: 7 years (for compliance)
 
@@ -188,12 +190,14 @@
 ---
 
 ### Dedicated IP Address
+
 - **$50/month**
 - For enterprise customers with IP allowlisting requirements
 
 ---
 
 ### Custom Adapters
+
 - **$500 one-time** setup fee
 - **$50/month** maintenance fee
 - For platforms not in our adapter library
@@ -204,13 +208,13 @@
 
 ## Pricing Comparison
 
-| Tier | Price/Month | Reconciliations | Cost per 1K |
-|------|-------------|-----------------|-------------|
-| **Free** | $0 | 1,000 | $0 |
-| **Starter** | $29 | 10,000 | $2.90 |
-| **Growth** | $99 | 100,000 | $0.99 |
-| **Scale** | $299 | 1,000,000 | $0.30 |
-| **Enterprise** | Custom | Unlimited | Custom |
+| Tier           | Price/Month | Reconciliations | Cost per 1K |
+| -------------- | ----------- | --------------- | ----------- |
+| **Free**       | $0          | 1,000           | $0          |
+| **Starter**    | $29         | 10,000          | $2.90       |
+| **Growth**     | $99         | 100,000         | $0.99       |
+| **Scale**      | $299        | 1,000,000       | $0.30       |
+| **Enterprise** | Custom      | Unlimited       | Custom      |
 
 **Volume Discount:** The more you use, the less you pay per reconciliation.
 
@@ -219,33 +223,43 @@
 ## FAQ
 
 ### What counts as a reconciliation?
+
 One reconciliation = matching one source transaction with one target transaction.
 
 ### What happens if I exceed my plan limit?
+
 You're automatically charged $0.01 per reconciliation over your limit. No service interruption.
 
 ### Can I upgrade/downgrade anytime?
+
 Yes! Upgrades are immediate. Downgrades take effect at the end of your billing cycle.
 
 ### Do you offer discounts for annual billing?
+
 Yes! Save 17% with annual billing (equivalent to 2 months free).
 
 ### What's included in support?
+
 Email support with SLA based on your plan. Enterprise includes dedicated account manager.
 
 ### Can I get a custom plan?
+
 Yes! Contact [sales@settler.io](mailto:sales@settler.io) for custom pricing based on your needs.
 
 ### Are there setup fees?
+
 No setup fees. Start free, upgrade as you scale.
 
 ### What payment methods are accepted?
+
 Credit card (Stripe), ACH (US customers), wire transfer (Enterprise).
 
 ### Can I cancel anytime?
+
 Yes! Cancel anytime. No long-term contracts (except Enterprise).
 
 ### Do you offer refunds?
+
 Yes! Prorated refunds for annual plans if you cancel within 30 days.
 
 ---
@@ -253,6 +267,7 @@ Yes! Prorated refunds for annual plans if you cancel within 30 days.
 ## Pricing Transparency
 
 **What You Get:**
+
 - ✅ No setup fees
 - ✅ No hidden costs
 - ✅ Cancel anytime
@@ -260,6 +275,7 @@ Yes! Prorated refunds for annual plans if you cancel within 30 days.
 - ✅ Transparent overage pricing
 
 **What We Don't Charge For:**
+
 - ❌ API calls (within rate limits)
 - ❌ Webhook deliveries
 - ❌ Report generation
@@ -288,4 +304,4 @@ Yes! Prorated refunds for annual plans if you cancel within 30 days.
 
 ---
 
-*Last Updated: January 2026*
+_Last Updated: January 2026_

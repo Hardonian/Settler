@@ -23,28 +23,34 @@ export function CommandPalette() {
 
   const commands = [
     {
-      id: "ai-sweep",
+      id: "search-exceptions",
+      icon: <Search className="text-zinc-400" />,
+      label: "Search Exceptions",
+      action: () => router.push("/console/exceptions"),
+    },
+    {
+      id: "run-reconciliation",
       icon: <Bot className="text-blue-400" />,
-      label: "Trigger AI Support Sweep",
-      action: () => alert("Support Agent deployed!"),
+      label: "Start Reconciliation Run",
+      action: () => router.push("/console/runs"),
     },
     {
-      id: "hunt-leads",
-      icon: <Zap className="text-amber-400" />,
-      label: "Deploy Sales Hunter",
-      action: () => alert("Sales Hunter deployed!"),
-    },
-    {
-      id: "billing",
-      icon: <CreditCard className="text-emerald-400" />,
-      label: "Manage Billing",
-      action: () => router.push("/billing"),
-    },
-    {
-      id: "pulse",
+      id: "sla-dashboard",
       icon: <Activity className="text-purple-400" />,
-      label: "View System Pulse",
-      action: () => router.push("/pulse"),
+      label: "View SLA Dashboard",
+      action: () => router.push("/console/sla"),
+    },
+    {
+      id: "financial-close",
+      icon: <Zap className="text-amber-400" />,
+      label: "Financial Close Dashboard",
+      action: () => router.push("/console/close"),
+    },
+    {
+      id: "sso-scim",
+      icon: <CreditCard className="text-emerald-400" />,
+      label: "Enterprise Security (SSO/SCIM)",
+      action: () => router.push("/console/settings/security"),
     },
   ];
 

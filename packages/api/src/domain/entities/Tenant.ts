@@ -6,7 +6,7 @@
 export enum TenantTier {
   FREE = "free",
   STARTER = "starter",
-  GROWTH = "growth",
+  PRO = "pro",
   SCALE = "scale",
   ENTERPRISE = "enterprise",
 }

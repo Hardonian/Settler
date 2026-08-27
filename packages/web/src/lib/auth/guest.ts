@@ -8,6 +8,7 @@
 import { createClient } from "@/lib/supabase/client";
 import { safeAsync } from "@/lib/safe";
 import { safeJsonParse } from "@/lib/utils/safe-parse";
+import { v4 as uuidv4 } from "uuid";
 
 export interface GuestSession {
   id: string;
@@ -102,5 +103,5 @@ export function clearGuestSession(): void {
  * Generate a unique guest ID
  */
 function generateGuestId(): string {
-  return `guest_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+  return `guest_${Date.now()}_${uuidv4()}`;
 }

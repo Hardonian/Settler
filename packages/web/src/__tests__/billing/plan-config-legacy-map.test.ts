@@ -1,4 +1,4 @@
-import { mapLegacyPlanId } from "@/domain/billing/planConfig";
+import { mapLegacyPlanId } from "../../domain/billing/planConfig";
 
 describe("mapLegacyPlanId", () => {
   it("maps enterprise subscription ids to enterprise plan code", () => {
@@ -6,7 +6,7 @@ describe("mapLegacyPlanId", () => {
   });
 
   it("passes through modern plan codes", () => {
-    expect(mapLegacyPlanId("growth")).toBe("growth");
+    expect(mapLegacyPlanId("pro")).toBe("pro");
     expect(mapLegacyPlanId("scale")).toBe("scale");
   });
 });

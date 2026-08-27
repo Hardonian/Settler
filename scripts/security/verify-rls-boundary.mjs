@@ -55,11 +55,12 @@ function main() {
   };
 
   if (dbUrl && runtimeMode) {
-    const result = spawnSync("pnpm", ["exec", "tsx", "scripts/verify-rls-status.ts"], {
+    const result = spawnSync("npx", ["pnpm", "exec", "tsx", "scripts/verify-rls-status.ts"], {
       cwd: repoRoot,
       encoding: "utf8",
       timeout: 120_000,
       env: { ...process.env, RLS_STATUS_OUTPUT: rlsStatusOut },
+      shell: true,
     });
 
     summary.commandStatus = result.status;

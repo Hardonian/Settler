@@ -27,22 +27,28 @@
     "test:mcp-smoke": "node --test tests/mcp-smoke.test.mjs",
     "foundry:core": "tsx src/index.ts foundry vectors run --suite core --seeds 1,2",
     "foundry:metamorphic": "tsx src/index.ts foundry metamorphic generate --base-suite core --per 1 --seed 1",
-    "foundry:faults": "tsx src/index.ts foundry generate --type faults --seeds 1 && FOUNDRY_FAULTS=1 tsx src/index.ts foundry report --last 1"
+    "foundry:faults": "tsx src/index.ts foundry generate --type faults --seeds 1 && node ../../scripts/run-with-env.mjs --set FOUNDRY_FAULTS=1 -- tsx src/index.ts foundry report --last 1"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^4.0.46",
     "@jobforge/sdk-ts": "workspace:*",
     "@settler/sdk": "workspace:*",
-    "chalk": "^5.6.2",
+    "ai": "^7.0.77",
+    "chalk": "^6.0.0",
     "commander": "^11.1.0",
     "dotenv": "^17.4.2",
     "inquirer": "^8.2.7",
     "yaml": "^2.9.0"
   },
   "devDependencies": {
-    "@types/node": "^24.12.4",
+    "@types/node": "^26.1.2",
+    "@vitest/coverage-v8": "^4.1.11",
     "jest": "^30.4.2",
     "ts-jest": "^29.4.11",
-    "typescript": "^5.9.3"
+    "tsx": "^4.23.11",
+    "typescript": "^5.9.3",
+    "vite": "^8.2.2",
+    "vitest": "^4.1.8"
   },
   "keywords": [
     "reconciliation",

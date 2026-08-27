@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`canonical surface consistency snapshots deterministic proofpack artifact shape for export parity 1`] = `
 {
@@ -76,7 +76,7 @@ exports[`canonical surface consistency snapshots deterministic proofpack artifac
       "topRecurringFamilies": [],
     },
   },
-  "contentHash": "e552180c8cd2e3a23d72b0990f6f7a3ebf13233aeaea44546793e46553804c16",
+  "contentHash": "70e01685c0eb474bda5f580311eeb1e2e0ad0d6dcf6551daa367cebab1f544ca",
   "deltas": {
     "runDelta": null,
   },

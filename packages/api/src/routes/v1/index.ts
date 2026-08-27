@@ -14,6 +14,7 @@ import exportsRouter from "./exports";
 import currencyRouter from "./currency";
 import webhookReceiveRouter from "./webhooks/receive";
 import webhookEventsRouter from "./webhooks/events";
+import billingRouter, { billingWebhookRouter } from "./billing";
 import ingestionRouter from "./ingestion";
 import reconciliationRouter from "./reconciliation";
 import ingestionExportsRouter from "./ingestion-exports";
@@ -42,11 +43,18 @@ import supportRouter from "./support";
 import toleranceSettingsRouter from "../tolerance-settings";
 import ventureInvoiceNudgerRouter from "./venture-invoice-nudger";
 import agenticWorkflowRouter from "./agentic-workflow";
+import { ssoRouter } from "./sso";
 
 export const v1Router: Router = Router();
+export const v1WebhookRouter: Router = Router();
+
+// Mount unprotected webhooks separately
+v1WebhookRouter.use("/webhooks/receive", webhookReceiveRouter);
+v1WebhookRouter.use("/billing/webhook", billingWebhookRouter);
+
+export { webhookReceiveRouter, billingWebhookRouter };
 
 // Mount v1 routes
-v1Router.use("/webhooks/receive", webhookReceiveRouter);
 v1Router.use("/webhooks", webhookEventsRouter); // Events discovery endpoint
 v1Router.use("/realtime", realtimeRouter);
 v1Router.use("/reconciliations", reconciliationSummaryRouter);
@@ -85,6 +93,7 @@ v1Router.use("/sla", slaRouter);
 v1Router.use("/slo", sloAlertingRouter);
 v1Router.use("/custom-integrations", customIntegrationsRouter);
 v1Router.use("/dedicated-infrastructure", dedicatedInfrastructureRouter);
+v1Router.use("/sso", ssoRouter);
 
 // Operator mode routes
 v1Router.use("/", operatorModeRouter);
@@ -97,8 +106,9 @@ v1Router.use("/", runsRouter);
 v1Router.use("/", governanceRouter);
 
 v1Router.use("/", capabilitiesRouter);
-
 v1Router.use("/", enterpriseRouter);
+v1Router.use("/billing", billingRouter);
+
 // Health check
 v1Router.get("/health", (_req, res) => {
   res.json({

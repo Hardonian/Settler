@@ -11,6 +11,7 @@ jest.mock("../../infrastructure/db/prisma", () => ({
     },
     reconciliationMatch: {
       findMany: jest.fn(),
+      findFirst: jest.fn(),
       updateMany: jest.fn(),
       count: jest.fn(),
     },
@@ -34,6 +35,7 @@ describe("AgenticWorkflowService", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockPrisma.reconciliationMatch.count.mockResolvedValue(0);
     service = new AgenticWorkflowService();
   });
 
@@ -75,11 +77,17 @@ describe("AgenticWorkflowService", () => {
 
   describe("updateAutomationState", () => {
     it("updates automation settings", async () => {
-      mockPrisma.tenant.findUnique.mockResolvedValue({
-        id: tenantId,
-        metadata: {},
+      let metadata: any = {};
+      mockPrisma.tenant.findUnique.mockImplementation(() =>
+        Promise.resolve({
+          id: tenantId,
+          metadata,
+        })
+      );
+      mockPrisma.tenant.update.mockImplementation((args: any) => {
+        metadata = args.data.metadata;
+        return Promise.resolve(true);
       });
-      mockPrisma.tenant.update.mockResolvedValue(true);
 
       const state = await service.updateAutomationState(tenantId, {
         staleEscalationEnabled: false,
@@ -196,6 +204,8 @@ describe("AgenticWorkflowService", () => {
           assignedTo: "user-1",
           sourceTransaction: {},
           archetypeClassifications: [],
+          status: "open",
+          reviewed: false,
         },
         {
           id: "high-priority",
@@ -206,6 +216,8 @@ describe("AgenticWorkflowService", () => {
           assignedTo: null,
           sourceTransaction: {},
           archetypeClassifications: [],
+          status: "open",
+          reviewed: false,
         },
       ]);
 
@@ -229,6 +241,8 @@ describe("AgenticWorkflowService", () => {
           assignedTo: null,
           sourceTransaction: {},
           archetypeClassifications: [],
+          status: "open",
+          reviewed: false,
         },
       ]);
 
@@ -245,7 +259,7 @@ describe("AgenticWorkflowService", () => {
     it("returns degraded when stale escalation is disabled", async () => {
       mockPrisma.tenant.findUnique.mockResolvedValue({
         id: tenantId,
-        settings: { staleEscalationEnabled: false },
+        metadata: { staleEscalationEnabled: false },
       });
 
       const result = await service.escalateStaleExceptions(tenantId);
@@ -258,12 +272,12 @@ describe("AgenticWorkflowService", () => {
     it("escalates exceptions older than threshold", async () => {
       mockPrisma.tenant.findUnique.mockResolvedValue({
         id: tenantId,
-        settings: { staleEscalationEnabled: true, staleThresholdHours: 72 },
+        metadata: { staleEscalationEnabled: true, staleThresholdHours: 72 },
       });
 
       mockPrisma.reconciliationMatch.findMany.mockResolvedValue([
-        { id: "stale-1" },
-        { id: "stale-2" },
+        { id: "stale-1", status: "open" },
+        { id: "stale-2", status: "open" },
       ]);
       mockPrisma.reconciliationMatch.updateMany.mockResolvedValue({ count: 2 });
       mockPrisma.reconAudit.createMany.mockResolvedValue(true);
@@ -281,7 +295,7 @@ describe("AgenticWorkflowService", () => {
     it("returns empty when no stale exceptions exist", async () => {
       mockPrisma.tenant.findUnique.mockResolvedValue({
         id: tenantId,
-        settings: { staleEscalationEnabled: true },
+        metadata: { staleEscalationEnabled: true },
       });
 
       mockPrisma.reconciliationMatch.findMany.mockResolvedValue([]);
@@ -377,6 +391,7 @@ describe("AgenticWorkflowService", () => {
         { id: "3", matchType: "unmatched", metadata: {}, createdAt: now, reviewed: false },
         { id: "4", matchType: "unmatched", metadata: {}, createdAt: now, reviewed: true },
         { id: "5", matchType: "unmatched", metadata: {}, createdAt: oldDate, reviewed: true },
+        { id: "6", matchType: "unmatched", metadata: {}, createdAt: now, reviewed: false },
       ]);
 
       const recommendations = await service.generatePolicyRecommendations(tenantId, 30);

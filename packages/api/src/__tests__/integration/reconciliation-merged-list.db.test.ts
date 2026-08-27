@@ -1,7 +1,6 @@
 /**
  * DB-backed contract tests for merged reconciliation listing and run resolution.
- * Adapts INSERT shape to whatever `public.tenants`, `public.users`, `public.recon_jobs`,
- * and `public.reconciliation_runs` columns exist (Prisma-shaped vs slimmer baselines).
+ * and `public.recon_results` columns exist (Prisma-shaped vs slimmer baselines).
  *
  * Opt-in (separate from generic RUN_DB_TESTS so tenant suites do not require these tables):
  *   RUN_RECON_MERGED_LIST_DB=1 RUN_DB_TESTS=true pnpm --filter @settler/api run test:recon-merged-db
@@ -23,12 +22,10 @@ import {
 const runDb = process.env.RUN_DB_TESTS === "true" && process.env.RUN_RECON_MERGED_LIST_DB === "1";
 const describeDb = runDb ? describe : describe.skip;
 
-const PRISMA_RECONCILIATION_RUN_COLUMNS = [
+const PRISMA_RECON_RESULTS_COLUMNS = [
   "id",
+  "recon_job_id",
   "tenant_id",
-  "user_id",
-  "ingestion_id",
-  "name",
   "status",
   "started_at",
   "completed_at",
@@ -37,9 +34,14 @@ const PRISMA_RECONCILIATION_RUN_COLUMNS = [
   "matched_count",
   "unmatched_source_count",
   "unmatched_target_count",
+  "conflict_count",
   "confidence_avg",
+  "confidence_min",
+  "confidence_max",
   "error_message",
-  "trace_id",
+  "input_hash",
+  "snapshot_id",
+  "summary",
   "metadata",
   "created_at",
   "updated_at",
@@ -97,7 +99,7 @@ describeDb("reconciliation merged list (database)", () => {
     tenants: Set<string>;
     users: Set<string> | null;
     reconJobs: Set<string>;
-    reconciliationRuns: Set<string>;
+    reconResults: Set<string>;
   };
 
   const tenantA = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
@@ -125,35 +127,33 @@ describeDb("reconciliation merged list (database)", () => {
       `SELECT COUNT(DISTINCT table_name)::int AS c
        FROM information_schema.tables
        WHERE table_schema = 'public'
-         AND table_name IN ('recon_jobs', 'reconciliation_runs')`
+         AND table_name IN ('recon_jobs', 'recon_results')`
     );
     if (Number(chk.rows[0]?.c) !== 2) {
       await pool.end();
       throw new Error(
-        "reconciliation-merged-list.db.test requires public.recon_jobs and public.reconciliation_runs."
+        "reconciliation-merged-list.db.test requires public.recon_jobs and public.recon_results."
       );
     }
 
     const tenants = await loadColumns(pool, "tenants");
     const reconJobs = await loadColumns(pool, "recon_jobs");
-    const reconciliationRuns = await loadColumns(pool, "reconciliation_runs");
+    const reconResults = await loadColumns(pool, "recon_results");
     const usersExist = await tableExists(pool, "users");
     const users = usersExist ? await loadColumns(pool, "users") : null;
 
-    const ingestionMergeCapable = PRISMA_RECONCILIATION_RUN_COLUMNS.every((c) =>
-      reconciliationRuns.has(c)
-    );
+    const ingestionMergeCapable = PRISMA_RECON_RESULTS_COLUMNS.every((c) => reconResults.has(c));
     if (!ingestionMergeCapable) {
-      const missing = PRISMA_RECONCILIATION_RUN_COLUMNS.filter((c) => !reconciliationRuns.has(c));
+      const missing = PRISMA_RECON_RESULTS_COLUMNS.filter((c) => !reconResults.has(c));
       await pool.end();
       throw new Error(
-        `reconciliation_runs is missing columns required by Prisma merge queries: ${missing.join(
+        `recon_results is missing columns required by Prisma merge queries: ${missing.join(
           ", "
         )}. Apply scripts/ci/reconciliation-merged-list-schema.sql to a test database, or use a DB that matches prisma/schema.prisma for this table.`
       );
     }
 
-    columns = { tenants, users, reconJobs, reconciliationRuns };
+    columns = { tenants, users, reconJobs, reconResults };
 
     const adapter = new PrismaPg(pool);
     const prismaClient = new PrismaClient({ adapter });
@@ -170,7 +170,7 @@ describeDb("reconciliation merged list (database)", () => {
     if (!ctx) throw new Error("reconciliation DB harness not initialized");
     const { pool } = ctx;
 
-    await pool.query(`DELETE FROM reconciliation_runs WHERE tenant_id = ANY($1::uuid[])`, [
+    await pool.query(`DELETE FROM recon_results WHERE tenant_id = ANY($1::uuid[])`, [
       [tenantA, tenantB],
     ]);
     await pool.query(`DELETE FROM recon_jobs WHERE tenant_id = ANY($1::uuid[])`, [
@@ -261,34 +261,31 @@ describeDb("reconciliation merged list (database)", () => {
     {
       const ingBase: Record<string, unknown> = {
         tenant_id: tenantA,
-        user_id: userA,
+        recon_job_id: null,
         status: "completed",
         source_count: 0,
         target_count: 0,
         matched_count: 0,
         unmatched_source_count: 0,
         unmatched_target_count: 0,
-        metadata: {},
+        conflict_count: 0,
+        metadata: { userId: userA },
         confidence_avg: null,
         error_message: null,
-        trace_id: null,
-        ingestion_id: null,
       };
       const tNew = new Date("2024-06-03T12:00:00.000Z");
       const tOld = new Date("2024-06-01T12:00:00.000Z");
-      await insertRow(pool, "reconciliation_runs", columns.reconciliationRuns, {
+      await insertRow(pool, "recon_results", columns.reconResults, {
         ...ingBase,
         id: ingNew,
-        name: "ing-new",
         started_at: tNew,
         completed_at: tNew,
         created_at: tNew,
         updated_at: tNew,
       });
-      await insertRow(pool, "reconciliation_runs", columns.reconciliationRuns, {
+      await insertRow(pool, "recon_results", columns.reconResults, {
         ...ingBase,
         id: ingOld,
-        name: "ing-old",
         started_at: tOld,
         completed_at: tOld,
         created_at: tOld,
@@ -454,11 +451,9 @@ describeDb("reconciliation merged list (database)", () => {
       updated_at: new Date(),
     });
     const now = new Date();
-    await insertRow(pool, "reconciliation_runs", columns.reconciliationRuns, {
+    await insertRow(pool, "recon_results", columns.reconResults, {
       id: collisionId,
       tenant_id: tenantA,
-      user_id: userA,
-      name: "collision-run",
       status: "completed",
       started_at: now,
       completed_at: now,
@@ -472,8 +467,6 @@ describeDb("reconciliation merged list (database)", () => {
       metadata: {},
       confidence_avg: null,
       error_message: null,
-      trace_id: null,
-      ingestion_id: null,
     });
 
     try {

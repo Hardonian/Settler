@@ -5,6 +5,7 @@
 
 import { Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
+import { enforceFreezeState } from "../../middleware/governance";
 import { requirePermission } from "../../middleware/authorization";
 import { Permission } from "../../infrastructure/security/Permissions";
 import { logError, logInfo } from "../../utils/logger";
@@ -24,6 +25,7 @@ const router: Router = Router();
  */
 router.post(
   "/agreements",
+  enforceFreezeState(),
   requirePermission(Permission.ADMIN_WRITE),
   async (req: AuthRequest, res: Response) => {
     try {
@@ -72,6 +74,7 @@ router.post(
  */
 router.post(
   "/metrics",
+  enforceFreezeState(),
   requirePermission(Permission.ADMIN_WRITE),
   async (req: AuthRequest, res: Response) => {
     try {
@@ -165,6 +168,7 @@ router.get(
  */
 router.post(
   "/violations/:violationId/acknowledge",
+  enforceFreezeState(),
   requirePermission(Permission.ADMIN_WRITE),
   async (req: AuthRequest, res: Response) => {
     try {

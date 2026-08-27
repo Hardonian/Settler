@@ -4,7 +4,7 @@ import { validateRequest } from "../middleware/validation";
 import { AuthRequest } from "../middleware/auth";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
-import { query, transaction } from "../db";
+import { queryWithTenant, transaction } from "../db";
 import { verifyPassword } from "../utils/hash";
 import { logInfo } from "../utils/logger";
 import { handleRouteError } from "../utils/error-handler";
@@ -58,7 +58,8 @@ router.delete(
       }
 
       // Verify password
-      const targetUsers = await query<{ password_hash: string }>(
+      const targetUsers = await queryWithTenant<{ password_hash: string }>(
+        tenantId,
         "SELECT password_hash FROM users WHERE id = $1 AND tenant_id = $2",
         [id, tenantId]
       );
@@ -98,7 +99,8 @@ router.delete(
       });
 
       // Log audit event
-      await query(
+      await queryWithTenant(
+        tenantId,
         `INSERT INTO audit_logs (event, user_id, metadata)
          VALUES ($1, $2, $3)`,
         ["user_data_deletion_requested", userId, JSON.stringify({ targetUserId: id })]
@@ -154,34 +156,40 @@ router.get(
 
       // Fetch all user data — scoped by tenant_id
       const [users, jobs, reports, webhooks, apiKeys, auditLogs] = await Promise.all([
-        query(
+        queryWithTenant(
+          tenantId,
           `SELECT id, email, name, role, data_residency_region, created_at, updated_at
            FROM users WHERE id = $1 AND tenant_id = $2`,
           [userId, tenantId]
         ),
-        query(
+        queryWithTenant(
+          tenantId,
           `SELECT id, name, source_adapter, target_adapter, rules, schedule, status, created_at, updated_at
            FROM jobs WHERE user_id = $1 AND tenant_id = $2`,
           [userId, tenantId]
         ),
-        query(
+        queryWithTenant(
+          tenantId,
           `SELECT r.id, r.job_id, r.summary, r.generated_at
            FROM reports r
            JOIN jobs j ON r.job_id = j.id
            WHERE j.user_id = $1 AND j.tenant_id = $2`,
           [userId, tenantId]
         ),
-        query(
+        queryWithTenant(
+          tenantId,
           `SELECT id, url, events, status, created_at, updated_at
            FROM webhooks WHERE user_id = $1 AND tenant_id = $2`,
           [userId, tenantId]
         ),
-        query(
+        queryWithTenant(
+          tenantId,
           `SELECT id, name, scopes, rate_limit, created_at, last_used_at
            FROM api_keys WHERE user_id = $1 AND tenant_id = $2`,
           [userId, tenantId]
         ),
-        query(
+        queryWithTenant(
+          tenantId,
           `SELECT event, metadata, timestamp
            FROM audit_logs
            WHERE user_id = $1 AND tenant_id = $2
@@ -209,7 +217,8 @@ router.get(
       };
 
       // Log export
-      await query(
+      await queryWithTenant(
+        tenantId,
         `INSERT INTO audit_logs (event, user_id, metadata)
          VALUES ($1, $2, $3)`,
         ["user_data_exported", userId, JSON.stringify({ exportedAt: new Date() })]

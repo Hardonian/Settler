@@ -1,7 +1,7 @@
 # Settler Investor Pitch Deck
 
 **Reconciliation-as-a-Service API**  
-*Automating Financial Data Reconciliation for Modern Businesses*
+_Automating Financial Data Reconciliation for Modern Businesses_
 
 ---
 
@@ -16,6 +16,7 @@
 - **Fragmented data** across 10+ platforms per business
 
 **The Cost:**
+
 - Revenue leakage from unmatched transactions
 - Compliance risks from inaccurate records
 - Operational overhead that doesn't scale
@@ -43,11 +44,13 @@
 ### Target Market
 
 **Primary:**
+
 - **50K+ SMBs** in e-commerce and SaaS
 - **10K+ mid-market companies** with multi-platform operations
 - **5K+ finance teams** automating reconciliation workflows
 
 **Secondary:**
+
 - Enterprise companies seeking API-first solutions
 - Developers building financial data pipelines
 - Accounting firms serving multiple clients
@@ -88,16 +91,17 @@ const report = await settler.reports.get(job.id);
 
 ### Why We Win
 
-| Feature | Settler | Legacy Solutions | Custom Scripts |
-|---------|---------|-----------------|----------------|
-| **Setup Time** | 5 minutes | Days/weeks | Weeks/months |
-| **API-First** | ✅ Yes | ❌ No | ⚠️ Partial |
-| **Real-Time** | ✅ Yes | ❌ No | ⚠️ Possible |
-| **Developer DX** | ✅ Excellent | ❌ Poor | ⚠️ Varies |
-| **Compliance** | ✅ Built-in | ⚠️ Add-on | ❌ Manual |
-| **Cost** | Usage-based | High (license) | High (dev time) |
+| Feature          | Settler      | Legacy Solutions | Custom Scripts  |
+| ---------------- | ------------ | ---------------- | --------------- |
+| **Setup Time**   | 5 minutes    | Days/weeks       | Weeks/months    |
+| **API-First**    | ✅ Yes       | ❌ No            | ⚠️ Partial      |
+| **Real-Time**    | ✅ Yes       | ❌ No            | ⚠️ Possible     |
+| **Developer DX** | ✅ Excellent | ❌ Poor          | ⚠️ Varies       |
+| **Compliance**   | ✅ Built-in  | ⚠️ Add-on        | ❌ Manual       |
+| **Cost**         | Usage-based  | High (license)   | High (dev time) |
 
 **Key Differentiators:**
+
 1. **API-first design** (like Stripe, Resend)
 2. **Composable adapters** (extensible platform)
 3. **Developer experience** (5-minute onboarding)
@@ -110,26 +114,31 @@ const report = await settler.reports.get(job.id);
 ### Pricing Tiers
 
 **Free Tier:**
+
 - 1,000 reconciliations/month
 - 2 adapters
 - Community support
 
 **Starter ($29/month):**
+
 - 10,000 reconciliations/month
 - 5 adapters
 - Email support
 
 **Growth ($99/month):**
+
 - 100,000 reconciliations/month
 - 15 adapters
 - Priority support
 
 **Scale ($299/month):**
+
 - 1M reconciliations/month
 - Unlimited adapters
 - 4-hour SLA
 
 **Enterprise (Custom):**
+
 - Unlimited usage
 - Dedicated infrastructure
 - SOC 2, PCI-DSS compliance
@@ -148,17 +157,20 @@ const report = await settler.reports.get(job.id);
 ### Current Status
 
 **Product:**
+
 - ✅ MVP complete (Stripe, Shopify, QuickBooks adapters)
 - ✅ TypeScript SDK production-ready
 - ✅ Python, Ruby, Go SDKs in development
 - ✅ Web dashboard (beta)
 
 **Customers:**
+
 - 50+ beta users
 - 10 paying customers (pre-launch)
 - $2K MRR (pre-launch)
 
 **Metrics:**
+
 - 95%+ reconciliation accuracy
 - <100ms API latency (p95)
 - 99.9% uptime
@@ -171,18 +183,21 @@ const report = await settler.reports.get(job.id);
 ### Launch Plan
 
 **Phase 1: Developer-First (Months 1-3)**
+
 - Product Hunt launch
 - Developer community outreach (Hacker News, Indie Hackers)
 - Content marketing (blog, tutorials)
 - **Target**: 1,000 signups, 100 paying customers
 
 **Phase 2: Partner Integrations (Months 4-6)**
+
 - Stripe Partner Program
 - Shopify App Store listing
 - QuickBooks integration marketplace
 - **Target**: 5,000 signups, 500 paying customers
 
 **Phase 3: Enterprise Sales (Months 7-12)**
+
 - Outbound sales to mid-market
 - Enterprise features (SSO, dedicated infra)
 - **Target**: 20,000 signups, 2,000 paying customers
@@ -200,15 +215,15 @@ const report = await settler.reports.get(job.id);
 
 ### 3-Year Forecast
 
-| Metric | Year 1 | Year 2 | Year 3 |
-|--------|--------|--------|--------|
-| **Customers** | 1,000 | 5,000 | 20,000 |
-| **MRR** | $50K | $250K | $1M |
-| **ARR** | $600K | $3M | $12M |
-| **CAC** | $50 | $75 | $100 |
-| **LTV** | $600 | $1,200 | $2,400 |
-| **LTV:CAC** | 12:1 | 16:1 | 24:1 |
-| **Churn** | 5% | 3% | 2% |
+| Metric        | Year 1 | Year 2 | Year 3 |
+| ------------- | ------ | ------ | ------ |
+| **Customers** | 1,000  | 5,000  | 20,000 |
+| **MRR**       | $50K   | $250K  | $1M    |
+| **ARR**       | $600K  | $3M    | $12M   |
+| **CAC**       | $50    | $75    | $100   |
+| **LTV**       | $600   | $1,200 | $2,400 |
+| **LTV:CAC**   | 12:1   | 16:1   | 24:1   |
+| **Churn**     | 5%     | 3%     | 2%     |
 
 ### Unit Economics
 
@@ -223,16 +238,19 @@ const report = await settler.reports.get(job.id);
 ### Founding Team
 
 **Founder/CEO**: [Name]
+
 - Former [Company] engineer
 - Built reconciliation systems for [Company]
 - 10+ years in fintech/SaaS
 
 **CTO**: [Name]
+
 - Former [Company] architect
 - Expert in API design, event sourcing
 - Open source contributor
 
 **Head of Product**: [Name]
+
 - Former [Company] PM
 - Experience with developer tools
 - Strong technical background
@@ -252,6 +270,7 @@ const report = await settler.reports.get(job.id);
 **Seed Round: $2M**
 
 **Use of Funds:**
+
 - **40%**: Engineering (expand team, build features)
 - **30%**: Go-to-market (marketing, sales)
 - **20%**: Infrastructure (scale, compliance)
@@ -278,6 +297,7 @@ const report = await settler.reports.get(job.id);
 **Year 3**: Build marketplace for community adapters
 
 **Year 5**: Platform for all financial operations automation
+
 - Revenue recognition
 - Tax calculation
 - Multi-entity consolidation

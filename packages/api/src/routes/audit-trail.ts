@@ -10,7 +10,7 @@ import { validateRequest } from "../middleware/validation";
 import { TenantRequest } from "../middleware/tenant";
 import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
-import { query } from "../db";
+import { queryWithTenant } from "../db";
 import { handleRouteError } from "../utils/error-handler";
 
 const router: Router = Router();
@@ -72,7 +72,7 @@ router.get(
 
       const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
-      const auditLogs = await query<{
+      const auditLogs = await queryWithTenant<{
         id: string;
         event: string;
         user_id: string;
@@ -82,6 +82,7 @@ router.get(
         user_agent: string | null;
         total_count: string;
       }>(
+        tenantId,
         `SELECT id, event, user_id, metadata, timestamp, ip, user_agent, COUNT(*) OVER() as total_count
          FROM audit_logs
          ${whereClause}
@@ -134,13 +135,14 @@ router.get(
         return;
       }
 
-      const auditLogs = await query<{
+      const auditLogs = await queryWithTenant<{
         id: string;
         event: string;
         user_id: string;
         metadata: unknown;
         timestamp: Date;
       }>(
+        tenantId,
         `SELECT id, event, user_id, metadata, timestamp
          FROM audit_logs
          WHERE tenant_id = $1
@@ -195,11 +197,12 @@ router.get(
         : new Date(Date.now() - 365 * 24 * 60 * 60 * 1000);
       const end = endDate ? new Date(endDate) : new Date();
 
-      const auditLogs = await query<{
+      const auditLogs = await queryWithTenant<{
         event: string;
         timestamp: Date;
         metadata: unknown;
       }>(
+        tenantId,
         `SELECT event, timestamp, metadata, user_id, ip_address, user_agent
          FROM audit_logs
          WHERE tenant_id = $1 AND timestamp >= $2 AND timestamp <= $3

@@ -8,6 +8,8 @@
  * - Fuzzy matching (reference ID variations, amount tolerance)
  */
 
+import { randomUUID } from "crypto";
+
 import {
   Transaction,
   Settlement,
@@ -598,6 +600,6 @@ export class MatchingEngine {
    * Generate UUID
    */
   private generateId(): string {
-    return `match_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `match_${Date.now()}_${randomUUID()}`;
   }
 }

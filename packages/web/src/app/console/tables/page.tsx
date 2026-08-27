@@ -87,7 +87,7 @@ export default function TablesPage() {
         "ingestions",
         "raw_records",
         "normalized_transactions",
-        "reconciliation_runs",
+        "recon_results",
         "reconciliation_matches",
         "exports",
       ];

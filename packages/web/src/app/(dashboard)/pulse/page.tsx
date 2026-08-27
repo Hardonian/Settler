@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 // Note: Recharts or Tremor would be injected here in a full build.
 // For the structural scaffolding, we'll build a beautiful CSS representation
@@ -12,7 +12,9 @@ export default function PulseDashboard() {
     <div className="container mx-auto p-8 space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">Pulse</h1>
+          <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+            Pulse
+          </h1>
           <p className="text-gray-500 mt-2">Real-time health of your financial operations.</p>
         </div>
         <div className="flex items-center gap-2 px-4 py-2 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded-full text-sm font-medium border border-green-200 dark:border-green-800">
@@ -24,7 +26,9 @@ export default function PulseDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-md border-gray-200 dark:border-gray-800">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500 uppercase tracking-wider">Reconciliation Lag</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-500 uppercase tracking-wider">
+              Reconciliation Lag
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-gray-900 dark:text-white">1.2s</div>
@@ -34,7 +38,9 @@ export default function PulseDashboard() {
 
         <Card className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-md border-gray-200 dark:border-gray-800">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500 uppercase tracking-wider">Auto-Match Rate</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-500 uppercase tracking-wider">
+              Auto-Match Rate
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">99.8%</div>
@@ -44,7 +50,9 @@ export default function PulseDashboard() {
 
         <Card className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-md border-gray-200 dark:border-gray-800">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500 uppercase tracking-wider">Unmatched Value</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-500 uppercase tracking-wider">
+              Unmatched Value
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-gray-900 dark:text-white">$0.00</div>
@@ -71,7 +79,7 @@ export default function PulseDashboard() {
             {/* Bars */}
             {[40, 60, 45, 80, 55, 90, 70, 100, 85, 95].map((height, i) => (
               <div key={i} className="w-full relative group">
-                <div 
+                <div
                   className="w-full bg-indigo-500/80 dark:bg-indigo-600/80 rounded-t-sm transition-all duration-500 group-hover:bg-indigo-400 cursor-pointer"
                   style={{ height: `${height}%` }}
                 >

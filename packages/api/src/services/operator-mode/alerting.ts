@@ -5,6 +5,7 @@
 
 import { query } from "../../db";
 import { logError, logWarn, logInfo } from "../../utils/logger";
+import { secureFetch } from "../../utils/ssrf-protection";
 import { generateDailyIntelligence } from "./daily-intelligence";
 import {
   buildAlertRouter,
@@ -449,41 +450,36 @@ export async function sendSlackAlert(
     logWarn("Slack webhook URL not configured", { alertId });
     return;
   }
-
-  try {
-    await fetch(slackWebhookUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        text: `🚨 Alert: ${alertData.ruleName}`,
-        blocks: [
-          {
-            type: "section",
-            text: {
-              type: "mrkdwn",
-              text:
-                `*${alertData.severity.toUpperCase()} Alert: ${alertData.ruleName}*\n` +
-                `Metric: ${alertData.metric}\n` +
-                `Value: ${alertData.value}\n` +
-                `Threshold: ${alertData.threshold}\n` +
-                `Alert ID: ${alertId}`,
-            },
+  // Send to Slack via SSRF-protected fetch
+  await secureFetch(slackWebhookUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      text: `🚨 Alert: ${alertData.ruleName}`,
+      blocks: [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text:
+              `*${alertData.severity.toUpperCase()} Alert: ${alertData.ruleName}*\n` +
+              `Metric: ${alertData.metric}\n` +
+              `Value: ${alertData.value}\n` +
+              `Threshold: ${alertData.threshold}\n` +
+              `Alert ID: ${alertId}`,
           },
-        ],
-      }),
-    });
+        },
+      ],
+    }),
+  });
 
-    logInfo("Slack alert sent", { alertId, ...alertData });
+  logInfo("Slack alert sent", { alertId, ...alertData });
 
-    await query(
-      `INSERT INTO alert_notifications (alert_id, notification_type, recipient, status, sent_at)
-       VALUES ($1, 'webhook', $2, 'sent', NOW())`,
-      [alertId, slackWebhookUrl]
-    );
-  } catch (error) {
-    logError("Failed to send Slack alert", error, { alertId });
-    throw error;
-  }
+  await query(
+    `INSERT INTO alert_notifications (alert_id, notification_type, recipient, status, sent_at)
+     VALUES ($1, 'webhook', $2, 'sent', NOW())`,
+    [alertId, slackWebhookUrl]
+  );
 }
 
 /**
@@ -507,7 +503,7 @@ async function sendWebhookAlert(
   }
 
   try {
-    await fetch(webhookUrl, {
+    await secureFetch(webhookUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

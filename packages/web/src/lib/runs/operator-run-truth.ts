@@ -193,6 +193,7 @@ export function deriveOperatorRunAttention(run: OperatorRunDetail): OperatorAtte
  */
 export function deriveOperatorRunNextActions(run: OperatorRunDetail): OperatorNextAction[] {
   const actions: OperatorNextAction[] = [];
+  const runScopedExceptionsHref = `/console/exceptions?runId=${run.id}&runKind=${run.runKind}`;
 
   if (run.status === "failed" && run.isTerminal) {
     actions.push({
@@ -204,9 +205,10 @@ export function deriveOperatorRunNextActions(run: OperatorRunDetail): OperatorNe
 
   if (run.exceptions.reviewRequired > 0 || run.exceptions.pending > 0) {
     actions.push({
-      label: "Open exceptions for this workspace",
-      href: "/console/exceptions",
-      rationale: "Work the queue while run and proof context are still fresh.",
+      label: "Review exceptions for this run",
+      href: runScopedExceptionsHref,
+      rationale:
+        "Work the queue while run context, proof posture, and operator notes are still fresh.",
     });
   }
 
@@ -237,12 +239,16 @@ export function deriveOperatorRunNextActions(run: OperatorRunDetail): OperatorNe
     });
   }
 
-  if (
-    actions.length === 0 &&
-    run.isTerminal &&
-    run.summary.unmatched === 0 &&
-    run.summary.conflicts === 0
-  ) {
+  if (run.status === "completed" && run.runKind !== "ingestion_run") {
+    actions.push({
+      label: "Inspect reconciliation results",
+      href: `/console/reconciliations?runId=${run.id}`,
+      rationale:
+        "Open the ranked outcome view to validate impact, rationale, and next operator actions.",
+    });
+  }
+
+  if (run.isTerminal && run.summary.unmatched === 0 && run.summary.conflicts === 0) {
     actions.push({
       label: "Archive evidence for close or audit",
       href: undefined,

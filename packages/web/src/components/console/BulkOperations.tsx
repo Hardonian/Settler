@@ -23,6 +23,13 @@ import { RefreshCw, Play, CheckCircle2, XCircle } from "lucide-react";
 import { format } from "date-fns";
 import { useGovernanceState } from "@/hooks/use-governance-state";
 import { FreezeBlockedButton } from "@/components/shared/FreezeBlockedButton";
+import { FreezeErrorAlert } from "@/components/shared/FreezeErrorAlert";
+import {
+  getApiErrorMessage,
+  getGovernanceRecoveryHref,
+  parseGovernanceFreezeError,
+  type GovernanceFreezeErrorDetails,
+} from "@/lib/governance/freeze-client";
 
 interface BulkOperation {
   id: string;
@@ -43,6 +50,7 @@ export function BulkOperations() {
   const [operations, setOperations] = useState<BulkOperation[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [freezeError, setFreezeError] = useState<GovernanceFreezeErrorDetails | null>(null);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [operationType, setOperationType] = useState<string>("");
   const [targetType, setTargetType] = useState<string>("");
@@ -66,6 +74,7 @@ export function BulkOperations() {
     try {
       setLoading(true);
       setError(null);
+      setFreezeError(null);
 
       const res = await fetch("/api/v1/bulk-operations", {
         method: "POST",
@@ -78,13 +87,26 @@ export function BulkOperations() {
         }),
       });
 
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || "Failed to create operation");
+      const payload = (await res.json().catch(() => null)) as unknown;
+      const freezeDetails = parseGovernanceFreezeError(payload, res.status);
+
+      if (freezeDetails) {
+        setFreezeError(freezeDetails);
+        return;
       }
 
-      const data = await res.json();
-      setOperations([...operations, data]);
+      if (!res.ok) {
+        throw new Error(getApiErrorMessage(payload, "Failed to create operation"));
+      }
+
+      const createdOperation =
+        payload && typeof payload === "object" && "data" in payload
+          ? ((payload as { data?: BulkOperation }).data ?? null)
+          : (payload as BulkOperation | null);
+
+      if (createdOperation) {
+        setOperations((current) => [...current, createdOperation]);
+      }
       setSelectedItems([]);
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "Failed to create operation");
@@ -141,6 +163,17 @@ export function BulkOperations() {
           <CardDescription>Perform operations on multiple items at once</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {freezeError ? (
+            <FreezeErrorAlert
+              reason={freezeError.reason}
+              frozenAt={freezeError.frozenAt ?? undefined}
+              recoveryAction={{
+                label: "Open Governance Controls",
+                href: getGovernanceRecoveryHref(),
+              }}
+            />
+          ) : null}
+
           {error && (
             <Alert variant="destructive">
               <AlertDescription>{error}</AlertDescription>

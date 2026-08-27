@@ -15,7 +15,7 @@
  *   - Can be "pending", "running", "completed", "failed"
  *
  * DB ACCESS PATTERN NOTE:
- * - This file uses raw SQL via `../db` query() for legacy compatibility
+ * - This file uses raw SQL via `../db` queryWithTenant(tenantId, ) for legacy compatibility
  * - runs.ts uses Prisma ORM for the reconResult table
  * - Rationale: This file was built incrementally with raw SQL for performance tuning
  *   while runs.ts was built later using the modern Prisma pattern.
@@ -29,7 +29,7 @@ import { AuthRequest } from "../middleware/auth";
 import { requirePermission, requireResourceOwnership } from "../middleware/authorization";
 import { enforceFreezeState } from "../middleware/governance";
 import { Permission } from "../infrastructure/security/Permissions";
-import { query } from "../db";
+import { queryWithTenant } from "../db";
 import { logInfo, logError } from "../utils/logger";
 import { Mutex } from "async-mutex";
 import { JobRouteService } from "../application/services/JobRouteService";
@@ -171,12 +171,13 @@ router.get(
       const offset = (page - 1) * limit;
 
       const [jobs, totalResult] = await Promise.all([
-        query<{
+        queryWithTenant<{
           id: string;
           name: string;
           status: string;
           created_at: Date;
         }>(
+          tenantId,
           `SELECT id, name, status, created_at
            FROM jobs
            WHERE user_id = $1 AND tenant_id = $2
@@ -184,7 +185,8 @@ router.get(
            LIMIT $3 OFFSET $4`,
           [userId, tenantId, limit, offset]
         ),
-        query<{ count: string }>(
+        queryWithTenant<{ count: string }>(
+          tenantId,
           `SELECT COUNT(*) as count FROM jobs WHERE user_id = $1 AND tenant_id = $2`,
           [userId, tenantId]
         ),
@@ -311,7 +313,8 @@ router.post(
       const tenantId = req.tenantId!;
 
       // Check if job is already running (optimistic locking)
-      const jobs = await query<{ status: string; version: number }>(
+      const jobs = await queryWithTenant<{ status: string; version: number }>(
+        tenantId,
         `SELECT status, version FROM jobs WHERE id = $1 AND user_id = $2 AND tenant_id = $3`,
         [id, userId, tenantId]
       );
@@ -327,7 +330,8 @@ router.post(
       }
 
       // Update job status atomically
-      const updated = await query<{ id: string }>(
+      const updated = await queryWithTenant<{ id: string }>(
+        tenantId,
         `UPDATE jobs
          SET status = 'running', version = version + 1, updated_at = NOW()
          WHERE id = $1 AND user_id = $2 AND tenant_id = $3 AND version = $4
@@ -347,7 +351,8 @@ router.post(
       }
 
       // Create execution record
-      const executions = await query<{ id: string }>(
+      const executions = await queryWithTenant<{ id: string }>(
+        tenantId,
         `INSERT INTO executions (job_id, status)
          VALUES ($1, 'running')
          RETURNING id`,
@@ -368,7 +373,8 @@ router.post(
       const executionId = executions[0].id;
 
       // Log audit event
-      await query<{ id: string }>(
+      await queryWithTenant<{ id: string }>(
+        tenantId,
         `INSERT INTO audit_logs (event, user_id, tenant_id, metadata)
          VALUES ($1, $2, $3, $4)`,
         ["job_executed", userId, tenantId, JSON.stringify({ jobId: id, executionId })]
@@ -383,21 +389,31 @@ router.post(
       let jobError: string | null = null;
       try {
         // Execute reconciliation logic here
-        await query(
+        await queryWithTenant(
+          tenantId,
           `UPDATE executions SET status = 'completed', completed_at = NOW()
            WHERE id = $1`,
           [executionId]
         );
-        await query(`UPDATE jobs SET status = 'active', updated_at = NOW() WHERE id = $1`, [id]);
+        await queryWithTenant(
+          tenantId,
+          `UPDATE jobs SET status = 'active', updated_at = NOW() WHERE id = $1`,
+          [id]
+        );
         logInfo("Job execution completed", { jobId: id, executionId, userId });
       } catch (error) {
         jobError = error instanceof Error ? error.message : "Unknown error";
         logError("Job execution failed", error, { executionId, jobId: id });
-        await query(`UPDATE executions SET status = 'failed', error = $1 WHERE id = $2`, [
-          jobError,
-          executionId,
-        ]);
-        await query(`UPDATE jobs SET status = 'active', updated_at = NOW() WHERE id = $1`, [id]);
+        await queryWithTenant(
+          tenantId,
+          `UPDATE executions SET status = 'failed', error = $1 WHERE id = $2`,
+          [jobError, executionId]
+        );
+        await queryWithTenant(
+          tenantId,
+          `UPDATE jobs SET status = 'active', updated_at = NOW() WHERE id = $1`,
+          [id]
+        );
         logInfo("Job execution failed", { jobId: id, executionId, userId, error: jobError });
       }
 

@@ -14,6 +14,7 @@ This guide provides step-by-step instructions for implementing all high-ROI impr
 ## Phase 1: Usage Tracking & Billing Enforcement ✅ READY
 
 ### Prerequisites
+
 - PostgreSQL database (Supabase)
 - Redis (Upstash) - optional but recommended
 - Environment variables configured
@@ -41,6 +42,7 @@ SELECT * FROM usage_counters LIMIT 1;
 ### Step 3: Deploy Code Changes
 
 All code changes are backward compatible:
+
 - `packages/web/src/lib/usage/tracking.ts` - Usage tracking service
 - `packages/web/src/middleware/usage-enforcement.ts` - Enforcement middleware
 - Updated API routes with usage enforcement
@@ -69,11 +71,13 @@ curl -X POST https://your-domain.com/api/v1/receipts \
 ## Phase 2: Enhanced Usage Dashboard ✅ READY
 
 ### Already Implemented
+
 - Real-time usage limits display
 - Visual indicators for usage vs limits
 - Color-coded warnings (green/yellow/red)
 
 ### Testing Checklist
+
 - [ ] Usage dashboard loads correctly
 - [ ] Limits display accurately
 - [ ] Visual indicators work
@@ -86,6 +90,7 @@ curl -X POST https://your-domain.com/api/v1/receipts \
 See `docs/strategic/IMPLEMENTATION_ONBOARDING.md` for detailed plan.
 
 ### Quick Start
+
 1. Add onboarding schema to Prisma
 2. Create onboarding service
 3. Build onboarding wizard component
@@ -98,6 +103,7 @@ See `docs/strategic/IMPLEMENTATION_ONBOARDING.md` for detailed plan.
 See `docs/strategic/IMPLEMENTATION_METRICS.md` for detailed plan.
 
 ### Quick Start
+
 1. Create metrics service
 2. Build executive dashboard UI
 3. Add API endpoints
@@ -108,6 +114,7 @@ See `docs/strategic/IMPLEMENTATION_METRICS.md` for detailed plan.
 ## Type Safety Verification
 
 All new code is fully type-safe:
+
 - ✅ TypeScript strict mode
 - ✅ No `any` types
 - ✅ Proper interfaces and types
@@ -118,6 +125,7 @@ All new code is fully type-safe:
 ## Backward Compatibility
 
 All changes are backward compatible:
+
 - ✅ Old code paths still work
 - ✅ Graceful fallbacks for missing data
 - ✅ No breaking API changes
@@ -128,16 +136,19 @@ All changes are backward compatible:
 ## Testing Strategy
 
 ### Unit Tests
+
 ```bash
 npm run test:unit
 ```
 
 ### Integration Tests
+
 ```bash
 npm run test:integration
 ```
 
 ### E2E Tests
+
 ```bash
 npm run test:e2e
 ```
@@ -147,18 +158,21 @@ npm run test:e2e
 ## Deployment Checklist
 
 ### Pre-Deployment
+
 - [ ] Database migration applied
 - [ ] Environment variables set
 - [ ] Redis configured (optional)
 - [ ] Tests passing
 
 ### Deployment
+
 - [ ] Deploy code changes
 - [ ] Verify health checks
 - [ ] Monitor error rates
 - [ ] Check usage tracking
 
 ### Post-Deployment
+
 - [ ] Verify usage tracking works
 - [ ] Check billing accuracy
 - [ ] Monitor performance
@@ -175,6 +189,7 @@ If issues occur:
    - Or comment out enforcement calls in API routes
 
 2. **Database Rollback:**
+
    ```sql
    DROP TABLE IF EXISTS usage_counters CASCADE;
    ```
@@ -188,6 +203,7 @@ If issues occur:
 ## Monitoring & Alerts
 
 ### Key Metrics to Monitor
+
 - Usage tracking accuracy
 - API response times
 - Error rates
@@ -195,6 +211,7 @@ If issues occur:
 - Database performance
 
 ### Alerts to Set Up
+
 - Usage tracking failures
 - High error rates
 - Database connection issues
@@ -205,12 +222,14 @@ If issues occur:
 ## Success Criteria
 
 ### Usage Tracking
+
 - ✅ 99.9%+ accuracy
 - ✅ <10ms overhead
 - ✅ 100% enforcement coverage
 - ✅ 0% revenue leakage
 
 ### Usage Dashboard
+
 - ✅ Real-time data
 - ✅ Accurate limits
 - ✅ Visual indicators

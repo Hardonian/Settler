@@ -4,6 +4,8 @@
   "private": true,
   "description": "Settler Java SDK workspace metadata",
   "scripts": {
-    "verify:presence": "echo 'java sdk metadata workspace'"
-  }
+    "verify:presence": "echo 'java sdk metadata workspace'",
+    "test": "cd ../.. && mvn test -pl packages/sdk-java"
+  },
+  "dependencies": {}
 }

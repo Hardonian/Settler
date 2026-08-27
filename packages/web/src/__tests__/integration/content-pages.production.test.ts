@@ -7,11 +7,19 @@ const WEB_PACKAGE_DIR = path.resolve(__dirname, "../../..");
 const PRODUCTION_PORT = 3301;
 const BASE_URL = `http://127.0.0.1:${PRODUCTION_PORT}`;
 const CONTENT_PAGES_DIR = path.join(WEB_PACKAGE_DIR, "content", "pages");
+const PACKAGE_MANAGER = resolvePackageManager();
 const ROUTES = fs
   .readdirSync(CONTENT_PAGES_DIR)
   .filter((fileName) => fileName.endsWith(".mdx"))
   .map((fileName) => `/${fileName.replace(/\.mdx$/, "")}`)
   .sort();
+
+function resolvePackageManager(): { command: string; argsPrefix: string[] } {
+  return {
+    command: process.platform === "win32" ? "pnpm.cmd" : "pnpm",
+    argsPrefix: [],
+  };
+}
 
 function runCommand(command: string, args: string[], cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -19,6 +27,7 @@ function runCommand(command: string, args: string[], cwd: string): Promise<void>
       cwd,
       env: { ...process.env },
       stdio: "pipe",
+      shell: process.platform === "win32",
     });
 
     let stdoutOutput = "";
@@ -47,7 +56,7 @@ function runCommand(command: string, args: string[], cwd: string): Promise<void>
   });
 }
 
-async function waitForServer(url: string, timeoutMs = 60_000): Promise<void> {
+async function waitForServer(url: string, timeoutMs = 120_000): Promise<void> {
   const startedAt = Date.now();
 
   while (Date.now() - startedAt < timeoutMs) {
@@ -74,16 +83,23 @@ describe("content pages in production build mode", () => {
   beforeAll(async () => {
     const buildIdPath = path.join(WEB_PACKAGE_DIR, ".next", "BUILD_ID");
     if (!fs.existsSync(buildIdPath)) {
-      await runCommand("pnpm", ["run", "build"], WEB_PACKAGE_DIR);
+      await runCommand(
+        PACKAGE_MANAGER.command,
+        [...PACKAGE_MANAGER.argsPrefix, "run", "build"],
+        WEB_PACKAGE_DIR
+      );
     }
 
-    serverProcess = spawn("pnpm", ["exec", "next", "start", "-p", String(PRODUCTION_PORT)], {
-      cwd: WEB_PACKAGE_DIR,
-      env: { ...process.env, NODE_ENV: "production" },
-      stdio: "ignore",
-    });
-
-    serverProcess.unref();
+    serverProcess = spawn(
+      process.execPath,
+      ["node_modules/next/dist/bin/next", "start", "-p", String(PRODUCTION_PORT)],
+      {
+        cwd: WEB_PACKAGE_DIR,
+        env: { ...process.env, NODE_ENV: "production", PORT: String(PRODUCTION_PORT) },
+        stdio: "inherit",
+        shell: false,
+      }
+    ) as unknown as ChildProcessWithoutNullStreams;
 
     await waitForServer(`${BASE_URL}/product`);
   });

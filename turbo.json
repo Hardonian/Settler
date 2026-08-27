@@ -1,11 +1,28 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": ["**/.env.*local"],
+  "globalDependencies": [".env.local"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**", "build/**", ".next/tsconfig.tsbuildinfo"],
       "cache": true,
+      "inputs": [
+        "src/**",
+        "app/**",
+        "public/**",
+        "package.json",
+        "tsconfig.json",
+        "next.config.js",
+        "next.config.mjs",
+        "postcss.config.js",
+        "tailwind.config.js",
+        "!**/*.test.ts",
+        "!**/*.test.tsx",
+        "!**/*.spec.ts",
+        "!**/*.spec.tsx",
+        "!__tests__/**",
+        "!**/*.stories.tsx"
+      ],
       "env": [
         "NODE_ENV",
         "NEXT_PUBLIC_SITE_URL",
@@ -130,8 +147,17 @@
       ]
     },
     "test": {
-      "dependsOn": ["build"],
+      "dependsOn": ["^build"],
       "outputs": ["coverage/**"],
+      "inputs": [
+        "src/**",
+        "app/**",
+        "package.json",
+        "tsconfig.json",
+        "jest.config.js",
+        "jest.config.ts",
+        "vitest.config.ts"
+      ],
       "env": [
         "NODE_ENV",
         "NEXT_PUBLIC_SITE_URL",
@@ -194,6 +220,17 @@
     },
     "lint": {
       "outputs": [],
+      "inputs": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "app/**/*.ts",
+        "app/**/*.tsx",
+        "src/**/*.js",
+        "src/**/*.jsx",
+        ".eslintrc.js",
+        "eslint.config.js",
+        "package.json"
+      ],
       "env": ["NODE_ENV"]
     },
     "typecheck": {

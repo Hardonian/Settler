@@ -239,9 +239,15 @@ export async function runMultiSourceReconciliation(
     for (const adapterEntry of sourceAdapters) {
       try {
         const { AdapterFactory } = await import("../adapters/adapter-factory");
-        const adapter = AdapterFactory.create(adapterEntry.adapter, JSON.stringify(adapterEntry.config));
-        const transactions = await adapter.fetchTransactions({ startDate: new Date(Date.now() - 30*24*60*60*1000).toISOString(), endDate: new Date().toISOString() });
-        
+        const adapter = AdapterFactory.create(
+          adapterEntry.adapter,
+          JSON.stringify(adapterEntry.config)
+        );
+        const transactions = await adapter.fetchTransactions({
+          startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+          endDate: new Date().toISOString(),
+        });
+
         for (const tx of transactions) {
           allTransactions.push({
             adapter: adapterEntry.adapter,

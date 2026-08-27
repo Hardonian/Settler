@@ -18,6 +18,7 @@
 ### Corporate Structure
 
 **Documents Required:**
+
 - [ ] Certificate of incorporation
 - [ ] Bylaws
 - [ ] Board resolutions
@@ -33,6 +34,7 @@
 ### Intellectual Property
 
 **Documents Required:**
+
 - [ ] Patent applications/grants
 - [ ] Trademark registrations
 - [ ] Copyright registrations
@@ -49,6 +51,7 @@
 ### Contracts
 
 **Documents Required:**
+
 - [ ] Customer contracts
 - [ ] Vendor contracts
 - [ ] Partner agreements
@@ -64,6 +67,7 @@
 ### Compliance
 
 **Documents Required:**
+
 - [ ] SOC 2 Type II certification
 - [ ] GDPR compliance documentation
 - [ ] PCI-DSS compliance (if applicable)
@@ -81,6 +85,7 @@
 ### Codebase
 
 **Documents Required:**
+
 - [ ] Code repository access
 - [ ] Architecture documentation
 - [ ] Technical specifications
@@ -96,6 +101,7 @@
 ### Code Quality
 
 **Metrics Required:**
+
 - [ ] Code coverage
 - [ ] Test coverage
 - [ ] Code review process
@@ -110,6 +116,7 @@
 ### Dependencies
 
 **Documents Required:**
+
 - [ ] Dependency list
 - [ ] License compliance
 - [ ] Security vulnerabilities
@@ -124,6 +131,7 @@
 ### Security
 
 **Documents Required:**
+
 - [ ] Security architecture
 - [ ] Security policies
 - [ ] Penetration test reports
@@ -141,6 +149,7 @@
 ### Security Posture
 
 **Documents Required:**
+
 - [ ] Security policies and procedures
 - [ ] Access controls
 - [ ] Encryption standards
@@ -156,6 +165,7 @@
 ### Compliance
 
 **Documents Required:**
+
 - [ ] SOC 2 Type II certification
 - [ ] GDPR compliance
 - [ ] PCI-DSS compliance (if applicable)
@@ -171,6 +181,7 @@
 ### Vulnerabilities
 
 **Documents Required:**
+
 - [ ] Vulnerability scan results
 - [ ] Penetration test reports
 - [ ] Security incident reports
@@ -187,6 +198,7 @@
 ### Product Metrics
 
 **Metrics Required:**
+
 - [ ] User growth
 - [ ] Activation rate
 - [ ] Retention rate
@@ -202,6 +214,7 @@
 ### Customer Metrics
 
 **Metrics Required:**
+
 - [ ] Customer count
 - [ ] Customer retention
 - [ ] Customer expansion
@@ -217,6 +230,7 @@
 ### Market Position
 
 **Documents Required:**
+
 - [ ] Market analysis
 - [ ] Competitive analysis
 - [ ] Market share
@@ -234,6 +248,7 @@
 ### Financial Statements
 
 **Documents Required:**
+
 - [ ] Income statements
 - [ ] Balance sheets
 - [ ] Cash flow statements
@@ -249,6 +264,7 @@
 ### Revenue
 
 **Metrics Required:**
+
 - [ ] MRR/ARR
 - [ ] Revenue growth
 - [ ] Revenue by customer
@@ -264,6 +280,7 @@
 ### Unit Economics
 
 **Metrics Required:**
+
 - [ ] CAC
 - [ ] LTV
 - [ ] LTV:CAC ratio
@@ -279,6 +296,7 @@
 ### Contracts
 
 **Documents Required:**
+
 - [ ] Customer contracts
 - [ ] Vendor contracts
 - [ ] Partner agreements
@@ -296,6 +314,7 @@
 ### Organizational Structure
 
 **Documents Required:**
+
 - [ ] Org chart
 - [ ] Job descriptions
 - [ ] Reporting structure
@@ -311,6 +330,7 @@
 ### Key Personnel
 
 **Documents Required:**
+
 - [ ] Key person agreements
 - [ ] Employment agreements
 - [ ] Non-compete agreements
@@ -326,6 +346,7 @@
 ### Culture
 
 **Documents Required:**
+
 - [ ] Culture statement
 - [ ] Values
 - [ ] Employee handbook
@@ -343,6 +364,7 @@
 ### Infrastructure
 
 **Documents Required:**
+
 - [ ] Infrastructure architecture
 - [ ] Cloud provider contracts
 - [ ] Infrastructure costs
@@ -358,6 +380,7 @@
 ### Processes
 
 **Documents Required:**
+
 - [ ] Operating procedures
 - [ ] Support processes
 - [ ] Sales processes
@@ -373,6 +396,7 @@
 ### Compliance
 
 **Documents Required:**
+
 - [ ] Compliance policies
 - [ ] Compliance audits
 - [ ] Regulatory compliance
@@ -390,42 +414,49 @@
 ### Preparation Checklist
 
 **Legal:**
+
 - [ ] Corporate documents organized
 - [ ] IP documentation complete
 - [ ] Contracts organized
 - [ ] Compliance documentation ready
 
 **Code:**
+
 - [ ] Codebase documented
 - [ ] Dependencies documented
 - [ ] Security documentation ready
 - [ ] Technical documentation complete
 
 **Security:**
+
 - [ ] Security policies documented
 - [ ] Compliance certifications ready
 - [ ] Vulnerability assessments complete
 - [ ] Incident response plan ready
 
 **Product:**
+
 - [ ] Product metrics tracked
 - [ ] Customer metrics tracked
 - [ ] Market analysis complete
 - [ ] Competitive analysis complete
 
 **Financial:**
+
 - [ ] Financial statements ready
 - [ ] Revenue metrics tracked
 - [ ] Unit economics documented
 - [ ] Financial projections ready
 
 **Team:**
+
 - [ ] Org structure documented
 - [ ] Key personnel agreements ready
 - [ ] Culture documented
 - [ ] Retention plans ready
 
 **Operations:**
+
 - [ ] Infrastructure documented
 - [ ] Processes documented
 - [ ] Compliance ready
@@ -438,16 +469,19 @@
 ### Typical Timeline
 
 **Week 1-2: Initial Review**
+
 - Document request
 - Initial review
 - Question list
 
 **Week 3-4: Deep Dive**
+
 - Detailed review
 - Follow-up questions
 - Site visits
 
 **Week 5-6: Final Review**
+
 - Final questions
 - Negotiations
 - Closing

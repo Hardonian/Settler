@@ -17,7 +17,7 @@ const PREMIUM_PRESET_IDS = new Set(["buyer_demo", "exception_ops"]);
 
 /** Plans that unlock advanced preset packs (non-default layouts beyond baseline). */
 function planAllowsAdvancedPresets(plan: PlanCode): boolean {
-  return plan === "growth" || plan === "scale" || plan === "enterprise";
+  return plan === "pro" || plan === "scale" || plan === "enterprise";
 }
 
 /** Future: enterprise + explicit flag; today always false until LLM lane ships. */

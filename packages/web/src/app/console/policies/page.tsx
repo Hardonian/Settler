@@ -18,6 +18,13 @@ const policySurfaces = [
     href: "/console/feature-flags-policy",
     cta: "Open policy rules",
   },
+  {
+    title: "Auto-Resolution Rules",
+    description:
+      "Configure deterministic rules to automatically adjudicate common exceptions without operator intervention.",
+    href: "/console/policies/auto-resolution",
+    cta: "Manage auto-resolution",
+  },
 ];
 
 export default function PoliciesPage() {

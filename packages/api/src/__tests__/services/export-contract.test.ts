@@ -366,26 +366,22 @@ describe("buildReconciliationExport historical intelligence", () => {
     );
 
     expect(document).not.toBeNull();
-    expect(document?.schemaVersion).toBe("1.2.0");
+    expect(document?.schemaVersion).toBe("1.1.0");
     expect(document?.historicalIntelligenceContext).toEqual({
       runId: "run-1",
       runKind: "recon_job",
       source: "operator_run_detail",
       reason: null,
     });
-    expect(document?.institutionalMemory).toMatchObject({
-      state: "ready",
-      provenance: {
-        runKind: "recon_job",
-        memorySource: "exception_adjudication_memory",
-        proofSource: "proof_packages",
-        deltaSource: "recon_results",
+    expect(document?.historicalIntelligence).toMatchObject({
+      proofPackages: {
+        state: "ready",
       },
-      memory: {
+      recurrence: {
         exceptionsWithMemories: 2,
         repeatedResolutionReasons: ["bank_window"],
       },
-      deltaBasis: {
+      delta: {
         state: "available",
         reasonCodes: ["history_window_evaluated"],
       },
@@ -417,13 +413,12 @@ describe("buildReconciliationExport historical intelligence", () => {
       source: "fallback",
       reason: "not_found",
     });
-    expect(document?.institutionalMemory).toMatchObject({
-      state: "unavailable",
-      provenance: {
-        runKind: "unknown",
-        source: "fallback_unavailable",
+    expect(document?.historicalIntelligence).toMatchObject({
+      proofPackages: {
+        state: "unavailable",
       },
-      deltaBasis: {
+      delta: {
+        state: "unavailable",
         reasonCodes: ["export_run_detail_not_found"],
       },
     });

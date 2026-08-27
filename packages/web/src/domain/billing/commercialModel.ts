@@ -38,7 +38,7 @@ export const COMMERCIAL_OFFERS: CommercialOffer[] = [
   {
     code: "cloud",
     name: "Cloud API",
-    headlinePrice: `$${planConfigs.growth.monthlyPrice.toLocaleString()}`,
+    headlinePrice: `$${planConfigs.pro.monthlyPrice.toLocaleString()}`,
     period: "/mo",
     description:
       "The scalable control plane for modern finance. Metered volume, hosted evidence, and exception triage.",
@@ -47,7 +47,7 @@ export const COMMERCIAL_OFFERS: CommercialOffer[] = [
     evidencePosture: "Hosted run evidence, replay detail, and usage telemetry",
     deployment: "Multi-tenant cloud",
     supportModel: "Email",
-    planCode: "growth",
+    planCode: "pro",
   },
   {
     code: "managed",

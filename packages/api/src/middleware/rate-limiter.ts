@@ -1,6 +1,6 @@
 /**
  * Rate Limiter Middleware
- * 
+ *
  * Per-tenant rate limiting using Redis or in-memory fallback
  * Protects against abuse and ensures fair usage
  */
@@ -25,28 +25,28 @@ interface RateLimitStore {
 // In-memory store (fallback when Redis unavailable)
 class MemoryStore implements RateLimitStore {
   private store = new Map<string, { count: number; resetTime: number }>();
-  
+
   async increment(key: string): Promise<{ count: number; resetTime: number }> {
     const now = Date.now();
     const existing = this.store.get(key);
-    
+
     if (!existing || now > existing.resetTime) {
       const resetTime = now + 60000; // 1 minute window
       this.store.set(key, { count: 1, resetTime });
       return { count: 1, resetTime };
     }
-    
+
     existing.count++;
     return { count: existing.count, resetTime: existing.resetTime };
   }
-  
+
   async decrement(key: string): Promise<void> {
     const existing = this.store.get(key);
     if (existing) {
       existing.count = Math.max(0, existing.count - 1);
     }
   }
-  
+
   async resetKey(key: string): Promise<void> {
     this.store.delete(key);
   }
@@ -56,11 +56,11 @@ export function createRateLimiter(options: RateLimitOptions) {
   const {
     windowMs = 60000,
     maxRequests = 100,
-    keyGenerator = (req) => req.ip || 'unknown',
+    keyGenerator = (req) => req.ip || "unknown",
     handler = (req, res) => {
       res.status(429).json({
-        error: 'RATE_LIMITED',
-        message: 'Too many requests, please try again later',
+        error: "RATE_LIMITED",
+        message: "Too many requests, please try again later",
         retryAfter: Math.ceil(windowMs / 1000),
       });
     },
@@ -73,29 +73,29 @@ export function createRateLimiter(options: RateLimitOptions) {
     try {
       const key = keyGenerator(req);
       const { count, resetTime } = await store.increment(key);
-      
+
       // Set rate limit headers
-      res.setHeader('X-RateLimit-Limit', maxRequests);
-      res.setHeader('X-RateLimit-Remaining', Math.max(0, maxRequests - count));
-      res.setHeader('X-RateLimit-Reset', Math.ceil(resetTime / 1000));
-      
+      res.setHeader("X-RateLimit-Limit", maxRequests);
+      res.setHeader("X-RateLimit-Remaining", Math.max(0, maxRequests - count));
+      res.setHeader("X-RateLimit-Reset", Math.ceil(resetTime / 1000));
+
       if (count > maxRequests) {
-        res.setHeader('Retry-After', windowSeconds);
+        res.setHeader("Retry-After", windowSeconds);
         handler(req, res);
         return;
       }
-      
+
       // Cleanup on request end
-      res.on('finish', () => {
+      res.on("finish", () => {
         if (res.statusCode >= 400) {
           store.decrement(key);
         }
       });
-      
+
       next();
     } catch (error) {
       // If rate limiting fails, allow request (fail open)
-      console.error('Rate limit error:', error);
+      console.error("Rate limit error:", error);
       next();
     }
   };

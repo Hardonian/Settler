@@ -9,6 +9,13 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "typescript": "^5.9.3"
+    "@vitest/coverage-v8": "^4.1.11",
+    "typescript": "^5.9.3",
+    "vite": "^8.2.2",
+    "vitest": "^4.1.8"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^4.0.46",
+    "ai": "^7.0.77"
   }
 }

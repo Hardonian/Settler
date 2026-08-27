@@ -23,6 +23,13 @@ import {
 import { AlertTriangle, CheckCircle2, Save, RotateCcw } from "lucide-react";
 import type { FlagValue } from "@/lib/domain/types";
 import { FLAG_REGISTRY, getFlagsByScope } from "@/lib/flags/registry";
+import { FreezeErrorAlert } from "@/components/shared/FreezeErrorAlert";
+import {
+  getApiErrorMessage,
+  getGovernanceRecoveryHref,
+  parseGovernanceFreezeError,
+  type GovernanceFreezeErrorDetails,
+} from "@/lib/governance/freeze-client";
 
 export function FeatureFlagsPolicy() {
   const [flags, setFlags] = useState<FlagValue[]>([]);
@@ -32,6 +39,7 @@ export function FeatureFlagsPolicy() {
   const [changes, setChanges] = useState<
     Map<string, boolean | number | string | Record<string, unknown>>
   >(new Map());
+  const [freezeError, setFreezeError] = useState<GovernanceFreezeErrorDetails | null>(null);
 
   useEffect(() => {
     fetchFlags();
@@ -75,6 +83,7 @@ export function FeatureFlagsPolicy() {
     try {
       setSaving(key);
       setError(null);
+      setFreezeError(null);
 
       const res = await fetch("/api/console/feature-flags", {
         method: "POST",
@@ -82,8 +91,16 @@ export function FeatureFlagsPolicy() {
         body: JSON.stringify({ key, value }),
       });
 
+      const payload = (await res.json().catch(() => null)) as unknown;
+      const freezeDetails = parseGovernanceFreezeError(payload, res.status);
+
+      if (freezeDetails) {
+        setFreezeError(freezeDetails);
+        return;
+      }
+
       if (!res.ok) {
-        throw new Error(`Failed to save flag: ${res.status}`);
+        throw new Error(getApiErrorMessage(payload, `Failed to save flag: ${res.status}`));
       }
 
       // Remove from changes
@@ -135,13 +152,31 @@ export function FeatureFlagsPolicy() {
     );
   }
 
-  if (error) {
+  if (error || freezeError) {
     return (
       <Card>
         <CardContent className="py-12 text-center">
-          <AlertTriangle className="w-12 h-12 mx-auto mb-4 text-red-500" />
-          <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
-          <Button onClick={fetchFlags}>Try Again</Button>
+          {freezeError ? (
+            <div className="max-w-2xl mx-auto text-left">
+              <FreezeErrorAlert
+                reason={freezeError.reason}
+                frozenAt={freezeError.frozenAt ?? undefined}
+                recoveryAction={{
+                  label: "Open Governance Controls",
+                  href: getGovernanceRecoveryHref(),
+                }}
+              />
+              <Button onClick={() => setFreezeError(null)} className="mt-4">
+                Back
+              </Button>
+            </div>
+          ) : (
+            <>
+              <AlertTriangle className="w-12 h-12 mx-auto mb-4 text-red-500" />
+              <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
+              <Button onClick={fetchFlags}>Try Again</Button>
+            </>
+          )}
         </CardContent>
       </Card>
     );

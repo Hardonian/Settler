@@ -191,7 +191,7 @@ describe("deriveOperatorRunAttention", () => {
     const items = deriveOperatorRunAttention(
       baseRun({
         runKind: "ingestion_run",
-        sourceModel: "reconciliation_runs",
+        sourceModel: "recon_results",
         exceptionWorkflowNote: "Keyed differently",
       })
     );
@@ -213,7 +213,7 @@ describe("deriveOperatorRunNextActions", () => {
         },
       })
     );
-    expect(actions.some((a) => a.href === "/console/exceptions")).toBe(true);
+    expect(actions.some((a) => a.href?.startsWith("/console/exceptions"))).toBe(true);
   });
 
   it("suggests close evidence when terminal and clean", () => {

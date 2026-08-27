@@ -4,20 +4,21 @@
 echo "🔍 Checking for unresolved merge conflicts..."
 if command -v pnpm >/dev/null 2>&1; then
   pnpm verify:conflict-markers || {
-    echo "⚠️  Skipping conflict-marker gate in pre-push because the local hook runtime failed."
-    echo "💡 Run 'pnpm verify:conflict-markers' from your working Node environment."
+    echo "❌ Unresolved merge conflict markers detected. Please resolve them before pushing."
+    exit 1
   }
 else
-  echo "⚠️  Skipping conflict-marker gate because pnpm was not found."
+  echo "❌ pnpm not found. Conflict-marker gate cannot run. Install pnpm and retry."
+  exit 1
 fi
 
-echo "🔍 Running broader pre-push verification gate..."
+echo "🔍 Running pre-push verification gate (aligned with CI verify:fast)..."
 if command -v pnpm >/dev/null 2>&1; then
-  pnpm verify:fast || {
-    echo "⚠️  Skipping blocking pre-push verification in this local runtime."
-    echo "⚠️  Mixed Windows/WSL toolchains in this repo can fail hooks even when the code is unchanged."
-    echo "💡 For full release parity run: pnpm run verify:release"
+  pnpm run repo-integrity && pnpm verify:fast || {
+    echo "❌ Pre-push verification failed. Run 'pnpm run verify:fast' locally and fix issues before pushing."
+    exit 1
   }
 else
-  echo "⚠️  Skipping pre-push verification because pnpm was not found."
+  echo "❌ pnpm not found. Pre-push verification cannot run. Install pnpm and retry."
+  exit 1
 fi
