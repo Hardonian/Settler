@@ -160,7 +160,7 @@
     "stripe": "^22.5.0",
     "swagger-ui-express": "^5.0.1",
     "tigerbeetle-node": "0.17.9",
-    "uuid": "^13.0.2",
+    "uuid": "^14.0.2",
     "winston": "^3.19.0",
     "xml2js": "^0.6.2",
     "zod": "^3.25.76"
