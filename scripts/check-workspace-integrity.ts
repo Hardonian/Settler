@@ -11,7 +11,7 @@
  * Usage: tsx scripts/check-workspace-integrity.ts
  */
 
-import { existsSync, readFileSync, readdirSync, statSync } from "fs";
+import { existsSync, readFileSync, readdirSync } from "fs";
 import { join } from "path";
 
 interface CheckResult {
@@ -105,7 +105,7 @@ function checkWorkspacePackages(): CheckResult {
       } else {
         workspacePackages.push(entry.name);
       }
-    } catch (error) {
+    } catch {
       invalidPackages.push(entry.name);
     }
   }
@@ -215,7 +215,7 @@ function checkInternalDependencies(): CheckResult {
  * Run all checks
  */
 async function main() {
-  console.log("🔍 Checking workspace integrity...\n");
+  console.info("🔍 Checking workspace integrity...\n");
 
   checks.push(checkNoNodeModules());
   checks.push(checkWorkspacePackages());
@@ -228,10 +228,10 @@ async function main() {
 
   checks.forEach((check) => {
     const icon = check.status === "pass" ? "✅" : check.status === "fail" ? "❌" : "⚠️";
-    console.log(`${icon} ${check.name}: ${check.message}`);
+    console.info(`${icon} ${check.name}: ${check.message}`);
   });
 
-  console.log(`\n📊 Summary: ${passed} passed, ${warnings} warnings, ${failed} failed`);
+  console.info(`\n📊 Summary: ${passed} passed, ${warnings} warnings, ${failed} failed`);
 
   if (failed > 0) {
     console.error("\n❌ Workspace integrity check failed");
@@ -243,7 +243,7 @@ async function main() {
     process.exit(0);
   }
 
-  console.log("\n✅ Workspace integrity check passed");
+  console.info("\n✅ Workspace integrity check passed");
   process.exit(0);
 }
 

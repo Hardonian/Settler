@@ -27,7 +27,6 @@ import * as path from "path";
 import * as net from "net";
 import { parseArgs } from "util";
 import * as dotenv from "dotenv";
-// @ts-expect-error - CJS module without declarations
 import nodeContract from "./node-version-contract.cjs";
 
 // Load environment variables from .env and .env.local
