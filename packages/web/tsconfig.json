@@ -56,7 +56,11 @@
       "@settler/types/*": ["../types/dist/*"],
       "@settler/reconciliation-core": ["../reconciliation-core/dist"],
       "@settler/reconciliation-core/*": ["../reconciliation-core/dist/*"],
-      "@settler/support-intake": ["../support-intake/src"]
+      "@settler/support-intake": ["../support-intake/src"],
+      "@jobforge/sdk-ts": ["../jobforge-sdk-ts/src"],
+      "@jobforge/sdk-ts/*": ["../jobforge-sdk-ts/src/*"],
+      "@jobforge/shared": ["../jobforge-shared/src"],
+      "@jobforge/shared/*": ["../jobforge-shared/src/*"]
     }
   },
   "include": [

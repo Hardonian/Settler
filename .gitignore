@@ -61,3 +61,10 @@ next-env.d.ts
 
 # Rust
 /target/
+
+# Temporary files & test harnesses
+tmp/
+.tmp/
+**/.tmp*/
+**/.tmp-*
+*.tmp

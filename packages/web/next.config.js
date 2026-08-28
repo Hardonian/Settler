@@ -102,6 +102,8 @@ const nextConfig = {
     "@settler/protocol",
     "@settler/types",
     "@settler/support-intake",
+    "@jobforge/sdk-ts",
+    "@jobforge/shared",
   ],
   webpack: (config, { isServer }) => {
     config.ignoreWarnings = [
@@ -129,10 +131,9 @@ const nextConfig = {
           __dirname,
           "../reconciliation-core/dist/index.js"
         ),
-        // Workspace packages with ESM dist output — resolve directly so webpack
-        // can bundle them instead of trying to require() them as CJS externals.
-        "@jobforge/sdk-ts": path.resolve(__dirname, "../../packages/jobforge-sdk-ts/dist/index.js"),
-        "@jobforge/shared": path.resolve(__dirname, "../../packages/jobforge-shared/dist/index.js"),
+        // Workspace packages — resolve source directly so webpack/Next.js transpiles them correctly
+        "@jobforge/sdk-ts": path.resolve(__dirname, "../jobforge-sdk-ts/src/index.ts"),
+        "@jobforge/shared": path.resolve(__dirname, "../jobforge-shared/src/index.ts"),
         "@settler/api/lib/email-lifecycle": path.resolve(
           __dirname,
           "../api/dist/lib/email-lifecycle.js"

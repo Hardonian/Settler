@@ -7,3 +7,7 @@ coverage
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
+tmp
+.tmp*
+**/.tmp*
+**/.tmp-*

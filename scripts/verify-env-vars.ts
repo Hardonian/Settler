@@ -162,7 +162,6 @@ interface VerificationResult {
 function verifyEnvVar(envVar: EnvVar): VerificationResult {
   const value = process.env[envVar.name];
   const hasDefault = envVar.defaultValue !== undefined;
-  const effectiveValue = value || envVar.defaultValue || "";
 
   if (envVar.required && !value && !hasDefault) {
     return {

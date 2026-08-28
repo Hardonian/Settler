@@ -41,13 +41,13 @@ async function verifyWebhookSetup() {
   console.log("\n2. Checking database...");
   try {
     // Check if stripe_events table exists
-    const tableExists = await prisma.$queryRaw<Array<{ exists: boolean }>>`
+    const tableExists = (await prisma.$queryRaw`
       SELECT EXISTS (
         SELECT FROM information_schema.tables 
         WHERE table_schema = 'public' 
         AND table_name = 'stripe_events'
       );
-    `;
+    `) as Array<{ exists: boolean }>;
 
     if (!tableExists[0]?.exists) {
       errors.push("stripe_events table does not exist. Run migration first.");
@@ -56,11 +56,11 @@ async function verifyWebhookSetup() {
       console.log("   ✅ stripe_events table: EXISTS");
 
       // Check indexes
-      const indexes = await prisma.$queryRaw<Array<{ indexname: string }>>`
+      const indexes = (await prisma.$queryRaw`
         SELECT indexname 
         FROM pg_indexes 
         WHERE tablename = 'stripe_events';
-      `;
+      `) as Array<{ indexname: string }>;
 
       const expectedIndexes = [
         "stripe_events_event_id_key", // unique constraint
@@ -69,7 +69,7 @@ async function verifyWebhookSetup() {
         "stripe_events_status_idx",
       ];
 
-      const existingIndexNames = indexes.map((i) => i.indexname);
+      const existingIndexNames = indexes.map((i: { indexname: string }) => i.indexname);
       const missingIndexes = expectedIndexes.filter((idx) => !existingIndexNames.includes(idx));
 
       if (missingIndexes.length > 0) {
