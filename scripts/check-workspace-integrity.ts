@@ -25,56 +25,44 @@ const workspaceRoot = process.cwd();
 const packagesDir = join(workspaceRoot, "packages");
 
 /**
- * Check for committed node_modules
+ * Check for committed node_modules (ensures git does not track node_modules files)
  */
 function checkNoNodeModules(): CheckResult {
-  const nodeModulesPaths: string[] = [];
+  try {
+    const { execSync } = require("child_process");
+    const output = execSync('git ls-files "**/node_modules/**"', {
+      encoding: "utf-8",
+      stdio: "pipe",
+      cwd: workspaceRoot,
+    }).trim();
 
-  function findNodeModules(dir: string): void {
-    try {
-      const entries = readdirSync(dir);
-      for (const entry of entries) {
-        const fullPath = join(dir, entry);
-        try {
-          const stat = statSync(fullPath);
-          if (stat.isDirectory() && entry === "node_modules") {
-            // Check if it's tracked by git
-            const relativePath = fullPath.replace(workspaceRoot + "/", "");
-            nodeModulesPaths.push(relativePath);
-          } else if (
-            stat.isDirectory() &&
-            !entry.startsWith(".") &&
-            entry !== "dist" &&
-            entry !== "build"
-          ) {
-            findNodeModules(fullPath);
-          }
-        } catch {
-          // Skip if we can't read
-        }
-      }
-    } catch {
-      // Skip if we can't read directory
+    if (output) {
+      const files = output.split("\n").filter(Boolean);
+      return {
+        name: "No Committed node_modules",
+        status: "fail",
+        message: `Found ${files.length} tracked files in node_modules: ${files.slice(0, 3).join(", ")}${files.length > 3 ? "..." : ""}. These should be untracked.`,
+      };
     }
-  }
-
-  // Only check packages directory to avoid false positives
-  if (existsSync(packagesDir)) {
-    findNodeModules(packagesDir);
-  }
-
-  if (nodeModulesPaths.length > 0) {
-    return {
-      name: "No Committed node_modules",
-      status: "fail",
-      message: `Found node_modules directories: ${nodeModulesPaths.join(", ")}. These should be gitignored.`,
-    };
+  } catch {
+    // If git fails or is not present, check .gitignore
+    const gitignorePath = join(workspaceRoot, ".gitignore");
+    if (existsSync(gitignorePath)) {
+      const gitignore = readFileSync(gitignorePath, "utf-8");
+      if (!gitignore.includes("node_modules")) {
+        return {
+          name: "No Committed node_modules",
+          status: "fail",
+          message: "node_modules is missing from .gitignore",
+        };
+      }
+    }
   }
 
   return {
     name: "No Committed node_modules",
     status: "pass",
-    message: "No node_modules directories found in packages",
+    message: "No node_modules directories tracked by git",
   };
 }
 
@@ -93,22 +81,17 @@ function checkWorkspacePackages(): CheckResult {
     };
   }
 
+  // Non-Node packages or subprojects not expected to have standard Node package.json
+  const excludedPackageNames = new Set(["sdk-go", "sdk-python", "sdk-ruby", "workhorse"]);
+
   const entries = readdirSync(packagesDir, { withFileTypes: true });
 
   for (const entry of entries) {
     if (!entry.isDirectory()) continue;
+    if (excludedPackageNames.has(entry.name)) continue;
 
     const packagePath = join(packagesDir, entry.name);
     const packageJsonPath = join(packagePath, "package.json");
-
-    // Skip non-JS packages (they don't need package.json)
-    const hasGoFiles = existsSync(join(packagePath, "*.go"));
-    const hasPythonFiles = existsSync(join(packagePath, "*.py"));
-    const hasRubyFiles = existsSync(join(packagePath, "*.rb"));
-
-    if (hasGoFiles || hasPythonFiles || hasRubyFiles) {
-      continue; // Skip non-JS packages
-    }
 
     if (!existsSync(packageJsonPath)) {
       invalidPackages.push(entry.name);

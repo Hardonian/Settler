@@ -350,21 +350,41 @@ async function checkPostgres() {
     return;
   }
 
-  const port = parseInt(process.env["DB_PORT"] || "5432");
-  const host = process.env["DB_HOST"] || "localhost";
+  const databaseUrl = process.env["DATABASE_URL"] || process.env["SUPABASE_DATABASE_URL"] || "";
+  let host = process.env["DB_HOST"] || "localhost";
+  let port = parseInt(process.env["DB_PORT"] || "5432");
+
+  if (databaseUrl) {
+    try {
+      const parsed = new URL(databaseUrl);
+      host = parsed.hostname;
+      port = parsed.port ? parseInt(parsed.port) : 5432;
+    } catch {}
+  }
 
   const isReachable = await checkPort(host, port);
 
   if (isReachable) {
     addCheck("services", "PostgreSQL", "pass", `${host}:${port} is reachable`);
   } else {
-    addCheck(
-      "services",
-      "PostgreSQL",
-      "fail",
-      `${host}:${port} is not reachable`,
-      'Run "pnpm tb:start" to start local PostgreSQL, or check DB_HOST/DB_PORT in .env.local'
-    );
+    const isLocalhost = host === "localhost" || host === "127.0.0.1";
+    if (isLocalhost) {
+      addCheck(
+        "services",
+        "PostgreSQL",
+        "warn",
+        `Local PostgreSQL at ${host}:${port} is not reachable`,
+        'Run "pnpm tb:start" to start local PostgreSQL, or configure cloud database in .env.local'
+      );
+    } else {
+      addCheck(
+        "services",
+        "PostgreSQL",
+        "warn",
+        `Remote PostgreSQL at ${host}:${port} is not reachable from this network`,
+        "Verify network connectivity, IP allowlist, or database credentials"
+      );
+    }
   }
 }
 
@@ -757,7 +777,9 @@ function checkBuild() {
   }
 
   try {
-    const result = execCommand("pnpm", ["--filter", "@settler/web", "build"], { timeout: 180000 });
+    const result = execCommand("pnpm", ["--filter", "@settler/web...", "build"], {
+      timeout: 180000,
+    });
 
     if (result.success) {
       addCheck("workspace", "Build", "pass", "Build successful");

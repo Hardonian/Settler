@@ -4,20 +4,10 @@
 
 set -e
 
-echo "Starting Vercel build..."
+echo "Starting Vercel build for Settler..."
 
-# Install dependencies (skip optional for faster installs)
-echo "Installing dependencies..."
-npm ci --omit=optional || npm install --omit=optional
-
-# Build dependencies first
-echo "Building dependencies..."
-npm run build --workspace=@settler/protocol || true
-npm run build --workspace=@settler/sdk || true
-npm run build --workspace=@settler/react-settler || true
-
-# Build web package
-echo "Building web package..."
-npm run build --workspace=@settler/web
+# Run dependency-aware build for web and all its workspace dependencies
+pnpm --filter @settler/web... build
 
 echo "Build completed successfully!"
+

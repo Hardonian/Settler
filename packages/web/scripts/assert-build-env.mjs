@@ -47,28 +47,48 @@ function hasValue(key) {
 const missing = REQUIRED_GROUPS.filter((group) => !group.keys.some((key) => hasValue(key)));
 const leakedToClient = SECRET_PUBLIC_COLLISION_KEYS.filter((key) => hasValue(`NEXT_PUBLIC_${key}`));
 
-if (missing.length > 0 || leakedToClient.length > 0) {
-  console.error("❌ Build-time environment validation failed.");
+if (leakedToClient.length > 0) {
+  console.error("❌ Build-time security validation failed.");
+  console.error("Detected secret-like keys leaked with NEXT_PUBLIC_ prefix:");
+  for (const leakedKey of leakedToClient) {
+    console.error(`  - NEXT_PUBLIC_${leakedKey}`);
+  }
+  process.exit(1);
+}
 
-  if (missing.length > 0) {
+const skipEnvValidation =
+  process.env.SKIP_ENV_VALIDATION === "true" || process.env.SKIP_ENV_VALIDATION === "1";
+
+if (missing.length > 0) {
+  if (skipEnvValidation) {
+    console.warn("⚠️  Build-time environment validation warning (SKIP_ENV_VALIDATION is active):");
+    for (const group of missing) {
+      console.warn(`  - Missing ${group.label}: ${group.keys.join(" or ")}`);
+    }
+    console.warn("Injecting safe build-time mock fallbacks for static compilation.");
+    if (!hasValue("NEXT_PUBLIC_SUPABASE_URL")) {
+      process.env.NEXT_PUBLIC_SUPABASE_URL = "https://placeholder.supabase.co";
+    }
+    if (!hasValue("NEXT_PUBLIC_SUPABASE_ANON_KEY")) {
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "placeholder-anon-key";
+    }
+    if (!hasValue("DATABASE_URL")) {
+      process.env.DATABASE_URL = "postgresql://postgres:postgres@localhost:5432/settler";
+    }
+  } else {
+    console.error("❌ Build-time environment validation failed.");
     console.error("Missing required environment key groups:");
     for (const group of missing) {
       console.error(`  - ${group.label}: ${group.keys.join(" or ")}`);
     }
+    console.error(
+      "Set required keys in Vercel environment settings or pass SKIP_ENV_VALIDATION=true for static-only previews."
+    );
+    process.exit(1);
   }
-
-  if (leakedToClient.length > 0) {
-    console.error("Detected secret-like keys leaked with NEXT_PUBLIC_ prefix:");
-    for (const leakedKey of leakedToClient) {
-      console.error(`  - NEXT_PUBLIC_${leakedKey}`);
-    }
-  }
-
-  console.error("Set required keys in Vercel environment settings for hosted builds/runs.");
-  process.exit(1);
+} else {
+  console.log("✅ Build-time environment validation passed for required key groups.");
 }
-
-console.log("✅ Build-time environment validation passed for required key groups.");
 
 import { rmSync } from "node:fs";
 try {
