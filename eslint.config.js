@@ -121,11 +121,16 @@ module.exports = [
       ],
     },
   },
-  // CLI package: allow console.log for CLI output (must come after general config to override)
+  // CLI packages and standalone automation/operator scripts: allow console and root relative imports
   {
-    files: ["packages/cli/src/**/*.ts"],
+    files: [
+      "packages/cli/src/**/*.ts",
+      "packages/edge-node/src/**/*.ts",
+      "scripts/**/*.{ts,js,mjs}",
+    ],
     rules: {
       "no-console": "off",
+      "no-restricted-imports": "off",
     },
   },
 ];

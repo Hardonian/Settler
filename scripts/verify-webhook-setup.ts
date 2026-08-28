@@ -8,7 +8,9 @@
  * - Webhook endpoint is accessible
  */
 
-import { prisma } from "../packages/web/src/shared/db/prismaClient";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 async function verifyWebhookSetup() {
   console.log("🔍 Verifying Stripe Webhook Setup...\n");

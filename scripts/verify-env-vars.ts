@@ -9,8 +9,6 @@
  *   tsx scripts/verify-env-vars.ts [--mode=production|development]
  */
 
-import { getEnv, getEnvWithDefault } from "../packages/web/src/lib/env";
-
 interface EnvVar {
   name: string;
   required: boolean;
