@@ -59,7 +59,7 @@ export class OrchestrationEngine {
     command: string,
     cwd?: string
   ): Promise<void> {
-    await this.queue.add(
+    await (this.queue as any).add(
       jobName,
       { jobName, command, cwd },
       { repeat: { pattern: cronExpression } }
