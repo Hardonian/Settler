@@ -27,7 +27,7 @@ async function test(name: string, fn: () => Promise<void>): Promise<void> {
   try {
     await fn();
     results.push({ name, passed: true });
-    console.log(`✅ ${name}`);
+    console.info(`✅ ${name}`);
   } catch (error) {
     results.push({
       name,
@@ -51,18 +51,18 @@ async function isServerListening(url: string): Promise<boolean> {
 }
 
 async function main() {
-  console.log("🧪 Running Smoke Tests...\n");
-  console.log(`API Base: ${API_BASE}\n`);
+  console.info("🧪 Running Smoke Tests...\n");
+  console.info(`API Base: ${API_BASE}\n`);
 
   const serverOnline = await isServerListening(API_BASE);
   if (!serverOnline) {
-    console.log(`ℹ️  Server at ${API_BASE} is not currently running.`);
-    console.log("   Start the dev server with 'pnpm dev' to run active endpoint smoke tests.");
-    console.log("   Skipping live HTTP probe suite in offline/build-only context.\n");
-    console.log("═══════════════════════════════════════════════════════════");
-    console.log("TEST SUMMARY (SKIPPED - OFFLINE)");
-    console.log("═══════════════════════════════════════════════════════════\n");
-    console.log("✅ Smoke test prerequisite check passed (offline mode handled gracefully).");
+    console.info(`ℹ️  Server at ${API_BASE} is not currently running.`);
+    console.info("   Start the dev server with 'pnpm dev' to run active endpoint smoke tests.");
+    console.info("   Skipping live HTTP probe suite in offline/build-only context.\n");
+    console.info("═══════════════════════════════════════════════════════════");
+    console.info("TEST SUMMARY (SKIPPED - OFFLINE)");
+    console.info("═══════════════════════════════════════════════════════════\n");
+    console.info("✅ Smoke test prerequisite check passed (offline mode handled gracefully).");
     process.exit(0);
   }
 
@@ -150,27 +150,27 @@ async function main() {
   }
 
   // Print summary
-  console.log("\n═══════════════════════════════════════════════════════════");
-  console.log("TEST SUMMARY");
-  console.log("═══════════════════════════════════════════════════════════\n");
+  console.info("\n═══════════════════════════════════════════════════════════");
+  console.info("TEST SUMMARY");
+  console.info("═══════════════════════════════════════════════════════════\n");
 
   const passed = results.filter((r) => r.passed).length;
   const failed = results.filter((r) => !r.passed).length;
 
-  console.log(`Total: ${results.length}`);
-  console.log(`✅ Passed: ${passed}`);
-  console.log(`❌ Failed: ${failed}\n`);
+  console.info(`Total: ${results.length}`);
+  console.info(`✅ Passed: ${passed}`);
+  console.info(`❌ Failed: ${failed}\n`);
 
   if (failed > 0) {
-    console.log("Failed Tests:");
+    console.info("Failed Tests:");
     results
       .filter((r) => !r.passed)
       .forEach((r) => {
-        console.log(`  ❌ ${r.name}: ${r.error}`);
+        console.info(`  ❌ ${r.name}: ${r.error}`);
       });
     process.exit(1);
   } else {
-    console.log("✅ All tests passed!");
+    console.info("✅ All tests passed!");
     process.exit(0);
   }
 }
