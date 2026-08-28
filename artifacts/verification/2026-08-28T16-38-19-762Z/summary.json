@@ -1,0 +1,75 @@
+{
+  "profile": "fast",
+  "stageFilter": null,
+  "runId": "2026-08-28T16-38-19-762Z",
+  "completedAt": "2026-08-28T16:38:25.986Z",
+  "passed": true,
+  "signals": {
+    "supplyChainAuditState": "unknown",
+    "supplyChainUnavailableCategory": null,
+    "tenantGuardrailStaticStatus": "incomplete",
+    "tenantRuntimeCoverageStatus": "incomplete"
+  },
+  "results": [
+    {
+      "stage": "root",
+      "label": "Root cleanliness",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 441,
+      "timeoutMs": 60000,
+      "logPath": "artifacts\\verification\\2026-08-28T16-38-19-762Z\\root.log"
+    },
+    {
+      "stage": "envContract",
+      "label": "Environment contract",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 1698,
+      "timeoutMs": 120000,
+      "logPath": "artifacts\\verification\\2026-08-28T16-38-19-762Z\\envContract.log"
+    },
+    {
+      "stage": "reconciliationCoreDist",
+      "label": "Reconciliation core dist freshness",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 461,
+      "timeoutMs": 60000,
+      "logPath": "artifacts\\verification\\2026-08-28T16-38-19-762Z\\reconciliationCoreDist.log"
+    },
+    {
+      "stage": "reconciliationTopology",
+      "label": "Reconciliation topology contract",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 529,
+      "timeoutMs": 60000,
+      "logPath": "artifacts\\verification\\2026-08-28T16-38-19-762Z\\reconciliationTopology.log"
+    },
+    {
+      "stage": "lint",
+      "label": "Lint",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 1443,
+      "timeoutMs": 720000,
+      "logPath": "artifacts\\verification\\2026-08-28T16-38-19-762Z\\lint.log"
+    },
+    {
+      "stage": "typecheck",
+      "label": "Typecheck",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 1644,
+      "timeoutMs": 720000,
+      "logPath": "artifacts\\verification\\2026-08-28T16-38-19-762Z\\typecheck.log"
+    }
+  ]
+}

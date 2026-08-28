@@ -163,10 +163,36 @@ jobs:
             fi
           done
 
+      - name: Resolve database URL for Prisma CLI
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+
+          const env = process.env;
+          let databaseUrl = env.DATABASE_URL || env.SUPABASE_DB_URL || env.SUPABASE_DATABASE_URL;
+
+          if (!databaseUrl && env.SUPABASE_URL && (env.SUPABASE_DB_PASSWORD || env.DATABASE_PASSWORD)) {
+            const match = env.SUPABASE_URL.match(/https?:\/\/([^.]+)\.supabase\.co/);
+            if (match) {
+              const projectRef = match[1];
+              const region = env.DB_REGION || 'us-west-2';
+              const password = encodeURIComponent(env.SUPABASE_DB_PASSWORD || env.DATABASE_PASSWORD);
+              databaseUrl = `postgresql://postgres.${projectRef}:${password}@aws-0-${region}.pooler.supabase.com:5432/postgres?sslmode=require`;
+            }
+          }
+
+          if (!databaseUrl) {
+            console.error('❌ Missing DB secrets. Configure one of: DATABASE_URL, STAGING_DATABASE_URL, SUPABASE_DB_URL, SUPABASE_DB_URL_STAGING, or SUPABASE_URL(+SUPABASE_DB_PASSWORD).');
+            process.exit(1);
+          }
+
+          fs.appendFileSync(process.env.GITHUB_ENV, `DATABASE_URL=${databaseUrl}\nSUPABASE_DB_URL=${env.SUPABASE_DB_URL || databaseUrl}\n`);
+          console.log('::add-mask::' + databaseUrl);
+          console.log('✅ Database URL resolved for Prisma CLI');
+          NODE
+
       - name: Generate Prisma client
         run: pnpm run prisma:generate || pnpm exec prisma generate
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL || secrets.STAGING_DATABASE_URL || secrets.SUPABASE_DB_URL || secrets.SUPABASE_DB_URL_STAGING }}
 
       - name: Validate DB secret availability
         run: |
@@ -184,10 +210,6 @@ jobs:
           (needs.detect-migrations.outputs.has_migrations == 'true')
         run: pnpm run migration:guardian
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL || secrets.STAGING_DATABASE_URL || secrets.SUPABASE_DB_URL || secrets.SUPABASE_DB_URL_STAGING }}
-          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL || secrets.SUPABASE_DB_URL_STAGING || secrets.DATABASE_URL || secrets.STAGING_DATABASE_URL }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL || secrets.SUPABASE_URL_STAGING }}
-          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD || secrets.SUPABASE_DB_PASSWORD_STAGING }}
           UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
           UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
           MIGRATION_TYPE: ${{ needs.detect-migrations.outputs.migration_type }}
@@ -336,7 +358,7 @@ jobs:
   apply-staging-migrations:
     name: Apply Migrations to Staging
     runs-on: ubuntu-latest
-    needs: [migration-guardian, detect-migrations]
+    needs: [detect-migrations, migration-guardian]
     if: |
       success() &&
       (github.event_name == 'push' || github.event.pull_request.merged == true) &&

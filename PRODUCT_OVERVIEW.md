@@ -120,3 +120,9 @@ Next.js 16 App Router application with 170+ static and dynamic routes:
 3. **SQL Query Layer:** Queries enforce parameterized `WHERE tenant_id = $1` filters.
 4. **PostgreSQL RLS Layer:** Database-level Row-Level Security filters by `current_setting('app.current_tenant_id')`.
 5. **Entity Layer:** Cross-tenant write operations throw `Error('Tenant mismatch')` before execution.
+
+---
+
+## 5. Enterprise 10x Architecture & Strategic Alignment
+
+For deep dives into the 6-layer enterprise technical stack, sub-millisecond execution benchmarks, Merkle proofpack specifications, and autonomous exception triage mechanics, consult the [Enterprise 10x Master Blueprint](docs/ENTERPRISE_10X_BLUEPRINT.md).
