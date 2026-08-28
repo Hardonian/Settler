@@ -131,9 +131,9 @@ const nextConfig = {
           __dirname,
           "../reconciliation-core/dist/index.js"
         ),
-        // Workspace packages — resolve source directly so webpack/Next.js transpiles them correctly
-        "@jobforge/sdk-ts": path.resolve(__dirname, "../jobforge-sdk-ts/src/index.ts"),
-        "@jobforge/shared": path.resolve(__dirname, "../jobforge-shared/src/index.ts"),
+        // Workspace packages — resolve dist directly so webpack/Next.js bundles them correctly
+        "@jobforge/sdk-ts": path.resolve(__dirname, "../jobforge-sdk-ts/dist/index.js"),
+        "@jobforge/shared": path.resolve(__dirname, "../jobforge-shared/dist/index.js"),
         "@settler/api/lib/email-lifecycle": path.resolve(
           __dirname,
           "../api/dist/lib/email-lifecycle.js"
