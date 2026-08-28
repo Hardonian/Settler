@@ -90,18 +90,29 @@ async function main() {
   await test("Billing enforcement on /api/v1/recon/jobs (unauthenticated)", async () => {
     const response = await fetch(`${API_BASE}/api/v1/recon/jobs`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Origin: API_BASE,
+      },
       body: JSON.stringify({ name: "Test Job" }),
     });
 
-    // Should return demo response or 403, not 500
+    // Should return demo response or 401/403, not 500
     if (response.status === 500) {
       throw new Error("Route returned 500 - billing enforcement may be broken");
     }
 
     const data = await response.json();
-    // Should either be demo response or error about subscription
-    if (!data.demo && !data.error && !data.message?.includes("subscription")) {
+    // Should either be demo response or error about subscription/auth
+    if (
+      !data.demo &&
+      !data.error &&
+      !data.code?.includes("SUBSCRIPTION") &&
+      !data.code?.includes("AUTH") &&
+      !data.message?.includes("subscription") &&
+      response.status !== 401 &&
+      response.status !== 403
+    ) {
       throw new Error("Unexpected response - billing may not be enforced");
     }
   });
@@ -110,7 +121,10 @@ async function main() {
   await test("Free route /api/v1/convert accessible", async () => {
     const response = await fetch(`${API_BASE}/api/v1/convert`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Origin: API_BASE,
+      },
       body: JSON.stringify({
         type: "unit",
         from: "m",

@@ -1,0 +1,45 @@
+{
+  "profile": "fast",
+  "stageFilter": null,
+  "runId": "2026-08-25T01-12-20-374Z",
+  "completedAt": "2026-08-25T01:12:24.957Z",
+  "passed": false,
+  "signals": {
+    "supplyChainAuditState": "unknown",
+    "supplyChainUnavailableCategory": null,
+    "tenantGuardrailStaticStatus": "incomplete",
+    "tenantRuntimeCoverageStatus": "incomplete"
+  },
+  "results": [
+    {
+      "stage": "root",
+      "label": "Root cleanliness",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 759,
+      "timeoutMs": 60000,
+      "logPath": "artifacts\\verification\\2026-08-25T01-12-20-374Z\\root.log"
+    },
+    {
+      "stage": "envContract",
+      "label": "Environment contract",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 3036,
+      "timeoutMs": 120000,
+      "logPath": "artifacts\\verification\\2026-08-25T01-12-20-374Z\\envContract.log"
+    },
+    {
+      "stage": "reconciliationCoreDist",
+      "label": "Reconciliation core dist freshness",
+      "status": "failed",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 778,
+      "timeoutMs": 60000,
+      "logPath": "artifacts\\verification\\2026-08-25T01-12-20-374Z\\reconciliationCoreDist.log"
+    }
+  ]
+}
