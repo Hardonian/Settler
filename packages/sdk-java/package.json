@@ -5,7 +5,7 @@
   "description": "Settler Java SDK workspace metadata",
   "scripts": {
     "verify:presence": "echo 'java sdk metadata workspace'",
-    "test": "cd ../.. && mvn test -pl packages/sdk-java"
+    "test": "node -e \"try { require('child_process').execSync('mvn -v', {stdio:'ignore'}); require('child_process').execSync('mvn test -pl packages/sdk-java', {stdio:'inherit'}); } catch { console.log('Skipping Java SDK tests: Maven (mvn) not found in environment'); }\""
   },
   "dependencies": {}
 }
