@@ -68,3 +68,6 @@ tmp/
 **/.tmp*/
 **/.tmp-*
 *.tmp
+
+.vercel
+.env*
