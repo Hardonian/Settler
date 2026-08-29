@@ -3,26 +3,11 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 });
 
 const path = require("path");
-const os = require("os");
-
-/**
- * Detect if running on Windows without elevated permissions
- * Windows symlink creation requires admin rights, which causes
- * EPERM errors during Next.js standalone build
- */
-const isWindows = os.platform() === "win32";
-// Only use standalone output on non-Windows platforms or CI (CI runs on Linux)
-// On Windows, use default output format to avoid symlink permission issues
-const shouldUseStandalone = !isWindows || process.env.CI === "true";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   pageExtensions: ["ts", "tsx", "js", "jsx"],
   reactStrictMode: true,
-  // Optimize build output
-  // Note: On Windows, standalone mode is disabled to avoid symlink permission issues
-  // The standalone output is used in CI/production (Linux) for optimized Docker deployments
-  output: shouldUseStandalone ? "standalone" : undefined,
   // Ensure Next.js uses the repo root for output tracing when multiple lockfiles exist.
   outputFileTracingRoot: path.resolve(__dirname, "..", ".."),
   // Reduce memory footprint during build

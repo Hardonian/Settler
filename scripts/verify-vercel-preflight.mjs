@@ -125,6 +125,7 @@ const webVercelJson = JSON.parse(readFileSync(resolve(ROOT, "packages/web/vercel
 const webPackageJson = JSON.parse(
   readFileSync(resolve(ROOT, "packages/web/package.json"), "utf-8")
 );
+const webNextConfig = readFileSync(resolve(ROOT, "packages/web/next.config.js"), "utf-8");
 
 const vercelSchema = "https://openapi.vercel.sh/vercel.json";
 for (const [label, config] of [
@@ -136,6 +137,14 @@ for (const [label, config] of [
   } else {
     fail(`${label} must declare $schema: ${vercelSchema}`);
   }
+}
+
+if (/\boutput\s*:\s*["']standalone["']/.test(webNextConfig)) {
+  fail(
+    "packages/web/next.config.js enables standalone output. It is for Docker/self-hosting, not Vercel platform deployments."
+  );
+} else {
+  pass("packages/web avoids Docker-only standalone output");
 }
 
 const unsupportedVercelKeys = ["nodeVersion"];
