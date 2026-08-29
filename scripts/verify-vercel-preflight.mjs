@@ -122,6 +122,21 @@ console.log("\n[4] Node version consistency");
 
 const vercelJson = JSON.parse(readFileSync(resolve(ROOT, "vercel.json"), "utf-8"));
 const webVercelJson = JSON.parse(readFileSync(resolve(ROOT, "packages/web/vercel.json"), "utf-8"));
+const webPackageJson = JSON.parse(
+  readFileSync(resolve(ROOT, "packages/web/package.json"), "utf-8")
+);
+
+const vercelSchema = "https://openapi.vercel.sh/vercel.json";
+for (const [label, config] of [
+  ["vercel.json", vercelJson],
+  ["packages/web/vercel.json", webVercelJson],
+]) {
+  if (config.$schema === vercelSchema) {
+    pass(`${label} declares the Vercel configuration schema`);
+  } else {
+    fail(`${label} must declare $schema: ${vercelSchema}`);
+  }
+}
 
 const unsupportedVercelKeys = ["nodeVersion"];
 for (const [label, config] of [
@@ -147,6 +162,7 @@ const nvmrcVersion = existsSync(nvmrcPath) ? readFileSync(nvmrcPath, "utf-8").tr
 
 const rootPkg = JSON.parse(readFileSync(resolve(ROOT, "package.json"), "utf-8"));
 const engineNode = rootPkg.engines?.node;
+const webEngineNode = webPackageJson.engines?.node;
 
 if (nvmrcVersion) {
   pass(`.nvmrc: ${nvmrcVersion}`);
@@ -166,6 +182,16 @@ if (engineNode) {
   }
 } else {
   fail("package.json missing engines.node — Vercel Node runtime would auto-detect");
+}
+
+if (!webEngineNode) {
+  fail("packages/web/package.json missing engines.node");
+} else if (webEngineNode !== engineNode) {
+  fail(
+    `packages/web engines.node (${webEngineNode}) does not match root engines.node (${engineNode})`
+  );
+} else {
+  pass(`packages/web engines.node matches root: ${webEngineNode}`);
 }
 
 // ── 5. Vercel install command hygiene ────────────────────────────────

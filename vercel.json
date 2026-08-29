@@ -1,4 +1,5 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "pnpm --filter @settler/web... build",
   "devCommand": "pnpm --filter @settler/web dev",
   "installCommand": "corepack enable && corepack prepare pnpm@9.15.0 --activate && pnpm install --frozen-lockfile",
@@ -9,9 +10,6 @@
       "NODE_OPTIONS": "--max-old-space-size=8192",
       "NEXT_TELEMETRY_DISABLED": "1"
     }
-  },
-  "env": {
-    "NODE_ENV": "production"
   },
   "headers": [
     {
