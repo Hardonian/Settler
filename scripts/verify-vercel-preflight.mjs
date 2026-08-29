@@ -147,6 +147,12 @@ if (/\boutput\s*:\s*["']standalone["']/.test(webNextConfig)) {
   pass("packages/web avoids Docker-only standalone output");
 }
 
+if (/outputFileTracingExcludes\s*:\s*\{[\s\S]*\.next\/lock/.test(webNextConfig)) {
+  pass("packages/web excludes Next's transient lock from deployment tracing");
+} else {
+  fail("packages/web must exclude .next/lock from output tracing for Vercel packaging");
+}
+
 const unsupportedVercelKeys = ["nodeVersion"];
 for (const [label, config] of [
   ["vercel.json", vercelJson],

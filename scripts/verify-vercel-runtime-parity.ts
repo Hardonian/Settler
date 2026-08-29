@@ -37,8 +37,10 @@ function main() {
     throw new Error(`Expected pnpm build command for monorepo, got: ${vercelConfig.buildCommand}`);
   }
 
-  if (!nextConfig.includes("output: shouldUseStandalone")) {
-    throw new Error("next.config.js should preserve standalone output behavior for deploy parity");
+  if (!nextConfig.includes("outputFileTracingExcludes") || !nextConfig.includes("./.next/lock")) {
+    throw new Error(
+      "next.config.js must exclude the transient .next/lock file from Vercel output tracing"
+    );
   }
 
   if (!/export const runtime\s*=\s*["']nodejs["']/.test(webhookRoute)) {
