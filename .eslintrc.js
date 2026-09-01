@@ -13,9 +13,12 @@ module.exports = {
   plugins: ["@typescript-eslint"],
   extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier"],
   rules: {
-    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+    ],
     "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/no-unsafe-assignment": "off",
     "@typescript-eslint/no-unsafe-member-access": "off",
     "@typescript-eslint/no-unsafe-call": "off",
@@ -26,7 +29,7 @@ module.exports = {
     "@typescript-eslint/require-await": "off",
     "@typescript-eslint/await-thenable": "off",
     "@typescript-eslint/ban-ts-comment": "off",
-    "no-console": "off",
+    "no-console": ["warn", { allow: ["warn", "error"] }],
 
     // MONOREPO BOUNDARY ENFORCEMENT
     // Prevent importing from package src directories - use workspace dependencies instead

@@ -14,6 +14,19 @@
 - [ ] Performance improvement
 - [ ] Security fix
 
+## Work Classification
+
+> Per [CONTRIBUTING.md](../../CONTRIBUTING.md), label this PR as one of:
+
+- [ ] **Maintenance** — cosmetic, polish, or consistency work
+- [ ] **Leverage** — improves operator throughput, verification confidence, release safety, or contract coherence
+- [ ] **Moat** — compounds reconciliation intelligence, evidence depth, policy memory, or audit trust
+
+## Tenant & Security Impact
+
+- [ ] This change has NO impact on tenant isolation or security boundaries
+- [ ] This change affects tenant-scoped code — `pnpm run verify:tenant` and `pnpm run test:cross-tenant` pass
+
 ## CI Verification Checklist
 
 **⚠️ CI MUST PASS BEFORE MERGE**

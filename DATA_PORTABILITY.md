@@ -6,8 +6,8 @@ Settler supports customer-directed data portability for tenant-owned operational
 
 ## Export Formats
 
-- Structured exports are provided in machine-readable formats (e.g., JSON/CSV where applicable).
-- Evidence artifacts include manifests/hashes to support integrity verification.
+- Structured exports are provided in machine-readable formats (JSON, CSV, and proofpack bundles).
+- Evidence artifacts include manifests and cryptographic hashes to support integrity verification.
 
 ## Scope of Portable Data
 
@@ -27,6 +27,14 @@ Settler supports customer-directed data portability for tenant-owned operational
 3. Settler prepares export package and delivery method according to contractual controls.
 4. Customer confirms receipt and validation of package integrity.
 
+### Fulfillment SLA
+
+| Request Type | Target Turnaround |
+|-------------|-------------------|
+| Standard data export (JSON/CSV) | 5 business days |
+| Full evidence bundle with proofpacks | 10 business days |
+| Emergency / legal hold export | 48 hours |
+
 ## Limitations
 
 - Data subject to legal hold, fraud/security investigations, or third-party contractual restrictions may be delayed or partially excluded as legally required.
@@ -34,4 +42,4 @@ Settler supports customer-directed data portability for tenant-owned operational
 
 ## Contact
 
-For portability requests: **portability@settler.dev**.
+For portability requests: **portability@hardonia.store**.

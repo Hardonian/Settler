@@ -2,17 +2,19 @@
 **/dist/
 build/
 *.tsbuildinfo
+.next/
+next-env.d.ts
 
-# Python
-__pycache__/
-*.pyc
-*.pyo
-.venv/
-.egg-info/
-*.egg
-.pytest_cache/
+# Rust
+/target/
 
-# Environment — keep examples, ignore secrets
+# Node
+node_modules/
+
+# Turbo build cache
+.turbo/
+
+# Environment — keep examples and templates, ignore secrets
 .env
 .env.*
 !.env.example
@@ -22,8 +24,14 @@ __pycache__/
 !.env.production.example
 !.env.local.example
 
-# Node
-node_modules/
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+.egg-info/
+*.egg
+.pytest_cache/
 
 # Terraform
 *.tfstate
@@ -43,24 +51,11 @@ Thumbs.db
 # Logs
 *.log
 
-# Turbo build cache
-.turbo/
-
 # Test/verification artifacts
 artifacts/
-*.tsbuildinfo
-.pytest_cache/
-.env*
 
 # Vercel
 .vercel
-
-# Next.js generated build output
-.next/
-next-env.d.ts
-
-# Rust
-/target/
 
 # Temporary files & test harnesses
 tmp/
@@ -68,6 +63,3 @@ tmp/
 **/.tmp*/
 **/.tmp-*
 *.tmp
-
-.vercel
-.env*

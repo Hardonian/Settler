@@ -8,10 +8,13 @@ This document defines the single source of truth for setting up Settler for loca
 
 Ensure these are installed before beginning:
 
-- **Node.js:** Version `24.x` (24.12.0 recommended). Use nvm to install.
+- **Node.js:** Version `24.x` (24.15.0 pinned in `.nvmrc`). Use nvm to install.
 - **pnpm:** Version `10.13` or higher (corepack enabled)
 - **Docker:** Required for running local instances of TigerBeetle and Postgres
+- **Rust:** Optional — only needed for kernel development (`crates/`). Install via [rustup](https://rustup.rs/).
 - **Doppler (Recommended):** For secret management (optional but recommended)
+
+> **Windows users:** See [WINDOWS_DEVELOPMENT.md](WINDOWS_DEVELOPMENT.md) for platform-specific setup.
 
 ### 2. Initial Setup
 
@@ -20,8 +23,8 @@ Follow these steps in order:
 #### Step 1: Clone the repository
 
 ```bash
-git clone https://github.com/settler/settler.git
-cd settler
+git clone https://github.com/Hardonian/Settler.git
+cd Settler
 ```
 
 #### Step 2: Bootstrap environment
@@ -110,7 +113,7 @@ This includes:
 - Test suite execution
 - Repository integrity checks
 
-### 6.1 Verify Demo Data (Optional)
+### 7. Verify Demo Data (Optional)
 
 For interactive playground functionality, generate demo data:
 
@@ -131,8 +134,8 @@ The minimal path to see a working Settler console is:
 
 ```bash
 # One-time setup
-git clone https://github.com/settler/settler.git
-cd settler
+git clone https://github.com/Hardonian/Settler.git
+cd Settler
 pnpm run bootstrap
 pnpm tb:start
 

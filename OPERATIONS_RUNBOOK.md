@@ -79,4 +79,91 @@ pnpm run verify:security     # Security posture check
 | P0 — Data loss or tenant breach | Immediate         | Freeze tenant, engage incident response          |
 | P1 — Service outage             | < 1 hour          | Check Vercel/Supabase status, rollback if needed |
 | P2 — Feature degradation        | < 4 hours         | Investigate, document, schedule fix              |
-| P3 — Non-critical bug           | Next business day | Triage and assign                                |
+| P3 — Non-critical bug           | Next business day | Triage and assign                                |\n\n## 7. Backup & Restore
+
+### PostgreSQL
+
+```bash
+# Manual backup (Supabase-hosted)
+pg_dump "$DATABASE_URL" --format=custom --file=settler-$(date +%Y%m%d).dump
+
+# Restore
+pg_restore --dbname="$DATABASE_URL" settler-YYYYMMDD.dump
+```
+
+- Supabase provides automated daily backups with 7-day retention (Pro plan) or 30-day retention (Enterprise).
+- Test restore procedures quarterly. Document results in `docs/archive/`.
+
+### TigerBeetle
+
+- TigerBeetle is an append-only ledger — data is immutable by design.
+- Cluster replication handles durability. For backup, snapshot the data directory.
+- `pnpm tb:status` verifies cluster health.
+
+### Redis
+
+- Redis is used for caching and job queues — data is ephemeral by design.
+- No backup required. Jobs are retried automatically via BullMQ retry policies.
+- If Redis is lost, restart it and allow the queue to rebuild from pending database state.
+
+## 8. Monitoring Setup
+
+| System | Tool | Purpose |
+|--------|------|---------|
+| **Errors** | Sentry | Unhandled exceptions, performance monitoring |
+| **Uptime** | Vercel / external probe | HTTP health checks on `/api/v1/health` |
+| **Logs** | Vercel Log Drain → Sentry | Structured log aggregation |
+| **Metrics** | OpenTelemetry (optional) | Request latency, throughput, queue depth |
+| **Billing** | Stripe Dashboard | Subscription status, MRR, churn |
+
+### Structured Logging
+
+Settler uses structured JSON logging via `@settler/logger`. All log entries include:
+- `tenantId` (when in tenant context)
+- `requestId` (correlation ID)
+- `timestamp` (ISO 8601)
+- `level` (error, warn, info, debug)
+
+### Alerting Thresholds
+
+| Metric | Warning | Critical |
+|--------|---------|----------|
+| Error rate (5xx) | > 1% of requests | > 5% of requests |
+| P95 latency | > 2s | > 5s |
+| Queue depth | > 1000 pending jobs | > 5000 pending jobs |
+| Disk usage | > 70% | > 90% |
+| Unmatched exception rate | > 20% of run | > 50% of run |
+
+## 9. Capacity Planning
+
+### Scaling Triggers
+
+| Resource | Trigger | Action |
+|----------|---------|--------|
+| **API CPU** | Sustained > 80% for 10 min | Scale Vercel concurrency or add serverless regions |
+| **Database connections** | > 80% of pool | Increase connection pool size or enable PgBouncer |
+| **Redis memory** | > 70% of allocated | Increase instance size or tune TTLs |
+| **Queue backlog** | Jobs older than SLA threshold | Add worker concurrency, investigate bottleneck |
+
+### Cost Optimization
+
+- Settler is designed for scale-to-zero on Vercel Serverless.
+- TigerBeetle and PostgreSQL are the only always-on costs.
+- Redis can be replaced with Upstash (serverless) for lower-traffic deployments.
+
+## 10. On-Call Rotation
+
+### Responsibilities
+
+- Monitor Sentry alerts and the daily ops report (`pnpm run ops:daily`).
+- Acknowledge P0/P1 incidents within the SLA window.
+- Run `pnpm run doctor` if system health is uncertain.
+- Document all incidents using the template at `docs/INCIDENT_POSTMORTEM_TEMPLATE.md`.
+
+### Communication Channels
+
+| Channel | Purpose |
+|---------|---------|
+| Sentry alerts | Automated error notifications |
+| Email | Escalation path for P0/P1 |
+| `pnpm run ops:daily` | Daily digest of operational health |

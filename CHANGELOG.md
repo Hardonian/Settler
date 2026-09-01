@@ -64,3 +64,6 @@ Initial production release of the Settler reconciliation platform.
 - Subscription tier management (free, trial, commercial, enterprise)
 - Tenant quota enforcement with usage tracking
 - Trial lifecycle email automation (day 7 through expiry)
+
+[Unreleased]: https://github.com/Hardonian/Settler/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/Hardonian/Settler/releases/tag/v1.0.0

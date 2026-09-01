@@ -5,9 +5,15 @@ Settler is a reconciliation intelligence platform — deterministic outcomes, ve
 ## Development Setup
 
 ```bash
-pnpm install
-pnpm dev:stack
+git clone https://github.com/Hardonian/Settler.git
+cd Settler
+pnpm run bootstrap     # Creates .env.local, installs deps, validates setup
+pnpm tb:start          # Starts PostgreSQL + Redis + TigerBeetle (Docker)
+pnpm dev               # http://localhost:3000 (console), http://localhost:4000 (API)
 ```
+
+For Windows-specific setup, see [WINDOWS_DEVELOPMENT.md](WINDOWS_DEVELOPMENT.md).
+For the full setup reference, see [SETUP.md](SETUP.md).
 
 For deterministic local fixtures and demo evidence:
 
@@ -102,6 +108,59 @@ pnpm run verify:security:fast
 - If a document is superseded, move it to `docs/archive/` and add index entries in `docs/_meta/archive-index.*`
 - Keep root-level docs limited to stable entry points (`README.md`, `CONTRIBUTING.md`, `CHANGELOG.md`, security and legal docs)
 - Follow [`docs/_meta/DOCS_GOVERNANCE.md`](docs/_meta/DOCS_GOVERNANCE.md)
+
+## Branch Naming Convention
+
+Use the following prefixes for branches:
+
+- `feat/` — new feature or capability
+- `fix/` — bug fix
+- `docs/` — documentation only
+- `security/` — security-related changes
+- `refactor/` — code restructuring without behavior change
+- `ci/` — CI/CD pipeline changes
+- `chore/` — maintenance, dependency updates, tooling
+
+## Commit Message Format
+
+Follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+<type>(<scope>): <description>
+
+[optional body]
+[optional footer]
+```
+
+Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `ci`, `security`, `perf`.
+Scopes: `api`, `web`, `core`, `adapters`, `cli`, `sdk`, `kernel`, `ci`, `docs`.
+
+Examples:
+- `feat(adapters): add TikTok Shop connector`
+- `fix(api): enforce tenantId on audit export route`
+- `security(api): add rate limiting per tenant`
+
+## Developer Certificate of Origin (DCO)
+
+All contributions must be signed off to certify you have the right to submit the code under the project's license:
+
+```bash
+git commit -s -m "feat(core): add tolerance sliding window"
+```
+
+The `-s` flag adds `Signed-off-by: Your Name <your@email.com>` to the commit message.
+
+## First-Time Contributors
+
+1. Look for issues labeled `good-first-issue` in the issue tracker.
+2. Read [AGENTS.md](AGENTS.md) for the agent execution contract and build commands.
+3. Read [MODEL_SPEC.md](MODEL_SPEC.md) for product identity and operating doctrine.
+4. Start with a small, well-scoped change — a documentation fix, a test improvement, or a bug fix.
+5. Run `pnpm verify:fast` before pushing to catch issues early.
+
+## Changelog
+
+All user-facing changes must include an entry in [CHANGELOG.md](CHANGELOG.md) under `[Unreleased]`, following [Keep a Changelog](https://keepachangelog.com/) format.
 
 ## Pull Request Expectations
 

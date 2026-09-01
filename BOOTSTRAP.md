@@ -1,49 +1,45 @@
-# Bootstrap (few clicks)
+# Bootstrap
 
-This repo is bootstrap-ready. Pick your stack below.
+The fastest path from clone to running Settler.
 
-## 0. Prereqs (one time)
+## Prerequisites
 
-- Python 3.12+ (or Node 18+ / Go 1.22+ / Rust 1.78+ depending on stack)
-- [just](https://github.com/casey/just) -> `pipx install rust-just` or `brew install just`
-- Git
+- **Node.js** 24.x (24.15.0+) — install via [nvm](https://github.com/nvm-sh/nvm) or [nvm-windows](https://github.com/coreybutler/nvm-windows)
+- **pnpm** 10.13+ — `corepack enable && corepack prepare pnpm@10.13.1 --activate`
+- **Docker** — required for PostgreSQL, Redis, and TigerBeetle
+- **Git**
 
-## 1. One-command bootstrap
-
-```bash
-just bootstrap        # detects stack, creates venv/.env, installs deps, runs smoke test
-```
-
-or without `just`:
+## One-Command Bootstrap
 
 ```bash
-./scripts/bootstrap.sh
+git clone https://github.com/Hardonian/Settler.git
+cd Settler
+pnpm run bootstrap
 ```
 
-## 2. Configure
+This command:
+1. Creates `.env.local` from `.env.local.example` (if missing)
+2. Installs all dependencies
+3. Validates the monorepo contract
+4. Runs first-run environment validation
+
+## Start Local Infrastructure
 
 ```bash
-cp .env.example .env  # then edit .env with your keys (never commit .env)
+pnpm tb:start          # PostgreSQL, Redis, TigerBeetle via Docker Compose
 ```
 
-## 3. Run / dev
+## Run
 
 ```bash
-just dev              # start the app locally
-just test             # run the test suite
-just status           # health check
+pnpm dev               # Console: http://localhost:3000, API: http://localhost:4000
 ```
 
-## 4. Docker (optional)
+## Verify
 
 ```bash
-docker compose up --build
+pnpm verify:fast       # Quick: lint → typecheck → env contract
 ```
 
-## 5. Verify it works
-
-```bash
-just smoke            # asserts the service responds on its health endpoint
-```
-
-Need help? Open an issue or see the operator docs at aiautomatedsystems.ca.
+For the full setup reference (environment variables, troubleshooting, Rust kernel setup), see [SETUP.md](SETUP.md).
+For Windows-specific instructions, see [WINDOWS_DEVELOPMENT.md](WINDOWS_DEVELOPMENT.md).

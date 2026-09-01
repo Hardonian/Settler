@@ -6,7 +6,8 @@ Settler is maintained by a core team of maintainers who review and approve chang
 
 - **Minor changes** (bug fixes, docs updates, small improvements) are approved through standard pull request review by any maintainer.
 - **Significant changes** (architecture, security model, breaking behavior, new engine primitives) require maintainer consensus. These are discussed in the PR or a linked GitHub issue before implementation.
-- **If consensus cannot be reached**, the decision and dissenting views are documented in the pull request. The project lead makes the final call.
+- **If consensus cannot be reached**, the decision and dissenting views are documented in the pull request. The project lead (see [CODEOWNERS](CODEOWNERS)) makes the final call.
+- **Significant architectural decisions** are recorded as Architecture Decision Records (ADRs) in [docs/ARCHITECTURE_DECISION_RECORDS.md](docs/ARCHITECTURE_DECISION_RECORDS.md).
 
 ## Roles
 
@@ -17,6 +18,17 @@ Review and merge changes, set technical direction, manage releases, and triage i
 ### Contributors
 
 Submit issues, pull requests, and documentation improvements. All contributors are expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md) and the guidelines in [CONTRIBUTING.md](CONTRIBUTING.md).
+
+### Becoming a Maintainer
+
+Contributors may be invited to become maintainers based on:
+
+- Sustained, high-quality contributions over 3+ months
+- Demonstrated understanding of the security invariants and tenant isolation model
+- Track record of thorough code reviews
+- Alignment with the [MODEL_SPEC.md](MODEL_SPEC.md) operating doctrine
+
+Maintainer nominations are discussed privately among existing maintainers and require consensus.
 
 ## Release Cadence
 

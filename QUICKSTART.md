@@ -6,7 +6,7 @@ The fastest path to a running Settler instance.
 
 | Tool        | Version            | Install                                                                                           |
 | ----------- | ------------------ | ------------------------------------------------------------------------------------------------- |
-| **Node.js** | `24.x` (24.12.0+)  | [nvm](https://github.com/nvm-sh/nvm) or [nvm-windows](https://github.com/coreybutler/nvm-windows) |
+| **Node.js** | `24.x` (24.15.0+)  | [nvm](https://github.com/nvm-sh/nvm) or [nvm-windows](https://github.com/coreybutler/nvm-windows) |
 | **pnpm**    | `10.13.1+`         | `corepack enable && corepack prepare pnpm@10.13.1 --activate`                                     |
 | **Docker**  | Any recent version | [docker.com](https://www.docker.com)                                                              |
 | **Git**     | Any                | —                                                                                                 |
@@ -14,8 +14,8 @@ The fastest path to a running Settler instance.
 ## 1. Clone and bootstrap
 
 ```bash
-git clone https://github.com/settler/settler.git
-cd settler
+git clone https://github.com/Hardonian/Settler.git
+cd Settler
 pnpm run bootstrap
 ```
 

@@ -10,7 +10,6 @@ on:
 
 env:
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
-  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
 
 jobs:
   security-invariants:
@@ -28,10 +27,11 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9.15.0
+          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
+          cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -145,8 +145,6 @@ jobs:
           fetch-depth: 0
 
       - name: Run Gitleaks
-        # gitleaks-action@v2 requires a paid GITLEAKS_LICENSE and fails open without
-        # it; use the OSS gitleaks CLI with the same .gitleaks.toml instead.
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

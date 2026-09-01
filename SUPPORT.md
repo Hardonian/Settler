@@ -100,7 +100,7 @@ PORT=3001 pnpm --filter @settler/web dev
 - **Bug reports:** Acknowledged within 72 hours. Critical bugs (data loss, security) are prioritized.
 - **Feature requests:** Reviewed and labeled within 1 week. Implementation timeline depends on scope and priority.
 - **Questions:** Best-effort response. Community help in Discussions is encouraged.
-- **Security reports:** Acknowledged within 72 hours per [SECURITY.md](SECURITY.md).
+- **Security reports:** Acknowledged within 48 hours per [SECURITY.md](SECURITY.md).
 
 ## Getting Faster Help
 

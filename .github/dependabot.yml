@@ -1,6 +1,6 @@
 version: 2
 updates:
-  # NPM dependencies
+  # NPM dependencies (primary ecosystem)
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
@@ -8,33 +8,25 @@ updates:
     commit-message:
       prefix: "deps"
     open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+    groups:
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
 
-  # Python/pip dependencies
-  - package-ecosystem: "pip"
+  # Rust/Cargo dependencies (crates/)
+  - package-ecosystem: "cargo"
     directory: "/"
     schedule:
       interval: "weekly"
     commit-message:
       prefix: "deps"
-    open-pull-requests-limit: 10
-
-  # Go modules
-  - package-ecosystem: "gomod"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    commit-message:
-      prefix: "deps"
-    open-pull-requests-limit: 10
-
-  # Maven dependencies
-  - package-ecosystem: "maven"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    commit-message:
-      prefix: "deps"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "rust"
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
@@ -44,4 +36,10 @@ updates:
     commit-message:
       prefix: "ci"
     open-pull-requests-limit: 5
-
+    labels:
+      - "ci"
+    groups:
+      actions-minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"

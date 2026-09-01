@@ -11,7 +11,7 @@
 
 <p align="center">
   <a href="https://github.com/Hardonian/Settler/actions/workflows/ci.yml"><img src="https://github.com/Hardonian/Settler/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI" /></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-BSL--1.1-blue" alt="License" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="License" /></a>
   <img src="https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Node.js-22%2B-339933?logo=node.js&logoColor=white" alt="Node.js" />
   <img src="https://img.shields.io/badge/Rust-Kernel-DEA584?logo=rust&logoColor=white" alt="Rust" />
@@ -93,7 +93,7 @@ Every adapter includes rate limiting, token refresh, webhook verification, and r
 - **Billing Gating** — Tier-based feature access with circuit-breaker degraded states
 - **46 Middleware Layers** — Auth, CSRF, rate limiting, idempotency, compression, ETag, request signing, observability, and more
 
-## Try It Now: Try Settler in 5 minutes
+## Try Settler in 5 Minutes
 
 Run the self-serve reconciliation demo with committed CSV seed data and no external services:
 
@@ -184,16 +184,36 @@ Full API reference: [docs/API_REFERENCE.md](docs/API_REFERENCE.md)
 
 | Document | Description |
 |----------|-------------|
+| [QUICKSTART.md](QUICKSTART.md) | Fastest path to a running instance |
 | [SETUP.md](SETUP.md) | Canonical local development setup |
+| [WINDOWS_DEVELOPMENT.md](WINDOWS_DEVELOPMENT.md) | Windows-specific configuration and fixes |
 | [PRODUCT_OVERVIEW.md](PRODUCT_OVERVIEW.md) | Platform architecture and design |
 | [SECURITY_INVARIANTS.md](SECURITY_INVARIANTS.md) | Tenant isolation and security model |
+| [OPERATIONS_RUNBOOK.md](OPERATIONS_RUNBOOK.md) | Incident response and operational procedures |
+| [GOVERNANCE.md](GOVERNANCE.md) | Decision-making, releases, and deprecation policy |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Contribution guidelines |
 | [CHANGELOG.md](CHANGELOG.md) | Release history |
+
+## What Settler is NOT
+
+- **Not an ERP** — Settler reconciles transactions across systems, it doesn't manage inventory, HR, or procurement.
+- **Not a payment processor** — Settler verifies and matches payments, it doesn't move money.
+- **Not a BI/analytics tool** — Settler produces evidence and exception queues, not dashboards or ad-hoc queries.
+- **Not a bank feed aggregator** — Settler integrates with aggregators (Plaid, TrueLayer) but doesn't provide bank connectivity itself.
+
+For detailed boundaries, see [docs/NON_GOALS.md](docs/NON_GOALS.md) and [docs/WHO_THIS_IS_NOT_FOR.md](docs/WHO_THIS_IS_NOT_FOR.md).
 
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). All pull requests must pass `pnpm verify` and `pnpm run typecheck`.
 
+## Support & Community
+
+- **Setup help:** [SUPPORT.md](SUPPORT.md)
+- **Security vulnerabilities:** [SECURITY.md](SECURITY.md) — report privately, never via public issues
+- **Questions:** GitHub Discussions (Q&A category)
+- **Code of Conduct:** [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+
 ## License
 
-See [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE).

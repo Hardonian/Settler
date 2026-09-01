@@ -10,7 +10,6 @@ useDefault = true
 [allowlist]
 description = "Allowlist for false positives"
 paths = [
-  '''\.md$''',
   '''\.lock$''',
   '''node_modules/''',
   '''\.next/''',
