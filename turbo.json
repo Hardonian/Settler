@@ -75,6 +75,8 @@
         "next.config.mjs",
         "postcss.config.js",
         "tailwind.config.js",
+        "prisma/schema.prisma",
+        "prisma/migrations/**",
         "!**/*.test.ts",
         "!**/*.test.tsx",
         "!**/*.spec.ts",
@@ -123,6 +125,8 @@
         "src/**/*.tsx",
         "app/**/*.ts",
         "app/**/*.tsx",
+        "prisma/schema.prisma",
+        "prisma/migrations/**",
         "tsconfig.json",
         "package.json"
       ]
