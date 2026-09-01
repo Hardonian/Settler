@@ -17,14 +17,14 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.46",
+    "@ai-sdk/openai": "^4.0.51",
     "@settler/types": "workspace:*",
-    "ai": "^7.0.77"
+    "ai": "^7.0.84"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.11",
     "typescript": "^5.9.3",
     "vite": "^8.2.2",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.11"
   }
 }
