@@ -1,22 +1,16 @@
-<p align="center">
-  <img src="packages/web/public/icon-512.png" alt="Settler" width="80" height="80" />
-</p>
+# Settler
 
-<h1 align="center">Settler</h1>
+![Settler](packages/web/public/icon-512.png)
 
-<p align="center">
-  <strong>Reconciliation intelligence & audit operating system</strong><br />
-  Deterministic transaction matching · Hash-linked evidence · Enterprise-grade tenant isolation
-</p>
+**Reconciliation intelligence & audit operating system**  
+Deterministic transaction matching · Hash-linked evidence · Enterprise-grade tenant isolation
 
-<p align="center">
-  <a href="https://github.com/Hardonian/Settler/actions/workflows/ci.yml"><img src="https://github.com/Hardonian/Settler/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI" /></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="License" /></a>
-  <img src="https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/Node.js-22%2B-339933?logo=node.js&logoColor=white" alt="Node.js" />
-  <img src="https://img.shields.io/badge/Rust-Kernel-DEA584?logo=rust&logoColor=white" alt="Rust" />
-  <img src="https://img.shields.io/badge/Next.js-16-000000?logo=next.js&logoColor=white" alt="Next.js" />
-</p>
+[![CI](https://github.com/Hardonian/Settler/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Hardonian/Settler/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-24%2B-339933?logo=node.js&logoColor=white)
+![Rust](https://img.shields.io/badge/Rust-Kernel-DEA584?logo=rust&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=next.js&logoColor=white)
 
 ---
 
@@ -56,7 +50,7 @@ graph TB
 ## Adapter Ecosystem — 25+ Verified Connectors
 
 | Category | Adapters |
-|----------|----------|
+| --- | --- |
 | **Payment Processors** | Stripe, PayPal, Square, Stripe Connect, Google Pay |
 | **Accounting** | QuickBooks, Xero, FreshBooks, Wave, NetSuite |
 | **E-Commerce** | Shopify, WooCommerce, Etsy, Amazon Seller, eBay, Wix Stores, TikTok Shop |
@@ -73,7 +67,7 @@ Every adapter includes rate limiting, token refresh, webhook verification, and r
 ## Tech Stack
 
 | Layer | Technology | Purpose |
-|-------|-----------|---------|
+| --- | --- | --- |
 | **Rust Kernel** | Cargo workspace | Content-addressable storage, cryptographic proofpacks, deterministic primitives |
 | **Reconciliation Core** | TypeScript | Matching engine, tolerance evaluation, evidence emission, exception intelligence |
 | **Control Plane** | Express 5 + PostgreSQL + Prisma | 37 API route modules, multi-tenant middleware, event sourcing, billing enforcement |
@@ -127,7 +121,7 @@ pnpm tb:start          # Starts PostgreSQL + Redis + TigerBeetle (Docker)
 pnpm dev               # http://localhost:3000 (console), http://localhost:4000 (API)
 ```
 
-**Prerequisites:** Node.js 22+, pnpm 9+, Docker
+**Prerequisites:** Node.js 24.x (24.15.0+), pnpm 10.13+, Docker
 
 ## Repository Structure
 
@@ -168,7 +162,7 @@ pnpm test:e2e      # Playwright-based end-to-end tests
 Versioned routes under `/api/v1/`. Key endpoints:
 
 | Endpoint | Method | Description |
-|----------|--------|-------------|
+| --- | --- | --- |
 | `/api/v1/ingestion` | POST | Ingest source/target records (CSV, JSON, webhooks) |
 | `/api/v1/reconciliation/run` | POST | Execute a reconciliation run |
 | `/api/v1/reconciliation/runs` | GET | List reconciliation runs |
@@ -183,7 +177,7 @@ Full API reference: [docs/API_REFERENCE.md](docs/API_REFERENCE.md)
 ## Documentation
 
 | Document | Description |
-|----------|-------------|
+| --- | --- |
 | [QUICKSTART.md](QUICKSTART.md) | Fastest path to a running instance |
 | [SETUP.md](SETUP.md) | Canonical local development setup |
 | [WINDOWS_DEVELOPMENT.md](WINDOWS_DEVELOPMENT.md) | Windows-specific configuration and fixes |

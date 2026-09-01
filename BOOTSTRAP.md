@@ -18,6 +18,7 @@ pnpm run bootstrap
 ```
 
 This command:
+
 1. Creates `.env.local` from `.env.local.example` (if missing)
 2. Installs all dependencies
 3. Validates the monorepo contract

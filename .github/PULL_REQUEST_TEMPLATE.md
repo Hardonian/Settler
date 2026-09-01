@@ -29,7 +29,7 @@
 
 ## CI Verification Checklist
 
-**⚠️ CI MUST PASS BEFORE MERGE**
+### ⚠️ CI Must Pass Before Merge
 
 - [ ] CI link: (paste link to CI run after pushing)
 - [ ] ✅ Repository integrity check passed (`repo-integrity`)

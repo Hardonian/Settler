@@ -125,7 +125,7 @@ Use the following prefixes for branches:
 
 Follow [Conventional Commits](https://www.conventionalcommits.org/):
 
-```
+```text
 <type>(<scope>): <description>
 
 [optional body]
@@ -136,6 +136,7 @@ Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `ci`, `secur
 Scopes: `api`, `web`, `core`, `adapters`, `cli`, `sdk`, `kernel`, `ci`, `docs`.
 
 Examples:
+
 - `feat(adapters): add TikTok Shop connector`
 - `fix(api): enforce tenantId on audit export route`
 - `security(api): add rate limiting per tenant`

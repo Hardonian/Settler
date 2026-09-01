@@ -74,12 +74,14 @@ pnpm run verify:security     # Security posture check
 
 ## 6. Escalation Path
 
-| Severity                        | Response Time     | Action                                           |
-| ------------------------------- | ----------------- | ------------------------------------------------ |
-| P0 — Data loss or tenant breach | Immediate         | Freeze tenant, engage incident response          |
-| P1 — Service outage             | < 1 hour          | Check Vercel/Supabase status, rollback if needed |
-| P2 — Feature degradation        | < 4 hours         | Investigate, document, schedule fix              |
-| P3 — Non-critical bug           | Next business day | Triage and assign                                |\n\n## 7. Backup & Restore
+| Severity | Response Time | Action |
+| --- | --- | --- |
+| P0 — Data loss or tenant breach | Immediate | Freeze tenant, engage incident response |
+| P1 — Service outage | < 1 hour | Check Vercel/Supabase status, rollback if needed |
+| P2 — Feature degradation | < 4 hours | Investigate, document, schedule fix |
+| P3 — Non-critical bug | Next business day | Triage and assign |
+
+## 7. Backup & Restore
 
 ### PostgreSQL
 
@@ -109,7 +111,7 @@ pg_restore --dbname="$DATABASE_URL" settler-YYYYMMDD.dump
 ## 8. Monitoring Setup
 
 | System | Tool | Purpose |
-|--------|------|---------|
+| --- | --- | --- |
 | **Errors** | Sentry | Unhandled exceptions, performance monitoring |
 | **Uptime** | Vercel / external probe | HTTP health checks on `/api/v1/health` |
 | **Logs** | Vercel Log Drain → Sentry | Structured log aggregation |
@@ -119,6 +121,7 @@ pg_restore --dbname="$DATABASE_URL" settler-YYYYMMDD.dump
 ### Structured Logging
 
 Settler uses structured JSON logging via `@settler/logger`. All log entries include:
+
 - `tenantId` (when in tenant context)
 - `requestId` (correlation ID)
 - `timestamp` (ISO 8601)
@@ -127,7 +130,7 @@ Settler uses structured JSON logging via `@settler/logger`. All log entries incl
 ### Alerting Thresholds
 
 | Metric | Warning | Critical |
-|--------|---------|----------|
+| --- | --- | --- |
 | Error rate (5xx) | > 1% of requests | > 5% of requests |
 | P95 latency | > 2s | > 5s |
 | Queue depth | > 1000 pending jobs | > 5000 pending jobs |
@@ -139,7 +142,7 @@ Settler uses structured JSON logging via `@settler/logger`. All log entries incl
 ### Scaling Triggers
 
 | Resource | Trigger | Action |
-|----------|---------|--------|
+| --- | --- | --- |
 | **API CPU** | Sustained > 80% for 10 min | Scale Vercel concurrency or add serverless regions |
 | **Database connections** | > 80% of pool | Increase connection pool size or enable PgBouncer |
 | **Redis memory** | > 70% of allocated | Increase instance size or tune TTLs |
@@ -163,7 +166,7 @@ Settler uses structured JSON logging via `@settler/logger`. All log entries incl
 ### Communication Channels
 
 | Channel | Purpose |
-|---------|---------|
+| --- | --- |
 | Sentry alerts | Automated error notifications |
 | Email | Escalation path for P0/P1 |
 | `pnpm run ops:daily` | Daily digest of operational health |

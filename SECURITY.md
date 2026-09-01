@@ -8,7 +8,7 @@ If you discover a security vulnerability in Settler, please report it responsibl
 
 ### Reporting Channels
 
-- **Email:** security@hardonia.store
+- **Email:** [security@hardonia.store](mailto:security@hardonia.store)
 - **GitHub:** [Private vulnerability reporting](https://github.com/Hardonian/Settler/security/advisories/new) (preferred)
 
 ### What to Include
@@ -22,7 +22,7 @@ If you discover a security vulnerability in Settler, please report it responsibl
 ## Response Timeline
 
 | Stage | Target |
-|-------|--------|
+| --- | --- |
 | **Acknowledgment** | Within 48 hours of receipt |
 | **Initial triage and severity assessment** | Within 72 hours |
 | **Remediation timeline communicated** | Within 7 business days |
@@ -51,7 +51,7 @@ This security policy applies to:
 ## Severity Classification
 
 | Severity | Criteria | Examples |
-|----------|----------|----------|
+| --- | --- | --- |
 | **Critical (P0)** | Tenant data breach, cross-tenant data access, RLS bypass, authentication bypass | Cross-tenant query without `tenant_id`, JWT forgery, RLS policy gap |
 | **High (P1)** | Privilege escalation, data exfiltration within tenant, service-wide outage | Role bypass, API key scope escape, unvalidated admin access |
 | **Medium (P2)** | Information disclosure, denial of service, security control bypass | Error message leaking internals, rate limit bypass, CSRF |
@@ -62,7 +62,7 @@ This security policy applies to:
 Settler enforces a 5-layer tenant isolation model. For the full specification, see [SECURITY_INVARIANTS.md](SECURITY_INVARIANTS.md).
 
 | Layer | Mechanism |
-|-------|-----------|
+| --- | --- |
 | **1. Middleware** | `tenantMiddleware` resolves `req.tenantId` before any route handler |
 | **2. Repository** | Every database method requires explicit `tenantId` parameter (TypeScript-enforced) |
 | **3. SQL** | All queries include parameterized `WHERE tenant_id = $N` |

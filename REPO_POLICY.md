@@ -1,6 +1,6 @@
 # Repository Policy: Open-Core Architecture
 
-**Last Updated**: 2025-01-28
+**Last Updated**: 2026-08-31
 
 ## Overview
 
@@ -49,6 +49,7 @@ All files are classified into one of four categories:
 - `packages/protocol/**`
 - `packages/react-settler/**`
 - `packages/cli/**`
+- `crates/**`
 - `docs/public/**`
 - `examples/**`
 
@@ -165,5 +166,5 @@ All files are classified into one of four categories:
 
 ---
 
-**Policy Version**: 1.0.0  
-**Effective Date**: 2025-01-28
+**Policy Version**: 1.1.0  
+**Effective Date**: 2026-08-31

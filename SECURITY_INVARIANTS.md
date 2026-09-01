@@ -8,8 +8,8 @@ backed by code that throws, rejects, or blocks if violated.
 
 ## Tenancy Key
 
-| Key                | Origin                                                                    | Set by                                                       |
-| ------------------ | ------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| Key | Origin | Set by |
+| --- | --- | --- |
 | `tenant_id` (UUID) | JWT claim, API key lookup, `X-Tenant-ID` header, subdomain, custom domain | `tenantMiddleware` (`packages/api/src/middleware/tenant.ts`) |
 
 The middleware resolves `req.tenantId` before any route handler executes.
@@ -102,14 +102,50 @@ The where clause can never be empty. `getAuditExport()` filters by `tenant_id = 
 transaction lookups. `getSourceAdapter()` is also tenant-scoped. This prevents
 cross-tenant transaction matching.
 
+### INV-10: Webhook payload cryptographic signature verification
+
+**Where:** `packages/api/src/middleware/webhook-verification.ts`, `packages/adapters/`
+
+All incoming provider webhooks (Stripe, Shopify, PayPal, QuickBooks, Xero) require valid HMAC SHA-256 signatures before parsing or enqueueing. Unverified payloads are rejected immediately with **400/401** before reaching application logic or accessing tenant state.
+
+### INV-11: API key scoping and lifecycle isolation
+
+**Where:** `packages/api/src/middleware/api-key-auth.ts`, `packages/api/src/domain/repositories/`
+
+API keys are permanently bound to a single `tenant_id` at creation and stored as salted hashes. API key authentication middleware resolves `req.tenantId` directly from the authenticated key record. Keys cannot be reassigned across tenants.
+
+### INV-12: Tenant-scoped rate limiting and quota enforcement
+
+**Where:** `packages/api/src/middleware/rate-limiting.ts`, `packages/api/src/services/billing/`
+
+Ingestion pipelines and public API endpoints enforce rate limits and tier quotas bucketed strictly by `tenant_id`. No single tenant can exhaust shared system resources or degrade throughput for another tenant.
+
+### INV-13: PII redaction and sensitive data isolation at rest
+
+**Where:** `packages/api/src/middleware/dlp.ts`
+
+DLP sanitization scrubs full PAN credit card numbers, SSNs, and unmasked credentials prior to database insertion, structured logging, and proofpack export.
+
+### INV-14: Fail-closed session and JWT validation lifecycle
+
+**Where:** `packages/api/src/middleware/auth.ts`, `packages/api/src/middleware/tenant.ts`
+
+Expired, revoked, or improperly signed JWTs fail closed with **401 Unauthorized**. Valid tokens without a resolvable or authorized `tenant_id` fail closed with **403 Forbidden**.
+
+---
+
+## Threat Model Reference
+
+For detailed adversary scenarios, STRIDE threat vectors, and mitigation boundaries, see [docs/THREAT_MODEL.md](docs/THREAT_MODEL.md).
+
 ---
 
 ## Test Coverage
 
-| Test file                                                   | What it proves                                                                                                                                                    |
-| ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Test file | What it proves |
+| --- | --- |
 | `__tests__/multi-tenancy/tenant-isolation-enforced.test.ts` | Guard rails on every repo method, cross-tenant save rejection, assertTenantScoped catches unscoped queries, matchTransaction/getAuditLogs reject missing tenantId |
-| `__tests__/multi-tenancy/tenant-isolation.test.ts`          | RLS enforcement with two live tenants, cross-tenant read returns empty                                                                                            |
+| `__tests__/multi-tenancy/tenant-isolation.test.ts` | RLS enforcement with two live tenants, cross-tenant read returns empty |
 
 ---
 
@@ -121,6 +157,10 @@ pnpm --filter @settler/api exec jest --testPathPattern=tenant-isolation-enforced
 
 # Run full RLS tests (requires database)
 RUN_DB_TESTS=true pnpm --filter @settler/api exec jest --testPathPattern=tenant-isolation
+
+# Quick security posture check
+pnpm run verify:tenant
+pnpm run verify:security:fast
 
 # Build — TypeScript will catch any caller that omits tenantId
 pnpm run build

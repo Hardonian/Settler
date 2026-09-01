@@ -1,7 +1,50 @@
 # Hardonian Code Owners
-# Default owner for everything
-@Hardonian
+# Syntax: https://help.github.com/en/articles/about-code-owners
+# Order matters: the last matching pattern takes precedence.
 
-# Default catch-all for any file not matched below
+# Global catch-all
 * @Hardonian
 
+# Core Infrastructure & CI/CD
+/.github/ @Hardonian
+/.github/workflows/ @Hardonian
+/.husky/ @Hardonian
+/scripts/ @Hardonian
+/config/ @Hardonian
+
+# Rust Kernel & WASM Crates
+/crates/ @Hardonian
+
+# API & Control Plane
+/packages/api/ @Hardonian
+/packages/api/src/security/ @Hardonian
+/packages/api/src/db/ @Hardonian
+/packages/api/src/__tests__/ @Hardonian
+
+# Reconciliation Core & Engine
+/packages/reconciliation-core/ @Hardonian
+/packages/proofs/ @Hardonian
+/packages/adapters/ @Hardonian
+
+# SDK & Client Libraries
+/packages/sdk/ @Hardonian
+/packages/react-settler/ @Hardonian
+/packages/cli/ @Hardonian
+
+# Frontend Operator Console
+/packages/web/ @Hardonian
+/packages/web/src/components/ @Hardonian
+/packages/web/src/app/ @Hardonian
+/packages/web/src/lib/ @Hardonian
+
+# Database & Migrations
+/supabase/ @Hardonian
+/prisma/ @Hardonian
+
+# Testing & QA
+/tests/ @Hardonian
+
+# Legal, Governance & Security
+/LEGAL/ @Hardonian
+/SECURITY.md @Hardonian
+/SECURITY_INVARIANTS.md @Hardonian

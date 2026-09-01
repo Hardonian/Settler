@@ -8,7 +8,7 @@ Reconciliation intelligence and audit operating system — deterministic matchin
 Monorepo. TypeScript + Rust.
 
 | Package | Role |
-|---------|------|
+| --- | --- |
 | `packages/api` | Express 5 control plane — 37 route modules, 46 middleware layers, 80+ services |
 | `packages/web` | Next.js 16 operator console — 170+ routes |
 | `packages/reconciliation-core` | Deterministic matching engine and run serialization |
@@ -74,7 +74,7 @@ Full specification: `SECURITY_INVARIANTS.md`.
 ## File Classification (Open-Core)
 
 | Classification | Rule | Example Paths |
-|---------------|------|---------------|
+| --- | --- | --- |
 | **OSS_PUBLIC** ✅ | Safe for public mirror | `packages/sdk/`, `packages/cli/`, `examples/` |
 | **PLATFORM_PROPRIETARY** 🔒 | Private repo only | `packages/web/`, `packages/api/`, `prisma/` |
 | **INTERNAL_BUSINESS** 📊 | Never in public mirror | `docs/internal/`, `strategic/` |

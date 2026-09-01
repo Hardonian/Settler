@@ -37,7 +37,7 @@ Settler supports the following data subject rights where applicable:
 
 For CCPA: California residents may request disclosure of data collected, request deletion, and opt out of data sale. Settler does not sell personal data.
 
-To exercise any right, contact **privacy@hardonia.store**.
+To exercise any right, contact **[privacy@hardonia.store](mailto:privacy@hardonia.store)**.
 
 ## AI Advisory Processing
 
@@ -65,4 +65,4 @@ To exercise any right, contact **privacy@hardonia.store**.
 
 ## Contact
 
-For privacy inquiries or data rights requests: **privacy@hardonia.store**.
+For privacy inquiries or data rights requests: **[privacy@hardonia.store](mailto:privacy@hardonia.store)**.

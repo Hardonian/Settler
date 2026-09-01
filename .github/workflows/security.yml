@@ -1,4 +1,4 @@
-name: Security Checks
+name: Security Invariants & Audit
 
 on:
   push:
@@ -6,21 +6,17 @@ on:
   pull_request:
     branches: [main, develop]
   schedule:
-    - cron: "0 9 * * 1"
+    - cron: "0 6 * * 1" # Weekly audit on Monday at 06:00 UTC
 
 env:
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
 
 jobs:
   security-invariants:
-    name: Security Invariant Verification
+    name: Layered Security Invariants
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    env:
-      NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-anon-key
-      DATABASE_URL: postgresql://postgres:***@localhost:5432/settler_test
     steps:
       - uses: actions/checkout@v7
 
@@ -36,17 +32,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build all workspace packages (web build consumes dist)
-        run: pnpm run build
-
-      - name: Build web app for runtime header probing
-        run: pnpm --filter @settler/web build
-
-      - name: Generate route registry
-        run: pnpm run security:routes
-
-      - name: Verify tenant coverage (must be 100%)
+      - name: Verify tenant isolation invariants
         run: pnpm run verify:tenant
+
+      - name: Verify tenant isolation runtime tests
+        run: pnpm --filter @settler/api exec jest --testPathPattern=tenant-isolation-enforced --runInBand
+
+      - name: Fast security posture verification
+        run: pnpm run verify:security:fast
+
+      - name: Verify security classification
+        run: pnpm run check:classification
 
       - name: Run cross-tenant runtime tests
         run: pnpm run test:cross-tenant
@@ -75,10 +71,11 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9.15.0
+          version: 10.13.1
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
+          cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
