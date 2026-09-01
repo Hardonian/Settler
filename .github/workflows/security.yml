@@ -59,10 +59,6 @@ jobs:
     permissions:
       contents: read
     env:
-      DEPENDABOT_ALERTS_EXPORT_B64: ${{ secrets.DEPENDABOT_ALERTS_EXPORT_B64 }}
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      DIRECT_URL: ${{ secrets.DIRECT_URL }}
-      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
       NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
       NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-anon-key
     steps:
@@ -96,9 +92,11 @@ jobs:
           test "${SECURITY_AUDIT_MODE:-strict}" != "off"
 
       - name: Materialize authenticated Dependabot export (optional)
-        if: env.DEPENDABOT_ALERTS_EXPORT_B64 != ''
+        if: ${{ secrets.DEPENDABOT_ALERTS_EXPORT_B64 != '' }}
+        env:
+          DEPENDABOT_ALERTS_EXPORT_B64: ${{ secrets.DEPENDABOT_ALERTS_EXPORT_B64 }}
         run: |
-          echo "${{ env.DEPENDABOT_ALERTS_EXPORT_B64 }}" | base64 -d > security/dependabot-alerts.json
+          echo "$DEPENDABOT_ALERTS_EXPORT_B64" | base64 -d > security/dependabot-alerts.json
 
       - name: Generate layered security evidence (full mode)
         env:
@@ -110,16 +108,16 @@ jobs:
         run: pnpm run verify:security:full
 
       - name: Enterprise gate (strict evidence when secrets exist)
-        if: env.DEPENDABOT_ALERTS_EXPORT_B64 != '' && (env.DATABASE_URL != '' || env.DIRECT_URL != '' || env.SUPABASE_DB_URL != '')
+        if: ${{ secrets.DEPENDABOT_ALERTS_EXPORT_B64 != '' && (secrets.DATABASE_URL != '' || secrets.DIRECT_URL != '' || secrets.SUPABASE_DB_URL != '') }}
         env:
           SECURITY_AUDIT_MODE: strict
           SECURITY_HEADER_PROBE_STRICT: "1"
           SECURITY_DEPENDENCY_EVIDENCE_MODE: strict
           SECURITY_RLS_EVIDENCE_MODE: runtime-rls-required
           DEPENDABOT_ALERTS_EXPORT_PATH: security/dependabot-alerts.json
-          DATABASE_URL: ${{ env.DATABASE_URL }}
-          DIRECT_URL: ${{ env.DIRECT_URL }}
-          SUPABASE_DB_URL: ${{ env.SUPABASE_DB_URL }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
         run: pnpm run verify:security:enterprise
 
       - name: Upload security evidence artifacts
