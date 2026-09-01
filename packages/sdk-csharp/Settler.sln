@@ -2,11 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "packages", "packages", "{809F86A1-1C4C-B159-0CD4-DF9D33D876CE}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sdk-csharp", "sdk-csharp", "{D362FFFC-A956-22C4-BE89-DA51675A9533}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Settler.Sdk", "packages\sdk-csharp\Settler.Sdk.csproj", "{3E582EA9-18D5-1E0C-F774-775F9A86F021}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Settler.Sdk", "Settler.Sdk.csproj", "{3E582EA9-18D5-1E0C-F774-775F9A86F021}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,10 +17,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{D362FFFC-A956-22C4-BE89-DA51675A9533} = {809F86A1-1C4C-B159-0CD4-DF9D33D876CE}
-		{3E582EA9-18D5-1E0C-F774-775F9A86F021} = {D362FFFC-A956-22C4-BE89-DA51675A9533}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A084139F-C43A-4989-A10D-25C4AE90D9D8}
