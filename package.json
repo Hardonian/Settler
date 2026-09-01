@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "description": "Settler - Open Source Reconciliation Engine",
+  "packageManager": "pnpm@10.13.1",
+  "engines": {
+    "node": ">=24.15.0",
+    "pnpm": ">=10.13.1"
+  },
   "workspaces": [
     "packages/*",
     "!packages/sdk-go",
