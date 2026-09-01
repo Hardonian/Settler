@@ -1,4 +1,4 @@
 /**
  * @jobforge/sdk-ts - TypeScript SDK for JobForge
  */
-export { JobForgeClient } from './client';
+export { JobForgeClient } from "./client";

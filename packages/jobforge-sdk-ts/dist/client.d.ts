@@ -2,8 +2,8 @@
  * JobForge TypeScript SDK - Server-only client
  * Never expose service keys on the client
  */
-import { SupabaseClient } from '@supabase/supabase-js';
-import type { JobRow, JobResultRow, EnqueueJobParams, ClaimJobsParams, HeartbeatJobParams, CompleteJobParams, CancelJobParams, RescheduleJobParams, ListJobsParams } from '@jobforge/shared';
+import { SupabaseClient } from "@supabase/supabase-js";
+import type { JobRow, JobResultRow, EnqueueJobParams, ClaimJobsParams, HeartbeatJobParams, CompleteJobParams, CancelJobParams, RescheduleJobParams, ListJobsParams } from "@jobforge/shared";
 export interface JobForgeClientConfig {
     supabaseUrl: string;
     supabaseKey: string;

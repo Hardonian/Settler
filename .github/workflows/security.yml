@@ -93,7 +93,7 @@ jobs:
 
       - name: Materialize authenticated Dependabot export (optional)
         env:
-          DEPENDABOT_ALERTS_EXPORT_B64: ${{ secrets.DEPENDABOT_ALERTS_EXPORT_B64 }}
+          DEPENDABOT_ALERTS_EXPORT_B64: ${{ secrets['DEPENDABOT_ALERTS_EXPORT_B64'] }}
         run: |
           if [ -n "$DEPENDABOT_ALERTS_EXPORT_B64" ]; then
             echo "$DEPENDABOT_ALERTS_EXPORT_B64" | base64 -d > security/dependabot-alerts.json
@@ -117,10 +117,10 @@ jobs:
           SECURITY_DEPENDENCY_EVIDENCE_MODE: strict
           SECURITY_RLS_EVIDENCE_MODE: runtime-rls-required
           DEPENDABOT_ALERTS_EXPORT_PATH: security/dependabot-alerts.json
-          DEPENDABOT_ALERTS_EXPORT_B64: ${{ secrets.DEPENDABOT_ALERTS_EXPORT_B64 }}
+          DEPENDABOT_ALERTS_EXPORT_B64: ${{ secrets['DEPENDABOT_ALERTS_EXPORT_B64'] }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          DIRECT_URL: ${{ secrets.DIRECT_URL }}
-          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          DIRECT_URL: ${{ secrets['DIRECT_URL'] }}
+          SUPABASE_DB_URL: ${{ secrets['SUPABASE_DB_URL'] }}
         run: |
           if [ -n "$DEPENDABOT_ALERTS_EXPORT_B64" ] && { [ -n "$DATABASE_URL" ] || [ -n "$DIRECT_URL" ] || [ -n "$SUPABASE_DB_URL" ]; }; then
             pnpm run verify:security:enterprise

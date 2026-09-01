@@ -1,5 +1,6 @@
 # Build artifacts
 **/dist/
+!packages/jobforge-sdk-ts/dist/
 build/
 *.tsbuildinfo
 .next/
