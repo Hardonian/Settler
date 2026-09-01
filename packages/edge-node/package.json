@@ -29,10 +29,10 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.46",
+    "@ai-sdk/openai": "^4.0.51",
     "@settler/types": "workspace:*",
-    "ai": "^7.0.77",
-    "axios": "^1.18.0",
+    "ai": "^7.0.84",
+    "axios": "^1.20.0",
     "better-sqlite3": "^12.10.0",
     "chalk": "^6.0.0",
     "commander": "^11.1.0",
@@ -43,19 +43,19 @@
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
-    "@types/node": "^26.1.2",
+    "@types/node": "^26.4.0",
     "@types/node-cron": "^3.0.11",
     "@types/uuid": "^9.0.8",
-    "@typescript-eslint/eslint-plugin": "^8.59.4",
-    "@typescript-eslint/parser": "^8.59.4",
+    "@typescript-eslint/eslint-plugin": "^8.68.0",
+    "@typescript-eslint/parser": "^8.68.0",
     "@vitest/coverage-v8": "^4.1.11",
     "eslint": "^9.39.4",
-    "jest": "^30.4.2",
-    "ts-jest": "^29.4.11",
-    "tsx": "^4.23.11",
+    "jest": "^30.5.0",
+    "ts-jest": "^29.4.12",
+    "tsx": "^4.23.12",
     "typescript": "^5.9.3",
     "vite": "^8.2.2",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.11"
   },
   "keywords": [
     "settler",
