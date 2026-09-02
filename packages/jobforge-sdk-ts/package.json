@@ -23,10 +23,10 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.51",
+    "@ai-sdk/openai": "^4.0.52",
     "@jobforge/shared": "workspace:*",
     "@supabase/supabase-js": "^2.112.4",
-    "ai": "^7.0.84",
+    "ai": "^7.0.85",
     "zod": "^3.25.76"
   },
   "devDependencies": {

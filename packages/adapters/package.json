@@ -24,10 +24,10 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.51",
+    "@ai-sdk/openai": "^4.0.52",
     "@settler/types": "workspace:*",
     "@supabase/supabase-js": "^2.112.4",
-    "ai": "^7.0.84",
+    "ai": "^7.0.85",
     "resend": "^6.25.0",
     "stripe": "^22.6.0",
     "zod": "^3.25.76"

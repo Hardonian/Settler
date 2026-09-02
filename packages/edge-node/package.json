@@ -29,9 +29,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.51",
+    "@ai-sdk/openai": "^4.0.52",
     "@settler/types": "workspace:*",
-    "ai": "^7.0.84",
+    "ai": "^7.0.85",
     "axios": "^1.20.0",
     "better-sqlite3": "^12.10.0",
     "chalk": "^6.0.0",
@@ -52,7 +52,7 @@
     "eslint": "^9.39.4",
     "jest": "^30.5.0",
     "ts-jest": "^29.4.12",
-    "tsx": "^4.23.12",
+    "tsx": "^4.23.13",
     "typescript": "^5.9.3",
     "vite": "^8.2.2",
     "vitest": "^4.1.11"
