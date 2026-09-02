@@ -133,7 +133,7 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "cron-parser": "^5.10.0",
-    "csv-parse": "^5.6.0",
+    "csv-parse": "^7.0.2",
     "csv-writer": "^1.6.0",
     "dotenv": "^17.4.2",
     "envalid": "^8.2.0",
