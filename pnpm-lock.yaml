@@ -66,6 +66,11 @@ overrides:
   react: 19.2.7
   react-dom: 19.2.7
 
+patchedDependencies:
+  proper-lockfile@4.1.2:
+    hash: 4980fb9f3412fb2afd3f87670d35f7905b34ecc7f12bd60a7039f8f89b954f1e
+    path: patches/proper-lockfile@4.1.2.patch
+
 importers:
 
   .:
@@ -147,8 +152,8 @@ importers:
         specifier: ^29.4.12
         version: 29.4.12(@babel/core@7.29.7)(@jest/transform@30.5.0)(@jest/types@30.5.0)(babel-jest@30.5.0(@babel/core@7.29.7))(jest-util@30.5.0)(jest@30.5.0(@types/node@26.4.0))(typescript@5.9.3)
       tsx:
-        specifier: ^4.23.12
-        version: 4.23.12
+        specifier: ^4.23.13
+        version: 4.23.13
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -156,8 +161,8 @@ importers:
   packages/adapters:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.51
-        version: 4.0.51(zod@3.25.76)
+        specifier: ^4.0.52
+        version: 4.0.52(zod@3.25.76)
       '@settler/types':
         specifier: workspace:*
         version: link:../types
@@ -165,8 +170,8 @@ importers:
         specifier: ^2.112.4
         version: 2.112.4(@opentelemetry/api@1.9.1)
       ai:
-        specifier: ^7.0.84
-        version: 7.0.84(zod@3.25.76)
+        specifier: ^7.0.85
+        version: 7.0.85(zod@3.25.76)
       resend:
         specifier: ^6.25.0
         version: 6.25.0(@react-email/render@0.0.16(react-dom@19.2.8(react@19.2.8))(react@19.2.8))
@@ -200,22 +205,22 @@ importers:
         version: 5.9.3
       vite:
         specifier: 6.4.2
-        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.11
-        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
 
   packages/agents:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.51
-        version: 4.0.51(zod@3.25.76)
+        specifier: ^4.0.52
+        version: 4.0.52(zod@3.25.76)
       '@settler/logger':
         specifier: workspace:*
         version: link:../logger
       ai:
-        specifier: ^7.0.84
-        version: 7.0.84(zod@3.25.76)
+        specifier: ^7.0.85
+        version: 7.0.85(zod@3.25.76)
       zod:
         specifier: ^3.23.0
         version: 3.25.76
@@ -228,16 +233,16 @@ importers:
         version: 5.9.3
       vite:
         specifier: 6.4.2
-        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+        version: 6.4.2(@types/node@26.4.1)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.11
-        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.1)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.1)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
 
   packages/api:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.51
-        version: 4.0.51(zod@3.25.76)
+        specifier: ^4.0.52
+        version: 4.0.52(zod@3.25.76)
       '@asteasolutions/zod-to-openapi':
         specifier: ^7.3.4
         version: 7.3.4(zod@3.25.76)
@@ -302,8 +307,8 @@ importers:
         specifier: ^1.38.3
         version: 1.38.3
       ai:
-        specifier: ^7.0.84
-        version: 7.0.84(zod@3.25.76)
+        specifier: ^7.0.85
+        version: 7.0.85(zod@3.25.76)
       ajv:
         specifier: ^8.20.0
         version: 8.20.0
@@ -317,8 +322,8 @@ importers:
         specifier: ^6.0.0
         version: 6.0.0
       bullmq:
-        specifier: ^6.3.1
-        version: 6.3.1(ioredis@6.0.0)(pg@8.23.0)
+        specifier: ^6.3.2
+        version: 6.3.2(ioredis@6.0.0)(pg@8.23.0)
       compression:
         specifier: ^1.8.1
         version: 1.8.1
@@ -383,8 +388,8 @@ importers:
         specifier: ^0.7.0
         version: 0.7.0
       pdfkit:
-        specifier: ^0.20.1
-        version: 0.20.1
+        specifier: ^0.20.2
+        version: 0.20.2
       pg:
         specifier: ^8.23.0
         version: 8.23.0
@@ -510,23 +515,23 @@ importers:
         specifier: ^29.4.12
         version: 29.4.12(@babel/core@7.29.7)(@jest/transform@30.5.0)(@jest/types@30.5.0)(babel-jest@30.5.0(@babel/core@7.29.7))(jest-util@30.5.0)(jest@30.5.0(@types/node@26.4.0))(typescript@5.9.3)
       tsx:
-        specifier: ^4.23.12
-        version: 4.23.12
+        specifier: ^4.23.13
+        version: 4.23.13
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
       vite:
         specifier: 6.4.2
-        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.11
-        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
 
   packages/cli:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.51
-        version: 4.0.51(zod@4.4.3)
+        specifier: ^4.0.52
+        version: 4.0.52(zod@4.4.3)
       '@jobforge/sdk-ts':
         specifier: workspace:*
         version: link:../jobforge-sdk-ts
@@ -534,8 +539,8 @@ importers:
         specifier: workspace:*
         version: link:../sdk
       ai:
-        specifier: ^7.0.84
-        version: 7.0.84(zod@4.4.3)
+        specifier: ^7.0.85
+        version: 7.0.85(zod@4.4.3)
       chalk:
         specifier: ^6.0.0
         version: 6.0.0
@@ -565,31 +570,31 @@ importers:
         specifier: ^29.4.12
         version: 29.4.12(@babel/core@7.29.7)(@jest/transform@30.5.0)(@jest/types@30.5.0)(babel-jest@30.5.0(@babel/core@7.29.7))(jest-util@30.5.0)(jest@30.5.0(@types/node@26.4.0))(typescript@5.9.3)
       tsx:
-        specifier: ^4.23.12
-        version: 4.23.12
+        specifier: ^4.23.13
+        version: 4.23.13
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
       vite:
         specifier: 6.4.2
-        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.11
-        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
 
   packages/compliance: {}
 
   packages/edge-ai-core:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.51
-        version: 4.0.51(zod@4.4.3)
+        specifier: ^4.0.52
+        version: 4.0.52(zod@4.4.3)
       '@types/node':
         specifier: ^26.4.0
         version: 26.4.0
       ai:
-        specifier: ^7.0.84
-        version: 7.0.84(zod@4.4.3)
+        specifier: ^7.0.85
+        version: 7.0.85(zod@4.4.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -628,26 +633,26 @@ importers:
         specifier: ^29.4.12
         version: 29.4.12(@babel/core@7.29.7)(@jest/transform@30.5.0)(@jest/types@30.5.0)(babel-jest@30.5.0(@babel/core@7.29.7))(jest-util@30.5.0)(jest@30.5.0(@types/node@26.4.0))(typescript@5.9.3)
       tsx:
-        specifier: ^4.23.12
-        version: 4.23.12
+        specifier: ^4.23.13
+        version: 4.23.13
       vite:
         specifier: 6.4.2
-        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.11
-        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
 
   packages/edge-node:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.51
-        version: 4.0.51(zod@4.4.3)
+        specifier: ^4.0.52
+        version: 4.0.52(zod@4.4.3)
       '@settler/types':
         specifier: workspace:*
         version: link:../types
       ai:
-        specifier: ^7.0.84
-        version: 7.0.84(zod@4.4.3)
+        specifier: ^7.0.85
+        version: 7.0.85(zod@4.4.3)
       axios:
         specifier: ^1.18.0
         version: 1.20.0
@@ -704,42 +709,42 @@ importers:
         specifier: ^29.4.12
         version: 29.4.12(@babel/core@7.29.7)(@jest/transform@30.5.0)(@jest/types@30.5.0)(babel-jest@30.5.0(@babel/core@7.29.7))(jest-util@30.5.0)(jest@30.5.0(@types/node@26.4.0))(typescript@5.9.3)
       tsx:
-        specifier: ^4.23.12
-        version: 4.23.12
+        specifier: ^4.23.13
+        version: 4.23.13
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
       vite:
         specifier: 6.4.2
-        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.11
-        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
 
   packages/hash:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.51
-        version: 4.0.51(zod@4.4.3)
+        specifier: ^4.0.52
+        version: 4.0.52(zod@4.4.3)
       ai:
-        specifier: ^7.0.84
-        version: 7.0.84(zod@4.4.3)
+        specifier: ^7.0.85
+        version: 7.0.85(zod@4.4.3)
     devDependencies:
       '@vitest/coverage-v8':
         specifier: ^4.1.11
         version: 4.1.11(vitest@4.1.11)
       vite:
         specifier: 6.4.2
-        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+        version: 6.4.2(@types/node@26.4.1)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.11
-        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.1)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.1)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
 
   packages/jobforge-adapter-settler:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.51
-        version: 4.0.51(zod@3.25.76)
+        specifier: ^4.0.52
+        version: 4.0.52(zod@3.25.76)
       '@jobforge/sdk-ts':
         specifier: workspace:*
         version: link:../jobforge-sdk-ts
@@ -747,8 +752,8 @@ importers:
         specifier: workspace:*
         version: link:../jobforge-shared
       ai:
-        specifier: ^7.0.84
-        version: 7.0.84(zod@3.25.76)
+        specifier: ^7.0.85
+        version: 7.0.85(zod@3.25.76)
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -764,19 +769,19 @@ importers:
         version: 5.9.3
       vite:
         specifier: 6.4.2
-        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+        version: 6.4.2(@types/node@26.4.1)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.11
-        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.1)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.1)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
 
   packages/jobforge-errors:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.51
-        version: 4.0.51(zod@4.4.3)
+        specifier: ^4.0.52
+        version: 4.0.52(zod@4.4.3)
       ai:
-        specifier: ^7.0.84
-        version: 7.0.84(zod@4.4.3)
+        specifier: ^7.0.85
+        version: 7.0.85(zod@4.4.3)
     devDependencies:
       '@jobforge/typescript-config':
         specifier: workspace:*
@@ -795,22 +800,22 @@ importers:
         version: 5.9.3
       vite:
         specifier: 6.4.2
-        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.11
-        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
 
   packages/jobforge-fetch:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.51
-        version: 4.0.51(zod@4.4.3)
+        specifier: ^4.0.52
+        version: 4.0.52(zod@4.4.3)
       '@jobforge/errors':
         specifier: workspace:*
         version: link:../jobforge-errors
       ai:
-        specifier: ^7.0.84
-        version: 7.0.84(zod@4.4.3)
+        specifier: ^7.0.85
+        version: 7.0.85(zod@4.4.3)
     devDependencies:
       '@jobforge/typescript-config':
         specifier: workspace:*
@@ -829,16 +834,16 @@ importers:
         version: 5.9.3
       vite:
         specifier: 6.4.2
-        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.11
-        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
 
   packages/jobforge-sdk-ts:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.51
-        version: 4.0.51(zod@3.25.76)
+        specifier: ^4.0.52
+        version: 4.0.52(zod@3.25.76)
       '@jobforge/shared':
         specifier: workspace:*
         version: link:../jobforge-shared
@@ -846,8 +851,8 @@ importers:
         specifier: ^2.112.4
         version: 2.112.4(@opentelemetry/api@1.9.1)
       ai:
-        specifier: ^7.0.84
-        version: 7.0.84(zod@3.25.76)
+        specifier: ^7.0.85
+        version: 7.0.85(zod@3.25.76)
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -869,19 +874,19 @@ importers:
         version: 5.9.3
       vite:
         specifier: 6.4.2
-        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.11
-        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
 
   packages/jobforge-shared:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.51
-        version: 4.0.51(zod@3.25.76)
+        specifier: ^4.0.52
+        version: 4.0.52(zod@3.25.76)
       ai:
-        specifier: ^7.0.84
-        version: 7.0.84(zod@3.25.76)
+        specifier: ^7.0.85
+        version: 7.0.85(zod@3.25.76)
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -903,38 +908,38 @@ importers:
         version: 5.9.3
       vite:
         specifier: 6.4.2
-        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.11
-        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
 
   packages/jobforge-typescript-config:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.51
-        version: 4.0.51(zod@4.4.3)
+        specifier: ^4.0.52
+        version: 4.0.52(zod@4.4.3)
       ai:
-        specifier: ^7.0.84
-        version: 7.0.84(zod@4.4.3)
+        specifier: ^7.0.85
+        version: 7.0.85(zod@4.4.3)
     devDependencies:
       '@vitest/coverage-v8':
         specifier: ^4.1.11
         version: 4.1.11(vitest@4.1.11)
       vite:
         specifier: 6.4.2
-        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+        version: 6.4.2(@types/node@26.4.1)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.11
-        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.1)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.1)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
 
   packages/logger:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.51
-        version: 4.0.51(zod@4.4.3)
+        specifier: ^4.0.52
+        version: 4.0.52(zod@4.4.3)
       ai:
-        specifier: ^7.0.84
-        version: 7.0.84(zod@4.4.3)
+        specifier: ^7.0.85
+        version: 7.0.85(zod@4.4.3)
     devDependencies:
       '@vitest/coverage-v8':
         specifier: ^4.1.11
@@ -944,22 +949,22 @@ importers:
         version: 5.9.3
       vite:
         specifier: 6.4.2
-        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+        version: 6.4.2(@types/node@26.4.1)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.11
-        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.1)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.1)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
 
   packages/proofs:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.51
-        version: 4.0.51(zod@4.4.3)
+        specifier: ^4.0.52
+        version: 4.0.52(zod@4.4.3)
       '@settler/types':
         specifier: workspace:*
         version: link:../types
       ai:
-        specifier: ^7.0.84
-        version: 7.0.84(zod@4.4.3)
+        specifier: ^7.0.85
+        version: 7.0.85(zod@4.4.3)
     devDependencies:
       '@vitest/coverage-v8':
         specifier: ^4.1.11
@@ -969,22 +974,22 @@ importers:
         version: 5.9.3
       vite:
         specifier: 6.4.2
-        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+        version: 6.4.2(@types/node@26.4.1)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.11
-        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.1)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.1)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
 
   packages/protocol:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.51
-        version: 4.0.51(zod@4.4.3)
+        specifier: ^4.0.52
+        version: 4.0.52(zod@4.4.3)
       '@types/node':
         specifier: ^26.4.0
         version: 26.4.0
       ai:
-        specifier: ^7.0.84
-        version: 7.0.84(zod@4.4.3)
+        specifier: ^7.0.85
+        version: 7.0.85(zod@4.4.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1003,22 +1008,22 @@ importers:
         version: 29.4.12(@babel/core@7.29.7)(@jest/transform@30.5.0)(@jest/types@30.5.0)(babel-jest@30.5.0(@babel/core@7.29.7))(jest-util@30.5.0)(jest@30.5.0(@types/node@26.4.0))(typescript@5.9.3)
       vite:
         specifier: 6.4.2
-        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.11
-        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
 
   packages/react-settler:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.51
-        version: 4.0.51(zod@4.4.3)
+        specifier: ^4.0.52
+        version: 4.0.52(zod@4.4.3)
       '@settler/protocol':
         specifier: workspace:*
         version: link:../protocol
       ai:
-        specifier: ^7.0.84
-        version: 7.0.84(zod@4.4.3)
+        specifier: ^7.0.85
+        version: 7.0.85(zod@4.4.3)
     devDependencies:
       '@types/node':
         specifier: ^26.4.0
@@ -1043,16 +1048,16 @@ importers:
         version: 5.9.3
       vite:
         specifier: 6.4.2
-        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.11
-        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
 
   packages/reconciliation-core:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.51
-        version: 4.0.51(zod@3.25.76)
+        specifier: ^4.0.52
+        version: 4.0.52(zod@3.25.76)
       '@prisma/client':
         specifier: 7.10.0
         version: 7.10.0(prisma@7.10.0(@types/react-dom@19.2.5(@types/react@19.2.18))(@types/react@19.2.18)(better-sqlite3@12.10.0)(magicast@0.5.4)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@5.9.3))(typescript@5.9.3)
@@ -1060,8 +1065,8 @@ importers:
         specifier: workspace:*
         version: link:../types
       ai:
-        specifier: ^7.0.84
-        version: 7.0.84(zod@3.25.76)
+        specifier: ^7.0.85
+        version: 7.0.85(zod@3.25.76)
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -1086,22 +1091,22 @@ importers:
         version: 5.9.3
       vite:
         specifier: 6.4.2
-        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.11
-        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
 
   packages/sdk:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.51
-        version: 4.0.51(zod@4.4.3)
+        specifier: ^4.0.52
+        version: 4.0.52(zod@4.4.3)
       '@types/node':
         specifier: ^26.4.0
         version: 26.4.0
       ai:
-        specifier: ^7.0.84
-        version: 7.0.84(zod@4.4.3)
+        specifier: ^7.0.85
+        version: 7.0.85(zod@4.4.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1126,29 +1131,29 @@ importers:
         version: 29.4.12(@babel/core@7.29.7)(@jest/transform@30.5.0)(@jest/types@30.5.0)(babel-jest@30.5.0(@babel/core@7.29.7))(jest-util@30.5.0)(jest@30.5.0(@types/node@26.4.0))(typescript@5.9.3)
       vite:
         specifier: 6.4.2
-        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.11
-        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
 
   packages/sdk-csharp:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.51
-        version: 4.0.51(zod@4.4.3)
+        specifier: ^4.0.52
+        version: 4.0.52(zod@4.4.3)
       ai:
-        specifier: ^7.0.84
-        version: 7.0.84(zod@4.4.3)
+        specifier: ^7.0.85
+        version: 7.0.85(zod@4.4.3)
     devDependencies:
       '@vitest/coverage-v8':
         specifier: ^4.1.11
         version: 4.1.11(vitest@4.1.11)
       vite:
         specifier: 6.4.2
-        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+        version: 6.4.2(@types/node@26.4.1)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.11
-        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.1)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.1)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
 
   packages/sdk-java: {}
 
@@ -1165,8 +1170,8 @@ importers:
   packages/support-intake:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.51
-        version: 4.0.51(zod@3.25.76)
+        specifier: ^4.0.52
+        version: 4.0.52(zod@3.25.76)
       '@prisma/client':
         specifier: 7.10.0
         version: 7.10.0(prisma@7.10.0(@types/react-dom@19.2.5(@types/react@19.2.18))(@types/react@19.2.18)(better-sqlite3@12.10.0)(magicast@0.5.4)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@5.9.3))(typescript@5.9.3)
@@ -1174,8 +1179,8 @@ importers:
         specifier: workspace:*
         version: link:../types
       ai:
-        specifier: ^7.0.84
-        version: 7.0.84(zod@3.25.76)
+        specifier: ^7.0.85
+        version: 7.0.85(zod@3.25.76)
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -1188,22 +1193,22 @@ importers:
         version: 5.9.3
       vite:
         specifier: 6.4.2
-        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+        version: 6.4.2(@types/node@26.4.1)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.11
-        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.1)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.1)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
 
   packages/types:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.51
-        version: 4.0.51(zod@3.25.76)
+        specifier: ^4.0.52
+        version: 4.0.52(zod@3.25.76)
       '@types/node':
         specifier: ^26.4.0
         version: 26.4.0
       ai:
-        specifier: ^7.0.84
-        version: 7.0.84(zod@3.25.76)
+        specifier: ^7.0.85
+        version: 7.0.85(zod@3.25.76)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1216,16 +1221,16 @@ importers:
         version: 4.1.11(vitest@4.1.11)
       vite:
         specifier: 6.4.2
-        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+        version: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.11
-        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
 
   packages/web:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^4.0.51
-        version: 4.0.51(zod@4.4.3)
+        specifier: ^4.0.52
+        version: 4.0.52(zod@4.4.3)
       '@builder.io/react':
         specifier: ^9.4.4
         version: 9.4.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -1320,8 +1325,8 @@ importers:
         specifier: ^6.1.0
         version: 6.1.0(@types/react@19.2.18)(react@19.2.7)(xstate@5.32.6)
       ai:
-        specifier: ^7.0.84
-        version: 7.0.84(zod@4.4.3)
+        specifier: ^7.0.85
+        version: 7.0.85(zod@4.4.3)
       autoprefixer:
         specifier: ^10.5.4
         version: 10.5.4(postcss@8.5.26)
@@ -1350,8 +1355,8 @@ importers:
         specifier: ^1.3.26
         version: 1.3.26(react@19.2.7)(vue@3.5.35(typescript@5.9.3))
       lucide-react:
-        specifier: ^1.35.0
-        version: 1.35.0(react@19.2.7)
+        specifier: ^1.37.0
+        version: 1.37.0(react@19.2.7)
       next:
         specifier: ^16.2.11
         version: 16.3.3(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(@playwright/test@1.62.1)(@types/node@26.4.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -1381,7 +1386,7 @@ importers:
         version: 2.6.1
       tailwindcss:
         specifier: ^3.4.17
-        version: 3.4.19(tsx@4.23.12)(yaml@2.9.0)
+        version: 3.4.19(tsx@4.23.13)(yaml@2.9.0)
       uuid:
         specifier: ^13.0.1
         version: 13.0.2
@@ -1460,36 +1465,36 @@ importers:
         version: 5.9.3
       vite:
         specifier: 6.4.2
-        version: 6.4.2(@types/node@26.4.0)(jiti@1.21.7)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+        version: 6.4.2(@types/node@26.4.0)(jiti@1.21.7)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.11
-        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@26.1.0)(vite@6.4.2(@types/node@26.4.0)(jiti@1.21.7)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@26.1.0)(vite@6.4.2(@types/node@26.4.0)(jiti@1.21.7)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
 
 packages:
 
   '@adobe/css-tools@4.5.0':
     resolution: {integrity: sha512-6OzddxPio9UiWTCemp4N8cYLV2ZN1ncRnV1cVGtve7dhPOtRkleRyx32GQCYSwDYgaHU3USMm84tNsvKzRCa1Q==}
 
-  '@ai-sdk/gateway@4.0.68':
-    resolution: {integrity: sha512-XKvZv6HFoMOWK64zXMaQatk4SxBzBDkGg7enXPWsCkxqPP4zDhFewOoBKasf3FPnZP9ceE+Yj3BgW925blAWtw==}
+  '@ai-sdk/gateway@4.0.69':
+    resolution: {integrity: sha512-W5MMdyqsaziQy/A4kxlK74iEQ+NuO6OaszH32cEQpUgBW0o15S2fAdP0aYSH2/5lrVZSMXLQLCzuMkRGHBua3A==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
-  '@ai-sdk/openai@4.0.51':
-    resolution: {integrity: sha512-ByLpf4FrmiAFFV/hI2f3EwtuRR+e0AWttik2UsUgTpS10KIGEOvdO6RSMcMcDINQyqIQh8iCb9V7MC/6RtmDsg==}
+  '@ai-sdk/openai@4.0.52':
+    resolution: {integrity: sha512-I44DlHmBe8Sv5HVOaxAQEX3IbeG8Voz78z9abg6QJtWpL/oz42/ytGNWGAJPvKOJ9jFQ4ofalySFviUCRQk9MA==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
-  '@ai-sdk/provider-utils@5.0.33':
-    resolution: {integrity: sha512-TfjJqJmRsQyxAlb+3hGmP1o1xLUIT79yhOgtJuTF4hqsB37IC3CufGsuFhU04EeTOg7R9iptQ6Bzm0MW0n/c3g==}
+  '@ai-sdk/provider-utils@5.0.34':
+    resolution: {integrity: sha512-tRBdgRcys/4d8wyQdOdyYScq1AxfMdMd0hIlwolxJKVIbBwXUgClZuQT0VIsz4e7pylY8FE6utYCCZ494UAMJQ==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
-  '@ai-sdk/provider@4.0.8':
-    resolution: {integrity: sha512-aWO7iwhFUGf347tCwNGggggfmZigaSu7TF739IZSrWWABUp7zkb4Cr3fMqvBe5EIS7ABJJu3Cadn0g/zs1G0QQ==}
+  '@ai-sdk/provider@4.0.9':
+    resolution: {integrity: sha512-XnGXPWiBIfqjsVEud5pOaVneRByJQOu2sYNwlSVJTPCvakdCDkVuYKKfNuStkIpMUYl7JIkBZGBx+B5YfNeVjA==}
     engines: {node: '>=22'}
 
   '@alloc/quick-lru@5.2.0':
@@ -4823,8 +4828,8 @@ packages:
   '@types/aria-query@5.0.4':
     resolution: {integrity: sha512-rfT93uj5s0PRL7EzccGMs3brplhcrghnDoV26NqKhCAS1hVo+WdNsPvE/yb6ilfr5hi2MEk6d5EWJTKdxg8jVw==}
 
-  '@types/aws-lambda@8.10.162':
-    resolution: {integrity: sha512-Fn658grtLOci1oxi1391vvDWJRKNGWRSqfxRkmN/Iy3c0tQH1USMKEXcPYHLvope+ZgTFocx9FRQJx1muBL6qw==}
+  '@types/aws-lambda@8.10.163':
+    resolution: {integrity: sha512-+4zuoEB3S8RIhimtOFT7zAEk2SbpwrKjjGl9CyYnQR6k08uynxfauIIB0pDU1ssr05F8oyGiETwpn+8eXZMqPw==}
 
   '@types/babel__core@7.20.5':
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
@@ -4988,6 +4993,9 @@ packages:
 
   '@types/node@26.4.0':
     resolution: {integrity: sha512-faiGnoIrLH/V8cibOMEAZ8pMw6oXqSukl29ra4mN8GdaB2ZewzeaLj+INpV5N+Z1eKWzY+IzaIZH2EIR6YZRNQ==}
+
+  '@types/node@26.4.1':
+    resolution: {integrity: sha512-k97ENvZWtvA6yqz5/FS6a7duDgOPEeOQOc2iKS/nY6mX6qJUKtLnWzQS+Xj6tXweyj6ZcTAK2Qecetnvi9nCLA==}
 
   '@types/oracledb@6.5.2':
     resolution: {integrity: sha512-kK1eBS/Adeyis+3OlBDMeQQuasIDLUYXsi2T15ccNJ0iyUpQ4xDF7svFu3+bGVrI0CMBUclPciz+lsQR3JX3TQ==}
@@ -5623,8 +5631,8 @@ packages:
     resolution: {integrity: sha512-kja8j7PjmncONqaTsB8fQ+wE2mSU2DJ9D4XKoJ5PFWIdRMa6SLSN1ff4mOr4jCbfRSsxR4keIiySJU0N9T5hIQ==}
     engines: {node: '>= 8.0.0'}
 
-  ai@7.0.84:
-    resolution: {integrity: sha512-znHNBWADOy79k8EK7636kDm5LmnjF4tMzegC2TfmlLDobDZbs0z0OXD2sxtH3eDTp5Re+pJQESvjinWJ6+kadQ==}
+  ai@7.0.85:
+    resolution: {integrity: sha512-HVtPz0qLbTUad+QBnWWReIUmwk+U4PcRENMx+9PsHGVoinoc5CLDiVjNR+VBXTKOSaNgce8kSU/Rtbb4kjZsSw==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -5938,8 +5946,8 @@ packages:
   buffer@5.7.1:
     resolution: {integrity: sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ==}
 
-  bullmq@6.3.1:
-    resolution: {integrity: sha512-dxFRQtN42H1SWpODKr1eHqFsgYPAWOKiZDihatP8Skdd/j8e0x77AP//TUqGMVuUmjHf/eNMa2e+g6bidc4oYg==}
+  bullmq@6.3.2:
+    resolution: {integrity: sha512-jW4mEG1JOKewI2IhtuMery+kNhCs+EZp4qeNXeYRfueW7P4NFOStFGHOdsiJE9EO9Abz+JMrYlymb+r7fCbT7A==}
     engines: {node: '>=14.17.0'}
     peerDependencies:
       bullmq-otel: '>=2.0.0'
@@ -7733,6 +7741,7 @@ packages:
   isomorphic-dompurify@3.23.0:
     resolution: {integrity: sha512-RuYFgdNApoTlR3QxVUyWdS/1ATpLEWEVg3H2tMImbfr6HkYPnuW1sdEtW4PRGlFhp04VbQQjcjXnucHYpXT44A==}
     engines: {node: ^22.22.2 || ^24.15.0 || >=26.0.0}
+    deprecated: Raised the minimum Node.js version (breaking) without a major bump. Use 4.x for the same code with correct semver, or pin 3.19.0 for Node < 22.22.2.
 
   istanbul-lib-coverage@3.2.2:
     resolution: {integrity: sha512-O8dpsF+r0WV/8MNRKfnmrtCWhuKjxrq2w+jpzBL5UZKTi2LeVWnWOmWRxFlesJONmc+wLAGvKQZEOanko0LFTg==}
@@ -8259,8 +8268,8 @@ packages:
     resolution: {integrity: sha512-DqC6n3QQ77zdFpCMASA1a3Jlb64Hv2N2DciFGkO/4L9+q/IpIAuRlKOvCXabtRW6cQf8usbmM6BE/TOPysCdIA==}
     engines: {bun: '>=1.0.0', deno: '>=1.30.0', node: '>=8.0.0'}
 
-  lucide-react@1.35.0:
-    resolution: {integrity: sha512-yXCCWxGFYT6bLIPYC4SY6fPQPRs/d797rRIue+J9XP2Td6vQvD53gaQRBCnIVT1kTQRHtAtxlfOQNWAuIF8ELg==}
+  lucide-react@1.37.0:
+    resolution: {integrity: sha512-LPsB4rD1TD6wZu1djKOf9vUnS1jTNaHbolXebXDgiTdb6jeA1agIJhJsIybCmjKmQClcOaal1o1OaiYahEftyQ==}
     peerDependencies:
       react: 19.2.7
 
@@ -8407,8 +8416,8 @@ packages:
     resolution: {integrity: sha512-4kmO/MdyUIkLIvTPr8VHLil4AtoKIoniWPIEk5+CDy0xnWC84azhSFmuJ7PxZdsYtiP5kEeQsORAVIeMgxT+Hw==}
     hasBin: true
 
-  msgpackr@2.0.5:
-    resolution: {integrity: sha512-cef05H/dSYpLpqp3sj/qyZh5vhUYCalnaLO7j1yOmpsR0y/XwLVtK7r5gn+U/F7CTEfMowcGhlUQJDLcLf7jcA==}
+  msgpackr@2.1.0:
+    resolution: {integrity: sha512-p/pBCVO63CsvvpkomUnNNag6+n38rULuDA6HHe70o2gtC8ODI52foF/4ko2qQcp6OiErJXTmrZeXmsGGHsIQNQ==}
 
   multer@2.3.0:
     resolution: {integrity: sha512-cjNbm3sttszgZeGfJR124D+jFEfkXCVAsoPBmFn9X7UxmDSFHWqE2CoEj0vrmSpuAFnqWR1Szcm9QTsiHr60Xw==}
@@ -8773,8 +8782,8 @@ packages:
   pause@0.0.1:
     resolution: {integrity: sha512-KG8UEiEVkR3wGEb4m5yZkVCzigAD+cVEJck2CzYZO37ZGJfctvVptVO192MwrtPhzONn6go8ylnOdMhKqi4nfg==}
 
-  pdfkit@0.20.1:
-    resolution: {integrity: sha512-1rRXK6x5o8I/3dBrBzXfxibpHpkfCnIA7EBAES7pEpGFc/65inMLlA8SalGWpJfal7BGekxeLf6A30IOpQpc5Q==}
+  pdfkit@0.20.2:
+    resolution: {integrity: sha512-Q/w03ICAQyXfHNfTsg1udp0ADerdBN0s7a6XSPL7J7Ro6ABnafoBOCDBstIO9U02mvzHEV8HrvFIw5iV5ejIRA==}
 
   peberminta@0.9.0:
     resolution: {integrity: sha512-XIxfHpEuSJbITd1H3EeQwpcZbTLHc+VVr8ANI9t5sit565tsI4/xK3KWTUFE2e6QiangUkh3B0jihzmGnNrRsQ==}
@@ -9899,8 +9908,8 @@ packages:
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
-  tsx@4.23.12:
-    resolution: {integrity: sha512-FDf4L4sYzKtzWYhU/Xm0AQFdTjdIxNo9ElTf2mxXM6k8YMHXzYUe4yODVaXP4V9uMFbVg8c0qyBccK2OOxb45Q==}
+  tsx@4.23.13:
+    resolution: {integrity: sha512-BL5MGkRln6aDYhb0xbQlEAGw743BaZYWdbWtdJOBriYJboKgUUYCadFp2/FpBBZquBC/ezNBn7wMMPx7FDZUDw==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -10437,8 +10446,8 @@ packages:
   zeptomatch@2.1.0:
     resolution: {integrity: sha512-KiGErG2J0G82LSpniV0CtIzjlJ10E04j02VOudJsPyPwNZgGnRKQy7I1R7GMyg/QswnE4l7ohSGrQbQbjXPPDA==}
 
-  zimmerframe@1.1.4:
-    resolution: {integrity: sha512-B58NGBEoc8Y9MWWCQGl/gq9xBCe4IiKM0a2x7GZdQKOW5Exr8S1W24J6OgM1njK8xCRGvAJIL/MxXHf6SkmQKQ==}
+  zimmerframe@1.1.5:
+    resolution: {integrity: sha512-msJxIvYDYcoNL+PJsu+7qmpDWsYmAxTY+2TNYXXF0hzBzBk0BMecOqDOG/EckUoKCuKwObfbugIl8QpqHDXeFA==}
 
   zod-validation-error@4.0.2:
     resolution: {integrity: sha512-Q6/nZLe6jxuU80qb/4uJ4t5v2VEZ44lzQjPDhYJNztRQ4wyWc6VF3D3Kb/fAuPetZQnhS3hnajCf9CsWesghLQ==}
@@ -10459,51 +10468,51 @@ snapshots:
 
   '@adobe/css-tools@4.5.0': {}
 
-  '@ai-sdk/gateway@4.0.68(zod@3.25.76)':
+  '@ai-sdk/gateway@4.0.69(zod@3.25.76)':
     dependencies:
-      '@ai-sdk/provider': 4.0.8
-      '@ai-sdk/provider-utils': 5.0.33(zod@3.25.76)
+      '@ai-sdk/provider': 4.0.9
+      '@ai-sdk/provider-utils': 5.0.34(zod@3.25.76)
       '@vercel/oidc': 3.2.0
       zod: 3.25.76
 
-  '@ai-sdk/gateway@4.0.68(zod@4.4.3)':
+  '@ai-sdk/gateway@4.0.69(zod@4.4.3)':
     dependencies:
-      '@ai-sdk/provider': 4.0.8
-      '@ai-sdk/provider-utils': 5.0.33(zod@4.4.3)
+      '@ai-sdk/provider': 4.0.9
+      '@ai-sdk/provider-utils': 5.0.34(zod@4.4.3)
       '@vercel/oidc': 3.2.0
       zod: 4.4.3
 
-  '@ai-sdk/openai@4.0.51(zod@3.25.76)':
+  '@ai-sdk/openai@4.0.52(zod@3.25.76)':
     dependencies:
-      '@ai-sdk/provider': 4.0.8
-      '@ai-sdk/provider-utils': 5.0.33(zod@3.25.76)
+      '@ai-sdk/provider': 4.0.9
+      '@ai-sdk/provider-utils': 5.0.34(zod@3.25.76)
       zod: 3.25.76
 
-  '@ai-sdk/openai@4.0.51(zod@4.4.3)':
+  '@ai-sdk/openai@4.0.52(zod@4.4.3)':
     dependencies:
-      '@ai-sdk/provider': 4.0.8
-      '@ai-sdk/provider-utils': 5.0.33(zod@4.4.3)
+      '@ai-sdk/provider': 4.0.9
+      '@ai-sdk/provider-utils': 5.0.34(zod@4.4.3)
       zod: 4.4.3
 
-  '@ai-sdk/provider-utils@5.0.33(zod@3.25.76)':
+  '@ai-sdk/provider-utils@5.0.34(zod@3.25.76)':
     dependencies:
-      '@ai-sdk/provider': 4.0.8
+      '@ai-sdk/provider': 4.0.9
       '@standard-schema/spec': 1.1.0
       '@workflow/serde': 4.1.0
       eventsource-parser: 3.1.1
       undici: 7.29.0
       zod: 3.25.76
 
-  '@ai-sdk/provider-utils@5.0.33(zod@4.4.3)':
+  '@ai-sdk/provider-utils@5.0.34(zod@4.4.3)':
     dependencies:
-      '@ai-sdk/provider': 4.0.8
+      '@ai-sdk/provider': 4.0.9
       '@standard-schema/spec': 1.1.0
       '@workflow/serde': 4.1.0
       eventsource-parser: 3.1.1
       undici: 7.29.0
       zod: 4.4.3
 
-  '@ai-sdk/provider@4.0.8':
+  '@ai-sdk/provider@4.0.9':
     dependencies:
       json-schema: 0.4.0
 
@@ -12565,7 +12574,7 @@ snapshots:
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/instrumentation': 0.218.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/semantic-conventions': 1.43.0
-      '@types/aws-lambda': 8.10.162
+      '@types/aws-lambda': 8.10.163
     transitivePeerDependencies:
       - supports-color
 
@@ -12975,33 +12984,33 @@ snapshots:
     dependencies:
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/core': 2.11.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/resources': 2.11.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.1)
 
   '@opentelemetry/resource-detector-aws@2.22.0(@opentelemetry/api@1.9.1)':
     dependencies:
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/core': 2.11.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/resources': 2.11.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/semantic-conventions': 1.43.0
 
   '@opentelemetry/resource-detector-azure@0.26.0(@opentelemetry/api@1.9.1)':
     dependencies:
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/core': 2.11.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/resources': 2.11.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/semantic-conventions': 1.43.0
 
   '@opentelemetry/resource-detector-container@0.8.13(@opentelemetry/api@1.9.1)':
     dependencies:
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/core': 2.11.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/resources': 2.11.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.1)
 
   '@opentelemetry/resource-detector-gcp@0.53.0(@opentelemetry/api@1.9.1)':
     dependencies:
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/core': 2.11.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/resources': 2.11.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.1)
       gcp-metadata: 8.1.4
     transitivePeerDependencies:
       - supports-color
@@ -13254,7 +13263,7 @@ snapshots:
       foreground-child: 3.3.1
       get-port-please: 3.2.0
       pathe: 2.0.3
-      proper-lockfile: 4.1.2
+      proper-lockfile: 4.1.2(patch_hash=4980fb9f3412fb2afd3f87670d35f7905b34ecc7f12bd60a7039f8f89b954f1e)
       remeda: 2.33.4
       std-env: 3.10.0
       valibot: 1.4.2(typescript@5.9.3)
@@ -13296,7 +13305,7 @@ snapshots:
       ajv: 8.20.0
       better-result: 2.10.0
       env-paths: 3.0.0
-      proper-lockfile: 4.1.2
+      proper-lockfile: 4.1.2(patch_hash=4980fb9f3412fb2afd3f87670d35f7905b34ecc7f12bd60a7039f8f89b954f1e)
 
   '@prisma/studio-core@0.33.0(@types/react-dom@19.2.5(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
     dependencies:
@@ -14403,7 +14412,7 @@ snapshots:
 
   '@types/aria-query@5.0.4': {}
 
-  '@types/aws-lambda@8.10.162': {}
+  '@types/aws-lambda@8.10.163': {}
 
   '@types/babel__core@7.20.5':
     dependencies:
@@ -14599,6 +14608,10 @@ snapshots:
   '@types/node-cron@3.0.11': {}
 
   '@types/node@26.4.0':
+    dependencies:
+      undici-types: 8.3.0
+
+  '@types/node@26.4.1':
     dependencies:
       undici-types: 8.3.0
 
@@ -15202,7 +15215,7 @@ snapshots:
       obug: 2.1.4
       std-env: 4.2.0
       tinyrainbow: 3.1.1
-      vitest: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
+      vitest: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
 
   '@vitest/expect@4.1.11':
     dependencies:
@@ -15213,21 +15226,29 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.1.1
 
-  '@vitest/mocker@4.1.11(vite@6.4.2(@types/node@26.4.0)(jiti@1.21.7)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))':
+  '@vitest/mocker@4.1.11(vite@6.4.2(@types/node@26.4.0)(jiti@1.21.7)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))':
     dependencies:
       '@vitest/spy': 4.1.11
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 6.4.2(@types/node@26.4.0)(jiti@1.21.7)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+      vite: 6.4.2(@types/node@26.4.0)(jiti@1.21.7)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
 
-  '@vitest/mocker@4.1.11(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))':
+  '@vitest/mocker@4.1.11(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))':
     dependencies:
       '@vitest/spy': 4.1.11
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+      vite: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
+
+  '@vitest/mocker@4.1.11(vite@6.4.2(@types/node@26.4.1)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))':
+    dependencies:
+      '@vitest/spy': 4.1.11
+      estree-walker: 3.0.3
+      magic-string: 0.30.21
+    optionalDependencies:
+      vite: 6.4.2(@types/node@26.4.1)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
 
   '@vitest/pretty-format@4.1.11':
     dependencies:
@@ -15451,18 +15472,18 @@ snapshots:
     dependencies:
       humanize-ms: 1.2.1
 
-  ai@7.0.84(zod@3.25.76):
+  ai@7.0.85(zod@3.25.76):
     dependencies:
-      '@ai-sdk/gateway': 4.0.68(zod@3.25.76)
-      '@ai-sdk/provider': 4.0.8
-      '@ai-sdk/provider-utils': 5.0.33(zod@3.25.76)
+      '@ai-sdk/gateway': 4.0.69(zod@3.25.76)
+      '@ai-sdk/provider': 4.0.9
+      '@ai-sdk/provider-utils': 5.0.34(zod@3.25.76)
       zod: 3.25.76
 
-  ai@7.0.84(zod@4.4.3):
+  ai@7.0.85(zod@4.4.3):
     dependencies:
-      '@ai-sdk/gateway': 4.0.68(zod@4.4.3)
-      '@ai-sdk/provider': 4.0.8
-      '@ai-sdk/provider-utils': 5.0.33(zod@4.4.3)
+      '@ai-sdk/gateway': 4.0.69(zod@4.4.3)
+      '@ai-sdk/provider': 4.0.9
+      '@ai-sdk/provider-utils': 5.0.34(zod@4.4.3)
       zod: 4.4.3
 
   ajv-formats@2.1.1(ajv@8.20.0):
@@ -15950,10 +15971,10 @@ snapshots:
       base64-js: 1.5.1
       ieee754: 1.2.1
 
-  bullmq@6.3.1(ioredis@6.0.0)(pg@8.23.0):
+  bullmq@6.3.2(ioredis@6.0.0)(pg@8.23.0):
     dependencies:
       cron-parser: 5.10.0
-      msgpackr: 2.0.5
+      msgpackr: 2.1.0
       node-abort-controller: 3.1.1
       semver: 7.8.5
       tslib: 2.8.1
@@ -18379,7 +18400,7 @@ snapshots:
 
   jest-worker@27.5.1:
     dependencies:
-      '@types/node': 26.4.0
+      '@types/node': 26.4.1
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
@@ -18745,7 +18766,7 @@ snapshots:
 
   lru.min@1.1.4: {}
 
-  lucide-react@1.35.0(react@19.2.7):
+  lucide-react@1.37.0(react@19.2.7):
     dependencies:
       react: 19.2.7
 
@@ -18864,7 +18885,7 @@ snapshots:
       '@msgpackr-extract/msgpackr-extract-win32-x64': 3.0.4
     optional: true
 
-  msgpackr@2.0.5:
+  msgpackr@2.1.0:
     optionalDependencies:
       msgpackr-extract: 3.0.4
 
@@ -19232,7 +19253,7 @@ snapshots:
 
   pause@0.0.1: {}
 
-  pdfkit@0.20.1:
+  pdfkit@0.20.2:
     dependencies:
       '@noble/ciphers': 1.3.0
       '@noble/hashes': 1.8.0
@@ -19325,13 +19346,13 @@ snapshots:
       camelcase-css: 2.0.1
       postcss: 8.5.26
 
-  postcss-load-config@6.0.1(jiti@1.21.7)(postcss@8.5.26)(tsx@4.23.12)(yaml@2.9.0):
+  postcss-load-config@6.0.1(jiti@1.21.7)(postcss@8.5.26)(tsx@4.23.13)(yaml@2.9.0):
     dependencies:
       lilconfig: 3.1.3
     optionalDependencies:
       jiti: 1.21.7
       postcss: 8.5.26
-      tsx: 4.23.12
+      tsx: 4.23.13
       yaml: 2.9.0
 
   postcss-nested@6.2.0(postcss@8.5.26):
@@ -19465,7 +19486,7 @@ snapshots:
       object-assign: 4.1.1
       react-is: 16.13.1
 
-  proper-lockfile@4.1.2:
+  proper-lockfile@4.1.2(patch_hash=4980fb9f3412fb2afd3f87670d35f7905b34ecc7f12bd60a7039f8f89b954f1e):
     dependencies:
       graceful-fs: 4.2.11
       retry: 0.12.0
@@ -20278,7 +20299,7 @@ snapshots:
       is-reference: 3.0.3
       locate-character: 3.0.0
       magic-string: 0.30.21
-      zimmerframe: 1.1.4
+      zimmerframe: 1.1.5
     transitivePeerDependencies:
       - '@typescript-eslint/types'
     optional: true
@@ -20300,7 +20321,7 @@ snapshots:
 
   tailwind-merge@2.6.1: {}
 
-  tailwindcss@3.4.19(tsx@4.23.12)(yaml@2.9.0):
+  tailwindcss@3.4.19(tsx@4.23.13)(yaml@2.9.0):
     dependencies:
       '@alloc/quick-lru': 5.2.0
       arg: 5.0.2
@@ -20319,7 +20340,7 @@ snapshots:
       postcss: 8.5.26
       postcss-import: 15.1.0(postcss@8.5.26)
       postcss-js: 4.1.0(postcss@8.5.26)
-      postcss-load-config: 6.0.1(jiti@1.21.7)(postcss@8.5.26)(tsx@4.23.12)(yaml@2.9.0)
+      postcss-load-config: 6.0.1(jiti@1.21.7)(postcss@8.5.26)(tsx@4.23.13)(yaml@2.9.0)
       postcss-nested: 6.2.0(postcss@8.5.26)
       postcss-selector-parser: 6.1.4
       resolve: 1.22.12
@@ -20494,7 +20515,7 @@ snapshots:
 
   tslib@2.8.1: {}
 
-  tsx@4.23.12:
+  tsx@4.23.13:
     dependencies:
       esbuild: 0.25.12
     optionalDependencies:
@@ -20712,7 +20733,7 @@ snapshots:
 
   vary@1.1.2: {}
 
-  vite@6.4.2(@types/node@26.4.0)(jiti@1.21.7)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0):
+  vite@6.4.2(@types/node@26.4.0)(jiti@1.21.7)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0):
     dependencies:
       esbuild: 0.25.12
       fdir: 6.5.0(picomatch@4.0.7)
@@ -20726,10 +20747,10 @@ snapshots:
       jiti: 1.21.7
       lightningcss: 1.33.0
       terser: 5.51.2
-      tsx: 4.23.12
+      tsx: 4.23.13
       yaml: 2.9.0
 
-  vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0):
+  vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0):
     dependencies:
       esbuild: 0.25.12
       fdir: 6.5.0(picomatch@4.0.7)
@@ -20743,13 +20764,30 @@ snapshots:
       jiti: 2.7.0
       lightningcss: 1.33.0
       terser: 5.51.2
-      tsx: 4.23.12
+      tsx: 4.23.13
       yaml: 2.9.0
 
-  vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@26.1.0)(vite@6.4.2(@types/node@26.4.0)(jiti@1.21.7)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)):
+  vite@6.4.2(@types/node@26.4.1)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0):
+    dependencies:
+      esbuild: 0.25.12
+      fdir: 6.5.0(picomatch@4.0.7)
+      picomatch: 4.0.7
+      postcss: 8.5.26
+      rollup: 4.63.0
+      tinyglobby: 0.2.17
+    optionalDependencies:
+      '@types/node': 26.4.1
+      fsevents: 2.3.3
+      jiti: 2.7.0
+      lightningcss: 1.33.0
+      terser: 5.51.2
+      tsx: 4.23.13
+      yaml: 2.9.0
+
+  vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@26.1.0)(vite@6.4.2(@types/node@26.4.0)(jiti@1.21.7)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)):
     dependencies:
       '@vitest/expect': 4.1.11
-      '@vitest/mocker': 4.1.11(vite@6.4.2(@types/node@26.4.0)(jiti@1.21.7)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
+      '@vitest/mocker': 4.1.11(vite@6.4.2(@types/node@26.4.0)(jiti@1.21.7)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
       '@vitest/pretty-format': 4.1.11
       '@vitest/runner': 4.1.11
       '@vitest/snapshot': 4.1.11
@@ -20766,7 +20804,7 @@ snapshots:
       tinyexec: 1.3.0
       tinyglobby: 0.2.17
       tinyrainbow: 3.1.1
-      vite: 6.4.2(@types/node@26.4.0)(jiti@1.21.7)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+      vite: 6.4.2(@types/node@26.4.0)(jiti@1.21.7)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@opentelemetry/api': 1.9.1
@@ -20776,10 +20814,10 @@ snapshots:
     transitivePeerDependencies:
       - msw
 
-  vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)):
+  vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)):
     dependencies:
       '@vitest/expect': 4.1.11
-      '@vitest/mocker': 4.1.11(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0))
+      '@vitest/mocker': 4.1.11(vite@6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
       '@vitest/pretty-format': 4.1.11
       '@vitest/runner': 4.1.11
       '@vitest/snapshot': 4.1.11
@@ -20796,11 +20834,41 @@ snapshots:
       tinyexec: 1.3.0
       tinyglobby: 0.2.17
       tinyrainbow: 3.1.1
-      vite: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.12)(yaml@2.9.0)
+      vite: 6.4.2(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@opentelemetry/api': 1.9.1
       '@types/node': 26.4.0
+      '@vitest/coverage-v8': 4.1.11(vitest@4.1.11)
+      jsdom: 30.0.1(@noble/hashes@1.8.0)
+    transitivePeerDependencies:
+      - msw
+
+  vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.1)(@vitest/coverage-v8@4.1.11)(jsdom@30.0.1(@noble/hashes@1.8.0))(vite@6.4.2(@types/node@26.4.1)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)):
+    dependencies:
+      '@vitest/expect': 4.1.11
+      '@vitest/mocker': 4.1.11(vite@6.4.2(@types/node@26.4.1)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
+      '@vitest/pretty-format': 4.1.11
+      '@vitest/runner': 4.1.11
+      '@vitest/snapshot': 4.1.11
+      '@vitest/spy': 4.1.11
+      '@vitest/utils': 4.1.11
+      es-module-lexer: 2.3.2
+      expect-type: 1.4.0
+      magic-string: 0.30.21
+      obug: 2.1.4
+      pathe: 2.0.3
+      picomatch: 4.0.7
+      std-env: 4.2.0
+      tinybench: 2.9.0
+      tinyexec: 1.3.0
+      tinyglobby: 0.2.17
+      tinyrainbow: 3.1.1
+      vite: 6.4.2(@types/node@26.4.1)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0)
+      why-is-node-running: 2.3.0
+    optionalDependencies:
+      '@opentelemetry/api': 1.9.1
+      '@types/node': 26.4.1
       '@vitest/coverage-v8': 4.1.11(vitest@4.1.11)
       jsdom: 30.0.1(@noble/hashes@1.8.0)
     transitivePeerDependencies:
@@ -21121,7 +21189,7 @@ snapshots:
       grammex: 3.1.13
       graphmatch: 1.1.1
 
-  zimmerframe@1.1.4:
+  zimmerframe@1.1.5:
     optional: true
 
   zod-validation-error@4.0.2(zod@3.25.76):

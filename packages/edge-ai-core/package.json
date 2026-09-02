@@ -25,9 +25,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.51",
+    "@ai-sdk/openai": "^4.0.52",
     "@types/node": "^26.4.0",
-    "ai": "^7.0.84",
+    "ai": "^7.0.85",
     "typescript": "^5.9.3",
     "uuid": "^14.0.2"
   },
@@ -42,7 +42,7 @@
     "jest": "^30.5.0",
     "prettier": "^3.9.6",
     "ts-jest": "^29.4.12",
-    "tsx": "^4.23.12",
+    "tsx": "^4.23.13",
     "vite": "^8.2.2",
     "vitest": "^4.1.11"
   },

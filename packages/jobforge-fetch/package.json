@@ -12,9 +12,9 @@
     "build": "node ../../scripts/run-package-tsc-build.mjs"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.51",
+    "@ai-sdk/openai": "^4.0.52",
     "@jobforge/errors": "workspace:*",
-    "ai": "^7.0.84"
+    "ai": "^7.0.85"
   },
   "devDependencies": {
     "@jobforge/typescript-config": "workspace:*",
