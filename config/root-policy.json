@@ -209,7 +209,9 @@
     "pr.txt",
     ".pre-commit-config.yaml",
     "jest.config.js",
-    ".vercel"
+    ".vercel",
+    ".settler",
+    "ledger"
   ],
   "blockedExtensions": [".tar", ".tgz", ".bak", ".tmp", ".old"],
   "localClutterPatterns": [

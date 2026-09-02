@@ -36,6 +36,7 @@
 | `.prettierignore`                        | config-file (file)  | Y                 | Y              | allowlisted | Tooling/environment config expected at root.                          |
 | `.prettierrc`                            | config-file (file)  | Y                 | Y              | allowlisted | Tooling/environment config expected at root.                          |
 | `.release-checklist.md`                  | config-file (file)  | Y                 | Y              | allowlisted | Tooling/environment config expected at root.                          |
+| `.settler`                               | project-dir (dir)   | Y                 | Y              | allowlisted | Event backbone and CAS local runtime directory.                       |
 | `.turbo`                                 | project-dir (dir)   | Y                 | Y              | allowlisted | Intentional top-level project area in monorepo layout.                |
 | `.vercelignore`                          | config-file (file)  | Y                 | Y              | allowlisted | Tooling/environment config expected at root.                          |
 | `_import`                                | project-dir (dir)   | Y                 | Y              | allowlisted | Intentional top-level project area in monorepo layout.                |
@@ -85,6 +86,7 @@
 | `launch/launch-checklist.md`             | docs-file (file)    | Y                 | Y              | allowlisted | Historical or canonical documentation retained at root.               |
 | `LAUNCH_READY.md`                        | docs-file (file)    | Y                 | Y              | allowlisted | Historical or canonical documentation retained at root.               |
 | `LAUNCHKIT.md`                           | docs-file (file)    | Y                 | Y              | allowlisted | Historical or canonical documentation retained at root.               |
+| `ledger`                                 | project-dir (dir)   | Y                 | Y              | allowlisted | Append-only execution ledger receipts for deterministic run history.  |
 | `legal`                                  | project-dir (dir)   | Y                 | Y              | allowlisted | Intentional top-level project area in monorepo layout.                |
 | `LEGAL`                                  | project-dir (dir)   | Y                 | Y              | allowlisted | Intentional top-level project area in monorepo layout.                |
 | `LICENSE`                                | tooling-file (file) | Y                 | Y              | allowlisted | Build/tooling/runtime file required from root.                        |
