@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { SmoothScroll } from "@/components/ui/SmoothScroll";
 import {
@@ -14,6 +15,18 @@ import { getImageUrl, SETTLER_IMAGES } from "@/lib/images/image-config";
 import { RuntimeUiConfigProvider } from "@/lib/runtime-ui-config/client";
 import { GlobalClientShell } from "@/components/GlobalClientShell";
 import { BRAND_STRINGS } from "@/lib/brand/strings";
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-mono",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://settler.dev"),
@@ -168,7 +181,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className="relative">
+      <body className={`relative ${inter.variable} ${jetbrainsMono.variable} ${inter.className}`}>
         <div
           className="fixed inset-0 pointer-events-none noise-overlay opacity-[0.03] dark:opacity-[0.05] z-[9999]"
           aria-hidden="true"

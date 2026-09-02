@@ -226,6 +226,7 @@
   body {
     @apply bg-background text-foreground;
     font-family:
+      var(--font-inter),
       system-ui,
       -apple-system,
       "Segoe UI",
@@ -304,7 +305,7 @@
   pre,
   kbd,
   samp {
-    font-family: "JetBrains Mono", "Fira Code", "Consolas", "Monaco", "Courier New", monospace;
+    font-family: var(--font-mono), "JetBrains Mono", "Fira Code", "Consolas", "Monaco", "Courier New", monospace;
     line-height: 1.5;
     /* Fluid code font size */
     font-size: clamp(0.8125rem, 1vw + 0.25rem, 0.875rem); /* 13px - 14px */

@@ -1,15 +1,35 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BrandLockup } from "@/components/brand/BrandLockup";
-import { ShieldCheck, ArrowRight, Zap, History, Globe } from "lucide-react";
+import {
+  ShieldCheck,
+  ArrowRight,
+  Zap,
+  History,
+  Globe,
+  Loader2,
+  AlertCircle,
+  CheckCircle,
+} from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { trackSignupStart, trackSignupComplete } from "@/lib/analytics/conversion";
 
 export default function SignupPage() {
+  const router = useRouter();
   const [referralCode, setReferralCode] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     try {
@@ -19,6 +39,65 @@ export default function SignupPage() {
       // ignore
     }
   }, []);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    trackSignupStart("signup_page").catch(() => {});
+
+    try {
+      const supabase = createClient();
+      const { data, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+            full_name: `${firstName} ${lastName}`.trim(),
+            referral_code: referralCode || undefined,
+          },
+          emailRedirectTo: `${window.location.origin}/console`,
+        },
+      });
+
+      if (authError) {
+        if (authError.message.includes("already registered")) {
+          setError("This email is already registered. Try signing in instead.");
+        } else if (authError.message.includes("password")) {
+          setError("Password must be at least 6 characters.");
+        } else {
+          setError(authError.message);
+        }
+        setLoading(false);
+        return;
+      }
+
+      // If email confirmation is required, show success message
+      if (data?.user?.identities?.length === 0) {
+        setError("This email is already registered. Try signing in instead.");
+        setLoading(false);
+        return;
+      }
+
+      trackSignupComplete(data?.user?.id || "", "trial").catch(() => {});
+
+      if (data?.session) {
+        // Auto-confirmed: redirect to onboarding
+        router.push("/console/onboarding");
+        router.refresh();
+      } else {
+        // Email confirmation required
+        setSuccess(true);
+        setLoading(false);
+      }
+    } catch {
+      setError("An unexpected error occurred. Please try again.");
+      setLoading(false);
+    }
+  }
 
   return (
     <div className="flex min-h-screen">
@@ -92,88 +171,151 @@ export default function SignupPage() {
             </div>
           </div>
 
-          <form className="space-y-6">
-            <input type="hidden" name="referral_code" value={referralCode} />
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="first-name"
-                    className="text-xs font-bold uppercase tracking-widest text-muted-foreground"
-                  >
-                    First Name
-                  </Label>
-                  <Input
-                    id="first-name"
-                    placeholder="John"
-                    className="h-12 border-border/60 bg-muted/20 focus:ring-primary focus:border-primary font-medium"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="last-name"
-                    className="text-xs font-bold uppercase tracking-widest text-muted-foreground"
-                  >
-                    Last Name
-                  </Label>
-                  <Input
-                    id="last-name"
-                    placeholder="Doe"
-                    className="h-12 border-border/60 bg-muted/20 focus:ring-primary focus:border-primary font-medium"
-                    required
-                  />
+          {success ? (
+            <div className="space-y-6">
+              <div className="flex items-start gap-3 rounded-lg border border-success/30 bg-success/5 px-4 py-4">
+                <CheckCircle
+                  className="h-5 w-5 mt-0.5 text-success flex-shrink-0"
+                  aria-hidden="true"
+                />
+                <div className="space-y-1">
+                  <p className="text-sm font-semibold text-foreground">Check your email</p>
+                  <p className="text-sm text-muted-foreground">
+                    We sent a confirmation link to{" "}
+                    <span className="font-medium text-foreground">{email}</span>. Click the link to
+                    activate your account and start your trial.
+                  </p>
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label
-                  htmlFor="email"
-                  className="text-xs font-bold uppercase tracking-widest text-muted-foreground"
-                >
-                  Work Email
-                </Label>
-                <Input
-                  id="email"
-                  placeholder="name@company.com"
-                  type="email"
-                  className="h-12 border-border/60 bg-muted/20 focus:ring-primary focus:border-primary font-medium"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label
-                  htmlFor="password"
-                  className="text-xs font-bold uppercase tracking-widest text-muted-foreground"
-                >
-                  Password
-                </Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  className="h-12 border-border/60 bg-muted/20 focus:ring-primary focus:border-primary font-medium"
-                  required
-                />
-              </div>
+              <Button variant="outline" className="w-full" asChild>
+                <Link href="/login">Go to sign in</Link>
+              </Button>
             </div>
+          ) : (
+            <>
+              <form className="space-y-6" onSubmit={handleSubmit}>
+                <input type="hidden" name="referral_code" value={referralCode} />
+                {error && (
+                  <div
+                    className="flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive"
+                    role="alert"
+                  >
+                    <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                    <span>{error}</span>
+                  </div>
+                )}
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="first-name"
+                        className="text-xs font-bold uppercase tracking-widest text-muted-foreground"
+                      >
+                        First Name
+                      </Label>
+                      <Input
+                        id="first-name"
+                        placeholder="John"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        className="h-12 border-border/60 bg-muted/20 focus:ring-primary focus:border-primary font-medium"
+                        required
+                        disabled={loading}
+                        autoComplete="given-name"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="last-name"
+                        className="text-xs font-bold uppercase tracking-widest text-muted-foreground"
+                      >
+                        Last Name
+                      </Label>
+                      <Input
+                        id="last-name"
+                        placeholder="Doe"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        className="h-12 border-border/60 bg-muted/20 focus:ring-primary focus:border-primary font-medium"
+                        required
+                        disabled={loading}
+                        autoComplete="family-name"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="email"
+                      className="text-xs font-bold uppercase tracking-widest text-muted-foreground"
+                    >
+                      Work Email
+                    </Label>
+                    <Input
+                      id="email"
+                      placeholder="name@company.com"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="h-12 border-border/60 bg-muted/20 focus:ring-primary focus:border-primary font-medium"
+                      required
+                      disabled={loading}
+                      autoComplete="email"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="password"
+                      className="text-xs font-bold uppercase tracking-widest text-muted-foreground"
+                    >
+                      Password
+                    </Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="h-12 border-border/60 bg-muted/20 focus:ring-primary focus:border-primary font-medium"
+                      required
+                      disabled={loading}
+                      minLength={6}
+                      autoComplete="new-password"
+                    />
+                  </div>
+                </div>
 
-            <Button className="w-full h-12 text-lg font-bold group" size="lg">
-              Create Account
-              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </form>
+                <Button
+                  className="w-full h-12 text-lg font-bold group"
+                  size="lg"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Creating account…
+                    </>
+                  ) : (
+                    <>
+                      Create Account
+                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </>
+                  )}
+                </Button>
+              </form>
 
-          <p className="text-xs text-muted-foreground leading-relaxed text-center font-medium">
-            By clicking &quot;Create Account&quot;, you agree to our{" "}
-            <Link href="/terms" className="text-primary underline">
-              Terms of Service
-            </Link>{" "}
-            and{" "}
-            <Link href="/privacy" className="text-primary underline">
-              Privacy Policy
-            </Link>
-            .
-          </p>
+              <p className="text-xs text-muted-foreground leading-relaxed text-center font-medium">
+                By clicking &quot;Create Account&quot;, you agree to our{" "}
+                <Link href="/terms" className="text-primary underline">
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link href="/privacy" className="text-primary underline">
+                  Privacy Policy
+                </Link>
+                .
+              </p>
+            </>
+          )}
 
           <p className="text-center text-sm font-medium text-muted-foreground pt-4 border-t border-border/40">
             Already have an account?{" "}
