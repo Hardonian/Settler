@@ -59,7 +59,7 @@ export default function SignupPage() {
             full_name: `${firstName} ${lastName}`.trim(),
             referral_code: referralCode || undefined,
           },
-          emailRedirectTo: `${window.location.origin}/console`,
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=/console/onboarding`,
         },
       });
 

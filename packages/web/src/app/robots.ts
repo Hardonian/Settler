@@ -6,7 +6,23 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://settler.dev";
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: { userAgent: "*", allow: "/", disallow: ["/dashboard/", "/api/", "/demo/"] },
+    rules: [
+      {
+        userAgent: "*",
+        allow: "/",
+        disallow: [
+          "/console/",
+          "/admin/",
+          "/dashboard/",
+          "/api/",
+          "/demo/",
+          "/auth/",
+          "/reset-password",
+          "/stitch_export/",
+        ],
+      },
+    ],
     sitemap: `${SITE_URL}/sitemap.xml`,
+    host: SITE_URL,
   };
 }

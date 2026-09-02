@@ -15,6 +15,8 @@ import { getImageUrl, SETTLER_IMAGES } from "@/lib/images/image-config";
 import { RuntimeUiConfigProvider } from "@/lib/runtime-ui-config/client";
 import { GlobalClientShell } from "@/components/GlobalClientShell";
 import { BRAND_STRINGS } from "@/lib/brand/strings";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -140,7 +142,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
-  themeColor: "#1b3f5f",
+  themeColor: "#0a0e14",
   viewportFit: "cover",
 };
 
@@ -156,6 +158,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="apple-touch-icon" href={SETTLER_IMAGES.appleTouchIcon.path} />
         <link rel="manifest" href="/manifest.json" />
+        <link rel="dns-prefetch" href="https://supabase.co" />
+        <link rel="preconnect" href="https://supabase.co" crossOrigin="anonymous" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -198,6 +202,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <SmoothScroll>{children}</SmoothScroll>
                 </main>
                 <GlobalClientShell />
+                <Analytics />
+                <SpeedInsights />
               </QueryProvider>
             </RuntimeUiConfigProvider>
           </TenantThemeProvider>

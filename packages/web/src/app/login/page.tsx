@@ -52,6 +52,19 @@ function LoginForm() {
     }
   }
 
+  const errorParam = searchParams.get("error");
+  const messageParam = searchParams.get("message");
+
+  const queryError =
+    errorParam === "auth_callback_failed"
+      ? "Authentication session expired or link was invalid. Please sign in."
+      : null;
+
+  const querySuccess =
+    messageParam === "password_updated"
+      ? "Password updated successfully. You can now sign in."
+      : null;
+
   return (
     <div className="w-full max-w-sm mx-auto space-y-12">
       <div className="space-y-6">
@@ -71,13 +84,22 @@ function LoginForm() {
       </div>
 
       <form className="space-y-6" onSubmit={handleSubmit}>
-        {error && (
+        {querySuccess && (
+          <div
+            className="flex items-start gap-3 rounded-lg border border-success/30 bg-success/5 px-4 py-3 text-sm text-success"
+            role="status"
+          >
+            <ShieldCheck className="h-4 w-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
+            <span>{querySuccess}</span>
+          </div>
+        )}
+        {(error || queryError) && (
           <div
             className="flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive"
             role="alert"
           >
             <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
-            <span>{error}</span>
+            <span>{error || queryError}</span>
           </div>
         )}
         <div className="space-y-4">
