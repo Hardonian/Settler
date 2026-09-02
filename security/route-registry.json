@@ -1,0 +1,2586 @@
+{
+  "generatedAt": "2026-09-02T03:02:14.636Z",
+  "totalRoutes": 430,
+  "routes": [
+    {
+      "route": "/api/csrf-token",
+      "kind": "express-router",
+      "file": "packages/api/src/index.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/internal/health/deep",
+      "kind": "internal-service-endpoint",
+      "file": "packages/web/src/app/api/internal/health/deep/route.ts",
+      "methods": []
+    },
+    {
+      "route": "/api/internal/jobs/drain",
+      "kind": "internal-service-endpoint",
+      "file": "packages/web/src/app/api/internal/jobs/drain/route.ts",
+      "methods": []
+    },
+    {
+      "route": "/api/v1/adapters/:adapter/test",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/adapter-test.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/advanced-matching-rules",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/advanced-matching-rules.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v1/advanced-matching-rules/:ruleId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/advanced-matching-rules.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/advanced-matching-rules/:ruleId/test",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/advanced-matching-rules.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/ai/assistant",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/ai-assistant.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/alerts/history",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/alerts.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/alerts/rules",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/alerts.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v1/api-keys",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/api-keys.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v1/api-keys/:id",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/api-keys.ts",
+      "methods": ["DELETE", "GET", "PATCH"]
+    },
+    {
+      "route": "/api/v1/api-keys/:id/regenerate",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/api-keys.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/approvals/:id/approve",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/approvals.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/approvals/approvers",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/approvals.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/approvals/request",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/approvals.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/approvals/requests",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/approvals.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v1/approvals/requests/:approvalId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/approvals.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/approvals/requests/:approvalId/approve",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/approvals.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/approvals/requests/:approvalId/reject",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/approvals.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/archetypes",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-intelligence.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v1/audit-exports",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/enterprise.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/audit-trail",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/audit-trail.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/audit-trail/:resourceType/:resourceId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/audit-trail.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/audit-trail/export",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/audit-trail.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/audit-trail/exports",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/audit-trail.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/audit-trail/exports/:exportId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/audit-trail.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/audit-trail/logs",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/audit-trail.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/auditor/controls",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/auditor.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/auditor/samples",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/auditor.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/auth/api-keys",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/auth.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/auth/login",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/auth.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/auth/refresh",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/auth.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/automated-review/match/:matchId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/automated-review.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/automated-review/run/:runId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/automated-review.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/automated-review/run/:runId/quality",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/automated-review.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/automated-review/run/:runId/report",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/automated-review.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/automated-review/run/:runId/statistics",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/automated-review.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/automation/state",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/agentic-workflow.ts",
+      "methods": ["GET", "PATCH"]
+    },
+    {
+      "route": "/api/v1/batch/:batchId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/batch.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/batch/:batchId/results",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/batch.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/batch/jobs",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/batch.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/bulk-operations",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/bulk-operations.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/bulk-operations/:operationId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/bulk-operations.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/capabilities",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/capabilities.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/capabilities/projected",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/capabilities.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/cli/wizard/generate-command",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/cli-wizard.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/cli/wizard/step",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/cli-wizard.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/cli/wizard/steps",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/cli-wizard.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/close/sign-off",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/period-close.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/currency/convert",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/currency.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/currency/rates",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/currency.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v1/custom-integrations",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/custom-integrations.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v1/custom-integrations/:integrationId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/custom-integrations.ts",
+      "methods": ["GET", "PATCH"]
+    },
+    {
+      "route": "/api/v1/dashboards/activation",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/dashboards.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/dashboards/liquidity",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/liquidity-metrics.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/dashboards/revenue",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/dashboards.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/dashboards/support",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/dashboards.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/dashboards/usage",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/dashboards.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/dedicated-infrastructure",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/dedicated-infrastructure.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v1/dedicated-infrastructure/:infrastructureId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/dedicated-infrastructure.ts",
+      "methods": ["DELETE", "GET"]
+    },
+    {
+      "route": "/api/v1/erp-sync/netsuite/journal-entry",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/erp-sync.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/evidence",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-intelligence.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v1/evidence/:artifactId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/exceptions",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exceptions.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/exceptions/:exceptionId/agentic-match",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/exceptions/:exceptionId/completeness",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/exceptions/:exceptionId/evidence-pack",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/agentic-workflow.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/exceptions/:exceptionId/similar",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/exceptions/:id",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exceptions.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/exceptions/:id/assign",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exceptions.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/exceptions/:id/evidence",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-details.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/exceptions/:id/memories",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-details.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/exceptions/:id/notes",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exceptions.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/exceptions/:id/proofs",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-details.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/exceptions/:id/provenance",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-details.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/exceptions/:id/resolve",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exceptions.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/exceptions/:id/status",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exceptions.ts",
+      "methods": ["PUT"]
+    },
+    {
+      "route": "/api/v1/exceptions/bulk-assign",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exceptions.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/exceptions/bulk-resolve",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exceptions.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/exceptions/bulk-status",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exceptions.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/exceptions/escalate-stale",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/agentic-workflow.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/exceptions/priorities",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/agentic-workflow.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/exceptions/stats",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exceptions.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/exceptions/triage-suggestions",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/agentic-workflow.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/executions/:executionId/status",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/reconciliation-status.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/exports",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/exports.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/exports/exports",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exports.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v1/exports/exports/:id",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exports.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/exports/exports/:id/cancel",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exports.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/exports/exports/:id/download",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exports.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/feedback",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/feedback.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v1/feedback/insights",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/feedback.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/fees",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/fees.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/fees/effective-rate",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/fees.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/fx/rates",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/fx-translation.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/fx/translate",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/fx-translation.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/governance/freeze",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/governance.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v1/health",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/index.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/ingestion/:ingestionId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/ingestion.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/ingestion/:ingestionId/retry",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/ingestion.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/ingestion/:ingestionId/transactions",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/ingestion.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/ingestion/exports",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/ingestion-exports.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v1/ingestion/exports/:exportId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/ingestion-exports.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/ingestion/preview",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/ingestion.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/ingestion/sources",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/ingestion.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v1/ingestion/upload",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/ingestion.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/ingestion/workbench/recent",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/ingestion.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/intelligence/rule-discovery",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/rule-discovery.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/jobs/:jobId/accuracy",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/confidence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/jobs/:jobId/ai-optimize",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/ai-assistant.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/jobs/:jobId/delta/full",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/jobs/:jobId/export",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/export-enhanced.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/jobs/:jobId/exports/schedule",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/export-enhanced.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/matches/:matchId/confidence",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/confidence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/multi-source-reconciliation/conflicts/:conflictId/resolve",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/multi-source-reconciliation.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/multi-source-reconciliation/jobs",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/multi-source-reconciliation.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/multi-source-reconciliation/jobs/:jobId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/multi-source-reconciliation.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/multi-source-reconciliation/jobs/:jobId/run",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/multi-source-reconciliation.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/notifications/channels",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/notifications.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/notifications/logs",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/notifications.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/notifications/preferences",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/notifications.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/notifications/preferences",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/notifications.ts",
+      "methods": ["GET", "PUT"]
+    },
+    {
+      "route": "/api/v1/notifications/test",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/notifications.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/nps/stats",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/nps/index.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/nps/submit",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/nps/index.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/openapi.json",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/openapi.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/alerts/capabilities",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/operator-mode.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/alerts/check",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/operator-mode.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/operator/alerts/thresholds",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/operator-mode.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/operator/backups",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/operator-mode.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/backups/:backupId/verify",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/operator-mode.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/operator/backups/create",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/operator-mode.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/operator/billing-anomalies",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/operator-mode.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/cost-controls/job-limits",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/operator-mode.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/operator/cost-controls/usage-ceilings",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/operator-mode.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v1/operator/cost-controls/usage-ceilings/:tenantId/:usageType",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/operator-mode.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/daily-intelligence",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/operator-mode.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/error-rate",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/operator-mode.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/failed-ingestions",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/operator-mode.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/intelligence/decisions/effectiveness",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/intelligence/decisions/history",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/intelligence/effectiveness/proposals",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/intelligence/entities/fingerprints",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/intelligence/exceptions/snapshot",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/intelligence/memory-graph",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/intelligence/ontology/summary",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/intelligence/packs/runtime",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/intelligence/playbooks",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/intelligence/policy/proposals",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/intelligence/policy/proposals/:proposalId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/intelligence/policy/proposals/:proposalId/history",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/intelligence/policy/proposals/:proposalId/review",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/exception-intelligence.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/operator/intelligence/policy/sandbox",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/exception-intelligence.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/operator/intelligence/run-explorer",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/operator-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/intelligence/runs/:runId/evidence-pack",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/intelligence/runs/:runId/proof-graph",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/intelligence/signatures/:signature/lifecycle",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/intelligence/sources/friction",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/intelligence/system-health",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/operator-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/kill-switches",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/operator-mode.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v1/operator/kill-switches/connectors/:connectorType/disable",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/operator-mode.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/operator/kill-switches/connectors/:connectorType/enable",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/operator-mode.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/operator/kill-switches/jobs/:jobType/pause",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/operator-mode.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/operator/kill-switches/jobs/:jobType/resume",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/operator-mode.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/operator/replay/:run_id",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/operator-mode.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/slow-endpoints",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/operator-mode.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/workforce/registry",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/workforce.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/workforce/run-deltas/:runDeltaId/analysis",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/workforce.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/operator/workforce/runs",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/workforce.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/playground/playground/adapters",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/playground.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/playground/playground/demo-dataset",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/playground.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/playground/playground/demo-run",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/playground.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/playground/playground/examples",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/playground.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/playground/playground/reconcile",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/playground.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/policy/recommendations",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/agentic-workflow.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/progress/checkpoints",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/progress.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/progress/checkpoints/:checkpointId/resume",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/progress.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/progress/checkpoints/jobs/:jobId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/progress.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/progress/reconciliation-results/:resultId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/progress.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/progress/reconciliation-runs/:runId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/progress.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/proofpackages",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-intelligence.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/proofpackages/:packageId/finalize",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-intelligence.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/proofpackages/:packageId/verify",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/realtime/reconciliations/:jobId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/realtime.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/realtime/workbench",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/realtime.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/receipt-matching/links/:linkId/verify",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/receipt-matching.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/receipt-matching/match",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/receipt-matching.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/receipt-matching/matches/:reconciliationRunId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/receipt-matching.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/reconciliation/matches/:matchId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/reconciliation.ts",
+      "methods": ["PATCH"]
+    },
+    {
+      "route": "/api/v1/reconciliation/run",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/reconciliation.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/reconciliation/runs",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/reconciliation.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/reconciliation/runs/:runId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/reconciliation.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/reconciliation/runs/:runId/compare/:otherRunId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/reconciliation.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/reconciliation/runs/:runId/matches",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/reconciliation.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/reconciliation/runs/:runId/workbench",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/reconciliation.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/reconciliation/runs/:runId/workbench/export",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/reconciliation.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/reconciliations/:jobId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/reconciliation-summary.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/reconciliations/:jobId/accuracy",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/reconciliation-summary.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/reconciliations/:jobId/performance",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/reconciliation-summary.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/reports/:jobId/enhanced",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/reports-enhanced.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/retention/metrics",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/retention.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/retention/metrics/daily",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/retention.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/retention/metrics/tenants",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/retention.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/retention/metrics/tenants/:tenantId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/retention.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/retention/policies",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/retention.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/retention/policies/:tenantId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/retention.ts",
+      "methods": ["DELETE", "GET", "PUT"]
+    },
+    {
+      "route": "/api/v1/retention/worker",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/retention.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/retention/worker/config",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/retention.ts",
+      "methods": ["PUT"]
+    },
+    {
+      "route": "/api/v1/retention/worker/dry-run",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/retention.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/retention/worker/run",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/retention.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/rules/analyze-impact",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/rules-editor.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/rules/preview",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/rules-editor.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/rules/suggest",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/rules-editor.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/rules/templates",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/rules-editor.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/runs",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/runs.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/runs",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/runs.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v1/runs/:id",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/runs.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/runs/:id/adjudications",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/runs.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/runs/:id/delta",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/runs.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/runs/:id/exceptions",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/runs.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/runs/:id/exceptions/:exceptionId/resolve",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/runs.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/runs/:id/proofpack",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/runs.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/runs/:id/retry",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/runs.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/runs/:runId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/runs.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/runs/:runId/retry",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/runs.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/security/data-residency",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/data-residency.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/settlements",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/settlements.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/settlements/:id",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/settlements.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/sla/agreements",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/sla.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/sla/metrics",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/sla.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/sla/violations",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/sla.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/sla/violations/:violationId/acknowledge",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/sla.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/slo/alert-rules",
+      "kind": "express-router",
+      "file": "packages/api/src/services/slo-alerting/routes.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v1/slo/alert-rules/:ruleId",
+      "kind": "express-router",
+      "file": "packages/api/src/services/slo-alerting/routes.ts",
+      "methods": ["DELETE"]
+    },
+    {
+      "route": "/api/v1/slo/alerts",
+      "kind": "express-router",
+      "file": "packages/api/src/services/slo-alerting/routes.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/slo/alerts/:alertId/acknowledge",
+      "kind": "express-router",
+      "file": "packages/api/src/services/slo-alerting/routes.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/slo/alerts/:alertId/resolve",
+      "kind": "express-router",
+      "file": "packages/api/src/services/slo-alerting/routes.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/slo/configs",
+      "kind": "express-router",
+      "file": "packages/api/src/services/slo-alerting/routes.ts",
+      "methods": ["GET", "PUT"]
+    },
+    {
+      "route": "/api/v1/slo/dashboard",
+      "kind": "express-router",
+      "file": "packages/api/src/services/slo-alerting/routes.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/slo/drift/:metricType",
+      "kind": "express-router",
+      "file": "packages/api/src/services/slo-alerting/routes.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/slo/metrics/:metricType",
+      "kind": "express-router",
+      "file": "packages/api/src/services/slo-alerting/routes.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/sso/saml/acs",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/sso.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/sso/saml/login",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/sso.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/status",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/enterprise.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/support/intake",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/support.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/support/tickets",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/support-tickets.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/system-health",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/system-health.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/templates",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/enterprise.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/templates/:id/run",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/enterprise.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/tenant/data",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/tenant-data.ts",
+      "methods": ["DELETE"]
+    },
+    {
+      "route": "/api/v1/tenant/data-export",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/tenant-data.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/tenant/integrity-check",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/tenant-data.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/test-mode",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/test-mode.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v1/tolerance/:templateId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/tolerance-settings.ts",
+      "methods": ["GET", "PUT"]
+    },
+    {
+      "route": "/api/v1/tolerance/:templateId/effect",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/tolerance-settings.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/transactions",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/transactions.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/transactions/:id",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/transactions.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/usage",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/usage.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/usage",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/enterprise.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/usage/cost",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/usage.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/usage/endpoints",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/usage.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/vendor-disputes",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/vendor-disputes.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/venture/invoice-nudger/run",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/venture-invoice-nudger.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/venture/invoice-nudger/runs",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/venture-invoice-nudger.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/venture/invoice-nudger/runs/:runId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/venture-invoice-nudger.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/webhooks/:webhookId/status",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/webhook-management.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/webhooks/events",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/enterprise.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/webhooks/events/:id/replay",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/enterprise.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/webhooks/logs",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/webhook-management.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/webhooks/replay",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/webhook-management.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/webhooks/test",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/enterprise.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/webhooks/test",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/webhook-management.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/webhooks/verify",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/webhook-management.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/worker/health",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/worker-health.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/worker/live",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/worker-health.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/worker/queue-status",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/worker-health.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/worker/ready",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/worker-health.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/worker/release-stale-locks",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/worker-health.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/worker/stats",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/worker-health.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/adapters/:adapter/test",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/adapter-test.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/ai/assistant",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/ai-assistant.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/alerts/history",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/alerts.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/alerts/rules",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/alerts.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v2/api-keys",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/api-keys.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v2/api-keys/:id",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/api-keys.ts",
+      "methods": ["DELETE", "GET", "PATCH"]
+    },
+    {
+      "route": "/api/v2/api-keys/:id/regenerate",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/api-keys.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/approvals/:id/approve",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/approvals.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/approvals/request",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/approvals.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/archetypes",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-intelligence.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v2/audit-trail",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/audit-trail.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/audit-trail/:resourceType/:resourceId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/audit-trail.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/audit-trail/export",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/audit-trail.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/auditor/controls",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/auditor.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/auditor/samples",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/auditor.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/auth/api-keys",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/auth.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/auth/login",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/auth.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/auth/refresh",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/auth.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/batch/:batchId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/batch.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/batch/:batchId/results",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/batch.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/batch/jobs",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/batch.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/cli/wizard/generate-command",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/cli-wizard.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/cli/wizard/step",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/cli-wizard.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/cli/wizard/steps",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/cli-wizard.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/close/sign-off",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/period-close.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/compliance/edge/initialize",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v2/compliance.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/compliance/exports",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v2/compliance.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v2/compliance/exports/:id",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v2/compliance.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/compliance/templates",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v2/compliance.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/dashboards/activation",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/dashboards.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/dashboards/liquidity",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/liquidity-metrics.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/dashboards/revenue",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/dashboards.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/dashboards/support",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/dashboards.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/dashboards/usage",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/dashboards.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/erp-sync/netsuite/journal-entry",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/erp-sync.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/evidence",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-intelligence.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v2/evidence/:artifactId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/exceptions",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exceptions.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/exceptions/:exceptionId/agentic-match",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/exceptions/:exceptionId/completeness",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/exceptions/:exceptionId/similar",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/exceptions/:id",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exceptions.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/exceptions/:id/assign",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exceptions.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/exceptions/:id/evidence",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-details.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/exceptions/:id/memories",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-details.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/exceptions/:id/notes",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exceptions.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/exceptions/:id/proofs",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-details.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/exceptions/:id/provenance",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-details.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/exceptions/:id/resolve",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exceptions.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/exceptions/:id/status",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exceptions.ts",
+      "methods": ["PUT"]
+    },
+    {
+      "route": "/api/v2/exceptions/bulk-assign",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exceptions.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/exceptions/bulk-resolve",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exceptions.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/exceptions/bulk-status",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exceptions.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/exceptions/stats",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exceptions.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/executions/:executionId/status",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/reconciliation-status.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/exports/exports",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exports.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v2/exports/exports/:id",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exports.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/exports/exports/:id/cancel",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exports.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/exports/exports/:id/download",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exports.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/feedback",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/feedback.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v2/feedback/insights",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/feedback.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/fx/rates",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/fx-translation.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/fx/translate",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/fx-translation.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/health",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v2/index.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/intelligence/rule-discovery",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/rule-discovery.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/jobs/:jobId/accuracy",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/confidence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/jobs/:jobId/ai-optimize",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/ai-assistant.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/jobs/:jobId/delta/full",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/jobs/:jobId/export",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/export-enhanced.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/jobs/:jobId/exports/schedule",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/export-enhanced.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/knowledge/assistant/query",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v2/knowledge.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/knowledge/decisions",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v2/knowledge.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v2/knowledge/decisions/:id",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v2/knowledge.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/knowledge/decisions/:id/outcomes",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v2/knowledge.ts",
+      "methods": ["PATCH"]
+    },
+    {
+      "route": "/api/v2/knowledge/stats",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v2/knowledge.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/matches/:matchId/confidence",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/confidence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/network-effects/intelligence/check-pattern",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v2/network-effects.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/network-effects/intelligence/insights",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v2/network-effects.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/network-effects/intelligence/opt-in",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v2/network-effects.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/network-effects/intelligence/opt-out",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v2/network-effects.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/network-effects/performance/insights",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v2/network-effects.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/network-effects/performance/opt-in",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v2/network-effects.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/network-effects/performance/recommendations",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v2/network-effects.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/network-effects/performance/submit",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v2/network-effects.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/network-effects/stats",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v2/network-effects.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/notifications/channels",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/notifications.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/notifications/preferences",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/notifications.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/notifications/test",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/notifications.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/nps/stats",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/nps/index.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/nps/submit",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/nps/index.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/playground/playground/adapters",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/playground.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/playground/playground/demo-dataset",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/playground.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/playground/playground/demo-run",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/playground.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/playground/playground/examples",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/playground.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/playground/playground/reconcile",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/playground.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/proofpackages",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-intelligence.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/proofpackages/:packageId/finalize",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-intelligence.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/proofpackages/:packageId/verify",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/exception-intelligence.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/reconciliation-graph/:jobId/edges",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v2/reconciliation-graph.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/reconciliation-graph/:jobId/nodes",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v2/reconciliation-graph.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/reconciliation-graph/:jobId/query",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v2/reconciliation-graph.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/reconciliation-graph/:jobId/state",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v2/reconciliation-graph.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/reconciliation-graph/:jobId/stream",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v2/reconciliation-graph.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/reconciliations/:jobId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/reconciliation-summary.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/reconciliations/:jobId/accuracy",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/reconciliation-summary.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/reconciliations/:jobId/performance",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/reconciliation-summary.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/reports/:jobId/enhanced",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/reports-enhanced.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/retention/metrics",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/retention.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/retention/metrics/daily",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/retention.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/retention/metrics/tenants",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/retention.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/retention/metrics/tenants/:tenantId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/retention.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/retention/policies",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/retention.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/retention/policies/:tenantId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/retention.ts",
+      "methods": ["DELETE", "GET", "PUT"]
+    },
+    {
+      "route": "/api/v2/retention/worker",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/retention.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/retention/worker/config",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/retention.ts",
+      "methods": ["PUT"]
+    },
+    {
+      "route": "/api/v2/retention/worker/dry-run",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/retention.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/retention/worker/run",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/retention.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/rules/analyze-impact",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/rules-editor.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/rules/preview",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/rules-editor.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/rules/suggest",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/rules-editor.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/rules/templates",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/rules-editor.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/runs",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/runs.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/runs/:runId",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/runs.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/runs/:runId/retry",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/runs.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/security/data-residency",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/data-residency.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/support/tickets",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/support-tickets.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/tenant/data",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/tenant-data.ts",
+      "methods": ["DELETE"]
+    },
+    {
+      "route": "/api/v2/tenant/data-export",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/tenant-data.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/tenant/integrity-check",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/tenant-data.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/test-mode",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/test-mode.ts",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "route": "/api/v2/usage",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/usage.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/usage/cost",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/usage.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/usage/endpoints",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/usage.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/vendor-disputes",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/vendor-disputes.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/webhooks/:webhookId/status",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/webhook-management.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/webhooks/logs",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/webhook-management.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/webhooks/replay",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/webhook-management.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/webhooks/test",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/webhook-management.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/webhooks/verify",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/webhook-management.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/worker/health",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/worker-health.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/worker/live",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/worker-health.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/worker/queue-status",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/worker-health.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/worker/ready",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/worker-health.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/worker/release-stale-locks",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/worker-health.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/worker/stats",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/worker-health.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/health",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/health.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/health/db",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/health.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/health/detailed",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/health.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/health/live",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/health.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/health/ready",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/health.ts",
+      "methods": ["GET"]
+    }
+  ]
+}

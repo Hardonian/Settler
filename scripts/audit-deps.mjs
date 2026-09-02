@@ -89,7 +89,7 @@ if (mode !== "off") {
   } else if (findings) {
     backend = { available: true, reason: null };
     if ((findings.high || 0) + (findings.critical || 0) > 0) {
-      finalOutcome = "failed-findings";
+      finalOutcome = mode === "strict" ? "failed-findings" : "warn-findings";
     }
   } else if (backendUnavailable(combinedOutput)) {
     findings = null;

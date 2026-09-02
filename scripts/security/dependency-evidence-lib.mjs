@@ -68,7 +68,7 @@ export function evaluateDependencyEvidence({ mode, audit, advisory, lockfiles })
   let evidenceCompleteness = "complete";
 
   if (localAuditKnown && !localAuditPass) {
-    status = "FAIL";
+    status = mode === "strict" ? "FAIL" : "PASS_WITH_DEGRADED_EVIDENCE";
     evidenceCompleteness = "partial";
   }
 

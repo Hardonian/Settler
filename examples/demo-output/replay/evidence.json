@@ -1,6 +1,6 @@
 {
   "run_id": "demo-run-1-replay",
-  "created_at": "2026-03-03T04:19:19.802Z",
+  "created_at": "2026-09-02T03:00:00.303Z",
   "tenant_id": "demo-tenant",
   "policy_id": "demo.strict",
   "policy_hash": "fb9248e8bc97d1a6938616d7ad5acf14388db3aef70f8f4a2bd137e35cae5a72",
@@ -26,10 +26,10 @@
     "summary": "input->config->output->fingerprint"
   },
   "artifacts": {
-    "run": "/workspace/Settler/examples/demo-output/replay/run.json",
-    "results": "/workspace/Settler/examples/demo-output/replay/results.json",
-    "evidence": "/workspace/Settler/examples/demo-output/replay/evidence.json",
-    "report": "/workspace/Settler/examples/demo-output/replay/report.html"
+    "run": "C:\\Users\\scott\\GitHub\\Settler\\examples\\demo-output\\replay\\run.json",
+    "results": "C:\\Users\\scott\\GitHub\\Settler\\examples\\demo-output\\replay\\results.json",
+    "evidence": "C:\\Users\\scott\\GitHub\\Settler\\examples\\demo-output\\replay\\evidence.json",
+    "report": "C:\\Users\\scott\\GitHub\\Settler\\examples\\demo-output\\replay\\report.html"
   },
   "metadata": {
     "retention_days": 90,

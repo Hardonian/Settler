@@ -1,6 +1,6 @@
 {
   "reportVersion": "2026-03-09.1",
-  "generatedAt": "2026-06-10T16:30:52.905Z",
+  "generatedAt": "2026-09-02T03:02:44.008Z",
   "dimensions": {
     "code_security_status": {
       "status": "PASS",
@@ -30,10 +30,10 @@
       ]
     },
     "tenant_isolation_status": {
-      "status": "PASS",
-      "evidenceLevel": "runtime-api",
+      "status": "CONDITIONAL",
+      "evidenceLevel": "runtime-api-missing",
       "blocking": false,
-      "reason": "Cross-tenant runtime denial checks passed.",
+      "reason": "Cross-tenant runtime denial evidence missing or not passing.",
       "nextAction": []
     },
     "runtime_probe_status": {
