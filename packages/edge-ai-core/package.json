@@ -28,7 +28,7 @@
     "@ai-sdk/openai": "^4.0.52",
     "@types/node": "^26.4.0",
     "ai": "^7.0.85",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "uuid": "^14.0.2"
   },
   "devDependencies": {
