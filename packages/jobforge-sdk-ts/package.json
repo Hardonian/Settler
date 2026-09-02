@@ -27,7 +27,7 @@
     "@jobforge/shared": "workspace:*",
     "@supabase/supabase-js": "^2.112.4",
     "ai": "^7.0.85",
-    "zod": "^3.25.76"
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@jobforge/typescript-config": "workspace:*",

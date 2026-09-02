@@ -21,7 +21,7 @@
     "@prisma/client": "7.10.0",
     "@settler/types": "workspace:*",
     "ai": "^7.0.85",
-    "zod": "^3.25.76"
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.11",
