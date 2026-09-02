@@ -111,7 +111,12 @@ export default function PricingPage() {
                       variant={popular ? "default" : "outline"}
                       className={`w-full h-12 font-bold group ${popular ? "text-lg" : ""}`}
                     >
-                      <Link href={offer.ctaHref} className="flex items-center justify-center gap-2">
+                      <Link
+                        href={offer.ctaHref}
+                        data-cta={`pricing_${offer.code}`}
+                        data-analytics={`pricing_${offer.code}_click`}
+                        className="flex items-center justify-center gap-2"
+                      >
                         {offer.ctaLabel}
                         <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                       </Link>

@@ -1,6 +1,5 @@
 "use client";
 
-import { Metadata } from "next";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, Suspense } from "react";
@@ -10,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { BrandLockup } from "@/components/brand/BrandLockup";
 import { ShieldCheck, ArrowRight, Zap, History, Globe, Loader2, AlertCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { trackConversion, CONVERSION_STAGES } from "@/lib/analytics/conversion";
+import { trackConversion } from "@/lib/analytics/conversion";
 
 function LoginForm() {
   const router = useRouter();

@@ -94,15 +94,19 @@ export default function HomePage() {
           actions={
             <>
               <Button asChild size="lg">
-                <UiLink href="/tour">
+                <UiLink href="/tour" data-cta="hero_tour" data-analytics="hero_tour_click">
                   See it in 60 seconds <ArrowRight className="ml-2 h-4 w-4" />
                 </UiLink>
               </Button>
               <Button variant="outline" size="lg" asChild>
-                <UiLink href="/demo/console">Explore operator console</UiLink>
+                <UiLink href="/demo/console" data-cta="hero_demo" data-analytics="hero_demo_click">
+                  Explore operator console
+                </UiLink>
               </Button>
               <Button variant="outline" size="lg" asChild>
-                <UiLink href="/signup">Start evaluating today</UiLink>
+                <UiLink href="/signup" data-cta="hero_signup" data-analytics="hero_signup_click">
+                  Start evaluating today
+                </UiLink>
               </Button>
             </>
           }

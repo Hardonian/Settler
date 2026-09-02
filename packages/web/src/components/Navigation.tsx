@@ -198,7 +198,7 @@ export function Navigation() {
                       featuresMenuOpen && "text-primary-600 dark:text-primary-400"
                     )}
                     aria-label="Features navigation"
-                    {...{ "aria-expanded": featuresMenuOpen }}
+                    aria-expanded={featuresMenuOpen}
                   >
                     Features
                     <ChevronDown
@@ -253,7 +253,7 @@ export function Navigation() {
                         moreMenuOpen && "text-primary-600 dark:text-primary-400"
                       )}
                       aria-label="More navigation options"
-                      {...{ "aria-expanded": moreMenuOpen }}
+                      aria-expanded={moreMenuOpen}
                     >
                       More
                       <ChevronDown

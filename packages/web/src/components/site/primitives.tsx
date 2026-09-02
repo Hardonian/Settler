@@ -166,11 +166,23 @@ export function CTASection({
         </p>
         <div className="mt-9 flex flex-wrap gap-3 sm:gap-4">
           <Button asChild>
-            <UiLink href={primaryHref}>{primaryLabel}</UiLink>
+            <UiLink
+              href={primaryHref}
+              data-cta="site_cta_primary"
+              data-analytics="cta_primary_click"
+            >
+              {primaryLabel}
+            </UiLink>
           </Button>
           {secondaryHref && secondaryLabel ? (
             <Button variant="outline" asChild>
-              <UiLink href={secondaryHref}>{secondaryLabel}</UiLink>
+              <UiLink
+                href={secondaryHref}
+                data-cta="site_cta_secondary"
+                data-analytics="cta_secondary_click"
+              >
+                {secondaryLabel}
+              </UiLink>
             </Button>
           ) : null}
         </div>
