@@ -148,7 +148,7 @@
     "multer": "^2.3.0",
     "node-cron": "^4.6.0",
     "opossum": "^10.0.0",
-    "p-retry": "^6.2.1",
+    "p-retry": "^8.0.0",
     "passport": "^0.7.0",
     "@node-saml/passport-saml": "^5.1.0",
     "pdfkit": "^0.20.2",
