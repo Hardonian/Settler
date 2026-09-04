@@ -12,6 +12,10 @@ Deterministic transaction matching · Hash-linked evidence · Enterprise-grade t
 ![Rust](https://img.shields.io/badge/Rust-Kernel-DEA584?logo=rust&logoColor=white)
 ![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=next.js&logoColor=white)
 
+<!-- BEGIN: EPYC GPU STACK -->
+![EPYC GPU Stack — private, local-first inference fabric](assets/epyc-gpu-fabric.svg)
+<!-- END: EPYC GPU STACK -->
+
 ---
 
 ## What Settler Does
