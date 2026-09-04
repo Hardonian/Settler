@@ -137,7 +137,7 @@ jobs:
           mkdir -p final
           find release-assets -type f \( -name "settler-*" -o -name "*.sha256" \) -exec cp {} final/ \;
       - name: Upload to GitHub release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v3
         with:
           files: final/*
         env:
