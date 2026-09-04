@@ -37,7 +37,7 @@
     "chalk": "^6.0.0",
     "commander": "^11.1.0",
     "dotenv": "^17.4.2",
-    "inquirer": "^8.2.7",
+    "inquirer": "^14.2.0",
     "yaml": "^2.9.0"
   },
   "devDependencies": {
