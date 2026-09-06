@@ -97,8 +97,8 @@ const listExceptionsSchema = z.object({
       .optional()
       .default("createdAt"),
     sortOrder: z.enum(["asc", "desc"]).optional().default("desc"),
-    limit: z.string().regex(/^\d+$/).transform(Number).optional().default("50"),
-    offset: z.string().regex(/^\d+$/).transform(Number).optional().default("0"),
+    limit: z.string().regex(/^\d+$/).transform(Number).optional().default(50),
+    offset: z.string().regex(/^\d+$/).transform(Number).optional().default(0),
   }),
 });
 

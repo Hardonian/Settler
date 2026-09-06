@@ -68,9 +68,9 @@ const getPrismaClient = (): PrismaClient | null => {
 const playgroundReconcileSchema = z.object({
   body: z.object({
     sourceAdapter: z.string(),
-    sourceData: z.array(z.record(z.unknown())),
+    sourceData: z.array(z.record(z.string(), z.unknown())),
     targetAdapter: z.string(),
-    targetData: z.array(z.record(z.unknown())),
+    targetData: z.array(z.record(z.string(), z.unknown())),
     rules: z.array(
       z.object({
         field: z.string(),

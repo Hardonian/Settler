@@ -17,14 +17,14 @@ export const validateRequest = (schema: ZodSchema) => {
         logWarn("Validation error", {
           path: req.path,
           method: req.method,
-          errors: error.errors,
+          errors: error.issues,
           traceId: (req as AuthRequest).traceId,
         });
 
         res.status(400).json({
           error: "Validation Error",
           message: "Invalid request data",
-          details: error.errors.map((e) => ({
+          details: error.issues.map((e) => ({
             path: e.path.join("."),
             message: e.message,
           })),

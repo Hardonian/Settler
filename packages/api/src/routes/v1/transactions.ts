@@ -19,8 +19,8 @@ const router: Router = Router();
 // Validation schemas
 const getTransactionsSchema = z.object({
   query: z.object({
-    page: z.string().regex(/^\d+$/).transform(Number).optional().default("1"),
-    limit: z.string().regex(/^\d+$/).transform(Number).optional().default("100"),
+    page: z.string().regex(/^\d+$/).transform(Number).optional().default(1),
+    limit: z.string().regex(/^\d+$/).transform(Number).optional().default(100),
     provider: z.string().optional(),
     status: z.string().optional(),
     type: z.string().optional(),

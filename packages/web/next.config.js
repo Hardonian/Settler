@@ -10,11 +10,10 @@ const nextConfig = {
   reactStrictMode: true,
   // Ensure Next.js uses the repo root for output tracing when multiple lockfiles exist.
   outputFileTracingRoot: path.resolve(__dirname, "..", ".."),
-  // Next creates this transient file while compiling and removes it once the
-  // build finishes. It is never a runtime dependency, so do not hand its stale
-  // trace entry to Vercel's function packager.
+  // Next creates transient build metadata while compiling. None of it is a
+  // runtime dependency, so do not hand it to Vercel's function packager.
   outputFileTracingExcludes: {
-    "/*": ["./.next/lock"],
+    "/*": ["./.next/lock", "./.next/trace", "./.next/cache/**/*"],
   },
   // Reduce memory footprint during build
   compress: true,

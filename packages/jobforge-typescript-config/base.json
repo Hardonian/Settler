@@ -15,7 +15,6 @@
     "isolatedModules": true,
     "incremental": true,
     "types": ["node"],
-    "baseUrl": ".",
     "paths": {
       "@jobforge/sdk-ts": ["../jobforge-sdk-ts/src"],
       "@jobforge/shared": ["../jobforge-shared/src"],

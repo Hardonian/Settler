@@ -22,8 +22,8 @@ const getAuditTrailSchema = z.object({
     startDate: z.string().datetime().optional(),
     endDate: z.string().datetime().optional(),
     eventType: z.string().optional(),
-    limit: z.string().regex(/^\d+$/).transform(Number).optional().default("100"),
-    offset: z.string().regex(/^\d+$/).transform(Number).optional().default("0"),
+    limit: z.string().regex(/^\d+$/).transform(Number).optional().default(100),
+    offset: z.string().regex(/^\d+$/).transform(Number).optional().default(0),
   }),
 });
 

@@ -74,7 +74,7 @@ const createAlertRuleSchema = z.object({
           channel: z.string().optional(),
           integrationKey: z.string().optional(),
           url: z.string().optional(),
-          headers: z.record(z.string()).optional(),
+          headers: z.record(z.string(), z.string()).optional(),
         })
       )
       .optional(),

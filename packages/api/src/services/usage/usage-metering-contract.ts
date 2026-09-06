@@ -24,7 +24,7 @@ export const usageEventSchema = z.object({
   ]),
   quantity: z.number().nonnegative(),
   occurred_at: z.string().datetime(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 export type UsageEvent = z.infer<typeof usageEventSchema>;

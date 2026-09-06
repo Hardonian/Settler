@@ -18,7 +18,7 @@ const router: Router = Router();
 const wizardStepSchema = z.object({
   body: z.object({
     step: z.number().min(1).max(5),
-    answers: z.record(z.unknown()),
+    answers: z.record(z.string(), z.unknown()),
   }),
 });
 

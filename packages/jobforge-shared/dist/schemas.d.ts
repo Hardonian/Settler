@@ -2,13 +2,27 @@
  * Zod schemas for runtime validation
  */
 import { z } from "zod";
-export declare const jobStatusSchema: z.ZodEnum<["queued", "running", "succeeded", "failed", "dead", "canceled"]>;
+export declare const jobStatusSchema: z.ZodEnum<{
+    queued: "queued";
+    running: "running";
+    succeeded: "succeeded";
+    failed: "failed";
+    dead: "dead";
+    canceled: "canceled";
+}>;
 export declare const jobRowSchema: z.ZodObject<{
     id: z.ZodString;
     tenant_id: z.ZodString;
     type: z.ZodString;
     payload: z.ZodRecord<z.ZodString, z.ZodUnknown>;
-    status: z.ZodEnum<["queued", "running", "succeeded", "failed", "dead", "canceled"]>;
+    status: z.ZodEnum<{
+        queued: "queued";
+        running: "running";
+        succeeded: "succeeded";
+        failed: "failed";
+        dead: "dead";
+        canceled: "canceled";
+    }>;
     attempts: z.ZodNumber;
     max_attempts: z.ZodNumber;
     run_at: z.ZodString;
@@ -23,47 +37,7 @@ export declare const jobRowSchema: z.ZodObject<{
     result_id: z.ZodNullable<z.ZodString>;
     created_at: z.ZodString;
     updated_at: z.ZodString;
-}, "strip", z.ZodTypeAny, {
-    id: string;
-    tenant_id: string;
-    type: string;
-    payload: Record<string, unknown>;
-    status: "queued" | "running" | "succeeded" | "failed" | "dead" | "canceled";
-    attempts: number;
-    max_attempts: number;
-    run_at: string;
-    locked_at: string | null;
-    locked_by: string | null;
-    heartbeat_at: string | null;
-    started_at: string | null;
-    finished_at: string | null;
-    idempotency_key: string | null;
-    created_by: string | null;
-    error: Record<string, unknown> | null;
-    result_id: string | null;
-    created_at: string;
-    updated_at: string;
-}, {
-    id: string;
-    tenant_id: string;
-    type: string;
-    payload: Record<string, unknown>;
-    status: "queued" | "running" | "succeeded" | "failed" | "dead" | "canceled";
-    attempts: number;
-    max_attempts: number;
-    run_at: string;
-    locked_at: string | null;
-    locked_by: string | null;
-    heartbeat_at: string | null;
-    started_at: string | null;
-    finished_at: string | null;
-    idempotency_key: string | null;
-    created_by: string | null;
-    error: Record<string, unknown> | null;
-    result_id: string | null;
-    created_at: string;
-    updated_at: string;
-}>;
+}, z.core.$strip>;
 export declare const enqueueJobParamsSchema: z.ZodObject<{
     tenant_id: z.ZodString;
     type: z.ZodString;
@@ -71,41 +45,16 @@ export declare const enqueueJobParamsSchema: z.ZodObject<{
     idempotency_key: z.ZodOptional<z.ZodString>;
     run_at: z.ZodOptional<z.ZodString>;
     max_attempts: z.ZodOptional<z.ZodNumber>;
-}, "strip", z.ZodTypeAny, {
-    tenant_id: string;
-    type: string;
-    payload: Record<string, unknown>;
-    max_attempts?: number | undefined;
-    run_at?: string | undefined;
-    idempotency_key?: string | undefined;
-}, {
-    tenant_id: string;
-    type: string;
-    payload: Record<string, unknown>;
-    max_attempts?: number | undefined;
-    run_at?: string | undefined;
-    idempotency_key?: string | undefined;
-}>;
+}, z.core.$strip>;
 export declare const completeJobParamsSchema: z.ZodObject<{
     job_id: z.ZodString;
     worker_id: z.ZodString;
-    status: z.ZodEnum<["succeeded", "failed"]>;
+    status: z.ZodEnum<{
+        succeeded: "succeeded";
+        failed: "failed";
+    }>;
     error: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
     result: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
     artifact_ref: z.ZodOptional<z.ZodString>;
-}, "strip", z.ZodTypeAny, {
-    status: "succeeded" | "failed";
-    job_id: string;
-    worker_id: string;
-    error?: Record<string, unknown> | undefined;
-    result?: Record<string, unknown> | undefined;
-    artifact_ref?: string | undefined;
-}, {
-    status: "succeeded" | "failed";
-    job_id: string;
-    worker_id: string;
-    error?: Record<string, unknown> | undefined;
-    result?: Record<string, unknown> | undefined;
-    artifact_ref?: string | undefined;
-}>;
+}, z.core.$strip>;
 //# sourceMappingURL=schemas.d.ts.map

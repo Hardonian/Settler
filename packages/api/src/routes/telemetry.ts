@@ -26,7 +26,7 @@ const submitTelemetrySchema = z.object({
       "settings_changed",
     ]),
     feature: z.string().optional(),
-    metadata: z.record(z.unknown()).optional(),
+    metadata: z.record(z.string(), z.unknown()).optional(),
     durationMs: z.number().optional(),
     success: z.boolean().optional(),
   }),

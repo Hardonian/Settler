@@ -47,7 +47,11 @@ const createExportSchema = z.object({
         fields: z.array(z.string()).optional(),
       })
       .optional()
-      .default({}),
+      .default({
+        includeMatched: true,
+        includeUnmatched: true,
+        includeExceptions: true,
+      }),
   }),
 });
 
@@ -55,7 +59,7 @@ const listExportsSchema = z.object({
   query: z.object({
     status: z.enum(["pending", "processing", "completed", "failed"]).optional(),
     type: z.string().optional(),
-    limit: z.string().regex(/^\d+$/).transform(Number).optional().default("20"),
+    limit: z.string().regex(/^\d+$/).transform(Number).optional().default(20),
     cursor: z.string().optional(),
   }),
 });

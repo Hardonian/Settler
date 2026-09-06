@@ -187,10 +187,10 @@ export async function executeSQL<T = unknown>(query: string, params?: unknown[])
       retries: 3,
       minTimeout: 1000,
       maxTimeout: 5000,
-      onFailedAttempt: (error: { attemptNumber: number; message: string }) => {
+      onFailedAttempt: ({ error, attemptNumber }) => {
         // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
 
-        console.warn(`Supabase query retry attempt ${error.attemptNumber}: ${error.message}`);
+        console.warn(`Supabase query retry attempt ${attemptNumber}: ${error.message}`);
       },
     }
   );
@@ -242,11 +242,11 @@ export async function initializeSupabaseExtensions(): Promise<void> {
         retries: 3,
         minTimeout: 1000,
         maxTimeout: 5000,
-        onFailedAttempt: (error: { attemptNumber: number; message: string }) => {
+        onFailedAttempt: ({ error, attemptNumber }) => {
           // Note: Can't use logger here as it may depend on Supabase - use console for initialization only
 
           console.warn(
-            `Supabase extension initialization retry ${error.attemptNumber}: ${error.message}`
+            `Supabase extension initialization retry ${attemptNumber}: ${error.message}`
           );
         },
       }
