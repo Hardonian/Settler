@@ -2,9 +2,11 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "target": "ES2022",
-    "lib": ["ES2022"],
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["node"],
     "module": "commonjs",
     "moduleResolution": "node",
+    "ignoreDeprecations": "6.0",
     "esModuleInterop": true,
     "strict": true,
     "strictNullChecks": true,
@@ -29,7 +31,6 @@
     "sourceMap": true,
     "composite": true,
     "incremental": true,
-    "baseUrl": ".",
     "paths": {
       "@settler/sdk": ["./packages/sdk/src"],
       "@settler/api": ["./packages/api/src"],

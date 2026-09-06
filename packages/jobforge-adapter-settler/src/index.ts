@@ -42,7 +42,7 @@ export const SettlerNotificationSendPayloadSchema = z.object({
     "review_requested",
   ]),
   contract_id: z.string().uuid(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
   channels: z.array(z.enum(["email", "sms", "in_app"])).default(["email", "in_app"]),
 });
 

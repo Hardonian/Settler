@@ -72,8 +72,8 @@ const listFeedbackSchema = z.object({
     source: z.string().optional(),
     startDate: z.string().datetime().optional(),
     endDate: z.string().datetime().optional(),
-    limit: z.string().regex(/^\d+$/).transform(Number).optional().default("50"),
-    offset: z.string().regex(/^\d+$/).transform(Number).optional().default("0"),
+    limit: z.string().regex(/^\d+$/).transform(Number).optional().default(50),
+    offset: z.string().regex(/^\d+$/).transform(Number).optional().default(0),
   }),
 });
 

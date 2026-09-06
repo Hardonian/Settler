@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
-import { AnyZodObject, ZodError } from "zod";
+import { ZodError, ZodObject } from "zod";
 import { sendError } from "../utils/api-response";
 import { logError } from "../utils/logger";
 
@@ -11,9 +11,9 @@ import { logError } from "../utils/logger";
  * router.post("/users", validate({ body: CreateUserSchema }), createUser);
  */
 export const validate = (schemas: {
-  body?: AnyZodObject;
-  query?: AnyZodObject;
-  params?: AnyZodObject;
+  body?: ZodObject;
+  query?: ZodObject;
+  params?: ZodObject;
 }): RequestHandler => {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -21,16 +21,16 @@ export const validate = (schemas: {
         req.body = await schemas.body.parseAsync(req.body);
       }
       if (schemas.query) {
-        req.query = await schemas.query.parseAsync(req.query);
+        req.query = (await schemas.query.parseAsync(req.query)) as Request["query"];
       }
       if (schemas.params) {
-        req.params = await schemas.params.parseAsync(req.params);
+        req.params = (await schemas.params.parseAsync(req.params)) as Request["params"];
       }
       next();
     } catch (error) {
       if (error instanceof ZodError) {
         // Format Zod errors into a readable string or object
-        const errorMessages = error.errors.map((issue) => ({
+        const errorMessages = error.issues.map((issue) => ({
           field: issue.path.join("."),
           message: issue.message,
         }));

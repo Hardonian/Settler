@@ -105,23 +105,23 @@ const serverEnvSchema = zod_1.z
     TIGERBEETLE_ENABLED: zod_1.z
         .string()
         .transform((val) => val === "true")
-        .default("false")
+        .default(false)
         .pipe(zod_1.z.boolean()),
     TIGERBEETLE_ADDRESS: zod_1.z.string().default("localhost:4300"),
     TIGERBEETLE_CLUSTER_ID: zod_1.z
         .string()
         .transform((val) => parseInt(val, 10))
-        .default("0")
+        .default(0)
         .pipe(zod_1.z.number().int().min(0)),
     TIGERBEETLE_TIMEOUT_MS: zod_1.z
         .string()
         .transform((val) => parseInt(val, 10))
-        .default("5000")
+        .default(5000)
         .pipe(zod_1.z.number().int().positive()),
     TIGERBEETLE_MAX_RETRIES: zod_1.z
         .string()
         .transform((val) => parseInt(val, 10))
-        .default("3")
+        .default(3)
         .pipe(zod_1.z.number().int().min(0).max(10)),
     SUPABASE_AUTH_ENABLED: zod_1.z.string().optional(),
     SUPABASE_ENTERPRISE_SSO_ENABLED: zod_1.z.string().optional(),

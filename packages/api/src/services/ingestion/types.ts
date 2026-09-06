@@ -119,7 +119,7 @@ export const NormalizedTransactionSchema = z.object({
   paymentMethod: z.string().optional(),
   reference: z.string().optional(),
   externalId: z.string().optional(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 export type NormalizedTransactionInput = z.infer<typeof NormalizedTransactionSchema>;

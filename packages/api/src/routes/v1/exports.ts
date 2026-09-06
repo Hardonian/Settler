@@ -33,7 +33,7 @@ const exportSchema = z.object({
         includeUnmatched: z.boolean().optional().default(false),
         includeRawPayloads: z.boolean().optional().default(false),
         columns: z.array(z.string()).optional(), // For CSV
-        glAccountMapping: z.record(z.string()).optional(), // For QuickBooks
+        glAccountMapping: z.record(z.string(), z.string()).optional(), // For QuickBooks
       })
       .optional(),
   }),

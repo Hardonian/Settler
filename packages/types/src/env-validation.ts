@@ -42,23 +42,23 @@ export const serverEnvSchema = z.object({
   TIGERBEETLE_ENABLED: z
     .string()
     .transform((val) => val === "true")
-    .default("false")
+    .default(false)
     .pipe(z.boolean()),
   TIGERBEETLE_ADDRESS: z.string().default("localhost:4300"),
   TIGERBEETLE_CLUSTER_ID: z
     .string()
     .transform((val) => parseInt(val, 10))
-    .default("0")
+    .default(0)
     .pipe(z.number().int().min(0)),
   TIGERBEETLE_TIMEOUT_MS: z
     .string()
     .transform((val) => parseInt(val, 10))
-    .default("5000")
+    .default(5000)
     .pipe(z.number().int().positive()),
   TIGERBEETLE_MAX_RETRIES: z
     .string()
     .transform((val) => parseInt(val, 10))
-    .default("3")
+    .default(3)
     .pipe(z.number().int().min(0).max(10)),
 });
 

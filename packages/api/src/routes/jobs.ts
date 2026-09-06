@@ -73,7 +73,10 @@ setInterval(cleanupOldMutexes, 30 * 60 * 1000);
 
 // Validation schemas with input sanitization
 const adapterConfigSchema = z
-  .record(z.union([z.string().max(1000), z.number(), z.boolean(), z.array(z.string().max(1000))]))
+  .record(
+    z.string(),
+    z.union([z.string().max(1000), z.number(), z.boolean(), z.array(z.string().max(1000))])
+  )
   .refine(
     (config) => {
       // Prevent prototype pollution
@@ -117,8 +120,8 @@ const getJobSchema = z.object({
 
 const paginationSchema = z.object({
   query: z.object({
-    page: z.string().regex(/^\d+$/).transform(Number).optional().default("1"),
-    limit: z.string().regex(/^\d+$/).transform(Number).optional().default("100"),
+    page: z.string().regex(/^\d+$/).transform(Number).optional().default(1),
+    limit: z.string().regex(/^\d+$/).transform(Number).optional().default(100),
   }),
 });
 

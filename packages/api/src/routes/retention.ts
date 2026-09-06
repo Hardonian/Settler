@@ -361,7 +361,7 @@ router.put(
         res.status(400).json({
           success: false,
           error: "Invalid request body",
-          details: error.errors,
+          details: error.issues,
         });
         return;
       }
@@ -549,7 +549,7 @@ router.put(
         res.status(400).json({
           success: false,
           error: "Invalid request body",
-          details: error.errors,
+          details: error.issues,
         });
         return;
       }

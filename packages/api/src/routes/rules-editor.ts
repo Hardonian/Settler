@@ -42,8 +42,8 @@ const previewRuleSchema = z.object({
     ),
     sampleData: z
       .object({
-        source: z.record(z.unknown()),
-        target: z.record(z.unknown()),
+        source: z.record(z.string(), z.unknown()),
+        target: z.record(z.string(), z.unknown()),
       })
       .optional(),
   }),

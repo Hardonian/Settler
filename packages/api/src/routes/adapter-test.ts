@@ -17,7 +17,7 @@ const router: Router = Router();
 const testConnectionSchema = z.object({
   body: z.object({
     adapter: z.string().min(1),
-    config: z.record(z.unknown()),
+    config: z.record(z.string(), z.unknown()),
   }),
 });
 
