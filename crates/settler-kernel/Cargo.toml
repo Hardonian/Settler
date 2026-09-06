@@ -13,7 +13,7 @@ hex = "0.4"
 serde_bytes = "0.11"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-wasmtime = "47.0.3"
+wasmtime = "48.0.1"
 
 [dev-dependencies]
 pretty_assertions = "1.4"
