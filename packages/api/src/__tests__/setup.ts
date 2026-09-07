@@ -15,6 +15,11 @@ process.env.DB_USER = "postgres";
 process.env.DB_PASSWORD = "postgres";
 process.env.REDIS_URL = "redis://localhost:6379";
 
+import { logger } from "../utils/logger";
+
+// Silence logger in tests to keep output clean unless debugging
+logger.silent = true;
+
 // Increase timeout for integration tests
 jest.setTimeout(30000);
 

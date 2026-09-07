@@ -21,7 +21,7 @@
     "build:all": "turbo run build",
     "dev": "turbo run dev",
     "test": "turbo run test",
-    "test:ci:verify": "pnpm --filter @settler/api exec jest --runInBand --forceExit",
+    "test:ci:verify": "pnpm --filter @settler/api exec jest --runInBand --forceExit --silent",
     "test:ci:verify:open-handles": "pnpm --filter @settler/api exec jest --runInBand --forceExit --detectOpenHandles",
     "test:e2e": "playwright test",
     "test:e2e:reality": "playwright test tests/e2e/frontend-reality-gates.spec.ts",

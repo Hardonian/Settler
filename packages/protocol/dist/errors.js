@@ -1,14 +1,11 @@
-"use strict";
 /**
  * Error Types
  * Standardized error handling for reconciliation workflows
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ConfigurationError = exports.CompilationError = exports.SecurityError = exports.ValidationError = exports.ReconciliationError = void 0;
 /**
  * Base Reconciliation Error
  */
-class ReconciliationError extends Error {
+export class ReconciliationError extends Error {
     code;
     statusCode;
     details;
@@ -23,11 +20,10 @@ class ReconciliationError extends Error {
         Error.captureStackTrace(this, this.constructor);
     }
 }
-exports.ReconciliationError = ReconciliationError;
 /**
  * Validation Error
  */
-class ValidationError extends ReconciliationError {
+export class ValidationError extends ReconciliationError {
     field;
     value;
     constructor(message, field, value, details) {
@@ -37,21 +33,19 @@ class ValidationError extends ReconciliationError {
         this.value = value;
     }
 }
-exports.ValidationError = ValidationError;
 /**
  * Security Error
  */
-class SecurityError extends ReconciliationError {
+export class SecurityError extends ReconciliationError {
     constructor(message, details) {
         super(message, "SECURITY_ERROR", 403, details);
         this.name = "SecurityError";
     }
 }
-exports.SecurityError = SecurityError;
 /**
  * Compilation Error
  */
-class CompilationError extends ReconciliationError {
+export class CompilationError extends ReconciliationError {
     component;
     line;
     column;
@@ -63,11 +57,10 @@ class CompilationError extends ReconciliationError {
         this.column = column;
     }
 }
-exports.CompilationError = CompilationError;
 /**
  * Configuration Error
  */
-class ConfigurationError extends ReconciliationError {
+export class ConfigurationError extends ReconciliationError {
     configPath;
     constructor(message, configPath, details) {
         super(message, "CONFIGURATION_ERROR", 500, details);
@@ -75,5 +68,4 @@ class ConfigurationError extends ReconciliationError {
         this.configPath = configPath;
     }
 }
-exports.ConfigurationError = ConfigurationError;
 //# sourceMappingURL=errors.js.map

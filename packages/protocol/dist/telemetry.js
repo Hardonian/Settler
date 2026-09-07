@@ -1,7 +1,6 @@
-"use strict";
 /**
  * Telemetry and Observability Types
  * Enterprise-grade monitoring and analytics
  */
-Object.defineProperty(exports, "__esModule", { value: true });
+export {};
 //# sourceMappingURL=telemetry.js.map
