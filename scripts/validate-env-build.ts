@@ -11,6 +11,23 @@
  *   npm run validate:env:runtime   # Validate for runtime context (strict)
  */
 
+import * as fs from "fs";
+import * as path from "path";
+import * as dotenv from "dotenv";
+
+function loadDotEnv(): void {
+  const envLocalPath = path.resolve(process.cwd(), ".env.local");
+  if (fs.existsSync(envLocalPath)) {
+    dotenv.config({ path: envLocalPath, override: false });
+  }
+  const envPath = path.resolve(process.cwd(), ".env");
+  if (fs.existsSync(envPath)) {
+    dotenv.config({ path: envPath, override: false });
+  }
+}
+
+loadDotEnv();
+
 /**
  * Check if we're in a build context
  */
@@ -21,6 +38,27 @@ function isBuildContext(): boolean {
     process.env.CI === "true" ||
     process.argv.includes("--build")
   );
+}
+
+const ALIASES: Record<string, string[]> = {
+  SUPABASE_URL: ["NEXT_PUBLIC_SUPABASE_URL"],
+  SUPABASE_ANON_KEY: ["NEXT_PUBLIC_SUPABASE_ANON_KEY"],
+  DB_PASSWORD: ["POSTGRES_PASSWORD"],
+  JWT_SECRET: ["SUPABASE_JWT_SECRET"],
+  DATABASE_URL: ["POSTGRES_PRISMA_URL", "POSTGRES_URL", "SUPABASE_DATABASE_URL", "DIRECT_URL"],
+};
+
+function getEnvValue(name: string): string | undefined {
+  if (process.env[name] && process.env[name]!.trim().length > 0) {
+    return process.env[name];
+  }
+  const aliases = ALIASES[name] || [];
+  for (const alias of aliases) {
+    if (process.env[alias] && process.env[alias]!.trim().length > 0) {
+      return process.env[alias];
+    }
+  }
+  return undefined;
 }
 
 /**
@@ -55,14 +93,14 @@ function validateBuildEnv(): { valid: boolean; errors: string[]; warnings: strin
 
   // Check build-time required variables
   for (const name of BUILD_TIME_REQUIRED) {
-    if (!process.env[name]) {
+    if (!getEnvValue(name)) {
       errors.push(`Missing build-time required variable: ${name}`);
     }
   }
 
   // Warn about runtime-only variables that are missing (but don't fail build)
   for (const name of RUNTIME_ONLY) {
-    if (!process.env[name]) {
+    if (!getEnvValue(name)) {
       warnings.push(`Missing runtime-only variable (will be required at runtime): ${name}`);
     }
   }
@@ -82,7 +120,7 @@ function validateRuntimeEnv(): { valid: boolean; errors: string[] } {
   const allRequired = [...BUILD_TIME_REQUIRED, ...RUNTIME_ONLY];
 
   for (const name of allRequired) {
-    if (!process.env[name]) {
+    if (!getEnvValue(name)) {
       errors.push(`Missing required variable: ${name}`);
     }
   }

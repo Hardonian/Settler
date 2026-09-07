@@ -20,7 +20,6 @@ export const SERVER_ENV_KEYS = [
   "DATABASE_URL",
   "ANON_KEY",
   "SERVICE_ROLE_KEY",
-  "DATABASE_URL",
   "SUPABASE_DATABASE_URL",
   "DIRECT_URL",
   "JWT_SECRET",
@@ -169,6 +168,8 @@ const serverEnvSchema = z
 const serverEnvBuildSchema = z
   .object({
     NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+    ANON_KEY: z.string().min(1).optional(),
+    SERVICE_ROLE_KEY: z.string().min(1).optional(),
     SUPABASE_URL: z.string().url().optional(),
     SUPABASE_ANON_KEY: z.string().min(1).optional(),
     SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
@@ -186,6 +187,11 @@ const serverEnvBuildSchema = z
     STRIPE_WEBHOOK_SECRET: z.string().optional(),
     RESEND_API_KEY: z.string().optional(),
     RESEND_FROM_EMAIL: z.string().email().optional(),
+    TIGERBEETLE_ENABLED: z.string().optional(),
+    TIGERBEETLE_ADDRESS: z.string().optional(),
+    TIGERBEETLE_CLUSTER_ID: z.string().optional(),
+    TIGERBEETLE_TIMEOUT_MS: z.string().optional(),
+    TIGERBEETLE_MAX_RETRIES: z.string().optional(),
     SUPABASE_AUTH_ENABLED: z.string().optional(),
     SUPABASE_ENTERPRISE_SSO_ENABLED: z.string().optional(),
     SUPABASE_ENTERPRISE_SSO_PROVIDER_ID: z.string().optional(),
