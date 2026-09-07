@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Ledger Domain Types
  *
@@ -8,5 +9,5 @@
  * The interface is designed to be implementation-agnostic,
  * supporting future alternate implementations (TigerBeetle, Postgres, etc.)
  */
-export {};
+Object.defineProperty(exports, "__esModule", { value: true });
 //# sourceMappingURL=ledger.js.map

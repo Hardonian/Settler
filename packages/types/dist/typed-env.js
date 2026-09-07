@@ -1,18 +1,24 @@
+"use strict";
 /**
  * Typed Environment Validation
  *
  * Provides server/client-safe schemas and validation helpers.
  * Use build/runtime modes to avoid failing builds on runtime-only variables.
  */
-import { z } from "zod";
-export const CLIENT_ENV_KEYS = [
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.RUNTIME_REQUIRED_SERVER_KEYS = exports.BUILD_REQUIRED_SERVER_KEYS = exports.SERVER_ENV_KEYS = exports.CLIENT_ENV_KEYS = void 0;
+exports.validateClientEnv = validateClientEnv;
+exports.validateServerEnv = validateServerEnv;
+exports.validateEnvScopes = validateEnvScopes;
+const zod_1 = require("zod");
+exports.CLIENT_ENV_KEYS = [
     "NEXT_PUBLIC_SITE_URL",
     "NEXT_PUBLIC_APP_URL",
     "NEXT_PUBLIC_SUPABASE_URL",
     "NEXT_PUBLIC_SUPABASE_ANON_KEY",
     "NEXT_PUBLIC_SENTRY_DSN",
 ];
-export const SERVER_ENV_KEYS = [
+exports.SERVER_ENV_KEYS = [
     "NODE_ENV",
     "DATABASE_URL",
     "ANON_KEY",
@@ -61,147 +67,147 @@ export const SERVER_ENV_KEYS = [
     "AIRBYTE_API_KEY",
     "AIRBYTE_WORKSPACE_ID",
 ];
-export const BUILD_REQUIRED_SERVER_KEYS = ["DATABASE_URL", "ANON_KEY"];
-export const RUNTIME_REQUIRED_SERVER_KEYS = [
+exports.BUILD_REQUIRED_SERVER_KEYS = ["DATABASE_URL", "ANON_KEY"];
+exports.RUNTIME_REQUIRED_SERVER_KEYS = [
     "SERVICE_ROLE_KEY",
     "JWT_SECRET",
     "ENCRYPTION_KEY",
 ];
-const clientEnvSchema = z
+const clientEnvSchema = zod_1.z
     .object({
-    NEXT_PUBLIC_SITE_URL: z.string().url(),
-    NEXT_PUBLIC_APP_URL: z.string().url(),
-    NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
-    NEXT_PUBLIC_SENTRY_DSN: z.string().url().optional(),
+    NEXT_PUBLIC_SITE_URL: zod_1.z.string().url(),
+    NEXT_PUBLIC_APP_URL: zod_1.z.string().url(),
+    NEXT_PUBLIC_SUPABASE_URL: zod_1.z.string().url(),
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: zod_1.z.string().min(1),
+    NEXT_PUBLIC_SENTRY_DSN: zod_1.z.string().url().optional(),
 })
     .strict();
-const serverEnvSchema = z
+const serverEnvSchema = zod_1.z
     .object({
-    NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
-    DATABASE_URL: z.string().url(),
-    ANON_KEY: z.string().min(1),
-    SERVICE_ROLE_KEY: z.string().min(1),
-    SUPABASE_DATABASE_URL: z.string().url().optional(),
-    DIRECT_URL: z.string().url().optional(),
-    JWT_SECRET: z.string().min(32),
-    ENCRYPTION_KEY: z
+    NODE_ENV: zod_1.z.enum(["development", "production", "test"]).default("development"),
+    DATABASE_URL: zod_1.z.string().url(),
+    ANON_KEY: zod_1.z.string().min(1),
+    SERVICE_ROLE_KEY: zod_1.z.string().min(1),
+    SUPABASE_DATABASE_URL: zod_1.z.string().url().optional(),
+    DIRECT_URL: zod_1.z.string().url().optional(),
+    JWT_SECRET: zod_1.z.string().min(32),
+    ENCRYPTION_KEY: zod_1.z
         .string()
         .refine((value) => value.length === 32 || value.length === 64, {
         message: "ENCRYPTION_KEY must be 32 or 64 characters",
     }),
-    STRIPE_SECRET_KEY: z.string().optional(),
-    STRIPE_WEBHOOK_SECRET: z.string().optional(),
-    RESEND_API_KEY: z.string().optional(),
-    RESEND_FROM_EMAIL: z.string().email().optional(),
+    STRIPE_SECRET_KEY: zod_1.z.string().optional(),
+    STRIPE_WEBHOOK_SECRET: zod_1.z.string().optional(),
+    RESEND_API_KEY: zod_1.z.string().optional(),
+    RESEND_FROM_EMAIL: zod_1.z.string().email().optional(),
     // TigerBeetle (Financial Ledger)
     // Optional - graceful fallback to Postgres if not configured
-    TIGERBEETLE_ENABLED: z
+    TIGERBEETLE_ENABLED: zod_1.z
         .string()
         .default("false")
         .transform((val) => val === "true")
-        .pipe(z.boolean()),
-    TIGERBEETLE_ADDRESS: z.string().default("localhost:4300"),
-    TIGERBEETLE_CLUSTER_ID: z
+        .pipe(zod_1.z.boolean()),
+    TIGERBEETLE_ADDRESS: zod_1.z.string().default("localhost:4300"),
+    TIGERBEETLE_CLUSTER_ID: zod_1.z
         .string()
         .default("0")
         .transform((val) => parseInt(val, 10))
-        .pipe(z.number().int().min(0)),
-    TIGERBEETLE_TIMEOUT_MS: z
+        .pipe(zod_1.z.number().int().min(0)),
+    TIGERBEETLE_TIMEOUT_MS: zod_1.z
         .string()
         .default("5000")
         .transform((val) => parseInt(val, 10))
-        .pipe(z.number().int().positive()),
-    TIGERBEETLE_MAX_RETRIES: z
+        .pipe(zod_1.z.number().int().positive()),
+    TIGERBEETLE_MAX_RETRIES: zod_1.z
         .string()
         .default("3")
         .transform((val) => parseInt(val, 10))
-        .pipe(z.number().int().min(0).max(10)),
-    SUPABASE_AUTH_ENABLED: z.string().optional(),
-    SUPABASE_ENTERPRISE_SSO_ENABLED: z.string().optional(),
-    SUPABASE_ENTERPRISE_SSO_PROVIDER_ID: z.string().optional(),
-    SUPABASE_ENTERPRISE_SSO_DOMAIN: z.string().optional(),
-    OPENFGA_ENABLED: z.string().optional(),
-    OPENFGA_API_URL: z.string().url().optional(),
-    OPENFGA_STORE_ID: z.string().optional(),
-    OPENFGA_MODEL_ID: z.string().optional(),
-    OPENFGA_HEALTHCHECK_URL: z.string().url().optional(),
-    TEMPORAL_ENABLED: z.string().optional(),
-    TEMPORAL_WORKER_ENABLED: z.string().optional(),
-    TEMPORAL_ADDRESS: z.string().optional(),
-    TEMPORAL_NAMESPACE: z.string().optional(),
-    TEMPORAL_TASK_QUEUE: z.string().optional(),
-    OTEL_ENABLED: z.string().optional(),
-    OTEL_EXPORTER_OTLP_ENDPOINT: z.string().url().optional(),
-    OTEL_SERVICE_NAME: z.string().optional(),
-    NANGO_ENABLED: z.string().optional(),
-    NANGO_BASE_URL: z.string().url().optional(),
-    NANGO_SECRET_KEY: z.string().optional(),
-    NANGO_PROVIDER_CONFIGS_JSON: z.string().optional(),
-    AIRBYTE_ENABLED: z.string().optional(),
-    AIRBYTE_BASE_URL: z.string().url().optional(),
-    AIRBYTE_CLIENT_ID: z.string().optional(),
-    AIRBYTE_CLIENT_SECRET: z.string().optional(),
-    AIRBYTE_API_KEY: z.string().optional(),
-    AIRBYTE_WORKSPACE_ID: z.string().optional(),
+        .pipe(zod_1.z.number().int().min(0).max(10)),
+    SUPABASE_AUTH_ENABLED: zod_1.z.string().optional(),
+    SUPABASE_ENTERPRISE_SSO_ENABLED: zod_1.z.string().optional(),
+    SUPABASE_ENTERPRISE_SSO_PROVIDER_ID: zod_1.z.string().optional(),
+    SUPABASE_ENTERPRISE_SSO_DOMAIN: zod_1.z.string().optional(),
+    OPENFGA_ENABLED: zod_1.z.string().optional(),
+    OPENFGA_API_URL: zod_1.z.string().url().optional(),
+    OPENFGA_STORE_ID: zod_1.z.string().optional(),
+    OPENFGA_MODEL_ID: zod_1.z.string().optional(),
+    OPENFGA_HEALTHCHECK_URL: zod_1.z.string().url().optional(),
+    TEMPORAL_ENABLED: zod_1.z.string().optional(),
+    TEMPORAL_WORKER_ENABLED: zod_1.z.string().optional(),
+    TEMPORAL_ADDRESS: zod_1.z.string().optional(),
+    TEMPORAL_NAMESPACE: zod_1.z.string().optional(),
+    TEMPORAL_TASK_QUEUE: zod_1.z.string().optional(),
+    OTEL_ENABLED: zod_1.z.string().optional(),
+    OTEL_EXPORTER_OTLP_ENDPOINT: zod_1.z.string().url().optional(),
+    OTEL_SERVICE_NAME: zod_1.z.string().optional(),
+    NANGO_ENABLED: zod_1.z.string().optional(),
+    NANGO_BASE_URL: zod_1.z.string().url().optional(),
+    NANGO_SECRET_KEY: zod_1.z.string().optional(),
+    NANGO_PROVIDER_CONFIGS_JSON: zod_1.z.string().optional(),
+    AIRBYTE_ENABLED: zod_1.z.string().optional(),
+    AIRBYTE_BASE_URL: zod_1.z.string().url().optional(),
+    AIRBYTE_CLIENT_ID: zod_1.z.string().optional(),
+    AIRBYTE_CLIENT_SECRET: zod_1.z.string().optional(),
+    AIRBYTE_API_KEY: zod_1.z.string().optional(),
+    AIRBYTE_WORKSPACE_ID: zod_1.z.string().optional(),
 })
     .strict()
     .superRefine((value, context) => {
     if (!value.DATABASE_URL && !value.SUPABASE_DATABASE_URL && !value.DIRECT_URL) {
         context.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: zod_1.z.ZodIssueCode.custom,
             path: ["DATABASE_URL"],
             message: "One of DATABASE_URL, SUPABASE_DATABASE_URL, or DIRECT_URL must be set",
         });
     }
 });
-const serverEnvBuildSchema = z
+const serverEnvBuildSchema = zod_1.z
     .object({
-    NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
-    SUPABASE_URL: z.string().url().optional(),
-    SUPABASE_ANON_KEY: z.string().min(1).optional(),
-    SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
-    DATABASE_URL: z.string().url().optional(),
-    SUPABASE_DATABASE_URL: z.string().url().optional(),
-    DIRECT_URL: z.string().url().optional(),
-    JWT_SECRET: z.string().min(32).optional(),
-    ENCRYPTION_KEY: z
+    NODE_ENV: zod_1.z.enum(["development", "production", "test"]).default("development"),
+    SUPABASE_URL: zod_1.z.string().url().optional(),
+    SUPABASE_ANON_KEY: zod_1.z.string().min(1).optional(),
+    SUPABASE_SERVICE_ROLE_KEY: zod_1.z.string().min(1).optional(),
+    DATABASE_URL: zod_1.z.string().url().optional(),
+    SUPABASE_DATABASE_URL: zod_1.z.string().url().optional(),
+    DIRECT_URL: zod_1.z.string().url().optional(),
+    JWT_SECRET: zod_1.z.string().min(32).optional(),
+    ENCRYPTION_KEY: zod_1.z
         .string()
         .refine((value) => value.length === 32 || value.length === 64, {
         message: "ENCRYPTION_KEY must be 32 or 64 characters",
     })
         .optional(),
-    STRIPE_SECRET_KEY: z.string().optional(),
-    STRIPE_WEBHOOK_SECRET: z.string().optional(),
-    RESEND_API_KEY: z.string().optional(),
-    RESEND_FROM_EMAIL: z.string().email().optional(),
-    SUPABASE_AUTH_ENABLED: z.string().optional(),
-    SUPABASE_ENTERPRISE_SSO_ENABLED: z.string().optional(),
-    SUPABASE_ENTERPRISE_SSO_PROVIDER_ID: z.string().optional(),
-    SUPABASE_ENTERPRISE_SSO_DOMAIN: z.string().optional(),
-    OPENFGA_ENABLED: z.string().optional(),
-    OPENFGA_API_URL: z.string().url().optional(),
-    OPENFGA_STORE_ID: z.string().optional(),
-    OPENFGA_MODEL_ID: z.string().optional(),
-    OPENFGA_HEALTHCHECK_URL: z.string().url().optional(),
-    TEMPORAL_ENABLED: z.string().optional(),
-    TEMPORAL_WORKER_ENABLED: z.string().optional(),
-    TEMPORAL_ADDRESS: z.string().optional(),
-    TEMPORAL_NAMESPACE: z.string().optional(),
-    TEMPORAL_TASK_QUEUE: z.string().optional(),
-    OTEL_ENABLED: z.string().optional(),
-    OTEL_EXPORTER_OTLP_ENDPOINT: z.string().url().optional(),
-    OTEL_SERVICE_NAME: z.string().optional(),
-    NANGO_ENABLED: z.string().optional(),
-    NANGO_BASE_URL: z.string().url().optional(),
-    NANGO_SECRET_KEY: z.string().optional(),
-    NANGO_PROVIDER_CONFIGS_JSON: z.string().optional(),
-    AIRBYTE_ENABLED: z.string().optional(),
-    AIRBYTE_BASE_URL: z.string().url().optional(),
-    AIRBYTE_CLIENT_ID: z.string().optional(),
-    AIRBYTE_CLIENT_SECRET: z.string().optional(),
-    AIRBYTE_API_KEY: z.string().optional(),
-    AIRBYTE_WORKSPACE_ID: z.string().optional(),
+    STRIPE_SECRET_KEY: zod_1.z.string().optional(),
+    STRIPE_WEBHOOK_SECRET: zod_1.z.string().optional(),
+    RESEND_API_KEY: zod_1.z.string().optional(),
+    RESEND_FROM_EMAIL: zod_1.z.string().email().optional(),
+    SUPABASE_AUTH_ENABLED: zod_1.z.string().optional(),
+    SUPABASE_ENTERPRISE_SSO_ENABLED: zod_1.z.string().optional(),
+    SUPABASE_ENTERPRISE_SSO_PROVIDER_ID: zod_1.z.string().optional(),
+    SUPABASE_ENTERPRISE_SSO_DOMAIN: zod_1.z.string().optional(),
+    OPENFGA_ENABLED: zod_1.z.string().optional(),
+    OPENFGA_API_URL: zod_1.z.string().url().optional(),
+    OPENFGA_STORE_ID: zod_1.z.string().optional(),
+    OPENFGA_MODEL_ID: zod_1.z.string().optional(),
+    OPENFGA_HEALTHCHECK_URL: zod_1.z.string().url().optional(),
+    TEMPORAL_ENABLED: zod_1.z.string().optional(),
+    TEMPORAL_WORKER_ENABLED: zod_1.z.string().optional(),
+    TEMPORAL_ADDRESS: zod_1.z.string().optional(),
+    TEMPORAL_NAMESPACE: zod_1.z.string().optional(),
+    TEMPORAL_TASK_QUEUE: zod_1.z.string().optional(),
+    OTEL_ENABLED: zod_1.z.string().optional(),
+    OTEL_EXPORTER_OTLP_ENDPOINT: zod_1.z.string().url().optional(),
+    OTEL_SERVICE_NAME: zod_1.z.string().optional(),
+    NANGO_ENABLED: zod_1.z.string().optional(),
+    NANGO_BASE_URL: zod_1.z.string().url().optional(),
+    NANGO_SECRET_KEY: zod_1.z.string().optional(),
+    NANGO_PROVIDER_CONFIGS_JSON: zod_1.z.string().optional(),
+    AIRBYTE_ENABLED: zod_1.z.string().optional(),
+    AIRBYTE_BASE_URL: zod_1.z.string().url().optional(),
+    AIRBYTE_CLIENT_ID: zod_1.z.string().optional(),
+    AIRBYTE_CLIENT_SECRET: zod_1.z.string().optional(),
+    AIRBYTE_API_KEY: zod_1.z.string().optional(),
+    AIRBYTE_WORKSPACE_ID: zod_1.z.string().optional(),
 })
     .strict();
 function isBuildTime() {
@@ -224,10 +230,10 @@ function pickEnv(input, keys) {
         return accumulator;
     }, {});
 }
-export function validateClientEnv(input = process.env, mode = "runtime") {
+function validateClientEnv(input = process.env, mode = "runtime") {
     const buildTime = mode === "build" || isBuildTime();
     const schema = buildTime ? clientEnvSchema.partial() : clientEnvSchema;
-    const result = schema.safeParse(pickEnv(input, CLIENT_ENV_KEYS));
+    const result = schema.safeParse(pickEnv(input, exports.CLIENT_ENV_KEYS));
     if (!result.success) {
         return {
             valid: false,
@@ -236,7 +242,7 @@ export function validateClientEnv(input = process.env, mode = "runtime") {
         };
     }
     if (buildTime) {
-        const missingClientKeys = CLIENT_ENV_KEYS.filter((key) => !input[key]);
+        const missingClientKeys = exports.CLIENT_ENV_KEYS.filter((key) => !input[key]);
         if (missingClientKeys.length > 0) {
             return {
                 valid: true,
@@ -251,11 +257,11 @@ export function validateClientEnv(input = process.env, mode = "runtime") {
         warnings: [],
     };
 }
-export function validateServerEnv(mode, input = process.env) {
+function validateServerEnv(mode, input = process.env) {
     const buildTime = mode === "build";
     const allowMissingBuildKeys = buildTime && (input.SKIP_ENV_VALIDATION === "true" || input.CI === "true" || input.CI === "1");
     const schema = buildTime ? serverEnvBuildSchema : serverEnvSchema;
-    const result = schema.safeParse(pickEnv(input, SERVER_ENV_KEYS));
+    const result = schema.safeParse(pickEnv(input, exports.SERVER_ENV_KEYS));
     if (!result.success) {
         return {
             valid: false,
@@ -264,7 +270,7 @@ export function validateServerEnv(mode, input = process.env) {
         };
     }
     if (buildTime) {
-        const missingBuildKeys = BUILD_REQUIRED_SERVER_KEYS.filter((key) => !input[key]);
+        const missingBuildKeys = exports.BUILD_REQUIRED_SERVER_KEYS.filter((key) => !input[key]);
         if (missingBuildKeys.length > 0) {
             return {
                 valid: true,
@@ -274,7 +280,7 @@ export function validateServerEnv(mode, input = process.env) {
                     : `${key} is required during build`),
             };
         }
-        const missingRuntimeKeys = RUNTIME_REQUIRED_SERVER_KEYS.filter((key) => !input[key]);
+        const missingRuntimeKeys = exports.RUNTIME_REQUIRED_SERVER_KEYS.filter((key) => !input[key]);
         if (missingRuntimeKeys.length > 0) {
             return {
                 valid: true,
@@ -289,15 +295,15 @@ export function validateServerEnv(mode, input = process.env) {
         warnings: [],
     };
 }
-export function validateEnvScopes() {
+function validateEnvScopes() {
     const errors = [];
     const warnings = [];
-    for (const key of CLIENT_ENV_KEYS) {
+    for (const key of exports.CLIENT_ENV_KEYS) {
         if (!key.startsWith("NEXT_PUBLIC_")) {
             errors.push(`Client env key ${key} must start with NEXT_PUBLIC_`);
         }
     }
-    for (const key of SERVER_ENV_KEYS) {
+    for (const key of exports.SERVER_ENV_KEYS) {
         if (key.startsWith("NEXT_PUBLIC_")) {
             errors.push(`Server env key ${key} must not start with NEXT_PUBLIC_`);
         }

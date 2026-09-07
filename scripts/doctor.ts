@@ -777,7 +777,8 @@ function checkBuild() {
 
   try {
     const result = execCommand("pnpm", ["--filter", "@settler/web...", "build"], {
-      timeout: 180000,
+      silent: true,
+      timeout: 300000,
     });
 
     if (result.success) {

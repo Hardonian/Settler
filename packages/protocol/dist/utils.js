@@ -1,11 +1,28 @@
+"use strict";
 /**
  * Protocol Utilities
  * Helper functions for working with protocol types
  */
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.sanitizeString = sanitizeString;
+exports.isValidISODate = isValidISODate;
+exports.isValidCurrency = isValidCurrency;
+exports.isValidMoney = isValidMoney;
+exports.formatMoney = formatMoney;
+exports.sanitizeTransactionMetadata = sanitizeTransactionMetadata;
+exports.validateTransactionId = validateTransactionId;
+exports.maskPII = maskPII;
+exports.generateSecureId = generateSecureId;
+exports.deepClone = deepClone;
+exports.stableStringify = stableStringify;
+exports.stableHash = stableHash;
 /**
  * Sanitize string input to prevent XSS
  */
-export function sanitizeString(input) {
+function sanitizeString(input) {
     if (typeof input !== "string") {
         return "";
     }
@@ -19,7 +36,7 @@ export function sanitizeString(input) {
 /**
  * Validate ISO 8601 date string
  */
-export function isValidISODate(dateString) {
+function isValidISODate(dateString) {
     if (!dateString || typeof dateString !== "string") {
         return false;
     }
@@ -29,7 +46,7 @@ export function isValidISODate(dateString) {
 /**
  * Validate currency code (ISO 4217)
  */
-export function isValidCurrency(currency) {
+function isValidCurrency(currency) {
     if (!currency || typeof currency !== "string") {
         return false;
     }
@@ -39,7 +56,7 @@ export function isValidCurrency(currency) {
 /**
  * Validate money amount
  */
-export function isValidMoney(money) {
+function isValidMoney(money) {
     if (!money || typeof money !== "object") {
         return false;
     }
@@ -54,7 +71,7 @@ export function isValidMoney(money) {
 /**
  * Format money for display
  */
-export function formatMoney(money, locale = "en-US") {
+function formatMoney(money, locale = "en-US") {
     if (!isValidMoney(money)) {
         return "Invalid";
     }
@@ -71,7 +88,7 @@ export function formatMoney(money, locale = "en-US") {
 /**
  * Sanitize transaction metadata
  */
-export function sanitizeTransactionMetadata(metadata) {
+function sanitizeTransactionMetadata(metadata) {
     if (!metadata || typeof metadata !== "object") {
         return undefined;
     }
@@ -98,7 +115,7 @@ export function sanitizeTransactionMetadata(metadata) {
 /**
  * Validate transaction ID format
  */
-export function validateTransactionId(id) {
+function validateTransactionId(id) {
     if (!id || typeof id !== "string") {
         return false;
     }
@@ -108,7 +125,7 @@ export function validateTransactionId(id) {
 /**
  * Mask PII in strings
  */
-export function maskPII(input, maskChar = "*") {
+function maskPII(input, maskChar = "*") {
     if (!input || typeof input !== "string") {
         return "";
     }
@@ -130,10 +147,10 @@ export function maskPII(input, maskChar = "*") {
 /**
  * Generate secure random ID
  */
-export function generateSecureId(prefix = "id") {
+function generateSecureId(prefix = "id") {
     const randomBytes = new Uint8Array(16);
-    if (typeof crypto !== "undefined" && crypto.getRandomValues) {
-        crypto.getRandomValues(randomBytes);
+    if (typeof node_crypto_1.default !== "undefined" && node_crypto_1.default.getRandomValues) {
+        node_crypto_1.default.getRandomValues(randomBytes);
     }
     else {
         // Fallback for environments without crypto
@@ -149,7 +166,7 @@ export function generateSecureId(prefix = "id") {
 /**
  * Deep clone object (for immutable updates)
  */
-export function deepClone(obj, seen = new WeakSet()) {
+function deepClone(obj, seen = new WeakSet()) {
     if (obj === null || typeof obj !== "object") {
         return obj;
     }
@@ -201,14 +218,14 @@ function normalize(value) {
 /**
  * Deterministically stringify data
  */
-export function stableStringify(value) {
+function stableStringify(value) {
     return JSON.stringify(normalize(value));
 }
-import crypto from "node:crypto";
+const node_crypto_1 = __importDefault(require("node:crypto"));
 /**
  * Compute SHA-256 hash of data
  */
-export function stableHash(value) {
-    return crypto.createHash("sha256").update(stableStringify(value)).digest("hex");
+function stableHash(value) {
+    return node_crypto_1.default.createHash("sha256").update(stableStringify(value)).digest("hex");
 }
 //# sourceMappingURL=utils.js.map
