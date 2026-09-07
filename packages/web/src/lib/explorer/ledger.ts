@@ -17,16 +17,23 @@ export type ExplorerLedgerEntry = {
   tool_calls: string[];
 };
 
-const LEDGER_DIR = path.resolve(process.cwd(), process.env.SETTLER_LEDGER_DIR ?? "ledger");
+function getLedgerDir(): string {
+  const custom = process.env.SETTLER_LEDGER_DIR;
+  if (custom) {
+    return path.resolve(custom);
+  }
+  return path.resolve(process.cwd(), "ledger");
+}
 
 // Use a simple memoization pattern instead of React.cache
 let cachedEntries: ExplorerLedgerEntry[] | null = null;
 
 async function readAllInternal(): Promise<ExplorerLedgerEntry[]> {
   try {
-    const files = (await fs.readdir(LEDGER_DIR)).filter((file) => file.endsWith(".json"));
+    const ledgerDir = getLedgerDir();
+    const files = (await fs.readdir(ledgerDir)).filter((file) => file.endsWith(".json"));
     const entries = await Promise.all(
-      files.map(async (file) => JSON.parse(await fs.readFile(path.join(LEDGER_DIR, file), "utf8")))
+      files.map(async (file) => JSON.parse(await fs.readFile(path.join(ledgerDir, file), "utf8")))
     );
     return (entries as ExplorerLedgerEntry[]).sort((a, b) =>
       b.timestamp.localeCompare(a.timestamp)

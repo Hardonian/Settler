@@ -14,7 +14,26 @@ const nextConfig = {
   // build finishes. It is never a runtime dependency, so do not hand its stale
   // trace entry to Vercel's function packager.
   outputFileTracingExcludes: {
-    "/*": ["./.next/lock"],
+    "/*": [
+      "./.next/lock",
+      "./.next/cache/**",
+      "./.turbo/**",
+      "../../target/**",
+      "../../crates/**",
+      "../../evidence/**",
+      "../../artifacts/**",
+      "../../qa-artifacts/**",
+    ],
+    "/**/*": [
+      "./.next/lock",
+      "./.next/cache/**",
+      "./.turbo/**",
+      "../../target/**",
+      "../../crates/**",
+      "../../evidence/**",
+      "../../artifacts/**",
+      "../../qa-artifacts/**",
+    ],
   },
   // Reduce memory footprint during build
   compress: true,
