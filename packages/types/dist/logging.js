@@ -1,8 +1,12 @@
+"use strict";
 /**
  * Standardized Logging Utilities
  * Structured logging for observability and debugging
  * Part of Phase 5: Observability
  */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AppError = exports.RequestCorrelation = exports.logger = void 0;
+exports.safeAsync = safeAsync;
 class Logger {
     isDevelopment;
     constructor() {
@@ -83,11 +87,11 @@ class Logger {
         }, undefined, { requestId, tenantId, duration }));
     }
 }
-export const logger = new Logger();
+exports.logger = new Logger();
 /**
  * Request correlation utilities
  */
-export class RequestCorrelation {
+class RequestCorrelation {
     static requestIdStore = new Map();
     static generateRequestId() {
         return `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
@@ -103,10 +107,11 @@ export class RequestCorrelation {
         }
     }
 }
+exports.RequestCorrelation = RequestCorrelation;
 /**
  * Error boundary for standardized error handling
  */
-export class AppError extends Error {
+class AppError extends Error {
     code;
     statusCode;
     context;
@@ -128,18 +133,19 @@ export class AppError extends Error {
         };
     }
 }
+exports.AppError = AppError;
 /**
  * Safe async handler wrapper
  * Ensures all errors are caught and logged
  */
-export function safeAsync(fn, context) {
+function safeAsync(fn, context) {
     return async (...args) => {
         try {
             return await fn(...args);
         }
         catch (error) {
             const err = error instanceof Error ? error : new Error(String(error));
-            logger.error("Unhandled error in async function", { ...context, args }, err);
+            exports.logger.error("Unhandled error in async function", { ...context, args }, err);
             return {
                 error: err.message,
                 code: "INTERNAL_ERROR",
