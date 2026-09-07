@@ -93,7 +93,7 @@ module.exports = {
       },
       backgroundImage: {
         "grid-quiet":
-          "linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px)",
+          "linear-gradient(to right, var(--grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px)",
         glass: "linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01))",
         "teal-gradient":
           "linear-gradient(135deg, var(--color-teal-500) 0%, var(--color-teal-700) 100%)",
@@ -110,6 +110,11 @@ module.exports = {
         glow: "glow 2s ease-in-out infinite alternate",
         float: "float 6s ease-in-out infinite",
         shimmer: "shimmer 2s linear infinite",
+        "spin-slow": "spin 25s linear infinite",
+        blob: "blob 8s ease-in-out infinite",
+        beam: "beam 2.8s ease-in-out infinite",
+        "radar-pulse": "radarPulse 2.4s cubic-bezier(0, 0, 0.2, 1) infinite",
+        "pulse-glow": "pulseGlow 2.5s ease-in-out infinite",
       },
       keyframes: {
         fadeIn: {
@@ -130,11 +135,30 @@ module.exports = {
         },
         float: {
           "0%, 100%": { transform: "translateY(0px)" },
-          "50%": { transform: "translateY(-20px)" },
+          "50%": { transform: "translateY(-12px)" },
         },
         shimmer: {
           "0%": { backgroundPosition: "-1000px 0" },
           "100%": { backgroundPosition: "1000px 0" },
+        },
+        blob: {
+          "0%, 100%": { transform: "translate(0px, 0px) scale(1)" },
+          "33%": { transform: "translate(24px, -36px) scale(1.08)" },
+          "66%": { transform: "translate(-18px, 18px) scale(0.94)" },
+        },
+        beam: {
+          "0%": { strokeDashoffset: "100%", opacity: "0.2" },
+          "50%": { opacity: "1" },
+          "100%": { strokeDashoffset: "0%", opacity: "0.2" },
+        },
+        radarPulse: {
+          "0%": { transform: "scale(0.95)", opacity: "0.8" },
+          "70%": { transform: "scale(1.4)", opacity: "0" },
+          "100%": { transform: "scale(1.4)", opacity: "0" },
+        },
+        pulseGlow: {
+          "0%, 100%": { opacity: "0.4", transform: "scale(1)" },
+          "50%": { opacity: "0.85", transform: "scale(1.04)" },
         },
       },
       // Fluid typography utilities using clamp()

@@ -142,7 +142,10 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
-  themeColor: "#0a0e14",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0e14" },
+  ],
   viewportFit: "cover",
 };
 
@@ -172,8 +175,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: `
               (function() {
                 var storedTheme = localStorage.getItem('theme');
-                var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                var resolvedTheme = storedTheme || (prefersDark ? 'dark' : 'light');
+                var resolvedTheme = storedTheme || 'light';
                 var root = document.documentElement;
                 if (resolvedTheme === 'dark') {
                   root.classList.add('dark');

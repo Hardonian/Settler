@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
@@ -16,7 +15,9 @@ import { Button } from "@/components/ui/button";
 import { UiLink } from "@/components/ui/link";
 import {
   AdapterConnectionMap,
+  AmbientLightOrbs,
   ExceptionTriageVisual,
+  InteractiveHeroEngine,
   ReconciliationFlow,
   VisualGrid,
 } from "@/components/site/HomeInfographics";
@@ -84,7 +85,8 @@ const capabilityClusters = [
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="relative min-h-screen bg-background overflow-x-hidden">
+      <AmbientLightOrbs />
       <Navigation />
       <main id="main-content" className="pt-16">
         <PageHero
@@ -118,18 +120,7 @@ export default function HomePage() {
               </Button>
             </>
           }
-          visual={
-            <div className="relative aspect-square w-full max-w-[500px] overflow-hidden rounded-3xl border border-primary/20 shadow-2xl bg-slate-950/50 backdrop-blur-sm">
-              <Image
-                src="/hero_abstract_reconciliation.png"
-                alt="Deterministic reconciliation visualization"
-                fill
-                className="object-cover opacity-90 transition-opacity hover:opacity-100"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-transparent" />
-            </div>
-          }
+          visual={<InteractiveHeroEngine />}
         />
 
         <Section withGrid className="bg-muted/10 border-y border-border/40 py-24">

@@ -100,6 +100,9 @@
   /* Focus ring */
   --focus-ring: 0 0 0 3px rgba(20, 184, 166, 0.3);
 
+  /* Grid line pattern */
+  --grid-line: rgba(255, 255, 255, 0.05);
+
   /* Status */
   --status-success: var(--color-success);
   --status-warning: var(--color-warning);
@@ -251,6 +254,9 @@
   /* Focus ring */
   --focus-ring: 0 0 0 3px rgba(13, 148, 136, 0.25);
   --focus-ring-offset: #ffffff;
+
+  /* Grid line pattern for light mode */
+  --grid-line: rgba(15, 23, 42, 0.05);
 
   /* Shadows — stronger on light */
   --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
