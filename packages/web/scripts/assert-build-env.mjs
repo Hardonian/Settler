@@ -19,6 +19,13 @@ if (shouldLoadLocalEnv) {
   }
 }
 
+if (!process.env.NODE_OPTIONS || !process.env.NODE_OPTIONS.includes("--max-old-space-size")) {
+  process.env.NODE_OPTIONS = `${process.env.NODE_OPTIONS || ""} --max-old-space-size=8192`.trim();
+}
+if (!process.env.NEXT_TELEMETRY_DISABLED) {
+  process.env.NEXT_TELEMETRY_DISABLED = "1";
+}
+
 const manifest = JSON.parse(readFileSync(resolve(repoRoot, "config", "env.required.json"), "utf8"));
 
 const BUILD_REQUIRED_GROUP_LABELS = new Set(["supabase-url", "supabase-anon", "database-url"]);
