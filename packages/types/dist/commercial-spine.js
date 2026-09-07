@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Canonical commercial spine for Settler (plans, packs, meters, legacy mappings).
  *
@@ -5,7 +6,19 @@
  * Stripe price IDs and secrets from environment variables; this module owns numeric
  * limits, descriptors, and taxonomy — not secrets.
  */
-export const USAGE_METERS = [
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.API_LEGACY_PLAN_FEATURES = exports.PREMIUM_PACKS = exports.LEGACY_SUBSCRIPTION_PLAN_ID_MAP = exports.PLAN_DEFAULT_MRR_USD = exports.PLAN_SPINE = exports.USAGE_METERS = void 0;
+exports.mapLegacySubscriptionPlanId = mapLegacySubscriptionPlanId;
+exports.getPlanSpine = getPlanSpine;
+exports.getDefaultPlanCode = getDefaultPlanCode;
+exports.mapLegacyPlanTypeToPlanCode = mapLegacyPlanTypeToPlanCode;
+exports.getLegacyQuotaProfile = getLegacyQuotaProfile;
+exports.getReconciliationVolumeLimit = getReconciliationVolumeLimit;
+exports.getExceptionThreshold = getExceptionThreshold;
+exports.getApiLegacyPlanLimits = getApiLegacyPlanLimits;
+exports.getApiLegacyPlanFeatures = getApiLegacyPlanFeatures;
+exports.calculatePlanMonthlyCostUsd = calculatePlanMonthlyCostUsd;
+exports.USAGE_METERS = [
     {
         id: "reconciliation_run",
         label: "Reconciliation runs",
@@ -77,7 +90,7 @@ export const USAGE_METERS = [
         notes: "Evidence retention dimension for enterprise quotes.",
     },
 ];
-export const PLAN_SPINE = {
+exports.PLAN_SPINE = {
     starter: {
         code: "starter",
         name: "Starter",
@@ -212,13 +225,13 @@ export const PLAN_SPINE = {
     },
 };
 /** Default MRR when subscription metadata does not carry explicit revenue (USD). */
-export const PLAN_DEFAULT_MRR_USD = {
+exports.PLAN_DEFAULT_MRR_USD = {
     starter: 0,
     pro: 99,
     scale: 399,
     enterprise: 0,
 };
-export const LEGACY_SUBSCRIPTION_PLAN_ID_MAP = {
+exports.LEGACY_SUBSCRIPTION_PLAN_ID_MAP = {
     base: "starter",
     free: "starter",
     starter: "starter",
@@ -228,7 +241,7 @@ export const LEGACY_SUBSCRIPTION_PLAN_ID_MAP = {
     scale: "scale",
     enterprise: "enterprise",
 };
-export const PREMIUM_PACKS = {
+exports.PREMIUM_PACKS = {
     exceptionIntelligence: {
         id: "exception_intelligence",
         integrationId: "exception-intelligence-pack",
@@ -243,21 +256,21 @@ export const PREMIUM_PACKS = {
         requiresAddOnRow: true,
     },
 };
-export function mapLegacySubscriptionPlanId(planId) {
+function mapLegacySubscriptionPlanId(planId) {
     const normalized = planId.trim().toLowerCase();
-    return LEGACY_SUBSCRIPTION_PLAN_ID_MAP[normalized] ?? "starter";
+    return exports.LEGACY_SUBSCRIPTION_PLAN_ID_MAP[normalized] ?? "starter";
 }
-export function getPlanSpine(planCode) {
+function getPlanSpine(planCode) {
     const code = planCode;
-    return code in PLAN_SPINE ? PLAN_SPINE[code] : null;
+    return code in exports.PLAN_SPINE ? exports.PLAN_SPINE[code] : null;
 }
-export function getDefaultPlanCode() {
+function getDefaultPlanCode() {
     return "starter";
 }
 /**
  * Map API/user legacy plan_type string to canonical {@link PlanCode}.
  */
-export function mapLegacyPlanTypeToPlanCode(planType) {
+function mapLegacyPlanTypeToPlanCode(planType) {
     const t = planType.trim().toLowerCase();
     if (t === "starter" || t === "pro" || t === "scale" || t === "enterprise") {
         return t;
@@ -273,15 +286,15 @@ export function mapLegacyPlanTypeToPlanCode(planType) {
     };
     return extendedMap[t] ?? "starter";
 }
-export function getLegacyQuotaProfile(planCode) {
-    return PLAN_SPINE[planCode].legacyQuotas;
+function getLegacyQuotaProfile(planCode) {
+    return exports.PLAN_SPINE[planCode].legacyQuotas;
 }
-export function getReconciliationVolumeLimit(planCode) {
-    const vol = PLAN_SPINE[planCode].limits.reconcile.monthlyVolume;
+function getReconciliationVolumeLimit(planCode) {
+    const vol = exports.PLAN_SPINE[planCode].limits.reconcile.monthlyVolume;
     return vol;
 }
-export function getExceptionThreshold(planCode, reconciliationVolume) {
-    const rate = PLAN_SPINE[planCode].limits.exceptions.includedRate;
+function getExceptionThreshold(planCode, reconciliationVolume) {
+    const rate = exports.PLAN_SPINE[planCode].limits.exceptions.includedRate;
     return Math.floor(reconciliationVolume * rate);
 }
 const STARTER_API_FEATURES = {
@@ -316,25 +329,25 @@ const ENTERPRISE_API_FEATURES = {
     workflows: { maxWorkflows: "unlimited", advancedWorkflows: true },
     support: "dedicated",
 };
-export const API_LEGACY_PLAN_FEATURES = {
+exports.API_LEGACY_PLAN_FEATURES = {
     starter: STARTER_API_FEATURES,
     pro: PRO_API_FEATURES,
     scale: SCALE_API_FEATURES,
     enterprise: ENTERPRISE_API_FEATURES,
 };
-export function getApiLegacyPlanLimits(planCode) {
-    const q = PLAN_SPINE[planCode].legacyQuotas;
+function getApiLegacyPlanLimits(planCode) {
+    const q = exports.PLAN_SPINE[planCode].legacyQuotas;
     return {
         reconciliationsPerMonth: q.reconciliationsPerMonth,
         logRetentionDays: q.logRetentionDays,
         platformAdapters: q.platformAdapters,
     };
 }
-export function getApiLegacyPlanFeatures(planCode) {
-    return API_LEGACY_PLAN_FEATURES[planCode];
+function getApiLegacyPlanFeatures(planCode) {
+    return exports.API_LEGACY_PLAN_FEATURES[planCode];
 }
-export function calculatePlanMonthlyCostUsd(planCode, reconciliationVolume, exceptionsRequiringReview) {
-    const plan = PLAN_SPINE[planCode];
+function calculatePlanMonthlyCostUsd(planCode, reconciliationVolume, exceptionsRequiringReview) {
+    const plan = exports.PLAN_SPINE[planCode];
     let cost = plan.monthlyPrice;
     const includedVolume = plan.limits.reconcile.monthlyVolume;
     if (includedVolume > 0 && reconciliationVolume > includedVolume) {

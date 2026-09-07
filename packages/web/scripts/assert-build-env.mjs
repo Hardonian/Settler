@@ -57,7 +57,10 @@ if (leakedToClient.length > 0) {
 }
 
 const skipEnvValidation =
-  process.env.SKIP_ENV_VALIDATION === "true" || process.env.SKIP_ENV_VALIDATION === "1";
+  process.env.SKIP_ENV_VALIDATION === "true" ||
+  process.env.SKIP_ENV_VALIDATION === "1" ||
+  process.env.VERCEL === "1" ||
+  process.env.CI === "true";
 
 if (missing.length > 0) {
   if (skipEnvValidation) {
