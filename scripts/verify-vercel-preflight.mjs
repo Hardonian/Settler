@@ -66,16 +66,25 @@ if (existsSync(ignorePath)) {
   const content = readFileSync(ignorePath, "utf-8");
   const lines = content.split("\n").map((l) => l.trim());
 
-  // Check for unanchored scripts/ pattern (would exclude packages/*/scripts/)
-  const dangerousScriptsPattern = lines.find(
-    (l) => !l.startsWith("#") && !l.startsWith("!") && l === "scripts/"
+  // Check for unanchored directory patterns (would exclude packages/* subdirectories)
+  const dangerousPatterns = [
+    "scripts/",
+    "evidence/",
+    "benchmarks/",
+    "artifacts/",
+    "crates/",
+    "launch/",
+    "tests/",
+  ];
+  const foundDangerous = lines.filter(
+    (l) => !l.startsWith("#") && !l.startsWith("!") && dangerousPatterns.includes(l)
   );
-  if (dangerousScriptsPattern) {
+  if (foundDangerous.length > 0) {
     fail(
-      '.vercelignore has unanchored "scripts/" pattern — this excludes packages/web/scripts/ too. Use "/scripts/" instead.'
+      `.vercelignore has unanchored directory patterns (${foundDangerous.join(", ")}) — these exclude subdirectories in packages/. Anchor them with a leading "/" (e.g. "/${foundDangerous[0]}").`
     );
   } else {
-    pass("No unanchored scripts/ pattern");
+    pass("No unanchored directory patterns");
   }
 
   // Check that packages/web/scripts is not explicitly excluded

@@ -28,14 +28,14 @@ node_modules/
 /strategic/
 
 # Test files
-tests/
+/tests/
 *.test.ts
 *.test.tsx
 *.spec.ts
 *.spec.tsx
 
 # CI/CD (not needed in deployment)
-.github/
+/.github/
 
 # Keep root scripts included.
 # Vercel install/build invokes root scripts via package lifecycle hooks (preinstall/postinstall/prebuild).
@@ -44,13 +44,13 @@ tests/
 # Other
 .DS_Store
 *.log
-coverage/
-target/
-crates/
-evidence/
-pilot-data/
-artifacts/
-qa-artifacts/
-bench/
-benchmarks/
-launch/
+/coverage/
+/target/
+/crates/
+/evidence/
+/pilot-data/
+/artifacts/
+/qa-artifacts/
+/bench/
+/benchmarks/
+/launch/
