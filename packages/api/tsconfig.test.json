@@ -2,7 +2,8 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "rootDir": "../..",
-    "outDir": "./dist-test"
+    "outDir": "./dist-test",
+    "isolatedModules": true
   },
   "include": ["src/**/*"],
   "exclude": [

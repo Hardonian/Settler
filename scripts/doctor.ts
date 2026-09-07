@@ -164,7 +164,7 @@ function execCommand(
       stdio: options.silent ? "pipe" : "inherit",
       timeout: options.timeout || 30000,
     });
-    return { success: true, output: output.trim() };
+    return { success: true, output: (output || "").toString().trim() };
   } catch (error: any) {
     return { success: false, output: error.message || String(error) };
   }
