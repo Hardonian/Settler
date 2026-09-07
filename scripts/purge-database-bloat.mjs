@@ -45,59 +45,25 @@ async function main() {
   );
   console.log(`   Deleted ${cronDel.rowCount} rows from cron.job_run_details.`);
 
-  // 2. Check net._http_response columns and delete older than 3 days
-  const netCols = cols.rows.filter(
-    (r) => r.table_schema === "net" && r.table_name === "_http_response"
+  // 2. Purge net._http_response
+  console.log("\n2️⃣ Purging net._http_response older than 3 days...");
+  const netDel = await client.query(
+    "DELETE FROM net._http_response WHERE created < now() - interval '3 days';"
   );
-  const timeColNet = netCols.find((c) =>
-    ["created", "created_at", "timedout_at", "error_msg"].includes(c.column_name)
-  )?.column_name;
-  console.log(`\n2️⃣ Purging net._http_response (detected time column: ${timeColNet || "none"})...`);
-  if (timeColNet) {
-    const netDel = await client.query(
-      `DELETE FROM net._http_response WHERE ${timeColNet} < now() - interval '3 days';`
-    );
-    console.log(`   Deleted ${netDel.rowCount} rows from net._http_response.`);
-  } else {
-    // If no created column, check all column names
-    console.log("   Columns in net._http_response:", netCols.map((c) => c.column_name).join(", "));
-    // Fallback: delete all or older
-    const netDel = await client.query("TRUNCATE TABLE net._http_response;");
-    console.log("   Truncated net._http_response cache.");
-  }
+  console.log(`   Deleted ${netDel.rowCount} rows from net._http_response.`);
 
   // 3. Purge analytics tables
-  const snapCols = cols.rows.filter(
-    (r) => r.table_schema === "analytics" && r.table_name === "index_usage_snapshots"
+  console.log("\n3️⃣ Purging analytics.index_usage_snapshots older than 7 days...");
+  const snapDel = await client.query(
+    "DELETE FROM analytics.index_usage_snapshots WHERE captured_at < now() - interval '7 days';"
   );
-  const timeColSnap = snapCols.find((c) =>
-    ["snapshot_at", "created_at", "captured_at", "timestamp"].includes(c.column_name)
-  )?.column_name;
-  console.log(
-    `\n3️⃣ Purging analytics.index_usage_snapshots (detected time column: ${timeColSnap || "none"})...`
-  );
-  if (timeColSnap) {
-    const snapDel = await client.query(
-      `DELETE FROM analytics.index_usage_snapshots WHERE ${timeColSnap} < now() - interval '7 days';`
-    );
-    console.log(`   Deleted ${snapDel.rowCount} rows from analytics.index_usage_snapshots.`);
-  }
+  console.log(`   Deleted ${snapDel.rowCount} rows from analytics.index_usage_snapshots.`);
 
-  const candCols = cols.rows.filter(
-    (r) => r.table_schema === "analytics" && r.table_name === "index_candidates"
+  console.log("   Purging analytics.index_candidates older than 7 days...");
+  const candDel = await client.query(
+    "DELETE FROM analytics.index_candidates WHERE created_at < now() - interval '7 days';"
   );
-  const timeColCand = candCols.find((c) =>
-    ["created_at", "detected_at", "timestamp"].includes(c.column_name)
-  )?.column_name;
-  console.log(
-    `   Purging analytics.index_candidates (detected time column: ${timeColCand || "none"})...`
-  );
-  if (timeColCand) {
-    const candDel = await client.query(
-      `DELETE FROM analytics.index_candidates WHERE ${timeColCand} < now() - interval '7 days';`
-    );
-    console.log(`   Deleted ${candDel.rowCount} rows from analytics.index_candidates.`);
-  }
+  console.log(`   Deleted ${candDel.rowCount} rows from analytics.index_candidates.`);
 
   // 4. VACUUM FULL to reclaim disk space
   console.log("\n4️⃣ Reclaiming disk space via VACUUM FULL...");
