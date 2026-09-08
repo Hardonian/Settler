@@ -1,84 +1,15 @@
 packages:
-  - "packages/*"
-  - "!packages/sdk-go"
-  - "!packages/sdk-python"
-  - "!packages/sdk-ruby"
-  - "!packages/workhorse"
+  - packages/*
+  - '!packages/sdk-go'
+  - '!packages/sdk-python'
+  - '!packages/sdk-ruby'
+  - '!packages/workhorse'
 
-# Install against the lockfile when possible and keep native optional binaries
-# available for local WSL verification, Linux Vercel builds, and Windows/macOS
-# contributor installs. Keeping this in pnpm-workspace.yaml avoids npm/npx
-# warning on pnpm-only project settings while preserving pnpm behavior.
-preferFrozenLockfile: true
-supportedArchitectures:
-  os:
-    - current
-    - linux
-    - win32
-    - darwin
-  cpu:
-    - current
-    - x64
-    - arm64
-  libc:
-    - current
-    - glibc
-    - musl
-
-overrides:
-  prisma: 7.10.0
-  "@prisma/client": 7.10.0
-  "@types/react": 18.3.28
-  "@types/react-dom": 18.3.7
-  rimraf: ^5.0.0
-  raw-body: ^2.5.2
-  hono: 4.12.34
-  qs: ^6.16.0
-  body-parser: ^1.20.6
-  tar: ^7.5.3
-  lodash: ^4.18.1
-  seroval: ^1.4.1
-  undici: 7.29.0
-  cookie: ^0.7.1
-  follow-redirects: ^1.16.0
-  word-wrap: ^1.2.5
-  fast-xml-parser: ^5.5.7
-  fast-xml-builder: ^1.2.0
-  esbuild: ^0.25.0
-  glob: ^13.0.6
-  minimatch: ">=10.2.1"
-  eslint: ^9.39.4
-  "@types/pg": 8.20.0
-  handlebars: ^4.7.9
-  picomatch: ^4.0.4
-  yaml: ^2.8.3
-  brace-expansion: 5.0.9
-  path-to-regexp: ^8.4.2
-  "@hono/node-server": ^1.19.10
-  effect: ^3.20.0
-  defu: ^6.1.5
-  rollup: ^4.59.0
-  "@tootallnate/once": ^3.0.1
-  dompurify: 3.4.13
-  protobufjs: ^7.5.8
-  axios: ^1.15.2
-  next: ^16.2.6
-  fast-uri: 3.1.5
-  "@opentelemetry/auto-instrumentations-node": ^0.76.0
-  "@opentelemetry/sdk-node": ^0.218.0
-  "@opentelemetry/exporter-prometheus": ^0.218.0
-  ws: ^8.20.1
-  postcss: ^8.5.10
-  uuid: ^13.0.1
-  nanoid: ^3.3.18
-  "socket.io-parser": 4.2.7
-  "ip-address": 10.3.1
-  "js-yaml": 3.15.1
-  vite: ^6.4.3
-  valibot: ^1.4.2
-  mysql2: ^3.23.1
-  deepmerge-ts: ^8.0.0
-  "@xmldom/xmldom": ^0.8.15
+allowedDeprecatedVersions:
+  '@ungap/structured-clone': 1.3.0
+  node-domexception: 1.0.0
+  prebuild-install: 7.1.3
+  whatwg-encoding: 3.1.1
 
 onlyBuiltDependencies:
   - esbuild
@@ -86,25 +17,87 @@ onlyBuiltDependencies:
   - bcrypt
   - better-sqlite3
   - prisma
-  - "@prisma/engines"
-  - "@prisma/client"
-  - "@playwright/browser-chromium"
-  - "@sentry-internal/node-cpu-profiler"
-  - "@sentry/cli"
+  - '@prisma/engines'
+  - '@prisma/client'
+  - '@playwright/browser-chromium'
+  - '@sentry-internal/node-cpu-profiler'
+  - '@sentry/cli'
   - protobufjs
   - isolated-vm
   - msgpackr-extract
   - unrs-resolver
 
+overrides:
+  '@hono/node-server': ^1.19.10
+  '@opentelemetry/auto-instrumentations-node': ^0.76.0
+  '@opentelemetry/core@<2.8.0': '>=2.8.0'
+  '@opentelemetry/exporter-prometheus': ^0.218.0
+  '@opentelemetry/propagator-jaeger@<2.9.0': '>=2.9.0'
+  '@opentelemetry/sdk-node': ^0.218.0
+  '@prisma/client': 7.10.0
+  '@tootallnate/once': ^3.0.1
+  '@types/pg': 8.20.0
+  '@types/react': 18.3.28
+  '@types/react-dom': 18.3.7
+  '@xmldom/xmldom': ^0.8.15
+  '@xmldom/xmldom@>=0.7.0 <=0.8.14': '>=0.8.15'
+  axios: ^1.15.2
+  body-parser: ^1.20.6
+  brace-expansion: 5.0.9
+  cookie: ^0.7.1
+  deepmerge-ts: ^8.0.0
+  deepmerge-ts@<8.0.0: '>=8.0.0'
+  defu: ^6.1.5
+  dompurify: 3.4.13
+  effect: ^3.20.0
+  esbuild: ^0.25.0
+  eslint: ^9.39.4
+  fast-uri: 3.1.5
+  fast-xml-builder: ^1.2.0
+  fast-xml-parser: ^5.5.7
+  follow-redirects: ^1.16.0
+  glob: ^13.0.6
+  handlebars: ^4.7.9
+  hono: 4.12.34
+  ip-address: 10.3.1
+  js-yaml: 3.15.1
+  lodash: ^4.18.1
+  minimatch: '>=10.2.1'
+  mysql2: ^3.23.1
+  mysql2@<3.22.0: '>=3.22.0'
+  mysql2@<=3.23.0: '>=3.23.1'
+  nanoid: ^3.3.18
+  nanoid@<3.3.18: '>=3.3.18'
+  next: ^16.2.6
+  path-to-regexp: ^8.4.2
+  picomatch: ^4.0.4
+  postcss: ^8.5.10
+  prisma: 7.10.0
+  protobufjs: ^7.5.8
+  qs: ^6.16.0
+  qs@>=2.2.5 <6.16.0: '>=6.16.0'
+  qs@>=6.14.2 <=6.15.3: '>=6.16.0'
+  raw-body: ^2.5.2
+  rimraf: ^5.0.0
+  rollup: ^4.59.0
+  seroval: ^1.4.1
+  socket.io-parser: 4.2.7
+  tar: ^7.5.3
+  undici: 7.29.0
+  uuid: ^13.0.1
+  valibot: ^1.4.2
+  vite: ^6.4.3
+  vite@<=6.4.2: '>=6.4.3'
+  word-wrap: ^1.2.5
+  ws: ^8.20.1
+  yaml: ^2.8.3
+
 patchedDependencies:
   proper-lockfile@4.1.2: patches/proper-lockfile@4.1.2.patch
 
-# These are deprecated transitive packages retained by current maintained
-# toolchains: Jest 30, jsdom/Cheerio, OpenTelemetry's GCP resource detector,
-# and better-sqlite3's native prebuild path. They are not direct runtime API
-# dependencies and have no high/critical advisory in the current audit.
-allowedDeprecatedVersions:
-  "@ungap/structured-clone": 1.3.0
-  node-domexception: 1.0.0
-  prebuild-install: 7.1.3
-  whatwg-encoding: 3.1.1
+preferFrozenLockfile: true
+
+supportedArchitectures:
+  cpu: [current, x64, arm64]
+  libc: [current, glibc, musl]
+  os: [current, linux, win32, darwin]
