@@ -24,20 +24,20 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.52",
+    "@ai-sdk/openai": "^4.0.60",
     "@settler/types": "workspace:*",
-    "@supabase/supabase-js": "^2.112.4",
-    "ai": "^7.0.85",
-    "resend": "^6.25.0",
-    "stripe": "^22.6.0",
+    "@supabase/supabase-js": "^2.115.0",
+    "ai": "^7.0.93",
+    "resend": "^6.26.0",
+    "stripe": "^22.6.1",
     "zod": "^4.5.4"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
-    "@types/node": "^26.4.0",
+    "@types/node": "^26.4.1",
     "@vitest/coverage-v8": "^4.1.11",
     "eslint-config-prettier": "^10.1.8",
-    "jest": "^30.5.0",
+    "jest": "^30.5.1",
     "ts-jest": "^29.4.12",
     "typescript": "^6.0.3",
     "vite": "^8.2.2",

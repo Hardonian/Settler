@@ -17,10 +17,10 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.52",
+    "@ai-sdk/openai": "^4.0.60",
     "@prisma/client": "7.10.0",
     "@settler/types": "workspace:*",
-    "ai": "^7.0.85",
+    "ai": "^7.0.93",
     "zod": "^4.5.4"
   },
   "devDependencies": {
