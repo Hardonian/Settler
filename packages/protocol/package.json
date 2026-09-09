@@ -24,9 +24,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.52",
-    "@types/node": "^26.4.0",
-    "ai": "^7.0.85",
+    "@ai-sdk/openai": "^4.0.60",
+    "@types/node": "^26.4.1",
+    "ai": "^7.0.93",
     "typescript": "^6.0.3"
   },
   "keywords": [
@@ -45,7 +45,7 @@
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "@vitest/coverage-v8": "^4.1.11",
-    "jest": "^30.5.0",
+    "jest": "^30.5.1",
     "ts-jest": "^29.4.12",
     "vite": "^8.2.2",
     "vitest": "^4.1.11"

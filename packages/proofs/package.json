@@ -17,9 +17,9 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.52",
+    "@ai-sdk/openai": "^4.0.60",
     "@settler/types": "workspace:*",
-    "ai": "^7.0.85"
+    "ai": "^7.0.93"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.11",

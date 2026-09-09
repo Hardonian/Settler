@@ -22,9 +22,9 @@
     "clean": "node -e \"const fs=require('fs'); fs.existsSync('dist') && fs.rmSync('dist', {recursive: true, force: true})\""
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.52",
-    "@types/node": "^26.4.0",
-    "ai": "^7.0.85",
+    "@ai-sdk/openai": "^4.0.60",
+    "@types/node": "^26.4.1",
+    "ai": "^7.0.93",
     "typescript": "^6.0.3",
     "zod": "^4.5.4"
   },
