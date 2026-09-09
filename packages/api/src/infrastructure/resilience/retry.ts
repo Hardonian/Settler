@@ -56,13 +56,13 @@ export async function retryWithBackoff<T>(
       minTimeout: opts.minTimeout,
       maxTimeout: opts.maxTimeout,
       factor: opts.factor,
-      onFailedAttempt: (context) => {
+      onFailedAttempt: (context: any) => {
         logWarn("Retry attempt failed", {
           attempt: context.attemptNumber,
           retriesLeft: context.retriesLeft,
-          error: context.error.message,
+          error: context.error?.message || context.message,
         });
-        opts.onFailedAttempt?.(context.error);
+        opts.onFailedAttempt?.(context.error || context);
       },
     }
   );
