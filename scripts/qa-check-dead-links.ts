@@ -45,11 +45,11 @@ async function checkDeadLinks() {
   const routeRegistry = JSON.parse(routeRegistryContent);
   const linkRegistry = JSON.parse(linkRegistryContent);
 
-  const pageRoutes = routeRegistry.routes.filter((r: any) => r.type === "page");
+  const validRoutes = routeRegistry.routes;
   const staticRoutes = new Set<string>(
-    pageRoutes.map((r: any) => String(r.path)).filter((path: string) => !isDynamicRoute(path))
+    validRoutes.map((r: any) => String(r.path)).filter((path: string) => !isDynamicRoute(path))
   );
-  const dynamicMatchers = pageRoutes
+  const dynamicMatchers = validRoutes
     .map((r: any) => String(r.path))
     .filter((path: string) => isDynamicRoute(path))
     .map((path: string) => toMatcher(path));

@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-09-11T12:35:54.533Z",
-  "totalRoutes": 558,
-  "pageRoutes": 305,
+  "generatedAt": "2026-09-11T13:38:03.585Z",
+  "totalRoutes": 562,
+  "pageRoutes": 309,
   "routes": [
     {
       "path": "/",
@@ -2588,6 +2588,14 @@
       "optional": false
     },
     {
+      "path": "/compare",
+      "type": "page",
+      "file": "compare\\page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/console",
       "type": "page",
       "file": "console\\page.tsx",
@@ -2831,6 +2839,14 @@
       "path": "/console/docs/glossary",
       "type": "page",
       "file": "console\\docs\\glossary\\page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/console/evidence",
+      "type": "page",
+      "file": "console\\evidence\\page.tsx",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -3095,6 +3111,14 @@
       "path": "/console/proof-explorer",
       "type": "page",
       "file": "console\\proof-explorer\\page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/console/proofs",
+      "type": "page",
+      "file": "console\\proofs\\page.tsx",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -3735,6 +3759,14 @@
       "path": "/docs/status",
       "type": "page",
       "file": "docs\\status\\page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/docs/support",
+      "type": "page",
+      "file": "docs\\support\\page.tsx",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -4540,6 +4572,7 @@
     "/changelog/[slug]",
     "/community",
     "/community/contributors",
+    "/compare",
     "/console",
     "/console/activity",
     "/console/admin/activation",
@@ -4571,6 +4604,7 @@
     "/console/diagnostics",
     "/console/docs",
     "/console/docs/glossary",
+    "/console/evidence",
     "/console/evidence/siem",
     "/console/evidence/soc2",
     "/console/exceptions",
@@ -4604,6 +4638,7 @@
     "/console/policies",
     "/console/policies/auto-resolution",
     "/console/proof-explorer",
+    "/console/proofs",
     "/console/reality",
     "/console/receipt-matching",
     "/console/receipts",
@@ -4684,6 +4719,7 @@
     "/docs/sdk/python",
     "/docs/sdk/ruby",
     "/docs/status",
+    "/docs/support",
     "/docs/webhooks",
     "/document-onboarding",
     "/edge-ai",

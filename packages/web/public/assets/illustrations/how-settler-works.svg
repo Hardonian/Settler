@@ -1,0 +1,73 @@
+<svg width="800" height="400" viewBox="0 0 800 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="primary-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#2563EB" />
+            <stop offset="100%" stop-color="#4F46E5" />
+        </linearGradient>
+        <linearGradient id="glow-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#2563EB" stop-opacity="0.2" />
+            <stop offset="100%" stop-color="#4F46E5" stop-opacity="0.2" />
+        </linearGradient>
+        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="5" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+    </defs>
+
+    <!-- Connection Lines (Animated Pulse feel) -->
+    <path d="M140 200 H 260" stroke="#E2E8F0" stroke-width="2" stroke-dasharray="4 4" />
+    <path d="M340 200 H 460" stroke="#E2E8F0" stroke-width="2" stroke-dasharray="4 4" />
+    <path d="M540 200 H 660" stroke="#E2E8F0" stroke-width="2" stroke-dasharray="4 4" />
+
+    <!-- Step 1: Ingest -->
+    <g transform="translate(60, 160)">
+        <rect width="80" height="80" rx="16" fill="white" stroke="#E2E8F0" stroke-width="2" />
+        <path d="M25 35 H 55 M 25 45 H 55 M 25 55 H 40" stroke="#2563EB" stroke-width="2"
+            stroke-linecap="round" />
+        <circle cx="60" cy="20" r="12" fill="#2563EB" fill-opacity="0.1" />
+        <path d="M55 20 L 65 20 M 60 15 L 60 25" stroke="#2563EB" stroke-width="1.5"
+            stroke-linecap="round" />
+    </g>
+    <text x="100" y="270" text-anchor="middle" font-family="Inter, sans-serif" font-size="14"
+        font-weight="600" fill="#1E293B">Ingest</text>
+    <text x="100" y="290" text-anchor="middle" font-family="Inter, sans-serif" font-size="12"
+        fill="#64748B">Adapters &amp; Files</text>
+
+    <!-- Step 2: Normalize -->
+    <g transform="translate(260, 160)">
+        <rect width="80" height="80" rx="16" fill="white" stroke="#E2E8F0" stroke-width="2" />
+        <rect x="25" y="30" width="30" height="6" rx="3" fill="#4F46E5" fill-opacity="0.1" />
+        <rect x="25" y="45" width="30" height="6" rx="3" fill="#4F46E5" />
+        <rect x="25" y="60" width="30" height="6" rx="3" fill="#4F46E5" fill-opacity="0.1" />
+    </g>
+    <text x="300" y="270" text-anchor="middle" font-family="Inter, sans-serif" font-size="14"
+        font-weight="600" fill="#1E293B">Normalize</text>
+    <text x="300" y="290" text-anchor="middle" font-family="Inter, sans-serif" font-size="12"
+        fill="#64748B">Canonical Schema</text>
+
+    <!-- Step 3: Rules -->
+    <g transform="translate(460, 160)">
+        <rect width="80" height="80" rx="16" fill="#4F46E5" />
+        <path d="M30 40 L 38 48 L 54 32" stroke="white" stroke-width="4" stroke-linecap="round"
+            stroke-linejoin="round" />
+        <circle cx="40" cy="40" r="28" stroke="white" stroke-width="2" stroke-opacity="0.3" />
+    </g>
+    <text x="500" y="270" text-anchor="middle" font-family="Inter, sans-serif" font-size="14"
+        font-weight="600" fill="#1E293B">Apply Rules</text>
+    <text x="500" y="290" text-anchor="middle" font-family="Inter, sans-serif" font-size="12"
+        fill="#64748B">Deterministic Match</text>
+
+    <!-- Step 4: Evidence -->
+    <g transform="translate(660, 160)">
+        <rect width="80" height="80" rx="16" fill="white" stroke="#E2E8F0" stroke-width="2" />
+        <path d="M30 30 V 60 H 55" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        <path d="M30 60 L 55 35" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" />
+        <circle cx="55" cy="35" r="4" fill="#F59E0B" />
+    </g>
+    <text x="700" y="270" text-anchor="middle" font-family="Inter, sans-serif" font-size="14"
+        font-weight="600" fill="#1E293B">Variances</text>
+    <text x="700" y="290" text-anchor="middle" font-family="Inter, sans-serif" font-size="12"
+        fill="#64748B">Review &amp; Audit</text>
+
+</svg>

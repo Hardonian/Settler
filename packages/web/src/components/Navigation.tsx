@@ -25,7 +25,7 @@ const primaryNavigationItems = [
 
 // Feature pages exposed in a dropdown
 const featureNavigationItems = [
-  { href: "/sidereal", label: "Sidereal API Platform" },
+  { href: "/compare", label: "Settler vs Competitors" },
   { href: "/roi-calculator", label: "ROI Calculator" },
   { href: "/document-onboarding", label: "Document Onboarding" },
   { href: "/value-proposition", label: "Value Proposition" },

@@ -2,6 +2,7 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { AnimatedHero } from "@/components/AnimatedHero";
 import { FeatureComparison } from "@/components/FeatureComparison";
+import { CompetitiveComparisonTable } from "@/components/pricing/CompetitiveComparisonTable";
 import { CTASection, Section, SectionHeader } from "@/components/site/primitives";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -131,6 +132,13 @@ export default function PricingPage() {
 
       {/* Feature Comparison */}
       <FeatureComparison />
+
+      {/* Competitive Market Positioning */}
+      <Section className="border-t border-border/40 py-16 sm:py-20 bg-muted/10">
+        <div className="mx-auto max-w-7xl">
+          <CompetitiveComparisonTable />
+        </div>
+      </Section>
 
       <Section className="border-t border-border/40 py-16 sm:py-20">
         <div className="mx-auto max-w-7xl">
