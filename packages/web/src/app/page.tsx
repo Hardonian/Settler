@@ -16,6 +16,8 @@ import { UiLink } from "@/components/ui/link";
 import {
   AdapterConnectionMap,
   AmbientLightOrbs,
+  BilateralSettlementVisualizer,
+  EnterpriseRoiCalculator,
   ExceptionTriageVisual,
   InteractiveHeroEngine,
   ReconciliationFlow,
@@ -96,8 +98,12 @@ export default function HomePage() {
           actions={
             <>
               <Button asChild size="lg">
-                <UiLink href="/tour" data-cta="hero_tour" data-analytics="hero_tour_click">
-                  See it in 60 seconds <ArrowRight className="ml-2 h-4 w-4" />
+                <UiLink
+                  href="/roi-calculator"
+                  data-cta="hero_roi_calc"
+                  data-analytics="hero_roi_calc_click"
+                >
+                  Calculate Recoverable ROI <ArrowRight className="ml-2 h-4 w-4" />
                 </UiLink>
               </Button>
               <Button variant="outline" size="lg" asChild>
@@ -122,6 +128,24 @@ export default function HomePage() {
           }
           visual={<InteractiveHeroEngine />}
         />
+
+        {/* Strategic Cross-Rail Enclave Section */}
+        <Section className="py-24 bg-muted/15 border-y border-border/40">
+          <SectionHeader
+            title="Why Stripe & PayPal Compete to Own Settler"
+            description="The Universal Bilateral Settlement Enclave — neutralizing cross-rail dispute arbitrage, contractual fee creep, and batch float drag with sovereign cryptographic proofs."
+          />
+          <BilateralSettlementVisualizer />
+        </Section>
+
+        {/* Interactive Enterprise ROI & Leakage Calculator */}
+        <Section className="py-24">
+          <SectionHeader
+            title="Institutional Payment Leakage & ROI Engine"
+            description="Simulate your multi-processor payment volume across Stripe, PayPal, and bank clearing accounts. Uncover hidden fee creep, float drag, and audit hours reclaimed by Settler."
+          />
+          <EnterpriseRoiCalculator />
+        </Section>
 
         <Section withGrid className="bg-muted/10 border-y border-border/40 py-24">
           <SectionHeader

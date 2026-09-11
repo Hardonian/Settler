@@ -27,6 +27,24 @@ const InteractiveHeroEngine = dynamic(
     ),
   }
 );
+const BilateralSettlementVisualizer = dynamic(
+  () =>
+    import("@/components/site/BilateralSettlementVisualizer").then(
+      (mod) => mod.BilateralSettlementVisualizer
+    ),
+  {
+    ssr: false,
+    loading: () => <div className="min-h-96 w-full rounded-3xl bg-card/60 animate-pulse" />,
+  }
+);
+const EnterpriseRoiCalculator = dynamic(
+  () =>
+    import("@/components/site/EnterpriseRoiCalculator").then((mod) => mod.EnterpriseRoiCalculator),
+  {
+    ssr: false,
+    loading: () => <div className="min-h-96 w-full rounded-3xl bg-card/60 animate-pulse" />,
+  }
+);
 const AmbientLightOrbs = dynamic(
   () => import("@/components/site/AmbientLightOrbs").then((mod) => mod.AmbientLightOrbs),
   { ssr: false }
@@ -35,6 +53,8 @@ const AmbientLightOrbs = dynamic(
 export {
   AdapterConnectionMap,
   AmbientLightOrbs,
+  BilateralSettlementVisualizer,
+  EnterpriseRoiCalculator,
   ExceptionTriageVisual,
   InteractiveHeroEngine,
   ReconciliationFlow,

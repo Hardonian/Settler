@@ -24,11 +24,28 @@ export class StripeEnhancedAdapter implements EnhancedAdapter {
   name = "stripe";
   version = "1.0.0";
   private supportedVersions = ["2023-10-16", "2024-01-01"]; // Supported API versions
+  private maxClockDriftSeconds = 300; // 5 minute clock drift tolerance window
+  private processedNonces = new Map<string, number>();
+
+  private cleanupStaleNonces(): void {
+    const now = Date.now();
+    const expiry = this.maxClockDriftSeconds * 2 * 1000;
+    for (const [nonce, ts] of this.processedNonces.entries()) {
+      if (now - ts > expiry) {
+        this.processedNonces.delete(nonce);
+      }
+    }
+  }
 
   /**
-   * Verify webhook signature
+   * Verify webhook signature with clock drift and replay protection
    */
-  verifyWebhook(payload: string | Buffer, signature: string, secret: string): boolean {
+  verifyWebhook(
+    payload: string | Buffer,
+    signature: string,
+    secret: string,
+    options?: { enforceReplayProtection?: boolean }
+  ): boolean {
     try {
       const elements = signature.split(",");
       const timestamp = elements.find((e) => e.startsWith("t="))?.substring(2);
@@ -38,77 +55,134 @@ export class StripeEnhancedAdapter implements EnhancedAdapter {
         return false;
       }
 
+      // Validate clock drift against replay attacks
+      const tsNumber = parseInt(timestamp, 10);
+      if (isNaN(tsNumber)) {
+        return false;
+      }
+      const currentEpochSec = Math.floor(Date.now() / 1000);
+      if (Math.abs(currentEpochSec - tsNumber) > this.maxClockDriftSeconds) {
+        return false;
+      }
+
       const signedPayload = `${timestamp}.${typeof payload === "string" ? payload : payload.toString()}`;
       const expectedSignature = crypto
         .createHmac("sha256", secret)
         .update(signedPayload)
         .digest("hex");
 
-      return signatures.some((sig) =>
+      const isValid = signatures.some((sig) =>
         crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expectedSignature))
       );
+
+      if (!isValid) return false;
+
+      // Replay prevention check
+      if (options?.enforceReplayProtection !== false) {
+        this.cleanupStaleNonces();
+        const primarySig = signatures[0] ?? "";
+        if (this.processedNonces.has(primarySig)) {
+          return false; // Replay detected
+        }
+        this.processedNonces.set(primarySig, Date.now());
+      }
+
+      return true;
     } catch {
       return false;
     }
   }
 
   /**
-   * Normalize webhook payload to canonical format
+   * Normalize webhook payload to canonical format with fault tolerance
    */
   normalizeWebhook(payload: Record<string, any>, tenantId: string): NormalizedEvent[] {
     const events: NormalizedEvent[] = [];
     const eventType = payload.type;
     const data = payload.data?.object || payload;
 
-    switch (eventType) {
-      case "charge.succeeded":
-      case "payment_intent.succeeded":
-        events.push({
-          type: "capture",
-          transaction: this.normalizeTransaction(data, tenantId),
-          rawPayload: payload,
-          timestamp: new Date(payload.created * 1000),
-        });
-        break;
-
-      case "charge.refunded":
-      case "refund.created":
-        events.push({
-          type: "refund",
-          refundDispute: this.normalizeRefundDispute(data, tenantId, "refund"),
-          rawPayload: payload,
-          timestamp: new Date(payload.created * 1000),
-        });
-        break;
-
-      case "charge.dispute.created":
-        events.push({
-          type: "chargeback",
-          refundDispute: this.normalizeRefundDispute(data, tenantId, "chargeback"),
-          rawPayload: payload,
-          timestamp: new Date(payload.created * 1000),
-        });
-        break;
-
-      case "payout.paid":
-        events.push({
-          type: "payout",
-          settlement: this.normalizeSettlement(data, tenantId),
-          rawPayload: payload,
-          timestamp: new Date(payload.created * 1000),
-        });
-        break;
-
-      default:
-        // Unknown event type, but still normalize if possible
-        if (data.id && data.amount) {
+    try {
+      switch (eventType) {
+        case "charge.succeeded":
+        case "payment_intent.succeeded":
           events.push({
             type: "capture",
             transaction: this.normalizeTransaction(data, tenantId),
             rawPayload: payload,
             timestamp: new Date(payload.created * 1000),
           });
-        }
+          break;
+
+        case "charge.refunded":
+        case "refund.created":
+          events.push({
+            type: "refund",
+            refundDispute: this.normalizeRefundDispute(data, tenantId, "refund"),
+            rawPayload: payload,
+            timestamp: new Date(payload.created * 1000),
+          });
+          break;
+
+        case "charge.dispute.created":
+        case "charge.dispute.updated":
+          events.push({
+            type: "chargeback",
+            refundDispute: this.normalizeRefundDispute(data, tenantId, "chargeback"),
+            rawPayload: payload,
+            timestamp: new Date(payload.created * 1000),
+          });
+          break;
+
+        case "payout.paid":
+          events.push({
+            type: "payout",
+            settlement: this.normalizeSettlement(data, tenantId),
+            rawPayload: payload,
+            timestamp: new Date(payload.created * 1000),
+          });
+          break;
+
+        default:
+          // Unknown or custom event type, but still normalize if transaction-like
+          if (data.id && data.amount !== undefined) {
+            events.push({
+              type: "capture",
+              transaction: this.normalizeTransaction(data, tenantId),
+              rawPayload: payload,
+              timestamp: new Date((payload.created || Math.floor(Date.now() / 1000)) * 1000),
+            });
+          }
+      }
+    } catch {
+      // Deterministic fallback event ensuring audit trail preservation
+      try {
+        events.push({
+          type: "capture",
+          transaction: {
+            id: this.generateId(),
+            tenantId,
+            provider: "stripe",
+            providerTransactionId: data?.id || `err_${Date.now()}`,
+            type: "capture",
+            amount: {
+              value: typeof data?.amount === "number" ? data.amount / 100 : 0,
+              currency: data?.currency ? String(data.currency).toUpperCase() : "USD",
+            },
+            status: "failed",
+            rawPayload: payload,
+            created_at: new Date(payload?.created ? payload.created * 1000 : Date.now()),
+            updatedAt: new Date(),
+          },
+          rawPayload: payload,
+          timestamp: new Date(),
+        });
+      } catch {
+        events.push({
+          type: "capture",
+          rawPayload: payload,
+          timestamp: new Date(),
+        });
+      }
     }
 
     return events;

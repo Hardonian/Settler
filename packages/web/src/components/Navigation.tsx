@@ -24,6 +24,7 @@ const primaryNavigationItems = [
 
 // Feature pages exposed in a dropdown
 const featureNavigationItems = [
+  { href: "/roi-calculator", label: "ROI Calculator" },
   { href: "/revenue-recovery", label: "Revenue Recovery" },
   { href: "/realtime-dashboard", label: "Realtime Telemetry" },
   { href: "/architecture", label: "Architecture" },
