@@ -1,0 +1,78 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "title": "Reconciliation Core Latency (P50, P95, P99)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(settler_recon_duration_seconds_bucket[5m])) by (le))",
+          "legendFormat": "P99 Latency (s)"
+        },
+        {
+          "expr": "histogram_quantile(0.50, sum(rate(settler_recon_duration_seconds_bucket[5m])) by (le))",
+          "legendFormat": "P50 Latency (s)"
+        }
+      ]
+    },
+    {
+      "title": "Throughput (Transactions Reconciled / Sec)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum(rate(settler_transactions_matched_total[1m]))",
+          "legendFormat": "Matched tx/s"
+        }
+      ]
+    },
+    {
+      "title": "TigerBeetle Two-Phase Commit Queue Depth",
+      "type": "gauge",
+      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "expr": "settler_tigerbeetle_pending_transfers_count",
+          "legendFormat": "Pending Transfers"
+        }
+      ]
+    },
+    {
+      "title": "Zero-Float Invariant Violations (Target = 0)",
+      "type": "stat",
+      "gridPos": { "h": 8, "w": 6, "x": 6, "y": 8 },
+      "targets": [
+        {
+          "expr": "sum(increase(settler_invariant_violations_total{type='FLOAT_DRIFT'}[1h]))",
+          "legendFormat": "Float Violations"
+        }
+      ]
+    },
+    {
+      "title": "Multi-Rail Volume Breakdown (Cents)",
+      "type": "piechart",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        {
+          "expr": "sum by (rail) (rate(settler_rail_volume_cents_total[5m]))",
+          "legendFormat": "{{rail}}"
+        }
+      ]
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["settler", "reconciliation", "tigerbeetle", "audit"],
+  "time": { "from": "now-6h", "to": "now" },
+  "timezone": "browser",
+  "title": "Settler Infrastructure & Ledger Telemetry",
+  "version": 1
+}

@@ -1,0 +1,76 @@
+version: "3.8"
+
+services:
+  redis-master:
+    image: redis:7.2-alpine
+    container_name: settler-redis-master
+    command: redis-server --appendonly yes --requirepass settler_dev_redis_secret --masterauth settler_dev_redis_secret
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_master_data:/data
+    networks:
+      - settler-net
+
+  redis-replica:
+    image: redis:7.2-alpine
+    container_name: settler-redis-replica
+    command: redis-server --replicaof redis-master 6379 --appendonly yes --requirepass settler_dev_redis_secret --masterauth settler_dev_redis_secret
+    depends_on:
+      - redis-master
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_replica_data:/data
+    networks:
+      - settler-net
+
+  redis-sentinel-1:
+    image: redis:7.2-alpine
+    container_name: settler-redis-sentinel-1
+    command: redis-sentinel /etc/redis/sentinel.conf
+    depends_on:
+      - redis-master
+      - redis-replica
+    ports:
+      - "26379:26379"
+    volumes:
+      - ./sentinel.conf:/etc/redis/sentinel.conf:ro
+    networks:
+      - settler-net
+
+  redis-sentinel-2:
+    image: redis:7.2-alpine
+    container_name: settler-redis-sentinel-2
+    command: redis-sentinel /etc/redis/sentinel.conf
+    depends_on:
+      - redis-master
+      - redis-replica
+    ports:
+      - "26380:26379"
+    volumes:
+      - ./sentinel.conf:/etc/redis/sentinel.conf:ro
+    networks:
+      - settler-net
+
+  redis-sentinel-3:
+    image: redis:7.2-alpine
+    container_name: settler-redis-sentinel-3
+    command: redis-sentinel /etc/redis/sentinel.conf
+    depends_on:
+      - redis-master
+      - redis-replica
+    ports:
+      - "26381:26379"
+    volumes:
+      - ./sentinel.conf:/etc/redis/sentinel.conf:ro
+    networks:
+      - settler-net
+
+volumes:
+  redis_master_data:
+  redis_replica_data:
+
+networks:
+  settler-net:
+    driver: bridge

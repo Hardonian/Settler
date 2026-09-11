@@ -119,6 +119,14 @@ const commandRegistry: Record<
       return { command: chaosCommand };
     },
   },
+  "due-diligence": {
+    description:
+      "Generate synthetic benchmark dataset and audit package for M&A technical due diligence",
+    load: async () => {
+      const { dueDiligenceCommand } = await import("./commands/due-diligence");
+      return { command: dueDiligenceCommand };
+    },
+  },
 
   capsule: {
     description: "[experimental] Create/verify deterministic time capsules",

@@ -1,0 +1,29 @@
+groups:
+  - name: settler_ledger_invariants
+    rules:
+      - alert: ZeroFloatDriftDetected
+        expr: increase(settler_invariant_violations_total{type='FLOAT_DRIFT'}[1m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "CRITICAL: Floating-point precision drift detected in settlement ledger"
+          description: "Tenant {{ $labels.tenant_id }} emitted non-integer cent reconciliation deltas."
+
+      - alert: CrossTenantLeakAttempt
+        expr: increase(settler_invariant_violations_total{type='CROSS_TENANT_LEAK'}[1m]) > 0
+        for: 0m
+        labels:
+          severity: page
+        annotations:
+          summary: "SECURITY: Cross-tenant data leak intercepted"
+          description: "An entity was rejected due to mismatched session tenant context."
+
+      - alert: HighReconciliationLatency
+        expr: histogram_quantile(0.99, sum(rate(settler_recon_duration_seconds_bucket[5m])) by (le)) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "P99 reconciliation latency exceeded 50ms threshold"
+          description: "Current P99 latency is {{ $value }}s."

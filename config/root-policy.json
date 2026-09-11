@@ -212,7 +212,8 @@
     "jest.config.js",
     ".vercel",
     ".settler",
-    "ledger"
+    "ledger",
+    "infra"
   ],
   "blockedExtensions": [".tar", ".tgz", ".bak", ".tmp", ".old"],
   "localClutterPatterns": [

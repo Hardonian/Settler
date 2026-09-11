@@ -1,6 +1,6 @@
 /**
  * Route Registry - Auto-generated
- * Generated at: 2026-09-11T02:10:04.376Z
+ * Generated at: 2026-09-11T12:35:54.535Z
  *
  * This file contains all routes discovered in the Next.js app directory.
  * Use this for type-safe route checking and link validation.
@@ -1924,6 +1924,14 @@ export const ROUTES: RouteInfo[] = [
     path: "/api/v1/astra/ledger/post",
     type: "route",
     file: "api\\v1\\astra\\ledger\\post\\route.ts",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/v1/astra/nl-query",
+    type: "route",
+    file: "api\\v1\\astra\\nl-query\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -4297,6 +4305,14 @@ export const ROUTES: RouteInfo[] = [
     optional: false,
   },
   {
+    path: "/sidereal",
+    type: "page",
+    file: "sidereal\\page.tsx",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
     path: "/signup",
     type: "page",
     file: "signup\\page.tsx",
@@ -4750,6 +4766,7 @@ export const PAGE_ROUTES: string[] = [
   "/runbooks",
   "/schematics",
   "/security-and-audit",
+  "/sidereal",
   "/signup",
   "/status",
   "/support",
@@ -5013,6 +5030,7 @@ export const ALL_ROUTES: string[] = [
   "/api/v1/astra/cadence/provision",
   "/api/v1/astra/disputes/synthesize",
   "/api/v1/astra/ledger/post",
+  "/api/v1/astra/nl-query",
   "/api/v1/astra/openapi",
   "/api/v1/astra/proofs/verify",
   "/api/v1/astra/reconcile",
@@ -5309,6 +5327,7 @@ export const ALL_ROUTES: string[] = [
   "/runbooks",
   "/schematics",
   "/security-and-audit",
+  "/sidereal",
   "/signup",
   "/status",
   "/support",

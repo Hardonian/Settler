@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-09-11T02:10:04.373Z",
-  "totalRoutes": 556,
-  "pageRoutes": 304,
+  "generatedAt": "2026-09-11T12:35:54.533Z",
+  "totalRoutes": 558,
+  "pageRoutes": 305,
   "routes": [
     {
       "path": "/",
@@ -1911,6 +1911,14 @@
       "path": "/api/v1/astra/ledger/post",
       "type": "route",
       "file": "api\\v1\\astra\\ledger\\post\\route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/v1/astra/nl-query",
+      "type": "route",
+      "file": "api\\v1\\astra\\nl-query\\route.ts",
       "dynamic": false,
       "catchAll": false,
       "optional": false
@@ -4284,6 +4292,14 @@
       "optional": false
     },
     {
+      "path": "/sidereal",
+      "type": "page",
+      "file": "sidereal\\page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/signup",
       "type": "page",
       "file": "signup\\page.tsx",
@@ -4736,6 +4752,7 @@
     "/runbooks",
     "/schematics",
     "/security-and-audit",
+    "/sidereal",
     "/signup",
     "/status",
     "/support",
