@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-11T01:56:25.964Z",
-  "totalRoutes": 548,
+  "generatedAt": "2026-09-11T02:01:50.512Z",
+  "totalRoutes": 553,
   "pageRoutes": 304,
   "routes": [
     {
@@ -1892,9 +1892,49 @@
       "optional": false
     },
     {
+      "path": "/api/v1/astra/cadence/provision",
+      "type": "route",
+      "file": "api\\v1\\astra\\cadence\\provision\\route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/v1/astra/disputes/synthesize",
+      "type": "route",
+      "file": "api\\v1\\astra\\disputes\\synthesize\\route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/v1/astra/openapi",
+      "type": "route",
+      "file": "api\\v1\\astra\\openapi\\route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/v1/astra/proofs/verify",
+      "type": "route",
+      "file": "api\\v1\\astra\\proofs\\verify\\route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/api/v1/astra/reconcile",
       "type": "route",
       "file": "api\\v1\\astra\\reconcile\\route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/v1/astra/telemetry/invariants",
+      "type": "route",
+      "file": "api\\v1\\astra\\telemetry\\invariants\\route.ts",
       "dynamic": false,
       "catchAll": false,
       "optional": false

@@ -359,15 +359,29 @@ export function AstraApiConsole() {
     }
 
     startTransition(() => {
-      if (selectedEndpoint.id === "bilateral-recon") {
-        fetch("/api/v1/astra/reconcile", {
-          method: "POST",
+      const endpointUrlMap: Record<string, { url: string; method: string }> = {
+        "bilateral-recon": { url: "/api/v1/astra/reconcile", method: "POST" },
+        "proof-verify": { url: "/api/v1/astra/proofs/verify", method: "POST" },
+        "disputes-clawback": { url: "/api/v1/astra/disputes/synthesize", method: "POST" },
+        "telemetry-invariants": { url: "/api/v1/astra/telemetry/invariants", method: "GET" },
+      };
+
+      const target = endpointUrlMap[selectedEndpoint.id];
+
+      if (target) {
+        const fetchOptions: RequestInit = {
+          method: target.method,
           headers: {
             "Content-Type": "application/json",
             Authorization: "Bearer stlr_live_9f823a9d8214",
           },
-          body: JSON.stringify(parsed),
-        })
+        };
+
+        if (target.method === "POST") {
+          fetchOptions.body = JSON.stringify(parsed);
+        }
+
+        fetch(target.url, fetchOptions)
           .then(async (res) => {
             const data = (await res.json()) as Record<string, unknown>;
             const headers: Record<string, string> = {
@@ -403,7 +417,8 @@ export function AstraApiConsole() {
           });
       } else {
         const res = selectedEndpoint.mockResponse(parsed);
-        const headers = {
+        setApiResponse(res);
+        setResponseHeaders({
           "content-type": "application/json; charset=utf-8",
           "x-settler-merkle-root":
             "0x4f82c189e92bc9837a2819cd918349281ab892c90192837482910fa98234cdfa",
@@ -411,9 +426,7 @@ export function AstraApiConsole() {
           "x-idempotency-key": `stlr_idem_${Date.now()}`,
           "x-exec-latency": "16.8ms",
           "x-ratelimit-remaining": "9998/10000",
-        };
-        setApiResponse(res);
-        setResponseHeaders(headers);
+        });
       }
     });
   };
