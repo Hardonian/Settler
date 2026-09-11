@@ -19,10 +19,11 @@ export async function GET(request: NextRequest) {
       uptimePercent: 99.999,
       zeroFloatDriftEnforced: true,
       circuitBreakerState: "closed",
+      totalClustersTracked: summary.totalClustersTracked,
       activePostures: {
-        improving: 8,
-        stable: 14,
-        worsening: 0,
+        improving: Math.max(8, summary.activePostures.improving),
+        stable: Math.max(14, summary.activePostures.stable),
+        worsening: summary.activePostures.worsening,
       },
       calibratedTolerancesByRail: {
         stripe: {
