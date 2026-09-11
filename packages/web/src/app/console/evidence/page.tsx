@@ -5,7 +5,16 @@ import { ConsolePageHeader } from "@/components/console/ConsolePageHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ShieldCheck, FileCheck, ShieldAlert, Download, ArrowRight, Activity, Lock, Terminal } from "lucide-react";
+import {
+  ShieldCheck,
+  FileCheck,
+  ShieldAlert,
+  Download,
+  ArrowRight,
+  Activity,
+  Lock,
+  Terminal,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { fadeUp } from "@/lib/motion/variants";
 
@@ -13,7 +22,8 @@ export default function EvidenceHubPage() {
   const hubs = [
     {
       title: "SOC 2 Type II Evidence Collector",
-      description: "Continuous compliance control mapping, automated Trust Services Criteria telemetry, and auditor bundle generation.",
+      description:
+        "Continuous compliance control mapping, automated Trust Services Criteria telemetry, and auditor bundle generation.",
       href: "/console/evidence/soc2",
       badge: "Certified 100%",
       badgeColor: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
@@ -21,7 +31,8 @@ export default function EvidenceHubPage() {
     },
     {
       title: "SIEM & Security Telemetry",
-      description: "Immutable journal event stream, Splunk/Datadog syslog forwarding, and tamper-evident administrative action logs.",
+      description:
+        "Immutable journal event stream, Splunk/Datadog syslog forwarding, and tamper-evident administrative action logs.",
       href: "/console/evidence/siem",
       badge: "Realtime Active",
       badgeColor: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
@@ -29,7 +40,8 @@ export default function EvidenceHubPage() {
     },
     {
       title: "Proof Explorer & WASM Replay",
-      description: "Search and mathematically verify RFC 6962 SHA-256 Merkle proofpacks with sub-millisecond offline verification.",
+      description:
+        "Search and mathematically verify RFC 6962 SHA-256 Merkle proofpacks with sub-millisecond offline verification.",
       href: "/console/proof-explorer",
       badge: "Deterministic",
       badgeColor: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
@@ -37,7 +49,8 @@ export default function EvidenceHubPage() {
     },
     {
       title: "Tamper-Evident Receipts & Hash Chains",
-      description: "Cryptographic hash chain receipts for individual settlement runs, transaction batches, and bank close records.",
+      description:
+        "Cryptographic hash chain receipts for individual settlement runs, transaction batches, and bank close records.",
       href: "/console/receipts-hash",
       badge: "SHA-256 Sealed",
       badgeColor: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20",
@@ -70,7 +83,9 @@ export default function EvidenceHubPage() {
       >
         <Card className="border-border/60">
           <CardHeader className="pb-2">
-            <CardDescription className="text-xs uppercase font-semibold">Audit Posture</CardDescription>
+            <CardDescription className="text-xs uppercase font-semibold">
+              Audit Posture
+            </CardDescription>
             <CardTitle className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
               <ShieldCheck className="h-6 w-6" />
               100% Compliant
@@ -83,10 +98,10 @@ export default function EvidenceHubPage() {
 
         <Card className="border-border/60">
           <CardHeader className="pb-2">
-            <CardDescription className="text-xs uppercase font-semibold">Merkle Roots Sealed</CardDescription>
-            <CardTitle className="text-2xl font-extrabold text-foreground">
-              4,891 Runs
-            </CardTitle>
+            <CardDescription className="text-xs uppercase font-semibold">
+              Merkle Roots Sealed
+            </CardDescription>
+            <CardTitle className="text-2xl font-extrabold text-foreground">4,891 Runs</CardTitle>
           </CardHeader>
           <CardContent className="text-xs text-muted-foreground">
             0% floating point variance detected
@@ -95,7 +110,9 @@ export default function EvidenceHubPage() {
 
         <Card className="border-border/60">
           <CardHeader className="pb-2">
-            <CardDescription className="text-xs uppercase font-semibold">SIEM Ingestion Rate</CardDescription>
+            <CardDescription className="text-xs uppercase font-semibold">
+              SIEM Ingestion Rate
+            </CardDescription>
             <CardTitle className="text-2xl font-extrabold text-blue-600 dark:text-blue-400">
               42.8k ops/sec
             </CardTitle>
@@ -107,7 +124,9 @@ export default function EvidenceHubPage() {
 
         <Card className="border-border/60">
           <CardHeader className="pb-2">
-            <CardDescription className="text-xs uppercase font-semibold">WASM Verify Latency</CardDescription>
+            <CardDescription className="text-xs uppercase font-semibold">
+              WASM Verify Latency
+            </CardDescription>
             <CardTitle className="text-2xl font-extrabold text-purple-600 dark:text-purple-400">
               0.84 ms
             </CardTitle>
@@ -123,7 +142,10 @@ export default function EvidenceHubPage() {
         {hubs.map((hub) => {
           const Icon = hub.icon;
           return (
-            <Card key={hub.title} className="border-border/70 bg-card hover:border-primary/40 transition-all flex flex-col justify-between">
+            <Card
+              key={hub.title}
+              className="border-border/70 bg-card hover:border-primary/40 transition-all flex flex-col justify-between"
+            >
               <CardHeader>
                 <div className="flex items-center justify-between gap-2 mb-2">
                   <div className="p-2.5 rounded-lg bg-primary/10 text-primary w-fit">
@@ -139,7 +161,11 @@ export default function EvidenceHubPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-0">
-                <Button asChild variant="outline" className="w-full justify-between font-semibold group">
+                <Button
+                  asChild
+                  variant="outline"
+                  className="w-full justify-between font-semibold group"
+                >
                   <Link href={hub.href}>
                     <span>Open {hub.title.split(" ")[0]}</span>
                     <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />

@@ -10,7 +10,8 @@ import { LifeBuoy, Clock, ShieldCheck, ArrowRight, MessageSquare, Terminal } fro
 
 export const metadata: Metadata = {
   title: "Support & SLA Documentation | Settler",
-  description: "Enterprise support channels, SLA response times, diagnostic telemetry intake, and escalation policies.",
+  description:
+    "Enterprise support channels, SLA response times, diagnostic telemetry intake, and escalation policies.",
 };
 
 export default function DocsSupportPage() {
@@ -18,19 +19,22 @@ export default function DocsSupportPage() {
     {
       level: "P0 — Critical Production Impact",
       response: "< 15 minutes (24/7/365)",
-      description: "Complete failure of deterministic matching pipeline, ledger commit halted, or unhandled cross-tenant security breach.",
+      description:
+        "Complete failure of deterministic matching pipeline, ledger commit halted, or unhandled cross-tenant security breach.",
       channel: "Emergency Pager & Dedicated Slack Connect",
     },
     {
       level: "P1 — High Operational Degradation",
       response: "< 1 hour (24/7)",
-      description: "Connector sync delay (> 5 mins), abnormal variance spike in auto-reconciliation, or third-party webhook drop.",
+      description:
+        "Connector sync delay (> 5 mins), abnormal variance spike in auto-reconciliation, or third-party webhook drop.",
       channel: "Dedicated Slack Connect & Support Portal",
     },
     {
       level: "P2 — Standard Technical Guidance",
       response: "< 4 business hours",
-      description: "Custom rule configuration questions, schema discovery tuning, or new connector integration support.",
+      description:
+        "Custom rule configuration questions, schema discovery tuning, or new connector integration support.",
       channel: "Support Portal & Email Intake",
     },
   ];
@@ -41,14 +45,18 @@ export default function DocsSupportPage() {
 
       <main id="main-content" className="pt-20">
         <section className="px-4 sm:px-6 lg:px-8 pt-12 pb-16 max-w-5xl mx-auto text-center">
-          <Badge variant="outline" className="mb-4 border-primary/30 text-primary uppercase text-xs font-bold tracking-widest">
+          <Badge
+            variant="outline"
+            className="mb-4 border-primary/30 text-primary uppercase text-xs font-bold tracking-widest"
+          >
             Developer &amp; Enterprise Support
           </Badge>
           <h1 className="text-3xl sm:text-5xl font-extrabold text-foreground tracking-tight">
             Support Intake &amp; SLA Guide
           </h1>
           <p className="mt-4 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
-            Everything you need to know about our response SLAs, incident escalation procedures, and how to submit diagnostic bundles.
+            Everything you need to know about our response SLAs, incident escalation procedures, and
+            how to submit diagnostic bundles.
           </p>
           <div className="mt-8 flex justify-center gap-4">
             <Button asChild size="lg" className="font-bold">
@@ -80,10 +88,13 @@ export default function DocsSupportPage() {
                         {t.response}
                       </Badge>
                     </div>
-                    <CardDescription className="text-xs sm:text-sm mt-1">{t.description}</CardDescription>
+                    <CardDescription className="text-xs sm:text-sm mt-1">
+                      {t.description}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent className="text-xs text-muted-foreground pt-0">
-                    <span className="font-semibold text-foreground">Intake Channel:</span> {t.channel}
+                    <span className="font-semibold text-foreground">Intake Channel:</span>{" "}
+                    {t.channel}
                   </CardContent>
                 </Card>
               ))}
@@ -98,7 +109,8 @@ export default function DocsSupportPage() {
               Submitting Diagnostic Telemetry
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              When reporting issues with specific reconciliation runs, include the trace ID or export the diagnostic bundle directly from the CLI or console:
+              When reporting issues with specific reconciliation runs, include the trace ID or
+              export the diagnostic bundle directly from the CLI or console:
             </p>
             <div className="rounded-xl border border-border bg-slate-950 p-4 font-mono text-xs text-slate-200">
               <div className="flex items-center gap-2 pb-2 text-slate-400 border-b border-slate-800">

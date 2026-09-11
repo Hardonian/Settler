@@ -85,8 +85,8 @@ export default function ComparePage() {
                   Settler vs. BlackLine
                 </h2>
                 <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
-                  BlackLine (NASDAQ: BL) is the legacy market leader built in the 2000s for batch ERP
-                  account reconciliations. While dominant in traditional Fortune 500 accounting
+                  BlackLine (NASDAQ: BL) is the legacy market leader built in the 2000s for batch
+                  ERP account reconciliations. While dominant in traditional Fortune 500 accounting
                   departments, its architectural age creates severe operational bottlenecks for
                   modern engineering and finance teams.
                 </p>
@@ -97,8 +97,8 @@ export default function ComparePage() {
                       The Bottom Line:
                     </p>
                     <p className="text-xs text-muted-foreground leading-relaxed">
-                      Don&apos;t wait 6 months and pay $150K+ in consulting fees. Deploy Settler in 10
-                      minutes, run deterministic matching with sub-second latency, and hand your
+                      Don&apos;t wait 6 months and pay $150K+ in consulting fees. Deploy Settler in
+                      10 minutes, run deterministic matching with sub-second latency, and hand your
                       auditors cryptographic proofpacks that eliminate audit sampling entirely.
                     </p>
                   </div>
@@ -115,9 +115,17 @@ export default function ComparePage() {
                     <CardTitle className="text-base">Slow, High-Friction Onboarding</CardTitle>
                   </CardHeader>
                   <CardContent className="text-xs text-muted-foreground space-y-2.5">
-                    <p>• Requires 3–6 months of expensive professional services and custom ETL setups.</p>
-                    <p>• No developer APIs or CLI; cannot be embedded into real-time CI/CD pipelines.</p>
-                    <p>• Audit output is &quot;paper-based&quot; static PDFs requiring auditors to manually sample entries.</p>
+                    <p>
+                      • Requires 3–6 months of expensive professional services and custom ETL
+                      setups.
+                    </p>
+                    <p>
+                      • No developer APIs or CLI; cannot be embedded into real-time CI/CD pipelines.
+                    </p>
+                    <p>
+                      • Audit output is &quot;paper-based&quot; static PDFs requiring auditors to
+                      manually sample entries.
+                    </p>
                     <p>• High annual contracts ($100K–$250K/yr) with opaque pricing barriers.</p>
                   </CardContent>
                 </Card>
@@ -131,10 +139,21 @@ export default function ComparePage() {
                     <CardTitle className="text-base">API-First Deterministic Engine</CardTitle>
                   </CardHeader>
                   <CardContent className="text-xs text-foreground/90 space-y-2.5">
-                    <p>• First live reconciliation in &lt; 10 minutes via modern TypeScript SDK and CLI.</p>
-                    <p>• Sub-millisecond continuous T+0 close powered by Rust kernel and TigerBeetle 2PC.</p>
-                    <p>• RFC 6962 SHA-256 Merkle proofpacks proven mathematically via WASM client.</p>
-                    <p>• Transparent pricing: Open source free tier, $99 Pro, and pay-as-you-grow metering.</p>
+                    <p>
+                      • First live reconciliation in &lt; 10 minutes via modern TypeScript SDK and
+                      CLI.
+                    </p>
+                    <p>
+                      • Sub-millisecond continuous T+0 close powered by Rust kernel and TigerBeetle
+                      2PC.
+                    </p>
+                    <p>
+                      • RFC 6962 SHA-256 Merkle proofpacks proven mathematically via WASM client.
+                    </p>
+                    <p>
+                      • Transparent pricing: Open source free tier, $99 Pro, and pay-as-you-grow
+                      metering.
+                    </p>
                   </CardContent>
                 </Card>
               </div>
@@ -154,9 +173,10 @@ export default function ComparePage() {
                   Settler vs. Modern Treasury
                 </h2>
                 <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
-                  Modern Treasury is an exceptional payment operations platform built around direct bank
-                  integrations and payment initiation (ACH, Wire, RTP). Settler is purpose-built for
-                  multi-source reconciliation intelligence, processor fee verification, and cryptographic audit proofs.
+                  Modern Treasury is an exceptional payment operations platform built around direct
+                  bank integrations and payment initiation (ACH, Wire, RTP). Settler is
+                  purpose-built for multi-source reconciliation intelligence, processor fee
+                  verification, and cryptographic audit proofs.
                 </p>
                 <div className="pt-2">
                   <div className="rounded-lg bg-card border border-border p-4 space-y-2">
@@ -166,8 +186,8 @@ export default function ComparePage() {
                     </p>
                     <p className="text-xs text-muted-foreground leading-relaxed">
                       Settler natively ingests Modern Treasury ledger feeds and reconciles them
-                      against merchant processors (Stripe, PayPal), e-commerce platforms (Shopify), and
-                      ERP systems (NetSuite, SAP) to prove external ledger balance.
+                      against merchant processors (Stripe, PayPal), e-commerce platforms (Shopify),
+                      and ERP systems (NetSuite, SAP) to prove external ledger balance.
                     </p>
                   </div>
                 </div>
@@ -183,9 +203,14 @@ export default function ComparePage() {
                     <CardTitle className="text-base">Bank Rails &amp; Payment Initiation</CardTitle>
                   </CardHeader>
                   <CardContent className="text-xs text-muted-foreground space-y-2.5">
-                    <p>• Connects directly to commercial banking partners for ACH, Wire, and FedNow.</p>
+                    <p>
+                      • Connects directly to commercial banking partners for ACH, Wire, and FedNow.
+                    </p>
                     <p>• Maintains internal ledger accounts for tracking money movement.</p>
-                    <p>• Focuses on initiating and moving funds rather than multi-processor fee leakage audit.</p>
+                    <p>
+                      • Focuses on initiating and moving funds rather than multi-processor fee
+                      leakage audit.
+                    </p>
                   </CardContent>
                 </Card>
 
@@ -198,9 +223,18 @@ export default function ComparePage() {
                     <CardTitle className="text-base">Comprehensive Audit OS</CardTitle>
                   </CardHeader>
                   <CardContent className="text-xs text-foreground/90 space-y-2.5">
-                    <p>• Cross-provider reconciliation across Stripe, PayPal, Adyen, SAP, and bank statements.</p>
-                    <p>• Detects hidden interchange fee leakage and uncontracted tier creep automatically.</p>
-                    <p>• Generates portable, tamper-evident proofpacks verifiable offline by external auditors.</p>
+                    <p>
+                      • Cross-provider reconciliation across Stripe, PayPal, Adyen, SAP, and bank
+                      statements.
+                    </p>
+                    <p>
+                      • Detects hidden interchange fee leakage and uncontracted tier creep
+                      automatically.
+                    </p>
+                    <p>
+                      • Generates portable, tamper-evident proofpacks verifiable offline by external
+                      auditors.
+                    </p>
                   </CardContent>
                 </Card>
               </div>
@@ -221,13 +255,15 @@ export default function ComparePage() {
                   <DollarSign className="h-8 w-8 text-rose-500 mb-2" />
                   <CardTitle className="text-lg">IEEE-754 Floating-Point Drift</CardTitle>
                   <CardDescription>
-                    Custom scripts using standard database floats lose pennies across high transaction volumes,
-                    leading to balance mismatches that fail SOC 1 and SOX compliance.
+                    Custom scripts using standard database floats lose pennies across high
+                    transaction volumes, leading to balance mismatches that fail SOC 1 and SOX
+                    compliance.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground pt-0">
-                  <span className="font-semibold text-foreground">Settler Solution:</span> Exact 64-bit integer
-                  cents arithmetic in Rust ensures 0.000000% mathematical drift across trillions of cents.
+                  <span className="font-semibold text-foreground">Settler Solution:</span> Exact
+                  64-bit integer cents arithmetic in Rust ensures 0.000000% mathematical drift
+                  across trillions of cents.
                 </CardContent>
               </Card>
 
@@ -236,13 +272,14 @@ export default function ComparePage() {
                   <ShieldAlert className="h-8 w-8 text-amber-500 mb-2" />
                   <CardTitle className="text-lg">Zero Cryptographic Proof</CardTitle>
                   <CardDescription>
-                    When auditors request evidence, custom scripts can only output CSV logs that could easily
-                    have been modified or overwritten after the fact.
+                    When auditors request evidence, custom scripts can only output CSV logs that
+                    could easily have been modified or overwritten after the fact.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground pt-0">
-                  <span className="font-semibold text-foreground">Settler Solution:</span> Every match run generates
-                  an immutable RFC 6962 Merkle proofpack signed with SHA-256 and content-addressable storage (CAS).
+                  <span className="font-semibold text-foreground">Settler Solution:</span> Every
+                  match run generates an immutable RFC 6962 Merkle proofpack signed with SHA-256 and
+                  content-addressable storage (CAS).
                 </CardContent>
               </Card>
 
@@ -251,13 +288,14 @@ export default function ComparePage() {
                   <Lock className="h-8 w-8 text-blue-500 mb-2" />
                   <CardTitle className="text-lg">Connector Maintenance Sinkhole</CardTitle>
                   <CardDescription>
-                    Payment gateways update webhook payloads, exchange rate APIs drift, and bank export formats shift,
-                    turning internal scripts into an endless maintenance tax.
+                    Payment gateways update webhook payloads, exchange rate APIs drift, and bank
+                    export formats shift, turning internal scripts into an endless maintenance tax.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground pt-0">
-                  <span className="font-semibold text-foreground">Settler Solution:</span> 30+ turnkey, verified
-                  connectors maintained and tested continuously against live schemas and rate changes.
+                  <span className="font-semibold text-foreground">Settler Solution:</span> 30+
+                  turnkey, verified connectors maintained and tested continuously against live
+                  schemas and rate changes.
                 </CardContent>
               </Card>
             </div>
@@ -284,8 +322,8 @@ export default function ComparePage() {
               Ready to Upgrade from Batch Lag to Mathematical Determinism?
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto text-base">
-              Start with our free open-source engine, run your first test reconciliation in 10 minutes,
-              or schedule an architecture walkthrough with our core engineering team.
+              Start with our free open-source engine, run your first test reconciliation in 10
+              minutes, or schedule an architecture walkthrough with our core engineering team.
             </p>
             <div className="pt-4 flex flex-wrap justify-center gap-4">
               <Button asChild size="lg" className="font-bold px-8 h-12 shadow-lg">
