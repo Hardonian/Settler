@@ -44,3 +44,4 @@ export * from "./timestamp-clustering.js";
 export * from "./descriptor-matching.js";
 export * from "./batch-splitter.js";
 export * from "./merkle-memo-engine.js";
+export * from "./interchange-route-recommender.js";
