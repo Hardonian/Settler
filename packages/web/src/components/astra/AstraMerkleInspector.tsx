@@ -4,18 +4,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CopyButton } from "@/components/ui/CopyButton";
-import {
-  ShieldCheck,
-  CheckCircle2,
-  Lock,
-  Download,
-  Terminal,
-  Cpu,
-  Fingerprint,
-  Layers,
-  Sparkles,
-  Search,
-} from "lucide-react";
+import { ShieldCheck, CheckCircle2, Lock, Download, Cpu, Fingerprint, Search } from "lucide-react";
 
 interface MerkleLeaf {
   id: string;
@@ -192,7 +181,7 @@ export function AstraMerkleInspector() {
           </div>
           <div className="font-mono text-xs sm:text-sm text-white break-all flex items-center justify-between gap-4">
             <span className="text-emerald-300">{MERKLE_ROOT}</span>
-            <CopyButton text={MERKLE_ROOT} label="Copy Root" />
+            <CopyButton text={MERKLE_ROOT} size="sm" />
           </div>
         </div>
       </div>

@@ -494,7 +494,7 @@ export function AstraApiConsole() {
             {/* Code Snippet Box */}
             <div className="relative mb-6 rounded-xl border border-slate-800 bg-slate-900/80 p-4 font-mono text-xs text-slate-200 overflow-x-auto shadow-inner">
               <div className="absolute top-2 right-2">
-                <CopyButton text={currentSnippet} label="Copy SDK Code" />
+                <CopyButton text={currentSnippet} size="sm" />
               </div>
               <pre className="pr-12 leading-relaxed whitespace-pre-wrap">{currentSnippet}</pre>
             </div>
@@ -569,9 +569,7 @@ export function AstraApiConsole() {
                   </Badge>
                 )}
               </div>
-              {apiResponse && (
-                <CopyButton text={JSON.stringify(apiResponse, null, 2)} label="Copy JSON" />
-              )}
+              {apiResponse && <CopyButton text={JSON.stringify(apiResponse, null, 2)} size="sm" />}
             </div>
 
             {/* Simulated Response Content */}

@@ -4,19 +4,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CopyButton } from "@/components/ui/CopyButton";
-import {
-  Flame,
-  AlertOctagon,
-  ShieldAlert,
-  CheckCircle2,
-  RefreshCw,
-  Terminal,
-  FileText,
-  Clock,
-  DollarSign,
-  TrendingDown,
-  Lock,
-} from "lucide-react";
+import { Flame, AlertOctagon, ShieldAlert, RefreshCw, Terminal, Lock } from "lucide-react";
 
 interface ChaosScenario {
   id: string;
@@ -348,10 +336,7 @@ export function AstraCrucibleChaos() {
                   <span className="text-[10px] text-slate-400 uppercase font-semibold">
                     Cryptographic Proofpack Anchor
                   </span>
-                  <CopyButton
-                    text={selectedScenario.resolvedArtifact.proofpackHash}
-                    label="Copy Hash"
-                  />
+                  <CopyButton text={selectedScenario.resolvedArtifact.proofpackHash} size="sm" />
                 </div>
                 <div className="text-[11px] text-cyan-300 truncate">
                   {selectedScenario.resolvedArtifact.proofpackHash}

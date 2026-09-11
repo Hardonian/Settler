@@ -3,19 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  GitFork,
-  ArrowRight,
-  CheckCircle2,
-  AlertTriangle,
-  Play,
-  RotateCw,
-  Cpu,
-  Layers,
-  Lock,
-  Workflow,
-  Sparkles,
-} from "lucide-react";
+import { Play, Cpu, Lock, Workflow, Sparkles } from "lucide-react";
 
 interface PipelineStep {
   id: string;
