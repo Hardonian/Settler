@@ -34,3 +34,6 @@ export * from "./operator-api-envelope.js";
 export * from "./billing-entitlements.js";
 export * from "./structured-run-delta.js";
 export * from "./batch-settlement-engine.js";
+export * from "./threat-recognition-engine.js";
+export * from "./pattern-learning-engine.js";
+export * from "./double-entry-posting-engine.js";
