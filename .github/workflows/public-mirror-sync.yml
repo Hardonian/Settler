@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - "v*"
     paths:
       - "packages/sdk/**"
       - "packages/sdk-python/**"
@@ -13,9 +15,7 @@ on:
       - "packages/protocol/**"
       - "packages/react-settler/**"
       - "packages/cli/**"
-      - "crates/settler-kernel/**"
-      - "crates/settler-verify-wasm/**"
-      - "crates/settler-sdk/**"
+      - "crates/**"
       - "docs/public/**"
       - "examples/**"
       - "README.public.md"
@@ -29,6 +29,11 @@ on:
         description: "Execute live publish to OSS mirror repository"
         required: true
         default: false
+        type: boolean
+      sync_tags:
+        description: "Synchronize git release tags to public mirror"
+        required: false
+        default: true
         type: boolean
       target_repo:
         description: "Target GitHub repository (owner/repo or URL)"
@@ -96,7 +101,9 @@ jobs:
               "packages/sdk",
               "packages/cli",
               "crates/settler-kernel",
+              "crates/settler-kernel-cli",
               "crates/settler-verify-wasm",
+              "crates/settler-verify-cli",
               "crates/settler-sdk",
               "docs/public",
               "examples"
@@ -119,6 +126,10 @@ jobs:
       - name: Enforce Classification & Security Clearance
         run: pnpm mirror:verify --path=./.mirror-out
 
+      - name: Verify Rust Workspace Compilation in Mirror Export
+        run: cargo check --workspace
+        working-directory: ./.mirror-out
+
       - name: Determine Publishing Mode
         id: mode
         run: |
@@ -129,6 +140,11 @@ jobs:
             else
               echo "mode=DRY_RUN" >> $GITHUB_OUTPUT
               echo "publish_flag=" >> $GITHUB_OUTPUT
+            fi
+            if [ "${{ github.event.inputs.sync_tags }}" = "false" ]; then
+              echo "tag_flag=--no-tags" >> $GITHUB_OUTPUT
+            else
+              echo "tag_flag=--sync-tags" >> $GITHUB_OUTPUT
             fi
             echo "target_repo=${{ github.event.inputs.target_repo || 'Hardonian/settler-oss' }}" >> $GITHUB_OUTPUT
             echo "target_branch=${{ github.event.inputs.branch || 'main' }}" >> $GITHUB_OUTPUT
@@ -145,6 +161,7 @@ jobs:
               echo "mode=DRY_RUN_UNCONFIGURED_SECRET" >> $GITHUB_OUTPUT
               echo "publish_flag=" >> $GITHUB_OUTPUT
             fi
+            echo "tag_flag=--sync-tags" >> $GITHUB_OUTPUT
             echo "target_repo=Hardonian/settler-oss" >> $GITHUB_OUTPUT
             echo "target_branch=main" >> $GITHUB_OUTPUT
             echo "force_flag=--force" >> $GITHUB_OUTPUT
@@ -162,7 +179,8 @@ jobs:
           pnpm mirror:publish ${{ steps.mode.outputs.publish_flag }} \
             --repo="${{ steps.mode.outputs.target_repo }}" \
             --branch="${{ steps.mode.outputs.target_branch }}" \
-            ${{ steps.mode.outputs.force_flag }}
+            ${{ steps.mode.outputs.force_flag }} \
+            ${{ steps.mode.outputs.tag_flag }}
 
       - name: Generate Mirror Audit Summary
         if: always()
@@ -206,17 +224,22 @@ jobs:
               "| **Exported Files** | **" + fileCount + "** allowlisted files |",
               "| **Exported Volume** | **" + totalSizeMb + " MB** |",
               "| **Classification Integrity** | ✅ 100% `OSS_PUBLIC` (0 denied, 0 secret flags) |",
+              "| **Rust Workspace Compilation** | ✅ All 5 crates verified via `cargo check` |",
               "| **Cryptographic Seal** | `sha256:" + manifestSha + "...` |",
               "",
               "### Exported OSS Component Inventory",
               "",
-              "- **TypeScript SDK**: `packages/sdk/**`",
+              "- **TypeScript Client SDK**: `packages/sdk/**`",
               "- **Command-Line & Replay Tools**: `packages/cli/**`",
-              "- **Rust Cryptographic Kernel**: `crates/settler-kernel/**`",
-              "- **WASM Verification Engine**: `crates/settler-verify-wasm/**`",
-              "- **Rust Client SDK**: `crates/settler-sdk/**`",
               "- **Shared Protocol Interfaces**: `packages/protocol/**`",
+              "- **React UI Components**: `packages/react-settler/**`",
+              "- **Rust Cryptographic Kernel**: `crates/settler-kernel/**`",
+              "- **Rust Kernel CLI Tooling**: `crates/settler-kernel-cli/**`",
+              "- **WASM Verification Engine**: `crates/settler-verify-wasm/**`",
+              "- **Native Rust Proof Verifier**: `crates/settler-verify-cli/**`",
+              "- **Rust Client SDK**: `crates/settler-sdk/**`",
               "- **Public Documentation & Examples**: `docs/public/**`, `examples/**`",
+              "- **Standalone Workspace Configs**: `package.json`, `pnpm-workspace.yaml`, `tsconfig.json`, `Cargo.toml`, `Cargo.lock`",
               "- **Distribution Guides**: `README.md`, `LICENSE` (Apache-2.0 / MIT), `CONTRIBUTING.md`",
               "",
               "> *Synchronized deterministically according to `REPO_POLICY.md` open-core boundary invariants.*"

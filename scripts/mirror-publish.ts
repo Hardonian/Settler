@@ -1,16 +1,20 @@
 #!/usr/bin/env tsx
 /**
- * Mirror Publish Tool
+ * Mirror Publish Tool (#96)
  *
  * Publishes allowlisted OSS_PUBLIC export from ./.mirror-out to the public mirror repository.
  * Strictly verifies 100% classification compliance, denylist absence, and secret clearance
  * before performing any staging or pushing operations.
+ * Supports automated tag synchronization, live push, dry-run staging, and JSON reporting.
  *
  * Usage:
  *   pnpm mirror:publish                  # Dry-run publish (stage and verify without pushing)
  *   pnpm mirror:publish --publish        # Execute push to configured target remote or URL
  *   pnpm mirror:publish --target=<url>   # Push to explicit repository URL
  *   pnpm mirror:publish --branch=main    # Target branch (defaults to main)
+ *   pnpm mirror:publish --sync-tags      # Sync release tags (default: true)
+ *   pnpm mirror:publish --tag=v1.0.0     # Explicit release tag
+ *   pnpm mirror:publish --json           # Machine-readable JSON summary
  */
 
 import { execSync } from "child_process";
@@ -30,6 +34,9 @@ interface PublishOptions {
   branch: string;
   force: boolean;
   autoDryrun: boolean;
+  syncTags: boolean;
+  explicitTag?: string;
+  jsonOutput: boolean;
 }
 
 function parseArgs(): PublishOptions {
@@ -38,6 +45,8 @@ function parseArgs(): PublishOptions {
   const publish = args.includes("--publish");
   const force = !args.includes("--no-force");
   const autoDryrun = !args.includes("--no-auto-dryrun");
+  const syncTags = !args.includes("--no-tags");
+  const jsonOutput = args.includes("--json");
 
   const remoteArg = args.find((a) => a.startsWith("--remote="));
   const remoteName = remoteArg
@@ -59,6 +68,9 @@ function parseArgs(): PublishOptions {
     ? branchArg.split("=")[1]
     : process.env.PUBLIC_MIRROR_BRANCH || DEFAULT_BRANCH;
 
+  const tagArg = args.find((a) => a.startsWith("--tag="));
+  const explicitTag = tagArg ? tagArg.split("=")[1] : undefined;
+
   return {
     publish,
     remoteName,
@@ -67,6 +79,9 @@ function parseArgs(): PublishOptions {
     branch,
     force,
     autoDryrun,
+    syncTags,
+    explicitTag,
+    jsonOutput,
   };
 }
 
@@ -109,24 +124,46 @@ function runCommand(command: string, cwd: string = process.cwd(), maskSecret?: s
 }
 
 async function verifyMirrorExport(): Promise<void> {
-  console.log("🔍 Verifying mirror export integrity & classification boundaries...");
   execSync(`tsx scripts/mirror-verify.ts --path=${MIRROR_OUT_DIR}`, {
     stdio: "inherit",
     cwd: process.cwd(),
   });
 }
 
-function getMonorepoMetadata(): { sha: string; shortSha: string; branch: string } {
+function getMonorepoMetadata(): {
+  sha: string;
+  shortSha: string;
+  branch: string;
+  commitTags: string[];
+} {
   try {
     const sha = runCommand("git rev-parse HEAD");
     const shortSha = runCommand("git rev-parse --short HEAD");
     const branch = runCommand("git rev-parse --abbrev-ref HEAD");
-    return { sha, shortSha, branch };
+
+    let commitTags: string[] = [];
+    try {
+      const rawTags = runCommand("git tag --points-at HEAD");
+      if (rawTags) {
+        commitTags = rawTags
+          .split("\n")
+          .map((t) => t.trim())
+          .filter(Boolean);
+      }
+    } catch {
+      // Tags might not be available or shallow clone
+    }
+
+    return { sha, shortSha, branch, commitTags };
   } catch {
     return {
       sha: process.env.GITHUB_SHA || "unknown",
       shortSha: (process.env.GITHUB_SHA || "unknown").slice(0, 7),
       branch: process.env.GITHUB_REF_NAME || "main",
+      commitTags:
+        process.env.GITHUB_REF_TYPE === "tag" && process.env.GITHUB_REF_NAME
+          ? [process.env.GITHUB_REF_NAME]
+          : [],
     };
   }
 }
@@ -164,9 +201,15 @@ function resolveTargetPushUrl(options: PublishOptions): {
 }
 
 async function prepareGitRepo(
-  metadata: { sha: string; shortSha: string; branch: string },
+  metadata: { sha: string; shortSha: string; branch: string; commitTags: string[] },
   options: PublishOptions
-): Promise<{ changed: boolean; commitSha: string; fileCount: number; totalSizeMb: string }> {
+): Promise<{
+  changed: boolean;
+  commitSha: string;
+  fileCount: number;
+  totalSizeMb: string;
+  syncedTags: string[];
+}> {
   // Read manifest summary
   const manifestPath = path.join(MIRROR_OUT_DIR, "mirror-manifest.json");
   const manifest = JSON.parse(await fs.readFile(manifestPath, "utf-8"));
@@ -178,7 +221,9 @@ async function prepareGitRepo(
   try {
     await fs.access(gitDir);
   } catch {
-    console.log("🌱 Initializing clean git repository in .mirror-out...");
+    if (!options.jsonOutput) {
+      console.log("🌱 Initializing clean git repository in .mirror-out...");
+    }
     runCommand(`git init -b ${options.branch}`, MIRROR_OUT_DIR);
   }
 
@@ -212,8 +257,10 @@ async function prepareGitRepo(
 
     // Commit
     runCommand(`git commit -m ${JSON.stringify(commitMsg)}`, MIRROR_OUT_DIR);
-    console.log(`✅ Staged and committed changes for OSS mirror (from ${metadata.shortSha}).`);
-  } else {
+    if (!options.jsonOutput) {
+      console.log(`✅ Staged and committed changes for OSS mirror (from ${metadata.shortSha}).`);
+    }
+  } else if (!options.jsonOutput) {
     console.log("ℹ️  No local file changes detected against mirror repository head.");
   }
 
@@ -221,7 +268,35 @@ async function prepareGitRepo(
   try {
     commitSha = runCommand("git rev-parse HEAD", MIRROR_OUT_DIR);
   } catch {
-    // If first commit just happened, this is handled
+    // Handled
+  }
+
+  // Synchronize tags
+  const syncedTags: string[] = [];
+  const tagsToApply = new Set<string>();
+
+  if (options.explicitTag) {
+    tagsToApply.add(options.explicitTag);
+  }
+
+  if (options.syncTags && metadata.commitTags.length > 0) {
+    for (const tag of metadata.commitTags) {
+      tagsToApply.add(tag);
+    }
+  }
+
+  for (const tag of tagsToApply) {
+    try {
+      runCommand(
+        `git tag -f -a "${tag}" -m "Release ${tag} synced from Hardonian/Settler@${metadata.shortSha}"`,
+        MIRROR_OUT_DIR
+      );
+      syncedTags.push(tag);
+    } catch (tagErr: any) {
+      if (!options.jsonOutput) {
+        console.warn(`⚠️  Failed to create tag ${tag} in mirror:`, tagErr.message);
+      }
+    }
   }
 
   return {
@@ -229,22 +304,30 @@ async function prepareGitRepo(
     commitSha,
     fileCount,
     totalSizeMb,
+    syncedTags,
   };
 }
 
 async function main() {
   const options = parseArgs();
 
-  console.log("==================================================");
-  console.log("🚀 Settler OSS Mirror Synchronization Tool (#96)");
-  console.log("==================================================\n");
+  if (!options.jsonOutput) {
+    console.log("==================================================");
+    console.log("🚀 Settler OSS Mirror Synchronization Tool (#96)");
+    console.log("==================================================\n");
+  }
 
   // Step 1: Ensure dry-run export exists
   let hasExport = await hasDryRunExport();
   if (!hasExport) {
     if (options.autoDryrun) {
-      console.log("📦 No mirror export found. Running `pnpm mirror:dryrun`...");
-      execSync("tsx scripts/mirror-dryrun.ts", { stdio: "inherit", cwd: process.cwd() });
+      if (!options.jsonOutput) {
+        console.log("📦 No mirror export found. Running `pnpm mirror:dryrun`...");
+      }
+      execSync("tsx scripts/mirror-dryrun.ts", {
+        stdio: options.jsonOutput ? "pipe" : "inherit",
+        cwd: process.cwd(),
+      });
       hasExport = await hasDryRunExport();
       if (!hasExport) {
         throw new Error("Failed to generate mirror export from `pnpm mirror:dryrun`.");
@@ -255,32 +338,43 @@ async function main() {
   }
 
   // Step 2: Verification gate
+  if (!options.jsonOutput) {
+    console.log("🔍 Verifying mirror export integrity & classification boundaries...");
+  }
   await verifyMirrorExport();
-  console.log("✅ Verification gate passed: all exported files are OSS_PUBLIC compliant.\n");
+  if (!options.jsonOutput) {
+    console.log("✅ Verification gate passed: all exported files are OSS_PUBLIC compliant.\n");
+  }
 
   // Step 3: Git preparation
   const metadata = getMonorepoMetadata();
   const prep = await prepareGitRepo(metadata, options);
-
-  console.log(`\n📊 Mirror Status:`);
-  console.log(`  Source Commit:    ${metadata.shortSha} (${metadata.branch})`);
-  console.log(`  Mirror Commit:    ${prep.commitSha.slice(0, 7)}`);
-  console.log(`  Exported Files:   ${prep.fileCount}`);
-  console.log(`  Exported Size:    ${prep.totalSizeMb} MB`);
-  console.log(`  Target Branch:    ${options.branch}`);
-
   const target = resolveTargetPushUrl(options);
-  console.log(`  Target Remote:    ${target.maskedUrl}`);
-  console.log(
-    `  Auth Configured:  ${target.tokenUsed ? "Yes (token active)" : "No (using environment SSH/credentials)"}`
-  );
-  console.log(
-    `  Publish Mode:     ${options.publish ? "🚀 LIVE PUBLISH" : "🧪 DRY RUN (no push)"}\n`
-  );
+
+  if (!options.jsonOutput) {
+    console.log(`\n📊 Mirror Status:`);
+    console.log(`  Source Commit:    ${metadata.shortSha} (${metadata.branch})`);
+    console.log(`  Mirror Commit:    ${prep.commitSha.slice(0, 7)}`);
+    console.log(`  Exported Files:   ${prep.fileCount}`);
+    console.log(`  Exported Size:    ${prep.totalSizeMb} MB`);
+    console.log(`  Target Branch:    ${options.branch}`);
+    console.log(`  Target Remote:    ${target.maskedUrl}`);
+    console.log(
+      `  Auth Configured:  ${target.tokenUsed ? "Yes (token active)" : "No (using environment SSH/credentials)"}`
+    );
+    if (prep.syncedTags.length > 0) {
+      console.log(`  Release Tags:     ${prep.syncedTags.join(", ")}`);
+    }
+    console.log(
+      `  Publish Mode:     ${options.publish ? "🚀 LIVE PUBLISH" : "🧪 DRY RUN (no push)"}\n`
+    );
+  }
 
   // Step 4: Publish if enabled
   if (options.publish) {
-    console.log(`📤 Pushing mirror export to ${target.maskedUrl} (${options.branch})...`);
+    if (!options.jsonOutput) {
+      console.log(`📤 Pushing mirror export to ${target.maskedUrl} (${options.branch})...`);
+    }
 
     const token =
       process.env.PUBLIC_MIRROR_TOKEN ||
@@ -293,16 +387,52 @@ async function main() {
 
     try {
       runCommand(`git push ${pushArgs}`, MIRROR_OUT_DIR, token);
-      console.log(
-        `\n✨ Successfully published OSS mirror to ${target.maskedUrl}:${options.branch}!`
-      );
+      if (!options.jsonOutput) {
+        console.log(
+          `✨ Successfully published OSS mirror to ${target.maskedUrl}:${options.branch}!`
+        );
+      }
+
+      // Push release tags if any were created
+      if (prep.syncedTags.length > 0) {
+        for (const tag of prep.syncedTags) {
+          if (!options.jsonOutput) {
+            console.log(`🏷️  Pushing tag ${tag} to ${target.maskedUrl}...`);
+          }
+          runCommand(`git push "${target.url}" "${tag}" --force`, MIRROR_OUT_DIR, token);
+        }
+        if (!options.jsonOutput) {
+          console.log(`✅ All release tags synchronized successfully.`);
+        }
+      }
     } catch (err: any) {
       console.error("\n❌ Push failed:", err.message);
       process.exit(1);
     }
-  } else {
+  } else if (!options.jsonOutput) {
     console.log("💡 Dry run complete. To publish to the public mirror, run:");
     console.log(`   pnpm mirror:publish --publish\n`);
+  }
+
+  if (options.jsonOutput) {
+    console.log(
+      JSON.stringify(
+        {
+          success: true,
+          mode: options.publish ? "LIVE" : "DRY_RUN",
+          sourceCommit: metadata.sha,
+          mirrorCommit: prep.commitSha,
+          files: prep.fileCount,
+          totalSizeMb: prep.totalSizeMb,
+          targetRepo: options.targetRepo,
+          targetBranch: options.branch,
+          tags: prep.syncedTags,
+          timestamp: new Date().toISOString(),
+        },
+        null,
+        2
+      )
+    );
   }
 }
 

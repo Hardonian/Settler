@@ -27,7 +27,8 @@ env:
 
 jobs:
   sync-to-oss:
-    if: vars.ENABLE_AUTO_SYNC != 'false'
+    # Superseded by .github/workflows/public-mirror-sync.yml (#96)
+    if: false
     runs-on: ubuntu-latest
     permissions:
       contents: write

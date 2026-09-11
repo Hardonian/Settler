@@ -41,7 +41,7 @@ Triggered on tags or manually:
 
 ### Tier 5: Sync
 
-- `auto-sync-oss.yml` — OSS mirror sync
+- `public-mirror-sync.yml` — Open-source public mirror synchronization with allowlist verification and tag sync (#96)
 
 ## Main Branch Protection
 

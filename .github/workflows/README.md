@@ -20,7 +20,7 @@ This directory contains GitHub Actions workflows for CI/CD automation.
 | `release-provenance.yml`    | SBOM and provenance generation                                       | push + manual        |
 | `release-safety-check.yml`  | Pre-release safety validation                                        | push + PR            |
 | `auto-merge.yml`            | Auto-merge safety checks                                             | PR                   |
-| `auto-sync-oss.yml`         | OSS mirror sync                                                      | push to main         |
+| `public-mirror-sync.yml`    | Open-source public mirror synchronization and tag sync (#96)         | push to main / tags  |
 | `dependency-review.yml`     | PR dependency review                                                 | PR                   |
 | `rust-verify.yml`           | Rust code verification                                               | push + PR            |
 
