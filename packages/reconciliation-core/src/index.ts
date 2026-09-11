@@ -47,3 +47,4 @@ export * from "./merkle-memo-engine.js";
 export * from "./interchange-route-recommender.js";
 export * from "./sla-breach-predictor.js";
 export * from "./fx-hedging-warning.js";
+export * from "./cross-border-classifier.js";
