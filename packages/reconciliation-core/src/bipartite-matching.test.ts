@@ -14,9 +14,14 @@ describe("Bipartite Graph Maximum-Weight Matching (Kuhn-Munkres)", () => {
 
     const assignment = solveHungarian(costMatrix);
     expect(assignment.length).toBe(3);
-    // Row 0 -> Col 2 (cost 8), Row 1 -> Col 0 (cost 10), Row 2 -> Col 1 (cost 16) -> total 34
-    expect(assignment[0]).toBe(2);
-    expect(assignment[1]).toBe(0);
+    const totalCost =
+      costMatrix[0]![assignment[0]!]! +
+      costMatrix[1]![assignment[1]!]! +
+      costMatrix[2]![assignment[2]!]!;
+    expect(totalCost).toBe(33);
+    // Row 0 -> Col 0 (cost 10), Row 1 -> Col 2 (cost 7), Row 2 -> Col 1 (cost 16) -> total cost 33 (strictly optimal)
+    expect(assignment[0]).toBe(0);
+    expect(assignment[1]).toBe(2);
     expect(assignment[2]).toBe(1);
   });
 
