@@ -40,3 +40,7 @@ export * from "./double-entry-posting-engine.js";
 export * from "./continuous-t0-ledger.js";
 export * from "./bipartite-matching.js";
 export * from "./arn-correlator.js";
+export * from "./timestamp-clustering.js";
+export * from "./descriptor-matching.js";
+export * from "./batch-splitter.js";
+export * from "./merkle-memo-engine.js";

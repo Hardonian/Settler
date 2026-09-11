@@ -46,6 +46,12 @@ export enum Permission {
   // Operator/Ingestion
   OPERATOR_READ = "operator:read",
   OPERATOR_WRITE = "operator:write",
+
+  // Granular Scoped API Keys (RBAC)
+  RECON_READ = "recon:read",
+  RECON_WRITE = "recon:write",
+  DISPUTES_MANAGE = "disputes:manage",
+  AUDIT_EXPORT = "audit:export",
 }
 
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
@@ -76,6 +82,10 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.EDGE_NODES_WRITE,
     Permission.OPERATOR_READ,
     Permission.OPERATOR_WRITE,
+    Permission.RECON_READ,
+    Permission.RECON_WRITE,
+    Permission.DISPUTES_MANAGE,
+    Permission.AUDIT_EXPORT,
   ],
   [UserRole.ADMIN]: [
     Permission.JOBS_READ,
@@ -96,6 +106,10 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.ADMIN_AUDIT,
     Permission.OPERATOR_READ,
     Permission.OPERATOR_WRITE,
+    Permission.RECON_READ,
+    Permission.RECON_WRITE,
+    Permission.DISPUTES_MANAGE,
+    Permission.AUDIT_EXPORT,
   ],
   [UserRole.DEVELOPER]: [
     Permission.JOBS_READ,
@@ -107,12 +121,15 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.WEBHOOKS_WRITE,
     Permission.USERS_READ,
     Permission.OPERATOR_READ,
+    Permission.RECON_READ,
+    Permission.RECON_WRITE,
   ],
   [UserRole.VIEWER]: [
     Permission.JOBS_READ,
     Permission.REPORTS_READ,
     Permission.WEBHOOKS_READ,
     Permission.USERS_READ,
+    Permission.RECON_READ,
   ],
 };
 

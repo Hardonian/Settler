@@ -24,6 +24,14 @@ const commandRegistry: Record<
       return { command: reportsCommand };
     },
   },
+  auth: {
+    description: "Manage Astra credentials & authentication (login, whoami, logout)",
+    aliases: ["login"],
+    load: async () => {
+      const { authCommand } = await import("./commands/auth");
+      return { command: authCommand };
+    },
+  },
   webhooks: {
     description: "Manage webhooks",
     aliases: ["webhook"],
@@ -152,6 +160,14 @@ const commandRegistry: Record<
     load: async () => {
       const { initCommand } = await import("./commands/future");
       return { command: initCommand };
+    },
+  },
+  "mock-data": {
+    description: "Generate deterministic financial transaction datasets for stress testing",
+    aliases: ["mock", "synth"],
+    load: async () => {
+      const { mockDataCommand } = await import("./commands/mock-data");
+      return { command: mockDataCommand };
     },
   },
   explain: {
