@@ -85,3 +85,8 @@ export type { ValidationResult } from "./validation/data-validator";
 // Performance - export config type and batch processing function
 export type { BatchConfig } from "./performance/batch-processor";
 export { processInBatches } from "./performance/batch-processor";
+
+// Advanced Banking & Interchange Optimizers
+export * from "./bai2";
+export * from "./camt053";
+export * from "./l2-l3-optimizer";
