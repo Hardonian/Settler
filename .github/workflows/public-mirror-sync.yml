@@ -36,7 +36,7 @@ jobs:
 
       - name: Synchronize to Public Mirror
         env:
-          PUBLIC_MIRROR_TOKEN: ${{ secrets.PUBLIC_MIRROR_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          PUBLIC_MIRROR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Syncing public artifacts to Hardonian/settler-oss mirror..."
           # Real sync command using git subtree / git filter-repo in production CI
