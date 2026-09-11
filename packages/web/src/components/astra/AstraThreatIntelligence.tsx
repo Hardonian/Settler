@@ -10,11 +10,8 @@ import {
   TrendingUp,
   TrendingDown,
   Activity,
-  Lock,
-  Search,
   CheckCircle2,
   RefreshCw,
-  Zap,
 } from "lucide-react";
 
 interface ThreatAnomalyPattern {
