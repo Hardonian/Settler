@@ -16,10 +16,8 @@ import {
   ArrowRight,
   Clock,
   DollarSign,
-  FileCheck2,
   Lock,
   Layers,
-  Sparkles,
 } from "lucide-react";
 
 export const metadata: Metadata = {

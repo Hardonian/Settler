@@ -67,7 +67,9 @@ async function checkDeadLinks() {
       continue;
     }
 
-    const matchedDynamic = dynamicMatchers.some((matcher) => matcher.regex.test(normalizedHref));
+    const matchedDynamic = dynamicMatchers.some((matcher: RouteMatcher) =>
+      matcher.regex.test(normalizedHref)
+    );
 
     if (!matchedDynamic) {
       const linkSources = linkRegistry.linksByPath[href] || [];
