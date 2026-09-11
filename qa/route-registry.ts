@@ -1,6 +1,6 @@
 /**
  * Route Registry - Auto-generated
- * Generated at: 2026-09-11T01:40:47.053Z
+ * Generated at: 2026-09-11T01:53:09.518Z
  *
  * This file contains all routes discovered in the Next.js app directory.
  * Use this for type-safe route checking and link validation.
@@ -2409,6 +2409,14 @@ export const ROUTES: RouteInfo[] = [
     optional: false,
   },
   {
+    path: "/astra",
+    type: "page",
+    file: "astra\\page.tsx",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
     path: "/auditor",
     type: "page",
     file: "auditor\\page.tsx",
@@ -4446,6 +4454,7 @@ export const PAGE_ROUTES: string[] = [
   "/app/system-health",
   "/app/traces",
   "/architecture",
+  "/astra",
   "/auditor",
   "/benchmarks",
   "/billing/success",
@@ -4992,6 +5001,7 @@ export const ALL_ROUTES: string[] = [
   "/app/system-health",
   "/app/traces",
   "/architecture",
+  "/astra",
   "/auditor",
   "/auth/callback",
   "/benchmarks",

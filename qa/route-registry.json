@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-09-11T01:40:47.047Z",
-  "totalRoutes": 546,
-  "pageRoutes": 303,
+  "generatedAt": "2026-09-11T01:53:09.515Z",
+  "totalRoutes": 547,
+  "pageRoutes": 304,
   "routes": [
     {
       "path": "/",
@@ -2396,6 +2396,14 @@
       "optional": false
     },
     {
+      "path": "/astra",
+      "type": "page",
+      "file": "astra\\page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/auditor",
       "type": "page",
       "file": "auditor\\page.tsx",
@@ -4432,6 +4440,7 @@
     "/app/system-health",
     "/app/traces",
     "/architecture",
+    "/astra",
     "/auditor",
     "/benchmarks",
     "/billing/success",

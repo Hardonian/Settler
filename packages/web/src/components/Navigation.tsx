@@ -15,6 +15,7 @@ import { Menu, ChevronDown } from "lucide-react";
 // Primary navigation items (always visible on desktop)
 const primaryNavigationItems = [
   { href: "/platform", label: "Platform" },
+  { href: "/astra", label: "Astra API" },
   { href: "/capabilities", label: "Capabilities" },
   { href: "/product", label: "Product" },
   { href: "/enterprise", label: "Enterprise" },
@@ -24,6 +25,7 @@ const primaryNavigationItems = [
 
 // Feature pages exposed in a dropdown
 const featureNavigationItems = [
+  { href: "/astra", label: "Astra API Platform" },
   { href: "/roi-calculator", label: "ROI Calculator" },
   { href: "/document-onboarding", label: "Document Onboarding" },
   { href: "/value-proposition", label: "Value Proposition" },
