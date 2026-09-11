@@ -73,6 +73,7 @@ export async function POST(request: NextRequest) {
       reconciliationRunId: runId,
       tenantId,
       rails,
+      toleranceBps,
       merkleRoot,
       executionLatencyMs: parseFloat(execLatency),
       totalMatchedCents: totalGrossCents,
