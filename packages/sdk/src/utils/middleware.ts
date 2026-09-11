@@ -144,3 +144,29 @@ export function createMetricsMiddleware(metrics?: {
     }
   };
 }
+
+/**
+ * Built-in middleware for HMAC SHA-256 request payload signing (RFC 7515 / Enterprise MitM Defense)
+ */
+export function createRequestSigningMiddleware(secret: string): Middleware {
+  return async (context: RequestContext, next: MiddlewareNext) => {
+    const timestamp = Math.floor(Date.now() / 1000).toString();
+    const serializedBody =
+      context.body !== undefined
+        ? typeof context.body === "string"
+          ? context.body
+          : JSON.stringify(context.body)
+        : "";
+
+    const payloadToSign = `${timestamp}.${context.method.toUpperCase()}.${context.path}.${serializedBody}`;
+
+    // Dynamic import of crypto to ensure cross-environment browser/Node compatibility
+    const { createHmac } = await import("node:crypto");
+    const signature = createHmac("sha256", secret).update(payloadToSign).digest("hex");
+
+    context.headers["x-settler-timestamp"] = timestamp;
+    context.headers["x-settler-signature"] = `t=${timestamp},v1=${signature}`;
+
+    return next();
+  };
+}

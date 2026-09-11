@@ -5,6 +5,20 @@
  * These types represent the unified, opinionated schema for all payment data,
  * abstracting provider differences as specified in the Product & Technical Specification.
  */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getApiLegacyPlanFeatures = exports.getApiLegacyPlanLimits = exports.API_LEGACY_PLAN_FEATURES = exports.calculatePlanMonthlyCostUsd = exports.getExceptionThreshold = exports.getReconciliationVolumeLimit = exports.getLegacyQuotaProfile = exports.getDefaultPlanCode = exports.getPlanSpine = exports.mapLegacyPlanTypeToPlanCode = exports.mapLegacySubscriptionPlanId = exports.LEGACY_SUBSCRIPTION_PLAN_ID_MAP = exports.PLAN_DEFAULT_MRR_USD = exports.PREMIUM_PACKS = exports.PLAN_SPINE = exports.USAGE_METERS = exports.supportIntakeSubmissionSchema = exports.supportIntakeRequestSchema = exports.SUPPORT_ISSUE_CATEGORY_LABELS = exports.SUPPORT_ISSUE_CATEGORY = exports.safeAsync = exports.AppError = exports.RequestCorrelation = exports.logger = exports.validateEnvScopes = exports.validateTypedServerEnv = exports.validateTypedClientEnv = exports.RUNTIME_REQUIRED_SERVER_KEYS = exports.BUILD_REQUIRED_SERVER_KEYS = exports.SERVER_ENV_KEYS = exports.CLIENT_ENV_KEYS = exports.safeEnv = exports.validateEnv = exports.validateClientEnv = exports.validateServerEnv = exports.fullEnvSchema = exports.clientEnvSchema = exports.serverEnvSchema = void 0;
 // Environment validation utilities (Phase 3: Environment Safety)
@@ -54,4 +68,5 @@ Object.defineProperty(exports, "calculatePlanMonthlyCostUsd", { enumerable: true
 Object.defineProperty(exports, "API_LEGACY_PLAN_FEATURES", { enumerable: true, get: function () { return commercial_spine_1.API_LEGACY_PLAN_FEATURES; } });
 Object.defineProperty(exports, "getApiLegacyPlanLimits", { enumerable: true, get: function () { return commercial_spine_1.getApiLegacyPlanLimits; } });
 Object.defineProperty(exports, "getApiLegacyPlanFeatures", { enumerable: true, get: function () { return commercial_spine_1.getApiLegacyPlanFeatures; } });
+__exportStar(require("./problem-details.js"), exports);
 //# sourceMappingURL=index.js.map

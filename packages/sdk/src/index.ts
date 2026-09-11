@@ -42,6 +42,7 @@ export {
   type ResponseContext,
   createLoggingMiddleware,
   createMetricsMiddleware,
+  createRequestSigningMiddleware,
 } from "./utils/middleware";
 export { withRetry, type RetryConfig } from "./utils/retry";
 

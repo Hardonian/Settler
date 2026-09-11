@@ -329,3 +329,5 @@ export {
   type LegacyQuotaProfile,
   type ApiLegacyPlanFeatures,
 } from "./commercial-spine";
+
+export * from "./problem-details.js";
