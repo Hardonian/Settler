@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-11T02:01:50.512Z",
-  "totalRoutes": 553,
+  "generatedAt": "2026-09-11T02:10:04.373Z",
+  "totalRoutes": 556,
   "pageRoutes": 304,
   "routes": [
     {
@@ -1908,6 +1908,14 @@
       "optional": false
     },
     {
+      "path": "/api/v1/astra/ledger/post",
+      "type": "route",
+      "file": "api\\v1\\astra\\ledger\\post\\route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/api/v1/astra/openapi",
       "type": "route",
       "file": "api\\v1\\astra\\openapi\\route.ts",
@@ -1932,9 +1940,25 @@
       "optional": false
     },
     {
+      "path": "/api/v1/astra/resilience",
+      "type": "route",
+      "file": "api\\v1\\astra\\resilience\\route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/api/v1/astra/telemetry/invariants",
       "type": "route",
       "file": "api\\v1\\astra\\telemetry\\invariants\\route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/v1/astra/threats",
+      "type": "route",
+      "file": "api\\v1\\astra\\threats\\route.ts",
       "dynamic": false,
       "catchAll": false,
       "optional": false

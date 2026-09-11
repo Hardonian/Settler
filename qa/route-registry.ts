@@ -1,6 +1,6 @@
 /**
  * Route Registry - Auto-generated
- * Generated at: 2026-09-11T02:01:50.517Z
+ * Generated at: 2026-09-11T02:10:04.376Z
  *
  * This file contains all routes discovered in the Next.js app directory.
  * Use this for type-safe route checking and link validation.
@@ -1921,6 +1921,14 @@ export const ROUTES: RouteInfo[] = [
     optional: false,
   },
   {
+    path: "/api/v1/astra/ledger/post",
+    type: "route",
+    file: "api\\v1\\astra\\ledger\\post\\route.ts",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
     path: "/api/v1/astra/openapi",
     type: "route",
     file: "api\\v1\\astra\\openapi\\route.ts",
@@ -1945,9 +1953,25 @@ export const ROUTES: RouteInfo[] = [
     optional: false,
   },
   {
+    path: "/api/v1/astra/resilience",
+    type: "route",
+    file: "api\\v1\\astra\\resilience\\route.ts",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
     path: "/api/v1/astra/telemetry/invariants",
     type: "route",
     file: "api\\v1\\astra\\telemetry\\invariants\\route.ts",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/v1/astra/threats",
+    type: "route",
+    file: "api\\v1\\astra\\threats\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -4988,10 +5012,13 @@ export const ALL_ROUTES: string[] = [
   "/api/v1/analytics",
   "/api/v1/astra/cadence/provision",
   "/api/v1/astra/disputes/synthesize",
+  "/api/v1/astra/ledger/post",
   "/api/v1/astra/openapi",
   "/api/v1/astra/proofs/verify",
   "/api/v1/astra/reconcile",
+  "/api/v1/astra/resilience",
   "/api/v1/astra/telemetry/invariants",
+  "/api/v1/astra/threats",
   "/api/v1/convert",
   "/api/v1/datasets",
   "/api/v1/feature-flags",
