@@ -1,6 +1,6 @@
 /**
  * Route Registry - Auto-generated
- * Generated at: 2026-09-11T01:35:52.735Z
+ * Generated at: 2026-09-11T01:40:47.053Z
  *
  * This file contains all routes discovered in the Next.js app directory.
  * Use this for type-safe route checking and link validation.
@@ -3673,6 +3673,14 @@ export const ROUTES: RouteInfo[] = [
     optional: false,
   },
   {
+    path: "/document-onboarding",
+    type: "page",
+    file: "document-onboarding\\page.tsx",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
     path: "/edge-ai",
     type: "page",
     file: "edge-ai\\page.tsx",
@@ -4313,6 +4321,14 @@ export const ROUTES: RouteInfo[] = [
     optional: false,
   },
   {
+    path: "/value-proposition",
+    type: "page",
+    file: "value-proposition\\page.tsx",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
     path: "/vendor-portal",
     type: "page",
     file: "vendor-portal\\page.tsx",
@@ -4586,6 +4602,7 @@ export const PAGE_ROUTES: string[] = [
   "/docs/sdk/ruby",
   "/docs/status",
   "/docs/webhooks",
+  "/document-onboarding",
   "/edge-ai",
   "/edge-ai/nodes",
   "/edge-ai/nodes/[nodeId]",
@@ -4665,6 +4682,7 @@ export const PAGE_ROUTES: string[] = [
   "/use-cases/[slug]",
   "/ux-playground",
   "/ux-playground/events",
+  "/value-proposition",
   "/vendor-portal",
   "/verify",
   "/why",
@@ -5132,6 +5150,7 @@ export const ALL_ROUTES: string[] = [
   "/docs/sdk/ruby",
   "/docs/status",
   "/docs/webhooks",
+  "/document-onboarding",
   "/edge-ai",
   "/edge-ai/nodes",
   "/edge-ai/nodes/[nodeId]",
@@ -5212,6 +5231,7 @@ export const ALL_ROUTES: string[] = [
   "/use-cases/[slug]",
   "/ux-playground",
   "/ux-playground/events",
+  "/value-proposition",
   "/vendor-portal",
   "/verify",
   "/why",

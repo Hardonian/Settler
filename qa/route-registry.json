@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-09-11T01:35:52.729Z",
-  "totalRoutes": 544,
-  "pageRoutes": 301,
+  "generatedAt": "2026-09-11T01:40:47.047Z",
+  "totalRoutes": 546,
+  "pageRoutes": 303,
   "routes": [
     {
       "path": "/",
@@ -3660,6 +3660,14 @@
       "optional": false
     },
     {
+      "path": "/document-onboarding",
+      "type": "page",
+      "file": "document-onboarding\\page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/edge-ai",
       "type": "page",
       "file": "edge-ai\\page.tsx",
@@ -4300,6 +4308,14 @@
       "optional": false
     },
     {
+      "path": "/value-proposition",
+      "type": "page",
+      "file": "value-proposition\\page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/vendor-portal",
       "type": "page",
       "file": "vendor-portal\\page.tsx",
@@ -4572,6 +4588,7 @@
     "/docs/sdk/ruby",
     "/docs/status",
     "/docs/webhooks",
+    "/document-onboarding",
     "/edge-ai",
     "/edge-ai/nodes",
     "/edge-ai/nodes/[nodeId]",
@@ -4651,6 +4668,7 @@
     "/use-cases/[slug]",
     "/ux-playground",
     "/ux-playground/events",
+    "/value-proposition",
     "/vendor-portal",
     "/verify",
     "/why",
