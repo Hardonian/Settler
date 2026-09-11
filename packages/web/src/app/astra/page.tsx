@@ -8,6 +8,7 @@ import { AstraApiConsole } from "@/components/astra/AstraApiConsole";
 import { AstraFlowEngine } from "@/components/astra/AstraFlowEngine";
 import { AstraCrucibleChaos } from "@/components/astra/AstraCrucibleChaos";
 import { AstraMerkleInspector } from "@/components/astra/AstraMerkleInspector";
+import { AstraThreatIntelligence } from "@/components/astra/AstraThreatIntelligence";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { UiLink } from "@/components/ui/link";
@@ -21,9 +22,10 @@ import {
   Zap,
   Sparkles,
   BookOpen,
+  BrainCircuit,
 } from "lucide-react";
 
-type AstraTab = "console" | "flow" | "crucible" | "merkle";
+type AstraTab = "console" | "flow" | "crucible" | "threats" | "merkle";
 
 export default function AstraPage() {
   const [activeTab, setActiveTab] = useState<AstraTab>("console");
@@ -174,6 +176,18 @@ export default function AstraPage() {
           </button>
 
           <button
+            onClick={() => setActiveTab("threats")}
+            className={`flex items-center gap-2 rounded-xl px-5 py-2.5 text-xs font-bold transition-all ${
+              activeTab === "threats"
+                ? "bg-gradient-to-r from-rose-600 to-indigo-600 text-white shadow-lg shadow-rose-950/50"
+                : "text-slate-400 hover:text-white hover:bg-slate-800/60"
+            }`}
+          >
+            <BrainCircuit className="h-4 w-4" />
+            <span>Threat Intelligence</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab("merkle")}
             className={`flex items-center gap-2 rounded-xl px-5 py-2.5 text-xs font-bold transition-all ${
               activeTab === "merkle"
@@ -191,6 +205,7 @@ export default function AstraPage() {
           {activeTab === "console" && <AstraApiConsole />}
           {activeTab === "flow" && <AstraFlowEngine />}
           {activeTab === "crucible" && <AstraCrucibleChaos />}
+          {activeTab === "threats" && <AstraThreatIntelligence />}
           {activeTab === "merkle" && <AstraMerkleInspector />}
         </div>
 
