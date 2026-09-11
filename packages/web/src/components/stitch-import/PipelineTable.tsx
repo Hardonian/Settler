@@ -31,7 +31,10 @@ const PipelineTable: React.FC = () => {
             type="text"
           />
         </div>
-        <button className="flex items-center justify-center rounded-lg bg-card dark:bg-[#192633] border border-border dark:border-border px-3 text-muted-foreground dark:text-muted-foreground hover:text-primary hover:border-primary dark:hover:text-primary transition-colors">
+        <button
+          aria-label="Filter pipelines"
+          className="flex items-center justify-center rounded-lg bg-card dark:bg-[#192633] border border-border dark:border-border px-3 text-muted-foreground dark:text-muted-foreground hover:text-primary hover:border-primary dark:hover:text-primary transition-colors"
+        >
           <Filter className="h-6 w-6" />
         </button>
       </div>
@@ -62,7 +65,10 @@ const PipelineTable: React.FC = () => {
                 </div>
               </div>
             </div>
-            <button className="text-muted-foreground hover:text-muted-foreground dark:hover:text-muted-foreground/30">
+            <button
+              aria-label="Pipeline options"
+              className="text-muted-foreground hover:text-muted-foreground dark:hover:text-muted-foreground/30"
+            >
               <MoreVertical className="h-6 w-6" />
             </button>
           </div>
@@ -141,7 +147,10 @@ const PipelineTable: React.FC = () => {
                 </div>
               </div>
             </div>
-            <button className="text-muted-foreground hover:text-muted-foreground dark:hover:text-muted-foreground/30">
+            <button
+              aria-label="Pipeline options"
+              className="text-muted-foreground hover:text-muted-foreground dark:hover:text-muted-foreground/30"
+            >
               <MoreVertical className="h-6 w-6" />
             </button>
           </div>
@@ -215,7 +224,10 @@ const PipelineTable: React.FC = () => {
                 </div>
               </div>
             </div>
-            <button className="text-muted-foreground hover:text-muted-foreground dark:hover:text-muted-foreground/30">
+            <button
+              aria-label="Pipeline options"
+              className="text-muted-foreground hover:text-muted-foreground dark:hover:text-muted-foreground/30"
+            >
               <MoreVertical className="h-6 w-6" />
             </button>
           </div>
@@ -249,7 +261,10 @@ const PipelineTable: React.FC = () => {
                 </div>
               </div>
             </div>
-            <button className="text-muted-foreground hover:text-muted-foreground dark:hover:text-muted-foreground/30">
+            <button
+              aria-label="Pipeline options"
+              className="text-muted-foreground hover:text-muted-foreground dark:hover:text-muted-foreground/30"
+            >
               <MoreVertical className="h-6 w-6" />
             </button>
           </div>

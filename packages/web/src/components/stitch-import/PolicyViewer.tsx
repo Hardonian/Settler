@@ -110,6 +110,7 @@ export default function PolicyViewer({ initialPolicies }: { initialPolicies: Pol
                     </div>
                     <button
                       title="View Policy Details"
+                      aria-label="View Policy Details"
                       className="rounded-lg p-2 text-muted-foreground hover:bg-primary/5 hover:text-primary transition-all"
                     >
                       <ChevronRight className="h-5 w-5" />

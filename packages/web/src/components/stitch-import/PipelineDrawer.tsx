@@ -70,7 +70,7 @@ const PipelineDrawer: React.FC = () => {
                 </h4>
                 <p className="text-xs text-muted-foreground">Source: API v2</p>
               </div>
-              <button className="text-muted-foreground">
+              <button aria-label="Edit source configuration" className="text-muted-foreground">
                 <Pencil className="h-6 w-6" />
               </button>
             </div>
@@ -85,7 +85,10 @@ const PipelineDrawer: React.FC = () => {
                 </h4>
                 <p className="text-xs text-muted-foreground">Map: standard_currency</p>
               </div>
-              <button className="text-muted-foreground">
+              <button
+                aria-label="Edit normalization configuration"
+                className="text-muted-foreground"
+              >
                 <Pencil className="h-6 w-6" />
               </button>
             </div>
@@ -98,7 +101,7 @@ const PipelineDrawer: React.FC = () => {
                 <h4 className="text-sm font-semibold text-foreground dark:text-white">S3 Bucket</h4>
                 <p className="text-xs text-muted-foreground">Destination: settled-trans</p>
               </div>
-              <button className="text-muted-foreground">
+              <button aria-label="Edit destination configuration" className="text-muted-foreground">
                 <Pencil className="h-6 w-6" />
               </button>
             </div>

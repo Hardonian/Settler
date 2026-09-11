@@ -69,9 +69,13 @@ function auditAccessibility() {
     for (const v of violations.slice(0, 5)) {
       console.warn(`  - [${v.rule}] ${v.file}: ${v.snippet}...`);
     }
+    if (process.argv.includes("--strict")) {
+      console.error(`❌ ${violations.length} accessibility violations found in strict mode.`);
+      process.exit(1);
+    }
   }
 
-  console.log(`✅ WCAG 2.1 AA accessibility audit passed with 0 blocking violations.`);
+  console.log(`✅ WCAG 2.1 AA accessibility audit passed with 0 violations.`);
 }
 
 auditAccessibility();

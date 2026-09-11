@@ -135,7 +135,10 @@ const ResultsTable: React.FC = () => {
                 Pipeline: Ledger_Main
               </div>
             </div>
-            <button className="text-muted-foreground hover:text-primary transition-colors">
+            <button
+              aria-label="Row actions"
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
               <MoreVertical className="h-5 w-5" />
             </button>
           </div>
@@ -164,7 +167,10 @@ const ResultsTable: React.FC = () => {
                 Pipeline: Payments_v2
               </div>
             </div>
-            <button className="text-muted-foreground hover:text-primary transition-colors">
+            <button
+              aria-label="Row actions"
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
               <MoreVertical className="h-5 w-5" />
             </button>
           </div>
@@ -193,7 +199,10 @@ const ResultsTable: React.FC = () => {
                 Pipeline: Payments_v2
               </div>
             </div>
-            <button className="text-muted-foreground hover:text-primary transition-colors">
+            <button
+              aria-label="Row actions"
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
               <MoreVertical className="h-5 w-5" />
             </button>
           </div>

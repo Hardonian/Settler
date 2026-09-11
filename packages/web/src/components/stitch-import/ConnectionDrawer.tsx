@@ -38,7 +38,10 @@ const ConnectionDrawer: React.FC = () => {
                 <span className="text-xs font-semibold text-muted-foreground">API Key</span>
                 <span className="font-mono text-sm text-foreground">sk_live_••••••••••••••••</span>
               </div>
-              <button className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-primary">
+              <button
+                aria-label="Copy API key"
+                className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-primary"
+              >
                 <Copy className="h-5 w-5" />
               </button>
             </div>
@@ -61,7 +64,10 @@ const ConnectionDrawer: React.FC = () => {
                 <p className="text-sm font-semibold text-foreground">Daily at 00:00 UTC</p>
                 <p className="text-xs text-muted-foreground font-medium">Next run in 14h 32m</p>
               </div>
-              <button className="ml-auto text-muted-foreground hover:text-primary transition-colors">
+              <button
+                aria-label="Edit sync schedule"
+                className="ml-auto text-muted-foreground hover:text-primary transition-colors"
+              >
                 <Pencil className="h-5 w-5" />
               </button>
             </div>

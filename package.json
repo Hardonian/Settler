@@ -293,6 +293,7 @@
     "verify:pre-go-live-simulation": "pnpm --filter @settler/reconciliation-core test -- pre-go-live-simulation.test.ts && pnpm --filter @settler/api exec jest src/__tests__/routes/reconciliation-v1-contract.test.ts --runInBand --forceExit",
     "reconciliation:summary": "node scripts/reconciliation-run-tools.mjs summary test-data/exports/latest",
     "reconciliation:compare": "node scripts/reconciliation-run-tools.mjs compare test-data/exports/smoke-seed42 test-data/exports/latest",
+    "verify:wcag": "node scripts/verify-wcag-accessibility.mjs --strict",
     "verify:issue-templates": "node scripts/validate-issue-templates.mjs",
     "version:sync": "node scripts/release/version-manager.mjs sync",
     "version:bump": "node scripts/release/version-manager.mjs bump",
