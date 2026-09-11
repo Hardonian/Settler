@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   return NextResponse.json({
-    engine: "Settler Astra Bilateral Reconciliation Kernel",
+    engine: "Settler Sidereal Bilateral Reconciliation Kernel",
     version: "1.4.0",
     openSource: true,
     license: "MIT / Apache-2.0 Open Core",
