@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { AnimatedHero } from "@/components/AnimatedHero";
@@ -14,7 +15,7 @@ import { PREMIUM_PACKS } from "@/domain/billing/premiumPacks";
 import { calculateMonthlyCost, planConfigs } from "@/domain/billing/planConfig";
 import { ROICalculator } from "@/components/pricing/ROICalculator";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Pricing | Settler",
   description: "Transparent pricing for high-integrity reconciliation infrastructure.",
 };

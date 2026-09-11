@@ -1,8 +1,7 @@
 import React from "react";
-import { Check, X, Minus, ShieldCheck, Zap, Cpu, Sparkles } from "lucide-react";
+import { Check, X, Cpu } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { SectionHeader } from "@/components/site/primitives";
 
 interface ComparisonRow {
   dimension: string;
@@ -178,7 +177,7 @@ export function CompetitiveComparisonTable() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/60">
-                {COMPARISON_DATA.map((row, idx) => (
+                {COMPARISON_DATA.map((row) => (
                   <tr
                     key={row.dimension}
                     className={`transition-colors hover:bg-muted/20 ${

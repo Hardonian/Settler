@@ -5,16 +5,7 @@ import { ConsolePageHeader } from "@/components/console/ConsolePageHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  ShieldCheck,
-  FileCheck,
-  ShieldAlert,
-  Download,
-  ArrowRight,
-  Activity,
-  Lock,
-  Terminal,
-} from "lucide-react";
+import { ShieldCheck, FileCheck, Download, ArrowRight, Activity, Lock } from "lucide-react";
 import { motion } from "framer-motion";
 import { fadeUp } from "@/lib/motion/variants";
 

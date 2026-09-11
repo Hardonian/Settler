@@ -6,7 +6,7 @@ import { PublicPageShell, Section, SectionHeader } from "@/components/site/primi
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LifeBuoy, Clock, ShieldCheck, ArrowRight, MessageSquare, Terminal } from "lucide-react";
+import { LifeBuoy, Terminal } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Support & SLA Documentation | Settler",

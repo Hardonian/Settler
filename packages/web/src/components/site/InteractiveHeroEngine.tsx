@@ -8,9 +8,7 @@ import {
   Zap,
   Sliders,
   FileCheck2,
-  ArrowRight,
   Database,
-  ArrowDownUp,
   Fingerprint,
   RotateCcw,
 } from "lucide-react";
