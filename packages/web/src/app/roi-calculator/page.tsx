@@ -9,16 +9,7 @@ import { BilateralSettlementVisualizer } from "@/components/site/BilateralSettle
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { UiLink } from "@/components/ui/link";
-import {
-  ShieldCheck,
-  TrendingUp,
-  CheckCircle2,
-  Lock,
-  ArrowRight,
-  Database,
-  Building2,
-  Scale,
-} from "lucide-react";
+import { ShieldCheck, Lock, ArrowRight, Scale } from "lucide-react";
 
 export default function RoiCalculatorPage() {
   return (

@@ -176,7 +176,7 @@ export class PayPalEnhancedAdapter implements EnhancedAdapter {
             });
           }
       }
-    } catch (_err) {
+    } catch {
       // Deterministic error envelope preserving raw payload
       try {
         events.push({

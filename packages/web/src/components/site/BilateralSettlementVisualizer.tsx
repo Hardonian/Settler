@@ -3,19 +3,14 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  CreditCard,
   ShieldCheck,
   Zap,
   Lock,
-  ArrowRight,
-  TrendingUp,
   AlertOctagon,
   CheckCircle2,
   Cpu,
   Layers,
-  Sparkles,
   RefreshCw,
-  Eye,
   FileCode2,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";

@@ -4,15 +4,10 @@ import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   TrendingUp,
-  DollarSign,
-  ShieldCheck,
   Zap,
-  Sliders,
   Download,
   CheckCircle2,
-  Lock,
   ArrowRight,
-  AlertCircle,
   FileCheck2,
   RotateCcw,
   Sparkles,
@@ -21,7 +16,6 @@ import {
   User,
   Scale,
 } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
