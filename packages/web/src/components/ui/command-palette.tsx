@@ -62,13 +62,13 @@ export function CommandPalette() {
     <>
       <button
         type="button"
-        className="hidden lg:flex items-center gap-2.5 px-3 py-1.5 bg-muted/60 hover:bg-muted/90 border border-border/80 hover:border-border rounded-lg text-sm text-foreground/80 hover:text-foreground cursor-pointer transition-all shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="flex items-center gap-2.5 px-3 py-1.5 bg-background hover:bg-accent/50 border border-border hover:border-primary-500/50 rounded-lg text-sm text-foreground cursor-pointer transition-all shadow-xs hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         onClick={() => setIsOpen(true)}
         aria-label="Open command palette"
       >
-        <Search className="w-4 h-4 text-primary-600 dark:text-primary-400" />
-        <span className="font-medium text-foreground/90">Search commands...</span>
-        <kbd className="flex items-center gap-1 ml-4 text-xs font-mono bg-background/90 border border-border px-1.5 py-0.5 rounded text-muted-foreground shadow-xs">
+        <Search className="w-4 h-4 text-primary-600 dark:text-primary-400 flex-shrink-0" />
+        <span className="font-medium text-foreground">Search commands...</span>
+        <kbd className="flex items-center gap-1 ml-3 text-xs font-mono bg-muted/80 border border-border px-1.5 py-0.5 rounded font-medium text-muted-foreground shadow-xs">
           <Command className="w-3 h-3" /> K
         </kbd>
       </button>

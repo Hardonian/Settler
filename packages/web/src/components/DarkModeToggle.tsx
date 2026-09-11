@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -8,15 +8,34 @@ export function DarkModeToggle() {
   const [mounted, setMounted] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 
-  useEffect(() => {
+  const syncState = useCallback(() => {
     const isDark = document.documentElement.classList.contains("dark");
     setDarkMode(isDark);
-    setMounted(true);
   }, []);
 
+  useEffect(() => {
+    syncState();
+    setMounted(true);
+
+    const handleThemeChange = () => syncState();
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === "theme") syncState();
+    };
+
+    window.addEventListener("settler-theme-change", handleThemeChange);
+    window.addEventListener("storage", handleStorage);
+    return () => {
+      window.removeEventListener("settler-theme-change", handleThemeChange);
+      window.removeEventListener("storage", handleStorage);
+    };
+  }, [syncState]);
+
   const persistTheme = (theme: "dark" | "light") => {
-    localStorage.setItem("theme", theme);
-    document.cookie = `theme=${theme}; path=/; max-age=31536000; samesite=lax`;
+    try {
+      localStorage.setItem("theme", theme);
+      document.cookie = `theme=${theme}; path=/; max-age=31536000; samesite=lax`;
+      window.dispatchEvent(new CustomEvent("settler-theme-change", { detail: theme }));
+    } catch {}
   };
 
   const toggleDarkMode = () => {
@@ -25,9 +44,11 @@ export function DarkModeToggle() {
 
     if (newDarkMode) {
       document.documentElement.classList.add("dark");
+      document.documentElement.style.colorScheme = "dark";
       persistTheme("dark");
     } else {
       document.documentElement.classList.remove("dark");
+      document.documentElement.style.colorScheme = "light";
       persistTheme("light");
     }
   };

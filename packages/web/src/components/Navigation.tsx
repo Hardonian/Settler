@@ -346,6 +346,7 @@ export function Navigation() {
                 );
               })}
               <div className="flex items-center gap-2 ml-2">
+                <CommandPalette />
                 <DarkModeToggle />
                 <Link
                   href="/login"
