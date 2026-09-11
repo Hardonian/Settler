@@ -16,8 +16,6 @@ import {
   TrendingUp,
   CheckCircle2,
   Cpu,
-  ArrowRight,
-  ShieldCheck,
   Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
