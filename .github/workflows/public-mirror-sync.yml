@@ -61,15 +61,14 @@ permissions:
 
 env:
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
-  ENABLE_MIRROR_SYNC: ${{ vars['ENABLE_AUTO_SYNC'] || 'true' }}
   PUBLIC_MIRROR_REPO_URL: ${{ secrets.PUBLIC_MIRROR_REPO_URL || 'https://github.com/Hardonian/settler-oss.git' }}
   PUBLIC_MIRROR_GIT_TOKEN: ${{ secrets.PUBLIC_MIRROR_GIT_TOKEN || secrets.GITHUB_TOKEN }}
-  PUBLIC_MIRROR_GIT_USERNAME: ${{ secrets['PUBLIC_MIRROR_GIT_USERNAME'] || 'github-actions[bot]' }}
+  PUBLIC_MIRROR_GIT_USERNAME: "github-actions[bot]"
 
 jobs:
   sync-public-mirror:
     name: Verify & Synchronize OSS Mirror
-    if: vars['ENABLE_AUTO_SYNC'] != 'false'
+    if: github.repository == 'Hardonian/Settler'
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
