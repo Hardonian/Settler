@@ -12,7 +12,6 @@
 import * as fs from "fs/promises";
 import * as path from "path";
 import { glob } from "glob";
-import { execSync } from "child_process";
 
 const MIRROR_OUT_DIR = process.env.MIRROR_OUT_DIR || "./.mirror-out";
 
@@ -80,8 +79,6 @@ function matchesPattern(filePath: string, patterns: string[]): boolean {
 }
 
 async function getAllFiles(rootDir: string): Promise<string[]> {
-  const files: string[] = [];
-
   const ignorePatterns = [
     "**/node_modules/**",
     "**/.git/**",
@@ -106,7 +103,7 @@ async function readFileContent(filePath: string): Promise<string | null> {
   try {
     const content = await fs.readFile(filePath, "utf-8");
     return content;
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -235,7 +232,7 @@ async function main() {
 
   console.log(`🔍 Verifying mirror export: ${mirrorDir}\n`);
 
-  const { passed, results, errors } = await verifyMirror(mirrorDir);
+  const { results, errors } = await verifyMirror(mirrorDir);
 
   const allowed = results.filter((r) => r.allowed).length;
   const denied = results.filter((r) => !r.allowed).length;

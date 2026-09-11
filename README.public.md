@@ -13,15 +13,15 @@ Settler is an open-core reconciliation intelligence platform. This repository co
 
 ## Open Source Packages
 
-| Package | Role | Language | Directory |
-| :--- | :--- | :--- | :--- |
-| **`@settler/sdk`** | Official TypeScript/JavaScript client SDK | TypeScript | [`packages/sdk`](packages/sdk) |
-| **`@settler/cli`** | Developer CLI for local reconciliation, runs, and replay | TypeScript | [`packages/cli`](packages/cli) |
-| **`@settler/protocol`** | Shared wire protocol and JSON schema definitions | TypeScript | [`packages/protocol`](packages/protocol) |
-| **`@settler/react-settler`**| React UI components and status widgets | TypeScript / React | [`packages/react-settler`](packages/react-settler) |
-| **`settler-kernel`** | High-performance content-addressable storage & hashing | Rust | [`crates/settler-kernel`](crates/settler-kernel) |
-| **`settler-verify-wasm`** | Client-side cryptographic proofpack verifier | Rust / WASM | [`crates/settler-verify-wasm`](crates/settler-verify-wasm) |
-| **`settler-sdk`** | Native Rust bindings and client SDK | Rust | [`crates/settler-sdk`](crates/settler-sdk) |
+| Package                      | Role                                                     | Language           | Directory                                                  |
+| :--------------------------- | :------------------------------------------------------- | :----------------- | :--------------------------------------------------------- |
+| **`@settler/sdk`**           | Official TypeScript/JavaScript client SDK                | TypeScript         | [`packages/sdk`](packages/sdk)                             |
+| **`@settler/cli`**           | Developer CLI for local reconciliation, runs, and replay | TypeScript         | [`packages/cli`](packages/cli)                             |
+| **`@settler/protocol`**      | Shared wire protocol and JSON schema definitions         | TypeScript         | [`packages/protocol`](packages/protocol)                   |
+| **`@settler/react-settler`** | React UI components and status widgets                   | TypeScript / React | [`packages/react-settler`](packages/react-settler)         |
+| **`settler-kernel`**         | High-performance content-addressable storage & hashing   | Rust               | [`crates/settler-kernel`](crates/settler-kernel)           |
+| **`settler-verify-wasm`**    | Client-side cryptographic proofpack verifier             | Rust / WASM        | [`crates/settler-verify-wasm`](crates/settler-verify-wasm) |
+| **`settler-sdk`**            | Native Rust bindings and client SDK                      | Rust               | [`crates/settler-sdk`](crates/settler-sdk)                 |
 
 ---
 
@@ -42,6 +42,7 @@ settler replay evidence.json
 ```
 
 Output:
+
 ```text
 ✔ Proofpack signature valid: sha256:48c781e97fd3557ea0722087...
 ✔ 100% Deterministic match
@@ -55,7 +56,7 @@ import { SettlerClient } from "@settler/sdk";
 
 const settler = new SettlerClient({
   apiKey: process.env.SETTLER_API_KEY,
-  endpoint: "https://api.settler.dev"
+  endpoint: "https://api.settler.dev",
 });
 
 // Reconcile two transaction streams
@@ -64,8 +65,8 @@ const run = await settler.reconciliations.create({
   target: { adapter: "postgres", config: { table: "general_ledger" } },
   rules: {
     matching: [{ field: "transaction_id", tolerance: 0 }],
-    precision: "exact_cents"
-  }
+    precision: "exact_cents",
+  },
 });
 
 console.log(`Reconciliation completed: ${run.id}, status: ${run.status}`);
@@ -76,6 +77,7 @@ console.log(`Reconciliation completed: ${run.id}, status: ${run.status}`);
 ## Architecture & Determinism Guarantee
 
 Settler operates under **Strict Determinism**:
+
 1. **Exact 64-bit Integer Cents**: Zero IEEE-754 floating-point drift across trillions of monetary transactions.
 2. **RFC 6962 SHA-256 Merkle Proofpacks**: Every match run produces a verifiable, tamper-evident cryptographic artifact.
 3. **WASM Client Verification**: Proofpacks can be verified independently in the browser or offline without contacting Settler servers.

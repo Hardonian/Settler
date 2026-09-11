@@ -49,27 +49,20 @@ function parseArgs(): PublishOptions {
   const jsonOutput = args.includes("--json");
 
   const remoteArg = args.find((a) => a.startsWith("--remote="));
-  const remoteName = remoteArg
-    ? remoteArg.split("=")[1]
-    : process.env.PUBLIC_MIRROR_REMOTE || DEFAULT_REMOTE;
+  const remoteName = remoteArg?.split("=")[1] || process.env.PUBLIC_MIRROR_REMOTE || DEFAULT_REMOTE;
 
   const repoArg = args.find((a) => a.startsWith("--repo="));
-  const targetRepo = repoArg
-    ? repoArg.split("=")[1]
-    : process.env.PUBLIC_MIRROR_REPO || DEFAULT_REPO;
+  const targetRepo = repoArg?.split("=")[1] || process.env.PUBLIC_MIRROR_REPO || DEFAULT_REPO;
 
   const urlArg = args.find((a) => a.startsWith("--target=") || a.startsWith("--target-url="));
-  const targetUrl = urlArg
-    ? urlArg.split("=")[1]
-    : process.env.PUBLIC_MIRROR_URL || process.env.PUBLIC_MIRROR_REPO_URL;
+  const targetUrl =
+    urlArg?.split("=")[1] || process.env.PUBLIC_MIRROR_URL || process.env.PUBLIC_MIRROR_REPO_URL;
 
   const branchArg = args.find((a) => a.startsWith("--branch="));
-  const branch = branchArg
-    ? branchArg.split("=")[1]
-    : process.env.PUBLIC_MIRROR_BRANCH || DEFAULT_BRANCH;
+  const branch = branchArg?.split("=")[1] || process.env.PUBLIC_MIRROR_BRANCH || DEFAULT_BRANCH;
 
   const tagArg = args.find((a) => a.startsWith("--tag="));
-  const explicitTag = tagArg ? tagArg.split("=")[1] : undefined;
+  const explicitTag = tagArg?.split("=")[1];
 
   return {
     publish,

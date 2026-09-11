@@ -206,16 +206,7 @@ const PROPRIETARY_IMPORT_PATTERNS = [
   /from ['"]@prisma\/client['"]/,
 ];
 
-const OSS_IMPORT_PATTERNS = [
-  /from ['"]@settler\/sdk['"]/,
-  /from ['"]@settler\/protocol['"]/,
-  /from ['"]@settler\/react-settler['"]/,
-  /from ['"]@settler\/cli['"]/,
-];
-
 async function getAllFiles(rootDir: string = "."): Promise<string[]> {
-  const files: string[] = [];
-
   // Default ignore patterns
   let ignorePatterns = [
     "**/node_modules/**",
@@ -249,7 +240,7 @@ async function getAllFiles(rootDir: string = "."): Promise<string[]> {
         return line.startsWith("/") ? line.substring(1) : line;
       });
     ignorePatterns = [...ignorePatterns, ...customIgnores];
-  } catch (error) {
+  } catch {
     // .classifyignore doesn't exist, use defaults only
   }
 
@@ -326,7 +317,7 @@ async function readFileContent(filePath: string): Promise<string | null> {
     }
     const content = await fs.readFile(filePath, "utf-8");
     return content;
-  } catch (error) {
+  } catch {
     // Skip binary files or unreadable files
     return null;
   }
@@ -356,20 +347,23 @@ function extractImports(content: string): string[] {
   // Match ES6 imports
   const es6Imports = content.matchAll(/import\s+.*?\s+from\s+['"]([^'"]+)['"]/g);
   for (const match of es6Imports) {
-    imports.push(match[1]);
+    if (match[1]) {
+      imports.push(match[1]);
+    }
   }
 
   // Match require statements
   const requireImports = content.matchAll(/require\(['"]([^'"]+)['"]\)/g);
   for (const match of requireImports) {
-    imports.push(match[1]);
+    if (match[1]) {
+      imports.push(match[1]);
+    }
   }
 
   return imports;
 }
 
 function classifyFile(filePath: string, content: string | null): FileClassification {
-  const normalizedPath = filePath.replace(/\\/g, "/");
   const relativePath = path.relative(process.cwd(), filePath).replace(/\\/g, "/");
 
   // Check if file is excluded from secret checks first

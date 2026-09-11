@@ -392,7 +392,7 @@ async function main() {
           cwd: process.cwd(),
         });
         console.log("\n✅ Mirror verification passed!\n");
-      } catch (error) {
+      } catch {
         console.error("\n❌ Mirror verification failed!");
         console.error("Review the errors above before publishing.\n");
         process.exit(1);
