@@ -119,7 +119,7 @@ export function AstraMerkleInspector() {
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-base font-bold tracking-tight text-white">
-                Astra Cryptographic Proofpack Inspector
+                Sidereal Cryptographic Proofpack Inspector
               </h2>
               <Badge
                 variant="outline"

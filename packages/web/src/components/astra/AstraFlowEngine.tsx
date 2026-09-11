@@ -135,7 +135,7 @@ export function AstraFlowEngine() {
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-base font-bold tracking-tight text-white">
-                Astra Bilateral Settlement Flow Engine
+                Sidereal Bilateral Settlement Flow Engine
               </h2>
               <Badge
                 variant="outline"

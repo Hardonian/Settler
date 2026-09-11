@@ -453,7 +453,7 @@ export function AstraApiConsole() {
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-base font-bold tracking-tight text-white">
-                Settler Astra API Console
+                Settler Sidereal API Console
               </h2>
               <Badge
                 variant="outline"

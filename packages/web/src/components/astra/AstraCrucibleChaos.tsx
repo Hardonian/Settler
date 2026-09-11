@@ -36,7 +36,7 @@ const CHAOS_SCENARIOS: ChaosScenario[] = [
       "[00:00.012] Ingested Stripe payout webhook: po_1OqKl9F2eZvKYlo291 (amount: $384,000.00 USD)",
       "[00:00.045] Querying depository bank clearing account via BAI2 feed...",
       "[00:00.120] INVARIANT ALERT: Expected clearing deposit missing (Drift: +72 hours)",
-      "[00:00.180] Astra Correlator: Quarantining batch po_1OqKl9F2 into suspense account (Account: 1040-SUSPENSE)",
+      "[00:00.180] Sidereal Correlator: Quarantining batch po_1OqKl9F2 into suspense account (Account: 1040-SUSPENSE)",
       "[00:00.240] TigerBeetle: Posting pending debit with automated auto-clear trigger on FedACH match",
       "[00:00.310] Sealed Proofpack: SHA-256 state root anchored with zero cash leakage",
     ],
@@ -60,7 +60,7 @@ const CHAOS_SCENARIOS: ChaosScenario[] = [
       "[00:00.018] Ingested PayPal Capture: CAP-88291410A (EUR €42,000.00)",
       "[00:00.039] Comparing effective rate against Merchant Agreement Tier [SCHEDULE_EU_ENTERPRISE_2026]",
       "[00:00.082] DISCREPANCY DETECTED: 45 bps surcharge beyond contracted ceiling",
-      "[00:00.145] Astra Dispute Engine: Auto-generating clawback memorandum and evidence payload",
+      "[00:00.145] Sidereal Dispute Engine: Auto-generating clawback memorandum and evidence payload",
       "[00:00.210] Synthesizing Visa/Mastercard Interchange Schedule reference report...",
       "[00:00.290] Generated signed institutional dispute brief: DISPUTE_PAYPAL_FX_88291410A.pdf",
     ],
@@ -85,7 +85,7 @@ const CHAOS_SCENARIOS: ChaosScenario[] = [
       "[00:00.041] Correlating against ERP Order Invoice #INV-89104 in NetSuite...",
       "[00:00.095] DETECTED: Missing Line-Item Commodity Code & Customer Tax ID in payment payload",
       "[00:00.160] Calculating fee leakage: 115 bps downgrade penalty across $1,600,000.00 volume",
-      "[00:00.220] Astra Rule Synthesizer: Synthesized automatic L3 payload enrichment middleware",
+      "[00:00.220] Sidereal Rule Synthesizer: Synthesized automatic L3 payload enrichment middleware",
       "[00:00.280] Deployed zero-code middleware hook to Stripe PaymentIntent creation pipeline",
     ],
     resolvedArtifact: {
@@ -107,7 +107,7 @@ const CHAOS_SCENARIOS: ChaosScenario[] = [
     logs: [
       "[00:00.008] Worker Node A: Ingested deposit event TX-9920194 ($149,000.00 USD)",
       "[00:00.014] Worker Node B: Ingested duplicate deposit event TX-9920194 ($149,000.00 USD)",
-      "[00:00.022] Astra Nonce Cache: SHA-256 payload digest collision detected: 0x6e29a... (Delta: 6ms)",
+      "[00:00.022] Sidereal Nonce Cache: SHA-256 payload digest collision detected: 0x6e29a... (Delta: 6ms)",
       "[00:00.038] INVARIANT ASSERTION: Enforcing atomicity lock; Worker B rejected with HTTP 409",
       "[00:00.052] TigerBeetle: Idempotent commit confirmed; account ledger balance unchanged",
       "[00:00.070] Security telemetry emitted: Duplicate replay neutralised with zero ledger corruption",
@@ -154,7 +154,7 @@ export function AstraCrucibleChaos() {
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-base font-bold tracking-tight text-white">
-                Astra Crucible Chaos Lab
+                Sidereal Crucible Chaos Lab
               </h2>
               <Badge
                 variant="outline"

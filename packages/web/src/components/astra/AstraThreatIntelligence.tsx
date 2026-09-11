@@ -313,7 +313,7 @@ export function AstraThreatIntelligence() {
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-base font-bold tracking-tight text-white">
-                Astra Threat Recognition &amp; Self-Maintaining Intelligence
+                Sidereal Threat Recognition &amp; Self-Maintaining Intelligence
               </h2>
               <Badge
                 variant="outline"
