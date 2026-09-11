@@ -12,3 +12,4 @@
 
 export * from "./evidence/index.js";
 export * from "./proofpack/index.js";
+export * from "./audit-sampling.js";
