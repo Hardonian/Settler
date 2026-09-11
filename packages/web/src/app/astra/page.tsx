@@ -49,7 +49,7 @@ export default function AstraPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-slate-950 text-slate-100 selection:bg-cyan-500 selection:text-slate-950">
+    <div className="relative min-h-screen bg-background text-foreground dark:bg-slate-950 dark:text-slate-100 selection:bg-cyan-500 selection:text-slate-950">
       <AmbientLightOrbs />
       <Navigation />
 
@@ -58,20 +58,20 @@ export default function AstraPage() {
         <div className="mx-auto max-w-3xl text-center mb-12">
           <Badge
             variant="outline"
-            className="mb-4 border-cyan-500/40 bg-cyan-500/10 px-3.5 py-1 text-xs font-bold text-cyan-300 backdrop-blur-md"
+            className="mb-4 border-cyan-500/40 bg-cyan-500/10 px-3.5 py-1 text-xs font-bold text-cyan-600 dark:text-cyan-300 backdrop-blur-md"
           >
             <Sparkles className="mr-1.5 h-3.5 w-3.5" />
             ASTRA DEVELOPER PLATFORM // THE STRIPE FOR RECONCILIATION
           </Badge>
 
-          <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
+          <h1 className="text-3xl font-extrabold tracking-tight text-foreground dark:text-white sm:text-5xl lg:text-6xl">
             Programmable Settlement &amp;{" "}
             <span className="bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
               Sovereign Ledger APIs
             </span>
           </h1>
 
-          <p className="mt-5 text-base sm:text-lg text-slate-400 leading-relaxed">
+          <p className="mt-5 text-base sm:text-lg text-muted-foreground dark:text-slate-400 leading-relaxed">
             Eliminate weeks of brittle spreadsheet reconciliation and opaque processor reporting.
             Settler Astra provides deterministic multi-rail APIs, sub-millisecond invariant
             assertions, and cryptographic Merkle root sealing for Stripe, PayPal, and enterprise

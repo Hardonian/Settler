@@ -274,12 +274,12 @@ function RealtimeDashboardContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black text-slate-100 selection:bg-cyan-500 selection:text-black">
+    <div className="min-h-screen bg-background text-foreground dark:bg-gradient-to-br dark:from-slate-950 dark:via-slate-900 dark:to-black dark:text-slate-100 selection:bg-cyan-500 selection:text-black">
       <Navigation />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24 space-y-8">
         {/* Header with Live Status Pill */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border dark:border-slate-800/80 pb-6">
           <div className="space-y-1">
             <div className="flex items-center gap-3">
               <span className="relative flex h-3 w-3">
@@ -292,11 +292,11 @@ function RealtimeDashboardContent() {
                   <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
                 )}
               </span>
-              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-2">
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground dark:text-white flex items-center gap-2">
                 Real-Time Telemetry & Settlement Radar
               </h1>
             </div>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-muted-foreground dark:text-slate-400">
               Live deterministic ingestion stream, microsecond CAS Merkle root verification, and
               automated leakage detection.
             </p>

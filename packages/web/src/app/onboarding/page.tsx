@@ -399,7 +399,7 @@ function WizardLayout({
   isLastStep?: boolean;
 }) {
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex min-h-screen bg-background text-foreground">
       <div className="flex-1 max-w-2xl mx-auto py-16 px-6 lg:px-12">
         {/* Progress Indicator */}
         <div className="mb-10">
@@ -411,8 +411,8 @@ function WizardLayout({
                     index + 1 < currentStep
                       ? "bg-primary border-primary text-primary-foreground"
                       : index + 1 === currentStep
-                        ? "border-primary text-primary bg-white"
-                        : "border-slate-300 text-slate-400 bg-white"
+                        ? "border-primary text-primary bg-background"
+                        : "border-border text-muted-foreground bg-muted/40"
                   }`}
                 >
                   {index + 1 < currentStep ? <Check size={16} /> : step.id}
@@ -420,7 +420,7 @@ function WizardLayout({
                 {index < STEPS.length - 1 && (
                   <div
                     className={`hidden lg:block w-20 h-1 mx-2 transition-colors ${
-                      index + 1 < currentStep ? "bg-primary" : "bg-slate-300"
+                      index + 1 < currentStep ? "bg-primary" : "bg-muted"
                     }`}
                   />
                 )}
@@ -436,18 +436,18 @@ function WizardLayout({
             <BrandLockup orientation="stacked" className="max-w-[220px]" priority />
           </Link>
           <h1 className="text-3xl font-bold italic tracking-tight">{title}</h1>
-          <p className="mt-2 text-slate-600 font-medium">{subtitle}</p>
+          <p className="mt-2 text-muted-foreground font-medium">{subtitle}</p>
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm flex items-center gap-2">
+          <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm flex items-center gap-2">
             <Shield className="h-4 w-4 flex-shrink-0" />
             {error}
           </div>
         )}
 
         {/* Wizard Content */}
-        <Card className="bg-white shadow-sm">
+        <Card className="bg-card border-border shadow-sm">
           <CardContent className="p-8">{children}</CardContent>
         </Card>
 

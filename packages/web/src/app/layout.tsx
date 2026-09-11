@@ -174,14 +174,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
-                var storedTheme = localStorage.getItem('theme');
-                var resolvedTheme = storedTheme || 'light';
-                var root = document.documentElement;
-                if (resolvedTheme === 'dark') {
-                  root.classList.add('dark');
-                } else {
-                  root.classList.remove('dark');
-                }
+                try {
+                  var storedTheme = localStorage.getItem('theme');
+                  if (!storedTheme) {
+                    var match = document.cookie.match(/(?:^|; )theme=([^;]*)/);
+                    storedTheme = match ? decodeURIComponent(match[1]) : null;
+                  }
+                  if (!storedTheme && window.matchMedia) {
+                    storedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                  }
+                  var resolvedTheme = storedTheme === 'dark' ? 'dark' : 'light';
+                  var root = document.documentElement;
+                  if (resolvedTheme === 'dark') {
+                    root.classList.add('dark');
+                    root.style.colorScheme = 'dark';
+                  } else {
+                    root.classList.remove('dark');
+                    root.style.colorScheme = 'light';
+                  }
+                } catch (e) {}
               })();
             `,
           }}
