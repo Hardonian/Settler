@@ -66,6 +66,7 @@
     "PRIVACY.md",
     "PRODUCT_CLARITY_AUDIT.md",
     "README.md",
+    "README.public.md",
     "README_LAUNCH.md",
     "REALITY_MAP.md",
     "REALITY_MODE_SUMMARY.md",
@@ -236,6 +237,7 @@
     "^\\.tooling$",
     "^\\.mypy_cache$",
     "^\\.ruff_cache$",
-    "^tsconfig\\.tsbuildinfo$"
+    "^tsconfig\\.tsbuildinfo$",
+    "^\\.mirror-out$"
   ]
 }

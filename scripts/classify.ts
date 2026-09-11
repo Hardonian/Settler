@@ -19,11 +19,7 @@ import * as path from "path";
 import { glob } from "glob";
 
 type Classification =
-  | "OSS_PUBLIC"
-  | "PLATFORM_PROPRIETARY"
-  | "INTERNAL_BUSINESS"
-  | "SECRET_RISK"
-  | "UNCLASSIFIED";
+  "OSS_PUBLIC" | "PLATFORM_PROPRIETARY" | "INTERNAL_BUSINESS" | "SECRET_RISK" | "UNCLASSIFIED";
 
 interface FileClassification {
   path: string;
@@ -64,6 +60,7 @@ const OSS_PUBLIC_PATHS = [
   "packages/protocol/**",
   "packages/react-settler/**",
   "packages/cli/**",
+  "crates/**",
   "docs/public/**",
   "examples/**",
 ];

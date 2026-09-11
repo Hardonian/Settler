@@ -27,6 +27,9 @@ const OSS_ALLOWLIST_PATTERNS = [
   "packages/protocol/**",
   "packages/react-settler/**",
   "packages/cli/**",
+  "crates/settler-kernel/**",
+  "crates/settler-verify-wasm/**",
+  "crates/settler-sdk/**",
   "docs/public/**",
   "examples/**",
 ];
@@ -39,6 +42,8 @@ const ROOT_FILES = [
   { src: "SECURITY.md", dest: "SECURITY.md", required: false },
   { src: "CODE_OF_CONDUCT.md", dest: "CODE_OF_CONDUCT.md", required: false },
   { src: ".gitignore", dest: ".gitignore", required: false },
+  { src: "Cargo.toml", dest: "Cargo.toml", required: false },
+  { src: "Cargo.lock", dest: "Cargo.lock", required: false },
 ];
 
 interface FileManifest {

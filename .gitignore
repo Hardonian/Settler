@@ -72,3 +72,4 @@ tmp/
 **/.tmp*/
 **/.tmp-*
 *.tmp
+.mirror-out/
