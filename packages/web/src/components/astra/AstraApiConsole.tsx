@@ -348,31 +348,73 @@ export function AstraApiConsole() {
   };
 
   const handleExecute = () => {
-    startTransition(() => {
-      let parsed = selectedEndpoint.defaultPayload;
-      try {
-        if (customPayload.trim()) {
-          parsed = JSON.parse(customPayload) as Record<string, unknown>;
-        }
-      } catch {
-        setPayloadError("Cannot execute with invalid JSON");
-        return;
+    let parsed = selectedEndpoint.defaultPayload;
+    try {
+      if (customPayload.trim()) {
+        parsed = JSON.parse(customPayload) as Record<string, unknown>;
       }
+    } catch {
+      setPayloadError("Cannot execute with invalid JSON");
+      return;
+    }
 
-      // Simulate real response
-      const res = selectedEndpoint.mockResponse(parsed);
-      const headers = {
-        "content-type": "application/json; charset=utf-8",
-        "x-settler-merkle-root":
-          "0x4f82c189e92bc9837a2819cd918349281ab892c90192837482910fa98234cdfa",
-        "x-settler-tenant-id": (parsed.tenantId as string) || "tenant_enterprise_019a",
-        "x-idempotency-key": `stlr_idem_${Date.now()}`,
-        "x-exec-latency": "18.4ms",
-        "x-ratelimit-remaining": "9998/10000",
-      };
-
-      setApiResponse(res);
-      setResponseHeaders(headers);
+    startTransition(() => {
+      if (selectedEndpoint.id === "bilateral-recon") {
+        fetch("/api/v1/astra/reconcile", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer stlr_live_9f823a9d8214",
+          },
+          body: JSON.stringify(parsed),
+        })
+          .then(async (res) => {
+            const data = (await res.json()) as Record<string, unknown>;
+            const headers: Record<string, string> = {
+              "content-type": "application/json; charset=utf-8",
+              "x-settler-merkle-root":
+                res.headers.get("x-settler-merkle-root") ||
+                (data.merkleRoot as string) ||
+                "0x4f82c189e92bc9837a2819cd918349281ab892c90192837482910fa98234cdfa",
+              "x-settler-tenant-id":
+                res.headers.get("x-settler-tenant-id") ||
+                (parsed.tenantId as string) ||
+                "tenant_enterprise_019a",
+              "x-idempotency-key":
+                res.headers.get("x-idempotency-key") || `stlr_idem_${Date.now()}`,
+              "x-exec-latency": res.headers.get("x-exec-latency") || "14.2ms",
+              "x-ratelimit-remaining": res.headers.get("x-ratelimit-remaining") || "9998/10000",
+            };
+            setApiResponse(data);
+            setResponseHeaders(headers);
+          })
+          .catch(() => {
+            const res = selectedEndpoint.mockResponse(parsed);
+            setApiResponse(res);
+            setResponseHeaders({
+              "content-type": "application/json; charset=utf-8",
+              "x-settler-merkle-root":
+                "0x4f82c189e92bc9837a2819cd918349281ab892c90192837482910fa98234cdfa",
+              "x-settler-tenant-id": (parsed.tenantId as string) || "tenant_enterprise_019a",
+              "x-idempotency-key": `stlr_idem_${Date.now()}`,
+              "x-exec-latency": "18.4ms",
+              "x-ratelimit-remaining": "9998/10000",
+            });
+          });
+      } else {
+        const res = selectedEndpoint.mockResponse(parsed);
+        const headers = {
+          "content-type": "application/json; charset=utf-8",
+          "x-settler-merkle-root":
+            "0x4f82c189e92bc9837a2819cd918349281ab892c90192837482910fa98234cdfa",
+          "x-settler-tenant-id": (parsed.tenantId as string) || "tenant_enterprise_019a",
+          "x-idempotency-key": `stlr_idem_${Date.now()}`,
+          "x-exec-latency": "16.8ms",
+          "x-ratelimit-remaining": "9998/10000",
+        };
+        setApiResponse(res);
+        setResponseHeaders(headers);
+      }
     });
   };
 

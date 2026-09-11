@@ -1,6 +1,6 @@
 /**
  * Route Registry - Auto-generated
- * Generated at: 2026-09-11T01:53:09.518Z
+ * Generated at: 2026-09-11T01:56:25.967Z
  *
  * This file contains all routes discovered in the Next.js app directory.
  * Use this for type-safe route checking and link validation.
@@ -1900,6 +1900,14 @@ export const ROUTES: RouteInfo[] = [
     path: "/api/v1/analytics",
     type: "route",
     file: "api\\v1\\analytics\\route.ts",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
+    path: "/api/v1/astra/reconcile",
+    type: "route",
+    file: "api\\v1\\astra\\reconcile\\route.ts",
     dynamic: false,
     catchAll: false,
     optional: false,
@@ -4938,6 +4946,7 @@ export const ALL_ROUTES: string[] = [
   "/api/user/value-moments",
   "/api/v1",
   "/api/v1/analytics",
+  "/api/v1/astra/reconcile",
   "/api/v1/convert",
   "/api/v1/datasets",
   "/api/v1/feature-flags",

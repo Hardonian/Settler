@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-11T01:53:09.515Z",
-  "totalRoutes": 547,
+  "generatedAt": "2026-09-11T01:56:25.964Z",
+  "totalRoutes": 548,
   "pageRoutes": 304,
   "routes": [
     {
@@ -1887,6 +1887,14 @@
       "path": "/api/v1/analytics",
       "type": "route",
       "file": "api\\v1\\analytics\\route.ts",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
+      "path": "/api/v1/astra/reconcile",
+      "type": "route",
+      "file": "api\\v1\\astra\\reconcile\\route.ts",
       "dynamic": false,
       "catchAll": false,
       "optional": false
