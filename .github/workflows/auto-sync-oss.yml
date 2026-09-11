@@ -19,11 +19,9 @@ on:
 
 env:
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
-  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
-  ENABLE_AUTO_SYNC: ${{ vars.ENABLE_AUTO_SYNC || 'true' }}
   OSS_REPO_URL: ${{ secrets.PUBLIC_MIRROR_REPO_URL || 'https://github.com/shardie-github/settler-oss.git' }}
   OSS_REPO_TOKEN: ${{ secrets.PUBLIC_MIRROR_GIT_TOKEN }}
-  OSS_REPO_USERNAME: ${{ secrets.PUBLIC_MIRROR_GIT_USERNAME || 'github-actions[bot]' }}
+  OSS_REPO_USERNAME: "github-actions[bot]"
 
 jobs:
   sync-to-oss:
