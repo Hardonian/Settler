@@ -24,6 +24,7 @@ export * from "./shopify";
 export * from "./quickbooks";
 export * from "./enhanced-quickbooks";
 export * from "./enhanced-paypal";
+export * from "./canada-cog";
 export * from "./xero";
 export * from "./netsuite";
 export * from "./woocommerce";
