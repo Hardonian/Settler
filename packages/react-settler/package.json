@@ -44,17 +44,17 @@
     "react-dom": "^18.0.0 || ^19.0.0"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.60",
+    "@ai-sdk/openai": "^4.0.66",
     "@settler/protocol": "workspace:*",
-    "ai": "^7.0.93"
+    "ai": "^7.0.99"
   },
   "devDependencies": {
-    "@types/node": "^26.4.1",
-    "@types/react": "19.2.18",
-    "@types/react-dom": "19.2.7",
+    "@types/node": "^26.5.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
     "@vitest/coverage-v8": "^4.1.11",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
     "typescript": "^6.0.3",
     "vite": "^8.2.2",
     "vitest": "^4.1.11"
