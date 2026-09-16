@@ -35,6 +35,27 @@ export interface CogForecastRecord {
   note: string;
 }
 
+/**
+ * A federal procurement record surfaced through COG's /api/v1/procurements
+ * endpoint. COG ingests these from Open.Canada federal contracts (>$10K), so a
+ * record here is award data — not an open tender.
+ */
+export interface CogProcurementRecord {
+  id: string;
+  tenderId: string;
+  title: string;
+  buyer: string;
+  buyerType: string;
+  estimatedCad: number | null;
+  awardDate: string | null;
+  categories: string[];
+  requirementClass: string;
+  evidenceUrl: string | null;
+  cegsVersion: string | null;
+  confidence: "low" | "medium" | "high";
+  note: string;
+}
+
 export type CogHealth =
   | "ok"
   | "stale"
@@ -197,6 +218,86 @@ export class CanadaCogAdapter {
         note: "ok",
       },
     ];
+  }
+
+  /**
+   * Fetch federal procurement records surfaced by COG. Covers the Open.Canada
+   * contracts the graph ingests. Returns an empty set when disabled and a
+   * single low-confidence record when the endpoint is unreachable — never
+   * fabricated rows.
+   */
+  async fetchProcurements(
+    opts: CogFetchOptions = {},
+  ): Promise<CogProcurementRecord[]> {
+    if (!isEnabled()) {
+      return [];
+    }
+
+    const baseUrl = resolveBaseUrl(opts);
+    const query = opts.projectId
+      ? `?project_id=${encodeURIComponent(opts.projectId)}`
+      : "";
+    const raw = await fetchJson<{
+      data?: Array<{
+        id?: string;
+        tender_id?: string;
+        tenderId?: string;
+        title?: string;
+        buyer?: string;
+        buyer_type?: string;
+        buyerType?: string;
+        estimated_cad?: number;
+        estimatedCad?: number;
+        closing_date?: string;
+        award_date?: string;
+        categories?: string[];
+        requirement_class?: string;
+        requirementClass?: string;
+        source_url?: string;
+      }>;
+      cegsVersion?: string;
+    }>(`${baseUrl}/api/v1/procurements${query}`, opts.signal);
+
+    if (!raw || !Array.isArray(raw.data)) {
+      return [
+        {
+          id: "unavailable",
+          tenderId: "",
+          title: "",
+          buyer: "",
+          buyerType: "Federal",
+          estimatedCad: null,
+          awardDate: null,
+          categories: [],
+          requirementClass: "UNKNOWN",
+          evidenceUrl: null,
+          cegsVersion: null,
+          confidence: "low",
+          note: `cog procurements fetch failed: ${baseUrl}/api/v1/procurements unreachable`,
+        },
+      ];
+    }
+
+    const cegsVersion = raw.cegsVersion ?? null;
+    const lowConfidence = cegsVersion !== null && cegsVersion !== EXPECTED_CEGS_VERSION;
+
+    return raw.data.map((p) => ({
+      id: p.id ?? "unknown",
+      tenderId: p.tender_id ?? p.tenderId ?? "",
+      title: p.title ?? "",
+      buyer: p.buyer ?? "",
+      buyerType: p.buyer_type ?? p.buyerType ?? "Federal",
+      estimatedCad: p.estimated_cad ?? p.estimatedCad ?? null,
+      awardDate: p.award_date ?? p.closing_date ?? null,
+      categories: p.categories ?? [],
+      requirementClass: p.requirement_class ?? p.requirementClass ?? "UNKNOWN",
+      evidenceUrl: p.source_url ?? null,
+      cegsVersion,
+      confidence: lowConfidence ? "low" : "medium",
+      note: lowConfidence
+        ? `cog spec version mismatch: expected ${EXPECTED_CEGS_VERSION}, got ${cegsVersion}`
+        : "ok",
+    }));
   }
 }
 

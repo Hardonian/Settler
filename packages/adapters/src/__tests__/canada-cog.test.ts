@@ -61,4 +61,23 @@ describe("canada-cog adapter", () => {
     );
     expect(source).toContain('EXPECTED_CEGS_VERSION = "0.1"');
   });
+
+  it("returns empty procurements when disabled", async () => {
+    delete process.env.CANADA_COG_ENABLED;
+    expect(await canadaCogAdapter.fetchProcurements()).toEqual([]);
+  });
+
+  it("returns a single low-confidence record when procurements endpoint is unreachable", async () => {
+    process.env.CANADA_COG_ENABLED = "1";
+    process.env.CANADA_COG_BASE_URL = "http://127.0.0.1:1";
+    const ctl = new AbortController();
+    ctl.abort();
+    const records = await canadaCogAdapter.fetchProcurements({
+      signal: ctl.signal,
+    });
+    expect(records).toHaveLength(1);
+    expect(records[0]?.confidence).toBe("low");
+    expect(records[0]?.note).toMatch(/cog procurements fetch failed/);
+    expect(records[0]?.estimatedCad).toBeNull();
+  });
 });
