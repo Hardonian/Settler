@@ -55,9 +55,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.60",
-    "@types/node": "^26.4.1",
-    "ai": "^7.0.93",
+    "@ai-sdk/openai": "^4.0.66",
+    "@types/node": "^26.5.1",
+    "ai": "^7.0.99",
     "typescript": "^6.0.3"
   },
   "devDependencies": {
