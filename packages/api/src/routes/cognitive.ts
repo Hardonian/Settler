@@ -15,7 +15,15 @@ import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
 import { handleRouteError } from "../utils/error-handler";
 import { queryWithTenant } from "../db";
-import { geminiCognitiveEngine } from "@settler/reconciliation-core";
+import {
+  geminiCognitiveEngine,
+  BatchSettlementEngine,
+  createPolicyProposal,
+  approvePolicy,
+  rejectPolicy,
+  type CognitivePolicyProposal,
+  type BatchSourceTransaction,
+} from "@settler/reconciliation-core";
 import { geminiAdapterSynthesizer } from "@settler/adapters";
 
 const router: Router = Router();
@@ -123,6 +131,25 @@ const adjudicateSchema = z.object({
   }),
 });
 
+interface RequestExceptionItem {
+  breakId: string;
+  sourceAmountCents: string;
+  targetAmountCents: string;
+  currency: string;
+  sourceTimestamp: string;
+  targetTimestamp?: string;
+  rail: string;
+  descriptor?: string;
+}
+
+interface RequestRunItem {
+  runId: string;
+  stateRoot: string;
+  matchedCount: number;
+  totalVolumeCents: string;
+  currency: string;
+}
+
 router.post(
   "/cognitive/adjudicate",
   requirePermission(Permission.JOBS_READ),
@@ -135,7 +162,7 @@ router.post(
       const result = geminiCognitiveEngine.adjudicateExceptions({
         tenantId,
         railContext: { rail, currency },
-        exceptions: exceptions.map((ex) => ({
+        exceptions: (exceptions as RequestExceptionItem[]).map((ex: RequestExceptionItem) => ({
           ...ex,
           sourceAmountCents: BigInt(ex.sourceAmountCents),
           targetAmountCents: BigInt(ex.targetAmountCents),
@@ -237,7 +264,7 @@ router.post(
         tenantId,
         query,
         reportingPeriod: { from: periodFrom, to: periodTo },
-        reconciliationRuns: fallbackRuns.map((r) => ({
+        reconciliationRuns: (fallbackRuns as RequestRunItem[]).map((r: RequestRunItem) => ({
           ...r,
           totalVolumeCents: BigInt(r.totalVolumeCents),
         })),
@@ -334,6 +361,296 @@ router.post(
       });
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to synthesize adapter via Gemini synthesizer", 500, {
+        tenantId: req.tenantId,
+        userId: req.userId,
+      });
+    }
+  }
+);
+
+// In-memory tenant-scoped policy store for cognitive self-healing candidates
+const tenantPolicyStore = new Map<string, Map<string, CognitivePolicyProposal>>();
+
+function getTenantPolicies(tenantId: string): Map<string, CognitivePolicyProposal> {
+  let map = tenantPolicyStore.get(tenantId);
+  if (!map) {
+    map = new Map();
+    tenantPolicyStore.set(tenantId, map);
+  }
+  return map;
+}
+
+// 5. Cognitive Policy Proposal Schema (SOX-404 Maker)
+const proposePolicySchema = z.object({
+  body: z.object({
+    rail: z.string().min(1),
+    action: z.string().min(1),
+    rationale: z.string().min(1),
+    ruleConfig: z.record(z.unknown()),
+    noiseReductionPct: z.number().min(0).max(100),
+    capitalGuardedCents: z.string().min(1),
+  }),
+});
+
+router.post(
+  "/cognitive/policy/propose",
+  requirePermission(Permission.JOBS_READ),
+  validateRequest(proposePolicySchema),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = assertTenant(req.tenantId);
+      const proposerId = req.userId || "operator_anonymous";
+      const { rail, action, rationale, ruleConfig, noiseReductionPct, capitalGuardedCents } =
+        req.body;
+
+      const proposal = createPolicyProposal({
+        tenantId,
+        rail,
+        action,
+        rationale,
+        ruleConfig,
+        noiseReductionPct,
+        capitalGuardedCents: BigInt(capitalGuardedCents),
+        proposerId,
+      });
+
+      const store = getTenantPolicies(tenantId);
+      store.set(proposal.proposalId, proposal);
+
+      await queryWithTenant(
+        tenantId,
+        `INSERT INTO audit_logs (event, user_id, tenant_id, ip, user_agent, path, metadata)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [
+          "cognitive_policy_proposed",
+          req.userId || null,
+          tenantId,
+          req.ip || null,
+          req.get("user-agent") || null,
+          req.originalUrl,
+          JSON.stringify({
+            proposalId: proposal.proposalId,
+            ruleHash: proposal.ruleHash,
+            action: proposal.action,
+            noiseReductionPct: proposal.noiseReductionPct,
+          }),
+        ]
+      );
+
+      res.json({
+        data: {
+          ...proposal,
+          capitalGuardedCents: proposal.capitalGuardedCents.toString(),
+        },
+      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, "Failed to propose cognitive policy", 500, {
+        tenantId: req.tenantId,
+        userId: req.userId,
+      });
+    }
+  }
+);
+
+// 6. Cognitive Policy Approval Schema (SOX-404 Checker)
+const approvePolicySchema = z.object({
+  body: z.object({
+    proposalId: z.string().min(1),
+    action: z.enum(["approve", "reject"]),
+    rejectionReason: z.string().optional(),
+  }),
+});
+
+router.post(
+  "/cognitive/policy/approve",
+  requirePermission(Permission.JOBS_WRITE),
+  validateRequest(approvePolicySchema),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = assertTenant(req.tenantId);
+      const checkerId = req.userId || "controller_anonymous";
+      const { proposalId, action, rejectionReason } = req.body;
+
+      const store = getTenantPolicies(tenantId);
+      const proposal = store.get(proposalId);
+
+      if (!proposal) {
+        res.status(404).json({
+          error: "Policy proposal not found for this tenant",
+        });
+        return;
+      }
+
+      let updated: CognitivePolicyProposal;
+      if (action === "approve") {
+        updated = approvePolicy({
+          proposal,
+          checkerId,
+          tenantId,
+        });
+      } else {
+        updated = rejectPolicy({
+          proposal,
+          checkerId,
+          tenantId,
+          rejectionReason: rejectionReason || "Rejected by controller",
+        });
+      }
+
+      store.set(proposalId, updated);
+
+      await queryWithTenant(
+        tenantId,
+        `INSERT INTO audit_logs (event, user_id, tenant_id, ip, user_agent, path, metadata)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [
+          action === "approve" ? "cognitive_policy_approved" : "cognitive_policy_rejected",
+          req.userId || null,
+          tenantId,
+          req.ip || null,
+          req.get("user-agent") || null,
+          req.originalUrl,
+          JSON.stringify({
+            proposalId: updated.proposalId,
+            status: updated.status,
+            checkerId: updated.checkerId,
+            immutableCertificateHash: updated.immutableCertificateHash,
+          }),
+        ]
+      );
+
+      res.json({
+        data: {
+          ...updated,
+          capitalGuardedCents: updated.capitalGuardedCents.toString(),
+        },
+      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, "Failed to approve or reject cognitive policy", 400, {
+        tenantId: req.tenantId,
+        userId: req.userId,
+      });
+    }
+  }
+);
+
+// 7. Policy Registry List Route
+router.get(
+  "/cognitive/policy/registry",
+  requirePermission(Permission.JOBS_READ),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = assertTenant(req.tenantId);
+      const store = getTenantPolicies(tenantId);
+      const policies = Array.from(store.values()).map((p) => ({
+        ...p,
+        capitalGuardedCents: p.capitalGuardedCents.toString(),
+      }));
+
+      res.json({
+        data: {
+          tenantId,
+          count: policies.length,
+          activeCount: policies.filter((p) => p.status === "active").length,
+          pendingCount: policies.filter((p) => p.status === "proposed").length,
+          policies,
+        },
+      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, "Failed to fetch policy registry", 500, {
+        tenantId: req.tenantId,
+        userId: req.userId,
+      });
+    }
+  }
+);
+
+// 8. Staged Multimodal Reconciliation Trigger Schema
+const reconcileStagedSchema = z.object({
+  body: z.object({
+    settlementId: z.string().min(1),
+    payoutAmount: z.number(),
+    currency: z.string().min(1),
+    payoutDate: z.string().min(1),
+    records: z.array(
+      z.object({
+        id: z.string(),
+        amount: z.number(),
+        date: z.string(),
+        fee: z.number().optional(),
+        type: z.enum(["sale", "refund", "chargeback", "adjustment", "fee"]).optional(),
+        reference: z.string().optional(),
+        metadata: z.record(z.unknown()).optional(),
+      })
+    ),
+    feeContract: z
+      .object({
+        rateBps: z.number(),
+        fixedFee: z.number(),
+        chargebackFee: z.number().optional(),
+        refundFeeReturned: z.boolean().optional(),
+      })
+      .optional(),
+    tolerance: z.number().optional(),
+  }),
+});
+
+router.post(
+  "/cognitive/reconcile-staged",
+  requirePermission(Permission.JOBS_WRITE),
+  validateRequest(reconcileStagedSchema),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = assertTenant(req.tenantId);
+      const { settlementId, payoutAmount, currency, payoutDate, records, feeContract, tolerance } =
+        req.body;
+
+      const sourceTransactions: BatchSourceTransaction[] = records.map((r) => ({
+        id: r.id,
+        amount: r.amount,
+        date: r.date,
+        fee: r.fee,
+        type: r.type,
+        reference: r.reference,
+        metadata: r.metadata,
+      }));
+
+      const reconciliationResult = BatchSettlementEngine.reconcile({
+        settlementId,
+        tenantId,
+        payoutAmount,
+        currency,
+        payoutDate,
+        sourceTransactions,
+        feeContract,
+        tolerance,
+      });
+
+      await queryWithTenant(
+        tenantId,
+        `INSERT INTO audit_logs (event, user_id, tenant_id, ip, user_agent, path, metadata)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [
+          "cognitive_staged_reconciliation_executed",
+          req.userId || null,
+          tenantId,
+          req.ip || null,
+          req.get("user-agent") || null,
+          req.originalUrl,
+          JSON.stringify({
+            settlementId,
+            stateRoot: reconciliationResult.stateRoot,
+            matches: reconciliationResult.matches.length,
+            isBalanced: reconciliationResult.isBalanced,
+          }),
+        ]
+      );
+
+      res.json({
+        data: reconciliationResult,
+      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, "Failed to reconcile staged records", 500, {
         tenantId: req.tenantId,
         userId: req.userId,
       });

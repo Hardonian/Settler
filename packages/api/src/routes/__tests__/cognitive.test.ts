@@ -149,6 +149,104 @@ describe("Cognitive API Routes", () => {
     });
   });
 
+  describe("POST /api/v1/cognitive/policy/propose & approve (SOX-404 Dual-Signature)", () => {
+    it("proposes a self-healing policy, lists registry, and approves with checker signature", async () => {
+      // 1. Propose
+      const proposeRes = await request(app)
+        .post("/api/v1/cognitive/policy/propose")
+        .send({
+          rail: "stripe_payout",
+          action: "HEAL_FLOAT_TIMING",
+          rationale: "Holiday clearing lag mitigation",
+          ruleConfig: { windowMultiplier: 2 },
+          noiseReductionPct: 94.5,
+          capitalGuardedCents: "50000000",
+        });
+
+      expect(proposeRes.status).toBe(200);
+      expect(proposeRes.body.data.proposalId).toMatch(/^pol_/);
+      expect(proposeRes.body.data.status).toBe("proposed");
+      expect(proposeRes.body.data.proposerId).toBe(USER);
+
+      const proposalId = proposeRes.body.data.proposalId;
+
+      // 2. Fetch registry
+      const regRes = await request(app).get("/api/v1/cognitive/policy/registry");
+      expect(regRes.status).toBe(200);
+      expect(regRes.body.data.count).toBeGreaterThanOrEqual(1);
+
+      // 3. Reject if same user tries to approve (SOX-404 violation)
+      const selfApproveRes = await request(app).post("/api/v1/cognitive/policy/approve").send({
+        proposalId,
+        action: "approve",
+      });
+
+      expect(selfApproveRes.status).toBe(400);
+      expect(selfApproveRes.body.message).toContain("dual-signature violation");
+
+      // 4. Approve with distinct controller identity
+      const controllerApp = express();
+      controllerApp.use(express.json());
+      controllerApp.use((req, _res, next) => {
+        (req as any).tenantId = TENANT;
+        (req as any).userId = "user_controller_sox_01"; // Distinct checker
+        next();
+      });
+      controllerApp.use("/api/v1", cognitiveRouter);
+
+      const approveRes = await request(controllerApp)
+        .post("/api/v1/cognitive/policy/approve")
+        .send({
+          proposalId,
+          action: "approve",
+        });
+
+      expect(approveRes.status).toBe(200);
+      expect(approveRes.body.data.status).toBe("active");
+      expect(approveRes.body.data.checkerId).toBe("user_controller_sox_01");
+      expect(approveRes.body.data.immutableCertificateHash).toMatch(/^0x[a-f0-9]{64}$/);
+    });
+  });
+
+  describe("POST /api/v1/cognitive/reconcile-staged", () => {
+    it("executes deterministic batch settlement reconciliation on staged multimodal records", async () => {
+      const res = await request(app)
+        .post("/api/v1/cognitive/reconcile-staged")
+        .send({
+          settlementId: "set_sep_2026_01",
+          payoutAmount: 20000,
+          currency: "USD",
+          payoutDate: "2026-09-15T00:00:00Z",
+          records: [
+            {
+              id: "tx_01",
+              amount: 15000,
+              date: "2026-09-14T10:00:00Z",
+              fee: 435,
+              type: "sale",
+            },
+            {
+              id: "tx_02",
+              amount: 5000,
+              date: "2026-09-14T12:00:00Z",
+              fee: 145,
+              type: "sale",
+            },
+          ],
+          feeContract: {
+            rateBps: 290,
+            fixedFee: 0,
+          },
+          tolerance: 0.01,
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.settlementId).toBe("set_sep_2026_01");
+      expect(res.body.data.matches.length).toBe(2);
+      expect(res.body.data.stateRoot).toHaveLength(64);
+    });
+  });
+
   describe("Tenant Isolation Guardrail", () => {
     it("rejects request if tenantId is missing or empty", async () => {
       const unauthenticatedApp = express();
