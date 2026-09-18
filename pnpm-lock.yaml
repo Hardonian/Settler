@@ -541,6 +541,9 @@ importers:
       '@settler/protocol':
         specifier: workspace:*
         version: link:../protocol
+      '@settler/reconciliation-core':
+        specifier: workspace:*
+        version: link:../reconciliation-core
       '@settler/sdk':
         specifier: workspace:*
         version: link:../sdk

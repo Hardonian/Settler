@@ -12,7 +12,9 @@
       "@settler/sdk": ["../sdk/dist"],
       "@settler/sdk/*": ["../sdk/dist/*"],
       "@settler/protocol": ["../protocol/dist"],
-      "@settler/protocol/*": ["../protocol/dist/*"]
+      "@settler/protocol/*": ["../protocol/dist/*"],
+      "@settler/reconciliation-core": ["../reconciliation-core/dist"],
+      "@settler/reconciliation-core/*": ["../reconciliation-core/dist/*"]
     }
   },
   "include": ["src/**/*"],

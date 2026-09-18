@@ -33,6 +33,7 @@
     "@ai-sdk/openai": "^4.0.66",
     "@jobforge/sdk-ts": "workspace:*",
     "@settler/protocol": "workspace:*",
+    "@settler/reconciliation-core": "workspace:*",
     "@settler/sdk": "workspace:*",
     "ai": "^7.0.99",
     "chalk": "^6.0.0",

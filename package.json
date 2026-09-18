@@ -242,6 +242,7 @@
     "verify:policy": "tsx scripts/verify-policy.ts && tsx scripts/test-moat.ts && tsx scripts/settler-replay.ts examples/demo-output-fixtures/demo-run-1/evidence.json",
     "verify:foundry": "pnpm exec tsx packages/cli/src/index.ts foundry vectors run --suite core --seeds 1,2",
     "verify:foundry:metamorphic": "pnpm exec tsx packages/cli/src/index.ts foundry metamorphic generate --base-suite core --per 1 --seed 1",
+    "verify:foundry:adversarial": "pnpm exec tsx packages/cli/src/index.ts foundry adversarial --count 5 --seed 42",
     "verify:foundry:faults": "pnpm exec tsx packages/cli/src/index.ts foundry generate --type faults --seeds 1 && node scripts/run-with-env.mjs --set FOUNDRY_FAULTS=1 -- pnpm exec tsx packages/cli/src/index.ts foundry report --last 1",
     "verify:api": "node scripts/verify-api.mjs",
     "verify:security": "pnpm run security:routes && pnpm run verify:tenant && node scripts/verify-security.mjs && node scripts/security/admin-route-authz.mjs && pnpm run test:cross-tenant && node scripts/run-with-env.mjs --default SECURITY_AUDIT_MODE=warn --shell -- \"pnpm run audit:deps && node scripts/security/dependency-triage.mjs && node scripts/run-tsx-safe.mjs scripts/security-smoke.ts\"",
