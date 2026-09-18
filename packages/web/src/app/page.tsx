@@ -24,6 +24,7 @@ import {
   ReconciliationFlow,
   VisualGrid,
 } from "@/components/site/HomeInfographics";
+import { CognitiveVerifierInteractiveEnclave } from "@/components/site/CognitiveVerifierInteractiveEnclave";
 
 export const metadata: Metadata = {
   title: "Settler — Reconciliation intelligence + audit OS",
@@ -129,6 +130,11 @@ export default function HomePage() {
           }
           visual={<InteractiveHeroEngine />}
         />
+
+        {/* Flagship Innovation: Cognitive Proposer / Deterministic Verifier Enclave */}
+        <Section className="py-20 bg-gradient-to-b from-background via-muted/10 to-background border-b border-border/40">
+          <CognitiveVerifierInteractiveEnclave />
+        </Section>
 
         {/* Strategic Cross-Rail Enclave Section */}
         <Section className="py-24 bg-muted/15 border-y border-border/40">

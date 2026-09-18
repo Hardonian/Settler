@@ -14,17 +14,19 @@ import { Menu, ChevronDown } from "lucide-react";
 
 // Primary navigation items (always visible on desktop)
 const primaryNavigationItems = [
+  { href: "/cognitive", label: "Cognitive OS" },
+  { href: "/verify", label: "Zero-Trust Verifier" },
   { href: "/platform", label: "Platform" },
   { href: "/sidereal", label: "Sidereal API" },
   { href: "/capabilities", label: "Capabilities" },
-  { href: "/product", label: "Product" },
-  { href: "/enterprise", label: "Enterprise" },
   { href: "/pricing", label: "Pricing" },
   { href: "/docs", label: "Docs" },
 ];
 
 // Feature pages exposed in a dropdown
 const featureNavigationItems = [
+  { href: "/product", label: "Product Suite" },
+  { href: "/enterprise", label: "Enterprise Governance" },
   { href: "/compare", label: "Settler vs Competitors" },
   { href: "/roi-calculator", label: "ROI Calculator" },
   { href: "/document-onboarding", label: "Document Onboarding" },
@@ -162,12 +164,20 @@ export function Navigation() {
                 <SettlerLogo className="h-8 w-auto" />
               </Link>
 
-              <div className="hidden xl:flex items-center gap-2 px-2.5 py-0.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-[11px] font-mono font-medium text-emerald-600 dark:text-emerald-400">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                <span>DETERMINISM ONLINE</span>
+              <div className="hidden 2xl:flex items-center gap-2">
+                <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-violet-500/30 bg-violet-500/10 text-[11px] font-mono font-medium text-violet-600 dark:text-violet-300">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-violet-400"></span>
+                  </span>
+                  <span>GEMINI 3 PROPOSER</span>
+                </div>
+                <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-[11px] font-mono font-medium text-emerald-600 dark:text-emerald-400">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                  </span>
+                  <span>RUST VERIFIER</span>
+                </div>
               </div>
             </div>
 

@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
+import { AmbientLightOrbs } from "@/components/site/HomeInfographics";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -274,622 +277,641 @@ paths:
   };
 
   return (
-    <div className="container mx-auto py-8 space-y-8 max-w-7xl">
-      {/* Header Banner */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-border/40 pb-6">
-        <div>
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="border-primary/50 text-primary bg-primary/10">
-              <Sparkles className="w-3 h-3 mr-1" /> Gemini 3.8 Flash Accelerated
-            </Badge>
-            <Badge
-              variant="outline"
-              className="border-emerald-500/50 text-emerald-500 bg-emerald-500/10"
-            >
-              <ShieldCheck className="w-3 h-3 mr-1" /> Deterministic Rust CAS
-            </Badge>
-            <Badge
-              variant="outline"
-              className="border-purple-500/50 text-purple-400 bg-purple-500/10"
-            >
-              <Lock className="w-3 h-3 mr-1" /> SOX-404 Dual-Signature
-            </Badge>
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight mt-2 text-foreground">
-            Cognitive Intelligence OS
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
-            Probabilistic cognitive fluidity at the perimeter, zero-float-drift cryptographic
-            determinism at the core.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="px-4 py-2 rounded-lg bg-card border border-border/60 text-right">
-            <div className="text-xs text-muted-foreground uppercase font-semibold">
-              Active Ledger Boundary
-            </div>
-            <div className="text-sm font-mono text-emerald-400 font-bold flex items-center gap-1.5 justify-end">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              100% RLS Tenant Isolated
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Tabs */}
-      <Tabs defaultValue="ingestion" className="space-y-6">
-        <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full h-auto p-1 bg-muted/60 border border-border/40 rounded-xl">
-          <TabsTrigger value="ingestion" className="py-2.5 flex items-center gap-2">
-            <FileText className="w-4 h-4 text-blue-400" />
-            <span>Multimodal Ingestion</span>
-          </TabsTrigger>
-          <TabsTrigger value="adjudication" className="py-2.5 flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-purple-400" />
-            <span>Causal Adjudication & Policy</span>
-          </TabsTrigger>
-          <TabsTrigger value="auditor" className="py-2.5 flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>Auditor OS & Verifier</span>
-          </TabsTrigger>
-          <TabsTrigger value="adapter" className="py-2.5 flex items-center gap-2">
-            <Cpu className="w-4 h-4 text-amber-400" />
-            <span>Connector Studio</span>
-          </TabsTrigger>
-        </TabsList>
-
-        {/* 1. Multimodal Document Ingestion */}
-        <TabsContent value="ingestion" className="space-y-6">
-          <div className="grid lg:grid-cols-2 gap-6">
-            <Card className="border-border/60 shadow-sm bg-card/60 backdrop-blur-sm">
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-blue-400" />
-                    Raw Statement Ingestion Stream
-                  </CardTitle>
-                  <label className="cursor-pointer">
-                    <input
-                      type="file"
-                      accept=".pdf,.csv,.xml,.txt"
-                      className="hidden"
-                      onChange={handleFileUpload}
-                    />
-                    <Badge
-                      variant="outline"
-                      className="border-primary/40 text-primary bg-primary/10 hover:bg-primary/20 flex items-center gap-1 cursor-pointer"
-                    >
-                      <UploadCloud className="w-3 h-3" /> Drop Bank File
-                    </Badge>
-                  </label>
-                </div>
-                <CardDescription>
-                  Extract unstructured PDF excerpts, SWIFT MT940, or ISO 20022 CAMT.053 XML files.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <textarea
-                  value={ingestionText}
-                  onChange={(e) => setIngestionText(e.target.value)}
-                  className="w-full h-56 p-3 rounded-md bg-muted/40 font-mono text-xs border border-border/80 focus:ring-1 focus:ring-primary focus:outline-none"
-                />
-                <div className="flex gap-2">
-                  <Button
-                    onClick={handleSimulateExtraction}
-                    disabled={isExtracting}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs h-9"
-                  >
-                    {isExtracting ? (
-                      <>
-                        <RefreshCw className="w-3.5 h-3.5 mr-2 animate-spin" /> Ingesting &
-                        Verifying...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="w-3.5 h-3.5 mr-2" /> Extract & Verify Balance
-                      </>
-                    )}
-                  </Button>
-                  <Button
-                    onClick={handleReconcileStaged}
-                    disabled={isReconcilingStaged}
-                    className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs h-9"
-                  >
-                    {isReconcilingStaged ? (
-                      <>
-                        <RefreshCw className="w-3.5 h-3.5 mr-2 animate-spin" /> Matching Staged...
-                      </>
-                    ) : (
-                      <>
-                        <ArrowDownRight className="w-3.5 h-3.5 mr-2" /> Stage & Reconcile Run
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-border/60 shadow-sm bg-card/60 backdrop-blur-sm">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                    Structured Normalized Records
-                  </CardTitle>
-                  <CardDescription>Zero-float-drift line-by-line provenance</CardDescription>
-                </div>
+    <div className="relative min-h-screen bg-background overflow-x-hidden">
+      <AmbientLightOrbs />
+      <Navigation />
+      <main className="pt-20 pb-24">
+        <div className="container mx-auto py-8 space-y-8 max-w-7xl">
+          {/* Header Banner */}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-border/40 pb-6">
+            <div>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="border-primary/50 text-primary bg-primary/10">
+                  <Sparkles className="w-3 h-3 mr-1" /> Gemini 3.8 Flash Accelerated
+                </Badge>
                 <Badge
                   variant="outline"
-                  className="border-emerald-500/50 text-emerald-400 bg-emerald-500/10"
+                  className="border-emerald-500/50 text-emerald-500 bg-emerald-500/10"
                 >
-                  {balanceVerdict === "EXACT_MATCH" ? "Exact Balance Verified" : "Balance Break"}
+                  <ShieldCheck className="w-3 h-3 mr-1" /> Deterministic Rust CAS
                 </Badge>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="rounded-md border border-border/60 overflow-hidden max-h-56 overflow-y-auto">
-                  <table className="w-full text-xs">
-                    <thead className="bg-muted/60 text-muted-foreground border-b border-border/60 sticky top-0">
-                      <tr>
-                        <th className="p-2 text-left">Record ID</th>
-                        <th className="p-2 text-left">Date</th>
-                        <th className="p-2 text-left">Amount</th>
-                        <th className="p-2 text-left">Confidence</th>
-                        <th className="p-2 text-right">Provenance</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border/40">
-                      {extractedRecords.map((rec) => (
-                        <tr key={rec.id} className="hover:bg-muted/20">
-                          <td className="p-2 font-mono font-medium text-foreground">{rec.id}</td>
-                          <td className="p-2 text-muted-foreground">{rec.date}</td>
-                          <td className="p-2 font-mono text-emerald-400 font-semibold">
-                            {rec.amount}
-                          </td>
-                          <td className="p-2">
-                            <Badge
-                              variant="outline"
-                              className="text-[10px] bg-blue-500/10 text-blue-400 border-blue-500/30"
-                            >
-                              {(rec.confidence * 100).toFixed(0)}%
-                            </Badge>
-                          </td>
-                          <td className="p-2 text-right text-muted-foreground font-mono">
-                            Line {rec.line}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-
-                {stagedReconResult && (
-                  <div className="p-3 rounded-lg bg-emerald-950/40 border border-emerald-500/40 text-xs space-y-1.5 animate-in fade-in duration-300">
-                    <div className="flex justify-between items-center">
-                      <span className="font-semibold text-emerald-300 flex items-center gap-1.5">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Staged Reconciliation
-                        Completed
-                      </span>
-                      <Badge
-                        variant="outline"
-                        className="text-[10px] text-emerald-400 border-emerald-500/40 font-mono"
-                      >
-                        {stagedReconResult.status}
-                      </Badge>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2 pt-1 font-mono text-[11px]">
-                      <div>
-                        Matched:{" "}
-                        <span className="text-foreground font-bold">
-                          {stagedReconResult.matchedCount} / {stagedReconResult.totalTransactions}
-                        </span>
-                      </div>
-                      <div>
-                        Payout Volume:{" "}
-                        <span className="text-foreground font-bold">
-                          {stagedReconResult.payoutAmount}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="text-[10px] font-mono text-muted-foreground break-all">
-                      StateRoot: {stagedReconResult.merkleRoot}
-                    </div>
-                  </div>
-                )}
-
-                <div className="p-3 rounded-lg bg-muted/40 border border-border/60 text-xs space-y-1.5">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Computed Statement Sum:</span>
-                    <span className="font-mono font-bold text-foreground">$170,920.75</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Declared Net Header:</span>
-                    <span className="font-mono font-bold text-foreground">$170,920.75</span>
-                  </div>
-                  <div className="flex justify-between border-t border-border/40 pt-1 text-emerald-400">
-                    <span className="font-semibold">Reconciliation Delta:</span>
-                    <span className="font-mono font-bold">$0.00 (Zero Drift)</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        {/* 2. Autonomous Closed-Loop Adjudication & Policy Governance */}
-        <TabsContent value="adjudication" className="space-y-6">
-          <Card className="border-border/60 shadow-sm bg-card/60 backdrop-blur-sm">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-purple-400" />
-                  Causal Exception Adjudication & SOX-404 Policy Governance
-                </CardTitle>
-                <CardDescription>
-                  Counterfactual root-cause analysis transforming exceptions into verified,
-                  dual-signed policy candidates.
-                </CardDescription>
+                <Badge
+                  variant="outline"
+                  className="border-purple-500/50 text-purple-400 bg-purple-500/10"
+                >
+                  <Lock className="w-3 h-3 mr-1" /> SOX-404 Dual-Signature
+                </Badge>
               </div>
-              <Button
-                size="sm"
-                onClick={handleSimulateAdjudication}
-                disabled={isAdjudicating}
-                className="bg-purple-600 hover:bg-purple-700 text-white"
-              >
-                {isAdjudicating ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> Evaluating Replay...
-                  </>
-                ) : (
-                  <>
-                    <RefreshCw className="w-4 h-4 mr-2" /> Re-Evaluate Live Exceptions
-                  </>
-                )}
-              </Button>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Healing Plans Grid */}
-              <div className="grid md:grid-cols-2 gap-4">
-                {healingPlans.map((plan) => (
-                  <div
-                    key={plan.id}
-                    className="p-4 rounded-xl border border-border/80 bg-muted/30 hover:border-purple-500/50 transition-colors space-y-3"
-                  >
-                    <div className="flex justify-between items-start">
-                      <div>
+              <h1 className="text-3xl font-bold tracking-tight mt-2 text-foreground">
+                Cognitive Intelligence OS
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
+                Probabilistic cognitive fluidity at the perimeter, zero-float-drift cryptographic
+                determinism at the core.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="px-4 py-2 rounded-lg bg-card border border-border/60 text-right">
+                <div className="text-xs text-muted-foreground uppercase font-semibold">
+                  Active Ledger Boundary
+                </div>
+                <div className="text-sm font-mono text-emerald-400 font-bold flex items-center gap-1.5 justify-end">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  100% RLS Tenant Isolated
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Main Tabs */}
+          <Tabs defaultValue="ingestion" className="space-y-6">
+            <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full h-auto p-1 bg-muted/60 border border-border/40 rounded-xl">
+              <TabsTrigger value="ingestion" className="py-2.5 flex items-center gap-2">
+                <FileText className="w-4 h-4 text-blue-400" />
+                <span>Multimodal Ingestion</span>
+              </TabsTrigger>
+              <TabsTrigger value="adjudication" className="py-2.5 flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-purple-400" />
+                <span>Causal Adjudication & Policy</span>
+              </TabsTrigger>
+              <TabsTrigger value="auditor" className="py-2.5 flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <span>Auditor OS & Verifier</span>
+              </TabsTrigger>
+              <TabsTrigger value="adapter" className="py-2.5 flex items-center gap-2">
+                <Cpu className="w-4 h-4 text-amber-400" />
+                <span>Connector Studio</span>
+              </TabsTrigger>
+            </TabsList>
+
+            {/* 1. Multimodal Document Ingestion */}
+            <TabsContent value="ingestion" className="space-y-6">
+              <div className="grid lg:grid-cols-2 gap-6">
+                <Card className="border-border/60 shadow-sm bg-card/60 backdrop-blur-sm">
+                  <CardHeader>
+                    <div className="flex justify-between items-center">
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <FileText className="w-5 h-5 text-blue-400" />
+                        Raw Statement Ingestion Stream
+                      </CardTitle>
+                      <label className="cursor-pointer">
+                        <input
+                          type="file"
+                          accept=".pdf,.csv,.xml,.txt"
+                          className="hidden"
+                          onChange={handleFileUpload}
+                        />
                         <Badge
                           variant="outline"
-                          className="font-mono text-[10px] bg-purple-500/10 text-purple-400 border-purple-500/30"
+                          className="border-primary/40 text-primary bg-primary/10 hover:bg-primary/20 flex items-center gap-1 cursor-pointer"
                         >
-                          {plan.action}
+                          <UploadCloud className="w-3 h-3" /> Drop Bank File
                         </Badge>
-                        <span className="text-xs text-muted-foreground ml-2 font-mono">
-                          {plan.id}
-                        </span>
-                      </div>
-                      <Badge
-                        variant="outline"
-                        className="text-[10px] bg-emerald-500/10 text-emerald-400 border-emerald-500/30 flex items-center gap-1"
-                      >
-                        <CheckCircle2 className="w-3 h-3" /> Replay Safe
-                      </Badge>
+                      </label>
                     </div>
-
-                    <p className="text-xs text-foreground leading-relaxed">{plan.rationale}</p>
-
-                    <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border/40 text-xs">
-                      <div>
-                        <div className="text-[10px] text-muted-foreground uppercase">
-                          Noise Reduction
-                        </div>
-                        <div className="font-mono font-bold text-emerald-400 text-sm">
-                          {plan.noiseReduction}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-[10px] text-muted-foreground uppercase">
-                          Capital Guarded
-                        </div>
-                        <div className="font-mono font-bold text-foreground text-sm">
-                          {plan.guarded}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="pt-2">
+                    <CardDescription>
+                      Extract unstructured PDF excerpts, SWIFT MT940, or ISO 20022 CAMT.053 XML
+                      files.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <textarea
+                      value={ingestionText}
+                      onChange={(e) => setIngestionText(e.target.value)}
+                      className="w-full h-56 p-3 rounded-md bg-muted/40 font-mono text-xs border border-border/80 focus:ring-1 focus:ring-primary focus:outline-none"
+                    />
+                    <div className="flex gap-2">
                       <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleProposePolicy(plan.id)}
-                        className="w-full text-xs border-purple-500/40 text-purple-300 hover:bg-purple-500/10"
+                        onClick={handleSimulateExtraction}
+                        disabled={isExtracting}
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs h-9"
                       >
-                        <Lock className="w-3.5 h-3.5 mr-1.5" /> Stage Dual-Signature Policy Proposal
+                        {isExtracting ? (
+                          <>
+                            <RefreshCw className="w-3.5 h-3.5 mr-2 animate-spin" /> Ingesting &
+                            Verifying...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-3.5 h-3.5 mr-2" /> Extract & Verify Balance
+                          </>
+                        )}
+                      </Button>
+                      <Button
+                        onClick={handleReconcileStaged}
+                        disabled={isReconcilingStaged}
+                        className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs h-9"
+                      >
+                        {isReconcilingStaged ? (
+                          <>
+                            <RefreshCw className="w-3.5 h-3.5 mr-2 animate-spin" /> Matching
+                            Staged...
+                          </>
+                        ) : (
+                          <>
+                            <ArrowDownRight className="w-3.5 h-3.5 mr-2" /> Stage & Reconcile Run
+                          </>
+                        )}
                       </Button>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  </CardContent>
+                </Card>
 
-              {/* Dual-Signature Approval Modal / Card if Selected */}
-              {selectedPlanForApproval && (
-                <div className="p-4 rounded-xl border-2 border-purple-500/60 bg-purple-950/20 space-y-3 animate-in fade-in duration-300">
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      <UserCheck className="w-5 h-5 text-purple-400" />
-                      <span className="text-sm font-bold text-foreground">
-                        SOX-404 Dual-Signature Review: {selectedPlanForApproval.id}
-                      </span>
-                    </div>
-                    <Badge variant="outline" className="border-purple-400/40 text-purple-300">
-                      Maker-Checker Required
-                    </Badge>
-                  </div>
-                  <div className="grid sm:grid-cols-2 gap-3 text-xs">
-                    <div className="p-2.5 rounded bg-muted/40 border border-border/50">
-                      <div className="text-[10px] text-muted-foreground uppercase font-semibold">
-                        Proposer (Maker)
-                      </div>
-                      <div className="font-mono font-bold text-foreground mt-0.5">
-                        operator_staff_01
-                      </div>
-                    </div>
-                    <div className="p-2.5 rounded bg-muted/40 border border-border/50">
-                      <div className="text-[10px] text-muted-foreground uppercase font-semibold">
-                        Controller (Checker)
-                      </div>
-                      <div className="font-mono font-bold text-purple-400 mt-0.5">
-                        controller_verified_exec
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex gap-2 pt-2">
-                    <Button
-                      size="sm"
-                      onClick={handleCommitDualSignature}
-                      className="bg-purple-600 hover:bg-purple-700 text-white font-medium text-xs flex-1"
-                    >
-                      <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" /> Authorize & Freeze SHA-256
-                      Policy Certificate
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setSelectedPlanForApproval(null)}
-                      className="text-xs"
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {/* Active Policy Registry Table */}
-              <div className="space-y-2 pt-4 border-t border-border/40">
-                <div className="flex justify-between items-center">
-                  <div className="text-sm font-bold text-foreground flex items-center gap-2">
-                    <Layers className="w-4 h-4 text-purple-400" /> Active Frozen Cognitive Policies
-                    ({activePolicies.length})
-                  </div>
-                  <Badge
-                    variant="outline"
-                    className="text-[10px] text-emerald-400 border-emerald-500/30"
-                  >
-                    Immutable SHA-256 Enforced
-                  </Badge>
-                </div>
-                <div className="rounded-lg border border-border/60 overflow-hidden">
-                  <table className="w-full text-xs">
-                    <thead className="bg-muted/60 text-muted-foreground border-b border-border/60">
-                      <tr>
-                        <th className="p-2.5 text-left">Policy ID</th>
-                        <th className="p-2.5 text-left">Action</th>
-                        <th className="p-2.5 text-left">Maker / Checker</th>
-                        <th className="p-2.5 text-left">Noise Reduction</th>
-                        <th className="p-2.5 text-left">Certificate Fingerprint</th>
-                        <th className="p-2.5 text-right">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border/40 font-mono">
-                      {activePolicies.map((pol) => (
-                        <tr key={pol.proposalId} className="hover:bg-muted/20">
-                          <td className="p-2.5 font-bold text-foreground">{pol.proposalId}</td>
-                          <td className="p-2.5 text-purple-400">{pol.action}</td>
-                          <td className="p-2.5 text-muted-foreground text-[11px]">
-                            {pol.proposerId} /{" "}
-                            <span className="text-foreground">{pol.checkerId}</span>
-                          </td>
-                          <td className="p-2.5 text-emerald-400 font-bold">
-                            {pol.noiseReductionPct}%
-                          </td>
-                          <td className="p-2.5 text-[10px] text-muted-foreground max-w-xs truncate">
-                            {pol.certificateHash}
-                          </td>
-                          <td className="p-2.5 text-right">
-                            <Badge
-                              variant="outline"
-                              className="text-[10px] bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
-                            >
-                              ACTIVE
-                            </Badge>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* 3. Conversational Auditor OS & Zero-Trust Verifier */}
-        <TabsContent value="auditor" className="space-y-6">
-          {/* Zero-Trust Client-Side Verifier Studio */}
-          <ZeroTrustVerifier />
-
-          {/* Attestation Dossier */}
-          <Card className="border-border/60 shadow-sm bg-card/60 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-emerald-400" />
-                Conversational Auditor & Zero-Knowledge Proofpacks
-              </CardTitle>
-              <CardDescription>
-                Ask questions in plain English. Settler generates 100% census audit memorandums and
-                cryptographic Merkle proofpacks.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Search className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
-                  <input
-                    type="text"
-                    value={auditQuery}
-                    onChange={(e) => setAuditQuery(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 text-xs rounded-md bg-muted/40 border border-border/80 text-foreground focus:ring-1 focus:ring-primary focus:outline-none"
-                    placeholder="Enter plain English audit inquiry..."
-                  />
-                </div>
-                <Button
-                  onClick={handleSimulateAudit}
-                  disabled={isAuditing}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs"
-                >
-                  {isAuditing ? <RefreshCw className="w-4 h-4 animate-spin" /> : "Verify Census"}
-                </Button>
-              </div>
-
-              {auditDossier && (
-                <div className="p-4 rounded-xl border border-border/80 bg-muted/20 space-y-4 text-xs">
-                  <div className="flex justify-between items-center border-b border-border/40 pb-3">
-                    <div className="font-bold text-foreground flex items-center gap-2">
-                      <Fingerprint className="w-4 h-4 text-emerald-400" />
-                      Auditor Attestation Dossier: {auditDossier.dossierId}
+                <Card className="border-border/60 shadow-sm bg-card/60 backdrop-blur-sm">
+                  <CardHeader className="flex flex-row items-center justify-between">
+                    <div>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                        Structured Normalized Records
+                      </CardTitle>
+                      <CardDescription>Zero-float-drift line-by-line provenance</CardDescription>
                     </div>
                     <Badge
                       variant="outline"
                       className="border-emerald-500/50 text-emerald-400 bg-emerald-500/10"
                     >
-                      100% Census Coverage
+                      {balanceVerdict === "EXACT_MATCH"
+                        ? "Exact Balance Verified"
+                        : "Balance Break"}
                     </Badge>
-                  </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="rounded-md border border-border/60 overflow-hidden max-h-56 overflow-y-auto">
+                      <table className="w-full text-xs">
+                        <thead className="bg-muted/60 text-muted-foreground border-b border-border/60 sticky top-0">
+                          <tr>
+                            <th className="p-2 text-left">Record ID</th>
+                            <th className="p-2 text-left">Date</th>
+                            <th className="p-2 text-left">Amount</th>
+                            <th className="p-2 text-left">Confidence</th>
+                            <th className="p-2 text-right">Provenance</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border/40">
+                          {extractedRecords.map((rec) => (
+                            <tr key={rec.id} className="hover:bg-muted/20">
+                              <td className="p-2 font-mono font-medium text-foreground">
+                                {rec.id}
+                              </td>
+                              <td className="p-2 text-muted-foreground">{rec.date}</td>
+                              <td className="p-2 font-mono text-emerald-400 font-semibold">
+                                {rec.amount}
+                              </td>
+                              <td className="p-2">
+                                <Badge
+                                  variant="outline"
+                                  className="text-[10px] bg-blue-500/10 text-blue-400 border-blue-500/30"
+                                >
+                                  {(rec.confidence * 100).toFixed(0)}%
+                                </Badge>
+                              </td>
+                              <td className="p-2 text-right text-muted-foreground font-mono">
+                                Line {rec.line}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
 
-                  <div className="grid sm:grid-cols-3 gap-3">
-                    <div className="p-2.5 rounded-lg bg-muted/40 border border-border/40">
-                      <div className="text-[10px] text-muted-foreground uppercase font-semibold">
-                        Transactions Verified
+                    {stagedReconResult && (
+                      <div className="p-3 rounded-lg bg-emerald-950/40 border border-emerald-500/40 text-xs space-y-1.5 animate-in fade-in duration-300">
+                        <div className="flex justify-between items-center">
+                          <span className="font-semibold text-emerald-300 flex items-center gap-1.5">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Staged
+                            Reconciliation Completed
+                          </span>
+                          <Badge
+                            variant="outline"
+                            className="text-[10px] text-emerald-400 border-emerald-500/40 font-mono"
+                          >
+                            {stagedReconResult.status}
+                          </Badge>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 pt-1 font-mono text-[11px]">
+                          <div>
+                            Matched:{" "}
+                            <span className="text-foreground font-bold">
+                              {stagedReconResult.matchedCount} /{" "}
+                              {stagedReconResult.totalTransactions}
+                            </span>
+                          </div>
+                          <div>
+                            Payout Volume:{" "}
+                            <span className="text-foreground font-bold">
+                              {stagedReconResult.payoutAmount}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="text-[10px] font-mono text-muted-foreground break-all">
+                          StateRoot: {stagedReconResult.merkleRoot}
+                        </div>
                       </div>
-                      <div className="font-mono font-bold text-foreground text-sm mt-0.5">
-                        {auditDossier.censusCount}
-                      </div>
-                    </div>
-                    <div className="p-2.5 rounded-lg bg-muted/40 border border-border/40">
-                      <div className="text-[10px] text-muted-foreground uppercase font-semibold">
-                        Total Audited Volume
-                      </div>
-                      <div className="font-mono font-bold text-foreground text-sm mt-0.5">
-                        {auditDossier.volume}
-                      </div>
-                    </div>
-                    <div className="p-2.5 rounded-lg bg-muted/40 border border-border/40">
-                      <div className="text-[10px] text-muted-foreground uppercase font-semibold">
-                        Unallocated Drift
-                      </div>
-                      <div className="font-mono font-bold text-emerald-400 text-sm mt-0.5">
-                        {auditDossier.drift}
-                      </div>
-                    </div>
-                  </div>
+                    )}
 
+                    <div className="p-3 rounded-lg bg-muted/40 border border-border/60 text-xs space-y-1.5">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Computed Statement Sum:</span>
+                        <span className="font-mono font-bold text-foreground">$170,920.75</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Declared Net Header:</span>
+                        <span className="font-mono font-bold text-foreground">$170,920.75</span>
+                      </div>
+                      <div className="flex justify-between border-t border-border/40 pt-1 text-emerald-400">
+                        <span className="font-semibold">Reconciliation Delta:</span>
+                        <span className="font-mono font-bold">$0.00 (Zero Drift)</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            {/* 2. Autonomous Closed-Loop Adjudication & Policy Governance */}
+            <TabsContent value="adjudication" className="space-y-6">
+              <Card className="border-border/60 shadow-sm bg-card/60 backdrop-blur-sm">
+                <CardHeader className="flex flex-row items-center justify-between">
                   <div>
-                    <div className="text-[10px] text-muted-foreground uppercase font-semibold mb-1">
-                      Aggregated Merkle State Root (RFC 6962)
-                    </div>
-                    <div className="p-2 rounded bg-background font-mono text-[11px] text-emerald-400 border border-border/60 break-all select-all">
-                      {auditDossier.merkleRoot}
-                    </div>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Sparkles className="w-5 h-5 text-purple-400" />
+                      Causal Exception Adjudication & SOX-404 Policy Governance
+                    </CardTitle>
+                    <CardDescription>
+                      Counterfactual root-cause analysis transforming exceptions into verified,
+                      dual-signed policy candidates.
+                    </CardDescription>
+                  </div>
+                  <Button
+                    size="sm"
+                    onClick={handleSimulateAdjudication}
+                    disabled={isAdjudicating}
+                    className="bg-purple-600 hover:bg-purple-700 text-white"
+                  >
+                    {isAdjudicating ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> Evaluating Replay...
+                      </>
+                    ) : (
+                      <>
+                        <RefreshCw className="w-4 h-4 mr-2" /> Re-Evaluate Live Exceptions
+                      </>
+                    )}
+                  </Button>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Healing Plans Grid */}
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {healingPlans.map((plan) => (
+                      <div
+                        key={plan.id}
+                        className="p-4 rounded-xl border border-border/80 bg-muted/30 hover:border-purple-500/50 transition-colors space-y-3"
+                      >
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <Badge
+                              variant="outline"
+                              className="font-mono text-[10px] bg-purple-500/10 text-purple-400 border-purple-500/30"
+                            >
+                              {plan.action}
+                            </Badge>
+                            <span className="text-xs text-muted-foreground ml-2 font-mono">
+                              {plan.id}
+                            </span>
+                          </div>
+                          <Badge
+                            variant="outline"
+                            className="text-[10px] bg-emerald-500/10 text-emerald-400 border-emerald-500/30 flex items-center gap-1"
+                          >
+                            <CheckCircle2 className="w-3 h-3" /> Replay Safe
+                          </Badge>
+                        </div>
+
+                        <p className="text-xs text-foreground leading-relaxed">{plan.rationale}</p>
+
+                        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border/40 text-xs">
+                          <div>
+                            <div className="text-[10px] text-muted-foreground uppercase">
+                              Noise Reduction
+                            </div>
+                            <div className="font-mono font-bold text-emerald-400 text-sm">
+                              {plan.noiseReduction}
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-[10px] text-muted-foreground uppercase">
+                              Capital Guarded
+                            </div>
+                            <div className="font-mono font-bold text-foreground text-sm">
+                              {plan.guarded}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="pt-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleProposePolicy(plan.id)}
+                            className="w-full text-xs border-purple-500/40 text-purple-300 hover:bg-purple-500/10"
+                          >
+                            <Lock className="w-3.5 h-3.5 mr-1.5" /> Stage Dual-Signature Policy
+                            Proposal
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
 
-                  <div className="p-3 rounded-lg bg-muted/50 border border-border/60 font-mono text-[11px] text-muted-foreground leading-relaxed">
-                    // Verification Command (WASM zero-trust execution)
-                    <br />
-                    <span className="text-foreground">
-                      pnpm exec tsx packages/cli/src/index.ts verify --dossier{" "}
-                      {auditDossier.dossierId}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* 4. Zero-Shot Connector Studio */}
-        <TabsContent value="adapter" className="space-y-6">
-          <div className="grid lg:grid-cols-2 gap-6">
-            <Card className="border-border/60 shadow-sm bg-card/60 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Terminal className="w-5 h-5 text-amber-400" />
-                  Regional Rail Specification
-                </CardTitle>
-                <CardDescription>
-                  Supply OpenAPI YAML/JSON or raw API documentation to generate production
-                  connectors.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <textarea
-                  value={connectorSpec}
-                  onChange={(e) => setConnectorSpec(e.target.value)}
-                  className="w-full h-64 p-3 rounded-md bg-muted/40 font-mono text-xs border border-border/80 focus:ring-1 focus:ring-primary focus:outline-none"
-                />
-                <Button
-                  onClick={handleSimulateSynthesis}
-                  disabled={isSynthesizing}
-                  className="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium"
-                >
-                  {isSynthesizing ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> Synthesizing Sandboxed
-                      Driver...
-                    </>
-                  ) : (
-                    <>
-                      <Code2 className="w-4 h-4 mr-2" /> Synthesize TypeScript Connector Driver
-                    </>
+                  {/* Dual-Signature Approval Modal / Card if Selected */}
+                  {selectedPlanForApproval && (
+                    <div className="p-4 rounded-xl border-2 border-purple-500/60 bg-purple-950/20 space-y-3 animate-in fade-in duration-300">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <UserCheck className="w-5 h-5 text-purple-400" />
+                          <span className="text-sm font-bold text-foreground">
+                            SOX-404 Dual-Signature Review: {selectedPlanForApproval.id}
+                          </span>
+                        </div>
+                        <Badge variant="outline" className="border-purple-400/40 text-purple-300">
+                          Maker-Checker Required
+                        </Badge>
+                      </div>
+                      <div className="grid sm:grid-cols-2 gap-3 text-xs">
+                        <div className="p-2.5 rounded bg-muted/40 border border-border/50">
+                          <div className="text-[10px] text-muted-foreground uppercase font-semibold">
+                            Proposer (Maker)
+                          </div>
+                          <div className="font-mono font-bold text-foreground mt-0.5">
+                            operator_staff_01
+                          </div>
+                        </div>
+                        <div className="p-2.5 rounded bg-muted/40 border border-border/50">
+                          <div className="text-[10px] text-muted-foreground uppercase font-semibold">
+                            Controller (Checker)
+                          </div>
+                          <div className="font-mono font-bold text-purple-400 mt-0.5">
+                            controller_verified_exec
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex gap-2 pt-2">
+                        <Button
+                          size="sm"
+                          onClick={handleCommitDualSignature}
+                          className="bg-purple-600 hover:bg-purple-700 text-white font-medium text-xs flex-1"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" /> Authorize & Freeze SHA-256
+                          Policy Certificate
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setSelectedPlanForApproval(null)}
+                          className="text-xs"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
                   )}
-                </Button>
-              </CardContent>
-            </Card>
 
-            <Card className="border-border/60 shadow-sm bg-card/60 backdrop-blur-sm">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div>
+                  {/* Active Policy Registry Table */}
+                  <div className="space-y-2 pt-4 border-t border-border/40">
+                    <div className="flex justify-between items-center">
+                      <div className="text-sm font-bold text-foreground flex items-center gap-2">
+                        <Layers className="w-4 h-4 text-purple-400" /> Active Frozen Cognitive
+                        Policies ({activePolicies.length})
+                      </div>
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] text-emerald-400 border-emerald-500/30"
+                      >
+                        Immutable SHA-256 Enforced
+                      </Badge>
+                    </div>
+                    <div className="rounded-lg border border-border/60 overflow-hidden">
+                      <table className="w-full text-xs">
+                        <thead className="bg-muted/60 text-muted-foreground border-b border-border/60">
+                          <tr>
+                            <th className="p-2.5 text-left">Policy ID</th>
+                            <th className="p-2.5 text-left">Action</th>
+                            <th className="p-2.5 text-left">Maker / Checker</th>
+                            <th className="p-2.5 text-left">Noise Reduction</th>
+                            <th className="p-2.5 text-left">Certificate Fingerprint</th>
+                            <th className="p-2.5 text-right">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border/40 font-mono">
+                          {activePolicies.map((pol) => (
+                            <tr key={pol.proposalId} className="hover:bg-muted/20">
+                              <td className="p-2.5 font-bold text-foreground">{pol.proposalId}</td>
+                              <td className="p-2.5 text-purple-400">{pol.action}</td>
+                              <td className="p-2.5 text-muted-foreground text-[11px]">
+                                {pol.proposerId} /{" "}
+                                <span className="text-foreground">{pol.checkerId}</span>
+                              </td>
+                              <td className="p-2.5 text-emerald-400 font-bold">
+                                {pol.noiseReductionPct}%
+                              </td>
+                              <td className="p-2.5 text-[10px] text-muted-foreground max-w-xs truncate">
+                                {pol.certificateHash}
+                              </td>
+                              <td className="p-2.5 text-right">
+                                <Badge
+                                  variant="outline"
+                                  className="text-[10px] bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                                >
+                                  ACTIVE
+                                </Badge>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* 3. Conversational Auditor OS & Zero-Trust Verifier */}
+            <TabsContent value="auditor" className="space-y-6">
+              {/* Zero-Trust Client-Side Verifier Studio */}
+              <ZeroTrustVerifier />
+
+              {/* Attestation Dossier */}
+              <Card className="border-border/60 shadow-sm bg-card/60 backdrop-blur-sm">
+                <CardHeader>
                   <CardTitle className="text-lg flex items-center gap-2">
-                    <Code2 className="w-5 h-5 text-emerald-400" />
-                    Synthesized Driver Output
+                    <ShieldCheck className="w-5 h-5 text-emerald-400" />
+                    Conversational Auditor & Zero-Knowledge Proofpacks
                   </CardTitle>
                   <CardDescription>
-                    Conforms to @settler/adapters Connector contract
+                    Ask questions in plain English. Settler generates 100% census audit memorandums
+                    and cryptographic Merkle proofpacks.
                   </CardDescription>
-                </div>
-                <Badge
-                  variant="outline"
-                  className="border-emerald-500/50 text-emerald-400 bg-emerald-500/10"
-                >
-                  Ready to Compile
-                </Badge>
-              </CardHeader>
-              <CardContent>
-                <pre className="p-3 rounded-md bg-background border border-border/60 font-mono text-xs text-foreground overflow-x-auto h-72">
-                  {synthesizedCode}
-                </pre>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-      </Tabs>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Search className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
+                      <input
+                        type="text"
+                        value={auditQuery}
+                        onChange={(e) => setAuditQuery(e.target.value)}
+                        className="w-full pl-9 pr-3 py-2 text-xs rounded-md bg-muted/40 border border-border/80 text-foreground focus:ring-1 focus:ring-primary focus:outline-none"
+                        placeholder="Enter plain English audit inquiry..."
+                      />
+                    </div>
+                    <Button
+                      onClick={handleSimulateAudit}
+                      disabled={isAuditing}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs"
+                    >
+                      {isAuditing ? (
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                      ) : (
+                        "Verify Census"
+                      )}
+                    </Button>
+                  </div>
+
+                  {auditDossier && (
+                    <div className="p-4 rounded-xl border border-border/80 bg-muted/20 space-y-4 text-xs">
+                      <div className="flex justify-between items-center border-b border-border/40 pb-3">
+                        <div className="font-bold text-foreground flex items-center gap-2">
+                          <Fingerprint className="w-4 h-4 text-emerald-400" />
+                          Auditor Attestation Dossier: {auditDossier.dossierId}
+                        </div>
+                        <Badge
+                          variant="outline"
+                          className="border-emerald-500/50 text-emerald-400 bg-emerald-500/10"
+                        >
+                          100% Census Coverage
+                        </Badge>
+                      </div>
+
+                      <div className="grid sm:grid-cols-3 gap-3">
+                        <div className="p-2.5 rounded-lg bg-muted/40 border border-border/40">
+                          <div className="text-[10px] text-muted-foreground uppercase font-semibold">
+                            Transactions Verified
+                          </div>
+                          <div className="font-mono font-bold text-foreground text-sm mt-0.5">
+                            {auditDossier.censusCount}
+                          </div>
+                        </div>
+                        <div className="p-2.5 rounded-lg bg-muted/40 border border-border/40">
+                          <div className="text-[10px] text-muted-foreground uppercase font-semibold">
+                            Total Audited Volume
+                          </div>
+                          <div className="font-mono font-bold text-foreground text-sm mt-0.5">
+                            {auditDossier.volume}
+                          </div>
+                        </div>
+                        <div className="p-2.5 rounded-lg bg-muted/40 border border-border/40">
+                          <div className="text-[10px] text-muted-foreground uppercase font-semibold">
+                            Unallocated Drift
+                          </div>
+                          <div className="font-mono font-bold text-emerald-400 text-sm mt-0.5">
+                            {auditDossier.drift}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="text-[10px] text-muted-foreground uppercase font-semibold mb-1">
+                          Aggregated Merkle State Root (RFC 6962)
+                        </div>
+                        <div className="p-2 rounded bg-background font-mono text-[11px] text-emerald-400 border border-border/60 break-all select-all">
+                          {auditDossier.merkleRoot}
+                        </div>
+                      </div>
+
+                      <div className="p-3 rounded-lg bg-muted/50 border border-border/60 font-mono text-[11px] text-muted-foreground leading-relaxed">
+                        // Verification Command (WASM zero-trust execution)
+                        <br />
+                        <span className="text-foreground">
+                          pnpm exec tsx packages/cli/src/index.ts verify --dossier{" "}
+                          {auditDossier.dossierId}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* 4. Zero-Shot Connector Studio */}
+            <TabsContent value="adapter" className="space-y-6">
+              <div className="grid lg:grid-cols-2 gap-6">
+                <Card className="border-border/60 shadow-sm bg-card/60 backdrop-blur-sm">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Terminal className="w-5 h-5 text-amber-400" />
+                      Regional Rail Specification
+                    </CardTitle>
+                    <CardDescription>
+                      Supply OpenAPI YAML/JSON or raw API documentation to generate production
+                      connectors.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <textarea
+                      value={connectorSpec}
+                      onChange={(e) => setConnectorSpec(e.target.value)}
+                      className="w-full h-64 p-3 rounded-md bg-muted/40 font-mono text-xs border border-border/80 focus:ring-1 focus:ring-primary focus:outline-none"
+                    />
+                    <Button
+                      onClick={handleSimulateSynthesis}
+                      disabled={isSynthesizing}
+                      className="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium"
+                    >
+                      {isSynthesizing ? (
+                        <>
+                          <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> Synthesizing Sandboxed
+                          Driver...
+                        </>
+                      ) : (
+                        <>
+                          <Code2 className="w-4 h-4 mr-2" /> Synthesize TypeScript Connector Driver
+                        </>
+                      )}
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/60 shadow-sm bg-card/60 backdrop-blur-sm">
+                  <CardHeader className="flex flex-row items-center justify-between">
+                    <div>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Code2 className="w-5 h-5 text-emerald-400" />
+                        Synthesized Driver Output
+                      </CardTitle>
+                      <CardDescription>
+                        Conforms to @settler/adapters Connector contract
+                      </CardDescription>
+                    </div>
+                    <Badge
+                      variant="outline"
+                      className="border-emerald-500/50 text-emerald-400 bg-emerald-500/10"
+                    >
+                      Ready to Compile
+                    </Badge>
+                  </CardHeader>
+                  <CardContent>
+                    <pre className="p-3 rounded-md bg-background border border-border/60 font-mono text-xs text-foreground overflow-x-auto h-72">
+                      {synthesizedCode}
+                    </pre>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 }
