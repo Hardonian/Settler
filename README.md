@@ -99,8 +99,21 @@ Traditional financial audit and reconciliation tools (BlackLine, Trintech) rely 
 
 **Settler turns financial audit into a zero-trust cryptographic check:**
 1. **Mathematical Determinism**: Every match run hashes inputs, tolerance rules, and outputs into a SHA-256 Merkle tree (Proofpack).
-2. **Offline Browser Verification**: Using our compiled WebAssembly engine (`crates/settler-verify-wasm`), external Big 4 auditors verify evidence bundles client-side in their browser without network access.
+2. **Offline Browser Verification**: Using our compiled WebAssembly engine (`crates/settler-verify-wasm`) or in-browser Web Crypto API, external Big 4 auditors verify evidence bundles client-side in their browser without network access.
 3. **Institutional Memory**: Operator exception adjudications train deterministic pattern heuristics, compounding institutional knowledge over time.
+
+## Gemini 3 Cognitive Intelligence Suite
+
+Settler pairs the cognitive reasoning of **Gemini 3** at the perimeter with the mathematical determinism of Settler's Rust kernel at the core:
+
+- **1M+ Token Multimodal Ingestion** — Drop raw PDFs, CAMT.053 XML, or MT940 statement streams directly into the operator console with zero float drift.
+- **Causal Counterfactual Adjudication** — Diagnoses holiday clearing lags and FX rounding variances; synthesizes bounded `SelfHealingPlan` candidates.
+- **SOX-404 Dual-Signature Governance** — Enforces strict Maker-Checker approval; generates permanent SHA-256 policy freeze certificates (`0x...`).
+- **Zero-Trust Proofpack Verifier** — In-browser offline Merkle verification using client-side Web Crypto API (`crypto.subtle.digest`) in <2ms with zero server roundtrips.
+- **Zero-Shot Connector Synthesizer** — Automatically generates production TypeScript `Connector` drivers from raw OpenAPI YAML or bank API documentation.
+- **Metamorphic Adversarial CI Fuzzer** — Automated testing (`pnpm run verify:foundry:adversarial`) validating 100% defense resilience against poisoned vectors and micro-rounding attacks.
+
+*Full specification: [`docs/GEMINI_COGNITIVE_ARCHITECTURE.md`](docs/GEMINI_COGNITIVE_ARCHITECTURE.md)*
 
 ## Transparent Pricing (Canonical Commercial Spine)
 
