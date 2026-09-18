@@ -28,13 +28,15 @@ export default function UseCasesPage() {
           title="Workflows for builders, operators, and evaluators"
           description="Settler supports distinct user journeys without hiding technical detail. These examples map directly to documented APIs, console surfaces, and operational artifacts in the repository."
           visual={
-            <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-primary/20 shadow-2xl">
+            <div className="group relative aspect-video w-full overflow-hidden rounded-2xl border border-primary/20 bg-card/60 shadow-2xl transition-all duration-500 hover:border-primary/40 hover:shadow-primary/10">
               <Image
-                src="/rule_trace_3d.png"
-                alt="Use case orchestration"
+                src="/use_cases_3d.png"
+                alt="Multi-rail financial settlement and payment workflow orchestration"
                 fill
-                className="object-cover"
+                className="object-cover transition-transform duration-700 group-hover:scale-105"
+                priority
               />
+              <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-transparent pointer-events-none" />
             </div>
           }
         />

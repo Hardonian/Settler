@@ -69,10 +69,21 @@ const AmbientLightOrbs = dynamic(
   () => import("@/components/site/AmbientLightOrbs").then((mod) => mod.AmbientLightOrbs),
   { ssr: false }
 );
+const ArchitectureModuleShowcase = dynamic(
+  () =>
+    import("@/components/site/ArchitectureModuleShowcase").then(
+      (mod) => mod.ArchitectureModuleShowcase
+    ),
+  {
+    ssr: false,
+    loading: () => <div className="min-h-96 w-full rounded-3xl bg-card/60 animate-pulse" />,
+  }
+);
 
 export {
   AdapterConnectionMap,
   AmbientLightOrbs,
+  ArchitectureModuleShowcase,
   AutonomousDocumentOnboarding,
   BilateralSettlementVisualizer,
   EnterpriseRoiCalculator,

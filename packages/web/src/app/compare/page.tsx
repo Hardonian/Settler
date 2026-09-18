@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { PublicPageShell, Section, SectionHeader } from "@/components/site/primitives";
@@ -33,34 +34,59 @@ export default function ComparePage() {
 
       <main id="main-content" className="pt-20">
         {/* Hero Section */}
-        <section className="relative px-4 sm:px-6 lg:px-8 pt-12 pb-16 lg:pt-16 lg:pb-24 max-w-7xl mx-auto text-center">
-          <Badge
-            variant="outline"
-            className="mb-4 border-primary/40 bg-primary/5 text-primary text-xs font-bold uppercase tracking-widest px-3 py-1"
-          >
-            Technical Due Diligence &amp; Market Comparison
-          </Badge>
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-foreground tracking-tight max-w-4xl mx-auto leading-tight">
-            Why High-Growth Companies Choose{" "}
-            <span className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
-              Settler
-            </span>
-          </h1>
-          <p className="mt-6 text-base sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Legacy financial close monoliths take 6 months of consulting and produce static PDFs.
-            In-house scripts drift and fail audits. Settler delivers mathematical determinism,
-            sub-millisecond continuous close, and cryptographic proofpacks.
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Button asChild size="lg" className="font-bold px-8 h-12 shadow-lg">
-              <Link href="/pricing">
-                View Transparent Pricing
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="lg" className="font-semibold h-12">
-              <Link href="/docs">Explore Developer Docs</Link>
-            </Button>
+        <section className="relative px-4 sm:px-6 lg:px-8 pt-12 pb-16 lg:pt-20 lg:pb-24 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+              <Badge
+                variant="outline"
+                className="border-primary/40 bg-primary/5 text-primary text-xs font-bold uppercase tracking-widest px-3 py-1"
+              >
+                Technical Due Diligence &amp; Market Comparison
+              </Badge>
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-foreground tracking-tight leading-[1.12]">
+                Why High-Growth Companies Choose{" "}
+                <span className="bg-gradient-to-r from-blue-600 via-cyan-500 to-teal-400 bg-clip-text text-transparent">
+                  Settler
+                </span>
+              </h1>
+              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                Legacy financial close monoliths take 6 months of consulting and produce static
+                PDFs. In-house scripts drift and fail audits. Settler delivers mathematical
+                determinism, sub-millisecond continuous close, and cryptographic proofpacks.
+              </p>
+              <div className="pt-2 flex flex-wrap justify-center lg:justify-start gap-4">
+                <Button asChild size="lg" className="font-bold px-8 h-12 shadow-lg">
+                  <Link href="/pricing">
+                    View Transparent Pricing
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" size="lg" className="font-semibold h-12">
+                  <Link href="/docs">Explore Developer Docs</Link>
+                </Button>
+              </div>
+            </div>
+
+            <div className="lg:col-span-5">
+              <div className="group relative aspect-square w-full max-w-[500px] mx-auto overflow-hidden rounded-3xl border border-primary/25 bg-card/70 shadow-2xl transition-all duration-500 hover:border-primary/45 hover:shadow-primary/15">
+                <Image
+                  src="/compare_matrix_3d.png"
+                  alt="Settler deterministic continuous close engine vs legacy batch pipeline"
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-tr from-primary/15 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute bottom-4 left-4 right-4 rounded-xl border border-white/10 bg-black/60 backdrop-blur-md p-3 text-xs text-white/90 flex items-center justify-between">
+                  <span className="font-mono text-[11px] text-cyan-300 font-semibold">
+                    ENGINE: T+0 CONTINUOUS
+                  </span>
+                  <span className="font-mono text-[11px] text-emerald-400 font-bold">
+                    DRIFT: 0.00%
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 

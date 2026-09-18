@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
@@ -113,35 +114,63 @@ export default function OpenSourcePage() {
       <main id="main-content">
         {/* Hero */}
         <section className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 bg-card dark:bg-background border-b border-border dark:border-border">
-          <div className="max-w-5xl mx-auto">
-            <div className="flex items-center gap-3 mb-5">
-              <Badge variant="outline">Apache 2.0</Badge>
-              <Badge variant="outline">Open Source</Badge>
-            </div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground dark:text-white mb-6 max-w-3xl">
-              Reconciliation Infrastructure You Can Actually Inspect
-            </h1>
-            <p className="text-xl text-muted-foreground dark:text-muted-foreground max-w-3xl mb-8 leading-relaxed">
-              Settler is fully open source. The matching engine, evidence model, CLI, SDK, and
-              self-host stack are all Apache 2.0. No gated core, no hidden runtime logic.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Button asChild>
-                <Link
-                  href="https://github.com/Hardonian/Settler"
-                  target="_blank"
-                  rel="noopener"
-                  className="inline-flex items-center gap-2"
-                >
-                  <GitBranch className="w-4 h-4" />
-                  View on GitHub
-                </Link>
-              </Button>
-              <Button variant="outline" asChild>
-                <Link href="/docs/quickstart">
-                  Quickstart Guide <ArrowRight className="w-4 h-4 ml-1" />
-                </Link>
-              </Button>
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+              <div className="lg:col-span-7 space-y-6">
+                <div className="flex items-center gap-3">
+                  <Badge variant="outline" className="border-primary/40 text-primary">
+                    Apache 2.0
+                  </Badge>
+                  <Badge variant="outline">Sovereign Open Source</Badge>
+                </div>
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground dark:text-white leading-tight">
+                  Reconciliation Infrastructure You Can Actually Inspect
+                </h1>
+                <p className="text-lg sm:text-xl text-muted-foreground dark:text-muted-foreground leading-relaxed">
+                  Settler is fully open source. The Rust matching engine kernel, cryptographic
+                  content-addressable storage (CAS), WebAssembly verification client, and self-host
+                  stack are all Apache 2.0. No gated core, no hidden runtime logic.
+                </p>
+                <div className="pt-2 flex flex-wrap gap-4">
+                  <Button asChild size="lg" className="font-semibold">
+                    <Link
+                      href="https://github.com/Hardonian/Settler"
+                      target="_blank"
+                      rel="noopener"
+                      className="inline-flex items-center gap-2"
+                    >
+                      <GitBranch className="w-4 h-4" />
+                      View on GitHub
+                    </Link>
+                  </Button>
+                  <Button variant="outline" size="lg" asChild>
+                    <Link href="/docs/quickstart">
+                      Quickstart Guide <ArrowRight className="w-4 h-4 ml-1" />
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+
+              <div className="lg:col-span-5">
+                <div className="group relative aspect-square w-full max-w-[480px] mx-auto overflow-hidden rounded-3xl border border-primary/25 bg-card/70 shadow-2xl transition-all duration-500 hover:border-primary/45 hover:shadow-primary/15">
+                  <Image
+                    src="/open_source_stack_3d.png"
+                    alt="Settler Open-Core Sovereign Technology Stack Architecture"
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    priority
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-primary/15 via-transparent to-transparent pointer-events-none" />
+                  <div className="absolute bottom-4 left-4 right-4 rounded-xl border border-white/10 bg-black/60 backdrop-blur-md p-3 text-xs text-white/90 flex items-center justify-between">
+                    <span className="font-mono text-[11px] text-cyan-300 font-semibold">
+                      STACK: RUST + CAS + WASM
+                    </span>
+                    <span className="font-mono text-[11px] text-emerald-400 font-bold">
+                      APACHE 2.0
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>

@@ -16,6 +16,7 @@ import { UiLink } from "@/components/ui/link";
 import {
   AdapterConnectionMap,
   AmbientLightOrbs,
+  ArchitectureModuleShowcase,
   BilateralSettlementVisualizer,
   EnterpriseRoiCalculator,
   ExceptionTriageVisual,
@@ -189,16 +190,23 @@ export default function HomePage() {
           </div>
         </Section>
 
-        <Section>
+        <Section className="py-24">
           <SectionHeader
-            title="What you can do today"
-            description="Core capabilities spanning deterministic matching, evidence generation, operator workflows, and integration adapters."
+            title="Core Architecture & Shipped Modules"
+            description="Explore the implemented 3D architecture modules powering deterministic matching, multi-rail orchestration, continuous close, and cryptographic evidence."
           />
-          <FeatureGrid>
-            {capabilityClusters.map((capability) => (
-              <FeatureCard key={capability.title} {...capability} />
-            ))}
-          </FeatureGrid>
+          <ArchitectureModuleShowcase />
+
+          <div className="mt-20 pt-16 border-t border-border/40">
+            <h3 className="text-xl font-bold tracking-tight mb-8 text-foreground">
+              Operational Capabilities Grounded in Code
+            </h3>
+            <FeatureGrid>
+              {capabilityClusters.map((capability) => (
+                <FeatureCard key={capability.title} {...capability} />
+              ))}
+            </FeatureGrid>
+          </div>
         </Section>
 
         <Section className="bg-muted/20">

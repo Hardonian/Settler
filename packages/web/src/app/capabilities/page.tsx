@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import Image from "next/image";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import {
@@ -59,7 +60,26 @@ export default function CapabilitiesPage() {
           eyebrow="Capabilities"
           title="A capability model grounded in real workflows"
           description="Settler combines deterministic execution, operator workflows, and evidence-first outputs so engineering, finance, and security teams can reason about reconciliation outcomes."
-          visual={<EvidenceArtifactPreview />}
+          visual={
+            <div className="group relative aspect-square w-full max-w-[500px] mx-auto overflow-hidden rounded-3xl border border-primary/25 bg-card/70 shadow-2xl transition-all duration-500 hover:border-primary/45 hover:shadow-primary/15">
+              <Image
+                src="/capabilities_matrix_3d.png"
+                alt="Settler 4-tier sovereign capability stack"
+                fill
+                className="object-cover transition-transform duration-700 group-hover:scale-105"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-tr from-primary/15 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute bottom-4 left-4 right-4 rounded-xl border border-white/10 bg-black/60 backdrop-blur-md p-3 text-xs text-white/90 flex items-center justify-between">
+                <span className="font-mono text-[11px] text-cyan-300 font-semibold">
+                  4-TIER CAPABILITY STACK
+                </span>
+                <span className="font-mono text-[11px] text-emerald-400 font-bold">
+                  SHA-256 SEALED
+                </span>
+              </div>
+            </div>
+          }
         />
         <Section>
           <SectionHeader
@@ -71,6 +91,23 @@ export default function CapabilitiesPage() {
               <FeatureCard key={group.title} {...group} />
             ))}
           </FeatureGrid>
+        </Section>
+
+        <Section className="py-20 border-t border-border/40">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <h2 className="text-3xl font-bold tracking-tight text-foreground">
+                Cryptographic Evidence Finality
+              </h2>
+              <p className="text-base text-muted-foreground leading-relaxed">
+                Every reconciliation execution produces a tamper-evident, RFC 6962 SHA-256 Merkle
+                root. Reports are not arbitrary spreadsheets—they are mathematically verifiable
+                proof artifacts that eliminate audit sampling and provide indisputable regulatory
+                truth.
+              </p>
+            </div>
+            <EvidenceArtifactPreview />
+          </div>
         </Section>
 
         <Section className="bg-muted/20">

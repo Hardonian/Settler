@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import Image from "next/image";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { AnimatedHero } from "@/components/AnimatedHero";
@@ -141,48 +142,76 @@ export default function PricingPage() {
         </div>
       </Section>
 
-      <Section className="border-t border-border/40 py-16 sm:py-20">
+      <Section className="border-t border-border/40 py-16 sm:py-24">
         <div className="mx-auto max-w-7xl">
-          <SectionHeader
-            title="Metering truth (deterministic billing inputs)"
-            description="Settler bills by reconciliation volume and exception load using canonical plan limits. The estimator below uses the same plan config contract used by the product."
-          />
-          <div className="mt-8 grid gap-6 md:grid-cols-2">
-            {pricingScenarios.map((scenario) =>
-              (() => {
-                const plan = planConfigs[scenario.plan];
-                if (!plan) return null;
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div className="lg:col-span-6 space-y-6">
+              <SectionHeader
+                title="Metering truth (deterministic billing inputs)"
+                description="Settler bills by reconciliation volume and exception load using canonical plan limits. The estimator below uses the same plan config contract used by the product."
+              />
+              <div className="grid gap-4">
+                {pricingScenarios.map((scenario) =>
+                  (() => {
+                    const plan = planConfigs[scenario.plan];
+                    if (!plan) return null;
 
-                return (
-                  <Card key={scenario.label} className="border-border/50">
-                    <CardHeader>
-                      <CardTitle className="text-lg">{scenario.label}</CardTitle>
-                      <CardDescription>
-                        Plan: {plan.name} · {scenario.volume.toLocaleString()} reconciliations ·{" "}
-                        {scenario.exceptions.toLocaleString()} exceptions
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <p className="text-sm text-muted-foreground">
-                        Estimated monthly bill:
-                        <span className="ml-2 text-base font-semibold text-foreground">
-                          $
-                          {calculateMonthlyCost(
-                            scenario.plan,
-                            scenario.volume,
-                            scenario.exceptions
-                          ).toLocaleString()}
-                        </span>
-                      </p>
-                      <p className="mt-2 text-xs text-muted-foreground">
-                        Includes base fee plus usage under the canonical spine. Enterprise contracts
-                        can override limits, retention, and support terms.
-                      </p>
-                    </CardContent>
-                  </Card>
-                );
-              })()
-            )}
+                    return (
+                      <Card
+                        key={scenario.label}
+                        className="border-border/50 bg-card/60 backdrop-blur-sm"
+                      >
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-lg font-bold">{scenario.label}</CardTitle>
+                          <CardDescription>
+                            Plan: {plan.name} · {scenario.volume.toLocaleString()} reconciliations ·{" "}
+                            {scenario.exceptions.toLocaleString()} exceptions
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                          <p className="text-sm text-muted-foreground">
+                            Estimated monthly bill:
+                            <span className="ml-2 text-base font-semibold text-foreground">
+                              $
+                              {calculateMonthlyCost(
+                                scenario.plan,
+                                scenario.volume,
+                                scenario.exceptions
+                              ).toLocaleString()}
+                            </span>
+                          </p>
+                          <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
+                            Includes base fee plus usage under the canonical spine. Enterprise
+                            contracts can override limits, retention, and support terms.
+                          </p>
+                        </CardContent>
+                      </Card>
+                    );
+                  })()
+                )}
+              </div>
+            </div>
+
+            <div className="lg:col-span-6">
+              <div className="group relative aspect-square w-full max-w-[500px] mx-auto overflow-hidden rounded-3xl border border-primary/25 bg-card/70 shadow-2xl transition-all duration-500 hover:border-primary/45 hover:shadow-primary/15">
+                <Image
+                  src="/metering_infra_3d.png"
+                  alt="Settler Deterministic Financial Metering & Settlement Engine"
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-tr from-primary/15 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute bottom-4 left-4 right-4 rounded-xl border border-white/10 bg-black/60 backdrop-blur-md p-3 text-xs text-white/90 flex items-center justify-between">
+                  <span className="font-mono text-[11px] text-emerald-400 font-semibold">
+                    FLOAT LEAKAGE: 0.000%
+                  </span>
+                  <span className="font-mono text-[11px] text-cyan-300 font-bold">
+                    SUB-MS PRECISION
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </Section>
