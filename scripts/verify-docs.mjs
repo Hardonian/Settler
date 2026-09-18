@@ -53,7 +53,10 @@ const getSection = (content, heading) => {
   return rest.slice(0, nextHeadingMatch.index);
 };
 
-const quickStartSection = getSection(readme, "Quick Start") || getSection(readme, "Quick start") || getSection(readme, "Quickstart");
+const quickStartSection =
+  getSection(readme, "Quick Start") ||
+  getSection(readme, "Quick start") ||
+  getSection(readme, "Quickstart");
 if (!quickStartSection) {
   errors.push("README.md is missing a Quick Start section.");
 }
@@ -69,7 +72,10 @@ if (fs.existsSync(packagesDir)) {
     if (!fs.existsSync(pkgPath)) {
       continue;
     }
-    const pkgJson = parseJsonFile(pkgPath, `workspace package.json (${path.relative(rootDir, pkgPath)})`);
+    const pkgJson = parseJsonFile(
+      pkgPath,
+      `workspace package.json (${path.relative(rootDir, pkgPath)})`
+    );
     if (pkgJson.name) {
       workspaceScripts.set(pkgJson.name, pkgJson.scripts || {});
     }
@@ -104,11 +110,12 @@ const checkCommand = (line) => {
   }
   if (trimmed.startsWith("cd ")) {
     const target = trimmed.replace(/^cd\s+/, "").trim();
-    if (!fileExists(target)) {
+    if (target !== path.basename(rootDir) && target !== "." && !fileExists(target)) {
       errors.push(`Missing directory from command: ${target}`);
     }
     return;
   }
+
   if (trimmed.startsWith("cp ")) {
     const parts = trimmed.split(/\s+/).slice(1);
     const source = parts[0];
@@ -127,7 +134,13 @@ const checkCommand = (line) => {
       return;
     }
     if (tokens[1] === "exec") {
-      const scriptToken = tokens.find((token) => token.endsWith(".ts") || token.endsWith(".mjs") || token.endsWith(".js") || token.endsWith(".sh"));
+      const scriptToken = tokens.find(
+        (token) =>
+          token.endsWith(".ts") ||
+          token.endsWith(".mjs") ||
+          token.endsWith(".js") ||
+          token.endsWith(".sh")
+      );
       if (scriptToken && !fileExists(scriptToken)) {
         errors.push(`Missing script referenced in command: ${scriptToken}`);
       }
@@ -152,7 +165,13 @@ const checkCommand = (line) => {
   }
 
   const fileToken = tokens.find((token) => token.includes("/") && !token.startsWith("http"));
-  if (fileToken && (fileToken.endsWith(".ts") || fileToken.endsWith(".mjs") || fileToken.endsWith(".js") || fileToken.endsWith(".sh"))) {
+  if (
+    fileToken &&
+    (fileToken.endsWith(".ts") ||
+      fileToken.endsWith(".mjs") ||
+      fileToken.endsWith(".js") ||
+      fileToken.endsWith(".sh"))
+  ) {
     if (!fileExists(fileToken)) {
       errors.push(`Missing file referenced in command: ${fileToken}`);
     }
@@ -173,7 +192,12 @@ const linkRegex = /\[[^\]]+\]\(([^)]+)\)/g;
 let linkMatch;
 while ((linkMatch = linkRegex.exec(readme)) !== null) {
   const rawTarget = linkMatch[1];
-  if (!rawTarget || rawTarget.startsWith("http") || rawTarget.startsWith("mailto:") || rawTarget.startsWith("#")) {
+  if (
+    !rawTarget ||
+    rawTarget.startsWith("http") ||
+    rawTarget.startsWith("mailto:") ||
+    rawTarget.startsWith("#")
+  ) {
     continue;
   }
   const target = rawTarget.split("#")[0];
@@ -184,8 +208,6 @@ while ((linkMatch = linkRegex.exec(readme)) !== null) {
     errors.push(`README.md references missing file: ${target}`);
   }
 }
-
-
 
 const walkMarkdownFiles = (dir) => {
   const out = [];
@@ -243,7 +265,12 @@ for (const canonicalDoc of canonicalDocs) {
 const docsReadmePath = path.join(rootDir, "docs/README.md");
 if (fs.existsSync(docsReadmePath)) {
   const docsReadme = readFile(docsReadmePath);
-  ["docs/getting-started/quickstart.md", "docs/architecture/README.md", "docs/operations/README.md", "docs/product/README.md"].forEach((target) => {
+  [
+    "docs/getting-started/quickstart.md",
+    "docs/architecture/README.md",
+    "docs/operations/README.md",
+    "docs/product/README.md",
+  ].forEach((target) => {
     const targetRelative = target.replace("docs/", "");
     if (!docsReadme.includes(target) && !docsReadme.includes(targetRelative)) {
       errors.push(`docs/README.md missing canonical hub/discovery link: ${target}`);
@@ -261,7 +288,9 @@ for (const archiveRoot of disallowedArchiveRoots) {
   }
   const markdownCount = walkMarkdownFiles(archiveRoot).length;
   if (markdownCount > 0) {
-    errors.push(`Orphan archive markdown found outside docs/archive/: ${path.relative(rootDir, archiveRoot)} (${markdownCount} files)`);
+    errors.push(
+      `Orphan archive markdown found outside docs/archive/: ${path.relative(rootDir, archiveRoot)} (${markdownCount} files)`
+    );
   }
 }
 

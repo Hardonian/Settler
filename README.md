@@ -1,6 +1,6 @@
 # Settler
 
-![Settler](packages/web/public/icon-512.png)
+![Settler](packages/web/public/icon.png)
 
 **Reconciliation intelligence & audit operating system**  
 Deterministic transaction matching · Hash-linked evidence · Enterprise-grade tenant isolation
