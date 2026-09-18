@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Code2, Sliders, Layers, Scale, ShieldCheck } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import {
@@ -216,42 +216,68 @@ export default function HomePage() {
               {[
                 {
                   role: "Developer",
+                  icon: Code2,
                   href: "/docs/api",
+                  badge: "TypeScript & Rust SDK",
                   desc: "SDK, CLI, and API-first integration with deterministic run semantics.",
                 },
                 {
                   role: "Operator",
+                  icon: Sliders,
                   href: "/console",
+                  badge: "Adjudication Console",
                   desc: "Exception triage, run inspection, evidence navigation, and control plane operations.",
                 },
                 {
-                  role: "Architecture reviewer",
+                  role: "Architecture Reviewer",
+                  icon: Layers,
                   href: "/docs/architecture/platform-architecture",
+                  badge: "Kernel & Ledger Spec",
                   desc: "Rust kernel, control plane, ledger architecture, and tenant isolation boundaries.",
                 },
                 {
                   role: "CFO / Risk",
+                  icon: Scale,
                   href: "/console/close",
+                  badge: "SOX-404 Compliance",
                   desc: "SOX-compliant approvals, continuous close dashboards, and liquidity metric analysis.",
                 },
                 {
                   role: "InfoSec / Admin",
+                  icon: ShieldCheck,
                   href: "/console/security/data-residency",
+                  badge: "Zero-Trust Isolation",
                   desc: "Geo-fencing, PII redaction engines, SIEM exports, and tenant observability.",
                 },
-              ].map((item) => (
-                <MarketingIntentCard key={item.role}>
-                  <UiLink
-                    href={item.href}
-                    className="block rounded-xl border border-border bg-card p-6 transition-colors hover:border-primary/45"
-                  >
-                    <h3 className="text-lg font-semibold text-foreground">{item.role}</h3>
-                    <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                      {item.desc}
-                    </p>
-                  </UiLink>
-                </MarketingIntentCard>
-              ))}
+              ].map((item) => {
+                const Icon = item.icon;
+                return (
+                  <MarketingIntentCard key={item.role}>
+                    <UiLink
+                      href={item.href}
+                      className="group block rounded-2xl border border-border/80 bg-card/70 p-6 transition-all duration-300 hover:border-primary/45 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-0.5"
+                    >
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <Icon className="h-5 w-5" />
+                        </div>
+                        <span className="text-[10px] font-mono uppercase tracking-wider font-semibold text-primary/80 bg-primary/5 border border-primary/20 px-2.5 py-0.5 rounded-full">
+                          {item.badge}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
+                          {item.role}
+                        </h3>
+                        <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                      </div>
+                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                        {item.desc}
+                      </p>
+                    </UiLink>
+                  </MarketingIntentCard>
+                );
+              })}
             </div>
           </div>
           <VisualGrid className="mt-12" />

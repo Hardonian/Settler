@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { AmbientLightOrbs } from "@/components/site/HomeInfographics";
@@ -55,50 +56,73 @@ export default function SiderealPage() {
 
       <main className="relative z-10 mx-auto max-w-7xl px-4 pt-28 pb-24 sm:px-6 lg:px-8">
         {/* Hero Section */}
-        <div className="mx-auto max-w-3xl text-center mb-12">
-          <Badge
-            variant="outline"
-            className="mb-4 border-cyan-500/40 bg-cyan-500/10 px-3.5 py-1 text-xs font-bold text-cyan-600 dark:text-cyan-300 backdrop-blur-md"
-          >
-            <Sparkles className="mr-1.5 h-3.5 w-3.5" />
-            SIDEREAL DEVELOPER PLATFORM // THE STRIPE FOR RECONCILIATION
-          </Badge>
-
-          <h1 className="text-3xl font-extrabold tracking-tight text-foreground dark:text-white sm:text-5xl lg:text-6xl">
-            Programmable Settlement &amp;{" "}
-            <span className="bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
-              Sovereign Ledger APIs
-            </span>
-          </h1>
-
-          <p className="mt-5 text-base sm:text-lg text-muted-foreground dark:text-slate-400 leading-relaxed">
-            Eliminate weeks of brittle spreadsheet reconciliation and opaque processor reporting.
-            Settler Sidereal provides deterministic multi-rail APIs, sub-millisecond invariant
-            assertions, and cryptographic Merkle root sealing for Stripe, PayPal, and enterprise
-            ERPs.
-          </p>
-
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-            <Button
-              asChild
-              size="lg"
-              className="bg-gradient-to-r from-cyan-600 via-indigo-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white font-bold text-sm shadow-xl shadow-cyan-950/40"
-            >
-              <UiLink href="/onboarding">
-                Get Instant API Keys <ArrowRight className="ml-2 h-4 w-4" />
-              </UiLink>
-            </Button>
-            <Button
-              asChild
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-16">
+          <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+            <Badge
               variant="outline"
-              size="lg"
-              className="border-slate-700 bg-slate-900/60 text-slate-200 hover:bg-slate-800 text-sm font-semibold"
+              className="border-cyan-500/40 bg-cyan-500/10 px-3.5 py-1 text-xs font-bold text-cyan-600 dark:text-cyan-300 backdrop-blur-md"
             >
-              <UiLink href="/docs/api">
-                <BookOpen className="mr-2 h-4 w-4 text-cyan-400" />
-                Read API Reference
-              </UiLink>
-            </Button>
+              <Sparkles className="mr-1.5 h-3.5 w-3.5" />
+              SIDEREAL DEVELOPER PLATFORM // THE STRIPE FOR RECONCILIATION
+            </Badge>
+
+            <h1 className="text-3xl font-extrabold tracking-tight text-foreground dark:text-white sm:text-5xl lg:text-6xl leading-tight">
+              Programmable Settlement &amp;{" "}
+              <span className="bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                Sovereign Ledger APIs
+              </span>
+            </h1>
+
+            <p className="text-base sm:text-lg text-muted-foreground dark:text-slate-400 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+              Eliminate weeks of brittle spreadsheet reconciliation and opaque processor reporting.
+              Settler Sidereal provides deterministic multi-rail APIs, sub-millisecond invariant
+              assertions, and cryptographic Merkle root sealing for Stripe, PayPal, and enterprise
+              ERPs.
+            </p>
+
+            <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-4">
+              <Button
+                asChild
+                size="lg"
+                className="bg-gradient-to-r from-cyan-600 via-indigo-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white font-bold text-sm shadow-xl shadow-cyan-950/40"
+              >
+                <UiLink href="/onboarding">
+                  Get Instant API Keys <ArrowRight className="ml-2 h-4 w-4" />
+                </UiLink>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="border-slate-700 bg-slate-900/60 text-slate-200 hover:bg-slate-800 text-sm font-semibold"
+              >
+                <UiLink href="/docs/api">
+                  <BookOpen className="mr-2 h-4 w-4 text-cyan-400" />
+                  Read API Reference
+                </UiLink>
+              </Button>
+            </div>
+          </div>
+
+          <div className="lg:col-span-5">
+            <div className="group relative aspect-square w-full max-w-[480px] mx-auto overflow-hidden rounded-3xl border border-cyan-500/30 bg-slate-950/80 shadow-2xl shadow-cyan-950/50 transition-all duration-500 hover:border-cyan-400/50">
+              <Image
+                src="/sidereal_core_3d.png"
+                alt="Settler Sidereal Programmable Settlement and Sovereign Ledger APIs 3D"
+                fill
+                className="object-cover transition-transform duration-700 group-hover:scale-105"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/15 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute bottom-4 left-4 right-4 rounded-xl border border-cyan-500/20 bg-slate-950/80 backdrop-blur-md p-3 text-xs text-white/90 flex items-center justify-between">
+                <span className="font-mono text-[11px] text-cyan-300 font-semibold">
+                  REST /v1/settle/execute
+                </span>
+                <span className="font-mono text-[11px] text-emerald-400 font-bold">
+                  SUB-MS INVARIANT
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 

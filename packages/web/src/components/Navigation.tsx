@@ -149,17 +149,27 @@ export function Navigation() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="flex justify-between items-center h-16 w-full min-h-[4rem]">
-            <Link
-              href="/"
-              className={cn(
-                "flex items-center flex-shrink-0 select-none",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                "rounded"
-              )}
-              aria-label="Settler homepage"
-            >
-              <SettlerLogo className="h-8 w-auto" />
-            </Link>
+            <div className="flex items-center gap-4">
+              <Link
+                href="/"
+                className={cn(
+                  "flex items-center flex-shrink-0 select-none",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                  "rounded"
+                )}
+                aria-label="Settler homepage"
+              >
+                <SettlerLogo className="h-8 w-auto" />
+              </Link>
+
+              <div className="hidden xl:flex items-center gap-2 px-2.5 py-0.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-[11px] font-mono font-medium text-emerald-600 dark:text-emerald-400">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span>DETERMINISM ONLINE</span>
+              </div>
+            </div>
 
             {/* Desktop Navigation */}
             <nav
@@ -218,7 +228,7 @@ export function Navigation() {
                   </button>
 
                   {featuresMenuOpen && (
-                    <div className="absolute top-full left-0 mt-2 w-52 bg-background border border-border rounded-lg shadow-lg py-2 z-50">
+                    <div className="absolute top-full left-0 mt-3 w-60 bg-card/95 border border-primary/25 rounded-2xl shadow-2xl backdrop-blur-2xl p-2 z-50 ring-1 ring-black/5 dark:ring-white/10 animate-in fade-in slide-in-from-top-2 duration-200">
                       {featureNavigationItems.map((item) => {
                         const isActive =
                           pathname === item.href || pathname?.startsWith(item.href + "/");
@@ -227,10 +237,9 @@ export function Navigation() {
                             key={item.href}
                             href={item.href}
                             className={cn(
-                              "block px-4 py-2 text-sm text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 hover:bg-accent",
-                              isActive &&
-                                "text-primary-600 dark:text-primary-400 font-medium bg-accent/50",
-                              "transition-colors duration-150 ease-out",
+                              "block px-3.5 py-2 text-sm rounded-xl text-muted-foreground hover:text-foreground hover:bg-primary/10",
+                              isActive && "text-primary font-semibold bg-primary/15",
+                              "transition-all duration-150 ease-out",
                               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
                             )}
                             onClick={() => setFeaturesMenuOpen(false)}
@@ -274,7 +283,7 @@ export function Navigation() {
 
                     {/* Dropdown menu */}
                     {moreMenuOpen && (
-                      <div className="absolute top-full right-0 mt-2 w-56 bg-background border border-border rounded-lg shadow-lg py-2 z-50">
+                      <div className="absolute top-full right-0 mt-3 w-56 bg-card/95 border border-primary/25 rounded-2xl shadow-2xl backdrop-blur-2xl p-2 z-50 ring-1 ring-black/5 dark:ring-white/10 animate-in fade-in slide-in-from-top-2 duration-200">
                         {secondaryNavigationItems.map((item) => {
                           const isActive =
                             pathname === item.href || pathname?.startsWith(item.href + "/");
@@ -283,10 +292,9 @@ export function Navigation() {
                               key={item.href}
                               href={item.href}
                               className={cn(
-                                "block px-4 py-2 text-sm text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 hover:bg-accent",
-                                isActive &&
-                                  "text-primary-600 dark:text-primary-400 font-medium bg-accent/50",
-                                "transition-colors duration-150 ease-out",
+                                "block px-3.5 py-2 text-sm rounded-xl text-muted-foreground hover:text-foreground hover:bg-primary/10",
+                                isActive && "text-primary font-semibold bg-primary/15",
+                                "transition-all duration-150 ease-out",
                                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
                               )}
                               onClick={() => setMoreMenuOpen(false)}
@@ -309,11 +317,16 @@ export function Navigation() {
                 <DarkModeToggle />
                 <Link
                   href="/login"
-                  className="text-sm text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400"
+                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Sign in
                 </Link>
-                <Button asChild variant="default" size="default" className="whitespace-nowrap">
+                <Button
+                  asChild
+                  variant="default"
+                  size="default"
+                  className="whitespace-nowrap font-bold shadow-lg shadow-primary/20 transition-all duration-300 hover:shadow-primary/35 hover:scale-[1.02]"
+                >
                   <Link href="/signup" aria-label="Get started with Settler">
                     Get Started
                   </Link>
