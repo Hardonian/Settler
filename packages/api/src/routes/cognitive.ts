@@ -386,7 +386,7 @@ const proposePolicySchema = z.object({
     rail: z.string().min(1),
     action: z.string().min(1),
     rationale: z.string().min(1),
-    ruleConfig: z.record(z.unknown()),
+    ruleConfig: z.record(z.string(), z.unknown()),
     noiseReductionPct: z.number().min(0).max(100),
     capitalGuardedCents: z.string().min(1),
   }),
@@ -481,7 +481,18 @@ router.post(
         return;
       }
 
+      if (action === "approve" && proposal.proposerId === checkerId) {
+        res.status(400).json({
+          error:
+            "SOX-404 dual-signature violation: checker identity cannot be identical to proposer identity",
+          message:
+            "SOX-404 dual-signature violation: checker identity cannot be identical to proposer identity",
+        });
+        return;
+      }
+
       let updated: CognitivePolicyProposal;
+
       if (action === "approve") {
         updated = approvePolicy({
           proposal,
@@ -565,7 +576,7 @@ router.get(
   }
 );
 
-// 8. Staged Multimodal Reconciliation Trigger Schema
+/// 8. Staged Multimodal Reconciliation Trigger Schema
 const reconcileStagedSchema = z.object({
   body: z.object({
     settlementId: z.string().min(1),
@@ -580,7 +591,7 @@ const reconcileStagedSchema = z.object({
         fee: z.number().optional(),
         type: z.enum(["sale", "refund", "chargeback", "adjustment", "fee"]).optional(),
         reference: z.string().optional(),
-        metadata: z.record(z.unknown()).optional(),
+        metadata: z.record(z.string(), z.unknown()).optional(),
       })
     ),
     feeContract: z
@@ -595,6 +606,16 @@ const reconcileStagedSchema = z.object({
   }),
 });
 
+interface RequestStagedRecordItem {
+  id: string;
+  amount: number;
+  date: string;
+  fee?: number;
+  type?: "sale" | "refund" | "chargeback" | "adjustment" | "fee";
+  reference?: string;
+  metadata?: Record<string, unknown>;
+}
+
 router.post(
   "/cognitive/reconcile-staged",
   requirePermission(Permission.JOBS_WRITE),
@@ -605,7 +626,9 @@ router.post(
       const { settlementId, payoutAmount, currency, payoutDate, records, feeContract, tolerance } =
         req.body;
 
-      const sourceTransactions: BatchSourceTransaction[] = records.map((r) => ({
+      const sourceTransactions: BatchSourceTransaction[] = (
+        records as RequestStagedRecordItem[]
+      ).map((r: RequestStagedRecordItem) => ({
         id: r.id,
         amount: r.amount,
         date: r.date,
@@ -639,9 +662,9 @@ router.post(
           req.originalUrl,
           JSON.stringify({
             settlementId,
-            stateRoot: reconciliationResult.stateRoot,
-            matches: reconciliationResult.matches.length,
-            isBalanced: reconciliationResult.isBalanced,
+            merkleRootHash: reconciliationResult.merkleRootHash,
+            matchedCount: reconciliationResult.matchedTransactionCount,
+            status: reconciliationResult.status,
           }),
         ]
       );

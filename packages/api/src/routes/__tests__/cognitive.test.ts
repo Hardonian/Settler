@@ -242,8 +242,8 @@ describe("Cognitive API Routes", () => {
 
       expect(res.status).toBe(200);
       expect(res.body.data.settlementId).toBe("set_sep_2026_01");
-      expect(res.body.data.matches.length).toBe(2);
-      expect(res.body.data.stateRoot).toHaveLength(64);
+      expect(res.body.data.matchedTransactionCount).toBe(2);
+      expect(res.body.data.merkleRootHash).toHaveLength(64);
     });
   });
 

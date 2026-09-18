@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-18T02:45:09.756Z",
-  "totalRoutes": 439,
+  "generatedAt": "2026-09-18T02:50:28.102Z",
+  "totalRoutes": 447,
   "routes": [
     {
       "route": "/api/csrf-token",
@@ -316,6 +316,30 @@
     },
     {
       "route": "/api/v1/cognitive/ingest",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/cognitive.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/cognitive/policy/approve",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/cognitive.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/cognitive/policy/propose",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/cognitive.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/cognitive/policy/registry",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/cognitive.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/cognitive/reconcile-staged",
       "kind": "express-router",
       "file": "packages/api/src/routes/cognitive.ts",
       "methods": ["POST"]
@@ -1876,6 +1900,30 @@
     },
     {
       "route": "/api/v2/cognitive/ingest",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/cognitive.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/cognitive/policy/approve",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/cognitive.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/cognitive/policy/propose",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/cognitive.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/cognitive/policy/registry",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/cognitive.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/cognitive/reconcile-staged",
       "kind": "express-router",
       "file": "packages/api/src/routes/cognitive.ts",
       "methods": ["POST"]

@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { ZeroTrustVerifier } from "@/components/cognitive/zero-trust-verifier";
 import {
   FileText,
   Sparkles,
@@ -18,10 +19,17 @@ import {
   RefreshCw,
   Search,
   Code2,
+  UploadCloud,
+  FileCheck,
+  Lock,
+  UserCheck,
+  Layers,
+  ArrowDownRight,
 } from "lucide-react";
 
 export default function CognitiveIntelligencePage() {
   // Ingestion State
+  const [selectedRail, setSelectedRail] = useState("stripe_payout");
   const [ingestionText, setIngestionText] =
     useState(`STATEMENT SUMMARY: CHASE OPERATING ACCOUNT #99812-44
 PERIOD: 2026-09-01 TO 2026-09-15
@@ -30,6 +38,9 @@ PERIOD: 2026-09-01 TO 2026-09-15
 2026-09-10 TXN_WIRE_03 $150,000.00 Treasury Capital Allocation USD
 TOTAL DEPOSITS: $170,920.75`);
   const [isExtracting, setIsExtracting] = useState(false);
+  const [isReconcilingStaged, setIsReconcilingStaged] = useState(false);
+  const [stagedReconResult, setStagedReconResult] = useState<any>(null);
+
   const [extractedRecords, setExtractedRecords] = useState<any[]>([
     {
       id: "TXN_STRIPE_01",
@@ -66,8 +77,12 @@ TOTAL DEPOSITS: $170,920.75`);
     "EXACT_MATCH"
   );
 
-  // Adjudication State
+  // Adjudication & Policy Governance State
   const [isAdjudicating, setIsAdjudicating] = useState(false);
+  const [selectedPlanForApproval, setSelectedPlanForApproval] = useState<any | null>(null);
+  const [checkerRole, setCheckerRole] = useState<"operator" | "controller">("controller");
+  const [approvalNote, setApprovalNote] = useState("Approved for Q3 SOX-404 compliance");
+
   const [healingPlans, setHealingPlans] = useState<any[]>([
     {
       id: "PLAN-TIME-98B2",
@@ -78,6 +93,7 @@ TOTAL DEPOSITS: $170,920.75`);
       rationale:
         "UK Late Summer Bank Holiday clearing lag detected. Extended auto-matching window from 24h to 72h with zero float drift.",
       status: "simulated_safe",
+      isProposed: false,
     },
     {
       id: "PLAN-ROUND-41F0",
@@ -88,6 +104,21 @@ TOTAL DEPOSITS: $170,920.75`);
       rationale:
         "Sub-cent foreign exchange conversion rounding discrepancies automatically balanced to 0-net variance.",
       status: "simulated_safe",
+      isProposed: false,
+    },
+  ]);
+
+  const [activePolicies, setActivePolicies] = useState<any[]>([
+    {
+      proposalId: "pol_7a3d9021e54f9a0c",
+      rail: "stripe_payout",
+      action: "HEAL_FLOAT_TIMING",
+      proposerId: "operator_alice",
+      checkerId: "controller_marcus",
+      status: "active",
+      noiseReductionPct: 94.2,
+      certificateHash: "0x48c781e9d1e3d36b7617b0769cf3ddf4b9ec43ef19942a78bf9fb6416182ee20",
+      approvedAt: "2026-09-17T20:15:00Z",
     },
   ]);
 
@@ -162,6 +193,50 @@ paths:
     }, 600);
   };
 
+  const handleReconcileStaged = () => {
+    setIsReconcilingStaged(true);
+    setTimeout(() => {
+      setIsReconcilingStaged(false);
+      setStagedReconResult({
+        settlementId: "set_auto_staged_2026",
+        matchedCount: 3,
+        totalTransactions: 3,
+        status: "exact_match",
+        merkleRoot: "7b4c91a029fe871032cd9045b81a2e3f4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f",
+        payoutAmount: "$170,920.75",
+        slippageBps: 0,
+        leakageCents: 0,
+      });
+    }, 750);
+  };
+
+  const handleProposePolicy = (planId: string) => {
+    setHealingPlans((prev) => prev.map((p) => (p.id === planId ? { ...p, isProposed: true } : p)));
+    const plan = healingPlans.find((p) => p.id === planId);
+    if (plan) {
+      setSelectedPlanForApproval(plan);
+    }
+  };
+
+  const handleCommitDualSignature = () => {
+    if (!selectedPlanForApproval) return;
+
+    const newPolicy = {
+      proposalId: `pol_${Math.random().toString(36).substring(2, 10)}`,
+      rail: selectedPlanForApproval.rail,
+      action: selectedPlanForApproval.action,
+      proposerId: "operator_staff_01",
+      checkerId: "controller_verified_exec",
+      status: "active",
+      noiseReductionPct: parseFloat(selectedPlanForApproval.noiseReduction),
+      certificateHash: `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("")}`,
+      approvedAt: new Date().toISOString(),
+    };
+
+    setActivePolicies((prev) => [newPolicy, ...prev]);
+    setSelectedPlanForApproval(null);
+  };
+
   const handleSimulateAdjudication = () => {
     setIsAdjudicating(true);
     setTimeout(() => {
@@ -183,6 +258,21 @@ paths:
     }, 650);
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      if (content) {
+        setIngestionText(content.slice(0, 5000));
+        handleSimulateExtraction();
+      }
+    };
+    reader.readAsText(file);
+  };
+
   return (
     <div className="container mx-auto py-8 space-y-8 max-w-7xl">
       {/* Header Banner */}
@@ -197,6 +287,12 @@ paths:
               className="border-emerald-500/50 text-emerald-500 bg-emerald-500/10"
             >
               <ShieldCheck className="w-3 h-3 mr-1" /> Deterministic Rust CAS
+            </Badge>
+            <Badge
+              variant="outline"
+              className="border-purple-500/50 text-purple-400 bg-purple-500/10"
+            >
+              <Lock className="w-3 h-3 mr-1" /> SOX-404 Dual-Signature
             </Badge>
           </div>
           <h1 className="text-3xl font-bold tracking-tight mt-2 text-foreground">
@@ -230,11 +326,11 @@ paths:
           </TabsTrigger>
           <TabsTrigger value="adjudication" className="py-2.5 flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-purple-400" />
-            <span>Causal Adjudication</span>
+            <span>Causal Adjudication & Policy</span>
           </TabsTrigger>
           <TabsTrigger value="auditor" className="py-2.5 flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>Auditor Copilot</span>
+            <span>Auditor OS & Verifier</span>
           </TabsTrigger>
           <TabsTrigger value="adapter" className="py-2.5 flex items-center gap-2">
             <Cpu className="w-4 h-4 text-amber-400" />
@@ -247,36 +343,69 @@ paths:
           <div className="grid lg:grid-cols-2 gap-6">
             <Card className="border-border/60 shadow-sm bg-card/60 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-blue-400" />
-                  Raw Bank Statement / CAMT Stream
-                </CardTitle>
+                <div className="flex justify-between items-center">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <FileText className="w-5 h-5 text-blue-400" />
+                    Raw Statement Ingestion Stream
+                  </CardTitle>
+                  <label className="cursor-pointer">
+                    <input
+                      type="file"
+                      accept=".pdf,.csv,.xml,.txt"
+                      className="hidden"
+                      onChange={handleFileUpload}
+                    />
+                    <Badge
+                      variant="outline"
+                      className="border-primary/40 text-primary bg-primary/10 hover:bg-primary/20 flex items-center gap-1 cursor-pointer"
+                    >
+                      <UploadCloud className="w-3 h-3" /> Drop Bank File
+                    </Badge>
+                  </label>
+                </div>
                 <CardDescription>
-                  Paste or ingest unstructured PDF excerpts, SWIFT MT940, or CAMT.053 XML files.
+                  Extract unstructured PDF excerpts, SWIFT MT940, or ISO 20022 CAMT.053 XML files.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <textarea
                   value={ingestionText}
                   onChange={(e) => setIngestionText(e.target.value)}
-                  className="w-full h-64 p-3 rounded-md bg-muted/40 font-mono text-xs border border-border/80 focus:ring-1 focus:ring-primary focus:outline-none"
+                  className="w-full h-56 p-3 rounded-md bg-muted/40 font-mono text-xs border border-border/80 focus:ring-1 focus:ring-primary focus:outline-none"
                 />
-                <Button
-                  onClick={handleSimulateExtraction}
-                  disabled={isExtracting}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium"
-                >
-                  {isExtracting ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> Ingesting & Verifying
-                      Balance...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-4 h-4 mr-2" /> Extract & Verify Mathematical Balance
-                    </>
-                  )}
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleSimulateExtraction}
+                    disabled={isExtracting}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs h-9"
+                  >
+                    {isExtracting ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 mr-2 animate-spin" /> Ingesting &
+                        Verifying...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-3.5 h-3.5 mr-2" /> Extract & Verify Balance
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    onClick={handleReconcileStaged}
+                    disabled={isReconcilingStaged}
+                    className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs h-9"
+                  >
+                    {isReconcilingStaged ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 mr-2 animate-spin" /> Matching Staged...
+                      </>
+                    ) : (
+                      <>
+                        <ArrowDownRight className="w-3.5 h-3.5 mr-2" /> Stage & Reconcile Run
+                      </>
+                    )}
+                  </Button>
+                </div>
               </CardContent>
             </Card>
 
@@ -285,9 +414,9 @@ paths:
                 <div>
                   <CardTitle className="text-lg flex items-center gap-2">
                     <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                    Structured Extraction & Provenance
+                    Structured Normalized Records
                   </CardTitle>
-                  <CardDescription>Zero-float-drift NormalizedRecord extraction</CardDescription>
+                  <CardDescription>Zero-float-drift line-by-line provenance</CardDescription>
                 </div>
                 <Badge
                   variant="outline"
@@ -297,9 +426,9 @@ paths:
                 </Badge>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="rounded-md border border-border/60 overflow-hidden">
+                <div className="rounded-md border border-border/60 overflow-hidden max-h-56 overflow-y-auto">
                   <table className="w-full text-xs">
-                    <thead className="bg-muted/60 text-muted-foreground border-b border-border/60">
+                    <thead className="bg-muted/60 text-muted-foreground border-b border-border/60 sticky top-0">
                       <tr>
                         <th className="p-2 text-left">Record ID</th>
                         <th className="p-2 text-left">Date</th>
@@ -333,6 +462,40 @@ paths:
                   </table>
                 </div>
 
+                {stagedReconResult && (
+                  <div className="p-3 rounded-lg bg-emerald-950/40 border border-emerald-500/40 text-xs space-y-1.5 animate-in fade-in duration-300">
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold text-emerald-300 flex items-center gap-1.5">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Staged Reconciliation
+                        Completed
+                      </span>
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] text-emerald-400 border-emerald-500/40 font-mono"
+                      >
+                        {stagedReconResult.status}
+                      </Badge>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 pt-1 font-mono text-[11px]">
+                      <div>
+                        Matched:{" "}
+                        <span className="text-foreground font-bold">
+                          {stagedReconResult.matchedCount} / {stagedReconResult.totalTransactions}
+                        </span>
+                      </div>
+                      <div>
+                        Payout Volume:{" "}
+                        <span className="text-foreground font-bold">
+                          {stagedReconResult.payoutAmount}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-[10px] font-mono text-muted-foreground break-all">
+                      StateRoot: {stagedReconResult.merkleRoot}
+                    </div>
+                  </div>
+                )}
+
                 <div className="p-3 rounded-lg bg-muted/40 border border-border/60 text-xs space-y-1.5">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Computed Statement Sum:</span>
@@ -352,18 +515,18 @@ paths:
           </div>
         </TabsContent>
 
-        {/* 2. Autonomous Closed-Loop Adjudication */}
+        {/* 2. Autonomous Closed-Loop Adjudication & Policy Governance */}
         <TabsContent value="adjudication" className="space-y-6">
           <Card className="border-border/60 shadow-sm bg-card/60 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-purple-400" />
-                  Autonomous Causal Break Adjudication
+                  Causal Exception Adjudication & SOX-404 Policy Governance
                 </CardTitle>
                 <CardDescription>
-                  Counterfactual root-cause analysis transforming reconciliation exceptions into
-                  bounded SelfHealingPlans.
+                  Counterfactual root-cause analysis transforming exceptions into verified,
+                  dual-signed policy candidates.
                 </CardDescription>
               </div>
               <Button
@@ -383,7 +546,8 @@ paths:
                 )}
               </Button>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
+              {/* Healing Plans Grid */}
               <div className="grid md:grid-cols-2 gap-4">
                 {healingPlans.map((plan) => (
                   <div
@@ -430,15 +594,139 @@ paths:
                         </div>
                       </div>
                     </div>
+
+                    <div className="pt-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleProposePolicy(plan.id)}
+                        className="w-full text-xs border-purple-500/40 text-purple-300 hover:bg-purple-500/10"
+                      >
+                        <Lock className="w-3.5 h-3.5 mr-1.5" /> Stage Dual-Signature Policy Proposal
+                      </Button>
+                    </div>
                   </div>
                 ))}
+              </div>
+
+              {/* Dual-Signature Approval Modal / Card if Selected */}
+              {selectedPlanForApproval && (
+                <div className="p-4 rounded-xl border-2 border-purple-500/60 bg-purple-950/20 space-y-3 animate-in fade-in duration-300">
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      <UserCheck className="w-5 h-5 text-purple-400" />
+                      <span className="text-sm font-bold text-foreground">
+                        SOX-404 Dual-Signature Review: {selectedPlanForApproval.id}
+                      </span>
+                    </div>
+                    <Badge variant="outline" className="border-purple-400/40 text-purple-300">
+                      Maker-Checker Required
+                    </Badge>
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-3 text-xs">
+                    <div className="p-2.5 rounded bg-muted/40 border border-border/50">
+                      <div className="text-[10px] text-muted-foreground uppercase font-semibold">
+                        Proposer (Maker)
+                      </div>
+                      <div className="font-mono font-bold text-foreground mt-0.5">
+                        operator_staff_01
+                      </div>
+                    </div>
+                    <div className="p-2.5 rounded bg-muted/40 border border-border/50">
+                      <div className="text-[10px] text-muted-foreground uppercase font-semibold">
+                        Controller (Checker)
+                      </div>
+                      <div className="font-mono font-bold text-purple-400 mt-0.5">
+                        controller_verified_exec
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 pt-2">
+                    <Button
+                      size="sm"
+                      onClick={handleCommitDualSignature}
+                      className="bg-purple-600 hover:bg-purple-700 text-white font-medium text-xs flex-1"
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" /> Authorize & Freeze SHA-256
+                      Policy Certificate
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setSelectedPlanForApproval(null)}
+                      className="text-xs"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Active Policy Registry Table */}
+              <div className="space-y-2 pt-4 border-t border-border/40">
+                <div className="flex justify-between items-center">
+                  <div className="text-sm font-bold text-foreground flex items-center gap-2">
+                    <Layers className="w-4 h-4 text-purple-400" /> Active Frozen Cognitive Policies
+                    ({activePolicies.length})
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] text-emerald-400 border-emerald-500/30"
+                  >
+                    Immutable SHA-256 Enforced
+                  </Badge>
+                </div>
+                <div className="rounded-lg border border-border/60 overflow-hidden">
+                  <table className="w-full text-xs">
+                    <thead className="bg-muted/60 text-muted-foreground border-b border-border/60">
+                      <tr>
+                        <th className="p-2.5 text-left">Policy ID</th>
+                        <th className="p-2.5 text-left">Action</th>
+                        <th className="p-2.5 text-left">Maker / Checker</th>
+                        <th className="p-2.5 text-left">Noise Reduction</th>
+                        <th className="p-2.5 text-left">Certificate Fingerprint</th>
+                        <th className="p-2.5 text-right">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/40 font-mono">
+                      {activePolicies.map((pol) => (
+                        <tr key={pol.proposalId} className="hover:bg-muted/20">
+                          <td className="p-2.5 font-bold text-foreground">{pol.proposalId}</td>
+                          <td className="p-2.5 text-purple-400">{pol.action}</td>
+                          <td className="p-2.5 text-muted-foreground text-[11px]">
+                            {pol.proposerId} /{" "}
+                            <span className="text-foreground">{pol.checkerId}</span>
+                          </td>
+                          <td className="p-2.5 text-emerald-400 font-bold">
+                            {pol.noiseReductionPct}%
+                          </td>
+                          <td className="p-2.5 text-[10px] text-muted-foreground max-w-xs truncate">
+                            {pol.certificateHash}
+                          </td>
+                          <td className="p-2.5 text-right">
+                            <Badge
+                              variant="outline"
+                              className="text-[10px] bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                            >
+                              ACTIVE
+                            </Badge>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* 3. Conversational Auditor Copilot */}
+        {/* 3. Conversational Auditor OS & Zero-Trust Verifier */}
         <TabsContent value="auditor" className="space-y-6">
+          {/* Zero-Trust Client-Side Verifier Studio */}
+          <ZeroTrustVerifier />
+
+          {/* Attestation Dossier */}
           <Card className="border-border/60 shadow-sm bg-card/60 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
