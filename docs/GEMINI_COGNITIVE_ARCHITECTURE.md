@@ -35,6 +35,7 @@ In mission-critical financial infrastructure and treasury management, probabilis
 ## The Seven Cognitive Pillars
 
 ### 1. Multimodal 1M+ Token Universal Ingestion
+
 - **Location:** [`packages/reconciliation-core/src/gemini-cognitive-engine.ts`](../packages/reconciliation-core/src/gemini-cognitive-engine.ts)
 - **API Route:** `POST /api/v1/cognitive/ingest`
 - **Functionality:**
@@ -44,6 +45,7 @@ In mission-critical financial infrastructure and treasury management, probabilis
   - Evaluates mathematical net totals against declared statement headers, reporting exact delta breaks if any drift is detected.
 
 ### 2. Autonomous Closed-Loop Exception Adjudication
+
 - **Location:** [`packages/reconciliation-core/src/gemini-cognitive-engine.ts`](../packages/reconciliation-core/src/gemini-cognitive-engine.ts) & [`packages/reconciliation-core/src/pattern-learning-engine.ts`](../packages/reconciliation-core/src/pattern-learning-engine.ts)
 - **API Route:** `POST /api/v1/cognitive/adjudicate`
 - **Functionality:**
@@ -53,6 +55,7 @@ In mission-critical financial infrastructure and treasury management, probabilis
   - Simulates proposed plans against historical run data, guaranteeing zero cents of float drift before policies are enacted.
 
 ### 3. SOX-404 Dual-Signature Policy Governance & State Machine
+
 - **Location:** [`packages/reconciliation-core/src/cognitive-policy-registry.ts`](../packages/reconciliation-core/src/cognitive-policy-registry.ts)
 - **API Routes:**
   - `POST /api/v1/cognitive/policy/propose`: Proposes candidate self-healing rule with bounded parameters.
@@ -64,6 +67,7 @@ In mission-critical financial infrastructure and treasury management, probabilis
   - Generates immutable cryptographic certificate hash linking tenant, proposer, checker, and rule payload.
 
 ### 4. Zero-Knowledge Conversational Auditor OS & Proofpacks
+
 - **Location:** [`packages/reconciliation-core/src/gemini-cognitive-engine.ts`](../packages/reconciliation-core/src/gemini-cognitive-engine.ts) & [`crates/settler-verify-wasm`](../crates/settler-verify-wasm)
 - **API Route:** `POST /api/v1/cognitive/audit`
 - **Functionality:**
@@ -72,6 +76,7 @@ In mission-critical financial infrastructure and treasury management, probabilis
   - Emits a Big-4 audit memorandum, SHA-256 Merkle root hash, and a self-contained browser script invoking Settler's WebAssembly verification engine.
 
 ### 5. Live In-Browser Zero-Trust Proofpack Verifier Studio
+
 - **Location:** [`packages/web/src/components/cognitive/zero-trust-verifier.tsx`](../packages/web/src/components/cognitive/zero-trust-verifier.tsx)
 - **Console Route:** Embedded in `/cognitive` Operator Console under Auditor OS tab.
 - **Functionality:**
@@ -80,6 +85,7 @@ In mission-critical financial infrastructure and treasury management, probabilis
   - Instant presets for valid settlement runs and adversarial tampered leaf detection.
 
 ### 6. Staged Multimodal Reconciliation Pipeline
+
 - **Location:** [`packages/reconciliation-core/src/batch-settlement-engine.ts`](../packages/reconciliation-core/src/batch-settlement-engine.ts)
 - **API Route:** `POST /api/v1/cognitive/reconcile-staged`
 - **Functionality:**
@@ -88,6 +94,7 @@ In mission-critical financial infrastructure and treasury management, probabilis
   - Injects verifiable audit log events (`cognitive_staged_reconciliation_executed`).
 
 ### 7. Metamorphic & Cognitive Adversarial CI Fuzzer
+
 - **Location:** [`packages/cli/src/commands/foundry.ts`](../packages/cli/src/commands/foundry.ts)
 - **CI Script:** `pnpm run verify:foundry:adversarial`
 - **Functionality:**

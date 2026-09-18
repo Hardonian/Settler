@@ -98,6 +98,7 @@ Every adapter includes rate limiting, token refresh, webhook verification, and r
 Traditional financial audit and reconciliation tools (BlackLine, Trintech) rely on overnight batch cron jobs, closed SQL databases, and static PDF/spreadsheet reports. Because verifying 100% of records manually is cost-prohibitive, auditors sample 25–50 transactions and extrapolate risk.
 
 **Settler turns financial audit into a zero-trust cryptographic check:**
+
 1. **Mathematical Determinism**: Every match run hashes inputs, tolerance rules, and outputs into a SHA-256 Merkle tree (Proofpack).
 2. **Offline Browser Verification**: Using our compiled WebAssembly engine (`crates/settler-verify-wasm`) or in-browser Web Crypto API, external Big 4 auditors verify evidence bundles client-side in their browser without network access.
 3. **Institutional Memory**: Operator exception adjudications train deterministic pattern heuristics, compounding institutional knowledge over time.
