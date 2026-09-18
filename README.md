@@ -10,6 +10,8 @@ Deterministic transaction matching · Hash-linked evidence · Enterprise-grade t
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-24%2B-339933?logo=node.js&logoColor=white)
 ![Rust](https://img.shields.io/badge/Rust-Kernel-DEA584?logo=rust&logoColor=white)
+![WASM](https://img.shields.io/badge/WASM-Browser_Verifier-654FF0?logo=webassembly&logoColor=white)
+![Determinism](https://img.shields.io/badge/Engine-SHA--256_Deterministic-00C853)
 ![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=next.js&logoColor=white)
 
 <!-- BEGIN: REPO HERO -->
@@ -90,6 +92,26 @@ Every adapter includes rate limiting, token refresh, webhook verification, and r
 - **SLA Monitoring & Alerting** — Configurable SLA/SLO thresholds with alerting pipelines
 - **Billing Gating** — Tier-based feature access with circuit-breaker degraded states
 - **46 Middleware Layers** — Auth, CSRF, rate limiting, idempotency, compression, ETag, request signing, observability, and more
+
+## Strategic Moat: Eliminating Audit Sampling
+
+Traditional financial audit and reconciliation tools (BlackLine, Trintech) rely on overnight batch cron jobs, closed SQL databases, and static PDF/spreadsheet reports. Because verifying 100% of records manually is cost-prohibitive, auditors sample 25–50 transactions and extrapolate risk.
+
+**Settler turns financial audit into a zero-trust cryptographic check:**
+1. **Mathematical Determinism**: Every match run hashes inputs, tolerance rules, and outputs into a SHA-256 Merkle tree (Proofpack).
+2. **Offline Browser Verification**: Using our compiled WebAssembly engine (`crates/settler-verify-wasm`), external Big 4 auditors verify evidence bundles client-side in their browser without network access.
+3. **Institutional Memory**: Operator exception adjudications train deterministic pattern heuristics, compounding institutional knowledge over time.
+
+## Transparent Pricing (Canonical Commercial Spine)
+
+| Tier | Base Fee | Included Volume | Reconciliation Overage | Exception Supervision | Key Capabilities |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Starter** | **$0/mo** | 10,000 / month | $0.01 / transaction | $0.10 / excess exception | 2 Connectors, 7-day retention, Community support |
+| **Pro** | **$99/mo** | 100,000 / month | $0.01 / transaction | $0.10 / excess exception | Unlimited Connectors, 30-day retention, 24h SLA |
+| **Scale** | **$399/mo** | 1,000,000 / month | $0.01 / transaction | $0.10 / excess exception | High-throughput pipelines, 90-day logs, 4h SLA |
+| **Enterprise** | **Custom** | Multi-million bands | Volume discounts ($0.008) | Custom thresholds ($0.08) | Dedicated VPC / On-prem, TigerBeetle, SOX 404, 24/7 SLA |
+
+*Canonical configuration: [`packages/types/src/commercial-spine.ts`](packages/types/src/commercial-spine.ts)*
 
 ## Try Settler in 5 Minutes
 

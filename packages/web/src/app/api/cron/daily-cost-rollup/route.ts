@@ -33,18 +33,30 @@ function verifyCronSecret(request: NextRequest): boolean {
   return authHeader === `Bearer ${cronSecret}`;
 }
 
+// Concurrency guard to prevent overlapping edge/worker invocations for the same target date
+const activeRollupLocks = new Set<string>();
+
 export async function POST(request: NextRequest) {
   // Verify cron secret
   if (!verifyCronSecret(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  try {
-    const body = await request.json().catch(() => ({}));
-    // Use provided date or default to yesterday (typical for daily rollups)
-    const targetDate =
-      body.date || new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+  const body = await request.json().catch(() => ({}));
+  // Use provided date or default to yesterday (typical for daily rollups)
+  const targetDate =
+    body.date || new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split("T")[0];
 
+  if (activeRollupLocks.has(targetDate) && !body.force) {
+    return NextResponse.json(
+      { status: "skipped", reason: `Daily cost rollup for ${targetDate} is already executing` },
+      { status: 409 }
+    );
+  }
+
+  activeRollupLocks.add(targetDate);
+
+  try {
     // Use dynamic import to avoid circular dependencies in cron jobs
     import("@/lib/utils/logger")
       .then(({ appLogger }) => {
@@ -170,7 +182,6 @@ export async function POST(request: NextRequest) {
       .catch(() => {
         // Silent fail if logger unavailable
       });
-    // Never return 500 - return graceful error for cron retry
     return NextResponse.json(
       {
         error: "ROLLUP_FAILED",
@@ -181,6 +192,8 @@ export async function POST(request: NextRequest) {
       },
       { status: 200 }
     );
+  } finally {
+    activeRollupLocks.delete(targetDate);
   }
 }
 

@@ -1,79 +1,61 @@
 # Pricing Documentation - Settler Enterprise
 
-**Last Updated:** December 2024
+**Last Updated:** September 2026  
+**Canonical Source of Truth:** `packages/types/src/commercial-spine.ts` (`PLAN_SPINE`)
 
 ---
 
 ## Pricing Model
 
-Settler uses a **usage-based pricing model** with a simple base fee plus per-transaction pricing.
+Settler uses a **predictable tiered subscription model with metered overage and exception supervision**.
 
-**Core Value:** "$0.01 per transaction"
+**Core Principle:** Transparent usage scaling with generous included volume and deterministically verifiable outcomes.
 
 ---
 
-## Pricing Tiers
-
-### Free Tier
-
-- **Base Price:** $0/month
-- **Included Transactions:** 100 transactions/month
-- **Overage Pricing:** $0.01 per transaction over 100
-- **Use Case:** Testing, small projects, evaluation
-
-**Limitations:**
-
-- 100 transactions/month included
-- Basic features only
-- Community support
+## Pricing Tiers (Canonical Commercial Spine)
 
 ### Starter Tier
 
-- **Base Price:** $29/month
-- **Included Transactions:** 1,000 transactions/month
-- **Overage Pricing:** $0.01 per transaction over 1,000
-- **Use Case:** Small businesses, startups, side projects
+- **Base Price:** $0/month (Free for validation & small teams)
+- **Included Reconciliations:** 10,000 transactions/month
+- **Reconciliation Overage:** $0.01 per transaction over 10,000
+- **Included Exception Rate:** 1.0% of total volume
+- **Exception Supervision Overage:** $0.10 per exception exceeding 1.0% threshold
+- **Retention:** 7-day audit logs
+- **Connectors:** 2 active platform adapters
+- **Support:** Community & GitHub Discussions
 
-**Example:** 2,500 transactions/month = $29 + (1,500 × $0.01) = $44/month
-
-**Features:**
-
-- All Free tier features
-- Priority support
-- API access
-- Developer console
-
-### Growth Tier
+### Pro Tier
 
 - **Base Price:** $99/month
-- **Included Transactions:** 10,000 transactions/month
-- **Overage Pricing:** $0.01 per transaction over 10,000
-- **Use Case:** Growing businesses, established fintechs
+- **Included Reconciliations:** 100,000 transactions/month
+- **Reconciliation Overage:** $0.01 per transaction over 100,000
+- **Included Exception Rate:** 1.0% of total volume
+- **Exception Supervision Overage:** $0.10 per exception exceeding 1.0% threshold
+- **Retention:** 30-day audit logs
+- **Connectors:** Unlimited platform adapters
+- **Support:** Email support with 24-hour SLA
 
-**Example:** 25,000 transactions/month = $99 + (15,000 × $0.01) = $249/month
+### Scale Tier
 
-**Features:**
-
-- All Starter tier features
-- Advanced analytics
-- Custom integrations
-- SLA guarantee
+- **Base Price:** $399/month
+- **Included Reconciliations:** 1,000,000 transactions/month
+- **Reconciliation Overage:** $0.01 per transaction over 1,000,000
+- **Included Exception Rate:** 1.0% of total volume
+- **Exception Supervision Overage:** $0.10 per exception exceeding 1.0% threshold
+- **Retention:** 90-day audit logs
+- **Connectors:** Unlimited platform adapters
+- **Support:** Priority support with dedicated Slack channel & 4-hour SLA
 
 ### Enterprise Tier
 
-- **Base Price:** Custom (typically $500-$10,000+/month)
-- **Included Transactions:** Custom (typically 100K+)
-- **Overage Pricing:** Volume discounts available
-- **Use Case:** Large enterprises, high-volume processors
-
-**Features:**
-
-- All Growth tier features
-- Dedicated support
-- Custom SLA
-- SSO/SAML
-- Custom integrations
-- On-premise options (available)
+- **Base Price:** Custom annual contract (typically $25K–$250K+/year)
+- **Included Reconciliations:** Custom high-volume bands (multi-million/month)
+- **Reconciliation Overage:** Volume-tiered (down to $0.008 per transaction)
+- **Exception Supervision:** Custom thresholds (down to $0.08 per exception)
+- **Deployment:** Dedicated VPC, Single-Tenant AWS/GCP, or Air-Gapped On-Premise
+- **Features:** Full TigerBeetle financial ledger, custom ERP adapters (SAP S/4HANA, NetSuite RFC 6962), SOX 404 maker-checker queues, cryptographic proofpack export, 24/7 dedicated enterprise SLA
 
 ---
 
@@ -82,31 +64,29 @@ Settler uses a **usage-based pricing model** with a simple base fee plus per-tra
 ### Formula
 
 ```
-Monthly Cost = Base Price + (Overage Transactions × $0.01)
+Monthly Cost = Base Price + (Max(0, Volume - IncludedVolume) × $0.01) + (Max(0, Exceptions - IncludedExceptions) × $0.10)
 ```
 
 Where:
+- `IncludedExceptions = TotalTransactions × IncludedExceptionRate (1.0%)`
 
-- **Overage Transactions** = Max(0, Total Transactions - Included Transactions)
+### Calculation Examples
 
-### Examples
+**Starter Tier ($0/mo):**
+- 8,000 transactions, 40 exceptions: **$0.00** (within 10,000 limit)
+- 15,000 transactions, 100 exceptions:
+  - Base: $0
+  - Volume overage: (15,000 - 10,000) × $0.01 = **$50.00**
+  - Included exceptions: 15,000 × 0.01 = 150. (100 <= 150, so $0 exception fee)
+  - Total: **$50.00**
 
-**Free Tier:**
-
-- 50 transactions: $0 + (0 × $0.01) = **$0**
-- 150 transactions: $0 + (50 × $0.01) = **$0.50**
-
-**Starter Tier:**
-
-- 500 transactions: $29 + (0 × $0.01) = **$29**
-- 2,500 transactions: $29 + (1,500 × $0.01) = **$44**
-- 5,000 transactions: $29 + (4,000 × $0.01) = **$69**
-
-**Growth Tier:**
-
-- 5,000 transactions: $99 + (0 × $0.01) = **$99**
-- 25,000 transactions: $99 + (15,000 × $0.01) = **$249**
-- 50,000 transactions: $99 + (40,000 × $0.01) = **$499**
+**Pro Tier ($99/mo):**
+- 80,000 transactions, 500 exceptions: **$99.00** (within 100,000 limit)
+- 150,000 transactions, 2,000 exceptions:
+  - Base: $99.00
+  - Volume overage: (150,000 - 100,000) × $0.01 = **$500.00**
+  - Included exceptions: 150,000 × 0.01 = 1,500. Excess = 500 × $0.10 = **$50.00**
+  - Total: **$649.00**
 
 ---
 
@@ -141,38 +121,41 @@ Where:
 
 ### Transaction Limits
 
-- **Free:** 100 transactions/month (hard limit)
-- **Starter:** 1,000 included, unlimited overage
-- **Growth:** 10,000 included, unlimited overage
-- **Enterprise:** Custom limits
+- **Starter:** 10,000 reconciliations/month included, $0.01/overage
+- **Pro:** 100,000 reconciliations/month included, $0.01/overage
+- **Scale:** 1,000,000 reconciliations/month included, $0.01/overage
+- **Enterprise:** Custom volume bands with high-scale commitments
 
 ### Feature Limits
 
-**Free Tier:**
-
-- Basic reconciliation only
-- Limited API calls (100/day)
-- Community support
-
 **Starter Tier:**
 
-- Full reconciliation features
-- 1,000 API calls/day
-- Email support
+- Core reconciliation engine & deterministic matching
+- 2 verified platform connectors
+- 7-day audit log retention
+- Community support
 
-**Growth Tier:**
+**Pro Tier:**
 
-- All features
-- 10,000 API calls/day
-- Priority support
-- SLA guarantee
+- Unlimited platform connectors (Stripe, Shopify, PayPal, QuickBooks, Xero, etc.)
+- 30-day audit log retention
+- Advanced anomaly alerts & reconciliation reporting
+- Email support with 24-hour SLA
+
+**Scale Tier:**
+
+- High-throughput processing pipelines
+- 90-day audit log retention
+- Automated exception adjudication workflows
+- Priority support with dedicated Slack channel & 4-hour SLA
 
 **Enterprise Tier:**
 
-- All features
-- Unlimited API calls
-- Dedicated support
-- Custom SLA
+- All features plus dedicated TigerBeetle double-entry ledgering
+- Custom ERP integrations (SAP S/4HANA, NetSuite journal sync)
+- SOX 404 maker-checker approval matrices
+- Single-tenant VPC or on-premise air-gapped deployment
+- 99.99% uptime SLA with 24/7 dedicated engineering support
 
 ---
 

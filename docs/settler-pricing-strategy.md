@@ -2,16 +2,24 @@
 
 ## Internal Business Strategy Document
 
-**Document Version:** 1.0  
-**Last Updated:** January 2025  
+**Document Version:** 2.0  
+**Last Updated:** September 2026  
 **Classification:** Internal - Leadership & Product Teams  
-**Status:** Active Implementation
+**Status:** Active Implementation  
+**Canonical Source of Truth:** `packages/types/src/commercial-spine.ts` (`PLAN_SPINE`)
+
+> **Notice on Commercial Spine Alignment:**  
+> While this document details earlier SMB exploration models, the live production commercial truth is anchored in the `@settler/types` `PLAN_SPINE`:  
+> - **Starter ($0/mo):** 10,000 reconciliations free, $0.01/overage txn, $0.10/exception over 1% threshold.  
+> - **Pro ($99/mo):** 100,000 reconciliations included, $0.01/overage txn, $0.10/exception overage.  
+> - **Scale ($399/mo):** 1,000,000 reconciliations included, $0.01/overage txn, $0.10/exception overage.  
+> - **Enterprise (Custom):** Dedicated VPC, air-gapped on-premise, TigerBeetle financial ledger, custom ERP connectors.
 
 ---
 
 ## Executive Summary
 
-Settler.dev is a Open Source Reconciliation Engine platform that automates financial reconciliation across payment processors, e-commerce platforms, and business systems. Our pricing strategy combines a **base subscription model** ($49.95/month) with **usage-based metering** and **premium add-on integrations** to create a predictable revenue foundation while capturing value from high-volume customers.
+Settler.dev is an enterprise reconciliation intelligence and audit operating system platform that automates financial reconciliation across payment processors, e-commerce platforms, and ERP systems. Our pricing strategy combines a **predictable tiered subscription model** with **usage-based metering** and **premium enterprise deployments** to create a defensible revenue foundation while capturing high-margin value from high-volume operations.
 
 **Revenue Model:**
 

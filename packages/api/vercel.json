@@ -1,6 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "cd ../.. && npm ci && npm run build",
+  "installCommand": "corepack enable && corepack prepare pnpm@10.13.1 --activate && cd ../.. && pnpm install --frozen-lockfile",
+  "buildCommand": "cd ../.. && pnpm --filter @settler/api build",
   "rewrites": [
     {
       "source": "/(.*)",
