@@ -16,14 +16,11 @@ import {
   Cpu,
   Terminal,
   CheckCircle2,
-  AlertTriangle,
-  ArrowRight,
   Fingerprint,
   RefreshCw,
   Search,
   Code2,
   UploadCloud,
-  FileCheck,
   Lock,
   UserCheck,
   Layers,
@@ -32,7 +29,6 @@ import {
 
 export default function CognitiveIntelligencePage() {
   // Ingestion State
-  const [selectedRail, setSelectedRail] = useState("stripe_payout");
   const [ingestionText, setIngestionText] =
     useState(`STATEMENT SUMMARY: CHASE OPERATING ACCOUNT #99812-44
 PERIOD: 2026-09-01 TO 2026-09-15
@@ -83,8 +79,6 @@ TOTAL DEPOSITS: $170,920.75`);
   // Adjudication & Policy Governance State
   const [isAdjudicating, setIsAdjudicating] = useState(false);
   const [selectedPlanForApproval, setSelectedPlanForApproval] = useState<any | null>(null);
-  const [checkerRole, setCheckerRole] = useState<"operator" | "controller">("controller");
-  const [approvalNote, setApprovalNote] = useState("Approved for Q3 SOX-404 compliance");
 
   const [healingPlans, setHealingPlans] = useState<any[]>([
     {
@@ -193,6 +187,7 @@ paths:
     setTimeout(() => {
       setIsExtracting(false);
       setBalanceVerdict("EXACT_MATCH");
+      setExtractedRecords((prev) => [...prev]);
     }, 600);
   };
 
@@ -251,6 +246,7 @@ paths:
     setIsAuditing(true);
     setTimeout(() => {
       setIsAuditing(false);
+      setAuditDossier((prev: any) => ({ ...prev, drift: "$0.00" }));
     }, 800);
   };
 
@@ -258,6 +254,7 @@ paths:
     setIsSynthesizing(true);
     setTimeout(() => {
       setIsSynthesizing(false);
+      setSynthesizedCode((prev) => prev);
     }, 650);
   };
 

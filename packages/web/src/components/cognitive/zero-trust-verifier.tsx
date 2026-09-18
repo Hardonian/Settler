@@ -7,12 +7,10 @@ import { Button } from "@/components/ui/button";
 import {
   ShieldCheck,
   ShieldAlert,
-  Fingerprint,
   Cpu,
   CheckCircle2,
   XCircle,
   FileCode2,
-  ArrowRight,
   Sparkles,
 } from "lucide-react";
 
