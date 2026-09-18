@@ -102,3 +102,4 @@ export * from "./vendor-reconciliation";
 export * from "./netsuite-journal-sync";
 export * from "./sap-s4hana";
 export * from "./zero-shot-schema";
+export * from "./gemini-adapter-synthesizer";

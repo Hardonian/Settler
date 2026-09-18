@@ -53,6 +53,7 @@ import { dataResidencyRouter } from "./routes/data-residency";
 import { liquidityMetricsRouter } from "./routes/liquidity-metrics";
 import { supportTicketsRouter } from "./routes/support-tickets";
 import { vendorDisputesRouter } from "./routes/vendor-disputes";
+import { cognitiveRouter } from "./routes/cognitive";
 // telemetryRouter removed — orphaned dead code with broken imports (SEC-AUDIT-001)
 import { testModeMiddleware, validateTestMode } from "./middleware/test-mode";
 import { featureFlagsMiddleware } from "./middleware/feature-flags";
@@ -341,6 +342,7 @@ function configureProtectedRouter(router: Router, options: ProtectedRouterOption
   router.use(cliWizardRouter);
   router.use(exportEnhancedRouter);
   router.use(aiAssistantRouter);
+  router.use(cognitiveRouter);
   router.use(auditTrailRouter);
   router.use("/tenant", tenantMiddleware, tenantDataRouter);
   router.use("/webhooks", webhookManagementRouter);

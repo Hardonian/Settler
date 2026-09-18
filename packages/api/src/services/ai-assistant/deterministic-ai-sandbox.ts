@@ -1,7 +1,7 @@
 import { createHash } from "crypto";
 import { stableStringify } from "../determinism/canonical-input";
 
-export type AIProvider = "openai" | "anthropic" | "local" | "mcp";
+export type AIProvider = "openai" | "anthropic" | "gemini" | "local" | "mcp";
 
 export interface AISandboxRequest {
   prompt: string;
@@ -51,6 +51,7 @@ interface ModelSelection {
 }
 
 const DEFAULT_MODELS: Record<AIProvider, string> = {
+  gemini: "gemini-3.8-flash",
   openai: "gpt-4o-mini",
   anthropic: "claude-3-5-haiku",
   local: "llama3.1:8b",

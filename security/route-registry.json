@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-18T01:57:08.948Z",
-  "totalRoutes": 431,
+  "generatedAt": "2026-09-18T02:40:06.113Z",
+  "totalRoutes": 439,
   "routes": [
     {
       "route": "/api/csrf-token",
@@ -300,6 +300,30 @@
       "route": "/api/v1/close/sign-off",
       "kind": "express-router",
       "file": "packages/api/src/routes/period-close.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/cognitive/adjudicate",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/cognitive.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/cognitive/audit",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/cognitive.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/cognitive/ingest",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/cognitive.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/cognitive/synthesize-adapter",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/cognitive.ts",
       "methods": ["POST"]
     },
     {
@@ -1836,6 +1860,30 @@
       "route": "/api/v2/close/sign-off",
       "kind": "express-router",
       "file": "packages/api/src/routes/period-close.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/cognitive/adjudicate",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/cognitive.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/cognitive/audit",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/cognitive.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/cognitive/ingest",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/cognitive.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v2/cognitive/synthesize-adapter",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/cognitive.ts",
       "methods": ["POST"]
     },
     {

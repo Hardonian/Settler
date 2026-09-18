@@ -54,3 +54,10 @@ export const scanMergedRunsForLegacyPage = jest.fn();
 export const resolveOperatorRunDetailForTenants = jest.fn();
 export const buildRunProofpackIndexByRunId = jest.fn().mockResolvedValue(new Map());
 export const toRunCompactProofSummary = jest.fn((value: unknown) => value);
+export const geminiCognitiveEngine = {
+  extractMultimodalStatement: jest.fn(),
+  adjudicateExceptions: jest.fn(),
+  synthesizeAuditProofDossier: jest.fn(),
+  generateAdversarialVectors: jest.fn(),
+};
+export class GeminiCognitiveEngine {}

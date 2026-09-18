@@ -18,7 +18,7 @@ const router: Router = Router();
 const aiQuerySchema = z.object({
   body: z.object({
     query: z.string().min(1).max(1000),
-    modelProvider: z.enum(["openai", "anthropic", "local", "mcp"]).optional(),
+    modelProvider: z.enum(["openai", "anthropic", "gemini", "local", "mcp"]).optional(),
     model: z.string().min(1).max(255).optional(),
     context: z
       .object({
