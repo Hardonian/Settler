@@ -32,7 +32,9 @@ pub enum SettlerSdkError {
 impl std::fmt::Display for SettlerSdkError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::MissingTenantId => write!(f, "Tenant invariant violation: tenant_id cannot be empty"),
+            Self::MissingTenantId => {
+                write!(f, "Tenant invariant violation: tenant_id cannot be empty")
+            }
             Self::InvalidAmount => write!(f, "Negative or zero amount cents invalid"),
             Self::Imbalance(s) => write!(f, "Double entry imbalance: {}", s),
         }
