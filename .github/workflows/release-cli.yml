@@ -6,10 +6,6 @@ on:
       - "v*"
   workflow_dispatch:
 
-env:
-  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
-  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
-
 jobs:
   build-cli-artifacts:
     name: Build CLI archives (${{ matrix.os }}-${{ matrix.arch }})
@@ -36,9 +32,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9.15.0
+        uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc

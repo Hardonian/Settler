@@ -8,9 +8,6 @@ on:
   schedule:
     - cron: "0 6 * * 1" # Weekly audit on Monday at 06:00 UTC
 
-env:
-  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
-
 jobs:
   security-invariants:
     name: Layered Security Invariants
@@ -21,9 +18,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
+        uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
@@ -65,9 +60,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
+        uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
@@ -93,7 +86,7 @@ jobs:
 
       - name: Materialize authenticated Dependabot export (optional)
         env:
-          DEPENDABOT_ALERTS_EXPORT_B64: ${{ fromJSON(toJSON(secrets))['DEPENDABOT_ALERTS_EXPORT_B64'] }}
+          DEPENDABOT_ALERTS_EXPORT_B64: ${{ secrets.DEPENDABOT_ALERTS_EXPORT_B64 }}
         run: |
           if [ -n "$DEPENDABOT_ALERTS_EXPORT_B64" ]; then
             echo "$DEPENDABOT_ALERTS_EXPORT_B64" | base64 -d > security/dependabot-alerts.json
@@ -117,10 +110,10 @@ jobs:
           SECURITY_DEPENDENCY_EVIDENCE_MODE: strict
           SECURITY_RLS_EVIDENCE_MODE: runtime-rls-required
           DEPENDABOT_ALERTS_EXPORT_PATH: security/dependabot-alerts.json
-          DEPENDABOT_ALERTS_EXPORT_B64: ${{ fromJSON(toJSON(secrets))['DEPENDABOT_ALERTS_EXPORT_B64'] }}
+          DEPENDABOT_ALERTS_EXPORT_B64: ${{ secrets.DEPENDABOT_ALERTS_EXPORT_B64 }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          DIRECT_URL: ${{ fromJSON(toJSON(secrets))['DIRECT_URL'] }}
-          SUPABASE_DB_URL: ${{ fromJSON(toJSON(secrets))['SUPABASE_DB_URL'] }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
         run: |
           if [ -n "$DEPENDABOT_ALERTS_EXPORT_B64" ] && { [ -n "$DATABASE_URL" ] || [ -n "$DIRECT_URL" ] || [ -n "$SUPABASE_DB_URL" ]; }; then
             pnpm run verify:security:enterprise
