@@ -86,7 +86,7 @@ jobs:
 
       - name: Setup TigerBeetle 3-Node Cluster
         run: |
-          set -e
+          set -euo pipefail
           # Create data directories for 3 nodes
           mkdir -p /tmp/tb/{0,1,2}
 
@@ -103,91 +103,66 @@ jobs:
             echo "Started node $i on port $PORT (PID: $(cat /tmp/tb_$i.pid))"
           done
 
-          # Wait for cluster to be ready
-          sleep 3
+          # Readiness is proven through the native protocol; TigerBeetle has no HTTP health endpoint.
+          for attempt in {1..20}; do
+            if printf 'lookup_accounts id=999999;\n' | timeout 5s tigerbeetle repl \
+              --cluster=0 --addresses=127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002 \
+              >/tmp/tb_ready.log 2>&1; then
+              break
+            fi
+            if [ "$attempt" -eq 20 ]; then
+              echo "TigerBeetle cluster failed to become ready"
+              cat /tmp/tb_*.log
+              exit 1
+            fi
+            sleep 1
+          done
+
           for i in 0 1 2; do
-            PORT=$((3000 + i))
-            for attempt in {1..10}; do
-              if curl -s "http://127.0.0.1:$PORT/health" 2>/dev/null | grep -q "OK"; then
-                echo "Node $i is healthy"
-                break
-              fi
-              if [ $attempt -eq 10 ]; then
-                echo "Node $i failed to start"
-                cat /tmp/tb_$i.log
-                exit 1
-              fi
-              sleep 1
-            done
+            kill -0 "$(cat /tmp/tb_$i.pid)"
           done
 
           echo "TigerBeetle 3-node cluster ready on ports 3000, 3001, 3002"
 
       - name: Verify Cluster Consensus
         run: |
-          set -e
-          # Test that all 3 nodes agree on account creation
-          for i in 0 1 2; do
-            PORT=$((3000 + i))
-            # Create accounts via each node
-            cat <<EOF > /tmp/create_accounts_$i.json
-            [
-              { "id": 1000, "ledger": 1, "code": 10, "flags": 0, "debits_pending": 0, "debits_posted": 0, "credits_pending": 0, "credits_posted": 0, "user_data_128": "0", "user_data_64": "0", "user_data_32": "0", "reserved": "0", "linked_event": "0" },
-              { "id": 1001, "ledger": 1, "code": 10, "flags": 0, "debits_pending": 0, "debits_posted": 0, "credits_pending": 0, "credits_posted": 0, "user_data_128": "0", "user_data_64": "0", "user_data_32": "0", "reserved": "0", "linked_event": "0" }
-            ]
-            EOF
-            # Use tigerbeetle CLI to create accounts
-            tigerbeetle create_accounts --addresses="127.0.0.1:$PORT" --batch=/tmp/create_accounts_$i.json
-          done
-
-          # Verify all nodes have same account state
-          for i in 0 1 2; do
-            PORT=$((3000 + i))
-            tigerbeetle query_accounts --addresses="127.0.0.1:$PORT" 1000 1001 > /tmp/accounts_$i.json
-          done
-
-          # Compare states
-          if ! diff /tmp/accounts_0.json /tmp/accounts_1.json; then
-            echo "FAIL: Node 0 and 1 account states differ"
-            exit 1
-          fi
-          if ! diff /tmp/accounts_1.json /tmp/accounts_2.json; then
-            echo "FAIL: Node 1 and 2 account states differ"
-            exit 1
-          fi
-          echo "PASS: All 3 nodes have consistent account state"
+          set -euo pipefail
+          printf 'create_accounts id=1000 code=10 ledger=1, id=1001 code=10 ledger=1;\nlookup_accounts id=1000, id=1001;\n' | \
+            timeout 10s tigerbeetle repl --cluster=0 \
+              --addresses=127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002 \
+              | tee /tmp/accounts_initial.log
+          grep -q '"id": "1000"' /tmp/accounts_initial.log
+          grep -q '"id": "1001"' /tmp/accounts_initial.log
+          echo "PASS: Cluster committed and read consensus state"
 
       - name: Test Split-Brain Handling
         run: |
-          set -e
+          set -euo pipefail
           # Simulate network partition: stop node 2
           kill $(cat /tmp/tb_2.pid) 2>/dev/null || true
           sleep 2
 
-          # Nodes 0 and 1 should still form quorum (2 of 3)
-          for i in 0 1; do
-            PORT=$((3000 + i))
-            if curl -s "http://127.0.0.1:$PORT/health" 2>/dev/null | grep -q "OK"; then
-              echo "Node $i healthy during partition"
-            else
-              echo "Node $i failed during partition"
-              exit 1
-            fi
-          done
+          # Nodes 0 and 1 should still form quorum (2 of 3).
+          printf 'create_accounts id=2000 code=20 ledger=1;\nlookup_accounts id=2000;\n' | \
+            timeout 10s tigerbeetle repl --cluster=0 \
+              --addresses=127.0.0.1:3000,127.0.0.1:3001 \
+              | tee /tmp/accounts_partition.log
+          grep -q '"id": "2000"' /tmp/accounts_partition.log
 
           # Restart node 2
           PORT=3002
           tigerbeetle start --addresses=127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002 /tmp/tb/2/tigerbeetle_2.tigerbeetle > /tmp/tb_2.log 2>&1 &
           echo $! > /tmp/tb_2.pid
-          sleep 3
-
-          # Verify node 2 catches up
-          for attempt in {1..10}; do
-            if curl -s "http://127.0.0.1:3002/health" 2>/dev/null | grep -q "OK"; then
+          # Verify node 2 catches up by reading the write committed while it was offline.
+          for attempt in {1..20}; do
+            if printf 'lookup_accounts id=2000;\n' | timeout 5s tigerbeetle repl \
+              --cluster=0 --addresses=127.0.0.1:3002 \
+              >/tmp/accounts_recovered.log 2>&1 && \
+              grep -q '"id": "2000"' /tmp/accounts_recovered.log; then
               echo "Node 2 recovered and caught up"
               break
             fi
-            if [ $attempt -eq 10 ]; then
+            if [ "$attempt" -eq 20 ]; then
               echo "Node 2 failed to recover"
               cat /tmp/tb_2.log
               exit 1
@@ -195,47 +170,31 @@ jobs:
             sleep 1
           done
 
-          # Verify all 3 nodes consistent again
-          for i in 0 1 2; do
-            PORT=$((3000 + i))
-            tigerbeetle query_accounts --addresses="127.0.0.1:$PORT" 1000 1001 > /tmp/accounts_$i.json
-          done
-          diff /tmp/accounts_0.json /tmp/accounts_1.json && diff /tmp/accounts_1.json /tmp/accounts_2.json
-          echo "PASS: Cluster recovered from split-brain, all nodes consistent"
+          echo "PASS: Cluster retained quorum and the restarted replica caught up"
 
       - name: Test Replication Factor
         run: |
-          set -e
-          # Verify replication factor is 3
-          # Each account should exist on all 3 replicas
+          set -euo pipefail
+          # A client bootstrapped from each replica must observe the quorum write.
           for i in 0 1 2; do
             PORT=$((3000 + i))
-            # Create a new account
-            cat <<EOF > /tmp/new_account.json
-            [{ "id": 2000, "ledger": 1, "code": 20, "flags": 0 }]
-            EOF
-            tigerbeetle create_accounts --addresses="127.0.0.1:$PORT" --batch=/tmp/new_account.json
-            # Query from all nodes
-            for j in 0 1 2; do
-              QPORT=$((3000 + j))
-              tigerbeetle query_accounts --addresses="127.0.0.1:$QPORT" 2000 > /tmp/account_${i}_${j}.json
-            done
+            printf 'lookup_accounts id=2000;\n' | timeout 10s tigerbeetle repl \
+              --cluster=0 --addresses="127.0.0.1:$PORT" \
+              >"/tmp/account_$i.log" 2>&1
+            grep -q '"id": "2000"' "/tmp/account_$i.log"
           done
-          echo "PASS: Replication factor 3 verified - account created on any node visible on all"
+          echo "PASS: Replicated state is visible through every replica"
 
       - name: Run Settler API Tests Against TB Cluster
         run: |
-          set -e
-          # Point Settler to the TB cluster
-          export TB_ADDRESSES="127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002"
+          set -euo pipefail
+          export TIGERBEETLE_ENABLED="true"
+          export TIGERBEETLE_ADDRESS="127.0.0.1:3000"
           export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/settler_test"
           export REDIS_URL="redis://localhost:6379"
           export JWT_SECRET="test-secret-min-32-chars-long-for-testing"
           export ENCRYPTION_KEY="12345678901234567890123456789012"
-
-          # Build and run reconciliation tests
-          pnpm run build
-          pnpm --filter @settler/api exec jest --runInBand --forceExit --testPathPatterns="reconciliation"
+          pnpm --filter @settler/api run test:tb
 
       - name: Cleanup
         if: always()

@@ -80,6 +80,9 @@ jobs:
       - name: Run cross-tenant runtime tests
         run: pnpm run test:cross-tenant
 
+      - name: Capture cross-tenant evidence
+        run: node scripts/security/cross-tenant-runner.mjs
+
       - name: Verify admin route authorization
         run: node scripts/security/admin-route-authz.mjs
 
