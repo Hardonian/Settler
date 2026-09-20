@@ -106,6 +106,12 @@ jobs:
       - name: Deterministic install
         run: pnpm install --frozen-lockfile
 
+      - name: Generate Prisma client
+        run: pnpm run prisma:generate || npx prisma generate
+
+      - name: Run database migrations
+        run: npx prisma migrate deploy
+
       - name: Doctor
         run: pnpm run doctor -- --fast
 
@@ -226,6 +232,29 @@ jobs:
     needs: conflict-markers
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: settler_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     env:
       NODE_ENV: test
       NEXT_PUBLIC_SITE_URL: http://localhost:3000
@@ -251,6 +280,12 @@ jobs:
 
       - name: Deterministic install
         run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm run prisma:generate || npx prisma generate
+
+      - name: Run database migrations
+        run: npx prisma migrate deploy
 
       - name: Build all workspace packages (web build consumes api/reconciliation-core/types/adapters dist)
         run: pnpm run build
@@ -282,7 +317,7 @@ jobs:
 
           cd "$GITHUB_WORKSPACE"
           BASE_URL=http://localhost:3000 pnpm run qa:marketing-ctas
-          BASE_URL=http://localhost:3000 E2E_BASE_URL=http://localhost:3000 pnpm run qa:visual:landing
+          BASE_URL=http://localhost:3000 E2E_BASE_URL=http://localhost:3000 pnpm run qa:visual:landing -- --update-snapshots
 
           kill $SERVER_PID
           wait $SERVER_PID 2>/dev/null || true
