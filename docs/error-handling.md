@@ -556,9 +556,7 @@ import Settler from "@settler/sdk";
 const settler = new Settler({ apiKey: process.env.SETTLER_API_KEY });
 
 try {
-  const job = await settler.jobs.create({
-    /* ... */
-  });
+  const job = await settler.jobs.create({/* ... */});
 } catch (error) {
   if (error instanceof Settler.APIError) {
     console.error("API Error:", error.code, error.message);

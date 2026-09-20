@@ -36,16 +36,17 @@ CREATE TABLE executions (
 ```
 
 **Key Columns:**
-| Column | Type | Purpose |
-|--------|------|---------|
-| `id` | UUID | Primary key |
-| `job_id` | UUID | FK to legacy `jobs` table |
-| `status` | VARCHAR | Execution status |
-| `started_at` | TIMESTAMP | When execution started |
-| `completed_at` | TIMESTAMP | When execution finished |
-| `error` | TEXT | Error message if failed |
-| `summary` | JSONB | Execution summary data |
-| `created_at` | TIMESTAMP | Record creation time |
+
+| Column         | Type      | Purpose                   |
+| -------------- | --------- | ------------------------- |
+| `id`           | UUID      | Primary key               |
+| `job_id`       | UUID      | FK to legacy `jobs` table |
+| `status`       | VARCHAR   | Execution status          |
+| `started_at`   | TIMESTAMP | When execution started    |
+| `completed_at` | TIMESTAMP | When execution finished   |
+| `error`        | TEXT      | Error message if failed   |
+| `summary`      | JSONB     | Execution summary data    |
+| `created_at`   | TIMESTAMP | Record creation time      |
 
 **Relationships:**
 
@@ -120,23 +121,24 @@ model ReconResult {
 ```
 
 **Key Columns:**
-| Column | Type | Purpose |
-|--------|------|---------|
-| `reconJobId` | UUID | FK to ReconJob (new) |
-| `tenantId` | UUID | Tenant isolation |
-| `executionId` | UUID? | Optional link to legacy executions |
-| `status` | String | running/completed/failed |
-| `sourceCount` | Int | Records from source |
-| `targetCount` | Int | Records from target |
-| `matchedCount` | Int | Successfully matched |
-| `unmatchedSourceCount` | Int | Unmatched source records |
-| `unmatchedTargetCount` | Int | Unmatched target records |
-| `conflictCount` | Int | Conflicts detected |
-| `totalAmountSource` | Decimal | Sum of source amounts |
-| `totalAmountTarget` | Decimal | Sum of target amounts |
-| `confidenceAvg/Min/Max` | Decimal | Confidence metrics |
-| `summary` | JSON | Contains provenance data |
-| `proofCapsule` | JSON? | Cryptographic proofs |
+
+| Column                  | Type    | Purpose                            |
+| ----------------------- | ------- | ---------------------------------- |
+| `reconJobId`            | UUID    | FK to ReconJob (new)               |
+| `tenantId`              | UUID    | Tenant isolation                   |
+| `executionId`           | UUID?   | Optional link to legacy executions |
+| `status`                | String  | running/completed/failed           |
+| `sourceCount`           | Int     | Records from source                |
+| `targetCount`           | Int     | Records from target                |
+| `matchedCount`          | Int     | Successfully matched               |
+| `unmatchedSourceCount`  | Int     | Unmatched source records           |
+| `unmatchedTargetCount`  | Int     | Unmatched target records           |
+| `conflictCount`         | Int     | Conflicts detected                 |
+| `totalAmountSource`     | Decimal | Sum of source amounts              |
+| `totalAmountTarget`     | Decimal | Sum of target amounts              |
+| `confidenceAvg/Min/Max` | Decimal | Confidence metrics                 |
+| `summary`               | JSON    | Contains provenance data           |
+| `proofCapsule`          | JSON?   | Cryptographic proofs               |
 
 **Relationships:**
 
@@ -190,14 +192,15 @@ model ReconciliationRun {
 ```
 
 **Key Columns:**
-| Column | Type | Purpose |
-|--------|------|---------|
-| `ingestionId` | UUID? | FK to Ingestion (source data) |
-| `tenantId` | UUID | Tenant isolation |
-| `userId` | UUID | User who triggered |
-| `name` | String? | Optional run name |
-| `status` | String | pending/running/completed/failed |
-| `traceId` | String? | Observability trace |
+
+| Column        | Type    | Purpose                          |
+| ------------- | ------- | -------------------------------- |
+| `ingestionId` | UUID?   | FK to Ingestion (source data)    |
+| `tenantId`    | UUID    | Tenant isolation                 |
+| `userId`      | UUID    | User who triggered               |
+| `name`        | String? | Optional run name                |
+| `status`      | String  | pending/running/completed/failed |
+| `traceId`     | String? | Observability trace              |
 
 **Relationships:**
 

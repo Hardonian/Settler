@@ -33,14 +33,29 @@ jest.mock("@/middleware/billing-gate-universal", () => ({
   withUniversalBillingGate: (handler: unknown) => handler,
 }));
 
-jest.mock("@settler/reconciliation-core", () => {
-  const actual = jest.requireActual("@settler/reconciliation-core") as Record<string, unknown>;
-  return {
-    ...actual,
-    resolveOperatorRunDetailForTenants: (...args: unknown[]) =>
-      resolveOperatorRunDetailForTenantsMock(...args),
-  };
-});
+jest.mock("@settler/reconciliation-core", () => ({
+  resolveOperatorRunDetailForTenants: (...args: unknown[]) =>
+    resolveOperatorRunDetailForTenantsMock(...args),
+  envelopeOperatorRunDetail: (route: string, detail: unknown) => ({
+    data: detail,
+    response_meta: {
+      apiSchemaVersion: "operator.v1",
+      route,
+      state: "available",
+      reasonCodes: [],
+      operatorMessage: "mock",
+    },
+  }),
+  buildConsoleReconciliationListBody: jest.fn(() => ({})),
+  decodeMergedRunsCursor: jest.fn(),
+  encodeMergedRunsCursor: jest.fn(),
+  fetchMergedReconciliationRunsPage: jest.fn(async () => ({
+    runs: [],
+    next_cursor: null,
+    pagination: { returned: 0, has_more: false },
+  })),
+  MergedRunsCursorError: class MergedRunsCursorError extends Error {},
+}));
 jest.mock("@/lib/logger", () => ({
   createLogger: () => ({
     info: jest.fn(),

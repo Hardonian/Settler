@@ -38,10 +38,10 @@ jobs:
             ${{ runner.os }}-cargo-
 
       - name: Install cargo-deny
-        run: cargo install cargo-deny --locked --version 0.20.2
+        run: cargo install cargo-deny --locked --force --version 0.20.2
 
       - name: Install cargo-audit
-        run: cargo install cargo-audit --locked
+        run: cargo install cargo-audit --locked --force
 
       - name: Rust fmt
         run: cargo fmt --all -- --check

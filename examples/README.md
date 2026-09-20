@@ -155,9 +155,7 @@ const stripeJob = await settler.jobs.create({
   source: { adapter: "stripe", config: { apiKey: process.env.STRIPE_SECRET_KEY } },
   target: {
     adapter: "quickbooks",
-    config: {
-      /* ... */
-    },
+    config: {/* ... */},
   },
   rules: { matching: [{ field: "transaction_id", type: "exact" }] },
 });
@@ -170,9 +168,7 @@ const paypalJob = await settler.jobs.create({
   },
   target: {
     adapter: "quickbooks",
-    config: {
-      /* ... */
-    },
+    config: {/* ... */},
   },
   rules: { matching: [{ field: "transaction_id", type: "exact" }] },
 });
@@ -203,15 +199,11 @@ const job = await settler.jobs.create({
   name: "Real-Time Reconciliation",
   source: {
     adapter: "shopify",
-    config: {
-      /* ... */
-    },
+    config: {/* ... */},
   },
   target: {
     adapter: "stripe",
-    config: {
-      /* ... */
-    },
+    config: {/* ... */},
   },
   rules: { matching: [{ field: "order_id", type: "exact" }] },
 });
@@ -393,15 +385,11 @@ const dailyJob = await settler.jobs.create({
   name: "Daily Reconciliation",
   source: {
     adapter: "shopify",
-    config: {
-      /* ... */
-    },
+    config: {/* ... */},
   },
   target: {
     adapter: "stripe",
-    config: {
-      /* ... */
-    },
+    config: {/* ... */},
   },
   rules: { matching: [{ field: "order_id", type: "exact" }] },
   schedule: "0 2 * * *", // Cron: Daily at 2 AM
@@ -412,15 +400,11 @@ const weeklyJob = await settler.jobs.create({
   name: "Weekly Reconciliation",
   source: {
     adapter: "stripe",
-    config: {
-      /* ... */
-    },
+    config: {/* ... */},
   },
   target: {
     adapter: "quickbooks",
-    config: {
-      /* ... */
-    },
+    config: {/* ... */},
   },
   rules: { matching: [{ field: "transaction_id", type: "exact" }] },
   schedule: "0 9 * * 1", // Cron: Monday at 9 AM
@@ -448,9 +432,7 @@ const job = await settler.jobs.create({
   },
   target: {
     adapter: "quickbooks",
-    config: {
-      /* ... */
-    },
+    config: {/* ... */},
   },
   rules: {
     matching: [

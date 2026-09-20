@@ -31,7 +31,7 @@
       },
       "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
       "id": 1,
-      "options": {"legend": {"calcs": [], "displayMode": "list", "placement": "bottom"},
+      "options": {"legend": {"calcs": [], "displayMode": "list", "placement": "bottom"}},
       "pluginVersion": "8.0.0",
       "targets": [
         {"expr": "rate(settler_reconciliation_total[5m])", "legendFormat": "{{status}}/{{type}}", "refId": "A"}
@@ -51,7 +51,7 @@
       },
       "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
       "id": 2,
-      "options": {"legend": {"calcs": [], "displayMode": "list", "placement": "bottom"},
+      "options": {"legend": {"calcs": [], "displayMode": "list", "placement": "bottom"}},
       "pluginVersion": "8.0.0",
       "targets": [
         {"expr": "histogram_quantile(0.95, rate(settler_reconciliation_duration_seconds_bucket[5m]))", "legendFormat": "p95", "refId": "A"},
@@ -91,7 +91,7 @@
       },
       "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
       "id": 4,
-      "options": {"legend": {"calcs": [], "displayMode": "list", "placement": "bottom"},
+      "options": {"legend": {"calcs": [], "displayMode": "list", "placement": "bottom"}},
       "pluginVersion": "8.0.0",
       "targets": [
         {"expr": "rate(settler_api_requests_total[5m])", "legendFormat": "{{method}} {{endpoint}}", "refId": "A"}

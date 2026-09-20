@@ -141,15 +141,9 @@ See [Error Handling Guide](../error-handling.md) for complete error codes and ha
     "id": "job_123",
     "name": "Shopify-Stripe Reconciliation",
     "status": "completed",
-    "source": {
-      /* ... */
-    },
-    "target": {
-      /* ... */
-    },
-    "rules": {
-      /* ... */
-    },
+    "source": {/* ... */},
+    "target": {/* ... */},
+    "rules": {/* ... */},
     "createdAt": "2026-01-15T10:30:00Z",
     "updatedAt": "2026-01-15T11:00:00Z"
   }
@@ -748,20 +742,14 @@ const job = await settler.jobs.create({
   name: "Daily Reconciliation",
   source: {
     adapter: "shopify",
-    config: {
-      /* ... */
-    },
+    config: {/* ... */},
   },
   target: {
     adapter: "stripe",
-    config: {
-      /* ... */
-    },
+    config: {/* ... */},
   },
   rules: {
-    matching: [
-      /* ... */
-    ],
+    matching: [/* ... */],
   },
 });
 
@@ -837,9 +825,7 @@ All list endpoints support pagination:
 
 ```json
 {
-  "data": [
-    /* ... */
-  ],
+  "data": [/* ... */],
   "pagination": {
     "page": 1,
     "limit": 20,

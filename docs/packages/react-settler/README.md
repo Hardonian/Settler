@@ -43,9 +43,7 @@ import {
 } from "@settler/react-settler";
 
 function MyDashboard() {
-  const transactions = [
-    /* your data */
-  ];
+  const transactions = [/* your data */];
 
   return (
     <ReconciliationDashboard>

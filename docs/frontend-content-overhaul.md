@@ -503,14 +503,15 @@
 **Headline:** "How Settler Compares"
 
 **Comparison Table:**
-| Feature | Settler | Build In-House | Generic Tools |
-|--------|---------|---------------|---------------|
-| Time to Market | 5 minutes | 3-6 months | N/A |
-| Platform Adapters | 10+ pre-built | Build each | Limited |
-| Edge AI | ✅ Included | Build yourself | ❌ Not available |
-| Real-Time Webhooks | ✅ Included | Build yourself | ❌ Limited |
-| Cost | $99/month | $50K+ dev | Varies |
-| Maintenance | Managed | Your team | Varies |
+
+| Feature            | Settler       | Build In-House | Generic Tools    |
+| ------------------ | ------------- | -------------- | ---------------- |
+| Time to Market     | 5 minutes     | 3-6 months     | N/A              |
+| Platform Adapters  | 10+ pre-built | Build each     | Limited          |
+| Edge AI            | ✅ Included   | Build yourself | ❌ Not available |
+| Real-Time Webhooks | ✅ Included   | Build yourself | ❌ Limited       |
+| Cost               | $99/month     | $50K+ dev      | Varies           |
+| Maintenance        | Managed       | Your team      | Varies           |
 
 ---
 

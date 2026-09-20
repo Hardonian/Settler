@@ -29,11 +29,11 @@ Settler supports customer-directed data portability for tenant-owned operational
 
 ### Fulfillment SLA
 
-| Request Type | Target Turnaround |
-| --- | --- |
-| Standard data export (JSON/CSV) | 5 business days |
-| Full evidence bundle with proofpacks | 10 business days |
-| Emergency / legal hold export | 48 hours |
+| Request Type                         | Target Turnaround |
+| ------------------------------------ | ----------------- |
+| Standard data export (JSON/CSV)      | 5 business days   |
+| Full evidence bundle with proofpacks | 10 business days  |
+| Emergency / legal hold export        | 48 hours          |
 
 ## Limitations
 

@@ -300,9 +300,7 @@ const job = await client.jobs.create({
   ],
   target: {
     adapter: "quickbooks",
-    config: {
-      /* ... */
-    },
+    config: {/* ... */},
   },
   rules: {
     matching: [

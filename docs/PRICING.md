@@ -68,11 +68,13 @@ Monthly Cost = Base Price + (Max(0, Volume - IncludedVolume) × $0.01) + (Max(0,
 ```
 
 Where:
+
 - `IncludedExceptions = TotalTransactions × IncludedExceptionRate (1.0%)`
 
 ### Calculation Examples
 
 **Starter Tier ($0/mo):**
+
 - 8,000 transactions, 40 exceptions: **$0.00** (within 10,000 limit)
 - 15,000 transactions, 100 exceptions:
   - Base: $0
@@ -81,6 +83,7 @@ Where:
   - Total: **$50.00**
 
 **Pro Tier ($99/mo):**
+
 - 80,000 transactions, 500 exceptions: **$99.00** (within 100,000 limit)
 - 150,000 transactions, 2,000 exceptions:
   - Base: $99.00

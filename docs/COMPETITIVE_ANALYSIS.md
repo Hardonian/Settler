@@ -34,17 +34,17 @@ quadrantChart
 
 ## 2. Feature & Architectural Comparison Matrix
 
-| Dimension | **Settler** | **BlackLine** (NASDAQ: BL) | **Trintech Cadency** | **ReconArt** | **Modern Treasury** |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Core Architecture** | Modern Monorepo (Rust + TS + PostgreSQL + TigerBeetle) | Legacy Multi-Tenant .NET / Java | Legacy On-Prem / Cloud Hybrid | Proprietary Web Application | Modern Ruby/Go Cloud API |
-| **Evidence Output** | **Hash-linked cryptographic proofpack (JSON/CAS)** | Static PDF reports & CSV exports | Scheduled PDF binder exports | Excel spreadsheets & PDFs | Webhook events & ledger lines |
-| **Determinism Guarantee** | **100% byte-for-byte reproducible mathematical runs** | Best-effort database query matching | Scheduled rule execution | Heuristic rule passes | Event ledger matching |
-| **Exception Adjudication** | **State-machine workbench with institutional memory** | Manual journal entry workflows | Form-based approval matrix | Exception status flags | Manual ledger adjustments |
-| **Integration Ecosystem** | **25+ turnkey modern connectors (Stripe, Plaid, SAP, etc.)** | Legacy ERP connectors via custom ETL | Heavy consulting setup via SAP/Oracle tools | Flat file SFTP / custom connectors | Direct Bank API integrations |
-| **Deployment Flexibility** | **OSS Self-Hosted, Managed VPC, or Cloud SaaS** | Cloud SaaS only (Proprietary) | Cloud SaaS or Legacy On-Prem | Cloud SaaS or On-Prem | Cloud SaaS only |
-| **Developer Ergonomics** | **First match in < 10 mins (CLI, SDKs, REST API)** | Months of sales calls & consultants | 6+ months implementation cycle | 8–16 weeks implementation | Developer-friendly API |
-| **Compliance Posture** | **SOX 404 maker-checker, 5-layer tenant isolation, DLP** | SOX compliant (via process) | SOX compliant (via process) | Standard audit logs | Banking compliance |
-| **Pricing Transparency** | **Open pricing starting at $99/mo + usage** | $30K–$200K+/yr negotiated contracts | $50K–$300K+/yr enterprise only | $20K–$100K+/yr enterprise | $1K–$10K+/mo platform fees |
+| Dimension                  | **Settler**                                                  | **BlackLine** (NASDAQ: BL)           | **Trintech Cadency**                        | **ReconArt**                       | **Modern Treasury**           |
+| :------------------------- | :----------------------------------------------------------- | :----------------------------------- | :------------------------------------------ | :--------------------------------- | :---------------------------- |
+| **Core Architecture**      | Modern Monorepo (Rust + TS + PostgreSQL + TigerBeetle)       | Legacy Multi-Tenant .NET / Java      | Legacy On-Prem / Cloud Hybrid               | Proprietary Web Application        | Modern Ruby/Go Cloud API      |
+| **Evidence Output**        | **Hash-linked cryptographic proofpack (JSON/CAS)**           | Static PDF reports & CSV exports     | Scheduled PDF binder exports                | Excel spreadsheets & PDFs          | Webhook events & ledger lines |
+| **Determinism Guarantee**  | **100% byte-for-byte reproducible mathematical runs**        | Best-effort database query matching  | Scheduled rule execution                    | Heuristic rule passes              | Event ledger matching         |
+| **Exception Adjudication** | **State-machine workbench with institutional memory**        | Manual journal entry workflows       | Form-based approval matrix                  | Exception status flags             | Manual ledger adjustments     |
+| **Integration Ecosystem**  | **25+ turnkey modern connectors (Stripe, Plaid, SAP, etc.)** | Legacy ERP connectors via custom ETL | Heavy consulting setup via SAP/Oracle tools | Flat file SFTP / custom connectors | Direct Bank API integrations  |
+| **Deployment Flexibility** | **OSS Self-Hosted, Managed VPC, or Cloud SaaS**              | Cloud SaaS only (Proprietary)        | Cloud SaaS or Legacy On-Prem                | Cloud SaaS or On-Prem              | Cloud SaaS only               |
+| **Developer Ergonomics**   | **First match in < 10 mins (CLI, SDKs, REST API)**           | Months of sales calls & consultants  | 6+ months implementation cycle              | 8–16 weeks implementation          | Developer-friendly API        |
+| **Compliance Posture**     | **SOX 404 maker-checker, 5-layer tenant isolation, DLP**     | SOX compliant (via process)          | SOX compliant (via process)                 | Standard audit logs                | Banking compliance            |
+| **Pricing Transparency**   | **Open pricing starting at $99/mo + usage**                  | $30K–$200K+/yr negotiated contracts  | $50K–$300K+/yr enterprise only              | $20K–$100K+/yr enterprise          | $1K–$10K+/mo platform fees    |
 
 ---
 
@@ -58,7 +58,7 @@ quadrantChart
   - No developer APIs or modern CLI; engineering teams cannot embed BlackLine into real-time CI/CD or modern cloud data flows.
   - Audit output is "paper-based" (PDFs and static reports), requiring auditors to manually sample entries rather than cryptographically verifying full datasets.
 - **Settler’s Winning Angle:**
-  - *"Don't wait 6 months and pay $150K in consulting fees. Deploy Settler in 10 minutes, run deterministic matching with sub-second latency, and hand your auditors cryptographic proofpacks that eliminate audit sampling entirely."*
+  - _"Don't wait 6 months and pay $150K in consulting fees. Deploy Settler in 10 minutes, run deterministic matching with sub-second latency, and hand your auditors cryptographic proofpacks that eliminate audit sampling entirely."_
 
 ### 3.2 Settler vs. Trintech & ReconArt
 
