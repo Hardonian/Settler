@@ -1,0 +1,56 @@
+-- Create recon_templates table (referenced by later migrations but never created)
+CREATE TABLE IF NOT EXISTS recon_templates (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID,
+  name TEXT NOT NULL,
+  description TEXT,
+  category TEXT,
+  source_adapter_type TEXT,
+  target_adapter_type TEXT,
+  recon_strategy TEXT NOT NULL DEFAULT 'deterministic',
+  matching_rules JSONB NOT NULL DEFAULT '[]'::jsonb,
+  validation_rules JSONB NOT NULL DEFAULT '[]'::jsonb,
+  transform_rules JSONB NOT NULL DEFAULT '[]'::jsonb,
+  is_public BOOLEAN NOT NULL DEFAULT false,
+  is_system BOOLEAN NOT NULL DEFAULT false,
+  usage_count INTEGER NOT NULL DEFAULT 0,
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  deleted_at TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS idx_recon_templates_tenant ON recon_templates(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_recon_templates_category ON recon_templates(category);
+CREATE INDEX IF NOT EXISTS idx_recon_templates_public ON recon_templates(is_public);
+
+-- Create recon_jobs table (referenced by deterministic_core FK but never created)
+CREATE TABLE IF NOT EXISTS recon_jobs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL,
+  user_id UUID NOT NULL,
+  name TEXT NOT NULL,
+  description TEXT,
+  template_id UUID,
+  source_adapter TEXT NOT NULL,
+  source_config_encrypted TEXT NOT NULL,
+  target_adapter TEXT NOT NULL,
+  target_config_encrypted TEXT NOT NULL,
+  mapping_template_id UUID,
+  transform_recipe_id UUID,
+  validation_rules JSONB NOT NULL DEFAULT '[]'::jsonb,
+  recon_strategy TEXT NOT NULL DEFAULT 'deterministic',
+  schedule_cron TEXT,
+  schedule_timezone TEXT NOT NULL DEFAULT 'UTC',
+  next_execution_at TIMESTAMPTZ,
+  status TEXT NOT NULL DEFAULT 'active',
+  version INTEGER NOT NULL DEFAULT 1,
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  deleted_at TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS idx_recon_jobs_tenant ON recon_jobs(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_recon_jobs_template ON recon_jobs(template_id);
+CREATE INDEX IF NOT EXISTS idx_recon_jobs_status ON recon_jobs(status);

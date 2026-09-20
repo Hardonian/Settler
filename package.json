@@ -158,7 +158,7 @@
     "preinstall": "node scripts/assert-node-version.mjs --warn-only",
     "postinstall": "node scripts/vercel-prisma-postinstall.js",
     "verify:build": "node scripts/verify-release.mjs --profile=build",
-    "setup:turbo": "test -f scripts/setup-vercel-turbo-cache.sh && bash scripts/setup-vercel-turbo-cache.sh || echo '⚠️  Turbo setup script not available'",
+    "setup:turbo": "test -f scripts/setup-vercel-turbo-cache.sh && bash scripts/setup-vercel-turbo-cache.sh || echo '\u26a0\ufe0f  Turbo setup script not available'",
     "demo:setup": "tsx scripts/generate-demo-data.ts",
     "demo:quickstart": "tsx scripts/demo-quickstart.ts",
     "demo:reset:legacy": "tsx scripts/generate-demo-data.ts",

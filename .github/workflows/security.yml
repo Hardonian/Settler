@@ -31,7 +31,7 @@ jobs:
         run: pnpm run verify:tenant
 
       - name: Verify tenant isolation runtime tests
-        run: pnpm --filter @settler/api exec jest --testPathPattern=tenant-isolation-enforced --runInBand
+        run: pnpm --filter @settler/api exec jest --testPathPatterns=tenant-isolation-enforced --runInBand
 
       - name: Fast security posture verification
         run: pnpm run verify:security:fast
@@ -75,6 +75,9 @@ jobs:
       - name: Build web app for runtime header probing
         run: pnpm --filter @settler/web build
 
+      - name: Install osv-scanner
+        run: |
+          curl -sfL https://raw.githubusercontent.com/google/osv-scanner/main/install.sh | sh -s -- -b /usr/local/bin v2.1.0 || echo "osv-scanner install failed, will degrade gracefully"
       - name: Run dependency audit gate (strict mode)
         env:
           SECURITY_AUDIT_MODE: strict

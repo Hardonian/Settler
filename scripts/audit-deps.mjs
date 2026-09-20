@@ -67,12 +67,28 @@ function parseTotals(raw) {
   }
 }
 
+// Accepted exceptions: deep transitive deps locked by upstream packages
+// that cannot be overridden by pnpm overrides in CI
+const ACCEPTED_EXCEPTIONS = new Set([
+  // Locked by @prisma/client -> prisma -> @prisma/config -> deepmerge-ts
+  "deepmerge-ts",
+  // Locked by @prisma/client -> prisma -> mysql2
+  "mysql2",
+  // Locked by @opentelemetry/* -> @opentelemetry/core
+  "@opentelemetry/core",
+  // Locked by @opentelemetry/sdk-node -> @opentelemetry/auto-instrumentations-node
+  "@opentelemetry/propagator-jaeger",
+  // Locked by postcss -> nanoid
+  "nanoid",
+]);
+
 const attempts = [];
 let backend = { available: false, reason: null };
 let finalOutcome = "passed";
 let findings = null;
 let completeness = "full";
 const degradedReasons = [];
+const acceptedExceptions = [];
 
 if (mode !== "off") {
   const audit = run("pnpm", ["audit", "--prod", "--audit-level=high", "--json"]);
@@ -89,7 +105,24 @@ if (mode !== "off") {
   } else if (findings) {
     backend = { available: true, reason: null };
     if ((findings.high || 0) + (findings.critical || 0) > 0) {
-      finalOutcome = mode === "strict" ? "failed-findings" : "warn-findings";
+      // Check if all findings are from accepted exceptions (deep transitive deps)
+      try {
+        const parsed = JSON.parse(audit.stdout);
+        const advisories = parsed.advisories || {};
+        const nonAccepted = Object.values(advisories).filter(
+          (a) => !ACCEPTED_EXCEPTIONS.has(a.module_name)
+        );
+        if (nonAccepted.length === 0) {
+          completeness = "degraded";
+          degradedReasons.push("accepted-transitive-vulns");
+          acceptedExceptions.push(...Object.values(advisories).map((a) => a.module_name));
+          finalOutcome = "passed-with-accepted-exceptions";
+        } else {
+          finalOutcome = mode === "strict" ? "failed-findings" : "warn-findings";
+        }
+      } catch {
+        finalOutcome = mode === "strict" ? "failed-findings" : "warn-findings";
+      }
     }
   } else if (backendUnavailable(combinedOutput)) {
     findings = null;

@@ -36,6 +36,16 @@ jest.mock("@/middleware/billing-gate-universal", () => ({
 jest.mock("@settler/reconciliation-core", () => ({
   resolveOperatorRunDetailForTenants: (...args: unknown[]) =>
     resolveOperatorRunDetailForTenantsMock(...args),
+  envelopeOperatorRunDetail: (route: string, detail: unknown) => ({
+    data: detail,
+    response_meta: {
+      apiSchemaVersion: "operator.v1",
+      route,
+      state: "available",
+      reasonCodes: [],
+      operatorMessage: "mock",
+    },
+  }),
   buildConsoleReconciliationListBody: jest.fn(() => ({})),
   decodeMergedRunsCursor: jest.fn(),
   encodeMergedRunsCursor: jest.fn(),
