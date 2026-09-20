@@ -175,18 +175,22 @@ test.describe("Demo Mode", () => {
 
 test.describe("Demo Mode CLI", () => {
   test("seed script should generate demo data", async () => {
-    const { execSync } = require("child_process");
+    const { execFileSync } = require("child_process");
+    const tsxCli = require.resolve("tsx/cli");
 
     try {
-      execSync("npx tsx scripts/seed-demo.ts --help", { encoding: "utf-8" });
+      execFileSync(process.execPath, [tsxCli, "scripts/seed-demo.ts", "--help"], {
+        encoding: "utf-8",
+      });
     } catch {
       test.skip();
       return;
     }
 
-    const output = execSync("DEMO_MODE=false npx tsx scripts/seed-demo.ts 2>&1", {
+    const output = execFileSync(process.execPath, [tsxCli, "scripts/seed-demo.ts"], {
       encoding: "utf-8",
       cwd: process.cwd(),
+      env: { ...process.env, DEMO_MODE: "false" },
     });
 
     expect(output).toContain("Demo Mode Seed Script");

@@ -20,13 +20,30 @@ function git(args) {
   return result.stdout.split(/\r?\n/).filter(Boolean);
 }
 
+function gitSucceeds(args) {
+  return spawnSync("git", args, { cwd: repoRoot, stdio: "ignore" }).status === 0;
+}
+
+function committedFiles() {
+  if (gitSucceeds(["rev-parse", "--verify", "HEAD^"])) {
+    return git(["diff", "--name-only", "--diff-filter=ACMR", "HEAD^", "HEAD"]);
+  }
+
+  const [isShallow] = git(["rev-parse", "--is-shallow-repository"]);
+  if (isShallow === "true") {
+    throw new Error(
+      "Incremental format check requires the parent commit; checkout with fetch-depth: 2 or run format:check:all."
+    );
+  }
+
+  // A genuine root commit has no parent, so every file in it is newly changed.
+  return git(["show", "--format=", "--name-only", "HEAD"]);
+}
+
 const candidates = new Set(
   checkAll
     ? git(["ls-files"])
-    : [
-        ...git(["show", "--format=", "--name-only", "HEAD"]),
-        ...git(["diff", "--name-only", "--diff-filter=ACMR", "HEAD"]),
-      ]
+    : [...committedFiles(), ...git(["diff", "--name-only", "--diff-filter=ACMR", "HEAD"])]
 );
 
 const files = [...candidates]

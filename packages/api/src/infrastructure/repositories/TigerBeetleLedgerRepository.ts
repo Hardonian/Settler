@@ -902,7 +902,8 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
     tenantId: string
   ): Promise<LedgerTransfer | null> {
     const transferId = generateTransferId(idempotencyKey, tenantId);
-    return this.getTransfer(bigintToString(transferId), tenantId);
+    const transfer = await this.getTransfer(bigintToString(transferId), tenantId);
+    return transfer ? { ...transfer, idempotencyKey } : null;
   }
 }
 

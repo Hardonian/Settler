@@ -111,8 +111,6 @@ jobs:
 
       - name: Sync schema to database
         run: npx prisma db push --accept-data-loss
-      - name: Run database migrations
-        run: npx prisma migrate deploy
 
       - name: Doctor
         run: pnpm run doctor -- --fast
@@ -252,14 +250,9 @@ jobs:
 
       - name: Sync schema to database
         run: npx prisma db push --accept-data-loss
-      - name: Run database migrations
-        run: npx prisma migrate deploy
 
       - name: Build workspace packages (produces dist consumed by web tests)
         run: pnpm run build
-
-      - name: Apply database migrations for integration tests
-        run: pnpm exec prisma migrate deploy
 
       - name: Web tests (sharded with memory cap)
         run: pnpm --filter @settler/web exec jest --maxWorkers=50% --shard=${{ matrix.shard }} --passWithNoTests
@@ -322,8 +315,6 @@ jobs:
 
       - name: Sync schema to database
         run: npx prisma db push --accept-data-loss
-      - name: Run database migrations
-        run: npx prisma migrate deploy
 
       - name: Build all workspace packages (web build consumes api/reconciliation-core/types/adapters dist)
         run: pnpm run build

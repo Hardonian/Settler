@@ -44,8 +44,9 @@ on:
       - main
 
 env:
-  DATABASE_URL: ${{ secrets.DATABASE_URL || secrets.STAGING_DATABASE_URL || secrets.SUPABASE_DB_URL || secrets.SUPABASE_DB_URL_STAGING }}
-  SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL || secrets.SUPABASE_DB_URL_STAGING || secrets.DATABASE_URL || secrets.STAGING_DATABASE_URL }}
+  # Scheduled checks target staging; prefer its IPv4-capable pooler URL when configured.
+  DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL || secrets.SUPABASE_DB_URL_STAGING || secrets.DATABASE_URL || secrets.SUPABASE_DB_URL }}
+  SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL_STAGING || secrets.STAGING_DATABASE_URL || secrets.SUPABASE_DB_URL || secrets.DATABASE_URL }}
   SUPABASE_URL: ${{ secrets.SUPABASE_URL || secrets.SUPABASE_URL_STAGING }}
   SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD || secrets.SUPABASE_DB_PASSWORD_STAGING }}
   UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
@@ -56,6 +57,7 @@ env:
   NPM_CONFIG_FETCH_RETRY_FACTOR: "2"
   NPM_CONFIG_FETCH_RETRY_MINTIMEOUT: "20000"
   NPM_CONFIG_FETCH_RETRY_MAXTIMEOUT: "120000"
+  MIGRATION_LOG_PATH: artifacts/migration-log/MIGRATION_LOG.md
 
 jobs:
   detect-migrations:

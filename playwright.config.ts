@@ -19,7 +19,8 @@ const BASE_URL =
   process.env.E2E_BASE_URL || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
 export default defineConfig({
-  testDir: "./tests",
+  // Keep Playwright from importing the Jest/Vitest suites under tests/integration(s).
+  testDir: "./tests/e2e",
 
   // Run tests in files in parallel
   fullyParallel: true,
