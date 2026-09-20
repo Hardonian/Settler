@@ -28,9 +28,11 @@ jobs:
     runs-on: ubuntu-latest
     if: >-
       github.ref == 'refs/heads/main' &&
-      github.event_name != 'pull_request' &&
-      (secrets.CF_API_TOKEN != '' || secrets.CLOUDFLARE_API_TOKEN != '')
+      github.event_name != 'pull_request'
     environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN || secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID || secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - uses: actions/checkout@v7
 
@@ -43,11 +45,13 @@ jobs:
         run: npm install -g wrangler
 
       - name: Create D1 database (idempotent)
+        if: env.CLOUDFLARE_API_TOKEN != ''
         continue-on-error: true
         working-directory: deploy/workers
         run: wrangler d1 create drift_db || true
 
       - name: Apply D1 schema
+        if: env.CLOUDFLARE_API_TOKEN != ''
         continue-on-error: true
         working-directory: deploy/workers
         run: |
@@ -59,13 +63,12 @@ jobs:
           fi
 
       - name: Deploy to Cloudflare Workers
+        if: env.CLOUDFLARE_API_TOKEN != ''
         working-directory: deploy/workers
         run: wrangler deploy --minify
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
 
       - name: Smoke test
+        if: env.CLOUDFLARE_API_TOKEN != ''
         run: |
           sleep 5
           curl -s https://${{ vars.DOMAIN }}/health | python3 -m json.tool || echo "Health check skipped"
@@ -75,17 +78,20 @@ jobs:
     runs-on: ubuntu-latest
     if: >-
       github.ref == 'refs/heads/main' &&
-      github.event_name != 'pull_request' &&
-      (secrets.CF_API_TOKEN != '' || secrets.CLOUDFLARE_API_TOKEN != '')
+      github.event_name != 'pull_request'
     environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN || secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID || secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - uses: actions/checkout@v7
 
       - name: Deploy to Cloudflare Pages
+        if: env.CLOUDFLARE_API_TOKEN != ''
         uses: cloudflare/pages-action@v1
         with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          apiToken: ${{ env.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
           projectName: ${{ github.event.repository.name }}
           directory: deploy/frontend
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          gitHubToken: ${{ github.token }}
