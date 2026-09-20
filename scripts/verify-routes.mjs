@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import path from "node:path";
 import dotenv from "dotenv";
 
@@ -58,7 +58,7 @@ function startWebServer() {
   const killServer = () => {
     if (isWindows) {
       try {
-        spawn("taskkill", ["/F", "/T", "/PID", String(server.pid)], { stdio: "ignore" });
+        spawnSync("taskkill", ["/F", "/T", "/PID", String(server.pid)], { stdio: "ignore" });
       } catch {}
     } else {
       server.kill("SIGTERM");

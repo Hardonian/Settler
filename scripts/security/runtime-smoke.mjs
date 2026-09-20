@@ -1,12 +1,16 @@
 #!/usr/bin/env node
 import { mkdirSync, writeFileSync, existsSync } from "node:fs";
 import path from "node:path";
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 
 const repoRoot = process.cwd();
 const runId = new Date().toISOString().replace(/[:.]/g, "-");
 const outputDir = path.join(repoRoot, "artifacts", "security", "runtime-smoke", runId);
 mkdirSync(outputDir, { recursive: true });
+
+function fetchWithTimeout(url, options = {}) {
+  return fetch(url, { ...options, signal: AbortSignal.timeout(5_000) });
+}
 
 function parseArgs(argv) {
   const args = Object.fromEntries(
@@ -37,7 +41,7 @@ async function waitForServer(url, timeoutMs = 45_000) {
   const started = Date.now();
   while (Date.now() - started < timeoutMs) {
     try {
-      const response = await fetch(url);
+      const response = await fetchWithTimeout(url);
       if (response.status < 500) return true;
     } catch {
       // continue retrying
@@ -60,14 +64,17 @@ async function maybeStartServer(config, logs) {
     return { baseUrl: null, child: null, started: false, unavailableReason: "missing_build" };
   }
 
+  const pnpmCli = process.env.npm_execpath;
+  if (!pnpmCli) {
+    throw new Error("npm_execpath is required to launch the runtime security server");
+  }
   const child = spawn(
-    "npx",
-    ["pnpm", "--filter", "@settler/web", "start", "-p", String(config.port)],
+    process.execPath,
+    [pnpmCli, "--filter", "@settler/web", "start", "-p", String(config.port)],
     {
       cwd: repoRoot,
       env: process.env,
       stdio: ["ignore", "pipe", "pipe"],
-      shell: true,
     }
   );
   child.stdout.on("data", (chunk) => logs.push(`[server][stdout] ${chunk.toString().trimEnd()}`));
@@ -76,7 +83,7 @@ async function maybeStartServer(config, logs) {
   const baseUrl = `http://127.0.0.1:${config.port}`;
   const up = await waitForServer(`${baseUrl}/api/v1/health`);
   if (!up) {
-    child.kill("SIGTERM");
+    await stopServer(child);
     return { baseUrl, child, started: false, unavailableReason: "server_start_failed" };
   }
 
@@ -86,6 +93,10 @@ async function maybeStartServer(config, logs) {
 async function stopServer(child) {
   if (!child) return;
   if (child.exitCode !== null || child.killed) return;
+  if (process.platform === "win32") {
+    spawnSync("taskkill", ["/F", "/T", "/PID", String(child.pid)], { stdio: "ignore" });
+    return;
+  }
   child.kill("SIGTERM");
   await new Promise((resolve) => {
     const timer = setTimeout(() => {
@@ -110,7 +121,7 @@ function isJsonProblem(contentType) {
 async function runProbes(baseUrl, config) {
   const checks = [];
 
-  const health = await fetch(`${baseUrl}/api/v1/health`);
+  const health = await fetchWithTimeout(`${baseUrl}/api/v1/health`);
   if (health.status === 404) {
     checks.push(
       toCheck("security_headers", "skipped", {
@@ -159,7 +170,7 @@ async function runProbes(baseUrl, config) {
     );
   }
 
-  const authResp = await fetch(`${baseUrl}/api/v1/runs`);
+  const authResp = await fetchWithTimeout(`${baseUrl}/api/v1/runs`);
   if (authResp.status === 404) {
     checks.push(
       toCheck("auth_tenant_boundary_negative", "skipped", {
@@ -182,7 +193,7 @@ async function runProbes(baseUrl, config) {
 
   const limiterRoute = "/api/v1/receipts";
   // Probe the route once first to check availability before hammering it.
-  const limiterProbe = await fetch(`${baseUrl}${limiterRoute}`, {
+  const limiterProbe = await fetchWithTimeout(`${baseUrl}${limiterRoute}`, {
     method: "POST",
     headers: { "content-type": "application/json", "x-forwarded-for": "198.51.100.42" },
     body: JSON.stringify({}),
@@ -202,7 +213,7 @@ async function runProbes(baseUrl, config) {
 
     if (first429 === null) {
       for (let i = 2; i <= config.rateLimitAttempts; i += 1) {
-        const resp = await fetch(`${baseUrl}${limiterRoute}`, {
+        const resp = await fetchWithTimeout(`${baseUrl}${limiterRoute}`, {
           method: "POST",
           headers: {
             "content-type": "application/json",
