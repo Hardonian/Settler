@@ -7,20 +7,20 @@ Reconciliation intelligence and audit operating system — deterministic matchin
 
 Monorepo. TypeScript + Rust.
 
-| Package | Role |
-| --- | --- |
-| `packages/api` | Express 5 control plane — 37 route modules, 46 middleware layers, 80+ services |
-| `packages/web` | Next.js 16 operator console — 170+ routes |
-| `packages/reconciliation-core` | Deterministic matching engine and run serialization |
-| `packages/adapters` | 25+ verified source/target connectors (Stripe, Shopify, QuickBooks, etc.) |
-| `packages/cli` | Foundry, replay, verification CLI tooling |
-| `packages/types` | Shared TypeScript types |
-| `packages/sdk` | Client SDK |
-| `packages/proofs` | Proofpack generation utilities |
-| `packages/edge-ai-core` | ML matching enhancement (optional) |
-| `packages/react-settler` | React component library |
-| `crates/settler-kernel` | Rust — CAS, cryptographic hashing, deterministic primitives |
-| `crates/settler-verify-wasm` | WASM build for browser-side proof verification |
+| Package                        | Role                                                                           |
+| ------------------------------ | ------------------------------------------------------------------------------ |
+| `packages/api`                 | Express 5 control plane — 37 route modules, 46 middleware layers, 80+ services |
+| `packages/web`                 | Next.js 16 operator console — 170+ routes                                      |
+| `packages/reconciliation-core` | Deterministic matching engine and run serialization                            |
+| `packages/adapters`            | 25+ verified source/target connectors (Stripe, Shopify, QuickBooks, etc.)      |
+| `packages/cli`                 | Foundry, replay, verification CLI tooling                                      |
+| `packages/types`               | Shared TypeScript types                                                        |
+| `packages/sdk`                 | Client SDK                                                                     |
+| `packages/proofs`              | Proofpack generation utilities                                                 |
+| `packages/edge-ai-core`        | ML matching enhancement (optional)                                             |
+| `packages/react-settler`       | React component library                                                        |
+| `crates/settler-kernel`        | Rust — CAS, cryptographic hashing, deterministic primitives                    |
+| `crates/settler-verify-wasm`   | WASM build for browser-side proof verification                                 |
 
 ## Canonical Commands
 
@@ -73,12 +73,12 @@ Full specification: `SECURITY_INVARIANTS.md`.
 
 ## File Classification (Open-Core)
 
-| Classification | Rule | Example Paths |
-| --- | --- | --- |
-| **OSS_PUBLIC** ✅ | Safe for public mirror | `packages/sdk/`, `packages/cli/`, `examples/` |
-| **PLATFORM_PROPRIETARY** 🔒 | Private repo only | `packages/web/`, `packages/api/`, `prisma/` |
-| **INTERNAL_BUSINESS** 📊 | Never in public mirror | `docs/internal/`, `strategic/` |
-| **SECRET_RISK** ⚠️ | CI fails immediately if detected | `.env` files with real credentials, API keys |
+| Classification              | Rule                             | Example Paths                                 |
+| --------------------------- | -------------------------------- | --------------------------------------------- |
+| **OSS_PUBLIC** ✅           | Safe for public mirror           | `packages/sdk/`, `packages/cli/`, `examples/` |
+| **PLATFORM_PROPRIETARY** 🔒 | Private repo only                | `packages/web/`, `packages/api/`, `prisma/`   |
+| **INTERNAL_BUSINESS** 📊    | Never in public mirror           | `docs/internal/`, `strategic/`                |
+| **SECRET_RISK** ⚠️          | CI fails immediately if detected | `.env` files with real credentials, API keys  |
 
 Full rules: `REPO_POLICY.md`.
 

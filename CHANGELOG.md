@@ -3,6 +3,7 @@
 ## [v1.5.0] - 2026-09-11
 
 ### 🔒 Moat (Cryptographic Trust & Invariants)
+
 - `22daa97f2` feat: add bilateral reconciliation API endpoint with cryptographic Merkle root generation (Scott Hardie)
 - `a1d9d4cbe` feat: implement enterprise SSO normalizer for SAML and OIDC assertions with tenant-bound security validation (Scott Hardie)
 - `a8bbb5fab` feat: implement FedNow reconciliation adapter, Merkle discrepancy engine, and CLI authentication and mocking modules (Scott Hardie)
@@ -10,10 +11,12 @@
 - `374b338f9` feat: implement real-time continuous T+0 streaming ledger engine for trial balance tracking (Scott Hardie)
 
 ### ⚡ Leverage (Developer Velocity & Multi-Rail Throughput)
+
 - `16d8ff867` feat: implement SEPA Instant pipeline, add reconciliation rate limiting tests, and initialize types package configuration (Scott Hardie)
 - `374735a94` feat: implement Adyen and MT940 settlement adapters with deterministic parsing and RFC 6962 hashing. (Scott Hardie)
 
 ### 🛠️ Maintenance (Polish, Hygiene & Conformance)
+
 - `1f24f19f7` feat: rebrand Astra to Sidereal across the platform and add navigation components (Scott Hardie)
 - `d0cb18f69` feat: implement SEPA Instant messaging, Shopify consolidator, statement error recovery, and audit sampling modules (Scott Hardie)
 - `cbf6447a3` feat: implement real-time transaction monitoring dashboard and auxiliary routing pages (Scott Hardie)
@@ -27,7 +30,6 @@
 - `768c3e183` feat: implement fuzzy string matching utility with Jaro-Winkler and Levenshtein algorithms for bank descriptor reconciliation (Scott Hardie)
 - `7452bebca` test(reconciliation-core): verify Kuhn-Munkres bipartite matching optimal cost assignment (Scott Hardie)
 - `d067261dc` feat: implement bipartite matching reconciliation core and initialize canonical type definitions (Scott Hardie)
-
 
 All notable changes to Settler are documented here.
 

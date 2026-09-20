@@ -180,15 +180,9 @@ const pdfExport = await settler.exports.create({
 ```typescript
 const job = await settler.jobs.create({
   name: "Daily Reconciliation",
-  source: {
-    /* ... */
-  },
-  target: {
-    /* ... */
-  },
-  rules: {
-    /* ... */
-  },
+  source: {/* ... */},
+  target: {/* ... */},
+  rules: {/* ... */},
   schedule: "0 2 * * *", // Daily at 2 AM UTC
 });
 ```
@@ -281,15 +275,9 @@ app.post("/webhooks/stripe", async (req, res) => {
 ```typescript
 const job = await settler.jobs.create({
   name: "Real-Time Reconciliation",
-  source: {
-    /* ... */
-  },
-  target: {
-    /* ... */
-  },
-  rules: {
-    /* ... */
-  },
+  source: {/* ... */},
+  target: {/* ... */},
+  rules: {/* ... */},
   webhookTriggers: {
     enabled: true,
     events: ["payment.succeeded", "order.created"],
@@ -408,15 +396,11 @@ const job = await settler.jobs.create({
   name: "Multi-Currency Reconciliation",
   source: {
     adapter: "stripe",
-    config: {
-      /* ... */
-    },
+    config: {/* ... */},
   },
   target: {
     adapter: "quickbooks",
-    config: {
-      /* ... */
-    },
+    config: {/* ... */},
   },
   rules: {
     matching: [
@@ -534,12 +518,8 @@ console.log("Aggregated results:", aggregated);
 ```typescript
 const job = await settler.jobs.create({
   name: "Custom Matching",
-  source: {
-    /* ... */
-  },
-  target: {
-    /* ... */
-  },
+  source: {/* ... */},
+  target: {/* ... */},
   rules: {
     matching: [
       { field: "order_id", type: "exact" },

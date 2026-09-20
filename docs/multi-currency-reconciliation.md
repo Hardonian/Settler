@@ -102,9 +102,7 @@ const job = await settler.jobs.create({
   },
   target: {
     adapter: "quickbooks",
-    config: {
-      /* ... */
-    },
+    config: {/* ... */},
   },
   rules: {
     matching: [
@@ -136,9 +134,7 @@ const job = await settler.jobs.create({
   },
   target: {
     adapter: "quickbooks",
-    config: {
-      /* ... */
-    },
+    config: {/* ... */},
   },
   rules: {
     matching: [

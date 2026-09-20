@@ -353,7 +353,8 @@
     "verify:observability-surface": "node scripts/verify-observability-surface.mjs",
     "verify:self-hosted-artifacts": "node scripts/verify-self-hosted-artifacts.mjs",
     "verify:pilot-evidence-index": "node scripts/pilot-evidence-index.mjs",
-    "verify:scim-surface": "node scripts/verify-scim-surface.mjs"
+    "verify:scim-surface": "node scripts/verify-scim-surface.mjs",
+    "check:classification": "tsx scripts/classify.ts --strict"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

@@ -9,10 +9,11 @@
 **Canonical Source of Truth:** `packages/types/src/commercial-spine.ts` (`PLAN_SPINE`)
 
 > **Notice on Commercial Spine Alignment:**  
-> While this document details earlier SMB exploration models, the live production commercial truth is anchored in the `@settler/types` `PLAN_SPINE`:  
-> - **Starter ($0/mo):** 10,000 reconciliations free, $0.01/overage txn, $0.10/exception over 1% threshold.  
-> - **Pro ($99/mo):** 100,000 reconciliations included, $0.01/overage txn, $0.10/exception overage.  
-> - **Scale ($399/mo):** 1,000,000 reconciliations included, $0.01/overage txn, $0.10/exception overage.  
+> While this document details earlier SMB exploration models, the live production commercial truth is anchored in the `@settler/types` `PLAN_SPINE`:
+>
+> - **Starter ($0/mo):** 10,000 reconciliations free, $0.01/overage txn, $0.10/exception over 1% threshold.
+> - **Pro ($99/mo):** 100,000 reconciliations included, $0.01/overage txn, $0.10/exception overage.
+> - **Scale ($399/mo):** 1,000,000 reconciliations included, $0.01/overage txn, $0.10/exception overage.
 > - **Enterprise (Custom):** Dedicated VPC, air-gapped on-premise, TigerBeetle financial ledger, custom ERP connectors.
 
 ---

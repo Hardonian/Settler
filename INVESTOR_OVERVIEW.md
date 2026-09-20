@@ -29,11 +29,11 @@ verifiable reconciliation pipeline.
 
 Open-core with three tiers:
 
-| Tier | Price | Key Differentiator |
-| --- | --- | --- |
-| Free | $0/mo | Single-rail, community support |
-| Pro | Usage-based | Multi-rail, proofpacks, API access |
-| Enterprise | Custom | SSO, SCIM, SLA, dedicated infra |
+| Tier       | Price       | Key Differentiator                 |
+| ---------- | ----------- | ---------------------------------- |
+| Free       | $0/mo       | Single-rail, community support     |
+| Pro        | Usage-based | Multi-rail, proofpacks, API access |
+| Enterprise | Custom      | SSO, SCIM, SLA, dedicated infra    |
 
 Revenue is driven by transaction-volume-based metering on Pro and annual contracts on
 Enterprise.
@@ -65,5 +65,5 @@ Founded by operators with direct experience in payment reconciliation pain at sc
 
 ---
 
-*For detailed product capabilities see [PRODUCT_OVERVIEW.md](PRODUCT_OVERVIEW.md).*
-*For operational procedures see [OPERATIONS_RUNBOOK.md](OPERATIONS_RUNBOOK.md).*
+_For detailed product capabilities see [PRODUCT_OVERVIEW.md](PRODUCT_OVERVIEW.md)._
+_For operational procedures see [OPERATIONS_RUNBOOK.md](OPERATIONS_RUNBOOK.md)._

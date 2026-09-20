@@ -96,9 +96,7 @@ const client = new SettlerClient({
 });
 
 // Create a job
-const job = await client.jobs.create({
-  /* ... */
-});
+const job = await client.jobs.create({/* ... */});
 
 // Get a job
 const jobDetails = await client.jobs.get(job.data.id);
@@ -142,9 +140,7 @@ import {
 } from "@settler/sdk";
 
 try {
-  const job = await client.jobs.create({
-    /* ... */
-  });
+  const job = await client.jobs.create({/* ... */});
 } catch (error) {
   if (error instanceof ValidationError) {
     console.error("Validation error:", error.message);
@@ -434,9 +430,7 @@ See [Console Integration Guide](../../docs/SDK_CLI_CONSOLE_INTEGRATION.md) for f
 The SDK is written in TypeScript and provides full type inference:
 
 ```typescript
-const job = await client.jobs.create({
-  /* ... */
-});
+const job = await client.jobs.create({/* ... */});
 // job is typed as ApiResponse<ReconciliationJob>
 
 const report = await client.reports.get("job_123");

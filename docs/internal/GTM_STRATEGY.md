@@ -10,11 +10,11 @@ Settler is the deterministic reconciliation intelligence and audit operating sys
 
 ### Primary ICPs
 
-| Segment | Target Profile | Key Decision Maker | Core Pain Point | Settler Value Proposition |
-| :--- | :--- | :--- | :--- | :--- |
-| **High-Growth FinTech & Scaleups** | Series A–D, $5M–$100M ARR, processing 50K–5M transactions/mo across multiple PSPs | VP of Eng / Lead Architect / Head of FinOps | Engineers wasting 20+ hrs/wk writing & maintaining brittle recon scripts | API-first deterministic matching engine, 25+ turnkey adapters, instant verification |
-| **Mid-Market Multi-Channel Commerce** | $20M–$500M GMV across Shopify, Amazon, TikTok Shop, Stripe, PayPal | Controller / Director of Accounting | High refund/chargeback rate, delayed monthly close (15+ days), ledger discrepancies | Real-time multi-source ingestion, automated fee & tax reconciliation, instant variance triage |
-| **Enterprise & Regulated Financials** | Public & Fortune 500, Banks, InsurTech, Payment Facilitators | CFO / Head of Internal Audit / CISO | Strict SOX 404 compliance, multi-million dollar audit prep costs, data sovereignty | Immutable hash-linked proofpacks, 5-layer tenant isolation, maker-checker workflows, DLP |
+| Segment                               | Target Profile                                                                    | Key Decision Maker                          | Core Pain Point                                                                     | Settler Value Proposition                                                                     |
+| :------------------------------------ | :-------------------------------------------------------------------------------- | :------------------------------------------ | :---------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------- |
+| **High-Growth FinTech & Scaleups**    | Series A–D, $5M–$100M ARR, processing 50K–5M transactions/mo across multiple PSPs | VP of Eng / Lead Architect / Head of FinOps | Engineers wasting 20+ hrs/wk writing & maintaining brittle recon scripts            | API-first deterministic matching engine, 25+ turnkey adapters, instant verification           |
+| **Mid-Market Multi-Channel Commerce** | $20M–$500M GMV across Shopify, Amazon, TikTok Shop, Stripe, PayPal                | Controller / Director of Accounting         | High refund/chargeback rate, delayed monthly close (15+ days), ledger discrepancies | Real-time multi-source ingestion, automated fee & tax reconciliation, instant variance triage |
+| **Enterprise & Regulated Financials** | Public & Fortune 500, Banks, InsurTech, Payment Facilitators                      | CFO / Head of Internal Audit / CISO         | Strict SOX 404 compliance, multi-million dollar audit prep costs, data sovereignty  | Immutable hash-linked proofpacks, 5-layer tenant isolation, maker-checker workflows, DLP      |
 
 ---
 
@@ -31,12 +31,12 @@ graph LR
 
 ### Plan Breakdown
 
-| Tier | Pricing | Included Volume & Capabilities | Governance & Compliance | Deployment |
-| :--- | :--- | :--- | :--- | :--- |
-| **OSS Community** | Free / Open Source | Unlimited local execution, Rust kernel matching, CLI tools, basic proofpack output | Community governance, local storage | Self-hosted Docker / Kubernetes |
-| **Cloud API** | $99/month + $0.01/txn over 10K | 25+ verified connector drivers, webhook ingestion, live activity feed, exception workbench | Tenant-isolated cloud database, standard DLP redaction | Managed Multi-Tenant US/EU Cloud |
-| **Managed Close** | $499/month + volume discounts | Up to 500K txn/mo, continuous close automation, automated variance adjudication, Slack/PagerDuty alerts | SOX dual-approval flows, custom tolerance rules, 99.9% uptime SLA | Managed Dedicated VPC or Isolated Pod |
-| **Enterprise Sovereign** | Custom Annual ($25K–$250K+ ACV) | Multi-million txn/sec via TigerBeetle, custom ERP connectors (SAP/NetSuite), dedicated account team | Full SOX 404 audit packs, OpenFGA ABAC, SAML SSO/SCIM, Data residency geo-fencing | Single-tenant Dedicated / On-Prem / VPC |
+| Tier                     | Pricing                         | Included Volume & Capabilities                                                                          | Governance & Compliance                                                           | Deployment                              |
+| :----------------------- | :------------------------------ | :------------------------------------------------------------------------------------------------------ | :-------------------------------------------------------------------------------- | :-------------------------------------- |
+| **OSS Community**        | Free / Open Source              | Unlimited local execution, Rust kernel matching, CLI tools, basic proofpack output                      | Community governance, local storage                                               | Self-hosted Docker / Kubernetes         |
+| **Cloud API**            | $99/month + $0.01/txn over 10K  | 25+ verified connector drivers, webhook ingestion, live activity feed, exception workbench              | Tenant-isolated cloud database, standard DLP redaction                            | Managed Multi-Tenant US/EU Cloud        |
+| **Managed Close**        | $499/month + volume discounts   | Up to 500K txn/mo, continuous close automation, automated variance adjudication, Slack/PagerDuty alerts | SOX dual-approval flows, custom tolerance rules, 99.9% uptime SLA                 | Managed Dedicated VPC or Isolated Pod   |
+| **Enterprise Sovereign** | Custom Annual ($25K–$250K+ ACV) | Multi-million txn/sec via TigerBeetle, custom ERP connectors (SAP/NetSuite), dedicated account team     | Full SOX 404 audit packs, OpenFGA ABAC, SAML SSO/SCIM, Data residency geo-fencing | Single-tenant Dedicated / On-Prem / VPC |
 
 ### High-Margin Add-On Packs
 
@@ -49,16 +49,16 @@ graph LR
 
 ## 4. Competitive Landscape & Defensibility
 
-| Capability | **Settler** | BlackLine | Trintech Cadency | ReconArt | Custom In-House Scripts |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **Execution Engine** | **Deterministic Rust Kernel** | Legacy Java/C# | Monolithic Legacy | Proprietary SaaS | Python/SQL scripts |
-| **Evidence Output** | **Hash-linked Cryptographic Proofpack** | PDF reports & Excel dumps | Static reports | Spreadsheet exports | Ad-hoc log files |
-| **Speed & Scalability** | **Sub-millisecond / TigerBeetle ready** | Batch scheduled | Batch scheduled | Slow batch | O(n²) script bottlenecks |
-| **API & SDK Ecosystem** | **Full REST/CLI/SDK (TS, Python, Go, Java)** | Legacy SOAP/REST | Closed / Limited | Limited REST | None / Custom |
-| **Turnkey Connectors** | **25+ verified modern connectors** | Complex legacy ETL | Heavy consultancy setup | Custom dev required | Manually built & maintained |
-| **Audit Verification** | **Offline zero-knowledge verifiable** | Auditor access to UI | Auditor access to UI | Auditor access to UI | Manual sampling |
-| **Time to First Match** | **< 10 minutes** | 3–6 months onboarding | 6–12 months onboarding | 2–4 months onboarding | Weeks of dev time |
-| **Gross Margin Profile** | **85%+ software margin** | Heavy professional services | Heavy consulting fees | Consulting-driven | Constant engineering drain |
+| Capability               |                 **Settler**                  |          BlackLine          |    Trintech Cadency     |       ReconArt        |   Custom In-House Scripts   |
+| :----------------------- | :------------------------------------------: | :-------------------------: | :---------------------: | :-------------------: | :-------------------------: |
+| **Execution Engine**     |        **Deterministic Rust Kernel**         |       Legacy Java/C#        |    Monolithic Legacy    |   Proprietary SaaS    |     Python/SQL scripts      |
+| **Evidence Output**      |   **Hash-linked Cryptographic Proofpack**    |  PDF reports & Excel dumps  |     Static reports      |  Spreadsheet exports  |      Ad-hoc log files       |
+| **Speed & Scalability**  |   **Sub-millisecond / TigerBeetle ready**    |       Batch scheduled       |     Batch scheduled     |      Slow batch       |  O(n²) script bottlenecks   |
+| **API & SDK Ecosystem**  | **Full REST/CLI/SDK (TS, Python, Go, Java)** |      Legacy SOAP/REST       |    Closed / Limited     |     Limited REST      |        None / Custom        |
+| **Turnkey Connectors**   |      **25+ verified modern connectors**      |     Complex legacy ETL      | Heavy consultancy setup |  Custom dev required  | Manually built & maintained |
+| **Audit Verification**   |    **Offline zero-knowledge verifiable**     |    Auditor access to UI     |  Auditor access to UI   | Auditor access to UI  |       Manual sampling       |
+| **Time to First Match**  |               **< 10 minutes**               |    3–6 months onboarding    | 6–12 months onboarding  | 2–4 months onboarding |      Weeks of dev time      |
+| **Gross Margin Profile** |           **85%+ software margin**           | Heavy professional services |  Heavy consulting fees  |   Consulting-driven   | Constant engineering drain  |
 
 ---
 

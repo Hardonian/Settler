@@ -96,9 +96,9 @@
 
 **After Settler:**
 
-- [Metric 1]: [Value] ([X]% improvement)
-- [Metric 2]: [Value] ([X]% improvement)
-- [Metric 3]: [Value] ([X]% improvement)
+- [Metric 1]: [Value] "[X]% improvement"
+- [Metric 2]: [Value] "[X]% improvement"
+- [Metric 3]: [Value] "[X]% improvement"
 
 **Key Metrics:**
 

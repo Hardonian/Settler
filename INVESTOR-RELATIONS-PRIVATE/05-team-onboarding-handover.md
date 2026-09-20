@@ -559,13 +559,13 @@ export async function createJob(config: JobConfig): Promise<Job> {
 
 ### Documentation Ownership
 
-| Document              | Owner              | Last Updated | Review Frequency |
+| Document | Owner | Last Updated | Review Frequency |
 | --------------------- | ------------------ | ------------ | ---------------- | --------- |
-| **README.md**         | Engineering Lead   | [Date]       | [Date]           | Quarterly |
-| **CONTRIBUTING.md**   | Engineering Lead   | [Date]       | Quarterly        |
-| **API Docs**          | API Team           | [Date]       | Monthly          |
-| **Architecture Docs** | Scott Hardie (CEO) | [Date]       | Quarterly        |
-| **Runbooks**          | SRE Team           | [Date]       | Monthly          |
+| **README.md** | Engineering Lead | [Date] | [Date] | Quarterly |
+| **CONTRIBUTING.md** | Engineering Lead | [Date] | Quarterly |
+| **API Docs** | API Team | [Date] | Monthly |
+| **Architecture Docs** | Scott Hardie (CEO) | [Date] | Quarterly |
+| **Runbooks** | SRE Team | [Date] | Monthly |
 
 ### Support Contacts
 

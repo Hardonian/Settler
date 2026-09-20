@@ -54,12 +54,7 @@ interface Feedback {
   id: string;
   timestamp: string;
   source:
-    | "sales_call"
-    | "user_interview"
-    | "support_ticket"
-    | "github_issue"
-    | "community"
-    | "survey";
+    "sales_call" | "user_interview" | "support_ticket" | "github_issue" | "community" | "survey";
   persona: "cto" | "cfo" | "finance_ops" | "developer";
   userId?: string;
   company?: string;

@@ -105,9 +105,7 @@ Settler is a modern, API-first reconciliation platform built for the cloud-nativ
 import Settler from "@settler/sdk";
 
 const client = new Settler({ apiKey: process.env.API_KEY });
-const job = await client.jobs.create({
-  /* config */
-});
+const job = await client.jobs.create({/* config */});
 const report = await client.reports.get(job.id);
 ```
 
