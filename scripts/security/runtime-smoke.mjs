@@ -65,18 +65,17 @@ async function maybeStartServer(config, logs) {
   }
 
   const pnpmCli = process.env.npm_execpath;
-  if (!pnpmCli) {
-    throw new Error("npm_execpath is required to launch the runtime security server");
-  }
-  const child = spawn(
-    process.execPath,
-    [pnpmCli, "--filter", "@settler/web", "start", "-p", String(config.port)],
-    {
-      cwd: repoRoot,
-      env: process.env,
-      stdio: ["ignore", "pipe", "pipe"],
-    }
-  );
+  const pnpmArgs = ["--filter", "@settler/web", "start", "-p", String(config.port)];
+  const pnpmCommand = pnpmCli
+    ? [process.execPath, [pnpmCli, ...pnpmArgs]]
+    : process.platform === "win32"
+      ? [process.env.ComSpec || "cmd.exe", ["/d", "/s", "/c", "pnpm.cmd", ...pnpmArgs]]
+      : ["pnpm", pnpmArgs];
+  const child = spawn(pnpmCommand[0], pnpmCommand[1], {
+    cwd: repoRoot,
+    env: process.env,
+    stdio: ["ignore", "pipe", "pipe"],
+  });
   child.stdout.on("data", (chunk) => logs.push(`[server][stdout] ${chunk.toString().trimEnd()}`));
   child.stderr.on("data", (chunk) => logs.push(`[server][stderr] ${chunk.toString().trimEnd()}`));
 

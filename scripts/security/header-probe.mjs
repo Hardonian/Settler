@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import path from "node:path";
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 
 const repoRoot = process.cwd();
 const runId = process.env.GITHUB_RUN_ID || new Date().toISOString().replace(/[:.]/g, "-");
@@ -108,16 +108,18 @@ async function maybeStartServer() {
   if (!existsSync(buildId))
     return { baseUrl: null, child: null, reason: "missing_build", startupLogs: [] };
 
-  const child = spawn(
-    "npx",
-    ["pnpm", "--filter", "@settler/web", "start", "-p", String(config.port)],
-    {
-      cwd: repoRoot,
-      env: process.env,
-      stdio: ["ignore", "pipe", "pipe"],
-      shell: true,
-    }
-  );
+  const pnpmCli = process.env.npm_execpath;
+  const pnpmArgs = ["--filter", "@settler/web", "start", "-p", String(config.port)];
+  const pnpmCommand = pnpmCli
+    ? [process.execPath, [pnpmCli, ...pnpmArgs]]
+    : process.platform === "win32"
+      ? [process.env.ComSpec || "cmd.exe", ["/d", "/s", "/c", "pnpm.cmd", ...pnpmArgs]]
+      : ["pnpm", pnpmArgs];
+  const child = spawn(pnpmCommand[0], pnpmCommand[1], {
+    cwd: repoRoot,
+    env: process.env,
+    stdio: ["ignore", "pipe", "pipe"],
+  });
   const logs = [];
   child.stdout.on("data", (chunk) => logs.push(chunk.toString()));
   child.stderr.on("data", (chunk) => logs.push(chunk.toString()));
@@ -125,7 +127,7 @@ async function maybeStartServer() {
   const baseUrl = `http://127.0.0.1:${config.port}`;
   const ready = await waitForServer(`${baseUrl}/api/v1/health`);
   if (!ready) {
-    child.kill("SIGTERM");
+    await stopServer(child);
     return { baseUrl: null, child: null, reason: "server_start_failed", startupLogs: logs };
   }
   return { baseUrl, child, startupLogs: logs };
@@ -133,6 +135,10 @@ async function maybeStartServer() {
 
 async function stopServer(child) {
   if (!child || child.exitCode !== null) return;
+  if (process.platform === "win32") {
+    spawnSync("taskkill", ["/F", "/T", "/PID", String(child.pid)], { stdio: "ignore" });
+    return;
+  }
   await new Promise((resolve) => {
     const timeout = setTimeout(() => {
       if (child.exitCode === null) child.kill("SIGKILL");

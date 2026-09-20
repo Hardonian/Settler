@@ -16,7 +16,16 @@ const cmd = [
   "src/__tests__/security/crossTenantMatrix.test.ts",
 ];
 
-const run = spawnSync("npx", ["pnpm", ...cmd], { cwd: repoRoot, encoding: "utf8", shell: true });
+const pnpmCli = process.env.npm_execpath;
+const pnpmCommand = pnpmCli
+  ? [process.execPath, [pnpmCli, ...cmd]]
+  : process.platform === "win32"
+    ? [process.env.ComSpec || "cmd.exe", ["/d", "/s", "/c", "pnpm.cmd", ...cmd]]
+    : ["pnpm", cmd];
+const run = spawnSync(pnpmCommand[0], pnpmCommand[1], {
+  cwd: repoRoot,
+  encoding: "utf8",
+});
 process.stdout.write(run.stdout || "");
 process.stderr.write(run.stderr || "");
 

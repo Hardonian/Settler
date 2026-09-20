@@ -23,10 +23,15 @@ const outputDir = path.join(repoRoot, "artifacts", "security", "dependency-audit
 mkdirSync(outputDir, { recursive: true });
 
 function run(command, args, timeout = isCi ? 90_000 : 15_000) {
-  const result = spawnSync(command, args, {
+  const pnpmCli = command === "pnpm" ? process.env.npm_execpath : null;
+  const resolvedCommand = pnpmCli
+    ? [process.execPath, [pnpmCli, ...args]]
+    : command === "pnpm" && process.platform === "win32"
+      ? [process.env.ComSpec || "cmd.exe", ["/d", "/s", "/c", "pnpm.cmd", ...args]]
+      : [command, args];
+  const result = spawnSync(resolvedCommand[0], resolvedCommand[1], {
     encoding: "utf8",
     timeout,
-    shell: process.platform === "win32",
   });
   return {
     timedOut: result.error && result.error.code === "ETIMEDOUT",

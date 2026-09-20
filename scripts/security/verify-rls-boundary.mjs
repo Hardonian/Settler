@@ -55,12 +55,18 @@ function main() {
   };
 
   if (dbUrl && runtimeMode) {
-    const result = spawnSync("npx", ["pnpm", "exec", "tsx", "scripts/verify-rls-status.ts"], {
+    const pnpmCli = process.env.npm_execpath;
+    const pnpmArgs = ["exec", "tsx", "scripts/verify-rls-status.ts"];
+    const pnpmCommand = pnpmCli
+      ? [process.execPath, [pnpmCli, ...pnpmArgs]]
+      : process.platform === "win32"
+        ? [process.env.ComSpec || "cmd.exe", ["/d", "/s", "/c", "pnpm.cmd", ...pnpmArgs]]
+        : ["pnpm", pnpmArgs];
+    const result = spawnSync(pnpmCommand[0], pnpmCommand[1], {
       cwd: repoRoot,
       encoding: "utf8",
       timeout: 120_000,
       env: { ...process.env, RLS_STATUS_OUTPUT: rlsStatusOut },
-      shell: true,
     });
 
     summary.commandStatus = result.status;
