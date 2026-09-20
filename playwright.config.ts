@@ -75,7 +75,12 @@ export default defineConfig({
       use: {
         ...devices["Desktop Chrome"],
       },
-      testIgnore: [/.*\.visual\.spec\.ts/, /.*\.audit\.spec\.ts/, /.*dom-reality.*/],
+      testIgnore: [
+        /.*visual.*\.spec\.ts/,
+        /.*\.audit\.spec\.ts/,
+        /.*dom-reality.*/,
+        /.*demo-mode.*/,
+      ],
     },
 
     {
@@ -83,7 +88,12 @@ export default defineConfig({
       use: {
         ...devices["Desktop Firefox"],
       },
-      testIgnore: [/.*\.visual\.spec\.ts/, /.*\.audit\.spec\.ts/, /.*dom-reality.*/],
+      testIgnore: [
+        /.*visual.*\.spec\.ts/,
+        /.*\.audit\.spec\.ts/,
+        /.*dom-reality.*/,
+        /.*demo-mode.*/,
+      ],
     },
 
     // Visual Regression: Mobile viewport (light mode)

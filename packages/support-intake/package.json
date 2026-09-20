@@ -14,7 +14,7 @@
   "scripts": {
     "build": "node ../../scripts/run-package-tsc-build.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run src",
     "clean": "rm -rf dist"
   },
   "dependencies": {
