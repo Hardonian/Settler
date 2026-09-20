@@ -103,10 +103,10 @@ jobs:
             echo "Started node $i on port $PORT (PID: $(cat /tmp/tb_$i.pid))"
           done
 
-          # Readiness is proven through the native protocol; TigerBeetle has no HTTP health endpoint.
+          # Readiness is proven through the native client protocol.
           for attempt in {1..20}; do
-            if printf 'lookup_accounts id=999999;\n' | timeout 5s tigerbeetle repl \
-              --cluster=0 --addresses=127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002 \
+            if timeout 5s pnpm --dir packages/api exec node scripts/tigerbeetle-cluster-smoke.mjs \
+              create 999999 127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002 \
               >/tmp/tb_ready.log 2>&1; then
               break
             fi
@@ -127,12 +127,10 @@ jobs:
       - name: Verify Cluster Consensus
         run: |
           set -euo pipefail
-          printf 'create_accounts id=1000 code=10 ledger=1, id=1001 code=10 ledger=1;\nlookup_accounts id=1000, id=1001;\n' | \
-            timeout 10s tigerbeetle repl --cluster=0 \
-              --addresses=127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002 \
-              | tee /tmp/accounts_initial.log
-          grep -q '"id": "1000"' /tmp/accounts_initial.log
-          grep -q '"id": "1001"' /tmp/accounts_initial.log
+          timeout 10s pnpm --dir packages/api exec node scripts/tigerbeetle-cluster-smoke.mjs \
+            create 1000 127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002
+          timeout 10s pnpm --dir packages/api exec node scripts/tigerbeetle-cluster-smoke.mjs \
+            create 1001 127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002
           echo "PASS: Cluster committed and read consensus state"
 
       - name: Test Split-Brain Handling
@@ -143,11 +141,8 @@ jobs:
           sleep 2
 
           # Nodes 0 and 1 should still form quorum (2 of 3).
-          printf 'create_accounts id=2000 code=20 ledger=1;\nlookup_accounts id=2000;\n' | \
-            timeout 10s tigerbeetle repl --cluster=0 \
-              --addresses=127.0.0.1:3000,127.0.0.1:3001 \
-              | tee /tmp/accounts_partition.log
-          grep -q '"id": "2000"' /tmp/accounts_partition.log
+          timeout 10s pnpm --dir packages/api exec node scripts/tigerbeetle-cluster-smoke.mjs \
+            create 2000 127.0.0.1:3000,127.0.0.1:3001
 
           # Restart node 2
           PORT=3002
@@ -155,10 +150,8 @@ jobs:
           echo $! > /tmp/tb_2.pid
           # Verify node 2 catches up by reading the write committed while it was offline.
           for attempt in {1..20}; do
-            if printf 'lookup_accounts id=2000;\n' | timeout 5s tigerbeetle repl \
-              --cluster=0 --addresses=127.0.0.1:3002 \
-              >/tmp/accounts_recovered.log 2>&1 && \
-              grep -q '"id": "2000"' /tmp/accounts_recovered.log; then
+            if timeout 5s pnpm --dir packages/api exec node scripts/tigerbeetle-cluster-smoke.mjs \
+              lookup 2000 127.0.0.1:3002 >/tmp/accounts_recovered.log 2>&1; then
               echo "Node 2 recovered and caught up"
               break
             fi
@@ -178,10 +171,8 @@ jobs:
           # A client bootstrapped from each replica must observe the quorum write.
           for i in 0 1 2; do
             PORT=$((3000 + i))
-            printf 'lookup_accounts id=2000;\n' | timeout 10s tigerbeetle repl \
-              --cluster=0 --addresses="127.0.0.1:$PORT" \
-              >"/tmp/account_$i.log" 2>&1
-            grep -q '"id": "2000"' "/tmp/account_$i.log"
+            timeout 10s pnpm --dir packages/api exec node scripts/tigerbeetle-cluster-smoke.mjs \
+              lookup 2000 "127.0.0.1:$PORT"
           done
           echo "PASS: Replicated state is visible through every replica"
 

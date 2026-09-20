@@ -249,6 +249,8 @@
     "verify:security:runtime": "node scripts/security/runtime-smoke.mjs",
     "verify:security:supply-chain": "node scripts/security/supply-chain.mjs",
     "verify:security:evidence": "node scripts/verify-security-evidence.mjs",
+    "generate-release-bundle": "tsx scripts/generate-release-bundle.ts",
+    "verify-release-bundle": "tsx scripts/verify-release-bundle.ts",
     "test:security:guardrails": "node --test scripts/__tests__/tenant-guardrails.test.mjs",
     "verify:launch-assets": "node scripts/verify-launch-assets.mjs",
     "verify:route-parity": "tsx scripts/verify-route-parity.ts",
