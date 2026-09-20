@@ -7,6 +7,7 @@
     "typecheck": "tsc --noEmit",
     "start": "node dist/security-agent.js --scan=all",
     "security:scan": "node dist/security-agent.js --scan=all",
+    "pretest": "pnpm run build",
     "test": "node --test dist/__tests__/legacy-agents.test.js dist/__tests__/security-agent.test.js"
   },
   "dependencies": {
