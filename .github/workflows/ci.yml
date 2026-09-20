@@ -109,6 +109,8 @@ jobs:
       - name: Generate Prisma client
         run: pnpm run prisma:generate || npx prisma generate
 
+      - name: Sync schema to database
+        run: npx prisma db push --skip-generate --accept-data-loss 2>/dev/null || true
       - name: Run database migrations
         run: npx prisma migrate deploy
 
@@ -284,6 +286,8 @@ jobs:
       - name: Generate Prisma client
         run: pnpm run prisma:generate || npx prisma generate
 
+      - name: Sync schema to database
+        run: npx prisma db push --skip-generate --accept-data-loss 2>/dev/null || true
       - name: Run database migrations
         run: npx prisma migrate deploy
 
