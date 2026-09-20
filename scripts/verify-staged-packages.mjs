@@ -5,13 +5,17 @@ import { readFileSync, existsSync } from "node:fs";
 import path from "node:path";
 
 function run(cmd, args, options = {}) {
-  const binary =
-    process.platform === "win32" && (cmd === "pnpm" || cmd === "pnpm.cmd") ? "pnpm.cmd" : cmd;
-  const result = spawnSync(binary, args, {
+  const isPnpm = cmd === "pnpm" || cmd === "pnpm.cmd";
+  const pnpmCli = isPnpm ? process.env.npm_execpath : null;
+  if (isPnpm && !pnpmCli) {
+    throw new Error("npm_execpath is required to run staged package verification");
+  }
+  const binary = isPnpm ? process.execPath : cmd;
+  const commandArgs = isPnpm ? [pnpmCli, ...args] : args;
+  const result = spawnSync(binary, commandArgs, {
     stdio: "inherit",
     env: { ...process.env, ...options.env },
     cwd: options.cwd ?? process.cwd(),
-    shell: process.platform === "win32",
   });
 
   if (result.status !== 0) {

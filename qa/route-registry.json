@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-09-11T13:38:03.585Z",
-  "totalRoutes": 562,
-  "pageRoutes": 309,
+  "generatedAt": "2026-09-20T18:12:44.545Z",
+  "totalRoutes": 563,
+  "pageRoutes": 310,
   "routes": [
     {
       "path": "/",
@@ -2572,6 +2572,14 @@
       "optional": false
     },
     {
+      "path": "/cognitive",
+      "type": "page",
+      "file": "cognitive\\page.tsx",
+      "dynamic": false,
+      "catchAll": false,
+      "optional": false
+    },
+    {
       "path": "/community",
       "type": "page",
       "file": "community\\page.tsx",
@@ -4570,6 +4578,7 @@
     "/categorize",
     "/changelog",
     "/changelog/[slug]",
+    "/cognitive",
     "/community",
     "/community/contributors",
     "/compare",

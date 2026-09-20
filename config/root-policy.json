@@ -25,6 +25,7 @@
     ".node-version",
     ".npm-auditignore",
     ".npmrc",
+    ".pnpmfile.cjs",
     ".nvmrc",
     ".prettierignore",
     ".prettierrc",

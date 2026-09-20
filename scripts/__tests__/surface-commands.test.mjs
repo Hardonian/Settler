@@ -13,6 +13,15 @@ const required = [
   "help:surface",
 ];
 const smokeable = ["demo:settler", "simulate:settler", "replay:run", "tenant:create", "chaos:test"];
+const pnpmCli = process.env.npm_execpath;
+
+function runPnpm(args) {
+  assert.ok(pnpmCli, "npm_execpath is required to run pnpm command smoke tests");
+  return spawnSync(process.execPath, [pnpmCli, ...args], {
+    encoding: "utf8",
+    timeout: 20000,
+  });
+}
 
 for (const scriptName of required) {
   test(`script ${scriptName} is registered`, () => {
@@ -39,20 +48,12 @@ test("surface registry references existing command scripts", () => {
 
 for (const scriptName of smokeable) {
   test(`${scriptName} supports --help`, () => {
-    const res = spawnSync("npx", ["pnpm", "run", scriptName, "--", "--help"], {
-      encoding: "utf8",
-      timeout: 20000,
-      shell: true,
-    });
+    const res = runPnpm(["run", scriptName, "--", "--help"]);
     assert.equal(res.status, 0, `--help failed for ${scriptName}: ${res.stderr || res.stdout}`);
   });
 
   test(`${scriptName} supports --dry-run`, () => {
-    const res = spawnSync("npx", ["pnpm", "run", scriptName, "--", "--dry-run"], {
-      encoding: "utf8",
-      timeout: 20000,
-      shell: true,
-    });
+    const res = runPnpm(["run", scriptName, "--", "--dry-run"]);
     assert.equal(res.status, 0, `--dry-run failed for ${scriptName}: ${res.stderr || res.stdout}`);
     assert.match(res.stdout, /dry-run/i, `--dry-run output missing marker for ${scriptName}`);
   });

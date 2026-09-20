@@ -1,6 +1,6 @@
 /**
  * Route Registry - Auto-generated
- * Generated at: 2026-09-11T13:38:03.588Z
+ * Generated at: 2026-09-20T18:12:44.548Z
  *
  * This file contains all routes discovered in the Next.js app directory.
  * Use this for type-safe route checking and link validation.
@@ -2585,6 +2585,14 @@ export const ROUTES: RouteInfo[] = [
     optional: false,
   },
   {
+    path: "/cognitive",
+    type: "page",
+    file: "cognitive\\page.tsx",
+    dynamic: false,
+    catchAll: false,
+    optional: false,
+  },
+  {
     path: "/community",
     type: "page",
     file: "community\\page.tsx",
@@ -4584,6 +4592,7 @@ export const PAGE_ROUTES: string[] = [
   "/categorize",
   "/changelog",
   "/changelog/[slug]",
+  "/cognitive",
   "/community",
   "/community/contributors",
   "/compare",
@@ -5148,6 +5157,7 @@ export const ALL_ROUTES: string[] = [
   "/categorize",
   "/changelog",
   "/changelog/[slug]",
+  "/cognitive",
   "/community",
   "/community/contributors",
   "/compare",

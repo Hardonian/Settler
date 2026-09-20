@@ -177,10 +177,13 @@ function resolveStages({ profile, stage }) {
 async function runStage(stageName, runDir) {
   const definition = stageCatalog[stageName];
   let [bin, args] = definition.command;
-  if (process.platform === "win32" && bin === "pnpm") {
-    // Some systems report pnpm.CMD while others report pnpm.cmd.
-    // Also ensures we use shell resolution properly.
-    bin = "pnpm.cmd";
+  if (bin === "pnpm") {
+    const pnpmCli = process.env.npm_execpath;
+    if (!pnpmCli) {
+      throw new Error("npm_execpath is required to run release verification stages");
+    }
+    bin = process.execPath;
+    args = [pnpmCli, ...args];
   }
   const startedAt = Date.now();
   const logLines = [];
@@ -192,7 +195,6 @@ async function runStage(stageName, runDir) {
       cwd: repoRoot,
       env: process.env,
       stdio: ["ignore", "pipe", "pipe"],
-      shell: process.platform === "win32",
     });
     let timedOut = false;
 
