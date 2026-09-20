@@ -10,10 +10,23 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const {
+      tenantId,
       merkleRoot = "0x4f82c189e92bc9837a2819cd918349281ab892c90192837482910fa98234cdfa",
       targetLeafHash = "0x89ab12cd34ef5678901234567890abcdef1234567890abcdef1234567890abcd",
       proofHashes = [],
     } = body;
+
+    // Invariant: Multi-tenant scoping required
+    if (!tenantId || typeof tenantId !== "string") {
+      return NextResponse.json(
+        {
+          error:
+            "TenantId invariant violation: Every request must be strictly scoped to a tenantId",
+          code: "SETTLER_INVARIANT_TENANT_REQUIRED",
+        },
+        { status: 400 }
+      );
+    }
 
     // Cryptographic proof verification loop
     let currentHash = targetLeafHash.replace(/^0x/, "");
@@ -34,6 +47,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       valid: isExactMatch,
+      tenantId,
       verificationEngine: "settler_kernel_wasm_v2.4",
       verifiedAt: new Date().toISOString(),
       merkleRoot,

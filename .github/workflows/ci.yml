@@ -267,8 +267,18 @@ jobs:
           pnpm start &
           SERVER_PID=$!
           echo "Waiting for web server to start..."
-          sleep 10
-          curl -f http://localhost:3000 || (sleep 5 && curl -f http://localhost:3000)
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:3000 > /dev/null 2>&1; then
+              echo "Server is ready after ${i} attempts"
+              break
+            fi
+            if [ "$i" -eq 30 ]; then
+              echo "Server failed to start after 30 attempts"
+              kill $SERVER_PID 2>/dev/null || true
+              exit 1
+            fi
+            sleep 2
+          done
 
           cd "$GITHUB_WORKSPACE"
           BASE_URL=http://localhost:3000 pnpm run qa:marketing-ctas
