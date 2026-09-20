@@ -107,7 +107,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Doctor
-        run: pnpm run doctor
+        run: pnpm run doctor -- --fast
 
       - name: Verify
         run: pnpm run verify
