@@ -189,7 +189,7 @@ export default defineConfig({
 
   // Local dev server configuration
   webServer: {
-    command: "npm run dev --workspace=packages/web",
+    command: process.env.CI ? "pnpm --filter @settler/web start" : "pnpm --filter @settler/web dev",
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI || process.env.CI_VISUAL_LANDING === "1",
     timeout: 120 * 1000,

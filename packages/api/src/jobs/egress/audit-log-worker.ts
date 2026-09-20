@@ -19,13 +19,13 @@ export class SiemEgressEngine {
 
   constructor() {
     if (config.redis.url) {
-      this.redis = new Redis(config.redis.url, { maxRetriesPerRequest: 3 });
+      this.redis = new Redis(config.redis.url, { maxRetriesPerRequest: null });
     } else {
       this.redis = new Redis({
         host: config.redis.host,
         port: config.redis.port,
         password: config.redis.password,
-        maxRetriesPerRequest: 3,
+        maxRetriesPerRequest: null,
       });
     }
 

@@ -36,7 +36,7 @@ export class PrioritizedQueue {
     // Prefer REDIS_URL if provided (Upstash format: rediss://default:password@host:6379)
     if (config.redis.url) {
       this.redis = new Redis(config.redis.url, {
-        maxRetriesPerRequest: 3,
+        maxRetriesPerRequest: null,
         enableReadyCheck: true,
         lazyConnect: true,
       });
@@ -46,11 +46,13 @@ export class PrioritizedQueue {
         host: string;
         port: number;
         password?: string;
+        maxRetriesPerRequest: null;
 
         tls?: any;
       } = {
         host: config.redis.host,
         port: config.redis.port,
+        maxRetriesPerRequest: null,
       };
       if (config.redis.password) {
         redisOptions.password = config.redis.password;
