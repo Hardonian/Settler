@@ -18,6 +18,7 @@
 // Webpack configuration excludes this file from client bundles
 
 import type { PrismaClient as PrismaClientType } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 
 // CRITICAL: Set environment variables BEFORE loading PrismaClient
 // Prisma 7 determines engine type at load time, so we must set these first
@@ -92,9 +93,13 @@ const nodeEnv =
 let prismaInstance: PrismaClientType;
 
 try {
-  // Pass datasourceUrl explicitly to satisfy Prisma wasm/client engine validation.
-  // The build phase sets a dummy DATABASE_URL to prevent build-time failures.
-  prismaInstance = globalForPrisma.prisma ?? new PrismaClient();
+  const connectionString =
+    process.env.DATABASE_URL || process.env.SUPABASE_DATABASE_URL || process.env.DIRECT_URL;
+  if (!connectionString) {
+    throw new Error("No PostgreSQL connection string is configured");
+  }
+  const adapter = new PrismaPg({ connectionString });
+  prismaInstance = globalForPrisma.prisma ?? new PrismaClient({ adapter });
 } catch (error) {
   if (!isBuildPhase) {
     console.error("[Prisma] Failed to initialize Prisma client:", error);

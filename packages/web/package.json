@@ -37,6 +37,7 @@
     "@builder.io/sdk": "^6.3.3",
     "@jobforge/sdk-ts": "workspace:*",
     "@jobforge/shared": "workspace:*",
+    "@prisma/adapter-pg": "7.10.0",
     "@prisma/client": "7.10.0",
     "@radix-ui/react-dropdown-menu": "^2.1.24",
     "@radix-ui/react-progress": "^1.1.16",

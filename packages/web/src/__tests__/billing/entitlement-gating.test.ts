@@ -23,7 +23,7 @@ describeIfDatabase("Entitlement Gating", () => {
     // Create test billing account
     const billingAccount = await prisma.billingAccount.create({
       data: {
-        userId: "test-user-id",
+        userId: "00000000-0000-4000-8000-000000000001",
         email: "test@example.com",
         status: "active",
       },

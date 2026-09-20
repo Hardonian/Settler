@@ -219,6 +219,9 @@ jobs:
       - name: Build workspace packages (produces dist consumed by web tests)
         run: pnpm run build
 
+      - name: Apply database migrations for integration tests
+        run: pnpm exec prisma migrate deploy
+
       - name: Web tests (sharded with memory cap)
         run: pnpm --filter @settler/web exec jest --maxWorkers=50% --shard=${{ matrix.shard }} --passWithNoTests
 

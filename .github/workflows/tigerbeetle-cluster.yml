@@ -228,7 +228,7 @@ jobs:
 
           # Build and run reconciliation tests
           pnpm run build
-          pnpm --filter @settler/api exec jest --runInBand --forceExit --testPathPattern="reconciliation"
+          pnpm --filter @settler/api exec jest --runInBand --forceExit --testPathPatterns="reconciliation"
 
       - name: Cleanup
         if: always()

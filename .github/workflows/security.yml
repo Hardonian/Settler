@@ -31,7 +31,7 @@ jobs:
         run: pnpm run verify:tenant
 
       - name: Verify tenant isolation runtime tests
-        run: pnpm --filter @settler/api exec jest --testPathPattern=tenant-isolation-enforced --runInBand
+        run: pnpm --filter @settler/api exec jest --testPathPatterns=tenant-isolation-enforced --runInBand
 
       - name: Fast security posture verification
         run: pnpm run verify:security:fast
