@@ -86,12 +86,19 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Install Node
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+
+      - name: Install wrangler
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        run: npm install -g wrangler
+
       - name: Deploy to Cloudflare Pages
         if: env.CLOUDFLARE_API_TOKEN != ''
-        uses: cloudflare/pages-action@v1
-        with:
-          apiToken: ${{ env.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: ${{ github.event.repository.name }}
-          directory: deploy/frontend
-          gitHubToken: ${{ github.token }}
+        run: >-
+          wrangler pages deploy deploy/frontend
+          --project-name="${{ github.event.repository.name }}"
+          --branch="${{ github.ref_name }}"
