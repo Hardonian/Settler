@@ -80,6 +80,9 @@ jobs:
       - name: Run cross-tenant runtime tests
         run: pnpm run test:cross-tenant
 
+      - name: Verify admin route authorization
+        run: node scripts/security/admin-route-authz.mjs
+
       - name: Run dependency audit
         env:
           SECURITY_AUDIT_MODE: strict

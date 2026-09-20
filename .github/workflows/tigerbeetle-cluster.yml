@@ -68,22 +68,21 @@ jobs:
 
       - name: Install TigerBeetle
         run: |
-          set -e
+          set -euo pipefail
           TB_VERSION="${TIGERBEETLE_VERSION}"
-          # Try official install script first, fall back to direct download
-          if ! (curl -fsSL "https://pkg.tigerbeetle.com/install.sh" | sh -s -- --version "${TB_VERSION}" 2>/dev/null); then
-            echo "Install script failed, trying direct download..."
-            ARCH=$(uname -m)
-            [ "$ARCH" = "x86_64" ] && ARCH="x86_64"
-            curl -fsSL "https://github.com/tigerbeetle/tigerbeetle/releases/download/${TB_VERSION}/tigerbeetle-linux-${ARCH}.zip" -o /tmp/tb.zip
-            cd /tmp && unzip -o tb.zip && chmod +x tigerbeetle
-            sudo mv tigerbeetle /usr/local/bin/tigerbeetle
-          fi
-          # install.sh places the binary in the current dir or /usr/local/bin
-          if [ -f ./tigerbeetle ]; then
-            sudo mv ./tigerbeetle /usr/local/bin/tigerbeetle
-          fi
-          tigerbeetle --version
+          case "$(uname -m)" in
+            x86_64) TB_ARCH="x86_64" ;;
+            aarch64|arm64) TB_ARCH="aarch64" ;;
+            *) echo "Unsupported TigerBeetle architecture: $(uname -m)" >&2; exit 1 ;;
+          esac
+          TB_ASSET="tigerbeetle-${TB_ARCH}-linux.zip"
+          curl --fail --location --show-error --silent \
+            "https://github.com/tigerbeetle/tigerbeetle/releases/download/${TB_VERSION}/${TB_ASSET}" \
+            --output /tmp/tigerbeetle.zip
+          unzip -o /tmp/tigerbeetle.zip -d /tmp/tigerbeetle-install
+          chmod +x /tmp/tigerbeetle-install/tigerbeetle
+          sudo install /tmp/tigerbeetle-install/tigerbeetle /usr/local/bin/tigerbeetle
+          tigerbeetle version
 
       - name: Setup TigerBeetle 3-Node Cluster
         run: |
