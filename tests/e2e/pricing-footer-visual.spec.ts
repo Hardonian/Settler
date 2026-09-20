@@ -11,12 +11,12 @@ async function stabilize(page: Page) {
     `,
   });
 
-  await page.waitForLoadState("networkidle");
+  await page.waitForLoadState("domcontentloaded");
 }
 
 test.describe("pricing and footer visual regression", () => {
   test("pricing hero stays visually stable", async ({ page }) => {
-    await page.goto("/pricing", { waitUntil: "networkidle" });
+    await page.goto("/pricing", { waitUntil: "domcontentloaded" });
     await stabilize(page);
 
     await expect(page.locator("section[aria-labelledby='pricing-heading']")).toHaveScreenshot(
@@ -28,7 +28,7 @@ test.describe("pricing and footer visual regression", () => {
   });
 
   test("global footer stays visually stable", async ({ page }) => {
-    await page.goto("/pricing", { waitUntil: "networkidle" });
+    await page.goto("/pricing", { waitUntil: "domcontentloaded" });
     await stabilize(page);
 
     await expect(page.locator("footer[role='contentinfo']")).toHaveScreenshot(

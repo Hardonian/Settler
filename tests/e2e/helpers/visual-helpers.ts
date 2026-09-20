@@ -116,7 +116,7 @@ export async function stabilizePage(
       const frozenDate = new OriginalDate(timestamp);
 
       // Override Date
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       (window as any).Date = class extends OriginalDate {
         constructor(...args: (string | number | Date)[]) {
           if (args.length === 0) {
@@ -162,7 +162,7 @@ export async function stabilizePage(
   });
 
   // Wait for network to be idle
-  await page.waitForLoadState("networkidle");
+  await page.waitForLoadState("domcontentloaded");
 
   // Final settle time
   await page.waitForTimeout(300);
@@ -269,7 +269,7 @@ export async function forceHoverState(page: Page, selector: string): Promise<voi
     const elements = document.querySelectorAll(sel);
     elements.forEach((el) => {
       el.classList.add("hover");
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       (el as any).style.cssText += "; background-color: inherit; color: inherit;";
     });
   }, selector);

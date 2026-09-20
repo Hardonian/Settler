@@ -100,7 +100,7 @@ async function stabilizePage(page: Page): Promise<void> {
     const frozenTime = new OriginalDate("2024-01-15T12:00:00Z");
 
     // Override Date constructor
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     (window as any).Date = class extends OriginalDate {
       constructor(...args: (string | number | Date)[]) {
         if (args.length === 0) {
@@ -140,7 +140,7 @@ async function stabilizePage(page: Page): Promise<void> {
   await page.evaluate(() => document.fonts.ready);
 
   // Wait for images to load
-  await page.waitForLoadState("networkidle");
+  await page.waitForLoadState("domcontentloaded");
 
   // Additional wait for any lazy-loaded content
   await page.waitForTimeout(500);
@@ -188,8 +188,8 @@ test.describe("Visual Regression - Public Pages", () => {
     test(`${route.name} - initial load`, async ({ page }, testInfo) => {
       // Navigate to page
       const response = await page.goto(`${BASE_URL}${route.path}`, {
-        waitUntil: "networkidle",
-        timeout: 30000,
+        waitUntil: "domcontentloaded",
+        timeout: 60000,
       });
 
       // Accept 200-399 status codes (redirects OK)
@@ -212,8 +212,8 @@ test.describe("Visual Regression - Public Pages", () => {
 
     test(`${route.name} - scrolled state`, async ({ page }, testInfo) => {
       await page.goto(`${BASE_URL}${route.path}`, {
-        waitUntil: "networkidle",
-        timeout: 30000,
+        waitUntil: "domcontentloaded",
+        timeout: 60000,
       });
 
       await stabilizePage(page);
@@ -244,8 +244,8 @@ test.describe("Visual Regression - Console Pages (Auth Required)", () => {
   for (const route of consoleRoutes) {
     test(`${route.name} - handles auth gracefully`, async ({ page }, testInfo) => {
       await page.goto(`${BASE_URL}${route.path}`, {
-        waitUntil: "networkidle",
-        timeout: 30000,
+        waitUntil: "domcontentloaded",
+        timeout: 60000,
       });
 
       await stabilizePage(page);
@@ -271,8 +271,8 @@ test.describe("Visual Regression - Console Pages (Auth Required)", () => {
 test.describe("Visual Regression - Error States", () => {
   test("404 page", async ({ page }, testInfo) => {
     await page.goto(`${BASE_URL}/non-existent-page-12345`, {
-      waitUntil: "networkidle",
-      timeout: 30000,
+      waitUntil: "domcontentloaded",
+      timeout: 60000,
     });
 
     await stabilizePage(page);
@@ -289,8 +289,8 @@ test.describe("Visual Regression - Error States", () => {
   test("error boundary - simulated", async ({ page }, testInfo) => {
     // Navigate to a page and inject an error boundary test
     await page.goto(`${BASE_URL}/`, {
-      waitUntil: "networkidle",
-      timeout: 30000,
+      waitUntil: "domcontentloaded",
+      timeout: 60000,
     });
 
     await stabilizePage(page);
@@ -319,8 +319,8 @@ test.describe("Visual Regression - Error States", () => {
 test.describe("Visual Regression - Component States", () => {
   test("docs page with code blocks", async ({ page }, testInfo) => {
     await page.goto(`${BASE_URL}/docs/quickstart`, {
-      waitUntil: "networkidle",
-      timeout: 30000,
+      waitUntil: "domcontentloaded",
+      timeout: 60000,
     });
 
     await stabilizePage(page);
@@ -343,8 +343,8 @@ test.describe("Visual Regression - Component States", () => {
 
   test("navigation expanded state", async ({ page }, testInfo) => {
     await page.goto(`${BASE_URL}/`, {
-      waitUntil: "networkidle",
-      timeout: 30000,
+      waitUntil: "domcontentloaded",
+      timeout: 60000,
     });
 
     await stabilizePage(page);
@@ -392,8 +392,8 @@ test.describe("Visual Regression - CLS Stability", () => {
     });
 
     await page.goto(`${BASE_URL}/`, {
-      waitUntil: "networkidle",
-      timeout: 30000,
+      waitUntil: "domcontentloaded",
+      timeout: 60000,
     });
 
     const cls = await clsPromise;

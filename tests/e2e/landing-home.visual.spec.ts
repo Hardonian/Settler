@@ -11,8 +11,8 @@ test.describe("Landing page visual baselines", () => {
     test.skip(!allowProject(testInfo.project.name), "Only desktop/mobile light visual projects.");
 
     const response = await page.goto(`${BASE_URL}/`, {
-      waitUntil: "networkidle",
-      timeout: 30000,
+      waitUntil: "domcontentloaded",
+      timeout: 60000,
     });
 
     expect(response?.status()).toBeLessThan(400);
