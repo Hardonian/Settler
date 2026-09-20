@@ -18,6 +18,8 @@ import {
   type Transfer,
   AccountFlags,
   TransferFlags,
+  CreateAccountStatus,
+  CreateTransferStatus,
 } from "tigerbeetle-node";
 
 import type {
@@ -301,11 +303,11 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
       };
 
       const results = await client.createAccounts([account]);
-      const error = results[0];
-      if (error) {
+      const result = results[0];
+      if (!result || result.status !== CreateAccountStatus.created) {
         throw new LedgerOperationError(
           "createAccount",
-          `TigerBeetle error code: ${(error as any).result ?? error}`
+          `TigerBeetle error code: ${result?.status ?? "missing result"}`
         );
       }
 
@@ -444,11 +446,11 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
       };
 
       const results = await client.createTransfers([transfer]);
-      const error = results[0];
-      if (error) {
+      const result = results[0];
+      if (!result || result.status !== CreateTransferStatus.created) {
         throw new LedgerOperationError(
           "createTransfer",
-          `TigerBeetle error code: ${(error as any).result ?? error}`
+          `TigerBeetle error code: ${result?.status ?? "missing result"}`
         );
       }
 
@@ -704,11 +706,11 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
       };
 
       const results = await client.createTransfers([reversalTransfer]);
-      const error = results[0];
-      if (error) {
+      const result = results[0];
+      if (!result || result.status !== CreateTransferStatus.created) {
         throw new LedgerOperationError(
           "reverseTransfer",
-          `TigerBeetle error code: ${(error as any).result ?? error}`
+          `TigerBeetle error code: ${result?.status ?? "missing result"}`
         );
       }
 
@@ -764,11 +766,11 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
       };
 
       const results = await client.createTransfers([postTransfer]);
-      const error = results[0];
-      if (error) {
+      const result = results[0];
+      if (!result || result.status !== CreateTransferStatus.created) {
         throw new LedgerOperationError(
           "postPendingTransfer",
-          `TB Error: ${(error as any).result ?? error}`
+          `TB Error: ${result?.status ?? "missing result"}`
         );
       }
 
@@ -815,11 +817,11 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
       };
 
       const results = await client.createTransfers([voidTransfer]);
-      const error = results[0];
-      if (error) {
+      const result = results[0];
+      if (!result || result.status !== CreateTransferStatus.created) {
         throw new LedgerOperationError(
           "voidPendingTransfer",
-          `TB Error: ${(error as any).result ?? error}`
+          `TB Error: ${result?.status ?? "missing result"}`
         );
       }
 
