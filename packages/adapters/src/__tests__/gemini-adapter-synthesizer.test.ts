@@ -1,8 +1,4 @@
-import {
-  GeminiAdapterSynthesizer,
-  geminiAdapterSynthesizer,
-  type SynthesizerRequest,
-} from "../gemini-adapter-synthesizer";
+import { geminiAdapterSynthesizer, type SynthesizerRequest } from "../gemini-adapter-synthesizer";
 
 describe("GeminiAdapterSynthesizer", () => {
   const TENANT = "tenant_enterprise_saudi_bank";

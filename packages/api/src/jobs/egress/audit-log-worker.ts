@@ -13,11 +13,13 @@ export interface AuditLogData {
 }
 
 export class SiemEgressEngine {
-  private queue: Queue;
+  private queue: Queue | null = null;
   private worker: Worker | null = null;
-  private redis: Redis;
+  private redis: Redis | null = null;
 
-  constructor() {
+  private initializeQueue(): Queue {
+    if (this.queue) return this.queue;
+
     if (config.redis.url) {
       this.redis = new Redis(config.redis.url, { maxRetriesPerRequest: null });
     } else {
@@ -38,14 +40,18 @@ export class SiemEgressEngine {
         removeOnFail: { age: 86400 * 7 }, // Keep failed for 7 days
       },
     });
+
+    return this.queue;
   }
 
   async enqueueAuditLog(data: AuditLogData): Promise<void> {
-    await this.queue.add("egress-siem", data);
+    await this.initializeQueue().add("egress-siem", data);
   }
 
   startWorker(concurrency: number = 5): void {
     if (this.worker) return;
+
+    this.initializeQueue();
 
     this.worker = new Worker(
       "audit_log_egress",
@@ -101,9 +107,18 @@ export class SiemEgressEngine {
   }
 
   async close() {
-    if (this.worker) await this.worker.close();
-    await this.queue.close();
-    await this.redis.quit();
+    if (this.worker) {
+      await this.worker.close();
+      this.worker = null;
+    }
+    if (this.queue) {
+      await this.queue.close();
+      this.queue = null;
+    }
+    if (this.redis) {
+      await this.redis.quit();
+      this.redis = null;
+    }
   }
 }
 

@@ -58,12 +58,6 @@ export interface NetSuiteJournalSyncResult {
   syncedAt: string;
 }
 
-function rfc6962LeafHash(data: string): string {
-  return createHash("sha256")
-    .update(Buffer.concat([Buffer.from([0x00]), Buffer.from(data, "utf-8")]))
-    .digest("hex");
-}
-
 export class NetSuiteJournalSyncEngine {
   /**
    * Generates OAuth 1.0a Token-Based Authentication (TBA) header for NetSuite SuiteTalk REST calls.

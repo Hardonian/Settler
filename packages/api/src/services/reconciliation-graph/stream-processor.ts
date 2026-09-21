@@ -28,16 +28,17 @@ export class StreamProcessor extends EventEmitter {
   private isProcessing = false;
   private batchSize = 100;
   private processingInterval = 100; // ms
+  private processingTimer: NodeJS.Timeout | null = null;
 
   constructor() {
     super();
-    this.startProcessing();
   }
 
   /**
    * Add transaction event to processing queue
    */
   async addEvent(event: TransactionEvent): Promise<void> {
+    this.startProcessing();
     this.processingQueue.push(event);
     this.emit("event_added", event);
   }
@@ -46,11 +47,21 @@ export class StreamProcessor extends EventEmitter {
    * Start processing queue
    */
   private startProcessing(): void {
-    setInterval(() => {
+    if (this.processingTimer) return;
+
+    this.processingTimer = setInterval(() => {
       if (!this.isProcessing && this.processingQueue.length > 0) {
-        this.processBatch();
+        void this.processBatch();
       }
     }, this.processingInterval);
+    this.processingTimer.unref();
+  }
+
+  stopProcessing(): void {
+    if (!this.processingTimer) return;
+
+    clearInterval(this.processingTimer);
+    this.processingTimer = null;
   }
 
   /**

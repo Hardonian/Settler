@@ -28,6 +28,7 @@ export class PrioritizedQueue {
   private queue: Queue;
   private worker: Worker | null = null;
   private redis: Redis;
+  private metricsTimer: NodeJS.Timeout;
 
   constructor(
     private queueName: string,
@@ -72,12 +73,17 @@ export class PrioritizedQueue {
     });
 
     // Update queue depth metric
-    setInterval(async () => {
-      const waiting = await this.queue.getWaitingCount();
-      const active = await this.queue.getActiveCount();
-      const delayed = await this.queue.getDelayedCount();
-      queueDepth.set({ queue_name: queueName }, waiting + active + delayed);
+    this.metricsTimer = setInterval(() => {
+      void this.updateQueueDepth();
     }, 5000);
+    this.metricsTimer.unref();
+  }
+
+  private async updateQueueDepth(): Promise<void> {
+    const waiting = await this.queue.getWaitingCount();
+    const active = await this.queue.getActiveCount();
+    const delayed = await this.queue.getDelayedCount();
+    queueDepth.set({ queue_name: this.queueName }, waiting + active + delayed);
   }
 
   /**
@@ -250,6 +256,7 @@ export class PrioritizedQueue {
    * Close queue and worker
    */
   async close(): Promise<void> {
+    clearInterval(this.metricsTimer);
     if (this.worker) {
       await this.worker.close();
     }

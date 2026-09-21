@@ -184,7 +184,6 @@ export class VendorReconciliationEngine {
     }
 
     for (const inv of invoices) {
-      const invTokens = normalizeTokens(`${inv.vendorName} ${inv.invoiceNumber}`);
       const invDateMs = new Date(inv.invoiceDate).getTime();
 
       let bestPayment: VendorPaymentReceipt | null = null;

@@ -1,9 +1,4 @@
-import {
-  validateIban,
-  parseSepaInstantMessage,
-  reconcileSepaInstantBatch,
-  type SepaInstantMessage,
-} from "../sepa-instant";
+import { validateIban, parseSepaInstantMessage, reconcileSepaInstantBatch } from "../sepa-instant";
 
 describe("SEPA Instant Credit Transfer Pipeline (pacs.008)", () => {
   describe("validateIban", () => {
