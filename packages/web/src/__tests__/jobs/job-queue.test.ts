@@ -3,7 +3,8 @@
  * Job Queue Tests
  *
  * Tests for RLS policies and concurrency controls.
- * Run with: npx jest packages/web/src/__tests__/jobs/job-queue.test.ts
+ * Run against a provisioned Supabase project with:
+ * RUN_SUPABASE_INTEGRATION_TESTS=true pnpm --filter @settler/web test -- src/__tests__/jobs/job-queue.test.ts
  */
 
 import { describe, it, expect, beforeAll, afterAll } from "@jest/globals";
@@ -13,10 +14,12 @@ import type { Database } from "@/types/database.types";
 
 type SupabaseDb = SupabaseClient<Database>;
 
-const hasSupabaseAdminEnv = Boolean(
-  process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.NEXT_PUBLIC_SUPABASE_URL
+const hasSupabaseIntegrationEnv = Boolean(
+  process.env.RUN_SUPABASE_INTEGRATION_TESTS === "true" &&
+  process.env.SUPABASE_SERVICE_ROLE_KEY &&
+  process.env.NEXT_PUBLIC_SUPABASE_URL
 );
-const describeIfSupabase = hasSupabaseAdminEnv ? describe : describe.skip;
+const describeIfSupabase = hasSupabaseIntegrationEnv ? describe : describe.skip;
 
 describeIfSupabase("Job Queue RLS and Concurrency", () => {
   let adminClient: SupabaseDb;
