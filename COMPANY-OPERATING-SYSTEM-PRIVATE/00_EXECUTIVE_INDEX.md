@@ -10,9 +10,12 @@
 
 ## 2) Read order (first, second, third)
 
-1. `01_Monetization/PACKAGING_AND_PLAN_ARCHITECTURE.md`
-2. `03_Legal-Commercial/COMMERCIAL_CONTRACTING_STACK.md`
+1. `../INVESTOR-RELATIONS-PRIVATE/EVIDENCE_REGISTER.md`
+2. `04_Sales-Implementation-Handoff/FIRST_PILOT_RUNBOOK.md`
 3. `02_Finance-Accounting/MONTHLY_CLOSE_CHECKLIST.md`
+
+Targets and templates in this operating system are plans, not historical performance. External
+claims must first be admitted to the investor-relations evidence register.
 
 ## 3) Canonical docs by category
 

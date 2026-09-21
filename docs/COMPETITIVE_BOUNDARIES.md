@@ -56,7 +56,8 @@ This document defines **how Settler competes** and **why it wins**. It eliminate
 
 ### 3. Multi-Tenant Isolation
 
-**Advantage:** Row-Level Security (RLS) at database level with complete tenant isolation.
+**Advantage:** RLS policy definitions plus application-layer tenant guards, with live verification
+required for each target environment.
 
 **Why It Matters:**
 

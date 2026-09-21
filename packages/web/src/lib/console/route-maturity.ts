@@ -25,11 +25,7 @@ export type RuntimeDependencyClass = "none" | "supabase" | "stripe" | "providers
 
 /** Product IA pillars (canonical console grouping). Keep in sync with marketing `COMMERCIAL_OFFERS`. */
 export type ConsoleNavSection =
-  | "Reconciliation core"
-  | "Exception ops"
-  | "Evidence + audit"
-  | "Control plane"
-  | "Administration";
+  "Reconciliation core" | "Exception ops" | "Evidence + audit" | "Control plane" | "Administration";
 
 export interface ConsoleRouteEntry {
   href: string;
@@ -174,10 +170,10 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
     stripeRequired: false,
     supabaseRequired: false,
     externalProviderRequired: false,
-    explicitDisclosureRequired: false,
+    explicitDisclosureRequired: true,
     degradedBehavior: "Shows static showcase data for source reliability.",
-    navTreatment: "primary",
-    ctaRestrictions: "none",
+    navTreatment: "secondary",
+    ctaRestrictions: "read-only",
     dataMode: "informational",
   },
   {
@@ -195,10 +191,10 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
     stripeRequired: false,
     supabaseRequired: false,
     externalProviderRequired: false,
-    explicitDisclosureRequired: false,
+    explicitDisclosureRequired: true,
     degradedBehavior: "Shows static showcase data for the close dashboard.",
-    navTreatment: "primary",
-    ctaRestrictions: "none",
+    navTreatment: "secondary",
+    ctaRestrictions: "read-only",
     dataMode: "informational",
   },
   {
@@ -216,10 +212,10 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
     stripeRequired: false,
     supabaseRequired: false,
     externalProviderRequired: false,
-    explicitDisclosureRequired: false,
+    explicitDisclosureRequired: true,
     degradedBehavior: "Shows static showcase data for GL Export.",
     navTreatment: "secondary",
-    ctaRestrictions: "none",
+    ctaRestrictions: "read-only",
     dataMode: "informational",
   },
   {
@@ -237,10 +233,10 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
     stripeRequired: false,
     supabaseRequired: false,
     externalProviderRequired: false,
-    explicitDisclosureRequired: false,
+    explicitDisclosureRequired: true,
     degradedBehavior: "Shows static showcase data for SOC 2 evidence collection.",
     navTreatment: "secondary",
-    ctaRestrictions: "none",
+    ctaRestrictions: "read-only",
     dataMode: "informational",
   },
   {
@@ -258,10 +254,10 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
     stripeRequired: false,
     supabaseRequired: false,
     externalProviderRequired: false,
-    explicitDisclosureRequired: false,
+    explicitDisclosureRequired: true,
     degradedBehavior: "Shows static showcase data for SIEM export configuration.",
     navTreatment: "secondary",
-    ctaRestrictions: "none",
+    ctaRestrictions: "read-only",
     dataMode: "informational",
   },
   {

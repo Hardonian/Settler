@@ -17,6 +17,21 @@ for (const route of CONSOLE_ROUTE_REGISTRY) {
     errors.push(`thin route must require explicit disclosure: ${route.href}`);
   }
 
+  if (route.maturity === "informational") {
+    if (!route.explicitDisclosureRequired) {
+      errors.push(`informational route must require explicit disclosure: ${route.href}`);
+    }
+    if (route.navTreatment === "primary") {
+      errors.push(`informational route cannot appear in primary navigation: ${route.href}`);
+    }
+    if (route.ctaRestrictions === "none") {
+      errors.push(`informational route must restrict calls to action: ${route.href}`);
+    }
+    if (route.dataMode !== "informational") {
+      errors.push(`informational route must use informational data mode: ${route.href}`);
+    }
+  }
+
   if (route.maturity === "admin-only" && route.roleRestriction !== "super-admin") {
     errors.push(`admin-only route must be super-admin restricted: ${route.href}`);
   }

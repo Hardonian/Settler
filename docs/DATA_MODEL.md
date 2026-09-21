@@ -88,7 +88,7 @@ This document defines **data ownership**, **data boundaries**, and **data retent
 
 - ✅ Row-Level Security (RLS) policies enforce tenant isolation
 - ✅ All queries filtered by `tenant_id`
-- ✅ No cross-tenant data access possible through API
+- ✅ Tenant-scoped API guard paths have automated coverage; live RLS behavior is verified separately
 
 **Boundaries:**
 
@@ -432,7 +432,7 @@ Settler's data model:
 - ✅ **Data Export:** Users can export their data
 - ✅ **Data Deletion:** Users can delete their data
 - ✅ **Data Privacy:** Personal and sensitive data protected
-- ✅ **Data Compliance:** GDPR and CCPA compliant
+- **Data compliance:** Deployment-specific legal review and operating evidence are required
 
 **Key Principles:**
 

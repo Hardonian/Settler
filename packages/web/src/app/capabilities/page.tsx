@@ -64,7 +64,7 @@ export default function CapabilitiesPage() {
             <div className="group relative aspect-square w-full max-w-[500px] mx-auto overflow-hidden rounded-3xl border border-primary/25 bg-card/70 shadow-2xl transition-all duration-500 hover:border-primary/45 hover:shadow-primary/15">
               <Image
                 src="/capabilities_matrix_3d.png"
-                alt="Settler 4-tier sovereign capability stack"
+                alt="Settler reconciliation capability overview"
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
                 priority
@@ -72,10 +72,10 @@ export default function CapabilitiesPage() {
               <div className="absolute inset-0 bg-gradient-to-tr from-primary/15 via-transparent to-transparent pointer-events-none" />
               <div className="absolute bottom-4 left-4 right-4 rounded-xl border border-white/10 bg-black/60 backdrop-blur-md p-3 text-xs text-white/90 flex items-center justify-between">
                 <span className="font-mono text-[11px] text-cyan-300 font-semibold">
-                  4-TIER CAPABILITY STACK
+                  DETERMINISTIC RECONCILIATION
                 </span>
                 <span className="font-mono text-[11px] text-emerald-400 font-bold">
-                  SHA-256 SEALED
+                  REPLAYABLE EVIDENCE
                 </span>
               </div>
             </div>
@@ -97,13 +97,12 @@ export default function CapabilitiesPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <h2 className="text-3xl font-bold tracking-tight text-foreground">
-                Cryptographic Evidence Finality
+                Replayable evidence
               </h2>
               <p className="text-base text-muted-foreground leading-relaxed">
-                Every reconciliation execution produces a tamper-evident, RFC 6962 SHA-256 Merkle
-                root. Reports are not arbitrary spreadsheets—they are mathematically verifiable
-                proof artifacts that eliminate audit sampling and provide indisputable regulatory
-                truth.
+                Reconciliation runs can produce tamper-evident SHA-256 and Merkle artifacts when
+                evidence generation is configured. These artifacts support replay, verification, and
+                audit review; they do not replace auditor judgment or certification.
               </p>
             </div>
             <EvidenceArtifactPreview />

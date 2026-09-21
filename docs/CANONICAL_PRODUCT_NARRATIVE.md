@@ -83,7 +83,7 @@ Settler is not a monolithic API. It is a layered operating system with explicit 
 | Kernel           | Rust                           | Deterministic hashing, proof primitives, computational integrity     |
 | Control Plane    | Node.js / Express / TypeScript | Orchestration, tenant management, API routes, policy enforcement     |
 | Operator Console | Next.js                        | Visualization, exception triage, run inspection, evidence navigation |
-| Ledger           | TigerBeetle                    | Immutable financial-grade transaction storage (optional)             |
+| Ledger           | TigerBeetle                    | Optional double-entry financial ledger                               |
 | Persistence      | PostgreSQL (Supabase)          | Projections, metadata, audit logs, tenant configuration              |
 | CLI              | TypeScript                     | Operator tooling, verification, foundry data generation              |
 
@@ -127,7 +127,9 @@ The truth/lineage explorer lets operators trace artifacts through the execution 
 
 ### 6. Tenant-Isolated Multi-Tenancy
 
-Row-level security on all tenant-scoped tables. API middleware enforces tenant binding. Ledger partitioning by tenant. Cross-tenant data access is mechanically prevented.
+Tenant identifiers, repository guards, route authorization, tenant-scoped query checks, and RLS
+definitions provide layered isolation. Deployment claims require a passing live RLS matrix in the
+target environment.
 
 **Evidence:** RLS policies in `supabase/migrations/`, `packages/api/src/middleware/`, `SECURITY_INVARIANTS.md`
 
@@ -145,18 +147,18 @@ These boundaries are non-negotiable. No surface may imply these capabilities exi
 
 ### Capability Boundaries
 
-| Boundary               | Status                             | Detail                                                                                                                                         |
-| ---------------------- | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| SOC 2 Type II          | **In preparation**                 | Not certified. Do not claim certification.                                                                                                     |
-| Platform adapter count | **7 verified adapters**            | Stripe, Shopify, QuickBooks, PayPal, Square, Xero, NetSuite. Do not claim "50+" or "unlimited."                                                |
-| Uptime SLA             | **Best-effort for non-Enterprise** | Target 99.5%. SLA-backed only for Enterprise tier.                                                                                             |
-| Real-time matching     | **Not supported**                  | Settler uses batch/scheduled reconciliation. No real-time streaming match.                                                                     |
-| 100% accuracy          | **Never claim**                    | Settler provides deterministic matching with confidence indicators. Exceptions require human review.                                           |
-| AI/ML matching         | **Advisory only when configured**  | AI features are advisory, evidence-linked, and bounded. Humans retain final authority. AI is not default — it requires provider configuration. |
-| HIPAA / FedRAMP        | **Not certified**                  | Do not imply healthcare or government compliance.                                                                                              |
-| Public security audit  | **Not available**                  | No third-party penetration test results are published.                                                                                         |
-| Customer references    | **Limited**                        | Do not claim broad adoption until public case studies exist.                                                                                   |
-| Guaranteed support     | **Enterprise only**                | Non-Enterprise support is best-effort with no response time commitments.                                                                       |
+| Boundary               | Status                            | Detail                                                                                                                                         |
+| ---------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| SOC 2 Type II          | **In preparation**                | Not certified. Do not claim certification.                                                                                                     |
+| Platform adapter count | **7 verified adapters**           | Stripe, Shopify, QuickBooks, PayPal, Square, Xero, NetSuite. Do not claim "50+" or "unlimited."                                                |
+| Uptime SLA             | **Contract-specific**             | No universal SLA is authorized from repository evidence; commitments require an executed agreement and target monitoring.                      |
+| Real-time matching     | **Not supported**                 | Settler uses batch/scheduled reconciliation. No real-time streaming match.                                                                     |
+| 100% accuracy          | **Never claim**                   | Settler provides deterministic matching with confidence indicators. Exceptions require human review.                                           |
+| AI/ML matching         | **Advisory only when configured** | AI features are advisory, evidence-linked, and bounded. Humans retain final authority. AI is not default — it requires provider configuration. |
+| HIPAA / FedRAMP        | **Not certified**                 | Do not imply healthcare or government compliance.                                                                                              |
+| Public security audit  | **Not available**                 | No third-party penetration test results are published.                                                                                         |
+| Customer references    | **Limited**                       | Do not claim broad adoption until public case studies exist.                                                                                   |
+| Guaranteed support     | **Contract-specific**             | Response commitments require an executed agreement and named operating coverage.                                                               |
 
 ### Language Rules
 
@@ -165,7 +167,7 @@ These boundaries are non-negotiable. No surface may imply these capabilities exi
 | "Eliminates errors"                | "Reduces errors through deterministic matching"                                      |
 | "100% accuracy"                    | "Deterministic matching with confidence indicators"                                  |
 | "Never fails"                      | "Designed for reliability with explicit degraded states"                             |
-| "Guaranteed uptime"                | "Target 99.5% availability (SLA-backed for Enterprise)"                              |
+| "Guaranteed uptime"                | "Availability commitments are defined in the executed service agreement"             |
 | "Automatically handles everything" | "Matches transactions based on configured rules; exceptions require operator review" |
 | "50+ integrations"                 | "7 verified platform adapters with custom adapter support"                           |
 | "AI-powered"                       | "Rules-based with optional AI advisory (when configured)"                            |

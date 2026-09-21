@@ -129,7 +129,8 @@ API keys can have custom scopes independent of user role:
 
 - All tables have `tenant_id` column
 - RLS policies filter by tenant_id
-- No cross-tenant queries possible
+- Live cross-tenant denial must be confirmed in the target environment with
+  `pnpm run verify:rls:live`
 
 ### API Level
 

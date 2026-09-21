@@ -105,7 +105,7 @@ This document defines **what Settler is** and **where it fits** in the market. I
 **Settler's Advantage:**
 
 - Row-Level Security (RLS) at database level
-- Complete tenant isolation
+- Layered tenant-isolation controls with a live verification gate
 - Secure multi-tenancy
 
 **Why Hard to Copy:**

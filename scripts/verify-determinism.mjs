@@ -1,16 +1,22 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
 
-const runA = spawnSync("npx", ["pnpm", "demo"], {
-  encoding: "utf8",
-  env: process.env,
-  shell: true,
-});
-const runB = spawnSync("npx", ["pnpm", "demo"], {
-  encoding: "utf8",
-  env: process.env,
-  shell: true,
-});
+function runDemo() {
+  const pnpmCli = process.env.npm_execpath;
+  const [command, args] = pnpmCli
+    ? [process.execPath, [pnpmCli, "demo"]]
+    : process.platform === "win32"
+      ? [process.env.ComSpec || "cmd.exe", ["/d", "/s", "/c", "pnpm.cmd", "demo"]]
+      : ["pnpm", ["demo"]];
+
+  return spawnSync(command, args, {
+    encoding: "utf8",
+    env: process.env,
+  });
+}
+
+const runA = runDemo();
+const runB = runDemo();
 
 if (runA.status !== 0 || runB.status !== 0) {
   process.stderr.write(runA.stderr || runB.stderr || "demo execution failed\n");

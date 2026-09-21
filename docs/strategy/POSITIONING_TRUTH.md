@@ -1,48 +1,60 @@
-# Settler Positioning Truth (Repo-Grounded)
+# Settler Positioning Truth
 
 ## Primary category
 
-**Open-source reconciliation engine** that surfaces mismatches and produces verifiable evidence.
+**Neutral settlement truth and exception resolution** for platforms and finance teams operating
+across multiple processors, commerce systems, banks, and ledgers.
 
-## Primary one-line description
+## One-line description
 
-Settler helps teams run deterministic reconciliation workflows, explain mismatches, and export verifiable evidence for every run.
+Settler deterministically connects financial records across system boundaries, explains
+mismatches, and produces replayable evidence for every resolution.
 
-## Primary painkiller (today)
+## Initial ideal customer profile
 
-When finance and ops systems disagree, Settler gives teams a repeatable way to prove what happened, what changed, and why.
+Vertical software and finance platforms that:
 
-## Target users
+- operate more than one payment or commerce rail;
+- must reconcile processor activity, bank deposits, and ledger entries;
+- have a recurring exception workload owned by finance or operations; and
+- can provide a production-bound pilot with measurable baseline data.
 
-- Engineers building reconciliation pipelines and integrations.
-- Finance and operations teams resolving exceptions.
-- Founders and technical evaluators who need audit-ready operational history.
+## Initial workflow
 
-## Top 3 differentiators (defensible now)
+Reconcile processor payouts to bank deposits and ledger entries, including fees, refunds,
+chargebacks, timing differences, and foreign exchange.
+
+## Defensible capabilities today
 
 1. **Deterministic replay:** rerun workflows from evidence and verify fingerprints match.
-2. **Proof-first outputs:** each run can produce evidence artifacts (`run.json`, `results.json`, `evidence.json`, `report.html`).
-3. **Policy-checked operations:** routing and review behavior can be encoded as explicit rules and attached to traces/audit context.
+2. **Proof-first outputs:** produce inspectable run, result, evidence, and report artifacts.
+3. **Policy-checked exceptions:** attach explicit rules, review decisions, and audit context.
+4. **Tenant isolation:** enforce tenant scope through repository and runtime guardrails.
 
-## Wording to avoid
+## Intended moat
 
-- "Autonomous finance brain"
-- "Self-healing financial AGI"
-- "Fully automatic close with zero review"
-- "Guaranteed compliance"
+The intended moat is not route count or UI breadth. It is a permissioned corpus of normalized
+financial events, exception patterns, and successful resolution policies that measurably improves
+onboarding and exception outcomes. That moat is not demonstrated until production data and rights
+exist.
 
 ## Claims allowed
 
-- Open-source reconciliation engine.
-- Deterministic run + replay workflow.
+- Open-source deterministic reconciliation engine.
+- Replayable reconciliation and evidence workflows.
 - Explainable mismatch routing with policy and review surfaces.
-- Evidence export for audit and operator handoff.
-- OSS core with optional enterprise extensions.
+- Tenant-isolation controls backed by named verification gates.
+- Optional enterprise extensions described by their verified capability state.
 
-## Claims disallowed until proven in repo
+## Claims disallowed until evidenced
 
-- Real-time guarantees across all connectors.
-- End-to-end SOC2/ISO certification claims.
-- Zero-manual-ops automation claims.
-- Universal ERP/payment connector coverage.
-- Guaranteed revenue recovery outcomes.
+- Customer, revenue, retention, or partnership claims without source records.
+- Accuracy, savings, recovery, throughput, or uptime claims outside an observed cohort.
+- Completed certification or legal-compliance claims without third-party evidence.
+- Universal connector coverage or fully autonomous financial close.
+- A proprietary data moat before permissioned production evidence exists.
+
+## Product discipline
+
+New features must improve the initial workflow, shorten onboarding, increase measured resolution
+quality, or close a named production/customer diligence gap. Everything else is deferred.

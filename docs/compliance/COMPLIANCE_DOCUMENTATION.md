@@ -128,7 +128,7 @@ Settler is designed with compliance and security as foundational principles. Thi
 
 - PostgreSQL RLS policies enforce tenant boundaries
 - All queries automatically filtered by tenant
-- No cross-tenant data access possible
+- Target-environment cross-tenant denial requires a passing live RLS evidence run
 
 **API-Level Isolation:**
 

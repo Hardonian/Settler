@@ -8,33 +8,24 @@ import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { SettlerLogo } from "@/components/brand/SettlerLogo";
 import { CommandPalette } from "@/components/ui/command-palette";
-import { AgentActivityFeed } from "@/components/ux/agent-activity-feed";
 import { cn } from "@/lib/utils";
 import { Menu, ChevronDown } from "lucide-react";
 
 // Primary navigation items (always visible on desktop)
 const primaryNavigationItems = [
-  { href: "/cognitive", label: "Cognitive OS" },
-  { href: "/verify", label: "Zero-Trust Verifier" },
-  { href: "/platform", label: "Platform" },
-  { href: "/sidereal", label: "Sidereal API" },
+  { href: "/product", label: "Product" },
   { href: "/capabilities", label: "Capabilities" },
+  { href: "/integrations", label: "Integrations" },
+  { href: "/security-and-audit", label: "Security" },
   { href: "/pricing", label: "Pricing" },
   { href: "/docs", label: "Docs" },
 ];
 
-// Feature pages exposed in a dropdown
+// Supporting material kept separate from the core buyer journey.
 const featureNavigationItems = [
-  { href: "/product", label: "Product Suite" },
-  { href: "/enterprise", label: "Enterprise Governance" },
-  { href: "/compare", label: "Settler vs Competitors" },
-  { href: "/roi-calculator", label: "ROI Calculator" },
-  { href: "/document-onboarding", label: "Document Onboarding" },
-  { href: "/value-proposition", label: "Value Proposition" },
-  { href: "/revenue-recovery", label: "Revenue Recovery" },
-  { href: "/realtime-dashboard", label: "Realtime Telemetry" },
   { href: "/architecture", label: "Architecture" },
-  { href: "/security-and-audit", label: "Security & Audit" },
+  { href: "/enterprise", label: "Enterprise" },
+  { href: "/compare", label: "Compare" },
   { href: "/open-source", label: "Open Source" },
   { href: "/changelog", label: "Changelog" },
 ];
@@ -72,7 +63,7 @@ export function Navigation() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [moreMenuOpen]);
 
-  // Close Features menu when clicking outside
+  // Close Resources menu when clicking outside
   useEffect(() => {
     if (!featuresMenuOpen) return;
 
@@ -163,22 +154,6 @@ export function Navigation() {
               >
                 <SettlerLogo className="h-8 w-auto" />
               </Link>
-
-              <div className="hidden 2xl:flex items-center gap-2">
-                <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-violet-500/30 bg-violet-500/10 text-[11px] font-mono font-medium text-violet-600 dark:text-violet-300">
-                  <span className="relative flex h-1.5 w-1.5">
-                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-violet-400"></span>
-                  </span>
-                  <span>GEMINI 3 PROPOSER</span>
-                </div>
-                <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-[11px] font-mono font-medium text-emerald-600 dark:text-emerald-400">
-                  <span className="relative flex h-1.5 w-1.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
-                  </span>
-                  <span>RUST VERIFIER</span>
-                </div>
-              </div>
             </div>
 
             {/* Desktop Navigation */}
@@ -210,7 +185,7 @@ export function Navigation() {
                   );
                 })}
 
-                {/* Features dropdown */}
+                {/* Resources dropdown */}
                 <div className="relative" ref={featuresMenuRef}>
                   <button
                     type="button"
@@ -224,10 +199,10 @@ export function Navigation() {
                       "motion-reduce:transition-none",
                       featuresMenuOpen && "text-primary-600 dark:text-primary-400"
                     )}
-                    aria-label="Features navigation"
+                    aria-label="Resources navigation"
                     aria-expanded={featuresMenuOpen}
                   >
-                    Features
+                    Resources
                     <ChevronDown
                       className={cn(
                         "w-4 h-4 transition-transform duration-200",
@@ -323,7 +298,6 @@ export function Navigation() {
               {/* Right side actions */}
               <div className="flex items-center gap-3 ml-2">
                 <CommandPalette />
-                <AgentActivityFeed />
                 <DarkModeToggle />
                 <Link
                   href="/login"
@@ -441,13 +415,13 @@ export function Navigation() {
                       })}
                     </nav>
 
-                    {/* Features Navigation */}
+                    {/* Resources Navigation */}
                     <nav
                       className="flex flex-col space-y-1 pt-6 border-t border-border"
-                      aria-label="Mobile features navigation"
+                      aria-label="Mobile resources navigation"
                     >
                       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 mb-2">
-                        Features
+                        Resources
                       </p>
                       {featureNavigationItems.map((item) => {
                         const isActive =
