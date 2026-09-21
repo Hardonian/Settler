@@ -67,10 +67,22 @@ export function auditSecurityClaims(root = defaultRoot) {
     "docs/EXECUTIVE_SUMMARY.md",
     "docs/positioning/CLAIM_VALIDATION.md",
     "docs/INVESTOR_NARRATIVE.md",
+    "docs/BILLING_FAQ.md",
+    "docs/ECONOMICS.md",
+    "docs/FAQ.md",
+    "docs/ONE_PAGER.md",
+    "docs/PITCH.md",
+    "docs/PRICING_LOGIC.md",
+    "docs/PRIVACY_BY_DESIGN.md",
+    "docs/SLA_POSITION.md",
+    "docs/SUPPORT_MODEL.md",
+    "docs/enterprise-battlecard.md",
+    "docs/enterprise-onboarding.md",
     "INVESTOR_OVERVIEW.md",
   ].map((file) => resolve(root, file));
   selectedFiles.push(...walkMarkdown(resolve(root, "docs/dd")));
   selectedFiles.push(...walkMarkdown(resolve(root, "docs/investor")));
+  selectedFiles.push(...walkMarkdown(resolve(root, "docs/business")));
 
   const violations = [];
   for (const file of requiredFiles) {

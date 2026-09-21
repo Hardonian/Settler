@@ -10,3 +10,6 @@ diligence evidence. Use the active documents at `docs/DUE_DILIGENCE.md`,
 
 The `investor/` subdirectory contains superseded public investor drafts. Active acquisition and
 investor evidence is controlled by the encrypted `INVESTOR-RELATIONS-PRIVATE/` packet.
+
+The `business/` subdirectory and archived top-level commercial documents contain superseded sales,
+pricing, privacy, support, and service-level claims. They are not approved collateral.
